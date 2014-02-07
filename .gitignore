@@ -1,0 +1,4 @@
+# Eclipse files
+.cproject
+.project
+.settings*
