@@ -1,0 +1,10 @@
+À discuter :
+
+Si on pousse les boîtes, créant ainsi un genre de log de l'exécution, comment préserver le format original tout en permettant de récupérer le(s) log(s) ?
+
+Pour chaque classe, copy constructor ? (+ assignment operator)
+
+
+
+Répondu :
+
