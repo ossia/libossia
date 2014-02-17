@@ -1,10 +1,29 @@
 À discuter :
 
-Si on pousse les boîtes, créant ainsi un genre de log de l'exécution, comment préserver le format original tout en permettant de récupérer le(s) log(s) ?
+Doit-on pouvoir naviguer vers le bas dans la hiérarchie ? Parce que c'est compliqué ... (iterator, const reference, exposer l'implem, etc)
+Même question pour les côtés d'un Event.
+En fait, le problème est d'accéder à une liste.
+Du coup, comment observer ces paramètres ?
+Changer l'observation pour du push ?
+Quoiqu'il serait vraiment intéressant d'avoir find() etc ...
+Que faire quand il y a plusieurs listes ? (navigation gauche droite des node)
 
-Pour chaque classe, copy constructor ? (+ assignment operator)
+Si on peut partager des objets (TimeProcess dans plusieurs box, State dans plusieurs Node), comment gérer la navigation ? (pas qu'un seul parent)
 
 
 
 Répondu :
 
+Si on pousse les boîtes, créant ainsi un genre de log de l'exécution, comment préserver le format original tout en permettant de récupérer le(s) log(s) ?
+	On produit un log par défaut (option désactivable), au fur et à mesure pour garder une trace si ça crash, et on restaure le scenario d'origine au stop.
+
+Dans un event, peut-on mélanger State et juste Message ?
+Quid de l'ordonnancement alors ?
+Comment gérer cet ordonnancement ?
+	Oui, on peut mélanger, via union, et cf std::list pour l'ordonnancement
+
+Is TimeProcess Observable ?
+	Oui
+
+Un type pour le temps ? date ? durée ?
+	Oui, TimeValue, avec méthodes de conversion
