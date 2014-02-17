@@ -13,23 +13,24 @@
 
 namespace OSSIA {
 
-class Event;
+class TimeBox;
 
 class TimeProcess {
 
+  // Constructors, destructor, assignment
   TimeProcess();
+  virtual ~TimeProcess();
 
-  void play() const;
+  // Navigation
+  TimeBox & getParentTimeBox();
 
-  Event & getStartEvent() const;
-  Event & getEndEvent() const;
+  // Lecture
+  virtual void play() const;
 
-  float getLength() const;
-//??  void setLength(float length);
-  float getMinimumLength() const;
-  void setMinimumLength(float minLength);
-  float getMaximumLength() const;
-  void setMaximumLength(float maxLength);
+  // pimpl idiom
+private:
+  class Impl;
+  Impl * pimpl;
 
 };
 

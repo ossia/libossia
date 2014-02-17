@@ -11,27 +11,36 @@
 #ifndef EVENT_H_
 #define EVENT_H_
 
-#include <vector>
+#include "IObservable.h"
 
 namespace OSSIA {
 
-class Address;
-class StateParameter;
+class Scenario;
+class State;
 
-class Event {
+class Event : public IObservable {
 
+  // Constructors, destructor, assignment
   Event();
+  virtual ~Event();
 
-  std::vector<StateParameter> getState() const;
+  // Navigation
+  Scenario & getParentScenario() const;
 
-  StateParameter getStateParameter(Address addr) const;
+  // Lecture
+  virtual void play() const;
 
-  Event & setStateParameter(StateParameter sp);
+  // Managing States
+  virtual void addState(State*);
+  virtual bool removeState(State*);
 
-  template <typename T>
-  Event & setStateParameter(Address addr, T value);
-
+  // Accessors
   float getDate() const;
+
+  // pimpl idiom
+private:
+  class Impl;
+  Impl * pimpl;
 
 };
 
