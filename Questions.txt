@@ -24,6 +24,12 @@ Empêcher l'héritage ?
 
 StartEvent ? EndEvent ? DisposableEvent ?
 
+Big parent object TimeElement ? (write read getScenario ...)
+
+GoTo dans Score ou dans TimeBox ou TimeProcess ou Scenario ou ...???
+
+
+
 Répondu :
 
 Si on pousse les boîtes, créant ainsi un genre de log de l'exécution, comment préserver le format original tout en permettant de récupérer le(s) log(s) ?

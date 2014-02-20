@@ -11,31 +11,32 @@
 #ifndef SCORE_H_
 #define SCORE_H_
 
-#include <vector>
+#include "IObservable.h"
 
 namespace OSSIA {
 
-class Event;
-class TimeProcess;
+class TimeBox;
+class TimeValue;
 
-class Score {
+class Score : public IObservable {
 
+  // Constructors, destructor, assignment
   Score();
+  Score(const Score&);
+  Score(const TimeBox&);
+  ~Score();
+  Score & operator= (const Score&);
 
-  void play() const;
+  // Lecture
+  TimeValue play() const;
+  TimeValue pause() const;
+  TimeValue stop() const;
 
-  void pause() const;
-
-  void stop() const;
-
-  void goToSecond(float date) const;
-
-  float getLength() const;
-
-  Event & getStartEvent();
-  Event & getEndEvent();
-
-  std::vector<TimeProcess*> getTimeProcesses;
+  // Accessors
+  TimeBox & getTimeBox() const;
+  bool isPlaying() const;
+  TimeValue getCursorPosition() const;
+  void setCursorPosition(TimeValue) const;
 
 };
 
