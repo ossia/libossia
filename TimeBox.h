@@ -17,15 +17,16 @@
 
 namespace OSSIA {
 
-class EndEvent;
+class Event;
 class Scenario;
-class StartEvent;
 class State;
 class TimeNode;
 class TimeProcess;
 class TimeValue;
 
 class TimeBox : public IObservable {
+
+public:
 
   // Constructors, destructor, assignment
   TimeBox();
@@ -39,8 +40,8 @@ class TimeBox : public IObservable {
   // Navigation
   TimeNode & getPreviousNode() const;
   TimeNode & getNextNode();
-  StartEvent & getStartEvent() const;
-  EndEvent & getEndEvent() const;
+  Event & getStartEvent() const;
+  Event & getEndEvent() const;
   Scenario & getParentScenario() const;
 
   // Iterators
@@ -62,11 +63,16 @@ class TimeBox : public IObservable {
   void setMaximumLength(TimeValue);
   bool isRigid();
   State & getStartState() const;
-  void setStartState(const State&); // set a copy
-  void setStartState(const State*); // set a reference
+  void setStartState(const State&);
   State & getEndState() const;
-  void setEndState(const State&); // set a copy
-  void setEndState(const State*); // set a reference
+  void setEndState(const State&);
+
+  // Observation message types
+  enum MessageType {
+    LENGTH,
+    MIN_LENGTH,
+    MAX_LENGTH
+  };
 
   // pimpl idiom
 private:

@@ -11,31 +11,36 @@
 #ifndef EVENT_H_
 #define EVENT_H_
 
-#include "IObservable.h"
+#include <set>
+
+#include "TimeNode.h"
 
 namespace OSSIA {
 
 class Scenario;
 class State;
+class TimeBox;
 
-class Event : public IObservable {
+class Event : public TimeNode {
+
+public:
 
   // Constructors, destructor, assignment
   Event();
+  Event(const Event&);
   virtual ~Event();
-
-  // Navigation
-  Scenario & getParentScenario() const;
+  Event & operator= (const Event&);
 
   // Lecture
-  virtual void play() const;
+  virtual void play(bool log = false, std::string name = "") const override;
 
-  // Managing States
-  virtual void addState(State*);
-  virtual bool removeState(State*);
+  // Navigation
+  virtual std::set<TimeBox*> getPreviousTimeBoxes() const override;
+  virtual std::set<TimeBox*> getNextTimeBoxes() const override;
 
   // Accessors
-  float getDate() const;
+  State & getState() const;
+  void setState(const State&);
 
   // pimpl idiom
 private:

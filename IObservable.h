@@ -17,6 +17,8 @@ class IObserver;
 
 class IObservable {
 
+public:
+
   // Constructors, destructor, assignment
   IObservable();
   virtual ~IObservable();

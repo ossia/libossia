@@ -11,22 +11,36 @@
 #ifndef MESSAGE_H_
 #define MESSAGE_H_
 
+#include "StateElement.h"
+
 namespace OSSIA {
 
 class Address;
 
-template <typename value_type>
-class Message {
+template <typename T>
+class Message : public StateElement {
+
+public:
+
+  typedef T value_type;
 
   // Constructors, destructor, asssignment
   Message();
+  Message(const Message&);
+  virtual ~Message();
+  Message & operator= (const Message&);
+
+  // Lecture
+  virtual void launch() const override;
 
   // Accessors
+  virtual StateElementType getType() const override final
+      { return MESSAGE_TYPE; };
   Address getAddress() const;
-  void setAddress(Address);
+  void setAddress(const Address);
   value_type getValue() const;
-  void setValue(value_type);
-  bool hasValue();
+  void setValue(const value_type);
+  bool hasValue() const;
 
   // pimpl idiom
 private:

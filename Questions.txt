@@ -6,11 +6,23 @@ En fait, le problème est d'accéder à une liste.
 Du coup, comment observer ces paramètres ?
 Changer l'observation pour du push ?
 Quoiqu'il serait vraiment intéressant d'avoir find() etc ...
-Que faire quand il y a plusieurs listes ? (navigation gauche droite des node)
+!!Que faire quand il y a plusieurs listes ? (navigation gauche droite des node)
 
 Si on peut partager des objets (TimeProcess dans plusieurs box, State dans plusieurs Node), comment gérer la navigation ? (pas qu'un seul parent)
 
+Un Event peut-il avoir plusieurs états ? (cf Pascal)
 
+RTTI ou virtual getType ?
+
+Que retourner en navigation si pas inscris dans un Scenario ?
+Est-ce que les fonctions de Navigation devraient aussi remonter dans Scenario ?
+Comme les move, link, etc ?
+
+A-t-on des objets qui ne devraient pas avoir d'existence en-dehors d'un Scenario ?
+Constructeur privé et factory ?
+Empêcher l'héritage ?
+
+StartEvent ? EndEvent ? DisposableEvent ?
 
 Répondu :
 

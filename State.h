@@ -12,19 +12,22 @@
 #define STATE_H_
 
 #include "IObservable.h"
+#include "StateElement.h"
 
 namespace OSSIA {
 
-class State : public IObservable {
+class State : public StateElement, public IObservable {
+
+public:
 
   // Constructors, destructor, assignment
   State();
   State(const State&);
-  ~State();
+  virtual ~State();
   State & operator= (const State&);
 
   // Lecture
-  void launch() const;
+  virtual void launch() const override;
 
   // Navigation
 
@@ -32,13 +35,15 @@ class State : public IObservable {
   class const_iterator; // bidirectional
   const_iterator begin() const;
   const_iterator end() const;
-  const_iterator find(const State&) const;
+  const_iterator find(const StateElement&) const;
 
-  // Managing sub-States
-  void addState(const State&);
-  bool removeState(const State&);
+  // Managing StateElements
+  void addStateElement(const StateElement&);
+  bool removeStateElement(const StateElement&);
 
   // Accessors
+  virtual StateElementType getType() const override final
+      { return STATE_TYPE; };
 
   // pimpl idiom
 private:

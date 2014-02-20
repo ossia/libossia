@@ -15,6 +15,8 @@ namespace OSSIA {
 
 class IObserver {
 
+public:
+
   // Constructors, destructor, assignment
   IObserver();
   virtual ~IObserver();
