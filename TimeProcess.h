@@ -25,11 +25,11 @@ public:
   TimeProcess();
   virtual ~TimeProcess();
 
-  // Navigation
-  TimeBox & getParentTimeBox();
-
   // Lecture
   virtual void play() const;
+
+  // Navigation
+  TimeBox & getParentTimeBox();
 
   // pimpl idiom
 private:

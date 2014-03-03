@@ -17,6 +17,10 @@
 
 namespace OSSIA {
 
+class Scenario;
+class TimeBox;
+class TimeValue;
+
 class TimeNode : public IObservable {
 
 public:
