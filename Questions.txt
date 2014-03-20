@@ -9,14 +9,18 @@ Quoiqu'il serait vraiment intéressant d'avoir find() etc ...
 !!Que faire quand il y a plusieurs listes ? (navigation gauche droite des node)
 
 Si on peut partager des objets (TimeProcess dans plusieurs box, State dans plusieurs Node), comment gérer la navigation ? (pas qu'un seul parent)
+	Si temporalité pas ubiquité, par contre, Automation peut
 
 Un Event peut-il avoir plusieurs états ? (cf Pascal)
+	Pas utile, utiliser l'ordonnancement d'états dans un état.
 
 RTTI ou virtual getType ?
+	getType si besoin
 
 Que retourner en navigation si pas inscris dans un Scenario ?
 Est-ce que les fonctions de Navigation devraient aussi remonter dans Scenario ?
 Comme les move, link, etc ?
+	NULL typé (objet statique)
 
 A-t-on des objets qui ne devraient pas avoir d'existence en-dehors d'un Scenario ?
 Constructeur privé et factory ?
@@ -27,6 +31,7 @@ StartEvent ? EndEvent ? DisposableEvent ?
 Big parent object TimeElement ? (write read getScenario ...)
 
 GoTo dans Score ou dans TimeBox ou TimeProcess ou Scenario ou ...???
+	GoTo partout, pour pouvoir lire une fraction temporelle d'une boîte indépendamment de son contexte
 
 
 
