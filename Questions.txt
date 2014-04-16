@@ -1,18 +1,18 @@
-À discuter :
+√Ä discuter :
 
-Doit-on pouvoir naviguer vers le bas dans la hiérarchie ? Parce que c'est compliqué ... (iterator, const reference, exposer l'implem, etc)
-Même question pour les côtés d'un Event.
-En fait, le problème est d'accéder à une liste.
-Du coup, comment observer ces paramètres ?
+Doit-on pouvoir naviguer vers le bas dans la hi√©rarchie ? Parce que c'est compliqu√© ... (iterator, const reference, exposer l'implem, etc)
+M√™me question pour les c√¥t√©s d'un Event.
+En fait, le probl√®me est d'acc√©der √† une liste.
+Du coup, comment observer ces param√®tres ?
 Changer l'observation pour du push ?
-Quoiqu'il serait vraiment intéressant d'avoir find() etc ...
+Quoiqu'il serait vraiment int√©ressant d'avoir find() etc ...
 !!Que faire quand il y a plusieurs listes ? (navigation gauche droite des node)
 
-Si on peut partager des objets (TimeProcess dans plusieurs box, State dans plusieurs Node), comment gérer la navigation ? (pas qu'un seul parent)
-	Si temporalité pas ubiquité, par contre, Automation peut
+Si on peut partager des objets (TimeProcess dans plusieurs box, State dans plusieurs Node), comment g√©rer la navigation ? (pas qu'un seul parent)
+	Si temporalit√© pas ubiquit√©, par contre, Automation peut
 
-Un Event peut-il avoir plusieurs états ? (cf Pascal)
-	Pas utile, utiliser l'ordonnancement d'états dans un état.
+Un Event peut-il avoir plusieurs √©tats ? (cf Pascal)
+	Pas utile, utiliser l'ordonnancement d'√©tats dans un √©tat.
 
 RTTI ou virtual getType ?
 	getType si besoin
@@ -20,33 +20,33 @@ RTTI ou virtual getType ?
 Que retourner en navigation si pas inscris dans un Scenario ?
 Est-ce que les fonctions de Navigation devraient aussi remonter dans Scenario ?
 Comme les move, link, etc ?
-	NULL typé (objet statique)
+	NULL typ√© (objet statique)
 
 A-t-on des objets qui ne devraient pas avoir d'existence en-dehors d'un Scenario ?
-Constructeur privé et factory ?
-Empêcher l'héritage ?
+Constructeur priv√© et factory ?
+Emp√©cher l'h√©ritage ?
 
 StartEvent ? EndEvent ? DisposableEvent ?
 
 Big parent object TimeElement ? (write read getScenario ...)
 
 GoTo dans Score ou dans TimeBox ou TimeProcess ou Scenario ou ...???
-	GoTo partout, pour pouvoir lire une fraction temporelle d'une boîte indépendamment de son contexte
+	GoTo partout, pour pouvoir lire une fraction temporelle d'une bo√Æte ind√©pendamment de son contexte
 
 
 
-Répondu :
+R√©pondu :
 
-Si on pousse les boîtes, créant ainsi un genre de log de l'exécution, comment préserver le format original tout en permettant de récupérer le(s) log(s) ?
-	On produit un log par défaut (option désactivable), au fur et à mesure pour garder une trace si ça crash, et on restaure le scenario d'origine au stop.
+Si on pousse les bo√Ætes, cr√©ant ainsi un genre de log de l'ex√©cution, comment pr√©server le format original tout en permettant de r√©cup√©rer le(s) log(s) ?
+	On produit un log par d√©faut (option d√©sactivable), au fur et √† mesure pour garder une trace si √ßa crash, et on restaure le scenario d'origine au stop.
 
-Dans un event, peut-on mélanger State et juste Message ?
+Dans un event, peut-on m√©langer State et juste Message ?
 Quid de l'ordonnancement alors ?
-Comment gérer cet ordonnancement ?
-	Oui, on peut mélanger, via union, et cf std::list pour l'ordonnancement
+Comment g√©rer cet ordonnancement ?
+	Oui, on peut m√©langer, via union, et cf std::list pour l'ordonnancement
 
 Is TimeProcess Observable ?
 	Oui
 
-Un type pour le temps ? date ? durée ?
-	Oui, TimeValue, avec méthodes de conversion
+Un type pour le temps ? date ? dur√©e ?
+	Oui, TimeValue, avec m√©thodes de conversion
