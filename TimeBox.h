@@ -19,7 +19,6 @@ namespace OSSIA {
 
 class Event;
 class Scenario;
-class State;
 class TimeNode;
 class TimeProcess;
 class TimeValue;
@@ -62,10 +61,6 @@ public:
   TimeValue getMaximumLength() const;
   void setMaximumLength(TimeValue);
   bool isRigid();
-  State & getStartState() const;
-  void setStartState(const State&);
-  State & getEndState() const;
-  void setEndState(const State&);
 
   // Observation message types
   enum MessageType {

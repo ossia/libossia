@@ -15,6 +15,7 @@
 
 namespace OSSIA {
 
+class State;
 class TimeBox;
 
 class TimeProcess : public IObservable {
@@ -30,6 +31,12 @@ public:
 
   // Navigation
   TimeBox & getParentTimeBox();
+
+  // Accessors
+  State & getStartState() const;
+  void setStartState(const State&);
+  State & getEndState() const;
+  void setEndState(const State&);
 
   // pimpl idiom
 private:
