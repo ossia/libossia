@@ -1,0 +1,3 @@
+[submodule "ImplScore/Score"]
+	path = ImplScore/Score
+	url = https://github.com/OSSIA/Score.git
