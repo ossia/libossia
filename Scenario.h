@@ -37,6 +37,19 @@ public:
   std::set<TimeBox*> getTimeBoxes() const;
   std::set<TimeNode*> getTimeNodes() const;
 
+  // Edition
+  void addTimeBox(const TimeBox&, const Event & startEvent);
+  void addTimeBox(
+      const TimeBox&,
+      const Event & startEvent,
+      const Event & endEvent);
+
+  // Accessors
+  Event & getStartEvent() const;
+  void setStartEvent(const Event&);
+  Event & getEndEvent() const;
+  void setEndEvent(const Event&);
+
   // pimpl idiom
 private:
   class Impl;
