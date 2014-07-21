@@ -21,11 +21,11 @@ public:
   // Constructors, destructor, assignment
   CurveSegment();
   CurveSegment(const CurveSegment&);
-  ~CurveSegment();
+  virtual ~CurveSegment();
   CurveSegment & operator= (const CurveSegment&);
 
   // Computation
-  T valueAt(TimeValue) const;
+  virtual T valueAt(double) const = 0; // Between 0 and 1
 
   // pimpl idiom
 private:

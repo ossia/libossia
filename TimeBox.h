@@ -38,7 +38,7 @@ public:
 
   // Navigation
   TimeNode & getPreviousNode() const;
-  TimeNode & getNextNode();
+  TimeNode & getNextNode() const;
   Event & getStartEvent() const;
   Event & getEndEvent() const;
   Scenario & getParentScenario() const;

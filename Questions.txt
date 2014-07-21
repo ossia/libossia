@@ -1,5 +1,18 @@
 À discuter :
 
+Comment downcaster un CurveSegment en sa spécialisation pour le modifier ?
+Doit RTTI et dynamic_cast, soit getType et static_cast, soit castTo(TypeSpécifié)
+
+State dans Process fait double emploi avec le State dans Event.
+Ne sert qu'à la sauvegarde par exemple, quand on veut gérer un Process de manière indépendante du temps.
+Du coup, State que dans les Event, et références dans les Process, à n'utiliser qu'en cas d'indépendance ?
+
+Comment faire pour vérifier que tout est toujours relié au 0 ?
+Surtout en cas de suppression ?
+
+Smart pointer ?
+Par exemple, créant une boîte, ça créé les events, setEvent => leak ?
+
 Doit-on pouvoir naviguer vers le bas dans la hiérarchie ? Parce que c'est compliqué ... (iterator, const reference, exposer l'implem, etc)
 Même question pour les côtés d'un Event.
 En fait, le problème est d'accéder à une liste.
