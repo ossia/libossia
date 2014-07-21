@@ -35,18 +35,16 @@ public:
   class const_iterator; // bidirectional
   const_iterator begin() const;
   const_iterator end() const;
-  const_iterator find(const TimeValue) const;
+  const_iterator find(const double) const;
 
-  // Manage points
-  bool addPoint(const TimeValue, const T, const CurveSegment&);
-  bool removePoint(const TimeValue);
+  // Manage points (abscissa in double between 0 and 1)
+  bool addPoint(const double, const T, const CurveSegment&);
+  bool removePoint(const double);
 
   // Accessors
-  TimeValue getLength() const;
-  void setLength(const TimeValue);
   T getInitialValue() const;
   void setInitialValue(const T);
-  std::map<TimeValue, std::pair<T, CurveSegment&>> getPointsMap() const;
+  std::map<double, std::pair<T, CurveSegment&>> getPointsMap() const;
 
   // pimpl idiom
 private:
