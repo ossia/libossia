@@ -8,6 +8,23 @@
 
 /* Begin PBXFileReference section */
 		468AC7C5197EB1D600FB2B18 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		468AC7C8197EB37F00FB2B18 /* Automation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Automation.h; path = ../../Automation.h; sourceTree = "<group>"; };
+		468AC7C9197EB37F00FB2B18 /* Curve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Curve.h; path = ../../Curve.h; sourceTree = "<group>"; };
+		468AC7CA197EB37F00FB2B18 /* CurveSegment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CurveSegment.h; path = ../../CurveSegment.h; sourceTree = "<group>"; };
+		468AC7CB197EB37F00FB2B18 /* Event.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Event.h; path = ../../Event.h; sourceTree = "<group>"; };
+		468AC7CC197EB37F00FB2B18 /* Expression.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Expression.h; path = ../../Expression.h; sourceTree = "<group>"; };
+		468AC7CD197EB37F00FB2B18 /* InteractiveBranching.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = InteractiveBranching.h; path = ../../InteractiveBranching.h; sourceTree = "<group>"; };
+		468AC7CE197EB37F00FB2B18 /* IObservable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IObservable.h; path = ../../IObservable.h; sourceTree = "<group>"; };
+		468AC7CF197EB37F00FB2B18 /* IObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IObserver.h; path = ../../IObserver.h; sourceTree = "<group>"; };
+		468AC7D0197EB37F00FB2B18 /* Message.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Message.h; path = ../../Message.h; sourceTree = "<group>"; };
+		468AC7D3197EB37F00FB2B18 /* Scenario.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Scenario.h; path = ../../Scenario.h; sourceTree = "<group>"; };
+		468AC7D4197EB37F00FB2B18 /* State.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = State.h; path = ../../State.h; sourceTree = "<group>"; };
+		468AC7D5197EB37F00FB2B18 /* StateElement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = StateElement.h; path = ../../StateElement.h; sourceTree = "<group>"; };
+		468AC7D6197EB37F00FB2B18 /* TimeBox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeBox.h; path = ../../TimeBox.h; sourceTree = "<group>"; };
+		468AC7D7197EB37F00FB2B18 /* TimeNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeNode.h; path = ../../TimeNode.h; sourceTree = "<group>"; };
+		468AC7D8197EB37F00FB2B18 /* TimeProcess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeProcess.h; path = ../../TimeProcess.h; sourceTree = "<group>"; };
+		468AC7D9197EB37F00FB2B18 /* TimeValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeValue.h; path = ../../TimeValue.h; sourceTree = "<group>"; };
+		468AC7DA197EB39E00FB2B18 /* Scenario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scenario.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -15,7 +32,40 @@
 			isa = PBXGroup;
 			children = (
 				468AC7C5197EB1D600FB2B18 /* Makefile */,
+				468AC7C6197EB33E00FB2B18 /* headers */,
+				468AC7C7197EB35200FB2B18 /* sources */,
 			);
+			sourceTree = "<group>";
+		};
+		468AC7C6197EB33E00FB2B18 /* headers */ = {
+			isa = PBXGroup;
+			children = (
+				468AC7C8197EB37F00FB2B18 /* Automation.h */,
+				468AC7C9197EB37F00FB2B18 /* Curve.h */,
+				468AC7CA197EB37F00FB2B18 /* CurveSegment.h */,
+				468AC7CB197EB37F00FB2B18 /* Event.h */,
+				468AC7CC197EB37F00FB2B18 /* Expression.h */,
+				468AC7CD197EB37F00FB2B18 /* InteractiveBranching.h */,
+				468AC7CE197EB37F00FB2B18 /* IObservable.h */,
+				468AC7CF197EB37F00FB2B18 /* IObserver.h */,
+				468AC7D0197EB37F00FB2B18 /* Message.h */,
+				468AC7D3197EB37F00FB2B18 /* Scenario.h */,
+				468AC7D4197EB37F00FB2B18 /* State.h */,
+				468AC7D5197EB37F00FB2B18 /* StateElement.h */,
+				468AC7D6197EB37F00FB2B18 /* TimeBox.h */,
+				468AC7D7197EB37F00FB2B18 /* TimeNode.h */,
+				468AC7D8197EB37F00FB2B18 /* TimeProcess.h */,
+				468AC7D9197EB37F00FB2B18 /* TimeValue.h */,
+			);
+			name = headers;
+			sourceTree = "<group>";
+		};
+		468AC7C7197EB35200FB2B18 /* sources */ = {
+			isa = PBXGroup;
+			children = (
+				468AC7DA197EB39E00FB2B18 /* Scenario.cpp */,
+			);
+			name = sources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
