@@ -11,7 +11,7 @@ SRC64 = Scenario.x64.o
 
 #########################################
 
-INCLUDES = -I../
+INCLUDES = -I../../
 INCLUDES += -Isupport/includes/
 INCLUDE_FILES := $(wildcard INCLUDES/*.h)
 
@@ -22,7 +22,6 @@ LIBS += support/lib/JamomaDSP.dylib
 LIBS += support/lib/JamomaModular.dylib
 LIBS += support/lib/JamomaScore.dylib
 LIBS += /System/Library/Frameworks/Carbon.framework/Versions/A/Carbon
-
 
 #########################################
 
@@ -38,8 +37,6 @@ DEFINES = -DTT_PLATFORM_MAC
 
 #DEFINES += -DOSSIA_API_EXPORTS
 
-
-
 #########################################
 
 CFLAGS = $(OPTIONS) $(DEFINES) $(INCLUDES) $(WARNINGS)
@@ -49,13 +46,10 @@ LDFLAGS += -install_name "@loader_path/../../../../support/$(NAME).dylib"
 #########################################
 
 Debug: OPTIMIZATION_FLAGS = $(OPTIMIZATION_DEBUG)
-Debug: createdirs install
-
-DebugWithoutTests: OPTIMIZATION_FLAGS = $(OPTIMIZATION_DEBUG)
-DebugWithoutTests: createdirs notest
+Debug: createdirs build
 
 Release: OPTIMIZATION_FLAGS = $(OPTIMIZATION_RELEASE)
-Release: createdirs install
+Release: createdirs build
 
 createdirs:
 	mkdir -p build
@@ -89,19 +83,5 @@ clean:
 	rm -f $(SRC32) $(SRC64)
 	rm -rf build
 
-build_and_test: | lipo 
-	echo Testing 32-bit 
-	if [ -f test.cpp ];   then rm -f build/test32; $(CC_32) test.cpp -g -std=c++11 -stdlib=libc++ -DTT_PLATFORM_MAC -DTT_ENABLE_ASSERTIONS ${INCLUDES} build/lib$(NAME).a ../../Foundation/library/build/libJamomaFoundation.a ../../DSP/library/build/libJamomaDSP.a /usr/lib/libxml2.dylib  -o build/test32 ; fi 
-	if [ -f build/test32 ]; then build/test32 ; fi 
-	echo Testing 64-bit 
-	if [ -f test.cpp ];   then rm -f build/test64; $(CC_64) test.cpp -g -std=c++11 -stdlib=libc++ -DTT_PLATFORM_MAC -DTT_ENABLE_ASSERTIONS ${INCLUDES} build/lib$(NAME).a ../../Foundation/library/build/libJamomaFoundation.a ../../DSP/library/build/libJamomaDSP.a /usr/lib/libxml2.dylib  -o build/test64 ; fi 
-	if [ -f build/test64 ]; then build/test64 ; fi 
-
-notest: | lipo 
-	if [ -f test.cpp ];   then rm -f build/test32; $(CC_32) test.cpp -g -std=c++11 -stdlib=libc++ -DTT_PLATFORM_MAC -DTT_ENABLE_ASSERTIONS ${INCLUDES} build/lib$(NAME).a ../../Foundation/library/build/libJamomaFoundation.a ../../DSP/library/build/libJamomaDSP.a /usr/lib/libxml2.dylib  -o build/test32 ; fi 
-	if [ -f test.cpp ];   then rm -f build/test64; $(CC_64) test.cpp -g -std=c++11 -stdlib=libc++ -DTT_PLATFORM_MAC -DTT_ENABLE_ASSERTIONS ${INCLUDES} build/lib$(NAME).a ../../Foundation/library/build/libJamomaFoundation.a ../../DSP/library/build/libJamomaDSP.a /usr/lib/libxml2.dylib  -o build/test64 ; fi 
-	echo Skipping Tests 
-
-install: | build_and_test
-	../../Shared/jamoma_copy.sh build/$(NAME).dylib ../../../Implementations/Max/Jamoma/support
+build: | lipo
 
