@@ -1,6 +1,23 @@
+*.orig
+
+*.o
+*.i386.o-*
+*.x64.o-*
+
 # Eclipse files
 .cproject
 .project
 .settings*
 /Debug
 /Clang
+
+# XCode files
+build
+xcuserdata
+project.xcworkspace
+
+# Backup files from various Linux text editors
+*~
+
+# Mac OSX Finder stuff
+.DS_Store
