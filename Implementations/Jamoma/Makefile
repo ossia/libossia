@@ -12,13 +12,15 @@ SRC64 = Scenario.x64.o
 #########################################
 
 INCLUDES = -I../
-INCLUDES += -IScore/library/includes/
+INCLUDES += -Isupport/includes/
 INCLUDE_FILES := $(wildcard INCLUDES/*.h)
 
 #########################################
 
-LIBS = Score/library/build/JamomaScore.dylib
-
+LIBS = support/lib/JamomaFoundation.dylib
+LIBS += support/lib/JamomaDSP.dylib
+LIBS += support/lib/JamomaModular.dylib
+LIBS += support/lib/JamomaScore.dylib
 LIBS += /System/Library/Frameworks/Carbon.framework/Versions/A/Carbon
 
 
