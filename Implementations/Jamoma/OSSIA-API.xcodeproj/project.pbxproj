@@ -24,7 +24,9 @@
 		468AC7D7197EB37F00FB2B18 /* TimeNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeNode.h; path = ../../TimeNode.h; sourceTree = "<group>"; };
 		468AC7D8197EB37F00FB2B18 /* TimeProcess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeProcess.h; path = ../../TimeProcess.h; sourceTree = "<group>"; };
 		468AC7D9197EB37F00FB2B18 /* TimeValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeValue.h; path = ../../TimeValue.h; sourceTree = "<group>"; };
-		468AC7DA197EB39E00FB2B18 /* Scenario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scenario.cpp; sourceTree = "<group>"; };
+		468AC7DD197FB5FA00FB2B18 /* Curve.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Curve.cpp; path = source/Curve.cpp; sourceTree = "<group>"; };
+		468AC7DE197FB5FA00FB2B18 /* CurveSegment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = CurveSegment.cpp; path = source/CurveSegment.cpp; sourceTree = "<group>"; };
+		468AC7DF197FB5FA00FB2B18 /* Scenario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Scenario.cpp; path = source/Scenario.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -63,7 +65,9 @@
 		468AC7C7197EB35200FB2B18 /* sources */ = {
 			isa = PBXGroup;
 			children = (
-				468AC7DA197EB39E00FB2B18 /* Scenario.cpp */,
+				468AC7DD197FB5FA00FB2B18 /* Curve.cpp */,
+				468AC7DE197FB5FA00FB2B18 /* CurveSegment.cpp */,
+				468AC7DF197FB5FA00FB2B18 /* Scenario.cpp */,
 			);
 			name = sources;
 			sourceTree = "<group>";
