@@ -14,6 +14,7 @@
 #include <set>
 
 #include "TimeProcess.h"
+#include "Event.h"
 
 namespace OSSIA {
 

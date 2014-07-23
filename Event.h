@@ -12,6 +12,7 @@
 #define EVENT_H_
 
 #include <set>
+#include <string>
 
 #include "TimeNode.h"
 
