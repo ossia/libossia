@@ -8,10 +8,10 @@ CC_64 = /usr/bin/clang++ -arch x86_64
 
 SRC32 = source/Curve.i386.o
 SRC64 = source/Curve.x64.o
-SRC32 = source/CurveSegment.i386.o
-SRC64 = source/CurveSegment.x64.o
-SRC32 = source/Scenario.i386.o
-SRC64 = source/Scenario.x64.o
+SRC32 += source/CurveSegment.i386.o
+SRC64 += source/CurveSegment.x64.o
+SRC32 += source/Scenario.i386.o
+SRC64 += source/Scenario.x64.o
 
 #########################################
 
