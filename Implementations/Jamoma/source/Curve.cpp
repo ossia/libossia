@@ -8,6 +8,8 @@
  * http://www.cecill.info
  */
 
+#include "Curve.h"
+
 #include "TTCurve.h"
 
 namespace OSSIA {
@@ -16,6 +18,9 @@ template <typename T>
 class Curve<T>::Impl {
 
 public:
+    
+  // Jamoma variables
+  TTObject mCurve;
 
   T initialValue;
   std::map<double, std::pair<T, CurveSegment&>> pointsMap;

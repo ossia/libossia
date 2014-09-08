@@ -94,6 +94,7 @@
 				468AC7DE197FB5FA00FB2B18 /* CurveSegment.cpp */,
 				468AC7DF197FB5FA00FB2B18 /* Scenario.cpp */,
 			);
+			indentWidth = 2;
 			name = Sources;
 			sourceTree = "<group>";
 		};
