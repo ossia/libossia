@@ -30,7 +30,7 @@ private:
 	
 	TTSymbol		mDescription;				///< ATTRIBUTE: text to describe the role of this node
     TTInt32			mPriority;					///< ATTRIBUTE: does this node have a priority over other nodes ?
-    TTValue			mTag;						///< ATTRIBUTE: tag list for this node
+    TTValue			mTags;						///< ATTRIBUTE: tag list for this node
     
     /**	Setter for mDescription attribute
      @param value       new description value */
@@ -40,9 +40,9 @@ private:
      @param value       new priority value */
 	TTErr       setPriority(const TTValue& value);
     
-    /**	Setter for mTag attribute
+    /**	Setter for mTags attribute
      @param value       new tag value */
-	TTErr       setTag(const TTValue& value);
+	TTErr       setTags(const TTValue& value);
     
     /** Notify observers of an attribute 
      @param attrName    the name of the attribute to notify

@@ -35,7 +35,7 @@ class TTMODULAR_EXPORT TTCue : public TTObjectBase
 	
 	TTSymbol					mName;							///< ATTRIBUTE : the name of the cue
 	TTSymbol					mDescription;					///< ATTRIBUTE : a description for the cue
-    TTValue                     mTag;							///< ATTRIBUTE : tag list for the preset
+    TTValue                     mTags;							///< ATTRIBUTE : tag list for the preset
 	TTUInt32					mRamp;							///< ATTRIBUTE : a time ramping value for the cue
     TTAddress                   mAddress;						///< ATTRIBUTE : the address from where to manage the script
 	TTObject					mScript;						///< a script containing relativeAddress and value

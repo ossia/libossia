@@ -258,6 +258,7 @@ extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_repetitionsFilter;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_return;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_returnedValue;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_Run;
+extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_running;
 
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_Send;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_script;
@@ -269,7 +270,7 @@ extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_stop;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_Stop;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_Subscribe;
 
-extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_tag;
+extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_tags;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_target;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_Tick;
 

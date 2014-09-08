@@ -64,9 +64,11 @@ private:
 	
 	/** */
 	TTErr bindAddress();
+    void cacheNodeObserver(TTNodePtr aNode, TTAddress& anAddress, TTSymbol& anAttributeName);
 	
 	/**  */
 	TTErr unbindAddress();
+    void uncacheNodeObserver(TTNodePtr aNode, TTObject& oldObserver, TTSymbol& anAttributeName);
 	
 	/** */
 	TTErr bindApplication();

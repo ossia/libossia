@@ -129,8 +129,9 @@ public:
 	 @param	firstReturnedTTNode		If non-null, the address of the first TTNode object pointer that is found for the given pattern is returned here.
 									The value of the pointer will be set upon return.
 	 @param	depthLimit				Precise the depth limit of the exploration (0 means no limit)
+     @param comparisonfunction      To sort the children at each level
 	 @return						An error code. */
-	TTErr			LookFor(TTListPtr whereToSearch, TTBoolean(testFunction)(TTNodePtr node, TTPtr args), void *argument, TTList& returnedTTNodes, TTNodePtr *firstReturnedTTNode, TTUInt8 depthLimit=0);
+	TTErr			LookFor(TTListPtr whereToSearch, TTBoolean(testFunction)(TTNodePtr node, TTPtr args), void *argument, TTList& returnedTTNodes, TTNodePtr *firstReturnedTTNode, TTUInt8 depthLimit=0, TTBoolean(comparisonFunction)(TTValue& v1, TTValue& v2)=NULL);
 	
 	/**	Is there is one TTNode or more that respect a test below an address 
 	 @param	whereToSearch			A TTNode list from where to start the research
@@ -141,7 +142,7 @@ public:
 	 @param	firstReturnedTTNode		If non-null, the address of the first TTNode object pointer that is found for the given pattern is returned here.
 									The value of the pointer will be set upon return.
 	 @return						An error code. */
-	TTErr			IsThere(TTListPtr whereToSearch, bool(testFunction)(TTNodePtr node, void*args), void *argument, bool *isThere, TTNodePtr *firstTTNode);
+	TTErr			IsThere(TTListPtr whereToSearch, TTBoolean(testFunction)(TTNodePtr node, void*args), void *argument, bool *isThere, TTNodePtr *firstTTNode);
 	
 	/**	Create a new TTNode, at the given location in the tree.
 	 @param	anAddress				The address for which you wish to create a TTNode.
@@ -193,6 +194,13 @@ public:
 	 @return						a kTTErrGeneric if there isn't observer	*/
 	TTErr			notifyObservers(TTAddress anAddress, TTNodePtr aNode, TTAddressNotificationFlag flag);
 };
+
+/**	An test tool : test the object stored inside the node.
+ This method could be used as testFunction for the LookFor or IsThere methods.
+ @param	node						A node
+ @param args						An TTObjectBasePtr argument to retreive an object instance
+ @return							true if the object is the same than the one passed in argument */
+TTBoolean TTFOUNDATION_EXPORT testNodeObject(TTNodePtr n, TTPtr args);
 
 /**	An test tool : test the type of the object stored inside the node. 
 	This method could be used as testFunction for the LookFor or IsThere methods.

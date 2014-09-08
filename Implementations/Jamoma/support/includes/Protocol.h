@@ -6,7 +6,7 @@
  *
  * @details
  *
- * @authors Laurent Garnier, Théo de la Hogue
+ * @author Laurent Garnier, Théo de la Hogue
  *
  * @copyright © 2011, Laurent Garnier, Théo de la Hogue @n
  * This code is licensed under the terms of the "New BSD License" @n

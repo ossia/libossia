@@ -33,7 +33,7 @@ private:
 	TTValue			mValueStepsize;				///< ATTRIBUTE: amount to increment or decrement by
 	
 	TTSymbol		mType;						///< ATTRIBUTE: type of this data's value
-	TTValue			mTag;						///< ATTRIBUTE: tag list for this data
+	TTValue			mTags;						///< ATTRIBUTE: tag list for this data
 	TTInt32			mPriority;					///< ATTRIBUTE: does this data have a priority over other datas ?
 	TTSymbol		mDescription;				///< ATTRIBUTE: text to describe the role of this data
 	TTBoolean		mRepetitionsFilter;			///< ATTRIBUTE: is repetitions are filtered out ?
@@ -170,8 +170,8 @@ private:
 	/**	Setter for mType attribute. */
 	TTErr       setType(const TTValue& value);
 	
-	/**	Setter for mTag attribute. */
-	TTErr       setTag(const TTValue& value);
+	/**	Setter for mTags attribute. */
+	TTErr       setTags(const TTValue& value);
 	
 	/**	Setter for mRepetitionsFilter attribute. */
 	TTErr       setRepetitionsFilter(const TTValue& value);
@@ -221,19 +221,8 @@ private:
 };
 typedef TTData* TTDataPtr;
 
-
-/** Parse command like < value (unit) (ramp ramptime) >
-	@details It depends on the command size :
-	- 1		: 1 value @n
-	- 2		: 2 values || 1 value + unit @n
-	- 3		: 3 values || 2 values + unit || 1 value + ramp ramptime @n
-	- X		: X values || X-1 values + unit || X-2 values + ramp ramptime || X-3 values + unit + ramp ramptime 
- @return	A dictionary with one or more keys: It always has a value. If it is ramping, it also has a ramp key, and if it has a unit, it also has a unit key.
- */
-
-
 /** Format the command to update the value of #TTData as a #TTDictionary. When updating the value we can make use of the #TTDapaspaceLib to provide new value with various measurement units, and we can set it to ramp (ease) to the new value over time making use of #TTDataRamp.
- @param[in] input		A #TTVaue containing one or more elements, taking the form of @n
+ @param[in] commandValue    A #TTValue containing one or more elements, taking the form of @n
 	< value (unit:optional) (ramp ramptime : optional) >
 	@n
 	Interprtation of the command depends on the command size : @n
@@ -249,10 +238,10 @@ typedef TTData* TTDataPtr;
 						an array of X-1 values and a unit OR
 						an array of X-2 values, the "ramp" symbol and a ramp time OR
 						X-3 values, a unit, the "ramp" string and a ramp time.
- @param[out] outputValue	This is not being used.
- @return #TTErrorNone if the method executes successfully, else an error code.
+ @param[in] parseUnitAndRamp to just store the commandValue into a dictionary whithout processing any parsing
+ @return	A dictionary with one or more keys: It always has a value. If it is ramping, it also has a ramp key, and if it has a unit, it also has a unit key.
  */
-TTDictionaryBasePtr	TTMODULAR_EXPORT TTDataParseCommand(const TTValue& command);
+TTDictionaryBasePtr	TTMODULAR_EXPORT TTDataParseCommand(const TTValue& commandValue, TTBoolean parseUnitAndRamp = YES);
 
 
 /**

@@ -38,7 +38,7 @@ private:
 	TTAddress                   mAddress;					///< ATTRIBUTE : data address to bind
 	TTSymbol					mDescription;				///< ATTRIBUTE : text to describe the role of this data
 	TTSymbol					mType;						///< ATTRIBUTE : type of the gui
-	TTSymbol					mTag;						///< ATTRIBUTE : a tag for this viewer
+	TTSymbol					mTags;						///< ATTRIBUTE : a tag for this viewer
 	TTBoolean					mHighlight;					///< ATTRIBUTE : highlight state of the gui
 	TTBoolean					mFreeze;					///< ATTRIBUTE : freeze data returning
 	

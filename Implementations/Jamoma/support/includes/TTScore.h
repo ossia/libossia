@@ -19,6 +19,7 @@
 #define __TT_SCORE_H__
 
 #include "TTScoreIncludes.h"
+#include "TTCurve.h"
 #include "Expression.h"
 #include "TTTimeCondition.h"
 #include "TTTimeContainer.h"
