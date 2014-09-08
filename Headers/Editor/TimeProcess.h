@@ -11,7 +11,7 @@
 #ifndef TIMEPROCESS_H_
 #define TIMEPROCESS_H_
 
-#include "IObservable.h"
+#include "Misc/IObservable.h"
 
 namespace OSSIA {
 

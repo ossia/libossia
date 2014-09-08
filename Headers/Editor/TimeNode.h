@@ -13,7 +13,7 @@
 
 #include <set>
 
-#include "IObservable.h"
+#include "Misc/IObservable.h"
 
 namespace OSSIA {
 
