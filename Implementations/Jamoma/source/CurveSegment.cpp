@@ -8,10 +8,4 @@
  * http://www.cecill.info
  */
 
-#include "CurveSegment.h"
-
-class OSSIA::CurveSegment::Impl {
-
-
-
-};
+#include "../../../CurveSegment.h"
