@@ -8,4 +8,4 @@
  * http://www.cecill.info
  */
 
-#include "../../../CurveSegment.h"
+#include "CurveSegment.h"

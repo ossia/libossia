@@ -8,7 +8,7 @@
  * http://www.cecill.info
  */
 
-#include "../../../Curve.h"
+#include "Curve.h"
 
 namespace OSSIA {
 
