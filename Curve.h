@@ -35,11 +35,11 @@ public:
   class const_iterator; // bidirectional
   const_iterator begin() const;
   const_iterator end() const;
-  const_iterator find(const double) const;
+  const_iterator find(double) const;
 
   // Manage points (abscissa in double between 0 and 1)
-  bool addPoint(const double, const T, const CurveSegment&);
-  bool removePoint(const double);
+  bool addPoint(double, const T, const CurveSegment&);
+  bool removePoint(double);
 
   // Accessors
   T getInitialValue() const;

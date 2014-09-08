@@ -32,9 +32,10 @@ LIBS += /System/Library/Frameworks/Carbon.framework/Versions/A/Carbon
 OPTIMIZATION_DEBUG = -O0 -DTT_ENABLE_ASSERTIONS
 OPTIMIZATION_RELEASE = -O3
 
-OPTIONS = -shared -msse3 -mfpmath=sse -gdwarf-2 -fvisibility=hidden
+OPTIONS = -msse3 -gdwarf-2 -fvisibility=hidden
 OPTIONS += -std=c++11 
 OPTIONS += -stdlib=libc++ # -U__STRICT_ANSI__ -D__STDC_FORMAT_MACROS
+#OPTIONS += -shared -mfpmath=sse #Generates Warnings
 WARNINGS = -Wall -Wno-unknown-pragmas -Wno-trigraphs
 DEFINES = -DTT_PLATFORM_MAC
 #########################################

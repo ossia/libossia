@@ -13,8 +13,8 @@
 
 #include <set>
 
-#include "TimeProcess.h"
 #include "Event.h"
+#include "TimeProcess.h"
 
 namespace OSSIA {
 

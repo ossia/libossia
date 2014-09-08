@@ -8,17 +8,17 @@
  * http://www.cecill.info
  */
 
-#include "Event.h"
-#include "Expression.h"
-#include "InteractiveBranching.h"
-#include "Scenario.h"
-#include "State.h"
-#include "TimeBox.h"
+#include "../Event.h"
+#include "../Expression.h"
+#include "../InteractiveBranching.h"
+#include "../Scenario.h"
+#include "../State.h"
+#include "../TimeBox.h"
 
 using namespace OSSIA;
 
-void main() {
-
+int main() {
+/*
   // States
 
   State stStart;
@@ -58,5 +58,5 @@ void main() {
 
   branching.addTimeBox(B1, B1.getStartEvent()); // ??
   branching.addTimeBox(B2, B2.getStartEvent()); // ??
-
+*/
 }
