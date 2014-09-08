@@ -8,7 +8,7 @@
  * http://www.cecill.info
  */
 
-#include "Scenario.h"
+#include "Editor/Scenario.h"
 
 class OSSIA::Scenario::Impl {
 

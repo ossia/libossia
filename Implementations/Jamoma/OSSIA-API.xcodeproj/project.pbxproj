@@ -27,6 +27,7 @@
 		468AC7DD197FB5FA00FB2B18 /* Curve.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Curve.cpp; path = source/Curve.cpp; sourceTree = "<group>"; };
 		468AC7DE197FB5FA00FB2B18 /* CurveSegment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = CurveSegment.cpp; path = source/CurveSegment.cpp; sourceTree = "<group>"; };
 		468AC7DF197FB5FA00FB2B18 /* Scenario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Scenario.cpp; path = source/Scenario.cpp; sourceTree = "<group>"; };
+		46A5E69E19BDEA8000815908 /* Curve.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = Curve.yml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -46,6 +47,7 @@
 			children = (
 				460D07E319BDD62500235124 /* Automation.h */,
 				460D07E419BDD62500235124 /* Curve.h */,
+				46A5E69E19BDEA8000815908 /* Curve.yml */,
 				460D07E519BDD62500235124 /* CurveSegment.h */,
 				460D07E619BDD62500235124 /* Event.h */,
 				460D07E719BDD62500235124 /* Expression.h */,

@@ -8,7 +8,7 @@
  * http://www.cecill.info
  */
 
-#include "Curve.h"
+#include "Editor/Curve.h"
 
 #include "TTCurve.h"
 
@@ -22,23 +22,23 @@ public:
   // Jamoma variables
   TTObject mCurve;
 
-  T initialValue;
-  std::map<double, std::pair<T, CurveSegment&>> pointsMap;
+  T mInitialValue;
+  std::map<double, std::pair<T, CurveSegment&>> mPointsMap;
 
-  Impl() : initialValue(), pointsMap() {};
+  Impl() : mInitialValue(), mPointsMap() {};
   Impl(const Impl & other) = default;
   ~Impl() = default;
 
   std::map<double, std::pair<T, CurveSegment&>> getPointsMap() {
-    return pointsMap;
+    return mPointsMap;
   }
 
-  bool addPoint(double abs, T value, CurveSegment & segment) {
-    return pointsMap.emplace(abs, std::make_pair(value, segment)).second;
+  bool addPoint(double abscissa, T value, CurveSegment & segment) {
+    return mPointsMap.emplace(abscissa, std::make_pair(value, segment)).second;
   }
 
-  bool removePoint(double abs) {
-    return pointsMap.erase(abs) > 0;
+  bool removePoint(double abscissa) {
+    return mPointsMap.erase(abscissa) > 0;
   }
 
 };
