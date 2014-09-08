@@ -15,9 +15,7 @@ SRC64 += source/Scenario.x64.o
 
 #########################################
 
-INCLUDES = -I../../Headers/Editor
-INCLUDES += -I../../Headers/Misc
-INCLUDES += -I../../Headers/Network
+INCLUDES = -I../../Headers/
 INCLUDES += -Isupport/includes/
 INCLUDE_FILES := $(wildcard INCLUDES/*.h)
 
