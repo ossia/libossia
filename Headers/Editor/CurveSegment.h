@@ -31,7 +31,7 @@ public:
     POWER_TYPE
   };
     
-  virtual CurveSegmentType getType() const {return NONE_TYPE;}; // TODO : replace this by = 0; when a first curve segment exists
+  virtual CurveSegmentType getType() const = 0; // TODO : replace this by = 0; when a first curve segment exists
 
   // Computation
   virtual T valueAt(double) const = 0; // Between 0 and 1

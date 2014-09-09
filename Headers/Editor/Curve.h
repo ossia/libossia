@@ -46,7 +46,7 @@ public:
   T getInitialValue() const;
   void setInitialValue(const T);
   std::map<double, std::pair<T, CurveSegment<T>&>> getPointsMap() const;
-    // {abscissa, {value, precedent segment}}
+    // {abscissa, {value, previous segment}}
 
   // pimpl idiom
 private:
