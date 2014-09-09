@@ -19,7 +19,7 @@ class CurveSegment {
 public:
 
   // Destructor only
-  virtual ~CurveSegment() = 0;
+  virtual ~CurveSegment() {};
   
   // Computation
   virtual T valueAt(double) const = 0; // Between 0 and 1
