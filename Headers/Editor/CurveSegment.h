@@ -23,6 +23,15 @@ public:
   CurveSegment(const CurveSegment&);
   virtual ~CurveSegment();
   CurveSegment & operator= (const CurveSegment&);
+  
+  // Curve segment types
+  enum CurveSegmentType {
+    NONE_TYPE,
+    LINEAR_TYPE,
+    POWER_TYPE
+  };
+    
+  virtual CurveSegmentType getType() const {return NONE_TYPE;}; // TODO : replace this by = 0; when a first curve segment exists
 
   // Computation
   virtual T valueAt(double) const = 0; // Between 0 and 1

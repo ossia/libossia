@@ -16,6 +16,7 @@
 
 namespace OSSIA {
 
+template <typename T>
 class CurveSegment;
 
 template <typename T>
@@ -38,13 +39,13 @@ public:
   const_iterator find(double) const;
 
   // Manage points (abscissa in double between 0 and 1)
-  bool addPoint(double, const T, const CurveSegment&);
+  bool addPoint(double, const T, const CurveSegment<T>&);
   bool removePoint(double);
 
   // Accessors
   T getInitialValue() const;
   void setInitialValue(const T);
-  std::map<double, std::pair<T, CurveSegment&>> getPointsMap() const;
+  std::map<double, std::pair<T, CurveSegment<T>&>> getPointsMap() const;
 
   // pimpl idiom
 private:
