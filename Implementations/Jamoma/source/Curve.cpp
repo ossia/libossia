@@ -96,7 +96,7 @@ Curve<T>& Curve<T>::operator= (const Curve & other)
 
 // Iterators
 
-// ...
+// todo ...
 
 template <typename T>
 bool Curve<T>::addPoint(double abs, const T value, const CurveSegment<T> & segment)
