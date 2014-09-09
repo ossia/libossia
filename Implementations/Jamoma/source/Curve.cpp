@@ -39,7 +39,29 @@ public:
     // update the points map
     mPointsMap.emplace(abscissa, std::make_pair(value, segment));
     
-    // edit parameters as x1 y1 b1 x2 y2 b2
+    // update the internal curve object
+    mCurve.set("functionParameters", editParameters());
+    
+    return mPointsMap[abscissa].second;
+  }
+  
+  bool removePoint(double abscissa) {
+    
+    // update the points map
+    if (mPointsMap.erase(abscissa) > 0) {
+    
+      // update the internal curve object
+      mCurve.set("functionParameters", editParameters());
+      
+      return true;
+    }
+    
+    return false;
+  }
+  
+  // edit parameters for the mPointsMap as a value containing <x1 y1 b1 x2 y2 b2>
+  TTValue editParameters()
+  {
     TTValue   parameters;
     TTUInt32  i = 0;
     
@@ -49,7 +71,7 @@ public:
     {
       parameters[i] = TTFloat64(it->first);
       parameters[i+1] = TTFloat64(it->second->first);
-
+      
       if (it->second->second->getType() == CurveSegment<T>::POWER_TYPE)
         // TODO : parameters[i+2] = TTFloat64(ExponentialCurveSegment(it->second->second)->getCoefficient());
         parameters[i+2] = TTFloat64(1.);
@@ -59,14 +81,7 @@ public:
       i++;
     }
     
-    // update the internal curve object
-    mCurve.set("functionParameters", parameters);
-    
-    return mPointsMap[abscissa].second;
-  }
-  
-  bool removePoint(double abscissa) {
-    return mPointsMap.erase(abscissa) > 0;
+    return parameters;
   }
   
 };
@@ -113,13 +128,13 @@ bool Curve<T>::removePoint(double abs)
 template <typename T>
 T Curve<T>::getInitialValue() const
 {
-  return pimpl->initialValue;
+  return pimpl->mInitialValue;
 }
 
 template <typename T>
 void Curve<T>::setInitialValue(const T value)
 {
-  pimpl->initialValue = value;
+  pimpl->mInitialValue = value;
 }
 
 template <typename T>
