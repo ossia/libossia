@@ -12,6 +12,8 @@ SRC32 += source/CurveSegment.i386.o
 SRC64 += source/CurveSegment.x64.o
 SRC32 += source/CurveSegment/CurveSegmentNone.i386.o
 SRC64 += source/CurveSegment/CurveSegmentNone.x64.o
+SRC32 += source/CurveSegment/CurveSegmentLinear.i386.o
+SRC64 += source/CurveSegment/CurveSegmentLinear.x64.o
 SRC32 += source/Scenario.i386.o
 SRC64 += source/Scenario.x64.o
 

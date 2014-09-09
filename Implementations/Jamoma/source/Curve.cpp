@@ -30,31 +30,6 @@ namespace OSSIA {
     Impl(const Impl & other) = default;
     ~Impl() = default;
     
-    bool addPoint(double abscissa, T value, CurveSegment<T> & segment)
-    {
-      // update the points map
-      mPointsMap.emplace(abscissa, std::make_pair(value, segment));
-      
-      // update the internal curve object
-      mCurve.set("functionParameters", editParameters());
-      
-      return mPointsMap[abscissa].second;
-    }
-    
-    bool removePoint(double abscissa)
-    {
-      // update the points map
-      if (mPointsMap.erase(abscissa) > 0) {
-        
-        // update the internal curve object
-        mCurve.set("functionParameters", editParameters());
-        
-        return true;
-      }
-      
-      return false;
-    }
-    
     // edit parameters for the mPointsMap as a value containing <x1 y1 c1 x2 y2 c2>
     TTValue editParameters()
     {
@@ -130,13 +105,28 @@ namespace OSSIA {
   template <typename T>
   bool Curve<T>::addPoint(double abscissa, const T value, const CurveSegment<T> & segment)
   {
-    return pimpl->addPoint(abscissa, value, segment);
+    // update the points map
+    pimpl->mPointsMap.emplace(abscissa, std::make_pair(value, segment));
+    
+    // update the internal curve object
+    pimpl->mCurve.set("functionParameters", pimpl->editParameters());
+    
+    return pimpl->mPointsMap[abscissa].second;
   }
   
   template <typename T>
   bool Curve<T>::removePoint(double abscissa)
   {
-    return pimpl->removePoint(abscissa);
+    // update the points map
+    if (pimpl->mPointsMap.erase(abscissa) > 0) {
+      
+      // update the internal curve object
+      pimpl->mCurve.set("functionParameters", pimpl->editParameters());
+      
+      return true;
+    }
+    
+    return false;
   }
   
   template <typename T>
