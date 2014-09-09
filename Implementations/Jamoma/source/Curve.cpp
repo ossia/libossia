@@ -30,12 +30,13 @@ public:
   Impl(const Impl & other) = default;
   ~Impl() = default;
 
-  std::map<double, std::pair<T, CurveSegment<T>&>> getPointsMap() {
+  std::map<double, std::pair<T, CurveSegment<T>&>> getPointsMap()
+  {
     return mPointsMap;
   }
 
-  bool addPoint(double abscissa, T value, CurveSegment<T> & segment) {
-    
+  bool addPoint(double abscissa, T value, CurveSegment<T> & segment)
+  {
     // update the points map
     mPointsMap.emplace(abscissa, std::make_pair(value, segment));
     
@@ -45,8 +46,8 @@ public:
     return mPointsMap[abscissa].second;
   }
   
-  bool removePoint(double abscissa) {
-    
+  bool removePoint(double abscissa)
+  {
     // update the points map
     if (mPointsMap.erase(abscissa) > 0) {
     
@@ -131,15 +132,15 @@ Curve<T>& Curve<T>::operator= (const Curve & other)
 // todo ...
 
 template <typename T>
-bool Curve<T>::addPoint(double abs, const T value, const CurveSegment<T> & segment)
+bool Curve<T>::addPoint(double abscissa, const T value, const CurveSegment<T> & segment)
 {
-  return pimpl->addPoint(abs, value, segment);
+  return pimpl->addPoint(abscissa, value, segment);
 }
 
 template <typename T>
-bool Curve<T>::removePoint(double abs)
+bool Curve<T>::removePoint(double abscissa)
 {
-  return pimpl->removePoint(abs);
+  return pimpl->removePoint(abscissa);
 }
 
 template <typename T>
