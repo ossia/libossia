@@ -87,6 +87,7 @@
 				460D07E119BDD62500235124 /* Headers */,
 				468AC7C7197EB35200FB2B18 /* Sources */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
 		};
 		468AC7C7197EB35200FB2B18 /* Sources */ = {

@@ -9,6 +9,7 @@
  */
 
 #include "Editor/Curve.h"
+#include "Editor/CurveSegment.h"
 
 #include "TTCurve.h"
 
@@ -18,29 +19,56 @@ template <typename T>
 class Curve<T>::Impl {
 
 public:
-    
-  // Jamoma variables
+  
   TTObject mCurve;
 
   T mInitialValue;
-  std::map<double, std::pair<T, CurveSegment&>> mPointsMap;
+  std::map<double, std::pair<T, CurveSegment<T>&>> mPointsMap;
 
-  Impl() : mInitialValue(), mPointsMap() {};
+  Impl() : mCurve("Curve"), mInitialValue(), mPointsMap() {};
+  
   Impl(const Impl & other) = default;
   ~Impl() = default;
 
-  std::map<double, std::pair<T, CurveSegment&>> getPointsMap() {
+  std::map<double, std::pair<T, CurveSegment<T>&>> getPointsMap() {
     return mPointsMap;
   }
 
-  bool addPoint(double abscissa, T value, CurveSegment & segment) {
-    return mPointsMap.emplace(abscissa, std::make_pair(value, segment)).second;
-  }
+  bool addPoint(double abscissa, T value, CurveSegment<T> & segment) {
+    
+    // update the points map
+    mPointsMap.emplace(abscissa, std::make_pair(value, segment));
+    
+    // edit parameters as x1 y1 b1 x2 y2 b2
+    TTValue   parameters;
+    TTUInt32  i = 0;
+    
+    parameters.resize(mPointsMap * 3);
+    
+    for (auto it = mPointsMap.begin(); it != mPointsMap.end(); it++)
+    {
+      parameters[i] = TTFloat64(it->first);
+      parameters[i+1] = TTFloat64(it->second->first);
 
+      if (it->second->second->getType() == CurveSegment<T>::POWER_TYPE)
+        // TODO : parameters[i+2] = TTFloat64(ExponentialCurveSegment(it->second->second)->getCoefficient());
+        parameters[i+2] = TTFloat64(1.);
+      else
+        parameters[i+2] = TTFloat64(1.);
+      
+      i++;
+    }
+    
+    // update the internal curve object
+    mCurve.set("functionParameters", parameters);
+    
+    return mPointsMap[abscissa].second;
+  }
+  
   bool removePoint(double abscissa) {
     return mPointsMap.erase(abscissa) > 0;
   }
-
+  
 };
 
 template <typename T>
@@ -60,7 +88,7 @@ Curve<T>::~Curve()
 }
 
 template <typename T>
-Curve<T> & Curve<T>::operator= (const Curve & other)
+Curve<T>& Curve<T>::operator= (const Curve & other)
 {
   delete pimpl;
   pimpl = new Impl(other.pimpl);
@@ -71,7 +99,7 @@ Curve<T> & Curve<T>::operator= (const Curve & other)
 // ...
 
 template <typename T>
-bool Curve<T>::addPoint(double abs, const T value, const CurveSegment & segment)
+bool Curve<T>::addPoint(double abs, const T value, const CurveSegment<T> & segment)
 {
   return pimpl->addPoint(abs, value, segment);
 }
@@ -95,7 +123,7 @@ void Curve<T>::setInitialValue(const T value)
 }
 
 template <typename T>
-std::map<double, std::pair<T, CurveSegment&>> Curve<T>::getPointsMap() const
+std::map<double, std::pair<T, CurveSegment<T>&>> Curve<T>::getPointsMap() const
 {
   return pimpl->getPointsMap();
 }
