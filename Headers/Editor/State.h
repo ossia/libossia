@@ -11,8 +11,8 @@
 #ifndef STATE_H_
 #define STATE_H_
 
-#include "IObservable.h"
-#include "StateElement.h"
+#include "Misc/IObservable.h"
+#include "Editor/StateElement.h"
 
 namespace OSSIA {
 
