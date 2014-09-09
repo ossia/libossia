@@ -59,18 +59,35 @@ public:
     return false;
   }
   
-  // edit parameters for the mPointsMap as a value containing <x1 y1 b1 x2 y2 b2>
+  // edit parameters for the mPointsMap as a value containing <x1 y1 c1 x2 y2 c2>
   TTValue editParameters()
   {
     TTValue   parameters;
+    auto      it = mPointsMap.begin();
     TTUInt32  i = 0;
     
-    parameters.resize(mPointsMap * 3);
+    parameters.resize((mPointsMap + 1) * 3);
     
-    for (auto it = mPointsMap.begin(); it != mPointsMap.end(); it++)
+    // edit x1 y1 c1
+    parameters[0] = 0.;
+    parameters[1] = mInitialValue;
+    if (it->second->second->getType() == CurveSegment<T>::POWER_TYPE)
+      // TODO : parameters[i+2] = TTFloat64(ExponentialCurveSegment(it->second->second)->getCoefficient());
+      parameters[2] = TTFloat64(1.);
+    else
+      parameters[2] = TTFloat64(1.);
+    
+    // edit x2 y2 c2 x3 y3 c3 ...
+    // note : the coefficient is into the next curve segment
+    i++;
+    
+    for (; it != mPointsMap.end();)
     {
       parameters[i] = TTFloat64(it->first);
       parameters[i+1] = TTFloat64(it->second->first);
+      
+      // go to next curve segment
+      it++;
       
       if (it->second->second->getType() == CurveSegment<T>::POWER_TYPE)
         // TODO : parameters[i+2] = TTFloat64(ExponentialCurveSegment(it->second->second)->getCoefficient());
