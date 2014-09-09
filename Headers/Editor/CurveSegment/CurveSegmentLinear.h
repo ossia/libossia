@@ -26,12 +26,12 @@ namespace OSSIA {
     virtual ~CurveSegmentLinear();
     CurveSegmentLinear & operator= (const CurveSegmentLinear&);
     
+    // Computation
+    virtual T valueAt(double) const override;
+    
     // Curve segment type
     virtual CurveSegmentType getType() const override final
     {return LINEAR_TYPE;};
-    
-    // Computation
-    virtual T valueAt(double) const override;
     
     // pimpl idiom
   private:

@@ -26,13 +26,13 @@ namespace OSSIA {
     virtual ~CurveSegmentNone();
     CurveSegmentNone & operator= (const CurveSegmentNone&);
     
-    // Curve segment type
-    virtual CurveSegmentType getType() const override final
-    {return NONE_TYPE;};
-    
     // Computation
     virtual T valueAt(double) const override final
     {return;};
+    
+    // Curve segment type
+    virtual CurveSegmentType getType() const override final
+    {return NONE_TYPE;};
     
     // pimpl idiom
   private:
