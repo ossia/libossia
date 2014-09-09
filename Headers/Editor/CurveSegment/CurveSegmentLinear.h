@@ -14,31 +14,32 @@
 #include "Editor/CurveSegment.h"
 
 namespace OSSIA {
-
+  
   template <typename T>
   class CurveSegmentLinear : public CurveSegment<T> {
-
-public:
-
-  // Constructors, destructor, assignment
-  CurveSegmentLinear(Curve<T> & parent);
-  CurveSegmentLinear(const CurveSegmentLinear&);
-  virtual ~CurveSegmentLinear();
-  CurveSegmentLinear & operator= (const CurveSegmentLinear&);
     
-  virtual CurveSegmentType getType() const override final
+  public:
+    
+    // Constructors, destructor, assignment
+    CurveSegmentLinear(Curve<T>&);
+    CurveSegmentLinear(const CurveSegmentLinear&);
+    virtual ~CurveSegmentLinear();
+    CurveSegmentLinear & operator= (const CurveSegmentLinear&);
+    
+    // Curve segment type
+    virtual CurveSegmentType getType() const override final
     {return LINEAR_TYPE;};
-
-  // Computation
-  virtual T valueAt(double) const override;
-
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl;
-
-};
-
+    
+    // Computation
+    virtual T valueAt(double) const override;
+    
+    // pimpl idiom
+  private:
+    class Impl;
+    Impl * pimpl;
+    
+  };
+  
 }
 
 

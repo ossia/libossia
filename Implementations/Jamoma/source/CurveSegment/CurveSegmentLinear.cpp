@@ -17,9 +17,7 @@ namespace OSSIA {
     
   public:
     
-    //TTObject mParentCurve;
-    
-    Impl() /*: mParentCurve(parentCurve)*/ {};
+    Impl() {};
     
     Impl(const Impl & other) = default;
     ~Impl() = default;
