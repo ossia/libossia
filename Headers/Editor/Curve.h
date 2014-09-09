@@ -49,7 +49,6 @@ public:
     // {abscissa, {value, previous segment}}
 
   // pimpl idiom
-private:
   class Impl;
   Impl * pimpl;
 

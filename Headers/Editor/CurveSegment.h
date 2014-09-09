@@ -11,6 +11,9 @@
 #ifndef CURVESEGMENT_H_
 #define CURVESEGMENT_H_
 
+template <typename T>
+class Curve;
+
 namespace OSSIA {
 
 template <typename T>
@@ -18,8 +21,12 @@ class CurveSegment {
 
 public:
 
-  // Destructor only
+  // Constructor, Destructor
+  CurveSegment(Curve<T> & parent) : mParent(parent) {};
   virtual ~CurveSegment() {};
+  
+  // Navigation
+  Curve<T>& getParent() const {return mParent;};
   
   // Computation
   virtual T valueAt(double) const = 0; // Between 0 and 1
@@ -32,6 +39,10 @@ public:
   };
     
   virtual CurveSegmentType getType() const = 0;
+  
+private:
+  
+  Curve<T>& mParent;
 
 };
 

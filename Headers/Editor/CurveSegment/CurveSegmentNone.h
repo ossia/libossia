@@ -15,21 +15,22 @@
 
 namespace OSSIA {
 
-  class CurveSegmentNone : public CurveSegment<void> {
+  template <typename T>
+  class CurveSegmentNone : public CurveSegment<T> {
 
 public:
 
   // Constructors, destructor, assignment
-  CurveSegmentNone();
+  CurveSegmentNone(Curve<T> & parent);
   CurveSegmentNone(const CurveSegmentNone&);
   virtual ~CurveSegmentNone();
   CurveSegmentNone & operator= (const CurveSegmentNone&);
-    
+  
   virtual CurveSegmentType getType() const override final
     {return NONE_TYPE;};
 
   // Computation
-  virtual void valueAt(double) const override final
+  virtual T valueAt(double) const override final
     {return;};
 
   // pimpl idiom

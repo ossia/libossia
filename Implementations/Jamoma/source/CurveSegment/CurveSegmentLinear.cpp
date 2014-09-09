@@ -12,38 +12,48 @@
 
 namespace OSSIA {
   
-  class CurveSegmentLinear::Impl {
+  template <typename T>
+  class CurveSegmentLinear<T>::Impl {
     
   public:
     
-    Impl() {};
+    //TTObject mParentCurve;
+    
+    Impl() /*: mParentCurve(parentCurve)*/ {};
     
     Impl(const Impl & other) = default;
     ~Impl() = default;
     
   };
   
-  CurveSegmentLinear::CurveSegmentLinear() :
+  template <typename T>
+  CurveSegmentLinear<T>::CurveSegmentLinear(Curve<T> & parent) :
+  CurveSegment<T>(parent),
   pimpl(new Impl)
   {}
   
-  CurveSegmentLinear::CurveSegmentLinear(const CurveSegmentLinear & other) :
+  template <typename T>
+  CurveSegmentLinear<T>::CurveSegmentLinear(const CurveSegmentLinear & other) :
+  CurveSegment<T>(other.getParent()),
   pimpl(new Impl(*(other.pimpl)))
   {}
   
-  CurveSegmentLinear::~CurveSegmentLinear()
+  template <typename T>
+  CurveSegmentLinear<T>::~CurveSegmentLinear()
   {
     delete pimpl;
   }
   
-  CurveSegmentLinear& CurveSegmentLinear::operator= (const CurveSegmentLinear & other)
+  template <typename T>
+  CurveSegmentLinear<T>& CurveSegmentLinear<T>::operator= (const CurveSegmentLinear & other)
   {
     delete pimpl;
     pimpl = new Impl(*(other.pimpl));
     return *this;
   }
 
-  double CurveSegmentLinear::valueAt(double abscissa) const
+  template <typename T>
+  T CurveSegmentLinear<T>::valueAt(double abscissa) const
   {
     // TODO
     return 0.;

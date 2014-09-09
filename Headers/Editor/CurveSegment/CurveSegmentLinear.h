@@ -15,12 +15,13 @@
 
 namespace OSSIA {
 
-  class CurveSegmentLinear : public CurveSegment<double> {
+  template <typename T>
+  class CurveSegmentLinear : public CurveSegment<T> {
 
 public:
 
   // Constructors, destructor, assignment
-  CurveSegmentLinear();
+  CurveSegmentLinear(Curve<T> & parent);
   CurveSegmentLinear(const CurveSegmentLinear&);
   virtual ~CurveSegmentLinear();
   CurveSegmentLinear & operator= (const CurveSegmentLinear&);
@@ -29,7 +30,7 @@ public:
     {return LINEAR_TYPE;};
 
   // Computation
-  virtual double valueAt(double) const override;
+  virtual T valueAt(double) const override;
 
   // pimpl idiom
 private:

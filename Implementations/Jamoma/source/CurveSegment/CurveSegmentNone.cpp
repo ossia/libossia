@@ -12,7 +12,8 @@
 
 namespace OSSIA {
   
-  class CurveSegmentNone::Impl {
+  template <typename T>
+  class CurveSegmentNone<T>::Impl {
     
   public:
     
@@ -23,20 +24,26 @@ namespace OSSIA {
     
   };
   
-  CurveSegmentNone::CurveSegmentNone() :
+  template <typename T>
+  CurveSegmentNone<T>::CurveSegmentNone(Curve<T> & parent) :
+  CurveSegment<T>(parent),
   pimpl(new Impl)
   {}
   
-  CurveSegmentNone::CurveSegmentNone(const CurveSegmentNone & other) :
+  template <typename T>
+  CurveSegmentNone<T>::CurveSegmentNone(const CurveSegmentNone & other) :
+  CurveSegment<T>(other.getParent()),
   pimpl(new Impl(*(other.pimpl)))
   {}
   
-  CurveSegmentNone::~CurveSegmentNone()
+  template <typename T>
+  CurveSegmentNone<T>::~CurveSegmentNone()
   {
     delete pimpl;
   }
   
-  CurveSegmentNone& CurveSegmentNone::operator= (const CurveSegmentNone & other)
+  template <typename T>
+  CurveSegmentNone<T>& CurveSegmentNone<T>::operator= (const CurveSegmentNone & other)
   {
     delete pimpl;
     pimpl = new Impl(*(other.pimpl));
