@@ -8,12 +8,12 @@
  * http://www.cecill.info
  */
 
-#include "../Event.h"
-#include "../Expression.h"
-#include "../InteractiveBranching.h"
-#include "../Scenario.h"
-#include "../State.h"
-#include "../TimeBox.h"
+#include "Editor/Event.h"
+#include "Editor/Expression.h"
+#include "Editor/InteractiveBranching.h"
+#include "Editor/Scenario.h"
+#include "Editor/State.h"
+#include "Editor/TimeBox.h"
 
 using namespace OSSIA;
 
