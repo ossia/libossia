@@ -18,11 +18,11 @@ class CurveSegment {
 
 public:
 
-  // Constructors, destructor, assignment
-  CurveSegment();
-  CurveSegment(const CurveSegment&);
-  virtual ~CurveSegment();
-  CurveSegment & operator= (const CurveSegment&);
+  // Destructor only
+  virtual ~CurveSegment() = 0;
+  
+  // Computation
+  virtual T valueAt(double) const = 0; // Between 0 and 1
   
   // Curve segment types
   enum CurveSegmentType {
@@ -31,15 +31,7 @@ public:
     POWER_TYPE
   };
     
-  virtual CurveSegmentType getType() const = 0; // TODO : replace this by = 0; when a first curve segment exists
-
-  // Computation
-  virtual T valueAt(double) const = 0; // Between 0 and 1
-
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl;
+  virtual CurveSegmentType getType() const = 0;
 
 };
 
