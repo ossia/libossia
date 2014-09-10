@@ -38,7 +38,7 @@ public:
   const_iterator end() const;
   const_iterator find(double) const;
 
-  // Manage points (abscissa in double between 0 and 1)
+  // Manage points (abscissa in double between 0. and 1.)
   bool addPoint(double, const T, const CurveSegment<T>&);
   bool removePoint(double);
 
@@ -52,7 +52,7 @@ public:
   T valueAt(double) const; // Between 0. and 1.
 
   // pimpl idiom
-// private: // todo issue #1 : 
+// private: // todo issue #1
   class Impl;
   Impl * pimpl;
 
