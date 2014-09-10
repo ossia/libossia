@@ -96,7 +96,7 @@ namespace OSSIA {
   {
     delete pimpl;
     pimpl = new Impl(*(other.pimpl));
-    return this;
+    return *this;
   }
   
   // Iterators
@@ -110,9 +110,7 @@ namespace OSSIA {
     pimpl->mPointsMap.emplace(abscissa, std::make_pair(value, segment));
     
     // update the internal curve object
-    pimpl->mCurve.set("functionParameters", pimpl->editParameters());
-    
-    return pimpl->mPointsMap[abscissa].second;
+    return pimpl->mCurve.set("functionParameters", pimpl->editParameters()) == kTTErrNone;
   }
   
   template <typename T>
@@ -158,4 +156,6 @@ namespace OSSIA {
     return TTFloat64(out[0]);
   }
   
+  // specialisation for double case
+  template class Curve<double>;
 }
