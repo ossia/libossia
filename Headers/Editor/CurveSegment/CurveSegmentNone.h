@@ -29,7 +29,7 @@ namespace OSSIA {
     // Computation
     virtual T valueAt(double) const override final
     {
-      T t;
+      T t = 0.;
       return t;
     };
     

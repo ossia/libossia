@@ -49,7 +49,7 @@ public:
     // {abscissa, {value, previous segment}}
   
   // Computation
-  virtual T valueAt(double) const = 0; // Between 0. and 1.
+  T valueAt(double) const; // Between 0. and 1.
 
   // pimpl idiom
 // private: // todo issue #1 : 

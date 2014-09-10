@@ -11,8 +11,7 @@
 #ifndef CURVESEGMENT_H_
 #define CURVESEGMENT_H_
 
-template <typename T>
-class Curve;
+#include "Editor/Curve.h" // inclusion instead of forward declaration for explicit instantiation purpose
 
 namespace OSSIA {
   
