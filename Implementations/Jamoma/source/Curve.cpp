@@ -9,9 +9,10 @@
  */
 
 #include "Editor/Curve.h"
-#include "Editor/CurveSegment.h"
 
 #include "TTCurve.h"
+
+#include "Editor/CurveSegment.h"
 
 namespace OSSIA {
   

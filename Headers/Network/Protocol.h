@@ -23,6 +23,4 @@ public:
 
 }
 
-
-
 #endif /* PROTOCOL_H_ */
