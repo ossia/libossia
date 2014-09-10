@@ -64,6 +64,12 @@ private :
      @return                an error code if the operation fails */
     TTErr   Sample(const TTValue& inputValue, TTValue& outputValue);
     
+    /** Get curve's value at a position
+     @param inputvalue      position
+     @param outputvalue     value of the curve at the given position
+     @return                an error code if the operation fails */
+    TTErr   ValueAt(const TTValue& inputValue, TTValue& outputValue);
+    
     /**  needed to be handled by a TTXmlHandler
      @param	inputValue      ..
      @param	outputValue     ..
