@@ -47,9 +47,12 @@ public:
   void setInitialValue(const T);
   std::map<double, std::pair<T, CurveSegment<T>&>> getPointsMap() const;
     // {abscissa, {value, previous segment}}
+  
+  // Computation
+  virtual T valueAt(double) const = 0; // Between 0. and 1.
 
   // pimpl idiom
-// private: // todo redo
+// private: // todo issue #1 : 
   class Impl;
   Impl * pimpl;
 
