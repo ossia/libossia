@@ -10,6 +10,8 @@
 
 #include "Editor/CurveSegment/CurveSegmentLinear.h"
 
+#include "TTCurve.h"
+
 namespace OSSIA {
   
   template <typename T>
@@ -53,8 +55,31 @@ namespace OSSIA {
   template <typename T>
   T CurveSegmentLinear<T>::valueAt(double abscissa) const
   {
-    // TODO
-    return 0.;
+    TTValue   out;
+    TTFloat64 previousAbscissa = 0.;
+    
+    // get the previous point abscissa to add it at the given abscissa
+    auto pointsMap = CurveSegmentLinear<T>::mParent->pimpl->getPointsMap();
+    
+    for (auto it = pointsMap.begin(); it.end(); it++)
+    {
+      // when this curve is found
+      if (it->second->second == this)
+      {
+        // get the previous point abscissa
+        if (it != pointsMap.begin())
+        {
+          it--;
+          previousAbscissa = it->first;
+        }
+        
+        break;
+      }
+    }
+    
+    CurveSegmentLinear<T>::mParent->pimpl->mCurve.send("ValueAt", TTFloat64(previousAbscissa + abscissa), out);
+    
+    return TTFloat64(out[0]);
   }
 
 }

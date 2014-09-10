@@ -148,4 +148,14 @@ namespace OSSIA {
     return pimpl->mPointsMap;
   }
   
+  template <typename T>
+  T Curve<T>::valueAt(double abscissa) const
+  {
+    TTValue out;
+    
+    pimpl->mCurve.send("ValueAt", TTFloat64(abscissa), out);
+    
+    return TTFloat64(out[0]);
+  }
+  
 }
