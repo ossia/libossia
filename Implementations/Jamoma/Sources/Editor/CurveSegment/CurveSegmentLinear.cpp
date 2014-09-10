@@ -59,7 +59,7 @@ namespace OSSIA {
     TTFloat64 previousAbscissa = 0.;
     
     // get the previous point abscissa to add it at the given abscissa
-    auto pointsMap = CurveSegmentLinear<T>::mParent->pimpl->getPointsMap();
+    auto pointsMap = CurveSegment<T>::mParent->pimpl->getPointsMap();
     
     for (auto it = pointsMap.begin(); it.end(); it++)
     {
@@ -77,7 +77,7 @@ namespace OSSIA {
       }
     }
     
-    CurveSegmentLinear<T>::mParent->pimpl->mCurve.send("ValueAt", TTFloat64(previousAbscissa + abscissa), out);
+    CurveSegment<T>::mParent->pimpl->mCurve.send("ValueAt", TTFloat64(previousAbscissa + abscissa), out);
     
     return TTFloat64(out[0]);
   }

@@ -6,21 +6,20 @@ CC_64 = /usr/bin/clang++ -arch x86_64
 
 #########################################
 
-SRC32 = source/Curve.i386.o
-SRC64 = source/Curve.x64.o
-SRC32 += source/CurveSegment.i386.o
-SRC64 += source/CurveSegment.x64.o
-SRC32 += source/CurveSegment/CurveSegmentNone.i386.o
-SRC64 += source/CurveSegment/CurveSegmentNone.x64.o
-SRC32 += source/CurveSegment/CurveSegmentLinear.i386.o
-SRC64 += source/CurveSegment/CurveSegmentLinear.x64.o
-SRC32 += source/Scenario.i386.o
-SRC64 += source/Scenario.x64.o
+SRC32 = Sources/Editor/Curve.i386.o
+SRC64 = Sources/Editor/Curve.x64.o
+SRC32 += Sources/Editor/CurveSegment.i386.o
+SRC64 += Sources/Editor/CurveSegment.x64.o
+SRC32 += Sources/Editor/CurveSegment/CurveSegmentNone.i386.o
+SRC64 += Sources/Editor/CurveSegment/CurveSegmentNone.x64.o
+SRC32 += Sources/Editor/CurveSegment/CurveSegmentLinear.i386.o
+SRC64 += Sources/Editor/CurveSegment/CurveSegmentLinear.x64.o
+SRC32 += Sources/Editor/Scenario.i386.o
+SRC64 += Sources/Editor/Scenario.x64.o
 
 #########################################
 
-INCLUDES = -I./
-INCLUDES += -I../../Headers/
+INCLUDES = -I../../Headers/
 INCLUDES += -Isupport/includes/
 INCLUDE_FILES := $(wildcard INCLUDES/*.h)
 

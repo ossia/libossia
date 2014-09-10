@@ -40,8 +40,8 @@ namespace OSSIA {
     
   };
   
+  // explicit instantiation for double
+  template class CurveSegmentLinear<double>;
 }
-
-
 
 #endif /* CURVESEGMENTLINEAR_H_ */

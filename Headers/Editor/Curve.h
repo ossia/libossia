@@ -57,11 +57,10 @@ public:
   Impl * pimpl;
 
 };
+  
+  // explicit instantiation for double
+  template class Curve<double>;
 
 }
-
-
-
-
 
 #endif /* CURVE_H_ */

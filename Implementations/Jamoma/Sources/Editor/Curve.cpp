@@ -31,20 +31,20 @@ namespace OSSIA {
     Impl(const Impl & other) = default;
     ~Impl() = default;
     
-    // edit parameters for the mPointsMap as a value containing <x1 y1 c1 x2 y2 c2>
+    // edit parameters for the mPointsMap as a value containing <x1 y1 c1 x2 y2 c2 x3 y3 c3 ...>
     TTValue editParameters()
     {
       TTValue   parameters;
       auto      it = mPointsMap.begin();
       TTUInt32  i = 0;
       
-      parameters.resize((mPointsMap + 1) * 3);
+      parameters.resize((mPointsMap.size() + 1) * 3);
       
       // edit x1 y1 c1
       parameters[0] = 0.;
       parameters[1] = mInitialValue;
-      if (it->second->second->getType() == CurveSegment<T>::POWER_TYPE)
-        // TODO : parameters[i+2] = TTFloat64(ExponentialCurveSegment(it->second->second)->getCoefficient());
+      if (it->second.second.getType() == CurveSegment<T>::POWER_TYPE)
+        // TODO : parameters[i+2] = TTFloat64(CurveSegmentPower(it->second.second)->getCoefficient());
         parameters[2] = TTFloat64(1.);
       else
         parameters[2] = TTFloat64(1.);
@@ -56,12 +56,12 @@ namespace OSSIA {
       for (; it != mPointsMap.end();)
       {
         parameters[i] = TTFloat64(it->first);
-        parameters[i+1] = TTFloat64(it->second->first);
+        parameters[i+1] = TTFloat64(it->second.first);
         
         // go to next curve segment
         it++;
         
-        if (it->second->second->getType() == CurveSegment<T>::POWER_TYPE)
+        if (it->second.second.getType() == CurveSegment<T>::POWER_TYPE)
           // TODO : parameters[i+2] = TTFloat64(ExponentialCurveSegment(it->second->second)->getCoefficient());
           parameters[i+2] = TTFloat64(1.);
         else
@@ -156,6 +156,4 @@ namespace OSSIA {
     return TTFloat64(out[0]);
   }
   
-  // specialisation for double case
-  template class Curve<double>;
 }

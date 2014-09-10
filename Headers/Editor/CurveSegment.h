@@ -40,14 +40,15 @@ namespace OSSIA {
     
     virtual CurveSegmentType getType() const = 0;
     
-  private:
+  protected:
     
     Curve<T>& mParent;
     
   };
   
+  // explicit instantiation for double
+  template class CurveSegment<double>;
+  
 }
-
-
 
 #endif /* CURVESEGMENT_H_ */

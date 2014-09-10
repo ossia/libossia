@@ -28,7 +28,10 @@ namespace OSSIA {
     
     // Computation
     virtual T valueAt(double) const override final
-    {return;};
+    {
+      T t;
+      return t;
+    };
     
     // Curve segment type
     virtual typename CurveSegment<T>::CurveSegmentType getType() const override final
@@ -41,8 +44,8 @@ namespace OSSIA {
     
   };
   
+  // explicit instantiation for double
+  template class CurveSegmentNone<double>;
 }
-
-
 
 #endif /* CURVESEGMENTNONE_H_ */
