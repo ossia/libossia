@@ -15,13 +15,17 @@
 
 using namespace OSSIA;
 
+#include <iostream>
+
+using namespace std;
+
 int main() {
 
-    Curve myCurve;
-    CurveSegmentLinear firstCurveSegment(myCurve);
+    Curve<double> myCurve;
+    CurveSegmentLinear<double> firstCurveSegment(myCurve);
     
-    myCurve.setInitialeValue(0.);
+    myCurve.setInitialValue(0.);
     myCurve.addPoint(1., 1., firstCurveSegment);
     
-    std::cout << "value at 0. = " << myCurve.valueAt(0.) << "\n";
+    cout << "value at 0. = " << myCurve.valueAt(0.) << "\n";
 }
