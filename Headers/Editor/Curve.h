@@ -49,6 +49,7 @@ public:
     // {abscissa, {value, previous segment}}
 
   // pimpl idiom
+// private: // todo redo
   class Impl;
   Impl * pimpl;
 
