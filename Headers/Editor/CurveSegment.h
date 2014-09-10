@@ -29,7 +29,7 @@ namespace OSSIA {
     Curve<T>& getParent() const {return mParent;};
     
     // Computation
-    virtual T valueAt(double) const = 0; // Between 0 and 1
+    virtual T valueAt(double) const = 0; // Between 0. and 1.
     
     // Curve segment types
     enum CurveSegmentType {
