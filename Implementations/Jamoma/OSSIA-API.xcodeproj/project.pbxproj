@@ -22,7 +22,6 @@
 		460D07EF19BDD62500235124 /* TimeValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeValue.h; sourceTree = "<group>"; };
 		460D07F119BDD62500235124 /* IObservable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IObservable.h; sourceTree = "<group>"; };
 		460D07F219BDD62500235124 /* IObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IObserver.h; sourceTree = "<group>"; };
-		460D07F419BDD62500235124 /* Message.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
 		464201C819BEF6F600893C87 /* Device.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Device.h; sourceTree = "<group>"; };
 		464201C919BEF6F600893C87 /* Protocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Protocol.h; sourceTree = "<group>"; };
 		464201CB19BF28F300893C87 /* CurveSegmentNone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentNone.h; sourceTree = "<group>"; };
@@ -33,6 +32,7 @@
 		468AC7DD197FB5FA00FB2B18 /* Curve.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Curve.cpp; path = source/Curve.cpp; sourceTree = "<group>"; };
 		468AC7DE197FB5FA00FB2B18 /* CurveSegment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = CurveSegment.cpp; path = source/CurveSegment.cpp; sourceTree = "<group>"; };
 		468AC7DF197FB5FA00FB2B18 /* Scenario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Scenario.cpp; path = source/Scenario.cpp; sourceTree = "<group>"; };
+		468E931319C0562900B26BFB /* Message.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
 		46A5E69E19BDEA8000815908 /* Curve.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = Curve.yml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -59,6 +59,7 @@
 				460D07E619BDD62500235124 /* Event.h */,
 				460D07E719BDD62500235124 /* Expression.h */,
 				460D07E819BDD62500235124 /* InteractiveBranching.h */,
+				468E931319C0562900B26BFB /* Message.h */,
 				460D07E919BDD62500235124 /* Scenario.h */,
 				460D07EA19BDD62500235124 /* State.h */,
 				460D07EB19BDD62500235124 /* StateElement.h */,
@@ -83,7 +84,6 @@
 			isa = PBXGroup;
 			children = (
 				464201C819BEF6F600893C87 /* Device.h */,
-				460D07F419BDD62500235124 /* Message.h */,
 				464201C919BEF6F600893C87 /* Protocol.h */,
 			);
 			path = Network;
