@@ -31,8 +31,8 @@ namespace OSSIA {
     {return;};
     
     // Curve segment type
-    virtual CurveSegmentType getType() const override final
-    {return NONE_TYPE;};
+    virtual typename CurveSegment<T>::CurveSegmentType getType() const override final
+    {return CurveSegment<T>::NONE_TYPE;};
     
     // pimpl idiom
   private:

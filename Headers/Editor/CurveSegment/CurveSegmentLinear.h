@@ -30,8 +30,8 @@ namespace OSSIA {
     virtual T valueAt(double) const override;
     
     // Curve segment type
-    virtual CurveSegmentType getType() const override final
-    {return LINEAR_TYPE;};
+    virtual typename CurveSegment<T>::CurveSegmentType getType() const override final
+    {return CurveSegment<T>::LINEAR_TYPE;};
     
     // pimpl idiom
   private:
