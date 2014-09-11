@@ -10,7 +10,6 @@
 
 #include "Editor/Curve.h"
 #include "Editor/CurveSegment.h"
-#include "Editor/CurveSegment/CurveSegmentNone.h"
 #include "Editor/CurveSegment/CurveSegmentLinear.h"
 
 using namespace OSSIA;
@@ -22,7 +21,7 @@ using namespace std;
 int main() {
 
     Curve<double> myCurve;
-    CurveSegmentLinear<double> firstCurveSegment(myCurve);
+    CurveSegmentLinear<double> firstCurveSegment(&myCurve);
     
     myCurve.setInitialValue(0.);
     myCurve.addPoint(1., 1., firstCurveSegment);
