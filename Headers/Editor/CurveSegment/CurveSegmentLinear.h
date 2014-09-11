@@ -16,12 +16,12 @@
 namespace OSSIA {
   
   template <typename T>
-  class CurveSegmentLinear : public CurveSegment<T> {
+  class __attribute__((visibility("default"))) CurveSegmentLinear : public CurveSegment<T> {
     
   public:
     
     // Constructors, destructor, assignment
-    CurveSegmentLinear(Curve<T>&);
+    CurveSegmentLinear(Curve<T>*);
     CurveSegmentLinear(const CurveSegmentLinear&);
     virtual ~CurveSegmentLinear();
     CurveSegmentLinear & operator= (const CurveSegmentLinear&);
@@ -39,9 +39,7 @@ namespace OSSIA {
     Impl * pimpl;
     
   };
-  
-  // explicit instantiation for double
-  template class CurveSegmentLinear<double>;
+
 }
 
 #endif /* CURVESEGMENTLINEAR_H_ */

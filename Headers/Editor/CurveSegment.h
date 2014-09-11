@@ -11,24 +11,30 @@
 #ifndef CURVESEGMENT_H_
 #define CURVESEGMENT_H_
 
-#include "Editor/Curve.h" // inclusion instead of forward declaration for explicit instantiation purpose
-
 namespace OSSIA {
   
   template <typename T>
-  class CurveSegment {
+  class Curve;
+  
+  template <typename T>
+  class __attribute__((visibility("default"))) CurveSegment {
     
   public:
     
     // Constructor, Destructor
-    CurveSegment(Curve<T> & parent) : mParent(parent) {};
+    CurveSegment() : mParent(nullptr) {};
+    CurveSegment(Curve<T> * parent) : mParent(parent) {};
     virtual ~CurveSegment() {};
     
     // Navigation
-    Curve<T>& getParent() const {return mParent;};
+    Curve<T>* getParent() const {return mParent;};
     
     // Computation
-    virtual T valueAt(double) const = 0; // Between 0. and 1.
+    virtual T valueAt(double) const // Between 0. and 1.
+    {
+      T t = 0.;
+      return t;
+    };
     
     // Curve segment types
     enum CurveSegmentType {
@@ -37,16 +43,14 @@ namespace OSSIA {
       POWER_TYPE
     };
     
-    virtual CurveSegmentType getType() const = 0;
+    virtual CurveSegmentType getType() const
+    {return CurveSegment<T>::NONE_TYPE;};
     
   protected:
     
-    Curve<T>& mParent;
+    Curve<T>* mParent;
     
   };
-  
-  // explicit instantiation for double
-  template class CurveSegment<double>;
   
 }
 

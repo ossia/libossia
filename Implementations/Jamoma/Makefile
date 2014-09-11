@@ -10,8 +10,6 @@ SRC32 = Sources/Editor/Curve.i386.o
 SRC64 = Sources/Editor/Curve.x64.o
 SRC32 += Sources/Editor/CurveSegment.i386.o
 SRC64 += Sources/Editor/CurveSegment.x64.o
-SRC32 += Sources/Editor/CurveSegment/CurveSegmentNone.i386.o
-SRC64 += Sources/Editor/CurveSegment/CurveSegmentNone.x64.o
 SRC32 += Sources/Editor/CurveSegment/CurveSegmentLinear.i386.o
 SRC64 += Sources/Editor/CurveSegment/CurveSegmentLinear.x64.o
 SRC32 += Sources/Editor/Scenario.i386.o
@@ -39,7 +37,7 @@ OPTIMIZATION_RELEASE = -O3
 OPTIONS = -msse3 -gdwarf-2 -fvisibility=hidden
 OPTIONS += -std=c++11 
 OPTIONS += -stdlib=libc++ # -U__STRICT_ANSI__ -D__STDC_FORMAT_MACROS
-#OPTIONS += -shared -mfpmath=sse #Generates Warnings
+OPTIONS += -shared -mfpmath=sse #Generates Warnings
 WARNINGS = -Wall -Wno-unknown-pragmas -Wno-trigraphs
 DEFINES = -DTT_PLATFORM_MAC
 #########################################

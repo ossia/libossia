@@ -24,14 +24,12 @@
 		460D07F219BDD62500235124 /* IObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IObserver.h; sourceTree = "<group>"; };
 		464201C819BEF6F600893C87 /* Device.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Device.h; sourceTree = "<group>"; };
 		464201C919BEF6F600893C87 /* Protocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Protocol.h; sourceTree = "<group>"; };
-		464201CB19BF28F300893C87 /* CurveSegmentNone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentNone.h; sourceTree = "<group>"; };
 		464201CE19BF370300893C87 /* CurveSegmentLinear.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentLinear.h; sourceTree = "<group>"; };
 		468AC7C5197EB1D600FB2B18 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		468E931319C0562900B26BFB /* Message.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
 		46A5E69E19BDEA8000815908 /* Curve.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = Curve.yml; sourceTree = "<group>"; };
 		46BA2A5B19C09A21009630B5 /* Curve.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Curve.cpp; sourceTree = "<group>"; };
 		46BA2A5D19C09A21009630B5 /* CurveSegmentLinear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentLinear.cpp; sourceTree = "<group>"; };
-		46BA2A5E19C09A21009630B5 /* CurveSegmentNone.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentNone.cpp; sourceTree = "<group>"; };
 		46BA2A5F19C09A21009630B5 /* CurveSegment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegment.cpp; sourceTree = "<group>"; };
 		46BA2A6019C09A21009630B5 /* Scenario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scenario.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -92,7 +90,6 @@
 		464201CA19BF28F300893C87 /* CurveSegment */ = {
 			isa = PBXGroup;
 			children = (
-				464201CB19BF28F300893C87 /* CurveSegmentNone.h */,
 				464201CE19BF370300893C87 /* CurveSegmentLinear.h */,
 			);
 			path = CurveSegment;
@@ -130,7 +127,6 @@
 		46BA2A5C19C09A21009630B5 /* CurveSegment */ = {
 			isa = PBXGroup;
 			children = (
-				46BA2A5E19C09A21009630B5 /* CurveSegmentNone.cpp */,
 				46BA2A5D19C09A21009630B5 /* CurveSegmentLinear.cpp */,
 			);
 			path = CurveSegment;

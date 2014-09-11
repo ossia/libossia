@@ -20,7 +20,7 @@ template <typename T>
 class CurveSegment;
 
 template <typename T>
-class Curve {
+class __attribute__((visibility("default"))) Curve {
 
 public:
 
@@ -39,7 +39,7 @@ public:
   const_iterator find(double) const;
 
   // Manage points (abscissa in double between 0. and 1.)
-  bool addPoint(double, const T, const CurveSegment<T>&);
+  bool addPoint(double, T, CurveSegment<T>&);
   bool removePoint(double);
 
   // Accessors
@@ -57,9 +57,6 @@ public:
   Impl * pimpl;
 
 };
-  
-  // explicit instantiation for double
-  template class Curve<double>;
 
 }
 

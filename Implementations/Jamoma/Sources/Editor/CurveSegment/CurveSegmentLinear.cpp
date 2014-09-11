@@ -12,6 +12,8 @@
 
 #include "TTCurve.h"
 
+#include "../Implementations/Jamoma/Sources/Editor/Curve.cpp" // because we use the parent curve into the segment (see : valueAt)
+
 namespace OSSIA {
   
 template <typename T>
@@ -27,7 +29,7 @@ public:
 };
 
 template <typename T>
-CurveSegmentLinear<T>::CurveSegmentLinear(Curve<T> & parent) :
+CurveSegmentLinear<T>::CurveSegmentLinear(Curve<T> * parent) :
 CurveSegment<T>(parent),
 pimpl(new Impl)
 {}
@@ -59,7 +61,7 @@ T CurveSegmentLinear<T>::valueAt(double abscissa) const
   TTFloat64 previousAbscissa = 0.;
 
   // get the previous point abscissa to add it to the given abscissa
-  auto pointsMap = CurveSegment<T>::mParent.getPointsMap();
+  auto pointsMap = CurveSegment<T>::mParent->getPointsMap();
   
   for (auto it = pointsMap.begin(); it != pointsMap.end(); it++)
   {
@@ -77,7 +79,10 @@ T CurveSegmentLinear<T>::valueAt(double abscissa) const
     }
   }
   
-  return CurveSegment<T>::mParent.valueAt(previousAbscissa + abscissa);
+  return CurveSegment<T>::mParent->valueAt(previousAbscissa + abscissa);
 }
+  
+  // explicit instantiation for double
+  template class CurveSegmentLinear<double>;
 
 }
