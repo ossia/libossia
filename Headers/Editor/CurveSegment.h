@@ -17,7 +17,7 @@ namespace OSSIA {
   class Curve;
   
   template <typename T>
-  class __attribute__((visibility("default"))) CurveSegment {
+  class CurveSegment {
     
   public:
     

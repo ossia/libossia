@@ -20,7 +20,7 @@ template <typename T>
 class CurveSegment;
 
 template <typename T>
-class __attribute__((visibility("default"))) Curve {
+class Curve {
 
 public:
 
