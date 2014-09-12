@@ -27,4 +27,6 @@ int main() {
     myCurve.addPoint(1., 1., firstCurveSegment);
     
     cout << "value at 0. = " << myCurve.valueAt(0.) << "\n";
+    cout << "value at 0.5 = " << myCurve.valueAt(0.5) << "\n";
+    cout << "value at 1. = " << myCurve.valueAt(1.) << "\n";
 }
