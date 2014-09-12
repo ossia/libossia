@@ -10,7 +10,7 @@
 
 #include "Editor/Curve.h"
 
-#include "TTCurve.h"
+#include "TTScore.h"
 
 #include "Editor/CurveSegment.h"
 
@@ -28,7 +28,15 @@ public:
   T mInitialValue;
   std::map<double, std::pair<T, CurveSegment<T>&>> mPointsMap;
   
-  Impl() : mCurve("Curve"), mInitialValue(), mPointsMap() {};
+  Impl() : /*mCurve("Curve"),*/ mInitialValue(), mPointsMap()
+  {
+    // todo : move this else where ...
+    TTFoundationInit("/usr/local/jamoma/");
+    TTModularInit("/usr/local/jamoma/");
+    TTScoreInit("/usr/local/jamoma/");
+    
+    mCurve = TTObject("Curve");
+  };
   
   Impl(const Impl & other) = default;
   ~Impl() = default;
@@ -55,19 +63,25 @@ public:
     // note : the coefficient is into the next curve segment
     i++;
     
-    for (; it != mPointsMap.end();)
+    for (;;)
     {
-      parameters[i] = TTFloat64(it->first);
-      parameters[i+1] = TTFloat64(it->second.first);
+      parameters[i*3] = TTFloat64(it->first);
+      parameters[i*3+1] = TTFloat64(it->second.first);
       
       // go to next curve segment
       it++;
+        
+      if (it == mPointsMap.end()) {
+        
+        parameters[i*3+2] = TTFloat64(1.);
+        break;
+      }
       
       if (it->second.second.getType() == CurveSegment<T>::POWER_TYPE)
         // TODO : parameters[i+2] = TTFloat64(ExponentialCurveSegment(it->second->second)->getCoefficient());
-        parameters[i+2] = TTFloat64(1.);
+        parameters[i*3+2] = TTFloat64(1.);
       else
-        parameters[i+2] = TTFloat64(1.);
+        parameters[i*3+2] = TTFloat64(1.);
       
       i++;
     }
