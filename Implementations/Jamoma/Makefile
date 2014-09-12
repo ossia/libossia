@@ -12,6 +12,8 @@ SRC32 += Sources/Editor/CurveSegment.i386.o
 SRC64 += Sources/Editor/CurveSegment.x64.o
 SRC32 += Sources/Editor/CurveSegment/CurveSegmentLinear.i386.o
 SRC64 += Sources/Editor/CurveSegment/CurveSegmentLinear.x64.o
+SRC32 += Sources/Editor/CurveSegment/CurveSegmentPower.i386.o
+SRC64 += Sources/Editor/CurveSegment/CurveSegmentPower.x64.o
 SRC32 += Sources/Editor/Scenario.i386.o
 SRC64 += Sources/Editor/Scenario.x64.o
 
