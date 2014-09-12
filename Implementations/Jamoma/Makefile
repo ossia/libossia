@@ -37,7 +37,7 @@ OPTIMIZATION_RELEASE = -O3
 OPTIONS = -msse3 -gdwarf-2
 OPTIONS += -std=c++11 
 OPTIONS += -stdlib=libc++ # -U__STRICT_ANSI__ -D__STDC_FORMAT_MACROS
-OPTIONS += -shared -mfpmath=sse #Generates Warnings
+OPTIONS += -shared -mfpmath=sse
 WARNINGS = -Wall -Wno-unknown-pragmas -Wno-trigraphs
 DEFINES = -DTT_PLATFORM_MAC
 #########################################
@@ -48,6 +48,7 @@ DEFINES = -DTT_PLATFORM_MAC
 
 CFLAGS = $(OPTIONS) $(DEFINES) $(INCLUDES) $(WARNINGS)
 LDFLAGS =  -shared -mfpmath=sse $(OPTIONS) $(DEFINES) $(LIBS) $(WARNINGS)
+LDFLAGS += -install_name "@rpath/$(NAME).dylib"
 
 #########################################
 
@@ -82,6 +83,13 @@ x64: $(SRC64)
 lipo: | link
 	lipo build/$(NAME)-i386.dylib build/$(NAME)-x86_64.dylib -create -output build/$(NAME).dylib
 	lipo build/lib$(NAME)-i386.a build/lib$(NAME)-x86_64.a -create -output build/lib$(NAME).a
+    
+	cp build/$(NAME).dylib /usr/local/lib # temporary for test with curve.cpp
+
+	install_name_tool -change @loader_path/../../../../support/JamomaFoundation.dylib @rpath/JamomaFoundation.dylib build/$(NAME).$(SUFFIX)
+	install_name_tool -change @loader_path/../../../../support/JamomaDSP.dylib @rpath/JamomaDSP.dylib build/$(NAME).$(SUFFIX)
+	install_name_tool -change @loader_path/../../../../support/JamomaModular.dylib @rpath/JamomaModular.dylib build/$(NAME).$(SUFFIX)
+	install_name_tool -change @loader_path/../../../../support/JamomaScore.dylib @rpath/JamomaScore.dylib build/$(NAME).$(SUFFIX)
 
 clean:
 	rm -f $(SRC32) $(SRC64)
