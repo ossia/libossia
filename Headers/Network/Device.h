@@ -11,8 +11,23 @@
 #ifndef DEVICE_H_
 #define DEVICE_H_
 
+namespace OSSIA {
+
+class Device {
+
+public:
+
+  // Constructors, destructor, assignment
+  Device();
+  Device(const Device&);
+  ~Device();
+  Device & operator= (const Device&);
+
+  // Accessors
 
 
+};
 
+}
 
 #endif /* DEVICE_H_ */

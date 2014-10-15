@@ -8,19 +8,18 @@
  * http://www.cecill.info
  */
 
-#ifndef PROTOCOL_H_
-#define PROTOCOL_H_
+#ifndef PROTOCOLS_H_
+#define PROTOCOLS_H_
 
 namespace OSSIA {
 
-class Protocol {
+class OSC {
 
 public:
 
-  virtual ~Protocol() = 0;
 
 };
 
 }
 
-#endif /* PROTOCOL_H_ */
+#endif /* PROTOCOLS_H_ */
