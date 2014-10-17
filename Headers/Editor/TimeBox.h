@@ -17,8 +17,8 @@
 
 namespace OSSIA {
 
-class Event;
 class Scenario;
+class State;
 class TimeNode;
 class TimeProcess;
 class TimeValue;
@@ -39,8 +39,10 @@ public:
   // Navigation
   TimeNode & getPreviousNode() const;
   TimeNode & getNextNode() const;
-  Event & getStartEvent() const;
-  Event & getEndEvent() const;
+  State & getStartState() const;
+  void setStartState(const State&);
+  State & getEndState() const;
+  void setEndState(const State&);
   Scenario & getParentScenario() const;
 
   // Iterators

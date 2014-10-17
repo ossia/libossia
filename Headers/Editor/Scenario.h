@@ -13,8 +13,8 @@
 
 #include <set>
 
-#include "Event.h"
-#include "TimeProcess.h"
+#include "Editor/TimeNode.h"
+#include "Editor/TimeProcess.h"
 
 namespace OSSIA {
 
@@ -39,17 +39,18 @@ public:
   std::set<TimeNode*> getTimeNodes() const;
 
   // Edition
-  void addTimeBox(const TimeBox&, const Event & startEvent);
+  void addTimeBox(const TimeBox&, const TimeNode & startNode);
   void addTimeBox(
       const TimeBox&,
-      const Event & startEvent,
-      const Event & endEvent);
+      const TimeNode & startNode,
+      const TimeNode & endNode);
 
   // Accessors
-  Event & getStartEvent() const;
-  void setStartEvent(const Event&);
-  Event & getEndEvent() const;
-  void setEndEvent(const Event&);
+  // internal TimeNodes
+  TimeNode & getStartNode() const;
+  void setStartNode(const TimeNode&);
+  TimeNode & getEndNode() const;
+  void setEndNode(const TimeNode&);
 
   // pimpl idiom
 private:

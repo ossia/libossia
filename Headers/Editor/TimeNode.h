@@ -17,6 +17,7 @@
 
 namespace OSSIA {
 
+class Expression
 class Scenario;
 class TimeBox;
 class TimeValue;
@@ -26,18 +27,36 @@ class TimeNode : public IObservable {
 public:
 
   // Constructors, destructor, assignment
-  virtual ~TimeNode() = default;
+  TimeNode();
+  TimeNode(const TimeNode&);
+  ~TimeNode();
+  TimeNode & operator= (const TimeNode&);
 
   // Lecture
-  virtual void play(bool log = false, std::string name = "") const = 0; // ??
+  void play(bool log = false, std::string name = "") const;
 
   // Navigation
-  virtual std::set<TimeBox*> getPreviousTimeBoxes() const = 0;
-  virtual std::set<TimeBox*> getNextTimeBoxes() const = 0;
+  std::set<TimeBox*> getPreviousTimeBoxes() const;
+  std::set<TimeBox*> getNextTimeBoxes() const;
   Scenario & getParentScenario() const;
+
+  // Iterators
+  class const_iterator;
+  // bidirectional, upon pair<State, pair<Expression, set<TimeBox*> > >
+  const_iterator begin() const;
+  const_iterator end() const;
+  const_iterator find(const State&) const;
+
+  // Managing states
+  void addState(const State&, const Expression, std::set<TimeBox*>);
+  bool removeState(const State&);
 
   // Accessors
   TimeValue getDate() const;
+  TimeValue getPreListenningDuration() const;
+  void setPreListenningDuration(TimeValue);
+  TimeValue getSimultaneityMargin();
+  void setSimultaneityMargin(TimeValue);
 
   // pimpl idiom
 private:
