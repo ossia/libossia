@@ -17,7 +17,7 @@
 
 namespace OSSIA {
 
-class Expression
+class Expression;
 class Scenario;
 class TimeBox;
 class TimeValue;
