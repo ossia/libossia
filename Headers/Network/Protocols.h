@@ -13,10 +13,29 @@
 
 namespace OSSIA {
 
+class Minuit {
+
+public:
+
+  // Constructors, destructor, assignment
+  Minuit(std::string name, std::string ip, int port);
+  Minuit(const Minuit&) = delete;
+  ~Minuit();
+  Minuit & operator= (const Minuit&) = delete;
+
+};
+
+
+
 class OSC {
 
 public:
 
+  // Constructors, destructor, assignment
+  OSC(std::string ip, int in_port, int out_port);
+  OSC(const OSC&) = delete;
+  ~OSC();
+  OSC & operator= (const OSC&) = delete;
 
 };
 
