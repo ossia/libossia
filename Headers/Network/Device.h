@@ -13,18 +13,35 @@
 
 namespace OSSIA {
 
+template <typename T>
 class Device {
 
 public:
 
+  typedef T protocol_type;
+
   // Constructors, destructor, assignment
   Device();
   Device(const Device&);
+  Device(T * protocol);
   ~Device();
   Device & operator= (const Device&);
 
-  // Accessors
+  // Factories
+  template <typename U>
+  Address addAddress(std::string) const;
+  template <typename U>
+  Address addAddress(std::string, U min, U max) const;
 
+  // Iterators
+  class const_iterator; // bidirectionnal
+  const_iterator begin() const;
+  const_iterator end() const;
+  const_iterator find(Address) const;
+
+  // Saving
+  bool save(std::string) const;
+  bool load(std::string) const;
 
 };
 
