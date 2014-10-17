@@ -17,9 +17,11 @@ namespace OSSIA {
 
 class Device;
 
+template <typename T>
 class Address {
 
 private:
+
   // Constructors, destructor, assignment
   Address();
   Address(const Address&);
@@ -27,6 +29,13 @@ private:
   Address & operator= (const Address&);
 
 public:
+
+  typedef T value_type;
+
+  // Factories
+  template <typename U>
+  Address addAddress(std::string) const;
+
   // Navigation
   bool isRoot() const;
   Address & getParent() const;
@@ -42,20 +51,8 @@ public:
   void addChild(const Address&);
   bool removeChild(const Address&);
 
-  // Parameter types
-  enum ParameterType {
-    NONE,
-    INT,
-    FLOAT,
-    STRING,
-    COLOR
-  };
-
   // Accessors
   std::string getAddress();
-  ParameterType getType();
-  void setType(ParameterType);
-
 
   // pimpl idiom
 private:
