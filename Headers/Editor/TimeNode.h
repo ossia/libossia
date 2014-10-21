@@ -12,7 +12,8 @@
 #define TIMENODE_H_
 
 #include <set>
-
+#include <string>
+#include <State.h>
 #include "Misc/IObservable.h"
 
 namespace OSSIA {

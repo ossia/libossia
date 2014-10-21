@@ -1,9 +1,9 @@
 #include <iostream>
-#include <net/session/MasterSession.h>
-#include <net/session/ZeroConfServerThread.h>
+#include <session/MasterSession.h>
+#include <session/ZeroConfServerThread.h>
 #include <QCoreApplication>
 
-#include <net/DistributedProcess.h>
+#include <DistributedProcess.h>
 using namespace std;
 
 

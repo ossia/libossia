@@ -1,8 +1,8 @@
 #pragma once
 #include <TimeProcess.h>
 
-#include <net/group/Group.h>
-#include <net/synchronisation_policy/SynchronisationPolicy.h>
+#include <group/Group.h>
+#include <synchronisation_policy/SynchronisationPolicy.h>
 using namespace OSSIA;
 class DistributedProcess : public TimeProcess
 {

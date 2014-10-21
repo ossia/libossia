@@ -8,16 +8,16 @@ TimeValue::TimeValue()
 
 TimeValue::TimeValue(const int c)
 {
-	date=c;
+//	date=c;
 }
 
 TimeValue& TimeValue::operator=(const int c)
 {
-	date=c;
-	return *this;
+//	date=c;
+//	return *this;
 }
 
 TimeValue::operator int()
 {
-	return date;
+//	return date;
 }

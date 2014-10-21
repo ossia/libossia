@@ -1,5 +1,5 @@
 #include <iostream>
-#include <net/session/ClientSessionBuilder.h>
+#include <session/ClientSessionBuilder.h>
 #include <QCoreApplication>
 // Client sans Zeroconf
 

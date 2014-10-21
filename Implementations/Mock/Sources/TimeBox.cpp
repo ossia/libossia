@@ -1,29 +1,29 @@
 #include <TimeBox.h>
 #include <TimeValue.h>
-#include <Event.h>
+//#include <TimeNode.h>
 #include <vector>
 using namespace OSSIA;
 
 class TimeBox::Impl
-{
+{/*
 	public:
 		Impl():
-			_startEvent{new Event},
-			_endEvent{new Event}
+			_startTimeNode{new TimeNode},
+			_endTimeNode{new TimeNode}
 		{
 
 		}
 		std::vector<TimeProcess*> _processes;
-		Event* _startEvent{nullptr};
-		Event* _endEvent{nullptr};
+		TimeNode* _startTimeNode{nullptr};
+		TimeNode* _endTimeNode{nullptr};*/
 };
 class TimeBox::const_iterator
 {
 
 };
 
-TimeBox::TimeBox():
-	pimpl{new Impl}
+TimeBox::TimeBox()//:
+//	pimpl{new Impl}
 {
 
 }
@@ -50,44 +50,44 @@ void TimeBox::play(bool log, std::string name) const
 
 	}
 }
-
-Event&TimeBox::getStartEvent() const
+/*
+TimeNode&TimeBox::getStartNode() const
 {
-	return *pimpl->_startEvent;
+//	return *pimpl->_startTimeNode;
 }
 
-Event&TimeBox::getEndEvent() const
+TimeNode&TimeBox::getEndNode() const
 {
-	return *pimpl->_endEvent;
+//	return *pimpl->_endTimeNode;
 }
 
-void TimeBox::setStartEvent(Event&& ev)
+void TimeBox::setStartNode(TimeNode&& ev)
 {
-	pimpl->_startEvent = new Event(ev);
+//	pimpl->_startTimeNode = new TimeNode(ev);
 }
 
-void TimeBox::setEndEvent(Event&& ev)
+void TimeBox::setEndNode(TimeNode&& ev)
 {
-	pimpl->_endEvent = new Event(ev);
+//	pimpl->_endTimeNode = new TimeNode(ev);
 }
 
-void TimeBox::setStartEvent(const Event& ev)
+void TimeBox::setStartNode(const TimeNode& ev)
 {
-	pimpl->_startEvent = &const_cast<Event&>(ev);
+//	pimpl->_startTimeNode = &const_cast<TimeNode&>(ev);
 }
 
-void TimeBox::setEndEvent(const Event&ev)
+void TimeBox::setEndNode(const TimeNode&ev)
 {
-	pimpl->_endEvent = &const_cast<Event&>(ev);
+//	pimpl->_endTimeNode = &const_cast<TimeNode&>(ev);
 }
-
+*/
 TimeValue TimeBox::getLength() const
 {
-	return pimpl->_endEvent->getDate() - pimpl->_startEvent->getDate();
+//	return pimpl->_endTimeNode->getDate() - pimpl->_startTimeNode->getDate();
 }
 
 bool TimeBox::isRigid()
 {
-	return true;
+//	return true;
 }
 

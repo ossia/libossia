@@ -3,7 +3,7 @@
 
 #include <QThread>
 
-#include <net/session/ZeroConfClient.h>
+#include <session/ZeroConfClient.h>
 #include <thread>
 
 class ZeroConfClientThread : public QThread
