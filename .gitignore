@@ -10,6 +10,8 @@
 .settings*
 /Debug
 /Clang
+*.user
+Makefile
 
 # XCode files
 build
