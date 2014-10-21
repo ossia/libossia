@@ -20,8 +20,8 @@ int main() {
 
   Device<Minuit> minuitDevice1(new Minuit("MinuitDevice1", "1.2.3.4", 66666));
 
-  Address test = minuitDevice1.addAddress<void>("test");
-  Address done = minuitDevice1.addAddress<void>("done");
+  Address test = minuitDevice1.addAddress<bool>("test");
+  Address done = minuitDevice1.addAddress("done");
 
   Address test1 = test.addAddress<int>("1");
   Address test2 = test.addAddress<std::string>("2");

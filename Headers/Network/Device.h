@@ -28,6 +28,7 @@ public:
   Device & operator= (const Device&);
 
   // Factories
+  Address addAddress(std::string) const;
   template <typename U>
   Address addAddress(std::string) const;
   template <typename U>

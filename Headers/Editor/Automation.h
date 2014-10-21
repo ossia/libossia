@@ -17,6 +17,7 @@
 
 namespace OSSIA {
 
+template <typename T>
 class Address;
 class Curve;
 class TimeValue;

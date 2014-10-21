@@ -15,6 +15,7 @@
 
 namespace OSSIA {
 
+template <typename T>
 class Address;
 
 template <typename T>

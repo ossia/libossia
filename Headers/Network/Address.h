@@ -15,6 +15,7 @@
 
 namespace OSSIA {
 
+template <typename T>
 class Device;
 
 template <typename T>
@@ -33,8 +34,11 @@ public:
   typedef T value_type;
 
   // Factories
+  Address addAddress(std::string) const;
   template <typename U>
   Address addAddress(std::string) const;
+  template <typename U>
+  Address addAddress(std::string, U min, U max) const;
 
   // Navigation
   bool isRoot() const;
