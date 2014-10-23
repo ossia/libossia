@@ -8,12 +8,7 @@
 #include <QtNetwork/QHostAddress>
 #include <QString>
 #include <iostream>
-
-struct ConnectionData
-{
-		std::string ip;
-		int port;
-};
+#include "ConnectionData.hpp"
 
 class ZeroConfClientThread;
 class ZeroConfClient: public QObject

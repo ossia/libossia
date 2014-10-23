@@ -31,6 +31,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/session/ClientSession.h
 ${CMAKE_CURRENT_SOURCE_DIR}/session/ClientSessionBuilder.h
 ${CMAKE_CURRENT_SOURCE_DIR}/session/ZeroConfServer.h
 ${CMAKE_CURRENT_SOURCE_DIR}/session/ZeroConfClient.h
+${CMAKE_CURRENT_SOURCE_DIR}/session/ConnectionData.hpp
 ${CMAKE_CURRENT_SOURCE_DIR}/synchronisation_policy/SynchronisationPolicy.h
 ${CMAKE_CURRENT_SOURCE_DIR}/DistributedProcess.h
 ${CMAKE_CURRENT_SOURCE_DIR}/DistributedScenario.h

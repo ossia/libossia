@@ -5,6 +5,7 @@
 #include <QtNetwork/QHostInfo>
 
 #include <dns_sd.h>
+#include <QDebug>
 
 #include "bonjourrecord.h"
 
@@ -41,6 +42,7 @@ class BonjourServiceResolver : public QObject
 														(DNSServiceResolveReply)bonjourResolveReply, this);
 			if (err != kDNSServiceErr_NoError)
 			{
+				qDebug() << err;
 				emit error(err);
 			}
 			else
@@ -48,10 +50,12 @@ class BonjourServiceResolver : public QObject
 				int sockfd = DNSServiceRefSockFD(dnssref);
 				if (sockfd == -1)
 				{
+					qDebug() << kDNSServiceErr_Invalid;
 					emit error(kDNSServiceErr_Invalid);
 				}
 				else
 				{
+					qDebug("ok");
 					bonjourSocket = new QSocketNotifier(sockfd, QSocketNotifier::Read, this);
 					connect(bonjourSocket, SIGNAL(activated(int)), this, SLOT(bonjourSocketReadyRead()));
 				}
@@ -79,7 +83,10 @@ class BonjourServiceResolver : public QObject
 		{
 			DNSServiceErrorType err = DNSServiceProcessResult(dnssref);
 			if (err != kDNSServiceErr_NoError)
+			{
+				qDebug() << err;
 				emit error(err);
+			}
 		}
 
 		void finishConnect(const QHostInfo &hostInfo)
@@ -94,6 +101,7 @@ class BonjourServiceResolver : public QObject
 												  const char *, const char *hosttarget, quint16 port,
 												  quint16 , const char *, void *context)
 		{
+			qDebug(Q_FUNC_INFO);
 			BonjourServiceResolver *serviceResolver = static_cast<BonjourServiceResolver *>(context);
 			if (errorCode != kDNSServiceErr_NoError)
 			{

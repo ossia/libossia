@@ -8,7 +8,7 @@ include_directories(${API_HEADERS_FOLDER}/Repartition)
 find_package(Qt5Core)
 find_package(Qt5Network)
 
-set(SRC 
+set(SRC
 ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 )
 
