@@ -29,7 +29,7 @@ class ClientSession : public Session
 												   this);
 
 			getLocalClient().receiver().addHandler("/edit/command",
-												   &ClientSession::handle__edit_command,
+												   &Session::handle__edit_command,
 												   this);
 		}
 
@@ -57,6 +57,19 @@ class ClientSession : public Session
 		{
 			return *_localClient;
 		}
+
+		virtual void sendCommand(std::string parentName,
+								 std::string name,
+								 const char * data, int len) override
+		{
+			_remoteMaster->send("/edit/command",
+								getId(),
+								0,
+								parentName.c_str(),
+								name.c_str(),
+								osc::Blob{data, len});
+		}
+
 
 		void changePermission(Client& client,
 							  Group& group,
@@ -97,7 +110,6 @@ class ClientSession : public Session
 			}
 		}
 
-		std::function<void(std::string, std::string, const char*, int)> cmdCallback;
 
 	private:
 		// /session/permission/listens
@@ -144,23 +156,6 @@ class ClientSession : public Session
 			if(sessionId != getId()) return;
 
 			private__createClient(id, std::string(name), std::string(ip), port);
-
-		}
-
-		void handle__edit_command(osc::ReceivedMessageArgumentStream args)
-		{
-			osc::int32 sessionId;
-			osc::int32 clientId;
-			const char* par_name;
-			const char* cmd_name;
-			osc::Blob blob;
-
-			args >> sessionId >> clientId >> par_name >> cmd_name >> blob;
-			if(sessionId != getId()/* || clientId != _localClient->getId()*/) return;
-
-			cmdCallback(std::string(par_name),
-						std::string(cmd_name),
-						static_cast<const char*>(blob.data), blob.size);
 
 		}
 

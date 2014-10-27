@@ -29,6 +29,12 @@ class MasterSession : public Session
 												&MasterSession::handle__session_disconnect,
 												this);
 
+
+
+			_localMaster->receiver().addHandler("/edit/command",
+												&Session::handle__edit_command,
+												this);
+
 			_localMaster->receiver().run();
 		}
 
@@ -40,7 +46,7 @@ class MasterSession : public Session
 
 		virtual void sendCommand(std::string parentName,
 								 std::string name,
-								 const char * data, int len)
+								 const char * data, int len) override
 		{
 			for(RemoteClient& rclt : clients())
 			{

@@ -48,6 +48,10 @@ class Session : public hasName, public hasId
 		Session(const Session&) = default;
 		virtual ~Session() = default;
 
+		virtual void sendCommand(std::string parentName,
+								 std::string name,
+								 const char * data, int len) = 0;
+
 		template<typename... K>
 		Group& group(K&&... args)
 		{
@@ -83,6 +87,24 @@ class Session : public hasName, public hasId
 
 
 		virtual Client& getClient() = 0;
+
+		std::function<void(std::string, std::string, const char*, int)> cmdCallback;
+		void handle__edit_command(osc::ReceivedMessageArgumentStream args)
+		{
+			osc::int32 sessionId;
+			osc::int32 clientId;
+			const char* par_name;
+			const char* cmd_name;
+			osc::Blob blob;
+
+			args >> sessionId >> clientId >> par_name >> cmd_name >> blob;
+			if(sessionId != getId()/* || clientId != _localClient->getId()*/) return;
+
+			cmdCallback(std::string(par_name),
+						std::string(cmd_name),
+						static_cast<const char*>(blob.data), blob.size);
+
+		}
 
 	protected:
 		// Accessible uniquement à masterSession, builder, et handlers...
