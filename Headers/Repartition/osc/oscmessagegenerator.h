@@ -56,9 +56,9 @@ namespace osc
 			}
 
 			template <typename Arg1, typename... Args>
-			void subfunc(const Arg1& arg1, const Args&... args)
+			void subfunc(Arg1&& arg1, Args&&... args)
 			{
-				std::cerr << " " << arg1;
+				//std::cerr << " " << arg1;
 				p << arg1;
 				subfunc(args...);
 			}

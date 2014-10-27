@@ -3,6 +3,7 @@
 #include "../client/LocalClient.h"
 #include "../permission/view/PermissionViewManager.h"
 
+#include <QDebug>
 class ClientSession : public Session
 {
 		friend class ClientSessionBuilder;
@@ -25,6 +26,10 @@ class ClientSession : public Session
 
 			getLocalClient().receiver().addHandler("/session/disconnect",
 												   &ClientSession::handle__session_disconnect,
+												   this);
+
+			getLocalClient().receiver().addHandler("/edit/command",
+												   &ClientSession::handle__edit_command,
 												   this);
 		}
 
@@ -92,6 +97,8 @@ class ClientSession : public Session
 			}
 		}
 
+		std::function<void(std::string, std::string, const char*, int)> cmdCallback;
+
 	private:
 		// /session/permission/listens
 		void handle__session_permission_listens(osc::ReceivedMessageArgumentStream args)
@@ -137,6 +144,23 @@ class ClientSession : public Session
 			if(sessionId != getId()) return;
 
 			private__createClient(id, std::string(name), std::string(ip), port);
+
+		}
+
+		void handle__edit_command(osc::ReceivedMessageArgumentStream args)
+		{
+			osc::int32 sessionId;
+			osc::int32 clientId;
+			const char* par_name;
+			const char* cmd_name;
+			osc::Blob blob;
+
+			args >> sessionId >> clientId >> par_name >> cmd_name >> blob;
+			if(sessionId != getId()/* || clientId != _localClient->getId()*/) return;
+
+			cmdCallback(std::string(par_name),
+						std::string(cmd_name),
+						static_cast<const char*>(blob.data), blob.size);
 
 		}
 

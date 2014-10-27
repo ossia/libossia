@@ -34,19 +34,22 @@ class MasterSession : public Session
 
 		virtual ~MasterSession()
 		{
-			qDebug() << "1";
 			_zc_thread.quit();
 			while(_zc_thread.isRunning()) std::this_thread::sleep_for(std::chrono::milliseconds(50));
-			qDebug() << "2";
 		}
 
-		virtual void sendCommand(std::string name, const char * data, int len)
+		virtual void sendCommand(std::string parentName,
+								 std::string name,
+								 const char * data, int len)
 		{
-			for(RemoteClient& clt : clients())
+			for(RemoteClient& rclt : clients())
 			{
-				clt.send("/edit/command",
-						 name.c_str(),
-						 data);
+				rclt.send("/edit/command",
+						  getId(),
+						  rclt.getId(),
+						  parentName.c_str(),
+						  name.c_str(),
+						  osc::Blob{data, len});
 			}
 		}
 
