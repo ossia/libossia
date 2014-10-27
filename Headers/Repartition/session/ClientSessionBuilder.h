@@ -72,6 +72,7 @@ class ClientSessionBuilder
 		}
 
 		// /session/clientNameIsTaken idSession nom
+		// TODO émettre message d'erreur dans thread Qt.
 		void handle__session_clientNameIsTaken(osc::ReceivedMessageArgumentStream args)
 		{
 			osc::int32 idSession;

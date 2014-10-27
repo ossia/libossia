@@ -29,11 +29,6 @@ class MasterSession : public Session
 												&MasterSession::handle__session_disconnect,
 												this);
 
-
-
-			_localMaster->receiver().addHandler("/edit/command",
-												&Session::handle__edit_command,
-												this);
 			_localMaster->receiver().run();
 		}
 
@@ -43,17 +38,18 @@ class MasterSession : public Session
 			while(_zc_thread.isRunning()) std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		}
 
-		virtual void sendCommand(std::string parentName,
-								 std::string name,
-								 const char * data, int len) override
+		// TODO mettre dans RemoteTrucBidule
+		virtual void sendCommand(const char* parentName,
+								 const char* name,
+								 const char* data, int len) override
 		{
 			for(RemoteClient& rclt : clients())
 			{
 				rclt.send("/edit/command",
 						  getId(),
 						  _localMaster->getId(),
-						  parentName.c_str(),
-						  name.c_str(),
+						  parentName,
+						  name,
 						  osc::Blob{data, len});
 			}
 		}
@@ -78,7 +74,7 @@ class MasterSession : public Session
 			}
 		}
 
-		virtual Client& getClient() override
+		virtual LocalClient& getClient() override
 		{
 			return *_localMaster;
 		}

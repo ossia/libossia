@@ -27,10 +27,6 @@ class ClientSession : public Session
 			getLocalClient().receiver().addHandler("/session/disconnect",
 												   &ClientSession::handle__session_disconnect,
 												   this);
-
-			getLocalClient().receiver().addHandler("/edit/command",
-												   &Session::handle__edit_command,
-												   this);
 		}
 
 		virtual ~ClientSession()
@@ -48,7 +44,7 @@ class ClientSession : public Session
 									_localClient->getId());
 		}
 
-		virtual Client& getClient() override
+		virtual LocalClient& getClient() override
 		{
 			return *_localClient;
 		}
@@ -58,15 +54,15 @@ class ClientSession : public Session
 			return *_localClient;
 		}
 
-		virtual void sendCommand(std::string parentName,
-								 std::string name,
+		virtual void sendCommand(const char* parentName,
+								 const char* name,
 								 const char * data, int len) override
 		{
 			_remoteMaster->send("/edit/command",
 								getId(),
 								_localClient->getId(),
-								parentName.c_str(),
-								name.c_str(),
+								parentName,
+								name,
 								osc::Blob{data, len});
 		}
 

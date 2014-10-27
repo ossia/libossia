@@ -4,6 +4,7 @@
 #include "../group/GroupManager.h"
 #include "../client/ClientManager.h"
 #include "../client/RemoteMaster.h"
+#include "../client/LocalClient.h"
 
 #include <type_traits>
 
@@ -49,8 +50,8 @@ class Session : public hasName, public hasId
 		Session(const Session&) = default;
 		virtual ~Session() = default;
 
-		virtual void sendCommand(std::string parentName,
-								 std::string name,
+		virtual void sendCommand(const char* parentName,
+								 const char* name,
 								 const char * data, int len) = 0;
 		virtual void sendUndoCommand() = 0;
 		virtual void sendRedoCommand() = 0;
@@ -89,27 +90,7 @@ class Session : public hasName, public hasId
 		}
 
 
-		virtual Client& getClient() = 0;
-
-		std::function<void(std::string, std::string, const char*, int)> cmdCallback;
-		std::function<void()> undoCallback;
-		std::function<void()> redoCallback;
-		void handle__edit_command(osc::ReceivedMessageArgumentStream args)
-		{
-			osc::int32 sessionId;
-			osc::int32 clientId;
-			const char* par_name;
-			const char* cmd_name;
-			osc::Blob blob;
-
-			args >> sessionId >> clientId >> par_name >> cmd_name >> blob;
-			if(sessionId != getId()/* || clientId != _localClient->getId()*/) return;
-
-			cmdCallback(std::string(par_name),
-						std::string(cmd_name),
-						static_cast<const char*>(blob.data), blob.size);
-
-		}
+		virtual LocalClient& getClient() = 0;
 
 	protected:
 		// Accessible uniquement à masterSession, builder, et handlers...
