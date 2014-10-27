@@ -34,7 +34,6 @@ class MasterSession : public Session
 			_localMaster->receiver().addHandler("/edit/command",
 												&Session::handle__edit_command,
 												this);
-
 			_localMaster->receiver().run();
 		}
 
@@ -52,10 +51,30 @@ class MasterSession : public Session
 			{
 				rclt.send("/edit/command",
 						  getId(),
-						  rclt.getId(),
+						  _localMaster->getId(),
 						  parentName.c_str(),
 						  name.c_str(),
 						  osc::Blob{data, len});
+			}
+		}
+
+		virtual void sendUndoCommand() override
+		{
+			for(RemoteClient& rclt : clients())
+			{
+				rclt.send("/edit/undo",
+						   getId(),
+						   _localMaster->getId());
+			}
+		}
+
+		virtual void sendRedoCommand() override
+		{
+			for(RemoteClient& rclt : clients())
+			{
+				rclt.send("/edit/redo",
+						   getId(),
+						   _localMaster->getId());
 			}
 		}
 
@@ -172,13 +191,13 @@ class MasterSession : public Session
 			Permission& perm = localPermissions()(client, group);
 
 			bool prevListens = perm.listens(),
-				 prevWrites  = perm.writes();
+					prevWrites  = perm.writes();
 
 			perm.setPermission(static_cast<Permission::Category>(cat),
 							   static_cast<Permission::Enablement>(enablement));
 
 			bool postListens = perm.listens(),
-				 postWrites  = perm.writes();
+					postWrites  = perm.writes();
 
 			// Cas de changements :
 			//	- !listens() devient  listens()

@@ -64,10 +64,24 @@ class ClientSession : public Session
 		{
 			_remoteMaster->send("/edit/command",
 								getId(),
-								0,
+								_localClient->getId(),
 								parentName.c_str(),
 								name.c_str(),
 								osc::Blob{data, len});
+		}
+
+		virtual void sendUndoCommand() override
+		{
+			_remoteMaster->send("/edit/undo",
+								getId(),
+								_localClient->getId());
+		}
+
+		virtual void sendRedoCommand() override
+		{
+			_remoteMaster->send("/edit/redo",
+								getId(),
+								_localClient->getId());
 		}
 
 

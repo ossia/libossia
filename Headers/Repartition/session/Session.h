@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <limits>
 #include <random>
+#include <QDebug>
 
 inline int32_t generateRandom64()
 {
@@ -51,6 +52,8 @@ class Session : public hasName, public hasId
 		virtual void sendCommand(std::string parentName,
 								 std::string name,
 								 const char * data, int len) = 0;
+		virtual void sendUndoCommand() = 0;
+		virtual void sendRedoCommand() = 0;
 
 		template<typename... K>
 		Group& group(K&&... args)
@@ -89,6 +92,8 @@ class Session : public hasName, public hasId
 		virtual Client& getClient() = 0;
 
 		std::function<void(std::string, std::string, const char*, int)> cmdCallback;
+		std::function<void()> undoCallback;
+		std::function<void()> redoCallback;
 		void handle__edit_command(osc::ReceivedMessageArgumentStream args)
 		{
 			osc::int32 sessionId;
