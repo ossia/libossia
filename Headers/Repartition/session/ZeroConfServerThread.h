@@ -14,8 +14,14 @@ class ZeroConfServerThread : public QThread
 	public:
 		FORWARD_DECL(void setPort)
 		{
-			while(!built) QThread::sleep(1);
+			while(!built) QThread::msleep(50);
 			_serv->setPort(FORWARD);
+		}
+
+		virtual ~ZeroConfServerThread()
+		{
+			if(_serv)
+				delete _serv;
 		}
 
 	protected:

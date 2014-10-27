@@ -21,6 +21,8 @@ class OscReceiver
 
 		~OscReceiver()
 		{
+			socket->AsynchronousBreak();
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 			_runThread.detach();
 			socket.reset();
 		}
