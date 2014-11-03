@@ -1,5 +1,5 @@
 /*!
- * \file Protocol.h
+ * \file Protocols.h
  *
  * \author Clément Bossut
  * \author Théo de la Hogue
