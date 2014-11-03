@@ -11,6 +11,8 @@
 #ifndef PROTOCOLS_H_
 #define PROTOCOLS_H_
 
+#include <string>
+
 namespace OSSIA {
 
 class Minuit {

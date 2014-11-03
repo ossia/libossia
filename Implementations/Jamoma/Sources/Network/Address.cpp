@@ -88,25 +88,7 @@ Device<T>& Address<T>::getDevice() const
 {
   ;
 }
-/*
-template <typename T>
-const_iterator Address<T>::begin() const
-{
-  ;
-}
-  
-template <typename T>
-const_iterator Address<T>::end() const
-{
-  ;
-}
-  
-template <typename T>
-const_iterator Address<T>::find(const Address<T>&) const
-{
-  ;
-}
-*/
+
 template <typename T>
 void addChild(const Address<T>&)
  {

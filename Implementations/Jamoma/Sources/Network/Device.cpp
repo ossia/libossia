@@ -8,44 +8,79 @@
  * http://www.cecill.info
  */
 
-#ifndef DEVICE_H_
-#define DEVICE_H_
+#include "Network/Device.h"
 
 namespace OSSIA {
-
+  
 template <typename T>
-class Device {
-
+class Device<T>::Impl {
+    
 public:
-
-  typedef T protocol_type;
-
-  // Constructors, destructor, assignment
-  Device();
-  Device(const Device&);
-  Device(T * protocol);
-  ~Device();
-  Device & operator= (const Device&);
-
-  // Factories
-  Address addAddress(std::string) const;
-  template <typename U>
-  Address addAddress(std::string) const;
-  template <typename U>
-  Address addAddress(std::string, U min, U max) const;
-
-  // Iterators
-  class const_iterator; // bidirectionnal
-  const_iterator begin() const;
-  const_iterator end() const;
-  const_iterator find(Address) const;
-
-  // Saving
-  bool save(std::string) const;
-  bool load(std::string) const;
-
+    
+  Impl()
+  {
+    ;
+  };
+    
+  Impl(const Impl & other) = default;
+  ~Impl() = default;
+    
 };
 
+template <typename T>
+Device<T>::Device() :
+pimpl(new Impl)
+{}
+  
+template <typename T>
+Device<T>::Device(const Device & other) :
+pimpl(new Impl(*(other.pimpl)))
+{}
+  
+template <typename T>
+Device<T>::~Device()
+{
+  delete pimpl;
+}
+  
+template <typename T>
+Device<T>& Device<T>::operator= (const Device & other)
+{
+  delete pimpl;
+  pimpl = new Impl(*(other.pimpl));
+  return *this;
 }
 
-#endif /* DEVICE_H_ */
+template <typename T>
+Address<T> Device<T>::addAddress(std::string) const
+{
+  ;
+}
+  
+template <typename T>
+template <typename U>
+Address<T> Device<T>::addAddress(std::string) const
+{
+  ;
+}
+  
+template <typename T>
+template <typename U>
+Address<T> Device<T>::addAddress(std::string, U min, U max) const
+{
+  ;
+}
+
+template <typename T>
+bool Device<T>::save(std::string) const
+{
+  ;
+}
+  
+template <typename T>
+bool Device<T>::load(std::string) const
+{
+  ;
+}
+
+}

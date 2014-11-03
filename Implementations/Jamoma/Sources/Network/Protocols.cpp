@@ -12,12 +12,23 @@
 
 #include "TTModular.h"
 
-Minuit::Minuit(std::string name, std::string ip, int port)
-{
-  ;
-}
+namespace OSSIA {
 
-Minuit::Minuit(const Minuit&)
+class Minuit::Impl {
+  
+public:
+  
+  Impl()
+  {
+    ;
+  };
+  
+  Impl(const Impl & other) = default;
+  ~Impl() = default;
+  
+};
+
+Minuit::Minuit(std::string name, std::string ip, int port)
 {
   ;
 }
@@ -27,18 +38,22 @@ Minuit::~Minuit()
   ;
 }
 
-Minuit & Minuit::operator= (const Minuit&)
-{
-  ;
-}
-
+  
+class OSC::Impl {
+  
+public:
+  
+  Impl()
+  {
+    ;
+  };
+  
+  Impl(const Impl & other) = default;
+  ~Impl() = default;
+  
+};
 
 OSC::OSC(std::string ip, int in_port, int out_port)
-{
-  ;
-}
-
-OSC::OSC(const OSC&)
 {
   ;
 }
@@ -47,8 +62,5 @@ OSC::~OSC()
 {
   ;
 }
-
-OSC & OSC::operator= (const OSC&)
-{
-  ;
+    
 }

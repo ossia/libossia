@@ -18,6 +18,10 @@ SRC32 += Sources/Editor/Scenario.i386.o
 SRC64 += Sources/Editor/Scenario.x64.o
 SRC32 += Sources/Network/Address.i386.o
 SRC64 += Sources/Network/Address.x64.o
+SRC32 += Sources/Network/Device.i386.o
+SRC64 += Sources/Network/Device.x64.o
+SRC32 += Sources/Network/Protocols.i386.o
+SRC64 += Sources/Network/Protocols.x64.o
 
 #########################################
 
