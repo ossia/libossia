@@ -22,6 +22,11 @@ public:
   Minuit(const Minuit&) = delete;
   ~Minuit();
   Minuit & operator= (const Minuit&) = delete;
+  
+  // pimpl idiom
+private:
+  class Impl;
+  Impl * pimpl;
 
 };
 
@@ -36,6 +41,11 @@ public:
   OSC(const OSC&) = delete;
   ~OSC();
   OSC & operator= (const OSC&) = delete;
+  
+  // pimpl idiom
+private:
+  class Impl;
+  Impl * pimpl;
 
 };
 

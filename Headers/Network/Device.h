@@ -43,7 +43,12 @@ public:
   // Saving
   bool save(std::string) const;
   bool load(std::string) const;
-
+  
+  // pimpl idiom
+private:
+  class Impl;
+  Impl * pimpl;
+  
 };
 
 }
