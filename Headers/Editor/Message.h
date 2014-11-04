@@ -37,8 +37,8 @@ public:
   // Accessors
   virtual StateElementType getType() const override final
       { return MESSAGE_TYPE; };
-  Address getAddress() const;
-  void setAddress(const Address);
+  Address<T> & getAddress() const;
+  void setAddress(const Address<T>&);
   value_type getValue() const;
   void setValue(const value_type);
   bool hasValue() const;

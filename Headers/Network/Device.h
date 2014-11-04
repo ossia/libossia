@@ -33,11 +33,11 @@ public:
   Device & operator= (const Device&);
 
   // Factories
-  Address<T> addAddress(std::string) const;
+  Address<void> addAddress(std::string) const;
   template <typename U>
-  Address<T> addAddress(std::string) const;
+  Address<U> addAddress(std::string) const;
   template <typename U>
-  Address<T> addAddress(std::string, U min, U max) const;
+  Address<U> addAddress(std::string, U min, U max) const;
 
   // Iterators
   class const_iterator; // bidirectionnal
