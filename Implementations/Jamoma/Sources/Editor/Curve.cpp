@@ -46,44 +46,37 @@ public:
   {
     TTValue   parameters;
     auto      it = mPointsMap.begin();
-    TTUInt32  i = 0;
     
     parameters.resize((mPointsMap.size() + 1) * 3);
     
-    // edit x1 y1 c1
-    parameters[0] = 0.;
-    parameters[1] = mInitialValue;
-    if (it->second.second.getType() == CurveSegment<T>::POWER_TYPE)
-      // TODO : parameters[i+2] = TTFloat64(CurveSegmentPower(it->second.second)->getCoefficient());
-      parameters[2] = TTFloat64(1.);
-    else
-      parameters[2] = TTFloat64(1.);
-    
-    // edit x2 y2 c2 x3 y3 c3 ...
-    // note : the coefficient is into the next curve segment
-    i++;
-    
-    for (;;)
+    for (TTUInt32 i = 0; i <= mPointsMap.size(); i++)
     {
-      parameters[i*3] = TTFloat64(it->first);
-      parameters[i*3+1] = TTFloat64(it->second.first);
-      
-      // go to next curve segment
-      it++;
+      // edit xi yi
+      if (i == 0) {
+          
+        parameters[0] = 0.;
+        parameters[1] = mInitialValue;
+      }
+      else {
+        
+        parameters[i*3] = TTFloat64(it->first);
+        parameters[i*3+1] = TTFloat64(it->second.first);
+          
+        // go to next curve segment
+        it++;
+      }
         
       if (it == mPointsMap.end()) {
-        
         parameters[i*3+2] = TTFloat64(1.);
         break;
       }
       
+      // edit ci
       if (it->second.second.getType() == CurveSegment<T>::POWER_TYPE)
         // TODO : parameters[i+2] = TTFloat64(ExponentialCurveSegment(it->second->second)->getCoefficient());
         parameters[i*3+2] = TTFloat64(1.);
       else
         parameters[i*3+2] = TTFloat64(1.);
-      
-      i++;
     }
     
     return parameters;
@@ -156,6 +149,9 @@ template <typename T>
 void Curve<T>::setInitialValue(const T value)
 {
   pimpl->mInitialValue = value;
+  
+  // update the internal curve object
+  pimpl->mCurve.set("functionParameters", pimpl->editParameters());
 }
 
 template <typename T>
@@ -167,11 +163,13 @@ std::map<double, std::pair<T, CurveSegment<T>&>> Curve<T>::getPointsMap() const
 template <typename T>
 T Curve<T>::valueAt(double abscissa) const
 {
-  TTValue out;
-  
-  pimpl->mCurve.send("ValueAt", TTFloat64(abscissa), out);
-  
-  return T(out[0]);
+  if (pimpl->mPointsMap.size() > 0) {
+    TTValue out;
+    pimpl->mCurve.send("ValueAt", TTFloat64(abscissa), out);
+    return T(out[0]);
+  }
+    
+  return pimpl->mInitialValue;
 }
 
 // explicit instantiation for double

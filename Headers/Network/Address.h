@@ -43,7 +43,7 @@ public:
   // Navigation
   bool isRoot() const;
   Address & getParent() const;
-  Device & getDevice() const;
+  Device<T> & getDevice() const;
 
   // Iterators
   class const_iterator; // bidirectional

@@ -1,5 +1,5 @@
 /*!
- * \file Protocol.h
+ * \file Protocols.h
  *
  * \author Clément Bossut
  * \author Théo de la Hogue
@@ -10,6 +10,8 @@
 
 #ifndef PROTOCOLS_H_
 #define PROTOCOLS_H_
+
+#include <string>
 
 namespace OSSIA {
 
@@ -22,6 +24,11 @@ public:
   Minuit(const Minuit&) = delete;
   ~Minuit();
   Minuit & operator= (const Minuit&) = delete;
+  
+  // pimpl idiom
+private:
+  class Impl;
+  Impl * pimpl;
 
 };
 
@@ -36,6 +43,11 @@ public:
   OSC(const OSC&) = delete;
   ~OSC();
   OSC & operator= (const OSC&) = delete;
+  
+  // pimpl idiom
+private:
+  class Impl;
+  Impl * pimpl;
 
 };
 

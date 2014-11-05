@@ -13,7 +13,7 @@
 
 #include <set>
 #include <string>
-#include <State.h>
+#include "Editor/State.h"
 #include "Misc/IObservable.h"
 
 namespace OSSIA {
