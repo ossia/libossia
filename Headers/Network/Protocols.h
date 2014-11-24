@@ -15,6 +15,25 @@
 
 namespace OSSIA {
 
+class Local {
+  
+public:
+  
+  // Constructors, destructor, assignment
+  Local(std::string name);
+  Local(const Local&) = delete;
+  ~Local();
+  Local & operator= (const Local&) = delete;
+  
+  // pimpl idiom
+private:
+  class Impl;
+  Impl * pimpl;
+  
+};
+  
+  
+
 class Minuit {
 
 public:

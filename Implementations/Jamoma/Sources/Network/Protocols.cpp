@@ -13,6 +13,31 @@
 #include "TTModular.h"
 
 namespace OSSIA {
+    
+class Local::Impl {
+    
+public:
+    
+    Impl()
+    {
+        ;
+    };
+    
+    Impl(const Impl & other) = default;
+    ~Impl() = default;
+    
+};
+
+Local::Local(std::string name)
+{
+    ;
+}
+
+Local::~Local()
+{
+    ;
+}
+    
 
 class Minuit::Impl {
   

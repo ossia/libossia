@@ -20,6 +20,12 @@ SRC32 += Sources/Network/Address.i386.o
 SRC64 += Sources/Network/Address.x64.o
 SRC32 += Sources/Network/Device.i386.o
 SRC64 += Sources/Network/Device.x64.o
+SRC32 += Sources/Network/DeviceLocal.i386.o
+SRC64 += Sources/Network/DeviceLocal.x64.o
+SRC32 += Sources/Network/DeviceMinuit.i386.o
+SRC64 += Sources/Network/DeviceMinuit.x64.o
+SRC32 += Sources/Network/DeviceOSC.i386.o
+SRC64 += Sources/Network/DeviceOSC.x64.o
 SRC32 += Sources/Network/Protocols.i386.o
 SRC64 += Sources/Network/Protocols.x64.o
 

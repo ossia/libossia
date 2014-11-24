@@ -16,7 +16,7 @@
 namespace OSSIA {
     
 template <typename T>
-    class Address;
+class Address;
 
 template <typename T>
 class Device {
