@@ -66,48 +66,7 @@ Device<T>& Device<T>::operator= (const Device & other)
   pimpl = new Impl(*(other.pimpl));
   return *this;
 }
-/*
-template <typename T>
-Address<T> Device<T>::addAddress(std::string address) const
-{
-  TTAddress anAddress(address.data());
-  TTSymbol  service("parameter");
-  TTObject  aData;
-  
-  if (pimpl->registerDataAtAddress(anAddress, service, aData))
-  {
-    // TODO : setup attribute depending on the T type
-  }
-}
-  
-template <typename T>
-template <typename U>
-Address<T> Device<T>::addAddress(std::string address) const
-{
-  TTAddress anAddress(address.data());
-  TTSymbol  service("parameter");
-  TTObject  aData;
-  
-  if (pimpl->registerDataAtAddress(anAddress, service, aData))
-  {
-    // TODO : setup attribute depending on the U type
-  }
-}
-  
-template <typename T>
-template <typename U>
-Address<T> Device<T>::addAddress(std::string address, U min, U max) const
-{
-  TTAddress anAddress(address.data());
-  TTSymbol  service("parameter");
-  TTObject  aData;
-  
-  if (pimpl->registerDataAtAddress(anAddress, service, aData))
-  {
-    // TODO : setup attribute depending on the U type
-  }
-}
-*/
+
 template <typename T>
 bool Device<T>::save(std::string filepath) const
 {
