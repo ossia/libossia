@@ -1,5 +1,5 @@
-#include "TimeNode.h"
-#include "TimeValue.h"
+#include "Editor/TimeNode.h"
+#include "Editor/TimeValue.h"
 
 using namespace OSSIA;
 /*
