@@ -21,7 +21,7 @@ public:
 
   virtual void launch() const = 0;
 
-  enum StateElementType {
+  enum class StateElementType {
     MESSAGE_TYPE,
     STATE_TYPE
   };

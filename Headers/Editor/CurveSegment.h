@@ -37,14 +37,14 @@ namespace OSSIA {
     };
     
     // Curve segment types
-    enum CurveSegmentType {
+    enum class CurveSegmentType {
       NONE_TYPE,
       LINEAR_TYPE,
       POWER_TYPE
     };
     
     virtual CurveSegmentType getType() const
-    {return CurveSegment<T>::NONE_TYPE;};
+    {return CurveSegment<T>::CurveSegmentType::NONE_TYPE;};
     
   protected:
     
