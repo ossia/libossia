@@ -62,13 +62,6 @@ public:
   void setMaximumLength(TimeValue);
   bool isRigid();
 
-  // Observation message types
-  enum MessageType {
-    LENGTH,
-    MIN_LENGTH,
-    MAX_LENGTH
-  };
-
   // pimpl idiom
 private:
   class Impl;
