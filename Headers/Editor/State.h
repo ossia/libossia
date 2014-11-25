@@ -20,34 +20,25 @@ class State : public StateElement {
 public:
 
   // Constructors, destructor, assignment
-  State();
-  State(const State&);
-  virtual ~State();
-  State & operator= (const State&);
+  State() = 0;
+  virtual ~State() = default;
 
   // Lecture
-  virtual void launch() const override;
-
-  // Navigation
+  virtual void launch() const override = 0;
 
   // Iterators
   class const_iterator; // bidirectional
-  const_iterator begin() const;
-  const_iterator end() const;
-  const_iterator find(const StateElement&) const;
+  const_iterator begin() const = 0;
+  const_iterator end() const = 0;
+  const_iterator find(const StateElement&) const = 0;
 
   // Managing StateElements
-  void addStateElement(const StateElement&);
-  bool removeStateElement(const StateElement&);
+  void addStateElement(const StateElement&) = 0;
+  bool removeStateElement(const StateElement&) = 0;
 
   // Accessors
   virtual StateElementType getType() const override final
       { return StateElementType::STATE_TYPE; };
-
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl;
 
 };
 
