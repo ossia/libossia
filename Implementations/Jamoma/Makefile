@@ -6,6 +6,8 @@ CC_64 = /usr/bin/clang++ -arch x86_64
 
 #########################################
 
+SRC32 = Sources/Editor/Automation.i386.o
+SRC64 = Sources/Editor/Automation.x64.o
 SRC32 = Sources/Editor/Curve.i386.o
 SRC64 = Sources/Editor/Curve.x64.o
 SRC32 += Sources/Editor/CurveSegment.i386.o
@@ -14,8 +16,24 @@ SRC32 += Sources/Editor/CurveSegment/CurveSegmentLinear.i386.o
 SRC64 += Sources/Editor/CurveSegment/CurveSegmentLinear.x64.o
 SRC32 += Sources/Editor/CurveSegment/CurveSegmentPower.i386.o
 SRC64 += Sources/Editor/CurveSegment/CurveSegmentPower.x64.o
+SRC32 += Sources/Editor/Expression.i386.o
+SRC64 += Sources/Editor/Expression.x64.o
+SRC32 += Sources/Editor/Message.i386.o
+SRC64 += Sources/Editor/Message.x64.o
 SRC32 += Sources/Editor/Scenario.i386.o
 SRC64 += Sources/Editor/Scenario.x64.o
+SRC32 += Sources/Editor/State.i386.o
+SRC64 += Sources/Editor/State.x64.o
+SRC32 += Sources/Editor/StateElement.i386.o
+SRC64 += Sources/Editor/StateElement.x64.o
+SRC32 += Sources/Editor/TimeBox.i386.o
+SRC64 += Sources/Editor/TimeBox.x64.o
+SRC32 += Sources/Editor/TimeNode.i386.o
+SRC64 += Sources/Editor/TimeNode.x64.o
+SRC32 += Sources/Editor/TimeProcess.i386.o
+SRC64 += Sources/Editor/TimeProcess.x64.o
+SRC32 += Sources/Editor/TimeValue.i386.o
+SRC64 += Sources/Editor/TimeValue.x64.o
 SRC32 += Sources/Network/Address.i386.o
 SRC64 += Sources/Network/Address.x64.o
 SRC32 += Sources/Network/Device.i386.o
