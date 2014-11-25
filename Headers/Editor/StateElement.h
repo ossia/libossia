@@ -17,7 +17,7 @@ class StateElement {
 
 public:
 
-  virtual ~StateElement() = 0;
+  virtual ~StateElement();
 
   virtual void launch() const = 0;
 
