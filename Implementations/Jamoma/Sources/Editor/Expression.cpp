@@ -9,6 +9,9 @@
  */
 
 #include "Editor/Expression.h"
+
+#include "TTScore.h"
+
 /*
 class OSSIA::Expression::Impl {
 

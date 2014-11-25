@@ -10,8 +10,33 @@
 
 #include "Editor/TimeProcess.h"
 
-class OSSIA::TimeProcess::Impl {
+#include "TTScore.h"
 
-
-
-};
+namespace OSSIA
+{
+  class TimeProcess::Impl
+  {
+    
+  public:
+    
+    Impl()
+    {
+      // todo : move this else where ...
+      TTFoundationInit("/usr/local/jamoma/");
+      TTModularInit("/usr/local/jamoma/");
+      TTScoreInit("/usr/local/jamoma/");
+    };
+    
+    Impl(const Impl & other) = default;
+    ~Impl() = default;
+  };
+  
+  TimeProcess::TimeProcess() :
+  pimpl(new Impl)
+  {}
+  
+  TimeProcess::~TimeProcess()
+  {
+    delete pimpl;
+  }
+}

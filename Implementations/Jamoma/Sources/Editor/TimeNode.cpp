@@ -10,8 +10,44 @@
 
 #include "Editor/TimeNode.h"
 
-class OSSIA::TimeNode::Impl {
+#include "TTScore.h"
 
-
-
-};
+namespace OSSIA
+{
+  class TimeNode::Impl
+  {
+    
+  public:
+    
+    Impl()
+    {
+      // todo : move this else where ...
+      TTFoundationInit("/usr/local/jamoma/");
+      TTModularInit("/usr/local/jamoma/");
+      TTScoreInit("/usr/local/jamoma/");
+    };
+    
+    Impl(const Impl & other) = default;
+    ~Impl() = default;
+  };
+  
+  TimeNode::TimeNode() :
+  pimpl(new Impl)
+  {}
+  
+  TimeNode::TimeNode(const TimeNode & other) :
+  pimpl(new Impl(*(other.pimpl)))
+  {}
+  
+  TimeNode::~TimeNode()
+  {
+    delete pimpl;
+  }
+  
+  TimeNode& TimeNode::operator= (const TimeNode & other)
+  {
+    delete pimpl;
+    pimpl = new Impl(*(other.pimpl));
+    return *this;
+  }
+}

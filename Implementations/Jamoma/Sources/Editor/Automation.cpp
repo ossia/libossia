@@ -10,6 +10,8 @@
 
 #include "Editor/Automation.h"
 
+#include "TTScore.h"
+
 class OSSIA::Automation::Impl {
 
 

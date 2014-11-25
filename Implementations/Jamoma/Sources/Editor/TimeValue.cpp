@@ -9,10 +9,45 @@
  */
 
 #include "Editor/TimeValue.h"
-/*
-class OSSIA::TimeValue::Impl {
 
+#include "TTScore.h"
 
-
-};
-*/
+namespace OSSIA
+{
+  class TimeValue::Impl
+  {
+    
+  public:
+    
+    Impl()
+    {
+      // todo : move this else where ...
+      TTFoundationInit("/usr/local/jamoma/");
+      TTModularInit("/usr/local/jamoma/");
+      TTScoreInit("/usr/local/jamoma/");
+    };
+    
+    Impl(const int other);
+    ~Impl() = default;
+  };
+  
+  TimeValue::TimeValue() :
+  pimpl(new Impl)
+  {}
+  
+  TimeValue::TimeValue(const int other) :
+  pimpl(new Impl(other))
+  {}
+  
+  TimeValue::~TimeValue()
+  {
+    delete pimpl;
+  }
+  
+  TimeValue& TimeValue::operator= (const int other)
+  {
+    delete pimpl;
+    pimpl = new Impl(other);
+    return *this;
+  }
+}

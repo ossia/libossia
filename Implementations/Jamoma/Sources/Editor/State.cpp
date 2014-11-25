@@ -10,8 +10,44 @@
 
 #include "Editor/State.h"
 
-class OSSIA::State::Impl {
+#include "TTScore.h"
 
-
-
-};
+namespace OSSIA
+{
+  class State::Impl
+  {
+    
+  public:
+    
+    Impl()
+    {
+      // todo : move this else where ...
+      TTFoundationInit("/usr/local/jamoma/");
+      TTModularInit("/usr/local/jamoma/");
+      TTScoreInit("/usr/local/jamoma/");
+    };
+    
+    Impl(const Impl & other) = default;
+    ~Impl() = default;
+  };
+  
+  State::State() :
+  pimpl(new Impl)
+  {}
+  
+  State::State(const State & other) :
+  pimpl(new Impl(*(other.pimpl)))
+  {}
+  
+  State::~State()
+  {
+    delete pimpl;
+  }
+  
+  State& State::operator= (const State & other)
+  {
+    delete pimpl;
+    pimpl = new Impl(*(other.pimpl));
+    return *this;
+  }
+}
