@@ -10,6 +10,7 @@
 .settings*
 /Debug
 /Clang
+/Jamoma
 *.user
 Makefile
 
