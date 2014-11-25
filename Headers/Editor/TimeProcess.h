@@ -11,14 +11,12 @@
 #ifndef TIMEPROCESS_H_
 #define TIMEPROCESS_H_
 
-#include "Misc/IObservable.h"
-
 namespace OSSIA {
 
 class State;
 class TimeBox;
 
-class TimeProcess : public IObservable {
+class TimeProcess {
 
 public:
 

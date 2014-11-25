@@ -18,15 +18,19 @@ class TimeValue {
   // Constructors, destructor, assignment
   TimeValue();
   TimeValue(const int);
+  ~TimeValue();
   TimeValue & operator= (const int);
 
   // Cast
   operator int();
+  
+  // pimpl idiom
+  // private: // todo issue #1
+  class Impl;
+  Impl * pimpl;
 
 };
 
 }
-
-
 
 #endif /* TIMEVALUE_H_ */

@@ -25,7 +25,7 @@ public:
 
   typedef T value_type;
 
-  // Constructors, destructor, asssignment
+  // Constructors, destructor, assignment
   Message();
   Message(const Message&);
   virtual ~Message();

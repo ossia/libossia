@@ -11,12 +11,11 @@
 #ifndef STATE_H_
 #define STATE_H_
 
-#include "Misc/IObservable.h"
 #include "Editor/StateElement.h"
 
 namespace OSSIA {
 
-class State : public StateElement, public IObservable {
+class State : public StateElement {
 
 public:
 

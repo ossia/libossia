@@ -13,8 +13,6 @@
 
 #include <string>
 
-#include "Misc/IObservable.h"
-
 namespace OSSIA {
 
 class Scenario;
@@ -23,7 +21,7 @@ class TimeNode;
 class TimeProcess;
 class TimeValue;
 
-class TimeBox : public IObservable {
+class TimeBox {
 
 public:
 
