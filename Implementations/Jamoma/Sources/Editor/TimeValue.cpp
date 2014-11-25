@@ -27,7 +27,9 @@ namespace OSSIA
       TTScoreInit("/usr/local/jamoma/");
     };
     
-    Impl(const int other);
+    Impl(const int other)
+    {}
+    
     ~Impl() = default;
   };
   

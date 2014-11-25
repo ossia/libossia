@@ -39,4 +39,9 @@ namespace OSSIA
   {
     delete pimpl;
   }
+  
+  void TimeProcess::play() const
+  {
+    ;
+  }
 }

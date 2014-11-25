@@ -50,4 +50,9 @@ namespace OSSIA
     pimpl = new Impl(*(other.pimpl));
     return *this;
   }
+  
+  void State::launch() const
+  {
+    ;
+  }
 }
