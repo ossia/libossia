@@ -18,5 +18,7 @@ using namespace std;
 
 int main() {
 
-    ;
+    State* s = State::create();
+    
+    delete s;
 }
