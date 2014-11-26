@@ -28,19 +28,23 @@ namespace OSSIA
     Message_Impl::~Message_Impl()
     {}
     
-    Address & getAddress() const
+    Address & Message_Impl::getAddress() const
     {
       TTAddress address;
       TTValue v;
       
-      mDictionary.get(kTTSym_address, v);
+      mDictionary.lookup(kTTSym_address, v);
       address = v[0];
       
       return address;
     }
     
-    AddressType getValue() const
+    AddressType Message_Impl::getValue() const
     {
-        return mDictionary.getValue();
+      TTValue v;
+      mDictionary.getValue(v);
+      
+      
+      return;
     }
 }

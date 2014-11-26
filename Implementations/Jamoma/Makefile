@@ -6,8 +6,8 @@ CC_64 = /usr/bin/clang++ -arch x86_64
 
 #########################################
 
-SRC32 = Sources/Editor/Automation.i386.o
-SRC64 = Sources/Editor/Automation.x64.o
+SRC32 = Sources/Editor/Automation_Impl.i386.o
+SRC64 = Sources/Editor/Automation_Impl.x64.o
 SRC32 = Sources/Editor/Curve.i386.o
 SRC64 = Sources/Editor/Curve.x64.o
 SRC32 += Sources/Editor/CurveSegment.i386.o
@@ -32,8 +32,8 @@ SRC32 += Sources/Editor/TimeProcess.i386.o
 SRC64 += Sources/Editor/TimeProcess.x64.o
 SRC32 += Sources/Editor/TimeValue.i386.o
 SRC64 += Sources/Editor/TimeValue.x64.o
-SRC32 += Sources/Network/Address.i386.o
-SRC64 += Sources/Network/Address.x64.o
+SRC32 += Sources/Network/Address_Impl.i386.o
+SRC64 += Sources/Network/Address_Impl.x64.o
 SRC32 += Sources/Network/Device.i386.o
 SRC64 += Sources/Network/Device.x64.o
 SRC32 += Sources/Network/DeviceLocal.i386.o
