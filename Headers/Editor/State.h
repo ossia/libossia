@@ -42,7 +42,7 @@ public:
 
   // Accessors
   virtual StateElementType getType() const override final
-      { return StateElementType::STATE_TYPE; };
+      { return StateElementType::STATE; };
 
   // pimpl idiom
 private:
