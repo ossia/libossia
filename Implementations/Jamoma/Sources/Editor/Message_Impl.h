@@ -22,12 +22,20 @@ namespace OSSIA
   public:
     
     // Constructors, destructor, assignment
-    Message_Impl();
+    Message_Impl(Address, AddressType);
     virtual ~Message_Impl();
+    
+    // Lecture
+    virtual void launch() const override;
+    
+    // Accessors
+    virtual Address & getAddress() const;
+    virtual AddressType getValue() const;
     
     /** Implementation Specific
      @details use mutable members to break constness of the API because Jamoma doesn't take care of it.
      */
+    TTDictionnary   mMessage;
   };
 }
 

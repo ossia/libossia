@@ -12,19 +12,31 @@
 
 namespace OSSIA
 {
-  Message* Message::create()
-  {
-    // todo : we shouldn't init each time we create an object ...
-    TTFoundationInit("/usr/local/jamoma/");
-    TTModularInit("/usr/local/jamoma/");
-    TTScoreInit("/usr/local/jamoma/");
+    Message* Message::create(Address, AddressType)
+    {
+        // todo : we shouldn't init each time we create an object ...
+        TTFoundationInit("/usr/local/jamoma/");
+        TTModularInit("/usr/local/jamoma/");
+        TTScoreInit("/usr/local/jamoma/");
+        
+        return new Message_Impl();
+    }
     
-    return new Message_Impl();
-  }
-  
-  Message_Impl::Message_Impl()
-  {}
-  
-  Message_Impl::~Message_Impl()
-  {}
+    Message_Impl::Message_Impl(Address, AddressType)
+    {}
+    
+    Message_Impl::~Message_Impl()
+    {}
+    
+    Address & getAddress() const
+    {
+      TTAddress address;
+      mMessage.get("address", address);
+      return address;
+    }
+    
+    AddressType getValue() const
+    {
+        return mMessage.getValue();
+    }
 }
