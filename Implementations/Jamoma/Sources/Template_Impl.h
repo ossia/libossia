@@ -26,7 +26,7 @@ namespace OSSIA
     virtual ~Template_Impl();
     
     // Feature
-    virtual void template_feature() = 0;
+    virtual void template_feature();
     
     /** Implementation Specific
      @details use mutable members to break constness of the API because Jamoma doesn't take care of it.
