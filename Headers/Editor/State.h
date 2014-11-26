@@ -28,13 +28,13 @@ public:
 
   // Iterators
   class const_iterator; // bidirectional
-  const_iterator begin() const = 0;
-  const_iterator end() const = 0;
-  const_iterator find(const StateElement&) const = 0;
+  virtual const_iterator begin() const = 0;
+  virtual const_iterator end() const = 0;
+  virtual const_iterator find(const StateElement&) const = 0;
 
   // Managing StateElements
-  void addStateElement(const StateElement&) = 0;
-  bool removeStateElement(const StateElement&) = 0;
+  virtual void addStateElement(const StateElement&) = 0;
+  virtual bool removeStateElement(const StateElement&) = 0;
 
   // Accessors
   virtual StateElementType getType() const override final

@@ -13,15 +13,13 @@
 
 namespace OSSIA {
 
-class Address;
-
 class Expression {
 
 public:
 
-  virtual ~Expression() = default;
-
-  virtual bool evaluate();
+  // Constructors, destructor, assignment
+  Expression();
+  Expression(const char*);
 
 };
 
