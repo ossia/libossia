@@ -41,7 +41,7 @@ namespace OSSIA
     /** Implementation Specific
      @details use mutable members to break constness of the API because Jamoma doesn't take care of it.
      */
-    mutable TTList      mLines;
+    mutable TTList mLines;
   };
 }
 
