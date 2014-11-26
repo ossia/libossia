@@ -15,38 +15,25 @@
 
 namespace OSSIA {
 
-template <typename T>
 class Address;
+class AddressType;
 
-template <typename T>
 class Message : public StateElement {
 
 public:
 
-  typedef T value_type;
-
-  // Constructors, destructor, assignment
-  Message();
-  Message(const Message&);
-  virtual ~Message();
-  Message & operator= (const Message&);
+  // Factory, destructor
+  static Message * create(Address, AddressType = NO_VALUE);
+  virtual ~Message() = default;
 
   // Lecture
-  virtual void launch() const override;
+  virtual void launch() const override = 0;
 
   // Accessors
+  virtual Address & getAddress() const = 0;
+  virtual AddressType getValue() const = 0;
   virtual StateElementType getType() const override final
       { return StateElementType::MESSAGE_TYPE; };
-  Address<T> & getAddress() const;
-  void setAddress(const Address<T>&);
-  value_type getValue() const;
-  void setValue(const value_type);
-  bool hasValue() const;
-
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl;
 
 };
 
