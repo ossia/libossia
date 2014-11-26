@@ -19,9 +19,10 @@ class State : public StateElement {
 
 public:
 
-  // Factory, destructor
+  // Factory, destructor, assignment
   static State * create();
   virtual ~State() = default;
+  virtual State & operator= (const State&) = 0;
 
   // Lecture
   virtual void launch() const override = 0;
