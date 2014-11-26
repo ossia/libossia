@@ -8,7 +8,6 @@ include_directories(${API_HEADERS_FOLDER})
 
 set(SRCS 
 #${CMAKE_CURRENT_SOURCE_DIR}/Sources/Event.cpp
-${CMAKE_CURRENT_SOURCE_DIR}/Sources/IObservable.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/Sources/later.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/Sources/Scenario.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/Sources/TimeBox.cpp
