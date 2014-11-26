@@ -39,7 +39,7 @@ namespace OSSIA
     virtual bool removeStateElement(const StateElement&) override;
     
     /** Implementation Specific
-    @details use mutable to break constness of the API because Jamoma doesn't take care of it.
+    @details use mutable members to break constness of the API because Jamoma doesn't take care of it.
      */
     mutable TTObject    mScript;
     mutable TTBoolean   mRunning;
