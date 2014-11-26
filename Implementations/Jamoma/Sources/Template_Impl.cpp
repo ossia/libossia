@@ -12,22 +12,22 @@
 
 namespace OSSIA
 {
-    Template* Template::create()
-    {
-        // todo : we shouldn't init each time we create an object ...
-        TTFoundationInit("/usr/local/jamoma/");
-        TTModularInit("/usr/local/jamoma/");
-        TTScoreInit("/usr/local/jamoma/");
-        
-        return new Template_Impl();
-    }
+  Template* Template::create()
+  {
+    // todo : we shouldn't init each time we create an object ...
+    TTFoundationInit("/usr/local/jamoma/");
+    TTModularInit("/usr/local/jamoma/");
+    TTScoreInit("/usr/local/jamoma/");
     
-    Template_Impl::Template_Impl()
-    {}
-    
-    Template_Impl::~Template_Impl()
-    {}
-    
-    void template_feature()
-    {}
+    return new Template_Impl();
+  }
+  
+  Template_Impl::Template_Impl()
+  {}
+  
+  Template_Impl::~Template_Impl()
+  {}
+  
+  void template_feature()
+  {}
 }
