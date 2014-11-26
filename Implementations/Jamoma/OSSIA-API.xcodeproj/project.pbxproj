@@ -24,11 +24,12 @@
 		46184C1C1A247F3C00C3B12E /* Automation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Automation.cpp; sourceTree = "<group>"; };
 		46184C1D1A247FC700C3B12E /* Expression.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Expression.cpp; sourceTree = "<group>"; };
 		46184C1E1A247FDF00C3B12E /* Message.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Message.cpp; sourceTree = "<group>"; };
-		46184C1F1A24802C00C3B12E /* State.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = State.cpp; sourceTree = "<group>"; };
+		46184C1F1A24802C00C3B12E /* State_Impl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = State_Impl.cpp; sourceTree = "<group>"; };
 		46184C211A24802C00C3B12E /* TimeBox.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeBox.cpp; sourceTree = "<group>"; };
 		46184C221A24802C00C3B12E /* TimeNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeNode.cpp; sourceTree = "<group>"; };
 		46184C231A24802C00C3B12E /* TimeProcess.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeProcess.cpp; sourceTree = "<group>"; };
 		46184C241A24802C00C3B12E /* TimeValue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeValue.cpp; sourceTree = "<group>"; };
+		46184C281A25E39400C3B12E /* State_Impl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = State_Impl.h; sourceTree = "<group>"; };
 		464201C819BEF6F600893C87 /* Device.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Device.h; sourceTree = "<group>"; };
 		464201CE19BF370300893C87 /* CurveSegmentLinear.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentLinear.h; sourceTree = "<group>"; };
 		468AC7C5197EB1D600FB2B18 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
@@ -140,7 +141,8 @@
 				46184C1D1A247FC700C3B12E /* Expression.cpp */,
 				46184C1E1A247FDF00C3B12E /* Message.cpp */,
 				46BA2A6019C09A21009630B5 /* Scenario.cpp */,
-				46184C1F1A24802C00C3B12E /* State.cpp */,
+				46184C281A25E39400C3B12E /* State_Impl.h */,
+				46184C1F1A24802C00C3B12E /* State_Impl.cpp */,
 				46184C211A24802C00C3B12E /* TimeBox.cpp */,
 				46184C221A24802C00C3B12E /* TimeNode.cpp */,
 				46184C231A24802C00C3B12E /* TimeProcess.cpp */,
