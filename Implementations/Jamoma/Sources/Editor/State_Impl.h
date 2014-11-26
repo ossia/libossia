@@ -13,6 +13,8 @@
 
 #include "Editor/State.h"
 
+#include "TTScore.h"
+
 namespace OSSIA {
 
 class State_Impl : public State {

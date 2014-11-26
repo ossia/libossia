@@ -10,8 +10,6 @@
 
 #include "Editor/State_Impl.h"
 
-#include "TTScore.h"
-
 namespace OSSIA
 {
   State_Impl::State_Impl()
