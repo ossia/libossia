@@ -25,10 +25,8 @@ namespace OSSIA
     Template_Impl();
     virtual ~Template_Impl();
     
-    // Iterators
-    virtual const_iterator begin() const override;
-    virtual const_iterator end() const override;
-    virtual const_iterator find(const TemplateElement&) const override;
+    // Feature
+    virtual void template_feature() = 0;
     
     /** Implementation Specific
      @details use mutable members to break constness of the API because Jamoma doesn't take care of it.
