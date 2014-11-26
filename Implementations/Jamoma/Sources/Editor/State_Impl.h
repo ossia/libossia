@@ -12,7 +12,6 @@
 #define STATE_IMPL_H_
 
 #include "Editor/State.h"
-#include "Editor/Message.h"
 
 #include "TTScore.h"
 

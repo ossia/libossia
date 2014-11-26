@@ -12,7 +12,6 @@
 #define MESSAGE_IMPL_H_
 
 #include "Editor/Message.h"
-#include "Network/Address.h"
 
 #include "TTScore.h"
 

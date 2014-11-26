@@ -21,7 +21,6 @@
 		460DCD6C1A0914C4000A9A19 /* DeviceLocal.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceLocal.cpp; sourceTree = "<group>"; };
 		460DCD6D1A0914C4000A9A19 /* DeviceMinuit.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceMinuit.cpp; sourceTree = "<group>"; };
 		460DCD6E1A0914C4000A9A19 /* DeviceOSC.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceOSC.cpp; sourceTree = "<group>"; };
-		46184C1C1A247F3C00C3B12E /* Automation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Automation.cpp; sourceTree = "<group>"; };
 		46184C1D1A247FC700C3B12E /* Expression.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Expression.cpp; sourceTree = "<group>"; };
 		46184C1F1A24802C00C3B12E /* State_Impl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = State_Impl.cpp; sourceTree = "<group>"; };
 		46184C211A24802C00C3B12E /* TimeBox.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeBox.cpp; sourceTree = "<group>"; };
@@ -35,6 +34,8 @@
 		46184C571A26294A00C3B12E /* Message_Impl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Message_Impl.h; sourceTree = "<group>"; };
 		46184C581A2643D500C3B12E /* Address_Impl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Address_Impl.cpp; sourceTree = "<group>"; };
 		46184C591A2643D500C3B12E /* Address_Impl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Address_Impl.h; sourceTree = "<group>"; };
+		46184C5A1A2647A600C3B12E /* Automation_Impl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Automation_Impl.cpp; sourceTree = "<group>"; };
+		46184C5B1A2647A600C3B12E /* Automation_Impl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Automation_Impl.h; sourceTree = "<group>"; };
 		464201C819BEF6F600893C87 /* Device.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Device.h; sourceTree = "<group>"; };
 		464201CE19BF370300893C87 /* CurveSegmentLinear.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentLinear.h; sourceTree = "<group>"; };
 		468AC7C5197EB1D600FB2B18 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
@@ -141,7 +142,8 @@
 		46BA2A5A19C09A21009630B5 /* Editor */ = {
 			isa = PBXGroup;
 			children = (
-				46184C1C1A247F3C00C3B12E /* Automation.cpp */,
+				46184C5B1A2647A600C3B12E /* Automation_Impl.h */,
+				46184C5A1A2647A600C3B12E /* Automation_Impl.cpp */,
 				46BA2A5B19C09A21009630B5 /* Curve.cpp */,
 				46BA2A5F19C09A21009630B5 /* CurveSegment.cpp */,
 				46BA2A5C19C09A21009630B5 /* CurveSegment */,
