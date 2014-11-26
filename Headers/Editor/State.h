@@ -19,7 +19,7 @@ class State : public StateElement {
 
 public:
 
-  // Constructors, destructor, assignment
+  // Factory, destructor
   static State * create();
   virtual ~State() = default;
 
