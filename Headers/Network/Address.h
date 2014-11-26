@@ -15,7 +15,6 @@
 
 namespace OSSIA {
 
-template <typename T>
 class Device;
 
 template <typename T>
@@ -62,6 +61,19 @@ public:
 private:
   class Impl;
   Impl * pimpl;
+
+};
+
+
+
+
+
+
+
+template<class Derived>
+class IAddress {
+
+
 
 };
 
