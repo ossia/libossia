@@ -154,8 +154,8 @@ private:
     TTErr buildNode(ProtocolPtr aProtocol, TTAddress anAddress);
     
     /** Observe the directory of an application (for distant application only) 
-     @param inputValue
-     @param outputValue     
+     @param inputValue      #TTBoolean to enable or disable directory observation
+     @param outputValue     nothing
      @return #TTErr error code */
 	TTErr DirectoryObserve(const TTValue& inputValue, TTValue& outputValue);
     

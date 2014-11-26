@@ -56,8 +56,8 @@ typedef TTCaseMap::const_iterator   TTCaseMapIterator;
  
  @see TTTimeEvent
  */
-class TTSCORE_EXPORT TTTimeCondition : public TTObjectBase {
-    
+class TTSCORE_EXPORT TTTimeCondition : public TTObjectBase
+{
     TTCLASS_SETUP(TTTimeCondition)
     
     friend class TTTimeEvent;
@@ -77,7 +77,8 @@ protected :
 
     Expression                      mDispose;                       ///< the expression to dispose the condition
 
-    TTUInt8                         mPendingCounter;                ///< counting the number of unready events
+    TTInt32                         mNotPendingEventCounter;        ///< counting the number of events which are not pending
+                                                                    ///< use signed integer to detect error if it goes below (see in EventStatusChanged)
 
 private :
     
@@ -105,6 +106,10 @@ private :
      @param	value           the expression
      @return                kTTErrNone */
     TTErr           setDisposeExpression(const TTValue& value);
+    
+    /**  Remove all events from the condition
+     @return                an error code if the operation fails */
+    TTErr           Clear();
     
     /**  Add an event to the condition
      @param	inputValue      an event and optionnally the comportment associated
@@ -160,6 +165,10 @@ private :
      @return                an error code if the operation fails */
     TTErr           Dispose(const TTValue& inputValue, TTValue& outputValue);
     
+    /**  Tell the condition to apply default behavior for each event
+     @return                an error code if the operation fails */
+    TTErr           Default();
+    
     /**  needed to be handled by a TTXmlHandler
      @param	inputValue      ..
      @param	outputValue     ..
@@ -179,7 +188,7 @@ private :
      @return                kTTErrNone */
     TTErr           EventStatusChanged(const TTValue& inputValue, TTValue& outputValue);
     
-    /** Helper function to set the ready attribute and notify
+    /** Helper function to set the ready attribute, send a notification and notify attribute observers
      @param	newReady        a boolean
      @return                kTTErrNone */
     TTErr           setReady(TTBoolean newReady);
@@ -192,7 +201,6 @@ private :
     void            applyDefaults();
 
     friend TTErr TTSCORE_EXPORT TTTimeConditionReceiverReturnValueCallback(const TTValue& baton, const TTValue& data);
-    
 };
 
 typedef TTTimeCondition* TTTimeConditionPtr;

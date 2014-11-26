@@ -57,6 +57,7 @@ protected:
     TTFloat64                       mOffset;                ///< ATTRIBUTE : the date (in ms) the sheduler will run from
     TTFloat64                       mSpeed;                 ///< ATTRIBUTE : the speed factor of the scheduler
     TTBoolean                       mExternalTick;          ///< ATTRIBUTE : if true the Tick message comes from an external source
+    TTBoolean                       mInfinite;              ///< ATTRIBUTE : if true the scheduler will run until Stop (this attribute overrides mDuration)
     
     TTBoolean                       mRunning;               ///< ATTRIBUTE : is the scheduler running right now ?
     TTBoolean                       mPaused;                ///< ATTRIBUTE : is the scheduler paused right now ?
@@ -97,7 +98,7 @@ public:
     /** Called every time a new step should be processed 
      @return        an error code if the scheduler step fails  */
     virtual TTErr Tick() = 0;
-    
+
     /** set the duration attribute
      @value             new duration
      @return            kTTErrGeneric if the value is not a single TTFloat64 >= 0. */

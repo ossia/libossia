@@ -43,7 +43,7 @@ public:
 
 	/** Determine the number of values in the list.
 		@return	The count of the values in the list.	*/
-	TTUInt32 getSize();
+	TTUInt32 getSize() const;
 	
 	/** Determine whether the list has any items.
 		@return	True if the list is empty, otherwise false.	*/

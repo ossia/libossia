@@ -20,7 +20,7 @@
 #include "TTModularIncludes.h"
 #include <stdio.h>
 
-#define TTMODULAR_OPML_ENCODING "ISO-8859-1"
+#define TTMODULAR_OPML_ENCODING "UTF-16"
 
 /** Write / Read mecanism
  

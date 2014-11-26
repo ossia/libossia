@@ -56,7 +56,7 @@ public:
 	void						setSelection(const TTBoolean newSelectionState, TTBoolean recursively=NO);
 
 	/** Get the symbol of the item */
-	TTSymbol					getSymbol();
+	TTSymbol&					getSymbol();
 	
 	/** Get the parent of the item */
 	TTAddressItemPtr			getParent();
@@ -105,8 +105,8 @@ public:
 	void						unregisterHandler(TTObject& anObject);
 	
 	/** Send a message to all handlers */
-	void						iterateHandlersSendingMessage(TTSymbol messageName);
-	void						iterateHandlersSendingMessage(TTSymbol messageName, TTValue& aValue);
+	void						iterateHandlersSendingMessage(TTSymbol& messageName);
+	void						iterateHandlersSendingMessage(TTSymbol& messageName, TTValue& aValue);
 	
 	friend void TTFOUNDATION_EXPORT TTAddressItemFind(const TTValue& itemValue, TTPtr aSymbolBaseToMatch, TTBoolean& found);
 };

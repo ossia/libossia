@@ -6,7 +6,7 @@
  *
  * @details It still has knowledge and support for sample-rates, but not channel counts or vector processing.
  *
- * @authors Timothy Place, Trond Lossius
+ * @author Timothy Place, Trond Lossius
  *
  * @copyright Copyright © 2008, Timothy Place @n
  * This code is licensed under the terms of the "New BSD License" @n

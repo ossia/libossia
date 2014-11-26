@@ -8,7 +8,7 @@
  * but may be sorted like a linked-list.
  * The linked list contains the key-value pairs of the hash a linked-list of TTKeyValues.
  *
- * @authors Timothy Place, Trond Lossius
+ * @author Timothy Place, Trond Lossius
  *
  * @copyright Copyright © 2010, Timothy Place @n
  * This code is licensed under the terms of the "New BSD License" @n

@@ -6,7 +6,7 @@
  *
  * @details
  *
- * @authors Timothy Place
+ * @author Timothy Place
  *
  * @copyright Copyright © 2014 by Timothy Place @n
  * This code is licensed under the terms of the "New BSD License" @n

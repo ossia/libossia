@@ -66,26 +66,26 @@ public:
     
     /** Get the expression address
      @return                expression address */
-    const TTAddress&      getAddress() const;
+    const TTAddress&    getAddress() const;
     
     /** Get the expression operator
      @return                expression operator */
-    const TTSymbol&       getOperator() const;
+    const TTSymbol&     getOperator() const;
     
     /** Get the expression value
      @return                expression value */
-    const TTValue&        getValue() const;
+    const TTValue&      getValue() const;
     
     /** evaluate the logical expression 
      @param value           the value to evaluate
      @return                return true is the test passes */
-    TTBoolean       evaluate(const TTValue& value);
+    TTBoolean           evaluate(const TTValue& value);
     
 private:
     
     /** Parse the expression
      @return                a value to parse */
-    void            parse(TTValue& toParse);
+    void                parse(TTValue& toParse);
 };
 
 typedef Expression* ExpressionPtr;

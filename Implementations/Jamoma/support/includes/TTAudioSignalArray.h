@@ -75,19 +75,13 @@ public:
 	}
 
 	
-	inline TTAudioSignal& getSignal(TTChannelCount index)
+	TTAudioSignal& getSignal(TTChannelCount index)
 	{
 		return *mAudioSignals[index];
 	}
 	
-	inline TTErr setSignal(TTChannelCount index, const TTAudioSignalPtr aSignal)
-	{
-		if (mAudioSignals[index] != aSignal) {
-			TTObjectBaseRelease((TTObjectBase**)&mAudioSignals[index]);
-			mAudioSignals[index] = (TTAudioSignal*)TTObjectBaseReference(aSignal);
-		}
-		return kTTErrNone;
-	}
+
+	TTErr setSignal(TTChannelCount index, const TTAudioSignalPtr aSignal);
 	
 	
 	void matchNumChannels(TTAudioSignalArray* anotherArray)

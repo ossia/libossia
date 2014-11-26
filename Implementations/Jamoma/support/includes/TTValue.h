@@ -1,19 +1,24 @@
 /** @file
- *
- * @ingroup foundationLibrary
- *
- * @brief Provides a common way of representing composite values.
- *
- * @details #TTValue is the primary interface used to pass values to and from methods in Jamoma Core. Methods for a given #TTObject should be passed both an input and output value to complete its operation, while the return is reserved for a #TTErr.
- @n@n Each #TTValue may be composed of a single element or many elements because it has been defined as a subclass of the C++ standard library's <a href="http://www.cplusplus.com/reference/vector/vector/">vector class</a>. This also enables our class to inherit familiar functions such as size() and from its parent class.
- @n@n Individual items within the #TTValue are defined by the #TTElement class. These individual elements may be one of the defined types in the #TTDataType enumeration.
- *
- * @authors Tim Place, Théo de la Hogue, Nathan Wolek, Julien Rabin, Nils Peters, Trond Lossius
- *
- * @copyright Copyright © 2008, Timothy Place @n
- * This code is licensed under the terms of the "New BSD License" @n
- * http://creativecommons.org/licenses/BSD/
- */
+ 
+ @ingroup	foundationLibrary
+ 
+ @brief		Provides a common way of representing composite values.
+ 
+ @details	#TTValue is the primary interface used to pass values to and from methods in Jamoma Core.
+			Methods for a given #TTObject should be passed both an input and output value to complete its operation, while the return is reserved for a #TTErr.
+			@n@n 
+			Each #TTValue may be composed of a single element or many elements because it has been defined as a subclass of the C++ standard library's <a href="http://www.cplusplus.com/reference/vector/vector/">vector class</a>. 
+			This also enables our class to inherit familiar functions such as size() and from its parent class.
+			@n@n 
+			Individual items within the #TTValue are defined by the #TTElement class. 
+			These individual elements may be one of the defined types in the #TTDataType enumeration.
+ 
+ @author	Tim Place, Théo de la Hogue, Nathan Wolek, Julien Rabin, Nils Peters, Trond Lossius
+ 
+ @copyright	Copyright © 2008, Timothy Place @n
+			This code is licensed under the terms of the "New BSD License" @n
+			http://creativecommons.org/licenses/BSD/
+*/
 
 
 #ifndef __TT_VALUE_H__
@@ -33,6 +38,11 @@ public:
 	/** @brief Constructor for an empty value */
 	TTValue()
 	{
+		// we reserve 1 because we want to always be assured that there is a memory for at least one element.
+		// it is exceedingly rare that a TTValue will be used empty, and most common that it will have one element.
+		// for speed, it is possible to use abuse TTValue by setting and getting the first element without range or type checking
+		// and even bypassing the setter methods entirely.
+		// in these cases it is critical to be able to rely upon the memory being valid for the first element.
 		reserve(1);
 	}
 	
@@ -41,7 +51,14 @@ public:
 	TTValue(const T& anInitialValue)
 	{
 		resize(1);
-		at(0) = anInitialValue;
+		(*this)[0] = anInitialValue;
+	}
+	
+	/** @brief Specialized constructor for the float64 case because it is so often performance sensitive. */
+	TTValue(const TTFloat64 v)
+	{
+		resize(1);
+		(*this)[0].float64(v);
 	}
 		
 	/** @brief Constructor with two initial elements. */
@@ -49,8 +66,8 @@ public:
 	TTValue(const T& aFirstElementInitialValue, const U& aSecondElementInitialValue)
 	{
 		resize(2);
-		at(0) = aFirstElementInitialValue;
-		at(1) = aSecondElementInitialValue;
+		(*this)[0] = aFirstElementInitialValue;
+		(*this)[1] = aSecondElementInitialValue;
 	}
 	
 	/** @brief Constructor with three initial elements. */
@@ -58,9 +75,9 @@ public:
 	TTValue(const T& aFirstElementInitialValue, const U& aSecondElementInitialValue, const V& aThirdElementInitialValue)
 	{
 		resize(3);
-		at(0) = aFirstElementInitialValue;
-		at(1) = aSecondElementInitialValue;
-		at(2) = aThirdElementInitialValue;
+		(*this)[0] = aFirstElementInitialValue;
+		(*this)[1] = aSecondElementInitialValue;
+		(*this)[2] = aThirdElementInitialValue;
 	}
 
 	/** @brief Constructor with four initial elements. */
@@ -68,10 +85,10 @@ public:
 	TTValue(const T& aFirstElementInitialValue, const U& aSecondElementInitialValue, const V& aThirdElementInitialValue, const W& aFourthElementInitialValue)
 	{
 		resize(4);
-		at(0) = aFirstElementInitialValue;
-		at(1) = aSecondElementInitialValue;
-		at(2) = aThirdElementInitialValue;
-		at(3) = aFourthElementInitialValue;
+		(*this)[0] = aFirstElementInitialValue;
+		(*this)[1] = aSecondElementInitialValue;
+		(*this)[2] = aThirdElementInitialValue;
+		(*this)[3] = aFourthElementInitialValue;
 	}
 
 	// force the destructor to be non-virtual
@@ -90,9 +107,28 @@ private:
 
 
 public:
+	
+	
+	/** Fast fetch of float64 elements without range/type checking or conversion */
+	TTFloat64 float64() const
+	{
+		return (*this)[0].float64();
+	}
+	
+	/** Fast assignment of float64 elements without range/type checking or conversion
+		@param	v the float to assign to this value.
+		@return	a reference to this value object.
+	 */
+	TTValue& float64(TTFloat64 v)
+	{
+		(*this)[0].float64(v);
+		return *this;
+	}
+	
 
     /** @brief Clear all values from the vector, leaving with size of 0 */
-	void clear() {
+	void clear()
+	{
 		TTElementVector::clear();
 	}
 
@@ -102,7 +138,7 @@ public:
 	{
 		resize(endIndex - startIndex);
 		for (size_t i=0; i<size(); i++)
-			at(i) = obj[startIndex+i];
+			(*this)[i] = obj[startIndex+i];
 	}
 	
 	
@@ -138,7 +174,7 @@ public:
 	TTValue& operator = (T value)
 	{
 		resize(1);
-		at(0) = value;
+		(*this)[0] = value;
 		return *this;
 	}
 	
@@ -147,7 +183,7 @@ public:
 	{
 		if (a.size() == b.size()) {
 			for (size_t i=0; i<a.size(); i++) {
-				if (a.at(i) != b.at(i)) {
+				if (a[i] != b[i]) {
 					return false;
 				}
 			}
@@ -174,7 +210,7 @@ public:
 	operator T() const
 	{
 		if (size())
-			return T(at(0));
+			return T((*this)[0]);
 		else
 			return T(0);
 	}
@@ -185,7 +221,7 @@ public:
 	operator TTSymbol() const
 	{
 		if (size())
-			return at(0);
+			return (*this)[0];
 		else
 			return kTTSymEmpty;
 	}
@@ -196,7 +232,7 @@ public:
 	operator TTObject() const
 	{
 		if (size())
-			return at(0);
+			return (*this)[0];
 		else
 			return TTObject();
 	}
@@ -230,7 +266,7 @@ public:
 		for (TTUInt32 i=0; i<appendingElementCount; i++) {
 			TTElement e = aValueToAppend[i];
 			
-			at(oldElementCount+i) = e;
+			(*this)[oldElementCount+i] = e;
 		}
 	}
 
@@ -294,8 +330,8 @@ public:
 		TTString temp;
 	
 		for (size_t i=0; i<size(); i++) {
-			at(i).string(temp, quotes);		// get a string for each item
-			if (i < (size()-1))				// add a space between each item, but no space at the end
+			(*this)[i].string(temp, quotes);	// get a string for each item
+			if (i < (size()-1))					// add a space between each item, but no space at the end
 				temp.append(" ");
 		}
 		
@@ -310,7 +346,7 @@ public:
 		TTString temp;
         
 		for (size_t i=0; i<size(); i++) {
-			at(i).string(temp, quotes);		// get a string for each item
+			(*this)[i].string(temp, quotes);		// get a string for each item
 			if (i < (size()-1))             // add a space between each item, but no space at the end
 				temp.append(" ");
 		}
@@ -320,7 +356,7 @@ public:
         append(temp);
 	}
 	
-    /** @breif Convert a single string into individual elements using space to divide items
+    /** @brief Convert a single string into individual elements using space to divide items
      @param     numberAsSymbol  optional #TTBoolean determines whether method leaves numbers as symbols, default is NO
      @return    none
      */
@@ -398,7 +434,7 @@ public:
 	}
 		
 
-	/**	@breif Convert a comma-separated-value string into an array of TTSymbols.
+	/**	@brief Convert a comma-separated-value string into an array of TTSymbols.
      @return    kTTErrInvalidType if first item is not kTypeString, else kTTErrNone
 	 */
 	TTErr transformCSVStringToSymbolArray()
@@ -438,14 +474,14 @@ public:
     
 #ifdef _DOXY_
     
-    /** @breif Return the number of elements
+    /** @brief Return the number of elements
      @details Inherited from the C++ standard library's <a href="http://www.cplusplus.com/reference/vector/vector/">vector class</a>
      @param     none
      @return    number of elements currently in #TTValue
      */
     size_type size() const noexcept;
     
-    /** @breif Change the number of elements
+    /** @brief Change the number of elements
      @details Inherited from the C++ standard library's <a href="http://www.cplusplus.com/reference/vector/vector/">vector class</a>
      @param     n   number of elements for resulting #TTValue
      @return    void

@@ -20,8 +20,6 @@
 #include "TTModularIncludes.h"
 #include <stdio.h>
 
-#define TTMODULAR_XML_ENCODING "ISO-8859-1"
-
 /** Write / Read mecanism
  
 	writeAs<Format> / readFrom<Format> methods are not directly called using the classic message system.

@@ -7,7 +7,7 @@
  * @details Defines several functions for constraining values within specified boundaries and preventing unwanted values. A variety of behaviors are offered, including clipping, wrapping and folding. Functions for handling <a href="http://en.wikipedia.org/wiki/Denormal_number">denormal values</a> are also defined. @n@n
  * Exercise caution when using the functions defined here with unsigned values. Negative, signed integers have the potential to become very large numbers when casting to unsigned integers. This can cause errors during a boundary check, such as values clipping to the high boundary instead of the low boundary or numerous iterations of loop to bring a wrapped value back into the acceptable range.
  * 
- * @authors Timothy Place & Tristan Matthews
+ * @author Timothy Place & Tristan Matthews
  *
  * @copyright Copyright © 2009, Timothy Place & Tristan Matthews @n
  * This code is licensed under the terms of the "New BSD License" @n

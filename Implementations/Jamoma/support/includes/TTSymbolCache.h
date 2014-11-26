@@ -260,6 +260,7 @@ extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_returnedValue;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_Run;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_running;
 
+extern TTFOUNDATION_EXPORT TTSymbol kTTSym_SelectionRefresh;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_Send;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_script;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_service;
@@ -302,6 +303,8 @@ extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_EventDateChanged;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_EventStatusChanged;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_ProcessStarted;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_ProcessEnded;
+extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_ProcessDisposed;
+extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_ProcessDurationMinReached;
 
 // attribute, message or any names
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_case;

@@ -6,7 +6,7 @@
  *
  * @details
  *
- * @authors Timothy Place, Nathan Wolek
+ * @author Timothy Place, Nathan Wolek
  *
  * @copyright Copyright © 2014 by Timothy Place @n
  * This code is licensed under the terms of the "New BSD License" @n

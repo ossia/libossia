@@ -117,6 +117,12 @@ private:
     
 public:
 	TTErr						updateAttributeValue(const TTSymbol attributeName, TTValue& value);
+    
+    /** Enable the listening of an attribute value using protocol solution if exist.
+     @details you have to unregister all observers for notification on the attribute before to disable the listening
+     @param inputValue      a TTAttribute object, a TTBoolean value to enable/disable
+     @param outputValue     nothing
+     @return #TTErr error code */
 	TTErr						enableListening(const TTAttribute& anAttribute, TTBoolean enable);
     
     // over writting of the TTObjectBase::getName() method

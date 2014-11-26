@@ -27,8 +27,8 @@
  
  @see TTTimeEvent
  */
-class TTSCORE_EXPORT TTTimeProcess : public TTObjectBase {
-    
+class TTSCORE_EXPORT TTTimeProcess : public TTObjectBase
+{    
     TTCLASS_SETUP(TTTimeProcess)
     
     friend class TTTimeContainer;
@@ -58,6 +58,8 @@ protected :
     
     TTBoolean                       mExternalTick;                  ///< a boolean flag to ease the access to the scheduler externalTick attribute
     
+    TTBoolean                       mDurationMinReached;            ///< a boolean flag to remind if the minimum duration have already been reached
+    
 private :
     
     TTObject                        mStartEvent;                    ///< the event object which handles the time process execution start
@@ -66,26 +68,30 @@ private :
     
     TTObject                        mEndEvent;                      ///< the event object which handles the time process execution stop
     
-    /** Specific compilation method used to pre-processed data in order to accelarate Process method.
-     @details the compiled attribute allows to know if the process needs to be compiled or not.
+    /** Specific compilation method used to pre-processed data in order to accelarate Process method
+     @details the compiled attribute allows to know if the process needs to be compiled or not
      @return                an error code returned by the compile method */
     virtual TTErr   Compile() {return kTTErrGeneric;};
     
     /** Specific process method on start
+     @details when this method is called the running state is NO which means event status propagation is disabled
      @return                an error code returned by the process start method */
     virtual TTErr   ProcessStart() {return kTTErrGeneric;};
     
     /** Specific process method on end
+     @details when this method is called the running state is NO which means event status propagation is disabled
      @return                an error code returned by the process end method */
     virtual TTErr   ProcessEnd() {return kTTErrGeneric;};
     
     /** Specific process method
+     @details when this method is called the running state is YES which means event status propagation is enabled
      @param	inputValue      position and date of the scheduler
      @param	outputValue     return an error of the processing
      @return                an error code returned by the process method */
     virtual TTErr   Process(const TTValue& inputValue, TTValue& outputValue) {outputValue = inputValue; return kTTErrGeneric;};
     
     /** Specific process method for pause/resume
+     @details when this method is called the running state is YES which means event status propagation is enabled
      @param	inputValue      boolean paused state of the scheduler
      @param	outputValue     return an error of the processing
      @return                an error code returned by the process paused method */
@@ -212,51 +218,51 @@ private :
     TTErr           getIntermediateEvents(TTValue& value);
     
     /** Move the time process
-     this method eases the setting of the start and end event dates
+     @details this method eases the setting of the start and end event dates
      @param	inputValue      new start date, new end date
      @param	outputValue     nothing
      @return                an error code if the movement fails */
     TTErr           Move(const TTValue& inputValue, TTValue& outputValue);
     
     /** Limit the time process duration
-        this method eases the setting of the minimal and maximal durations
+     @details this method eases the setting of the minimal and maximal durations
      @param	inputValue      duration min, duration max
      @param	outputValue     nothing
      @return                an error code if the limitation fails */
     TTErr           Limit(const TTValue& inputValue, TTValue& outputValue);
     
-    /** Start the time process
-     this method eases the access of the start event trigger message
-     @return                an error code if the play fails */
+    /** Start the time process and optionnaly push its start event state
+     @details this method makes the start event happening
+     @return                an error code if the start fails */
     TTErr           Start();
     
-    /** End the time process
-     this method eases the access of the end event trigger message
-     @return                an error code if the stop fails */
+    /** End the time process and optionnaly push its end event state
+     @details this method makes the end event happening
+     @return                an error code if the end fails */
     TTErr           End();
     
     /** Play the time process from a time offset
-        this method eases the managment of the scheduler object
-     @return                an error code if the play fails */
+     @details this method eases the managment of the scheduler object
+     @return                #kTTErrGeneric if the time process is already playing */
     TTErr           Play();
     
     /** Stop the time process
-     this method eases the managment of the scheduler object
-     @return                an error code if the stop fails */
+     @details this method eases the managment of the scheduler object
+     @return                #kTTErrGeneric if the time process is already stopped */
     TTErr           Stop();
     
     /** Pause the time process
-        this method eases the managment of the scheduler object
+     @details this method eases the managment of the scheduler object
      @return                an error code if the pause fails */
     TTErr           Pause();
     
     /** Resume the time process
-        this method eases the managment of the scheduler object
+     @details this method eases the managment of the scheduler object
      @return                an error code if the resume fails */
     TTErr           Resume();
     
     /** Drive the time process progression
-     this method eases the managment of the scheduler object
+     @details this method eases the managment of the scheduler object
      @return                an error code if the tick fails */
     TTErr           Tick();
     
@@ -264,7 +270,13 @@ private :
      @param inputValue      the event which have changed his date
      @param outputValue     nothing
      @return                kTTErrNone */
-    TTErr           EventDateChanged(const TTValue& inputValue, TTValue& outputValue);
+    virtual TTErr   EventDateChanged(const TTValue& inputValue, TTValue& outputValue) {outputValue = inputValue; return kTTErrGeneric;};
+    
+    /** To be notified when an event condition changed
+     @param inputValue      the event which have changed his condition, the condition
+     @param outputValue     nothing
+     @return                kTTErrNone */
+    virtual TTErr   EventConditionChanged(const TTValue& inputValue, TTValue& outputValue) {outputValue = inputValue; return kTTErrGeneric;};
     
     /** To be notified when an event status changed
      @param inputValue      the event which have changed his status
@@ -277,6 +289,11 @@ private :
      @param outputValue     nothing
      @return                kTTErrNone */
     TTErr           SchedulerRunningChanged(const TTValue& inputValue, TTValue& outputValue);
+    
+    /** Send current status notification if the container is running
+     @param notification    #TTSymbol "ProcessStarted", "ProcessEnded" or "ProcessDisposed"
+     @return                kTTErrNone */
+    TTErr           sendStatusNotification(TTSymbol& notification);
     
 protected :
     
@@ -314,11 +331,15 @@ void TTSCORE_EXPORT TTTimeProcessSchedulerCallback(TTPtr object, TTFloat64 posit
 /** Define some macros to ease the access of events attributes */
 #define mStartDate TTTimeEventPtr(mStartEvent.instance())->mDate
 #define mStartCondition TTTimeEventPtr(mStartEvent.instance())->mCondition
+#define mStartName TTTimeEventPtr(mStartEvent.instance())->mName
 
 #define mEndDate TTTimeEventPtr(mEndEvent.instance())->mDate
 #define mEndCondition TTTimeEventPtr(mEndEvent.instance())->mCondition
+#define mEndName TTTimeEventPtr(mEndEvent.instance())->mName
 
 #define mDuration mEndDate - mStartDate
+
+#define mRigid mDurationMin && mDurationMax && mDurationMin == mDurationMax
 
 /** Define callback function to get position back from the scheduler */
 typedef void (*TTTimeProcessPositionCallback)(TTPtr, TTFloat64, TTFloat64);

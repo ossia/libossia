@@ -41,7 +41,7 @@ typedef TTErr (TTAudioObjectBase::*TTProcessMethod)(TTAudioSignalArrayPtr in, TT
 /**	A type that can be used to store a pointer to a calculate method (which calculates a single sample).
  @param x			A single sample to be processed
  @param y			A single processed sample
- @param data		TODO
+ @param data		Additional data to be used by the calculation implementation, such as the channel number for which to compute.
  @ingroup typedefs
  */
 typedef TTErr (TTAudioObjectBase::*TTCalculateMethod)(const TTFloat64& x, TTFloat64& y, TTPtr data);
@@ -216,13 +216,6 @@ public:
 	 @return			#TTErr error code if the method fails to execute, else #kTTErrNone.
 	 */
 	TTErr calculateMessage(TTValueConstRef input, TTValueRef output);
-
-	
-	/**	A process method that may be used by subclasses to wrap a calculate method in a semi-standard way.
-	 @details			Unfortunately, this is slow.  An alternative is to use the #TT_WRAP_CALCULATE_METHOD macro.
-	 @return			#TTErr error code if the method fails to execute, else #kTTErrNone.
-	 */
-	TTErr calculateProcess(TTAudioSignalArrayPtr inputs, TTAudioSignalArrayPtr outputs);
 
 	
 	/** Process the input signal, resulting in an output signal. This method wraps the actual process method that will be called.

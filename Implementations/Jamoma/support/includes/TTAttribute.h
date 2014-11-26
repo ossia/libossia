@@ -6,7 +6,7 @@
  *
  * @details 
  *
- * @authors Timothy Place, Theo de la Hogue, Nils Peters, Trond Lossius
+ * @author Timothy Place, Theo de la Hogue, Nils Peters, Trond Lossius
  *
  * @copyright Copyright © 2008, Timothy Place @n
  * This code is licensed under the terms of the "New BSD License" @n

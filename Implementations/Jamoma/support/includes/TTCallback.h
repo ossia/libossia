@@ -8,7 +8,7 @@
  *
  * @todo Use the TTObject class functionnality because TTNode is also a TTObject
  *
- * @authors Théo de la Hogue, Tim Place, Nathan Wolek, Trond Lossius
+ * @author Théo de la Hogue, Tim Place, Nathan Wolek, Trond Lossius
  *
  * @copyright Copyright © 2009, Théo de la Hogue and Timothy Place @n
  * This code is licensed under the terms of the "New BSD License" @n

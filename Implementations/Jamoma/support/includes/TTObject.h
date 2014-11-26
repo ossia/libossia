@@ -4,7 +4,7 @@
  *
  * @brief Create Jamoma object instances.
  *
- * @authors Timothy Place
+ * @author Timothy Place
  *
  * @copyright Copyright © 2012, Timothy Place @n
  * This code is licensed under the terms of the "New BSD License" @n
@@ -158,8 +158,11 @@ public:
 		@param	anOutputValue	Will be filled-in with data upon return if the message returns data.
 		@return					#TTErr error code if the method fails to execute, else #kTTErrNone.
 	 */
-	TTErr send(const TTSymbol aName, const TTValue& anInputValue, TTValue& anOutputValue);
-	
+	TTValue send(const TTSymbol aName, const TTValue& anInputValue);
+#define SUPPORT_OLD_SEND_SYNTAX
+#ifdef SUPPORT_OLD_SEND_SYNTAX
+	TT_DEPRECATED ( TTErr send(const TTSymbol aName, const TTValue& anInputValue, TTValue& anOutputValue); )
+#endif
 	
 	/** Register an observer.
 		The observer will be monitoring this object.

@@ -25,6 +25,7 @@
 #include "TTTimeContainer.h"
 #include "TTTimeEvent.h"
 #include "TTTimeProcess.h"
+#include "TTScore.test.h"
 
 #if 0
 #pragma mark -

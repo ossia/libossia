@@ -6,7 +6,7 @@
  *
  * @details The Jamoma base class.
  *
- * @authors Timothy Place, Trond Lossius, Nils Peters
+ * @author Timothy Place, Trond Lossius, Nils Peters
  *
  * @copyright Copyright © 2008, Timothy Place @n
  * This code is licensed under the terms of the "New BSD License" @n
@@ -314,6 +314,7 @@ enum TTDataType {
 	kTypeLocalValue,	///< This is a special type used by TTAttribute to indicate that a value is a TTValue and is locally maintained.
 	kTypeMatrix,		///< An instance of a TTMatrix object
 	kTypeDictionary,	///< Dictionary type
+	kTypeError,			///< An error represented by TTErr
     // TODO: JamomaCore #281 : review the use of TTAddress
 	//kTypeAddress,
 	kNumTTDataTypes

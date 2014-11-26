@@ -8,7 +8,7 @@
  * All attribute members of the environment are made public, since essentially every class is a friend.
  * They should, however, be treated as read-only.
  *
- * @authors Timothy Place, Nils Peters, Trond Lossius
+ * @author Timothy Place, Nils Peters, Trond Lossius
  *
  * @copyright Copyright © 2008, Timothy Place @n
  * This code is licensed under the terms of the "New BSD License" @n

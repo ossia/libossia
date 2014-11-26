@@ -103,7 +103,7 @@ public:
 	
 
 	/** Get the directory part */
-	TTSymbol getDirectory()
+	TTSymbol& getDirectory()
 	{
 		return getBasePointer()->getDirectory();
 	}
@@ -115,19 +115,19 @@ public:
 	}
 	
 	/** Get the name part */
-	TTSymbol getName()
+	TTSymbol& getName()
 	{
 		return getBasePointer()->getName();
 	}
 	
 	/** Get the instance part */
-	TTSymbol getInstance()
+	TTSymbol& getInstance()
 	{
 		return getBasePointer()->getInstance();
 	}
 	
 	/** Get the attribute part */
-	TTSymbol getAttribute()
+	TTSymbol& getAttribute()
 	{
 		return getBasePointer()->getAttribute();
 	}

@@ -7,7 +7,7 @@
 	Internal objects may inherit directly from #TTObjectBase,
 	but most objects will inherit from #TTDataObjectBase or #TTAudioObjectBase.
 
-	@authors Timothy Place, Theo de la Hogue, Trond Lossius
+	@author Timothy Place, Theo de la Hogue, Trond Lossius
 
 	@copyright Copyright © 2008, Timothy Place @n
 	This code is licensed under the terms of the "New BSD License" @n
@@ -142,6 +142,11 @@ public:
 		@return								Reference count.
 	 */
 	TTUInt16 getReferenceCount() {return referenceCount;}
+    
+    /**	Query an object to get the number of observers.
+     @return								Observers list size.
+	 */
+	TTUInt32 getObserverCount() const {return observers.getSize();}
 	
 	/** @brief Register an attribute
 		@details The theory on attributes is that the subclass calls registerAttribute()
@@ -284,7 +289,7 @@ public:
     TTSymbol getAttributeType(const TTSymbol name);
 	
 	/** Get the getterFlags of an attribute
-		@param name					The name of the attribute that we are querying properies of.
+		@param name					The name of the attribute that we are querying properties of.
 		@param value					Pointer to attribute flags. Used for returning the result of the query.
 		@return						#TTErr error code if the method fails to execute, else #kTTErrNone.
 	 */

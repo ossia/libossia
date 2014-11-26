@@ -4,7 +4,7 @@
 	
 	@brief Implementation of template code exported by TTObject
  
-	@authors Timothy Place
+	@author Timothy Place
 	
 	@copyright Copyright © 2014, Timothy Place @n
 	This code is licensed under the terms of the "New BSD License" @n

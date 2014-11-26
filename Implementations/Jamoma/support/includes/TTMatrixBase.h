@@ -17,7 +17,7 @@
 			 Please note that previous support for N dimensions has been deprecated and the TTMatrixBase class is now fixed at 2 dimensions. 
 			 Throughout this documentation, dimension 1 is referred to as the "row" and dimension 2 is referred to as the "column".
   
-	@authors Timothy Place & Nathan Wolek
+	@author Timothy Place & Nathan Wolek
 
 	@copyright	Copyright © 2011-2012, Timothy Place & Nathan Wolek @n
 				This code is licensed under the terms of the "New BSD License" @n

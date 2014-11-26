@@ -109,19 +109,19 @@ public:
 	virtual ~TTAddressBase();
 	
 	/** Get the directory part */
-	TTSymbol					getDirectory();
+	TTSymbol&					getDirectory();
 	
 	/** Get a pointer to the parent address */
 	TTAddressBase*				getParent();
 	
 	/** Get the name part */
-	TTSymbol					getName();
+	TTSymbol&					getName();
 	
 	/** Get the instance part */
-	TTSymbol					getInstance();
+	TTSymbol&					getInstance();
 	
 	/** Get the attribute part */
-	TTSymbol					getAttribute();
+	TTSymbol&					getAttribute();
 	
 	/** Get the type */
 	TTAddressType				getType();

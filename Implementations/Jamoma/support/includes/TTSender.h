@@ -35,7 +35,6 @@ public:	// use public for quick acces during signal processing
 private:
 	
 	TTAddress                   mAddress;					///< ATTRIBUTE: the address to bind
-	TTNodeDirectoryPtr			mDirectory;					///< a sender depends on a directory
 	TTBoolean					mIsSending;					///< a flag to lock the object in case of infinite loop
     // TODO JamomaCore #305 : TTList : allow to register as none pointer members
 	TTListPtr                   mObjectCache;				///< ATTRIBUTE : a cache containing all binded objects for quick access
@@ -52,10 +51,10 @@ private:
 	TTErr Send(TTValue& valueToSend, TTValue& outputValue);				// to -- lower case in order to hide the message during the Class wrapping process
 	
 	/** */
-	TTErr bindAddress();
+	TTErr bindAddress(TTNodeDirectoryPtr aDirectory);
 	
 	/** */
-	TTErr unbindAddress();
+	TTErr unbindAddress(TTNodeDirectoryPtr aDirectory);
 	
 	/** */
 	TTErr bindApplication();

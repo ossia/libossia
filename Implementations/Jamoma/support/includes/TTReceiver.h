@@ -37,7 +37,6 @@ private:
 	TTAddress                   mAddress;					///< ATTRIBUTE : the address to bind
 	TTBoolean					mActive;					///< ATTRIBUTE : if false, received data won't be output without unregister the attribute observer (default true).
 	
-	TTNodeDirectoryPtr			mDirectory;					///< a receiver depends on a directory
 	TTObject                    mReturnAddressCallback;		///< a way to return received address to the owner of this receiver
 	TTObject                    mReturnValueCallback;		///< a way to return received value to the owner of this receiver
 	TTObject                    mAddressObserver;			///< an address life cycle observer
@@ -63,11 +62,11 @@ private:
 	TTErr Grab(const TTValue& inputValue, TTValue& outputValue);
 	
 	/** */
-	TTErr bindAddress();
+	TTErr bindAddress(TTNodeDirectoryPtr aDirectory);
     void cacheNodeObserver(TTNodePtr aNode, TTAddress& anAddress, TTSymbol& anAttributeName);
 	
 	/**  */
-	TTErr unbindAddress();
+	TTErr unbindAddress(TTNodeDirectoryPtr aDirectory);
     void uncacheNodeObserver(TTNodePtr aNode, TTObject& oldObserver, TTSymbol& anAttributeName);
 	
 	/** */

@@ -30,7 +30,7 @@ class TTMODULAR_EXPORT TTContainer : public TTObjectBase
 	
 private:
 
-	TTUInt8				mPriority;						///< ATTRIBUTE : does this container have a priority over other containers ?
+	TTInt32				mPriority;						///< ATTRIBUTE : does this container have a priority over other containers ?
 	TTSymbol			mDescription;					///< ATTRIBUTE : a text label to describe the role of this container
     TTSymbol			mService;                       ///< ATTRIBUTE : a symbol used to type the container (this is mainly for Max to say if it is a view or a model)
 	TTValue				mTags;							///< ATTRIBUTE : tag list for this container
@@ -54,6 +54,12 @@ private:
 	/** */
 	TTErr Init();
     TTErr initNode(TTNodePtr aNode);
+    
+    /** Rename the container 
+     @param inputValue      a new name.instance #TTSymbol
+     @param outputValue     the effective #TTSymbol name.instance
+     @return #TTErr error code */
+    TTErr Rename(const TTValue& inputValue, TTValue& outputValue);
 	
 	/** */
 	TTErr AliasRemove();

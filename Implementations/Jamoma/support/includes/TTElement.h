@@ -6,7 +6,7 @@
  *
  * @details
  *
- * @authors Tim Place, Théo de la Hogue, Nathan Wolek, Julien Rabin, Nils Peters, Trond Lossius
+ * @author Tim Place, Théo de la Hogue, Nathan Wolek, Julien Rabin, Nils Peters, Trond Lossius
  *
  * @copyright Copyright © 2008, Timothy Place @n
  * This code is licensed under the terms of the "New BSD License" @n
@@ -72,49 +72,13 @@ class TTDictionary;
 			case kTypeBoolean:\
 				value = mValue.boolean;\
 				break;\
+			case kTypeError:\
+				value = mValue.error;\
+				break;\
 			default:\
 				value = 0;\
 				break;\
 		}
-
-#define	CONVERT(dType) switch(*(type+index)) {\
-case kTypeInt8:\
-value = (dType)(data+index)->int8;\
-break;\
-case kTypeUInt8:\
-value = (dType)(data+index)->uint8;\
-break;\
-case kTypeInt16:\
-value = (dType)(data+index)->int16;\
-break;\
-case kTypeUInt16:\
-value = (dType)(data+index)->uint16;\
-break;\
-case kTypeFloat32:\
-value = (dType)(data+index)->float32;\
-break;\
-case kTypeFloat64:\
-value = (dType)(data+index)->float64;\
-break;\
-case kTypeInt32:\
-value = (dType)(data+index)->int32;\
-break;\
-case kTypeUInt32:\
-value = (dType)(data+index)->uint32;\
-break;\
-case kTypeInt64:\
-value = (dType)(data+index)->int64;\
-break;\
-case kTypeUInt64:\
-value = (dType)(data+index)->uint64;\
-break;\
-case kTypeBoolean:\
-value = (dType)(data+index)->boolean;\
-break;\
-default:\
-value = (dType)-1;\
-break;\
-}
 
 
 /****************************************************************************************************/
@@ -136,6 +100,9 @@ class TTFOUNDATION_EXPORT TT_ALIGN_16 TTElement {
 		That means also be careful in how we refcount and free these cases.
 	 
 		@see http://en.wikipedia.org/wiki/Data_structure_alignment
+	 
+		Additionally we can return an error using TTValue.
+		This permits you return a TTValue from a function while still maintaining the ability to return error codes.
 	 */
 	union TTDataValue {
 		TTFloat32		float32;
@@ -156,8 +123,14 @@ class TTFOUNDATION_EXPORT TT_ALIGN_16 TTElement {
 		TTMatrix*		mMatrix;
 		TTPtr			ptr;
 		TTSymbolBase*	dictionary;	///< dictionaries are referenced by name
+		TTErr			error;
 	};
 	
+	/*	It is _essential_ that the first item is the value itself.
+		This allows us to cast the memory directly to a primitive value (e.g. a double)
+		in performance sensitive code where we don't want to check types or sizes
+		returned by a function.
+	 */
 	TTDataValue		mValue;
 	TTDataType		mType;
 
@@ -259,6 +232,12 @@ public:
 			TTELEMENT_CONVERT;
 			return value;
 		}
+	}
+	
+	// fast (but less safe) version of the above
+	TTFloat64 float64() const
+	{
+		return mValue.float64;
 	}
 
 	operator TTInt8() const
@@ -409,6 +388,14 @@ public:
 			return NULL;
 	}
 	
+	operator TTErr() const
+	{
+		if (mType == kTypeError)
+			return mValue.error;
+		else
+			return kTTErrNone;
+	}
+	
 	operator TTDictionary() const;
 
 	
@@ -450,6 +437,13 @@ public:
 		mType = kTypeFloat64;
 		mValue.float64 = value;
 		return *this;
+	}
+	
+	// fast (but less safe) version of the above
+	void float64(TTFloat64 value)
+	{
+		mType = kTypeFloat64;
+		mValue.float64 = value;
 	}
 	
 	TTElement& operator = (TTInt8 value)
@@ -585,6 +579,14 @@ public:
 		chuck();
 		mType = kTypePointer;
 		mValue.ptr = value;
+		return *this;
+	}
+    
+    TTElement& operator = (TTErr value)
+	{
+		chuck();
+		mType = kTypeError;
+		mValue.error = value;
 		return *this;
 	}
 	
@@ -750,6 +752,10 @@ public:
 					if ( a1.mValue.ptr != a2.mValue.ptr )
 						return false;
 					break;
+				case kTypeError:
+					if ( a1.mValue.error != a2.mValue.error )
+						return false;
+					break;
 				default: // the type is not currently handled
 					return false;
 			}
@@ -797,10 +803,23 @@ public:
 				if ( a1.mValue.uint64 != i )
 					return false;
 				break;
+			case kTypeError:
+				if ( a1.mValue.error != i )
+					return false;
+				break;
 			default: // the type is not currently handled
 				return false;
 		}
 		return true;
+	}
+	
+	// clang compiler considers TTErr conversion ambiguous so we manually need to overload for this case
+	friend bool operator == (const TTElement& a1, TTErr err)
+	{
+		if (a1.mType == kTypeError && a1.mValue.error == err)
+			return true;
+		else
+			return false;
 	}
 
 	
@@ -906,6 +925,10 @@ public:
 				break;
 			case kTypePointer:
 				if ( a1.mValue.ptr >= a2.mValue.ptr )
+					return false;
+				break;
+			case kTypeError:
+				if ( a1.mValue.error >= a2.mValue.error )
 					return false;
 				break;
 			default:

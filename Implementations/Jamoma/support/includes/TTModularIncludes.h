@@ -17,7 +17,7 @@
 #define __TT_MODULAR_INCLUDES_H__
 
 #define TTMODULAR_VERSION_STRING "0.1"
-#define TTMODULAR_XML_ENCODING "ISO-8859-1"
+#define TTMODULAR_XML_ENCODING "UTF-16"
 
 #ifdef TT_PLATFORM_WIN
 #include "windows.h"

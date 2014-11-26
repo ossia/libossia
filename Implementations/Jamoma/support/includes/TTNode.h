@@ -80,26 +80,18 @@ public:
         @param anObject                 an object referenced by the node
         @param aContext                 any pointer to precise the object place in its environnement
         @param aDirectory               a pointer to a node directory */
-	TTNode (TTSymbol aName, TTSymbol anInstance, TTObject anObject, TTPtr aContext, TTNodeDirectoryPtr aDirectory);
+	TTNode (TTSymbol& aName, TTSymbol& anInstance, TTObject& anObject, TTPtr aContext, TTNodeDirectoryPtr aDirectory);
 	
 	/** Destructor */
 	virtual ~TTNode ();
 
-	/** Set the name of the node
+	/** Set the name and the instance of the node
 		@details It maintains the directory and the directory
-		@param	newName					the name to set
-		@param	newInstance				the returned instance if a new have been created
+		@param	aNameInstance			#TTAddress name.instance to set
+		@param	newInstance				the returned #TTSymbol instance if a new have been created
 		@param	newInstanceCreated		true if a new instance have been created
 		@return	#TTErr 					an error code */
-	TTErr			setName(TTSymbol name, TTSymbol newInstance, TTBoolean *newInstanceCreated);
-
-	/** Set the instance of the node
-		@details It maintains the directory and the global hashtab
-		@param	instance				the instance to set
-		@param	newInstance				the returned instance if a new have been created
-		@param	newInstanceCreated		true if a new instance have been created
-		@return	#TTErr 					an error code */
-	TTErr			setInstance(TTSymbol instance, TTSymbol newInstance, TTBoolean *newInstanceCreated);
+	TTErr			setNameInstance(TTAddress& aNameInstance, TTSymbol& newInstance, TTBoolean *newInstanceCreated);
 
 	/** Set the parent of the node
 		@details This method ensure that the path to the node exist
@@ -126,11 +118,11 @@ public:
 	
 	/** Get the name of the node
         @return #TTSymbol               the name of the node */
-	TTSymbol		getName();
+	TTSymbol&		getName();
 	
 	/** Get the instance of the node
         @return #TTSymbol               the instance of the node */
-	TTSymbol		getInstance();
+	TTSymbol&		getInstance();
 	
 	/** Get a pointer to the parent node of the node
         @return #TTNodePtr              the parent node */
@@ -138,7 +130,7 @@ public:
 	
 	/** Get a linklist of children of the node : select them by name and instance (use wilcards to select them all)
         @return #TTErr                  an error code */
-	TTErr			getChildren(TTSymbol name, TTSymbol instance, TTList& returnedChildren);
+	TTErr			getChildren(TTSymbol& name, TTSymbol& instance, TTList& returnedChildren);
 	
 	/** Get a linklist of children name 
         @return #TTErr                  an error code */
@@ -146,7 +138,7 @@ public:
 	
 	/** Get a linklist of children instance for a given name 
         @return #TTErr                  an error code */
-	TTErr			getChildrenInstance(TTSymbol aName, TTList& returnedChildrenInstance);
+	TTErr			getChildrenInstance(TTSymbol& aName, TTList& returnedChildrenInstance);
 	
 	/** Get the object binded by this node. It return also NULL when the object is not valid 
         @return #TTObject               the referenced object */
@@ -167,7 +159,7 @@ public:
 		@param childName                the name of a child.
 		@param newInstance              a new instance created (or "" if not)	.
 		@return	#TTErr                  a kTTErrGeneric if the child doesn't exist.	*/
-	TTErr			generateInstance(TTSymbol childName, TTSymbol& newInstance);
+	TTErr			generateInstance(TTSymbol& childName, TTSymbol& newInstance);
 };
 
 	
