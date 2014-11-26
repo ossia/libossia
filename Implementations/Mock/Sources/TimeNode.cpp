@@ -11,7 +11,12 @@ class TimeNode::Impl {
 TimeNode::TimeNode()//:
 //	pimpl(new Impl)
 {
+	
+}
 
+TimeNode::~TimeNode()
+{
+	
 }
 
 Scenario& TimeNode::getParentScenario() const

@@ -72,7 +72,7 @@ public:
       }
       
       // edit ci
-      if (it->second.second.getType() == CurveSegment<T>::POWER_TYPE)
+      if (it->second.second.getType() == CurveSegment<T>::CurveSegmentType::POWER_TYPE)
         // TODO : parameters[i+2] = TTFloat64(ExponentialCurveSegment(it->second->second)->getCoefficient());
         parameters[i*3+2] = TTFloat64(1.);
       else
