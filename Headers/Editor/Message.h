@@ -25,6 +25,9 @@ public:
   // Factory, destructor
   static Message * create(Address, AddressType = NO_VALUE);
   virtual ~Message() = default;
+  virtual Message & operator= (const Message&) = 0;
+  virtual operator State*() const override {return nullptr;}
+  virtual operator Message*() const override = 0;
 
   // Lecture
   virtual void launch() const override = 0;
@@ -32,8 +35,6 @@ public:
   // Accessors
   virtual Address & getAddress() const = 0;
   virtual AddressType getValue() const = 0;
-  virtual StateElementType getType() const override final
-      { return StateElementType::MESSAGE_TYPE; };
 
 };
 

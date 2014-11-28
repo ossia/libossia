@@ -19,10 +19,12 @@ class State : public StateElement {
 
 public:
 
-  // Factory, destructor, assignment
+  // Factory, destructor, assignment, conversion
   static State * create();
   virtual ~State() = default;
   virtual State & operator= (const State&) = 0;
+  virtual operator State*() const override = 0;
+  virtual operator Message*() const override {return nullptr;}
 
   // Lecture
   virtual void launch() const override = 0;
@@ -36,10 +38,6 @@ public:
   // Managing StateElements
   virtual void addStateElement(const StateElement&) = 0;
   virtual bool removeStateElement(const StateElement&) = 0;
-
-  // Accessors
-  virtual StateElementType getType() const override final
-      { return StateElementType::STATE_TYPE; };
 
 };
 
