@@ -35,11 +35,15 @@ TimeBox::~TimeBox()
 
 TimeBox::const_iterator TimeBox::begin() const
 {
+	const_iterator c;
+	return c;
 //	return pimpl->_processes.cbegin();
 }
 
 TimeBox::const_iterator TimeBox::end() const
 {
+	const_iterator c;
+	return c;
 //	return pimpl->_processes.cend();
 }
 
@@ -83,11 +87,14 @@ void TimeBox::setEndNode(const TimeNode&ev)
 */
 TimeValue TimeBox::getLength() const
 {
+	TimeValue v;
+	return v;
 //	return pimpl->_endTimeNode->getDate() - pimpl->_startTimeNode->getDate();
 }
 
 bool TimeBox::isRigid()
 {
+	return false;
 //	return true;
 }
 

@@ -87,9 +87,9 @@ Scenario::~Scenario()
 
 }
 
-Scenario&Scenario::operator=(const Scenario&)
+Scenario&Scenario::operator=(const Scenario& s)
 {
-
+	return *this;
 }
 
 void Scenario::play() const
@@ -100,17 +100,17 @@ void Scenario::play() const
 }
 
 std::set<TimeBox*> Scenario::getTimeBoxes() const
-{/*
+{
 	std::set<TimeBox*> st;
-	for(TimeBox* bp : pimpl->_timeBoxes) st.insert(bp);
-	return st;*/
+	//for(TimeBox* bp : pimpl->_timeBoxes) st.insert(bp);
+	return st;
 }
 
 std::set<TimeNode*> Scenario::getTimeNodes() const
-{/*
+{
 	std::set<TimeNode*> st;
-	for(TimeNode* bp : pimpl->_timeNodes) st.insert(bp);
-	return st;*/
+	//for(TimeNode* bp : pimpl->_timeNodes) st.insert(bp);
+	return st;
 }
 
 void Scenario::addTimeBox(const TimeBox& t, const TimeNode& startTimeNode)
@@ -142,6 +142,8 @@ void Scenario::addTimeBox(const TimeBox& t, const TimeNode& startTimeNode, const
 
 TimeNode& Scenario::getStartNode() const
 {
+	TimeNode* node = new TimeNode;
+	return *node;
 //	return *pimpl->_startTimeNode;
 }
 
@@ -154,6 +156,8 @@ void Scenario::setStartNode(const TimeNode& ev)
 
 TimeNode&Scenario::getEndNode() const
 {
+	TimeNode* node = new TimeNode;
+	return *node;
 //	return *pimpl->_endTimeNode;
 }
 
