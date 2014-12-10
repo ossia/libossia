@@ -52,7 +52,7 @@ public:
   // pimpl idiom
 private:
   class Impl;
-  Impl * pimpl;
+  Impl * pimpl{};
   
 };
 

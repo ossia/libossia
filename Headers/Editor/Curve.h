@@ -54,7 +54,7 @@ public:
   // pimpl idiom
 // private: // todo issue #1
   class Impl;
-  Impl * pimpl;
+  Impl * pimpl{};
 
 };
 

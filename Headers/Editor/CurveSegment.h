@@ -48,7 +48,7 @@ namespace OSSIA {
     
   protected:
     
-    Curve<T>* mParent;
+    Curve<T>* mParent{};
     
   };
   
