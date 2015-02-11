@@ -19,9 +19,6 @@ public:
 
   virtual ~StateElement() = default;
 
-  virtual operator State*() const = 0;
-  virtual operator Message*() const = 0;
-
   virtual void launch() const = 0;
 
 };

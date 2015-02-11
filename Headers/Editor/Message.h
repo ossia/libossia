@@ -11,30 +11,31 @@
 #ifndef MESSAGE_H_
 #define MESSAGE_H_
 
+#include <memory>
+
 #include "StateElement.h"
 
 namespace OSSIA {
 
 class Address;
-class AddressType;
+class AddressVariant;
 
 class Message : public StateElement {
 
 public:
 
   // Factory, destructor
-  static Message * create(Address, AddressType = NO_VALUE);
+  static std::shared_ptr<Message> create(std::shared_ptr<Address>,
+                                         AddressVariant = NO_VALUE);
+  virtual std::shared_ptr<Message> clone() const = 0;
   virtual ~Message() = default;
-  virtual Message & operator= (const Message&) = 0;
-  virtual operator State*() const override {return nullptr;}
-  virtual operator Message*() const override = 0;
 
   // Lecture
   virtual void launch() const override = 0;
 
   // Accessors
   virtual Address & getAddress() const = 0;
-  virtual AddressType getValue() const = 0;
+  virtual AddressVariant getValue() const = 0;
 
 };
 
