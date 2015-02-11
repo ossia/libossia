@@ -44,11 +44,11 @@ namespace OSSIA {
     };
     
     virtual CurveSegmentType getType() const
-    {return CurveSegment<T>::CurveSegmentType::NONE_TYPE;};
+    {return CurveSegment<T>::CurveSegmentType::NONE;};
     
   protected:
     
-    Curve<T>* mParent;
+    Curve<T>* mParent{};
     
   };
   

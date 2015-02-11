@@ -31,12 +31,12 @@ namespace OSSIA {
     
     // Curve segment type
     virtual typename CurveSegment<T>::CurveSegmentType getType() const override final
-    {return CurveSegment<T>::CurveSegmentType::POWER_TYPE;};
+    {return CurveSegment<T>::CurveSegmentType::POWER;};
     
     // pimpl idiom
   private:
     class Impl;
-    Impl * pimpl;
+    Impl * pimpl{};
     
   };
 

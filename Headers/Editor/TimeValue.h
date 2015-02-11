@@ -15,6 +15,7 @@ namespace OSSIA {
 
 class TimeValue {
 
+	public:
   // Constructors, destructor, assignment
   TimeValue();
   TimeValue(const int);
@@ -23,11 +24,11 @@ class TimeValue {
 
   // Cast
   operator int();
-  
+
   // pimpl idiom
   // private: // todo issue #1
   class Impl;
-  Impl * pimpl;
+  Impl * pimpl{};
 
 };
 

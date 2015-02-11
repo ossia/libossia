@@ -1,6 +1,6 @@
 #include "Editor/TimeNode.h"
 #include "Editor/TimeValue.h"
-
+#include "Editor/Scenario.h"
 using namespace OSSIA;
 /*
 class TimeNode::Impl {
@@ -11,21 +11,24 @@ class TimeNode::Impl {
 TimeNode::TimeNode()//:
 //	pimpl(new Impl)
 {
-	
+
 }
 
 TimeNode::~TimeNode()
 {
-	
+
 }
 
 Scenario& TimeNode::getParentScenario() const
 {
-
+	Scenario* s = new Scenario;
+	return *s;
 }
 
 TimeValue TimeNode::getDate() const
 {
+	TimeValue v;
+	return v;
 //	return pimpl->_date;
 }
 /*
