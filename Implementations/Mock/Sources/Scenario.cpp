@@ -99,9 +99,9 @@ void Scenario::play() const
 	// pimpl->_runThread = std::thread(&Scenario::Impl::play, pimpl);
 }
 
-std::set<TimeBox*> Scenario::getTimeBoxes() const
+std::set<Constraint*> Scenario::getTimeBoxes() const
 {
-	std::set<TimeBox*> st;
+	std::set<Constraint*> st;
 	//for(TimeBox* bp : pimpl->_timeBoxes) st.insert(bp);
 	return st;
 }
@@ -113,13 +113,13 @@ std::set<TimeNode*> Scenario::getTimeNodes() const
 	return st;
 }
 
-void Scenario::addTimeBox(const TimeBox& t, const TimeNode& startTimeNode)
+void Scenario::addTimeBox(const Constraint& t, const TimeNode& startTimeNode)
 {/*
 	pimpl->_timeBoxes.push_back(&const_cast<TimeBox&>(t));
 */
 }
 
-void Scenario::addTimeBox(const TimeBox& t, const TimeNode& startTimeNode, const TimeNode& endTimeNode)
+void Scenario::addTimeBox(const Constraint& t, const TimeNode& startTimeNode, const TimeNode& endTimeNode)
 {/*
 	pimpl->_timeBoxes.push_back(&const_cast<TimeBox&>(t));
 	TimeNode* sev = &const_cast<TimeNode&>(startTimeNode);

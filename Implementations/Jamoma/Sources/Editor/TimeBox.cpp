@@ -14,7 +14,7 @@
 
 namespace OSSIA
 {
-  class TimeBox::Impl
+  class Constraint::Impl
   {
     
   public:
@@ -31,20 +31,20 @@ namespace OSSIA
     ~Impl() = default;
   };
   
-  TimeBox::TimeBox() :
+  Constraint::Constraint() :
   pimpl(new Impl)
   {}
   
-  TimeBox::TimeBox(const TimeBox & other) :
+  Constraint::Constraint(const Constraint & other) :
   pimpl(new Impl(*(other.pimpl)))
   {}
   
-  TimeBox::~TimeBox()
+  Constraint::~Constraint()
   {
     delete pimpl;
   }
   
-  TimeBox& TimeBox::operator= (const TimeBox & other)
+  Constraint& Constraint::operator= (const Constraint & other)
   {
     delete pimpl;
     pimpl = new Impl(*(other.pimpl));

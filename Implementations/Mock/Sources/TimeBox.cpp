@@ -4,7 +4,7 @@
 #include <vector>
 using namespace OSSIA;
 
-class TimeBox::Impl
+class Constraint::Impl
 {/*
 	public:
 		Impl():
@@ -17,37 +17,37 @@ class TimeBox::Impl
 		TimeNode* _startTimeNode{nullptr};
 		TimeNode* _endTimeNode{nullptr};*/
 };
-class TimeBox::const_iterator
+class Constraint::const_iterator
 {
 
 };
 
-TimeBox::TimeBox()//:
+Constraint::Constraint()//:
 //	pimpl{new Impl}
 {
 
 }
 
-TimeBox::~TimeBox()
+Constraint::~Constraint()
 {
 
 }
 
-TimeBox::const_iterator TimeBox::begin() const
+Constraint::const_iterator Constraint::begin() const
 {
 	const_iterator c;
 	return c;
 //	return pimpl->_processes.cbegin();
 }
 
-TimeBox::const_iterator TimeBox::end() const
+Constraint::const_iterator Constraint::end() const
 {
 	const_iterator c;
 	return c;
 //	return pimpl->_processes.cend();
 }
 
-void TimeBox::play(bool log, std::string name) const
+void Constraint::play(bool log, std::string name) const
 {
 //	for(TimeProcess* p : *this)
 	{
@@ -85,14 +85,14 @@ void TimeBox::setEndNode(const TimeNode&ev)
 //	pimpl->_endTimeNode = &const_cast<TimeNode&>(ev);
 }
 */
-TimeValue TimeBox::getLength() const
+TimeValue Constraint::getLength() const
 {
 	TimeValue v;
 	return v;
 //	return pimpl->_endTimeNode->getDate() - pimpl->_startTimeNode->getDate();
 }
 
-bool TimeBox::isRigid()
+bool Constraint::isRigid()
 {
 	return false;
 //	return true;

@@ -29,13 +29,13 @@ namespace OSSIA
     virtual void play() const;
     
     // Navigation
-    virtual std::set<TimeBox*> getTimeBoxes() const;
+    virtual std::set<Constraint*> getTimeBoxes() const;
     virtual std::set<TimeNode*> getTimeNodes() const;
     
     // Edition
-    virtual void addTimeBox(const TimeBox&, const TimeNode & startNode);
+    virtual void addTimeBox(const Constraint&, const TimeNode & startNode);
     virtual void addTimeBox(
-                    const TimeBox&,
+                    const Constraint&,
                     const TimeNode & startNode,
                     const TimeNode & endNode);
     

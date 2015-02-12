@@ -19,7 +19,7 @@ namespace OSSIA {
 
 class Expression;
 class Scenario;
-class TimeBox;
+class Constraint;
 class TimeValue;
 
 class TimeNode {
@@ -36,8 +36,8 @@ public:
   void play(bool log = false, std::string name = "") const;
 
   // Navigation
-  std::set<TimeBox*> getPreviousTimeBoxes() const;
-  std::set<TimeBox*> getNextTimeBoxes() const;
+  std::set<Constraint*> getPreviousTimeBoxes() const;
+  std::set<Constraint*> getNextTimeBoxes() const;
   Scenario & getParentScenario() const;
 
   // Iterators
@@ -48,7 +48,7 @@ public:
   const_iterator find(const State&) const;
 
   // Managing states
-  void addState(const State&, const Expression, std::set<TimeBox*>);
+  void addState(const State&, const Expression, std::set<Constraint*>);
   bool removeState(const State&);
 
   // Accessors

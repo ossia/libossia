@@ -14,7 +14,7 @@
 namespace OSSIA {
 
 class State;
-class TimeBox;
+class Constraint;
 
 class TimeProcess {
 
@@ -28,7 +28,7 @@ public:
   virtual void play() const;
 
   // Navigation
-  TimeBox & getParentTimeBox();
+  Constraint & getParentTimeBox();
 
   // Accessors
   State & getStartState() const;

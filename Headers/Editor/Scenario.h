@@ -18,7 +18,7 @@
 
 namespace OSSIA {
 
-class TimeBox;
+class Constraint;
 class TimeNode;
 
 class Scenario : public TimeProcess {
@@ -35,13 +35,13 @@ public:
   virtual void play() const override;
 
   // Navigation
-  std::set<TimeBox*> getTimeBoxes() const;
+  std::set<Constraint*> getTimeBoxes() const;
   std::set<TimeNode*> getTimeNodes() const;
 
   // Edition
-  void addTimeBox(const TimeBox&, const TimeNode & startNode);
+  void addTimeBox(const Constraint&, const TimeNode & startNode);
   void addTimeBox(
-      const TimeBox&,
+      const Constraint&,
       const TimeNode & startNode,
       const TimeNode & endNode);
 

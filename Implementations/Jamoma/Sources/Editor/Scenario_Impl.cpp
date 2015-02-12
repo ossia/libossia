@@ -31,16 +31,16 @@ namespace OSSIA
   void Scenario_Impl::play() const
   {}
   
-  std::set<TimeBox*> Scenario_Impl::getTimeBoxes() const
+  std::set<Constraint*> Scenario_Impl::getTimeBoxes() const
   {}
   
   std::set<TimeNode*> Scenario_Impl::getTimeNodes() const
   {}
   
-  void Scenario_Impl::addTimeBox(const TimeBox&, const TimeNode & startNode)
+  void Scenario_Impl::addTimeBox(const Constraint&, const TimeNode & startNode)
   {}
   
-  void Scenario_Impl::addTimeBox(const TimeBox&,
+  void Scenario_Impl::addTimeBox(const Constraint&,
                   const TimeNode & startNode,
                   const TimeNode & endNode)
   {}

@@ -1,5 +1,5 @@
 /*!
- * \file TimeBox.h
+ * \file Constraint.h
  *
  * \author Clément Bossut
  * \author Théo de la Hogue
@@ -8,8 +8,8 @@
  * http://www.cecill.info
  */
 
-#ifndef TIMEBOX_H_
-#define TIMEBOX_H_
+#ifndef CONSTRAINT_H_
+#define CONSTRAINT_H_
 
 #include <string>
 
@@ -21,15 +21,15 @@ class TimeNode;
 class TimeProcess;
 class TimeValue;
 
-class TimeBox {
+class Constraint {
 
 public:
 
   // Constructors, destructor, assignment
-  TimeBox();
-  TimeBox(const TimeBox&);
-  ~TimeBox();
-  TimeBox & operator= (const TimeBox&);
+  Constraint();
+  Constraint(const Constraint&);
+  ~Constraint();
+  Constraint & operator= (const Constraint&);
 
   // Lecture
   void play(bool log = false, std::string name = "") const;
@@ -71,4 +71,4 @@ private:
 
 }
 
-#endif /* TIMEBOX_H_ */
+#endif /* CONSTRAINT_H_ */
