@@ -24,7 +24,7 @@ class Message : public StateElement {
 
 public:
 
-  // Factory, destructor
+  // Factories, destructor
   static std::shared_ptr<Message> create(std::shared_ptr<Address>,
                                          AddressVariant = NO_VALUE);
   virtual std::shared_ptr<Message> clone() const = 0;
