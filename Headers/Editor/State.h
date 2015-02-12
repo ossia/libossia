@@ -11,6 +11,8 @@
 #ifndef STATE_H_
 #define STATE_H_
 
+#include <memory>
+
 #include "Editor/StateElement.h"
 
 namespace OSSIA {
@@ -20,11 +22,9 @@ class State : public StateElement {
 public:
 
   // Factory, destructor, assignment, conversion
-  static State * create();
+  static std::shared_ptr<State> create();
+  virtual std::shared_ptr<State> clone() const = 0;
   virtual ~State() = default;
-  virtual State & operator= (const State&) = 0;
-  virtual operator State*() const override = 0;
-  virtual operator Message*() const override {return nullptr;}
 
   // Lecture
   virtual void launch() const override = 0;
@@ -49,11 +49,11 @@ public:
   virtual const_reverse_iterator crend() const = 0;
   virtual size_type size() const = 0;
   virtual bool empty() const = 0;
-  virtual StateElement*& front() = 0;
-  virtual const StateElement*& front() const = 0;
-  virtual StateElement*& back() = 0;
-  virtual const StateElement*& back() const = 0;
-  virtual iterator insert(const_iterator, StateElement*) = 0;
+  virtual std::shared_ptr<StateElement> front() = 0;
+  virtual const std::shared_ptr<StateElement> front() const = 0;
+  virtual std::shared_ptr<StateElement> back() = 0;
+  virtual const std::shared_ptr<StateElement> back() const = 0;
+  virtual iterator insert(const_iterator, std::shared_ptr<StateElement>) = 0;
   virtual iterator erase(const_iterator) = 0;
   virtual iterator erase(const_iterator first, const_iterator last) = 0;
 
