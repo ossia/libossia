@@ -1,5 +1,5 @@
 /*!
- * \file Expression.h
+ * \file AddressValue.h
  *
  * \author Clément Bossut
  * \author Théo de la Hogue
@@ -8,20 +8,22 @@
  * http://www.cecill.info
  */
 
-#ifndef EXPRESSION_H_
-#define EXPRESSION_H_
+#ifndef ADDRESSVALUE_H_
+#define ADDRESSVALUE_H_
 
 namespace OSSIA {
 
-class Address;
+enum class AddressValueType {
 
-class Expression {
+};
+
+class AddressValue {
 
 public:
 
-  virtual ~Expression() = default;
+  virtual ~AddressValue() = default;
 
-  virtual bool evaluate();
+
 
 };
 
@@ -29,4 +31,4 @@ public:
 
 
 
-#endif /* EXPRESSION_H_ */
+#endif /* ADDRESSVALUE_H_ */
