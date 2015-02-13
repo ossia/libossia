@@ -21,7 +21,7 @@ public:
 
   virtual ~Expression() = default;
 
-  virtual bool evaluate();
+  virtual bool evaluate() const = 0;
 
 };
 
