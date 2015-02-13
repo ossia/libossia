@@ -20,15 +20,11 @@ class TimeProcess {
 
 public:
 
-  // Constructors, destructor, assignment
-  TimeProcess();
-  virtual ~TimeProcess();
+  virtual ~TimeProcess() = default;
 
-  // Lecture
-  virtual void play() const;
+  virtual void play() const = 0;
 
-  // Navigation
-  Constraint & getParentTimeBox();
+  virtual std::shared_ptr<Constraint> getParentConstraint();
 
   // Accessors
   State & getStartState() const;
