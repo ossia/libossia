@@ -1,5 +1,5 @@
 /*!
- * \file Constraint.h
+ * \file TimeConstraint.h
  *
  * \author Clément Bossut
  * \author Théo de la Hogue
@@ -8,8 +8,8 @@
  * http://www.cecill.info
  */
 
-#ifndef CONSTRAINT_H_
-#define CONSTRAINT_H_
+#ifndef TIMECONSTRAINT_H_
+#define TIMECONSTRAINT_H_
 
 #include <memory>
 #include <string>
@@ -22,16 +22,16 @@ class TimeNode;
 class TimeProcess;
 class TimeValue;
 
-class Constraint {
+class TimeConstraint {
 
 public:
 
   // Factories, destructor
-  static std::shared_ptr<Constraint> create(TimeValue nominal,
+  static std::shared_ptr<TimeConstraint> create(TimeValue nominal,
                                             TimeValue min = nominal,
                                             TimeValue max = nominal);
-  virtual std::shared_ptr<Constraint> clone() const = 0;
-  virtual ~Constraint() = default;
+  virtual std::shared_ptr<TimeConstraint> clone() const = 0;
+  virtual ~TimeConstraint() = default;
 
   // Lecture
   void play(bool log = false, std::string name = "") const = 0;
@@ -79,4 +79,4 @@ public:
 
 }
 
-#endif /* CONSTRAINT_H_ */
+#endif /* TIMECONSTRAINT_H_ */
