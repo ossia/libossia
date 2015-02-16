@@ -24,18 +24,11 @@ public:
 
   virtual void play() const = 0;
 
-  virtual std::shared_ptr<Constraint> getParentConstraint();
-
   // Accessors
-  State & getStartState() const;
-  void setStartState(const State&);
-  State & getEndState() const;
-  void setEndState(const State&);
-
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl{};
+  const std::shared_ptr<State> & getStartState() const = 0;
+  void setStartState(std::shared_ptr<State>) = 0;
+  const std::shared_ptr<State> & getEndState() const = 0;
+  void setEndState(std::shared_ptr<State>) = 0;
 
 };
 

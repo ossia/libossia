@@ -37,9 +37,8 @@ public:
   void play(bool log = false, std::string name = "") const = 0;
 
   // Navigation
-  const std::shared_ptr<TimeNode> getStartEvent() const = 0;
-  const std::shared_ptr<TimeNode> getEndEvent() const = 0;
-  const std::shared_ptr<Scenario> getParentScenario() const = 0;
+  const std::shared_ptr<TimeNode> & getStartEvent() const = 0;
+  const std::shared_ptr<TimeNode> & getEndEvent() const = 0;
 
   // Accessors
   const std::shared_ptr<State> & getStartState() const = 0;
