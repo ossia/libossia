@@ -14,7 +14,6 @@
 namespace OSSIA {
 
 class State;
-class Constraint;
 
 class TimeProcess {
 
@@ -23,6 +22,10 @@ public:
   virtual ~TimeProcess() = default;
 
   virtual void play() const = 0;
+
+  // Navigation
+  const std::shared_ptr<TimeEvent> & getStartEvent() const = 0;
+  const std::shared_ptr<TimeEvent> & getEndEvent() const = 0;
 
   // Accessors
   const std::shared_ptr<State> & getStartState() const = 0;
