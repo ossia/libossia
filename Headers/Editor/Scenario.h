@@ -25,7 +25,8 @@ class Scenario : public TimeProcess {
 
 public:
 
-  // Constructors, destructor, assignment
+  // Factories, destructor
+  static std::shared_ptr<Scenario> create()
   Scenario();
   Scenario(const Scenario&);
   ~Scenario();
