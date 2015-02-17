@@ -38,7 +38,7 @@ public:
   // Lecture
   virtual void evaluate() const override = 0;
 
-  // Accessors
+  // Accessors //todo is it necessary ?
   virtual Address & getAddress() const = 0;
   virtual Operator getOperator() const = 0;
   virtual AddressValue getOperand() const = 0;

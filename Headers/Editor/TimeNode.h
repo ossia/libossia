@@ -38,7 +38,7 @@ public:
   // Accessors
   TimeValue getDate() const = 0;
   TimeValue getSimultaneityMargin() const = 0;
-  void setSimultaneityMargin(TimeValue) = 0;
+  void setSimultaneityMargin(TimeValue) = 0; //todo why not in constructor (only) ?
 
   // Std container
   class iterator;
