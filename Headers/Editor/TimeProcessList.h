@@ -1,5 +1,5 @@
 /*!
- * \file TimeNode.h
+ * \file TimeProcessList.h
  *
  * \author Clément Bossut
  * \author Théo de la Hogue
@@ -8,37 +8,20 @@
  * http://www.cecill.info
  */
 
-#ifndef TIMENODE_H_
-#define TIMENODE_H_
+#ifndef TIMEPROCESSLIST_H_
+#define TIMEPROCESSLIST_H_
 
 #include <memory>
-#include <string>
 
 namespace OSSIA {
 
-class Expression;
-class Scenario;
-class State;
-class TimeConstraint;
-class TimeEvent;
-class TimeValue;
+class TimeProcess;
 
-class TimeNode {
+class TimeProcessList {
 
 public:
 
-  // Factories, destructor
-  static std::shared_ptr<TimeNode> create();
-  virtual std::shared_ptr<TimeNode> clone() const = 0;
-  virtual ~TimeNode() = default;
-
-  // Lecture
-  void play(bool log = false, std::string name = "") const = 0;
-
-  // Accessors
-  TimeValue getDate() const = 0;
-  TimeValue getSimultaneityMargin() const = 0;
-  void setSimultaneityMargin(TimeValue) = 0;
+  virtual ~TimeProcessList() = default;
 
   // Std container
   class iterator;
@@ -60,14 +43,11 @@ public:
   virtual const_reverse_iterator crend() const = 0;
   virtual size_type size() const = 0;
   virtual bool empty() const = 0;
-  virtual TimeEvent & front() = 0;
-  virtual const TimeEvent & front() const = 0;
-  virtual TimeEvent & back() = 0;
-  virtual const TimeEvent & back() const = 0;
-//  virtual iterator insert(const_iterator, std::shared_ptr<Event>) = 0;
-  virtual iterator emplace(const_iterator,
-                           std::shared_ptr<State> = NO_STATE,
-                           std::shared_ptr<Expression> = NO_EXPRESSION) = 0;
+  virtual std::shared_ptr<TimeProcess> & front() = 0;
+  virtual const std::shared_ptr<TimeProcess> & front() const = 0;
+  virtual std::shared_ptr<TimeProcess> & back() = 0;
+  virtual const std::shared_ptr<TimeProcess> & back() const = 0;
+  virtual iterator insert(const_iterator, std::shared_ptr<TimeProcess>) = 0;
   virtual iterator erase(const_iterator) = 0;
   virtual iterator erase(const_iterator first, const_iterator last) = 0;
 
@@ -75,4 +55,6 @@ public:
 
 }
 
-#endif /* TIMENODE_H_ */
+
+
+#endif /* TIMEPROCESSLIST_H_ */
