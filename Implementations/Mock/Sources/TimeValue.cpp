@@ -6,6 +6,11 @@ TimeValue::TimeValue()
 
 }
 
+TimeValue::~TimeValue()
+{
+
+}
+
 TimeValue::TimeValue(const int c)
 {
 //	date=c;
