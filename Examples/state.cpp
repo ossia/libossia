@@ -20,5 +20,7 @@ int main() {
 
     State* s = State::create();
     
+    s->addStateElement(*(State::create()));
+
     delete s;
 }

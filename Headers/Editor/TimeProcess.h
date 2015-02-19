@@ -14,32 +14,27 @@
 namespace OSSIA {
 
 class State;
-class Constraint;
+class TimeValue;
 
 class TimeProcess {
 
 public:
 
-  // Constructors, destructor, assignment
-  TimeProcess();
-  virtual ~TimeProcess();
+  virtual ~TimeProcess() = default;
 
-  // Lecture
-  virtual void play() const;
+  virtual void play() const = 0;
 
   // Navigation
-  Constraint & getParentTimeBox();
+  virtual const std::shared_ptr<TimeEvent> & getStartEvent() const = 0;
+  virtual const std::shared_ptr<TimeEvent> & getEndEvent() const = 0;
 
   // Accessors
-  State & getStartState() const;
-  void setStartState(const State&);
-  State & getEndState() const;
-  void setEndState(const State&);
-
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl{};
+  virtual TimeValue getLength() const = 0;
+  virtual void setLength(TimeValue) = 0;
+  virtual const std::shared_ptr<State> & getStartState() const = 0;
+  virtual void setStartState(std::shared_ptr<State>) = 0;
+  virtual const std::shared_ptr<State> & getEndState() const = 0;
+  virtual void setEndState(std::shared_ptr<State>) = 0;
 
 };
 

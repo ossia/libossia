@@ -18,7 +18,7 @@
 namespace OSSIA {
 
 class Address;
-class AddressVariant;
+class AddressValue;
 
 class Message : public StateElement {
 
@@ -26,7 +26,7 @@ public:
 
   // Factories, destructor
   static std::shared_ptr<Message> create(std::shared_ptr<Address>,
-                                         AddressVariant = NO_VALUE);
+                                         AddressValue/*todo = NO_VALUE*/);
   virtual std::shared_ptr<Message> clone() const = 0;
   virtual ~Message() = default;
 
@@ -35,7 +35,7 @@ public:
 
   // Accessors
   virtual Address & getAddress() const = 0;
-  virtual AddressVariant getValue() const = 0;
+  virtual AddressValue getValue() const = 0;
 
 };
 

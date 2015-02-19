@@ -1,5 +1,5 @@
 /*!
- * \file Constraint.h
+ * \file TimeConstraint.h
  *
  * \author Clément Bossut
  * \author Théo de la Hogue
@@ -8,43 +8,41 @@
  * http://www.cecill.info
  */
 
-#ifndef CONSTRAINT_H_
-#define CONSTRAINT_H_
+#ifndef TIMECONSTRAINT_H_
+#define TIMECONSTRAINT_H_
 
 #include <memory>
 #include <string>
 
 namespace OSSIA {
 
-class Scenario;
 class State;
 class TimeNode;
 class TimeProcess;
 class TimeValue;
 
-class Constraint {
+class TimeConstraint {
 
 public:
 
   // Factories, destructor
-  static std::shared_ptr<Constraint> create(TimeValue nominal,
+  static std::shared_ptr<TimeConstraint> create(TimeValue nominal,
                                             TimeValue min = nominal,
                                             TimeValue max = nominal);
-  virtual std::shared_ptr<Constraint> clone() const = 0;
-  virtual ~Constraint() = default;
+  virtual std::shared_ptr<TimeConstraint> clone() const = 0;
+  virtual ~TimeConstraint() = default;
 
   // Lecture
   void play(bool log = false, std::string name = "") const = 0;
 
   // Navigation
-  std::shared_ptr<TimeNode> getStartEvent() const = 0;
-  std::shared_ptr<TimeNode> getEndEvent() const = 0;
-  std::shared_ptr<Scenario> getParentScenario() const = 0;
+  const std::shared_ptr<TimeNode> & getStartNode() const = 0;
+  const std::shared_ptr<TimeNode> & getEndNode() const = 0;
 
   // Accessors
-  std::shared_ptr<State> getStartState() const = 0;
+  const std::shared_ptr<State> & getStartState() const = 0;
   void setStartState(std::shared_ptr<State>) = 0;
-  std::shared_ptr<State> getEndState() const = 0;
+  const std::shared_ptr<State> & getEndState() const = 0;
   void setEndState(std::shared_ptr<State>) = 0;
 
   // Std container
@@ -67,10 +65,10 @@ public:
   virtual const_reverse_iterator crend() const = 0;
   virtual size_type size() const = 0;
   virtual bool empty() const = 0;
-  virtual std::shared_ptr<TimeProcess> front() = 0;
-  virtual const std::shared_ptr<TimeProcess> front() const = 0;
-  virtual std::shared_ptr<TimeProcess> back() = 0;
-  virtual const std::shared_ptr<TimeProcess> back() const = 0;
+  virtual std::shared_ptr<TimeProcess> & front() = 0;
+  virtual const std::shared_ptr<TimeProcess> & front() const = 0;
+  virtual std::shared_ptr<TimeProcess> & back() = 0;
+  virtual const std::shared_ptr<TimeProcess> & back() const = 0;
   virtual iterator insert(const_iterator, std::shared_ptr<TimeProcess>) = 0;
   virtual iterator erase(const_iterator) = 0;
   virtual iterator erase(const_iterator first, const_iterator last) = 0;
@@ -79,4 +77,4 @@ public:
 
 }
 
-#endif /* CONSTRAINT_H_ */
+#endif /* TIMECONSTRAINT_H_ */

@@ -11,57 +11,65 @@
 #ifndef TIMENODE_H_
 #define TIMENODE_H_
 
-#include <set>
+#include <memory>
 #include <string>
-#include "Editor/State.h"
 
 namespace OSSIA {
 
 class Expression;
 class Scenario;
-class Constraint;
+class State;
+class TimeConstraint;
+class TimeEvent;
 class TimeValue;
 
 class TimeNode {
 
 public:
 
-  // Constructors, destructor, assignment
-  TimeNode();
-  TimeNode(const TimeNode&);
-  ~TimeNode();
-  TimeNode & operator= (const TimeNode&);
+  // Factories, destructor
+  static std::shared_ptr<TimeNode> create();
+  virtual std::shared_ptr<TimeNode> clone() const = 0;
+  virtual ~TimeNode() = default;
 
   // Lecture
-  void play(bool log = false, std::string name = "") const;
-
-  // Navigation
-  std::set<Constraint*> getPreviousTimeBoxes() const;
-  std::set<Constraint*> getNextTimeBoxes() const;
-  Scenario & getParentScenario() const;
-
-  // Iterators
-  class const_iterator;
-  // bidirectional, upon pair<State, pair<Expression, set<TimeBox*> > >
-  const_iterator begin() const;
-  const_iterator end() const;
-  const_iterator find(const State&) const;
-
-  // Managing states
-  void addState(const State&, const Expression, std::set<Constraint*>);
-  bool removeState(const State&);
+  void play(bool log = false, std::string name = "") const = 0;
 
   // Accessors
-  TimeValue getDate() const;
-  TimeValue getPreListenningDuration() const;
-  void setPreListenningDuration(TimeValue);
-  TimeValue getSimultaneityMargin();
-  void setSimultaneityMargin(TimeValue);
+  TimeValue getDate() const = 0;
+  TimeValue getSimultaneityMargin() const = 0;
+  void setSimultaneityMargin(TimeValue) = 0; //todo why not in constructor (only) ?
 
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl{};
+  // Std container
+  class iterator;
+  class const_iterator;
+  class reverse_iterator;
+  class const_reverse_iterator;
+  class size_type;
+  virtual iterator begin() = 0;
+  virtual iterator end() = 0;
+  virtual reverse_iterator rbegin() = 0;
+  virtual reverse_iterator rend() = 0;
+  virtual const_iterator begin() const = 0;
+  virtual const_iterator end() const = 0;
+  virtual const_reverse_iterator rbegin() const = 0;
+  virtual const_reverse_iterator rend() const = 0;
+  virtual const_iterator cbegin() const = 0;
+  virtual const_iterator cend() const = 0;
+  virtual const_reverse_iterator crbegin() const = 0;
+  virtual const_reverse_iterator crend() const = 0;
+  virtual size_type size() const = 0;
+  virtual bool empty() const = 0;
+  virtual TimeEvent & front() = 0;
+  virtual const TimeEvent & front() const = 0;
+  virtual TimeEvent & back() = 0;
+  virtual const TimeEvent & back() const = 0;
+//  virtual iterator insert(const_iterator, std::shared_ptr<Event>) = 0;
+  virtual iterator emplace(const_iterator,
+                           std::shared_ptr<State> = NO_STATE,
+                           std::shared_ptr<Expression> = NO_EXPRESSION) = 0;
+  virtual iterator erase(const_iterator) = 0;
+  virtual iterator erase(const_iterator first, const_iterator last) = 0;
 
 };
 

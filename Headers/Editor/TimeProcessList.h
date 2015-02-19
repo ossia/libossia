@@ -1,5 +1,5 @@
 /*!
- * \file State.h
+ * \file TimeProcessList.h
  *
  * \author Clément Bossut
  * \author Théo de la Hogue
@@ -8,26 +8,20 @@
  * http://www.cecill.info
  */
 
-#ifndef STATE_H_
-#define STATE_H_
+#ifndef TIMEPROCESSLIST_H_
+#define TIMEPROCESSLIST_H_
 
 #include <memory>
 
-#include "Editor/StateElement.h"
-
 namespace OSSIA {
 
-class State : public StateElement {
+class TimeProcess;
+
+class TimeProcessList {
 
 public:
 
-  // Factories, destructor
-  static std::shared_ptr<State> create();
-  virtual std::shared_ptr<State> clone() const = 0;
-  virtual ~State() = default;
-
-  // Lecture
-  virtual void launch() const override = 0;
+  virtual ~TimeProcessList() = default;
 
   // Std container
   class iterator;
@@ -49,11 +43,11 @@ public:
   virtual const_reverse_iterator crend() const = 0;
   virtual size_type size() const = 0;
   virtual bool empty() const = 0;
-  virtual std::shared_ptr<StateElement> & front() = 0;
-  virtual const std::shared_ptr<StateElement> & front() const = 0;
-  virtual std::shared_ptr<StateElement> & back() = 0;
-  virtual const std::shared_ptr<StateElement> & back() const = 0;
-  virtual iterator insert(const_iterator, std::shared_ptr<StateElement>) = 0;
+  virtual std::shared_ptr<TimeProcess> & front() = 0;
+  virtual const std::shared_ptr<TimeProcess> & front() const = 0;
+  virtual std::shared_ptr<TimeProcess> & back() = 0;
+  virtual const std::shared_ptr<TimeProcess> & back() const = 0;
+  virtual iterator insert(const_iterator, std::shared_ptr<TimeProcess>) = 0;
   virtual iterator erase(const_iterator) = 0;
   virtual iterator erase(const_iterator first, const_iterator last) = 0;
 
@@ -61,4 +55,6 @@ public:
 
 }
 
-#endif /* STATE_H_ */
+
+
+#endif /* TIMEPROCESSLIST_H_ */
