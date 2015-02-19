@@ -14,7 +14,6 @@
 		460D07E919BDD62500235124 /* Scenario.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Scenario.h; sourceTree = "<group>"; };
 		460D07EA19BDD62500235124 /* State.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = State.h; sourceTree = "<group>"; };
 		460D07EB19BDD62500235124 /* StateElement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StateElement.h; sourceTree = "<group>"; };
-		460D07EC19BDD62500235124 /* TimeBox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeBox.h; sourceTree = "<group>"; };
 		460D07ED19BDD62500235124 /* TimeNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeNode.h; sourceTree = "<group>"; };
 		460D07EE19BDD62500235124 /* TimeProcess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeProcess.h; sourceTree = "<group>"; };
 		460D07EF19BDD62500235124 /* TimeValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeValue.h; sourceTree = "<group>"; };
@@ -23,7 +22,7 @@
 		460DCD6E1A0914C4000A9A19 /* DeviceOSC.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceOSC.cpp; sourceTree = "<group>"; };
 		46184C1D1A247FC700C3B12E /* Expression.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Expression.cpp; sourceTree = "<group>"; };
 		46184C1F1A24802C00C3B12E /* State_Impl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = State_Impl.cpp; sourceTree = "<group>"; };
-		46184C211A24802C00C3B12E /* TimeBox.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeBox.cpp; sourceTree = "<group>"; };
+		46184C211A24802C00C3B12E /* Constraint.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Constraint.cpp; sourceTree = "<group>"; };
 		46184C221A24802C00C3B12E /* TimeNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeNode.cpp; sourceTree = "<group>"; };
 		46184C231A24802C00C3B12E /* TimeProcess.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeProcess.cpp; sourceTree = "<group>"; };
 		46184C241A24802C00C3B12E /* TimeValue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeValue.cpp; sourceTree = "<group>"; };
@@ -79,7 +78,6 @@
 				460D07E919BDD62500235124 /* Scenario.h */,
 				460D07EA19BDD62500235124 /* State.h */,
 				460D07EB19BDD62500235124 /* StateElement.h */,
-				460D07EC19BDD62500235124 /* TimeBox.h */,
 				460D07ED19BDD62500235124 /* TimeNode.h */,
 				460D07EE19BDD62500235124 /* TimeProcess.h */,
 				460D07EF19BDD62500235124 /* TimeValue.h */,
@@ -157,7 +155,7 @@
 				46BA2A6019C09A21009630B5 /* Scenario.cpp */,
 				46184C281A25E39400C3B12E /* State_Impl.h */,
 				46184C1F1A24802C00C3B12E /* State_Impl.cpp */,
-				46184C211A24802C00C3B12E /* TimeBox.cpp */,
+				46184C211A24802C00C3B12E /* Constraint.cpp */,
 				46184C221A24802C00C3B12E /* TimeNode.cpp */,
 				46184C231A24802C00C3B12E /* TimeProcess.cpp */,
 				46184C241A24802C00C3B12E /* TimeValue.cpp */,

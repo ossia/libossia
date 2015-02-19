@@ -1,5 +1,5 @@
 /*!
- * \file TimeBox.cpp
+ * \file Constraint.cpp
  *
  * \author Clément Bossut
  * \author Théo de la Hogue
@@ -8,7 +8,7 @@
  * http://www.cecill.info
  */
 
-#include "Editor/TimeBox.h"
+#include "Editor/Constraint.h"
 
 #include "TTScore.h"
 
