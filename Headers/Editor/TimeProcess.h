@@ -13,6 +13,7 @@
 
 namespace OSSIA {
 
+class Scheduler;
 class State;
 class TimeValue;
 
@@ -35,6 +36,8 @@ public:
   virtual void setStartState(std::shared_ptr<State>) = 0;
   virtual const std::shared_ptr<State> & getEndState() const = 0;
   virtual void setEndState(std::shared_ptr<State>) = 0;
+  virtual const std::shared_ptr<Scheduler> & getScheduler() const = 0;
+  virtual void setScheduler(std::shared_ptr<Scheduler>) = 0;
 
 };
 
