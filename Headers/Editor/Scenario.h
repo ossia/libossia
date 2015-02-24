@@ -11,9 +11,6 @@
 #ifndef SCENARIO_H_
 #define SCENARIO_H_
 
-#include <set>
-
-#include "Editor/TimeNode.h"
 #include "Editor/TimeProcess.h"
 
 namespace OSSIA {
@@ -34,18 +31,18 @@ public:
   virtual void play(bool log = false, std::string name = "") const override = 0;
 
   // Edition
-  void addConstraint(const Constraint&, const TimeNode & startNode) = 0;
-  void addConstraint(
+  virtual void addConstraint(const Constraint&, const TimeNode & startNode) = 0;
+  virtual void addConstraint(
       const Constraint&,
       const TimeNode & startNode,
       const TimeNode & endNode) = 0;
 
   // Accessors
   // internal TimeNodes
-  const std::shared_ptr<TimeNode> & getStartNode() const = 0;
-  void setStartNode(std::shared_ptr<TimeNode>) = 0;
-  const std::shared_ptr<TimeNode> & getEndNode() const = 0;
-  void setEndNode(std::shared_ptr<TimeNode>) = 0;
+  virtual const std::shared_ptr<TimeNode> & getStartNode() const = 0;
+  virtual void setStartNode(std::shared_ptr<TimeNode>) = 0;
+  virtual const std::shared_ptr<TimeNode> & getEndNode() const = 0;
+  virtual void setEndNode(std::shared_ptr<TimeNode>) = 0;
 
 };
 
