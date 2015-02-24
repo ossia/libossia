@@ -22,7 +22,7 @@ public:
 
   virtual ~TimeProcess() = default;
 
-  virtual void play() const = 0;
+  virtual void play(bool log = false, std::string name = "") const = 0;
 
   // Navigation
   virtual const std::shared_ptr<TimeEvent> & getStartEvent() const = 0;
