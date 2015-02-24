@@ -26,37 +26,26 @@ class Scenario : public TimeProcess {
 public:
 
   // Factories, destructor
-  static std::shared_ptr<Scenario> create()
-  Scenario();
-  Scenario(const Scenario&);
-  ~Scenario();
-  Scenario & operator= (const Scenario&);
+  static std::shared_ptr<Scenario> create();
+  virtual std::shared_ptr<Scenario> clone() const = 0;
+  virtual ~Scenario() = default;
 
   // Lecture
-  virtual void play() const override;
-
-  // Navigation
-  std::set<Constraint*> getTimeBoxes() const;
-  std::set<TimeNode*> getTimeNodes() const;
+  virtual void play(bool log = false, std::string name = "") const override = 0;
 
   // Edition
-  void addTimeBox(const Constraint&, const TimeNode & startNode);
-  void addTimeBox(
+  void addConstraint(const Constraint&, const TimeNode & startNode) = 0;
+  void addConstraint(
       const Constraint&,
       const TimeNode & startNode,
-      const TimeNode & endNode);
+      const TimeNode & endNode) = 0;
 
   // Accessors
   // internal TimeNodes
-  TimeNode & getStartNode() const;
-  void setStartNode(const TimeNode&);
-  TimeNode & getEndNode() const;
-  void setEndNode(const TimeNode&);
-
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl{};
+  const std::shared_ptr<TimeNode> & getStartNode() const = 0;
+  void setStartNode(std::shared_ptr<TimeNode>) = 0;
+  const std::shared_ptr<TimeNode> & getEndNode() const = 0;
+  void setEndNode(std::shared_ptr<TimeNode>) = 0;
 
 };
 
