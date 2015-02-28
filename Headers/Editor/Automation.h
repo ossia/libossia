@@ -43,8 +43,6 @@ public:
   virtual void setCurve(std::shared_ptr<Curve>) = 0;
   virtual const std::shared_ptr<Address> & getInputAdress() const = 0;
   virtual void setInputAddress(std::shared_ptr<Address>) = 0;
-  virtual const std::shared_ptr<AddressList> & getOutputAddresses() const = 0;
-  virtual void setOutputAddresses(std::shared_ptr<AddressList>) = 0;
 
   // Std container
   // Output Addresses

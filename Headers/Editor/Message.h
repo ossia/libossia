@@ -34,7 +34,7 @@ public:
   virtual void launch() const override = 0;
 
   // Accessors
-  virtual Address & getAddress() const = 0;
+  virtual std::shared_ptr<Address> & getAddress() const = 0;
   virtual AddressValue getValue() const = 0;
 
 };
