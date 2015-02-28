@@ -18,9 +18,9 @@ using namespace std;
 
 int main() {
 
-    State* s = State::create();
+    shared_ptr<State> s = State::create();
     
-    s->addStateElement(*(State::create()));
+    s->insert(s->begin(),State::create());
 
-    delete s;
+    cout<<"done!"<<endl;
 }
