@@ -13,19 +13,19 @@
 
 namespace OSSIA {
 
-class iterator {
+class genericIterator {
 
 };
 
-class const_iterator {
+class genericConst_iterator {
 
 public:
 
-  const_iterator(iterator){};
+  genericConst_iterator(genericIterator){};
 
 };
 
-class size_type {
+class genericSize_type {
 
 };
 
