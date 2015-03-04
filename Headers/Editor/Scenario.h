@@ -38,6 +38,8 @@ public:
       const TimeNode & endNode) = 0;
 
   // Accessors
+  virtual const bool isKiller() const = 0;
+  virtual void setKiller(bool) = 0;
   // internal TimeNodes
   virtual const std::shared_ptr<TimeNode> & getStartNode() const = 0;
   virtual void setStartNode(std::shared_ptr<TimeNode>) = 0;
