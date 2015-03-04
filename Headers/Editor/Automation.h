@@ -13,7 +13,7 @@
 
 #include <list>
 
-#include "TimeProcess.h"
+#include "Editor/TimeProcess.h"
 
 namespace OSSIA {
 
