@@ -11,6 +11,8 @@
 #ifndef EXPRESSIONCOMPOSITION_H_
 #define EXPRESSIONCOMPOSITION_H_
 
+#include "Editor/Expression.h"
+
 namespace OSSIA {
 
 class ExpressionComposition : public Expression {
@@ -26,9 +28,9 @@ public:
 
   // Factories, destructor
   static std::shared_ptr<ExpressionComposition>
-        create(std::shared_ptr<ExpressionAtom>,
+        create(std::shared_ptr<Expression>,
                Operator,
-               std::shared_ptr<ExpressionAtom>/*todo = NO_EXPRESSION*/);
+               std::shared_ptr<Expression>/*todo = NO_EXPRESSION*/);
   virtual std::shared_ptr<ExpressionComposition> clone() const = 0;
   virtual ~ExpressionComposition() = default;
 
