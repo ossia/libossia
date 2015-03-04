@@ -33,12 +33,12 @@ public:
   virtual ~TimeNode() = default;
 
   // Lecture
-  void play(bool log = false, std::string name = "") const = 0;
+  virtual void play(bool log = false, std::string name = "") const = 0;
 
   // Accessors
-  TimeValue getDate() const = 0;
-  TimeValue getSimultaneityMargin() const = 0;
-  void setSimultaneityMargin(TimeValue) = 0; //todo why not in constructor (only) ?
+  virtual TimeValue getDate() const = 0;
+  virtual TimeValue getSimultaneityMargin() const = 0;
+  virtual void setSimultaneityMargin(TimeValue) = 0; //todo why not in constructor (only) ?
 
   // Std container
   class iterator;
@@ -60,14 +60,14 @@ public:
   virtual const_reverse_iterator crend() const = 0;
   virtual size_type size() const = 0;
   virtual bool empty() const = 0;
-  virtual TimeEvent & front() = 0;
-  virtual const TimeEvent & front() const = 0;
-  virtual TimeEvent & back() = 0;
-  virtual const TimeEvent & back() const = 0;
+  virtual std::shared_ptr<TimeEvent> & front() = 0;
+  virtual const std::shared_ptr<TimeEvent> & front() const = 0;
+  virtual std::shared_ptr<TimeEvent> & back() = 0;
+  virtual const std::shared_ptr<TimeEvent> & back() const = 0;
 //  virtual iterator insert(const_iterator, std::shared_ptr<Event>) = 0;
   virtual iterator emplace(const_iterator,
-                           std::shared_ptr<State> = NO_STATE,
-                           std::shared_ptr<Expression> = NO_EXPRESSION) = 0;
+                           std::shared_ptr<State>/*todo = NO_STATE*/,
+                           std::shared_ptr<Expression>/*todo = NO_EXPRESSION*/) = 0;
   virtual iterator erase(const_iterator) = 0;
   virtual iterator erase(const_iterator first, const_iterator last) = 0;
 

@@ -36,10 +36,10 @@ public:
   virtual ~ExpressionAtom() = default;
 
   // Lecture
-  virtual void evaluate() const override = 0;
+  virtual bool evaluate() const override = 0;
 
   // Accessors //todo is it necessary ?
-  virtual Address & getAddress() const = 0;
+  virtual const std::shared_ptr<Address> & getAddress() const = 0;
   virtual Operator getOperator() const = 0;
   virtual AddressValue getOperand() const = 0;
 

@@ -16,6 +16,8 @@
 
 namespace OSSIA {
 
+class Expression;
+
 class TimeEvent {
 
 public:

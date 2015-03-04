@@ -29,23 +29,23 @@ public:
 
   // Factories, destructor
   static std::shared_ptr<TimeConstraint> create(TimeValue nominal,
-                                            TimeValue min = nominal,
-                                            TimeValue max = nominal);
+						TimeValue min = nominal,
+						TimeValue max = nominal);
   virtual std::shared_ptr<TimeConstraint> clone() const = 0;
   virtual ~TimeConstraint() = default;
 
   // Lecture
-  void play(bool log = false, std::string name = "") const = 0;
+  virtual void play(bool log = false, std::string name = "") const = 0;
 
   // Navigation
-  const std::shared_ptr<TimeNode> & getStartNode() const = 0;
-  const std::shared_ptr<TimeNode> & getEndNode() const = 0;
+  virtual const std::shared_ptr<TimeNode> & getStartNode() const = 0;
+  virtual const std::shared_ptr<TimeNode> & getEndNode() const = 0;
 
   // Accessors
-  const std::shared_ptr<State> & getStartState() const = 0;
-  void setStartState(std::shared_ptr<State>) = 0;
-  const std::shared_ptr<State> & getEndState() const = 0;
-  void setEndState(std::shared_ptr<State>) = 0;
+  virtual const std::shared_ptr<State> & getStartState() const = 0;
+  virtual void setStartState(std::shared_ptr<State>) = 0;
+  virtual const std::shared_ptr<State> & getEndState() const = 0;
+  virtual void setEndState(std::shared_ptr<State>) = 0;
 
 };
 

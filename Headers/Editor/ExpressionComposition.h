@@ -33,11 +33,11 @@ public:
   virtual ~ExpressionComposition() = default;
 
   // Lecture
-  virtual void evaluate() const override = 0;
+  virtual bool evaluate() const override = 0;
 
   // Accessors //todo is it necessary ?
-  virtual ExpressionAtom & getFirstOperand() const = 0;
-  virtual ExpressionAtom & getSecondOperand() const = 0;
+  virtual const std::shared_ptr<Expression> & getFirstOperand() const = 0;
+  virtual const std::shared_ptr<Expression> & getSecondOperand() const = 0;
   virtual Operator getOperator() const = 0;
 
 };
