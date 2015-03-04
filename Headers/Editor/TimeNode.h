@@ -40,24 +40,14 @@ public:
   virtual TimeValue getSimultaneityMargin() const = 0;
   virtual void setSimultaneityMargin(TimeValue) = 0; //todo why not in constructor (only) ?
 
-  // Std container
+  // Std container //todo inherit Container ? because emplace is only here now
   class iterator;
   class const_iterator;
-  class reverse_iterator;
-  class const_reverse_iterator;
   class size_type;
   virtual iterator begin() = 0;
   virtual iterator end() = 0;
-  virtual reverse_iterator rbegin() = 0;
-  virtual reverse_iterator rend() = 0;
-  virtual const_iterator begin() const = 0;
-  virtual const_iterator end() const = 0;
-  virtual const_reverse_iterator rbegin() const = 0;
-  virtual const_reverse_iterator rend() const = 0;
   virtual const_iterator cbegin() const = 0;
   virtual const_iterator cend() const = 0;
-  virtual const_reverse_iterator crbegin() const = 0;
-  virtual const_reverse_iterator crend() const = 0;
   virtual size_type size() const = 0;
   virtual bool empty() const = 0;
   virtual std::shared_ptr<TimeEvent> & front() = 0;
