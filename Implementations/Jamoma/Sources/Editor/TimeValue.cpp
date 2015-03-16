@@ -1,55 +1,28 @@
-/*!
- * \file TimeValue.cpp
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #include "Editor/TimeValue.h"
+using namespace OSSIA;
 
-#include "TTScore.h"
-
-namespace OSSIA
+TimeValue::TimeValue()
 {
-  class TimeValue::Impl
-  {
-    
-  public:
-    
-    Impl()
-    {
-      // todo : move this else where ...
-      TTFoundationInit("/usr/local/jamoma/");
-      TTModularInit("/usr/local/jamoma/");
-      TTScoreInit("/usr/local/jamoma/");
-    };
-    
-    Impl(const int other)
-    {}
-    
-    ~Impl() = default;
-  };
-  
-  TimeValue::TimeValue() :
-  pimpl(new Impl)
-  {}
-  
-  TimeValue::TimeValue(const int other) :
-  pimpl(new Impl(other))
-  {}
-  
-  TimeValue::~TimeValue()
-  {
-    delete pimpl;
-  }
-  
-  TimeValue& TimeValue::operator= (const int other)
-  {
-    delete pimpl;
-    pimpl = new Impl(other);
-    return *this;
-  }
+  // todo : we shouldn't init each time we create an object ...
+  TTFoundationInit("/usr/local/jamoma/");
+  TTModularInit("/usr/local/jamoma/");
+  TTScoreInit("/usr/local/jamoma/");
+}
+
+TimeValue::TimeValue(const int c)
+{
+//	date=c;
+}
+
+TimeValue& TimeValue::operator=(const int c)
+{
+	return *this;
+//	date=c;
+//	return *this;
+}
+
+TimeValue::operator int()
+{
+	return -1;
+//	return date;
 }

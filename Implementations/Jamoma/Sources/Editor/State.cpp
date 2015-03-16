@@ -1,35 +1,42 @@
-/*!
- * \file State_Impl.cpp
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
+#include "Editor/State.h"
 
-#include "State_Impl.h"
+using namespace OSSIA;
+using namespace std;
 
-namespace OSSIA
+class JamomaState : public State
 {
-  State* State::create()
+  
+private:
+  // Implementation Specific
+  shared_ptr<StateElement> element;
+  //TTList mLines; // code relative to old state managment
+  
+public:
+  // Constructors, destructor, cloning
+  JamomaState()
   {
     // todo : we shouldn't init each time we create an object ...
     TTFoundationInit("/usr/local/jamoma/");
     TTModularInit("/usr/local/jamoma/");
     TTScoreInit("/usr/local/jamoma/");
-    
-    return new State_Impl();
   }
   
-  State_Impl::State_Impl()
+  JamomaState(const JamomaState * other)
   {}
   
-  State_Impl::~State_Impl()
+  virtual ~JamomaState()
   {}
   
-  void State_Impl::launch() const
+  virtual shared_ptr<State> clone() const override
   {
+    return shared_ptr<State>(new JamomaState(this));
+  }
+
+  // Lecture
+  virtual void launch() const override
+  {
+/* code relative to old state managment
+ 
     for (mLines.begin(); mLines.end(); mLines.next())
     {
       TTDictionary line = mLines.current()[0];
@@ -85,23 +92,64 @@ namespace OSSIA
         state.launch();
       }
     }
+*/
+  }
+
+  // Std container
+  virtual iterator begin() override
+  {
+    return iterator();
   }
   
-  class State::const_iterator
-  {};
-  
-  State::const_iterator State_Impl::begin() const
-  {}
-  
-  State::const_iterator State_Impl::end() const
-  {}
-  
-  State::const_iterator State_Impl::find(const StateElement&) const
-  {}
-  
-  // Managing StateElements
-  void State_Impl::addStateElement(const StateElement& stateElement)
+  virtual iterator end() override
   {
+    return iterator();
+  }
+  
+  virtual const_iterator cbegin() const override
+  {
+    return iterator();
+  }
+  
+  virtual const_iterator cend() const override
+  {
+    return iterator();
+  }
+  
+  virtual size_type size() const override
+  {
+    return size_type();
+  }
+  
+  virtual bool empty() const override
+  {
+    return true;
+  }
+  
+  virtual shared_ptr<StateElement> & front() override
+  {
+    return element;
+  }
+  
+  virtual const shared_ptr<StateElement> & front() const override
+  {
+    return element;
+  }
+  
+  virtual shared_ptr<StateElement> & back() override
+  {
+    return element;
+  }
+  
+  virtual const shared_ptr<StateElement> & back() const override
+  {
+    return element;
+  }
+  
+  virtual iterator insert(const_iterator where, shared_ptr<StateElement> what) override
+  {
+/* code relative to old state managment
+ 
     if (stateElement.getType() == StateElement::StateElementType::MESSAGE_TYPE)
     {
       Message       message = stateElement;
@@ -123,7 +171,7 @@ namespace OSSIA
     else if (stateElement.getType() == StateElement::StateElementType::STATE_TYPE)
     {
       State* state = State::create();
-
+      
       for (State::const_iterator it = stateElement.begin(); it != stateElement.end(); it++)
         state.addStateElement(*it);
       
@@ -133,22 +181,38 @@ namespace OSSIA
       
       mLines.append(line);
     }
+*/
+    return iterator();
   }
   
-  bool State_Impl::removeStateElement(const StateElement&)
+  virtual iterator erase(const_iterator which) override
   {
-    return false;
+    return iterator();
   }
   
-  void State_ImplFindAddress(const TTValue& lineValue, TTPtr addressPtrToMatch, TTBoolean& found)
+  virtual iterator erase(const_iterator first, const_iterator last) override
   {
-	TTDictionary  line = lineValue[0];
-	TTAddress     address;
-    TTValue       v;
+    return iterator();
+  }
+  
+};
 
-	line.lookup(kTTSym_address, v);
-    address = v[0];
-    
-	found = address == *((TTAddress*)addressPtrToMatch);
-  }
+shared_ptr<State> State::create()
+{
+  return shared_ptr<State>(new JamomaState);
 }
+
+/* code relative to old state managment
+ 
+void State_ImplFindAddress(const TTValue& lineValue, TTPtr addressPtrToMatch, TTBoolean& found)
+{
+  TTDictionary  line = lineValue[0];
+  TTAddress     address;
+  TTValue       v;
+  
+  line.lookup(kTTSym_address, v);
+  address = v[0];
+  
+  found = address == *((TTAddress*)addressPtrToMatch);
+}
+*/

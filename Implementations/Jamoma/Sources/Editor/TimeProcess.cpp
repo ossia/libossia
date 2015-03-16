@@ -1,47 +1,62 @@
-/*!
- * \file TimeProcess.cpp
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #include "Editor/TimeProcess.h"
 
-#include "TTScore.h"
+using namespace OSSIA;
+using namespace std;
 
-namespace OSSIA
+class Scheduler;
+
+class JamomaTimeProcess : public TimeProcess
 {
-  class TimeProcess::Impl
-  {
-    
-  public:
-    
-    Impl()
-    {
-      // todo : move this else where ...
-      TTFoundationInit("/usr/local/jamoma/");
-      TTModularInit("/usr/local/jamoma/");
-      TTScoreInit("/usr/local/jamoma/");
-    };
-    
-    Impl(const Impl & other) = default;
-    ~Impl() = default;
-  };
   
-  TimeProcess::TimeProcess() :
-  pimpl(new Impl)
+private:
+  // Implementation Specific
+  shared_ptr<TimeEvent> evt;
+  shared_ptr<State> st;
+  shared_ptr<Scheduler> sched;
+  
+public:
+  // Navigation
+  virtual const shared_ptr<TimeEvent> & getStartEvent() const override
+  {
+    return evt;
+  }
+  
+  virtual const shared_ptr<TimeEvent> & getEndEvent() const override
+  {
+    return evt;
+  }
+
+  // Accessors
+  virtual TimeValue getLength() const override
+  {
+    return TimeValue();
+  }
+  
+  virtual void setLength(TimeValue) override
   {}
   
-  TimeProcess::~TimeProcess()
+  virtual const shared_ptr<State> & getStartState() const override
   {
-    delete pimpl;
+    return st;
   }
   
-  void TimeProcess::play() const
+  virtual void setStartState(shared_ptr<State>) override
+  {}
+  
+  virtual const shared_ptr<State> & getEndState() const override
   {
-    ;
+    return st;
   }
-}
+  
+  virtual void setEndState(shared_ptr<State>) override
+  {}
+  
+  virtual const shared_ptr<Scheduler> & getScheduler() const override
+  {
+    return sched;
+  }
+  
+  virtual void setScheduler(shared_ptr<Scheduler>) override
+  {}
+
+};
