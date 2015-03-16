@@ -14,13 +14,14 @@
 namespace OSSIA {
 
 enum class AddressValueType {
-
+	NO_VALUE
 };
 
 class AddressValue {
 
 public:
-
+  AddressValue() = default;
+  AddressValue(AddressValueType) {}
   virtual ~AddressValue() = default;
 
 

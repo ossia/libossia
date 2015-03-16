@@ -18,14 +18,15 @@ namespace OSSIA {
 template <typename T>
 class Container {
 
+
+
+public:
+
   typedef T value_type;
   typedef genericIterator iterator;
   typedef genericConst_iterator const_iterator;
   typedef genericSize_type size_type;
-
   virtual ~Container() = default;
-
-public:
 
   virtual iterator begin() = 0;
   virtual iterator end() = 0;

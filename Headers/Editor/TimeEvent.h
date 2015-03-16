@@ -15,7 +15,7 @@
 #include <string>
 
 namespace OSSIA {
-
+class State;
 class Expression;
 
 class TimeEvent {

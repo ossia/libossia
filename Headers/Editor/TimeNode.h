@@ -41,9 +41,9 @@ public:
   virtual void setSimultaneityMargin(TimeValue) = 0; //todo why not in constructor (only) ?
 
   // Std container //todo inherit Container ? because emplace is only here now
-  class iterator;
-  class const_iterator;
-  class size_type;
+  class iterator { };
+  class const_iterator { };
+  class size_type { };
   virtual iterator begin() = 0;
   virtual iterator end() = 0;
   virtual const_iterator cbegin() const = 0;

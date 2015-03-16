@@ -4,7 +4,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class MockScenario : virtual Scenario, virtual MockTimeProcess {
+class MockScenario : public Scenario, public MockTimeProcess {
 
 public:
 
@@ -16,7 +16,7 @@ public:
   MockScenario(const MockScenario * other) {}
   virtual ~MockScenario() {}
   virtual shared_ptr<Scenario> clone() const override {
-    return shared_ptr<Scenario>(new MockScenario(this));
+	return shared_ptr<Scenario>(new MockScenario(this));
   }
 
   // Lecture
@@ -24,23 +24,23 @@ public:
 
   // Edition
   virtual void addConstraint(
-      const Constraint&,
-      const TimeNode & startNode) override {}
+	  const Constraint&,
+	  const TimeNode & startNode) override {}
   virtual void addConstraint(
-      const Constraint&,
-      const TimeNode & startNode,
-      const TimeNode & endNode) override {}
+	  const Constraint&,
+	  const TimeNode & startNode,
+	  const TimeNode & endNode) override {}
 
   // Accessors
   virtual const bool isKiller() const override {return true;}
   virtual void setKiller(bool) override {}
   // internal TimeNodes
   virtual const shared_ptr<TimeNode> & getStartNode() const override {
-    return tnode;
+	return tnode;
   }
   virtual void setStartNode(shared_ptr<TimeNode>) override {}
   virtual const shared_ptr<TimeNode> & getEndNode() const override {
-    return tnode;
+	return tnode;
   }
   virtual void setEndNode(shared_ptr<TimeNode>) override {}
 

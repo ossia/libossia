@@ -4,9 +4,11 @@ project(APIMockImplementation)
 
 include_directories(${API_HEADERS_FOLDER}/Editor)
 include_directories(${API_HEADERS_FOLDER}/Misc)
-include_directories(${API_HEADERS_FOLDER}/Network)
+include_directories(${API_HEADERS_FOLDER})
 
-file(GLOB_RECURSE SRCS *.h *.cpp)
+file(GLOB_RECURSE SRCS
+	"${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.cpp")
 
 add_library(APIMock ${SRCS})
 

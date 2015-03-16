@@ -1,11 +1,12 @@
 #include "Editor/TimeProcess.h"
-
+#include "Editor/TimeValue.h"
 using namespace OSSIA;
 using namespace std;
 
-class Scheduler;
-
-class MockTimeProcess : public TimeProcess {
+namespace OSSIA {
+	class Scheduler;
+}
+class MockTimeProcess : public virtual TimeProcess {
 
 public:
 
@@ -16,10 +17,10 @@ public:
 
   // Navigation
   virtual const shared_ptr<TimeEvent> & getStartEvent() const override {
-    return evt;
+	return evt;
   }
   virtual const shared_ptr<TimeEvent> & getEndEvent() const override {
-    return evt;
+	return evt;
   }
 
   // Accessors
@@ -30,7 +31,7 @@ public:
   virtual const shared_ptr<State> & getEndState() const override {return st;}
   virtual void setEndState(shared_ptr<State>) override {}
   virtual const shared_ptr<Scheduler> & getScheduler() const override {
-    return sched;
+	return sched;
   }
   virtual void setScheduler(shared_ptr<Scheduler>) override {}
 
