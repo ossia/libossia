@@ -18,7 +18,7 @@ namespace OSSIA {
 class Constraint;
 class TimeNode;
 
-class Scenario : public TimeProcess {
+class Scenario : public virtual TimeProcess {
 
 public:
 

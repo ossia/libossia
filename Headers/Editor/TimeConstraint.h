@@ -29,8 +29,8 @@ public:
 
   // Factories, destructor
   static std::shared_ptr<TimeConstraint> create(TimeValue nominal,
-						TimeValue min = nominal,
-						TimeValue max = nominal);
+						TimeValue min,
+						TimeValue max);
   virtual std::shared_ptr<TimeConstraint> clone() const = 0;
   virtual ~TimeConstraint() = default;
 

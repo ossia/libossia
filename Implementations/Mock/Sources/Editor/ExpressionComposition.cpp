@@ -1,4 +1,5 @@
 #include "Editor/ExpressionComposition.h"
+#include "Network/AddressValue.h"
 
 using namespace OSSIA;
 using namespace std;
@@ -11,13 +12,13 @@ public:
   shared_ptr<Expression> exp;
 
   // Constructors, destructor, cloning
-  MockExpressionComposition(shared_ptr<ExpressionComposition> exp1,
-			    Operator op,
-			    shared_ptr<ExpressionComposition> exp2) {}
+  MockExpressionComposition(shared_ptr<Expression> exp1,
+				Operator op,
+				shared_ptr<Expression> exp2) {}
   MockExpressionComposition(const MockExpressionComposition * other) {}
   virtual ~MockExpressionComposition() {}
   virtual shared_ptr<ExpressionComposition> clone() const override {
-    return shared_ptr<ExpressionComposition>(new MockExpressionComposition(this));
+	return shared_ptr<ExpressionComposition>(new MockExpressionComposition(this));
   }
 
   // Lecture
@@ -25,18 +26,18 @@ public:
 
   // Accessors
   virtual const shared_ptr<Expression> & getFirstOperand() const override {
-    return exp;
+	return exp;
   }
   virtual const shared_ptr<Expression> & getSecondOperand() const {
-    return exp;
+	return exp;
   }
   virtual Operator getOperator() const override {return Operator::NOT;};
 
 };
 
 shared_ptr<ExpressionComposition> ExpressionComposition::create(
-    std::shared_ptr<Address> addr,
-    Operator op,
-    AddressValue val) {
+		std::shared_ptr<Expression> addr,
+		Operator op,
+		std::shared_ptr<Expression> val) {
   return shared_ptr<ExpressionComposition>(new MockExpressionComposition(addr, op, val));
 }

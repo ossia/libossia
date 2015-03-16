@@ -12,7 +12,7 @@
 #define EXPRESSIONCOMPOSITION_H_
 
 #include "Editor/Expression.h"
-
+#include <memory>
 namespace OSSIA {
 
 class ExpressionComposition : public Expression {
@@ -20,17 +20,17 @@ class ExpressionComposition : public Expression {
 public:
 
   enum class Operator {
-    NOT,
-    AND,
-    OR,
-    XOR
+	NOT,
+	AND,
+	OR,
+	XOR
   };
 
   // Factories, destructor
   static std::shared_ptr<ExpressionComposition>
-        create(std::shared_ptr<Expression>,
-               Operator,
-               std::shared_ptr<Expression>/*todo = NO_EXPRESSION*/);
+		create(std::shared_ptr<Expression>,
+			   Operator,
+			   std::shared_ptr<Expression>/*todo = NO_EXPRESSION*/);
   virtual std::shared_ptr<ExpressionComposition> clone() const = 0;
   virtual ~ExpressionComposition() = default;
 

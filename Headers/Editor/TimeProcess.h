@@ -11,11 +11,14 @@
 #ifndef TIMEPROCESS_H_
 #define TIMEPROCESS_H_
 
+#include <string>
+#include <memory>
 namespace OSSIA {
 
 class Scheduler;
 class State;
 class TimeValue;
+class TimeEvent;
 
 class TimeProcess {
 

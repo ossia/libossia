@@ -23,7 +23,7 @@ class AddressValue;
 class Curve;
 class TimeValue;
 
-class Automation : public TimeProcess, public Container<Address> {
+class Automation : public virtual TimeProcess, public Container<Address> {
 
 public:
 

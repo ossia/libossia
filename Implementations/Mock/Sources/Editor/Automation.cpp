@@ -1,10 +1,11 @@
 #include "TimeProcess.cpp"
 #include "Editor/Automation.h"
+#include "Network/AddressValue.h"
 
 using namespace OSSIA;
 using namespace std;
 
-class MockAutomation : virtual Automation, virtual MockTimeProcess {
+class MockAutomation : public virtual Automation, public virtual MockTimeProcess {
 
 public:
 
@@ -18,7 +19,7 @@ public:
   MockAutomation(const MockAutomation * other) {}
   virtual ~MockAutomation() {}
   virtual shared_ptr<Automation> clone() const override {
-    return shared_ptr<Automation>(new MockAutomation(this));
+	return shared_ptr<Automation>(new MockAutomation(this));
   }
 
   // Lecture
@@ -42,20 +43,20 @@ public:
   virtual size_type size() const override {return size_type();}
   virtual bool empty() const override {return true;}
   virtual shared_ptr<Address> & front() override {
-    return element;
+	return element;
   }
   virtual const shared_ptr<Address> & front() const override {
-    return element;
+	return element;
   }
   virtual shared_ptr<Address> & back() override {
-    return element;
+	return element;
   }
   virtual const shared_ptr<Address> & back() const override {
-    return element;
+	return element;
   }
   virtual iterator insert(const_iterator where,
 			  shared_ptr<Address> what) override {
-    return iterator();
+	return iterator();
   }
   virtual iterator erase(const_iterator which) override {return iterator();}
   virtual iterator erase(const_iterator first,

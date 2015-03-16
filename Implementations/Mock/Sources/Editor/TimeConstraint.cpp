@@ -1,5 +1,5 @@
 #include "Editor/TimeConstraint.h"
-
+#include "Editor/TimeValue.h"
 using namespace OSSIA;
 using namespace std;
 
@@ -14,12 +14,12 @@ public:
 
   // Constructors, destructor, cloning
   MockTimeConstraint(TimeValue nominal,
-		     TimeValue min = nominal,
-		     TimeValue max = nominal){}
+			 TimeValue min,
+			 TimeValue max){}
   MockTimeConstraint(const MockTimeConstraint * other){}
   virtual ~MockTimeConstraint() {}
   virtual shared_ptr<TimeConstraint> clone() const override {
-    return shared_ptr<TimeConstraint>(new MockTimeConstraint(this));
+	return shared_ptr<TimeConstraint>(new MockTimeConstraint(this));
   }
 
   // Lecture
@@ -27,19 +27,19 @@ public:
 
   // Navigation
   virtual const shared_ptr<TimeNode> & getStartNode() const override{
-    return tnode;
+	return tnode;
   }
   virtual const shared_ptr<TimeNode> & getEndNode() const override {
-    return tnode;
+	return tnode;
   }
 
   // Accessors
   virtual const shared_ptr<State> & getStartState() const override {
-    return st;
+	return st;
   }
   virtual void setStartState(shared_ptr<State>) override {};
   virtual const shared_ptr<State> & getEndState() const override {
-    return st;
+	return st;
   }
   virtual void setEndState(shared_ptr<State>) override;
 
@@ -51,20 +51,20 @@ public:
   virtual size_type size() const override {return size_type();}
   virtual bool empty() const override {return true;}
   virtual shared_ptr<TimeProcess> & front() override {
-    return element;
+	return element;
   }
   virtual const shared_ptr<TimeProcess> & front() const override {
-    return element;
+	return element;
   }
   virtual shared_ptr<TimeProcess> & back() override {
-    return element;
+	return element;
   }
   virtual const shared_ptr<TimeProcess> & back() const override {
-    return element;
+	return element;
   }
   virtual iterator insert(const_iterator where,
 			  shared_ptr<TimeProcess> what) override {
-    return iterator();
+	return iterator();
   }
   virtual iterator erase(const_iterator which) override {return iterator();}
   virtual iterator erase(const_iterator first,
@@ -73,7 +73,7 @@ public:
 };
 
 shared_ptr<TimeConstraint> TimeConstraint::create(TimeValue nominal,
-						  TimeValue min = nominal,
-						  TimeValue max = nominal) {
+						  TimeValue min,
+						  TimeValue max) {
   return shared_ptr<TimeConstraint>(new MockTimeConstraint(nominal, min, max));
 }

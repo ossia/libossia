@@ -1,4 +1,5 @@
 #include "Editor/TimeNode.h"
+#include "Editor/TimeValue.h"
 
 using namespace OSSIA;
 using namespace std;
@@ -15,7 +16,7 @@ public:
   MockTimeNode(const MockTimeNode * other) {}
   virtual ~MockTimeNode() {}
   virtual shared_ptr<TimeNode> clone() const override {
-    return shared_ptr<TimeNode>(new MockTimeNode(this));
+	return shared_ptr<TimeNode>(new MockTimeNode(this));
   }
 
   // Lecture
@@ -29,26 +30,26 @@ public:
   // Std container
   virtual iterator begin() override {return iterator();}
   virtual iterator end() override {return iterator();}
-  virtual const_iterator cbegin() const override {return iterator();}
-  virtual const_iterator cend() const override {return iterator();}
+  virtual const_iterator cbegin() const override {return const_iterator();}
+  virtual const_iterator cend() const override {return const_iterator();}
   virtual size_type size() const override {return size_type();}
   virtual bool empty() const override {return true;}
   virtual shared_ptr<TimeEvent> & front() override {
-    return element;
+	return element;
   }
   virtual const shared_ptr<TimeEvent> & front() const override {
-    return element;
+	return element;
   }
   virtual shared_ptr<TimeEvent> & back() override {
-    return element;
+	return element;
   }
   virtual const shared_ptr<TimeEvent> & back() const override {
-    return element;
+	return element;
   }
   virtual iterator emplace(const_iterator where,
 			  shared_ptr<State> st,
 			  shared_ptr<Expression> exp) override {
-    return iterator();
+	return iterator();
   }
   virtual iterator erase(const_iterator which) override {return iterator();}
   virtual iterator erase(const_iterator first,
