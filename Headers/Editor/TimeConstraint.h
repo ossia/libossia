@@ -23,7 +23,7 @@ class TimeNode;
 class TimeProcess;
 class TimeValue;
 
-class TimeConstraint : public Container<TimeProcess>{
+class TimeConstraint : public Container<TimeProcess> {
 
 public:
 

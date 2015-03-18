@@ -11,8 +11,9 @@
 #ifndef TIMEPROCESS_H_
 #define TIMEPROCESS_H_
 
-#include <string>
 #include <memory>
+#include <string>
+
 namespace OSSIA {
 
 class Scheduler;
@@ -29,6 +30,7 @@ public:
   virtual void play(bool log = false, std::string name = "") const = 0;
 
   // Navigation
+
   virtual const std::shared_ptr<TimeEvent> & getStartEvent() const = 0;
   virtual const std::shared_ptr<TimeEvent> & getEndEvent() const = 0;
 
