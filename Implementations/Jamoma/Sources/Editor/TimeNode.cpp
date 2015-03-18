@@ -1,4 +1,7 @@
 #include "Editor/TimeNode.h"
+#include "Editor/TimeValue.h"
+
+#include "TTScore.h"
 
 using namespace OSSIA;
 using namespace std;
@@ -28,7 +31,7 @@ public:
   
   virtual shared_ptr<TimeNode> clone() const override
   {
-    return shared_ptr<TimeNode>(new JamomaTimeNode(this));
+    return nullptr;//shared_ptr<TimeNode>(new JamomaTimeNode(this));
   }
 
   // Lecture
@@ -119,5 +122,5 @@ public:
 
 shared_ptr<TimeNode> TimeNode::create()
 {
-  return shared_ptr<TimeNode>(new JamomaTimeNode());
+  return nullptr;//shared_ptr<TimeNode>(new JamomaTimeNode());
 }

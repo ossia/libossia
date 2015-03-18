@@ -1,4 +1,7 @@
 #include "Editor/TimeConstraint.h"
+#include "Editor/TimeValue.h"
+
+#include "TTScore.h"
 
 using namespace OSSIA;
 using namespace std;
@@ -14,7 +17,7 @@ private:
   
 public:
   // Constructors, destructor, cloning
-  JamomaTimeConstraint(TimeValue nominal, TimeValue min = nominal, TimeValue max = nominal)
+  JamomaTimeConstraint(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/)
   {
     // todo : we shouldn't init each time we create an object ...
     TTFoundationInit("/usr/local/jamoma/");
@@ -133,7 +136,7 @@ public:
 
 };
 
-shared_ptr<TimeConstraint> TimeConstraint::create(TimeValue nominal, TimeValue min = nominal, TimeValue max = nominal)
+shared_ptr<TimeConstraint> TimeConstraint::create(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/)
 {
   return shared_ptr<TimeConstraint>(new JamomaTimeConstraint(nominal, min, max));
 }

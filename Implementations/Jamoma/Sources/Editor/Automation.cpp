@@ -1,10 +1,13 @@
 #include "TimeProcess.cpp"
 #include "Editor/Automation.h"
+#include "Network/Address.h"
+#include "Network/AddressValue.h"
 
 #include "TTScore.h"
 
 using namespace OSSIA;
 using namespace std;
+
 
 class JamomaAutomation : virtual Automation, virtual JamomaTimeProcess
 {
@@ -33,7 +36,7 @@ public:
   
   virtual shared_ptr<Automation> clone() const override
   {
-    return shared_ptr<Automation>(new JamomaAutomation(this));
+    return nullptr;//shared_ptr<Automation>(new JamomaAutomation(this));
   }
 
   // Lecture
@@ -54,7 +57,7 @@ public:
     return AddressValue();
   }
   
-  virtual void setSEndValue(AddressValue) override
+  virtual void setEndValue(AddressValue) override
   {}
   
   virtual const shared_ptr<Curve> & getCurve() const override
@@ -144,5 +147,5 @@ public:
 
 shared_ptr<Automation> Automation::create()
 {
-  return shared_ptr<Automation>(new JamomaAutomation());
+  return nullptr;//shared_ptr<Automation>(new JamomaAutomation());
 }

@@ -1,4 +1,7 @@
 #include "Editor/ExpressionAtom.h"
+#include "Network/AddressValue.h"
+
+#include "TTScore.h"
 
 using namespace OSSIA;
 using namespace std;
@@ -8,11 +11,12 @@ class JamomaExpressionAtom : public ExpressionAtom
   
 private:
   // Implementation Specific
-  shared_ptr<Address> addr;
-
+  shared_ptr<ExpressionValue> first_expr;
+  shared_ptr<ExpressionValue> second_expr;
+  
 public:
   // Constructors, destructor, cloning
-  JamomaExpressionAtom(std::shared_ptr<Address> addr, Operator op, AddressValue val)
+  JamomaExpressionAtom(std::shared_ptr<Address> addr, Operator op, std::shared_ptr<AddressValue> val)
   {
     // todo : we shouldn't init each time we create an object ...
     TTFoundationInit("/usr/local/jamoma/");
@@ -38,24 +42,24 @@ public:
   }
 
   // Accessors
-  virtual const shared_ptr<Address> & getAddress() const override
+  virtual const std::shared_ptr<ExpressionValue> & getFirstOperand() const override
   {
-    return addr;
+    return first_expr;
+  }
+  
+  virtual const std::shared_ptr<ExpressionValue> & getSecondOperand() const override
+  {
+    return second_expr;
   }
   
   virtual Operator getOperator() const override
   {
     return Operator::IMPULSE;
   }
-  
-  virtual AddressValue getOperand() const override
-  {
-    return AddressValue();
-  }
 
 };
 
-shared_ptr<ExpressionAtom> ExpressionAtom::create(std::shared_ptr<Address> addr, Operator op, AddressValue val)
+shared_ptr<ExpressionAtom> ExpressionAtom::create(std::shared_ptr<Address> addr, Operator op, std::shared_ptr<AddressValue> val)
 {
   return shared_ptr<ExpressionAtom>(new JamomaExpressionAtom(addr, op, val));
 }

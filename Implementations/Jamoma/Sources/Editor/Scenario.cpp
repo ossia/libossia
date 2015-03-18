@@ -1,6 +1,8 @@
 #include "TimeProcess.cpp"
 #include "Editor/Scenario.h"
 
+#include "TTScore.h"
+
 using namespace OSSIA;
 using namespace std;
 
@@ -29,7 +31,7 @@ public:
   
   virtual shared_ptr<Scenario> clone() const override
   {
-    return shared_ptr<Scenario>(new JamomaScenario(this));
+    return nullptr;//shared_ptr<Scenario>(new JamomaScenario(this));
   }
 
   // Lecture
@@ -73,5 +75,5 @@ public:
 
 shared_ptr<Scenario> Scenario::create()
 {
-  return shared_ptr<Scenario>(new JamomaScenario());
+  return nullptr;//shared_ptr<Scenario>(new JamomaScenario());
 }

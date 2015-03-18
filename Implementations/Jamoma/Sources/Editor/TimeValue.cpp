@@ -1,4 +1,7 @@
 #include "Editor/TimeValue.h"
+
+#include "TTScore.h"
+
 using namespace OSSIA;
 
 TimeValue::TimeValue()
@@ -12,6 +15,11 @@ TimeValue::TimeValue()
 TimeValue::TimeValue(const int c)
 {
 //	date=c;
+}
+
+TimeValue::~TimeValue()
+{
+    ;
 }
 
 TimeValue& TimeValue::operator=(const int c)

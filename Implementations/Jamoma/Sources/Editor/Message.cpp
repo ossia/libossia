@@ -1,4 +1,5 @@
 #include "Editor/Message.h"
+#include "Network/Address.h"
 
 #include "TTScore.h"
 
@@ -39,12 +40,12 @@ public:
   {}
 
   // Accessors
-  virtual shared_ptr<Address> & getAddress() const override
+  virtual const shared_ptr<Address> & getAddress() const override
   {
     return addr; //todo cannot return non-const member in const method
   }
   
-  virtual AddressValue getValue() const override
+  virtual const AddressValue getValue() const override
   {
     return val;
   }

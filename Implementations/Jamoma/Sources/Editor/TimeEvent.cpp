@@ -1,5 +1,4 @@
 #include "TimeProcessList.cpp"
-
 #include "Editor/TimeEvent.h"
 
 using namespace OSSIA;
@@ -12,6 +11,7 @@ private:
   // Implementation Specific
   shared_ptr<State> st;
   shared_ptr<Expression> exp;
+  JamomaTimeProcessList proclist;
   
 public:
   // Constructor, destructor
@@ -43,12 +43,12 @@ public:
   
   virtual TimeProcessList & getPreviousProcesses() override
   {
-    return JamomaTimeProcessList();
+    return proclist;
   }
   
   virtual TimeProcessList & getNextProcesses() override
   {
-    return JamomaTimeProcessList();
+    return proclist;
   }
 
 };

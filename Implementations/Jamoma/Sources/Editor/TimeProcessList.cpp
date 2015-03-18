@@ -1,5 +1,7 @@
 #include "Editor/TimeProcessList.h"
 
+#include "TTScore.h"
+
 using namespace OSSIA;
 using namespace std;
 

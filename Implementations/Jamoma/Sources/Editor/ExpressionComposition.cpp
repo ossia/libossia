@@ -1,5 +1,7 @@
 #include "Editor/ExpressionComposition.h"
 
+#include "TTScore.h"
+
 using namespace OSSIA;
 using namespace std;
 
@@ -8,11 +10,12 @@ class JamomaExpressionComposition : public ExpressionComposition
   
 private:
   // Implementation Specific
-  shared_ptr<Expression> exp;
+  shared_ptr<Expression> first_expr;
+  shared_ptr<Expression> second_expr;
 
 public:
   // Constructors, destructor, cloning
-  JamomaExpressionComposition(shared_ptr<ExpressionComposition> exp1, Operator op, shared_ptr<ExpressionComposition> exp2)
+  JamomaExpressionComposition(shared_ptr<Expression> first_expr, Operator op, shared_ptr<Expression> second_expr)
   {
     // todo : we shouldn't init each time we create an object ...
     TTFoundationInit("/usr/local/jamoma/");
@@ -40,22 +43,22 @@ public:
   // Accessors
   virtual const shared_ptr<Expression> & getFirstOperand() const override
   {
-    return exp;
+    return first_expr;
   }
   
   virtual const shared_ptr<Expression> & getSecondOperand() const
   {
-    return exp;
+    return second_expr;
   }
   
   virtual Operator getOperator() const override
   {
-    return Operator::NOT;
+    return Operator::AND;
   }
 
 };
 
-shared_ptr<ExpressionComposition> ExpressionComposition::create(std::shared_ptr<Address> addr, Operator op, AddressValue val)
+shared_ptr<ExpressionComposition> ExpressionComposition::create(std::shared_ptr<Expression> first_expr, Operator op, std::shared_ptr<Expression> second_expr)
 {
-  return shared_ptr<ExpressionComposition>(new JamomaExpressionComposition(addr, op, val));
+  return shared_ptr<ExpressionComposition>(new JamomaExpressionComposition(first_expr, op, second_expr));
 }

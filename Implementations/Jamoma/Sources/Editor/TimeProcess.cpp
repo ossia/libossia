@@ -1,9 +1,8 @@
 #include "Editor/TimeProcess.h"
+#include "Editor/TimeValue.h"
 
 using namespace OSSIA;
 using namespace std;
-
-class Scheduler;
 
 class JamomaTimeProcess : public TimeProcess
 {
@@ -12,7 +11,7 @@ private:
   // Implementation Specific
   shared_ptr<TimeEvent> event;
   shared_ptr<State> state;
-  shared_ptr<Scheduler> scheduler;
+  shared_ptr<Clock> clock;
   
 public:
   // Navigation
@@ -51,12 +50,12 @@ public:
   virtual void setEndState(shared_ptr<State>) override
   {}
   
-  virtual const shared_ptr<Scheduler> & getScheduler() const override
+  virtual const shared_ptr<Clock> & getClock() const override
   {
-    return scheduler;
+    return clock;
   }
   
-  virtual void setScheduler(shared_ptr<Scheduler>) override
+  virtual void setClock(shared_ptr<Clock>) override
   {}
 
 };
