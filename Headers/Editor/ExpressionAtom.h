@@ -12,15 +12,18 @@
 #define EXPRESSIONATOM_H_
 
 #include "Editor/Expression.h"
-#include "Network/AddressValue.h"
 #include <memory>
 namespace OSSIA {
+
+class ExpressionValue;
+class AddressValue;
 
 class ExpressionAtom : public Expression {
 
 public:
 
   enum class Operator {
+    IMPULSE,
 	EQUAL,
 	GREATER_THAN,
 	LOWER_THAN,
@@ -30,9 +33,9 @@ public:
 
   // Factories, destructor
   static std::shared_ptr<ExpressionAtom> create(
-      std::shared_ptr<ExpressionValue>,
+      std::shared_ptr<Address>,
       Operator,
-      std::shared_ptr<ExpressionValue>);
+      std::shared_ptr<AddressValue>);
   virtual std::shared_ptr<ExpressionAtom> clone() const = 0;
   virtual ~ExpressionAtom() = default;
 

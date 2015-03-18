@@ -39,7 +39,7 @@ public:
   virtual AddressValue getStartValue() const = 0; //todo doublon avec Curve ?
   virtual void setStartValue(AddressValue) = 0;
   virtual AddressValue getEndValue() const = 0;
-  virtual void setSEndValue(AddressValue) = 0;
+  virtual void setEndValue(AddressValue) = 0;
   virtual const std::shared_ptr<Curve> & getCurve() const = 0;
   virtual void setCurve(std::shared_ptr<Curve>) = 0;
   virtual const std::shared_ptr<Address> & getInputAdress() const = 0;
