@@ -53,7 +53,6 @@
 			isa = PBXGroup;
 			children = (
 				460D07E219BDD62500235124 /* Editor */,
-				460D07F319BDD62500235124 /* Network */,
 			);
 			name = Headers;
 			path = ../../Headers;
@@ -75,6 +74,7 @@
 				460D07ED19BDD62500235124 /* TimeNode.h */,
 				460D07EE19BDD62500235124 /* TimeProcess.h */,
 				460D07EF19BDD62500235124 /* TimeValue.h */,
+				460D07F319BDD62500235124 /* Network */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -86,7 +86,8 @@
 				464201C819BEF6F600893C87 /* Device.h */,
 				46AA0ED11A012151007374E9 /* Protocols.h */,
 			);
-			path = Network;
+			name = Network;
+			path = ../Network;
 			sourceTree = "<group>";
 		};
 		464201CA19BF28F300893C87 /* CurveSegment */ = {
