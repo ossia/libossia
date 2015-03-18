@@ -33,11 +33,16 @@ struct Minuit : public Protocol {
 
 class OSC : public Protocol {
   OSC(std::string ip, int in_port, int out_port)
-    :ip(ip), in_port(in_port), out_port(out_port) {}
+    :ip(ip), in_port(in_port), out_port(out_port) {} //todo what if only in or out ?
 
   std::string ip;
   int in_port;
   int out_port;
+};
+
+class Midi : public Protocol {
+  static std::vector<Midi> scan();//todo options
+  //todo members
 };
 
 }
