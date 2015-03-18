@@ -31,7 +31,7 @@ public:
   virtual const shared_ptr<Expression> & getSecondOperand() const {
 	return exp;
   }
-  virtual Operator getOperator() const override {return Operator::NOT;};
+  virtual Operator getOperator() const override {return Operator::AND;};
 
 };
 
