@@ -11,25 +11,54 @@
 #ifndef ADDRESSVALUE_H_
 #define ADDRESSVALUE_H_
 
+#include "Editor/ExpressionValue.h"
+
 namespace OSSIA {
 
-enum class AddressValueType {
-	NO_VALUE
-};
-
-class AddressValue {
+class AddressValue : public ExpressionValue {
 
 public:
-  AddressValue() = default;
-  AddressValue(AddressValueType) {}
+
+  enum class Type {
+    NONE,
+    BOOL,
+    INT,
+    FLOAT,
+    CHAR,
+    STRING,
+    TUPLE, //todo
+    GENERIC
+  };
+
   virtual ~AddressValue() = default;
 
+};
 
+struct Bool : public AddressValue {
+  bool value;
+};
 
+struct Int : public AddressValue {
+  int value;
+};
+
+struct Float : public AddressValue {
+  float value;
+};
+
+struct Char : public AddressValue {
+  char value;
+};
+
+struct String : public AddressValue {
+  std::string value;
+};
+
+struct Generic : public AddressValue {
+  char * start;
+  int size;
 };
 
 }
-
-
 
 #endif /* ADDRESSVALUE_H_ */
