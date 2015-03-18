@@ -8,9 +8,8 @@
  * http://www.cecill.info
  */
 
-#include "Editor/Event.h"
+#include "Editor/TimeEvent.h"
 #include "Editor/Expression.h"
-#include "Editor/InteractiveBranching.h"
 #include "Editor/Scenario.h"
 #include "Editor/State.h"
 #include "Editor/TimeBox.h"
