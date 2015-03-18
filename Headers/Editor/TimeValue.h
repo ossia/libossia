@@ -25,11 +25,6 @@ class TimeValue {
   // Cast
   operator int();
 
-  // pimpl idiom
-  // private: // todo issue #1
-  class Impl;
-  Impl * pimpl{};
-
 };
 
 }
