@@ -13,17 +13,18 @@
 
 #include "Network/Address.h"
 #include "Network/Device.h"
-#include "Network/Protocols.h"
+#include "Network/Protocol.h"
 
 using namespace OSSIA;
 using namespace std;
 
 int main() {
 
-  Minuit myProt("MinuitDevice1", "1.2.3.4", 66666);
-  auto minuitDevice = Device.create(myProt);
+  Minuit myProt{"MinuitDevice1", "1.2.3.4", 66666};
+  auto minuitDevice = Device::create(myProt);
 
-  auto test = minuitDevice->addAddress("test", AddressType::BOOL);
+  auto test = minuitDevice->emplace(minuitDevice->begin(), "test");
+  test->createAddress(AddressValue::Type::BOOL);
   auto done = minuitDevice->addAddress("done");
 
   auto test1 = test->addAddress("1", AddressType::INT);
