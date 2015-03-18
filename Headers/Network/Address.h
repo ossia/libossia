@@ -13,55 +13,49 @@
 
 #include <string>
 
+#include "Editor/Expression.h"
+#include "Editor/ExpressionValue.h"
+
 namespace OSSIA {
 
-template <typename T>
-class Device;
-
-template <typename T>
-class Address {
-
-private:
-
-  // Constructors, destructor, assignment
-  Address();
-  Address(const Address&);
-  ~Address();
-  Address & operator= (const Address&);
+class Address : public ExpressionValue, public Expression {
 
 public:
 
-  typedef T value_type;
+  // Destructor
+  virtual ~Address() = default;
 
-  // Factories
-  Address addAddress(std::string) const;
-  template <typename U>
-  Address addAddress(std::string) const;
-  template <typename U>
-  Address addAddress(std::string, U min, U max) const;
-
-  // Navigation
-  bool isRoot() const;
-  Address & getParent() const;
-  Device<T> & getDevice() const;
-
-  // Iterators
-  class const_iterator; // bidirectional
-  const_iterator begin() const;
-  const_iterator end() const;
-  const_iterator find(const Address&) const;
-
-  // Managing children
-  void addChild(const Address&);
-  bool removeChild(const Address&);
+  // Network
+  virtual const std::shared_ptr<Device> & getDevice() const = 0;
+  virtual bool updateValue() const = 0;
+  virtual bool sendValue(AddressValue) const = 0;
 
   // Accessors
-  std::string getAddress();
+  virtual AddressValue getValue() const = 0;
+  virtual AddressValue::Type getValueType() const = 0;
+  virtual AccessMode getAccessMode() const = 0;
+  virtual Domain getDomain() const = 0;
+  virtual BoundingModes getBoundingMode() const = 0;
+  virtual bool getRepetitionFilter() const = 0;
+  virtual Destination getDestination() const = 0;
+  virtual Address & setAccessMode(AccessMode) = 0;
+  virtual Address & setDomain(Domain) = 0;
+  virtual Address & setBoundingMode(BoundingModes) = 0;
+  virtual Address & setRepetitionFilter(bool = true) = 0;
+  virtual Address & setDestination(Destination) = 0;
 
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl{};
+  // Enumerations
+  enum class AccessMode {
+    GET,
+    SET,
+    BI
+  };
+  enum class BoundingMode {
+    FREE,
+    CLIP,
+    WRAP,
+    FOLD
+  };
 
 };
 

@@ -11,8 +11,8 @@
 #ifndef TIMEPROCESS_H_
 #define TIMEPROCESS_H_
 
-#include <string>
 #include <memory>
+#include <string>
 
 #include "Editor/TimeValue.h"
 

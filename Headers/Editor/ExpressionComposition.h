@@ -11,8 +11,10 @@
 #ifndef EXPRESSIONCOMPOSITION_H_
 #define EXPRESSIONCOMPOSITION_H_
 
-#include "Editor/Expression.h"
 #include <memory>
+
+#include "Editor/Expression.h"
+
 namespace OSSIA {
 
 class ExpressionComposition : public Expression {
@@ -20,17 +22,16 @@ class ExpressionComposition : public Expression {
 public:
 
   enum class Operator {
-	NOT,
 	AND,
 	OR,
 	XOR
   };
 
   // Factories, destructor
-  static std::shared_ptr<ExpressionComposition>
-		create(std::shared_ptr<Expression>,
-			   Operator,
-			   std::shared_ptr<Expression>/*todo = NO_EXPRESSION*/);
+  static std::shared_ptr<ExpressionComposition> create(
+      std::shared_ptr<Expression>,
+      Operator,
+      std::shared_ptr<Expression>);
   virtual std::shared_ptr<ExpressionComposition> clone() const = 0;
   virtual ~ExpressionComposition() = default;
 

@@ -10,20 +10,20 @@ class JamomaTimeProcess : public TimeProcess
   
 private:
   // Implementation Specific
-  shared_ptr<TimeEvent> evt;
-  shared_ptr<State> st;
-  shared_ptr<Scheduler> sched;
+  shared_ptr<TimeEvent> event;
+  shared_ptr<State> state;
+  shared_ptr<Scheduler> scheduler;
   
 public:
   // Navigation
   virtual const shared_ptr<TimeEvent> & getStartEvent() const override
   {
-    return evt;
+    return event;
   }
   
   virtual const shared_ptr<TimeEvent> & getEndEvent() const override
   {
-    return evt;
+    return event;
   }
 
   // Accessors
@@ -37,7 +37,7 @@ public:
   
   virtual const shared_ptr<State> & getStartState() const override
   {
-    return st;
+    return state;
   }
   
   virtual void setStartState(shared_ptr<State>) override
@@ -45,7 +45,7 @@ public:
   
   virtual const shared_ptr<State> & getEndState() const override
   {
-    return st;
+    return state;
   }
   
   virtual void setEndState(shared_ptr<State>) override
@@ -53,7 +53,7 @@ public:
   
   virtual const shared_ptr<Scheduler> & getScheduler() const override
   {
-    return sched;
+    return scheduler;
   }
   
   virtual void setScheduler(shared_ptr<Scheduler>) override
