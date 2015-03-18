@@ -50,6 +50,7 @@ public:
   // Accessors
   virtual AddressValue getValue() const = 0;
   virtual AddressValue::Type getValueType() const = 0;
+
   virtual AccessMode getAccessMode() const = 0;
   //todo virtual Domain getDomain() const = 0;
   virtual BoundingMode getBoundingMode() const = 0; //todo multiple ?
