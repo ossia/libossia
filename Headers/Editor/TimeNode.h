@@ -14,6 +14,8 @@
 #include <memory>
 #include <string>
 
+#include "Misc/Container.h"
+
 namespace OSSIA {
 
 class Expression;
@@ -23,7 +25,7 @@ class TimeConstraint;
 class TimeEvent;
 class TimeValue;
 
-class TimeNode {
+class TimeNode : public Container<TimeEvent> {
 
 public:
 
@@ -40,26 +42,10 @@ public:
   virtual TimeValue getSimultaneityMargin() const = 0;
   virtual void setSimultaneityMargin(TimeValue) = 0; //todo why not in constructor (only) ?
 
-  // Std container //todo inherit Container ? because emplace is only here now
-  class iterator { };
-  class const_iterator { };
-  class size_type { };
-  virtual iterator begin() = 0;
-  virtual iterator end() = 0;
-  virtual const_iterator cbegin() const = 0;
-  virtual const_iterator cend() const = 0;
-  virtual size_type size() const = 0;
-  virtual bool empty() const = 0;
-  virtual std::shared_ptr<TimeEvent> & front() = 0;
-  virtual const std::shared_ptr<TimeEvent> & front() const = 0;
-  virtual std::shared_ptr<TimeEvent> & back() = 0;
-  virtual const std::shared_ptr<TimeEvent> & back() const = 0;
-//  virtual iterator insert(const_iterator, std::shared_ptr<Event>) = 0;
+  // TimeEvent Factory
   virtual iterator emplace(const_iterator,
                            std::shared_ptr<State>/*todo = NO_STATE*/,
                            std::shared_ptr<Expression>/*todo = NO_EXPRESSION*/) = 0;
-  virtual iterator erase(const_iterator) = 0;
-  virtual iterator erase(const_iterator first, const_iterator last) = 0;
 
 };
 
