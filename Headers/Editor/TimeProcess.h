@@ -13,11 +13,13 @@
 
 #include <string>
 #include <memory>
+
+#include "Editor/TimeValue.h"
+
 namespace OSSIA {
 
 class Scheduler;
 class State;
-class TimeValue;
 class TimeEvent;
 
 class TimeProcess {
