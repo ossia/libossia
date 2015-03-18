@@ -11,6 +11,8 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include "Network/AddressValue.h"
+
 #include "Misc/Container.h"
 
 namespace OSSIA {
@@ -31,7 +33,8 @@ public:
   virtual bool removeAddress() = 0;
 
   // Address Factory
-  virtual std::shared_ptr<Address> createAddress(AddressValue::Type = NONE) = 0;
+  virtual std::shared_ptr<Address> createAddress(
+      AddressValue::Type = AddressValue::Type::NONE) = 0;
 
   // Child Node Factory
   virtual iterator emplace(const_iterator, std::string) = 0;

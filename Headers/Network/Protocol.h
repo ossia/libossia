@@ -22,6 +22,9 @@ struct Local : public Protocol {};
 
 
 struct Minuit : public Protocol {
+  Minuit(std::string name, std::string ip, int port)
+    :name(name), ip(ip), port(port) {}
+
   std::string name;
   std::string ip;
   int port;
@@ -29,6 +32,9 @@ struct Minuit : public Protocol {
 
 
 class OSC : public Protocol {
+  OSC(std::string ip, int in_port, int out_port)
+    :ip(ip), in_port(in_port), out_port(out_port) {}
+
   std::string ip;
   int in_port;
   int out_port;

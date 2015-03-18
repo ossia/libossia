@@ -11,6 +11,8 @@
 #ifndef ADDRESSVALUE_H_
 #define ADDRESSVALUE_H_
 
+#include <string>
+
 #include "Editor/ExpressionValue.h"
 
 namespace OSSIA {
