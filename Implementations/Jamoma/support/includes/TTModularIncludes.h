@@ -56,7 +56,7 @@
 #include "TTRegex.h"
 
 #include "Protocol.h"
-#include "Scheduler.h"
+#include "TTClock.h"
 
 #include "TTApplication.h"
 #include "TTApplicationManager.h"

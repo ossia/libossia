@@ -73,7 +73,7 @@ public:
 	TTErr getKeys(TTValue& hashKeys);
 	
 	/** Get an array of all of the keys sorted for the hash table. */
-	TTErr getKeysSorted(TTValue& hashKeysSorted, TTBoolean(comparisonFunction)(TTValue&, TTValue&) = NULL);
+	TTErr getKeysSorted(TTValue& hashKeysSorted, TTBoolean(*comparisonFunction)(TTValue&, TTValue&) = NULL);
 
 	/** Return the number of keys in the hash table. */
 	TTUInt32 getSize();

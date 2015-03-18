@@ -32,11 +32,11 @@ class TTSCORE_EXPORT TTTimeContainer : public TTTimeProcess
       
 private :
     
-    /** To be notified when the scheduler speed changed
+    /** To be notified when the clock speed changed
      @param inputValue      the new speed value
      @param outputValue     nothing
      @return                kTTErrNone */
-    TTErr                   SchedulerSpeedChanged(const TTValue& inputValue, TTValue& outputValue) {outputValue = inputValue; return kTTErrGeneric;};
+    TTErr                   ClockSpeedChanged(const TTValue& inputValue, TTValue& outputValue) {outputValue = inputValue; return kTTErrGeneric;};
     
 protected :
     
@@ -97,7 +97,7 @@ protected :
      @return                a boolean value */
     TTBoolean               getTimeProcessRunning(TTObject& aTimeProcess);
     
-    friend TTErr TTSCORE_EXPORT TTTimeContainerSchedulerSpeedCallback(const TTValue& baton, const TTValue& data);
+    friend TTErr TTSCORE_EXPORT TTTimeContainerClockSpeedCallback(const TTValue& baton, const TTValue& data);
 };
 
 typedef TTTimeContainer* TTTimeContainerPtr;

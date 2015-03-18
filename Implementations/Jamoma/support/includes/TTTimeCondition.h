@@ -19,32 +19,20 @@
 #define __TT_TIME_CONDITION_H__
 
 #include "TTScoreIncludes.h"
-#include "Expression.h"
+#include "TTExpression.h"
 
 /** Define a struct containing an expression and a boolean, as the expression to trigger and the default comportment */
 struct Comportment {
     
     Comportment() : trigger(), dflt(true) {}
 
-    Expression trigger;
+    TTExpression trigger;
     TTBoolean dflt;
 };
 
 /** Define an unordered map to store and retreive a comportment relative to a TTTimeEventPtr */
-#ifdef TT_PLATFORM_WIN
-    #include <hash_map>
-    using namespace stdext;	// Visual Studio 2008 puts the hash_map in this namespace
-    typedef hash_map<TTObjectBasePtr,Comportment>    TTCaseMap;
-#else
-//	#ifdef TT_PLATFORM_LINUX
-//  at least for GCC 4.6 on the BeagleBoard, the unordered map is standard
-    #include <unordered_map>
-//	#else
-//		#include "boost/unordered_map.hpp"
-//		using namespace boost;
-//	#endif
-    typedef std::unordered_map<TTObjectBasePtr,Comportment>	TTCaseMap;
-#endif
+#include <unordered_map>
+typedef std::unordered_map<TTObjectBasePtr,Comportment>	TTCaseMap;
 
 typedef	TTCaseMap*                  TTCaseMapPtr;
 typedef TTCaseMap::const_iterator   TTCaseMapIterator;
@@ -75,7 +63,7 @@ protected :
     TTHash                          mReceivers;                     ///< a table of receivers stored by address
     TTCaseMap                       mCases;                         ///< a map linking an event to its comportment
 
-    Expression                      mDispose;                       ///< the expression to dispose the condition
+    TTExpression                    mDispose;                       ///< the expression to dispose the condition
 
     TTInt32                         mNotPendingEventCounter;        ///< counting the number of events which are not pending
                                                                     ///< use signed integer to detect error if it goes below (see in EventStatusChanged)

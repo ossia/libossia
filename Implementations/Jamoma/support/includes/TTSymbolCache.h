@@ -153,11 +153,11 @@ extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_Viewer;
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_XmlHandler;
 
 // notifications
-extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_SchedulerDurationChanged;
-extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_SchedulerOffsetChanged;
-extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_SchedulerSpeedChanged;
-extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_SchedulerRunningChanged;
-extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_SchedulerTicked;
+extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_ClockDurationChanged;
+extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_ClockOffsetChanged;
+extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_ClockSpeedChanged;
+extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_ClockRunningChanged;
+extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_ClockTicked;
 
 // attribute, message or any word often used
 extern TTFOUNDATION_EXPORT TTSymbol	kTTSym_active;

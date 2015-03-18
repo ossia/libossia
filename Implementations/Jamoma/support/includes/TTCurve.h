@@ -24,12 +24,18 @@
  
  @see Automation
  */
-class TTCurve : public TTObjectBase, public TTList
+class TTSCORE_EXPORT TTCurve : public TTObjectBase//, public TTList
 {
 	TTCLASS_SETUP(TTCurve)
 	
+public:
+		void begin() { mList.begin(); }
+		void end() { mList.end(); }
+		void next() { mList.next(); } 
+		void append(const TTValue& v) { mList.append(v); }
+		
 private :
-    
+    TTList								mList;							///< Inheritance won't work on Windows
     TTBoolean                           mActive;                        ///< is the curve ready to run ?
     TTBoolean                           mRedundancy;                    ///< is the curve allow repetitions ?
     TTUInt32                            mSampleRate;                    ///< time precision of the curve

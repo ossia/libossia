@@ -20,7 +20,7 @@
 #include "TTModularIncludes.h"
 
 /**	TTData establishes a control point, which is to say a TTNode that is dramaticly expanded, for a model to get/set its state.
- @details In Max the jcom.parameter, jcom.message and jcom.return externals are based on TTData
+ @details In Max the externals j.parameter, j.message and j.return externals are based on #TTData
  */
 class TTMODULAR_EXPORT TTData : public TTCallback
 {
@@ -40,8 +40,8 @@ private:
 	TTBoolean		mActive;					///< ATTRIBUTE: this used by return only to stop sending values
 	TTBoolean		mInitialized;				///< ATTRIBUTE: is the Value attribute has been initialized ?
 	
-	TTValue			mRangeBounds;				///< ATTRIBUTE: 
-	TTSymbol		mRangeClipmode;				///< ATTRIBUTE: 
+	TTValue			mRangeBounds;				///< ATTRIBUTE: the range bounds for this data's value
+	TTSymbol		mRangeClipmode;				///< ATTRIBUTE: what clip mode to apply if proposed value is outside the range set by #mRangeBounds. Implemented options are none, both, low or high.
 	
 	TTBoolean		mDynamicInstances;			///< ATTRIBUTE: is the data can be dynamically instanciated
 	TTValue			mInstanceBounds;			///< ATTRIBUTE: two TTValues for a range of dynamic instances (-1 = infini)
@@ -85,30 +85,124 @@ private:
 	 @see #TTDataParseCommand
 	 */
     TTErr       Command(const TTValue& inputValue, TTValue& outputValue);
-    
 	
+	
+	/** Prepares a command to update the value of TTValue, optimised for Data of #mType #kTTSym_none.
+	 @param[in] inputValue	A command to update the value of #TTData. The command might set value, specify a unit for it, and also request that the change happens as a ramp. If this is a single #TTDictionary, it is passed directly on to the appropriate command for the #TTData type (decimal, integer, etc..), else it is first converted to a #TTDictionary before being passed on.
+	 @param[out] outputValue	This is not being used.
+	 @return #TTErrorNone if the method executes successfully, else an error code.
+	 @see #TTDataParseCommand
+	 */
 	TTErr       NoneCommand(const TTValue& inputValue, TTValue& outputValue);
+	
+	
+	/** Prepares a command to update the value of TTValue, optimised for Data of #mType #kTTSym_generic.
+	 @param[in] inputValue	A command to update the value of #TTData. The command might set value, specify a unit for it, and also request that the change happens as a ramp. If this is a single #TTDictionary, it is passed directly on to the appropriate command for the #TTData type (decimal, integer, etc..), else it is first converted to a #TTDictionary before being passed on.
+	 @param[out] outputValue	This is not being used.
+	 @return #TTErrorNone if the method executes successfully, else an error code.
+	 @see #TTDataParseCommand
+	 */
     TTErr       GenericCommand(const TTValue& inputValue, TTValue& outputValue);
+	
+	
+	/** Prepares a command to update the value of TTValue, optimised for Data of #mType #kTTSym_boolean.
+	 @param[in] inputValue	A command to update the value of #TTData. The command might set value, specify a unit for it, and also request that the change happens as a ramp. If this is a single #TTDictionary, it is passed directly on to the appropriate command for the #TTData type (decimal, integer, etc..), else it is first converted to a #TTDictionary before being passed on.
+	 @param[out] outputValue	This is not being used.
+	 @return #TTErrorNone if the method executes successfully, else an error code.
+	 @see #TTDataParseCommand
+	 */
     TTErr       BooleanCommand(const TTValue& inputValue, TTValue& outputValue);
+	
+	
+	/** Prepares a command to update the value of TTValue, optimised for Data of #mType #kTTSym_integer.
+	 @param[in] inputValue	A command to update the value of #TTData. The command might set value, specify a unit for it, and also request that the change happens as a ramp. If this is a single #TTDictionary, it is passed directly on to the appropriate command for the #TTData type (decimal, integer, etc..), else it is first converted to a #TTDictionary before being passed on.
+	 @param[out] outputValue	This is not being used.
+	 @return #TTErrorNone if the method executes successfully, else an error code.
+	 @see #TTDataParseCommand
+	 */
     TTErr       IntegerCommand(const TTValue& inputValue, TTValue& outputValue);
+	
+	
+	/** Prepares a command to update the value of TTValue, optimised for Data of #mType #kTTSym_decimal.
+	 @param[in] inputValue	A command to update the value of #TTData. The command might set value, specify a unit for it, and also request that the change happens as a ramp. If this is a single #TTDictionary, it is passed directly on to the appropriate command for the #TTData type (decimal, integer, etc..), else it is first converted to a #TTDictionary before being passed on.
+	 @param[out] outputValue	This is not being used.
+	 @return #TTErrorNone if the method executes successfully, else an error code.
+	 @see #TTDataParseCommand
+	 */
     TTErr       DecimalCommand(const TTValue& inputValue, TTValue& outputValue);
+	
+	
+	/** Prepares a command to update the value of TTValue, optimised for Data of #mType #kTTSym_array.
+	 @param[in] inputValue	A command to update the value of #TTData. The command might set value, specify a unit for it, and also request that the change happens as a ramp. If this is a single #TTDictionary, it is passed directly on to the appropriate command for the #TTData type (decimal, integer, etc..), else it is first converted to a #TTDictionary before being passed on.
+	 @param[out] outputValue	This is not being used.
+	 @return #TTErrorNone if the method executes successfully, else an error code.
+	 @see #TTDataParseCommand
+	 */
     TTErr       ArrayCommand(const TTValue& inputValue, TTValue& outputValue);
+	
+	
+	/** Prepares a command to update the value of TTValue, optimised for Data of #mType #kTTSym_string.
+	 @param[in] inputValue	A command to update the value of #TTData. The command might set value, specify a unit for it, and also request that the change happens as a ramp. If this is a single #TTDictionary, it is passed directly on to the appropriate command for the #TTData type (decimal, integer, etc..), else it is first converted to a #TTDictionary before being passed on.
+	 @param[out] outputValue	This is not being used.
+	 @return #TTErrorNone if the method executes successfully, else an error code.
+	 @see #TTDataParseCommand
+	 */
     TTErr       StringCommand(const TTValue& inputValue, TTValue& outputValue);
 	
-	/**	Getter and Setter for mValue attribute (Setter methods are typed) */
+	
+	/**	Setter for #mValue attribute, performs typechecking and calls the appropriate optimised setter method.
+	 @param value	The new value that the attribute is to be set to.
+	 @return		#TTErrorNone if the method executes successfully, else an error code.
+	 */
 	TTErr       getValue(TTValue& value);
-    
+	
+	
+	/**	Setter for #mValue attribute, optimised for #mType #kTTSym_none.
+	 @param value	The new value that the attribute is to be set to.
+	 @return		#TTErrorNone if the method executes successfully, else an error code.
+	 */
 	TTErr       setNoneValue(const TTValue& value);
+	
+	
+	/**	Setter for #mValue attribute, optimised for #mType #kTTSym_boolean.
+	 @param value	The new value that the attribute is to be set to.
+	 @return		#TTErrorNone if the method executes successfully, else an error code.
+	 */
     TTErr       setBooleanValue(const TTValue& value);
+	
+	
+	/**	Setter for #mValue attribute, optimised for #mType #kTTSym_generic.
+	 @param value	The new value that the attribute is to be set to.
+	 @return		#TTErrorNone if the method executes successfully, else an error code.
+	 */
     TTErr       setGenericValue(const TTValue& value);
+	
+	
+	/**	Setter for #mValue attribute, optimised for #mType #kTTSym_integer.
+	 @param value	The new value that the attribute is to be set to.
+	 @return		#TTErrorNone if the method executes successfully, else an error code.
+	 */
     TTErr       setIntegerValue(const TTValue& value);
-    
-    /** Private method that sets the internal value attribute.
-     @param[in]         The new value that the attribute is to be set to.
-     @return            #TTErrorNone if the method executed successfully, elseway an error code.
+	
+	
+    /** Setter for #mValue attribute, optimised for #mType #kTTSym_decimal.
+     @param[in]     The new value that the attribute is to be set to.
+     @return        #TTErrorNone if the method executed successfully, elseway an error code.
     */
     TTErr       setDecimalValue(const TTValue& value);
+	
+	
+	/**	Setter for #mValue attribute, optimised for #mType #kTTSym_array.
+	 @param value	The new value that the attribute is to be set to.
+	 @return		#TTErrorNone if the method executes successfully, else an error code.
+	 */
     TTErr       setArrayValue(const TTValue& value);
+	
+	
+	/**	Setter for #mValue attribute, optimised for #mType #kTTSym_string.
+	 @param value	The new value that the attribute is to be set to.
+	 @return		#TTErrorNone if the method executes successfully, else an error code.
+	 */
     TTErr       setStringValue(const TTValue& value);
     
     /** */
@@ -117,13 +211,20 @@ private:
     TTBoolean	checkDecimalType(const TTValue& value);
     TTBoolean	checkArrayType(const TTValue& value);
     TTBoolean	checkStringType(const TTValue& value);
-    
-    /* */
+	
+	
+    /* Clips the value according to the values of the #mRangeBounds and #mRangeClipmode attributes.
+	 @return	boolean value, depending on the result. This is currently not being used.
+	 */
     TTBoolean	clipValue();
-    
-    /* */
+	
+	
+    /* Return current  #mValue to all observers. 
+	 @return		#TTErrorNone if the method executes successfully, else an error code.
+	 */
     TTErr       returnValue();
-    
+	
+	
     /** Initialize the value with default value */
 	TTErr       NoneInit();
     TTErr       GenericInit();
@@ -132,15 +233,22 @@ private:
     TTErr       DecimalInit();
     TTErr       ArrayInit();
     TTErr       StringInit();
-    
+	
+	
     /** Ramper messages */
     // TODO: Jamomacore #294 : Ease the access of the object of a kTypeObject attribute of a TTObject
     TTErr       RampSet(const TTValue& inputValue, TTValue& outputValue);
+	
+	
     // TODO: Jamomacore #294 : Ease the access of the object of a kTypeObject attribute of a TTObject
     TTErr       RampTarget(const TTValue& inputValue, TTValue& outputValue);
-    // TODO: Jamomacore #294 : Ease the access of the object of a kTypeObject attribute of a TTObject
+	
+	
+	// TODO: Jamomacore #294 : Ease the access of the object of a kTypeObject attribute of a TTObject
     TTErr       RampGo(const TTValue& inputValue, TTValue& outputValue);
-    // TODO: Jamomacore #294 : Ease the access of the object of a kTypeObject attribute of a TTObject
+	
+	
+	// TODO: Jamomacore #294 : Ease the access of the object of a kTypeObject attribute of a TTObject
     TTErr       RampSlide(const TTValue& inputValue, TTValue& outputValue);
     
     /**	Increment mValue attribute (and ramp this incrementation)
@@ -150,6 +258,7 @@ private:
      default	: no value or wrong value
 	 */
 	TTErr       Inc(const TTValue& inputValue, TTValue& outputValue);
+	
 	
 	/**	Decrement mValue attribute (and ramp this decrementation)
      It depends on the command size :
@@ -163,63 +272,116 @@ private:
 	TTErr       getValueDefault(TTValue& value);
 	TTErr       setValueDefault(const TTValue& value);
 	
-	/**	Setter for mValueStepsize attribute. */
+	/**	Getter for mValueStepsize attribute. 
+	 */
 	TTErr       getValueStepsize(TTValue& value);
+	
+	
+	/**	Setter for mValueStepsize attribute.
+	 */
 	TTErr       setValueStepsize(const TTValue& value);
 	
-	/**	Setter for mType attribute. */
+	
+	/**	Setter for #mType attribute.
+	 @details This methods also sets what type-optimised methods to use to initiate #TTData and for commands. Commands are used to update mValue instantly or by ramping to a new target value over time, and might also specify new (target) value using various dataspace units.
+	 @param value		The desired value for #mType.
+	 @return		#TTErrorNone if the method executes successfully, else an error code.
+	 */
 	TTErr       setType(const TTValue& value);
 	
-	/**	Setter for mTags attribute. */
+	
+	/**	Setter for mTags attribute. 
+	 */
 	TTErr       setTags(const TTValue& value);
 	
-	/**	Setter for mRepetitionsFilter attribute. */
+	
+	/**	Setter for mRepetitionsFilter attribute. 
+	 */
 	TTErr       setRepetitionsFilter(const TTValue& value);
 	
-	/**	Setter for mActive attribute. */
+	
+	/**	Setter for mActive attribute. 
+	 */
 	TTErr       setActive(const TTValue& value);
 	
-	/**	Setter for mRangeBounds attribute. */
+	
+	/**	Setter for mRangeBounds attribute. 
+	 */
 	TTErr       setRangeBounds(const TTValue& value);
 	
-	/**	Setter for mRangeClipmode attribute. */
+	
+	/**	Setter for mRangeClipmode attribute. 
+	 */
 	TTErr       setRangeClipmode(const TTValue& value);
 	
-	/**	Setter for mInstanceBounds attribute. */
+	
+	/**	Setter for mInstanceBounds attribute. 
+	 */
 	TTErr       setInstanceBounds(const TTValue& value);
 
-	/**	Setter for mRampDrive attribute. */
+	
+	/**	Setter for mRampDrive attribute. 
+	 */
     // TODO: Jamomacore #294 : Ease the access of the object of a kTypeObject attribute of a TTObject
 	TTErr       setRampDrive(const TTValue& value);
+	
+	
 #ifndef TT_NO_DSP	
-	/**	Setter for mRampFunction attribute. */
+	/**	Setter for mRampFunction attribute. 
+	 */
     // TODO: Jamomacore #294 : Ease the access of the object of a kTypeObject attribute of a TTObject
 	TTErr       setRampFunction(const TTValue& value);
 #endif
-	/**	Setter for mDataspace attribute. */
+	
+	
+	/**	Setter for mDataspace attribute. 
+	 */
     // TODO: Jamomacore #294 : Ease the access of the object of a kTypeObject attribute of a TTObject
 	TTErr       setDataspace(const TTValue& value);
 	
-	/**	Setter for mDataspaceUnit attribute. */
+	
+	/**	Setter for mDataspaceUnit attribute. 
+	 */
     // TODO: Jamomacore #294 : Ease the access of the object of a kTypeObject attribute of a TTObject
 	TTErr       setDataspaceUnit(const TTValue& value);
-    
-    /**	Setter for mDescription attribute. */
+	
+	
+    /**	Setter for mDescription attribute. 
+	 */
 	TTErr       setDescription(const TTValue& value);
-    
-    /**	Setter for mPriority attribute. */
+	
+	
+    /**	Setter for mPriority attribute. 
+	 */
 	TTErr       setPriority(const TTValue& value);
 	
-	/**  needed to be handled by a TTTextHandler */
+	
+	/**  needed to be handled by a TTTextHandler 
+	 */
 	TTErr       WriteAsText(const TTValue& inputValue, TTValue& outputValue);
     
+	
+	/**
+	 */
 	TTErr		convertUnit(const TTValue& inputValue, TTValue& outputValue);
+	
+	
+	/**
+	 */
 	TTErr		notifyObservers(TTSymbol attrName, const TTValue& value);
-    
+	
+	
+	/**
+	 */
     TTErr		rampSetup();
+	
+	
+	/**
+	 */
 	friend void TTMODULAR_EXPORT TTDataRampCallback(void *o, TTUInt32 n, TTFloat64 *v);
 };
 typedef TTData* TTDataPtr;
+
 
 /** Format the command to update the value of #TTData as a #TTDictionary. When updating the value we can make use of the #TTDapaspaceLib to provide new value with various measurement units, and we can set it to ramp (ease) to the new value over time making use of #TTDataRamp.
  @param[in] commandValue    A #TTValue containing one or more elements, taking the form of @n

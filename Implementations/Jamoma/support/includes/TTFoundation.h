@@ -28,7 +28,7 @@
 	cannot be manipulated directly.
  */
 
-	/** TODO Doxygen: need more comments here	
+	/** TODO Doxygen: need more comments here
 		@ingroup macros
 	*/
 #define TT_OBJECT_CONSTRUCTOR \
@@ -38,7 +38,7 @@
 	\
 	thisTTClass :: thisTTClass (const TTValue& arguments) : TTDataObjectBase(arguments)
 
-	/** TODO Doxygen: need more comments here	
+	/** TODO Doxygen: need more comments here
 		@ingroup macros
 	*/
 #define TT_BASE_OBJECT_CONSTRUCTOR \
@@ -48,7 +48,7 @@
 	\
 	thisTTClass :: thisTTClass (const TTValue& arguments) : TTObjectBase(arguments)
 
-	/** TODO Doxygen: need more comments here	
+	/** TODO Doxygen: need more comments here
 		@ingroup macros
 	*/
 #define TTCLASS_SETUP(className)												\
@@ -66,7 +66,7 @@
 //		virtual ~ className ();
 
 extern	TTFOUNDATION_EXPORT	TTString TTFoundationBinaryPath;
-void    TTFOUNDATION_EXPORT TTFoundationInit(const char* pathToTheJamomaFolder = NULL);
+void    TTFOUNDATION_EXPORT TTFoundationInit(const char* pathToTheJamomaFolder = nullptr, bool loadFromBuiltinPaths = false);
 
 
 #endif // __TT_FOUNDATION_H__

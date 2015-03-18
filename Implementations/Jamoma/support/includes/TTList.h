@@ -112,7 +112,7 @@ public:
 	
 	/** Sort a list using a comparison function
 		@param	comparisonFunction which return true if the first element have to be before the second */
-	void sort(TTBoolean(comparisonFunction)(TTValue&, TTValue&) = NULL);
+	void sort(TTBoolean(*comparisonFunction)(TTValue&, TTValue&) = NULL);
 	
 	/** Find a value in the list by using a passed-in matching function. */
 	TTErr find(TTFunctionMatch aMatchFunction, TTPtr aBaton, TTValue& returnedValue);

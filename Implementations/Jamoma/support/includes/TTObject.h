@@ -161,7 +161,7 @@ public:
 	TTValue send(const TTSymbol aName, const TTValue& anInputValue);
 #define SUPPORT_OLD_SEND_SYNTAX
 #ifdef SUPPORT_OLD_SEND_SYNTAX
-	TT_DEPRECATED ( TTErr send(const TTSymbol aName, const TTValue& anInputValue, TTValue& anOutputValue); )
+	TT_DEPRECATED ( TTErr send(const TTSymbol aName, const TTValue& anInputValue, TTValue& anOutputValue) );
 #endif
 	
 	/** Register an observer.

@@ -20,6 +20,7 @@
 
 #include <limits>
 #ifdef TT_PLATFORM_LINUX
+#include <cmath>
 #define FLT_MAX std::numeric_limits<float>::max()
 #define DBL_MAX std::numeric_limits<double>::max()
 #endif
@@ -32,21 +33,15 @@ template<class T>
 static void TTZeroDenormal(T& value)
 {
 #ifndef TT_DISABLE_DENORMAL_FIX
-#ifdef TT_PLATFORM_WIN
-	// MSVC is not standards-compliant, which includes lack of support for C99's fpclassify()
-	value += kTTAntiDenormalValue;
-	value -= kTTAntiDenormalValue;
-#else // a good platform
-	if (!isnormal(value))
+	if (!std::isnormal(value))
 		value = 0;
-#endif
 #endif
 }
 
 
 /** @fn T TTAntiDenormal(const T input)
  @memberof TTLimits.h
- @brief Filter out denormaled values, which can make processing extremely slow when present. 
+ @brief Filter out denormaled values, which can make processing extremely slow when present.
  @seealso	TTZeroDenormal
  */
 template<class T>
@@ -55,9 +50,9 @@ static T TTAntiDenormal(const T input)
 	T output = input;
 	TTZeroDenormal(output);
 	return output;
-	
+
 	// This function used to be implemented using the following algorithm:
-	// 
+	//
 	// value += kTTAntiDenormalValue;
 	// value -= kTTAntiDenormalValue;
 	//
@@ -94,7 +89,7 @@ static T TTAntiDenormal(const T input)
 
 
 
-/** Constrain a number to within a range.  Calculation is performed in-place. 
+/** Constrain a number to within a range.  Calculation is performed in-place.
 	@seealso	TTClip()
  */
 template<class T>
@@ -107,7 +102,7 @@ static void TTLimit(T& value, const T lowBound, const T highBound)
 }
 
 
-/** Constrain a number to within a range. 
+/** Constrain a number to within a range.
  @seealso	TTLimit()
  */
 template<class T>
@@ -116,9 +111,9 @@ static T TTClip(const T input, const T lowBound, const T highBound)
 	T output = input;
 	TTLimit(output, lowBound, highBound);
 	return output;
-	
+
 	// This function used to be implemented using the following algorithm:
-	// 
+	//
 	// value = T(((fabs(value - double(low_bound))) + (low_bound + high_bound)) - fabs(value - double(high_bound)));
 	// value /= 2;		// relying on the compiler to optimize this, chosen to reduce compiler errors in Xcode
 	// return value;
@@ -231,16 +226,7 @@ static T TTFold(T value, T low_bound, T high_bound)
 		return value; //nothing to fold
 	else {
 		foldRange = 2 * fabs((double)low_bound - high_bound);
-#ifdef TT_PLATFORM_WIN
-		// The standard remainder() function is not present on Windows, so we do it ourselves.
-		double	v = value - low_bound;
-		double	d = v / foldRange;
-		long	n = TTRound(d);
-		double	r = v - n * foldRange;
-		return fabs(r);
-#else
 		return fabs(remainder(value - low_bound, foldRange)) + low_bound;
-#endif
 	}
 }
 
@@ -276,7 +262,7 @@ static TTInt32 TTRound(T value)
 #pragma mark - new code from Tristan
 #endif
 
-	
+
 template <class T>
 static T limitMin(T value, T low_bound)
 {
@@ -335,9 +321,9 @@ static TTUInt32 limitMin(TTUInt32 value, TTUInt32 low_bound)
  value = TTUInt32(value + low_bound);
  return value;
 }
- 
- 
-template <class T>	
+
+
+template <class T>
 static TTUInt64 limitMin(TTUInt64 value, TTUInt64 low_bound)
 {
 	value -= std::min(low_bound, value); // so 0 at lowest
@@ -359,22 +345,22 @@ int main(int argc, char* argv[])
 	    std::cout << "Usage: limitMin <value> <lowerBound>\n";
 	    return 1;
 	}
-	
+
 	TTUInt16 u, l;
-	
+
 	std::cout << "Enter a value:\n";
 	u = atoi(argv[1]);
 	std::cout << "u is " << u << std::endl;
 	std::cout << "Enter a lower bound:\n";
 	l = atoi(argv[2]);
 	std::cout << "l is " << l << std::endl;
-	
+
 	long long iterations = 100000000LL;
-	
+
 	// execute a lot of times
 	while (iterations--)
 	    TTUInt16 v = limitMin<TTUInt16>(u, l);
-	
+
 	return 0;
 }
 */

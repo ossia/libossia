@@ -38,8 +38,8 @@ private:
 	
 	TTAddress			mInput;						///< ATTRIBUTE : address of the data for the incoming value
 	
-	TTFloat64			mInputMin;					///< ATTRIBUTE : 
-	TTFloat64			mInputMax;					///< ATTRIBUTE :
+	TTFloat64			mInputMin;					///< ATTRIBUTE : lower boundary of input value
+	TTFloat64			mInputMax;					///< ATTRIBUTE : upper boundery of input value
     TTUInt32            mInputIndex;                ///< ATTRIBUTE : select an index of the input value to map (0 means to take the whole value)
     TTFloat64			mInputThresholdDown;        ///< ATTRIBUTE :
 	TTFloat64			mInputThresholdUp;			///< ATTRIBUTE :
@@ -48,8 +48,8 @@ private:
     
     TTAddress			mOutput;					///< ATTRIBUTE : address of the data for the value to control
     
-	TTFloat64			mOutputMin;					///< ATTRIBUTE :
-	TTFloat64			mOutputMax;					///< ATTRIBUTE :
+	TTFloat64			mOutputMin;					///< ATTRIBUTE : lower boundary of mapped (output) value
+	TTFloat64			mOutputMax;					///< ATTRIBUTE : upper boundary of mapped (output) value
     TTFloat64			mOutputThresholdDown;       ///< ATTRIBUTE :
 	TTFloat64			mOutputThresholdUp;			///< ATTRIBUTE :
     TTBoolean			mOutputGoingDown;           ///< memorize last state to filter repetitions
@@ -65,6 +65,8 @@ private:
 	TTValue				mFunctionSamples;			///< ATTRIBUTE : an overview of the mapping (each value between [map(InputMin) :: map(InputMax)])
 #endif
     TTUInt32            mRamp;                      ///< ATTRIBUTE : a ramp time to pass to the output data
+	
+	TTSymbol			mClipmode;				///< ATTRIBUTE: what clip mode to apply if proposed value is outside the range set by #mRangeBounds. Implemented options are none, both, low or high.
 	
 	TTObject            mReceiver;					///< the receiver which binds on In data(s)
 	TTObject            mSender;					///< the sender which binds on Out data(s)
@@ -140,6 +142,9 @@ private:
 	
 	/** */
 	TTErr scaleOutput();
+	
+	/**	Setter for mRangeClipmode attribute. */
+	TTErr       setClipmode(const TTValue& value);
 	
 	/** */
 	TTErr notifyObservers(TTSymbol attrName, const TTValue& value);

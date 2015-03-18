@@ -414,7 +414,7 @@ public:
 #endif
 	TTErr sendMessage(const TTSymbol name, const TTValue& anInputValue, TTValue& anOutputValue);
 
-	TTErr sendMessage(const TTSymbol name, const TTValue& anInputValue, TTNoValue ignore)
+    TTErr sendMessage(const TTSymbol name, const TTValue& anInputValue, TTNoValue /*ignore*/)
 	{
 		TTValue unusedReturnValue;
 		return sendMessage(name, anInputValue, unusedReturnValue);

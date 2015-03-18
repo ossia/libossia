@@ -30,7 +30,7 @@ typedef TTApplicationManager* TTApplicationManagerPtr;
 
 /** Initialize the Modular library and intanciate the TTModular object
  @param binaries                    path to the Jamoma libraries and extensions binaries folder to load them */
-void TTMODULAR_EXPORT TTModularInit(const char* binaries = NULL);
+void TTMODULAR_EXPORT TTModularInit(const char* binaries = nullptr, bool loadFromBuiltinPaths = false);
 
 #if 0
 #pragma mark -

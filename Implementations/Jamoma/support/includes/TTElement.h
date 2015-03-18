@@ -31,7 +31,7 @@
 #include "TTAddressCache.h"
 #endif
 
-
+#include <cinttypes>
 class TTDictionary;
 
 
@@ -167,7 +167,6 @@ public:
 	{
 		mValue.ptr = NULL;	// windows doesn't permit using an initializer for a union?
 	}
-	
 	
 	template<class T>
 	TTElement(const T& anInitialValue) :
@@ -618,36 +617,28 @@ public:
 				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%lf", mValue.float64);
 				break;
 			case kTypeInt8:
-				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%i", mValue.int8);
+				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%" PRId8, mValue.int8);
 				break;
 			case kTypeUInt8:
-				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%u", mValue.uint8);
+				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%" PRIu8 "u", mValue.uint8);
 				break;
 			case kTypeInt16:
-				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%i", mValue.int16);
+				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%" PRId16, mValue.int16);
 				break;
 			case kTypeUInt16:
-				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%u", mValue.uint16);
+				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%" PRIu16 "u", mValue.uint16);
 				break;
 			case kTypeInt32:
-				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%i", (int)mValue.int32);
+				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%" PRId32, mValue.int32);
 				break;
 			case kTypeUInt32:
-				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%iu", (unsigned int)mValue.uint32);
+				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%" PRIu32 "u", mValue.uint32);
 				break;
 			case kTypeInt64:
-#ifdef __LP64__ // Mac 64-Bit
-				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%ld", mValue.int64);
-#else
-				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%lld", mValue.int64);
-#endif
+				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%" PRId64, mValue.int64);
 				break;
 			case kTypeUInt64:
-#ifdef __LP64__ // Mac 64-Bit
-				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%lu", mValue.int64);
-#else
-				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%llu", mValue.uint64);
-#endif
+				snprintf(temp, TTELEMENT_TEMP_STRINGLEN, "%" PRIu64 "u", mValue.uint64);
 				break;
 			case kTypeBoolean:
 				if (mValue.boolean)
@@ -792,17 +783,23 @@ public:
 					return false;
 				break;
 			case kTypeUInt32:
-				if ( a1.mValue.uint32 != i )
+			{
+				unsigned int tmp = i;
+				if ( a1.mValue.uint32 != tmp )
 					return false;
 				break;
+			}
 			case kTypeInt64:
 				if ( a1.mValue.int64 != i )
 					return false;
 				break;
 			case kTypeUInt64:
-				if ( a1.mValue.uint64 != i )
+			{
+				long unsigned int tmp = i;
+				if ( a1.mValue.uint64 != tmp )
 					return false;
 				break;
+			}
 			case kTypeError:
 				if ( a1.mValue.error != i )
 					return false;

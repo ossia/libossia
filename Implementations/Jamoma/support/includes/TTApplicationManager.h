@@ -85,6 +85,10 @@ private:
 #pragma mark Application accesors
 #endif
     
+    /** Attribute accessor: get application table
+     @return #kTTErrNone */
+    TTErr getApplications(TTValue& value);
+    
 	/** Attribute accessor: get all application names
      @return #TTErr error code 
      @seealso ApplicationIntantiateLocal, ApplicationIntantiateDistant, ApplicationRelease, ApplicationGet */

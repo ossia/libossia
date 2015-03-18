@@ -45,6 +45,9 @@ private:
 	TTObject			mCurrentPreset;					///< the current preset
     
     TTObject            mReturnLineCallback;			///< Callback to return back cue lines to the owner of this presetmanager
+    
+    /** */
+	TTErr	getPresets(TTValue& value);
 	
 	/** */
 	TTErr	setAddress(const TTValue& value);

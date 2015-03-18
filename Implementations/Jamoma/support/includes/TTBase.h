@@ -1,6 +1,6 @@
 /** @file
  *
- * @ingroup foundationLibrary 
+ * @ingroup foundationLibrary
  *
  * @brief Jamoma's lowest-level base class and related infrastructure.
  *
@@ -33,16 +33,14 @@
 		#endif
 	#endif
 // win64 must come before win32
-#elif defined ( _WIN64 )
-#ifndef TT_PLATFORM_WIN
-	#define TT_PLATFORM_WIN
-#endif
-#elif _WIN32
-#ifndef TT_PLATFORM_WIN
-	#define TT_PLATFORM_WIN
-#endif
-#elif __linux
-	#define TT_PLATFORM_LINUX
+#elif (defined(_WIN64) || defined(_WIN32)) && !defined(__MINGW32__)
+	#ifndef TT_PLATFORM_WIN
+		#define TT_PLATFORM_WIN
+	#endif
+#elif defined(__linux) || defined(__MINGW32__)
+	#if !defined(TT_PLATFORM_LINUX)
+		#define TT_PLATFORM_LINUX
+	#endif
 #endif
 
 #ifndef TT_PLATFORM_LINUX
@@ -71,13 +69,16 @@
 #include <sstream>
 #include <iterator>
 #include <stdexcept>
+#include <cstdint>
+#include <atomic>
 
 #ifdef TT_PLATFORM_LINUX
 #include <stdarg.h>
+#include <time.h>
 #endif
 
 #ifdef TT_PLATFORM_WIN
-	#include "windows.h"
+	//#include "windows.h"
 	#include <time.h>
 
 	#pragma warning(disable:4244) // to avoid possible data lost warning with MSVC
@@ -136,7 +137,7 @@
  */
 #ifndef TT_NO_DEPRECATION_WARNINGS
 #ifdef __GNUC__
-#define TT_DEPRECATED(func) func __attribute__ ((deprecated))
+#define TT_DEPRECATED(func)  __attribute__ ((deprecated)) func
 #elif defined(_MSC_VER)
 #define TT_DEPRECATED(func) __declspec(deprecated) func
 #endif
@@ -150,10 +151,12 @@
 // Memory alignment
 
 #if defined(_MSC_VER) || defined(__BORLANDC__)
-#define TT_ALIGN_16 __declspec(align(16))
+//#define TT_ALIGN_16 __declspec(align(16))
+#define TT_ALIGN_16
 #else // assuming gcc
 #define TT_ALIGN_16 __attribute__((aligned (16)))
 #endif
+
 
 
 /****************************************************************************************************/
@@ -169,39 +172,12 @@ typedef const char*			TTImmutableCString;
 
 typedef signed char			TTInt8;					///< 8 bit signed integer (char)
 typedef unsigned char		TTUInt8;				///< 8 bit unsigned integer (char)
-typedef signed short		TTInt16;				///< 16 bit signed integer
-typedef unsigned short		TTUInt16;				///< 16 bit unsigned integer
-
-#ifdef USE_PROBLEMATIC_FOR_CPP_DUE_TO_AMBIGUITY_INT_TYPE
-#ifdef __LP64__		// Mac 64-bit
-	typedef signed int			TTInt32;			///< 32 bit signed integer
-	typedef unsigned int		TTUInt32;			///< 32 bit unsigned integer
-#else				// Mac 32-bit, Win32 32-bit
-	typedef signed long			TTInt32;			///< 32 bit signed integer
-	typedef unsigned long		TTUInt32;			///< 32 bit unsigned integer
-#endif
-#else
-#define TTInt32 int
-#ifdef __LP64__		// Mac 64-bit
-typedef unsigned int		TTUInt32;			///< 32 bit unsigned integer
-#else				// Mac 32-bit, Win32 32-bit
-typedef unsigned long		TTUInt32;			///< 32 bit unsigned integer
-#endif
-
-#endif
-
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-	typedef __int64				TTInt64;			///< 64 bit signed integer
-	typedef unsigned __int64	TTUInt64;			///< 64 bit unsigned integer
-#else
-	#if defined(__LP64__)	// Mac 64-bit
-		typedef signed long			TTInt64;		///< 64 bit unsigned integer
-		typedef unsigned long		TTUInt64;		///< 64 bit unsigned integer
-	#else // Max 32-bit
-		typedef signed long long	TTInt64;		///< 64 bit unsigned integer
-		typedef unsigned long long	TTUInt64;		///< 64 bit unsigned integer
-	#endif
-#endif
+typedef std::int16_t		TTInt16;				///< 16 bit signed integer
+typedef std::uint16_t		TTUInt16;				///< 16 bit unsigned integer
+typedef std::int32_t		TTInt32;				///< 32 bit signed integer
+typedef std::uint32_t		TTUInt32;				///< 32 bit unsigned integer
+typedef std::int64_t		TTInt64;				///< 64 bit signed integer
+typedef std::uint64_t		TTUInt64;				///< 64 bit unsigned integer
 
 // can't do the follow -- conflicts on the mac with Carbon headers
 //#ifndef uint
@@ -210,7 +186,7 @@ typedef unsigned long		TTUInt32;			///< 32 bit unsigned integer
 
 typedef float					TTFloat32;			///< 32 bit floating point number
 typedef double					TTFloat64;			///< 64 bit floating point number
-typedef std::complex<double>	TTComplex;			///< Conmplex number
+typedef std::complex<double>	TTComplex;			///< Complex number
 
 
 /**	@typedef TTRowID
@@ -263,14 +239,10 @@ typedef TTSampleVector*				TTSampleVectorPtr;
 /** An integer that is the same size as a pointer.	*/
 typedef long				TTPtrSizedInt;				// this works for both 32 and 64 bit code on the Mac
 
-/** An integer that can be used for atomic operations. TODO: consider if other type should be used here	*/
-#ifdef TT_PLATFORM_WIN
-typedef TT_ALIGN_16 volatile int			TTAtomicInt;
-typedef TT_ALIGN_16 volatile unsigned int	TTAtomicUInt;
-#else
-typedef TT_ALIGN_16 volatile int32_t		TTAtomicInt;
-typedef TT_ALIGN_16 volatile u_int32_t		TTAtomicUInt;
-#endif
+/** An integer that can be used for atomic operations. */
+typedef std::atomic<int32_t> TTAtomicInt;
+typedef std::atomic<uint32_t> TTAtomicUInt;
+
 
 /** A generic pointer. */
 typedef void*				TTPtr;
@@ -341,14 +313,14 @@ public:
 	TTDataInfo() :
 		name(NULL)
 	{;}
-	
+
 	static TTDataInfoPtr getInfoForType(TTDataType type)
 	{
 		return ttDataTypeInfo[type];
 	}
-	
+
 	static TTDataInfoPtr getInfoForType(TTSymbol& typeAsSymbol)
-	{		
+	{
 		TTDataType type = matchSymbolToDataType(typeAsSymbol);
 		return getInfoForType(type);
 	}
@@ -359,7 +331,7 @@ public:
 	}
 
 	static void addDataInfoForType(TTDataType type);
-	
+
 	static TTDataType matchSymbolToDataType(TTSymbol& typeAsSymbol);
 
 };
@@ -415,123 +387,73 @@ public:
 	#pragma intrinsic (_InterlockedCompareExchange)
 #endif
 
-	
+
 inline void TTAtomicIncrement(TTAtomicInt& value)
 {
-#ifdef TT_PLATFORM_MAC
-	OSAtomicIncrement32(&value);
-#elif defined (TT_PLATFORM_WIN)
-	_InterlockedIncrement((volatile long*)&value);
-#else // what should we do for thread safety on Linux and iOS?
 	value++;
-#endif
 }
 
 
 inline void TTAtomicIncrement(TTAtomicUInt& value)
 {
-#ifdef TT_PLATFORM_MAC
-	OSAtomicIncrement32((int32_t*)&value);
-#elif defined (TT_PLATFORM_WIN)
-	_InterlockedIncrement((volatile long*)&value);
-#else // what should we do for thread safety on Linux and iOS?
 	value++;
-#endif
 }
 
 
 inline void TTAtomicDecrement(TTAtomicInt& value)
 {
-#ifdef TT_PLATFORM_MAC
-	OSAtomicDecrement32(&value);
-#elif defined (TT_PLATFORM_WIN)
-	_InterlockedDecrement((volatile long*)&value);
-#else // what should we do for thread safety on Linux and iOS?
 	value--;
-#endif
 }
 
 
 inline void TTAtomicDecrement(TTAtomicUInt& value)
 {
-#ifdef TT_PLATFORM_MAC
-	OSAtomicDecrement32((int32_t*)&value);
-#elif defined (TT_PLATFORM_WIN)
-	_InterlockedDecrement((volatile long*)&value);
-#else // what should we do for thread safety on Linux and iOS?
 	value--;
-#endif
 }
 
-	
+
 inline void TTAtomicIncrementWithBarrier(TTAtomicUInt& value)
 {
-#ifdef TT_PLATFORM_MAC
-	OSAtomicIncrement32Barrier((int32_t*)&value);
-#elif defined (TT_PLATFORM_WIN)
-	_InterlockedIncrement((volatile long*)&value); // on windows there is always a barrier
-#else // what should we do for thread safety on Linux and iOS?
-	value++;
-#endif
+	value.fetch_add(1, std::memory_order_seq_cst);
 }
 
 
 inline void TTAtomicDecrementWithBarrier(TTAtomicUInt& value)
 {
-#ifdef TT_PLATFORM_MAC
-	OSAtomicDecrement32Barrier((int32_t*)&value);
-#elif defined (TT_PLATFORM_WIN)
-	_InterlockedDecrement((volatile long*)&value); // on windows there is always a barrier
-#else // what should we do for thread safety on Linux and iOS?
-	value++;
-#endif
+	value.fetch_sub(1, std::memory_order_seq_cst);
 }
 
-	
+
 inline void TTAtomicAssign(TTAtomicInt& value, const TTAtomicInt& newValue, const TTAtomicInt& oldValue)
 {
-#ifdef TT_PLATFORM_MAC
-	OSAtomicCompareAndSwap32(oldValue, newValue, &value);
-#elif defined (TT_PLATFORM_WIN)
-	_InterlockedCompareExchange((volatile long*)&value, (long) newValue, (long) oldValue);
-#else // what should we do for thread safety on Linux and iOS?
-	value = newValue;
-#endif
+	auto oldVal = oldValue.load();
+	auto newVal = newValue.load();
+	value.compare_exchange_strong(oldVal, newVal);
 }
 
-	
+
 	/**	Return the current system time in milliseconds.
 		Although it is a global kind of function, we include it as a method of TTBase
 		so that it can be defined in the header file and then inlined in other libraries.	*/
 inline TTFloat64 TTGetTimeInMilliseconds()
 {
-	// On the Mac, CLOCKS_PER_SEC is 1000000, so we optimize
-#if	CLOCKS_PER_SEC == 1000000
-	return clock() / 1000.0;	
-#else
 	return (clock() * 1000.0) / CLOCKS_PER_SEC;
-#endif
 }
 
-	
+
 	/**	Return the current system time in microseconds.	*/
 inline TTFloat64 TTGetTimeInMicroseconds()
 {
-	// On the Mac, CLOCKS_PER_SEC is 1000000, so we optimize
-#if	CLOCKS_PER_SEC == 1000000
-	return clock();	
-#else
 	return (clock() * 1000000.0) / CLOCKS_PER_SEC;
-#endif
 }
-	
+
 
 /**	Produces a random-valued 64-bit floating-point number in the range [0.0, 1.0]	*/
 TTFOUNDATION_EXPORT TTFloat64 TTRandom64();
 
 
 /** \ingroup consts
- Equal Power lookup table, 512 elements 
+ Equal Power lookup table, 512 elements
  */
 TTFOUNDATION_EXPORT extern const TTFloat32 kTTLookupEqualPower[];
 
@@ -630,22 +552,22 @@ TTFOUNDATION_EXPORT extern const TTFloat64 kTTGainMidiPowerInv;
  */
 TTFOUNDATION_EXPORT extern const TTFloat64 kTTInv255;
 
-/** Platform and host independent method for posting log messages. 
+/** Platform and host independent method for posting log messages.
  @param message		The message to post.
  */
 void TTFOUNDATION_EXPORT TTLogMessage(TTImmutableCString message, ...);
 
-/** Platform and host independent method for posting warnings. 
+/** Platform and host independent method for posting warnings.
  @param message		The message to post.
  */
 void TTFOUNDATION_EXPORT TTLogWarning(TTImmutableCString message, ...);
 
-/** Platform and host independent method for posting errors. 
+/** Platform and host independent method for posting errors.
  @param message		The message to post.
  */
 void TTFOUNDATION_EXPORT TTLogError(TTImmutableCString message, ...);
 
-/** Platform and host independent method for posting messages only when debugging is enabled in the environment. 
+/** Platform and host independent method for posting messages only when debugging is enabled in the environment.
  @param message		The message to post.
  */
 void TTFOUNDATION_EXPORT TTLogDebug(TTImmutableCString message, ...);

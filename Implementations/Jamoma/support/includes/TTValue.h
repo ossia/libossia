@@ -32,7 +32,7 @@
 	@copydetails TTValue.h
 */
 class TTValue : public TTElementVector {
-    
+
 public:
 
 	/** @brief Constructor for an empty value */
@@ -45,7 +45,7 @@ public:
 		// in these cases it is critical to be able to rely upon the memory being valid for the first element.
 		reserve(1);
 	}
-	
+
 	/** @brief Constructor with a single initial element. */
 	template<class T>
 	TTValue(const T& anInitialValue)
@@ -60,7 +60,7 @@ public:
 		resize(1);
 		(*this)[0].float64(v);
 	}
-		
+
 	/** @brief Constructor with two initial elements. */
 	template <class T, class U>
 	TTValue(const T& aFirstElementInitialValue, const U& aSecondElementInitialValue)
@@ -69,7 +69,7 @@ public:
 		(*this)[0] = aFirstElementInitialValue;
 		(*this)[1] = aSecondElementInitialValue;
 	}
-	
+
 	/** @brief Constructor with three initial elements. */
 	template <class T, class U, class V>
 	TTValue(const T& aFirstElementInitialValue, const U& aSecondElementInitialValue, const V& aThirdElementInitialValue)
@@ -96,12 +96,12 @@ public:
     /** @brief Destructor */
 	~TTValue()
 	{;}
-	
-    
+
+
 private:
 	/** @brief Internal method used by the constructors. */
 	void init();
-	
+
 	/** @brief Performs a deep copy of the object */
 	inline void copy(const TTValue& obj);
 
@@ -132,7 +132,7 @@ public:
 		TTElementVector::clear();
 	}
 
-    
+
 	/** @brief Copy a value starting from an index until another index */
 	void copyRange(const TTValue& obj, TTUInt16 startIndex, TTUInt16 endIndex)
 	{
@@ -140,20 +140,20 @@ public:
 		for (size_t i=0; i<size(); i++)
 			(*this)[i] = obj[startIndex+i];
 	}
-	
-	
+
+
 	/** @brief Copy a value starting from an index until the last element */
 	void copyFrom(const TTValue& obj, TTUInt16 index)
 	{
 		copyRange(obj, index, obj.size());
 	}
-	
-	
+
+
 	/** @brief Insert another TTValue before the first element.
      @details
      The following example code would result in TTValue b having elements ordered <1, 2, 3, ga, bu, zo, meu>:
      @code{.cpp}
-     TTValue a(1, 2, 3); 
+     TTValue a(1, 2, 3);
      TTValue b(ga, bu, zo, meu);
      b.prepend(a);
      @endcode
@@ -166,7 +166,7 @@ public:
 		*this = v;
 	}
 
-	
+
 	/**	@brief Assign a value to TTValue.
      @details Overwrites current elements.
      */
@@ -177,7 +177,7 @@ public:
 		(*this)[0] = value;
 		return *this;
 	}
-	
+
 	/**	@brief Test equality of two values */
 	friend bool operator == (const TTValue& a, const TTValue& b)
 	{
@@ -192,7 +192,7 @@ public:
 		return false;
 	}
 
-#ifndef TT_PLATFORM_WIN
+#if !defined(TT_PLATFORM_WIN) && (!defined(__GNUC__) || defined(__clang__))
     /** @overload
      */
 	template<class T>
@@ -225,7 +225,7 @@ public:
 		else
 			return kTTSymEmpty;
 	}
-    
+
     // TTObject needs to be manually wrapped to avoid ambiguity as interpretted by the clang compiler
     /** @overload
      */
@@ -236,16 +236,16 @@ public:
 		else
 			return TTObject();
 	}
-	
+
     /** @brief Insert a single TTElement at the end */
 	template<class T>
 	void append(const T& anElementValueToAppend)
 	{
 		TTElement e(anElementValueToAppend);
-		
+
 		push_back(e);
 	}
-	
+
     /** @brief Insert another TTValue after the last element.
      @details
      The following example code would result in TTValue b having elements ordered <ga, bu, zo, meu, 1, 2, 3>:
@@ -260,12 +260,12 @@ public:
 		TTUInt32 appendingElementCount = aValueToAppend.size();
 		TTUInt32 oldElementCount = size();
 		TTUInt32 newElementCount = oldElementCount + appendingElementCount;
-		
+
 		resize(newElementCount);
-		
+
 		for (TTUInt32 i=0; i<appendingElementCount; i++) {
 			TTElement e = aValueToAppend[i];
-			
+
 			(*this)[oldElementCount+i] = e;
 		}
 	}
@@ -280,7 +280,7 @@ public:
 		for (TTElementIter i = this->begin(); i != this->end(); i++)
 			i->clip(aLowBound, aHighBound);
 	}
-	
+
 	/** @brief Clip numerical values below a specified boundary
      @param[in] aLowBound   Lowest value that should be preserved. Anything lower will be set to this value.
      @return    none
@@ -290,7 +290,7 @@ public:
 		for (TTElementIter i = this->begin(); i != this->end(); i++)
 			i->cliplow(aLowBound);
 	}
-	
+
 	/** @brief Clip numerical values above a specified boundary
      @param[in] aHighBound  Highest value that should be preserved. Anything higher will be set to this value.
      @return    none
@@ -300,7 +300,7 @@ public:
 		for (TTElementIter i = this->begin(); i != this->end(); i++)
 			i->cliphigh(aHighBound);
 	}
-	
+
 	/** @brief Round float & double elements to the nearest whole number */
 	void round()
 	{
@@ -312,7 +312,7 @@ public:
 	{
 		for_each(this->begin(), this->end(), std::mem_fun_ref(&TTElement::truncate));
 	}
-	
+
 	/** @brief Booleanize numerical elements
      @details Sets all non-zero numerical elements to true, while those that are zero will be set to false. Changes the #TTDataType of these elements to kTypeBoolean.
      */
@@ -320,7 +320,7 @@ public:
 	{
 		for_each(this->begin(), this->end(), std::mem_fun_ref(&TTElement::booleanize));
 	}
-	
+
 	/** @brief Return the content as a single string with spaces between elements
      @param     none
      @return    #TTString that contains the content of all elements in the #TTValue
@@ -328,29 +328,29 @@ public:
 	TTString toString(TTBoolean quotes = YES) const
 	{
 		TTString temp;
-	
+
 		for (size_t i=0; i<size(); i++) {
 			(*this)[i].string(temp, quotes);	// get a string for each item
 			if (i < (size()-1))					// add a space between each item, but no space at the end
 				temp.append(" ");
 		}
-		
+
         return temp;
 	}
-    
+
     // TODO: Could this be DRYer?
     /** @overload
      */
 	void toString(TTBoolean quotes = YES)
 	{
 		TTString temp;
-        
+
 		for (size_t i=0; i<size(); i++) {
 			(*this)[i].string(temp, quotes);		// get a string for each item
 			if (i < (size()-1))             // add a space between each item, but no space at the end
 				temp.append(" ");
 		}
-		
+
 		// now set the value to the new string
         clear();
         append(temp);
@@ -366,7 +366,7 @@ public:
 			clear(); // clear the contents of the value
 			return; // and do nothing else
 		}
-					
+
 		TTUInt32					n = 0;
 		TTInt32						convertedInt;
         TTUInt32					convertedUInt;
@@ -374,45 +374,45 @@ public:
 		std::vector<std::string>	strList;
 		std::string					str(TTString(at(0)));
 		std::istringstream			iss(str);
-		
+
 		std::copy(
 				  std::istream_iterator<std::string>( iss ),
 				  std::istream_iterator<std::string>(),
 				  back_inserter( strList ) );
-		
+
 		if (strList.size() < 1) {
 			clear();
 			return;
 		}
 
 		resize(strList.size());
-		
+
 		for (unsigned int i = 0; i < strList.size(); ++i) {
 			TTString	currentString = strList.at(i).c_str();
-			
+
 			if (currentString.toTTInt32(convertedInt) && !numberAsSymbol) {
-                
+
 				at(n) = int(convertedInt);
 				n++;
 			}
             else if (currentString.toTTUInt32(convertedUInt) && !numberAsSymbol) {
-                
+
 				at(n) = TTUInt32(convertedUInt);
 				n++;
 			}
 			else if (currentString.toTTFloat32(convertedFloat) && !numberAsSymbol) {
-                
+
 				at(n) = TTFloat64(convertedFloat);  // cast float32 into float64
 				n++;
 			}
 			else {
 				if (currentString.c_str()[0] == '"') {
 					TTString	editString = currentString.substr(1, currentString.size());	// don't keep the leading "
-					
+
 					while (currentString.c_str()[currentString.size()-1] != '"' && (i != (strList.size() - 1))) {
 						i++;
 						currentString = strList.at(i);
-						
+
 						editString += " ";
 						editString += currentString;
 					}
@@ -422,17 +422,17 @@ public:
 
 				}
 				else {
-					
+
 					at(n) = TTSymbol(currentString.c_str());
 					n++;
 				}
 			}
 		}
-		
+
 		// resize value
 		resize(n);
 	}
-		
+
 
 	/**	@brief Convert a comma-separated-value string into an array of TTSymbols.
      @return    kTTErrInvalidType if first item is not kTypeString, else kTTErrNone
@@ -441,27 +441,27 @@ public:
 	{
 		if (at(0).type() != kTypeString)
 			return kTTErrInvalidType;
-		
+
 		const TTString&	str = at(0);
 		char*			cStr;
 		char*			current;
 
 		clear();
-		
+
 		cStr = new char[str.size()+1];
 		strncpy(cStr, str.c_str(), str.size()+1);
-		
+
 		current = strrchr(cStr, ',');
 		while (current) {
 			*current = 0;
 			current++;
-			
+
 			// Do some basic whitespace stripping from the ends
 			while (*current == ' ')
 				current++;
 			while (current[strlen(current)-1] == ' ')
 				current[strlen(current)-1] = 0;
-			
+
 			append(TTSymbol(current));
 			current = strrchr(cStr, ',');
 		}
@@ -469,10 +469,11 @@ public:
 		delete[] cStr;
 		return kTTErrNone;
 	}
-    
+
 // inherited functions from Vector class
-    
+
 #ifdef _DOXY_
+
     
     /** @brief Return the number of elements
      @details Inherited from the C++ standard library's <a href="http://www.cplusplus.com/reference/vector/vector/">vector class</a>
@@ -487,28 +488,28 @@ public:
      @return    void
      */
     void resize (size_type n);
-    
+
 #endif
-	
+
 // deprecated functions
-    
+
     /** @brief DEPRECATED
      @deprecated instead, please call the size() method */
 	TT_DEPRECATED( TTUInt16 getSize() const )
 	{
 		return size();
 	}
-	
+
 	/** @brief DEPRECATED
      @deprecated instead, please call the resize() method */
 	TT_DEPRECATED( void setSize(const TTUInt16 arg) )
 	{
 		resize(arg);
 	}
-	
-	
+
+
 	/** @brief DEPRECATED
-     @deprecated instead, please call TTElement::type() on the element itself. 
+     @deprecated instead, please call TTElement::type() on the element itself.
      @details
      Old syntax:
      @code{.cpp}
@@ -518,15 +519,15 @@ public:
      New syntax:
      @code{.cpp}
      TTValue v(1,2,3);
-     TTDataType thetype = v[1].type(); 
+     TTDataType thetype = v[1].type();
      @endcode
      */
 	TT_DEPRECATED( TTDataType getType(const TTUInt16 index=0) const )
 	{
 		return at(index).type();
 	}
-    
-    
+
+
     /** @brief DEPRECATED
      @deprecated instead, please make an assignment using standard C array syntax.
      @details
@@ -546,7 +547,7 @@ public:
 	{
 		at(index) = anElementValue;
 	}
-    
+
 	/** @brief DEPRECATED
 	 @deprecated instead, please fetch the value of an element using standard C array syntax.
      @details
@@ -568,7 +569,7 @@ public:
 	{
 		returnedElementValue = at(index);
 	}
-    
+
 	/*
      TT_DEPRECATED ( void get(const TTUInt16 index, TTObjectBase** value) const )
      {
@@ -576,19 +577,19 @@ public:
      *value = at(index);
      }
 	 */
-    
+
 	TT_DEPRECATED ( void get(const TTUInt16 index, TTPtr* value) const )
 	{
 		if (at(index).type() == kTypePointer)
 			*value = at(index);
 	}
-    
+
 	TT_DEPRECATED ( void get(const TTUInt16 index, TTString& value) const )
 	{
 		value = (TTString)at(index);
 	}
-    
-	
+
+
     // inlined for speed (e.g. for use in the matrix)
     /** @brief DEPRECATED
 	 @deprecated inlined function formerly used by #TTMatrix or @ref foundationDataspaceLib
@@ -597,7 +598,7 @@ public:
 	{
 		return TTUInt8(at(index));
 	}
-	
+
 	// inlined for speed (e.g. for use in the matrix)
     /** @copydoc getUInt8()
      */
@@ -605,21 +606,21 @@ public:
 	{
 		return TTInt32(at(index));
 	}
-	
+
 	/** @copydoc getUInt8()
      */
 	TT_DEPRECATED( TTFloat64 getFloat32(TTUInt16 index = 0) const )
 	{
 		return TTFloat32(at(index));
 	}
-	
+
 	/** @copydoc getUInt8()
      */
 	TT_DEPRECATED( TTFloat64 getFloat64(TTUInt16 index = 0) const )
 	{
 		return TTFloat64(at(index));
 	}
-    
+
 	/** @copydoc getUInt8()
      */
 	TT_DEPRECATED( void getArray(TTUInt8* arrayToFill, TTUInt16 maxSize) const )
@@ -630,8 +631,8 @@ public:
 			*(arrayToFill+i) = TTUInt8(at(i));
 		}
 	}
-	
-	
+
+
 	/** @overload
      */
 	TT_DEPRECATED( void getArray(TTInt32* arrayToFill, TTUInt16 maxSize) const )
@@ -642,8 +643,8 @@ public:
 			*(arrayToFill+i) = TTInt32(at(i));
 		}
 	}
-	
-	
+
+
 	/** @overload
      */
 	TT_DEPRECATED( void getArray(TTFloat32* arrayToFill, TTUInt16 maxSize) const )
@@ -654,8 +655,8 @@ public:
 			*(arrayToFill+i) = TTFloat32(at(i));
 		}
 	}
-	
-	
+
+
 	/** @overload
      */
 	TT_DEPRECATED( void getArray(TTFloat64* arrayToFill, TTUInt16 maxSize) const )
@@ -666,7 +667,7 @@ public:
 			*(arrayToFill+i) = TTFloat64(at(i));
 		}
 	}
-	
+
 
 
 };
