@@ -14,8 +14,6 @@
 #include <memory>
 #include <string>
 
-#include "Editor/Clock.h"
-
 namespace OSSIA {
 
 class State;

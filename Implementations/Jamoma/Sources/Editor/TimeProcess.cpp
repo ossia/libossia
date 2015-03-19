@@ -1,5 +1,6 @@
 #include "Editor/TimeProcess.h"
 #include "Editor/TimeValue.h"
+#include "Editor/Clock.h"
 
 using namespace OSSIA;
 using namespace std;
