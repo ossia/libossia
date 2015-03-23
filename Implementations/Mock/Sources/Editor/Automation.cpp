@@ -5,7 +5,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class MockAutomation : public virtual Automation, public virtual MockTimeProcess {
+class MockAutomation : public Automation, public MockTimeProcess {
 
 public:
 
@@ -29,7 +29,7 @@ public:
   virtual AddressValue getStartValue() const override {return AddressValue();}
   virtual void setStartValue(AddressValue) override {}
   virtual AddressValue getEndValue() const override {return AddressValue();}
-  virtual void setSEndValue(AddressValue) override {}
+  virtual void setEndValue(AddressValue) override {}
   virtual const shared_ptr<Curve> & getCurve() const override {return curve;}
   virtual void setCurve(shared_ptr<Curve>) override {}
   virtual const shared_ptr<Address> & getInputAdress() const override {return addr;}

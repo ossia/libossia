@@ -16,10 +16,10 @@
 
 namespace OSSIA {
 
+class Clock;
 class State;
 class TimeEvent;
 class TimeValue;
-class Clock;
 
 class TimeProcess {
 

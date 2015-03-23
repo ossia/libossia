@@ -16,8 +16,8 @@
 
 namespace OSSIA {
 
-class State;
 class Expression;
+class State;
 class TimeProcessList;
 
 class TimeEvent {

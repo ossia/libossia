@@ -35,7 +35,7 @@ public:
 
   // Accessors
   virtual const std::shared_ptr<Address> & getAddress() const = 0;
-  virtual const AddressValue getValue() const = 0;
+  virtual AddressValue getValue() const = 0;
 
 };
 
