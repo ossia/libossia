@@ -11,7 +11,7 @@
 #ifndef CONTAINER_H_
 #define CONTAINER_H_
 
-#include "Misc/Iterators.h"
+#include <cstddef>
 
 namespace OSSIA {
 
@@ -23,9 +23,9 @@ class Container {
 public:
 
   typedef T value_type;
-  typedef genericIterator iterator;
-  typedef genericConst_iterator const_iterator;
-  typedef genericSize_type size_type;
+  typedef T * iterator;
+  typedef const T * const_iterator;
+  typedef std::size_t size_type;
   virtual ~Container() = default;
 
   virtual iterator begin() = 0;

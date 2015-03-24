@@ -25,7 +25,7 @@ class TimeConstraint;
 class TimeEvent;
 class TimeValue;
 
-class TimeNode : public Container<TimeEvent> {
+class TimeNode : public virtual Container<TimeEvent> {
 
 public:
 

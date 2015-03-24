@@ -18,7 +18,7 @@
 
 namespace OSSIA {
 
-class State : public StateElement, public Container<StateElement> {
+class State : public StateElement, public virtual Container<StateElement> {
 
 public:
 

@@ -20,7 +20,7 @@ namespace OSSIA {
 class TimeProcess;
 
 //todo could be just a Container<TimeProcess> ? needs observation ? save/load ?
-class TimeProcessList : public Container<TimeProcess> {
+class TimeProcessList : public virtual Container<TimeProcess> {
 
 public:
 

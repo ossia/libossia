@@ -19,7 +19,7 @@ namespace OSSIA {
 
 class Protocol;
 
-class Device : public Node {
+class Device : public virtual Node {
 
 public:
 

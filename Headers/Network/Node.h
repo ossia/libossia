@@ -17,7 +17,7 @@
 
 namespace OSSIA {
 
-class Node : public Container<Node> {
+class Node : public virtual Container<Node> {
 
 public:
 
