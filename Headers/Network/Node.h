@@ -17,6 +17,8 @@
 
 namespace OSSIA {
 
+class Address;
+
 class Node : public virtual Container<Node> {
 
 public:

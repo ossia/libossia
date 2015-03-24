@@ -13,6 +13,7 @@
 
 #include "Network/AddressValue.h"
 
+#include <memory>
 #include <string>
 
 #include "Editor/Expression.h"

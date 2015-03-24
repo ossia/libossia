@@ -12,6 +12,7 @@
 #define PROTOCOLS_H_
 
 #include <string>
+#include <vector>
 
 namespace OSSIA {
 
@@ -31,7 +32,7 @@ struct Minuit : public Protocol {
 };
 
 
-class OSC : public Protocol {
+struct OSC : public Protocol {
   OSC(std::string ip, int in_port, int out_port)
     :ip(ip), in_port(in_port), out_port(out_port) {} //todo what if only in or out ?
 
@@ -40,7 +41,8 @@ class OSC : public Protocol {
   int out_port;
 };
 
-class Midi : public Protocol {
+struct Midi : public Protocol {
+  // to see IPs of connected Midi devices
   static std::vector<Midi> scan();//todo options
   //todo members
 };

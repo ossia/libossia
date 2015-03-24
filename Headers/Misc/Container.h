@@ -12,13 +12,12 @@
 #define CONTAINER_H_
 
 #include <cstddef>
+#include <memory>
 
 namespace OSSIA {
 
 template <typename T>
 class Container {
-
-
 
 public:
 
@@ -45,7 +44,5 @@ public:
 };
 
 }
-
-
 
 #endif /* CONTAINER_H_ */

@@ -12,6 +12,7 @@ public:
   // Dummy members
   shared_ptr<State> st;
   shared_ptr<Expression> exp;
+  MockTimeProcessList m;
 
   // Constructor, destructor
   MockTimeEvent(shared_ptr<State> st, shared_ptr<Expression> exp) {}
@@ -23,15 +24,13 @@ public:
   // Accessors
   virtual const shared_ptr<State> & getState() const override {return st;}
   virtual const shared_ptr<Expression> & getExpression() const override {
-	return exp;
+    return exp;
   }
   virtual TimeProcessList & getPreviousProcesses() override {
-	  MockTimeProcessList m;
-	return m;
+    return m;
   }
   virtual TimeProcessList & getNextProcesses() override {
-	  MockTimeProcessList m;
-	  return m;
+    return m;
   }
 
 };
