@@ -24,7 +24,7 @@ class Device : public virtual Node {
 public:
 
   // Factory, destructor
-  static std::shared_ptr<Device> create(Protocol, std::string = "");
+  static std::shared_ptr<Device> create(Protocol &, std::string = "");
   virtual ~Device() = default;
 
   // Network
