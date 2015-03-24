@@ -25,14 +25,20 @@ int main() {
 
   auto test = minuitDevice->emplace(minuitDevice->begin(), "test");
   test->createAddress(AddressValue::Type::BOOL);
-  auto done = minuitDevice->addAddress("done");
+  auto done = minuitDevice->emplace(minuitDevice->begin(), "done");
+  done->createAddress(AddressValue::Type::NONE);
 
-  auto test1 = test->addAddress("1", AddressType::INT);
-  auto test2 = test->addAddress("2", AddressType::STRING);
-  auto test3 = test->addAddress("3", AddressType::INT, AddressType::INT);
-  auto test4 = test->addAddress("4", AddressType::INT, 0, 100);
+  auto test1 = test->emplace(test->begin(), "1");
+  test1->createAddress(AddressValue::Type::INT);
+  auto test2 = test->emplace(test->begin(), "2");
+  test2->createAddress(AddressValue::Type::STRING);
+  auto test3 = test->emplace(test->begin(), "3");
+  /* todo more to think about Tuples :
+  test3->createAddress(AddressValue::Type::INT, AddressValue::Type::INT); */
+  auto test4 = test->emplace(test->begin(), "4");
+  test4->createAddress(AddressValue::Type::INT);//todo setDomain(0,100)
 
-  OSC PrOSCol("0.0.0.0", 1000, 1001);
-  auto oscDevice = Device.create(PrOSCol);
+  OSC PrOSCol{"0.0.0.0", 1000, 1001};
+  auto oscDevice = Device::create(PrOSCol);
 
 }
