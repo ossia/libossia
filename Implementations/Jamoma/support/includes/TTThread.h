@@ -22,8 +22,8 @@ typedef void*(*TTThreadCallbackType)(void* arg);
 class TTThread
 {
 	std::thread thread;
-	TTThreadCallbackType	callback;	///< method called in the new thread when it starts
-	void*					argument;	///< argument passed to the callback
+	//TTThreadCallbackType	callback;	///< method called in the new thread when it starts
+	//void*					argument;	///< argument passed to the callback
 
 public:
 	TTThread(TTThreadCallbackType aCallback, void* anArgument)

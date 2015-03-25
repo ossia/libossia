@@ -22,7 +22,7 @@
 #define __TT_APPLICATION_H__
 
 #include "TTModularIncludes.h"
-#include "Protocol.h"
+#include "TTProtocol.h"
 #include "TTMirror.h"
 
 class TTApplication;
@@ -31,8 +31,8 @@ typedef TTApplication* TTApplicationPtr;
 class TTApplicationManager;
 typedef TTApplicationManager* TTApplicationManagerPtr;
 
-class Protocol;
-typedef Protocol* ProtocolPtr;
+class TTProtocol;
+typedef TTProtocol* TTProtocolPtr;
 
 class TTMirror;
 typedef TTMirror* TTMirrorPtr;
@@ -153,7 +153,7 @@ private:
     /** Convenient method to build the directory under an address using a protocol
      @return #TTErr error code
      @seealso DirectoryBuild */
-    TTErr buildNode(ProtocolPtr aProtocol, TTAddress anAddress);
+    TTErr buildNode(TTProtocolPtr aProtocol, TTAddress anAddress);
     
     /** Observe the directory of an application (for distant application only) 
      @param inputValue      #TTBoolean to enable or disable directory observation
@@ -295,7 +295,7 @@ private:
      @param attributesName  attributes of the object to mirror
      @return #TTObject
      @seealso readNodeFromXml */
-    TTObject appendMirrorObject(ProtocolPtr aProtocol, TTAddress anAddress, TTSymbol objectName, TTValue& attributesName);
+    TTObject appendMirrorObject(TTProtocolPtr aProtocol, TTAddress anAddress, TTSymbol objectName, TTValue& attributesName);
     
     /**  Convenient method used to create a data object
      @param aProtocol       a protocol object
@@ -303,14 +303,14 @@ private:
      @param service         data service
      @return #TTObject
      @seealso readNodeFromXml */
-    TTObject appendProxyData(ProtocolPtr aProtocol, TTAddress anAddress, TTSymbol service);
+    TTObject appendProxyData(TTProtocolPtr aProtocol, TTAddress anAddress, TTSymbol service);
     
     /**  Convenient method used to create a container object
      @param aProtocol       a protocol object
      @param anAddress       where to register the container object
      @return #TTObject
      @seealso readNodeFromXml */
-    TTObject appendProxyContainer(ProtocolPtr aProtocol, TTAddress anAddress);
+    TTObject appendProxyContainer(TTProtocolPtr aProtocol, TTAddress anAddress);
     
 #if 0
 #pragma mark -

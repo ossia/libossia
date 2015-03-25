@@ -55,7 +55,7 @@
 
 #include "TTRegex.h"
 
-#include "Protocol.h"
+#include "TTProtocol.h"
 #include "TTClock.h"
 
 #include "TTApplication.h"

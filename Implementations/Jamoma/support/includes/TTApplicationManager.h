@@ -15,7 +15,7 @@
  * Then, notice the features above can also be done in the opposite way (the local application to the distant applications). @n
  * The #TTApplicationManager class provides method to instanciate and release #TTApplication and #Protocol instances. @n
  *
- * @see TTApplication, ProtocolLib
+ * @see TTApplication, TTProtocolLib
  *
  * @authors Théo de la Hogue
  *
@@ -32,8 +32,8 @@
 class TTApplication;
 typedef TTApplication* TTApplicationPtr;
 
-class Protocol;
-typedef Protocol* ProtocolPtr;
+class TTProtocol;
+typedef TTProtocol* TTProtocolPtr;
 
 class TTXmlHandler;
 typedef TTXmlHandler* TTXmlHandlerPtr;
@@ -309,8 +309,8 @@ public:
     
     /**  Get a protocol relative to a name
      @param protocolName    #TTSymbol
-     @return #ProtocolPtr or NULL if the protocol doesn't exist */
-    ProtocolPtr findProtocol(TTSymbol protocolName);
+     @return #TTProtocolPtr or NULL if the protocol doesn't exist */
+    TTProtocolPtr findProtocol(TTSymbol protocolName);
     
 #if 0
 #pragma mark -
