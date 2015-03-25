@@ -16,7 +16,10 @@
 
 namespace OSSIA {
 
-class Protocol {};
+class Protocol {
+public:
+  virtual ~Protocol() = default;
+};
 
 
 struct Local : public Protocol {};
