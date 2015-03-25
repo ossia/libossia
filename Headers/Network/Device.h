@@ -32,6 +32,9 @@ public:
   
 };
 
+std::shared_ptr<Node> declareMinuitInternDevice(std::string, int port);
+std::shared_ptr<Node> declareOSCInternDevice(int in_port, int out_port);
+
 }
 
 #endif /* DEVICE_H_ */
