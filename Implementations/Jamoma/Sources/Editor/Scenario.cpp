@@ -10,7 +10,8 @@ class JamomaScenario : virtual Scenario, virtual JamomaTimeProcess
 {
   
 private:
-  // Implementation Specific
+  
+  // Implementation specific
   shared_ptr<TimeNode> tnode;
   
 public:

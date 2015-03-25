@@ -40,18 +40,14 @@ SRC32 += Sources/Editor/TimeProcessList.i386.o
 SRC64 += Sources/Editor/TimeProcessList.x64.o
 SRC32 += Sources/Editor/TimeValue.i386.o
 SRC64 += Sources/Editor/TimeValue.x64.o
-#SRC32 += Sources/Network/Address.i386.o
-#SRC64 += Sources/Network/Address.x64.o
-#SRC32 += Sources/Network/Device.i386.o
-#SRC64 += Sources/Network/Device.x64.o
-#SRC32 += Sources/Network/DeviceLocal.i386.o
-#SRC64 += Sources/Network/DeviceLocal.x64.o
-#SRC32 += Sources/Network/DeviceMinuit.i386.o
-#SRC64 += Sources/Network/DeviceMinuit.x64.o
-#SRC32 += Sources/Network/DeviceOSC.i386.o
-#SRC64 += Sources/Network/DeviceOSC.x64.o
-#SRC32 += Sources/Network/Protocols.i386.o
-#SRC64 += Sources/Network/Protocols.x64.o
+SRC32 += Sources/Misc/Container.i386.o
+SRC64 += Sources/Misc/Container.x64.o
+SRC32 += Sources/Network/Address.i386.o
+SRC64 += Sources/Network/Address.x64.o
+SRC32 += Sources/Network/Device.i386.o
+SRC64 += Sources/Network/Device.x64.o
+SRC32 += Sources/Network/Node.i386.o
+SRC64 += Sources/Network/Node.x64.o
 
 #########################################
 

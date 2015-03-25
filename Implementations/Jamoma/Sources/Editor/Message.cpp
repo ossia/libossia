@@ -10,7 +10,8 @@ class JamomaMessage : public Message
 {
   
 private:
-  // Implementation Specific
+  
+  // Implementation specific
   shared_ptr<Address> addr;
   AddressValue val;
 
@@ -45,7 +46,7 @@ public:
     return addr; //todo cannot return non-const member in const method
   }
   
-  virtual const AddressValue getValue() const override
+  virtual AddressValue getValue() const override
   {
     return val;
   }

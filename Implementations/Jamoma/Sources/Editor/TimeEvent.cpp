@@ -8,7 +8,8 @@ class JamomaTimeEvent : public TimeEvent
 {
   
 private:
-  // Implementation Specific
+  
+  // Implementation specific
   shared_ptr<State> st;
   shared_ptr<Expression> exp;
   JamomaTimeProcessList proclist;

@@ -1,32 +1,26 @@
-#include "Editor/TimeProcessList.h"
+#include <memory>
 
-#include "TTScore.h"
+#include "Misc/Container.h"
 
 using namespace OSSIA;
 using namespace std;
 
-class JamomaTimeProcessList : public TimeProcessList
+template <typename T>
+class JamomaContainer : public virtual Container<T>
 {
   
 private:
   
   // Implementation specific
-  shared_ptr<TimeProcess> element;
-  
-public:
-  // Constructor, destructor
-  JamomaTimeProcessList()
-  {
-    // todo : we shouldn't init each time we create an object ...
-    TTFoundationInit("/usr/local/jamoma/");
-    TTModularInit("/usr/local/jamoma/");
-    TTScoreInit("/usr/local/jamoma/");
-  }
-  
-  virtual ~JamomaTimeProcessList()
-  {}
+  shared_ptr<T> element;
 
-  // Std container
+public:
+
+  typedef T value_type;
+  typedef T * iterator;
+  typedef const T * const_iterator;
+  typedef std::size_t size_type;
+
   virtual iterator begin() override
   {
     return iterator();
@@ -57,29 +51,28 @@ public:
     return true;
   }
   
-  virtual shared_ptr<TimeProcess> & front() override
+  virtual shared_ptr<T> & front() override
   {
     return element;
   }
   
-  virtual const shared_ptr<TimeProcess> & front() const override
+  virtual const shared_ptr<T> & front() const override
+  {
+    return element;
+  }
+  virtual shared_ptr<T> & back() override
   {
     return element;
   }
   
-  virtual shared_ptr<TimeProcess> & back() override
+  virtual const shared_ptr<T> & back() const override
   {
-    return element;
+        return element;
   }
   
-  virtual const shared_ptr<TimeProcess> & back() const override
+  virtual iterator insert(const_iterator where, shared_ptr<T> what) override
   {
-    return element;
-  }
-  
-  virtual iterator insert(const_iterator where, shared_ptr<TimeProcess> what) override
-  {
-    return iterator();
+        return iterator();
   }
   
   virtual iterator erase(const_iterator which) override

@@ -13,6 +13,7 @@ class JamomaAutomation : virtual Automation, virtual JamomaTimeProcess
 {
   
 private:
+  
   // Implementation Specific
   shared_ptr<Curve> curve;
   shared_ptr<Address> addr;

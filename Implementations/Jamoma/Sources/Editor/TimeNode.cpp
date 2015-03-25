@@ -10,7 +10,8 @@ class JamomaTimeNode : public TimeNode
 {
   
 private:
-  // Implementation Specific
+  
+  // Implementation specific
   shared_ptr<TimeEvent> element;
   
 public:

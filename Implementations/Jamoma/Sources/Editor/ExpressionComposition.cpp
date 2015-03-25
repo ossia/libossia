@@ -9,7 +9,8 @@ class JamomaExpressionComposition : public ExpressionComposition
 {
   
 private:
-  // Implementation Specific
+  
+  // Implementation specific
   shared_ptr<Expression> first_expr;
   shared_ptr<Expression> second_expr;
 

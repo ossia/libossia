@@ -10,13 +10,14 @@ class JamomaExpressionAtom : public ExpressionAtom
 {
   
 private:
-  // Implementation Specific
+  
+  // Implementation specific
   shared_ptr<ExpressionValue> first_expr;
   shared_ptr<ExpressionValue> second_expr;
   
 public:
   // Constructors, destructor, cloning
-  JamomaExpressionAtom(std::shared_ptr<Address> addr, Operator op, std::shared_ptr<AddressValue> val)
+  JamomaExpressionAtom(std::shared_ptr<ExpressionValue> expr1, Operator op, std::shared_ptr<ExpressionValue> expr2)
   {
     // todo : we shouldn't init each time we create an object ...
     TTFoundationInit("/usr/local/jamoma/");
@@ -54,12 +55,12 @@ public:
   
   virtual Operator getOperator() const override
   {
-    return Operator::IMPULSE;
+    return Operator::EQUAL;
   }
 
 };
 
-shared_ptr<ExpressionAtom> ExpressionAtom::create(std::shared_ptr<Address> addr, Operator op, std::shared_ptr<AddressValue> val)
+shared_ptr<ExpressionAtom> ExpressionAtom::create(std::shared_ptr<ExpressionValue> expr1, Operator op, std::shared_ptr<ExpressionValue> expr2)
 {
-  return shared_ptr<ExpressionAtom>(new JamomaExpressionAtom(addr, op, val));
+  return shared_ptr<ExpressionAtom>(new JamomaExpressionAtom(expr1, op, expr2));
 }

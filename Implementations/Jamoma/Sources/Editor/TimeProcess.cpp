@@ -9,7 +9,8 @@ class JamomaTimeProcess : public TimeProcess
 {
   
 private:
-  // Implementation Specific
+  
+  // Implementation specific
   shared_ptr<TimeEvent> event;
   shared_ptr<State> state;
   shared_ptr<Clock> clock;

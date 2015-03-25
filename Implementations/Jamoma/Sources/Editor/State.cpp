@@ -9,7 +9,8 @@ class JamomaState : public State
 {
   
 private:
-  // Implementation Specific
+  
+  // Implementation specific
   shared_ptr<StateElement> element;
   //TTList mLines; // code relative to old state managment
   

@@ -10,7 +10,8 @@ class JamomaTimeConstraint : public TimeConstraint
 {
   
 private:
-  // Implementation Specific
+  
+  // Implementation specific
   shared_ptr<TimeNode> tnode;
   shared_ptr<State> st;
   shared_ptr<TimeProcess> element;

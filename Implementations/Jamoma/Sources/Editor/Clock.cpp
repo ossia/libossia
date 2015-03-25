@@ -7,7 +7,8 @@ class JamomaClock : public Clock
 {
   
 private:
-  // Implementation Specific
+  
+  // Implementation specific
   
 public:
 

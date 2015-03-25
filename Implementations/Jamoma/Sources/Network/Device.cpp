@@ -1,29 +1,28 @@
-/*!
- * \file Device.cpp
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #include "Network/Device.h"
+#include "Network/Protocol.h"
+#include "Node.cpp"
 
+#include "TTFoundation.h"
 #include "TTModular.h"
 
-namespace OSSIA {
+using namespace OSSIA;
+using namespace std;
+
+class JamomaDevice : public Device, public JamomaNode
+{
+
+private:
   
-class SharedImpl {
-    
-public:
-  
+  // Implemenatation specific
   TTObject mApplicationManager;
   TTObject mApplication;
-    
-  SharedImpl()
+  
+public:
+
+  // Constructor, destructor
+  JamomaDevice(Protocol & protocol, string name = "") : JamomaNode(name)
   {
-    // todo : move this else where ...
+    // todo : we shouldn't init each time we create an object ...
     TTFoundationInit("/usr/local/jamoma/");
     TTModularInit("/usr/local/jamoma/");
     
@@ -32,43 +31,50 @@ public:
       mApplicationManager = TTObject("ApplicationManager");
     else
       mApplicationManager = TTObjectBasePtr(TTModularApplicationManager);
-  };
+    
+    // which protocol is it ?
+    // todo: this is not a good way to do as if a new protocol appears we have to create a case for it here
+    Local* local_protocol = dynamic_cast<Local*>(&protocol);
+    if (local_protocol)
+    {
+      TTLogMessage("Local device created");
+      return;
+    }
+    
+    Minuit* minuit_protocol = dynamic_cast<Minuit*>(&protocol);
+    if (minuit_protocol)
+    {
+      TTLogMessage("Minuit device created");
+      return;
+    }
+    
+    OSC* osc_protocol = dynamic_cast<OSC*>(&protocol);
+    if (osc_protocol)
+    {
+      TTLogMessage("OSC device created");
+      return;
+    }
+  }
   
-  SharedImpl(const SharedImpl & other) = default;
-  ~SharedImpl() = default;
+  ~JamomaDevice()
+  {}
+
+  // Network
+  virtual bool updateNamespace() override
+  {
+    return false;
+  }
+
 };
 
-template <typename T>
-Device<T>::Device() :
-pimpl(new Impl)
-{}
-  
-template <typename T>
-Device<T>::Device(const Device & other) :
-pimpl(new Impl(*(other.pimpl)))
-{}
-  
-template <typename T>
-Device<T>::Device(T * protocol) :
-pimpl(new Impl)
-{}
-  
-template <typename T>
-Device<T>::~Device()
+shared_ptr<Device> Device::create(Protocol & p, string name)
 {
-  delete pimpl;
-}
-  
-template <typename T>
-Device<T>& Device<T>::operator= (const Device & other)
-{
-  delete pimpl;
-  pimpl = new Impl(*(other.pimpl));
-  return *this;
+  return shared_ptr<Device>(new JamomaDevice(p, name));
 }
 
-template <typename T>
-bool Device<T>::save(std::string filepath) const
+/* old code
+ 
+bool Device::save(std::string filepath) const
 {
   // create a xml handler
   TTObject aXmlHandler(kTTSym_XmlHandler);
@@ -82,9 +88,8 @@ bool Device<T>::save(std::string filepath) const
   
   return err == kTTErrNone;
 }
-  
-template <typename T>
-bool Device<T>::load(std::string filepath) const
+
+bool Device::load(std::string filepath)
 {
   // create a xml handler
   TTObject aXmlHandler(kTTSym_XmlHandler);
@@ -98,5 +103,5 @@ bool Device<T>::load(std::string filepath) const
   
   return err == kTTErrNone;
 }
-
-}
+ 
+*/
