@@ -45,9 +45,9 @@ public:
   // Accessors
   T getInitialValue() const;
   void setInitialValue(const T);
-  std::map<double, std::pair<T, CurveSegment<T>&>> getPointsMap() const;
+  std::map<double, std::pair<T, CurveSegment<T>>> getPointsMap() const;
     // {abscissa, {value, previous segment}}
-  
+
   // Computation
   T valueAt(double) const; // Between 0. and 1.
 

@@ -12,46 +12,41 @@
 #define CURVESEGMENT_H_
 
 namespace OSSIA {
-  
+
   template <typename T>
   class Curve;
-  
+
   template <typename T>
   class CurveSegment {
-    
+
   public:
-    
+
     // Constructor, Destructor
-    CurveSegment() : mParent(nullptr) {};
-    CurveSegment(Curve<T> * parent) : mParent(parent) {};
-    virtual ~CurveSegment() {};
-    
+    CurveSegment();
+    CurveSegment(Curve<T> * parent);
+    virtual ~CurveSegment();
+
     // Navigation
-    Curve<T>* getParent() const {return mParent;};
-    
+    Curve<T>* getParent() const;
+
     // Computation
-    virtual T valueAt(double) const // Between 0. and 1.
-    {
-      T t = 0.;
-      return t;
-    };
-    
+    virtual T valueAt(double) const; // Between 0. and 1.
+
     // Curve segment types
     enum class CurveSegmentType {
       NONE,
       LINEAR,
       POWER
     };
-    
-    virtual CurveSegmentType getType() const
-    {return CurveSegment<T>::CurveSegmentType::NONE;};
-    
+
+    virtual CurveSegmentType getType() const;
+
   protected:
-    
+
     Curve<T>* mParent{};
-    
+
   };
-  
+
 }
 
 #endif /* CURVESEGMENT_H_ */
