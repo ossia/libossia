@@ -19,12 +19,12 @@ class MockCurve : public Curve<double>
         bool removePoint(double) {return true;}
 
         // Accessors
-        double getInitialValue() const {return 0.0;}
+        double getInitialValue() const {return 0.5;}
         void setInitialValue(const double) {}
-        std::map<double, std::pair<double, CurveSegment<double>>> getPointsMap() const {return {{0.0, {0.0, {}}}};}
+        std::map<double, std::pair<double, CurveSegment<double>>> getPointsMap() const {return {{0.1, {0.5, {}}}};}
           // {abscissa, {value, previous segment}}
 
         // Computation
-        double valueAt(double) const {return 0.0;} // Between 0. and 1.
+        double valueAt(double) const {return 0.5;} // Between 0. and 1.
 
 };

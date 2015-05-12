@@ -23,10 +23,10 @@ int main()
   // Minuit device creation
   Minuit minuitDeviceParameters{"MinuitDevice1", "127.0.0.1", 9998};
   auto minuitDevice = Device::create(minuitDeviceParameters);
-  
+
   // Minuit tree building
   minuitDevice->updateNamespace();
-  
+
   // OSC device creation
   OSC oscDeviceParameters{"127.0.0.1", 9996, 9997};
   auto oscDevice = Device::create(oscDeviceParameters);
@@ -34,21 +34,21 @@ int main()
   // OSC tree building
   auto test = oscDevice->emplace(oscDevice->begin(), "test");
   test->createAddress(AddressValue::Type::BOOL);
-  
+
   auto done = oscDevice->emplace(oscDevice->begin(), "done");
   done->createAddress(AddressValue::Type::NONE);
 
   auto test1 = test->emplace(test->begin(), "1");
   test1->createAddress(AddressValue::Type::INT);
-  
+
   auto test2 = test->emplace(test->begin(), "2");
   test2->createAddress(AddressValue::Type::STRING);
-  
+
   auto test3 = test->emplace(test->begin(), "3");
-  /* todo: more to think about Tuples
-  test3->createAddress(AddressValue::Type::INT, AddressValue::Type::INT); 
+  /* TODO: more to think about Tuples
+  test3->createAddress(AddressValue::Type::INT, AddressValue::Type::INT);
    */
-  
+
   auto test4 = test->emplace(test->begin(), "4");
-  test4->createAddress(AddressValue::Type::INT); // todo: setDomain(0,100)
+  test4->createAddress(AddressValue::Type::INT); // TODO: setDomain(0,100)
 }

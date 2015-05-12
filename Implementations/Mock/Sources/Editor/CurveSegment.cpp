@@ -16,7 +16,7 @@ class MockCurveSegment : public CurveSegment<double>
         // Computation
         virtual double valueAt(double) const // Between 0. and 1.
         {
-          return 0.0;
+          return 0.5;
         }
 
         virtual CurveSegmentType getType() const

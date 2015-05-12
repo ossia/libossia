@@ -8,8 +8,7 @@
  * http://www.cecill.info
  */
 
-#ifndef STATE_H_
-#define STATE_H_
+#pragma once
 
 #include <memory>
 
@@ -20,18 +19,16 @@ namespace OSSIA {
 
 class State : public StateElement, public virtual Container<StateElement> {
 
-public:
+    public:
 
-  // Factories, destructor
-  static std::shared_ptr<State> create();
-  virtual std::shared_ptr<State> clone() const = 0;
-  virtual ~State() = default;
+      // Factories, destructor
+      static std::shared_ptr<State> create();
+      virtual std::shared_ptr<State> clone() const = 0;
+      virtual ~State() = default;
 
-  // Lecture
-  virtual void launch() const override = 0;
+      // Lecture
+      virtual void launch() const override = 0;
 
 };
 
 }
-
-#endif /* STATE_H_ */

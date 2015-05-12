@@ -8,8 +8,7 @@
  * http://www.cecill.info
  */
 
-#ifndef TIMENODE_H_
-#define TIMENODE_H_
+#pragma once
 
 #include <memory>
 #include <string>
@@ -27,28 +26,26 @@ class TimeValue;
 
 class TimeNode : public virtual Container<TimeEvent> {
 
-public:
+    public:
 
-  // Factories, destructor
-  static std::shared_ptr<TimeNode> create();
-  virtual std::shared_ptr<TimeNode> clone() const = 0;
-  virtual ~TimeNode() = default;
+      // Factories, destructor
+      static std::shared_ptr<TimeNode> create();
+      virtual std::shared_ptr<TimeNode> clone() const = 0;
+      virtual ~TimeNode() = default;
 
-  // Lecture
-  virtual void play(bool log = false, std::string name = "") const = 0;
+      // Lecture
+      virtual void play(bool log = false, std::string name = "") const = 0;
 
-  // Accessors
-  virtual TimeValue getDate() const = 0;
-  virtual TimeValue getSimultaneityMargin() const = 0;
-  virtual void setSimultaneityMargin(TimeValue) = 0; //todo why not in constructor (only) ?
+      // Accessors
+      virtual TimeValue getDate() const = 0;
+      virtual TimeValue getSimultaneityMargin() const = 0;
+      virtual void setSimultaneityMargin(TimeValue) = 0; //todo why not in constructor (only) ?
 
-  // TimeEvent Factory
-  virtual iterator emplace(const_iterator,
-                           std::shared_ptr<State>/*todo = NO_STATE*/,
-                           std::shared_ptr<Expression>/*todo = NO_EXPRESSION*/) = 0;
+      // TimeEvent Factory
+      virtual iterator emplace(const_iterator,
+                               std::shared_ptr<State>/*todo = NO_STATE*/,
+                               std::shared_ptr<Expression>/*todo = NO_EXPRESSION*/) = 0;
 
-};
+    };
 
 }
-
-#endif /* TIMENODE_H_ */

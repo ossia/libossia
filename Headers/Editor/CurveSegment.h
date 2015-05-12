@@ -8,8 +8,7 @@
  * http://www.cecill.info
  */
 
-#ifndef CURVESEGMENT_H_
-#define CURVESEGMENT_H_
+#pragma once
 
 namespace OSSIA {
 
@@ -49,4 +48,3 @@ namespace OSSIA {
 
 }
 
-#endif /* CURVESEGMENT_H_ */
