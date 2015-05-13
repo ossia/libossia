@@ -12,6 +12,7 @@
 
 #include <map>
 #include <utility>
+#include <memory>
 
 namespace OSSIA {
 
@@ -25,6 +26,8 @@ class Curve {
 
       typedef T value_type;
 
+      static std::shared_ptr<Curve> create();
+      virtual std::shared_ptr<Curve> clone() const;
       // Constructors, destructor, assignment
       Curve();
       Curve(const Curve&);
@@ -52,6 +55,7 @@ class Curve {
 
       // pimpl idiom
     // private: // TODO issue #1
+      // TODO : encore d'actualité ?
       class Impl;
       Impl * pimpl{};
 

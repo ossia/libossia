@@ -2,12 +2,14 @@
 #include "Editor/CurveSegment.h"
 
 using namespace OSSIA;
+using namespace std;
 
 class MockCurve : public Curve<double>
 {
     public:
         MockCurve();
-
+        MockCurve(const MockCurve & curve) : Curve<double>(curve) {}
+        shared_ptr<Curve> clone() const {return shared_ptr<Curve>(new MockCurve(*this));}
         // Iterators
         class const_iterator; // bidirectional
         const_iterator begin() const;
@@ -28,3 +30,9 @@ class MockCurve : public Curve<double>
         double valueAt(double) const {return 0.5;} // Between 0. and 1.
 
 };
+
+namespace OSSIA
+{
+    template<> shared_ptr<Curve<double> > Curve<double>::create() {
+        return shared_ptr<Curve>(new MockCurve());}
+}
