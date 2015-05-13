@@ -53,15 +53,15 @@ public:
   virtual AddressValue::Type getValueType() const = 0;
 
   virtual AccessMode getAccessMode() const = 0;
-  //todo virtual Domain getDomain() const = 0;
-  virtual BoundingMode getBoundingMode() const = 0; //todo multiple ?
+  //TODO virtual Domain getDomain() const = 0;
+  virtual BoundingMode getBoundingMode() const = 0; //TODO multiple ?
   virtual bool getRepetitionFilter() const = 0;
-  //todo virtual Destination getDestination() const = 0;
+  //TODO virtual Destination getDestination() const = 0;
   virtual Address & setAccessMode(AccessMode) = 0;
-  //todo virtual Address & setDomain(Domain) = 0;
-  virtual Address & setBoundingMode(BoundingMode) = 0; //todo multiple ?
+  //TODO virtual Address & setDomain(Domain) = 0;
+  virtual Address & setBoundingMode(BoundingMode) = 0; //TODO multiple ?
   virtual Address & setRepetitionFilter(bool = true) = 0;
-  //todo virtual Address & setDestination(Destination) = 0;
+  //TODO virtual Address & setDestination(Destination) = 0;
 
 };
 

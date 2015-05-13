@@ -35,7 +35,7 @@ class Automation : public virtual TimeProcess, public virtual Container<Address>
       virtual void play(bool log = false, std::string name = "") const override = 0;
 
       // Accessors
-      virtual AddressValue getStartValue() const = 0; //todo doublon avec Curve ?
+      virtual AddressValue getStartValue() const = 0; //TODO doublon avec Curve ?
       virtual void setStartValue(AddressValue) = 0;
       virtual AddressValue getEndValue() const = 0;
       virtual void setEndValue(AddressValue) = 0;
@@ -46,7 +46,7 @@ class Automation : public virtual TimeProcess, public virtual Container<Address>
 
       // Std container
       // Output Addresses
-      //todo maybe possess a Container<Address> better than inherit ? for all ?
+      //TODO maybe possess a Container<Address> better than inherit ? for all ?
 
 };
 

@@ -39,7 +39,7 @@ class ExpressionAtom : public Expression {
       // Lecture
       virtual bool evaluate() const override = 0;
 
-      // Accessors //todo is it necessary ?
+      // Accessors //TODO is it necessary ?
       virtual const std::shared_ptr<ExpressionValue> & getFirstOperand() const = 0;
       virtual const std::shared_ptr<ExpressionValue> & getSecondOperand() const = 0;
       virtual Operator getOperator() const = 0;

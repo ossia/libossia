@@ -9,14 +9,15 @@ class MockScenario : public Scenario, public MockTimeProcess {
 public:
 
   // Dummy members
-  shared_ptr<TimeNode> tnode;
+  shared_ptr<TimeNode> stnode;
+  shared_ptr<TimeNode> etnode;
 
   // Constructors, destructor, cloning
   MockScenario() {}
   MockScenario(const MockScenario * other) {}
   virtual ~MockScenario() {}
   virtual shared_ptr<Scenario> clone() const override {
-	return shared_ptr<Scenario>(new MockScenario(this));
+    return shared_ptr<Scenario>(new MockScenario(this));
   }
 
   // Lecture
@@ -24,25 +25,25 @@ public:
 
   // Edition
   virtual void addConstraint(
-	  const Constraint&,
-	  const TimeNode & startNode) override {}
+      const Constraint&,
+      const TimeNode & startNode) override {}
   virtual void addConstraint(
-	  const Constraint&,
-	  const TimeNode & startNode,
-	  const TimeNode & endNode) override {}
+      const Constraint&,
+      const TimeNode & startNode,
+      const TimeNode & endNode) override {}
 
   // Accessors
   virtual const bool isKiller() const override {return true;}
   virtual void setKiller(bool) override {}
   // internal TimeNodes
   virtual const shared_ptr<TimeNode> & getStartNode() const override {
-	return tnode;
+    return stnode;
   }
-  virtual void setStartNode(shared_ptr<TimeNode>) override {}
+  virtual void setStartNode(shared_ptr<TimeNode> node) override {stnode = node;}
   virtual const shared_ptr<TimeNode> & getEndNode() const override {
-	return tnode;
+    return etnode;
   }
-  virtual void setEndNode(shared_ptr<TimeNode>) override {}
+  virtual void setEndNode(shared_ptr<TimeNode> node) override {etnode = node;}
 
 };
 

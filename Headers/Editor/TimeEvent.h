@@ -28,7 +28,7 @@ class TimeEvent {
       // Lecture
       virtual void play(bool log = false, std::string name = "") const = 0;
 
-      // Accessors //todo is it necessary ?
+      // Accessors //TODO is it necessary ?
       virtual const std::shared_ptr<State> & getState() const = 0;
       virtual const std::shared_ptr<Expression> & getExpression() const = 0;
       virtual TimeProcessList & getPreviousProcesses() = 0;

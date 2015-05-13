@@ -39,12 +39,12 @@ class TimeNode : public virtual Container<TimeEvent> {
       // Accessors
       virtual TimeValue getDate() const = 0;
       virtual TimeValue getSimultaneityMargin() const = 0;
-      virtual void setSimultaneityMargin(TimeValue) = 0; //todo why not in constructor (only) ?
+      virtual void setSimultaneityMargin(TimeValue) = 0; //TODO why not in constructor (only) ?
 
       // TimeEvent Factory
       virtual iterator emplace(const_iterator,
-                               std::shared_ptr<State>/*todo = NO_STATE*/,
-                               std::shared_ptr<Expression>/*todo = NO_EXPRESSION*/) = 0;
+                               std::shared_ptr<State>/*TODO = NO_STATE*/,
+                               std::shared_ptr<Expression>/*TODO = NO_EXPRESSION*/) = 0;
 
     };
 
