@@ -34,15 +34,15 @@ int main()
 
   // Minuit tree building
   minuitDevice->updateNamespace();
-/*
+
   // OSC device creation
   OSC oscDeviceParameters{"127.0.0.1", 9996, 9997};
-  auto oscDevice = Device::create(oscDeviceParameters);
+  auto oscDevice = Device::create(oscDeviceParameters, "oscDevice");
 
   // OSC tree building
   auto test = oscDevice->emplace(oscDevice->begin(), "test");
   test->createAddress(AddressValue::Type::BOOL);
-
+/*
   auto done = oscDevice->emplace(oscDevice->begin(), "done");
   done->createAddress(AddressValue::Type::NONE);
 
