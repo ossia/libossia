@@ -52,15 +52,15 @@ SRC64 += Sources/Network/Node.x64.o
 #########################################
 
 INCLUDES = -I../../Headers/
-INCLUDES += -I/usr/local/jamoma/includes/
+INCLUDES += -I/usr/local/jamoma/include/
 INCLUDE_FILES := $(wildcard INCLUDES/*.h)
 
 #########################################
 
-LIBS = /usr/local/jamoma/lib/JamomaFoundation.dylib
-LIBS += /usr/local/jamoma/lib/JamomaDSP.dylib
-LIBS += /usr/local/jamoma/lib/JamomaModular.dylib
-LIBS += /usr/local/jamoma/lib/JamomaScore.dylib
+LIBS = /usr/local/jamoma/lib/libJamomaFoundation.dylib
+LIBS += /usr/local/jamoma/lib/libJamomaDSP.dylib
+LIBS += /usr/local/jamoma/lib/libJamomaModular.dylib
+LIBS += /usr/local/jamoma/lib/libJamomaScore.dylib
 LIBS += /System/Library/Frameworks/Carbon.framework/Versions/A/Carbon
 
 #########################################
@@ -117,7 +117,7 @@ x64: $(SRC64)
 lipo: | link
 	lipo build/$(NAME)-i386.dylib build/$(NAME)-x86_64.dylib -create -output build/$(NAME).dylib
 	lipo build/lib$(NAME)-i386.a build/lib$(NAME)-x86_64.a -create -output build/lib$(NAME).a
-    
+	install_name_tool -add_rpath /usr/local/jamoma/lib build/$(NAME).$(SUFFIX)
 	cp build/$(NAME).dylib /usr/local/lib # temporary for test with curve.cpp
 
 clean:
