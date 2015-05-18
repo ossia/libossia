@@ -20,13 +20,21 @@ using namespace std;
 
 int main()
 {
+  // No protocol device creation
+  Protocol tempDeviceParameters{};
+  auto tempDevice = Device::create(tempDeviceParameters, "temp");
+  
+  // Local device creation
+  Local localDeviceparameters{};
+  auto localDevice = Device::create(localDeviceparameters, "i-score");
+  
   // Minuit device creation
-  Minuit minuitDeviceParameters{"MinuitDevice1", "127.0.0.1", 9998};
-  auto minuitDevice = Device::create(minuitDeviceParameters);
+  Minuit minuitDeviceParameters{"newDevice", "127.0.0.1", 9998, 13579};
+  auto minuitDevice = Device::create(minuitDeviceParameters, "newDevice");
   
   // Minuit tree building
   minuitDevice->updateNamespace();
-  
+/*
   // OSC device creation
   OSC oscDeviceParameters{"127.0.0.1", 9996, 9997};
   auto oscDevice = Device::create(oscDeviceParameters);
@@ -45,10 +53,13 @@ int main()
   test2->createAddress(AddressValue::Type::STRING);
   
   auto test3 = test->emplace(test->begin(), "3");
-  /* todo: more to think about Tuples
-  test3->createAddress(AddressValue::Type::INT, AddressValue::Type::INT); 
-   */
+  // todo: more to think about Tuples
+  // test3->createAddress(AddressValue::Type::INT, AddressValue::Type::INT);
   
   auto test4 = test->emplace(test->begin(), "4");
   test4->createAddress(AddressValue::Type::INT); // todo: setDomain(0,100)
+*/
+  
+  while (true)
+    ;
 }
