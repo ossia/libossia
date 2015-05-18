@@ -77,8 +77,8 @@ public:
       protocolMinuit.send("Stop");
       protocolMinuit.send("ApplicationRegister", device_name);
       protocolMinuit.send("ApplicationSelect", device_name);
-      //protocolMinuit.set("port", minuit_protocol->port);
-      //protocolMinuit.set("ip", TTSymbol(minuit_protocol->ip));
+      protocolMinuit.set("port", minuit_protocol->port);
+      protocolMinuit.set("ip", TTSymbol(minuit_protocol->ip));
       protocolMinuit.send("Run");
       
       TTLogMessage("Minuit device created\n");
