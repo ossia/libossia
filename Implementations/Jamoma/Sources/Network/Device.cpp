@@ -52,7 +52,9 @@ public:
 
       // create
       TTLogMessage("Local device created\n");
-      return;
+      
+      setupNode();
+      return ;
     }
     
     Minuit* minuit_protocol = dynamic_cast<Minuit*>(&protocol);
@@ -80,14 +82,16 @@ public:
       protocolMinuit.set("port", minuit_protocol->in_port);
       protocolMinuit.set("ip", TTSymbol(minuit_protocol->ip));
       
-      // todo : change Minuit mechanism to setup out_port using the distant device (and not the local one)
+      // todo : change Minuit mechanism to setup one out_port per distant device
       protocolMinuit.send("ApplicationSelect", local_device_name);
       protocolMinuit.set("port", minuit_protocol->out_port);
       
       protocolMinuit.send("Run");
       
       TTLogMessage("Minuit device created\n");
-      return;
+      
+      setupNode();
+      return ;
     }
     
     OSC* osc_protocol = dynamic_cast<OSC*>(&protocol);
@@ -118,8 +122,13 @@ public:
       protocolOSC.send("Run");
       
       TTLogMessage("OSC device created\n");
-      return;
+      
+      setupNode();
+      return ;
     }
+    
+    setupNode();
+    return ;
   }
   
   ~JamomaDevice()
@@ -134,6 +143,17 @@ public:
   {
     TTErr err = mApplication.send("DirectoryBuild");
     return err == kTTErrNone;
+  }
+  
+private:
+  
+  void setupNode()
+  {
+    TTValue v;
+    mApplication.get("directory", v);
+    this->mNode = TTNodeDirectoryPtr(TTPtr(v[0]))->getRoot();
+    this->mDirectory = TTNodeDirectoryPtr(TTPtr(v[0]));
+    this->mParent = nullptr;
   }
 
 };
