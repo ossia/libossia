@@ -58,7 +58,7 @@ public:
     Minuit* minuit_protocol = dynamic_cast<Minuit*>(&protocol);
     if (minuit_protocol)
     {
-      // create a distante application
+      // create a distant application
       mApplication = mApplicationManager.send("ApplicationInstantiateDistant", device_name);
       
       // create a Minuit protocol unit
@@ -73,12 +73,17 @@ public:
       else
         TTLogError("Local device doesn't exist\n");
       
-      // register the application to the Minuit protocol and set paramaters up
+      // register the application to the Minuit protocol and set parameters up
       protocolMinuit.send("Stop");
       protocolMinuit.send("ApplicationRegister", device_name);
       protocolMinuit.send("ApplicationSelect", device_name);
-      protocolMinuit.set("port", minuit_protocol->port);
+      protocolMinuit.set("port", minuit_protocol->in_port);
       protocolMinuit.set("ip", TTSymbol(minuit_protocol->ip));
+      
+      // todo : change Minuit mechanism to setup out_port using the distant device (and not the local one)
+      protocolMinuit.send("ApplicationSelect", local_device_name);
+      protocolMinuit.set("port", minuit_protocol->out_port);
+      
       protocolMinuit.send("Run");
       
       TTLogMessage("Minuit device created\n");
