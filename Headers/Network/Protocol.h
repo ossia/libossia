@@ -26,12 +26,12 @@ struct Local : public Protocol {};
 
 
 struct Minuit : public Protocol {
-  Minuit(std::string name, std::string ip, int port)
-    :name(name), ip(ip), port(port) {}
+  Minuit(std::string ip, int in_port, int out_port)
+    :ip(ip), in_port(in_port), out_port(out_port) {} //TODO what if only in or out ?
 
-  std::string name;
   std::string ip;
-  int port;
+  int in_port;
+  int out_port;
 };
 
 
