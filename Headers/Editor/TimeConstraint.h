@@ -8,8 +8,7 @@
  * http://www.cecill.info
  */
 
-#ifndef TIMECONSTRAINT_H_
-#define TIMECONSTRAINT_H_
+#pragma once
 
 #include <memory>
 #include <string>
@@ -25,30 +24,29 @@ class TimeValue;
 
 class TimeConstraint : public virtual Container<TimeProcess> {
 
-public:
+    public:
 
-  // Factories, destructor
-  static std::shared_ptr<TimeConstraint> create(TimeValue nominal,
-						TimeValue min,
-						TimeValue max);
-  virtual std::shared_ptr<TimeConstraint> clone() const = 0;
-  virtual ~TimeConstraint() = default;
+      // Factories, destructor
+      static std::shared_ptr<TimeConstraint> create(TimeValue nominal,
+                            TimeValue min,
+                            TimeValue max);
+      virtual std::shared_ptr<TimeConstraint> clone() const = 0;
+      virtual ~TimeConstraint() = default;
 
-  // Lecture
-  virtual void play(bool log = false, std::string name = "") const = 0;
+      // Lecture
+      virtual void play(bool log = false, std::string name = "") const = 0;
 
-  // Navigation
-  virtual const std::shared_ptr<TimeNode> & getStartNode() const = 0;
-  virtual const std::shared_ptr<TimeNode> & getEndNode() const = 0;
+      // Navigation
+      virtual const std::shared_ptr<TimeNode> & getStartNode() const = 0;
+      virtual const std::shared_ptr<TimeNode> & getEndNode() const = 0;
 
-  // Accessors
-  virtual const std::shared_ptr<State> & getStartState() const = 0;
-  virtual void setStartState(std::shared_ptr<State>) = 0;
-  virtual const std::shared_ptr<State> & getEndState() const = 0;
-  virtual void setEndState(std::shared_ptr<State>) = 0;
+      // Accessors
+      virtual const std::shared_ptr<State> & getStartState() const = 0;
+      virtual void setStartState(std::shared_ptr<State>) = 0;
+      virtual const std::shared_ptr<State> & getEndState() const = 0;
+      virtual void setEndState(std::shared_ptr<State>) = 0;
 
-};
+    };
 
 }
 
-#endif /* TIMECONSTRAINT_H_ */

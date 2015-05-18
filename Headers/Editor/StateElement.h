@@ -8,21 +8,18 @@
  * http://www.cecill.info
  */
 
-#ifndef STATEELEMENT_H_
-#define STATEELEMENT_H_
+#pragma once
 
 namespace OSSIA {
 
 class StateElement {
 
-public:
+    public:
 
-  virtual ~StateElement() = default;
+      virtual ~StateElement() = default;
 
-  virtual void launch() const = 0;
+      virtual void launch() const = 0;
 
 };
 
 }
-
-#endif /* STATEELEMENT_H_ */

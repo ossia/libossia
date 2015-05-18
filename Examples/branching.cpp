@@ -12,7 +12,7 @@
 #include "Editor/Expression.h"
 #include "Editor/Scenario.h"
 #include "Editor/State.h"
-#include "Editor/TimeBox.h"
+#include "Editor/TimeConstraint.h"
 
 using namespace OSSIA;
 

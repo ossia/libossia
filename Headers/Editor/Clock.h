@@ -8,19 +8,16 @@
  * http://www.cecill.info
  */
 
-#ifndef CLOCK_H_
-#define CLOCK_H_
+#pragma once
 
 namespace OSSIA {
 
 class Clock {
 
-public:
+    public:
 
-  virtual ~Clock() = default;
+      virtual ~Clock() = default;
 
 };
 
 }
-
-#endif /* CLOCK_H_ */

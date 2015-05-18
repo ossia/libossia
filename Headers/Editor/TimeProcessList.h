@@ -8,8 +8,7 @@
  * http://www.cecill.info
  */
 
-#ifndef TIMEPROCESSLIST_H_
-#define TIMEPROCESSLIST_H_
+#pragma once
 
 #include <memory>
 
@@ -19,7 +18,7 @@ namespace OSSIA {
 
 class TimeProcess;
 
-//todo could be just a Container<TimeProcess> ? needs observation ? save/load ?
+//TODO could be just a Container<TimeProcess> ? needs observation ? save/load ?
 class TimeProcessList : public virtual Container<TimeProcess> {
 
 public:
@@ -29,7 +28,3 @@ public:
 };
 
 }
-
-
-
-#endif /* TIMEPROCESSLIST_H_ */

@@ -8,25 +8,22 @@
  * http://www.cecill.info
  */
 
-#ifndef TIMEVALUE_H_
-#define TIMEVALUE_H_
+#pragma once
 
 namespace OSSIA {
 
 class TimeValue {
 
-	public:
-  // Constructors, destructor, assignment
-  TimeValue();
-  TimeValue(const int);
-  ~TimeValue();
-  TimeValue & operator= (const int);
+    public:
+      // Constructors, destructor, assignment
+      TimeValue();
+      TimeValue(const int);
+      ~TimeValue();
+      TimeValue & operator= (const int);
 
-  // Cast
-  operator int();
+      // Cast
+      operator int();
 
 };
 
 }
-
-#endif /* TIMEVALUE_H_ */

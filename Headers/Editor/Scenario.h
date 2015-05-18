@@ -8,8 +8,7 @@
  * http://www.cecill.info
  */
 
-#ifndef SCENARIO_H_
-#define SCENARIO_H_
+#pragma once
 
 #include "Editor/TimeProcess.h"
 
@@ -49,5 +48,3 @@ public:
 };
 
 }
-
-#endif /* SCENARIO_H_ */

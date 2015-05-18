@@ -28,7 +28,7 @@ public:
     FLOAT,
     CHAR,
     STRING,
-    TUPLE, //todo
+    TUPLE, //TODO
     GENERIC
   };
 
