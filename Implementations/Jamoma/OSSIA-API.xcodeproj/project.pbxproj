@@ -17,9 +17,6 @@
 		460D07ED19BDD62500235124 /* TimeNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeNode.h; sourceTree = "<group>"; };
 		460D07EE19BDD62500235124 /* TimeProcess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeProcess.h; sourceTree = "<group>"; };
 		460D07EF19BDD62500235124 /* TimeValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeValue.h; sourceTree = "<group>"; };
-		460DCD6C1A0914C4000A9A19 /* DeviceLocal.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceLocal.cpp; sourceTree = "<group>"; };
-		460DCD6D1A0914C4000A9A19 /* DeviceMinuit.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceMinuit.cpp; sourceTree = "<group>"; };
-		460DCD6E1A0914C4000A9A19 /* DeviceOSC.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceOSC.cpp; sourceTree = "<group>"; };
 		464201CE19BF370300893C87 /* CurveSegmentLinear.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentLinear.h; sourceTree = "<group>"; };
 		46502A741AC2AB2C0067AB66 /* Device.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Device.cpp; sourceTree = "<group>"; };
 		46502A751AC2AB340067AB66 /* Address.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; };
@@ -43,7 +40,6 @@
 		468E931319C0562900B26BFB /* Message.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
 		46A4923019C2E264003691A8 /* CurveSegmentPower.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentPower.h; sourceTree = "<group>"; };
 		46A4923119C2E2D6003691A8 /* CurveSegmentPower.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentPower.cpp; sourceTree = "<group>"; };
-		46AA0ED51A0122C3007374E9 /* Protocols.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Protocols.cpp; sourceTree = "<group>"; };
 		46BA2A5B19C09A21009630B5 /* Curve.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Curve.cpp; sourceTree = "<group>"; };
 		46BA2A5D19C09A21009630B5 /* CurveSegmentLinear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentLinear.cpp; sourceTree = "<group>"; };
 		46BA2A5F19C09A21009630B5 /* CurveSegment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegment.cpp; sourceTree = "<group>"; };
@@ -65,6 +61,7 @@
 		460D07E119BDD62500235124 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				460D07F319BDD62500235124 /* Network */,
 				460D07E219BDD62500235124 /* Editor */,
 			);
 			name = Headers;
@@ -94,7 +91,6 @@
 				460D07EE19BDD62500235124 /* TimeProcess.h */,
 				4689BAEB1ABA2E8D00D1BA4E /* TimeProcessList.h */,
 				460D07EF19BDD62500235124 /* TimeValue.h */,
-				460D07F319BDD62500235124 /* Network */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -108,8 +104,7 @@
 				4689BAE21ABA223800D1BA4E /* Node.h */,
 				4689BAE31ABA223800D1BA4E /* Protocol.h */,
 			);
-			name = Network;
-			path = ../Network;
+			path = Network;
 			sourceTree = "<group>";
 		};
 		464201CA19BF28F300893C87 /* CurveSegment */ = {
@@ -144,11 +139,7 @@
 			children = (
 				46502A751AC2AB340067AB66 /* Address.cpp */,
 				46502A741AC2AB2C0067AB66 /* Device.cpp */,
-				460DCD6C1A0914C4000A9A19 /* DeviceLocal.cpp */,
-				460DCD6D1A0914C4000A9A19 /* DeviceMinuit.cpp */,
-				460DCD6E1A0914C4000A9A19 /* DeviceOSC.cpp */,
 				46502A761AC2AB410067AB66 /* Node.cpp */,
-				46AA0ED51A0122C3007374E9 /* Protocols.cpp */,
 			);
 			path = Network;
 			sourceTree = "<group>";

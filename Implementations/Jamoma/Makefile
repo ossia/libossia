@@ -52,15 +52,15 @@ SRC64 += Sources/Network/Node.x64.o
 #########################################
 
 INCLUDES = -I../../Headers/
-INCLUDES += -Isupport/includes/
+INCLUDES += -I/usr/local/jamoma/includes/
 INCLUDE_FILES := $(wildcard INCLUDES/*.h)
 
 #########################################
 
-LIBS = support/lib/JamomaFoundation.dylib
-LIBS += support/lib/JamomaDSP.dylib
-LIBS += support/lib/JamomaModular.dylib
-LIBS += support/lib/JamomaScore.dylib
+LIBS = /usr/local/jamoma/lib/JamomaFoundation.dylib
+LIBS += /usr/local/jamoma/lib/JamomaDSP.dylib
+LIBS += /usr/local/jamoma/lib/JamomaModular.dylib
+LIBS += /usr/local/jamoma/lib/JamomaScore.dylib
 LIBS += /System/Library/Frameworks/Carbon.framework/Versions/A/Carbon
 
 #########################################
@@ -119,11 +119,6 @@ lipo: | link
 	lipo build/lib$(NAME)-i386.a build/lib$(NAME)-x86_64.a -create -output build/lib$(NAME).a
     
 	cp build/$(NAME).dylib /usr/local/lib # temporary for test with curve.cpp
-
-	install_name_tool -change @loader_path/../../../../support/JamomaFoundation.dylib @rpath/JamomaFoundation.dylib build/$(NAME).$(SUFFIX)
-	install_name_tool -change @loader_path/../../../../support/JamomaDSP.dylib @rpath/JamomaDSP.dylib build/$(NAME).$(SUFFIX)
-	install_name_tool -change @loader_path/../../../../support/JamomaModular.dylib @rpath/JamomaModular.dylib build/$(NAME).$(SUFFIX)
-	install_name_tool -change @loader_path/../../../../support/JamomaScore.dylib @rpath/JamomaScore.dylib build/$(NAME).$(SUFFIX)
 
 clean:
 	rm -f $(SRC32) $(SRC64)
