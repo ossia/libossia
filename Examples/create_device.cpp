@@ -25,12 +25,12 @@ int main()
   auto tempDevice = Device::create(tempDeviceParameters, "temp");
   
   // Local device creation
-  Local localDeviceparameters{};
-  auto localDevice = Device::create(localDeviceparameters, "i-score");
+  Local localDeviceParameters{};
+  auto localDevice = Device::create(localDeviceParameters, "i-score");
   
   // Minuit device creation
-  Minuit minuitDeviceParameters{"MinuitDevice1", "127.0.0.1", 9998};
-  auto minuitDevice = Device::create(minuitDeviceParameters);
+  Minuit minuitDeviceParameters{"127.0.0.1", 9998, 13579};
+  auto minuitDevice = Device::create(minuitDeviceParameters, "newDevice");
 
   // Minuit tree building
   minuitDevice->updateNamespace();
