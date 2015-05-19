@@ -38,7 +38,7 @@ class Curve : public virtual Container<CurveSegment<T>> {
       // Accessors
       virtual T getInitialValue() const = 0;
       virtual void setInitialValue(const T) = 0;
-      virtual std::map<double, std::pair<T, CurveSegment<T>>> getPointsMap() const = 0;
+      virtual std::map<double, std::pair<T, std::shared_ptr<CurveSegment<T> > > > getPointsMap() const = 0;
         // {abscissa, {value, previous segment}}
 
       // Computation

@@ -24,7 +24,7 @@ class MockCurve : public Curve<double>, public MockContainer<CurveSegment<double
         // Accessors
         virtual double getInitialValue() const override {return 0.5;}
         virtual void setInitialValue(const double) override {}
-        virtual std::map<double, std::pair<double, CurveSegment<double>>> getPointsMap() const {return {{0.1, {0.5, MockCurveSegment{} }}};}
+        virtual std::map<double, std::pair<double, std::shared_ptr<CurveSegment<double>>>> getPointsMap() const {return {{0.1, {0.5, {} }}};}
           // {abscissa, {value, previous segment}}
 
         // Computation
