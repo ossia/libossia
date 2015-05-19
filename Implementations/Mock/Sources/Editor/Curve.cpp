@@ -1,7 +1,6 @@
 #include "Editor/Curve.h"
 #include "Editor/CurveSegment.h"
 #include "../Misc/Container.cpp"
-#include "../Editor/CurveSegment.cpp"
 
 using namespace OSSIA;
 using namespace std;
@@ -32,5 +31,8 @@ class MockCurve : public Curve<double>, public MockContainer<CurveSegment<double
 
 };
 
-template<> shared_ptr<Curve<double> > Curve<double>::create() {
-    return shared_ptr<Curve<double>>(new MockCurve());}
+namespace OSSIA {
+    template<> shared_ptr<Curve<double> > Curve<double>::create() {
+        return shared_ptr<Curve<double>>(new MockCurve());}
+}
+
