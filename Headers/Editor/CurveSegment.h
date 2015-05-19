@@ -9,6 +9,7 @@
  */
 
 #pragma once
+#include <memory>
 
 namespace OSSIA {
 
@@ -21,15 +22,13 @@ namespace OSSIA {
   public:
 
     // Constructor, Destructor
-    CurveSegment();
-    CurveSegment(Curve<T> * parent);
-    virtual ~CurveSegment();
+    virtual ~CurveSegment() = default;
 
     // Navigation
-    Curve<T>* getParent() const;
+    virtual std::shared_ptr<Curve<T>> getParent() const = 0;
 
     // Computation
-    virtual T valueAt(double) const; // Between 0. and 1.
+    virtual T valueAt(double) const = 0; // Between 0. and 1.
 
     // Curve segment types
     enum class CurveSegmentType {
@@ -38,11 +37,7 @@ namespace OSSIA {
       POWER
     };
 
-    virtual CurveSegmentType getType() const;
-
-  protected:
-
-    Curve<T>* mParent{};
+    virtual CurveSegmentType getType() const = 0;
 
   };
 

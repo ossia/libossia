@@ -6,19 +6,18 @@ using namespace OSSIA;
 class MockCurveSegment : public CurveSegment<double>
 {
     public:
-        MockCurveSegment() {mParent = nullptr;}
-        MockCurveSegment(Curve<double>* parent) {mParent = parent;}
+        MockCurveSegment() {}
+        MockCurveSegment(Curve<double>* parent) {}
         virtual ~MockCurveSegment() {}
 
         // Navigation
-        Curve<double>* getParent() const {return mParent;}
+        virtual std::shared_ptr<Curve<double>> getParent() const
+            {return Curve<double>::create();}
 
         // Computation
         virtual double valueAt(double) const // Between 0. and 1.
-        {
-          return 0.5;
-        }
+            {return 0.5;}
 
         virtual CurveSegmentType getType() const
-        {return CurveSegment<double>::CurveSegmentType::NONE;}
+            {return CurveSegment<double>::CurveSegmentType::NONE;}
 };
