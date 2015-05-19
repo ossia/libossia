@@ -1,5 +1,7 @@
 #include "Network/Address.h"
 
+#include "TTModular.h"
+
 using namespace OSSIA;
 using namespace std;
 
@@ -9,13 +11,16 @@ class JamomaAddress : public Address
 private:
   
   // Implementation specific
+  TTObject  mObject;
   shared_ptr<Device> device;
   
 public:
 
   // Constructor, destructor
   JamomaAddress(AddressValue::Type = AddressValue::Type::NONE)
-  {}
+  {
+    ; // nothing to do as we need to wait the owner sets mObject member
+  }
   
   virtual ~JamomaAddress()
   {}
@@ -31,14 +36,21 @@ public:
     return false;
   }
   
-  virtual bool sendValue(AddressValue) const override
+  virtual bool sendValue(AddressValue value) const override
   {
+    TTValue v;
+    // todo : convert AddressValue into TTValue
+    // todo : resolve the const problem
+    // return !mObject.send("Command", v);
     return false;
   }
 
   // Accessors
   virtual AddressValue getValue() const override
   {
+    TTValue v;
+    mObject.get("value", v);
+    // todo : convert TTValue into AddressValue
     return AddressValue();
   }
   

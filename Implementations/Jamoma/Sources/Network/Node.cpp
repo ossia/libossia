@@ -10,20 +10,58 @@ using namespace std;
 class JamomaNode : public virtual Node, public JamomaContainer<Node>
 {
   
-protected:
+private:
   
   // Implementation specific
-  TTNode *            mNode;
   TTNodeDirectory *   mDirectory;
+  TTNode *            mNode;
   JamomaNode *        mParent;
   shared_ptr<Address> mAddress;
   
 public:
 
   // Constructor, destructor
-  JamomaNode(string name)
+  JamomaNode(string name, TTNodeDirectory * aDirectory, TTNode * aNode) :
+  mDirectory(aDirectory),
+  mNode(aNode)
   {
-    ; // nothing to do as we need to wait the owner sets mNode member
+    if (mNode)
+    {
+      // todo : edit parent
+      
+      // edit address
+      TTObject object = mNode->getObject();
+      
+      if (object.valid())
+      {
+        TTSymbol objectName = object.name();
+        
+        if (objectName == kTTSym_Mirror)
+          objectName = TTMirrorPtr(object.instance())->getName();
+        
+        // for local, proxy or mirror application
+        if (objectName == "Data")
+        {
+          TTSymbol type;
+          object.get("type", type);
+          
+          if (type == kTTSym_none)
+            ;// mAddress = std::make_shared<Address(AddressValue::Type::NONE)>;
+          else if (type == kTTSym_generic)
+            ;// mAddress = std::make_shared<Address(AddressValue::Type::TUPLE)>;
+          else if (type == kTTSym_boolean)
+            ;// mAddress = std::make_shared<Address(AddressValue::Type::BOOL))>;
+          else if (type == kTTSym_integer)
+            ;// mAddress = std::make_shared<Address(AddressValue::Type::INT)>;
+          else if (type == kTTSym_decimal)
+            ;// mAddress = std::make_shared<Address(AddressValue::Type::FLOAT)>;
+          else if (type == kTTSym_array)
+            ;// mAddress = std::make_shared<Address(AddressValue::Type::TUPLE)>;
+          else if (type == kTTSym_string)
+            ;// mAddress = std::make_shared<Address(AddressValue::Type::STRING)>;
+        }
+      }
+    }
   }
   
   ~JamomaNode()
@@ -48,45 +86,6 @@ public:
   
   virtual const shared_ptr<Address> & getAddress() const override
   {
-    // compute address one time only
-    if (mAddress)
-      return mAddress;
-      
-    if (mNode)
-    {
-      TTObject object = mNode->getObject();
-      
-      if (object.valid())
-      {
-        TTSymbol objectName = object.name();
-        
-        if (objectName == kTTSym_Mirror)
-          objectName = TTMirrorPtr(object.instance())->getName();
-        
-        // for local, proxy or mirror application
-        if (objectName == "Data")
-        {
-          TTSymbol type;
-          object.get("type", type);
-          
-          if (type == kTTSym_none)
-            ;// mAddress = Address(AddressValue::Type::NONE);
-          else if (type == kTTSym_generic)
-            ;// mAddress = JamomaAddress(AddressValue::Type::TUPLE);
-          else if (type == kTTSym_boolean)
-            ;// mAddress = JamomaAddress(AddressValue::Type::BOOL);
-          else if (type == kTTSym_integer)
-            ;// mAddress = JamomaAddress(AddressValue::Type::INT);
-          else if (type == kTTSym_decimal)
-            ;// mAddress = JamomaAddress(AddressValue::Type::FLOAT);
-          else if (type == kTTSym_array)
-            ;// mAddress = JamomaAddress(AddressValue::Type::TUPLE);
-          else if (type == kTTSym_string)
-            ;// mAddress = JamomaAddress(AddressValue::Type::STRING);
-        }
-      }
-    }
-    
     return mAddress;
   }
   
