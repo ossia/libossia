@@ -13,25 +13,35 @@ class JamomaNode : public virtual Node, public JamomaContainer<Node>
 private:
   
   // Implementation specific
-  TTNodeDirectory *   mDirectory;
-  TTNode *            mNode;
-  JamomaNode *        mParent;
-  shared_ptr<Address> mAddress;
+  TTNodeDirectory *     mDirectory;
+  TTNode *              mNode;
+  JamomaNode *          mParent;
+  shared_ptr<Address>   mAddress;
   
 public:
 
   // Constructor, destructor
-  JamomaNode(string name, TTNodeDirectory * aDirectory, TTNode * aNode) :
+  JamomaNode(string name, TTNodeDirectory * aDirectory = nullptr, TTNode * aNode = nullptr) :
   mDirectory(aDirectory),
   mNode(aNode)
   {
     if (mNode)
     {
-      // todo : edit parent
+      // edit parent
+      TTNode *parent = mNode->getParent();
+      if (parent)
+      {
+        TTString parentNameInstance = parent->getName().c_str();
+        if (parent->getInstance() != kTTSymEmpty)
+        {
+          parentNameInstance += parent->getInstance().c_str();
+        }
+        
+        mParent = new JamomaNode(parentNameInstance.data(), mDirectory, parent);
+      }
       
-      // edit address
+      // edit address only for Data object
       TTObject object = mNode->getObject();
-      
       if (object.valid())
       {
         TTSymbol objectName = object.name();
@@ -39,26 +49,9 @@ public:
         if (objectName == kTTSym_Mirror)
           objectName = TTMirrorPtr(object.instance())->getName();
         
-        // for local, proxy or mirror application
         if (objectName == "Data")
         {
-          TTSymbol type;
-          object.get("type", type);
-          
-          if (type == kTTSym_none)
-            ;// mAddress = std::make_shared<Address(AddressValue::Type::NONE)>;
-          else if (type == kTTSym_generic)
-            ;// mAddress = std::make_shared<Address(AddressValue::Type::TUPLE)>;
-          else if (type == kTTSym_boolean)
-            ;// mAddress = std::make_shared<Address(AddressValue::Type::BOOL))>;
-          else if (type == kTTSym_integer)
-            ;// mAddress = std::make_shared<Address(AddressValue::Type::INT)>;
-          else if (type == kTTSym_decimal)
-            ;// mAddress = std::make_shared<Address(AddressValue::Type::FLOAT)>;
-          else if (type == kTTSym_array)
-            ;// mAddress = std::make_shared<Address(AddressValue::Type::TUPLE)>;
-          else if (type == kTTSym_string)
-            ;// mAddress = std::make_shared<Address(AddressValue::Type::STRING)>;
+          mAddress = shared_ptr<Address>(new JamomaAddress(object));
         }
       }
     }
