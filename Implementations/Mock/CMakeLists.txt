@@ -8,7 +8,8 @@ include_directories(${API_HEADERS_FOLDER})
 
 file(GLOB_RECURSE SRCS
 	"${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.cpp")
+	"${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Tests/*.cpp")
 
 add_library(APIMock ${SRCS})
 

@@ -8,9 +8,7 @@
  * http://www.cecill.info
  */
 
-#ifndef CONTAINER_H_
-#define CONTAINER_H_
-
+#pragma once
 #include <cstddef>
 #include <memory>
 
@@ -44,5 +42,3 @@ public:
 };
 
 }
-
-#endif /* CONTAINER_H_ */

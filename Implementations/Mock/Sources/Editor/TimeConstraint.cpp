@@ -39,7 +39,7 @@ public:
   virtual const shared_ptr<State> & getStartState() const override {
 	return st;
   }
-  virtual void setStartState(shared_ptr<State>) override {};
+  virtual void setStartState(shared_ptr<State>) override {}
   virtual const shared_ptr<State> & getEndState() const override {
 	return st;
   }

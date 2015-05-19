@@ -14,7 +14,7 @@
 
 namespace OSSIA {
 
-class Constraint;
+class TimeConstraint;
 class TimeNode;
 
 class Scenario : public virtual TimeProcess {
@@ -30,9 +30,9 @@ public:
   virtual void play(bool log = false, std::string name = "") const override = 0;
 
   // Edition
-  virtual void addConstraint(const Constraint&, const TimeNode & startNode) = 0;
+  virtual void addConstraint(const TimeConstraint&, const TimeNode & startNode) = 0;
   virtual void addConstraint(
-      const Constraint&,
+      const TimeConstraint&,
       const TimeNode & startNode,
       const TimeNode & endNode) = 0;
 

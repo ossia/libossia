@@ -1,3 +1,4 @@
+
 #include "TimeProcess.cpp"
 #include "Editor/Scenario.h"
 
@@ -24,11 +25,12 @@ public:
   virtual void play(bool log = false, string name = "") const override {}
 
   // Edition
+  // TODO : passer des shared ptr ?
   virtual void addConstraint(
-      const Constraint&,
+      const TimeConstraint&,
       const TimeNode & startNode) override {}
   virtual void addConstraint(
-      const Constraint&,
+      const TimeConstraint&,
       const TimeNode & startNode,
       const TimeNode & endNode) override {}
 
