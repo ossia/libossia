@@ -39,7 +39,7 @@ public:
   virtual void setCurve(shared_ptr<Curve> cv) override {curve = cv;}
   virtual const shared_ptr<Address> & getInputAdress() const override {return addr;}
   virtual void setInputAddress(shared_ptr<Address> a) override {addr = a;}
-    //TODO : why 'input'address ?
+    //TODO : why 'input'address -> if mapping
 };
 
 shared_ptr<Automation> Automation::create() {
