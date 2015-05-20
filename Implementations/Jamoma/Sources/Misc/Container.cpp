@@ -13,14 +13,14 @@ private:
   
   // Implementation specific
   shared_ptr<T> element;
-
+  
 public:
-
+  
   typedef T value_type;
   typedef T * iterator;
   typedef const T * const_iterator;
   typedef std::size_t size_type;
-
+  
   virtual iterator begin() override
   {
     return iterator();
@@ -67,12 +67,12 @@ public:
   
   virtual const shared_ptr<T> & back() const override
   {
-        return element;
+    return element;
   }
   
   virtual iterator insert(const_iterator where, shared_ptr<T> what) override
   {
-        return iterator();
+    return iterator();
   }
   
   virtual iterator erase(const_iterator which) override
@@ -84,5 +84,5 @@ public:
   {
     return iterator();
   }
-
+  
 };

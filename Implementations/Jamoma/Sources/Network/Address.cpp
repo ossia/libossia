@@ -106,6 +106,11 @@ public:
           mBoundingMode = BoundingMode::FOLD;
         
         mData.get("repetitionFilter", mRepetitionFilter);
+        
+        // enable callback to be notified each time the value change
+        TTValue args(TTPtr(this), mData);
+        mData.set("baton", args);
+        mData.set("function", TTPtr(&JamomaAddress::ValueCallback));
       }
     }
   }
@@ -116,7 +121,6 @@ public:
   // Network
   virtual const std::shared_ptr<Device> & getDevice() const override
   {
-    
     return device;
   }
   
@@ -170,6 +174,7 @@ public:
   virtual bool sendValue(AddressValue value) const override
   {
     TTValue v;
+    
     // todo : convert AddressValue into TTValue
     
     if (mData.name() == "Data")
@@ -238,4 +243,21 @@ public:
     return false;
   }
   
+private:
+  
+  static TTErr ValueCallback(const TTValue& baton, const TTValue& value)
+  {
+    JamomaAddress * self = static_cast<JamomaAddress*>(TTPtr(baton[0]));
+    TTObject aData = baton[1];
+    
+    // check data object
+    if (aData.instance() == self->mData.instance())
+    {
+      // print the returned value
+      TTLogMessage("address has been updated to %s \n", value.toString().data());
+      return kTTErrNone;
+    }
+    
+    return kTTErrGeneric;
+  }
 };

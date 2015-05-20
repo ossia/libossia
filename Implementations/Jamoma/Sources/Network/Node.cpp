@@ -149,7 +149,7 @@ public:
   }
 
   // Child Node Factory
-  virtual iterator emplace(const_iterator, string) override
+  virtual iterator emplace(const_iterator pos, string name) override
   {
     return iterator();
   }
