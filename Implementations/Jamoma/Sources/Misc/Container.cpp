@@ -1,4 +1,5 @@
 #include <memory>
+#include <list>
 
 #include "Misc/Container.h"
 
@@ -12,7 +13,8 @@ class JamomaContainer : public virtual Container<T>
 private:
   
   // Implementation specific
-  shared_ptr<T> element;
+  std::list<T*>   _list;
+  shared_ptr<T>   _element;
   
 public:
   
@@ -23,66 +25,71 @@ public:
   
   virtual iterator begin() override
   {
-    return iterator();
+    return *_list.begin();
   }
   
   virtual iterator end() override
   {
-    return iterator();
+    return *_list.end();
   }
   
   virtual const_iterator cbegin() const override
   {
-    return iterator();
+    return *_list.cbegin();
   }
   
   virtual const_iterator cend() const override
   {
-    return iterator();
+    return *_list.cend();
   }
   
   virtual size_type size() const override
   {
-    return size_type();
+    return _list.size();
   }
   
   virtual bool empty() const override
   {
-    return true;
+    return _list.empty();
   }
   
   virtual shared_ptr<T> & front() override
   {
-    return element;
+    // todo : _element = std::make_shared<T>(*_list.front());
+    return _element;
   }
   
   virtual const shared_ptr<T> & front() const override
   {
-    return element;
+    // todo : _element = std::make_shared<T>(*_list.front());
+    return _element;
   }
+  
   virtual shared_ptr<T> & back() override
   {
-    return element;
+    // todo : _element = std::make_shared<T>(*_list.back());
+    return _element;
   }
   
   virtual const shared_ptr<T> & back() const override
   {
-    return element;
+    // todo : _element = std::make_shared<T>(*_list.back());
+    return _element;
   }
   
   virtual iterator insert(const_iterator where, shared_ptr<T> what) override
   {
-    return iterator();
+    return iterator(); // todo : *_list.insert(where, what);
   }
   
   virtual iterator erase(const_iterator which) override
   {
-    return iterator();
+    return iterator(); // todo : *_list.erase(which);
   }
   
   virtual iterator erase(const_iterator first, const_iterator last) override
   {
-    return iterator();
+    return iterator(); // todo : *_list.erase(first, last);
   }
   
 };
