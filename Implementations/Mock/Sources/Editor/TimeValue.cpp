@@ -8,7 +8,12 @@ TimeValue::TimeValue()
 
 TimeValue::TimeValue(const int c)
 {
-//	date=c;
+    //	date=c;
+}
+
+TimeValue::~TimeValue()
+{
+
 }
 
 TimeValue& TimeValue::operator=(const int c)

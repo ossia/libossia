@@ -1,3 +1,4 @@
+#pragma once
 #include "Editor/TimeProcess.h"
 #include "Editor/TimeValue.h"
 

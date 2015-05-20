@@ -19,9 +19,10 @@ namespace OSSIA {
 
 class Address;
 class AddressValue;
-class Curve;
+template <typename T> class Curve;
 class TimeValue;
 
+template <typename T>
 class Automation : public virtual TimeProcess, public virtual Container<Address> {
 
     public:
@@ -39,8 +40,8 @@ class Automation : public virtual TimeProcess, public virtual Container<Address>
       virtual void setStartValue(AddressValue) = 0;
       virtual AddressValue getEndValue() const = 0;
       virtual void setEndValue(AddressValue) = 0;
-      virtual const std::shared_ptr<Curve> & getCurve() const = 0;
-      virtual void setCurve(std::shared_ptr<Curve>) = 0;
+      virtual const std::shared_ptr<Curve<T>> & getCurve() const = 0;
+      virtual void setCurve(std::shared_ptr<Curve<T>>) = 0;
       virtual const std::shared_ptr<Address> & getInputAdress() const = 0;
       virtual void setInputAddress(std::shared_ptr<Address>) = 0;
 

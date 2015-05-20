@@ -17,7 +17,7 @@ public:
   // Constructors, destructor, cloning
   MockTimeConstraint(TimeValue nominal,
 			 TimeValue min,
-			 TimeValue max){}
+             TimeValue max) {}
   MockTimeConstraint(const MockTimeConstraint * other){}
   virtual ~MockTimeConstraint() {}
   virtual shared_ptr<TimeConstraint> clone() const override {
@@ -43,7 +43,7 @@ public:
   virtual const shared_ptr<State> & getEndState() const override {
 	return st;
   }
-  virtual void setEndState(shared_ptr<State>) override;
+  virtual void setEndState(shared_ptr<State>) override {}
 
 };
 
