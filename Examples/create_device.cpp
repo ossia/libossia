@@ -28,21 +28,25 @@ int main()
   Local localDeviceParameters{};
   auto localDevice = Device::create(localDeviceParameters, "i-score");
   
+  // Local tree building
+//  auto localTestNode = localDevice->emplace(localDevice->begin(), "test");
+//  localTestNode->createAddress(AddressValue::Type::BOOL);
+  
   // Minuit device creation
   Minuit minuitDeviceParameters{"127.0.0.1", 9998, 13579};
   auto minuitDevice = Device::create(minuitDeviceParameters, "newDevice");
 
   // Minuit tree building
   minuitDevice->updateNamespace();
-
+/*
   // OSC device creation
   OSC oscDeviceParameters{"127.0.0.1", 9996, 9997};
   auto oscDevice = Device::create(oscDeviceParameters, "oscDevice");
 
   // OSC tree building
-  auto test = oscDevice->emplace(oscDevice->begin(), "test");
-  test->createAddress(AddressValue::Type::BOOL);
-/*
+  auto oscTestNode = oscDevice->emplace(oscDevice->begin(), "test");
+  oscTestNode->createAddress(AddressValue::Type::BOOL);
+ 
   auto done = oscDevice->emplace(oscDevice->begin(), "done");
   done->createAddress(AddressValue::Type::NONE);
 
