@@ -151,6 +151,24 @@ public:
   // Child Node Factory
   virtual iterator emplace(const_iterator pos, string name) override
   {
+    TTAddress nodeAddress;
+    mNode->getAddress(nodeAddress);
+    
+    TTAddress   address = nodeAddress.appendAddress(TTAddress(name.data()));
+    TTObject    empty;
+    TTPtr       context = NULL;
+    TTNodePtr   node;
+    TTBoolean   newInstanceCreated;
+    
+    TTErr err = mDirectory->TTNodeCreate(address, empty, context, &node, &newInstanceCreated);
+    
+    if (!err)
+    {
+      JamomaNode newNode(name, mDirectory, node);
+      
+      // todo : store the newNode into the Container
+    }
+    
     return iterator();
   }
 
