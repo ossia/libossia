@@ -11,13 +11,14 @@ class JamomaAddress : public Address
 private:
   
   // Implementation specific
-  TTObject                    mData;
+  mutable TTObject            mData;
+  mutable AddressValue *      mValue;
   AddressValue::Type          mValueType;
   AccessMode                  mAccessMode;
   BoundingMode                mBoundingMode;
   bool                        mRepetitionFilter;
   
-  shared_ptr<Device> device;
+  shared_ptr<Device>          device;
   
 public:
   
@@ -43,19 +44,40 @@ public:
         mData.get("type", type);
         
         if (type == kTTSym_none)
+        {
+          mValue = new AddressValue();
           mValueType = AddressValue::Type::NONE;
+        }
         else if (type == kTTSym_generic)
+        {
+          // todo : do i need to create an array of AddressValue ?
           mValueType = AddressValue::Type::TUPLE;
+        }
         else if (type == kTTSym_boolean)
+        {
+          mValue = new OSSIA::Bool(false);
           mValueType = AddressValue::Type::BOOL;
+        }
         else if (type == kTTSym_integer)
+        {
+          mValue = new OSSIA::Int(0);
           mValueType = AddressValue::Type::INT;
+        }
         else if (type == kTTSym_decimal)
+        {
+          mValue = new OSSIA::Float(0.);
           mValueType = AddressValue::Type::FLOAT;
+        }
         else if (type == kTTSym_array)
+        {
+          // todo : do i need to create an array of AddressValue ?
           mValueType = AddressValue::Type::TUPLE;
+        }
         else if (type == kTTSym_string)
+        {
+          mValue = new OSSIA::String("");
           mValueType = AddressValue::Type::STRING;
+        }
         
         TTSymbol service;
         mData.get("service", service);
@@ -94,11 +116,54 @@ public:
   // Network
   virtual const std::shared_ptr<Device> & getDevice() const override
   {
+    
     return device;
   }
   
   virtual bool updateValue() const override
   {
+    TTValue v;
+    mData.get("value", v);
+    
+    // clear former value
+    delete mValue;
+    
+    if (v.size())
+    {
+      if (v[0].type() == kTypeBoolean)
+      {
+        mValue = new OSSIA::Bool(v[0]);
+        return true;
+      }
+      else if (v[0].type() == kTypeUInt8 || v[0].type() == kTypeInt8 ||
+               v[0].type() == kTypeUInt16 || v[0].type() == kTypeInt16 ||
+               v[0].type() == kTypeUInt32 || v[0].type() == kTypeInt32 ||
+               v[0].type() == kTypeUInt64 || v[0].type() == kTypeInt64)
+      {
+        mValue = new OSSIA::Int(TTInt64(v[0]));
+        return true;
+      }
+      else if (v[0].type() == kTypeFloat32 || v[0].type() == kTypeFloat64)
+      {
+        mValue = new OSSIA::Float(TTFloat64(v[0]));
+        return true;
+      }
+      else if (v[0].type() == kTypeString)
+      {
+        char* c_value = TTString(v[0]).data();
+        mValue = new OSSIA::Char(c_value[0]);
+        return true;
+      }
+      else if (v[0].type() == kTypeSymbol)
+      {
+        
+        TTSymbol s_value = v[0];
+        mValue = new OSSIA::String(s_value.c_str());
+        return true;
+      }
+      // todo : generic case
+    }
+
     return false;
   }
   
@@ -106,18 +171,18 @@ public:
   {
     TTValue v;
     // todo : convert AddressValue into TTValue
-    // todo : resolve the const problem
-    // return !mData.send("Command", v);
-    return false;
+    
+    if (mData.name() == "Data")
+      return !mData.send("Command", v);
+    else
+      return !mData.set("value", v);
   }
   
   // Accessors
-  virtual AddressValue getValue() const override
+  virtual AddressValue * getValue() const override
   {
-    TTValue v;
-    mData.get("value", v);
-    // todo : convert TTValue into AddressValue
-    return AddressValue();
+    updateValue();
+    return mValue;
   }
   
   virtual AddressValue::Type getValueType() const override
@@ -142,6 +207,7 @@ public:
   
   virtual Address & setAccessMode(AccessMode) override
   {
+    // note : it is not possible to change the service attribute of Data after its creation
     return *this;
   }
   
