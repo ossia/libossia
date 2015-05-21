@@ -21,24 +21,32 @@ private:
 public:
 
   // Constructor, destructor
-  JamomaNode(string name, TTNodeDirectory * aDirectory = nullptr, TTNode * aNode = nullptr) :
+  JamomaNode(string name, TTNodeDirectory * aDirectory = nullptr, TTNode * aNode = nullptr, JamomaNode * aParent = nullptr) :
   mDirectory(aDirectory),
-  mNode(aNode)
+  mNode(aNode),
+  mParent(aParent)
   {
     if (mNode)
     {
-      // edit parent
-      TTNode *parent = mNode->getParent();
-      if (parent)
+      // if no parent provided : check if internal TTNode have parent
+      // this allow to rebuild the tree on top of a node
+      // note : is this needed ?
+      /*
+      if (!mParent)
       {
-        TTString parentNameInstance = parent->getName().c_str();
-        if (parent->getInstance() != kTTSymEmpty)
+        TTNode *parent = mNode->getParent();
+        if (parent)
         {
-          parentNameInstance += parent->getInstance().c_str();
+          TTString parentNameInstance = parent->getName().c_str();
+          if (parent->getInstance() != kTTSymEmpty)
+          {
+            parentNameInstance += parent->getInstance().c_str();
+          }
+          
+          mParent = new JamomaNode(parentNameInstance.data(), mDirectory, parent, nullptr);
         }
-        
-        mParent = new JamomaNode(parentNameInstance.data(), mDirectory, parent);
       }
+      */
       
       // edit address only for Data object
       TTObject object = mNode->getObject();
@@ -95,6 +103,9 @@ public:
   // Address Factory
   virtual shared_ptr<Address> createAddress(AddressValue::Type type) override
   {
+    // clear former address
+    removeAddress();
+    
     if (mNode)
     {
       TTSymbol applicationType = getApplicationType();
@@ -141,11 +152,12 @@ public:
         else if (type == AddressValue::Type::GENERIC)
           object.set("type", kTTSym_generic);
       }
+      
+      // edit new address
+      mAddress = shared_ptr<Address>(new JamomaAddress(object));
     }
     
-    // todo : clear former address
-    
-    return getAddress();
+    return mAddress;
   }
 
   // Child Node Factory
@@ -165,7 +177,7 @@ public:
     if (!err)
     {
       // store the new node into the Container
-      return insert(cend(), shared_ptr<JamomaNode>(new JamomaNode(name, mDirectory, node)));
+      return insert(cend(), shared_ptr<JamomaNode>(new JamomaNode(name, mDirectory, node, this)));
     }
     
     return iterator();
