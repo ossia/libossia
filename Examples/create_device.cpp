@@ -30,7 +30,10 @@ int main()
   
   // Local tree building
   auto localTestNode = localDevice->emplace(localDevice->begin(), "test");
-  localTestNode->createAddress(AddressValue::Type::BOOL);
+  auto localTestAddress = localTestNode->createAddress(AddressValue::Type::BOOL);
+  
+  // Updating local tree value
+  localTestAddress->sendValue(Bool(true));
   
   // Minuit device creation
   Minuit minuitDeviceParameters{"127.0.0.1", 9998, 13579};
