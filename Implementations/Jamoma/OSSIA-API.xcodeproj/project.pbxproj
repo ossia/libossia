@@ -20,7 +20,7 @@
 		464201CE19BF370300893C87 /* CurveSegmentLinear.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentLinear.h; sourceTree = "<group>"; };
 		464A18D01B0B313B00807B85 /* Misc */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Misc; sourceTree = "<group>"; };
 		46502A741AC2AB2C0067AB66 /* Device.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Device.cpp; sourceTree = "<group>"; };
-		46502A751AC2AB340067AB66 /* Address.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; };
+		46502A751AC2AB340067AB66 /* Address.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		46502A761AC2AB410067AB66 /* Node.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Node.cpp; sourceTree = "<group>"; };
 		465FD2F11B0CEF220025B500 /* Container.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Container.cpp; sourceTree = "<group>"; };
 		4689BADE1ABA20BD00D1BA4E /* Clock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
