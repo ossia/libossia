@@ -29,8 +29,8 @@ int main()
   auto localDevice = Device::create(localDeviceParameters, "i-score");
   
   // Local tree building
-//  auto localTestNode = localDevice->emplace(localDevice->begin(), "test");
-//  localTestNode->createAddress(AddressValue::Type::BOOL);
+  auto localTestNode = localDevice->emplace(localDevice->begin(), "test");
+  localTestNode->createAddress(AddressValue::Type::BOOL);
   
   // Minuit device creation
   Minuit minuitDeviceParameters{"127.0.0.1", 9998, 13579};
