@@ -127,8 +127,7 @@ public:
     return element;
   }
   
-  virtual iterator insert(const_iterator where,
-			  shared_ptr<Address> what) override
+  virtual iterator insert(const_iterator where, const shared_ptr<Address> & what) override
   {
     return iterator();
   }

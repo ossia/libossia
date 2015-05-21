@@ -120,7 +120,7 @@ public:
     return element;
   }
   
-  virtual iterator insert(const_iterator where, shared_ptr<TimeProcess> what) override
+  virtual iterator insert(const_iterator where, const shared_ptr<TimeProcess> & what) override
   {
     return iterator();
   }

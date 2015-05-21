@@ -13,14 +13,14 @@ class JamomaContainer : public virtual Container<T>
 private:
   
   // Implementation specific
-  std::list<T*>   _list;
-  shared_ptr<T>   _element;
+  std::list<shared_ptr<T>>  _list;
+  shared_ptr<T>  _element;
   
 public:
   
   typedef T value_type;
-  typedef T * iterator;
-  typedef const T * const_iterator;
+  typedef shared_ptr<T> iterator;
+  typedef const shared_ptr<T> const_iterator;
   typedef std::size_t size_type;
   
   virtual iterator begin() override
@@ -55,41 +55,41 @@ public:
   
   virtual shared_ptr<T> & front() override
   {
-    // todo : _element = std::make_shared<T>(*_list.front());
-    return _element;
+    return _list.front();
   }
   
   virtual const shared_ptr<T> & front() const override
   {
-    // todo : _element = std::make_shared<T>(*_list.front());
-    return _element;
+    return _list.front();
   }
   
   virtual shared_ptr<T> & back() override
   {
-    // todo : _element = std::make_shared<T>(*_list.back());
-    return _element;
+    return _list.back();
   }
   
   virtual const shared_ptr<T> & back() const override
   {
-    // todo : _element = std::make_shared<T>(*_list.back());
-    return _element;
+    return _list.back();
   }
   
-  virtual iterator insert(const_iterator where, shared_ptr<T> what) override
+  virtual iterator insert(const_iterator where, const shared_ptr<T> & what) override
   {
-    return iterator(); // todo : *_list.insert(where, what);
+    auto it = std::find(_list.cbegin(), _list.cend(), where);
+    return *_list.insert(it, what);
   }
   
   virtual iterator erase(const_iterator which) override
   {
-    return iterator(); // todo : *_list.erase(which);
+    auto it = std::find(_list.cbegin(), _list.cend(), which);
+    return *_list.erase(it);
   }
   
   virtual iterator erase(const_iterator first, const_iterator last) override
   {
-    return iterator(); // todo : *_list.erase(first, last);
+    auto f_it = std::find(_list.cbegin(), _list.cend(), first);
+    auto l_it = std::find(_list.cbegin(), _list.cend(), last);
+    return *_list.erase(f_it, l_it);
   }
   
 };

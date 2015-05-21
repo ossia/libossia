@@ -164,9 +164,8 @@ public:
     
     if (!err)
     {
-      JamomaNode newNode(name, mDirectory, node);
-      
-      // todo : store the newNode into the Container
+      // store the new node into the Container
+      return insert(cend(), shared_ptr<JamomaNode>(new JamomaNode(name, mDirectory, node)));
     }
     
     return iterator();
