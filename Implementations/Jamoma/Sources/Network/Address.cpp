@@ -144,7 +144,7 @@ public:
                v[0].type() == kTypeUInt32 || v[0].type() == kTypeInt32 ||
                v[0].type() == kTypeUInt64 || v[0].type() == kTypeInt64)
       {
-        mValue = new OSSIA::Int(TTInt64(v[0]));
+        mValue = new OSSIA::Int(TTInt32(v[0]));
         return true;
       }
       else if (v[0].type() == kTypeFloat32 || v[0].type() == kTypeFloat64)
