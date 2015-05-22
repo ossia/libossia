@@ -1,7 +1,7 @@
 #include <QtTest>
 
-#include "../Sources/Network/Device.cpp"
-#include "../Sources/Network/Node.cpp"
+#include "Network/Device.h"
+#include "Network/Node.h"
 #include "Network/Protocol.h"
 
 using namespace OSSIA;

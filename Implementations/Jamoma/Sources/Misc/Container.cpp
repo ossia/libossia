@@ -1,5 +1,6 @@
 #include <memory>
 #include <list>
+#include <algorithm>
 
 #include "Misc/Container.h"
 
