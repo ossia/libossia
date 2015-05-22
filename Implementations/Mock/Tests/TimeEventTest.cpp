@@ -24,7 +24,7 @@ private Q_SLOTS:
         auto autom = Automation<double>::create();
 
         scenar->addConstraint(*cstr, *startTimeNode, *endTimeNode);
-        cstr->insert(cstr->begin(), autom);
+        cstr->timeProcesses().insert(cstr->timeProcesses().begin(), autom);
 
         auto startEv = autom->getStartEvent();
         auto endEv = autom->getEndEvent();

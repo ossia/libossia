@@ -21,10 +21,9 @@ template <typename T>
 class CurveSegment;
 
 template <typename T>
-class Curve : public virtual Container<CurveSegment<T>> {
+class Curve {
 
     public:
-
       typedef T value_type;
 
       static std::shared_ptr<Curve> create();
@@ -43,6 +42,14 @@ class Curve : public virtual Container<CurveSegment<T>> {
 
       // Computation
       virtual T valueAt(double) const = 0; // Between 0. and 1.
+
+      Container<CurveSegment<T>>& curveSegments()
+      { return m_curveSegments; }
+      const Container<CurveSegment<T>>& curveSegments() const
+      { return m_curveSegments; }
+
+    private:
+      Container<CurveSegment<T>> m_curveSegments;
 };
 
 }

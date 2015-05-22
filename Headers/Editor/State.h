@@ -17,7 +17,7 @@
 
 namespace OSSIA {
 
-class State : public StateElement, public virtual Container<StateElement> {
+class State : public StateElement {
 
     public:
 
@@ -28,6 +28,14 @@ class State : public StateElement, public virtual Container<StateElement> {
 
       // Lecture
       virtual void launch() const override = 0;
+
+      Container<StateElement>& stateElements()
+      { return m_stateElements; }
+      const Container<StateElement>& stateElements() const
+      { return m_stateElements; }
+
+    private:
+      Container<StateElement> m_stateElements;
 
 };
 

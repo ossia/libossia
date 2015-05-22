@@ -5,7 +5,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class MockNode : public virtual Node, public MockContainer<Node> {
+class MockNode : public virtual Node {
 
 public:
 

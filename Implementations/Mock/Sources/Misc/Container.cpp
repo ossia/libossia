@@ -7,6 +7,9 @@ using namespace OSSIA;
 using namespace std;
 
 template <typename T>
+using MockContainer = Container<T>;
+/*
+template <typename T>
 class MockContainer : public virtual Container<T> {
 
 public:
@@ -46,3 +49,5 @@ public:
                          const_iterator last) override {return iterator();}
 
 };
+
+*/
