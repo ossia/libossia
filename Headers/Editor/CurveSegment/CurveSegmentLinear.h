@@ -32,11 +32,6 @@ namespace OSSIA {
     virtual typename CurveSegment<T>::CurveSegmentType getType() const override final
     {return CurveSegment<T>::CurveSegmentType::LINEAR;}
 
-    // pimpl idiom
-  private:
-    class Impl;
-    Impl * pimpl{};
-
   };
 
 }

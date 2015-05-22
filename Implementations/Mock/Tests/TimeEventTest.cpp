@@ -25,6 +25,16 @@ private Q_SLOTS:
 
         scenar->addConstraint(*cstr, *startTimeNode, *endTimeNode);
         cstr->insert(cstr->begin(), autom);
+
+        auto startEv = autom->getStartEvent();
+        auto endEv = autom->getEndEvent();
+
+        QVERIFY(startEv->getNextProcesses().size() == 1);
+        QVERIFY(endEv->getPreviousProcesses().size() == 1);
+        QCOMPARE(startEv->getState(), autom->getStartState());
+        QCOMPARE(endEv->getState(), autom->getEndState());
+        startEv->getExpression();
+
     }
 };
 

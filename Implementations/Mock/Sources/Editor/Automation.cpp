@@ -37,7 +37,7 @@ public:
   virtual void setEndValue(AddressValue) override {}
   virtual const shared_ptr<Curve<double>> & getCurve() const override {return curve;}
   virtual void setCurve(shared_ptr<Curve<double>> cv) override {curve = cv;}
-  virtual const shared_ptr<Address> & getInputAdress() const override {return addr;}
+  virtual const shared_ptr<Address> & getInputAddress() const override {return addr;}
   virtual void setInputAddress(shared_ptr<Address> a) override {addr = a;}
     //TODO : why 'input'address -> if mapping
 };

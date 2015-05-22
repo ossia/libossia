@@ -42,7 +42,7 @@ class Automation : public virtual TimeProcess, public virtual Container<Address>
       virtual void setEndValue(AddressValue) = 0;
       virtual const std::shared_ptr<Curve<T>> & getCurve() const = 0;
       virtual void setCurve(std::shared_ptr<Curve<T>>) = 0;
-      virtual const std::shared_ptr<Address> & getInputAdress() const = 0;
+      virtual const std::shared_ptr<Address> & getInputAddress() const = 0;
       virtual void setInputAddress(std::shared_ptr<Address>) = 0;
 
       // Std container
