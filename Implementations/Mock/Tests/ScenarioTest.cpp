@@ -1,12 +1,14 @@
-#include "../Sources/Editor/Scenario.cpp"
-#include "../Sources/Editor/TimeConstraint.cpp"
-#include "../Sources/Editor/TimeNode.cpp"
-#include "../Sources/Editor/TimeEvent.cpp"
-#include "../Sources/Editor/TimeValue.cpp"
+#include "Editor/Scenario.h"
+#include "Editor/TimeConstraint.h"
+#include "Editor/TimeNode.h"
+#include "Editor/TimeEvent.h"
+#include "Editor/TimeValue.h"
 
 #include <QTest>
 #include <memory>
 //#include <QDebug>
+
+using namespace OSSIA;
 
 class ScenarioTest : public QObject
 {

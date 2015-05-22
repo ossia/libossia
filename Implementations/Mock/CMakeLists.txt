@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(APIMockImplementation)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Tests)
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Tests)
 
 include_directories(${API_HEADERS_FOLDER}/Editor)
 include_directories(${API_HEADERS_FOLDER}/Misc)
