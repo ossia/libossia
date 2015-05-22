@@ -18,9 +18,11 @@ endFunction()
 
 # Commands
 addIScoreQtTest(APIScenarioTest
-								"${CMAKE_CURRENT_SOURCE_DIR}/ScenarioTest.cpp")
+			    "${CMAKE_CURRENT_SOURCE_DIR}/ScenarioTest.cpp")
 addIScoreQtTest(APITimeEventTest
-								"${CMAKE_CURRENT_SOURCE_DIR}/TimeEventTest.cpp")
+			    "${CMAKE_CURRENT_SOURCE_DIR}/TimeEventTest.cpp")
 
+addIScoreQtTest(APIDeviceTest
+			    "${CMAKE_CURRENT_SOURCE_DIR}/DeviceTest.cpp")
 
 include(CTest)

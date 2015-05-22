@@ -22,7 +22,7 @@ public:
   virtual bool sendValue(AddressValue) const override {return false;}
 
   // Accessors
-  virtual AddressValue getValue() const override {return AddressValue();}
+  virtual AddressValue * getValue() const override {return new AddressValue();}
   virtual AddressValue::Type getValueType() const override {
     return AddressValue::Type::NONE;
   }

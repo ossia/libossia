@@ -12,8 +12,8 @@ class MockContainer : public virtual Container<T> {
 public:
 
   typedef T value_type;
-  typedef T * iterator;
-  typedef const T * const_iterator;
+  typedef shared_ptr<T> iterator;
+  typedef const shared_ptr<T> const_iterator;
   typedef std::size_t size_type;
 
   // Dummy element
@@ -38,7 +38,7 @@ public:
         return element;
   }
   virtual iterator insert(const_iterator where,
-                          shared_ptr<T> what) override {
+                          const shared_ptr<T> &what) override {
         return iterator();
   }
   virtual iterator erase(const_iterator which) override {return iterator();}
