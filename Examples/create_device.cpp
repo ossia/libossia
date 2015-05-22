@@ -33,7 +33,8 @@ int main()
   auto localTestAddress = localTestNode->createAddress(AddressValue::Type::BOOL);
   
   // Updating local tree value
-  localTestAddress->sendValue(Bool(true));
+  Bool b(true);
+  localTestAddress->sendValue(&b);
   
   // Minuit device creation
   Minuit minuitDeviceParameters{"127.0.0.1", 9998, 13579};
@@ -84,7 +85,8 @@ int main()
   // todo : auto oscTupleAddress = oscTupleNode->createAddress(AddressValue::Type::FLOAT, AddressValue::Type::FLOAT, AddressValue::Type::FLOAT);
 
   // Updating osc tree value
-  oscIntAddress->sendValue(Int(0.5));
+  Int i(0.5);
+  oscIntAddress->sendValue(&i);
     
   while (true)
     ;
