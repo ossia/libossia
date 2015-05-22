@@ -134,7 +134,7 @@ public:
       }
       
       // edit new address
-      mAddress = shared_ptr<Address>(new JamomaAddress(object, getApplicationType() != kTTSym_local));
+      mAddress = shared_ptr<Address>(new JamomaAddress(object));
     }
     
     return mAddress;

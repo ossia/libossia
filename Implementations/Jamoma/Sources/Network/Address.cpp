@@ -23,7 +23,7 @@ private:
 public:
   
   // Constructor, destructor
-  JamomaAddress(TTObject aData = TTObject(), bool watch = false) :
+  JamomaAddress(TTObject aData = TTObject()) :
   mData(aData),
   mValueType(AddressValue::Type::NONE),
   mAccessMode(AccessMode::BI),
