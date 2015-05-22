@@ -12,13 +12,12 @@
 
 #include <memory>
 #include <string>
+#include "TimeProcessList.h"
 
 namespace OSSIA {
 
 class Expression;
 class State;
-class TimeProcessList;
-
 class TimeEvent {
 
     public:

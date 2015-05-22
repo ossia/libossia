@@ -15,7 +15,5 @@
 
 namespace OSSIA {
 
-template <typename T>
-using Container = std::vector<std::shared_ptr<T>>;
-
+template<typename T> using Container = std::vector<std::shared_ptr<T>, std::allocator<std::shared_ptr<T>>>;
 }
