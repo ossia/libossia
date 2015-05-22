@@ -13,15 +13,15 @@ class JamomaNode : public virtual Node, public JamomaContainer<Node>
 private:
   
   // Implementation specific
-  TTNodeDirectory *     mDirectory;
-  TTNode *              mNode;
-  JamomaNode *          mParent;
-  shared_ptr<Address>   mAddress;
+  TTNodeDirectory *       mDirectory;
+  TTNode *                mNode;
+  shared_ptr<JamomaNode>  mParent;
+  shared_ptr<Address>     mAddress;
   
 public:
 
   // Constructor, destructor
-  JamomaNode(string name, TTNodeDirectory * aDirectory = nullptr, TTNode * aNode = nullptr, JamomaNode * aParent = nullptr) :
+  JamomaNode(string name, TTNodeDirectory * aDirectory = nullptr, TTNode * aNode = nullptr, shared_ptr<JamomaNode> aParent = nullptr) :
   mDirectory(aDirectory),
   mNode(aNode),
   mParent(aParent)
@@ -157,7 +157,7 @@ public:
     if (!err)
     {
       // store the new node into the Container
-      return insert(cend(), shared_ptr<JamomaNode>(new JamomaNode(name, mDirectory, node, this)));
+      return insert(pos, shared_ptr<JamomaNode>(new JamomaNode(name, mDirectory, node, shared_ptr<JamomaNode>(this))));
     }
     
     return iterator();
@@ -196,7 +196,7 @@ protected:
         nameInstance += child->getInstance().c_str();
       }
       
-      parent->insert(parent->cend(), shared_ptr<JamomaNode>(new JamomaNode(nameInstance.data(), parent->mDirectory, child, parent)));
+      parent->insert(parent->cend(), shared_ptr<JamomaNode>(new JamomaNode(nameInstance.data(), parent->mDirectory, child, shared_ptr<JamomaNode>(parent))));
     }
   }
 };
