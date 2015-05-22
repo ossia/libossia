@@ -28,27 +28,7 @@ public:
   {
     if (mNode)
     {
-      // if no parent provided : check if internal TTNode have parent
-      // this allow to rebuild the tree on top of a node
-      // note : is this needed ?
-      /*
-      if (!mParent)
-      {
-        TTNode *parent = mNode->getParent();
-        if (parent)
-        {
-          TTString parentNameInstance = parent->getName().c_str();
-          if (parent->getInstance() != kTTSymEmpty)
-          {
-            parentNameInstance += parent->getInstance().c_str();
-          }
-          
-          mParent = new JamomaNode(parentNameInstance.data(), mDirectory, parent, nullptr);
-        }
-      }
-      */
-      
-      // edit address only for Data object
+      // auto edit address if the node already manages a valid Data or Mirror object
       TTObject object = mNode->getObject();
       if (object.valid())
       {
@@ -196,5 +176,27 @@ private:
     mDirectory->getRoot()->getObject().get("type", type);
     
     return type;
+  }
+
+protected:
+  
+  void buildChildren(JamomaNode * parent)
+  {
+    TTList childrenList;
+    
+    parent->mNode->getChildren(S_WILDCARD, S_WILDCARD, childrenList);
+    
+    for (childrenList.begin(); childrenList.end(); childrenList.next())
+    {
+      TTNodePtr child = TTNodePtr(TTPtr(childrenList.current()[0]));
+      
+      TTString nameInstance = child->getName().c_str();
+      if (child->getInstance() != kTTSymEmpty)
+      {
+        nameInstance += child->getInstance().c_str();
+      }
+      
+      parent->insert(parent->cend(), shared_ptr<JamomaNode>(new JamomaNode(nameInstance.data(), parent->mDirectory, child, parent)));
+    }
   }
 };

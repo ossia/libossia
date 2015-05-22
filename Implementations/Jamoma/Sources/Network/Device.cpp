@@ -39,6 +39,10 @@ public:
   virtual bool updateNamespace() override
   {
     TTErr err = mApplication.send("DirectoryBuild");
+    
+    // build tree from the root
+    buildChildren(this);
+    
     return err == kTTErrNone;
   }
 };
