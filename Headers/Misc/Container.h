@@ -20,8 +20,8 @@ class Container {
 public:
 
   typedef T value_type;
-  typedef T * iterator;
-  typedef const T * const_iterator;
+  typedef std::shared_ptr<T> iterator;
+  typedef const std::shared_ptr<T> const_iterator;
   typedef std::size_t size_type;
   virtual ~Container() = default;
 
@@ -35,7 +35,7 @@ public:
   virtual const std::shared_ptr<T> & front() const = 0;
   virtual std::shared_ptr<T> & back() = 0;
   virtual const std::shared_ptr<T> & back() const = 0;
-  virtual iterator insert(const_iterator, std::shared_ptr<T>) = 0;
+  virtual iterator insert(const_iterator, const std::shared_ptr<T> &) = 0;
   virtual iterator erase(const_iterator) = 0;
   virtual iterator erase(const_iterator first, const_iterator last) = 0;
 

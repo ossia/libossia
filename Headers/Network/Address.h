@@ -44,12 +44,12 @@ public:
   virtual ~Address() = default;
 
   // Network
-  virtual const std::shared_ptr<Device> & getDevice() const = 0;
+  virtual const std::shared_ptr<Device> & getDevice() const = 0; // théo : is this really needed ? I don't know how to provide it
   virtual bool updateValue() const = 0;
   virtual bool sendValue(AddressValue) const = 0;
 
   // Accessors
-  virtual AddressValue getValue() const = 0;
+  virtual AddressValue * getValue() const = 0;
   virtual AddressValue::Type getValueType() const = 0;
 
   virtual AccessMode getAccessMode() const = 0;

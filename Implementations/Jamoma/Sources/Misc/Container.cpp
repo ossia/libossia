@@ -1,4 +1,5 @@
 #include <memory>
+#include <list>
 
 #include "Misc/Container.h"
 
@@ -12,77 +13,83 @@ class JamomaContainer : public virtual Container<T>
 private:
   
   // Implementation specific
-  shared_ptr<T> element;
-
+  std::list<shared_ptr<T>>  _list;
+  shared_ptr<T>  _element;
+  
 public:
-
+  
   typedef T value_type;
-  typedef T * iterator;
-  typedef const T * const_iterator;
+  typedef shared_ptr<T> iterator;
+  typedef const shared_ptr<T> const_iterator;
   typedef std::size_t size_type;
-
+  
   virtual iterator begin() override
   {
-    return iterator();
+    return *_list.begin();
   }
   
   virtual iterator end() override
   {
-    return iterator();
+    return *_list.end();
   }
   
   virtual const_iterator cbegin() const override
   {
-    return iterator();
+    return *_list.cbegin();
   }
   
   virtual const_iterator cend() const override
   {
-    return iterator();
+    return *_list.cend();
   }
   
   virtual size_type size() const override
   {
-    return size_type();
+    return _list.size();
   }
   
   virtual bool empty() const override
   {
-    return true;
+    return _list.empty();
   }
   
   virtual shared_ptr<T> & front() override
   {
-    return element;
+    return _list.front();
   }
   
   virtual const shared_ptr<T> & front() const override
   {
-    return element;
+    return _list.front();
   }
+  
   virtual shared_ptr<T> & back() override
   {
-    return element;
+    return _list.back();
   }
   
   virtual const shared_ptr<T> & back() const override
   {
-        return element;
+    return _list.back();
   }
   
-  virtual iterator insert(const_iterator where, shared_ptr<T> what) override
+  virtual iterator insert(const_iterator where, const shared_ptr<T> & what) override
   {
-        return iterator();
+    auto it = std::find(_list.cbegin(), _list.cend(), where);
+    return *_list.insert(it, what);
   }
   
   virtual iterator erase(const_iterator which) override
   {
-    return iterator();
+    auto it = std::find(_list.cbegin(), _list.cend(), which);
+    return *_list.erase(it);
   }
   
   virtual iterator erase(const_iterator first, const_iterator last) override
   {
-    return iterator();
+    auto f_it = std::find(_list.cbegin(), _list.cend(), first);
+    auto l_it = std::find(_list.cbegin(), _list.cend(), last);
+    return *_list.erase(f_it, l_it);
   }
-
+  
 };

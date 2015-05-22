@@ -149,7 +149,7 @@ public:
     return element;
   }
   
-  virtual iterator insert(const_iterator where, shared_ptr<StateElement> what) override
+  virtual iterator insert(const_iterator where, const shared_ptr<StateElement> & what) override
   {
 /* code relative to old state managment
  

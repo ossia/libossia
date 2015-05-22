@@ -33,30 +33,35 @@ public:
   };
 
   virtual ~AddressValue() = default;
-
 };
 
 struct Bool : public AddressValue {
+  Bool(bool v) : value(v) {}
   bool value;
 };
 
 struct Int : public AddressValue {
+  Int(int v) : value(v) {}
   int value;
 };
 
 struct Float : public AddressValue {
+  Float(float v) : value(v) {}
   float value;
 };
 
 struct Char : public AddressValue {
+  Char(char v) : value(v) {}
   char value;
 };
 
 struct String : public AddressValue {
+  String(std::string v) : value(v) {}
   std::string value;
 };
 
 struct Generic : public AddressValue {
+  // todo : constructor
   char * start;
   int size;
 };

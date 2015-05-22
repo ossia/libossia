@@ -20,114 +20,11 @@ private:
 public:
 
   // Constructor, destructor
-  JamomaDevice(Protocol & protocol, string name = "") : JamomaNode(name)
+  JamomaDevice(Protocol & protocol, string name = "", TTObject applicationManager = TTObject(), TTObject application = TTObject(), TTNodeDirectoryPtr aDirectory = nullptr) :
+  JamomaNode(name, aDirectory, aDirectory->getRoot()),
+  mApplicationManager(applicationManager),
+  mApplication(application)
   {
-    TTSymbol device_name(name);
-    
-    // todo : we shouldn't init each time we create an object ...
-    TTFoundationInit("/usr/local/jamoma/extensions/");
-    TTModularInit("/usr/local/jamoma/extensions");
-    
-    // if no application manager
-    if (TTModularApplicationManager == NULL)
-      mApplicationManager = TTObject("ApplicationManager");
-    else
-      mApplicationManager = TTObjectBasePtr(TTModularApplicationManager);
-    
-    // is the application already exist ?
-    mApplication = mApplicationManager.send("ApplicationFind", device_name);
-    if (mApplication.valid())
-    {
-      TTLogError("%s device created already exist\n");
-      return;
-    }
-    
-    // which protocol is it ?
-    // todo: this is not a good way to do as if a new protocol appears we have to create a case for it here
-    Local* local_protocol = dynamic_cast<Local*>(&protocol);
-    if (local_protocol)
-    {
-      // create a local application
-      mApplication = mApplicationManager.send("ApplicationInstantiateLocal", device_name);
-
-      // create
-      TTLogMessage("Local device created\n");
-      
-      setupNode();
-      return ;
-    }
-    
-    Minuit* minuit_protocol = dynamic_cast<Minuit*>(&protocol);
-    if (minuit_protocol)
-    {
-      // create a distant application
-      mApplication = mApplicationManager.send("ApplicationInstantiateDistant", device_name);
-      
-      // create a Minuit protocol unit
-      TTObject protocolMinuit = mApplicationManager.send("ProtocolFind", "Minuit");
-      if (!protocolMinuit.valid())
-        protocolMinuit = mApplicationManager.send("ProtocolInstantiate", "Minuit");
-      
-      // register local application to the Minuit protocol
-      TTSymbol local_device_name;
-      if (!mApplicationManager.get("applicationLocalName", local_device_name))
-        protocolMinuit.send("ApplicationRegister", local_device_name);
-      else
-        TTLogError("Local device doesn't exist\n");
-      
-      // register the application to the Minuit protocol and set parameters up
-      protocolMinuit.send("Stop");
-      protocolMinuit.send("ApplicationRegister", device_name);
-      protocolMinuit.send("ApplicationSelect", device_name);
-      protocolMinuit.set("port", minuit_protocol->in_port);
-      protocolMinuit.set("ip", TTSymbol(minuit_protocol->ip));
-      
-      // todo : change Minuit mechanism to setup one out_port per distant device
-      protocolMinuit.send("ApplicationSelect", local_device_name);
-      protocolMinuit.set("port", minuit_protocol->out_port);
-      
-      protocolMinuit.send("Run");
-      
-      TTLogMessage("Minuit device created\n");
-      
-      setupNode();
-      return ;
-    }
-    
-    OSC* osc_protocol = dynamic_cast<OSC*>(&protocol);
-    if (osc_protocol)
-    {
-      // create a distante application
-      mApplication = mApplicationManager.send("ApplicationInstantiateDistant", device_name);
-      
-      // create an OSC protocol unit
-      TTObject protocolOSC = mApplicationManager.send("ProtocolFind", "OSC");
-      if (!protocolOSC.valid())
-        protocolOSC = mApplicationManager.send("ProtocolInstantiate", "OSC");
-      
-      // register local application to the OSC protocol
-      TTSymbol local_device_name;
-      if (!mApplicationManager.get("applicationLocalName", local_device_name))
-        protocolOSC.send("ApplicationRegister", local_device_name);
-      else
-        TTLogError("Local device doesn't exist");
-      
-      // register the application to the OSC protocol and set paramaters up
-      protocolOSC.send("Stop");
-      protocolOSC.send("ApplicationRegister", device_name);
-      protocolOSC.send("ApplicationSelect", device_name);
-      TTValue ports(osc_protocol->in_port, osc_protocol->out_port);
-      protocolOSC.set("port", ports);
-      protocolOSC.set("ip", TTSymbol(osc_protocol->ip));
-      protocolOSC.send("Run");
-      
-      TTLogMessage("OSC device created\n");
-      
-      setupNode();
-      return ;
-    }
-    
-    setupNode();
     return ;
   }
   
@@ -142,25 +39,127 @@ public:
   virtual bool updateNamespace() override
   {
     TTErr err = mApplication.send("DirectoryBuild");
+    
+    // build tree from the root
+    buildChildren(this);
+    
     return err == kTTErrNone;
   }
-  
-private:
-  
-  void setupNode()
-  {
-    TTValue v;
-    mApplication.get("directory", v);
-    this->mNode = TTNodeDirectoryPtr(TTPtr(v[0]))->getRoot();
-    this->mDirectory = TTNodeDirectoryPtr(TTPtr(v[0]));
-    this->mParent = nullptr;
-  }
-
 };
 
-shared_ptr<Device> Device::create(Protocol & p, string name)
+shared_ptr<Device> Device::create(Protocol & protocol, string name)
 {
-  return shared_ptr<Device>(new JamomaDevice(p, name));
+  TTSymbol device_name(name);
+  TTObject applicationManager;
+  TTObject application;
+  
+  // todo : we shouldn't init each time we create an object ...
+  TTFoundationInit("/usr/local/jamoma/extensions/");
+  TTModularInit("/usr/local/jamoma/extensions");
+  
+  // if no application manager
+  if (TTModularApplicationManager == NULL)
+    applicationManager = TTObject("ApplicationManager");
+  else
+    applicationManager = TTObjectBasePtr(TTModularApplicationManager);
+  
+  // is the application already exist ?
+  application = applicationManager.send("ApplicationFind", device_name);
+  if (application.valid())
+  {
+    TTLogError("%s device created already exist\n");
+    return nullptr;
+  }
+  
+  // which protocol is it ?
+  // todo: this is not a good way to do as if a new protocol appears we have to create a case for it here
+  Local* local_protocol = dynamic_cast<Local*>(&protocol);
+  if (local_protocol)
+  {
+    // create a local application
+    application = applicationManager.send("ApplicationInstantiateLocal", device_name);
+    
+    // create
+    TTLogMessage("Local device created\n");
+    
+    TTValue v;
+    application.get("directory", v);
+    return shared_ptr<Device>(new JamomaDevice(protocol, name, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0]))));
+  }
+  
+  Minuit* minuit_protocol = dynamic_cast<Minuit*>(&protocol);
+  if (minuit_protocol)
+  {
+    // create a distant application
+    application = applicationManager.send("ApplicationInstantiateDistant", device_name);
+    
+    // create a Minuit protocol unit
+    TTObject protocolMinuit = applicationManager.send("ProtocolFind", "Minuit");
+    if (!protocolMinuit.valid())
+      protocolMinuit = applicationManager.send("ProtocolInstantiate", "Minuit");
+    
+    // register local application to the Minuit protocol
+    TTSymbol local_device_name;
+    if (!applicationManager.get("applicationLocalName", local_device_name))
+      protocolMinuit.send("ApplicationRegister", local_device_name);
+    else
+      TTLogError("Local device doesn't exist\n");
+    
+    // register the application to the Minuit protocol and set parameters up
+    protocolMinuit.send("Stop");
+    protocolMinuit.send("ApplicationRegister", device_name);
+    protocolMinuit.send("ApplicationSelect", device_name);
+    protocolMinuit.set("port", minuit_protocol->in_port);
+    protocolMinuit.set("ip", TTSymbol(minuit_protocol->ip));
+    
+    // todo : change Minuit mechanism to setup one out_port per distant device
+    protocolMinuit.send("ApplicationSelect", local_device_name);
+    protocolMinuit.set("port", minuit_protocol->out_port);
+    
+    protocolMinuit.send("Run");
+    
+    TTLogMessage("Minuit device created\n");
+    
+    TTValue v;
+    application.get("directory", v);
+    return shared_ptr<Device>(new JamomaDevice(protocol, name, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0]))));
+  }
+  
+  OSC* osc_protocol = dynamic_cast<OSC*>(&protocol);
+  if (osc_protocol)
+  {
+    // create a distante application
+    application = applicationManager.send("ApplicationInstantiateDistant", device_name);
+    
+    // create an OSC protocol unit
+    TTObject protocolOSC = applicationManager.send("ProtocolFind", "OSC");
+    if (!protocolOSC.valid())
+      protocolOSC = applicationManager.send("ProtocolInstantiate", "OSC");
+    
+    // register local application to the OSC protocol
+    TTSymbol local_device_name;
+    if (!applicationManager.get("applicationLocalName", local_device_name))
+      protocolOSC.send("ApplicationRegister", local_device_name);
+    else
+      TTLogError("Local device doesn't exist");
+    
+    // register the application to the OSC protocol and set paramaters up
+    protocolOSC.send("Stop");
+    protocolOSC.send("ApplicationRegister", device_name);
+    protocolOSC.send("ApplicationSelect", device_name);
+    TTValue ports(osc_protocol->in_port, osc_protocol->out_port);
+    protocolOSC.set("port", ports);
+    protocolOSC.set("ip", TTSymbol(osc_protocol->ip));
+    protocolOSC.send("Run");
+    
+    TTLogMessage("OSC device created\n");
+    
+    TTValue v;
+    application.get("directory", v);
+    return shared_ptr<Device>(new JamomaDevice(protocol, name, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0]))));
+  }
+
+  return nullptr;
 }
 
 /* old code
@@ -169,7 +168,7 @@ bool Device::save(std::string filepath) const
 {
   // create a xml handler
   TTObject aXmlHandler(kTTSym_XmlHandler);
-  
+ 
   // pass it the application
   aXmlHandler.set(kTTSym_object, pimpl->mApplication);
   

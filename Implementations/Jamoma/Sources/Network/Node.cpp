@@ -10,20 +10,39 @@ using namespace std;
 class JamomaNode : public virtual Node, public JamomaContainer<Node>
 {
   
-protected:
+private:
   
   // Implementation specific
-  TTNode *            mNode;
-  TTNodeDirectory *   mDirectory;
-  JamomaNode *        mParent;
-  shared_ptr<Address> mAddress;
+  TTNodeDirectory *     mDirectory;
+  TTNode *              mNode;
+  JamomaNode *          mParent;
+  shared_ptr<Address>   mAddress;
   
 public:
 
   // Constructor, destructor
-  JamomaNode(string name)
+  JamomaNode(string name, TTNodeDirectory * aDirectory = nullptr, TTNode * aNode = nullptr, JamomaNode * aParent = nullptr) :
+  mDirectory(aDirectory),
+  mNode(aNode),
+  mParent(aParent)
   {
-    ; // nothing to do as we need to wait the owner sets mNode member
+    if (mNode)
+    {
+      // auto edit address if the node already manages a valid Data or Mirror object
+      TTObject object = mNode->getObject();
+      if (object.valid())
+      {
+        TTSymbol objectName = object.name();
+        
+        if (objectName == kTTSym_Mirror)
+          objectName = TTMirrorPtr(object.instance())->getName();
+        
+        if (objectName == "Data")
+        {
+          mAddress = shared_ptr<Address>(new JamomaAddress(object));
+        }
+      }
+    }
   }
   
   ~JamomaNode()
@@ -48,45 +67,6 @@ public:
   
   virtual const shared_ptr<Address> & getAddress() const override
   {
-    // compute address one time only
-    if (mAddress)
-      return mAddress;
-      
-    if (mNode)
-    {
-      TTObject object = mNode->getObject();
-      
-      if (object.valid())
-      {
-        TTSymbol objectName = object.name();
-        
-        if (objectName == kTTSym_Mirror)
-          objectName = TTMirrorPtr(object.instance())->getName();
-        
-        // for local, proxy or mirror application
-        if (objectName == "Data")
-        {
-          TTSymbol type;
-          object.get("type", type);
-          
-          if (type == kTTSym_none)
-            ;// mAddress = Address(AddressValue::Type::NONE);
-          else if (type == kTTSym_generic)
-            ;// mAddress = JamomaAddress(AddressValue::Type::TUPLE);
-          else if (type == kTTSym_boolean)
-            ;// mAddress = JamomaAddress(AddressValue::Type::BOOL);
-          else if (type == kTTSym_integer)
-            ;// mAddress = JamomaAddress(AddressValue::Type::INT);
-          else if (type == kTTSym_decimal)
-            ;// mAddress = JamomaAddress(AddressValue::Type::FLOAT);
-          else if (type == kTTSym_array)
-            ;// mAddress = JamomaAddress(AddressValue::Type::TUPLE);
-          else if (type == kTTSym_string)
-            ;// mAddress = JamomaAddress(AddressValue::Type::STRING);
-        }
-      }
-    }
-    
     return mAddress;
   }
   
@@ -103,6 +83,9 @@ public:
   // Address Factory
   virtual shared_ptr<Address> createAddress(AddressValue::Type type) override
   {
+    // clear former address
+    removeAddress();
+    
     if (mNode)
     {
       TTSymbol applicationType = getApplicationType();
@@ -149,16 +132,34 @@ public:
         else if (type == AddressValue::Type::GENERIC)
           object.set("type", kTTSym_generic);
       }
+      
+      // edit new address
+      mAddress = shared_ptr<Address>(new JamomaAddress(object));
     }
     
-    // todo : clear former address
-    
-    return getAddress();
+    return mAddress;
   }
 
   // Child Node Factory
-  virtual iterator emplace(const_iterator, string) override
+  virtual iterator emplace(const_iterator pos, string name) override
   {
+    TTAddress nodeAddress;
+    mNode->getAddress(nodeAddress);
+    
+    TTAddress   address = nodeAddress.appendAddress(TTAddress(name.data()));
+    TTObject    empty;
+    TTPtr       context = NULL;
+    TTNodePtr   node;
+    TTBoolean   newInstanceCreated;
+    
+    TTErr err = mDirectory->TTNodeCreate(address, empty, context, &node, &newInstanceCreated);
+    
+    if (!err)
+    {
+      // store the new node into the Container
+      return insert(cend(), shared_ptr<JamomaNode>(new JamomaNode(name, mDirectory, node, this)));
+    }
+    
     return iterator();
   }
 
@@ -175,5 +176,27 @@ private:
     mDirectory->getRoot()->getObject().get("type", type);
     
     return type;
+  }
+
+protected:
+  
+  void buildChildren(JamomaNode * parent)
+  {
+    TTList childrenList;
+    
+    parent->mNode->getChildren(S_WILDCARD, S_WILDCARD, childrenList);
+    
+    for (childrenList.begin(); childrenList.end(); childrenList.next())
+    {
+      TTNodePtr child = TTNodePtr(TTPtr(childrenList.current()[0]));
+      
+      TTString nameInstance = child->getName().c_str();
+      if (child->getInstance() != kTTSymEmpty)
+      {
+        nameInstance += child->getInstance().c_str();
+      }
+      
+      parent->insert(parent->cend(), shared_ptr<JamomaNode>(new JamomaNode(nameInstance.data(), parent->mDirectory, child, parent)));
+    }
   }
 };
