@@ -29,7 +29,7 @@ int main()
   auto localDevice = Device::create(localDeviceParameters, "i-score");
   
   // Local tree building
-  auto localTestNode = localDevice->emplace(localDevice->begin(), "test");
+  auto localTestNode = localDevice->emplace(localDevice->cend(), "test");
   auto localTestAddress = localTestNode->createAddress(AddressValue::Type::BOOL);
   
   // Updating local tree value
@@ -42,31 +42,50 @@ int main()
   // Minuit tree building
   minuitDevice->updateNamespace();
 /*
+  // Display tree in console
+  std::cout << "The content of Minuit device is : ";
+  for (auto it = minuitDevice->begin(); it != minuitDevice->end(); ++it)
+  {
+    std::cout << (*it).getName() << "\n";
+  }
+*/
+
   // OSC device creation
   OSC oscDeviceParameters{"127.0.0.1", 9996, 9997};
   auto oscDevice = Device::create(oscDeviceParameters, "oscDevice");
 
-  // OSC tree building
-  auto oscTestNode = oscDevice->emplace(oscDevice->begin(), "test");
-  oscTestNode->createAddress(AddressValue::Type::BOOL);
+  /* OSC tree building :
+      /test
+      /test/my_bang
+      /test/my_bool
+      /test/my_int
+      /test/my_float
+      /test/my_string
+      /test/my_tuple
+  */
+  auto oscTestNode = oscDevice->emplace(oscDevice->cend(), "test");
  
-  auto done = oscDevice->emplace(oscDevice->begin(), "done");
-  done->createAddress(AddressValue::Type::NONE);
+  auto oscBangNode = oscTestNode->emplace(oscTestNode->cend(), "my_bang");
+  auto oscBangAddress = oscBangNode->createAddress(AddressValue::Type::NONE);
+    
+  auto oscBoolNode = oscTestNode->emplace(oscTestNode->cend(), "my_bool");
+  auto oscBoolAddress = oscBoolNode->createAddress(AddressValue::Type::BOOL);
 
-  auto test1 = test->emplace(test->begin(), "1");
-  test1->createAddress(AddressValue::Type::INT);
+  auto oscIntNode = oscTestNode->emplace(oscTestNode->cend(), "my_int");
+  auto oscIntAddress = oscIntNode->createAddress(AddressValue::Type::INT);
 
-  auto test2 = test->emplace(test->begin(), "2");
-  test2->createAddress(AddressValue::Type::STRING);
+  auto oscFloatNode = oscTestNode->emplace(oscTestNode->cend(), "my_float");
+  auto oscFloatAddress = oscFloatNode->createAddress(AddressValue::Type::FLOAT);
 
-  auto test3 = test->emplace(test->begin(), "3");
-  // todo: more to think about Tuples
-  // test3->createAddress(AddressValue::Type::INT, AddressValue::Type::INT);
+  auto oscStringNode = oscTestNode->emplace(oscTestNode->cend(), "my_string");
+  auto oscStringAddress = oscStringNode->createAddress(AddressValue::Type::STRING);
   
-  auto test4 = test->emplace(test->begin(), "4");
-  test4->createAddress(AddressValue::Type::INT); // TODO: setDomain(0,100)
-*/
+  auto oscTupleNode = oscTestNode->emplace(oscTestNode->cend(), "my_tuple");
+  // todo : auto oscTupleAddress = oscTupleNode->createAddress(AddressValue::Type::FLOAT, AddressValue::Type::FLOAT, AddressValue::Type::FLOAT);
 
+  // Updating osc tree value
+  oscIntAddress->sendValue(Int(0.5));
+    
   while (true)
     ;
 }
