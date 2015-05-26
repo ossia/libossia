@@ -19,10 +19,10 @@ private Q_SLOTS:
         auto localDevice = Device::create(local, "localProtocol");
 
         std::string nodeName("fils");
-        localDevice->emplace(localDevice->front(), nodeName);
-        QCOMPARE(int(localDevice->size()), 1 );
+        localDevice->emplace(localDevice->children().begin(), nodeName);
+        QCOMPARE(int(localDevice->children().size()), 1 );
 
-        auto node = localDevice->front();
+        auto node = localDevice->children().front();
         QCOMPARE(node->getName(), nodeName);
 
         QCOMPARE(node->getParent().getName(), localDevice->getName());
@@ -41,17 +41,17 @@ private Q_SLOTS:
         auto localDevice = Device::create(local, "localProtocol");
 
         std::string nodeName("parent");
-        localDevice->emplace(localDevice->front(), nodeName);
-        QCOMPARE(int(localDevice->size()), 1 );
+        localDevice->emplace(localDevice->children().begin(), nodeName);
+        QCOMPARE(int(localDevice->children().size()), 1 );
 
-        auto parentNode = localDevice->front();
+        auto parentNode = localDevice->children().front();
 
-        parentNode->emplace(parentNode->front(), "fils1");
-        parentNode->emplace(parentNode->front(), "fils2");
-        parentNode->emplace(parentNode->front(), "fils3");
+        parentNode->emplace(parentNode->children().begin(), "fils1");
+        parentNode->emplace(parentNode->children().begin(), "fils2");
+        parentNode->emplace(parentNode->children().begin(), "fils3");
         //TODO ordre de rangement de emplace
 
-        auto first_child = parentNode->front();
+        auto first_child = parentNode->children().begin();
 
         //QCOMPARE(first_child->getName(), std::string("fils3"));
 
