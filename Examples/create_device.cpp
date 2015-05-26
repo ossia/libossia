@@ -70,19 +70,19 @@ int main()
   auto oscBangAddress = (*oscBangNode)->createAddress(AddressValue::Type::NONE);
 
   auto oscBoolNode = (*oscTestNode)->emplace((*oscTestNode)->children().cend(), "my_bool");
-  auto oscBoolAddress = (*oscBangNode)->createAddress(AddressValue::Type::BOOL);
+  auto oscBoolAddress = (*oscBoolNode)->createAddress(AddressValue::Type::BOOL);
 
   auto oscIntNode = (*oscTestNode)->emplace((*oscTestNode)->children().cend(), "my_int");
-  auto oscIntAddress = (*oscBangNode)->createAddress(AddressValue::Type::INT);
+  auto oscIntAddress = (*oscIntNode)->createAddress(AddressValue::Type::INT);
 
   auto oscFloatNode = (*oscTestNode)->emplace((*oscTestNode)->children().cend(), "my_float");
-  auto oscFloatAddress = (*oscBangNode)->createAddress(AddressValue::Type::FLOAT);
+  auto oscFloatAddress = (*oscFloatNode)->createAddress(AddressValue::Type::FLOAT);
 
   auto oscStringNode = (*oscTestNode)->emplace((*oscTestNode)->children().cend(), "my_string");
-  auto oscStringAddress = (*oscBangNode)->createAddress(AddressValue::Type::STRING);
+  auto oscStringAddress = (*oscStringNode)->createAddress(AddressValue::Type::STRING);
 
-  auto oscTupleNode = (*oscBangNode)->emplace((*oscTestNode)->children().cend(), "my_tuple");
-  // todo : auto oscTupleAddress = oscTupleNode->createAddress(AddressValue::Type::FLOAT, AddressValue::Type::FLOAT, AddressValue::Type::FLOAT);
+  auto oscTupleNode = (*oscTestNode)->emplace((*oscTestNode)->children().cend(), "my_tuple");
+  // todo : auto oscTupleAddress = (*oscTupleNode)->createAddress(AddressValue::Type::FLOAT, AddressValue::Type::FLOAT, AddressValue::Type::FLOAT);
 
   // Updating osc tree value
   Int i(0.5);
