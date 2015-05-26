@@ -8,48 +8,34 @@
  * http://www.cecill.info
  */
 
-#ifndef MESSAGE_H_
-#define MESSAGE_H_
+#pragma once
+
+#include <memory>
 
 #include "StateElement.h"
 
 namespace OSSIA {
 
-template <typename T>
 class Address;
+class AddressValue;
 
-template <typename T>
 class Message : public StateElement {
 
-public:
+    public:
 
-  typedef T value_type;
+      // Factories, destructor
+      static std::shared_ptr<Message> create(std::shared_ptr<Address>,
+                                             AddressValue*);
+      virtual std::shared_ptr<Message> clone() const = 0;
+      virtual ~Message() = default;
 
-  // Constructors, destructor, assignment
-  Message();
-  Message(const Message&);
-  virtual ~Message();
-  Message & operator= (const Message&);
+      // Lecture
+      virtual void launch() const override = 0;
 
-  // Lecture
-  virtual void launch() const override;
+      // Accessors
+      virtual const std::shared_ptr<Address> & getAddress() const = 0;
+      virtual AddressValue * getValue() const = 0;
 
-  // Accessors
-  virtual StateElementType getType() const override final
-      { return StateElementType::MESSAGE; };
-  Address<T> & getAddress() const;
-  void setAddress(const Address<T>&);
-  value_type getValue() const;
-  void setValue(const value_type);
-  bool hasValue() const;
-
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl{};
-
-};
+    };
 
 }
-
-#endif /* MESSAGE_H_ */

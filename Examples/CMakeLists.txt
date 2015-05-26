@@ -1,0 +1,6 @@
+file(GLOB_RECURSE SRCS *.cpp)
+foreach(src ${SRCS})
+get_filename_component(theTarget ${src} NAME)
+	add_executable(${theTarget} ${src})
+	target_link_libraries(${theTarget} APIMock)
+endforeach()

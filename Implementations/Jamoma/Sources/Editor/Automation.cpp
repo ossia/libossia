@@ -1,59 +1,84 @@
-/*!
- * \file Automation.cpp
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
+#include "TimeProcess.cpp"
 #include "Editor/Automation.h"
+#include "Network/Address.h"
+#include "Network/AddressValue.h"
 
 #include "TTScore.h"
 
-namespace OSSIA
+using namespace OSSIA;
+using namespace std;
+
+
+class JamomaAutomation : virtual Automation<double>, virtual JamomaTimeProcess
 {
-  class Automation::Impl
+  
+private:
+  
+  // Implementation Specific
+  shared_ptr<Curve<double>> curve;
+  shared_ptr<Address> addr;
+  shared_ptr<Address> element;
+  
+public:
+  // Constructors, destructor, cloning
+  JamomaAutomation()
   {
-    
-  public:
-    
-    Impl()
-    {
-      // todo : move this else where ...
-      TTFoundationInit("/usr/local/jamoma/");
-      TTModularInit("/usr/local/jamoma/");
-      TTScoreInit("/usr/local/jamoma/");
-    };
-    
-    Impl(const Impl & other) = default;
-    ~Impl() = default;
-  };
+    // todo : we shouldn't init each time we create an object ...
+    TTFoundationInit("/usr/local/jamoma/");
+    TTModularInit("/usr/local/jamoma/");
+    TTScoreInit("/usr/local/jamoma/");
+  }
   
-  
-  Automation::Automation() :
-  pimpl(new Impl)
+  JamomaAutomation(const JamomaAutomation * other)
   {}
   
-  Automation::Automation(const Automation & other) :
-  pimpl(new Impl(*(other.pimpl)))
+  virtual ~JamomaAutomation()
   {}
   
-  Automation::~Automation()
+  virtual shared_ptr<Automation> clone() const override
   {
-    delete pimpl;
+    return nullptr;//shared_ptr<Automation>(new JamomaAutomation(this));
+  }
+
+  // Lecture
+  virtual void play(bool log = false, string name = "") const override
+  {}
+
+  // Accessors
+  virtual AddressValue getStartValue() const override
+  {
+    return AddressValue();
   }
   
-  Automation& Automation::operator= (const Automation & other)
+  virtual void setStartValue(AddressValue) override
+  {}
+  
+  virtual AddressValue getEndValue() const override
   {
-    delete pimpl;
-    pimpl = new Impl(*(other.pimpl));
-    return *this;
+    return AddressValue();
   }
   
-  void Automation::play() const
+  virtual void setEndValue(AddressValue) override
+  {}
+  
+  virtual const shared_ptr<Curve<double>> & getCurve() const override
   {
-    ;
+    return curve;
   }
+  
+  virtual void setCurve(shared_ptr<Curve<double>>) override
+  {}
+/*
+  virtual const shared_ptr<Address> & getInputAdress() const override
+  {
+    return addr;
+  }
+*/  
+  virtual void setInputAddress(shared_ptr<Address>) override
+  {}
+};
+
+template<> shared_ptr<Automation<double>> Automation<double>::create()
+{
+  return nullptr;//shared_ptr<Automation>(new JamomaAutomation());
 }

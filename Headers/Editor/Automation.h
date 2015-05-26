@@ -8,58 +8,49 @@
  * http://www.cecill.info
  */
 
-#ifndef AUTOMATION_H_
-#define AUTOMATION_H_
+#pragma once
 
 #include <list>
 
-#include "TimeProcess.h"
+#include "Editor/TimeProcess.h"
+#include "Misc/Container.h"
 
 namespace OSSIA {
 
-template <typename T>
 class Address;
-class Curve;
+class AddressValue;
+template <typename T> class Curve;
 class TimeValue;
 
-class Automation : public TimeProcess {
+template <typename T>
+class Automation : public virtual TimeProcess {
+    public:
 
-public:
+        // Factories, destructor
+        static std::shared_ptr<Automation<T>> create();
+        virtual std::shared_ptr<Automation<T>> clone() const = 0;
+        virtual ~Automation() = default;
 
-  // Constructors, destructor, assignement
-  Automation();
-  Automation(const Automation&);
-  ~Automation();
-  Automation & operator= (const Automation&);
+        // Lecture
+        virtual void play(bool log = false, std::string name = "") const override = 0;
 
-  // Lecture
-  virtual void play() const override;
+        // Accessors
+        virtual AddressValue getStartValue() const = 0; //TODO doublon avec Curve ?
+        virtual void setStartValue(AddressValue) = 0;
+        virtual AddressValue getEndValue() const = 0;
+        virtual void setEndValue(AddressValue) = 0;
+        virtual const std::shared_ptr<Curve<T>> & getCurve() const = 0;
+        virtual void setCurve(std::shared_ptr<Curve<T>>) = 0;
+        virtual const std::shared_ptr<Address> & getInputAddress() const = 0;
+        virtual void setInputAddress(std::shared_ptr<Address>) = 0;
 
-  // Edition
+        Container<Address>& addresses()
+        { return m_addresses; }
+        const Container<Address>& addresses() const
+        { return m_addresses; }
 
-  // Iterators
-  class const_iterator; // bidirectional
-  const_iterator begin() const;
-  const_iterator end() const;
-  const_iterator find(const Address&) const;
-
-  // Managing Addresses
-  void addAddress(const Address&);
-  bool removeAddress(const Address&);
-
-  // Accessors
-  TimeValue getPeriod() const;
-  void setPeriod(const TimeValue);
-  Curve & getCurve() const;
-  void setCurve(const Curve&);
-
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl{};
-
+    private:
+        Container<Address> m_addresses;
 };
 
 }
-
-#endif /* AUTOMATION_H_ */

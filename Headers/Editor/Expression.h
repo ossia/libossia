@@ -8,23 +8,21 @@
  * http://www.cecill.info
  */
 
-#ifndef EXPRESSION_H_
-#define EXPRESSION_H_
+#pragma once
 
 namespace OSSIA {
 
+class Address;
+
 class Expression {
 
-public:
+    public:
 
-  // Constructors, destructor, assignment
-  Expression();
-  Expression(const char*);
+      virtual ~Expression() = default;
 
-};
+      virtual bool evaluate() const = 0;
+
+    };
 
 }
 
-
-
-#endif /* EXPRESSION_H_ */

@@ -1,53 +1,61 @@
-/*!
- * \file TimeNode.cpp
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #include "Editor/TimeNode.h"
+#include "Editor/TimeValue.h"
 
 #include "TTScore.h"
 
-namespace OSSIA
+using namespace OSSIA;
+using namespace std;
+
+class JamomaTimeNode : public TimeNode
 {
-  class TimeNode::Impl
+  
+private:
+  
+  // Implementation specific
+  shared_ptr<TimeEvent> element;
+  
+public:
+  // Constructors, destructor, cloning
+  JamomaTimeNode()
   {
-    
-  public:
-    
-    Impl()
-    {
-      // todo : move this else where ...
-      TTFoundationInit("/usr/local/jamoma/");
-      TTModularInit("/usr/local/jamoma/");
-      TTScoreInit("/usr/local/jamoma/");
-    };
-    
-    Impl(const Impl & other) = default;
-    ~Impl() = default;
-  };
-  
-  TimeNode::TimeNode() :
-  pimpl(new Impl)
-  {}
-  
-  TimeNode::TimeNode(const TimeNode & other) :
-  pimpl(new Impl(*(other.pimpl)))
-  {}
-  
-  TimeNode::~TimeNode()
-  {
-    delete pimpl;
+    // todo : we shouldn't init each time we create an object ...
+    TTFoundationInit("/usr/local/jamoma/");
+    TTModularInit("/usr/local/jamoma/");
+    TTScoreInit("/usr/local/jamoma/");
   }
   
-  TimeNode& TimeNode::operator= (const TimeNode & other)
+  JamomaTimeNode(const JamomaTimeNode * other)
+  {}
+  
+  virtual ~JamomaTimeNode()
+  {}
+  
+  virtual shared_ptr<TimeNode> clone() const override
   {
-    delete pimpl;
-    pimpl = new Impl(*(other.pimpl));
-    return *this;
+    return nullptr;//shared_ptr<TimeNode>(new JamomaTimeNode(this));
   }
+
+  // Lecture
+  virtual void play(bool log = false, string name = "") const override
+  {}
+
+  // Accessors
+  virtual TimeValue getDate() const override
+  {
+    return TimeValue();
+  }
+  
+  virtual TimeValue getSimultaneityMargin() const override
+  {
+    return TimeValue();
+  }
+  
+  virtual void setSimultaneityMargin(TimeValue) override
+  {}
+
+};
+
+shared_ptr<TimeNode> TimeNode::create()
+{
+  return nullptr;//shared_ptr<TimeNode>(new JamomaTimeNode());
 }

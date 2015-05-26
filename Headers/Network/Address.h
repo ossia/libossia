@@ -8,63 +8,60 @@
  * http://www.cecill.info
  */
 
-#ifndef ADDRESS_H_
-#define ADDRESS_H_
+#pragma once
+#include "Network/AddressValue.h"
 
+#include <memory>
 #include <string>
+
+#include "Editor/Expression.h"
+#include "Editor/ExpressionValue.h"
 
 namespace OSSIA {
 
-template <typename T>
 class Device;
 
-template <typename T>
-class Address {
-
-private:
-
-  // Constructors, destructor, assignment
-  Address();
-  Address(const Address&);
-  ~Address();
-  Address & operator= (const Address&);
+class Address : public ExpressionValue, public Expression {
 
 public:
 
-  typedef T value_type;
+  // Enumerations
+  enum class AccessMode {
+    GET,
+    SET,
+    BI
+  };
+  enum class BoundingMode {
+    FREE,
+    CLIP,
+    WRAP,
+    FOLD
+  };
 
-  // Factories
-  Address addAddress(std::string) const;
-  template <typename U>
-  Address addAddress(std::string) const;
-  template <typename U>
-  Address addAddress(std::string, U min, U max) const;
+  // Destructor
+  virtual ~Address() = default;
 
-  // Navigation
-  bool isRoot() const;
-  Address & getParent() const;
-  Device<T> & getDevice() const;
-
-  // Iterators
-  class const_iterator; // bidirectional
-  const_iterator begin() const;
-  const_iterator end() const;
-  const_iterator find(const Address&) const;
-
-  // Managing children
-  void addChild(const Address&);
-  bool removeChild(const Address&);
+  // Network
+  virtual const std::shared_ptr<Device> & getDevice() const = 0; // théo : is this really needed ? I don't know how to provide it
+  virtual bool updateValue() const = 0;
+  virtual bool sendValue(const AddressValue*) const = 0;
 
   // Accessors
-  std::string getAddress();
+  virtual AddressValue * getValue() const = 0;
+  virtual AddressValue::Type getValueType() const = 0;
 
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl{};
+  virtual AccessMode getAccessMode() const = 0;
+  //TODO virtual Domain getDomain() const = 0;
+  virtual BoundingMode getBoundingMode() const = 0; //TODO multiple ?
+  virtual bool getRepetitionFilter() const = 0;
+  //TODO virtual Destination getDestination() const = 0;
+  virtual Address & setAccessMode(AccessMode) = 0;
+  //TODO virtual Address & setDomain(Domain) = 0;
+  virtual Address & setBoundingMode(BoundingMode) = 0; //TODO multiple ?
+  virtual Address & setRepetitionFilter(bool = true) = 0;
+  //TODO virtual Address & setDestination(Destination) = 0;
 
 };
 
 }
 
-#endif /* ADDRESS_H_ */

@@ -8,63 +8,54 @@
  * http://www.cecill.info
  */
 
-#ifndef TIMENODE_H_
-#define TIMENODE_H_
+#pragma once
 
-#include <set>
+#include <memory>
 #include <string>
-#include "Editor/State.h"
+
+#include "Misc/Container.h"
 
 namespace OSSIA {
 
 class Expression;
 class Scenario;
-class TimeBox;
+class State;
+class TimeConstraint;
+class TimeEvent;
 class TimeValue;
 
-class TimeNode {
+class TimeNode{
 
-public:
+    public:
+        using iterator = Container<TimeEvent>::iterator;
+        using const_iterator = Container<TimeEvent>::const_iterator;
 
-  // Constructors, destructor, assignment
-  TimeNode();
-  TimeNode(const TimeNode&);
-  ~TimeNode();
-  TimeNode & operator= (const TimeNode&);
+        // Factories, destructor
+        static std::shared_ptr<TimeNode> create();
+        virtual std::shared_ptr<TimeNode> clone() const = 0;
+        virtual ~TimeNode() = default;
 
-  // Lecture
-  void play(bool log = false, std::string name = "") const;
+        // Lecture
+        virtual void play(bool log = false, std::string name = "") const = 0;
 
-  // Navigation
-  std::set<TimeBox*> getPreviousTimeBoxes() const;
-  std::set<TimeBox*> getNextTimeBoxes() const;
-  Scenario & getParentScenario() const;
+        // Accessors
+        virtual TimeValue getDate() const = 0;
+        virtual TimeValue getSimultaneityMargin() const = 0;
+        virtual void setSimultaneityMargin(TimeValue) = 0; //TODO why not in constructor (only) ?
 
-  // Iterators
-  class const_iterator;
-  // bidirectional, upon pair<State, pair<Expression, set<TimeBox*> > >
-  const_iterator begin() const;
-  const_iterator end() const;
-  const_iterator find(const State&) const;
+        // TimeEvent Factory
+        virtual iterator emplace(const_iterator,
+                                 std::shared_ptr<State>/*TODO = NO_STATE*/,
+                                 std::shared_ptr<Expression>/*TODO = NO_EXPRESSION*/) = 0;
 
-  // Managing states
-  void addState(const State&, const Expression, std::set<TimeBox*>);
-  bool removeState(const State&);
+        Container<TimeEvent>& timeProcesses()
+        { return m_timeEvents; }
+        const Container<TimeEvent>& timeProcesses() const
+        { return m_timeEvents; }
 
-  // Accessors
-  TimeValue getDate() const;
-  TimeValue getPreListenningDuration() const;
-  void setPreListenningDuration(TimeValue);
-  TimeValue getSimultaneityMargin();
-  void setSimultaneityMargin(TimeValue);
-
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl{};
+    private:
+        Container<TimeEvent> m_timeEvents;
 
 };
 
 }
-
-#endif /* TIMENODE_H_ */

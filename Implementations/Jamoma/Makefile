@@ -8,55 +8,59 @@ CC_64 = /usr/bin/clang++ -arch x86_64
 
 SRC32 = Sources/Editor/Automation.i386.o
 SRC64 = Sources/Editor/Automation.x64.o
-SRC32 = Sources/Editor/Curve.i386.o
-SRC64 = Sources/Editor/Curve.x64.o
-SRC32 += Sources/Editor/CurveSegment.i386.o
-SRC64 += Sources/Editor/CurveSegment.x64.o
-SRC32 += Sources/Editor/CurveSegment/CurveSegmentLinear.i386.o
-SRC64 += Sources/Editor/CurveSegment/CurveSegmentLinear.x64.o
-SRC32 += Sources/Editor/CurveSegment/CurveSegmentPower.i386.o
-SRC64 += Sources/Editor/CurveSegment/CurveSegmentPower.x64.o
-SRC32 += Sources/Editor/Expression.i386.o
-SRC64 += Sources/Editor/Expression.x64.o
+SRC64 += Sources/Editor/Clock.x64.o
+SRC32 += Sources/Editor/Clock.i386.o
+#SRC32 = Sources/Editor/Curve.i386.o
+#SRC64 = Sources/Editor/Curve.x64.o
+#SRC32 += Sources/Editor/CurveSegment.i386.o
+#SRC64 += Sources/Editor/CurveSegment.x64.o
+#SRC32 += Sources/Editor/CurveSegment/CurveSegmentLinear.i386.o
+#SRC64 += Sources/Editor/CurveSegment/CurveSegmentLinear.x64.o
+#SRC32 += Sources/Editor/CurveSegment/CurveSegmentPower.i386.o
+#SRC64 += Sources/Editor/CurveSegment/CurveSegmentPower.x64.o
+SRC32 += Sources/Editor/ExpressionAtom.i386.o
+SRC64 += Sources/Editor/ExpressionAtom.x64.o
+SRC32 += Sources/Editor/ExpressionComposition.i386.o
+SRC64 += Sources/Editor/ExpressionComposition.x64.o
 SRC32 += Sources/Editor/Message.i386.o
 SRC64 += Sources/Editor/Message.x64.o
 SRC32 += Sources/Editor/Scenario.i386.o
 SRC64 += Sources/Editor/Scenario.x64.o
 SRC32 += Sources/Editor/State.i386.o
 SRC64 += Sources/Editor/State.x64.o
-SRC32 += Sources/Editor/TimeBox.i386.o
-SRC64 += Sources/Editor/TimeBox.x64.o
+SRC32 += Sources/Editor/TimeConstraint.i386.o
+SRC64 += Sources/Editor/TimeConstraint.x64.o
+SRC32 += Sources/Editor/TimeEvent.i386.o
+SRC64 += Sources/Editor/TimeEvent.x64.o
 SRC32 += Sources/Editor/TimeNode.i386.o
 SRC64 += Sources/Editor/TimeNode.x64.o
 SRC32 += Sources/Editor/TimeProcess.i386.o
 SRC64 += Sources/Editor/TimeProcess.x64.o
+SRC32 += Sources/Editor/TimeProcessList.i386.o
+SRC64 += Sources/Editor/TimeProcessList.x64.o
 SRC32 += Sources/Editor/TimeValue.i386.o
 SRC64 += Sources/Editor/TimeValue.x64.o
+SRC32 += Sources/Misc/Container.i386.o
+SRC64 += Sources/Misc/Container.x64.o
 SRC32 += Sources/Network/Address.i386.o
 SRC64 += Sources/Network/Address.x64.o
 SRC32 += Sources/Network/Device.i386.o
 SRC64 += Sources/Network/Device.x64.o
-SRC32 += Sources/Network/DeviceLocal.i386.o
-SRC64 += Sources/Network/DeviceLocal.x64.o
-SRC32 += Sources/Network/DeviceMinuit.i386.o
-SRC64 += Sources/Network/DeviceMinuit.x64.o
-SRC32 += Sources/Network/DeviceOSC.i386.o
-SRC64 += Sources/Network/DeviceOSC.x64.o
-SRC32 += Sources/Network/Protocols.i386.o
-SRC64 += Sources/Network/Protocols.x64.o
+SRC32 += Sources/Network/Node.i386.o
+SRC64 += Sources/Network/Node.x64.o
 
 #########################################
 
 INCLUDES = -I../../Headers/
-INCLUDES += -Isupport/includes/
+INCLUDES += -I/usr/local/jamoma/include/
 INCLUDE_FILES := $(wildcard INCLUDES/*.h)
 
 #########################################
 
-LIBS = support/lib/JamomaFoundation.dylib
-LIBS += support/lib/JamomaDSP.dylib
-LIBS += support/lib/JamomaModular.dylib
-LIBS += support/lib/JamomaScore.dylib
+LIBS = /usr/local/jamoma/lib/libJamomaFoundation.dylib
+LIBS += /usr/local/jamoma/lib/libJamomaDSP.dylib
+LIBS += /usr/local/jamoma/lib/libJamomaModular.dylib
+LIBS += /usr/local/jamoma/lib/libJamomaScore.dylib
 LIBS += /System/Library/Frameworks/Carbon.framework/Versions/A/Carbon
 
 #########################################
@@ -113,13 +117,8 @@ x64: $(SRC64)
 lipo: | link
 	lipo build/$(NAME)-i386.dylib build/$(NAME)-x86_64.dylib -create -output build/$(NAME).dylib
 	lipo build/lib$(NAME)-i386.a build/lib$(NAME)-x86_64.a -create -output build/lib$(NAME).a
-    
+	install_name_tool -add_rpath /usr/local/jamoma/lib build/$(NAME).$(SUFFIX)
 	cp build/$(NAME).dylib /usr/local/lib # temporary for test with curve.cpp
-
-	install_name_tool -change @loader_path/../../../../support/JamomaFoundation.dylib @rpath/JamomaFoundation.dylib build/$(NAME).$(SUFFIX)
-	install_name_tool -change @loader_path/../../../../support/JamomaDSP.dylib @rpath/JamomaDSP.dylib build/$(NAME).$(SUFFIX)
-	install_name_tool -change @loader_path/../../../../support/JamomaModular.dylib @rpath/JamomaModular.dylib build/$(NAME).$(SUFFIX)
-	install_name_tool -change @loader_path/../../../../support/JamomaScore.dylib @rpath/JamomaScore.dylib build/$(NAME).$(SUFFIX)
 
 clean:
 	rm -f $(SRC32) $(SRC64)

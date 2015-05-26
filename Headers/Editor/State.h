@@ -8,49 +8,35 @@
  * http://www.cecill.info
  */
 
-#ifndef STATE_H_
-#define STATE_H_
+#pragma once
+
+#include <memory>
 
 #include "Editor/StateElement.h"
+#include "Misc/Container.h"
 
 namespace OSSIA {
 
 class State : public StateElement {
 
-public:
+    public:
 
-  // Constructors, destructor, assignment
-  State();
-  State(const State&);
-  virtual ~State();
-  State & operator= (const State&);
+      // Factories, destructor
+      static std::shared_ptr<State> create();
+      virtual std::shared_ptr<State> clone() const = 0;
+      virtual ~State() = default;
 
-  // Lecture
-  virtual void launch() const override;
+      // Lecture
+      virtual void launch() const override = 0;
 
-  // Navigation
+      Container<StateElement>& stateElements()
+      { return m_stateElements; }
+      const Container<StateElement>& stateElements() const
+      { return m_stateElements; }
 
-  // Iterators
-  class const_iterator; // bidirectional
-  const_iterator begin() const;
-  const_iterator end() const;
-  const_iterator find(const StateElement&) const;
-
-  // Managing StateElements
-  void addStateElement(const StateElement&);
-  bool removeStateElement(const StateElement&);
-
-  // Accessors
-  virtual StateElementType getType() const override final
-      { return StateElementType::STATE; };
-
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl{};
+    private:
+      Container<StateElement> m_stateElements;
 
 };
 
 }
-
-#endif /* STATE_H_ */

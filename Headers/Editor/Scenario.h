@@ -8,57 +8,43 @@
  * http://www.cecill.info
  */
 
-#ifndef SCENARIO_H_
-#define SCENARIO_H_
+#pragma once
 
-#include <set>
-
-#include "Editor/TimeNode.h"
 #include "Editor/TimeProcess.h"
 
 namespace OSSIA {
 
-class TimeBox;
+class TimeConstraint;
 class TimeNode;
 
-class Scenario : public TimeProcess {
+class Scenario : public virtual TimeProcess {
 
 public:
 
-  // Constructors, destructor, assignment
-  Scenario();
-  Scenario(const Scenario&);
-  ~Scenario();
-  Scenario & operator= (const Scenario&);
+  // Factories, destructor
+  static std::shared_ptr<Scenario> create();
+  virtual std::shared_ptr<Scenario> clone() const = 0;
+  virtual ~Scenario() = default;
 
   // Lecture
-  virtual void play() const override;
-
-  // Navigation
-  std::set<TimeBox*> getTimeBoxes() const;
-  std::set<TimeNode*> getTimeNodes() const;
+  virtual void play(bool log = false, std::string name = "") const override = 0;
 
   // Edition
-  void addTimeBox(const TimeBox&, const TimeNode & startNode);
-  void addTimeBox(
-      const TimeBox&,
+  virtual void addConstraint(const TimeConstraint&, const TimeNode & startNode) = 0;
+  virtual void addConstraint(
+      const TimeConstraint&,
       const TimeNode & startNode,
-      const TimeNode & endNode);
+      const TimeNode & endNode) = 0;
 
   // Accessors
+  virtual const bool isKiller() const = 0;
+  virtual void setKiller(bool) = 0;
   // internal TimeNodes
-  TimeNode & getStartNode() const;
-  void setStartNode(const TimeNode&);
-  TimeNode & getEndNode() const;
-  void setEndNode(const TimeNode&);
-
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl{};
+  virtual const std::shared_ptr<TimeNode> & getStartNode() const = 0;
+  virtual void setStartNode(std::shared_ptr<TimeNode>) = 0;
+  virtual const std::shared_ptr<TimeNode> & getEndNode() const = 0;
+  virtual void setEndNode(std::shared_ptr<TimeNode>) = 0;
 
 };
 
 }
-
-#endif /* SCENARIO_H_ */

@@ -1,58 +1,58 @@
-/*!
- * \file Message.cpp
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #include "Editor/Message.h"
+#include "Network/Address.h"
 
 #include "TTScore.h"
 
-namespace OSSIA
+using namespace OSSIA;
+using namespace std;
+
+class JamomaMessage : public Message
 {
-  template <typename T>
-  class Message<T>::Impl
-  {
-    
-  public:
-    
-    Impl()
-    {
-      // todo : move this else where ...
-      TTFoundationInit("/usr/local/jamoma/");
-      TTModularInit("/usr/local/jamoma/");
-      TTScoreInit("/usr/local/jamoma/");
-    };
-    
-    Impl(const Impl & other) = default;
-    ~Impl() = default;
-  };
   
-  template <typename T>
-  Message<T>::Message() :
-  pimpl(new Impl)
+private:
+  
+  // Implementation specific
+  shared_ptr<Address> address;
+  AddressValue * value;
+
+public:
+  
+  // Constructors, destructor, cloning
+  JamomaMessage(shared_ptr<Address> a, AddressValue * v) :
+  address(a),
+  value(v)
   {}
   
-  template <typename T>
-  Message<T>::Message(const Message & other) :
-  pimpl(new Impl(*(other.pimpl)))
+  JamomaMessage(const JamomaMessage * other)
   {}
   
-  template <typename T>
-  Message<T>::~Message()
+  virtual ~JamomaMessage()
+  {}
+  
+  virtual shared_ptr<Message> clone() const override
   {
-    delete pimpl;
+    return shared_ptr<Message>(new JamomaMessage(this));
+  }
+
+  // Lecture
+  virtual void launch() const override
+  {
+    address->sendValue(value);
+  }
+
+  // Accessors
+  virtual const shared_ptr<Address> & getAddress() const override
+  {
+    return address;
   }
   
-  template <typename T>
-  Message<T>& Message<T>::operator= (const Message & other)
+  virtual AddressValue * getValue() const override
   {
-    delete pimpl;
-    pimpl = new Impl(*(other.pimpl));
-    return *this;
+    return value;
   }
+};
+
+shared_ptr<Message> Message::create(shared_ptr<Address> a, AddressValue * v)
+{
+  return shared_ptr<Message>(new JamomaMessage(a, v));
 }

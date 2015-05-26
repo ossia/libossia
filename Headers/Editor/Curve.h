@@ -8,11 +8,12 @@
  * http://www.cecill.info
  */
 
-#ifndef CURVE_H_
-#define CURVE_H_
+#pragma once
 
 #include <map>
 #include <utility>
+#include <memory>
+#include "Misc/Container.h"
 
 namespace OSSIA {
 
@@ -22,42 +23,33 @@ class CurveSegment;
 template <typename T>
 class Curve {
 
-public:
+    public:
+      typedef T value_type;
 
-  typedef T value_type;
+      static std::shared_ptr<Curve> create();
+      virtual std::shared_ptr<Curve> clone() const = 0;
+      virtual ~Curve() = default;
 
-  // Constructors, destructor, assignment
-  Curve();
-  Curve(const Curve&);
-  ~Curve();
-  Curve & operator= (const Curve&);
+      // Manage points (abscissa in double between 0. and 1.)
+      virtual bool addPoint(double, T, CurveSegment<T>&) = 0;
+      virtual bool removePoint(double) = 0;
 
-  // Iterators
-  class const_iterator; // bidirectional
-  const_iterator begin() const;
-  const_iterator end() const;
-  const_iterator find(double) const;
+      // Accessors
+      virtual T getInitialValue() const = 0;
+      virtual void setInitialValue(const T) = 0;
+      virtual std::map<double, std::pair<T, std::shared_ptr<CurveSegment<T> > > > getPointsMap() const = 0;
+        // {abscissa, {value, previous segment}}
 
-  // Manage points (abscissa in double between 0. and 1.)
-  bool addPoint(double, T, CurveSegment<T>&);
-  bool removePoint(double);
+      // Computation
+      virtual T valueAt(double) const = 0; // Between 0. and 1.
 
-  // Accessors
-  T getInitialValue() const;
-  void setInitialValue(const T);
-  std::map<double, std::pair<T, CurveSegment<T>&>> getPointsMap() const;
-    // {abscissa, {value, previous segment}}
-  
-  // Computation
-  T valueAt(double) const; // Between 0. and 1.
+      Container<CurveSegment<T>>& curveSegments()
+      { return m_curveSegments; }
+      const Container<CurveSegment<T>>& curveSegments() const
+      { return m_curveSegments; }
 
-  // pimpl idiom
-// private: // todo issue #1
-  class Impl;
-  Impl * pimpl{};
-
+    private:
+      Container<CurveSegment<T>> m_curveSegments;
 };
 
 }
-
-#endif /* CURVE_H_ */

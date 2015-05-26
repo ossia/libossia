@@ -1,102 +1,202 @@
-/*!
- * \file Device.cpp
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #include "Network/Device.h"
+#include "Network/Protocol.h"
+#include "Node.cpp"
 
+#include "TTFoundation.h"
 #include "TTModular.h"
 
-namespace OSSIA {
-  
-class SharedImpl {
-    
-public:
-  
+using namespace OSSIA;
+using namespace std;
+
+class JamomaDevice : public Device, public JamomaNode
+{
+
+private:
+
+  // Implementation specific
   TTObject mApplicationManager;
   TTObject mApplication;
-    
-  SharedImpl()
+
+public:
+
+  // Constructor, destructor
+  JamomaDevice(Protocol & protocol, string name = "", TTObject applicationManager = TTObject(), TTObject application = TTObject(), TTNodeDirectoryPtr aDirectory = nullptr) :
+  JamomaNode(name, aDirectory, aDirectory->getRoot()),
+  mApplicationManager(applicationManager),
+  mApplication(application)
   {
-    // todo : move this else where ...
-    TTFoundationInit("/usr/local/jamoma/");
-    TTModularInit("/usr/local/jamoma/");
+    return ;
+  }
+
+  ~JamomaDevice()
+  {
+    TTSymbol device_name;
+    mApplication.get("name", device_name);
+    mApplicationManager.send("ApplicationRelease", device_name);
+  }
+
+  // Network
+  virtual bool updateNamespace() override
+  {
+    TTErr err = mApplication.send("DirectoryBuild");
     
-    // if no application manager
-    if (TTModularApplicationManager == NULL)
-      mApplicationManager = TTObject("ApplicationManager");
-    else
-      mApplicationManager = TTObjectBasePtr(TTModularApplicationManager);
-  };
-  
-  SharedImpl(const SharedImpl & other) = default;
-  ~SharedImpl() = default;
+    // update root node
+    this->mNode = this->mDirectory->getRoot();
+    
+    // todo : erase all former nodes
+
+    // build tree from the root
+    buildChildren(shared_ptr<JamomaNode>(this));
+
+    return err == kTTErrNone;
+  }
 };
 
-template <typename T>
-Device<T>::Device() :
-pimpl(new Impl)
-{}
-  
-template <typename T>
-Device<T>::Device(const Device & other) :
-pimpl(new Impl(*(other.pimpl)))
-{}
-  
-template <typename T>
-Device<T>::Device(T * protocol) :
-pimpl(new Impl)
-{}
-  
-template <typename T>
-Device<T>::~Device()
+shared_ptr<Device> Device::create(Protocol & protocol, string name)
 {
-  delete pimpl;
-}
-  
-template <typename T>
-Device<T>& Device<T>::operator= (const Device & other)
-{
-  delete pimpl;
-  pimpl = new Impl(*(other.pimpl));
-  return *this;
+  TTSymbol device_name(name);
+  TTObject applicationManager;
+  TTObject application;
+
+  // todo : we shouldn't init each time we create an object ...
+  TTFoundationInit("/usr/local/jamoma/extensions/", true);
+  TTModularInit("/usr/local/jamoma/extensions", true);
+
+  // if no application manager
+  if (TTModularApplicationManager == NULL)
+    applicationManager = TTObject("ApplicationManager");
+  else
+    applicationManager = TTObjectBasePtr(TTModularApplicationManager);
+
+  // is the application already exist ?
+  application = applicationManager.send("ApplicationFind", device_name);
+  if (application.valid())
+  {
+    TTLogError("%s device created already exist\n");
+    return nullptr;
+  }
+
+  // which protocol is it ?
+  // todo: this is not a good way to do as if a new protocol appears we have to create a case for it here
+  Local* local_protocol = dynamic_cast<Local*>(&protocol);
+  if (local_protocol)
+  {
+    // create a local application
+    application = applicationManager.send("ApplicationInstantiateLocal", device_name);
+
+    // create
+    TTLogMessage("Local device created\n");
+
+    TTValue v;
+    application.get("directory", v);
+    return shared_ptr<Device>(new JamomaDevice(protocol, name, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0]))));
+  }
+
+  Minuit* minuit_protocol = dynamic_cast<Minuit*>(&protocol);
+  if (minuit_protocol)
+  {
+    // create a distant application
+    application = applicationManager.send("ApplicationInstantiateDistant", device_name);
+
+    // create a Minuit protocol unit
+    TTObject protocolMinuit = applicationManager.send("ProtocolFind", "Minuit");
+    if (!protocolMinuit.valid())
+      protocolMinuit = applicationManager.send("ProtocolInstantiate", "Minuit");
+
+    // register local application to the Minuit protocol
+    TTSymbol local_device_name;
+    if (!applicationManager.get("applicationLocalName", local_device_name))
+      protocolMinuit.send("ApplicationRegister", local_device_name);
+    else
+      TTLogError("Local device doesn't exist\n");
+
+    // register the application to the Minuit protocol and set parameters up
+    protocolMinuit.send("Stop");
+    protocolMinuit.send("ApplicationRegister", device_name);
+    protocolMinuit.send("ApplicationSelect", device_name);
+    protocolMinuit.set("port", minuit_protocol->in_port);
+    protocolMinuit.set("ip", TTSymbol(minuit_protocol->ip));
+
+    // todo : change Minuit mechanism to setup one out_port per distant device
+    protocolMinuit.send("ApplicationSelect", local_device_name);
+    protocolMinuit.set("port", minuit_protocol->out_port);
+
+    protocolMinuit.send("Run");
+
+    TTLogMessage("Minuit device created\n");
+
+    TTValue v;
+    application.get("directory", v);
+    return shared_ptr<Device>(new JamomaDevice(protocol, name, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0]))));
+  }
+
+  OSC* osc_protocol = dynamic_cast<OSC*>(&protocol);
+  if (osc_protocol)
+  {
+    // create a distante application
+    application = applicationManager.send("ApplicationInstantiateDistant", device_name);
+
+    // create an OSC protocol unit
+    TTObject protocolOSC = applicationManager.send("ProtocolFind", "OSC");
+    if (!protocolOSC.valid())
+      protocolOSC = applicationManager.send("ProtocolInstantiate", "OSC");
+
+    // register local application to the OSC protocol
+    TTSymbol local_device_name;
+    if (!applicationManager.get("applicationLocalName", local_device_name))
+      protocolOSC.send("ApplicationRegister", local_device_name);
+    else
+      TTLogError("Local device doesn't exist");
+
+    // register the application to the OSC protocol and set paramaters up
+    protocolOSC.send("Stop");
+    protocolOSC.send("ApplicationRegister", device_name);
+    protocolOSC.send("ApplicationSelect", device_name);
+    TTValue ports(osc_protocol->in_port, osc_protocol->out_port);
+    protocolOSC.set("port", ports);
+    protocolOSC.set("ip", TTSymbol(osc_protocol->ip));
+    protocolOSC.send("Run");
+
+    TTLogMessage("OSC device created\n");
+
+    TTValue v;
+    application.get("directory", v);
+    return shared_ptr<Device>(new JamomaDevice(protocol, name, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0]))));
+  }
+
+  return nullptr;
 }
 
-template <typename T>
-bool Device<T>::save(std::string filepath) const
+/* old code
+
+bool Device::save(std::string filepath) const
 {
   // create a xml handler
   TTObject aXmlHandler(kTTSym_XmlHandler);
-  
+
   // pass it the application
   aXmlHandler.set(kTTSym_object, pimpl->mApplication);
-  
+
   // write
   TTValue none;
   TTErr err = aXmlHandler.send(kTTSym_Write, filepath, none);
-  
-  return err == kTTErrNone;
-}
-  
-template <typename T>
-bool Device<T>::load(std::string filepath) const
-{
-  // create a xml handler
-  TTObject aXmlHandler(kTTSym_XmlHandler);
-  
-  // pass it the application
-  aXmlHandler.set(kTTSym_object, pimpl->mApplication);
-  
-  // read
-  TTValue none;
-  TTErr err = aXmlHandler.send(kTTSym_Read, filepath, none);
-  
+
   return err == kTTErrNone;
 }
 
+bool Device::load(std::string filepath)
+{
+  // create a xml handler
+  TTObject aXmlHandler(kTTSym_XmlHandler);
+
+  // pass it the application
+  aXmlHandler.set(kTTSym_object, pimpl->mApplication);
+
+  // read
+  TTValue none;
+  TTErr err = aXmlHandler.send(kTTSym_Read, filepath, none);
+
+  return err == kTTErrNone;
 }
+
+*/

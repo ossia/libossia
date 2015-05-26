@@ -8,9 +8,7 @@
 .cproject
 .project
 .settings*
-/Debug
-/Clang
-/Jamoma
+/build*
 *.user
 Makefile
 

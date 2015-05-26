@@ -1,8 +1,13 @@
 cmake_minimum_required(VERSION 2.8)
 project(API)
-
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(API_HEADERS_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/Headers)
+set(API_IMPL_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/Implementations)
 
-add_subdirectory(Headers)
+file(GLOB_RECURSE HEADERS Headers/*.h)
+add_custom_target(OSSIAHeaders SOURCES ${HEADERS})
+include_directories(Headers)
+
 add_subdirectory(Implementations)
-# add_subdirectory(Tests)
+add_subdirectory(Examples)
+add_subdirectory(Tests)

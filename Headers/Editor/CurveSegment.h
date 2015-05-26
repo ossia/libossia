@@ -8,50 +8,38 @@
  * http://www.cecill.info
  */
 
-#ifndef CURVESEGMENT_H_
-#define CURVESEGMENT_H_
+#pragma once
+#include <memory>
 
 namespace OSSIA {
-  
+
   template <typename T>
   class Curve;
-  
+
   template <typename T>
   class CurveSegment {
-    
+
   public:
-    
+
     // Constructor, Destructor
-    CurveSegment() : mParent(nullptr) {};
-    CurveSegment(Curve<T> * parent) : mParent(parent) {};
-    virtual ~CurveSegment() {};
-    
+    virtual ~CurveSegment() = default;
+
     // Navigation
-    Curve<T>* getParent() const {return mParent;};
-    
+    virtual std::shared_ptr<Curve<T>> getParent() const = 0;
+
     // Computation
-    virtual T valueAt(double) const // Between 0. and 1.
-    {
-      T t = 0.;
-      return t;
-    };
-    
+    virtual T valueAt(double) const = 0; // Between 0. and 1.
+
     // Curve segment types
     enum class CurveSegmentType {
       NONE,
       LINEAR,
       POWER
     };
-    
-    virtual CurveSegmentType getType() const
-    {return CurveSegment<T>::CurveSegmentType::NONE;};
-    
-  protected:
-    
-    Curve<T>* mParent{};
-    
+
+    virtual CurveSegmentType getType() const = 0;
+
   };
-  
+
 }
 
-#endif /* CURVESEGMENT_H_ */

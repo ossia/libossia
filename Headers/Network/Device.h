@@ -8,54 +8,30 @@
  * http://www.cecill.info
  */
 
-#ifndef DEVICE_H_
-#define DEVICE_H_
-
+#pragma once
 #include <string>
 
-namespace OSSIA {
-    
-template <typename T>
-class Address;
+#include "Network/Node.h"
 
-template <typename T>
-class Device {
+namespace OSSIA {
+
+class Protocol;
+
+class Device : public virtual Node {
 
 public:
 
-  typedef T protocol_type;
+  // Factory, destructor
+  static std::shared_ptr<Device> create(Protocol &, std::string = "");
+  virtual ~Device() = default;
 
-  // Constructors, destructor, assignment
-  Device();
-  Device(const Device&);
-  Device(T * protocol);
-  ~Device();
-  Device & operator= (const Device&);
-
-  // Factories
-  Address<void> addAddress(std::string) const;
-  template <typename U>
-  Address<U> addAddress(std::string) const;
-  template <typename U>
-  Address<U> addAddress(std::string, U min, U max) const;
-
-  // Iterators
-  class const_iterator; // bidirectionnal
-  const_iterator begin() const;
-  const_iterator end() const;
-  const_iterator find(Address<T>) const;
-
-  // Saving
-  bool save(std::string) const;
-  bool load(std::string) const;
-  
-  // pimpl idiom
-private:
-  class Impl;
-  Impl * pimpl{};
+  // Network
+  virtual bool updateNamespace() = 0;
   
 };
 
+std::shared_ptr<Node> declareMinuitInternDevice(std::string, int port);
+std::shared_ptr<Node> declareOSCInternDevice(int in_port, int out_port);
+
 }
 
-#endif /* DEVICE_H_ */
