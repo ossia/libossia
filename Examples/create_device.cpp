@@ -25,7 +25,7 @@ int main()
   auto tempDevice = Device::create(tempDeviceParameters, "temp");
 
   // Local device
-  std::cout << "\nLocal device example\n";
+  cout << "\nLocal device example\n";
   Local localDeviceParameters{};
   auto localDevice = Device::create(localDeviceParameters, "i-score");
   {
@@ -39,7 +39,7 @@ int main()
   }
 
   // Minuit device
-  std::cout << "\nMinuit device example\n";
+  cout << "\nMinuit device example\n";
   Minuit minuitDeviceParameters{"127.0.0.1", 9998, 13579};
   auto minuitDevice = Device::create(minuitDeviceParameters, "newDevice");
   {
@@ -47,15 +47,15 @@ int main()
     minuitDevice->updateNamespace();
     
     // display tree in console
-    std::cout << "The content of Minuit device is :\n";
+    cout << "The content of Minuit device is :\n";
     for(const auto& node : minuitDevice->children())
     {
-      std::cout << node->getName() << "\n";
+      cout << node->getName() << "\n";
     }
   }
 
   // OSC device
-  std::cout << "\nOSC device example\n";
+  cout << "\nOSC device example\n";
   OSC oscDeviceParameters{"127.0.0.1", 9996, 9997};
   auto oscDevice = Device::create(oscDeviceParameters, "oscDevice");
   {
