@@ -108,9 +108,14 @@ public:
         mData.get("repetitionFilter", mRepetitionFilter);
         
         // enable callback to be notified each time the value change
-        TTValue args(TTPtr(this), mData);
-        mData.set("baton", args);
-        mData.set("function", TTPtr(&JamomaAddress::ValueCallback));
+        TTObject    callback("callback");
+        TTValue     args(TTPtr(this), mData);
+        callback.set("baton", args);
+        callback.set("function", TTPtr(&JamomaAddress::ValueCallback));
+        
+        TTAttributePtr attribute;
+        mData.instance()->findAttribute("value", &attribute);
+        attribute->registerObserverForNotifications(callback);
       }
     }
   }
@@ -171,7 +176,7 @@ public:
     return false;
   }
   
-  virtual bool sendValue(AddressValue value) const override
+  virtual bool sendValue(AddressValue * value) const override
   {
     TTValue v;
     

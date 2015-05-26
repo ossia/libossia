@@ -14,8 +14,7 @@ class JamomaContainer : public virtual Container<T>
 private:
   
   // Implementation specific
-  std::list<shared_ptr<T>>  _list;
-  shared_ptr<T>  _element;
+  std::list<shared_ptr<T>> _list;
   
 public:
   

@@ -29,32 +29,34 @@ public:
     TUPLE, //TODO
     GENERIC
   };
+  
+  //Type type = Type::NONE;
 
   virtual ~AddressValue() = default;
 };
 
 struct Bool : public AddressValue {
-  Bool(bool v) : value(v) {}
+  Bool(bool v) : /*type(Type::BOOL),*/ value(v) {}
   bool value;
 };
 
 struct Int : public AddressValue {
-  Int(int v) : value(v) {}
+  Int(int v) : /*type(Type::INT),*/ value(v) {}
   int value;
 };
 
 struct Float : public AddressValue {
-  Float(float v) : value(v) {}
+  Float(float v) : /*type(Type::FLOAT),*/ value(v) {}
   float value;
 };
 
 struct Char : public AddressValue {
-  Char(char v) : value(v) {}
+  Char(char v) : /*type(Type::CHAR),*/ value(v) {}
   char value;
 };
 
 struct String : public AddressValue {
-  String(std::string v) : value(v) {}
+  String(std::string v) : /*type(Type::STRING),*/ value(v) {}
   std::string value;
 };
 
