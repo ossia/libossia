@@ -34,7 +34,7 @@ private Q_SLOTS:
         QCOMPARE(startEv->getState(), autom->getStartState());
         QCOMPARE(endEv->getState(), autom->getEndState());
         startEv->getExpression();
-*/
+//*/
     }
 };
 
