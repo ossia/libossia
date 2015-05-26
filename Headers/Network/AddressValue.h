@@ -32,7 +32,7 @@ public:
   
   virtual ~AddressValue() = default;
   
-  Type getType() {return type;}
+  Type getType() const {return type;}
   
 protected:
   
