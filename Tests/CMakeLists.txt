@@ -24,5 +24,6 @@ endFunction()
 
 addAPIQtTest(APIDeviceTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Network/DeviceTest.cpp")
 addAPIQtTest(APINodeTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Network/NodeTest.cpp")
+addAPIQtTest(APIAddressTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Network/AddressTest.cpp")
 
 include(CTest)
