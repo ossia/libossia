@@ -8,9 +8,7 @@
  * http://www.cecill.info
  */
 
-#ifndef PROTOCOLS_H_
-#define PROTOCOLS_H_
-
+#pragma once
 #include <string>
 #include <vector>
 
@@ -52,4 +50,3 @@ struct Midi : public Protocol {
 
 }
 
-#endif /* PROTOCOLS_H_ */

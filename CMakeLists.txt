@@ -10,4 +10,4 @@ include_directories(Headers)
 
 add_subdirectory(Implementations)
 add_subdirectory(Examples)
-# add_subdirectory(Tests)
+add_subdirectory(Tests)

@@ -8,9 +8,7 @@
  * http://www.cecill.info
  */
 
-#ifndef ADDRESSVALUE_H_
-#define ADDRESSVALUE_H_
-
+#pragma once
 #include <string>
 
 #include "Editor/ExpressionValue.h"
@@ -78,4 +76,3 @@ struct Generic : public AddressValue {
 
 }
 
-#endif /* ADDRESSVALUE_H_ */

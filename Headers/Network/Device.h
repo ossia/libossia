@@ -8,9 +8,7 @@
  * http://www.cecill.info
  */
 
-#ifndef DEVICE_H_
-#define DEVICE_H_
-
+#pragma once
 #include <string>
 
 #include "Network/Node.h"
@@ -37,4 +35,3 @@ std::shared_ptr<Node> declareOSCInternDevice(int in_port, int out_port);
 
 }
 
-#endif /* DEVICE_H_ */
