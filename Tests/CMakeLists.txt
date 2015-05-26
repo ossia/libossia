@@ -24,6 +24,8 @@ endFunction()
 
 #addAPIQtTest(APIScenarioTest	    "${CMAKE_CURRENT_SOURCE_DIR}/ScenarioTest.cpp")
 #addAPIQtTest(APITimeEventTest	    "${CMAKE_CURRENT_SOURCE_DIR}/TimeEventTest.cpp")
-addAPIQtTest(APIDeviceTest	    "${CMAKE_CURRENT_SOURCE_DIR}/DeviceTest.cpp")
+
+addAPIQtTest(APIDeviceTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Network/DeviceTest.cpp")
+addAPIQtTest(APINodeTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Network/NodeTest.cpp")
 
 include(CTest)

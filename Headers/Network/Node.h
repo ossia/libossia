@@ -8,8 +8,7 @@
  * http://www.cecill.info
  */
 
-#ifndef NODE_H
-#define NODE_H
+#pragma once
 
 #include "Network/AddressValue.h"
 
@@ -44,6 +43,3 @@ public:
 };
 
 }
-
-#endif // NODE_H
-

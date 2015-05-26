@@ -8,9 +8,7 @@
  * http://www.cecill.info
  */
 
-#ifndef ADDRESS_H_
-#define ADDRESS_H_
-
+#pragma once
 #include "Network/AddressValue.h"
 
 #include <memory>
@@ -67,4 +65,3 @@ public:
 
 }
 
-#endif /* ADDRESS_H_ */
