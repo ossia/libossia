@@ -32,33 +32,41 @@ public:
     GENERIC
   };
   
-  //Type type = Type::NONE;
-
   virtual ~AddressValue() = default;
+  
+  Type getType() {return type;}
+  
+protected:
+  
+  Type type;
+};
+  
+struct None : public AddressValue {
+  None() {type = Type::NONE;}
 };
 
 struct Bool : public AddressValue {
-  Bool(bool v) : /*type(Type::BOOL),*/ value(v) {}
+  Bool(bool v) : value(v) {type = Type::BOOL;}
   bool value;
 };
 
 struct Int : public AddressValue {
-  Int(int v) : /*type(Type::INT),*/ value(v) {}
+  Int(int v) : value(v) {type = Type::INT;}
   int value;
 };
 
 struct Float : public AddressValue {
-  Float(float v) : /*type(Type::FLOAT),*/ value(v) {}
+  Float(float v) : value(v) {type = Type::FLOAT;}
   float value;
 };
 
 struct Char : public AddressValue {
-  Char(char v) : /*type(Type::CHAR),*/ value(v) {}
+  Char(char v) : value(v) {type = Type::CHAR;}
   char value;
 };
 
 struct String : public AddressValue {
-  String(std::string v) : /*type(Type::STRING),*/ value(v) {}
+  String(std::string v) : value(v) {type = Type::STRING;}
   std::string value;
 };
 
