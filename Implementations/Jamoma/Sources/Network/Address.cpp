@@ -180,7 +180,43 @@ public:
   {
     TTValue v;
     
-    // todo : convert AddressValue into TTValue
+    // convert AddressValue into TTValue
+    if (value->getType() == AddressValue::Type::NONE)
+    {
+      ;
+    }
+    else if (value->getType() == AddressValue::Type::BOOL)
+    {
+      Bool * b = (Bool*)value;
+      v = TTBoolean(b->value);
+    }
+    else if (value->getType() == AddressValue::Type::INT)
+    {
+      Int * i = (Int*)value;
+      v = TTInt32(i->value);
+    }
+    else if (value->getType() == AddressValue::Type::FLOAT)
+    {
+      Float * f = (Float*)value;
+      v = TTFloat64(f->value);
+    }
+    else if (value->getType() == AddressValue::Type::CHAR)
+    {
+      ; // todo
+    }
+    else if (value->getType() == AddressValue::Type::STRING)
+    {
+      String * s = (String*)value;
+      v = TTSymbol(s->value);
+    }
+    else if (value->getType() == AddressValue::Type::TUPLE)
+    {
+      ; // todo
+    }
+    else if (value->getType() == AddressValue::Type::GENERIC)
+    {
+      ; // todo
+    }
     
     if (mData.name() == "Data")
       return !mData.send("Command", v);
