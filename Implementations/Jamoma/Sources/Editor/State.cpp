@@ -95,63 +95,14 @@ public:
         state.launch();
       }
     }
-*/
+ */
   }
-
-  // Std container
-  virtual iterator begin() override
-  {
-    return iterator();
-  }
-  
-  virtual iterator end() override
-  {
-    return iterator();
-  }
-  
-  virtual const_iterator cbegin() const override
-  {
-    return iterator();
-  }
-  
-  virtual const_iterator cend() const override
-  {
-    return iterator();
-  }
-  
-  virtual size_type size() const override
-  {
-    return size_type();
-  }
-  
-  virtual bool empty() const override
-  {
-    return true;
-  }
-  
-  virtual shared_ptr<StateElement> & front() override
-  {
-    return element;
-  }
-  
-  virtual const shared_ptr<StateElement> & front() const override
-  {
-    return element;
-  }
-  
-  virtual shared_ptr<StateElement> & back() override
-  {
-    return element;
-  }
-  
-  virtual const shared_ptr<StateElement> & back() const override
-  {
-    return element;
-  }
-  
+    
+/* code relative to old state managment
+ 
   virtual iterator insert(const_iterator where, const shared_ptr<StateElement> & what) override
   {
-/* code relative to old state managment
+
  
     if (stateElement.getType() == StateElement::StateElementType::MESSAGE_TYPE)
     {
@@ -184,20 +135,10 @@ public:
       
       mLines.append(line);
     }
+
+    return iterator();
+  }
 */
-    return iterator();
-  }
-  
-  virtual iterator erase(const_iterator which) override
-  {
-    return iterator();
-  }
-  
-  virtual iterator erase(const_iterator first, const_iterator last) override
-  {
-    return iterator();
-  }
-  
 };
 
 shared_ptr<State> State::create()
