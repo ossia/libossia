@@ -42,14 +42,14 @@ int main()
 
   // Minuit tree building
   minuitDevice->updateNamespace();
-/*
+
   // Display tree in console
-  std::cout << "The content of Minuit device is : ";
-  for (auto it = minuitDevice->begin(); it != minuitDevice->end(); ++it)
+  std::cout << "\nThe content of Minuit device is : ";
+  for(const auto& node : minuitDevice->children())
   {
-    std::cout << (*it).getName() << "\n";
+    std::cout << node->getName() << "\n";
   }
-*/
+  std::cout << "\n";
 
   // OSC device creation
   OSC oscDeviceParameters{"127.0.0.1", 9996, 9997};
