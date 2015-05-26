@@ -39,9 +39,14 @@ public:
   virtual bool updateNamespace() override
   {
     TTErr err = mApplication.send("DirectoryBuild");
+    
+    // update root node
+    this->mNode = this->mDirectory->getRoot();
+    
+    // todo : erase all former nodes
 
     // build tree from the root
-    buildChildren(this);
+    buildChildren(shared_ptr<JamomaNode>(this));
 
     return err == kTTErrNone;
   }
