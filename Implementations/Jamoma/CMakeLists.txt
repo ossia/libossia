@@ -15,6 +15,8 @@ include_directories(${API_HEADERS_FOLDER})
 file(GLOB_RECURSE SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Network/*.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Network/*.cpp"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/*.hpp"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Misc/*.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Misc/*.cpp")
 

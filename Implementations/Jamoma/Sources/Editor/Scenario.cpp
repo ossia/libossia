@@ -40,10 +40,10 @@ public:
   {}
 
   // Edition
-  virtual void addConstraint(const Constraint&, const TimeNode & startNode) override
+  virtual void addConstraint(const TimeConstraint&, const TimeNode & startNode) override
   {}
   
-  virtual void addConstraint(const Constraint&, const TimeNode & startNode, const TimeNode & endNode) override
+  virtual void addConstraint(const TimeConstraint&, const TimeNode & startNode, const TimeNode & endNode) override
   {}
 
   // Accessors

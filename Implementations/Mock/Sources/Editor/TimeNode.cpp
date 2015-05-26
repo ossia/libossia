@@ -5,7 +5,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class MockTimeNode : public TimeNode, public MockContainer<TimeEvent> {
+class MockTimeNode : public TimeNode {
 
 public:
 
@@ -14,7 +14,7 @@ public:
   MockTimeNode(const MockTimeNode * other) {}
   virtual ~MockTimeNode() {}
   virtual shared_ptr<TimeNode> clone() const override {
-	return shared_ptr<TimeNode>(new MockTimeNode(this));
+    return shared_ptr<TimeNode>(new MockTimeNode(this));
   }
 
   // Lecture

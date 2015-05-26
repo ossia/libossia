@@ -7,7 +7,7 @@ using namespace OSSIA;
 using namespace std;
 
 class MockAutomation :
-    public Automation<double>, public MockTimeProcess, public MockContainer<Address> {
+    public Automation<double>, public MockTimeProcess {
 
 public:
 

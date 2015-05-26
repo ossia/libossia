@@ -5,7 +5,7 @@ using namespace OSSIA;
 using namespace std;
 
 class MockTimeProcessList :
-    public TimeProcessList, public MockContainer<TimeProcess> {
+    public TimeProcessList {
 
 public:
 

@@ -4,7 +4,8 @@
 using namespace OSSIA;
 using namespace std;
 
-class MockState : public State, public MockContainer<StateElement> {
+class MockState : public State
+{
 
 public:
 

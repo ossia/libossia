@@ -22,8 +22,7 @@ class TimeNode;
 class TimeProcess;
 class TimeValue;
 
-class TimeConstraint : public virtual Container<TimeProcess> {
-
+class TimeConstraint {
     public:
 
       // Factories, destructor
@@ -46,6 +45,14 @@ class TimeConstraint : public virtual Container<TimeProcess> {
       virtual const std::shared_ptr<State> & getEndState() const = 0;
       virtual void setEndState(std::shared_ptr<State>) = 0;
 
+
+      Container<TimeProcess>& timeProcesses()
+      { return m_timeProcesses; }
+      const Container<TimeProcess>& timeProcesses() const
+      { return m_timeProcesses; }
+
+    private:
+      Container<TimeProcess> m_timeProcesses;
     };
 
 }

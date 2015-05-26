@@ -7,17 +7,17 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaNode : public virtual Node, public JamomaContainer<Node>
+class JamomaNode : public virtual Node
 {
-  
-private:
-  
+
+protected:
+
   // Implementation specific
-  TTNodeDirectory *       mDirectory;
-  TTNode *                mNode;
+  TTNodeDirectory *       mDirectory{};
+  TTNode *                mNode{};
   shared_ptr<JamomaNode>  mParent;
   shared_ptr<Address>     mAddress;
-  
+
 public:
 
   // Constructor, destructor
@@ -33,10 +33,10 @@ public:
       if (object.valid())
       {
         TTSymbol objectName = object.name();
-        
+
         if (objectName == kTTSym_Mirror)
           objectName = TTMirrorPtr(object.instance())->getName();
-        
+
         if (objectName == "Data")
         {
           mAddress = shared_ptr<Address>(new JamomaAddress(object));
@@ -44,7 +44,7 @@ public:
       }
     }
   }
-  
+
   ~JamomaNode()
   {
     ;
@@ -61,22 +61,22 @@ public:
   {
     if (mNode)
       return mNode->getName().c_str();
-    
+
     return "";
   }
-  
+
   virtual const shared_ptr<Address> & getAddress() const override
   {
     return mAddress;
   }
-  
+
   virtual bool removeAddress() override
   {
     if (mNode)
     {
       return !mNode->setObject();
     }
-    
+
     return false;
   }
 
@@ -85,19 +85,19 @@ public:
   {
     // clear former address
     removeAddress();
-    
+
     if (mNode)
     {
       TTSymbol applicationType = getApplicationType();
       TTObject object;
-      
+
       // for local application case
       if (applicationType == kTTSym_local)
       {
         object = TTObject("Data", "parameter");
         mNode->setObject(object);
       }
-      
+
       // for proxy application
       else if (applicationType == kTTSym_proxy)
       {
@@ -106,13 +106,13 @@ public:
         TTValue args(nodeAddress, "parameter");
         object = getApplication().send("ProxyDataInstantiate", args);
       }
-      
+
       // for mirror application
       else if (applicationType == kTTSym_mirror)
       {
         ; // todo : allow to use TTApplication::appendMirrorObject method
       }
-      
+
       if (object.valid())
       {
         if (type == AddressValue::Type::NONE)
@@ -132,11 +132,11 @@ public:
         else if (type == AddressValue::Type::GENERIC)
           object.set("type", kTTSym_generic);
       }
-      
+
       // edit new address
       mAddress = shared_ptr<Address>(new JamomaAddress(object));
     }
-    
+
     return mAddress;
   }
 
@@ -145,58 +145,62 @@ public:
   {
     TTAddress nodeAddress;
     mNode->getAddress(nodeAddress);
-    
+
     TTAddress   address = nodeAddress.appendAddress(TTAddress(name.data()));
     TTObject    empty;
     TTPtr       context = NULL;
     TTNodePtr   node;
     TTBoolean   newInstanceCreated;
-    
+
     TTErr err = mDirectory->TTNodeCreate(address, empty, context, &node, &newInstanceCreated);
-    
+
     if (!err)
     {
       // store the new node into the Container
-      return insert(pos, shared_ptr<JamomaNode>(new JamomaNode(name, mDirectory, node, shared_ptr<JamomaNode>(this))));
+      return children().insert(pos, std::make_shared<JamomaNode>(name, mDirectory, node, shared_ptr<JamomaNode>(this)));
     }
-    
+
     return iterator();
   }
 
 private:
-  
+
   TTObject & getApplication()
   {
     return mDirectory->getRoot()->getObject();
   }
-  
+
   TTSymbol getApplicationType()
   {
     TTSymbol type;
     mDirectory->getRoot()->getObject().get("type", type);
-    
+
     return type;
   }
 
 protected:
-  
-  void buildChildren(JamomaNode * parent)
+
+  void buildChildren(shared_ptr<JamomaNode> parent)
   {
     TTList childrenList;
-    
+
     parent->mNode->getChildren(S_WILDCARD, S_WILDCARD, childrenList);
-    
+
     for (childrenList.begin(); childrenList.end(); childrenList.next())
     {
       TTNodePtr child = TTNodePtr(TTPtr(childrenList.current()[0]));
-      
+
       TTString nameInstance = child->getName().c_str();
       if (child->getInstance() != kTTSymEmpty)
       {
         nameInstance += child->getInstance().c_str();
       }
       
-      parent->insert(parent->cend(), shared_ptr<JamomaNode>(new JamomaNode(nameInstance.data(), parent->mDirectory, child, shared_ptr<JamomaNode>(parent))));
+      shared_ptr<JamomaNode> newNode = std::make_shared<JamomaNode>(nameInstance.data(), parent->mDirectory, child, parent);
+    
+      parent->children().push_back(newNode);
+        
+      buildChildren(newNode);
     }
   }
 };

@@ -5,7 +5,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class MockCurve : public Curve<double>, public MockContainer<CurveSegment<double>>
+class MockCurve : public Curve<double>
 {
     public:
         MockCurve() {}

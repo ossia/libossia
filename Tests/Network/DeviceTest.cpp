@@ -14,11 +14,11 @@ private Q_SLOTS:
     void createDeviceTest()
     {
         Protocol none;
-        auto deviceNoProtocole = Device::create(none, "void protocol");
+        //auto deviceNoProtocole = Device::create(none, "void protocol");
 
         Minuit minuit{"127.0.0.1", 7000, 7001};
-        auto minDev = Device::create(minuit, "minuitDevice");
 
+        auto minDev = Device::create(minuit, "minuitDevice");
         QCOMPARE(minDev->updateNamespace(), false);
     }
 };

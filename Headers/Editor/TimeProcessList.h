@@ -11,20 +11,12 @@
 #pragma once
 
 #include <memory>
+#include <Editor/TimeProcess.h>
 
 #include "Misc/Container.h"
 
 namespace OSSIA {
 
-class TimeProcess;
-
-//TODO could be just a Container<TimeProcess> ? needs observation ? save/load ?
-class TimeProcessList : public virtual Container<TimeProcess> {
-
-public:
-
-  virtual ~TimeProcessList() = default;
-
-};
+using TimeProcessList = Container<TimeProcess>;
 
 }

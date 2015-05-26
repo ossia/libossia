@@ -1,13 +1,14 @@
 #include <QtTest>
 
-#include "../Sources/Editor/Curve.cpp"
-#include "../Sources/Editor/Automation.cpp"
-#include "../Sources/Editor/Scenario.cpp"
-#include "../Sources/Editor/TimeConstraint.cpp"
-#include "../Sources/Editor/TimeNode.cpp"
-#include "../Sources/Editor/TimeEvent.cpp"
-#include "../Sources/Editor/TimeValue.cpp"
+#include "Editor/Curve.h"
+#include "Editor/Automation.h"
+#include "Editor/Scenario.h"
+#include "Editor/TimeConstraint.h"
+#include "Editor/TimeNode.h"
+#include "Editor/TimeEvent.h"
+#include "Editor/TimeValue.h"
 
+using namespace OSSIA;
 
 class TimeEventTest : public QObject
 {
@@ -24,7 +25,7 @@ private Q_SLOTS:
         auto autom = Automation<double>::create();
 
         scenar->addConstraint(*cstr, *startTimeNode, *endTimeNode);
-        cstr->insert(cstr->begin(), autom);
+        cstr->timeProcesses().insert(cstr->timeProcesses().begin(), autom);
 
         auto startEv = autom->getStartEvent();
         auto endEv = autom->getEndEvent();
