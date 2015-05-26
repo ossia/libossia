@@ -176,7 +176,7 @@ public:
     return false;
   }
   
-  virtual bool sendValue(AddressValue * value) const override
+  virtual bool sendValue(const AddressValue * value) const override
   {
     TTValue v;
     

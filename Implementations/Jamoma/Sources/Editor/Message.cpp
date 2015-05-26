@@ -12,18 +12,16 @@ class JamomaMessage : public Message
 private:
   
   // Implementation specific
-  shared_ptr<Address> addr;
-  AddressValue val;
+  shared_ptr<Address> address;
+  AddressValue * value;
 
 public:
+  
   // Constructors, destructor, cloning
-  JamomaMessage(shared_ptr<Address> addr, AddressValue val)
-  {
-    // todo : we shouldn't init each time we create an object ...
-    TTFoundationInit("/usr/local/jamoma/");
-    TTModularInit("/usr/local/jamoma/");
-    TTScoreInit("/usr/local/jamoma/");
-  }
+  JamomaMessage(shared_ptr<Address> a, AddressValue * v) :
+  address(a),
+  value(v)
+  {}
   
   JamomaMessage(const JamomaMessage * other)
   {}
@@ -38,22 +36,23 @@ public:
 
   // Lecture
   virtual void launch() const override
-  {}
+  {
+    address->sendValue(value);
+  }
 
   // Accessors
   virtual const shared_ptr<Address> & getAddress() const override
   {
-    return addr; //todo cannot return non-const member in const method
+    return address;
   }
   
-  virtual AddressValue getValue() const override
+  virtual AddressValue * getValue() const override
   {
-    return val;
+    return value;
   }
-
 };
 
-shared_ptr<Message> Message::create(shared_ptr<Address> addr, AddressValue val)
+shared_ptr<Message> Message::create(shared_ptr<Address> a, AddressValue * v)
 {
-  return shared_ptr<Message>(new JamomaMessage(addr, val));
+  return shared_ptr<Message>(new JamomaMessage(a, v));
 }
