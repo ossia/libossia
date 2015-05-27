@@ -13,8 +13,8 @@ class DeviceTest : public QObject
 private Q_SLOTS:
     void createDeviceTest()
     {
-        Protocol none;
-        //auto deviceNoProtocole = Device::create(none, "void protocol");
+        Local none;
+        auto deviceNoProtocole = Device::create(none, "void protocol");
 
         Minuit minuit{"127.0.0.1", 7000, 7001};
 

@@ -28,7 +28,7 @@ int main()
   cout << "\nLocal device example\n";
   Local localDeviceParameters{};
   auto localDevice = Device::create(localDeviceParameters, "i-score");
-  {
+/*  {
     // tree building
     auto localTestNode = localDevice->emplace(localDevice->children().cend(), "test");
     auto localTestAddress = (*localTestNode)->createAddress(AddressValue::Type::BOOL);
@@ -37,7 +37,7 @@ int main()
     Bool b(true);
     localTestAddress->sendValue(&b);
   }
-
+*/
   // Minuit device
   cout << "\nMinuit device example\n";
   Minuit minuitDeviceParameters{"127.0.0.1", 9998, 13579};
