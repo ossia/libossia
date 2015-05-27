@@ -15,6 +15,7 @@ protected:
   // Implementation specific
   TTNodeDirectory *       mDirectory{};
   TTNode *                mNode{};
+  shared_ptr<JamomaNode>  mSelf;
   shared_ptr<JamomaNode>  mParent;
   shared_ptr<Address>     mAddress;
 
@@ -24,6 +25,7 @@ public:
   JamomaNode(string name, TTNodeDirectory * aDirectory = nullptr, TTNode * aNode = nullptr, shared_ptr<JamomaNode> aParent = nullptr) :
   mDirectory(aDirectory),
   mNode(aNode),
+  mSelf(nullptr),
   mParent(aParent)
   {
     if (mNode)
@@ -156,8 +158,12 @@ public:
 
     if (!err)
     {
+      // build a shared pointer to pass to our children
+      if (!mSelf)
+        mSelf = shared_ptr<JamomaNode>(this);
+      
       // store the new node into the Container
-      return children().insert(pos, std::make_shared<JamomaNode>(name, mDirectory, node, shared_ptr<JamomaNode>(this)));
+      return children().insert(pos, std::make_shared<JamomaNode>(name, mDirectory, node, mSelf));
     }
 
     return iterator();
@@ -180,27 +186,39 @@ private:
 
 protected:
 
-  void buildChildren(shared_ptr<JamomaNode> parent)
+  void buildChildren()
   {
     TTList childrenList;
 
-    parent->mNode->getChildren(S_WILDCARD, S_WILDCARD, childrenList);
-
-    for (childrenList.begin(); childrenList.end(); childrenList.next())
-    {
-      TTNodePtr child = TTNodePtr(TTPtr(childrenList.current()[0]));
-
-      TTString nameInstance = child->getName().c_str();
-      if (child->getInstance() != kTTSymEmpty)
-      {
-        nameInstance += child->getInstance().c_str();
-      }
-      
-      shared_ptr<JamomaNode> newNode = std::make_shared<JamomaNode>(nameInstance.data(), parent->mDirectory, child, parent);
+    mNode->getChildren(S_WILDCARD, S_WILDCARD, childrenList);
     
-      parent->children().push_back(newNode);
+    if (!childrenList.isEmpty())
+    {
+      // build shared pointer to pass to our children
+      if (!mSelf)
+        mSelf = shared_ptr<JamomaNode>(this);
+      
+      // build a node for each child
+      for (childrenList.begin(); childrenList.end(); childrenList.next())
+      {
+        TTNodePtr child = TTNodePtr(TTPtr(childrenList.current()[0]));
         
-      buildChildren(newNode);
+        // build child name
+        TTString nameInstance = child->getName().c_str();
+        if (child->getInstance() != kTTSymEmpty)
+        {
+          nameInstance += child->getInstance().c_str();
+        }
+        
+        // build child node
+        shared_ptr<JamomaNode> newNode = std::make_shared<JamomaNode>(nameInstance.data(), mDirectory, child, mSelf);
+        
+        // store the child node
+        children().push_back(newNode);
+        
+        // continue recursively
+        newNode->buildChildren();
+      }
     }
   }
 };

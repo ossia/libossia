@@ -46,7 +46,7 @@ public:
     // todo : erase all former nodes
 
     // build tree from the root
-    buildChildren(shared_ptr<JamomaNode>(this));
+    buildChildren();
 
     return err == kTTErrNone;
   }
