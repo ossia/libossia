@@ -18,14 +18,21 @@ private Q_SLOTS:
         Local local{};
         auto localDevice = Device::create(local, "localProtocol");
 
-        std::string nodeName("fils");
-        localDevice->emplace(localDevice->children().begin(), nodeName);
-        QCOMPARE(int(localDevice->children().size()), 1 );
+        Minuit minuit{"127.0.0.1", 7000, 7001};
+        auto minuitDev = Device::create(minuit, "minuit_device");
 
-        auto node = localDevice->children().front();
+        std::string nodeName("fils");
+        minuitDev->emplace(minuitDev->children().begin(), nodeName);
+        QCOMPARE(int(minuitDev->children().size()), 1 );
+
+        auto node = minuitDev->children().front();
         QCOMPARE(node->getName(), nodeName);
 
-        QCOMPARE(node->getParent().getName(), localDevice->getName());
+        QCOMPARE(node->getParent().getName(), minuitDev->getName());
+
+        OSC osc{"127.0.0.1", 9998, 9999};
+        auto oscDevice = Device::create(osc, "osc_device");
+
 
         auto address = node->createAddress(AddressValue::Type::BOOL);
         QVERIFY(address != nullptr );
