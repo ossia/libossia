@@ -7,7 +7,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaNode : public virtual Node
+class JamomaNode : public virtual Node, public enable_shared_from_this<JamomaNode>
 {
 
 protected:
@@ -15,9 +15,11 @@ protected:
   // Implementation specific
   TTNodeDirectory *       mDirectory{};
   TTNode *                mNode{};
-  shared_ptr<JamomaNode>  mSelf;
-  shared_ptr<JamomaNode>  mParent;
+
+  weak_ptr<JamomaNode>    mParent;
   shared_ptr<Address>     mAddress;
+    
+  string                  dName; // DEBUG
 
 public:
 
@@ -25,7 +27,6 @@ public:
   JamomaNode(string name, TTNodeDirectory * aDirectory = nullptr, TTNode * aNode = nullptr, shared_ptr<JamomaNode> aParent = nullptr) :
   mDirectory(aDirectory),
   mNode(aNode),
-  mSelf(nullptr),
   mParent(aParent)
   {
     if (mNode)
@@ -45,17 +46,22 @@ public:
         }
       }
     }
+    
+    // DEBUG
+    dName = name;
   }
 
   ~JamomaNode()
   {
-    ;
+    // DEBUG
+    cout << "~JamomaNode() : " << dName << "\n";
   }
 
   // Navigation
   virtual Node & getParent() const override
   {
-    return *mParent;
+    shared_ptr<JamomaNode> p = mParent.lock();
+    return *p;
   }
 
   // Accessors
@@ -158,12 +164,8 @@ public:
 
     if (!err)
     {
-      // build a shared pointer to pass to our children
-      if (!mSelf)
-        mSelf = shared_ptr<JamomaNode>(this);
-      
       // store the new node into the Container
-      return children().insert(pos, std::make_shared<JamomaNode>(name, mDirectory, node, mSelf));
+      return children().insert(pos, std::make_shared<JamomaNode>(name, mDirectory, node, shared_from_this()));
     }
 
     return iterator();
@@ -194,10 +196,6 @@ protected:
     
     if (!childrenList.isEmpty())
     {
-      // build shared pointer to pass to our children
-      if (!mSelf)
-        mSelf = shared_ptr<JamomaNode>(this);
-      
       // build a node for each child
       for (childrenList.begin(); childrenList.end(); childrenList.next())
       {
@@ -211,7 +209,7 @@ protected:
         }
         
         // build child node
-        shared_ptr<JamomaNode> newNode = std::make_shared<JamomaNode>(nameInstance.data(), mDirectory, child, mSelf);
+        shared_ptr<JamomaNode> newNode = std::make_shared<JamomaNode>(nameInstance.data(), mDirectory, child, shared_from_this());
         
         // store the child node
         children().push_back(newNode);
