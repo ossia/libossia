@@ -18,8 +18,6 @@ protected:
 
   weak_ptr<JamomaNode>    mParent;
   shared_ptr<Address>     mAddress;
-    
-  string                  dName; // DEBUG
 
 public:
 
@@ -46,16 +44,10 @@ public:
         }
       }
     }
-    
-    // DEBUG
-    dName = name;
   }
 
   ~JamomaNode()
-  {
-    // DEBUG
-    cout << "~JamomaNode() : " << dName << "\n";
-  }
+  {}
 
   // Navigation
   virtual Node & getParent() const override
