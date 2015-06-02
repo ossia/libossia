@@ -17,6 +17,7 @@ private:
   shared_ptr<TimeProcess> element;
   
 public:
+  
   // Constructors, destructor, cloning
   JamomaTimeConstraint(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/)
   {

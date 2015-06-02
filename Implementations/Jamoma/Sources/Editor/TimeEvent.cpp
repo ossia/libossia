@@ -10,13 +10,15 @@ class JamomaTimeEvent : public TimeEvent
 private:
   
   // Implementation specific
-  shared_ptr<State> st;
-  shared_ptr<Expression> exp;
-  JamomaTimeProcessList proclist;
+  shared_ptr<State>       mState;
+  shared_ptr<Expression>  mExpression;
+  JamomaTimeProcessList   mProcessList;
   
 public:
   // Constructor, destructor
-  JamomaTimeEvent(shared_ptr<State> st, shared_ptr<Expression> exp)
+  JamomaTimeEvent(shared_ptr<State> aState, shared_ptr<Expression> anExpression)
+  mState(aState),
+  mExpression(anExpression)
   {
     // todo : we shouldn't init each time we create an object ...
     TTFoundationInit("/usr/local/jamoma/");
@@ -29,27 +31,34 @@ public:
 
   // Lecture
   virtual void play(bool log = false, string name = "") const override
-  {}
+  {
+    // launch it state
+    mState->launch();
+    
+    // note : what else ?
+  }
 
   // Accessors
   virtual const shared_ptr<State> & getState() const override
   {
-    return st;
+    return mState;
   }
   
   virtual const shared_ptr<Expression> & getExpression() const override
   {
-    return exp;
+    return mExpression;
   }
   
   virtual TimeProcessList & getPreviousProcesses() override
   {
-    return proclist;
+    // todo : return effective previous processes
+    return mProcessList;
   }
   
   virtual TimeProcessList & getNextProcesses() override
   {
-    return proclist;
+    // todo : return effective next processes
+    return mProcessList;
   }
 
 };
