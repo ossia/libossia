@@ -34,15 +34,22 @@ int main()
     // Minuit tree building
     minuitDevice->updateNamespace();
     
-    // Find bitdepth node to create a bitdepth message
+    // create a state
+    auto test = State::create();
+    
+    // find bitdepth and samplerateRatio nodes to fill the state
     shared_ptr<Message> bitdepthMessage;
+    shared_ptr<Message> samplerateMessage;
+    
     for (const auto& module : minuitDevice->children())
     {
         if (module->getName() == "deg")
         {
             for (const auto& parameter : module->children())
             {
-                if (parameter->getName() == "bitdepth")
+                string parameter_name = parameter->getName();
+                
+                if (parameter_name == "bitdepth")
                 {
                     cout << "\n/deg/bitdepth node found\n";
                     
@@ -52,13 +59,26 @@ int main()
                     // change the value
                     Int i(10);
                     bitdepthAddress->sendValue(&i);
+                }
+                else if (parameter_name == "samplerateRatio")
+                {
+                    cout << "\n/deg/samplerateRatio node found\n";
                     
-                    break;
+                    auto samplerateAddress = parameter->getAddress();
+                    samplerateMessage = Message::create(samplerateAddress, samplerateAddress->getValue());
+                    
+                    // change the value
+                    Float f(0.5);
+                    samplerateAddress->sendValue(&f);
                 }
             }
         }
     }
     
+    // fill the state
+    test->stateElements().push_back(bitdepthMessage);
+    test->stateElements().push_back(samplerateMessage);
+    
     // trigger the message
-    bitdepthMessage->launch();
+    test->launch();
 }
