@@ -1,5 +1,5 @@
 /*!
- * \file create_device.cpp
+ * \file network.cpp
  *
  * \author Clément Bossut
  * \author Théo de la Hogue
