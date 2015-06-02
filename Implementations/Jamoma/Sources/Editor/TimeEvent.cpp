@@ -16,7 +16,7 @@ private:
   
 public:
   // Constructor, destructor
-  JamomaTimeEvent(shared_ptr<State> aState, shared_ptr<Expression> anExpression)
+  JamomaTimeEvent(shared_ptr<State> aState, shared_ptr<Expression> anExpression) :
   mState(aState),
   mExpression(anExpression)
   {
@@ -32,8 +32,8 @@ public:
   // Lecture
   virtual void play(bool log = false, string name = "") const override
   {
-    // launch it state
-    mState->launch();
+    // todo : launch it state
+    //mState->launch();
     
     // note : what else ?
   }
