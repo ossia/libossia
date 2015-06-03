@@ -59,7 +59,7 @@ public:
   virtual const std::shared_ptr<Address> & getAddress() const = 0;
   
   /*! get message's value
-   \return AddressValue the value */
+   \return #AddressValue the value */
   virtual AddressValue * getValue() const = 0;
 };
 
