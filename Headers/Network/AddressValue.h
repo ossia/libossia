@@ -17,12 +17,18 @@
 
 #include "Editor/ExpressionValue.h"
 
-namespace OSSIA {
+namespace OSSIA
+{
 
-class AddressValue : public ExpressionValue {
+class AddressValue : public ExpressionValue
+{
 
 public:
 
+# pragma mark -
+# pragma mark Enumerations
+  
+  /*! type of value */
   enum class Type {
     NONE,
     BOOL,
@@ -34,8 +40,17 @@ public:
     GENERIC
   };
   
-  virtual ~AddressValue() = default;
+# pragma mark -
+# pragma mark Life cycle
   
+  /*! destructor */
+  virtual ~AddressValue() = default;
+
+# pragma mark -
+# pragma mark Accessors
+  
+  /*! get the address value type
+   \return #Type of the address value */
   Type getType() const {return type;}
   
 protected:

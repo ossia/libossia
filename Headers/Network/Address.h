@@ -34,7 +34,7 @@ public:
 # pragma mark -
 # pragma mark Enumerations
   
-  /*! operation allowed on value */
+  /*! operation allowed on address */
   enum class AccessMode
   {
     GET,
@@ -42,7 +42,7 @@ public:
     BI
   };
   
-  /*! value behaviors at crossing domain boundaries time */
+  /*! address behaviors at crossing domain boundaries time */
   enum class BoundingMode
   {
     FREE,
@@ -60,23 +60,23 @@ public:
 # pragma mark -
 # pragma mark Value
   
-  /*! update the value internaly without updating client */
+  /*! update the address value internaly without updating client */
   virtual bool updateValue() const = 0;
   
-  /*! get the value 
+  /*! get the address value
    \return #AddressValue* the value */
   virtual AddressValue * getValue() const = 0;
   
-  /*! send a value
+  /*! send a value to the address
    \param #AddressValue* the value */
   virtual bool sendValue(const AddressValue*) const = 0;
 
 # pragma mark -
 # pragma mark Network
 
-  /*! get the device where the address value is
+  /*! get the device where the address is
    \note is this really needed ? how to provide it on implementation side ?
-   \return std::shared_ptr<#Device> the device where the address value is */
+   \return std::shared_ptr<#Device> the device where the address is */
   virtual const std::shared_ptr<Device> & getDevice() const = 0;
   
   /*! \todo
@@ -87,16 +87,16 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
-  /*! get the value type
-   \return #AddressValue::Type of the value */
+  /*! get the address type
+   \return #AddressValue::Type of the address */
   virtual AddressValue::Type getValueType() const = 0;
 
-  /*! get the value access mode
-   \return #AccessMode of the value */
+  /*! get the address access mode
+   \return #AccessMode of the address */
   virtual AccessMode getAccessMode() const = 0;
   
-  /*! set the value access mode
-   \param #AccessMode of the value */
+  /*! set the address access mode
+   \param #AccessMode of the address */
   virtual Address & setAccessMode(AccessMode) = 0;
   
   /*! \todo
@@ -104,21 +104,21 @@ public:
   virtual Address & setDomain(Domain) = 0;
   */
   
-  /*! get the value bounding mode
+  /*! get the address bounding mode
    \todo multiple ?
-   \return #BoundingMode of the value */
+   \return #BoundingMode of the address */
   virtual BoundingMode getBoundingMode() const = 0;
   
-  /*! set the value bounding mode
+  /*! set the address bounding mode
    \todo multiple ?
-   \param #BoundingMode of the value */
+   \param #BoundingMode of the address */
   virtual Address & setBoundingMode(BoundingMode) = 0;
   
-  /*! get the value repetition filter status
+  /*! get the address repetition filter status
    \return bool true is repetition filter is enabled */
   virtual bool getRepetitionFilter() const = 0;
   
-  /*! set the value repetition filter status
+  /*! set the address repetition filter status
    \param bool true is to enable repetition filter */
   virtual Address & setRepetitionFilter(bool = true) = 0;
 };
