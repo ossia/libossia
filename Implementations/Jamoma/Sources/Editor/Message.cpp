@@ -34,7 +34,7 @@ public:
     return shared_ptr<Message>(new JamomaMessage(this));
   }
 
-  // Lecture
+  // Execution
   virtual void launch() const override
   {
     address->sendValue(value);

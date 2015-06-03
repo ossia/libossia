@@ -35,7 +35,7 @@ public:
     return shared_ptr<ExpressionComposition>(new JamomaExpressionComposition(this));
   }
 
-  // Lecture
+  // Execution
   virtual bool evaluate() const override
   {
     return true;

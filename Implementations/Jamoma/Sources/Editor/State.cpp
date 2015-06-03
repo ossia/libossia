@@ -30,7 +30,7 @@ public:
     return shared_ptr<State>(new JamomaState(this));
   }
 
-  // Lecture
+  // Execution
   virtual void launch() const override
   {
     for (const auto& element : stateElements())

@@ -40,7 +40,7 @@ public:
     return nullptr;//shared_ptr<Automation>(new JamomaAutomation(this));
   }
 
-  // Lecture
+  // Execution
   virtual void play(bool log = false, string name = "") const override
   {}
 

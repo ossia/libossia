@@ -35,7 +35,7 @@ public:
     return nullptr;//shared_ptr<TimeNode>(new JamomaTimeNode(this));
   }
 
-  // Lecture
+  // Execution
   virtual void play(bool log = false, string name = "") const override
   {}
 

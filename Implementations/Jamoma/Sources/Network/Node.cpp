@@ -50,10 +50,9 @@ public:
   {}
 
   // Navigation
-  virtual Node & getParent() const override
+  virtual shared_ptr<Node> getParent() const override
   {
-    shared_ptr<JamomaNode> p = mParent.lock();
-    return *p;
+    return mParent.lock();
   }
 
   // Accessors

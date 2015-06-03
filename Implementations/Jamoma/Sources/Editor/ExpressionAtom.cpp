@@ -36,7 +36,7 @@ public:
     return shared_ptr<ExpressionAtom>(new JamomaExpressionAtom(this));
   }
 
-  // Lecture
+  // Execution
   virtual bool evaluate() const override
   {
     return true;

@@ -29,7 +29,7 @@ public:
   virtual ~JamomaTimeEvent()
   {}
 
-  // Lecture
+  // Execution
   virtual void play(bool log = false, string name = "") const override
   {
     // todo : launch it state

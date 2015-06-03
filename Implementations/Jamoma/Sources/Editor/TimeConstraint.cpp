@@ -21,10 +21,7 @@ public:
   // Constructors, destructor, cloning
   JamomaTimeConstraint(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/)
   {
-    // todo : we shouldn't init each time we create an object ...
-    TTFoundationInit("/usr/local/jamoma/");
-    TTModularInit("/usr/local/jamoma/");
-    TTScoreInit("/usr/local/jamoma/");
+    ;
   }
   
   JamomaTimeConstraint(const JamomaTimeConstraint * other)
@@ -38,7 +35,7 @@ public:
     return shared_ptr<TimeConstraint>(new JamomaTimeConstraint(this));
   }
 
-  // Lecture
+  // Execution
   virtual void play(bool log = false, string name = "") const override
   {}
 

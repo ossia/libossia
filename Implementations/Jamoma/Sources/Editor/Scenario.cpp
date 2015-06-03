@@ -1,7 +1,8 @@
-#include "TimeProcess.cpp"
 #include "Editor/Scenario.h"
+#include "Editor/TimeNode.h"
 
-#include "TTScore.h"
+#include "TimeProcess.cpp"
+#include "../Misc/Container.cpp"
 
 using namespace OSSIA;
 using namespace std;
@@ -12,17 +13,18 @@ class JamomaScenario : virtual Scenario, virtual JamomaTimeProcess
 private:
   
   // Implementation specific
-  shared_ptr<TimeNode> tnode;
+private:
+  
+  Container<TimeConstraint> mTimeContraints;
+  Container<TimeNode>       mTimeNodes;
+  
+  bool                      mIsKiller;
   
 public:
+  
   // Constructors, destructor, cloning
   JamomaScenario()
-  {
-    // todo : we shouldn't init each time we create an object ...
-    TTFoundationInit("/usr/local/jamoma/");
-    TTModularInit("/usr/local/jamoma/");
-    TTScoreInit("/usr/local/jamoma/");
-  }
+  {}
   
   JamomaScenario(const JamomaScenario * other)
   {}
@@ -35,42 +37,51 @@ public:
     return nullptr;//shared_ptr<Scenario>(new JamomaScenario(this));
   }
 
-  // Lecture
+  // Execution
   virtual void play(bool log = false, string name = "") const override
   {}
 
   // Edition
-  virtual void addConstraint(const TimeConstraint&, const TimeNode & startNode) override
+  virtual void addConstraint(const shared_ptr<TimeConstraint> constraint, const shared_ptr<TimeNode> startNode) override
   {}
   
-  virtual void addConstraint(const TimeConstraint&, const TimeNode & startNode, const TimeNode & endNode) override
-  {}
+  virtual void addConstraint(const shared_ptr<TimeConstraint> constraint, const shared_ptr<TimeNode> startNode, const shared_ptr<TimeNode> endNode) override
+  {
+    mTimeContraints.push_back(constraint);
+    mTimeNodes.push_back(startNode);
+    mTimeNodes.push_back(endNode);
+  }
 
   // Accessors
   virtual const bool isKiller() const override
   {
-    return true;
+    return mIsKiller;
   }
   
-  virtual void setKiller(bool) override
-  {}
+  virtual void setKiller(bool isKiller) override
+  {
+    mIsKiller = isKiller;
+  }
   
-  // internal TimeNodes
   virtual const shared_ptr<TimeNode> & getStartNode() const override
   {
-    return tnode;
+    return mTimeNodes[0];
   }
   
-  virtual void setStartNode(shared_ptr<TimeNode>) override
-  {}
+  virtual void setStartNode(shared_ptr<TimeNode> startNode) override
+  {
+    mTimeNodes[0] = startNode;
+  }
   
   virtual const shared_ptr<TimeNode> & getEndNode() const override
   {
-    return tnode;
+    return mTimeNodes[1];
   }
   
-  virtual void setEndNode(shared_ptr<TimeNode>) override
-  {}
+  virtual void setEndNode(shared_ptr<TimeNode> endNode) override
+  {
+    mTimeNodes[1] = endNode;
+  }
 
 };
 
