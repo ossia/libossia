@@ -20,7 +20,7 @@ using namespace OSSIA;
 using namespace std;
 
 int main()
-{z
+{
     // Local device
     cout << "\nLocal device\n";
     Local localDeviceParameters{};

@@ -36,7 +36,7 @@ int main()
     auto constraint = TimeConstraint::create(duration, duration, duration);
 
     // add time contraint from start to the end of the scenario
-    scenario->addConstraint(*constraint, *scenario->getStartNode(), *scenario->getEndNode());
+    scenario->addConstraint(constraint, scenario->getStartNode(), scenario->getEndNode());
 
     // tell the scenario to kill children processes when it ends
     scenario->setKiller(true);
