@@ -19,7 +19,8 @@ private:
   
 public:
   
-  // Life cycle
+# pragma mark -
+# pragma mark Life cycle
   JamomaAutomation()
   {}
   
@@ -34,11 +35,13 @@ public:
     return nullptr;//shared_ptr<Automation>(new JamomaAutomation(this));
   }
 
-  // Execution
+# pragma mark -
+# pragma mark Execution
   virtual void play(bool log = false, string name = "") const override
   {}
 
-  // Accessors
+# pragma mark -
+# pragma mark Accessors
   virtual AddressValue getStartValue() const override
   {
     return AddressValue();

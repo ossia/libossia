@@ -15,7 +15,8 @@ private:
 
 public:
   
-  // Life cycle
+# pragma mark -
+# pragma mark Life cycle
   JamomaMessage(shared_ptr<Address> a, AddressValue * v) :
   address(a),
   value(v)
@@ -32,13 +33,15 @@ public:
     return shared_ptr<Message>(new JamomaMessage(this));
   }
 
-  // Execution
+# pragma mark -
+# pragma mark Execution
   virtual void launch() const override
   {
     address->sendValue(value);
   }
 
-  // Accessors
+# pragma mark -
+# pragma mark Accessors
   virtual const shared_ptr<Address> & getAddress() const override
   {
     return address;

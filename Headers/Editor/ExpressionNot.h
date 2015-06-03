@@ -21,15 +21,18 @@ class ExpressionNot : public Expression {
 
     public:
 
-      // Life cycle
+    # pragma mark -
+# pragma mark Life cycle
       static std::shared_ptr<ExpressionNot> create(std::shared_ptr<Expression>);
       virtual std::shared_ptr<ExpressionNot> clone() const = 0;
       virtual ~ExpressionNot() = default;
 
-      // Execution
+    # pragma mark -
+# pragma mark Execution
       virtual bool evaluate() const override = 0;
 
-      // Accessors
+    # pragma mark -
+# pragma mark Accessors
       virtual const std::shared_ptr<Expression> & getExpression() const = 0;
 
     };

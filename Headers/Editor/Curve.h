@@ -38,7 +38,8 @@ class Curve {
       virtual bool addPoint(double, T, CurveSegment<T>&) = 0;
       virtual bool removePoint(double) = 0;
 
-      // Accessors
+    # pragma mark -
+# pragma mark Accessors
       virtual T getInitialValue() const = 0;
       virtual void setInitialValue(const T) = 0;
       virtual std::map<double, std::pair<T, std::shared_ptr<CurveSegment<T> > > > getPointsMap() const = 0;

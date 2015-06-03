@@ -27,16 +27,19 @@ class Message : public StateElement {
 
     public:
 
-      // Life cycle
+    # pragma mark -
+# pragma mark Life cycle
       static std::shared_ptr<Message> create(std::shared_ptr<Address>,
                                              AddressValue*);
       virtual std::shared_ptr<Message> clone() const = 0;
       virtual ~Message() = default;
 
-      // Execution
+    # pragma mark -
+# pragma mark Execution
       virtual void launch() const override = 0;
 
-      // Accessors
+    # pragma mark -
+# pragma mark Accessors
       virtual const std::shared_ptr<Address> & getAddress() const = 0;
       virtual AddressValue * getValue() const = 0;
 

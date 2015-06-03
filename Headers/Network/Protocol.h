@@ -16,9 +16,11 @@
 #include <string>
 #include <vector>
 
-namespace OSSIA {
+namespace OSSIA
+{
 
-class Protocol {
+class Protocol
+{
 public:
   virtual ~Protocol() = default;
 };
@@ -27,7 +29,8 @@ public:
 struct Local : public Protocol {};
 
 
-struct Minuit : public Protocol {
+struct Minuit : public Protocol
+{
   Minuit(std::string ip, int in_port, int out_port)
     :ip(ip), in_port(in_port), out_port(out_port) {} //TODO what if only in or out ?
 
@@ -37,7 +40,8 @@ struct Minuit : public Protocol {
 };
 
 
-struct OSC : public Protocol {
+struct OSC : public Protocol
+{
   OSC(std::string ip, int in_port, int out_port)
     :ip(ip), in_port(in_port), out_port(out_port) {} //TODO what if only in or out ?
 
@@ -46,7 +50,8 @@ struct OSC : public Protocol {
   int out_port;
 };
 
-struct Midi : public Protocol {
+struct Midi : public Protocol
+{
   // to see IPs of connected Midi devices
   static std::vector<Midi> scan();//TODO options
   //TODO members

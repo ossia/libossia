@@ -28,7 +28,8 @@ namespace OSSIA {
     // Constructor, Destructor
     virtual ~CurveSegment() = default;
 
-    // Navigation
+    # pragma mark -
+# pragma mark Navigation
     virtual std::shared_ptr<Curve<T>> getParent() const = 0;
 
     // Computation

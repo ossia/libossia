@@ -13,7 +13,8 @@ private:
   
 public:
   
-  // Life cycle
+# pragma mark -
+# pragma mark Life cycle
   JamomaState()
   {}
   
@@ -28,7 +29,8 @@ public:
     return shared_ptr<State>(new JamomaState(this));
   }
 
-  // Execution
+# pragma mark -
+# pragma mark Execution
   virtual void launch() const override
   {
     for (const auto& element : stateElements())

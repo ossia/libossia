@@ -13,7 +13,8 @@ private:
   shared_ptr<TimeEvent> element;
   
 public:
-  // Life cycle
+# pragma mark -
+# pragma mark Life cycle
   JamomaTimeNode()
   {}
   
@@ -28,11 +29,13 @@ public:
     return nullptr;//shared_ptr<TimeNode>(new JamomaTimeNode(this));
   }
 
-  // Execution
+# pragma mark -
+# pragma mark Execution
   virtual void play(bool log = false, string name = "") const override
   {}
 
-  // Accessors
+# pragma mark -
+# pragma mark Accessors
   virtual TimeValue getDate() const override
   {
     return TimeValue();

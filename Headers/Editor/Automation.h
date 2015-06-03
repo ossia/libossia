@@ -30,15 +30,18 @@ template <typename T>
 class Automation : public virtual TimeProcess {
     public:
 
-        // Life cycle
+      # pragma mark -
+# pragma mark Life cycle
         static std::shared_ptr<Automation<T>> create();
         virtual std::shared_ptr<Automation<T>> clone() const = 0;
         virtual ~Automation() = default;
 
-        // Execution
+      # pragma mark -
+# pragma mark Execution
         virtual void play(bool log = false, std::string name = "") const override = 0;
 
-        // Accessors
+      # pragma mark -
+# pragma mark Accessors
         virtual AddressValue getStartValue() const = 0; //TODO doublon avec Curve ?
         virtual void setStartValue(AddressValue) = 0;
         virtual AddressValue getEndValue() const = 0;

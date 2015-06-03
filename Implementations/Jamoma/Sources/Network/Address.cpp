@@ -123,11 +123,8 @@ public:
   virtual ~JamomaAddress()
   {}
   
-  // Network
-  virtual const std::shared_ptr<Device> & getDevice() const override
-  {
-    return device;
-  }
+# pragma mark -
+# pragma mark Value
   
   virtual bool updateValue() const override
   {
@@ -174,6 +171,12 @@ public:
     }
 
     return false;
+  }
+  
+  virtual AddressValue * getValue() const override
+  {
+    updateValue();
+    return mValue;
   }
   
   virtual bool sendValue(const AddressValue * value) const override
@@ -223,12 +226,13 @@ public:
     else
       return !mData.set("value", v);
   }
+
+# pragma mark -
+# pragma mark Accessors
   
-  // Accessors
-  virtual AddressValue * getValue() const override
+  virtual const std::shared_ptr<Device> & getDevice() const override
   {
-    updateValue();
-    return mValue;
+    return device;
   }
   
   virtual AddressValue::Type getValueType() const override

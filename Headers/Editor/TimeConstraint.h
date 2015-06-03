@@ -32,7 +32,8 @@ class TimeConstraint
   
 public:
   
-  // Life cycle
+# pragma mark -
+# pragma mark Life cycle
 
   /*! factory
    \details if the 3 duration are equals it means ...
@@ -50,14 +51,16 @@ public:
   /*! desctructor */
   virtual ~TimeConstraint() = default;
 
-  // Execution
+# pragma mark -
+# pragma mark Execution
 
   /*! execute the scenario and optionnaly log the execution into a file
    \param bool to enable log
    \param std::string to give a log file name where to write */
   virtual void play(bool log = false, std::string name = "") const = 0;
 
-  // Accessors
+# pragma mark -
+# pragma mark Accessors
   
   /*! get the node from where the constraint starts
    \return std::shared_ptr<#TimeNode> start node */
@@ -83,14 +86,15 @@ public:
    \param std::shared_ptr<#State> end state */
   virtual void setEndState(std::shared_ptr<State>) = 0;
 
-  // Internals
+# pragma mark -
+# pragma mark Internals
   
-  /*! get internals processes attached to the constraint
+  /*! get processes attached to the constraint
    \return #Container<#TimeProcess> container */
   Container<TimeProcess>& timeProcesses()
   { return m_timeProcesses; }
   
-  /*! get internals processes attached to the constraint
+  /*! get processes attached to the constraint
    \return #Container<#TimeProcess> container */
   const Container<TimeProcess>& timeProcesses() const
   { return m_timeProcesses; }

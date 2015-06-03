@@ -35,7 +35,8 @@ public:
     mApplicationManager.send("ApplicationRelease", device_name);
   }
 
-  // Network
+# pragma mark -
+# pragma mark Network
   virtual bool updateNamespace() override
   {
     TTErr err = mApplication.send("DirectoryBuild");

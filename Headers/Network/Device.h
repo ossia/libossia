@@ -29,7 +29,8 @@ public:
   static std::shared_ptr<Device> create(Protocol &, std::string = "");
   virtual ~Device() = default;
 
-  // Network
+# pragma mark -
+# pragma mark Network
   virtual bool updateNamespace() = 0;
   
 };

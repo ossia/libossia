@@ -16,7 +16,8 @@ private:
   shared_ptr<Clock> clock;
   
 public:
-  // Navigation
+  # pragma mark -
+# pragma mark Navigation
   virtual const shared_ptr<TimeEvent> & getStartEvent() const override
   {
     return event;
@@ -27,7 +28,8 @@ public:
     return event;
   }
 
-  // Accessors
+# pragma mark -
+# pragma mark Accessors
   virtual TimeValue getLength() const override
   {
     return TimeValue();

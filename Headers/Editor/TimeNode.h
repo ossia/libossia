@@ -19,7 +19,8 @@
 
 #include "Misc/Container.h"
 
-namespace OSSIA {
+namespace OSSIA
+{
 
 class Expression;
 class Scenario;
@@ -28,38 +29,59 @@ class TimeConstraint;
 class TimeEvent;
 class TimeValue;
 
-class TimeNode{
+class TimeNode
+{
 
-    public:
-        using iterator = Container<TimeEvent>::iterator;
-        using const_iterator = Container<TimeEvent>::const_iterator;
+public:
 
-        // Life cycle
-        static std::shared_ptr<TimeNode> create();
-        virtual std::shared_ptr<TimeNode> clone() const = 0;
-        virtual ~TimeNode() = default;
+  using iterator = Container<TimeEvent>::iterator;
+  using const_iterator = Container<TimeEvent>::const_iterator;
 
-        // Execution
-        virtual void play(bool log = false, std::string name = "") const = 0;
+# pragma mark -
+# pragma mark Life cycle
+  
+  /*! factory */
+  static std::shared_ptr<TimeNode> create();
+  
+  /*! clone */
+  virtual std::shared_ptr<TimeNode> clone() const = 0;
+  
+  /*! destructor */
+  virtual ~TimeNode() = default;
 
-        // Accessors
-        virtual TimeValue getDate() const = 0;
-        virtual TimeValue getSimultaneityMargin() const = 0;
-        virtual void setSimultaneityMargin(TimeValue) = 0; //TODO why not in constructor (only) ?
+# pragma mark -
+# pragma mark Execution
+  
+  /*! execute the scenario and optionnaly log the execution into a file
+   \param bool to enable log
+   \param string to give a log file name where to write */
+  virtual void play(bool log = false, std::string name = "") const = 0;
 
-        // TimeEvent Factory
-        virtual iterator emplace(const_iterator,
-                                 std::shared_ptr<State>/*TODO = NO_STATE*/,
-                                 std::shared_ptr<Expression>/*TODO = NO_EXPRESSION*/) = 0;
+# pragma mark -
+# pragma mark Accessors
+  
+  virtual TimeValue getDate() const = 0;
+  virtual TimeValue getSimultaneityMargin() const = 0;
+  virtual void setSimultaneityMargin(TimeValue) = 0; //TODO why not in constructor (only) ?
 
-        Container<TimeEvent>& timeProcesses()
-        { return m_timeEvents; }
-        const Container<TimeEvent>& timeProcesses() const
-        { return m_timeEvents; }
+# pragma mark -
+# pragma mark TimeEvent Factory
+  
+  virtual iterator emplace(const_iterator,
+                           std::shared_ptr<State>/*TODO = NO_STATE*/,
+                           std::shared_ptr<Expression>/*TODO = NO_EXPRESSION*/) = 0;
 
-    private:
-        Container<TimeEvent> m_timeEvents;
+# pragma mark -
+# pragma mark Internals
+  
+  Container<TimeEvent>& timeProcesses()
+  { return m_timeEvents; }
+  
+  const Container<TimeEvent>& timeProcesses() const
+  { return m_timeEvents; }
 
+private:
+  Container<TimeEvent> m_timeEvents;
 };
 
 }

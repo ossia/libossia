@@ -21,49 +21,81 @@
 #include "Editor/Expression.h"
 #include "Editor/ExpressionValue.h"
 
-namespace OSSIA {
+namespace OSSIA
+{
 
 class Device;
 
-class Address : public ExpressionValue, public Expression {
+class Address : public ExpressionValue, public Expression
+{
 
 public:
 
-  // Enumerations
-  enum class AccessMode {
+# pragma mark -
+# pragma mark Enumerations
+  
+  /*! operation allowed on value */
+  enum class AccessMode
+  {
     GET,
     SET,
     BI
   };
-  enum class BoundingMode {
+  
+  /*! value behaviors at crossing domain boundaries time */
+  enum class BoundingMode
+  {
     FREE,
     CLIP,
     WRAP,
     FOLD
   };
 
-  // Destructor
+# pragma mark -
+# pragma mark Life cycle
+  
+  /*! destructor */
   virtual ~Address() = default;
 
-  // Network
-  virtual const std::shared_ptr<Device> & getDevice() const = 0; // théo : is this really needed ? I don't know how to provide it
+# pragma mark -
+# pragma mark Value
+  
+  /*! update the value internaly without updating client */
   virtual bool updateValue() const = 0;
+  
+  /*! get the value 
+   \return #AddressValue* the value */
+  virtual AddressValue * getValue() const = 0;
+  
+  /*! send a value
+   \param #AddressValue* the value */
   virtual bool sendValue(const AddressValue*) const = 0;
 
-  // Accessors
-  virtual AddressValue * getValue() const = 0;
+# pragma mark -
+# pragma mark Accessors
+  
+  virtual const std::shared_ptr<Device> & getDevice() const = 0; // théo : is this really needed ? how to provide it ?
+  
   virtual AddressValue::Type getValueType() const = 0;
 
   virtual AccessMode getAccessMode() const = 0;
-  //TODO virtual Domain getDomain() const = 0;
-  virtual BoundingMode getBoundingMode() const = 0; //TODO multiple ?
-  virtual bool getRepetitionFilter() const = 0;
-  //TODO virtual Destination getDestination() const = 0;
   virtual Address & setAccessMode(AccessMode) = 0;
-  //TODO virtual Address & setDomain(Domain) = 0;
+  
+  /*! \todo:
+  virtual Domain getDomain() const = 0;
+  virtual Address & setDomain(Domain) = 0;
+  */
+  
+  virtual BoundingMode getBoundingMode() const = 0; //TODO multiple ?
   virtual Address & setBoundingMode(BoundingMode) = 0; //TODO multiple ?
+  
+  virtual bool getRepetitionFilter() const = 0;
   virtual Address & setRepetitionFilter(bool = true) = 0;
-  //TODO virtual Address & setDestination(Destination) = 0;
+  
+  /*! \todo:
+  virtual Destination getDestination() const = 0;
+  virtual Address & setDestination(Destination) = 0;
+  */
 
 };
 

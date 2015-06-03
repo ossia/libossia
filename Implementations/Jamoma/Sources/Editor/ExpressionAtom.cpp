@@ -14,7 +14,8 @@ private:
   shared_ptr<ExpressionValue> second_expr;
   
 public:
-  // Life cycle
+# pragma mark -
+# pragma mark Life cycle
   JamomaExpressionAtom(std::shared_ptr<ExpressionValue> expr1, Operator op, std::shared_ptr<ExpressionValue> expr2)
   {}
   
@@ -29,13 +30,15 @@ public:
     return shared_ptr<ExpressionAtom>(new JamomaExpressionAtom(this));
   }
 
-  // Execution
+# pragma mark -
+# pragma mark Execution
   virtual bool evaluate() const override
   {
     return true;
   }
 
-  // Accessors
+# pragma mark -
+# pragma mark Accessors
   virtual const std::shared_ptr<ExpressionValue> & getFirstOperand() const override
   {
     return first_expr;

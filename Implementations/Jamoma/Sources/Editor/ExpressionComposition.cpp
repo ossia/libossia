@@ -13,7 +13,8 @@ private:
   shared_ptr<Expression> second_expr;
 
 public:
-  // Life cycle
+# pragma mark -
+# pragma mark Life cycle
   JamomaExpressionComposition(shared_ptr<Expression> first_expr, Operator op, shared_ptr<Expression> second_expr)
   {}
   
@@ -28,13 +29,15 @@ public:
     return shared_ptr<ExpressionComposition>(new JamomaExpressionComposition(this));
   }
 
-  // Execution
+# pragma mark -
+# pragma mark Execution
   virtual bool evaluate() const override
   {
     return true;
   }
 
-  // Accessors
+# pragma mark -
+# pragma mark Accessors
   virtual const shared_ptr<Expression> & getFirstOperand() const override
   {
     return first_expr;

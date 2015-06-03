@@ -25,12 +25,14 @@ class State : public StateElement {
 
     public:
 
-      // Life cycle
+    # pragma mark -
+# pragma mark Life cycle
       static std::shared_ptr<State> create();
       virtual std::shared_ptr<State> clone() const = 0;
       virtual ~State() = default;
 
-      // Execution
+    # pragma mark -
+# pragma mark Execution
       virtual void launch() const override = 0;
 
       Container<StateElement>& stateElements()

@@ -27,7 +27,8 @@ class Scenario : public virtual TimeProcess
 
 public:
 
-  // Life cycle
+# pragma mark -
+# pragma mark Life cycle
   
   /*! factory */
   static std::shared_ptr<Scenario> create();
@@ -38,14 +39,16 @@ public:
   /*! destructor */
   virtual ~Scenario() = default;
 
-  // Execution
+# pragma mark -
+# pragma mark Execution
   
   /*! execute the scenario and optionnaly log the execution into a file
    \param bool to enable log
    \param string to give a log file name where to write */
   virtual void play(bool log = false, std::string name = "") const override = 0;
 
-  // Edition
+# pragma mark -
+# pragma mark Edition
   
   /*! add a constraint from a start node into the scenario (implicit creation of the end node)
    \param std::shared_ptr<#TimeConstraint> to add
@@ -62,7 +65,8 @@ public:
    \param std::shared_ptr<#TimeConstraint> to remove */
   virtual void removeConstraint(const std::shared_ptr<TimeConstraint> constraint) = 0;
 
-  // Accessors
+# pragma mark -
+# pragma mark Accessors
   
   /*! is the scenario allowed to kill sub process when it ends ?
    \return bool as killer status */

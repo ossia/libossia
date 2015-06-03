@@ -28,10 +28,12 @@ class TimeEvent {
 
       virtual ~TimeEvent() = default;
 
-      // Execution
+    # pragma mark -
+# pragma mark Execution
       virtual void play(bool log = false, std::string name = "") const = 0;
 
-      // Accessors //TODO is it necessary ?
+    # pragma mark -
+# pragma mark Accessors //TODO is it necessary ?
       virtual const std::shared_ptr<State> & getState() const = 0;
       virtual const std::shared_ptr<Expression> & getExpression() const = 0;
       virtual TimeProcessList & getPreviousProcesses() = 0;

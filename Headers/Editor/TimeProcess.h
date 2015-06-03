@@ -32,11 +32,13 @@ class TimeProcess {
 
       virtual void play(bool log = false, std::string name = "") const = 0;
 
-      // Navigation
+      # pragma mark -
+# pragma mark Navigation
       virtual const std::shared_ptr<TimeEvent> & getStartEvent() const = 0;
       virtual const std::shared_ptr<TimeEvent> & getEndEvent() const = 0;
 
-      // Accessors
+    # pragma mark -
+# pragma mark Accessors
       virtual TimeValue getLength() const = 0;
       virtual void setLength(TimeValue) = 0;
       virtual const std::shared_ptr<State> & getStartState() const = 0;

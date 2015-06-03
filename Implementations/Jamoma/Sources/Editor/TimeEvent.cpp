@@ -24,7 +24,8 @@ public:
   virtual ~JamomaTimeEvent()
   {}
 
-  // Execution
+# pragma mark -
+# pragma mark Execution
   virtual void play(bool log = false, string name = "") const override
   {
     // todo : launch it state
@@ -33,7 +34,8 @@ public:
     // note : what else ?
   }
 
-  // Accessors
+# pragma mark -
+# pragma mark Accessors
   virtual const shared_ptr<State> & getState() const override
   {
     return mState;

@@ -18,41 +18,50 @@
 
 #include "Misc/Container.h"
 
-namespace OSSIA {
+namespace OSSIA
+{
 
 class Address;
 
-class Node  {
+class Node
+{
 
-    public:
-        using iterator = Container<Node>::iterator;
-        using const_iterator = Container<Node>::const_iterator;
+public:
+  
+  using iterator = Container<Node>::iterator;
+  using const_iterator = Container<Node>::const_iterator;
 
-        // Destructor
-        virtual ~Node() = default;
+# pragma mark -
+# pragma mark Life cycle
+  virtual ~Node() = default;
 
-        // Navigation
-        virtual std::shared_ptr<Node> getParent() const = 0;
+# pragma mark -
+# pragma mark Navigation
+  virtual std::shared_ptr<Node> getParent() const = 0;
 
-        // Accessors
-        virtual std::string getName() const = 0;
-        virtual const std::shared_ptr<Address> & getAddress() const = 0;
-        virtual bool removeAddress() = 0;
+# pragma mark -
+# pragma mark Accessors
+  virtual std::string getName() const = 0;
+  virtual const std::shared_ptr<Address> & getAddress() const = 0;
+  virtual bool removeAddress() = 0;
 
-        // Address Factory
-        virtual std::shared_ptr<Address> createAddress(
+# pragma mark -
+# pragma mark Factory
+  virtual std::shared_ptr<Address> createAddress(
                 AddressValue::Type = AddressValue::Type::NONE) = 0;
 
-        // Child Node Factory
-        virtual iterator emplace(const_iterator, std::string) = 0;
+  virtual iterator emplace(const_iterator, std::string) = 0;
 
-        Container<Node>& children()
-        { return m_nodes; }
-        const Container<Node>& children() const
-        { return m_nodes; }
+# pragma mark -
+# pragma mark Internals
+  Container<Node>& children()
+  { return m_nodes; }
+  
+  const Container<Node>& children() const
+  { return m_nodes; }
 
-      private:
-        Container<Node> m_nodes;
+private:
+  Container<Node> m_nodes;
 };
 
 }

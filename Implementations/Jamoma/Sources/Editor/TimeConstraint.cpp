@@ -10,20 +10,24 @@ class JamomaTimeConstraint : public TimeConstraint
 private:
   
   // Implementation specific
+  TimeValue             mDuration;
+  TimeValue             mDurationMin;
+  TimeValue             mDurationMax;
+  
   shared_ptr<TimeNode>  mStartNode;
   shared_ptr<TimeNode>  mEndNode;
   shared_ptr<State>     mStartState;
   shared_ptr<State>     mEndState;
   
-  shared_ptr<TimeProcess> element;
-  
 public:
   
-  // Life cycle
-  JamomaTimeConstraint(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/)
-  {
-    ;
-  }
+# pragma mark -
+# pragma mark Life cycle
+  JamomaTimeConstraint(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/) :
+  mDuration(nominal),
+  mDurationMin(min),
+  mDurationMax(max)
+  {}
   
   JamomaTimeConstraint(const JamomaTimeConstraint * other)
   {}
@@ -36,13 +40,13 @@ public:
     return shared_ptr<TimeConstraint>(new JamomaTimeConstraint(this));
   }
 
-  // Execution
+# pragma mark -
+# pragma mark Execution
   virtual void play(bool log = false, string name = "") const override
-  {
-    
-  }
+  {}
 
-  // Accessors
+# pragma mark -
+# pragma mark Accessors
   virtual const shared_ptr<TimeNode> & getStartNode() const override
   {
     return mStartNode;

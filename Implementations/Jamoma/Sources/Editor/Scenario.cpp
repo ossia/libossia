@@ -20,7 +20,8 @@ private:
   
 public:
   
-  // Life cycle
+# pragma mark -
+# pragma mark Life cycle
   JamomaScenario()
   {}
   
@@ -35,23 +36,26 @@ public:
     return nullptr;//shared_ptr<Scenario>(new JamomaScenario(this));
   }
 
-  // Execution
+# pragma mark -
+# pragma mark Execution
   virtual void play(bool log = false, string name = "") const override
-  {
-    ;
-  }
+  {}
 
-  // Edition
+# pragma mark -
+# pragma mark Edition
   virtual void addConstraint(const shared_ptr<TimeConstraint> constraint, const shared_ptr<TimeNode> startNode) override
-  {
-    ;
-  }
+  {}
   
   virtual void addConstraint(const shared_ptr<TimeConstraint> constraint, const shared_ptr<TimeNode> startNode, const shared_ptr<TimeNode> endNode) override
   {
+    // store
     mTimeContraints.push_back(constraint);
     mTimeNodes.push_back(startNode);
     mTimeNodes.push_back(endNode);
+    
+    // edit constraint
+    constraint.setStartNode(startNode);
+    constraint.setEndNode(endNode);
   }
   
   virtual void removeConstraint(const shared_ptr<TimeConstraint> constraint) override
@@ -68,7 +72,8 @@ public:
     }
   }
 
-  // Accessors
+# pragma mark -
+# pragma mark Accessors
   virtual const bool isKiller() const override
   {
     return mIsKiller;

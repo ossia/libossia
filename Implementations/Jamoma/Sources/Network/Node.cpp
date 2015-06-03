@@ -49,13 +49,15 @@ public:
   ~JamomaNode()
   {}
 
-  // Navigation
+  # pragma mark -
+# pragma mark Navigation
   virtual shared_ptr<Node> getParent() const override
   {
     return mParent.lock();
   }
 
-  // Accessors
+# pragma mark -
+# pragma mark Accessors
   virtual string getName() const override
   {
     if (mNode)
