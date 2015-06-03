@@ -22,7 +22,9 @@ private:
   
 public:
   
-  // Constructor, destructor
+# pragma mark -
+# pragma mark Life cycle
+  
   JamomaAddress(TTObject aData = TTObject()) :
   mData(aData),
   mValueType(AddressValue::Type::NONE),
@@ -228,12 +230,15 @@ public:
   }
 
 # pragma mark -
-# pragma mark Accessors
+# pragma mark Network
   
   virtual const std::shared_ptr<Device> & getDevice() const override
   {
     return device;
   }
+
+# pragma mark -
+# pragma mark Accessors
   
   virtual AddressValue::Type getValueType() const override
   {
@@ -245,34 +250,34 @@ public:
     return mAccessMode;
   }
   
-  virtual BoundingMode getBoundingMode() const override
-  {
-    return mBoundingMode;
-  }
-  
-  virtual bool getRepetitionFilter() const override
-  {
-    return mRepetitionFilter;
-  }
-  
   virtual Address & setAccessMode(AccessMode) override
   {
     // note : it is not possible to change the service attribute of Data after its creation
     return *this;
   }
   
+  virtual BoundingMode getBoundingMode() const override
+  {
+    return mBoundingMode;
+  }
+  
   virtual Address & setBoundingMode(BoundingMode) override
   {
     if (mBoundingMode == BoundingMode::FREE)
       mData.set("rangeClipmode", kTTSym_none);
-    else if (mBoundingMode == BoundingMode::CLIP)
-      mData.set("rangeClipmode", kTTSym_both);
-    else if (mBoundingMode == BoundingMode::WRAP)
-      mData.set("rangeClipmode", kTTSym_wrap);
-    else if (mBoundingMode == BoundingMode::FOLD)
-      mData.set("rangeClipmode", kTTSym_fold);
-    
-    return *this;
+      else if (mBoundingMode == BoundingMode::CLIP)
+        mData.set("rangeClipmode", kTTSym_both);
+        else if (mBoundingMode == BoundingMode::WRAP)
+          mData.set("rangeClipmode", kTTSym_wrap);
+          else if (mBoundingMode == BoundingMode::FOLD)
+            mData.set("rangeClipmode", kTTSym_fold);
+            
+            return *this;
+  }
+  
+  virtual bool getRepetitionFilter() const override
+  {
+    return mRepetitionFilter;
   }
   
   virtual Address & setRepetitionFilter(bool repetitionFilter) override
@@ -282,7 +287,9 @@ public:
     return *this;
   }
   
-  // Expression
+# pragma mark -
+# pragma mark Expression
+  
   virtual bool evaluate() const override
   {
     return false;

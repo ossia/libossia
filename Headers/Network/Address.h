@@ -72,31 +72,55 @@ public:
   virtual bool sendValue(const AddressValue*) const = 0;
 
 # pragma mark -
+# pragma mark Network
+
+  /*! get the device where the address value is
+   \note is this really needed ? how to provide it on implementation side ?
+   \return std::shared_ptr<#Device> the device where the address value is */
+  virtual const std::shared_ptr<Device> & getDevice() const = 0;
+  
+  /*! \todo
+   virtual Destination getDestination() const = 0;
+   virtual Address & setDestination(Destination) = 0;
+   */
+
+# pragma mark -
 # pragma mark Accessors
   
-  virtual const std::shared_ptr<Device> & getDevice() const = 0; // théo : is this really needed ? how to provide it ?
-  
+  /*! get the value type
+   \return #AddressValue::Type of the value */
   virtual AddressValue::Type getValueType() const = 0;
 
+  /*! get the value access mode
+   \return #AccessMode of the value */
   virtual AccessMode getAccessMode() const = 0;
+  
+  /*! set the value access mode
+   \param #AccessMode of the value */
   virtual Address & setAccessMode(AccessMode) = 0;
   
-  /*! \todo:
+  /*! \todo
   virtual Domain getDomain() const = 0;
   virtual Address & setDomain(Domain) = 0;
   */
   
-  virtual BoundingMode getBoundingMode() const = 0; //TODO multiple ?
-  virtual Address & setBoundingMode(BoundingMode) = 0; //TODO multiple ?
+  /*! get the value bounding mode
+   \todo multiple ?
+   \return #BoundingMode of the value */
+  virtual BoundingMode getBoundingMode() const = 0;
   
+  /*! set the value bounding mode
+   \todo multiple ?
+   \param #BoundingMode of the value */
+  virtual Address & setBoundingMode(BoundingMode) = 0;
+  
+  /*! get the value repetition filter status
+   \return bool true is repetition filter is enabled */
   virtual bool getRepetitionFilter() const = 0;
-  virtual Address & setRepetitionFilter(bool = true) = 0;
   
-  /*! \todo:
-  virtual Destination getDestination() const = 0;
-  virtual Address & setDestination(Destination) = 0;
-  */
-
+  /*! set the value repetition filter status
+   \param bool true is to enable repetition filter */
+  virtual Address & setRepetitionFilter(bool = true) = 0;
 };
 
 }
