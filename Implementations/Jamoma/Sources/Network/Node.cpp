@@ -1,4 +1,5 @@
 #include "Network/Node.h"
+
 #include "Address.cpp"
 #include "../Misc/Container.cpp"
 
@@ -21,7 +22,9 @@ protected:
 
 public:
 
-  // Constructor, destructor
+# pragma mark -
+# pragma mark Life cycle
+  
   JamomaNode(string name, TTNodeDirectory * aDirectory = nullptr, TTNode * aNode = nullptr, shared_ptr<JamomaNode> aParent = nullptr) :
   mDirectory(aDirectory),
   mNode(aNode),
@@ -49,8 +52,9 @@ public:
   ~JamomaNode()
   {}
 
-  # pragma mark -
+# pragma mark -
 # pragma mark Navigation
+  
   virtual shared_ptr<Node> getParent() const override
   {
     return mParent.lock();
@@ -58,6 +62,7 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
+  
   virtual string getName() const override
   {
     if (mNode)
@@ -71,17 +76,9 @@ public:
     return mAddress;
   }
 
-  virtual bool removeAddress() override
-  {
-    if (mNode)
-    {
-      return !mNode->setObject();
-    }
-
-    return false;
-  }
-
-  // Address Factory
+# pragma mark -
+# pragma mark Address
+  
   virtual shared_ptr<Address> createAddress(AddressValue::Type type) override
   {
     // clear former address
@@ -140,8 +137,20 @@ public:
 
     return mAddress;
   }
+  
+  virtual bool removeAddress() override
+  {
+    if (mNode)
+    {
+      return !mNode->setObject();
+    }
+    
+    return false;
+  }
 
-  // Child Node Factory
+# pragma mark -
+# pragma mark Children
+  
   virtual iterator emplace(const_iterator pos, string name) override
   {
     TTAddress nodeAddress;
@@ -163,6 +172,9 @@ public:
 
     return iterator();
   }
+  
+# pragma mark -
+# pragma mark Implementation specific
 
 private:
 

@@ -18,31 +18,49 @@
 
 #include "StateElement.h"
 
-namespace OSSIA {
+namespace OSSIA
+{
 
 class Address;
 class AddressValue;
 
-class Message : public StateElement {
+class Message : public StateElement
+{
 
-    public:
+public:
 
-    # pragma mark -
+# pragma mark -
 # pragma mark Life cycle
-      static std::shared_ptr<Message> create(std::shared_ptr<Address>,
-                                             AddressValue*);
-      virtual std::shared_ptr<Message> clone() const = 0;
-      virtual ~Message() = default;
+  
+  /*! factory
+   \param std::shared_ptr<#Address> where to send the value
+   \param #AddressValue the value
+   \return std::shared_ptr<#Message> */
+  static std::shared_ptr<Message> create(std::shared_ptr<Address>,
+                                         AddressValue*);
+  
+  /*! clone */
+  virtual std::shared_ptr<Message> clone() const = 0;
+  
+  /*! destructor */
+  virtual ~Message() = default;
 
-    # pragma mark -
+# pragma mark -
 # pragma mark Execution
-      virtual void launch() const override = 0;
+  
+  /*! send the value to the address */
+  virtual void launch() const override = 0;
 
-    # pragma mark -
+# pragma mark -
 # pragma mark Accessors
-      virtual const std::shared_ptr<Address> & getAddress() const = 0;
-      virtual AddressValue * getValue() const = 0;
-
-    };
+  
+  /*! get message's address
+   \return std::shared_ptr<#Address> the address */
+  virtual const std::shared_ptr<Address> & getAddress() const = 0;
+  
+  /*! get message's value
+   \return AddressValue the value */
+  virtual AddressValue * getValue() const = 0;
+};
 
 }

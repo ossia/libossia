@@ -29,14 +29,15 @@ public:
 # pragma mark Enumerations
   
   /*! type of value */
-  enum class Type {
+  enum class Type
+  {
     NONE,
     BOOL,
     INT,
     FLOAT,
     CHAR,
     STRING,
-    TUPLE, //TODO
+    TUPLE,
     GENERIC
   };
   
@@ -57,38 +58,90 @@ protected:
   
   Type type;
 };
+
+# pragma mark -
+# pragma mark None
   
-struct None : public AddressValue {
+/*! \details None value */
+struct None : public AddressValue
+{
+  /*! constructor */
   None() {type = Type::NONE;}
 };
 
-struct Bool : public AddressValue {
+# pragma mark -
+# pragma mark Bool
+  
+/*! \details Bool value */
+struct Bool : public AddressValue
+{
+  /*! constructor 
+   \param bool value */
   Bool(bool v) : value(v) {type = Type::BOOL;}
+  
   bool value;
 };
+  
+# pragma mark -
+# pragma mark Int
 
-struct Int : public AddressValue {
+/*! \details Int value */
+struct Int : public AddressValue
+{
+  /*! constructor
+   \param int value */
   Int(int v) : value(v) {type = Type::INT;}
+  
   int value;
 };
+  
+# pragma mark -
+# pragma mark Float
 
-struct Float : public AddressValue {
+/*! \details Float value */
+struct Float : public AddressValue
+{
+  /*! constructor
+   \param float value */
   Float(float v) : value(v) {type = Type::FLOAT;}
+  
   float value;
 };
-
-struct Char : public AddressValue {
+  
+# pragma mark -
+# pragma mark Char
+  
+/*! \details Char value */
+struct Char : public AddressValue
+{
+  /*! constructor
+   \param char value */
   Char(char v) : value(v) {type = Type::CHAR;}
+  
   char value;
 };
+  
+# pragma mark -
+# pragma mark String
 
-struct String : public AddressValue {
+/*! \details String value */
+struct String : public AddressValue
+{
+  /*! constructor
+   \param std::string value */
   String(std::string v) : value(v) {type = Type::STRING;}
+  
   std::string value;
 };
+  
+# pragma mark -
+# pragma mark Generic
 
-struct Generic : public AddressValue {
-  // todo : constructor
+/*! \details Generic value */
+struct Generic : public AddressValue
+{
+  /*! constructor 
+   \todo */
   char * start;
   int size;
 };

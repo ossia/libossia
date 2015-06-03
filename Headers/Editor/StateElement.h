@@ -14,16 +14,25 @@
 
 #pragma once
 
-namespace OSSIA {
+namespace OSSIA
+{
 
-class StateElement {
+class StateElement
+{
 
-    public:
+public:
 
-      virtual ~StateElement() = default;
-
-      virtual void launch() const = 0;
-
+# pragma mark -
+# pragma mark Life cycle
+  
+  /*! destructor */
+  virtual ~StateElement() = default;
+  
+# pragma mark -
+# pragma mark Execution
+  
+  /*! what to do at execution time */
+  virtual void launch() const = 0;
 };
 
 }

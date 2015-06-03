@@ -295,6 +295,9 @@ public:
     return false;
   }
   
+# pragma mark -
+# pragma mark Implementation specific
+  
 private:
   
   static TTErr ValueCallback(const TTValue& baton, const TTValue& value)

@@ -33,35 +33,62 @@ public:
 
 # pragma mark -
 # pragma mark Life cycle
+  
+  /*! destructor */
   virtual ~Node() = default;
 
 # pragma mark -
 # pragma mark Navigation
+  
+  /*! get node's parent 
+   \return std::shared_ptr<Node> the parent */
   virtual std::shared_ptr<Node> getParent() const = 0;
 
 # pragma mark -
 # pragma mark Accessors
+  
+  /*! get node's name
+   \return std::string the name */
   virtual std::string getName() const = 0;
+  
+  /*! get node's address
+   \return std::shared_ptr<#Address> the address */
   virtual const std::shared_ptr<Address> & getAddress() const = 0;
+  
+# pragma mark -
+# pragma mark Address
+  
+  /*! create node's address
+   \param #AddressValue::Type the type of the address to create
+   \return std::shared_ptr<#Address> the new address */
+  virtual std::shared_ptr<Address> createAddress(
+                AddressValue::Type = AddressValue::Type::NONE) = 0;
+  
+  /*! remove node's address
+   \return bool true if the address is correctly removed */
   virtual bool removeAddress() = 0;
 
 # pragma mark -
-# pragma mark Factory
-  virtual std::shared_ptr<Address> createAddress(
-                AddressValue::Type = AddressValue::Type::NONE) = 0;
-
-  virtual iterator emplace(const_iterator, std::string) = 0;
-
-# pragma mark -
-# pragma mark Internals
-  Container<Node>& children()
-  { return m_nodes; }
+# pragma mark Children
   
+  /*! create and store a child node
+   \param #Container<#Node>::const_iterator where to store the child
+   \param std::string child name
+   \return #Container<#Node>::iterator */
+  virtual iterator emplace(const_iterator, std::string) = 0;
+  
+  /*! get children of the node
+   \return #Container<#Node> container */
+  Container<Node>& children()
+  { return m_children; }
+  
+  /*! get children of the node
+   \return #Container<#Node> container */
   const Container<Node>& children() const
-  { return m_nodes; }
+  { return m_children; }
 
 private:
-  Container<Node> m_nodes;
+  Container<Node> m_children;
 };
 
 }

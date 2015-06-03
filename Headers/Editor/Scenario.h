@@ -30,7 +30,8 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  /*! factory */
+  /*! factory 
+   \return std::shared_ptr<#Scenario> */
   static std::shared_ptr<Scenario> create();
   
   /*! clone */

@@ -40,7 +40,8 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  /*! factory */
+  /*! factory 
+   \return std::shared_ptr<#TimeNode> */
   static std::shared_ptr<TimeNode> create();
   
   /*! clone */

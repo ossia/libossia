@@ -19,7 +19,9 @@ private:
 
 public:
 
-  // Constructor, destructor
+# pragma mark -
+# pragma mark Life cycle
+  
   JamomaDevice(Protocol & protocol, string name = "", TTObject applicationManager = TTObject(), TTObject application = TTObject(), TTNodeDirectoryPtr aDirectory = nullptr) :
   JamomaNode(name, aDirectory, aDirectory->getRoot()),
   mApplicationManager(applicationManager),
@@ -37,6 +39,7 @@ public:
 
 # pragma mark -
 # pragma mark Network
+  
   virtual bool updateNamespace() override
   {
     TTErr err = mApplication.send("DirectoryBuild");
@@ -52,6 +55,9 @@ public:
     return err == kTTErrNone;
   }
 };
+
+# pragma mark -
+# pragma mark Life cycle
 
 shared_ptr<Device> Device::create(Protocol & protocol, string name)
 {

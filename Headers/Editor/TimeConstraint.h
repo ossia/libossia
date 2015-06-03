@@ -39,7 +39,8 @@ public:
    \details if the 3 duration are equals it means ...
    \param #TimeValue duration of the constraint
    \param #TimeValue minimal duration of the constraint
-   \param #TimeValue maximal duration of the constraint */
+   \param #TimeValue maximal duration of the constraint 
+   \return std::shared_ptr<#TimeConstraint> */
   static std::shared_ptr<TimeConstraint> create(TimeValue nominal,
                                                 TimeValue min,
                                                 TimeValue max);
@@ -87,7 +88,7 @@ public:
   virtual void setEndState(std::shared_ptr<State>) = 0;
 
 # pragma mark -
-# pragma mark Internals
+# pragma mark Time Processes
   
   /*! get processes attached to the constraint
    \return #Container<#TimeProcess> container */

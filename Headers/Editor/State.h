@@ -19,30 +19,48 @@
 #include "Editor/StateElement.h"
 #include "Misc/Container.h"
 
-namespace OSSIA {
+namespace OSSIA
+{
 
-class State : public StateElement {
+class State : public StateElement
+{
 
-    public:
+public:
 
-    # pragma mark -
+# pragma mark -
 # pragma mark Life cycle
-      static std::shared_ptr<State> create();
-      virtual std::shared_ptr<State> clone() const = 0;
-      virtual ~State() = default;
+  
+  /*! factory
+   \return std::shared_ptr<#State> */
+  static std::shared_ptr<State> create();
+  
+  /*! clone */
+  virtual std::shared_ptr<State> clone() const = 0;
+  
+  /*! destructor */
+  virtual ~State() = default;
 
-    # pragma mark -
+# pragma mark -
 # pragma mark Execution
-      virtual void launch() const override = 0;
+  
+  /*! launch each state elements of the state */
+  virtual void launch() const override = 0;
 
-      Container<StateElement>& stateElements()
-      { return m_stateElements; }
-      const Container<StateElement>& stateElements() const
-      { return m_stateElements; }
+# pragma mark -
+# pragma mark State Elements
+  
+  /*! get the state elements of the state
+   \return #Container<#StateElements> container */
+  Container<StateElement>& stateElements()
+  { return m_stateElements; }
+  
+  /*! get the state elements of the state
+   \return #Container<#StateElements> container */
+  const Container<StateElement>& stateElements() const
+  { return m_stateElements; }
 
-    private:
-      Container<StateElement> m_stateElements;
-
+private:
+  Container<StateElement> m_stateElements;
 };
 
 }

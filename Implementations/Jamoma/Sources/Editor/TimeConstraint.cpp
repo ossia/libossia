@@ -23,6 +23,7 @@ public:
   
 # pragma mark -
 # pragma mark Life cycle
+  
   JamomaTimeConstraint(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/) :
   mDuration(nominal),
   mDurationMin(min),
@@ -42,11 +43,13 @@ public:
 
 # pragma mark -
 # pragma mark Execution
+  
   virtual void play(bool log = false, string name = "") const override
   {}
 
 # pragma mark -
 # pragma mark Accessors
+  
   virtual const shared_ptr<TimeNode> & getStartNode() const override
   {
     return mStartNode;
