@@ -21,7 +21,7 @@ class State : public StateElement {
 
     public:
 
-      // Factories, destructor
+      // Constructors, destructor, cloning
       static std::shared_ptr<State> create();
       virtual std::shared_ptr<State> clone() const = 0;
       virtual ~State() = default;

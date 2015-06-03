@@ -23,7 +23,7 @@ class Scenario : public virtual TimeProcess
 
 public:
 
-  // Factories, destructor
+  // Constructors, destructor, cloning
   static std::shared_ptr<Scenario> create();
   virtual std::shared_ptr<Scenario> clone() const = 0;
   virtual ~Scenario() = default;

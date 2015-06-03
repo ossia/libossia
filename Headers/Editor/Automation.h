@@ -26,7 +26,7 @@ template <typename T>
 class Automation : public virtual TimeProcess {
     public:
 
-        // Factories, destructor
+        // Constructors, destructor, cloning
         static std::shared_ptr<Automation<T>> create();
         virtual std::shared_ptr<Automation<T>> clone() const = 0;
         virtual ~Automation() = default;

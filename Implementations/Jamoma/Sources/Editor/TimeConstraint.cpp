@@ -12,8 +12,10 @@ class JamomaTimeConstraint : public TimeConstraint
 private:
   
   // Implementation specific
-  shared_ptr<TimeNode> tnode;
-  shared_ptr<State> st;
+  shared_ptr<TimeNode>  mStartNode;
+  shared_ptr<TimeNode>  mEndNode;
+  shared_ptr<State>     mState;
+  
   shared_ptr<TimeProcess> element;
   
 public:
@@ -39,7 +41,7 @@ public:
   virtual void play(bool log = false, string name = "") const override
   {}
 
-  // Navigation
+  // Accessors
   virtual const shared_ptr<TimeNode> & getStartNode() const override
   {
     return tnode;
@@ -50,7 +52,6 @@ public:
     return tnode;
   }
 
-  // Accessors
   virtual const shared_ptr<State> & getStartState() const override
   {
     return st;

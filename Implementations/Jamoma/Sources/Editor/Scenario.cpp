@@ -9,12 +9,10 @@ using namespace std;
 
 class JamomaScenario : virtual Scenario, virtual JamomaTimeProcess
 {
-  
+
 private:
   
   // Implementation specific
-private:
-  
   Container<TimeConstraint> mTimeContraints;
   Container<TimeNode>       mTimeNodes;
   
@@ -39,11 +37,16 @@ public:
 
   // Execution
   virtual void play(bool log = false, string name = "") const override
-  {}
+  {
+    // DEBUG
+    cout << "Scenario::play : working progress ...\n";
+  }
 
   // Edition
   virtual void addConstraint(const shared_ptr<TimeConstraint> constraint, const shared_ptr<TimeNode> startNode) override
-  {}
+  {
+    
+  }
   
   virtual void addConstraint(const shared_ptr<TimeConstraint> constraint, const shared_ptr<TimeNode> startNode, const shared_ptr<TimeNode> endNode) override
   {
