@@ -36,7 +36,7 @@ class ExpressionAtom : public Expression {
       virtual std::shared_ptr<ExpressionAtom> clone() const = 0;
       virtual ~ExpressionAtom() = default;
 
-      // Lecture
+      // Execution
       virtual bool evaluate() const override = 0;
 
       // Accessors //TODO is it necessary ?

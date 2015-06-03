@@ -35,7 +35,7 @@ class TimeNode{
         virtual std::shared_ptr<TimeNode> clone() const = 0;
         virtual ~TimeNode() = default;
 
-        // Lecture
+        // Execution
         virtual void play(bool log = false, std::string name = "") const = 0;
 
         // Accessors

@@ -24,7 +24,7 @@ class TimeEvent {
 
       virtual ~TimeEvent() = default;
 
-      // Lecture
+      // Execution
       virtual void play(bool log = false, std::string name = "") const = 0;
 
       // Accessors //TODO is it necessary ?

@@ -26,7 +26,7 @@ class State : public StateElement {
       virtual std::shared_ptr<State> clone() const = 0;
       virtual ~State() = default;
 
-      // Lecture
+      // Execution
       virtual void launch() const override = 0;
 
       Container<StateElement>& stateElements()

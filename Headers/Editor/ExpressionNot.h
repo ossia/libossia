@@ -22,7 +22,7 @@ class ExpressionNot : public Expression {
       virtual std::shared_ptr<ExpressionNot> clone() const = 0;
       virtual ~ExpressionNot() = default;
 
-      // Lecture
+      // Execution
       virtual bool evaluate() const override = 0;
 
       // Accessors

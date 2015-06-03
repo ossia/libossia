@@ -29,7 +29,7 @@ class Message : public StateElement {
       virtual std::shared_ptr<Message> clone() const = 0;
       virtual ~Message() = default;
 
-      // Lecture
+      // Execution
       virtual void launch() const override = 0;
 
       // Accessors

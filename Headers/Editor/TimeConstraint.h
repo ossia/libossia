@@ -32,7 +32,7 @@ class TimeConstraint {
       virtual std::shared_ptr<TimeConstraint> clone() const = 0;
       virtual ~TimeConstraint() = default;
 
-      // Lecture
+      // Execution
       virtual void play(bool log = false, std::string name = "") const = 0;
 
       // Navigation

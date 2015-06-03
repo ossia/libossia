@@ -31,7 +31,7 @@ class Automation : public virtual TimeProcess {
         virtual std::shared_ptr<Automation<T>> clone() const = 0;
         virtual ~Automation() = default;
 
-        // Lecture
+        // Execution
         virtual void play(bool log = false, std::string name = "") const override = 0;
 
         // Accessors

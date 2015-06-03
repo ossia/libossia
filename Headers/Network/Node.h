@@ -28,7 +28,7 @@ class Node  {
         virtual ~Node() = default;
 
         // Navigation
-        virtual Node & getParent() const = 0;
+        virtual std::shared_ptr<Node> getParent() const = 0;
 
         // Accessors
         virtual std::string getName() const = 0;
