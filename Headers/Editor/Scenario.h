@@ -57,6 +57,10 @@ public:
    \param std::shared_ptr<#TimeNode> to start from
    \param std::shared_ptr<#TimeNode> to end */
   virtual void addConstraint(const std::shared_ptr<TimeConstraint>, const std::shared_ptr<TimeNode>, const std::shared_ptr<TimeNode>) = 0;
+  
+  /*! remove a constraint from the scenario
+   \param std::shared_ptr<#TimeConstraint> to remove */
+  virtual void removeConstraint(const std::shared_ptr<TimeConstraint> constraint) = 0;
 
   // Accessors
   
