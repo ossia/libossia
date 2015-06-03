@@ -1,10 +1,14 @@
 /*!
  * \file Scenario.h
  *
+ * \brief
+ *
+ * \details
+ *
  * \author Clément Bossut
  * \author Théo de la Hogue
  *
- * This code is licensed under the terms of the "CeCILL-C"
+ * \copyright This code is licensed under the terms of the "CeCILL-C"
  * http://www.cecill.info
  */
 
@@ -23,9 +27,15 @@ class Scenario : public virtual TimeProcess
 
 public:
 
-  // Constructors, destructor, cloning
+  // Life cycle
+  
+  /*! factory */
   static std::shared_ptr<Scenario> create();
+  
+  /*! clone */
   virtual std::shared_ptr<Scenario> clone() const = 0;
+  
+  /*! destructor */
   virtual ~Scenario() = default;
 
   // Execution
