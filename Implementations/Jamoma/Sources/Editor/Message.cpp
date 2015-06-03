@@ -1,8 +1,6 @@
 #include "Editor/Message.h"
 #include "Network/Address.h"
 
-#include "TTScore.h"
-
 using namespace OSSIA;
 using namespace std;
 

@@ -1,7 +1,5 @@
 #include "Editor/State.h"
 
-#include "TTScore.h"
-
 using namespace OSSIA;
 using namespace std;
 

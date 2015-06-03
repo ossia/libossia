@@ -38,14 +38,13 @@ public:
   // Execution
   virtual void play(bool log = false, string name = "") const override
   {
-    // DEBUG
-    cout << "Scenario::play : working progress ...\n";
+    ;
   }
 
   // Edition
   virtual void addConstraint(const shared_ptr<TimeConstraint> constraint, const shared_ptr<TimeNode> startNode) override
   {
-    
+    ;
   }
   
   virtual void addConstraint(const shared_ptr<TimeConstraint> constraint, const shared_ptr<TimeNode> startNode, const shared_ptr<TimeNode> endNode) override
@@ -53,6 +52,20 @@ public:
     mTimeContraints.push_back(constraint);
     mTimeNodes.push_back(startNode);
     mTimeNodes.push_back(endNode);
+  }
+  
+  virtual void removeConstraint(const shared_ptr<TimeConstraint> constraint) override
+  {
+    Container<TimeConstraint>::iterator it;
+    
+    for (it = mTimeContraints.begin(); it != mTimeContraints.end(); it++)
+    {
+      if (*it == constraint)
+      {
+        mTimeContraints.erase(it);
+        break;
+      }
+    }
   }
 
   // Accessors

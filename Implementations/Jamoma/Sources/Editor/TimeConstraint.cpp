@@ -1,8 +1,6 @@
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeValue.h"
 
-#include "TTScore.h"
-
 using namespace OSSIA;
 using namespace std;
 
@@ -14,7 +12,8 @@ private:
   // Implementation specific
   shared_ptr<TimeNode>  mStartNode;
   shared_ptr<TimeNode>  mEndNode;
-  shared_ptr<State>     mState;
+  shared_ptr<State>     mStartState;
+  shared_ptr<State>     mEndState;
   
   shared_ptr<TimeProcess> element;
   
@@ -39,34 +38,40 @@ public:
 
   // Execution
   virtual void play(bool log = false, string name = "") const override
-  {}
+  {
+    
+  }
 
   // Accessors
   virtual const shared_ptr<TimeNode> & getStartNode() const override
   {
-    return tnode;
+    return mStartNode;
   }
   
   virtual const shared_ptr<TimeNode> & getEndNode() const override
   {
-    return tnode;
+    return mEndNode;
   }
 
   virtual const shared_ptr<State> & getStartState() const override
   {
-    return st;
+    return mStartState;
   }
   
-  virtual void setStartState(shared_ptr<State>) override
-  {}
+  virtual void setStartState(shared_ptr<State> startState) override
+  {
+    mStartState = startState;
+  }
   
   virtual const shared_ptr<State> & getEndState() const override
   {
-    return st;
+    return mEndState;
   }
   
-  virtual void setEndState(shared_ptr<State>) override
-  {}
+  virtual void setEndState(shared_ptr<State> endState) override
+  {
+    mEndState = endState;
+  }
 
 };
 

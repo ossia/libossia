@@ -19,12 +19,7 @@ public:
   JamomaTimeEvent(shared_ptr<State> aState, shared_ptr<Expression> anExpression) :
   mState(aState),
   mExpression(anExpression)
-  {
-    // todo : we shouldn't init each time we create an object ...
-    TTFoundationInit("/usr/local/jamoma/");
-    TTModularInit("/usr/local/jamoma/");
-    TTScoreInit("/usr/local/jamoma/");
-  }
+  {}
   
   virtual ~JamomaTimeEvent()
   {}

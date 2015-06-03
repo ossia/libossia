@@ -1,8 +1,6 @@
 #include "Editor/TimeNode.h"
 #include "Editor/TimeValue.h"
 
-#include "TTScore.h"
-
 using namespace OSSIA;
 using namespace std;
 
@@ -17,12 +15,7 @@ private:
 public:
   // Life cycle
   JamomaTimeNode()
-  {
-    // todo : we shouldn't init each time we create an object ...
-    TTFoundationInit("/usr/local/jamoma/");
-    TTModularInit("/usr/local/jamoma/");
-    TTScoreInit("/usr/local/jamoma/");
-  }
+  {}
   
   JamomaTimeNode(const JamomaTimeNode * other)
   {}

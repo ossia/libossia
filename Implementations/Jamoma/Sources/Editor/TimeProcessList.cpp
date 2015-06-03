@@ -1,7 +1,5 @@
 #include "Editor/TimeProcessList.h"
 
-#include "TTScore.h"
-
 using namespace OSSIA;
 using namespace std;
 
@@ -16,12 +14,7 @@ private:
 public:
   // Constructor, destructor
   JamomaTimeProcessList()
-  {
-    // todo : we shouldn't init each time we create an object ...
-    TTFoundationInit("/usr/local/jamoma/");
-    TTModularInit("/usr/local/jamoma/");
-    TTScoreInit("/usr/local/jamoma/");
-  }
+  {}
   
   virtual ~JamomaTimeProcessList()
   {}

@@ -157,9 +157,9 @@
 		46BA2A5919C09A21009630B5 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				46AA0ED21A0122C3007374E9 /* Network */,
 				46BA2A5A19C09A21009630B5 /* Editor */,
 				46502A771AC2AD380067AB66 /* Misc */,
-				46AA0ED21A0122C3007374E9 /* Network */,
 			);
 			path = Sources;
 			sourceTree = "<group>";

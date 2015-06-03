@@ -1,8 +1,6 @@
 #include "Editor/ExpressionAtom.h"
 #include "Network/AddressValue.h"
 
-#include "TTScore.h"
-
 using namespace OSSIA;
 using namespace std;
 
@@ -18,12 +16,7 @@ private:
 public:
   // Life cycle
   JamomaExpressionAtom(std::shared_ptr<ExpressionValue> expr1, Operator op, std::shared_ptr<ExpressionValue> expr2)
-  {
-    // todo : we shouldn't init each time we create an object ...
-    TTFoundationInit("/usr/local/jamoma/");
-    TTModularInit("/usr/local/jamoma/");
-    TTScoreInit("/usr/local/jamoma/");
-  }
+  {}
   
   JamomaExpressionAtom(const JamomaExpressionAtom * other)
   {}

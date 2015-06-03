@@ -1,7 +1,5 @@
 #include "Editor/ExpressionComposition.h"
 
-#include "TTScore.h"
-
 using namespace OSSIA;
 using namespace std;
 
@@ -17,12 +15,7 @@ private:
 public:
   // Life cycle
   JamomaExpressionComposition(shared_ptr<Expression> first_expr, Operator op, shared_ptr<Expression> second_expr)
-  {
-    // todo : we shouldn't init each time we create an object ...
-    TTFoundationInit("/usr/local/jamoma/");
-    TTModularInit("/usr/local/jamoma/");
-    TTScoreInit("/usr/local/jamoma/");
-  }
+  {}
   
   JamomaExpressionComposition(const JamomaExpressionComposition * other)
   {}

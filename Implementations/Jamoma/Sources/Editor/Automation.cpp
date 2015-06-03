@@ -3,8 +3,6 @@
 #include "Network/Address.h"
 #include "Network/AddressValue.h"
 
-#include "TTScore.h"
-
 using namespace OSSIA;
 using namespace std;
 
@@ -23,12 +21,7 @@ public:
   
   // Life cycle
   JamomaAutomation()
-  {
-    // todo : we shouldn't init each time we create an object ...
-    TTFoundationInit("/usr/local/jamoma/");
-    TTModularInit("/usr/local/jamoma/");
-    TTScoreInit("/usr/local/jamoma/");
-  }
+  {}
   
   JamomaAutomation(const JamomaAutomation * other)
   {}
