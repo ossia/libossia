@@ -20,7 +20,7 @@ private:
   
 public:
   
-  // Constructors, destructor, cloning
+  // Life cycle
   JamomaTimeConstraint(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/)
   {
     ;

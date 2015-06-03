@@ -15,7 +15,7 @@ private:
   shared_ptr<Expression> second_expr;
 
 public:
-  // Constructors, destructor, cloning
+  // Life cycle
   JamomaExpressionComposition(shared_ptr<Expression> first_expr, Operator op, shared_ptr<Expression> second_expr)
   {
     // todo : we shouldn't init each time we create an object ...

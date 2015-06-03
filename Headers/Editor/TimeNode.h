@@ -34,7 +34,7 @@ class TimeNode{
         using iterator = Container<TimeEvent>::iterator;
         using const_iterator = Container<TimeEvent>::const_iterator;
 
-        // Constructors, destructor, cloning
+        // Life cycle
         static std::shared_ptr<TimeNode> create();
         virtual std::shared_ptr<TimeNode> clone() const = 0;
         virtual ~TimeNode() = default;

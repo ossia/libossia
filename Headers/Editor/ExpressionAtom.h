@@ -32,7 +32,7 @@ class ExpressionAtom : public Expression {
         LOWER_THAN_OR_EQUAL
       };
 
-      // Constructors, destructor, cloning
+      // Life cycle
       static std::shared_ptr<ExpressionAtom> create(
           std::shared_ptr<ExpressionValue>,
           Operator,

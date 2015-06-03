@@ -30,7 +30,7 @@ class ExpressionComposition : public Expression {
         XOR
       };
 
-      // Constructors, destructor, cloning
+      // Life cycle
       static std::shared_ptr<ExpressionComposition> create(
           std::shared_ptr<Expression>,
           Operator,

@@ -15,7 +15,7 @@ private:
   
 public:
   
-  // Constructors, destructor, cloning
+  // Life cycle
   JamomaState()
   {}
   

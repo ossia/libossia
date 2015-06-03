@@ -15,7 +15,7 @@ private:
   shared_ptr<TimeEvent> element;
   
 public:
-  // Constructors, destructor, cloning
+  // Life cycle
   JamomaTimeNode()
   {
     // todo : we shouldn't init each time we create an object ...

@@ -21,7 +21,7 @@ class ExpressionNot : public Expression {
 
     public:
 
-      // Constructors, destructor, cloning
+      // Life cycle
       static std::shared_ptr<ExpressionNot> create(std::shared_ptr<Expression>);
       virtual std::shared_ptr<ExpressionNot> clone() const = 0;
       virtual ~ExpressionNot() = default;

@@ -30,7 +30,7 @@ template <typename T>
 class Automation : public virtual TimeProcess {
     public:
 
-        // Constructors, destructor, cloning
+        // Life cycle
         static std::shared_ptr<Automation<T>> create();
         virtual std::shared_ptr<Automation<T>> clone() const = 0;
         virtual ~Automation() = default;

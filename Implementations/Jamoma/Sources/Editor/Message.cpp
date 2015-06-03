@@ -17,7 +17,7 @@ private:
 
 public:
   
-  // Constructors, destructor, cloning
+  // Life cycle
   JamomaMessage(shared_ptr<Address> a, AddressValue * v) :
   address(a),
   value(v)

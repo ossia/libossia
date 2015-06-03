@@ -20,7 +20,8 @@ private:
   shared_ptr<Address> element;
   
 public:
-  // Constructors, destructor, cloning
+  
+  // Life cycle
   JamomaAutomation()
   {
     // todo : we shouldn't init each time we create an object ...

@@ -16,7 +16,7 @@ private:
   shared_ptr<ExpressionValue> second_expr;
   
 public:
-  // Constructors, destructor, cloning
+  // Life cycle
   JamomaExpressionAtom(std::shared_ptr<ExpressionValue> expr1, Operator op, std::shared_ptr<ExpressionValue> expr2)
   {
     // todo : we shouldn't init each time we create an object ...
