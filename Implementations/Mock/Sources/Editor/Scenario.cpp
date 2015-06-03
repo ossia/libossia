@@ -26,12 +26,12 @@ public:
   // Edition
   // TODO : passer des shared ptr ?
   virtual void addConstraint(
-      const TimeConstraint&,
-      const TimeNode & startNode) override {}
+      const std::shared_ptr<TimeConstraint>,
+      const std::shared_ptr<TimeNode>) override {}
   virtual void addConstraint(
-      const TimeConstraint&,
-      const TimeNode & startNode,
-      const TimeNode & endNode) override {}
+          const std::shared_ptr<TimeConstraint>,
+          const std::shared_ptr<TimeNode>,
+          const std::shared_ptr<TimeNode>) override {}
 
   // Accessors
   virtual const bool isKiller() const override {return true;}

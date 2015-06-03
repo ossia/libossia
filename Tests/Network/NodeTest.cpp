@@ -28,7 +28,7 @@ private Q_SLOTS:
         auto node = minuitDev->children().front();
         QCOMPARE(node->getName(), nodeName);
 
-        QCOMPARE(node->getParent().getName(), minuitDev->getName());
+        QCOMPARE(node->getParent()->getName(), minuitDev->getName());
 
         OSC osc{"127.0.0.1", 9998, 9999};
         auto oscDevice = Device::create(osc, "osc_device");

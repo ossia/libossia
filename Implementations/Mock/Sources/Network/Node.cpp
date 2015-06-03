@@ -18,7 +18,7 @@ public:
   ~MockNode() {}
 
   // Navigation
-  virtual Node & getParent() const override {return *parent;}
+  virtual std::shared_ptr<Node> getParent() const override {return {};}
 
   // Accessors
   virtual string getName() const override {return "";}

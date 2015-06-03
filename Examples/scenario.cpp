@@ -22,25 +22,25 @@ int main()
 {
     // create a scenario
     auto scenario = Scenario::create();
-    
+
     // create first node of the scenario
     auto startScenarioNode = TimeNode::create();
     scenario->setStartNode(startScenarioNode);
-    
+
     // create last node of the scenario
     auto endScenarioNode = TimeNode::create();
     scenario->setEndNode(endScenarioNode);
-    
+
     // create a time constraint of 2000 ms
     TimeValue duration(2000);
     auto constraint = TimeConstraint::create(duration, duration, duration);
-    
+
     // add time contraint from start to the end of the scenario
     scenario->addConstraint(*constraint, *scenario->getStartNode(), *scenario->getEndNode());
-    
+
     // tell the scenario to kill children processes when it ends
     scenario->setKiller(true);
-    
+
     // play the scenario
     scenario->play();
 
