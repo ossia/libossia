@@ -33,8 +33,13 @@ public:
           const std::shared_ptr<TimeNode>,
           const std::shared_ptr<TimeNode>) override {}
 
+  virtual void removeConstraint(const std::shared_ptr<TimeConstraint> constraint)
+  {
+
+  }
+
   // Accessors
-  virtual const bool isKiller() const override {return true;}
+  virtual bool isKiller() const override {return true;}
   virtual void setKiller(bool) override {}
   // internal TimeNodes
   virtual const shared_ptr<TimeNode> & getStartNode() const override {

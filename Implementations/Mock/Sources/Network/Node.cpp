@@ -1,4 +1,3 @@
-#pragma once
 #include "Network/Node.h"
 #include "../Misc/Container.cpp"
 
