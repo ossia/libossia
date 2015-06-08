@@ -1,88 +1,75 @@
-#include "Editor/TimeConstraint.h"
-#include "Editor/TimeValue.h"
+#include "JamomaTimeConstraint.h"
 
-using namespace OSSIA;
-using namespace std;
-
-class JamomaTimeConstraint : public TimeConstraint
-{
-  
-private:
-  
-  // Implementation specific
-  TimeValue             mDuration;
-  TimeValue             mDurationMin;
-  TimeValue             mDurationMax;
-  
-  shared_ptr<TimeNode>  mStartNode;
-  shared_ptr<TimeNode>  mEndNode;
-  shared_ptr<State>     mStartState;
-  shared_ptr<State>     mEndState;
-  
-public:
-  
 # pragma mark -
 # pragma mark Life cycle
-  
-  JamomaTimeConstraint(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/) :
-  mDuration(nominal),
-  mDurationMin(min),
-  mDurationMax(max)
-  {}
-  
-  JamomaTimeConstraint(const JamomaTimeConstraint * other)
-  {}
-  
-  virtual ~JamomaTimeConstraint()
-  {}
-  
-  virtual shared_ptr<TimeConstraint> clone() const override
-  {
-    return make_shared<JamomaTimeConstraint>(this);
-  }
+
+shared_ptr<TimeConstraint> JamomaTimeConstraint::create(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/)
+{
+  return make_shared<JamomaTimeConstraint>(nominal, min, max);
+}
+
+JamomaTimeConstraint::JamomaTimeConstraint(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/) :
+mDuration(nominal),
+mDurationMin(min),
+mDurationMax(max)
+{}
+
+JamomaTimeConstraint::JamomaTimeConstraint(const JamomaTimeConstraint * other)
+{}
+
+JamomaTimeConstraint::~JamomaTimeConstraint()
+{}
+
+shared_ptr<TimeConstraint> JamomaTimeConstraint::clone() const
+{
+  return make_shared<JamomaTimeConstraint>(this);
+}
 
 # pragma mark -
 # pragma mark Execution
-  
-  virtual void play(bool log = false, string name = "") const override
-  {}
+
+void JamomaTimeConstraint::play(bool log, string name) const
+{}
 
 # pragma mark -
 # pragma mark Accessors
-  
-  virtual const shared_ptr<TimeNode> & getStartNode() const override
-  {
-    return mStartNode;
-  }
-  
-  virtual const shared_ptr<TimeNode> & getEndNode() const override
-  {
-    return mEndNode;
-  }
 
-  virtual const shared_ptr<State> & getStartState() const override
-  {
-    return mStartState;
-  }
-  
-  virtual void setStartState(shared_ptr<State> startState) override
-  {
-    mStartState = startState;
-  }
-  
-  virtual const shared_ptr<State> & getEndState() const override
-  {
-    return mEndState;
-  }
-  
-  virtual void setEndState(shared_ptr<State> endState) override
-  {
-    mEndState = endState;
-  }
-
-};
-
-shared_ptr<TimeConstraint> TimeConstraint::create(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/)
+const shared_ptr<TimeNode> & JamomaTimeConstraint::getStartNode() const
 {
-  return make_shared<JamomaTimeConstraint>(nominal, min, max);
+  return mStartNode;
+}
+
+void JamomaTimeConstraint::setStartNode(std::shared_ptr<TimeNode> startNode)
+{
+  mStartNode = startNode;
+}
+
+const shared_ptr<TimeNode> & JamomaTimeConstraint::getEndNode() const
+{
+  return mEndNode;
+}
+
+void JamomaTimeConstraint::setEndNode(std::shared_ptr<TimeNode> endNode)
+{
+  mEndNode = endNode;
+}
+
+const shared_ptr<State> & JamomaTimeConstraint::getStartState() const
+{
+  return mStartState;
+}
+
+void JamomaTimeConstraint::setStartState(shared_ptr<State> startState)
+{
+  mStartState = startState;
+}
+
+const shared_ptr<State> & JamomaTimeConstraint::getEndState() const
+{
+  return mEndState;
+}
+
+void JamomaTimeConstraint::setEndState(shared_ptr<State> endState)
+{
+  mEndState = endState;
 }

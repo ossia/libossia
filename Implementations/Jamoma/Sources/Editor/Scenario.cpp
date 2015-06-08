@@ -1,6 +1,8 @@
 #include "Editor/Scenario.h"
 #include "Editor/TimeNode.h"
 
+#include "JamomaTimeConstraint.h"
+
 #include "TimeProcess.cpp"
 #include "../Misc/Container.cpp"
 
@@ -57,8 +59,8 @@ public:
     mTimeNodes.push_back(endNode);
     
     // edit constraint
-    //constraint.setStartNode(startNode);
-    //constraint.setEndNode(endNode);
+    dynamic_pointer_cast<JamomaTimeConstraint>(constraint)->setStartNode(startNode);
+    dynamic_pointer_cast<JamomaTimeConstraint>(constraint)->setEndNode(endNode);
   }
   
   virtual void removeConstraint(const shared_ptr<TimeConstraint> constraint) override
