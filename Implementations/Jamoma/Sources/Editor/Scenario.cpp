@@ -78,7 +78,7 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
-  virtual const bool isKiller() const override
+  virtual bool isKiller() const override
   {
     return mIsKiller;
   }

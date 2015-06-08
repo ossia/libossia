@@ -51,6 +51,10 @@ public:
 
     // build tree from the root
     buildChildren();
+    
+    // is there children below ?
+    if (children().size() == 0)
+      throw std::runtime_error("namespace empty after the update");
 
     return err == kTTErrNone;
   }
@@ -79,7 +83,7 @@ shared_ptr<Device> Device::create(Protocol & protocol, string name)
   application = applicationManager.send("ApplicationFind", device_name);
   if (application.valid())
   {
-    TTLogError("%s device created already exist\n");
+    throw std::runtime_error("the device already exist");
     return nullptr;
   }
 
@@ -115,7 +119,7 @@ shared_ptr<Device> Device::create(Protocol & protocol, string name)
     if (!applicationManager.get("applicationLocalName", local_device_name))
       protocolMinuit.send("ApplicationRegister", local_device_name);
     else
-      TTLogError("Local device doesn't exist\n");
+      throw std::runtime_error("Local device doesn't exist");
 
     // register the application to the Minuit protocol and set parameters up
     protocolMinuit.send("Stop");
@@ -153,7 +157,7 @@ shared_ptr<Device> Device::create(Protocol & protocol, string name)
     if (!applicationManager.get("applicationLocalName", local_device_name))
       protocolOSC.send("ApplicationRegister", local_device_name);
     else
-      TTLogError("Local device doesn't exist");
+      throw std::runtime_error("Local device doesn't exist");
 
     // register the application to the OSC protocol and set paramaters up
     protocolOSC.send("Stop");
