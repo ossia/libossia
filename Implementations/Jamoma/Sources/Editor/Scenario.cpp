@@ -1,7 +1,7 @@
 #include "Editor/Scenario.h"
 #include "Editor/TimeNode.h"
 
-#include "JamomaTimeConstraint.h"
+#include "../../Includes/Editor/JamomaTimeConstraint.h"
 
 #include "TimeProcess.cpp"
 #include "../Misc/Container.cpp"
