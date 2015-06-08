@@ -18,6 +18,8 @@
 using namespace OSSIA;
 using namespace std;
 
+void explore(shared_ptr<Node> node);
+
 int main()
 {
   // No protocol device creation
@@ -40,18 +42,15 @@ int main()
 */
   // Minuit device
   cout << "\nMinuit device example\n";
-  Minuit minuitDeviceParameters{"127.0.0.1", 9998, 13579};
-  auto minuitDevice = Device::create(minuitDeviceParameters, "newDevice");
+  Minuit minuitDeviceParameters{"127.0.0.1", 10001, 13579};
+  auto minuitDevice = Device::create(minuitDeviceParameters, "myPdApp");
   {
     // tree building
     minuitDevice->updateNamespace();
     
     // display tree in console
     cout << "The content of Minuit device is :\n";
-    for(const auto& node : minuitDevice->children())
-    {
-      cout << node->getName() << "\n";
-    }
+    explore(minuitDevice);
   }
 
   // OSC device
@@ -107,4 +106,13 @@ int main()
 
   while (true)
     ;
+}
+
+void explore(shared_ptr<Node> node)
+{
+    for(const auto& child : node->children())
+    {
+        cout << child->getName() << "\n";
+        explore(child);
+    }
 }
