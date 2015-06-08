@@ -30,7 +30,7 @@ public:
   
   virtual shared_ptr<Message> clone() const override
   {
-    return shared_ptr<Message>(new JamomaMessage(this));
+    return make_shared<JamomaMessage>(this);
   }
 
 # pragma mark -
@@ -55,5 +55,5 @@ public:
 
 shared_ptr<Message> Message::create(shared_ptr<Address> a, AddressValue * v)
 {
-  return shared_ptr<Message>(new JamomaMessage(a, v));
+  return make_shared<JamomaMessage>(a, v);
 }

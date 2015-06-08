@@ -27,7 +27,7 @@ public:
   
   virtual shared_ptr<State> clone() const override
   {
-    return shared_ptr<State>(new JamomaState(this));
+    return make_shared<JamomaState>(this);
   }
 
 # pragma mark -
@@ -42,5 +42,5 @@ public:
 
 shared_ptr<State> State::create()
 {
-  return shared_ptr<State>(new JamomaState);
+  return make_shared<JamomaState>();
 }

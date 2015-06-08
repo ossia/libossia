@@ -112,5 +112,5 @@ public:
 
 shared_ptr<Scenario> Scenario::create()
 {
-  return nullptr;//shared_ptr<Scenario>(new JamomaScenario());
+  return nullptr; // make_shared<JamomaScenario>();
 }

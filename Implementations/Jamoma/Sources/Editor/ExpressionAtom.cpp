@@ -27,7 +27,7 @@ public:
   
   virtual shared_ptr<ExpressionAtom> clone() const override
   {
-    return shared_ptr<ExpressionAtom>(new JamomaExpressionAtom(this));
+    return make_shared<JamomaExpressionAtom>(this);
   }
 
 # pragma mark -
@@ -58,5 +58,5 @@ public:
 
 shared_ptr<ExpressionAtom> ExpressionAtom::create(std::shared_ptr<ExpressionValue> expr1, Operator op, std::shared_ptr<ExpressionValue> expr2)
 {
-  return shared_ptr<ExpressionAtom>(new JamomaExpressionAtom(expr1, op, expr2));
+  return make_shared<JamomaExpressionAtom>(expr1, op, expr2);
 }

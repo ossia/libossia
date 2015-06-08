@@ -38,7 +38,7 @@ public:
   
   virtual shared_ptr<TimeConstraint> clone() const override
   {
-    return shared_ptr<TimeConstraint>(new JamomaTimeConstraint(this));
+    return make_shared<JamomaTimeConstraint>(this);
   }
 
 # pragma mark -
@@ -84,5 +84,5 @@ public:
 
 shared_ptr<TimeConstraint> TimeConstraint::create(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/)
 {
-  return shared_ptr<TimeConstraint>(new JamomaTimeConstraint(nominal, min, max));
+  return make_shared<JamomaTimeConstraint>(nominal, min, max);
 }
