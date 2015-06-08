@@ -1,4 +1,4 @@
-#include "../../Includes/Editor/JamomaTimeConstraint.h"
+#include "Editor/JamomaTimeConstraint.h"
 
 # pragma mark -
 # pragma mark Life cycle

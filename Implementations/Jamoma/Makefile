@@ -52,6 +52,7 @@ SRC64 += Sources/Network/Node.x64.o
 #########################################
 
 INCLUDES = -I../../Headers/
+INCLUDES += -IIncludes/
 INCLUDES += -I/usr/local/jamoma/include/
 INCLUDE_FILES := $(wildcard INCLUDES/*.h)
 
