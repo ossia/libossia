@@ -24,8 +24,6 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  shared_ptr<TimeConstraint> create(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/);
-  
   JamomaTimeConstraint(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/);
   
   JamomaTimeConstraint(const JamomaTimeConstraint * other);

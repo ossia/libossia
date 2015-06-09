@@ -3,7 +3,7 @@
 # pragma mark -
 # pragma mark Life cycle
 
-shared_ptr<TimeConstraint> JamomaTimeConstraint::create(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/)
+shared_ptr<TimeConstraint> TimeConstraint::create(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/)
 {
   return make_shared<JamomaTimeConstraint>(nominal, min, max);
 }
