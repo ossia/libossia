@@ -36,7 +36,7 @@ public:
   
   virtual shared_ptr<Scenario> clone() const override
   {
-    return nullptr;//shared_ptr<Scenario>(new JamomaScenario(this));
+    return nullptr; // make_shared<JamomaScenario>(this);
   }
 
 # pragma mark -

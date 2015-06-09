@@ -32,7 +32,7 @@ public:
   
   virtual shared_ptr<Automation> clone() const override
   {
-    return nullptr;//shared_ptr<Automation>(new JamomaAutomation(this));
+    return nullptr; // make_shared<JamomaAutomation>(this);
   }
 
 # pragma mark -
@@ -77,5 +77,5 @@ public:
 
 template<> shared_ptr<Automation<double>> Automation<double>::create()
 {
-  return nullptr;//shared_ptr<Automation>(new JamomaAutomation());
+  return nullptr; // make_shared<JamomaAutomation>();
 }

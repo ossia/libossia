@@ -26,7 +26,7 @@ public:
   
   virtual shared_ptr<TimeNode> clone() const override
   {
-    return nullptr;//shared_ptr<TimeNode>(new JamomaTimeNode(this));
+    return nullptr; // make_shared<JamomaTimeNode>(this);
   }
 
 # pragma mark -
@@ -53,5 +53,5 @@ public:
 
 shared_ptr<TimeNode> TimeNode::create()
 {
-  return nullptr;//shared_ptr<TimeNode>(new JamomaTimeNode());
+  return nullptr; // make_shared<JamomaTimeNode>();
 }
