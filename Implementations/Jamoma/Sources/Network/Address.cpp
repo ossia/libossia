@@ -136,40 +136,75 @@ public:
     // clear former value
     delete mValue;
     
-    if (v.size())
+    // create new value and fill it
+    switch (mValueType)
     {
-      if (v[0].type() == kTypeBoolean)
+      case AddressValue::Type::NONE :
       {
-        mValue = new OSSIA::Bool(v[0]);
-        return true;
+        mValue = new OSSIA::None();
+        return v.size() == 0;
       }
-      else if (v[0].type() == kTypeUInt8 || v[0].type() == kTypeInt8 ||
-               v[0].type() == kTypeUInt16 || v[0].type() == kTypeInt16 ||
-               v[0].type() == kTypeUInt32 || v[0].type() == kTypeInt32 ||
-               v[0].type() == kTypeUInt64 || v[0].type() == kTypeInt64)
+      case AddressValue::Type::BOOL :
       {
-        mValue = new OSSIA::Int(TTInt32(v[0]));
-        return true;
+        if (v.size() == 1)
+        {
+          mValue = new OSSIA::Bool(v[0]);
+          return true;
+        }
+        break;
       }
-      else if (v[0].type() == kTypeFloat32 || v[0].type() == kTypeFloat64)
+      case AddressValue::Type::INT :
       {
-        mValue = new OSSIA::Float(TTFloat64(v[0]));
-        return true;
+        if (v.size() == 1)
+        {
+          mValue = new OSSIA::Int(v[0]);
+          return true;
+        }
+        break;
       }
-      else if (v[0].type() == kTypeString)
+      case AddressValue::Type::FLOAT :
       {
-        char* c_value = TTString(v[0]).data();
-        mValue = new OSSIA::Char(c_value[0]);
-        return true;
+        if (v.size() == 1)
+        {
+          mValue = new OSSIA::Float(v[0]);
+          return true;
+        }
+        break;
       }
-      else if (v[0].type() == kTypeSymbol)
+      case AddressValue::Type::CHAR :
       {
-        
-        TTSymbol s_value = v[0];
-        mValue = new OSSIA::String(s_value.c_str());
-        return true;
+        if (v.size() == 1)
+        {
+          if (v[0].type() == kTypeString)
+          {
+            char* c_value = TTString(v[0]).data();
+            mValue = new OSSIA::Char(c_value[0]);
+            return true;
+          }
+        }
+        break;
       }
-      // todo : generic case
+      case AddressValue::Type::STRING :
+      {
+        if (v.size() == 1)
+        {
+          if (v[0].type() == kTypeSymbol)
+          {
+            TTSymbol s_value = v[0];
+            mValue = new OSSIA::String(s_value.c_str());
+            return true;
+          }
+        }
+        break;
+      }
+      case AddressValue::Type::TUPLE :
+      {
+        ; // todo
+      }
+      case AddressValue::Type::GENERIC :
+      {
+        ; // todo
+      }
     }
 
     return false;
