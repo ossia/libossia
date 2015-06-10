@@ -14,6 +14,7 @@
 
 #pragma once
 #include <string>
+#include <vector>
 
 #include "Editor/ExpressionValue.h"
 
@@ -77,7 +78,7 @@ struct Bool : public AddressValue
 {
   /*! constructor 
    \param bool value */
-  Bool(bool v) : value(v) {type = Type::BOOL;}
+  Bool(bool v = false) : value(v) {type = Type::BOOL;}
   
   bool value;
 };
@@ -90,7 +91,7 @@ struct Int : public AddressValue
 {
   /*! constructor
    \param int value */
-  Int(int v) : value(v) {type = Type::INT;}
+  Int(int v = 0) : value(v) {type = Type::INT;}
   
   int value;
 };
@@ -103,7 +104,7 @@ struct Float : public AddressValue
 {
   /*! constructor
    \param float value */
-  Float(float v) : value(v) {type = Type::FLOAT;}
+  Float(float v = 0.) : value(v) {type = Type::FLOAT;}
   
   float value;
 };
@@ -116,7 +117,7 @@ struct Char : public AddressValue
 {
   /*! constructor
    \param char value */
-  Char(char v) : value(v) {type = Type::CHAR;}
+  Char(char v = 0x00) : value(v) {type = Type::CHAR;}
   
   char value;
 };
@@ -129,9 +130,22 @@ struct String : public AddressValue
 {
   /*! constructor
    \param std::string value */
-  String(std::string v) : value(v) {type = Type::STRING;}
+  String(std::string v = "") : value(v) {type = Type::STRING;}
   
   std::string value;
+};
+  
+# pragma mark -
+# pragma mark Tuple
+  
+/*! \details Tuple value */
+struct Tuple : public AddressValue
+{
+  /*! constructor
+  \param std::vector<#AddressValue> value*/
+  Tuple(std::vector<AddressValue*> v = std::vector<AddressValue*>()) : value(v) {type = Type::TUPLE;}
+    
+  std::vector<AddressValue*> value;
 };
   
 # pragma mark -

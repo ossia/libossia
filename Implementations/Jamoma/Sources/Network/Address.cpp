@@ -52,32 +52,32 @@ public:
         }
         else if (type == kTTSym_generic)
         {
-          // todo : do i need to create an array of AddressValue ?
+          mValue = new OSSIA::Tuple();
           mValueType = AddressValue::Type::TUPLE;
         }
         else if (type == kTTSym_boolean)
         {
-          mValue = new OSSIA::Bool(false);
+          mValue = new OSSIA::Bool();
           mValueType = AddressValue::Type::BOOL;
         }
         else if (type == kTTSym_integer)
         {
-          mValue = new OSSIA::Int(0);
+          mValue = new OSSIA::Int();
           mValueType = AddressValue::Type::INT;
         }
         else if (type == kTTSym_decimal)
         {
-          mValue = new OSSIA::Float(0.);
+          mValue = new OSSIA::Float();
           mValueType = AddressValue::Type::FLOAT;
         }
         else if (type == kTTSym_array)
         {
-          // todo : do i need to create an array of AddressValue ?
+          mValue = new OSSIA::Tuple();
           mValueType = AddressValue::Type::TUPLE;
         }
         else if (type == kTTSym_string)
         {
-          mValue = new OSSIA::String("");
+          mValue = new OSSIA::String();
           mValueType = AddressValue::Type::STRING;
         }
         
@@ -136,78 +136,10 @@ public:
     // clear former value
     delete mValue;
     
-    // create new value and fill it
-    switch (mValueType)
-    {
-      case AddressValue::Type::NONE :
-      {
-        mValue = new OSSIA::None();
-        return v.size() == 0;
-      }
-      case AddressValue::Type::BOOL :
-      {
-        if (v.size() == 1)
-        {
-          mValue = new OSSIA::Bool(v[0]);
-          return true;
-        }
-        break;
-      }
-      case AddressValue::Type::INT :
-      {
-        if (v.size() == 1)
-        {
-          mValue = new OSSIA::Int(v[0]);
-          return true;
-        }
-        break;
-      }
-      case AddressValue::Type::FLOAT :
-      {
-        if (v.size() == 1)
-        {
-          mValue = new OSSIA::Float(v[0]);
-          return true;
-        }
-        break;
-      }
-      case AddressValue::Type::CHAR :
-      {
-        if (v.size() == 1)
-        {
-          if (v[0].type() == kTypeString)
-          {
-            char* c_value = TTString(v[0]).data();
-            mValue = new OSSIA::Char(c_value[0]);
-            return true;
-          }
-        }
-        break;
-      }
-      case AddressValue::Type::STRING :
-      {
-        if (v.size() == 1)
-        {
-          if (v[0].type() == kTypeSymbol)
-          {
-            TTSymbol s_value = v[0];
-            mValue = new OSSIA::String(s_value.c_str());
-            return true;
-          }
-        }
-        break;
-      }
-      case AddressValue::Type::TUPLE :
-      {
-        ; // todo
-      }
-      case AddressValue::Type::GENERIC :
-      {
-        ; // todo
-      }
-    }
+    // create new value
+    mValue = convertTTValueIntoAddressValue(v, mValueType);
 
-    return false;
+    return mValue != nullptr;
   }
   
   virtual AddressValue * getValue() const override
@@ -219,44 +151,7 @@ public:
   virtual bool sendValue(const AddressValue * value) const override
   {
     TTValue v;
-    
-    // convert AddressValue into TTValue
-    if (value->getType() == AddressValue::Type::NONE)
-    {
-      ;
-    }
-    else if (value->getType() == AddressValue::Type::BOOL)
-    {
-      Bool * b = (Bool*)value;
-      v = TTBoolean(b->value);
-    }
-    else if (value->getType() == AddressValue::Type::INT)
-    {
-      Int * i = (Int*)value;
-      v = TTInt32(i->value);
-    }
-    else if (value->getType() == AddressValue::Type::FLOAT)
-    {
-      Float * f = (Float*)value;
-      v = TTFloat64(f->value);
-    }
-    else if (value->getType() == AddressValue::Type::CHAR)
-    {
-      ; // todo
-    }
-    else if (value->getType() == AddressValue::Type::STRING)
-    {
-      String * s = (String*)value;
-      v = TTSymbol(s->value);
-    }
-    else if (value->getType() == AddressValue::Type::TUPLE)
-    {
-      ; // todo
-    }
-    else if (value->getType() == AddressValue::Type::GENERIC)
-    {
-      ; // todo
-    }
+    convertAddressValueIntoTTValue(value, v);
     
     if (mData.name() == "Data")
       return !mData.send("Command", v);
@@ -349,5 +244,162 @@ private:
     }
     
     return kTTErrGeneric;
+  }
+  
+  AddressValue * convertTTValueIntoAddressValue(TTValue& v, AddressValue::Type valueType) const
+  {
+    switch (valueType)
+    {
+      case AddressValue::Type::NONE :
+      {
+        return new OSSIA::None();
+      }
+        
+      case AddressValue::Type::BOOL :
+      {
+        if (v.size() == 1)
+          return new OSSIA::Bool(v[0]);
+        
+        return new OSSIA::Bool();
+      }
+    
+      case AddressValue::Type::INT :
+      {
+        if (v.size() == 1)
+          return new OSSIA::Int(v[0]);
+        
+        return new OSSIA::Int();
+      }
+        
+      case AddressValue::Type::FLOAT :
+      {
+        if (v.size() == 1)
+          return new OSSIA::Float(v[0]);
+        
+        return new OSSIA::Float();
+      }
+        
+      case AddressValue::Type::CHAR :
+      {
+        if (v.size() == 1)
+        {
+          if (v[0].type() == kTypeString)
+          {
+            char* c_value = TTString(v[0]).data();
+            return new OSSIA::Char(c_value[0]);
+          }
+        }
+        
+        return new OSSIA::Char();
+      }
+        
+      case AddressValue::Type::STRING :
+      {
+        if (v.size() == 1)
+        {
+          if (v[0].type() == kTypeSymbol)
+          {
+            TTSymbol s_value = v[0];
+            return new OSSIA::String(s_value.c_str());
+          }
+        }
+        
+        return new OSSIA::String();
+      }
+        
+      case AddressValue::Type::TUPLE :
+      {
+        std::vector<AddressValue*> t_value;
+        
+        for (const auto & e : v)
+        {
+          AddressValue::Type type;
+          
+          if (e.type() == kTypeBoolean)
+          {
+            type = AddressValue::Type::BOOL;
+          }
+          else if (e.type() == kTypeInt8 || e.type() == kTypeUInt8 ||
+                   e.type() == kTypeInt16 || e.type() == kTypeUInt16 ||
+                   e.type() == kTypeInt32 || e.type() == kTypeUInt32 ||
+                   e.type() == kTypeInt64 || e.type() == kTypeUInt64)
+          {
+            type = AddressValue::Type::INT;
+          }
+          else if (e.type() == kTypeFloat32 || e.type() == kTypeFloat64)
+          {
+            type = AddressValue::Type::FLOAT;
+          }
+          else if (e.type() == kTypeSymbol)
+          {
+            type = AddressValue::Type::STRING;
+          }
+          else
+          {
+            continue;
+          }
+          
+          TTValue t(e);
+          t_value.push_back(convertTTValueIntoAddressValue(t, type));
+        }
+        
+        return new OSSIA::Tuple(t_value);
+      }
+        
+      case AddressValue::Type::GENERIC :
+      {
+        return nullptr; // todo
+      }
+    }
+  }
+  
+  void convertAddressValueIntoTTValue(const AddressValue * value, TTValue & v) const
+  {
+    if (value->getType() == AddressValue::Type::NONE)
+    {
+      ;
+    }
+    else if (value->getType() == AddressValue::Type::BOOL)
+    {
+      Bool * b = (Bool*)value;
+      v = TTBoolean(b->value);
+    }
+    else if (value->getType() == AddressValue::Type::INT)
+    {
+      Int * i = (Int*)value;
+      v = TTInt32(i->value);
+    }
+    else if (value->getType() == AddressValue::Type::FLOAT)
+    {
+      Float * f = (Float*)value;
+      v = TTFloat64(f->value);
+    }
+    else if (value->getType() == AddressValue::Type::CHAR)
+    {
+      Char * c = (Char*)value;
+      v = TTSymbol(c->value);
+    }
+    else if (value->getType() == AddressValue::Type::STRING)
+    {
+      String * s = (String*)value;
+      v = TTSymbol(s->value);
+    }
+    else if (value->getType() == AddressValue::Type::TUPLE)
+    {
+      Tuple * t = (Tuple*)value;
+      
+      for (const auto & e : t->value)
+      {
+        TTValue n;
+        convertAddressValueIntoTTValue(e, n);
+        
+        if (n.size())
+          v.append(n[0]);
+      }
+    }
+    else if (value->getType() == AddressValue::Type::GENERIC)
+    {
+      ; // todo
+    }
   }
 };
