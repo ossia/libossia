@@ -112,7 +112,123 @@ void explore(shared_ptr<Node> node)
 {
     for(const auto& child : node->children())
     {
-        cout << child->getName() << "\n";
+        cout << child->getName();
+        
+        auto address = child->getAddress();
+        
+        if (address)
+        {
+            cout << " : address type=";
+            switch (address->getValueType())
+            {
+                case AddressValue::Type::NONE :
+                {
+                    cout << "none";
+                    break;
+                }
+                case AddressValue::Type::BOOL :
+                {
+                    cout << "bool";
+                    Bool * b = (Bool*)address->getValue();
+                    cout << ", value=" << b->value;
+                    break;
+                }
+                case AddressValue::Type::INT :
+                {
+                    cout << "int";
+                    Int * i = (Int*)address->getValue();
+                    cout << ", value=" << i->value;
+                    break;
+                }
+                case AddressValue::Type::FLOAT :
+                {
+                    cout << "float";
+                    Float * f = (Float*)address->getValue();
+                    cout << ", value=" << f->value;
+                    break;
+                }
+                case AddressValue::Type::CHAR :
+                {
+                    cout << "char";
+                    Char * c = (Char*)address->getValue();
+                    cout << ", value=" << c->value;
+                    break;
+                }
+                case AddressValue::Type::STRING :
+                {
+                    cout << "string";
+                    String * s = (String*)address->getValue();
+                    cout << ", value=" << s->value;
+                    break;
+                }
+                case AddressValue::Type::TUPLE :
+                {
+                    cout << "tuple";
+                    // todo: cout << ", value=" << address->getValue();
+                    break;
+                }
+                case AddressValue::Type::GENERIC :
+                {
+                    cout << "generic";
+                    // todo: cout << ", value=" << address->getValue();
+                    break;
+                }
+                default:
+                    break;
+            }
+            
+            cout << ", access=";
+            switch (address->getAccessMode())
+            {
+                case Address::AccessMode::SET :
+                {
+                    cout << "set";
+                    break;
+                }
+                case Address::AccessMode::GET :
+                {
+                    cout << "get";
+                    break;
+                }
+                case Address::AccessMode::BI :
+                {
+                    cout << "bi";
+                    break;
+                }
+                default:
+                    break;
+            }
+            
+            cout << ", bounding=";
+            switch (address->getBoundingMode())
+            {
+                case Address::BoundingMode::FREE :
+                {
+                    cout << "free";
+                    break;
+                }
+                case Address::BoundingMode::CLIP :
+                {
+                    cout << "clip";
+                    break;
+                }
+                case Address::BoundingMode::WRAP :
+                {
+                    cout << "wrap";
+                    break;
+                }
+                case Address::BoundingMode::FOLD :
+                {
+                    cout << "fold";
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+        
+        cout << "\n";
+        
         explore(child);
     }
 }
