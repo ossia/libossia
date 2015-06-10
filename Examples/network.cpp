@@ -130,41 +130,99 @@ void explore(shared_ptr<Node> node)
                 {
                     cout << "bool";
                     Bool * b = (Bool*)address->getValue();
-                    cout << ", value=" << b->value;
+                    cout << ", value=< " << b->value << " >";
                     break;
                 }
                 case AddressValue::Type::INT :
                 {
                     cout << "int";
                     Int * i = (Int*)address->getValue();
-                    cout << ", value=" << i->value;
+                    cout << ", value=< " << i->value << " >";
                     break;
                 }
                 case AddressValue::Type::FLOAT :
                 {
                     cout << "float";
                     Float * f = (Float*)address->getValue();
-                    cout << ", value=" << f->value;
+                    cout << ", value=< " << f->value << " >";
                     break;
                 }
                 case AddressValue::Type::CHAR :
                 {
                     cout << "char";
                     Char * c = (Char*)address->getValue();
-                    cout << ", value=" << c->value;
+                    cout << ", value=< " << c->value << " >";
                     break;
                 }
                 case AddressValue::Type::STRING :
                 {
                     cout << "string";
                     String * s = (String*)address->getValue();
-                    cout << ", value=" << s->value;
+                    cout << ", value=< " << s->value << " >";
                     break;
                 }
                 case AddressValue::Type::TUPLE :
                 {
                     cout << "tuple";
-                    // todo: cout << ", value=" << address->getValue();
+                    Tuple * t = (Tuple*)address->getValue();
+                    
+                    cout << ", value=<";
+                    for (const auto & e : t->value)
+                    {
+                        cout << " ";
+                        switch (e->getType())
+                        {
+                            case AddressValue::Type::NONE :
+                            {
+                                cout << "-";
+                                break;
+                            }
+                            case AddressValue::Type::BOOL :
+                            {
+                                Bool * b = (Bool*)e;
+                                cout << b->value;
+                                break;
+                            }
+                            case AddressValue::Type::INT :
+                            {
+                                Int * i = (Int*)e;
+                                cout << i->value;
+                                break;
+                            }
+                            case AddressValue::Type::FLOAT :
+                            {
+                                Float * f = (Float*)e;
+                                cout << f->value;
+                                break;
+                            }
+                            case AddressValue::Type::CHAR :
+                            {
+                                Char * c = (Char*)e;
+                                cout << c->value;
+                                break;
+                            }
+                            case AddressValue::Type::STRING :
+                            {
+                                String * s = (String*)e;
+                                cout << s->value;
+                                break;
+                            }
+                            case AddressValue::Type::TUPLE :
+                            {
+                                // todo : make a recursive conversion function
+                                break;
+                            }
+                            case AddressValue::Type::GENERIC :
+                            {
+                                // todo
+                                break;
+                            }
+                            default:
+                                break;
+                        }
+                    }
+                    cout << " >";
+                        
                     break;
                 }
                 case AddressValue::Type::GENERIC :
