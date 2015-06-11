@@ -11,7 +11,7 @@ public:
   shared_ptr<Device> device;
 
   // Constructor, destructor
-  MockAddress(AddressValue::Type = AddressValue::Type::NONE) {}
+  MockAddress(AddressValue::Type = AddressValue::Type::IMPULSE) {}
   virtual ~MockAddress() {}
 
   // Network
@@ -23,7 +23,7 @@ public:
 
   virtual AddressValue * getValue() const override {return new AddressValue;}
   virtual AddressValue::Type getValueType() const override {
-    return AddressValue::Type::NONE;
+    return AddressValue::Type::IMPULSE;
   }
 
   virtual AccessMode getAccessMode() const override {return AccessMode::BI;}

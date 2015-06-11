@@ -19,5 +19,5 @@ class MockCurveSegment : public CurveSegment<double>
             {return 0.5;}
 
         virtual CurveSegmentType getType() const
-            {return CurveSegment<double>::CurveSegmentType::NONE;}
+            {return CurveSegment<double>::CurveSegmentType::IMPULSE;}
 };
