@@ -260,6 +260,28 @@ public:
   virtual Address & setDomain(AddressDomain * domain) override
   {
     mDomain = domain;
+    
+    TTValue range, v;
+    
+    if (mDomain->getValues().empty())
+    {
+      convertAddressValueIntoTTValue(mDomain->getMin(), v);
+      range.append(v);
+    
+      convertAddressValueIntoTTValue(mDomain->getMax(), v);
+      range.append(v);
+    }
+    else
+    {
+      for (const auto & e : mDomain->getValues())
+      {
+        convertAddressValueIntoTTValue(e, v);
+        range.append(v);
+      }
+    }
+
+    mData.set("rangeBounds", range);
+    
     return *this;
   }
   
@@ -268,8 +290,10 @@ public:
     return mBoundingMode;
   }
 
-  virtual Address & setBoundingMode(BoundingMode) override
+  virtual Address & setBoundingMode(BoundingMode boundingMode) override
   {
+    mBoundingMode = boundingMode;
+    
     if (mBoundingMode == BoundingMode::FREE)
       mData.set("rangeClipmode", kTTSym_none);
     else if (mBoundingMode == BoundingMode::CLIP)
@@ -289,6 +313,8 @@ public:
 
   virtual Address & setRepetitionFilter(bool repetitionFilter) override
   {
+    mRepetitionFilter = repetitionFilter;
+    
     mData.set("repetitionFilter", repetitionFilter);
 
     return *this;
