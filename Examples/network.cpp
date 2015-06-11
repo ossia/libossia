@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <memory>
+#include <functional>
 
 #include "Network/Address.h"
 #include "Network/Device.h"
@@ -19,6 +20,9 @@ using namespace OSSIA;
 using namespace std;
 
 void explore(shared_ptr<Node> node);
+void printValue(const AddressValue * v);
+void printDomain(const AddressDomain * d);
+void printValueCallback(const AddressValue * v);
 
 int main()
 {
@@ -48,7 +52,7 @@ int main()
     // tree building
     minuitDevice->updateNamespace();
     
-    // display tree in console
+    // display tree in console and attached to callback to display value update)
     cout << "The content of Minuit device is :\n";
     explore(minuitDevice);
   }
@@ -58,6 +62,7 @@ int main()
   OSC oscDeviceParameters{"127.0.0.1", 9996, 9997};
   auto oscDevice = Device::create(oscDeviceParameters, "oscDevice");
   {
+    OSSIA::Address::ValueCallback callback = printValueCallback;
     /* tree building :
      /test
      /test/my_bang
@@ -71,21 +76,27 @@ int main()
     
     auto oscImpulseNode = (*oscTestNode)->emplace((*oscTestNode)->children().cend(), "my_impulse");
     auto oscImpulseAddress = (*oscImpulseNode)->createAddress(AddressValue::Type::IMPULSE);
+    oscImpulseAddress->setValueCallback(callback);
     
     auto oscBoolNode = (*oscTestNode)->emplace((*oscTestNode)->children().cend(), "my_bool");
     auto oscBoolAddress = (*oscBoolNode)->createAddress(AddressValue::Type::BOOL);
+    oscBoolAddress->setValueCallback(callback);
     
     auto oscIntNode = (*oscTestNode)->emplace((*oscTestNode)->children().cend(), "my_int");
     auto oscIntAddress = (*oscIntNode)->createAddress(AddressValue::Type::INT);
+    oscIntAddress->setValueCallback(callback);
     
     auto oscFloatNode = (*oscTestNode)->emplace((*oscTestNode)->children().cend(), "my_float");
     auto oscFloatAddress = (*oscFloatNode)->createAddress(AddressValue::Type::FLOAT);
+    oscFloatAddress->setValueCallback(callback);
     
     auto oscStringNode = (*oscTestNode)->emplace((*oscTestNode)->children().cend(), "my_string");
     auto oscStringAddress = (*oscStringNode)->createAddress(AddressValue::Type::STRING);
+    oscStringAddress->setValueCallback(callback);
     
     auto oscTupleNode = (*oscTestNode)->emplace((*oscTestNode)->children().cend(), "my_tuple");
     auto oscTupleAddress = (*oscTupleNode)->createAddress(AddressValue::Type::TUPLE);
+    oscTupleAddress->setValueCallback(callback);
     
     // updating tree value
     Impulse n;
@@ -112,80 +123,6 @@ int main()
     ;
 }
 
-void printValue(AddressValue * v)
-{
-    switch (v->getType())
-    {
-        case AddressValue::Type::IMPULSE :
-        {
-            cout << "-";
-            break;
-        }
-        case AddressValue::Type::BOOL :
-        {
-            Bool * b = (Bool*)v;
-            cout << b->value;
-            break;
-        }
-        case AddressValue::Type::INT :
-        {
-            Int * i = (Int*)v;
-            cout << i->value;
-            break;
-        }
-        case AddressValue::Type::FLOAT :
-        {
-            Float * f = (Float*)v;
-            cout << f->value;
-            break;
-        }
-        case AddressValue::Type::CHAR :
-        {
-            Char * c = (Char*)v;
-            cout << c->value;
-            break;
-        }
-        case AddressValue::Type::STRING :
-        {
-            String * s = (String*)v;
-            cout << s->value;
-            break;
-        }
-        case AddressValue::Type::TUPLE :
-        {
-            Tuple * t = (Tuple*)v;
-            bool first = true;
-            for (const auto & e : t->value)
-            {
-                if (!first) cout << " ";
-                printValue(e);
-                first = false;
-            }
-            break;
-        }
-        case AddressValue::Type::GENERIC :
-        {
-            // todo
-            break;
-        }
-        default:
-            break;
-    }
-}
-
-void printDomain(AddressDomain * d)
-{
-    printValue(d->getMin());
-    cout << ", ";
-    printValue(d->getMax());
-    if (!d->getValues().empty())
-    {
-        cout << ", ";
-        for (const auto & v : d->getValues())
-            printValue(v);
-    }
-}
-
 void explore(shared_ptr<Node> node)
 {
     for (const auto& child : node->children())
@@ -196,6 +133,11 @@ void explore(shared_ptr<Node> node)
         
         if (address)
         {
+            // attach to callback
+            OSSIA::Address::ValueCallback callback = printValueCallback;
+            address->setValueCallback(callback);
+            
+            // display address info
             cout << " : ";
             switch (address->getValueType())
             {
@@ -248,8 +190,9 @@ void explore(shared_ptr<Node> node)
                 }
                 case AddressValue::Type::GENERIC :
                 {
-                    cout << "Generic";
-                    // todo: cout << ", value=" << address->getValue();
+                    cout << "Generic(";
+                    printValue(address->getValue());
+                    cout << ")";
                     break;
                 }
                 default:
@@ -316,4 +259,82 @@ void explore(shared_ptr<Node> node)
     }
 }
 
+void printValue(const AddressValue * v)
+{
+    switch (v->getType())
+    {
+        case AddressValue::Type::IMPULSE :
+        {
+            cout << "-";
+            break;
+        }
+        case AddressValue::Type::BOOL :
+        {
+            Bool * b = (Bool*)v;
+            cout << b->value;
+            break;
+        }
+        case AddressValue::Type::INT :
+        {
+            Int * i = (Int*)v;
+            cout << i->value;
+            break;
+        }
+        case AddressValue::Type::FLOAT :
+        {
+            Float * f = (Float*)v;
+            cout << f->value;
+            break;
+        }
+        case AddressValue::Type::CHAR :
+        {
+            Char * c = (Char*)v;
+            cout << c->value;
+            break;
+        }
+        case AddressValue::Type::STRING :
+        {
+            String * s = (String*)v;
+            cout << s->value;
+            break;
+        }
+        case AddressValue::Type::TUPLE :
+        {
+            Tuple * t = (Tuple*)v;
+            bool first = true;
+            for (const auto & e : t->value)
+            {
+                if (!first) cout << " ";
+                printValue(e);
+                first = false;
+            }
+            break;
+        }
+        case AddressValue::Type::GENERIC :
+        {
+            // todo
+            break;
+        }
+        default:
+            break;
+    }
+}
 
+void printDomain(const AddressDomain * d)
+{
+    printValue(d->getMin());
+    cout << ", ";
+    printValue(d->getMax());
+    if (!d->getValues().empty())
+    {
+        cout << ", ";
+        for (const auto & v : d->getValues())
+            printValue(v);
+    }
+}
+
+void printValueCallback(const AddressValue * v)
+{
+    printValue(v);
+    cout << "\n";
+}

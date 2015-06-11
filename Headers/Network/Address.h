@@ -131,18 +131,18 @@ public:
 # pragma mark Callback
   
   /*! to get the value back */
-  using AddressValueCallback = std::function<void(const AddressValue *)>;
+  using ValueCallback = std::function<void(const AddressValue *)>;
   
   /*! get the address value callback function
-   \return #AddressValueCallback function */
-  virtual AddressValueCallback getAddressValueCallback() const = 0;
+   \return #ValueCallback function */
+  virtual ValueCallback getValueCallback() const = 0;
   
   /*! set the address value callback function
-   \param #AddressValueCallback function */
-  virtual void setAddressValueCallback(AddressValueCallback callback) = 0;
+   \param #ValueCallback function */
+  virtual void setValueCallback(ValueCallback callback) = 0;
   
 protected:
-  AddressValueCallback m_callback;
+  ValueCallback m_callback;
 };
 
 }
