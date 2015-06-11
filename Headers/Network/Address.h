@@ -126,22 +126,22 @@ public:
   /*! set the address repetition filter status
    \param bool true is to enable repetition filter */
   virtual Address & setRepetitionFilter(bool = true) = 0;
-  
+
 # pragma mark -
 # pragma mark Callback
   
   /*! to get the value back */
-  using AddressValueCallback = std::function<void(const Address &, const AddressValue *)>;
+  using AddressValueCallback = std::function<void(const AddressValue *)>;
   
   /*! get the address value callback function
    \return #AddressValueCallback function */
-  AddressValueCallback getAddressValueCallback() const {return m_callback;};
+  virtual AddressValueCallback getAddressValueCallback() const = 0;
   
   /*! set the address value callback function
    \param #AddressValueCallback function */
-  void setAddressValueCallback(AddressValueCallback callback) {m_callback = callback;};
+  virtual void setAddressValueCallback(AddressValueCallback callback) = 0;
   
-private:
+protected:
   AddressValueCallback m_callback;
 };
 

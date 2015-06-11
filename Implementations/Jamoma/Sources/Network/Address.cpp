@@ -295,6 +295,19 @@ public:
   }
 
 # pragma mark -
+# pragma mark Callback
+
+  virtual AddressValueCallback getAddressValueCallback() const override
+  {
+    return m_callback;
+  }
+ 
+  virtual void setAddressValueCallback(AddressValueCallback callback) override
+  {
+    m_callback = callback;
+  }
+
+# pragma mark -
 # pragma mark Expression
 
   virtual bool evaluate() const override
@@ -315,15 +328,24 @@ private:
     // check data object
     if (aData.instance() == self->mData.instance())
     {
-      // print the returned value
-      TTLogMessage("address has been updated to %s \n", value.toString().data());
-      return kTTErrNone;
+      /*
+      if (self->m_callback)
+      {
+        AddressValue * v = self->convertTTValueIntoAddressValue(value, self->mValueType);
+        self->m_callback(v);
+        delete v;
+      */
+        // DEBUG print the returned value
+        TTLogMessage("address has been updated to %s\n", value.toString().data());
+        
+        return kTTErrNone;
+      //}
     }
 
     return kTTErrGeneric;
   }
 
-  AddressValue * convertTTValueIntoAddressValue(TTValue& v, AddressValue::Type valueType) const
+  AddressValue * convertTTValueIntoAddressValue(const TTValue& v, AddressValue::Type valueType) const
   {
     switch (valueType)
     {
