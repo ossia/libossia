@@ -62,7 +62,7 @@ public:
    \param #AddressValue::Type the type of the address to create
    \return std::shared_ptr<#Address> the new address */
   virtual std::shared_ptr<Address> createAddress(
-                AddressValue::Type = AddressValue::Type::NONE) = 0;
+                AddressValue::Type = AddressValue::Type::IMPULSE) = 0;
   
   /*! remove node's address
    \return bool true if the address is correctly removed */

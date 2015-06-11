@@ -32,7 +32,7 @@ public:
   /*! type of value */
   enum class Type
   {
-    NONE,
+    IMPULSE,
     BOOL,
     INT,
     FLOAT,
@@ -61,13 +61,13 @@ protected:
 };
 
 # pragma mark -
-# pragma mark None
+# pragma mark Impulse
   
-/*! \details None value */
-struct None : public AddressValue
+/*! \details Impulse value */
+struct Impulse : public AddressValue
 {
   /*! constructor */
-  None() {type = Type::NONE;}
+  Impulse() {type = Type::IMPULSE;}
 };
 
 # pragma mark -

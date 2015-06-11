@@ -18,6 +18,10 @@
 		460D07EE19BDD62500235124 /* TimeProcess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeProcess.h; sourceTree = "<group>"; };
 		460D07EF19BDD62500235124 /* TimeValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeValue.h; sourceTree = "<group>"; };
 		464201CE19BF370300893C87 /* CurveSegmentLinear.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentLinear.h; sourceTree = "<group>"; };
+		464258761B26EC7900324157 /* JamomaScenario.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaScenario.h; sourceTree = "<group>"; };
+		464D5F5E1B297CFB001C22E6 /* JamomaTimeNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaTimeNode.h; sourceTree = "<group>"; };
+		464D5F5F1B297FF5001C22E6 /* AddressDomain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddressDomain.h; sourceTree = "<group>"; };
+		464D5F601B29C0D5001C22E6 /* JamomaAutomation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaAutomation.h; sourceTree = "<group>"; };
 		46502A741AC2AB2C0067AB66 /* Device.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Device.cpp; sourceTree = "<group>"; };
 		46502A751AC2AB340067AB66 /* Address.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		46502A761AC2AB410067AB66 /* Node.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Node.cpp; sourceTree = "<group>"; };
@@ -45,6 +49,7 @@
 		46BA2A5D19C09A21009630B5 /* CurveSegmentLinear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentLinear.cpp; sourceTree = "<group>"; };
 		46BA2A5F19C09A21009630B5 /* CurveSegment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegment.cpp; sourceTree = "<group>"; };
 		46BA2A6019C09A21009630B5 /* Scenario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scenario.cpp; sourceTree = "<group>"; };
+		46C1CE2B1B26F98B00EDA0A6 /* JamomaTimeProcess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaTimeProcess.h; sourceTree = "<group>"; };
 		46D2C60D1B260B9900C04D8A /* JamomaTimeConstraint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaTimeConstraint.h; sourceTree = "<group>"; };
 		46D435DA1AB731330041D8AF /* Automation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Automation.cpp; sourceTree = "<group>"; };
 		46D435DB1AB735220041D8AF /* ExpressionAtom.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ExpressionAtom.cpp; sourceTree = "<group>"; };
@@ -103,6 +108,7 @@
 			children = (
 				4689BADF1ABA223800D1BA4E /* Address.h */,
 				4689BAE01ABA223800D1BA4E /* AddressValue.h */,
+				464D5F5F1B297FF5001C22E6 /* AddressDomain.h */,
 				4689BAE11ABA223800D1BA4E /* Device.h */,
 				4689BAE21ABA223800D1BA4E /* Node.h */,
 				4689BAE31ABA223800D1BA4E /* Protocol.h */,
@@ -209,7 +215,11 @@
 		46D2C60C1B260B9900C04D8A /* Editor */ = {
 			isa = PBXGroup;
 			children = (
+				464D5F601B29C0D5001C22E6 /* JamomaAutomation.h */,
+				464258761B26EC7900324157 /* JamomaScenario.h */,
 				46D2C60D1B260B9900C04D8A /* JamomaTimeConstraint.h */,
+				464D5F5E1B297CFB001C22E6 /* JamomaTimeNode.h */,
+				46C1CE2B1B26F98B00EDA0A6 /* JamomaTimeProcess.h */,
 			);
 			path = Editor;
 			sourceTree = "<group>";

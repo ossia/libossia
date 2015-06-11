@@ -15,6 +15,7 @@ private:
   mutable AddressValue *      mValue;
   AddressValue::Type          mValueType;
   AccessMode                  mAccessMode;
+  AddressDomain *             mDomain;
   BoundingMode                mBoundingMode;
   bool                        mRepetitionFilter;
   
@@ -27,7 +28,7 @@ public:
   
   JamomaAddress(TTObject aData = TTObject()) :
   mData(aData),
-  mValueType(AddressValue::Type::NONE),
+  mValueType(AddressValue::Type::IMPULSE),
   mAccessMode(AccessMode::BI),
   mBoundingMode(BoundingMode::FREE),
   mRepetitionFilter(false)
@@ -47,8 +48,8 @@ public:
         
         if (type == kTTSym_none)
         {
-          mValue = new AddressValue();
-          mValueType = AddressValue::Type::NONE;
+          mValue = new Impulse();
+          mValueType = AddressValue::Type::IMPULSE;
         }
         else if (type == kTTSym_generic)
         {
@@ -90,6 +91,70 @@ public:
           mAccessMode = AccessMode::SET;
         else if (service == kTTSym_return)
           mAccessMode = AccessMode::GET;
+        
+        TTValue range;
+        mData.get("rangeBounds", range);
+        
+        if (type == kTTSym_none)
+        {
+          mDomain = new AddressDomain();
+        }
+        else if (type == kTTSym_generic)
+        {
+          mDomain = new AddressDomain();
+        }
+        else if (type == kTTSym_boolean)
+        {
+          if (range.size() == 2)
+          {
+            AddressValue * min = new OSSIA::Bool(range[0]);
+            AddressValue * max = new OSSIA::Bool(range[1]);
+            mDomain = new AddressDomain(min, max);
+          }
+        }
+        else if (type == kTTSym_integer)
+        {
+          if (range.size() == 2)
+          {
+            AddressValue * min = new OSSIA::Int(range[0]);
+            AddressValue * max = new OSSIA::Int(range[1]);
+            mDomain = new AddressDomain(min, max);
+          }
+        }
+        else if (type == kTTSym_decimal)
+        {
+          if (range.size() == 2)
+          {
+            AddressValue * min = new OSSIA::Float(range[0]);
+            AddressValue * max = new OSSIA::Float(range[1]);
+            mDomain = new AddressDomain(min, max);
+          }
+        }
+        else if (type == kTTSym_array)
+        {
+          // we need to know the size of the array to setup the domain
+          TTValue v;
+          mData.get("value", v);
+          
+          std::vector<AddressValue*> tuple_min;
+          std::vector<AddressValue*> tuple_max;
+          for (int i = 0; i < v.size(); i++)
+            tuple_min.push_back(new OSSIA::Float(range[0]));
+            tuple_max.push_back(new OSSIA::Float(range[1]));
+      
+          mDomain = new AddressDomain(new OSSIA::Tuple(tuple_min), new OSSIA::Tuple(tuple_max));
+        }
+        else if (type == kTTSym_string)
+        {
+          // string values enumeration
+          std::vector<AddressValue*> values;
+          for (const auto & e : range)
+          {
+            TTSymbol s = e;
+            values.push_back(new OSSIA::String(s.c_str()));
+          }
+          mDomain = new AddressDomain(new OSSIA::Impulse(), new OSSIA::Impulse(), values);
+        }
         
         TTSymbol clipmode;
         mData.get("rangeClipmode", clipmode);
@@ -183,6 +248,18 @@ public:
   virtual Address & setAccessMode(AccessMode) override
   {
     // note : it is not possible to change the service attribute of Data after its creation
+    throw std::runtime_error("access mode cannot be set afterward");
+    return *this;
+  }
+  
+  virtual AddressDomain * getDomain() const override
+  {
+    return mDomain;
+  }
+  
+  virtual Address & setDomain(AddressDomain * domain) override
+  {
+    mDomain = domain;
     return *this;
   }
   
@@ -195,14 +272,14 @@ public:
   {
     if (mBoundingMode == BoundingMode::FREE)
       mData.set("rangeClipmode", kTTSym_none);
-      else if (mBoundingMode == BoundingMode::CLIP)
-        mData.set("rangeClipmode", kTTSym_both);
-        else if (mBoundingMode == BoundingMode::WRAP)
-          mData.set("rangeClipmode", kTTSym_wrap);
-          else if (mBoundingMode == BoundingMode::FOLD)
-            mData.set("rangeClipmode", kTTSym_fold);
-            
-            return *this;
+    else if (mBoundingMode == BoundingMode::CLIP)
+      mData.set("rangeClipmode", kTTSym_both);
+    else if (mBoundingMode == BoundingMode::WRAP)
+      mData.set("rangeClipmode", kTTSym_wrap);
+    else if (mBoundingMode == BoundingMode::FOLD)
+      mData.set("rangeClipmode", kTTSym_fold);
+
+    return *this;
   }
   
   virtual bool getRepetitionFilter() const override
@@ -250,9 +327,9 @@ private:
   {
     switch (valueType)
     {
-      case AddressValue::Type::NONE :
+      case AddressValue::Type::IMPULSE :
       {
-        return new OSSIA::None();
+        return new OSSIA::Impulse();
       }
         
       case AddressValue::Type::BOOL :
@@ -355,7 +432,7 @@ private:
   
   void convertAddressValueIntoTTValue(const AddressValue * value, TTValue & v) const
   {
-    if (value->getType() == AddressValue::Type::NONE)
+    if (value->getType() == AddressValue::Type::IMPULSE)
     {
       ;
     }

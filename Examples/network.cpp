@@ -43,7 +43,7 @@ int main()
   // Minuit device
   cout << "\nMinuit device example\n";
   Minuit minuitDeviceParameters{"127.0.0.1", 9998, 13579};
-  auto minuitDevice = Device::create(minuitDeviceParameters, "newDevice");
+  auto minuitDevice = Device::create(minuitDeviceParameters, "MinuitDevice");
   {
     // tree building
     minuitDevice->updateNamespace();
@@ -69,8 +69,8 @@ int main()
     */
     auto oscTestNode = oscDevice->emplace(oscDevice->children().cend(), "test");
     
-    auto oscBangNode = (*oscTestNode)->emplace((*oscTestNode)->children().cend(), "my_bang");
-    auto oscBangAddress = (*oscBangNode)->createAddress(AddressValue::Type::NONE);
+    auto oscImpulseNode = (*oscTestNode)->emplace((*oscTestNode)->children().cend(), "my_impulse");
+    auto oscImpulseAddress = (*oscImpulseNode)->createAddress(AddressValue::Type::IMPULSE);
     
     auto oscBoolNode = (*oscTestNode)->emplace((*oscTestNode)->children().cend(), "my_bool");
     auto oscBoolAddress = (*oscBoolNode)->createAddress(AddressValue::Type::BOOL);
@@ -85,11 +85,11 @@ int main()
     auto oscStringAddress = (*oscStringNode)->createAddress(AddressValue::Type::STRING);
     
     auto oscTupleNode = (*oscTestNode)->emplace((*oscTestNode)->children().cend(), "my_tuple");
-    // todo : auto oscTupleAddress = (*oscTupleNode)->createAddress(AddressValue::Type::FLOAT, AddressValue::Type::FLOAT, AddressValue::Type::FLOAT);
+    auto oscTupleAddress = (*oscTupleNode)->createAddress(AddressValue::Type::TUPLE);
     
     // updating tree value
-    None n;
-    oscBangAddress->sendValue(&n);
+    Impulse n;
+    oscImpulseAddress->sendValue(&n);
     
     Bool b(true);
     oscBoolAddress->sendValue(&b);
@@ -102,15 +102,93 @@ int main()
     
     String s("hello world !");
     oscStringAddress->sendValue(&s);
+      
+    std::vector<AddressValue*> value = {new Float(0.1), new Float(0.2), new Float(0.3)};
+    Tuple t(value);
+    oscTupleAddress->sendValue(&t);
   }
 
   while (true)
     ;
 }
 
+void printValue(AddressValue * v)
+{
+    switch (v->getType())
+    {
+        case AddressValue::Type::IMPULSE :
+        {
+            cout << "-";
+            break;
+        }
+        case AddressValue::Type::BOOL :
+        {
+            Bool * b = (Bool*)v;
+            cout << b->value;
+            break;
+        }
+        case AddressValue::Type::INT :
+        {
+            Int * i = (Int*)v;
+            cout << i->value;
+            break;
+        }
+        case AddressValue::Type::FLOAT :
+        {
+            Float * f = (Float*)v;
+            cout << f->value;
+            break;
+        }
+        case AddressValue::Type::CHAR :
+        {
+            Char * c = (Char*)v;
+            cout << c->value;
+            break;
+        }
+        case AddressValue::Type::STRING :
+        {
+            String * s = (String*)v;
+            cout << s->value;
+            break;
+        }
+        case AddressValue::Type::TUPLE :
+        {
+            Tuple * t = (Tuple*)v;
+            bool first = true;
+            for (const auto & e : t->value)
+            {
+                if (!first) cout << " ";
+                printValue(e);
+                first = false;
+            }
+            break;
+        }
+        case AddressValue::Type::GENERIC :
+        {
+            // todo
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void printDomain(AddressDomain * d)
+{
+    printValue(d->getMin());
+    cout << ", ";
+    printValue(d->getMax());
+    if (!d->getValues().empty())
+    {
+        cout << ", ";
+        for (const auto & v : d->getValues())
+            printValue(v);
+    }
+}
+
 void explore(shared_ptr<Node> node)
 {
-    for(const auto& child : node->children())
+    for (const auto& child : node->children())
     {
         cout << child->getName();
         
@@ -118,116 +196,59 @@ void explore(shared_ptr<Node> node)
         
         if (address)
         {
-            cout << " : address type=";
+            cout << " : ";
             switch (address->getValueType())
             {
-                case AddressValue::Type::NONE :
+                case AddressValue::Type::IMPULSE :
                 {
-                    cout << "none";
+                    cout << "Impulse";
                     break;
                 }
                 case AddressValue::Type::BOOL :
                 {
-                    cout << "bool";
-                    Bool * b = (Bool*)address->getValue();
-                    cout << ", value=< " << b->value << " >";
+                    cout << "Bool(";
+                    printValue(address->getValue());
+                    cout << ")";
                     break;
                 }
                 case AddressValue::Type::INT :
                 {
-                    cout << "int";
-                    Int * i = (Int*)address->getValue();
-                    cout << ", value=< " << i->value << " >";
+                    cout << "Int(";
+                    printValue(address->getValue());
+                    cout << ")";
                     break;
                 }
                 case AddressValue::Type::FLOAT :
                 {
-                    cout << "float";
-                    Float * f = (Float*)address->getValue();
-                    cout << ", value=< " << f->value << " >";
+                    cout << "Float(";
+                    printValue(address->getValue());
+                    cout << ")";
                     break;
                 }
                 case AddressValue::Type::CHAR :
                 {
-                    cout << "char";
-                    Char * c = (Char*)address->getValue();
-                    cout << ", value=< " << c->value << " >";
+                    cout << "Char(";
+                    printValue(address->getValue());
+                    cout << ")";
                     break;
                 }
                 case AddressValue::Type::STRING :
                 {
-                    cout << "string";
-                    String * s = (String*)address->getValue();
-                    cout << ", value=< " << s->value << " >";
+                    cout << "String(";
+                    printValue(address->getValue());
+                    cout << ")";
                     break;
                 }
                 case AddressValue::Type::TUPLE :
                 {
-                    cout << "tuple";
-                    Tuple * t = (Tuple*)address->getValue();
-                    
-                    cout << ", value=<";
-                    for (const auto & e : t->value)
-                    {
-                        cout << " ";
-                        switch (e->getType())
-                        {
-                            case AddressValue::Type::NONE :
-                            {
-                                cout << "-";
-                                break;
-                            }
-                            case AddressValue::Type::BOOL :
-                            {
-                                Bool * b = (Bool*)e;
-                                cout << b->value;
-                                break;
-                            }
-                            case AddressValue::Type::INT :
-                            {
-                                Int * i = (Int*)e;
-                                cout << i->value;
-                                break;
-                            }
-                            case AddressValue::Type::FLOAT :
-                            {
-                                Float * f = (Float*)e;
-                                cout << f->value;
-                                break;
-                            }
-                            case AddressValue::Type::CHAR :
-                            {
-                                Char * c = (Char*)e;
-                                cout << c->value;
-                                break;
-                            }
-                            case AddressValue::Type::STRING :
-                            {
-                                String * s = (String*)e;
-                                cout << s->value;
-                                break;
-                            }
-                            case AddressValue::Type::TUPLE :
-                            {
-                                // todo : make a recursive conversion function
-                                break;
-                            }
-                            case AddressValue::Type::GENERIC :
-                            {
-                                // todo
-                                break;
-                            }
-                            default:
-                                break;
-                        }
-                    }
-                    cout << " >";
-                        
+                    cout << "Tuple(";
+                    printValue(address->getValue());
+                    cout << ")";
                     break;
                 }
                 case AddressValue::Type::GENERIC :
                 {
-                    cout << "generic";
+                    cout << "Generic";
                     // todo: cout << ", value=" << address->getValue();
                     break;
                 }
@@ -235,7 +256,7 @@ void explore(shared_ptr<Node> node)
                     break;
             }
             
-            cout << ", access=";
+            cout << ", AccessMode(";
             switch (address->getAccessMode())
             {
                 case Address::AccessMode::SET :
@@ -257,7 +278,7 @@ void explore(shared_ptr<Node> node)
                     break;
             }
             
-            cout << ", bounding=";
+            cout << "), BoundingMode(";
             switch (address->getBoundingMode())
             {
                 case Address::BoundingMode::FREE :
@@ -283,6 +304,10 @@ void explore(shared_ptr<Node> node)
                 default:
                     break;
             }
+            
+            cout << "), Domain(";
+            printDomain(address->getDomain());
+            cout << ")";
         }
         
         cout << "\n";
@@ -290,3 +315,5 @@ void explore(shared_ptr<Node> node)
         explore(child);
     }
 }
+
+

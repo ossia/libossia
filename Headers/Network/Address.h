@@ -13,10 +13,12 @@
  */
 
 #pragma once
-#include "Network/AddressValue.h"
-
 #include <memory>
 #include <string>
+#include <functional>
+
+#include "Network/AddressValue.h"
+#include "Network/AddressDomain.h"
 
 #include "Editor/Expression.h"
 #include "Editor/ExpressionValue.h"
@@ -99,10 +101,13 @@ public:
    \param #AccessMode of the address */
   virtual Address & setAccessMode(AccessMode) = 0;
   
-  /*! \todo
-  virtual Domain getDomain() const = 0;
-  virtual Address & setDomain(Domain) = 0;
-  */
+  /*! get the address domain 
+   \return #AddressDomain of the address */
+  virtual AddressDomain * getDomain() const = 0;
+  
+  /*! set the address domain
+   \param #AddressDomain of the address */
+  virtual Address & setDomain(AddressDomain *) = 0;
   
   /*! get the address bounding mode
    \todo multiple ?
@@ -121,6 +126,23 @@ public:
   /*! set the address repetition filter status
    \param bool true is to enable repetition filter */
   virtual Address & setRepetitionFilter(bool = true) = 0;
+  
+# pragma mark -
+# pragma mark Callback
+  
+  /*! to get the value back */
+  using AddressValueCallback = std::function<void(const Address &, const AddressValue *)>;
+  
+  /*! get the address value callback function
+   \return #AddressValueCallback function */
+  AddressValueCallback getAddressValueCallback() const {return m_callback;};
+  
+  /*! set the address value callback function
+   \param #AddressValueCallback function */
+  void setAddressValueCallback(AddressValueCallback callback) {m_callback = callback;};
+  
+private:
+  AddressValueCallback m_callback;
 };
 
 }

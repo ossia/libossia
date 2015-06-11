@@ -122,7 +122,7 @@ public:
 
       if (object.valid())
       {
-        if (type == AddressValue::Type::NONE)
+        if (type == AddressValue::Type::IMPULSE)
           object.set("type", kTTSym_none);
         else if (type == AddressValue::Type::BOOL)
           object.set("type", kTTSym_boolean);
