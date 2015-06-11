@@ -18,28 +18,44 @@
 #include <string>
 #include "TimeProcessList.h"
 
-namespace OSSIA {
+namespace OSSIA
+{
 
 class Expression;
 class State;
-class TimeEvent {
+  
+class TimeEvent
+{
+public:
+  
+# pragma mark -
+# pragma mark Life cycle
+  
+  /*! destructor */
+  virtual ~TimeEvent() = default;
 
-    public:
-
-      virtual ~TimeEvent() = default;
-
-    # pragma mark -
+# pragma mark -
 # pragma mark Execution
-      virtual void play(bool log = false, std::string name = "") const = 0;
+  
+  /*! execute the scenario and optionnaly log the execution into a file
+   \param bool to enable log
+   \param string to give a log file name where to write */
+  virtual void play(bool log = false, std::string name = "") const = 0;
 
-    # pragma mark -
-# pragma mark Accessors //TODO is it necessary ?
-      virtual const std::shared_ptr<State> & getState() const = 0;
-      virtual const std::shared_ptr<Expression> & getExpression() const = 0;
-      virtual TimeProcessList & getPreviousProcesses() = 0;
-      virtual TimeProcessList & getNextProcesses() = 0;
-
-    };
-
+# pragma mark -
+# pragma mark Accessors
+  
+  /*! get the state of the event
+   \return std::shared_ptr<#State> state */
+  virtual const std::shared_ptr<State> & getState() const = 0;
+  
+  /*! get the expression of the event
+   \return std::shared_ptr<#Expression> expression */
+  virtual const std::shared_ptr<Expression> & getExpression() const = 0;
+  
+  
+  virtual TimeProcessList & getPreviousProcesses() = 0;
+  virtual TimeProcessList & getNextProcesses() = 0;
+};
 }
 

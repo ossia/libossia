@@ -1,3 +1,17 @@
+/*!
+ * \file JamomaTimeConstraint.h
+ *
+ * \brief
+ *
+ * \details
+ *
+ * \author Théo de la Hogue
+ *
+ * \copyright This code is licensed under the terms of the "CeCILL-C"
+ * http://www.cecill.info
+ */
+
+#pragma once
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeValue.h"
 
@@ -6,7 +20,7 @@ using namespace std;
 
 class JamomaTimeConstraint : public TimeConstraint
 {
-  
+
 private:
   
   // Implementation specific

@@ -75,10 +75,10 @@ public:
 # pragma mark -
 # pragma mark Internals
   
-  Container<TimeEvent>& timeProcesses()
+  Container<TimeEvent>& timeEvents()
   { return m_timeEvents; }
   
-  const Container<TimeEvent>& timeProcesses() const
+  const Container<TimeEvent>& timeEvents() const
   { return m_timeEvents; }
 
 private:

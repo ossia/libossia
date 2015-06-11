@@ -37,7 +37,7 @@ namespace OSSIA {
 
     // Curve segment types
     enum class CurveSegmentType {
-      NONE,
+      IMPULSE,
       LINEAR,
       POWER
     };
