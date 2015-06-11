@@ -25,7 +25,7 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaNode(string name, TTNodeDirectory * aDirectory = nullptr, TTNode * aNode = nullptr, shared_ptr<JamomaNode> aParent = nullptr) :
+  JamomaNode(TTNodeDirectory * aDirectory = nullptr, TTNode * aNode = nullptr, shared_ptr<JamomaNode> aParent = nullptr) :
   mDirectory(aDirectory),
   mNode(aNode),
   mParent(aParent)
@@ -66,7 +66,16 @@ public:
   virtual string getName() const override
   {
     if (mNode)
-      return mNode->getName().c_str();
+    {
+      TTString nameInstance = mNode->getName().c_str();
+      if (mNode->getInstance() != kTTSymEmpty)
+      {
+        nameInstance += ".";
+        nameInstance += mNode->getInstance().c_str();
+      }
+      
+      return nameInstance.data();
+    }
 
     return "";
   }
@@ -167,7 +176,7 @@ public:
     if (!err)
     {
       // store the new node into the Container
-      return children().insert(pos, std::make_shared<JamomaNode>(name, mDirectory, node, shared_from_this()));
+      return children().insert(pos, std::make_shared<JamomaNode>(mDirectory, node, shared_from_this()));
     }
 
     return iterator();
@@ -206,15 +215,8 @@ protected:
       {
         TTNodePtr child = TTNodePtr(TTPtr(childrenList.current()[0]));
         
-        // build child name
-        TTString nameInstance = child->getName().c_str();
-        if (child->getInstance() != kTTSymEmpty)
-        {
-          nameInstance += child->getInstance().c_str();
-        }
-        
         // build child node
-        shared_ptr<JamomaNode> newNode = std::make_shared<JamomaNode>(nameInstance.data(), mDirectory, child, shared_from_this());
+        shared_ptr<JamomaNode> newNode = std::make_shared<JamomaNode>(mDirectory, child, shared_from_this());
         
         // store the child node
         children().push_back(newNode);

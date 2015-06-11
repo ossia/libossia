@@ -22,8 +22,8 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaDevice(Protocol & protocol, string name = "", TTObject applicationManager = TTObject(), TTObject application = TTObject(), TTNodeDirectoryPtr aDirectory = nullptr) :
-  JamomaNode(name, aDirectory, aDirectory->getRoot()),
+  JamomaDevice(Protocol & protocol, TTObject applicationManager = TTObject(), TTObject application = TTObject(), TTNodeDirectoryPtr aDirectory = nullptr) :
+  JamomaNode(aDirectory, aDirectory->getRoot()),
   mApplicationManager(applicationManager),
   mApplication(application)
   {
@@ -100,7 +100,7 @@ shared_ptr<Device> Device::create(Protocol & protocol, string name)
 
     TTValue v;
     application.get("directory", v);
-    return make_shared<JamomaDevice>(protocol, name, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+    return make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
   }
 
   Minuit* minuit_protocol = dynamic_cast<Minuit*>(&protocol);
@@ -138,7 +138,7 @@ shared_ptr<Device> Device::create(Protocol & protocol, string name)
 
     TTValue v;
     application.get("directory", v);
-    return make_shared<JamomaDevice>(protocol, name, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+    return make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
   }
 
   OSC* osc_protocol = dynamic_cast<OSC*>(&protocol);
@@ -172,7 +172,7 @@ shared_ptr<Device> Device::create(Protocol & protocol, string name)
 
     TTValue v;
     application.get("directory", v);
-    return make_shared<JamomaDevice>(protocol, name, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+    return make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
   }
 
   return nullptr;
