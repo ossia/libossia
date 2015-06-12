@@ -30,11 +30,16 @@ public:
 # pragma mark Life cycle
   
   /*! constructor */
-  AddressDomain(AddressValue * min = new Impulse(), AddressValue * max = new Impulse(), std::vector<AddressValue*> values = std::vector<AddressValue*>()) :
+  AddressDomain(
+          AddressValue * min = new Impulse(),
+          AddressValue * max = new Impulse(),
+          std::vector<AddressValue*> values = std::vector<AddressValue*>()) :
   m_min(min),
   m_max(max),
   m_values(values)
-  {};
+  {
+
+  }
   
   /*! destructor */
   virtual ~AddressDomain() = default;

@@ -156,7 +156,7 @@ struct Generic : public AddressValue
 {
   /*! constructor 
    \todo */
-  char * start;
+  char * start{};
   int size;
 };
 
