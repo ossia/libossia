@@ -16,7 +16,6 @@
 
 #include <memory>
 #include <string>
-#include "TimeProcessList.h"
 
 namespace OSSIA
 {
@@ -26,6 +25,7 @@ class State;
   
 class TimeEvent
 {
+  
 public:
   
 # pragma mark -
@@ -52,10 +52,6 @@ public:
   /*! get the expression of the event
    \return std::shared_ptr<#Expression> expression */
   virtual const std::shared_ptr<Expression> & getExpression() const = 0;
-  
-  
-  virtual TimeProcessList & getPreviousProcesses() = 0;
-  virtual TimeProcessList & getNextProcesses() = 0;
 };
 }
 
