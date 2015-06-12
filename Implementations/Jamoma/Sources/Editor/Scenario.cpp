@@ -6,7 +6,7 @@
 
 shared_ptr<Scenario> Scenario::create()
 {
-  return nullptr; // make_shared<JamomaScenario>();
+  return make_shared<JamomaScenario>();
 }
 
 JamomaScenario::JamomaScenario()
@@ -20,7 +20,7 @@ JamomaScenario::~JamomaScenario()
 
 shared_ptr<Scenario> JamomaScenario::clone() const
 {
-  return nullptr; // make_shared<JamomaScenario>(this);
+  return make_shared<JamomaScenario>(this);
 }
 
 # pragma mark -
@@ -63,6 +63,14 @@ void JamomaScenario::removeConstraint(const shared_ptr<TimeConstraint> constrain
 
 # pragma mark -
 # pragma mark Accessors
+
+TimeValue JamomaScenario::getLength() const
+{
+
+}
+
+void JamomaScenario::setLength(TimeValue)
+{}
 
 bool JamomaScenario::isKiller() const
 {

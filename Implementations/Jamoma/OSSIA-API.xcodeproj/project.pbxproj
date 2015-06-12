@@ -40,7 +40,6 @@
 		4689BAE81ABA256800D1BA4E /* ExpressionValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpressionValue.h; sourceTree = "<group>"; };
 		4689BAE91ABA2D1800D1BA4E /* TimeConstraint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeConstraint.h; sourceTree = "<group>"; };
 		4689BAEA1ABA2D1800D1BA4E /* TimeEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeEvent.h; sourceTree = "<group>"; };
-		4689BAEB1ABA2E8D00D1BA4E /* TimeProcessList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeProcessList.h; sourceTree = "<group>"; };
 		468AC7C5197EB1D600FB2B18 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		468E931319C0562900B26BFB /* Message.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
 		46A4923019C2E264003691A8 /* CurveSegmentPower.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentPower.h; sourceTree = "<group>"; };
@@ -49,7 +48,6 @@
 		46BA2A5D19C09A21009630B5 /* CurveSegmentLinear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentLinear.cpp; sourceTree = "<group>"; };
 		46BA2A5F19C09A21009630B5 /* CurveSegment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegment.cpp; sourceTree = "<group>"; };
 		46BA2A6019C09A21009630B5 /* Scenario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scenario.cpp; sourceTree = "<group>"; };
-		46C1CE2B1B26F98B00EDA0A6 /* JamomaTimeProcess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaTimeProcess.h; sourceTree = "<group>"; };
 		46D2C60D1B260B9900C04D8A /* JamomaTimeConstraint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaTimeConstraint.h; sourceTree = "<group>"; };
 		46D435DA1AB731330041D8AF /* Automation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Automation.cpp; sourceTree = "<group>"; };
 		46D435DB1AB735220041D8AF /* ExpressionAtom.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ExpressionAtom.cpp; sourceTree = "<group>"; };
@@ -59,8 +57,6 @@
 		46D435DF1AB73D360041D8AF /* TimeConstraint.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeConstraint.cpp; sourceTree = "<group>"; };
 		46D435E01AB73D360041D8AF /* TimeEvent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeEvent.cpp; sourceTree = "<group>"; };
 		46D435E11AB73D360041D8AF /* TimeNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeNode.cpp; sourceTree = "<group>"; };
-		46D435E21AB73D360041D8AF /* TimeProcess.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeProcess.cpp; sourceTree = "<group>"; };
-		46D435E31AB73D360041D8AF /* TimeProcessList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeProcessList.cpp; sourceTree = "<group>"; };
 		46D435E41AB73D360041D8AF /* TimeValue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeValue.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -97,7 +93,6 @@
 				4689BAEA1ABA2D1800D1BA4E /* TimeEvent.h */,
 				460D07ED19BDD62500235124 /* TimeNode.h */,
 				460D07EE19BDD62500235124 /* TimeProcess.h */,
-				4689BAEB1ABA2E8D00D1BA4E /* TimeProcessList.h */,
 				460D07EF19BDD62500235124 /* TimeValue.h */,
 			);
 			path = Editor;
@@ -188,8 +183,6 @@
 				46D435DF1AB73D360041D8AF /* TimeConstraint.cpp */,
 				46D435E01AB73D360041D8AF /* TimeEvent.cpp */,
 				46D435E11AB73D360041D8AF /* TimeNode.cpp */,
-				46D435E21AB73D360041D8AF /* TimeProcess.cpp */,
-				46D435E31AB73D360041D8AF /* TimeProcessList.cpp */,
 				46D435E41AB73D360041D8AF /* TimeValue.cpp */,
 			);
 			path = Editor;
@@ -219,7 +212,6 @@
 				464258761B26EC7900324157 /* JamomaScenario.h */,
 				46D2C60D1B260B9900C04D8A /* JamomaTimeConstraint.h */,
 				464D5F5E1B297CFB001C22E6 /* JamomaTimeNode.h */,
-				46C1CE2B1B26F98B00EDA0A6 /* JamomaTimeProcess.h */,
 			);
 			path = Editor;
 			sourceTree = "<group>";

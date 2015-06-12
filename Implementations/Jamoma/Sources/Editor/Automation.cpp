@@ -29,6 +29,12 @@ void JamomaAutomation::play(bool log, string name) const
 # pragma mark -
 # pragma mark Accessors
 
+TimeValue JamomaAutomation::getLength() const
+{}
+
+void JamomaAutomation::setLength(TimeValue)
+{}
+
 AddressValue JamomaAutomation::getStartValue() const
 {
   return AddressValue();

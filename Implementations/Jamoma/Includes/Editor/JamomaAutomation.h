@@ -14,15 +14,14 @@
 #pragma once
 #include "Editor/Automation.h"
 #include "Editor/TimeNode.h"
+#include "Editor/TimeValue.h"
 #include "Network/Address.h"
 #include "Network/AddressValue.h"
-
-//#include "../Sources/Editor/TimeProcess.cpp"
 
 using namespace OSSIA;
 using namespace std;
 
-class JamomaAutomation : public Automation<double>//, public JamomaTimeProcess
+class JamomaAutomation : public Automation<double>
 {
   
 private:
@@ -52,6 +51,10 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
+  
+  virtual TimeValue getLength() const override;
+  
+  virtual void setLength(TimeValue) override;
   
   virtual AddressValue getStartValue() const override;
   

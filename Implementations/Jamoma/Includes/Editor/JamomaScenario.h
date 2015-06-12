@@ -15,20 +15,19 @@
 #include "Editor/Scenario.h"
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeNode.h"
-
-//#include "../Sources/Editor/TimeProcess.cpp"
+#include "Editor/TimeValue.h"
 
 using namespace OSSIA;
 using namespace std;
 
-class JamomaScenario : public Scenario//, public JamomaTimeProcess
+class JamomaScenario : public Scenario
 {
 
 private:
   
   // Implementation specific
   Container<TimeConstraint> mTimeContraints;
-  Container<TimeNode>       mTimeNodes;
+  Container<TimeNode>       mTimeNodes;         // list of all time nodes of the scenario (the first is the start node, the second is the end node)
   
   bool                      mIsKiller;
   
@@ -61,6 +60,10 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
+  
+  virtual TimeValue getLength() const override;
+  
+  virtual void setLength(TimeValue) override;
   
   virtual bool isKiller() const override;
   
