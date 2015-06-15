@@ -53,7 +53,7 @@ public:
   
   /*! get node's address
    \return std::shared_ptr<#Address> the address */
-  virtual const std::shared_ptr<Address> & getAddress() const = 0;
+  virtual const std::shared_ptr<OSSIA::Address> & getAddress() const = 0;
   
 # pragma mark -
 # pragma mark Address
@@ -61,7 +61,7 @@ public:
   /*! create node's address
    \param #AddressValue::Type the type of the address to create
    \return std::shared_ptr<#Address> the new address */
-  virtual std::shared_ptr<Address> createAddress(
+  virtual std::shared_ptr<OSSIA::Address> createAddress(
                 AddressValue::Type = AddressValue::Type::IMPULSE) = 0;
   
   /*! remove node's address

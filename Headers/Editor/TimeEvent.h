@@ -45,6 +45,8 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
+  virtual void addState(std::shared_ptr<State>) = 0;
+  
   /*! get the state of the event
    \return std::shared_ptr<#State> state */
   virtual const std::shared_ptr<State> & getState() const = 0;
