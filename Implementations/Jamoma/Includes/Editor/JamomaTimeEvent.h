@@ -54,5 +54,5 @@ public:
   
   virtual const shared_ptr<Expression> & getExpression() const override;
   
-  virtual void setExpression(shared_ptr<Expression> expression) override;
+  virtual void setExpression(const shared_ptr<Expression> expression) override;
 };

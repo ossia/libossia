@@ -35,7 +35,7 @@ const shared_ptr<Expression> & JamomaTimeEvent::getExpression() const
   return mExpression;
 }
 
-void JamomaTimeEvent::setExpression(shared_ptr<Expression> expression)
+void JamomaTimeEvent::setExpression(const shared_ptr<Expression> expression)
 {
   mExpression = expression;
 }
