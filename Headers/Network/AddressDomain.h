@@ -20,6 +20,8 @@
 
 namespace OSSIA
 {
+  
+class AddressValue;
 
 class AddressDomain
 {
@@ -30,10 +32,9 @@ public:
 # pragma mark Life cycle
   
   /*! constructor */
-  AddressDomain(
-          AddressValue * min = new Impulse(),
-          AddressValue * max = new Impulse(),
-          std::vector<AddressValue*> values = std::vector<AddressValue*>()) :
+  AddressDomain(AddressValue * min = new Impulse(),
+                AddressValue * max = new Impulse(),
+                std::vector<AddressValue*> values = std::vector<AddressValue*>()) :
   m_min(min),
   m_max(max),
   m_values(values)
@@ -48,19 +49,19 @@ public:
 # pragma mark Accessors
   
   /*! get the minimal value
-   \return #AddressValue minimal value */
+   \return #AddressValue* minimal value */
   AddressValue * getMin() const {return m_min;}
   
   /*! set the minimal value
-   \param #AddressValue minimal value */
+   \param #AddressValue* minimal value */
   void setMin(AddressValue * min) {m_min = min;}
   
   /*! get the maximal value
-   \return #AddressValue maximal value */
+   \return #AddressValue* maximal value */
   AddressValue * getMax() const {return m_max;}
   
   /*! set the maximal value
-   \param #AddressValue maximal value */
+   \param #AddressValue* maximal value */
   void setMax(AddressValue * max) {m_max = max;}
   
   /*! get authorized values
