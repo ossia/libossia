@@ -23,9 +23,7 @@ namespace OSSIA
 {
 
 class Expression;
-class Scenario;
 class State;
-class TimeConstraint;
 class TimeEvent;
 class TimeValue;
 
@@ -61,23 +59,37 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
+  /*! get the date
+   \return #TimeValue the date */
   virtual TimeValue getDate() const = 0;
+  
+  /*! get the simultaneity margin
+   \return #TimeValue the simultaneity margin */
   virtual TimeValue getSimultaneityMargin() const = 0;
-  virtual void setSimultaneityMargin(TimeValue) = 0; //TODO why not in constructor (only) ?
+  
+  /*! set the simultaneity margin
+   \todo remove setter and move the setting into constructor (?)
+   \param #TimeValue the simultaneity margin */
+  virtual void setSimultaneityMargin(TimeValue) = 0;
 
 # pragma mark -
-# pragma mark TimeEvent Factory
+# pragma mark TimeEvents
   
+  /*! create and store a time event
+   \param #Container<#TimeEvent>::const_iterator where to store the time event
+   \param std::shared_ptr<#State> state (\todo NO_STATE)
+   \return std::shared_ptr<#Expression> expression (\todo NO_EXPRESSION) */
   virtual iterator emplace(const_iterator,
-                           std::shared_ptr<State>/*TODO = NO_STATE*/,
-                           std::shared_ptr<Expression>/*TODO = NO_EXPRESSION*/) = 0;
-
-# pragma mark -
-# pragma mark Internals
+                           std::shared_ptr<State>,
+                           std::shared_ptr<Expression>) = 0;
   
+  /*! get the time events of the time node
+   \return #Container<#TimeEvent> container */
   Container<TimeEvent>& timeEvents()
   { return m_timeEvents; }
   
+  /*! get the time events of the time node
+   \return #Container<#TimeEvent> container */
   const Container<TimeEvent>& timeEvents() const
   { return m_timeEvents; }
 

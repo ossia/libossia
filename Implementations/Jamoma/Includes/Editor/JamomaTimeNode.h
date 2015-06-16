@@ -26,7 +26,7 @@ private:
   // Implementation specific
   
 public:
-  
+
 # pragma mark -
 # pragma mark Life cycle
   
@@ -51,4 +51,11 @@ public:
   virtual TimeValue getSimultaneityMargin() const override;
   
   virtual void setSimultaneityMargin(TimeValue) override;
+  
+# pragma mark -
+# pragma mark TimeEvents
+  
+  virtual iterator emplace(const_iterator,
+                           std::shared_ptr<State>,
+                           std::shared_ptr<Expression>) override;
 };
