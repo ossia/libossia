@@ -10,9 +10,11 @@
 #include <iostream>
 #include <memory>
 
+#include "Editor/Expression.h"
 #include "Editor/ExpressionAtom.h"
 #include "Editor/Scenario.h"
 #include "Editor/TimeConstraint.h"
+#include "Editor/TimeEvent.h"
 #include "Editor/TimeNode.h"
 #include "Editor/TimeValue.h"
 #include "Editor/Value.h"
@@ -48,8 +50,8 @@ int main()
     auto main_end = TimeNode::create(); // implicit creation of an end event into the node
     
     // get TimeEvents of the start and end TimeNodes to make them interactive to the /play address
-    auto main_start_event =  *(main_start->timeEvents().begin());
-    auto main_end_event =  *(main_end->timeEvents().begin());
+    auto main_start_event = main_start->timeEvents().begin();
+    auto main_end_event = main_end->timeEvents().begin();
     
     // create "/play == true" and "/play == false" expressions
     Destination local_play(local_play_node);
@@ -63,7 +65,7 @@ int main()
     auto play_expression_end = ExpressionAtom::create(&local_play,
                                                       ExpressionAtom::Operator::EQUAL,
                                                       &_false);
-    
+/*
     // make start event to be interactive to "/play == true" and end event to be interactive to "/play == false"
     main_start_event->setExpression(play_expression_start);
     main_end_event->setExpression(play_expression_end);
@@ -75,11 +77,11 @@ int main()
     // create the main Scenario and add it to the main TimeConstraint
     auto main_scenario = Scenario::create(); // implicit creation of a start state and end state, implicit creation of first and last TimeNode
     main_constraint->timeProcesses().push_back(main_scenario);
-    
+*/
     /* 
      Main Scenario edition
      */
-
+/*
     // get the start TimeEvent of the main Scenario
     auto first_start_event = scenario->getStartNode()->timeEvents()->begin();
     
@@ -106,6 +108,6 @@ int main()
     
     // play the scenario
     scenario->play();
-
+*/
     return 0;
 }
