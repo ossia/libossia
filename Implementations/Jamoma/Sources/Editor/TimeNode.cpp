@@ -5,7 +5,12 @@
 
 shared_ptr<TimeNode> TimeNode::create()
 {
-  return make_shared<JamomaTimeNode>();
+  shared_ptr<JamomaTimeNode> timeNode = make_shared<JamomaTimeNode>();
+  
+  // create a first time event
+  timeNode->emplace(timeNode->timeEvents().begin());
+  
+  return timeNode;
 }
 
 JamomaTimeNode::JamomaTimeNode()
@@ -48,8 +53,8 @@ void JamomaTimeNode::setSimultaneityMargin(TimeValue)
 # pragma mark TimeEvents
 
 JamomaTimeNode::iterator JamomaTimeNode::emplace(const_iterator pos,
-                                 std::shared_ptr<State> state,
-                                 std::shared_ptr<Expression> expression)
+                                                 std::shared_ptr<State> state,
+                                                 std::shared_ptr<Expression> expression)
 {
-  return timeEvents().begin(); //! \todo
+  return timeEvents().insert(pos, std::make_shared<JamomaTimeEvent>(state, expression, shared_from_this()));
 }

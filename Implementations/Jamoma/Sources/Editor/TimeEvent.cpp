@@ -1,55 +1,41 @@
-#include "Editor/TimeEvent.h"
+#include "Editor/JamomaTimeEvent.h"
 #include "Editor/State.h"
 
-using namespace OSSIA;
-using namespace std;
-
-class JamomaTimeEvent : public TimeEvent
-{
-  
-private:
-  
-  // Implementation specific
-  shared_ptr<State>       mState;
-  shared_ptr<Expression>  mExpression;
-  
-public:
-  
 # pragma mark -
 # pragma mark Life cycle
-  
-  JamomaTimeEvent(shared_ptr<State> aState, shared_ptr<Expression> anExpression) :
-  mState(aState),
-  mExpression(anExpression)
-  {}
-  
-  virtual ~JamomaTimeEvent()
-  {}
+
+JamomaTimeEvent::JamomaTimeEvent(shared_ptr<State> aState, shared_ptr<Expression> anExpression, shared_ptr<JamomaTimeNode> aTimeNode) :
+mState(aState),
+mExpression(anExpression),
+mTimeNode(aTimeNode)
+{}
+
+JamomaTimeEvent::~JamomaTimeEvent()
+{}
 
 # pragma mark -
 # pragma mark Execution
-  
-  virtual void play(bool log = false, string name = "") const override
-  {
-    mState->launch();
-    // note : what else ?
-  }
+
+void JamomaTimeEvent::play(bool log, string name) const
+{
+  mState->launch();
+  // note : what else ?
+}
 
 # pragma mark -
 # pragma mark Accessors
   
-  virtual const shared_ptr<State> & getState() const override
-  {
-    return mState;
-  }
-  
-  virtual const shared_ptr<Expression> & getExpression() const override
-  {
-    return mExpression;
-  }
-  
-  virtual void setExpression(shared_ptr<Expression> expression) override
-  {
-    mExpression = expression;
-  }
-};
+const shared_ptr<State> & JamomaTimeEvent::getState() const
+{
+  return mState;
+}
+
+const shared_ptr<Expression> & JamomaTimeEvent::getExpression() const
+{
+  return mExpression;
+}
+
+void JamomaTimeEvent::setExpression(shared_ptr<Expression> expression)
+{
+  mExpression = expression;
+}

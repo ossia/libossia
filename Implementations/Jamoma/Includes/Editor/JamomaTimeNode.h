@@ -12,13 +12,16 @@
  */
 
 #pragma once
+
 #include "Editor/TimeNode.h"
 #include "Editor/TimeValue.h"
+
+#include "JamomaTimeEvent.h"
 
 using namespace OSSIA;
 using namespace std;
 
-class JamomaTimeNode : public TimeNode
+class JamomaTimeNode : public TimeNode, public enable_shared_from_this<JamomaTimeNode>
 {
   
 private:
@@ -56,6 +59,6 @@ public:
 # pragma mark TimeEvents
   
   virtual iterator emplace(const_iterator,
-                           std::shared_ptr<State>,
-                           std::shared_ptr<Expression>) override;
+                           std::shared_ptr<State> = nullptr,
+                           std::shared_ptr<Expression> = nullptr) override;
 };

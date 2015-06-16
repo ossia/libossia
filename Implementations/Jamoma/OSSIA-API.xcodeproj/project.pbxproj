@@ -41,6 +41,7 @@
 		4689BAEA1ABA2D1800D1BA4E /* TimeEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeEvent.h; sourceTree = "<group>"; };
 		468AC7C5197EB1D600FB2B18 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		468E931319C0562900B26BFB /* Message.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
+		4696661D1B307F940082480E /* JamomaTimeEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaTimeEvent.h; sourceTree = "<group>"; };
 		46A4923019C2E264003691A8 /* CurveSegmentPower.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentPower.h; sourceTree = "<group>"; };
 		46A4923119C2E2D6003691A8 /* CurveSegmentPower.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentPower.cpp; sourceTree = "<group>"; };
 		46BA2A5B19C09A21009630B5 /* Curve.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Curve.cpp; sourceTree = "<group>"; };
@@ -209,6 +210,7 @@
 				464D5F601B29C0D5001C22E6 /* JamomaAutomation.h */,
 				464258761B26EC7900324157 /* JamomaScenario.h */,
 				46D2C60D1B260B9900C04D8A /* JamomaTimeConstraint.h */,
+				4696661D1B307F940082480E /* JamomaTimeEvent.h */,
 				464D5F5E1B297CFB001C22E6 /* JamomaTimeNode.h */,
 			);
 			path = Editor;

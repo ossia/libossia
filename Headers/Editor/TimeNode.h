@@ -80,8 +80,8 @@ public:
    \param std::shared_ptr<#State> state (\todo NO_STATE)
    \return std::shared_ptr<#Expression> expression (\todo NO_EXPRESSION) */
   virtual iterator emplace(const_iterator,
-                           std::shared_ptr<State>,
-                           std::shared_ptr<Expression>) = 0;
+                           std::shared_ptr<State> = nullptr,
+                           std::shared_ptr<Expression> = nullptr) = 0;
   
   /*! get the time events of the time node
    \return #Container<#TimeEvent> container */
