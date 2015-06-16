@@ -1,5 +1,5 @@
 /*!
- * \file AddressValue.h
+ * \file Value.h
  *
  * \brief
  *
@@ -16,12 +16,10 @@
 #include <string>
 #include <vector>
 
-#include "Editor/ExpressionValue.h"
-
 namespace OSSIA
 {
 
-class AddressValue : public ExpressionValue
+class Value
 {
 
 public:
@@ -38,6 +36,7 @@ public:
     FLOAT,
     CHAR,
     STRING,
+    DESTINATION, //! \note see Destination structure declaration in Node.h
     TUPLE,
     GENERIC
   };
@@ -46,39 +45,45 @@ public:
 # pragma mark Life cycle
   
   /*! destructor */
-  virtual ~AddressValue() = default;
+  virtual ~Value() = default;
 
 # pragma mark -
 # pragma mark Accessors
   
   /*! get the address value type
    \return #Type of the address value */
-  Type getType() const {return type;}
+  Type getType() const {return m_type;}
   
 protected:
   
-  Type type;
+  Type m_type;
 };
 
 # pragma mark -
 # pragma mark Impulse
   
 /*! \details Impulse value */
-struct Impulse : public AddressValue
+struct Impulse : public Value
 {
   /*! constructor */
-  Impulse() {type = Type::IMPULSE;}
+  Impulse()
+  {
+    m_type = Type::IMPULSE;
+  }
 };
 
 # pragma mark -
 # pragma mark Bool
   
 /*! \details Bool value */
-struct Bool : public AddressValue
+struct Bool : public Value
 {
   /*! constructor 
    \param bool value */
-  Bool(bool v = false) : value(v) {type = Type::BOOL;}
+  Bool(bool v = false) : value(v)
+  {
+    m_type = Type::BOOL;
+  }
   
   bool value;
 };
@@ -87,11 +92,14 @@ struct Bool : public AddressValue
 # pragma mark Int
 
 /*! \details Int value */
-struct Int : public AddressValue
+struct Int : public Value
 {
   /*! constructor
    \param int value */
-  Int(int v = 0) : value(v) {type = Type::INT;}
+  Int(int v = 0) : value(v)
+  {
+    m_type = Type::INT;
+  }
   
   int value;
 };
@@ -100,11 +108,14 @@ struct Int : public AddressValue
 # pragma mark Float
 
 /*! \details Float value */
-struct Float : public AddressValue
+struct Float : public Value
 {
   /*! constructor
    \param float value */
-  Float(float v = 0.) : value(v) {type = Type::FLOAT;}
+  Float(float v = 0.) : value(v)
+  {
+    m_type = Type::FLOAT;
+  }
   
   float value;
 };
@@ -113,11 +124,14 @@ struct Float : public AddressValue
 # pragma mark Char
   
 /*! \details Char value */
-struct Char : public AddressValue
+struct Char : public Value
 {
   /*! constructor
    \param char value */
-  Char(char v = 0x00) : value(v) {type = Type::CHAR;}
+  Char(char v = 0x00) : value(v)
+  {
+    m_type = Type::CHAR;
+  }
   
   char value;
 };
@@ -126,33 +140,39 @@ struct Char : public AddressValue
 # pragma mark String
 
 /*! \details String value */
-struct String : public AddressValue
+struct String : public Value
 {
   /*! constructor
    \param std::string value */
-  String(std::string v = "") : value(v) {type = Type::STRING;}
+  String(std::string v = "") : value(v)
+  {
+    m_type = Type::STRING;
+  }
   
   std::string value;
 };
-  
+
 # pragma mark -
 # pragma mark Tuple
   
 /*! \details Tuple value */
-struct Tuple : public AddressValue
+struct Tuple : public Value
 {
   /*! constructor
-  \param std::vector<#AddressValue> value*/
-  Tuple(std::vector<AddressValue*> v = std::vector<AddressValue*>()) : value(v) {type = Type::TUPLE;}
+  \param std::vector<#Value> value*/
+  Tuple(std::vector<Value*> v = std::vector<Value*>()) : value(v)
+  {
+    m_type = Type::TUPLE;
+  }
     
-  std::vector<AddressValue*> value;
+  std::vector<Value*> value;
 };
   
 # pragma mark -
 # pragma mark Generic
 
 /*! \details Generic value */
-struct Generic : public AddressValue
+struct Generic : public Value
 {
   /*! constructor 
    \todo */

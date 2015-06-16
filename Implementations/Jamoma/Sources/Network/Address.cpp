@@ -1,4 +1,5 @@
 #include "Network/Address.h"
+#include "Network/Node.h"
 
 #include "TTModular.h"
 
@@ -11,15 +12,15 @@ class JamomaAddress : public Address
 private:
 
   // Implementation specific
-  mutable TTObject            mData;
-  mutable AddressValue *      mValue{};
-  AddressValue::Type          mValueType;
-  AccessMode                  mAccessMode;
-  AddressDomain *             mDomain;
-  BoundingMode                mBoundingMode;
-  bool                        mRepetitionFilter;
+  mutable TTObject    mData;
+  mutable Value *     mValue{};
+  Value::Type         mValueType;
+  AccessMode          mAccessMode;
+  Domain *            mDomain;
+  BoundingMode        mBoundingMode;
+  bool                mRepetitionFilter;
 
-  shared_ptr<Device>          device;
+  shared_ptr<Device>  device;
 
 public:
 
@@ -28,7 +29,7 @@ public:
 
   JamomaAddress(TTObject aData = TTObject()) :
   mData(aData),
-  mValueType(AddressValue::Type::IMPULSE),
+  mValueType(Value::Type::IMPULSE),
   mAccessMode(AccessMode::BI),
   mBoundingMode(BoundingMode::FREE),
   mRepetitionFilter(false)
@@ -49,37 +50,37 @@ public:
         if (type == kTTSym_none)
         {
           mValue = new Impulse();
-          mValueType = AddressValue::Type::IMPULSE;
+          mValueType = Value::Type::IMPULSE;
         }
         else if (type == kTTSym_generic)
         {
           mValue = new OSSIA::Tuple();
-          mValueType = AddressValue::Type::TUPLE;
+          mValueType = Value::Type::TUPLE;
         }
         else if (type == kTTSym_boolean)
         {
           mValue = new OSSIA::Bool();
-          mValueType = AddressValue::Type::BOOL;
+          mValueType = Value::Type::BOOL;
         }
         else if (type == kTTSym_integer)
         {
           mValue = new OSSIA::Int();
-          mValueType = AddressValue::Type::INT;
+          mValueType = Value::Type::INT;
         }
         else if (type == kTTSym_decimal)
         {
           mValue = new OSSIA::Float();
-          mValueType = AddressValue::Type::FLOAT;
+          mValueType = Value::Type::FLOAT;
         }
         else if (type == kTTSym_array)
         {
           mValue = new OSSIA::Tuple();
-          mValueType = AddressValue::Type::TUPLE;
+          mValueType = Value::Type::TUPLE;
         }
         else if (type == kTTSym_string)
         {
           mValue = new OSSIA::String();
-          mValueType = AddressValue::Type::STRING;
+          mValueType = Value::Type::STRING;
         }
 
         TTSymbol service;
@@ -97,37 +98,37 @@ public:
         
         if (type == kTTSym_none)
         {
-          mDomain = new AddressDomain();
+          mDomain = new Domain();
         }
         else if (type == kTTSym_generic)
         {
-          mDomain = new AddressDomain();
+          mDomain = new Domain();
         }
         else if (type == kTTSym_boolean)
         {
           if (range.size() == 2)
           {
-            AddressValue * min = new OSSIA::Bool(range[0]);
-            AddressValue * max = new OSSIA::Bool(range[1]);
-            mDomain = new AddressDomain(min, max);
+            Value * min = new OSSIA::Bool(range[0]);
+            Value * max = new OSSIA::Bool(range[1]);
+            mDomain = new Domain(min, max);
           }
         }
         else if (type == kTTSym_integer)
         {
           if (range.size() == 2)
           {
-            AddressValue * min = new OSSIA::Int(range[0]);
-            AddressValue * max = new OSSIA::Int(range[1]);
-            mDomain = new AddressDomain(min, max);
+            Value * min = new OSSIA::Int(range[0]);
+            Value * max = new OSSIA::Int(range[1]);
+            mDomain = new Domain(min, max);
           }
         }
         else if (type == kTTSym_decimal)
         {
           if (range.size() == 2)
           {
-            AddressValue * min = new OSSIA::Float(range[0]);
-            AddressValue * max = new OSSIA::Float(range[1]);
-            mDomain = new AddressDomain(min, max);
+            Value * min = new OSSIA::Float(range[0]);
+            Value * max = new OSSIA::Float(range[1]);
+            mDomain = new Domain(min, max);
           }
         }
         else if (type == kTTSym_array)
@@ -136,24 +137,24 @@ public:
           TTValue v;
           mData.get("value", v);
           
-          std::vector<AddressValue*> tuple_min;
-          std::vector<AddressValue*> tuple_max;
+          std::vector<Value*> tuple_min;
+          std::vector<Value*> tuple_max;
           for (int i = 0; i < v.size(); i++)
             tuple_min.push_back(new OSSIA::Float(range[0]));
             tuple_max.push_back(new OSSIA::Float(range[1]));
       
-          mDomain = new AddressDomain(new OSSIA::Tuple(tuple_min), new OSSIA::Tuple(tuple_max));
+          mDomain = new Domain(new OSSIA::Tuple(tuple_min), new OSSIA::Tuple(tuple_max));
         }
         else if (type == kTTSym_string)
         {
           // string values enumeration
-          std::vector<AddressValue*> values;
+          std::vector<Value*> values;
           for (const auto & e : range)
           {
             TTSymbol s = e;
             values.push_back(new OSSIA::String(s.c_str()));
           }
-          mDomain = new AddressDomain(new OSSIA::Impulse(), new OSSIA::Impulse(), values);
+          mDomain = new Domain(new OSSIA::Impulse(), new OSSIA::Impulse(), values);
         }
         
         TTSymbol clipmode;
@@ -202,21 +203,21 @@ public:
     delete mValue;
 
     // create new value
-    mValue = convertTTValueIntoAddressValue(v, mValueType);
+    mValue = convertTTValueIntoValue(v, mValueType);
 
     return mValue != nullptr;
   }
 
-  virtual AddressValue * getValue() const override
+  virtual const Value * getValue() const override
   {
     updateValue();
     return mValue;
   }
 
-  virtual bool sendValue(const AddressValue * value) const override
+  virtual bool sendValue(const Value * value) const override
   {
     TTValue v;
-    convertAddressValueIntoTTValue(value, v);
+    convertValueIntoTTValue(value, v);
 
     if (mData.name() == "Data")
       return !mData.send("Command", v);
@@ -235,7 +236,7 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  virtual AddressValue::Type getValueType() const override
+  virtual Value::Type getValueType() const override
   {
     return mValueType;
   }
@@ -252,12 +253,12 @@ public:
     return *this;
   }
   
-  virtual AddressDomain * getDomain() const override
+  virtual Domain * getDomain() const override
   {
     return mDomain;
   }
   
-  virtual Address & setDomain(AddressDomain * domain) override
+  virtual Address & setDomain(Domain * domain) override
   {
     mDomain = domain;
     
@@ -265,17 +266,17 @@ public:
     
     if (mDomain->getValues().empty())
     {
-      convertAddressValueIntoTTValue(mDomain->getMin(), v);
+      convertValueIntoTTValue(mDomain->getMin(), v);
       range.append(v);
     
-      convertAddressValueIntoTTValue(mDomain->getMax(), v);
+      convertValueIntoTTValue(mDomain->getMax(), v);
       range.append(v);
     }
     else
     {
       for (const auto & e : mDomain->getValues())
       {
-        convertAddressValueIntoTTValue(e, v);
+        convertValueIntoTTValue(e, v);
         range.append(v);
       }
     }
@@ -356,7 +357,7 @@ private:
     {
       if (self->m_callback)
       {
-        AddressValue * v = self->convertTTValueIntoAddressValue(value, self->mValueType);
+        Value * v = self->convertTTValueIntoValue(value, self->mValueType);
         self->m_callback(v);
         
         return kTTErrNone;
@@ -366,16 +367,16 @@ private:
     return kTTErrGeneric;
   }
 
-  AddressValue * convertTTValueIntoAddressValue(const TTValue& v, AddressValue::Type valueType) const
+  Value * convertTTValueIntoValue(const TTValue& v, Value::Type valueType) const
   {
     switch (valueType)
     {
-      case AddressValue::Type::IMPULSE :
+      case Value::Type::IMPULSE :
       {
         return new OSSIA::Impulse();
       }
 
-      case AddressValue::Type::BOOL :
+      case Value::Type::BOOL :
       {
         if (v.size() == 1)
           return new OSSIA::Bool(v[0]);
@@ -383,7 +384,7 @@ private:
         return new OSSIA::Bool();
       }
 
-      case AddressValue::Type::INT :
+      case Value::Type::INT :
       {
         if (v.size() == 1)
           return new OSSIA::Int(v[0]);
@@ -391,7 +392,7 @@ private:
         return new OSSIA::Int();
       }
 
-      case AddressValue::Type::FLOAT :
+      case Value::Type::FLOAT :
       {
         if (v.size() == 1)
           return new OSSIA::Float(v[0]);
@@ -399,7 +400,7 @@ private:
         return new OSSIA::Float();
       }
 
-      case AddressValue::Type::CHAR :
+      case Value::Type::CHAR :
       {
         if (v.size() == 1)
         {
@@ -413,7 +414,7 @@ private:
         return new OSSIA::Char();
       }
 
-      case AddressValue::Type::STRING :
+      case Value::Type::STRING :
       {
         if (v.size() == 1)
         {
@@ -426,33 +427,51 @@ private:
 
         return new OSSIA::String();
       }
-
-      case AddressValue::Type::TUPLE :
+        
+      case Value::Type::DESTINATION :
       {
-        std::vector<AddressValue*> t_value;
+        /*
+        if (v.size() == 1)
+        {
+          if (v[0].type() == kTypeSymbol)
+          {
+            //! \todo retreive the Address from the symbol
+            //TTAddress s_value = v[0];
+            
+            return new OSSIA::Destination();
+          }
+        }
+        
+        return new OSSIA::Destination();
+         */
+      }
+
+      case Value::Type::TUPLE :
+      {
+        std::vector<Value*> t_value;
 
         for (const auto & e : v)
         {
-          AddressValue::Type type;
+          Value::Type type;
 
           if (e.type() == kTypeBoolean)
           {
-            type = AddressValue::Type::BOOL;
+            type = Value::Type::BOOL;
           }
           else if (e.type() == kTypeInt8 || e.type() == kTypeUInt8 ||
                    e.type() == kTypeInt16 || e.type() == kTypeUInt16 ||
                    e.type() == kTypeInt32 || e.type() == kTypeUInt32 ||
                    e.type() == kTypeInt64 || e.type() == kTypeUInt64)
           {
-            type = AddressValue::Type::INT;
+            type = Value::Type::INT;
           }
           else if (e.type() == kTypeFloat32 || e.type() == kTypeFloat64)
           {
-            type = AddressValue::Type::FLOAT;
+            type = Value::Type::FLOAT;
           }
           else if (e.type() == kTypeSymbol)
           {
-            type = AddressValue::Type::STRING;
+            type = Value::Type::STRING;
           }
           else
           {
@@ -460,66 +479,113 @@ private:
           }
 
           TTValue t(e);
-          t_value.push_back(convertTTValueIntoAddressValue(t, type));
+          t_value.push_back(convertTTValueIntoValue(t, type));
         }
 
         return new OSSIA::Tuple(t_value);
       }
 
-      case AddressValue::Type::GENERIC :
+      case Value::Type::GENERIC :
       {
         return nullptr; // todo
       }
     }
   }
 
-  void convertAddressValueIntoTTValue(const AddressValue * value, TTValue & v) const
+  void convertValueIntoTTValue(const Value * value, TTValue & v) const
   {
-    if (value->getType() == AddressValue::Type::IMPULSE)
+    switch (value->getType())
     {
-      ;
-    }
-    else if (value->getType() == AddressValue::Type::BOOL)
-    {
-      Bool * b = (Bool*)value;
-      v = TTBoolean(b->value);
-    }
-    else if (value->getType() == AddressValue::Type::INT)
-    {
-      Int * i = (Int*)value;
-      v = TTInt32(i->value);
-    }
-    else if (value->getType() == AddressValue::Type::FLOAT)
-    {
-      Float * f = (Float*)value;
-      v = TTFloat64(f->value);
-    }
-    else if (value->getType() == AddressValue::Type::CHAR)
-    {
-      Char * c = (Char*)value;
-      v = TTSymbol(c->value);
-    }
-    else if (value->getType() == AddressValue::Type::STRING)
-    {
-      String * s = (String*)value;
-      v = TTSymbol(s->value);
-    }
-    else if (value->getType() == AddressValue::Type::TUPLE)
-    {
-      Tuple * t = (Tuple*)value;
-
-      for (const auto & e : t->value)
+      case Value::Type::IMPULSE :
       {
-        TTValue n;
-        convertAddressValueIntoTTValue(e, n);
-
-        if (n.size())
-          v.append(n[0]);
+        break;
+      }
+        
+      case Value::Type::BOOL :
+      {
+        Bool * b = (Bool*)value;
+        v = TTBoolean(b->value);
+        break;
+      }
+        
+      case Value::Type::INT :
+      {
+        Int * i = (Int*)value;
+        v = TTInt32(i->value);
+        break;
+      }
+        
+      case Value::Type::FLOAT :
+      {
+        Float * f = (Float*)value;
+        v = TTFloat64(f->value);
+        break;
+      }
+        
+      case Value::Type::CHAR :
+      {
+        Char * c = (Char*)value;
+        v = TTSymbol(c->value);
+        break;
+      }
+        
+      case Value::Type::STRING :
+      {
+        String * s = (String*)value;
+        v = TTSymbol(s->value);
+        break;
+      }
+        
+      case Value::Type::DESTINATION :
+      {
+        Destination * d = (Destination*)value;
+        v = TTAddress(buildNodePath(d->value).data());
+        break;
+      }
+        
+      case Value::Type::TUPLE :
+      {
+        Tuple * t = (Tuple*)value;
+        
+        for (const auto & e : t->value)
+        {
+          TTValue n;
+          convertValueIntoTTValue(e, n);
+          
+          if (n.size())
+            v.append(n[0]);
+          
+          break;
+        }
+      }
+        
+      case Value::Type::GENERIC :
+      {
+        //! \todo
+        break;
       }
     }
-    else if (value->getType() == AddressValue::Type::GENERIC)
+  }
+  
+  std::string buildNodePath(std::shared_ptr<Node> node) const
+  {
+    std::string path;
+    std::string name = node->getName();
+    std::shared_ptr<Node> parent = node->getParent();
+    
+    if (parent != nullptr)
     {
-      ; // todo
+      path += buildNodePath(parent);
+      if (path != "/")
+        path += "/";
+      path += name;
     }
+    else
+    {
+      //! \todo use device name
+      path = name;
+    }
+    
+    return path;
   }
 };

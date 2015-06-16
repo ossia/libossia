@@ -11,13 +11,13 @@ private:
   
   // Implementation specific
   shared_ptr<Address> address;
-  AddressValue * value;
+  Value * value;
 
 public:
   
 # pragma mark -
 # pragma mark Life cycle
-  JamomaMessage(shared_ptr<Address> a, AddressValue * v) :
+  JamomaMessage(shared_ptr<Address> a, Value * v) :
   address(a),
   value(v)
   {}
@@ -47,13 +47,13 @@ public:
     return address;
   }
   
-  virtual AddressValue * getValue() const override
+  virtual Value * getValue() const override
   {
     return value;
   }
 };
 
-shared_ptr<Message> Message::create(shared_ptr<Address> a, AddressValue * v)
+shared_ptr<Message> Message::create(shared_ptr<Address> a, Value * v)
 {
   return make_shared<JamomaMessage>(a, v);
 }

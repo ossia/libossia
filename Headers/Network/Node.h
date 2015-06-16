@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "Network/AddressValue.h"
+#include "Editor/Value.h"
 
 #include "Misc/Container.h"
 
@@ -59,10 +59,10 @@ public:
 # pragma mark Address
   
   /*! create node's address
-   \param #AddressValue::Type the type of the address to create
+   \param #Value::Type the type of the address to create
    \return std::shared_ptr<#Address> the new address */
   virtual std::shared_ptr<OSSIA::Address> createAddress(
-                AddressValue::Type = AddressValue::Type::IMPULSE) = 0;
+                Value::Type = Value::Type::IMPULSE) = 0;
   
   /*! remove node's address
    \return bool true if the address is correctly removed */
@@ -90,5 +90,20 @@ public:
 private:
   Container<Node> m_children;
 };
-
+  
+# pragma mark -
+# pragma mark Destination
+  
+/*! \details Destination value */
+struct Destination : public Value
+{
+  /*! constructor */
+  Destination(std::shared_ptr<Node> v) : value(v)
+  {
+    m_type = Type::DESTINATION;
+  }
+  
+  std::shared_ptr<Node> value;
+};
+  
 }

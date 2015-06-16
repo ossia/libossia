@@ -14,19 +14,25 @@
 
 #pragma once
 
-namespace OSSIA {
+namespace OSSIA
+{
 
-class Address;
+class Expression
+{
 
-class Expression {
+public:
+  
+# pragma mark -
+# pragma mark Life cycle
+  
+  /*! destructor */
+  virtual ~Expression() = default;
+  
+# pragma mark -
+# pragma mark Execution
+  
+  virtual bool evaluate() const = 0;
 
-    public:
-
-      virtual ~Expression() = default;
-
-      virtual bool evaluate() const = 0;
-
-    };
-
+};
 }
 

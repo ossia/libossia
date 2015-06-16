@@ -15,26 +15,37 @@
 #pragma once
 #include "Editor/Expression.h"
 
-namespace OSSIA {
+namespace OSSIA
+{
 
-class ExpressionNot : public Expression {
+class ExpressionNot : public Expression
+{
 
-    public:
+public:
 
-    # pragma mark -
+# pragma mark -
 # pragma mark Life cycle
-      static std::shared_ptr<ExpressionNot> create(std::shared_ptr<Expression>);
-      virtual std::shared_ptr<ExpressionNot> clone() const = 0;
-      virtual ~ExpressionNot() = default;
+  
+  /*! factory
+   \return std::shared_ptr<#ExpressionNot> */
+  static std::shared_ptr<ExpressionNot> create(std::shared_ptr<Expression>);
+  
+  /*! clone
+   \return std::shared_ptr<#ExpressionNot> */
+  virtual std::shared_ptr<ExpressionNot> clone() const = 0;
+  
+  /*! destructor */
+  virtual ~ExpressionNot() = default;
 
-    # pragma mark -
+# pragma mark -
 # pragma mark Execution
-      virtual bool evaluate() const override = 0;
+  
+  virtual bool evaluate() const override = 0;
 
-    # pragma mark -
+# pragma mark -
 # pragma mark Accessors
-      virtual const std::shared_ptr<Expression> & getExpression() const = 0;
+  
+  virtual const std::shared_ptr<Expression> & getExpression() const = 0;
 
-    };
-
+};
 }

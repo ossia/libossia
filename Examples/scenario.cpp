@@ -10,10 +10,17 @@
 #include <iostream>
 #include <memory>
 
+#include "Editor/ExpressionAtom.h"
 #include "Editor/Scenario.h"
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeNode.h"
 #include "Editor/TimeValue.h"
+#include "Editor/Value.h"
+
+#include "Network/Address.h"
+#include "Network/Device.h"
+#include "Network/Node.h"
+#include "Network/Protocol.h"
 
 using namespace OSSIA;
 using namespace std;
@@ -29,29 +36,33 @@ int main()
     auto local_device = Device::create(local_device_parameters, "i-score");
     
     // add a /play address
-    auto local_play_node = localDevice->emplace(localDevice->children().cend(), "play");
-    auto local_play_address = (*local_play_node)->createAddress(AddressValue::Type::BOOL);
+    auto local_play_node = *(local_device->emplace(local_device->children().cend(), "play"));
+    auto local_play_address = local_play_node->createAddress(Value::Type::BOOL);
     
     /* 
      Main Scenario setup
      */
     
     // create two TimeNodes for the start and the end
-    TimeNode main_start = TimeNode::create(); // implicit creation of a first event into the node
-    TimeNode main_end = TimeNode::create(); // implicit creation of an end event into the node
+    auto main_start = TimeNode::create(); // implicit creation of a first event into the node
+    auto main_end = TimeNode::create(); // implicit creation of an end event into the node
     
-    // get TimeEvents of the start and end TimeNodes to make them interactive to /play address
-    TimeEvent main_start_event =  main_start->timeEvents()->begin();
-    TimeEvent main_end_event =  main_end->timeEvents()->begin();
+    // get TimeEvents of the start and end TimeNodes to make them interactive to the /play address
+    auto main_start_event =  *(main_start->timeEvents().begin());
+    auto main_end_event =  *(main_end->timeEvents().begin());
     
     // create "/play == true" and "/play == false" expressions
-    auto play_expression_start = ExpressionAtom::create(ExpressionValue::create(local_play_address),
-                                                        ExpressionAtom::Operator::EQUAL,
-                                                        ExpressionValue::create(Bool(true)));
+    Destination local_play(local_play_node);
+    Bool _true(true); //! \todo create Bool::true
+    Bool _false(false); //! \todo create Bool::false
     
-    auto play_expression_end = ExpressionAtom::create(ExpressionValue::create(local_play_address),
+    auto play_expression_start = ExpressionAtom::create(&local_play,
+                                                        ExpressionAtom::Operator::EQUAL,
+                                                        &_true);
+    
+    auto play_expression_end = ExpressionAtom::create(&local_play,
                                                       ExpressionAtom::Operator::EQUAL,
-                                                      ExpressionValue::create(Bool(false)));
+                                                      &_false);
     
     // make start event to be interactive to "/play == true" and end event to be interactive to "/play == false"
     main_start_event->setExpression(play_expression_start);

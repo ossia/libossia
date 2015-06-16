@@ -13,49 +13,67 @@
  */
 
 #pragma once
-
-#include "Editor/Expression.h"
-#include "Network/AddressValue.h"
 #include <memory>
 
-namespace OSSIA {
+#include "Editor/Expression.h"
+#include "Editor/Value.h"
 
-class ExpressionAtom : public Expression {
+#include "Network/Address.h"
 
-    public:
+namespace OSSIA
+{
 
-      enum class Operator {
-        EQUAL,
-        GREATER_THAN,
-        LOWER_THAN,
-        GREATER_THAN_OR_EQUAL,
-        LOWER_THAN_OR_EQUAL
-      };
+class ExpressionAtom : public Expression
+{
 
-    # pragma mark -
+public:
+
+# pragma mark -
+# pragma mark Enumerations
+  
+  /*! type of operator */
+  enum class Operator
+  {
+    EQUAL,
+    GREATER_THAN,
+    LOWER_THAN,
+    GREATER_THAN_OR_EQUAL,
+    LOWER_THAN_OR_EQUAL
+  };
+
+# pragma mark -
 # pragma mark Life cycle
-      // Condition constructor
-      static std::shared_ptr<ExpressionAtom> create(
-          std::shared_ptr<ExpressionValue>,
-          Operator,
-          std::shared_ptr<ExpressionValue>);
+  
+  /*! factory for logical condition `
+   \return std::shared_ptr<#ExpressionAtom> */
+  static std::shared_ptr<ExpressionAtom> create(Value*,
+                                                Operator,
+                                                Value*);
          
-      // Impulse constructor
-      static std::shared_ptr<ExpressionAtom> create(
-          std::shared_ptr<Address>);
-      virtual std::shared_ptr<ExpressionAtom> clone() const = 0;
-      virtual ~ExpressionAtom() = default;
+  /*! factory for event condition
+   \return std::shared_ptr<#ExpressionAtom> */
+  static std::shared_ptr<ExpressionAtom> create(std::shared_ptr<Address>);
+  
+  /*! clone
+   \return std::shared_ptr<#ExpressionAtom> */
+  virtual std::shared_ptr<ExpressionAtom> clone() const = 0;
+  
+  /*! destructor */
+  virtual ~ExpressionAtom() = default;
 
-    # pragma mark -
+# pragma mark -
 # pragma mark Execution
-      virtual bool evaluate() const override = 0;
+  
+  virtual bool evaluate() const override = 0;
 
-    # pragma mark -
-# pragma mark Accessors //TODO is it necessary ?
-      virtual const std::shared_ptr<ExpressionValue> & getFirstOperand() const = 0;
-      virtual const std::shared_ptr<ExpressionValue> & getSecondOperand() const = 0;
-      virtual Operator getOperator() const = 0;
-
+# pragma mark -
+# pragma mark Accessors
+  
+  virtual const Value* getFirstOperand() const = 0;
+  
+  virtual Operator getOperator() const = 0;
+  
+  virtual const Value* getSecondOperand() const = 0;
 };
 
 }

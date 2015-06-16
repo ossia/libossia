@@ -15,8 +15,8 @@
 #include "Editor/Automation.h"
 #include "Editor/TimeNode.h"
 #include "Editor/TimeValue.h"
+#include "Editor/Value.h"
 #include "Network/Address.h"
-#include "Network/AddressValue.h"
 
 using namespace OSSIA;
 using namespace std;
@@ -56,13 +56,13 @@ public:
   
   virtual void setLength(TimeValue) override;
   
-  virtual AddressValue getStartValue() const override;
+  virtual Value getStartValue() const override;
   
-  virtual void setStartValue(AddressValue) override;
+  virtual void setStartValue(Value) override;
   
-  virtual AddressValue getEndValue() const override;
+  virtual Value getEndValue() const override;
   
-  virtual void setEndValue(AddressValue) override;
+  virtual void setEndValue(Value) override;
   
   virtual const shared_ptr<Curve<double>> & getCurve() const override;
   

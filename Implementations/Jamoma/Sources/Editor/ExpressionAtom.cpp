@@ -1,5 +1,5 @@
 #include "Editor/ExpressionAtom.h"
-#include "Network/AddressValue.h"
+#include "Editor/Value.h"
 
 using namespace OSSIA;
 using namespace std;
@@ -10,13 +10,15 @@ class JamomaExpressionAtom : public ExpressionAtom
 private:
   
   // Implementation specific
-  shared_ptr<ExpressionValue> first_expr;
-  shared_ptr<ExpressionValue> second_expr;
+  Value* first_expr;
+  Value* second_expr;
   
 public:
+  
 # pragma mark -
 # pragma mark Life cycle
-  JamomaExpressionAtom(std::shared_ptr<ExpressionValue> expr1, Operator op, std::shared_ptr<ExpressionValue> expr2)
+  
+  JamomaExpressionAtom(Value* expr1, Operator op, Value* expr2)
   {}
   
   JamomaExpressionAtom(const JamomaExpressionAtom * other)
@@ -32,6 +34,7 @@ public:
 
 # pragma mark -
 # pragma mark Execution
+  
   virtual bool evaluate() const override
   {
     return true;
@@ -39,24 +42,25 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
-  virtual const std::shared_ptr<ExpressionValue> & getFirstOperand() const override
+  
+  virtual const Value* getFirstOperand() const override
   {
     return first_expr;
-  }
-  
-  virtual const std::shared_ptr<ExpressionValue> & getSecondOperand() const override
-  {
-    return second_expr;
   }
   
   virtual Operator getOperator() const override
   {
     return Operator::EQUAL;
   }
+  
+  virtual const Value* getSecondOperand() const override
+  {
+    return second_expr;
+  }
 
 };
 
-shared_ptr<ExpressionAtom> ExpressionAtom::create(std::shared_ptr<ExpressionValue> expr1, Operator op, std::shared_ptr<ExpressionValue> expr2)
+shared_ptr<ExpressionAtom> ExpressionAtom::create(Value* expr1, Operator op, Value* expr2)
 {
   return make_shared<JamomaExpressionAtom>(expr1, op, expr2);
 }

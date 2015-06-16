@@ -47,4 +47,9 @@ public:
   {
     return mExpression;
   }
+  
+  virtual void setExpression(shared_ptr<Expression> expression) override
+  {
+    mExpression = expression;
+  }
 };

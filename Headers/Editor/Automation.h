@@ -22,7 +22,7 @@ namespace OSSIA
 {
 
 class Address;
-class AddressValue;
+class Value;
 template <typename T> class Curve;
 class TimeValue;
 
@@ -47,11 +47,11 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
-  virtual AddressValue getStartValue() const = 0; //TODO doublon avec Curve ?
-  virtual void setStartValue(AddressValue) = 0;
+  virtual Value getStartValue() const = 0; //TODO doublon avec Curve ?
+  virtual void setStartValue(Value) = 0;
   
-  virtual AddressValue getEndValue() const = 0;
-  virtual void setEndValue(AddressValue) = 0;
+  virtual Value getEndValue() const = 0;
+  virtual void setEndValue(Value) = 0;
   
   virtual const std::shared_ptr<Curve<T>> & getCurve() const = 0;
   virtual void setCurve(std::shared_ptr<Curve<T>>) = 0;

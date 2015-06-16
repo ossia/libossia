@@ -35,20 +35,20 @@ TimeValue JamomaAutomation::getLength() const
 void JamomaAutomation::setLength(TimeValue)
 {}
 
-AddressValue JamomaAutomation::getStartValue() const
+Value JamomaAutomation::getStartValue() const
 {
-  return AddressValue();
+  return Value();
 }
 
-void JamomaAutomation::setStartValue(AddressValue)
+void JamomaAutomation::setStartValue(Value)
 {}
 
-AddressValue JamomaAutomation::getEndValue() const
+Value JamomaAutomation::getEndValue() const
 {
-  return AddressValue();
+  return Value();
 }
 
-void JamomaAutomation::setEndValue(AddressValue)
+void JamomaAutomation::setEndValue(Value)
 {}
 
 const shared_ptr<Curve<double>> & JamomaAutomation::getCurve() const

@@ -22,7 +22,7 @@ namespace OSSIA
 {
 
 class Address;
-class AddressValue;
+class Value;
 
 class Message : public StateElement
 {
@@ -34,10 +34,10 @@ public:
   
   /*! factory
    \param std::shared_ptr<#Address> where to send the value
-   \param #AddressValue the value
+   \param #Value the value
    \return std::shared_ptr<#Message> */
   static std::shared_ptr<Message> create(std::shared_ptr<Address>,
-                                         AddressValue*);
+                                         Value*);
   
   /*! clone */
   virtual std::shared_ptr<Message> clone() const = 0;
@@ -59,8 +59,8 @@ public:
   virtual const std::shared_ptr<Address> & getAddress() const = 0;
   
   /*! get message's value
-   \return #AddressValue the value */
-  virtual AddressValue * getValue() const = 0;
+   \return #Value the value */
+  virtual Value * getValue() const = 0;
 };
 
 }

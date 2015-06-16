@@ -88,7 +88,7 @@ public:
 # pragma mark -
 # pragma mark Address
   
-  virtual shared_ptr<Address> createAddress(AddressValue::Type type) override
+  virtual shared_ptr<Address> createAddress(Value::Type type) override
   {
     // clear former address
     removeAddress();
@@ -122,21 +122,21 @@ public:
 
       if (object.valid())
       {
-        if (type == AddressValue::Type::IMPULSE)
+        if (type == Value::Type::IMPULSE)
           object.set("type", kTTSym_none);
-        else if (type == AddressValue::Type::BOOL)
+        else if (type == Value::Type::BOOL)
           object.set("type", kTTSym_boolean);
-        else if (type == AddressValue::Type::INT)
+        else if (type == Value::Type::INT)
           object.set("type", kTTSym_integer);
-        else if (type == AddressValue::Type::FLOAT)
+        else if (type == Value::Type::FLOAT)
           object.set("type", kTTSym_decimal);
-        else if (type == AddressValue::Type::CHAR)
+        else if (type == Value::Type::CHAR)
           object.set("type", kTTSym_string);
-        else if (type == AddressValue::Type::STRING)
+        else if (type == Value::Type::STRING)
           object.set("type", kTTSym_string);
-        else if (type == AddressValue::Type::TUPLE)
+        else if (type == Value::Type::TUPLE)
           object.set("type", kTTSym_array);
-        else if (type == AddressValue::Type::GENERIC)
+        else if (type == Value::Type::GENERIC)
           object.set("type", kTTSym_generic);
       }
 
