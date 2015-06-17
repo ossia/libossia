@@ -71,10 +71,16 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
+  /*! get first operand
+   \return const std::shared_ptr<#Expression> first operand */
   virtual const Value* getFirstOperand() const = 0;
   
+  /*! get operator
+   \return #Operator operator */
   virtual Operator getOperator() const = 0;
   
+  /*! get second operand
+   \return const std::shared_ptr<#Expression> second operand */
   virtual const Value* getSecondOperand() const = 0;
 };
 

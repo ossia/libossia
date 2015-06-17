@@ -40,11 +40,15 @@ public:
 # pragma mark -
 # pragma mark Execution
   
+  /*! evaluate the expression atom
+   \return bool result of the evaluation */
   virtual bool evaluate() const override = 0;
 
 # pragma mark -
 # pragma mark Accessors
   
+  /*! get expression
+   \return const std::shared_ptr<#Expression> expression */
   virtual const std::shared_ptr<Expression> & getExpression() const = 0;
 
 };

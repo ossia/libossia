@@ -56,15 +56,23 @@ public:
 # pragma mark -
 # pragma mark Execution
   
+  /*! evaluate the expression atom
+   \return bool result of the evaluation */
   virtual bool evaluate() const override = 0;
 
 # pragma mark -
 # pragma mark Accessors
   
+  /*! get first operand
+   \return const std::shared_ptr<#Expression> first operand */
   virtual const std::shared_ptr<Expression> & getFirstOperand() const = 0;
   
+  /*! get operator
+   \return #Operator operator */
   virtual Operator getOperator() const = 0;
   
+  /*! get second operand
+   \return const std::shared_ptr<#Expression> second operand */
   virtual const std::shared_ptr<Expression> & getSecondOperand() const = 0;
 };
 }
