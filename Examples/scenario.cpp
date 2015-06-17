@@ -61,7 +61,7 @@ int main()
                                                       ExpressionAtom::Operator::EQUAL,
                                                       &_false);
     
-    // create TimeEvents inside TimeNodes whitout state but interactive to the /play address
+    // create TimeEvents inside TimeNodes whitout State but interactive to the /play address
     auto main_start_event = *(main_start->emplace(main_start->timeEvents().begin(), nullptr, play_expression_start));
     auto main_end_event = *(main_end->emplace(main_end->timeEvents().begin(), nullptr, play_expression_end));
 
@@ -70,27 +70,32 @@ int main()
     auto main_constraint = TimeConstraint::create(main_duration, main_start_event, main_end_event, main_duration, main_duration);
     
     // create the main Scenario and add it to the main TimeConstraint
-    auto main_scenario = Scenario::create(); // implicit creation of a start state and end state, implicit creation of first and last TimeNode
+    auto main_scenario = Scenario::create();
     main_constraint->timeProcesses().push_back(main_scenario);
 
     /* 
      Main Scenario edition
      */
-/*
-    // get the start TimeEvent of the main Scenario
-    auto first_start_event = scenario->getStartNode()->timeEvents()->begin();
     
-    // create a TimeNode and get its TimeEvent
-    TimeNode first_end_node = TimeNode::create();
-    auto first_end_event = first_start_node->timeEvents()->begin();
+    // get the start node of the main Scenario
+    auto scenario_start_node = main_scenario->getStartNode();
+    
+    // create a TimeNode
+    auto first_end_node = TimeNode::create();
+
+    // create a TimeEvent inside the scenario start node without State and Expression
+    auto first_start_event = *(scenario_start_node->emplace(scenario_start_node->timeEvents().begin()));
+    
+    // create a TimeEvent inside the end node without State and Expression
+    auto first_end_event = *(first_end_node->emplace(first_end_node->timeEvents().begin()));
     
     // create a TimeConstraint between the two TimeEvents
     TimeValue first_duration(3000);
-    auto first_constraint = TimeConstraint::create(first_duration, first_start_event, first_end_event);
+    auto first_constraint = TimeConstraint::create(first_duration, first_start_event, first_end_event, first_duration, first_duration);
     
     // add the new TimeConstraint to the main Scenario
-    main_scenario->addConstraint(main_scenario->getStartNode(), first_constraint, first_end_node);
-    
+    main_scenario->addConstraint(first_constraint);
+/*
     // create an automation into the new TimeConstraint
     auto first_automation = Automation<double>::create();
     first_constraint->timeProcesses().push_back(first_automation);
