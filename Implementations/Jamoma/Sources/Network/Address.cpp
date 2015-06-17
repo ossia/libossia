@@ -16,9 +16,10 @@ private:
   mutable Value *     mValue{};
   Value::Type         mValueType;
   AccessMode          mAccessMode;
-  Domain *            mDomain;
   BoundingMode        mBoundingMode;
   bool                mRepetitionFilter;
+  
+  shared_ptr<Domain>  mDomain;
 
   shared_ptr<Device>  device;
 
@@ -98,11 +99,11 @@ public:
         
         if (type == kTTSym_none)
         {
-          mDomain = new Domain();
+          mDomain = Domain::create();
         }
         else if (type == kTTSym_generic)
         {
-          mDomain = new Domain();
+          mDomain = Domain::create();
         }
         else if (type == kTTSym_boolean)
         {
@@ -110,7 +111,7 @@ public:
           {
             Value * min = new OSSIA::Bool(range[0]);
             Value * max = new OSSIA::Bool(range[1]);
-            mDomain = new Domain(min, max);
+            mDomain = Domain::create(min, max);
           }
         }
         else if (type == kTTSym_integer)
@@ -119,7 +120,7 @@ public:
           {
             Value * min = new OSSIA::Int(range[0]);
             Value * max = new OSSIA::Int(range[1]);
-            mDomain = new Domain(min, max);
+            mDomain = Domain::create(min, max);
           }
         }
         else if (type == kTTSym_decimal)
@@ -128,7 +129,7 @@ public:
           {
             Value * min = new OSSIA::Float(range[0]);
             Value * max = new OSSIA::Float(range[1]);
-            mDomain = new Domain(min, max);
+            mDomain = Domain::create(min, max);
           }
         }
         else if (type == kTTSym_array)
@@ -143,7 +144,7 @@ public:
             tuple_min.push_back(new OSSIA::Float(range[0]));
             tuple_max.push_back(new OSSIA::Float(range[1]));
       
-          mDomain = new Domain(new OSSIA::Tuple(tuple_min), new OSSIA::Tuple(tuple_max));
+          mDomain = Domain::create(new OSSIA::Tuple(tuple_min), new OSSIA::Tuple(tuple_max));
         }
         else if (type == kTTSym_string)
         {
@@ -154,7 +155,7 @@ public:
             TTSymbol s = e;
             values.push_back(new OSSIA::String(s.c_str()));
           }
-          mDomain = new Domain(new OSSIA::Impulse(), new OSSIA::Impulse(), values);
+          mDomain = Domain::create(new OSSIA::Impulse(), new OSSIA::Impulse(), values);
         }
         
         TTSymbol clipmode;
@@ -253,12 +254,12 @@ public:
     return *this;
   }
   
-  virtual Domain * getDomain() const override
+  virtual const shared_ptr<Domain> & getDomain() const override
   {
     return mDomain;
   }
   
-  virtual Address & setDomain(Domain * domain) override
+  virtual Address & setDomain(shared_ptr<Domain> domain) override
   {
     mDomain = domain;
     

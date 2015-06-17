@@ -96,11 +96,11 @@ public:
   
   /*! get the address domain 
    \return #Domain of the address */
-  virtual Domain * getDomain() const = 0;
+  virtual const std::shared_ptr<Domain> & getDomain() const = 0;
   
   /*! set the address domain
    \param #Domain of the address */
-  virtual Address & setDomain(Domain *) = 0;
+  virtual Address & setDomain(std::shared_ptr<Domain>) = 0;
   
   /*! get the address bounding mode
    \todo multiple ?

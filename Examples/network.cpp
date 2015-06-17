@@ -19,9 +19,9 @@
 using namespace OSSIA;
 using namespace std;
 
-void explore(shared_ptr<Node> node);
+void explore(const shared_ptr<Node> node);
 void printValue(const Value * v);
-void printDomain(const Domain * d);
+void printDomain(const shared_ptr<Domain> d);
 void printValueCallback(const Value * v);
 
 int main()
@@ -131,7 +131,7 @@ int main()
     ;
 }
 
-void explore(shared_ptr<Node> node)
+void explore(const shared_ptr<Node> node)
 {
     for (const auto& child : node->children())
     {
@@ -341,7 +341,7 @@ void printValue(const Value * v)
     }
 }
 
-void printDomain(const Domain * d)
+void printDomain(const shared_ptr<Domain> d)
 {
     printValue(d->getMin());
     cout << ", ";
