@@ -39,7 +39,6 @@ public:
 # pragma mark Life cycle
   
   JamomaTimeEvent(shared_ptr<TimeNode> aTimeNode = nullptr,
-                  shared_ptr<State> aState = nullptr,
                   shared_ptr<Expression> anExpression = nullptr);
   
   ~JamomaTimeEvent();

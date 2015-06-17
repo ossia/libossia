@@ -59,6 +59,5 @@ public:
 # pragma mark TimeEvents
   
   iterator emplace(const_iterator,
-                   shared_ptr<State> = nullptr,
                    shared_ptr<Expression> = nullptr) override;
 };

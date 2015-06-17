@@ -12,7 +12,9 @@
 
 #include "Editor/Expression.h"
 #include "Editor/ExpressionAtom.h"
+#include "Editor/Message.h"
 #include "Editor/Scenario.h"
+#include "Editor/State.h"
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeEvent.h"
 #include "Editor/TimeNode.h"
@@ -26,6 +28,9 @@
 
 using namespace OSSIA;
 using namespace std;
+
+void local_play_callback(const Value * v);
+void local_test_callback(const Value * v);
 
 int main()
 {
@@ -41,7 +46,17 @@ int main()
     auto local_play_node = *(local_device->emplace(local_device->children().cend(), "play"));
     auto local_play_address = local_play_node->createAddress(Value::Type::BOOL);
     
-    /* 
+    // attach /play address to a callback
+    local_play_address->setValueCallback(local_play_callback);
+    
+    // add a /test address
+    auto local_test_node = *(local_device->emplace(local_device->children().cend(), "test"));
+    auto local_test_address = local_test_node->createAddress(Value::Type::FLOAT);
+    
+    // attach /test address to a callback
+    local_test_address->setValueCallback(local_test_callback);
+    
+    /*
      Main Scenario setup
      */
     
@@ -51,19 +66,17 @@ int main()
     
     // create "/play == true" and "/play == false" Expressions
     Destination local_play(local_play_node);
-    Bool _true(true); //! \todo create Bool::true
-    Bool _false(false); //! \todo create Bool::false
     auto play_expression_start = ExpressionAtom::create(&local_play,
                                                         ExpressionAtom::Operator::EQUAL,
-                                                        &_true);
+                                                        &True);
     
     auto play_expression_end = ExpressionAtom::create(&local_play,
                                                       ExpressionAtom::Operator::EQUAL,
-                                                      &_false);
+                                                      &False);
     
-    // create TimeEvents inside TimeNodes whitout State but interactive to the /play address
-    auto main_start_event = *(main_start->emplace(main_start->timeEvents().begin(), nullptr, play_expression_start));
-    auto main_end_event = *(main_end->emplace(main_end->timeEvents().begin(), nullptr, play_expression_end));
+    // create TimeEvents inside TimeNodes and make them interactive to the /play address
+    auto main_start_event = *(main_start->emplace(main_start->timeEvents().begin(), play_expression_start));
+    auto main_end_event = *(main_end->emplace(main_end->timeEvents().begin(), play_expression_end));
 
     // create the main TimeConstraint
     TimeValue main_duration(30000);
@@ -83,11 +96,21 @@ int main()
     // create a TimeNode
     auto first_end_node = TimeNode::create();
 
-    // create a TimeEvent inside the scenario start node without State and Expression
+    // create a TimeEvent inside the scenario start node without Expression
     auto first_start_event = *(scenario_start_node->emplace(scenario_start_node->timeEvents().begin()));
     
-    // create a TimeEvent inside the end node without State and Expression
+    // add "/test 0." message to start event's state
+    Float zero(0.);
+    auto first_start_message = Message::create(local_test_address, &zero);
+    first_start_event->getState()->stateElements().push_back(first_start_message);
+    
+    // create a TimeEvent inside the end node without Expression
     auto first_end_event = *(first_end_node->emplace(first_end_node->timeEvents().begin()));
+    
+    // add "/test 1." message to end event's state
+    Float one(1.);
+    auto first_end_message = Message::create(local_test_address, &one);
+    first_start_event->getState()->stateElements().push_back(first_end_message);
     
     // create a TimeConstraint between the two TimeEvents
     TimeValue first_duration(3000);
@@ -105,9 +128,23 @@ int main()
     //! \todo create an independent state into an event
     //auto new_event = first_end_event->timeEvents()->begin();
     //event.addState(...);
-    
-    // play the scenario
-    scenario->play();
 */
+    // play the scenario
+    local_play_address->sendValue(&True);
+
     return 0;
+}
+
+void local_play_callback(const Value * v)
+{
+    ; //! \todo play the sceanrio (how ? from which object ?)
+}
+
+void local_test_callback(const Value * v)
+{
+    if (v->getType() == Value::Type::FLOAT)
+    {
+        Float * f = (Float*)v;
+        cout << f->value;
+    }
 }

@@ -77,10 +77,8 @@ public:
   
   /*! create and store a time event
    \param #Container<#TimeEvent>::const_iterator where to store the time event
-   \param std::shared_ptr<#State> state (\todo NO_STATE)
-   \return std::shared_ptr<#Expression> expression (\todo NO_EXPRESSION) */
+   \return std::shared_ptr<#Expression> expression */
   virtual iterator emplace(const_iterator,
-                           std::shared_ptr<State> = nullptr,
                            std::shared_ptr<Expression> = nullptr) = 0;
   
   /*! get the time events of the time node

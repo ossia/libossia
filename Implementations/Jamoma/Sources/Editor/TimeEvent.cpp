@@ -5,12 +5,12 @@
 # pragma mark Life cycle
 
 JamomaTimeEvent::JamomaTimeEvent(shared_ptr<TimeNode> aTimeNode,
-                                 shared_ptr<State> aState,
                                  shared_ptr<Expression> anExpression) :
 mTimeNode(aTimeNode),
-mState(aState),
 mExpression(anExpression)
-{}
+{
+  mState = State::create();
+}
 
 JamomaTimeEvent::~JamomaTimeEvent()
 {}
@@ -34,6 +34,7 @@ const shared_ptr<TimeNode> & JamomaTimeEvent::getTimeNode() const
   
 const shared_ptr<State> & JamomaTimeEvent::getState() const
 {
+  //!
   return mState;
 }
 
