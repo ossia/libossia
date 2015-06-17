@@ -26,6 +26,7 @@ class JamomaScenario : public Scenario
 private:
   
   // Implementation specific
+  shared_ptr<TimeConstraint>  mParentConstraint;
   Container<TimeConstraint> mTimeContraints;
   Container<TimeNode>       mTimeNodes;         // list of all time nodes of the scenario (the first is the start node, the second is the end node)
   
@@ -36,7 +37,7 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaScenario();
+  JamomaScenario(shared_ptr<TimeConstraint> = nullptr);
   
   JamomaScenario(const JamomaScenario * other);
   

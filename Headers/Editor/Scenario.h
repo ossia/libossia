@@ -31,8 +31,9 @@ public:
 # pragma mark Life cycle
 
   /*! factory
+   \param the parent time constraint of the scenario
    \return std::shared_ptr<#Scenario> */
-  static std::shared_ptr<Scenario> create();
+  static std::shared_ptr<Scenario> create(std::shared_ptr<TimeConstraint> = nullptr);
 
   /*! clone */
   virtual std::shared_ptr<Scenario> clone() const = 0;

@@ -35,7 +35,11 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  static std::shared_ptr<Automation<T>> create();
+  /*! factory
+   \param the parent time constraint of the automation
+   \return std::shared_ptr<#Automation<T>> */
+  static std::shared_ptr<Automation<T>> create(std::shared_ptr<TimeConstraint> = nullptr);
+  
   virtual std::shared_ptr<Automation<T>> clone() const = 0;
   virtual ~Automation() = default;
 
