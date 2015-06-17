@@ -32,15 +32,14 @@ void JamomaScenario::play(bool log, string name) const
 # pragma mark -
 # pragma mark Edition
 
-void JamomaScenario::addConstraint(const shared_ptr<TimeConstraint> constraint, const shared_ptr<TimeNode> startNode)
-{}
-
-void JamomaScenario::addConstraint(const shared_ptr<TimeConstraint> constraint, const shared_ptr<TimeNode> startNode, const shared_ptr<TimeNode> endNode)
+void JamomaScenario::addConstraint(const shared_ptr<TimeConstraint> constraint)
 {
   // store
   mTimeContraints.push_back(constraint);
-  mTimeNodes.push_back(startNode);
-  mTimeNodes.push_back(endNode);
+  
+  //! \todo store constraint's start and end node if they aren't already stored
+  //mTimeNodes.push_back(constraint->getStartEvent()->getTimeNode());
+  //mTimeNodes.push_back(constraint->getStartEvent()->getTimeNode());
 }
 
 void JamomaScenario::removeConstraint(const shared_ptr<TimeConstraint> constraint)
@@ -55,6 +54,16 @@ void JamomaScenario::removeConstraint(const shared_ptr<TimeConstraint> constrain
       break;
     }
   }
+}
+
+void JamomaScenario::addTimeNode(const std::shared_ptr<TimeNode>)
+{
+  
+}
+
+void JamomaScenario::removeTimeNode(const std::shared_ptr<TimeNode>)
+{
+  
 }
 
 # pragma mark -

@@ -40,33 +40,33 @@ public:
   
   JamomaAutomation(const JamomaAutomation * other);
   
-  virtual ~JamomaAutomation();
+  ~JamomaAutomation();
   
-  virtual shared_ptr<Automation> clone() const override;
+  shared_ptr<Automation> clone() const override;
 
 # pragma mark -
 # pragma mark Execution
   
-  virtual void play(bool log = false, string name = "") const override;
+  void play(bool log = false, string name = "") const override;
 
 # pragma mark -
 # pragma mark Accessors
   
-  virtual Value getStartValue() const override;
+  Value getStartValue() const override;
   
-  virtual void setStartValue(Value) override;
+  void setStartValue(Value) override;
   
-  virtual Value getEndValue() const override;
+  Value getEndValue() const override;
   
-  virtual void setEndValue(Value) override;
+  void setEndValue(Value) override;
   
-  virtual const shared_ptr<Curve<double>> & getCurve() const override;
+  const shared_ptr<Curve<double>> & getCurve() const override;
   
-  virtual void setCurve(shared_ptr<Curve<double>>) override;
+  void setCurve(shared_ptr<Curve<double>>) override;
   
-  virtual const shared_ptr<Address> & getInputAddress() const override;
+  const shared_ptr<Address> & getInputAddress() const override;
 
-  virtual void setInputAddress(shared_ptr<Address>) override;
+  void setInputAddress(shared_ptr<Address>) override;
   
   const std::shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
   

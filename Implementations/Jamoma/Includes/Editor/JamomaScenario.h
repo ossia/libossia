@@ -40,34 +40,36 @@ public:
   
   JamomaScenario(const JamomaScenario * other);
   
-  virtual ~JamomaScenario();
+  ~JamomaScenario();
   
-  virtual shared_ptr<Scenario> clone() const override;
+  shared_ptr<Scenario> clone() const override;
 
 # pragma mark -
 # pragma mark Execution
   
-  virtual void play(bool log = false, string name = "") const override;
+  void play(bool log = false, string name = "") const override;
 
 # pragma mark -
 # pragma mark Edition
   
-  virtual void addConstraint(const shared_ptr<TimeConstraint> constraint, const shared_ptr<TimeNode> startNode) override;
+  void addConstraint(const shared_ptr<TimeConstraint> constraint) override;
   
-  virtual void addConstraint(const shared_ptr<TimeConstraint> constraint, const shared_ptr<TimeNode> startNode, const shared_ptr<TimeNode> endNode) override;
+  void removeConstraint(const shared_ptr<TimeConstraint> constraint) override;
   
-  virtual void removeConstraint(const shared_ptr<TimeConstraint> constraint) override;
+  void addTimeNode(const std::shared_ptr<TimeNode>) override;
+
+  void removeTimeNode(const std::shared_ptr<TimeNode>) override;
 
 # pragma mark -
 # pragma mark Accessors
   
-  virtual bool isKiller() const override;
+  bool isKiller() const override;
   
-  virtual void setKiller(bool isKiller) override;
+  void setKiller(bool isKiller) override;
   
-  virtual const std::shared_ptr<TimeNode> & getStartNode() const override;
+  const std::shared_ptr<TimeNode> & getStartNode() const override;
   
-  virtual const std::shared_ptr<TimeNode> & getEndNode() const override;
+  const std::shared_ptr<TimeNode> & getEndNode() const override;
   
   const std::shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
   

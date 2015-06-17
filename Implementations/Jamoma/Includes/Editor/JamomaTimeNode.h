@@ -37,28 +37,28 @@ public:
   
   JamomaTimeNode(const JamomaTimeNode * other);
   
-  virtual ~JamomaTimeNode();
+  ~JamomaTimeNode();
   
-  virtual shared_ptr<TimeNode> clone() const override;
+  shared_ptr<TimeNode> clone() const override;
 
 # pragma mark -
 # pragma mark Execution
   
-  virtual void play(bool log = false, string name = "") const override;
+  void play(bool log = false, string name = "") const override;
 
 # pragma mark -
 # pragma mark Accessors
   
-  virtual TimeValue getDate() const override;
+  TimeValue getDate() const override;
   
-  virtual TimeValue getSimultaneityMargin() const override;
+  TimeValue getSimultaneityMargin() const override;
   
-  virtual void setSimultaneityMargin(TimeValue) override;
+  void setSimultaneityMargin(TimeValue) override;
   
 # pragma mark -
 # pragma mark TimeEvents
   
-  virtual iterator emplace(const_iterator,
+  iterator emplace(const_iterator,
                            std::shared_ptr<State> = nullptr,
                            std::shared_ptr<Expression> = nullptr) override;
 };

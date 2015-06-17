@@ -40,7 +40,7 @@ public:
   
   JamomaTimeConstraint(const JamomaTimeConstraint * other);
   
-  virtual ~JamomaTimeConstraint();
+  ~JamomaTimeConstraint();
   
   shared_ptr<TimeConstraint> clone() const override;
 

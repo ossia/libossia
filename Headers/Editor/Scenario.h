@@ -51,20 +51,21 @@ public:
 # pragma mark -
 # pragma mark Edition
 
-  /*! add a constraint from a start node into the scenario (implicit creation of the end node)
-   \param std::shared_ptr<#TimeConstraint> to add
-   \param std::shared_ptr<#TimeNode> to start from */
-  virtual void addConstraint(const std::shared_ptr<TimeConstraint>, const std::shared_ptr<TimeNode>) = 0;
-
-  /*! add a constraint from a start node to an end node into the scenario
-   \param std::shared_ptr<#TimeConstraint> to add
-   \param std::shared_ptr<#TimeNode> to start from
-   \param std::shared_ptr<#TimeNode> to end */
-  virtual void addConstraint(const std::shared_ptr<TimeConstraint>, const std::shared_ptr<TimeNode>, const std::shared_ptr<TimeNode>) = 0;
+  /*! add a constraint and its time nodes into the scenario if they don't already be added
+   \param std::shared_ptr<#TimeConstraint> to add */
+  virtual void addConstraint(const std::shared_ptr<TimeConstraint>) = 0;
 
   /*! remove a constraint from the scenario
    \param std::shared_ptr<#TimeConstraint> to remove */
-  virtual void removeConstraint(const std::shared_ptr<TimeConstraint> constraint) = 0;
+  virtual void removeConstraint(const std::shared_ptr<TimeConstraint>) = 0;
+  
+  /*! add a time node into the scenario if it is not already added
+   \param std::shared_ptr<#TimeNode> to add */
+  virtual void addTimeNode(const std::shared_ptr<TimeNode>) = 0;
+  
+  /*! remove a time node from the scenario
+   \param std::shared_ptr<#TimeNode> to remove */
+  virtual void removeTimeNode(const std::shared_ptr<TimeNode>) = 0;
 
 # pragma mark -
 # pragma mark Accessors

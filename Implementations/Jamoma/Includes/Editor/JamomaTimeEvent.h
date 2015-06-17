@@ -40,19 +40,19 @@ public:
   
   JamomaTimeEvent(shared_ptr<TimeNode> aTimeNode = nullptr, shared_ptr<State> aState = nullptr, shared_ptr<Expression> anExpression = nullptr);
   
-  virtual ~JamomaTimeEvent();
+  ~JamomaTimeEvent();
 
 # pragma mark -
 # pragma mark Execution
   
-  virtual void play(bool log = false, string name = "") const override;
+  void play(bool log = false, string name = "") const override;
 
 # pragma mark -
 # pragma mark Accessors
   
-  virtual const shared_ptr<TimeNode> & getTimeNode() const override;
+  const shared_ptr<TimeNode> & getTimeNode() const override;
   
-  virtual const shared_ptr<State> & getState() const override;
+  const shared_ptr<State> & getState() const override;
   
-  virtual const shared_ptr<Expression> & getExpression() const override;
+  const shared_ptr<Expression> & getExpression() const override;
 };
