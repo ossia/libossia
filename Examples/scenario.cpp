@@ -45,19 +45,14 @@ int main()
      Main Scenario setup
      */
     
-    // create two TimeNodes for the start and the end
-    auto main_start = TimeNode::create(); // implicit creation of a first event into the node
-    auto main_end = TimeNode::create(); // implicit creation of an end event into the node
+    // create the start and the end TimeNodes
+    auto main_start = TimeNode::create();
+    auto main_end = TimeNode::create();
     
-    // get TimeEvents of the start and end TimeNodes to make them interactive to the /play address
-    auto main_start_event = main_start->timeEvents().begin();
-    auto main_end_event = main_end->timeEvents().begin();
-    
-    // create "/play == true" and "/play == false" expressions
+    // create "/play == true" and "/play == false" Expressions
     Destination local_play(local_play_node);
     Bool _true(true); //! \todo create Bool::true
     Bool _false(false); //! \todo create Bool::false
-    
     auto play_expression_start = ExpressionAtom::create(&local_play,
                                                         ExpressionAtom::Operator::EQUAL,
                                                         &_true);
@@ -65,19 +60,19 @@ int main()
     auto play_expression_end = ExpressionAtom::create(&local_play,
                                                       ExpressionAtom::Operator::EQUAL,
                                                       &_false);
-/*
-    // make start event to be interactive to "/play == true" and end event to be interactive to "/play == false"
-    main_start_event->setExpression(play_expression_start);
-    main_end_event->setExpression(play_expression_end);
     
-    // create the main TimeConstraint passing the first event of each TimeNode
+    // create TimeEvents inside TimeNodes and make them interactive to the /play address
+    auto main_start_event = *(main_start->emplace(main_start->timeEvents().begin(), nullptr, play_expression_start));
+    auto main_end_event = *(main_end->emplace(main_end->timeEvents().begin(), nullptr, play_expression_end));
+
+    // create the main TimeConstraint
     TimeValue main_duration(30000);
-    auto main_constraint = TimeConstraint::create(main_duration, main_start_event, main_end_event);
+    auto main_constraint = TimeConstraint::create(main_duration, main_start_event, main_end_event, main_duration, main_duration);
     
     // create the main Scenario and add it to the main TimeConstraint
     auto main_scenario = Scenario::create(); // implicit creation of a start state and end state, implicit creation of first and last TimeNode
     main_constraint->timeProcesses().push_back(main_scenario);
-*/
+
     /* 
      Main Scenario edition
      */
