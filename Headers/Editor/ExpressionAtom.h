@@ -64,6 +64,8 @@ public:
 # pragma mark -
 # pragma mark Execution
   
+  /*! evaluate the expression atom
+   \return bool result of the evaluation */
   virtual bool evaluate() const override = 0;
 
 # pragma mark -

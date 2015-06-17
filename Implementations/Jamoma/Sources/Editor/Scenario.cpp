@@ -41,10 +41,6 @@ void JamomaScenario::addConstraint(const shared_ptr<TimeConstraint> constraint, 
   mTimeContraints.push_back(constraint);
   mTimeNodes.push_back(startNode);
   mTimeNodes.push_back(endNode);
-  
-  // edit constraint
-  dynamic_pointer_cast<JamomaTimeConstraint>(constraint)->setStartNode(startNode);
-  dynamic_pointer_cast<JamomaTimeConstraint>(constraint)->setEndNode(endNode);
 }
 
 void JamomaScenario::removeConstraint(const shared_ptr<TimeConstraint> constraint)

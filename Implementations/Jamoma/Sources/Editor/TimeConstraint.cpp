@@ -3,15 +3,17 @@
 # pragma mark -
 # pragma mark Life cycle
 
-shared_ptr<TimeConstraint> TimeConstraint::create(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/)
+shared_ptr<TimeConstraint> TimeConstraint::create(TimeValue nominal, shared_ptr<TimeEvent> startEvent, shared_ptr<TimeEvent> endEvent, TimeValue min, TimeValue max)
 {
-  return make_shared<JamomaTimeConstraint>(nominal, min, max);
+  return make_shared<JamomaTimeConstraint>(nominal, startEvent, endEvent, min, max);
 }
 
-JamomaTimeConstraint::JamomaTimeConstraint(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/) :
+JamomaTimeConstraint::JamomaTimeConstraint(TimeValue nominal, shared_ptr<TimeEvent> startEvent, shared_ptr<TimeEvent> endEvent, TimeValue min, TimeValue max) :
 mDuration(nominal),
 mDurationMin(min),
-mDurationMax(max)
+mDurationMax(max),
+mStartEvent(startEvent),
+mEndEvent(endEvent)
 {}
 
 JamomaTimeConstraint::JamomaTimeConstraint(const JamomaTimeConstraint * other)
@@ -34,42 +36,12 @@ void JamomaTimeConstraint::play(bool log, string name) const
 # pragma mark -
 # pragma mark Accessors
 
-const shared_ptr<TimeNode> & JamomaTimeConstraint::getStartNode() const
+const shared_ptr<TimeEvent> & JamomaTimeConstraint::getStartEvent() const
 {
-  return mStartNode;
+  return mStartEvent;
 }
 
-void JamomaTimeConstraint::setStartNode(std::shared_ptr<TimeNode> startNode)
+const shared_ptr<TimeEvent> & JamomaTimeConstraint::getEndEvent() const
 {
-  mStartNode = startNode;
-}
-
-const shared_ptr<TimeNode> & JamomaTimeConstraint::getEndNode() const
-{
-  return mEndNode;
-}
-
-void JamomaTimeConstraint::setEndNode(std::shared_ptr<TimeNode> endNode)
-{
-  mEndNode = endNode;
-}
-
-const shared_ptr<State> & JamomaTimeConstraint::getStartState() const
-{
-  return mStartState;
-}
-
-void JamomaTimeConstraint::setStartState(shared_ptr<State> startState)
-{
-  mStartState = startState;
-}
-
-const shared_ptr<State> & JamomaTimeConstraint::getEndState() const
-{
-  return mEndState;
-}
-
-void JamomaTimeConstraint::setEndState(shared_ptr<State> endState)
-{
-  mEndState = endState;
+  return mEndEvent;
 }

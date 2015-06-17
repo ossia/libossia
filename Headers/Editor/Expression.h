@@ -31,6 +31,8 @@ public:
 # pragma mark -
 # pragma mark Execution
   
+  /*! evaluate the expression 
+   \return bool result of the evaluation */
   virtual bool evaluate() const = 0;
 
 };

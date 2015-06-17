@@ -24,21 +24,19 @@ class JamomaTimeConstraint : public TimeConstraint
 private:
   
   // Implementation specific
-  TimeValue             mDuration;
-  TimeValue             mDurationMin;
-  TimeValue             mDurationMax;
+  TimeValue               mDuration;
+  TimeValue               mDurationMin;
+  TimeValue               mDurationMax;
   
-  shared_ptr<TimeNode>  mStartNode;
-  shared_ptr<TimeNode>  mEndNode;
-  shared_ptr<State>     mStartState;
-  shared_ptr<State>     mEndState;
+  shared_ptr<TimeEvent>   mStartEvent;
+  shared_ptr<TimeEvent>   mEndEvent;
   
 public:
   
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaTimeConstraint(TimeValue nominal, TimeValue min /*= nominal*/, TimeValue max /*= nominal*/);
+  JamomaTimeConstraint(TimeValue nominal, shared_ptr<TimeEvent> startEvent, shared_ptr<TimeEvent> endEvent, TimeValue min, TimeValue max);
   
   JamomaTimeConstraint(const JamomaTimeConstraint * other);
   
@@ -54,19 +52,7 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
-  const shared_ptr<TimeNode> & getStartNode() const override;
+  const shared_ptr<TimeEvent> & getStartEvent() const override;
   
-  void setStartNode(std::shared_ptr<TimeNode> startNode);
-  
-  const shared_ptr<TimeNode> & getEndNode() const override;
-  
-  void setEndNode(std::shared_ptr<TimeNode> endNode);
-  
-  const shared_ptr<State> & getStartState() const override;
-  
-  void setStartState(shared_ptr<State> startState) override;
-  
-  const shared_ptr<State> & getEndState() const override;
-  
-  void setEndState(shared_ptr<State> endState) override;
+  const shared_ptr<TimeEvent> & getEndEvent() const override;
 };

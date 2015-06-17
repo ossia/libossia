@@ -29,16 +29,16 @@ class JamomaTimeEvent : public TimeEvent
 private:
   
   // Implementation specific
-  shared_ptr<State>         mState;
-  shared_ptr<Expression>    mExpression;
-  weak_ptr<JamomaTimeNode>  mTimeNode;
-  
+  shared_ptr<TimeNode>        mTimeNode;
+  shared_ptr<State>           mState;
+  shared_ptr<Expression>      mExpression;
+
 public:
   
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaTimeEvent(shared_ptr<State> aState = nullptr, shared_ptr<Expression> anExpression = nullptr, shared_ptr<JamomaTimeNode> aTimeNode = nullptr);
+  JamomaTimeEvent(shared_ptr<TimeNode> aTimeNode = nullptr, shared_ptr<State> aState = nullptr, shared_ptr<Expression> anExpression = nullptr);
   
   virtual ~JamomaTimeEvent();
 
@@ -50,9 +50,9 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
+  virtual const shared_ptr<TimeNode> & getTimeNode() const override;
+  
   virtual const shared_ptr<State> & getState() const override;
   
   virtual const shared_ptr<Expression> & getExpression() const override;
-  
-  virtual void setExpression(const shared_ptr<Expression> expression) override;
 };
