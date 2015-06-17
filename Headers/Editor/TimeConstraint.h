@@ -89,12 +89,12 @@ public:
 # pragma mark -
 # pragma mark Time Processes
   
-  /*! get processes attached to the constraint
+  /*! get time processes attached to the time constraint
    \return #Container<#TimeProcess> container */
   Container<TimeProcess>& timeProcesses()
   { return m_timeProcesses; }
   
-  /*! get processes attached to the constraint
+  /*! get time processes attached to the time constraint
    \return #Container<#TimeProcess> container */
   const Container<TimeProcess>& timeProcesses() const
   { return m_timeProcesses; }

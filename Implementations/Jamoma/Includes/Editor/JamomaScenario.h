@@ -27,10 +27,11 @@ private:
   
   // Implementation specific
   shared_ptr<TimeConstraint>  mParentConstraint;
-  Container<TimeConstraint> mTimeContraints;
-  Container<TimeNode>       mTimeNodes;         // list of all time nodes of the scenario (the first is the start node, the second is the end node)
   
-  bool                      mIsKiller;
+  Container<TimeConstraint>   mTimeContraints;
+  Container<TimeNode>         mTimeNodes;         // list of all time nodes of the scenario (the first is the start node, the second is the end node)
+  
+  bool                        mIsKiller;
   
 public:
   

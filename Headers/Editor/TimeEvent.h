@@ -17,11 +17,14 @@
 #include <memory>
 #include <string>
 
+#include "Misc/Container.h"
+
 namespace OSSIA
 {
 
 class Expression;
 class State;
+class TimeConstraint;
 class TimeNode;
   
 class TimeEvent
@@ -57,6 +60,33 @@ public:
   /*! get the expression of the event
   \return std::shared_ptr<#Expression> expression */
   virtual const std::shared_ptr<Expression> & getExpression() const = 0;
+  
+# pragma mark -
+# pragma mark Time Constraints
+  
+  /*! get previous time contraints attached to the event
+   \return #Container<#TimeConstraint> container */
+  Container<TimeConstraint>& previousTimeConstraints()
+  { return m_previousTimeConstraints; }
+  
+  /*! get previous time contraints attached to the event
+   \return #Container<#TimeProcess> container */
+  const Container<TimeConstraint>& previousTimeConstraints() const
+  { return m_previousTimeConstraints; }
+  
+  /*! get next time contraints attached to the event
+   \return #Container<#TimeConstraint> container */
+  Container<TimeConstraint>& nextTimeConstraints()
+  { return m_nextTimeConstraints; }
+  
+  /*! get next time contraints attached to the event
+   \return #Container<#TimeProcess> container */
+  const Container<TimeConstraint>& nextTimeConstraints() const
+  { return m_nextTimeConstraints; }
+  
+private:
+  Container<TimeConstraint> m_previousTimeConstraints;
+  Container<TimeConstraint> m_nextTimeConstraints;
 };
 }
 

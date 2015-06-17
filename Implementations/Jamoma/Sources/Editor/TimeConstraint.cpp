@@ -9,7 +9,25 @@ shared_ptr<TimeConstraint> TimeConstraint::create(TimeValue nominal,
                                                   TimeValue min,
                                                   TimeValue max)
 {
-  return make_shared<JamomaTimeConstraint>(nominal, startEvent, endEvent, min, max);
+    auto constraint = make_shared<JamomaTimeConstraint>(nominal, startEvent, endEvent, min, max);
+    
+    // store the constraint into the start event as a next constraint
+    if (find(startEvent->nextTimeConstraints().begin(),
+             startEvent->nextTimeConstraints().end(),
+             constraint) == startEvent->nextTimeConstraints().end())
+    {
+        startEvent->nextTimeConstraints().push_back(constraint);
+    }
+    
+    // store the constraint into the end event as a previous constraint
+    if (find(endEvent->previousTimeConstraints().begin(),
+             endEvent->previousTimeConstraints().end(),
+             constraint) == endEvent->previousTimeConstraints().end())
+    {
+        endEvent->previousTimeConstraints().push_back(constraint);
+    }
+    
+    return constraint;
 }
 
 JamomaTimeConstraint::JamomaTimeConstraint(TimeValue nominal,

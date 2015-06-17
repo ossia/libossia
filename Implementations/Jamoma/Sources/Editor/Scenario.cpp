@@ -11,7 +11,11 @@ shared_ptr<Scenario> Scenario::create(shared_ptr<TimeConstraint> parentConstrain
 
 JamomaScenario::JamomaScenario(shared_ptr<TimeConstraint> parentConstraint) :
 mParentConstraint(parentConstraint)
-{}
+{
+  // create the start and the end time nodes
+  mTimeNodes.push_back(TimeNode::create());
+  mTimeNodes.push_back(TimeNode::create());
+}
 
 JamomaScenario::JamomaScenario(const JamomaScenario * other)
 {}
@@ -35,36 +39,40 @@ void JamomaScenario::play(bool log, string name) const
 
 void JamomaScenario::addConstraint(const shared_ptr<TimeConstraint> constraint)
 {
-  // store
-  mTimeContraints.push_back(constraint);
+  // store the constraint if it is not already stored
+  if (find(mTimeContraints.begin(),
+           mTimeContraints.end(),
+           constraint) == mTimeContraints.end())
+  {
+    mTimeContraints.push_back(constraint);
+  }
   
-  //! \todo store constraint's start and end node if they aren't already stored
-  //mTimeNodes.push_back(constraint->getStartEvent()->getTimeNode());
-  //mTimeNodes.push_back(constraint->getStartEvent()->getTimeNode());
+  // store constraint's start node if it is not already stored
+  addTimeNode(constraint->getStartEvent()->getTimeNode());
+  
+  // store constraint's end node if it is not already stored
+  addTimeNode(constraint->getEndEvent()->getTimeNode());
 }
 
 void JamomaScenario::removeConstraint(const shared_ptr<TimeConstraint> constraint)
 {
-  Container<TimeConstraint>::iterator it;
-  
-  for (it = mTimeContraints.begin(); it != mTimeContraints.end(); it++)
+  mTimeContraints.erase(find(mTimeContraints.begin(), mTimeContraints.end(), constraint));
+}
+
+void JamomaScenario::addTimeNode(const std::shared_ptr<TimeNode> timeNode)
+{
+  // store a time node if it is not already stored
+  if (find(mTimeNodes.begin(),
+           mTimeNodes.end(),
+           timeNode) == mTimeNodes.end())
   {
-    if (*it == constraint)
-    {
-      mTimeContraints.erase(it);
-      break;
-    }
+    mTimeNodes.push_back(timeNode);
   }
 }
 
-void JamomaScenario::addTimeNode(const std::shared_ptr<TimeNode>)
+void JamomaScenario::removeTimeNode(const std::shared_ptr<TimeNode> timeNode)
 {
-  
-}
-
-void JamomaScenario::removeTimeNode(const std::shared_ptr<TimeNode>)
-{
-  
+  mTimeNodes.erase(find(mTimeNodes.begin(), mTimeNodes.end(), timeNode));
 }
 
 # pragma mark -
