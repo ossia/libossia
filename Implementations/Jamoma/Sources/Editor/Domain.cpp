@@ -5,14 +5,14 @@
 
 shared_ptr<Domain> Domain::create(Value * min,
                                   Value * max,
-                                  std::vector<Value*> values)
+                                  vector<Value*> values)
 {
   return make_shared<JamomaDomain>(min, max, values);
 }
 
 JamomaDomain::JamomaDomain(Value * min,
                            Value * max,
-                           std::vector<Value*> values) :
+                           vector<Value*> values) :
 mMin(min),
 mMax(max),
 mValues(values)
@@ -44,12 +44,12 @@ void JamomaDomain::setMax(Value * max)
   mMax = max;
 }
 
-std::vector<Value*> JamomaDomain::getValues() const
+vector<Value*> JamomaDomain::getValues() const
 {
   return mValues;
 }
 
-void JamomaDomain::setValues(std::vector<Value*> values)
+void JamomaDomain::setValues(vector<Value*> values)
 {
   mValues = values;
 }

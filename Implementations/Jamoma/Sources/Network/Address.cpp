@@ -138,8 +138,8 @@ public:
           TTValue v;
           mData.get("value", v);
           
-          std::vector<Value*> tuple_min;
-          std::vector<Value*> tuple_max;
+          vector<Value*> tuple_min;
+          vector<Value*> tuple_max;
           for (int i = 0; i < v.size(); i++)
             tuple_min.push_back(new OSSIA::Float(range[0]));
             tuple_max.push_back(new OSSIA::Float(range[1]));
@@ -149,7 +149,7 @@ public:
         else if (type == kTTSym_string)
         {
           // string values enumeration
-          std::vector<Value*> values;
+          vector<Value*> values;
           for (const auto & e : range)
           {
             TTSymbol s = e;
@@ -229,7 +229,7 @@ public:
 # pragma mark -
 # pragma mark Network
 
-  virtual const std::shared_ptr<Device> & getDevice() const override
+  virtual const shared_ptr<Device> & getDevice() const override
   {
     return device;
   }
@@ -250,7 +250,7 @@ public:
   virtual Address & setAccessMode(AccessMode) override
   {
     // note : it is not possible to change the service attribute of Data after its creation
-    throw std::runtime_error("access mode cannot be set afterward");
+    throw runtime_error("access mode cannot be set afterward");
     return *this;
   }
   
@@ -449,7 +449,7 @@ private:
 
       case Value::Type::TUPLE :
       {
-        std::vector<Value*> t_value;
+        vector<Value*> t_value;
 
         for (const auto & e : v)
         {
@@ -568,11 +568,11 @@ private:
     }
   }
   
-  std::string buildNodePath(std::shared_ptr<Node> node) const
+  string buildNodePath(shared_ptr<Node> node) const
   {
-    std::string path;
-    std::string name = node->getName();
-    std::shared_ptr<Node> parent = node->getParent();
+    string path;
+    string name = node->getName();
+    shared_ptr<Node> parent = node->getParent();
     
     if (parent != nullptr)
     {

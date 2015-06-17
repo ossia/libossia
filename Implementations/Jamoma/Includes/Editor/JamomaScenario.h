@@ -58,9 +58,9 @@ public:
   
   void removeConstraint(const shared_ptr<TimeConstraint> constraint) override;
   
-  void addTimeNode(const std::shared_ptr<TimeNode>) override;
+  void addTimeNode(const shared_ptr<TimeNode>) override;
 
-  void removeTimeNode(const std::shared_ptr<TimeNode>) override;
+  void removeTimeNode(const shared_ptr<TimeNode>) override;
 
 # pragma mark -
 # pragma mark Accessors
@@ -69,13 +69,13 @@ public:
   
   void setKiller(bool isKiller) override;
   
-  const std::shared_ptr<TimeNode> & getStartNode() const override;
+  const shared_ptr<TimeNode> & getStartNode() const override;
   
-  const std::shared_ptr<TimeNode> & getEndNode() const override;
+  const shared_ptr<TimeNode> & getEndNode() const override;
   
-  const std::shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
+  const shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
   
-  const std::shared_ptr<State> & getStartState() const override;
+  const shared_ptr<State> & getStartState() const override;
   
-  const std::shared_ptr<State> & getEndState() const override;
+  const shared_ptr<State> & getEndState() const override;
 };

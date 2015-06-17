@@ -30,7 +30,7 @@ public:
   TTObject mCurve;
   
   T mInitialValue;
-  std::map<double, std::pair<T, CurveSegment<T>&>> mPointsMap;
+  map<double, pair<T, CurveSegment<T>&>> mPointsMap;
   
   Impl() : /*mCurve("Curve"),*/ mInitialValue(), mPointsMap()
   {
@@ -119,7 +119,7 @@ Curve<T>& Curve<T>::operator= (const Curve & other)
 template <typename T>
 bool Curve<T>::addPoint(double abscissa, T value, CurveSegment<T> & segment)
 {
-  std::pair <T,CurveSegment<T>&> pair(value, segment);
+  pair <T,CurveSegment<T>&> pair(value, segment);
   
   // update the points map
   pimpl->mPointsMap.emplace(abscissa, pair);
@@ -159,7 +159,7 @@ void Curve<T>::setInitialValue(const T value)
 }
 
 template <typename T>
-std::map<double, std::pair<T, CurveSegment<T>&>> Curve<T>::getPointsMap() const
+map<double, pair<T, CurveSegment<T>&>> Curve<T>::getPointsMap() const
 {
   return pimpl->mPointsMap;
 }

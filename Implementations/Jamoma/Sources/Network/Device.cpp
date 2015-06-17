@@ -54,7 +54,7 @@ public:
     
     // is there children below ?
     if (children().size() == 0)
-      throw std::runtime_error("namespace empty after the update");
+      throw runtime_error("namespace empty after the update");
 
     return err == kTTErrNone;
   }
@@ -83,7 +83,7 @@ shared_ptr<Device> Device::create(Protocol & protocol, string name)
   application = applicationManager.send("ApplicationFind", device_name);
   if (application.valid())
   {
-    throw std::runtime_error("the device already exist");
+    throw runtime_error("the device already exist");
     return nullptr;
   }
 
@@ -119,7 +119,7 @@ shared_ptr<Device> Device::create(Protocol & protocol, string name)
     if (!applicationManager.get("applicationLocalName", local_device_name))
       protocolMinuit.send("ApplicationRegister", local_device_name);
     else
-      throw std::runtime_error("Local device doesn't exist");
+      throw runtime_error("Local device doesn't exist");
 
     // register the application to the Minuit protocol and set parameters up
     protocolMinuit.send("Stop");
@@ -157,7 +157,7 @@ shared_ptr<Device> Device::create(Protocol & protocol, string name)
     if (!applicationManager.get("applicationLocalName", local_device_name))
       protocolOSC.send("ApplicationRegister", local_device_name);
     else
-      throw std::runtime_error("Local device doesn't exist");
+      throw runtime_error("Local device doesn't exist");
 
     // register the application to the OSC protocol and set paramaters up
     protocolOSC.send("Stop");
@@ -180,7 +180,7 @@ shared_ptr<Device> Device::create(Protocol & protocol, string name)
 
 /* old code
 
-bool Device::save(std::string filepath) const
+bool Device::save(string filepath) const
 {
   // create a xml handler
   TTObject aXmlHandler(kTTSym_XmlHandler);
@@ -195,7 +195,7 @@ bool Device::save(std::string filepath) const
   return err == kTTErrNone;
 }
 
-bool Device::load(std::string filepath)
+bool Device::load(string filepath)
 {
   // create a xml handler
   TTObject aXmlHandler(kTTSym_XmlHandler);

@@ -69,9 +69,9 @@ public:
 
   void setInputAddress(shared_ptr<Address>) override;
   
-  const std::shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
+  const shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
   
-  const std::shared_ptr<State> & getStartState() const override;
+  const shared_ptr<State> & getStartState() const override;
   
-  const std::shared_ptr<State> & getEndState() const override;
+  const shared_ptr<State> & getEndState() const override;
 };

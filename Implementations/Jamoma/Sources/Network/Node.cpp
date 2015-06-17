@@ -176,7 +176,7 @@ public:
     if (!err)
     {
       // store the new node into the Container
-      return children().insert(pos, std::make_shared<JamomaNode>(mDirectory, node, shared_from_this()));
+      return children().insert(pos, make_shared<JamomaNode>(mDirectory, node, shared_from_this()));
     }
 
     return iterator();
@@ -216,7 +216,7 @@ protected:
         TTNodePtr child = TTNodePtr(TTPtr(childrenList.current()[0]));
         
         // build child node
-        shared_ptr<JamomaNode> newNode = std::make_shared<JamomaNode>(mDirectory, child, shared_from_this());
+        shared_ptr<JamomaNode> newNode = make_shared<JamomaNode>(mDirectory, child, shared_from_this());
         
         // store the child node
         children().push_back(newNode);

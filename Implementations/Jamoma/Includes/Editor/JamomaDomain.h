@@ -12,7 +12,7 @@ private:
   // Implementation specific
   Value * mMin;
   Value * mMax;
-  std::vector<Value*> mValues;
+  vector<Value*> mValues;
   
 public:
   
@@ -21,7 +21,7 @@ public:
   
   JamomaDomain(Value * = new Impulse(),
                Value * = new Impulse(),
-               std::vector<Value*> = std::vector<Value*>());
+               vector<Value*> = vector<Value*>());
   
   ~JamomaDomain();
 
@@ -36,9 +36,9 @@ public:
 
   void setMax(Value * max);
   
-  std::vector<Value*> getValues() const;
+  vector<Value*> getValues() const;
   
-  void setValues(std::vector<Value*> values);
+  void setValues(vector<Value*> values);
   
 };
 

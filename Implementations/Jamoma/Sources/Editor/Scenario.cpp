@@ -59,7 +59,7 @@ void JamomaScenario::removeConstraint(const shared_ptr<TimeConstraint> constrain
   mTimeContraints.erase(find(mTimeContraints.begin(), mTimeContraints.end(), constraint));
 }
 
-void JamomaScenario::addTimeNode(const std::shared_ptr<TimeNode> timeNode)
+void JamomaScenario::addTimeNode(const shared_ptr<TimeNode> timeNode)
 {
   // store a time node if it is not already stored
   if (find(mTimeNodes.begin(),
@@ -70,7 +70,7 @@ void JamomaScenario::addTimeNode(const std::shared_ptr<TimeNode> timeNode)
   }
 }
 
-void JamomaScenario::removeTimeNode(const std::shared_ptr<TimeNode> timeNode)
+void JamomaScenario::removeTimeNode(const shared_ptr<TimeNode> timeNode)
 {
   mTimeNodes.erase(find(mTimeNodes.begin(), mTimeNodes.end(), timeNode));
 }
@@ -98,17 +98,17 @@ const shared_ptr<TimeNode> & JamomaScenario::getEndNode() const
   return mTimeNodes[1];
 }
 
-const std::shared_ptr<TimeConstraint> & JamomaScenario::getParentTimeConstraint() const
+const shared_ptr<TimeConstraint> & JamomaScenario::getParentTimeConstraint() const
 {
   return mParentConstraint;
 }
 
-const std::shared_ptr<State> & JamomaScenario::getStartState() const
+const shared_ptr<State> & JamomaScenario::getStartState() const
 {
   
 }
 
-const std::shared_ptr<State> & JamomaScenario::getEndState() const
+const shared_ptr<State> & JamomaScenario::getEndState() const
 {
   
 }

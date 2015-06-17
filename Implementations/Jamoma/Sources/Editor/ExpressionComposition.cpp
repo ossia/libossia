@@ -58,7 +58,7 @@ public:
   }
 };
 
-shared_ptr<ExpressionComposition> ExpressionComposition::create(std::shared_ptr<Expression> first_expr, Operator op, std::shared_ptr<Expression> second_expr)
+shared_ptr<ExpressionComposition> ExpressionComposition::create(shared_ptr<Expression> first_expr, Operator op, shared_ptr<Expression> second_expr)
 {
   return make_shared<JamomaExpressionComposition>(first_expr, op, second_expr);
 }

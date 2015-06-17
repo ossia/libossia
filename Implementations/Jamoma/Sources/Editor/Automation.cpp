@@ -67,17 +67,17 @@ const shared_ptr<Address> & JamomaAutomation::getInputAddress() const
 void JamomaAutomation::setInputAddress(shared_ptr<Address>)
 {}
 
-const std::shared_ptr<TimeConstraint> & JamomaAutomation::getParentTimeConstraint() const
+const shared_ptr<TimeConstraint> & JamomaAutomation::getParentTimeConstraint() const
 {
   return mParentConstraint;
 }
 
-const std::shared_ptr<State> & JamomaAutomation::getStartState() const
+const shared_ptr<State> & JamomaAutomation::getStartState() const
 {
   
 }
 
-const std::shared_ptr<State> & JamomaAutomation::getEndState() const
+const shared_ptr<State> & JamomaAutomation::getEndState() const
 {
   
 }
