@@ -87,7 +87,10 @@ struct Bool : public Value
   
   bool value;
 };
-  
+
+static Bool False = Bool(false);
+static Bool True = Bool(true);
+
 # pragma mark -
 # pragma mark Int
 
