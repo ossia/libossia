@@ -52,6 +52,12 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
+  TimeValue getDuration() const override;
+  
+  TimeValue getDurationMin() const override;
+
+  TimeValue getDurationMax() const override;
+  
   const shared_ptr<TimeEvent> & getStartEvent() const override;
   
   const shared_ptr<TimeEvent> & getEndEvent() const override;

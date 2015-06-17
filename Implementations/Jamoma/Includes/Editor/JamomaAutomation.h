@@ -52,10 +52,6 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
-  virtual TimeValue getLength() const override;
-  
-  virtual void setLength(TimeValue) override;
-  
   virtual Value getStartValue() const override;
   
   virtual void setStartValue(Value) override;
@@ -71,4 +67,10 @@ public:
   virtual const shared_ptr<Address> & getInputAddress() const override;
 
   virtual void setInputAddress(shared_ptr<Address>) override;
+  
+  const std::shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
+  
+  const std::shared_ptr<State> & getStartState() const override;
+  
+  const std::shared_ptr<State> & getEndState() const override;
 };

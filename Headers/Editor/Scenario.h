@@ -81,17 +81,9 @@ public:
    \return std::shared_ptr<#TimeNode> start node */
   virtual const std::shared_ptr<TimeNode> & getStartNode() const = 0;
 
-  /*! set the node from where the scenario starts
-   \param std::shared_ptr<#TimeNode> start node */
-  virtual void setStartNode(std::shared_ptr<TimeNode>) = 0;
-
   /*! get the node where the scenario ends
    \return std::shared_ptr<#TimeNode> end node */
   virtual const std::shared_ptr<TimeNode> & getEndNode() const = 0;
-
-  /*! set the node where the scenario ends
-   \param std::shared_ptr<#TimeNode> end node */
-  virtual void setEndNode(std::shared_ptr<TimeNode>) = 0;
 };
 
 }

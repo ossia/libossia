@@ -66,6 +66,18 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
+  /*! get the time constraint duration
+   \return #TimeValue duration */
+  virtual TimeValue getDuration() const = 0;
+  
+  /*! get the time constraint minimal duration
+   \return #TimeValue minimal duration */
+  virtual TimeValue getDurationMin() const = 0;
+  
+  /*! get the time constraint maximal duration
+   \return #TimeValue maximal duration */
+  virtual TimeValue getDurationMax() const = 0;
+  
   /*! get the event from where the constraint starts
    \return std::shared_ptr<#TimeEvent> start event */
   virtual const std::shared_ptr<TimeEvent> & getStartEvent() const = 0;

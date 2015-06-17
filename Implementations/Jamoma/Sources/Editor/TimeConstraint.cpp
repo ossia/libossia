@@ -36,6 +36,21 @@ void JamomaTimeConstraint::play(bool log, string name) const
 # pragma mark -
 # pragma mark Accessors
 
+TimeValue JamomaTimeConstraint::getDuration() const
+{
+  return mDuration;
+}
+
+TimeValue JamomaTimeConstraint::getDurationMin() const
+{
+  return mDurationMin;
+}
+
+TimeValue JamomaTimeConstraint::getDurationMax() const
+{
+  return mDurationMax;
+}
+
 const shared_ptr<TimeEvent> & JamomaTimeConstraint::getStartEvent() const
 {
   return mStartEvent;

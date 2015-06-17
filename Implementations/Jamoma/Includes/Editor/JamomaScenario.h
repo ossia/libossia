@@ -61,19 +61,17 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
-  virtual TimeValue getLength() const override;
-  
-  virtual void setLength(TimeValue) override;
-  
   virtual bool isKiller() const override;
   
   virtual void setKiller(bool isKiller) override;
   
-  virtual const shared_ptr<TimeNode> & getStartNode() const override;
+  virtual const std::shared_ptr<TimeNode> & getStartNode() const override;
   
-  virtual void setStartNode(shared_ptr<TimeNode> startNode) override;
+  virtual const std::shared_ptr<TimeNode> & getEndNode() const override;
   
-  virtual const shared_ptr<TimeNode> & getEndNode() const override;
+  const std::shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
   
-  virtual void setEndNode(shared_ptr<TimeNode> endNode) override;
+  const std::shared_ptr<State> & getStartState() const override;
+  
+  const std::shared_ptr<State> & getEndState() const override;
 };

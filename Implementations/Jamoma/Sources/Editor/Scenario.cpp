@@ -60,14 +60,6 @@ void JamomaScenario::removeConstraint(const shared_ptr<TimeConstraint> constrain
 # pragma mark -
 # pragma mark Accessors
 
-TimeValue JamomaScenario::getLength() const
-{
-
-}
-
-void JamomaScenario::setLength(TimeValue)
-{}
-
 bool JamomaScenario::isKiller() const
 {
   return mIsKiller;
@@ -83,17 +75,22 @@ const shared_ptr<TimeNode> & JamomaScenario::getStartNode() const
   return mTimeNodes[0];
 }
 
-void JamomaScenario::setStartNode(shared_ptr<TimeNode> startNode)
-{
-  mTimeNodes[0] = startNode;
-}
-
 const shared_ptr<TimeNode> & JamomaScenario::getEndNode() const
 {
   return mTimeNodes[1];
 }
 
-void JamomaScenario::setEndNode(shared_ptr<TimeNode> endNode)
+const std::shared_ptr<TimeConstraint> & JamomaScenario::getParentTimeConstraint() const
 {
-  mTimeNodes[1] = endNode;
+  
+}
+
+const std::shared_ptr<State> & JamomaScenario::getStartState() const
+{
+  
+}
+
+const std::shared_ptr<State> & JamomaScenario::getEndState() const
+{
+  
 }

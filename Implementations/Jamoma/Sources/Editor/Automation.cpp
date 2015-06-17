@@ -29,12 +29,6 @@ void JamomaAutomation::play(bool log, string name) const
 # pragma mark -
 # pragma mark Accessors
 
-TimeValue JamomaAutomation::getLength() const
-{}
-
-void JamomaAutomation::setLength(TimeValue)
-{}
-
 Value JamomaAutomation::getStartValue() const
 {
   return Value();
@@ -70,4 +64,19 @@ void JamomaAutomation::setInputAddress(shared_ptr<Address>)
 template<> shared_ptr<Automation<double>> Automation<double>::create()
 {
   return nullptr; // make_shared<JamomaAutomation>();
+}
+
+const std::shared_ptr<TimeConstraint> & JamomaAutomation::getParentTimeConstraint() const
+{
+  
+}
+
+const std::shared_ptr<State> & JamomaAutomation::getStartState() const
+{
+  
+}
+
+const std::shared_ptr<State> & JamomaAutomation::getEndState() const
+{
+  
 }
