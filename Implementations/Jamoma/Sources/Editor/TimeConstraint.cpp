@@ -3,12 +3,20 @@
 # pragma mark -
 # pragma mark Life cycle
 
-shared_ptr<TimeConstraint> TimeConstraint::create(TimeValue nominal, shared_ptr<TimeEvent> startEvent, shared_ptr<TimeEvent> endEvent, TimeValue min, TimeValue max)
+shared_ptr<TimeConstraint> TimeConstraint::create(TimeValue nominal,
+                                                  shared_ptr<TimeEvent> startEvent,
+                                                  shared_ptr<TimeEvent> endEvent,
+                                                  TimeValue min,
+                                                  TimeValue max)
 {
   return make_shared<JamomaTimeConstraint>(nominal, startEvent, endEvent, min, max);
 }
 
-JamomaTimeConstraint::JamomaTimeConstraint(TimeValue nominal, shared_ptr<TimeEvent> startEvent, shared_ptr<TimeEvent> endEvent, TimeValue min, TimeValue max) :
+JamomaTimeConstraint::JamomaTimeConstraint(TimeValue nominal,
+                                           shared_ptr<TimeEvent> startEvent,
+                                           shared_ptr<TimeEvent> endEvent,
+                                           TimeValue min,
+                                           TimeValue max) :
 mDuration(nominal),
 mDurationMin(min),
 mDurationMax(max),

@@ -4,7 +4,9 @@
 # pragma mark -
 # pragma mark Life cycle
 
-JamomaTimeEvent::JamomaTimeEvent(shared_ptr<TimeNode> aTimeNode, shared_ptr<State> aState, shared_ptr<Expression> anExpression) :
+JamomaTimeEvent::JamomaTimeEvent(shared_ptr<TimeNode> aTimeNode,
+                                 shared_ptr<State> aState,
+                                 shared_ptr<Expression> anExpression) :
 mTimeNode(aTimeNode),
 mState(aState),
 mExpression(anExpression)

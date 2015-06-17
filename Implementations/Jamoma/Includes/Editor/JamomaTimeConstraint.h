@@ -36,7 +36,11 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaTimeConstraint(TimeValue nominal, shared_ptr<TimeEvent> startEvent, shared_ptr<TimeEvent> endEvent, TimeValue min, TimeValue max);
+  JamomaTimeConstraint(TimeValue nominal,
+                       shared_ptr<TimeEvent> startEvent,
+                       shared_ptr<TimeEvent> endEvent,
+                       TimeValue min,
+                       TimeValue max);
   
   JamomaTimeConstraint(const JamomaTimeConstraint * other);
   
