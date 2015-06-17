@@ -61,7 +61,7 @@ int main()
                                                       ExpressionAtom::Operator::EQUAL,
                                                       &_false);
     
-    // create TimeEvents inside TimeNodes and make them interactive to the /play address
+    // create TimeEvents inside TimeNodes whitout state but interactive to the /play address
     auto main_start_event = *(main_start->emplace(main_start->timeEvents().begin(), nullptr, play_expression_start));
     auto main_end_event = *(main_end->emplace(main_end->timeEvents().begin(), nullptr, play_expression_end));
 
