@@ -13,6 +13,7 @@
  */
 
 #pragma once
+
 #include <memory>
 #include <string>
 #include <functional>
@@ -136,7 +137,7 @@ public:
   
   /*! set the address value callback function
    \param #ValueCallback function */
-  virtual void setValueCallback(ValueCallback callback) = 0;
+  virtual void setValueCallback(ValueCallback) = 0;
   
 protected:
   ValueCallback m_callback;

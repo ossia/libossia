@@ -13,6 +13,7 @@
  */
 
 #pragma once
+
 #include <string>
 
 #include "Network/Node.h"
