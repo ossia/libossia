@@ -32,6 +32,8 @@ using namespace std;
 void local_play_callback(const Value * v);
 void local_test_callback(const Value * v);
 
+shared_ptr<TimeConstraint> main_constraint;
+
 int main()
 {
     /* 
@@ -80,7 +82,7 @@ int main()
 
     // create the main TimeConstraint
     TimeValue main_duration(30000);
-    auto main_constraint = TimeConstraint::create(main_duration, main_start_event, main_end_event, main_duration, main_duration);
+    main_constraint = TimeConstraint::create(main_duration, main_start_event, main_end_event, main_duration, main_duration);
     
     // create the main Scenario and add it to the main TimeConstraint
     auto main_scenario = Scenario::create();
@@ -137,7 +139,14 @@ int main()
 
 void local_play_callback(const Value * v)
 {
-    ; //! \todo play the sceanrio (how ? from which object ?)
+    if (v->getType() == Value::Type::BOOL)
+    {
+        Bool * b = (Bool*)v;
+        if (b->value)
+            main_constraint->play();
+        else
+            ; //! main_constraint->stop(); \todo how to stop execution ?
+    }
 }
 
 void local_test_callback(const Value * v)

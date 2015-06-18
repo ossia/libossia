@@ -32,7 +32,66 @@ shared_ptr<Scenario> JamomaScenario::clone() const
 # pragma mark Execution
 
 void JamomaScenario::play(bool log, string name) const
-{}
+{
+  /* PROCESS START
+  
+  // reset all events to waiting status
+  for (mTimeEvents.begin(); mTimeEvents.end(); mTimeEvents.next())
+  {
+    TTObject aTimeEvent = mTimeEvents.current()[0];
+    aTimeEvent.set("status", kTTSym_eventWaiting);
+  }
+  
+  // sort events in 2 lists depending of their time process position relative to the time offset
+  TTValue v;
+  mClock.get(kTTSym_offset, v);
+  TTUInt32 timeOffset = v[0];
+  
+  TTList eventsToSetHappened;
+  TTList eventsToRequestHappen;
+  
+  for (mTimeProcesses.begin(); mTimeProcesses.end(); mTimeProcesses.next())
+  {
+    TTObject aTimeProcess = mTimeProcesses.current()[0];
+    
+    TTObject startEvent = getTimeProcessStartEvent(aTimeProcess);
+    TTObject endEvent = getTimeProcessEndEvent(aTimeProcess);
+    
+    TTUInt32 startEventDate;
+    TTUInt32 endEventDate;
+    
+    startEvent.get("date", startEventDate);
+    endEvent.get("date", endEventDate);
+    
+    if (startEventDate < timeOffset &&
+        endEventDate < timeOffset)
+    {
+      // if the start event is not already into the other list
+      if (eventsToRequestHappen.findEquals(startEvent, v))
+        eventsToSetHappened.appendUnique(startEvent);
+    }
+    else if (startEventDate < timeOffset &&
+             endEventDate > timeOffset)
+    {
+      eventsToRequestHappen.appendUnique(startEvent);
+      eventsToSetHappened.remove(startEvent);
+    }
+  }
+  
+  for (eventsToSetHappened.begin(); eventsToSetHappened.end(); eventsToSetHappened.next())
+  {
+    TTObject event = eventsToSetHappened.current()[0];
+    event.set("status", kTTSym_eventHappened);
+  }
+  
+  for (eventsToRequestHappen.begin(); eventsToRequestHappen.end(); eventsToRequestHappen.next())
+  {
+    TTObject event = eventsToRequestHappen.current()[0];
+    event.send(kTTSym_Happen);
+  }
+  
+  */
+}
 
 # pragma mark -
 # pragma mark Edition

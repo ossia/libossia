@@ -91,7 +91,8 @@ public:
   virtual AccessMode getAccessMode() const = 0;
   
   /*! set the address access mode
-   \param #AccessMode of the address */
+   \param #AccessMode of the address 
+   \return #Address the address */
   virtual Address & setAccessMode(AccessMode) = 0;
   
   /*! get the address domain 
@@ -99,7 +100,8 @@ public:
   virtual const std::shared_ptr<Domain> & getDomain() const = 0;
   
   /*! set the address domain
-   \param #Domain of the address */
+   \param #Domain of the address
+   \return #Address the address */
   virtual Address & setDomain(std::shared_ptr<Domain>) = 0;
   
   /*! get the address bounding mode
@@ -109,7 +111,8 @@ public:
   
   /*! set the address bounding mode
    \todo multiple ?
-   \param #BoundingMode of the address */
+   \param #BoundingMode of the address
+   \return #Address the address */
   virtual Address & setBoundingMode(BoundingMode) = 0;
   
   /*! get the address repetition filter status
@@ -117,7 +120,8 @@ public:
   virtual bool getRepetitionFilter() const = 0;
   
   /*! set the address repetition filter status
-   \param bool true is to enable repetition filter */
+   \param bool true is to enable repetition filter
+   \return #Address the address */
   virtual Address & setRepetitionFilter(bool = true) = 0;
 
 # pragma mark -

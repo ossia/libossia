@@ -57,7 +57,10 @@ shared_ptr<TimeConstraint> JamomaTimeConstraint::clone() const
 # pragma mark Execution
 
 void JamomaTimeConstraint::play(bool log, string name) const
-{}
+{
+  for (const auto & timeprocess : timeProcesses())
+    timeprocess->play();
+}
 
 # pragma mark -
 # pragma mark Accessors

@@ -12,8 +12,10 @@
  */
 
 #pragma once
+
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeEvent.h"
+#include "Editor/TimeProcess.h"
 #include "Editor/TimeValue.h"
 
 using namespace OSSIA;
