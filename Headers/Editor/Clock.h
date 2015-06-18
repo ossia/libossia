@@ -65,30 +65,30 @@ public:
   
   /*! get the duration of the clock
    \return const #TimeValue duration */
-  virtual const TimeValue getDuration() const;
+  virtual const TimeValue getDuration() const = 0;
   
   /*! set the duration of the clock execution
    \param const #TimeValue duration
    \return #Clock the clock */
-  virtual Clock & setDuration(const TimeValue);
+  virtual Clock & setDuration(const TimeValue) = 0;
   
   /*! get the offset of the clock
    \return const #TimeValue offset */
-  virtual const TimeValue getOffset() const;
+  virtual const TimeValue getOffset() const = 0;
   
   /** set the offset of the clock
    \param const #TimeValue offset
    \return #Clock the clock */
-  virtual Clock & setOffset(const TimeValue);
+  virtual Clock & setOffset(const TimeValue) = 0;
   
   /*! get the speed of the clock
    \return const #TimeValue speed */
-  virtual const float getSpeed() const;
+  virtual const float getSpeed() const = 0;
   
   /** set the speed factor attribute
    \param const float speed factor
    \return #Clock the clock */
-  virtual Clock & setSpeed(const float);
+  virtual Clock & setSpeed(const float) = 0;
   
 # pragma mark -
 # pragma mark Callback
