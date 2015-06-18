@@ -81,3 +81,8 @@ const shared_ptr<State> & JamomaAutomation::getEndState() const
 {
   
 }
+
+const shared_ptr<Clock> & JamomaAutomation::getClock() const
+{
+  
+}

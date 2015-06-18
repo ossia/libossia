@@ -171,3 +171,8 @@ const shared_ptr<State> & JamomaScenario::getEndState() const
 {
   
 }
+
+const shared_ptr<Clock> & JamomaScenario::getClock() const
+{
+  
+}

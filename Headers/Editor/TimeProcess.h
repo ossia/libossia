@@ -59,8 +59,7 @@ public:
   virtual const std::shared_ptr<State> & getEndState() const = 0;
   
   /*! get the time process clock
-   \todo
    \return std::shared_ptr<#Clock> clock */
-  //virtual const std::shared_ptr<Clock> & getClock() const = 0;
+  virtual const std::shared_ptr<Clock> & getClock() const = 0;
 };
 }
