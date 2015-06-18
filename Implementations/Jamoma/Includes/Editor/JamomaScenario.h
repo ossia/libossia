@@ -12,6 +12,8 @@
  */
 
 #pragma once
+
+#include "Editor/Clock.h"
 #include "Editor/Scenario.h"
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeNode.h"
