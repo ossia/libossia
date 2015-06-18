@@ -35,9 +35,9 @@ public:
    \param offset
    \param speed
    \return std::shared_ptr<#Clock> */
-  static std::shared_ptr<Clock> create(const TimeValue,
-                                       const TimeValue = 0.,
-                                       const float = 0.);
+  static std::shared_ptr<Clock> create(const TimeValue&,
+                                       const TimeValue& = 0.,
+                                       float = 0.);
   
   /*! clone */
   virtual std::shared_ptr<Clock> clone() const = 0;
@@ -68,44 +68,46 @@ public:
   
   /*! get the duration of the clock
    \return const #TimeValue duration */
-  virtual const TimeValue getDuration() const = 0;
+  virtual const TimeValue & getDuration() const = 0;
   
   /*! set the duration of the clock execution
    \param const #TimeValue duration
    \return #Clock the clock */
-  virtual Clock & setDuration(const TimeValue) = 0;
+  virtual Clock & setDuration(const TimeValue&) = 0;
   
   /*! get the offset of the clock
    \return const #TimeValue offset */
-  virtual const TimeValue getOffset() const = 0;
+  virtual const TimeValue & getOffset() const = 0;
   
   /** set the offset of the clock
    \param const #TimeValue offset
    \return #Clock the clock */
-  virtual Clock & setOffset(const TimeValue) = 0;
+  virtual Clock & setOffset(const TimeValue&) = 0;
   
   /*! get the speed of the clock
    \return const #TimeValue speed */
-  virtual const float getSpeed() const = 0;
+  virtual float getSpeed() const = 0;
   
   /** set the speed factor attribute
    \param const float speed factor
    \return #Clock the clock */
-  virtual Clock & setSpeed(const float) = 0;
+  virtual Clock & setSpeed(float) = 0;
   
 # pragma mark -
 # pragma mark Callback
   
-  /*! to get the clock position back */
-  using PositionCallback = std::function<void(const TimeValue)>;
+  /*! to get the clock execution back
+   \param clock position 
+   \param clock date */
+  using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&)>;
   
-  /*! get the clock position callback function
+  /*! get the clock execution callback function
    \return #ValueCallback function */
-  virtual PositionCallback getPositionCallback() const = 0;
+  virtual ExecutionCallback getExecutionCallback() const = 0;
   
-  /*! set the clock position callback function
+  /*! set the clock execution callback function
    \param #ValueCallback function */
-  virtual void setPositionCallback(PositionCallback) = 0;
+  virtual void setExecutionCallback(ExecutionCallback) = 0;
   
 };
 }
