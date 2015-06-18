@@ -106,7 +106,7 @@ void JamomaClock::tick()
     return;
   
   mPosition += delta / mDuration;
-  //! mDate += delta; \todo TimeValue
+  mDate += delta;
   
   if (mPosition < 1. /*!|| mInfinite \todo use TimeValue::Inf */)
   {
