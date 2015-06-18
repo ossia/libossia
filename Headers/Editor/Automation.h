@@ -15,6 +15,8 @@
 #pragma once
 #include <list>
 
+#include "Editor/Clock.h"
+#include "Editor/State.h"
 #include "Editor/TimeProcess.h"
 #include "Misc/Container.h"
 
@@ -42,9 +44,9 @@ public:
    \param the clock use to run the automation
    \return std::shared_ptr<#Automation<T>> */
   static std::shared_ptr<Automation<T>> create(std::shared_ptr<TimeConstraint> = nullptr,
-                                               std::shared_ptr<State> = nullptr,
-                                               std::shared_ptr<State> = nullptr,
-                                               std::shared_ptr<Clock> = nullptr);
+                                               std::shared_ptr<State> = State::create(),
+                                               std::shared_ptr<State> = State::create(),
+                                               std::shared_ptr<Clock> = Clock::create());
   
   virtual std::shared_ptr<Automation<T>> clone() const = 0;
   virtual ~Automation() = default;
