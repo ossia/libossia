@@ -34,64 +34,58 @@ shared_ptr<Scenario> JamomaScenario::clone() const
 
 void JamomaScenario::play(bool log, string name) const
 {
-  /* PROCESS START
+  // reset all timenodes to waiting status
+  for (auto & timenode : mTimeNodes)
+    ; //! \todo timenode->setStatus(TimeNode::Status::WAITING);
+
+  // sort timenodes in 2 lists depending of their timeconstraint position relative to the time offset
+  TimeValue timeOffset = mClock->getOffset();
   
-  // reset all events to waiting status
-  for (mTimeEvents.begin(); mTimeEvents.end(); mTimeEvents.next())
+  Container<TimeNode> timenodesToSetHappened;
+  Container<TimeNode> timenodesToRequestHappen;
+  
+  for (auto & timeconstraint : mTimeContraints)
   {
-    TTObject aTimeEvent = mTimeEvents.current()[0];
-    aTimeEvent.set("status", kTTSym_eventWaiting);
-  }
-  
-  // sort events in 2 lists depending of their time process position relative to the time offset
-  TTValue v;
-  mClock.get(kTTSym_offset, v);
-  TTUInt32 timeOffset = v[0];
-  
-  TTList eventsToSetHappened;
-  TTList eventsToRequestHappen;
-  
-  for (mTimeProcesses.begin(); mTimeProcesses.end(); mTimeProcesses.next())
-  {
-    TTObject aTimeProcess = mTimeProcesses.current()[0];
+    auto startNode = timeconstraint->getStartEvent()->getTimeNode();
+    auto endNode = timeconstraint->getEndEvent()->getTimeNode();
     
-    TTObject startEvent = getTimeProcessStartEvent(aTimeProcess);
-    TTObject endEvent = getTimeProcessEndEvent(aTimeProcess);
+    TimeValue startNodeDate = startNode->getDate();
+    TimeValue endNodeDate = endNode->getDate();
     
-    TTUInt32 startEventDate;
-    TTUInt32 endEventDate;
-    
-    startEvent.get("date", startEventDate);
-    endEvent.get("date", endEventDate);
-    
-    if (startEventDate < timeOffset &&
-        endEventDate < timeOffset)
+    if (startNodeDate < timeOffset && endNodeDate < timeOffset)
     {
-      // if the start event is not already into the other list
-      if (eventsToRequestHappen.findEquals(startEvent, v))
-        eventsToSetHappened.appendUnique(startEvent);
+      // if the start node is not already into the list of timenodes to request happened
+      if (find(timenodesToRequestHappen.begin(),
+               timenodesToRequestHappen.end(),
+               startNode) == timenodesToRequestHappen.end())
+        // if the start node is not already into the list of timenodes to set happened
+        if (find(timenodesToSetHappened.begin(),
+                 timenodesToSetHappened.end(),
+                 startNode) == timenodesToSetHappened.end())
+          // store the start node to set it happened
+          timenodesToSetHappened.push_back(startNode);
     }
-    else if (startEventDate < timeOffset &&
-             endEventDate > timeOffset)
+    else if (startNodeDate < timeOffset && endNodeDate > timeOffset)
     {
-      eventsToRequestHappen.appendUnique(startEvent);
-      eventsToSetHappened.remove(startEvent);
+      // if the start node is not already into the list of timenodes to request happened
+      if (find(timenodesToRequestHappen.begin(),
+               timenodesToRequestHappen.end(),
+               startNode) == timenodesToRequestHappen.end())
+        // store the start node to request happened
+        timenodesToRequestHappen.push_back(startNode);
+      
+      // remove the start node from the list of timenodes to set happened
+      timenodesToSetHappened.erase(find(timenodesToSetHappened.begin(),
+                                        timenodesToSetHappened.end(),
+                                        startNode));
     }
   }
   
-  for (eventsToSetHappened.begin(); eventsToSetHappened.end(); eventsToSetHappened.next())
-  {
-    TTObject event = eventsToSetHappened.current()[0];
-    event.set("status", kTTSym_eventHappened);
-  }
+  for (auto & timenode : timenodesToSetHappened)
+    ; //! \todo timenode->setStatus(TimeNode::Status::HAPPENED);
   
-  for (eventsToRequestHappen.begin(); eventsToRequestHappen.end(); eventsToRequestHappen.next())
-  {
-    TTObject event = eventsToRequestHappen.current()[0];
-    event.send(kTTSym_Happen);
-  }
-  
-  */
+  for (auto & timenode : timenodesToRequestHappen)
+    ; //! \todo timenode->happen();
 }
 
 # pragma mark -
