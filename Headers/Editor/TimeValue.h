@@ -42,13 +42,17 @@ public:
   TimeValue & operator= (const double);
   
   /*! addition operator */
-  TimeValue & operator+ (const double);
+  TimeValue & operator+= (const double);
   
   /*! soustraction operator */
-  TimeValue & operator- (const double);
+  TimeValue & operator-= (const double);
 
   /*! int casting operator */
   operator double();
+  
+protected:
+  
+  double m_value;
 
 };
 }

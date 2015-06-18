@@ -7,7 +7,7 @@ TimeValue::TimeValue()
 
 TimeValue::TimeValue(const double d)
 {
-//	date=c;
+  m_value = d;
 }
 
 TimeValue::~TimeValue()
@@ -17,27 +17,23 @@ TimeValue::~TimeValue()
 
 TimeValue& TimeValue::operator=(const double d)
 {
-	return *this;
-//	date=c;
-//	return *this;
+  m_value = d;
+  return *this;
 }
 
-TimeValue& TimeValue::operator+(const double d)
+TimeValue& TimeValue::operator+=(const double d)
 {
+  m_value += d;
   return *this;
-  //	date=c;
-  //	return *this;
 }
 
-TimeValue& TimeValue::operator-(const double d)
+TimeValue& TimeValue::operator-=(const double d)
 {
+  m_value -= d;
   return *this;
-  //	date=c;
-  //	return *this;
 }
 
 TimeValue::operator double()
 {
-	return -1;
-//	return date;
+	return m_value;
 }
