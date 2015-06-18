@@ -39,6 +39,9 @@ public:
                                        const TimeValue = 0.,
                                        const float = 0.);
   
+  /*! clone */
+  virtual std::shared_ptr<Clock> clone() const = 0;
+  
   /*! destructor */
   virtual ~Clock() = default;
 
