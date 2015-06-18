@@ -85,8 +85,10 @@ int main()
     // create the main TimeConstraint
     main_constraint = TimeConstraint::create(main_start_event, main_end_event);
     
-    // create the main Scenario and add it to the main TimeConstraint
+    // create the main Scenario as main TimeConstraint child
     auto main_scenario = Scenario::create(main_constraint);
+    
+    //! \todo we shouldn't have to add it to the main TimeConstraint
     main_constraint->timeProcesses().push_back(main_scenario);
 
     /* 
@@ -116,8 +118,11 @@ int main()
      Main Scenario edition : creation of an Automation
      */
     
-    // create an automation into the first TimeConstraint
+    // create an automation as first TimeConstraint child
     auto first_automation = Automation<double>::create(first_constraint);
+    
+    //! \todo we shouldn't have to add it to the first TimeConstraint
+    first_constraint->timeProcesses().push_back(first_automation);
     
     // add "/test 0." message to Automation's start state
     Float zero(0.);
