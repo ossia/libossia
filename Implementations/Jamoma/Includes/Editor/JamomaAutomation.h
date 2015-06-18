@@ -1,5 +1,5 @@
 /*!
- * \file JamomaScenario.h
+ * \file JamomaAutomation.h
  *
  * \brief
  *
@@ -12,6 +12,7 @@
  */
 
 #pragma once
+
 #include "Editor/Automation.h"
 #include "Editor/TimeNode.h"
 #include "Editor/TimeValue.h"
