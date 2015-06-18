@@ -45,6 +45,17 @@ public:
   \param bool to enable log
   \param string to give a log file name where to write */
   virtual void play(bool log = false, std::string name = "") const = 0;
+  
+# pragma mark -
+# pragma mark Edition
+  
+  /*! add a sub state into the state of the event
+   \param std::shared_ptr<#State> to add */
+  virtual void addState(const std::shared_ptr<State>) = 0;
+  
+  /*! remove a sub state from the state of the event
+   \param std::shared_ptr<#State> to remove */
+  virtual void removeState(const std::shared_ptr<State>) = 0;
 
 # pragma mark -
 # pragma mark Accessors

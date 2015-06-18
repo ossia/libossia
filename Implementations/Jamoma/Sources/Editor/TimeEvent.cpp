@@ -25,6 +25,25 @@ void JamomaTimeEvent::play(bool log, string name) const
 }
 
 # pragma mark -
+# pragma mark Edition
+
+void JamomaTimeEvent::addState(const std::shared_ptr<State> state)
+{
+  // store a state if it is not already stored
+  if (find(mState->stateElements().begin(),
+           mState->stateElements().end(),
+           state) == mState->stateElements().end())
+  {
+    mState->stateElements().push_back(state);
+  }
+}
+
+void JamomaTimeEvent::removeState(const std::shared_ptr<State> state)
+{
+  mState->stateElements().erase(find(mState->stateElements().begin(), mState->stateElements().end(), state));
+}
+
+# pragma mark -
 # pragma mark Accessors
 
 const shared_ptr<TimeNode> & JamomaTimeEvent::getTimeNode() const
@@ -34,7 +53,6 @@ const shared_ptr<TimeNode> & JamomaTimeEvent::getTimeNode() const
   
 const shared_ptr<State> & JamomaTimeEvent::getState() const
 {
-  //!
   return mState;
 }
 

@@ -47,6 +47,13 @@ public:
 # pragma mark Execution
   
   void play(bool log = false, string name = "") const override;
+  
+# pragma mark -
+# pragma mark Edition
+  
+  void addState(const std::shared_ptr<State>) override;
+  
+  void removeState(const std::shared_ptr<State>) override;
 
 # pragma mark -
 # pragma mark Accessors
