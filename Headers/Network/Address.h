@@ -139,9 +139,6 @@ public:
    \param #ValueCallback function */
   virtual void setValueCallback(ValueCallback) = 0;
   
-protected:
-  ValueCallback m_callback;
 };
-  
 }
 

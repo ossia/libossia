@@ -20,6 +20,8 @@ private:
   bool                mRepetitionFilter;
   
   shared_ptr<Domain>  mDomain;
+  
+  ValueCallback       mCallback;
 
   shared_ptr<Device>  device;
 
@@ -327,12 +329,12 @@ public:
 
   virtual Address::ValueCallback getValueCallback() const override
   {
-    return m_callback;
+    return mCallback;
   }
  
   virtual void setValueCallback(Address::ValueCallback callback) override
   {
-    m_callback = callback;
+    mCallback = callback;
   }
 
 # pragma mark -
@@ -356,10 +358,10 @@ private:
     // check data object
     if (aData.instance() == self->mData.instance())
     {
-      if (self->m_callback)
+      if (self->mCallback)
       {
         Value * v = self->convertTTValueIntoValue(value, self->mValueType);
-        self->m_callback(v);
+        self->mCallback(v);
         
         return kTTErrNone;
       }
