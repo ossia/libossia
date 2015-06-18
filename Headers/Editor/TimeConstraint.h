@@ -17,6 +17,7 @@
 #include <memory>
 #include <string>
 
+#include "Editor/TimeValue.h"
 #include "Misc/Container.h"
 
 namespace OSSIA
@@ -36,17 +37,17 @@ public:
 
   /*! factory
    \details if the 3 duration are equals it means ...
-   \param #TimeValue duration of the constraint
    \param #std::shared_ptr<TimeEvent> event where the constraint starts
    \param #std::shared_ptr<TimeEvent> event where the constraint ends
-   \param #TimeValue minimal duration of the constraint
-   \param #TimeValue maximal duration of the constraint
+   \param const #TimeValue& duration of the constraint
+   \param const #TimeValue& minimal duration of the constraint
+   \param const #TimeValue& maximal duration of the constraint
    \return std::shared_ptr<#TimeConstraint> */
-  static std::shared_ptr<TimeConstraint> create(TimeValue nominal,
+  static std::shared_ptr<TimeConstraint> create(std::shared_ptr<TimeEvent>,
                                                 std::shared_ptr<TimeEvent>,
-                                                std::shared_ptr<TimeEvent>,
-                                                TimeValue,
-                                                TimeValue);
+                                                const TimeValue& = Infinite,
+                                                const TimeValue& = 0.,
+                                                const TimeValue& = Infinite);
   
   /*! clone 
    \return std::shared_ptr<#TimeConstraint> */
@@ -67,16 +68,16 @@ public:
 # pragma mark Accessors
   
   /*! get the time constraint duration
-   \return #TimeValue duration */
-  virtual TimeValue getDuration() const = 0;
+   \return const #TimeValue& duration */
+  virtual const TimeValue & getDuration() const = 0;
   
   /*! get the time constraint minimal duration
-   \return #TimeValue minimal duration */
-  virtual TimeValue getDurationMin() const = 0;
+   \return const #TimeValue& minimal duration */
+  virtual const TimeValue & getDurationMin() const = 0;
   
   /*! get the time constraint maximal duration
-   \return #TimeValue maximal duration */
-  virtual TimeValue getDurationMax() const = 0;
+   \return const #TimeValue& maximal duration */
+  virtual const TimeValue & getDurationMax() const = 0;
   
   /*! get the event from where the constraint starts
    \return std::shared_ptr<#TimeEvent> start event */

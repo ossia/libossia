@@ -27,23 +27,23 @@ class JamomaTimeConstraint : public TimeConstraint
 private:
   
   // Implementation specific
+  shared_ptr<TimeEvent>   mStartEvent;
+  shared_ptr<TimeEvent>   mEndEvent;
+  
   TimeValue               mDuration;
   TimeValue               mDurationMin;
   TimeValue               mDurationMax;
-  
-  shared_ptr<TimeEvent>   mStartEvent;
-  shared_ptr<TimeEvent>   mEndEvent;
   
 public:
   
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaTimeConstraint(TimeValue nominal,
-                       shared_ptr<TimeEvent> startEvent,
-                       shared_ptr<TimeEvent> endEvent,
-                       TimeValue min,
-                       TimeValue max);
+  JamomaTimeConstraint(shared_ptr<TimeEvent>,
+                       shared_ptr<TimeEvent>,
+                       const TimeValue& = Infinite,
+                       const TimeValue& = 0.,
+                       const TimeValue& = Infinite);
   
   JamomaTimeConstraint(const JamomaTimeConstraint * other);
   
@@ -59,11 +59,11 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
-  TimeValue getDuration() const override;
+  const TimeValue & getDuration() const override;
   
-  TimeValue getDurationMin() const override;
+  const TimeValue & getDurationMin() const override;
 
-  TimeValue getDurationMax() const override;
+  const TimeValue & getDurationMax() const override;
   
   const shared_ptr<TimeEvent> & getStartEvent() const override;
   

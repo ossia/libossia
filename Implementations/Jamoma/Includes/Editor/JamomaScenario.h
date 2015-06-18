@@ -29,7 +29,8 @@ private:
   
   // Implementation specific
   shared_ptr<TimeConstraint>  mParentConstraint;
-  
+  shared_ptr<State>           mStartState;
+  shared_ptr<State>           mEndState;
   shared_ptr<Clock>           mClock;
   
   Container<TimeConstraint>   mTimeContraints;
@@ -42,7 +43,10 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaScenario(shared_ptr<TimeConstraint> = nullptr, shared_ptr<Clock> = nullptr);
+  JamomaScenario(shared_ptr<TimeConstraint> = nullptr,
+                 shared_ptr<State> = nullptr,
+                 shared_ptr<State> = nullptr,
+                 shared_ptr<Clock> = nullptr);
   
   JamomaScenario(const JamomaScenario * other);
   

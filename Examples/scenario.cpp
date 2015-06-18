@@ -10,6 +10,7 @@
 #include <iostream>
 #include <memory>
 
+#include "Editor/Clock.h"
 #include "Editor/Expression.h"
 #include "Editor/ExpressionAtom.h"
 #include "Editor/Message.h"
@@ -81,11 +82,10 @@ int main()
     auto main_end_event = *(main_end->emplace(main_end->timeEvents().begin(), play_expression_end));
 
     // create the main TimeConstraint
-    TimeValue main_duration(30000);
-    main_constraint = TimeConstraint::create(main_duration, main_start_event, main_end_event, main_duration, main_duration);
+    main_constraint = TimeConstraint::create(main_start_event, main_end_event);
     
     // create the main Scenario and add it to the main TimeConstraint
-    auto main_scenario = Scenario::create();
+    auto main_scenario = Scenario::create(main_constraint);
     main_constraint->timeProcesses().push_back(main_scenario);
 
     /* 

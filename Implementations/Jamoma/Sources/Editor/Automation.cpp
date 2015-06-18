@@ -6,13 +6,21 @@ using namespace std;
 # pragma mark -
 # pragma mark Life cycle
 
-template<> shared_ptr<Automation<double>> Automation<double>::create(shared_ptr<TimeConstraint> parentConstraint, shared_ptr<Clock> clock)
+template<> shared_ptr<Automation<double>> Automation<double>::create(shared_ptr<TimeConstraint> parentConstraint,
+                                                                     shared_ptr<State> startState,
+                                                                     shared_ptr<State> endState,
+                                                                     shared_ptr<Clock> clock)
 {
-  return make_shared<JamomaAutomation>(parentConstraint);
+  return make_shared<JamomaAutomation>(parentConstraint, startState, endState, clock);
 }
 
-JamomaAutomation::JamomaAutomation(shared_ptr<TimeConstraint> parentConstraint, shared_ptr<Clock> clock) :
+JamomaAutomation::JamomaAutomation(shared_ptr<TimeConstraint> parentConstraint,
+                                   shared_ptr<State> startState,
+                                   shared_ptr<State> endState,
+                                   shared_ptr<Clock> clock) :
 mParentConstraint(parentConstraint),
+mStartState(startState),
+mEndState(endState),
 mClock(clock)
 {}
 
@@ -75,12 +83,12 @@ const shared_ptr<TimeConstraint> & JamomaAutomation::getParentTimeConstraint() c
 
 const shared_ptr<State> & JamomaAutomation::getStartState() const
 {
-  
+  return mStartState;
 }
 
 const shared_ptr<State> & JamomaAutomation::getEndState() const
 {
-  
+  return mEndState;
 }
 
 const shared_ptr<Clock> & JamomaAutomation::getClock() const

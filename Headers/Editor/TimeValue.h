@@ -26,11 +26,11 @@ public:
 # pragma mark Life cycle
   
   /*! constructor */
-  TimeValue();
+  TimeValue(const bool = false);
   
   /*! constructor
    \param int value */
-  TimeValue(const double);
+  TimeValue(const double, const bool = false);
   
   /*! destructor */
   ~TimeValue();
@@ -50,9 +50,19 @@ public:
   /*! int casting operator */
   operator double();
   
+# pragma mark -
+# pragma mark Accessors
+  
+  /*! is the time value infinite ?
+   \return bool infinite */
+  bool isInfinite() const;
+  
 protected:
   
-  double m_value;
-
+  double  m_value;
+  bool    m_infinite;
 };
+  
+static TimeValue Infinite = TimeValue(true);
+
 }

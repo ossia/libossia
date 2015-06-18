@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include "Editor/Clock.h"
+#include "Editor/State.h"
 #include "Editor/TimeProcess.h"
 
 namespace OSSIA
@@ -32,8 +34,14 @@ public:
 
   /*! factory
    \param the parent time constraint of the scenario
+   \param the state at start
+   \param the state at end
+   \param the clock use to run the scenario
    \return std::shared_ptr<#Scenario> */
-  static std::shared_ptr<Scenario> create(std::shared_ptr<TimeConstraint> = nullptr, std::shared_ptr<Clock> = nullptr);
+  static std::shared_ptr<Scenario> create(std::shared_ptr<TimeConstraint> = nullptr,
+                                          std::shared_ptr<State> = State::create(),
+                                          std::shared_ptr<State> = State::create(),
+                                          std::shared_ptr<Clock> = Clock::create());
 
   /*! clone */
   virtual std::shared_ptr<Scenario> clone() const = 0;

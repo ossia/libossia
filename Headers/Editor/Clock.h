@@ -35,9 +35,9 @@ public:
    \param offset
    \param speed
    \return std::shared_ptr<#Clock> */
-  static std::shared_ptr<Clock> create(const TimeValue&,
+  static std::shared_ptr<Clock> create(const TimeValue& = 0.,
                                        const TimeValue& = 0.,
-                                       float = 0.);
+                                       float = 1.);
   
   /*! clone */
   virtual std::shared_ptr<Clock> clone() const = 0;

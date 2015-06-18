@@ -3,13 +3,13 @@
 # pragma mark -
 # pragma mark Life cycle
 
-shared_ptr<TimeConstraint> TimeConstraint::create(TimeValue nominal,
-                                                  shared_ptr<TimeEvent> startEvent,
+shared_ptr<TimeConstraint> TimeConstraint::create(shared_ptr<TimeEvent> startEvent,
                                                   shared_ptr<TimeEvent> endEvent,
-                                                  TimeValue min,
-                                                  TimeValue max)
+                                                  const TimeValue& nominal,
+                                                  const TimeValue& min,
+                                                  const TimeValue& max)
 {
-    auto constraint = make_shared<JamomaTimeConstraint>(nominal, startEvent, endEvent, min, max);
+    auto constraint = make_shared<JamomaTimeConstraint>(startEvent, endEvent, nominal, min, max);
     
     // store the constraint into the start event as a next constraint
     if (find(startEvent->nextTimeConstraints().begin(),
@@ -30,16 +30,16 @@ shared_ptr<TimeConstraint> TimeConstraint::create(TimeValue nominal,
     return constraint;
 }
 
-JamomaTimeConstraint::JamomaTimeConstraint(TimeValue nominal,
-                                           shared_ptr<TimeEvent> startEvent,
+JamomaTimeConstraint::JamomaTimeConstraint(shared_ptr<TimeEvent> startEvent,
                                            shared_ptr<TimeEvent> endEvent,
-                                           TimeValue min,
-                                           TimeValue max) :
+                                           const TimeValue& nominal,
+                                           const TimeValue& min,
+                                           const TimeValue& max) :
+mStartEvent(startEvent),
+mEndEvent(endEvent),
 mDuration(nominal),
 mDurationMin(min),
-mDurationMax(max),
-mStartEvent(startEvent),
-mEndEvent(endEvent)
+mDurationMax(max)
 {}
 
 JamomaTimeConstraint::JamomaTimeConstraint(const JamomaTimeConstraint * other)
@@ -65,17 +65,17 @@ void JamomaTimeConstraint::play(bool log, string name) const
 # pragma mark -
 # pragma mark Accessors
 
-TimeValue JamomaTimeConstraint::getDuration() const
+const TimeValue & JamomaTimeConstraint::getDuration() const
 {
   return mDuration;
 }
 
-TimeValue JamomaTimeConstraint::getDurationMin() const
+const TimeValue & JamomaTimeConstraint::getDurationMin() const
 {
   return mDurationMin;
 }
 
-TimeValue JamomaTimeConstraint::getDurationMax() const
+const TimeValue & JamomaTimeConstraint::getDurationMax() const
 {
   return mDurationMax;
 }

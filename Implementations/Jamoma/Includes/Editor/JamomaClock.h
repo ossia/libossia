@@ -53,7 +53,7 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaClock(const TimeValue&,
+  JamomaClock(const TimeValue& = 0.,
               const TimeValue& = 0.,
               float = 0.);
   

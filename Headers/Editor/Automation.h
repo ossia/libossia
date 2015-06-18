@@ -37,8 +37,14 @@ public:
   
   /*! factory
    \param the parent time constraint of the automation
+   \param the state at start
+   \param the state at end
+   \param the clock use to run the automation
    \return std::shared_ptr<#Automation<T>> */
-  static std::shared_ptr<Automation<T>> create(std::shared_ptr<TimeConstraint> = nullptr, std::shared_ptr<Clock> = nullptr);
+  static std::shared_ptr<Automation<T>> create(std::shared_ptr<TimeConstraint> = nullptr,
+                                               std::shared_ptr<State> = nullptr,
+                                               std::shared_ptr<State> = nullptr,
+                                               std::shared_ptr<Clock> = nullptr);
   
   virtual std::shared_ptr<Automation<T>> clone() const = 0;
   virtual ~Automation() = default;

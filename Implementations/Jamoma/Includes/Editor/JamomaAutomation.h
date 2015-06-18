@@ -30,7 +30,8 @@ private:
   
   // Implementation Specific
   shared_ptr<TimeConstraint>  mParentConstraint;
-  
+  shared_ptr<State>           mStartState;
+  shared_ptr<State>           mEndState;
   shared_ptr<Clock>           mClock;
   
   shared_ptr<Curve<double>>   curve;
@@ -42,7 +43,10 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaAutomation(shared_ptr<TimeConstraint> = nullptr, shared_ptr<Clock> = nullptr);
+  JamomaAutomation(shared_ptr<TimeConstraint> = nullptr,
+                   shared_ptr<State> = nullptr,
+                   shared_ptr<State> = nullptr,
+                   shared_ptr<Clock> = nullptr);
   
   JamomaAutomation(const JamomaAutomation * other);
   
