@@ -29,6 +29,9 @@ private:
   
   // Implementation Specific
   shared_ptr<TimeConstraint>  mParentConstraint;
+  
+  shared_ptr<Clock>           mClock;
+  
   shared_ptr<Curve<double>>   curve;
   shared_ptr<Address>         addr;
   shared_ptr<Address>         element;
@@ -38,7 +41,7 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaAutomation(shared_ptr<TimeConstraint> = nullptr);
+  JamomaAutomation(shared_ptr<TimeConstraint> = nullptr, shared_ptr<Clock> = nullptr);
   
   JamomaAutomation(const JamomaAutomation * other);
   
