@@ -14,20 +14,41 @@
 
 #pragma once
 
-namespace OSSIA {
+namespace OSSIA
+{
 
-class TimeValue {
+class TimeValue
+{
 
-    public:
-      // Constructors, destructor, assignment
-      TimeValue();
-      TimeValue(const int);
-      ~TimeValue();
-      TimeValue & operator= (const int);
+public:
 
-      // Cast
-      operator int();
+# pragma mark -
+# pragma mark Life cycle
+  
+  /*! constructor */
+  TimeValue();
+  
+  /*! constructor
+   \param int value */
+  TimeValue(const double);
+  
+  /*! destructor */
+  ~TimeValue();
+  
+# pragma mark -
+# pragma mark Operator
+  
+  /*! assignation operator */
+  TimeValue & operator= (const double);
+  
+  /*! addition operator */
+  TimeValue & operator+ (const double);
+  
+  /*! soustraction operator */
+  TimeValue & operator- (const double);
+
+  /*! int casting operator */
+  operator double();
 
 };
-
 }
