@@ -14,6 +14,11 @@
 
 #pragma once
 
+#include <memory>
+#include <functional>
+
+#include "Editor/TimeValue.h"
+
 namespace OSSIA
 {
 
@@ -24,6 +29,15 @@ public:
   
 # pragma mark -
 # pragma mark Life cycle
+  
+  /*! factory
+   \param duration
+   \param offset
+   \param speed
+   \return std::shared_ptr<#Clock> */
+  static std::shared_ptr<Clock> create(const TimeValue,
+                                       const TimeValue = 0.,
+                                       const float = 0.);
   
   /*! destructor */
   virtual ~Clock() = default;
@@ -49,19 +63,46 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
+  /*! get the duration of the clock
+   \return const #TimeValue duration */
+  virtual const TimeValue getDuration() const;
+  
   /*! set the duration of the clock execution
    \param const #TimeValue duration
    \return #Clock the clock */
   virtual Clock & setDuration(const TimeValue);
+  
+  /*! get the offset of the clock
+   \return const #TimeValue offset */
+  virtual const TimeValue getOffset() const;
   
   /** set the offset of the clock
    \param const #TimeValue offset
    \return #Clock the clock */
   virtual Clock & setOffset(const TimeValue);
   
+  /*! get the speed of the clock
+   \return const #TimeValue speed */
+  virtual const float getSpeed() const;
+  
   /** set the speed factor attribute
    \param const float speed factor
    \return #Clock the clock */
   virtual Clock & setSpeed(const float);
+  
+# pragma mark -
+# pragma mark Callback
+  
+  /*! to get the clock position back */
+  using PositionCallback = std::function<void(const TimeValue)>;
+  
+  /*! get the clock position callback function
+   \return #ValueCallback function */
+  virtual PositionCallback getPositionCallback() const = 0;
+  
+  /*! set the clock position callback function
+   \param #ValueCallback function */
+  virtual void setPositionCallback(PositionCallback) = 0;
+  
 };
 }
