@@ -26,7 +26,9 @@ class JamomaTimeConstraint : public TimeConstraint
 
 private:
   
-  // Implementation specific
+# pragma mark -
+# pragma mark Implementation specific
+  
   shared_ptr<TimeEvent>   mStartEvent;
   shared_ptr<TimeEvent>   mEndEvent;
   

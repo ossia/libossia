@@ -23,10 +23,11 @@ using namespace std;
 
 class JamomaTimeNode : public TimeNode, public enable_shared_from_this<JamomaTimeNode>
 {
-  
+
 private:
-  
-  // Implementation specific
+
+# pragma mark -
+# pragma mark Implementation specific
   
 public:
 

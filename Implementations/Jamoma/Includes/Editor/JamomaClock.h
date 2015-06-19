@@ -27,7 +27,9 @@ class JamomaClock : public Clock
   
 private:
   
-  // Implementation specific
+# pragma mark -
+# pragma mark Implementation specific
+  
   TimeValue         mDuration;      /// the time (in ms) the clock will run at normal speed factor
   TimeValue         mOffset;        /// the date (in ms) the clock will run from
   double            mSpeed;         /// the speed factor of the clock

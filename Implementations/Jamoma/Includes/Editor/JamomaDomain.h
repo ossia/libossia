@@ -24,7 +24,9 @@ class JamomaDomain : public Domain
   
 private:
   
-  // Implementation specific
+# pragma mark -
+# pragma mark Implementation specific
+  
   Value * mMin;
   Value * mMax;
   vector<Value*> mValues;

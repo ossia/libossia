@@ -26,13 +26,40 @@ class JamomaTimeNode;
 class JamomaTimeEvent : public TimeEvent
 {
   
+public:
+  
+# pragma mark -
+# pragma mark Enumerations
+  
+  /*! event status */
+  enum class Status
+  {
+    WAITING,
+    PENDING,
+    HAPPENED,
+    DISPOSED
+  };
+  
 private:
   
+# pragma mark -
+# pragma mark Implementation specific
+  
   // Implementation specific
-  shared_ptr<TimeNode>        mTimeNode;
-  shared_ptr<State>           mState;
-  shared_ptr<Expression>      mExpression;
+  shared_ptr<TimeNode>    mTimeNode;
+  shared_ptr<State>       mState;
+  shared_ptr<Expression>  mExpression;
+  
+  Status                  mStatus;
 
+  uint32_t                mMinReachedConstraintsCounter;  /// how many constraints have reached their minimun duration bound ?
+  uint32_t                mEndedConstraintsCounter;       /// how many constraints have ended ?
+  uint32_t                mDisposedConstraintsCounter;    /// how many constraints have been disposed ?
+  
+  bool                    mRequestWait;                   /// an internal flag to know if there is a request to make the event to wait
+  bool                    mRequestHappen;                 /// an internal flag to know if there is a request to make the event happen
+  bool                    mRequestDispose;                /// an internal flag to know if there is a request to dispose the event
+  
 public:
   
 # pragma mark -
@@ -63,4 +90,35 @@ public:
   const shared_ptr<State> & getState() const override;
   
   const shared_ptr<Expression> & getExpression() const override;
+
+# pragma mark -
+# pragma mark Implementation specific
+  
+private:
+  
+  /*! set status directly
+   \details this is usefull to reset event at precise status but it couldn't not be used when our Scenario is running
+   \param Status status to set */
+  void setStatus(Status);
+  
+  /*! request to make the event to wait
+   \details the request will be apply on next statusUpdate call */
+  void wait();
+  
+  /*! request to make the event happen
+   \details the request will be apply on next statusUpdate call */
+  void happen();
+  
+  /*! request to make the event not happen
+   \details the request will be apply on next statusUpdate call */
+  void dispose();
+  
+  /*! apply request or update event status depending on attached processes statement
+   \details this methods should only be called by our Scenario or the event itself */
+  void statusUpdate();
+  
+  /*! internal method to apply new status and notify observers
+   \param Status status to apply */
+  void statusApply(Status);
+  
 };

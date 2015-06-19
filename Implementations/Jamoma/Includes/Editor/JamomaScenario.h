@@ -27,7 +27,9 @@ class JamomaScenario : public Scenario
 
 private:
   
-  // Implementation specific
+# pragma mark -
+# pragma mark Implementation specific
+  
   shared_ptr<State>           mStartState;
   shared_ptr<State>           mEndState;
   shared_ptr<Clock>           mClock;
