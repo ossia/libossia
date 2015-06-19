@@ -51,8 +51,8 @@ void JamomaScenario::play(bool log, string name) const
   
   for (auto & timeconstraint : mTimeContraints)
   {
-    auto startNode = timeconstraint->getStartNode();
-    auto endNode = timeconstraint->getEndNode();
+    auto startNode = timeconstraint->getStartEvent()->getTimeNode();
+    auto endNode = timeconstraint->getEndEvent()->getTimeNode();
     
     TimeValue startNodeDate = startNode->getDate();
     TimeValue endNodeDate = endNode->getDate();
@@ -107,10 +107,10 @@ void JamomaScenario::addConstraint(const shared_ptr<TimeConstraint> constraint)
   }
   
   // store constraint's start node if it is not already stored
-  addTimeNode(constraint->getStartNode());
+  addTimeNode(constraint->getStartEvent()->getTimeNode());
   
   // store constraint's end node if it is not already stored
-  addTimeNode(constraint->getEndNode());
+  addTimeNode(constraint->getEndEvent()->getTimeNode());
 }
 
 void JamomaScenario::removeConstraint(const shared_ptr<TimeConstraint> constraint)

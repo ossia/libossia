@@ -21,7 +21,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaTimeNode : public TimeNode
+class JamomaTimeNode : public TimeNode, public enable_shared_from_this<JamomaTimeNode>
 {
   
 private:

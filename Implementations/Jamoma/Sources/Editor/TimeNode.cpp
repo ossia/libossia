@@ -50,5 +50,5 @@ void JamomaTimeNode::setSimultaneityMargin(TimeValue)
 JamomaTimeNode::iterator JamomaTimeNode::emplace(const_iterator pos,
                                                  shared_ptr<Expression> expression)
 {
-  return timeEvents().insert(pos, make_shared<JamomaTimeEvent>(expression));
+  return timeEvents().insert(pos, make_shared<JamomaTimeEvent>(shared_from_this(), expression));
 }
