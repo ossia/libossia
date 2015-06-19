@@ -21,7 +21,6 @@ namespace OSSIA
 
 class Clock;
 class State;
-class TimeConstraint;
 class TimeValue;
 
 class TimeProcess
@@ -45,10 +44,6 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
-  
-  /*! get the time constraint whre the time process is stored
-   \return std::shared_ptr<#TimeConstraint> time constraint */
-  virtual const std::shared_ptr<TimeConstraint> & getParentTimeConstraint() const = 0;
   
   /*! get the time process start state
    \return std::shared_ptr<#State> start state */

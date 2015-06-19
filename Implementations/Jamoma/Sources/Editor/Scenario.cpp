@@ -4,19 +4,16 @@
 # pragma mark -
 # pragma mark Life cycle
 
-shared_ptr<Scenario> Scenario::create(shared_ptr<TimeConstraint> parentConstraint,
-                                      shared_ptr<State> startState,
+shared_ptr<Scenario> Scenario::create(shared_ptr<State> startState,
                                       shared_ptr<State> endState,
                                       shared_ptr<Clock> clock)
 {
-  return make_shared<JamomaScenario>(parentConstraint, startState, endState, clock);
+  return make_shared<JamomaScenario>(startState, endState, clock);
 }
 
-JamomaScenario::JamomaScenario(shared_ptr<TimeConstraint> parentConstraint,
-                               shared_ptr<State> startState,
+JamomaScenario::JamomaScenario(shared_ptr<State> startState,
                                shared_ptr<State> endState,
                                shared_ptr<Clock> clock) :
-mParentConstraint(parentConstraint),
 mStartState(startState),
 mEndState(endState),
 mClock(clock)
@@ -158,11 +155,6 @@ const shared_ptr<TimeNode> & JamomaScenario::getStartNode() const
 const shared_ptr<TimeNode> & JamomaScenario::getEndNode() const
 {
   return mTimeNodes[1];
-}
-
-const shared_ptr<TimeConstraint> & JamomaScenario::getParentTimeConstraint() const
-{
-  return mParentConstraint;
 }
 
 const shared_ptr<State> & JamomaScenario::getStartState() const

@@ -29,7 +29,6 @@ class JamomaAutomation : public Automation<double>
 private:
   
   // Implementation Specific
-  shared_ptr<TimeConstraint>  mParentConstraint;
   shared_ptr<State>           mStartState;
   shared_ptr<State>           mEndState;
   shared_ptr<Clock>           mClock;
@@ -43,10 +42,9 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaAutomation(shared_ptr<TimeConstraint> = nullptr,
-                   shared_ptr<State> = nullptr,
-                   shared_ptr<State> = nullptr,
-                   shared_ptr<Clock> = nullptr);
+  JamomaAutomation(shared_ptr<State>,
+                   shared_ptr<State>,
+                   shared_ptr<Clock>);
   
   JamomaAutomation(const JamomaAutomation * other);
   
@@ -77,8 +75,6 @@ public:
   const shared_ptr<Address> & getInputAddress() const override;
 
   void setInputAddress(shared_ptr<Address>) override;
-  
-  const shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
   
   const shared_ptr<State> & getStartState() const override;
   

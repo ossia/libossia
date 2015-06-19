@@ -38,13 +38,11 @@ public:
 # pragma mark Life cycle
   
   /*! factory
-   \param std::shared_ptr<#TimeConstraint> the parent time constraint
    \param std::shared_ptr<#State> the state at start
    \param std::shared_ptr<#State> the state at end
    \param std::shared_ptr<#Clock> the clock use to run
    \return std::shared_ptr<#Automation<T>> */
-  static std::shared_ptr<Automation<T>> create(std::shared_ptr<TimeConstraint> = nullptr,
-                                               std::shared_ptr<State> = State::create(),
+  static std::shared_ptr<Automation<T>> create(std::shared_ptr<State> = State::create(),
                                                std::shared_ptr<State> = State::create(),
                                                std::shared_ptr<Clock> = Clock::create());
   

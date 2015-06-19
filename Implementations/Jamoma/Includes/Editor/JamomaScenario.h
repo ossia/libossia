@@ -28,7 +28,6 @@ class JamomaScenario : public Scenario
 private:
   
   // Implementation specific
-  shared_ptr<TimeConstraint>  mParentConstraint;
   shared_ptr<State>           mStartState;
   shared_ptr<State>           mEndState;
   shared_ptr<Clock>           mClock;
@@ -43,10 +42,9 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaScenario(shared_ptr<TimeConstraint> = nullptr,
-                 shared_ptr<State> = nullptr,
-                 shared_ptr<State> = nullptr,
-                 shared_ptr<Clock> = nullptr);
+  JamomaScenario(shared_ptr<State>,
+                 shared_ptr<State>,
+                 shared_ptr<Clock>);
   
   JamomaScenario(const JamomaScenario * other);
   
@@ -80,8 +78,6 @@ public:
   const shared_ptr<TimeNode> & getStartNode() const override;
   
   const shared_ptr<TimeNode> & getEndNode() const override;
-  
-  const shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
   
   const shared_ptr<State> & getStartState() const override;
   

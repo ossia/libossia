@@ -65,8 +65,8 @@ int main()
      */
     
     // create the start and the end TimeNodes
-    auto main_start = TimeNode::create();
-    auto main_end = TimeNode::create();
+    auto main_start_node = TimeNode::create();
+    auto main_end_node = TimeNode::create();
     
     // create "/play == true" and "/play == false" Expressions
     Destination local_play(local_play_node);
@@ -79,16 +79,16 @@ int main()
                                                       &False);
     
     // create TimeEvents inside TimeNodes and make them interactive to the /play address
-    auto main_start_event = *(main_start->emplace(main_start->timeEvents().begin(), play_expression_start));
-    auto main_end_event = *(main_end->emplace(main_end->timeEvents().begin(), play_expression_end));
+    auto main_start_event = *(main_start_node->emplace(main_start_node->timeEvents().begin(), play_expression_start));
+    auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), play_expression_end));
 
+    // create the main Scenario
+    auto main_scenario = Scenario::create();
+    
     // create the main TimeConstraint
     main_constraint = TimeConstraint::create(main_start_event, main_end_event);
     
-    // create the main Scenario as main TimeConstraint child
-    auto main_scenario = Scenario::create(main_constraint);
-    
-    //! \todo we shouldn't have to add it to the main TimeConstraint
+    // add the scenario to the main TimeConstraint
     main_constraint->timeProcesses().push_back(main_scenario);
 
     /* 
@@ -118,10 +118,10 @@ int main()
      Main Scenario edition : creation of an Automation
      */
     
-    // create an automation as first TimeConstraint child
-    auto first_automation = Automation<double>::create(first_constraint);
+    // create an automation
+    auto first_automation = Automation<double>::create();
     
-    //! \todo we shouldn't have to add it to the first TimeConstraint
+    // add it to the first TimeConstraint
     first_constraint->timeProcesses().push_back(first_automation);
     
     // add "/test 0." message to Automation's start state
