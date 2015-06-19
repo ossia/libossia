@@ -32,10 +32,12 @@ public:
   
   /*! factory
    \param duration
+   \param granularity
    \param offset
    \param speed
    \return std::shared_ptr<#Clock> */
   static std::shared_ptr<Clock> create(const TimeValue& = Infinite,
+                                       const TimeValue& = 1.,
                                        const TimeValue& = 0.,
                                        float = 1.);
   
@@ -60,7 +62,8 @@ public:
   /*! resume the clock progression */
   virtual void resume() = 0;
   
-  /*! called every time a new step should be processed */
+  /*! called every time a new step should be processed.
+   \details can be use to force step processing in case of external drive */
   virtual void tick() = 0;
   
 # pragma mark -

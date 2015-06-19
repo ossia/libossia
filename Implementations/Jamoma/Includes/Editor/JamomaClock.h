@@ -31,8 +31,10 @@ private:
 # pragma mark Implementation specific
   
   TimeValue         mDuration;      /// the time (in ms) the clock will run at normal speed factor
+  TimeValue         mGranularity;   /// the minimum time between each tick (in ms)
   TimeValue         mOffset;        /// the date (in ms) the clock will run from
   double            mSpeed;         /// the speed factor of the clock
+ 
   
   bool              mExternalTick;  /// if true the tick() method is called from outside
   
@@ -40,8 +42,6 @@ private:
   bool              mPaused;        /// is the clock paused right now ?
   double            mPosition;      /// the progression of the clock between the beginning and the end [0. :: 1.]
   TimeValue         mDate;          /// how many time the clock is running (without no speed factor consideration)
-  
-  double            mGranularity;   /// the minimun time between each tick (in ms)
   
   thread            mThread;        /// a thread to launch the clock execution
   mutex             mThreadMutex;   /// prevents the thread object from being used concurrently
@@ -55,6 +55,7 @@ public:
 # pragma mark Life cycle
   
   JamomaClock(const TimeValue&,
+              const TimeValue&,
               const TimeValue&,
               float);
   

@@ -6,16 +6,19 @@ using namespace OSSIA;
 # pragma mark Life cycle
 
 std::shared_ptr<Clock> Clock::create(const TimeValue& duration,
+                                     const TimeValue& granularity,
                                      const TimeValue& offset,
                                      float speed)
 {
-  return make_shared<JamomaClock>(duration, offset, speed);
+  return make_shared<JamomaClock>(duration, granularity, offset, speed);
 }
 
 JamomaClock::JamomaClock(const TimeValue& duration,
+                         const TimeValue& granularity,
                          const TimeValue& offset,
                          float speed) :
 mDuration(duration),
+mGranularity(granularity),
 mOffset(offset),
 mSpeed(speed)
 {}
@@ -105,6 +108,7 @@ void JamomaClock::resume()
 void JamomaClock::tick()
 {
   double delta = computeDeltaTime() * mSpeed;
+  double epsilon = mGranularity / mDuration;
   
   // test paused and running status after the computeDeltatTime because there is a sleep inside
   if (mPaused || !mRunning)
@@ -113,7 +117,7 @@ void JamomaClock::tick()
   mPosition += delta / mDuration;
   mDate += delta;
   
-  if (mPosition < 1. || mDuration.isInfinite())
+  if ((1. - mPosition) > epsilon || mDuration.isInfinite())
   {
     // notify the owner
     (mCallback)(mPosition, mDate);

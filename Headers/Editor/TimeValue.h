@@ -83,5 +83,6 @@ protected:
   
 static TimeValue Infinite = TimeValue(true);
 static TimeValue Zero = TimeValue(0.);
+static TimeValue One = TimeValue(1.);
 
 }

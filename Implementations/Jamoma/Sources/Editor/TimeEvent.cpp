@@ -19,6 +19,10 @@ JamomaTimeEvent::~JamomaTimeEvent()
 
 void JamomaTimeEvent::play(bool log, string name) const
 {
+  //! \todo have empty expression that return always true when it is evaluated
+  if (!mExpression)
+    return mState->launch();
+
   if (mExpression->evaluate())
     mState->launch();
 }
