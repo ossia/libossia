@@ -1,9 +1,9 @@
 /*!
  * \file TimeEvent.h
  *
- * \brief
+ * \brief #TimeEvent is use to describe temporal structure to launch the start or the end of each attached #TimeConstraint.
  *
- * \details
+ * \details #TimeEvent has a #State and can also be submitted to an #Expression.
  *
  * \author Clément Bossut
  * \author Théo de la Hogue

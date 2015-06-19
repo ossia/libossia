@@ -1,10 +1,9 @@
 /*!
  * \file TimeNode.h
  *
- * \brief #TimeNode is use to describe temporal structure to synchronize the start or the end of each attached #TimeConstraint.
+ * \brief #TimeNode is use to describe temporal structure to synchronize each attached #TimeEvent evaluation.
  *
- * \details #TimeNode can be executed once each incoming #TimeConstraint are terminated. \n
- * #TimeNode is also a #TimeEvent container.
+ * \details #TimeNode is a #TimeEvent container that can be executed once each attached #TimeEvent are ready.
  *
  * \author Clément Bossut
  * \author Théo de la Hogue

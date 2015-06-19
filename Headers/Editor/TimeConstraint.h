@@ -1,7 +1,7 @@
 /*!
  * \file TimeConstraint.h
  *
- * \brief #TimeConstraint is use to describe temporal structure precising which amount of time (the duration) are between two TimeNodes.
+ * \brief #TimeConstraint is use to describe temporal structure precising which amount of time (the duration) are between two TimeEvents.
  *
  * \details The duration can be fixed or between a minimal and a maximal duration. \n
  * TimeConstraint is also a #TimeProcess container.
