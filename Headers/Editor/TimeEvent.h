@@ -37,7 +37,7 @@ public:
 # pragma mark -
 # pragma mark Execution
   
-  /*! execute the scenario and optionnaly log the execution into a file
+  /*! execute and optionnaly log the execution into a file
   \param bool to enable log
   \param string to give a log file name where to write */
   virtual void play(bool log = false, std::string name = "") const = 0;

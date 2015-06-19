@@ -1,9 +1,10 @@
 /*!
  * \file TimeNode.h
  *
- * \brief
+ * \brief #TimeNode is use to describe temporal structure to synchronize the start or the end of each attached #TimeConstraint.
  *
- * \details
+ * \details #TimeNode can be executed once each incoming #TimeConstraint are terminated. \n
+ * #TimeNode is also a #TimeEvent container.
  *
  * \author Clément Bossut
  * \author Théo de la Hogue
@@ -52,7 +53,7 @@ public:
 # pragma mark -
 # pragma mark Execution
   
-  /*! execute the scenario and optionnaly log the execution into a file
+  /*! execute and optionnaly log the execution into a file
    \param bool to enable log
    \param string to give a log file name where to write */
   virtual void play(bool log = false, std::string name = "") const = 0;

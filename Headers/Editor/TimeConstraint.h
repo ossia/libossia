@@ -1,9 +1,10 @@
 /*!
  * \file TimeConstraint.h
  *
- * \brief
+ * \brief #TimeConstraint is use to describe temporal structure precising which amount of time (the duration) are between two TimeNodes.
  *
- * \details
+ * \details The duration can be fixed or between a minimal and a maximal duration. \n
+ * TimeConstraint is also a #TimeProcess container.
  *
  * \author Clément Bossut
  * \author Théo de la Hogue
@@ -36,7 +37,7 @@ public:
 # pragma mark Life cycle
 
   /*! factory
-   \details if the 3 duration are equals it means ...
+   \details by default a #TimeConstraint have an infinite duration with no minimal duration and an infinite maximal duration.
    \param #std::shared_ptr<TimeNode> node where the constraint starts
    \param #std::shared_ptr<TimeNode> node where the constraint ends
    \param const #TimeValue& duration of the constraint
@@ -59,7 +60,7 @@ public:
 # pragma mark -
 # pragma mark Execution
 
-  /*! execute the scenario and optionnaly log the execution into a file
+  /*! execute and optionnaly log the execution into a file
    \param bool to enable log
    \param std::string to give a log file name where to write */
   virtual void play(bool log = false, std::string name = "") const = 0;
