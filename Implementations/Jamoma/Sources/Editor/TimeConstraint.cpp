@@ -3,40 +3,40 @@
 # pragma mark -
 # pragma mark Life cycle
 
-shared_ptr<TimeConstraint> TimeConstraint::create(shared_ptr<TimeEvent> startEvent,
-                                                  shared_ptr<TimeEvent> endEvent,
+shared_ptr<TimeConstraint> TimeConstraint::create(shared_ptr<TimeNode> startNode,
+                                                  shared_ptr<TimeNode> endNode,
                                                   const TimeValue& nominal,
                                                   const TimeValue& min,
                                                   const TimeValue& max)
 {
-    auto constraint = make_shared<JamomaTimeConstraint>(startEvent, endEvent, nominal, min, max);
+    auto constraint = make_shared<JamomaTimeConstraint>(startNode, endNode, nominal, min, max);
     
-    // store the constraint into the start event as a next constraint
-    if (find(startEvent->nextTimeConstraints().begin(),
-             startEvent->nextTimeConstraints().end(),
-             constraint) == startEvent->nextTimeConstraints().end())
+    // store the constraint into the start node as a next constraint
+    if (find(startNode->nextTimeConstraints().begin(),
+             startNode->nextTimeConstraints().end(),
+             constraint) == startNode->nextTimeConstraints().end())
     {
-        startEvent->nextTimeConstraints().push_back(constraint);
+        startNode->nextTimeConstraints().push_back(constraint);
     }
     
-    // store the constraint into the end event as a previous constraint
-    if (find(endEvent->previousTimeConstraints().begin(),
-             endEvent->previousTimeConstraints().end(),
-             constraint) == endEvent->previousTimeConstraints().end())
+    // store the constraint into the end node as a previous constraint
+    if (find(endNode->previousTimeConstraints().begin(),
+             endNode->previousTimeConstraints().end(),
+             constraint) == endNode->previousTimeConstraints().end())
     {
-        endEvent->previousTimeConstraints().push_back(constraint);
+        endNode->previousTimeConstraints().push_back(constraint);
     }
     
     return constraint;
 }
 
-JamomaTimeConstraint::JamomaTimeConstraint(shared_ptr<TimeEvent> startEvent,
-                                           shared_ptr<TimeEvent> endEvent,
+JamomaTimeConstraint::JamomaTimeConstraint(shared_ptr<TimeNode> startNode,
+                                           shared_ptr<TimeNode> endNode,
                                            const TimeValue& nominal,
                                            const TimeValue& min,
                                            const TimeValue& max) :
-mStartEvent(startEvent),
-mEndEvent(endEvent),
+mStartNode(startNode),
+mEndNode(endNode),
 mDuration(nominal),
 mDurationMin(min),
 mDurationMax(max)
@@ -80,12 +80,12 @@ const TimeValue & JamomaTimeConstraint::getDurationMax() const
   return mDurationMax;
 }
 
-const shared_ptr<TimeEvent> & JamomaTimeConstraint::getStartEvent() const
+const shared_ptr<TimeNode> & JamomaTimeConstraint::getStartNode() const
 {
-  return mStartEvent;
+  return mStartNode;
 }
 
-const shared_ptr<TimeEvent> & JamomaTimeConstraint::getEndEvent() const
+const shared_ptr<TimeNode> & JamomaTimeConstraint::getEndNode() const
 {
-  return mEndEvent;
+  return mEndNode;
 }

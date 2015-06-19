@@ -4,9 +4,7 @@
 # pragma mark -
 # pragma mark Life cycle
 
-JamomaTimeEvent::JamomaTimeEvent(shared_ptr<TimeNode> aTimeNode,
-                                 shared_ptr<Expression> anExpression) :
-mTimeNode(aTimeNode),
+JamomaTimeEvent::JamomaTimeEvent(shared_ptr<Expression> anExpression) :
 mExpression(anExpression)
 {
   mState = State::create();
@@ -46,11 +44,6 @@ void JamomaTimeEvent::removeState(const std::shared_ptr<State> state)
 # pragma mark -
 # pragma mark Accessors
 
-const shared_ptr<TimeNode> & JamomaTimeEvent::getTimeNode() const
-{
-  return mTimeNode;
-}
-  
 const shared_ptr<State> & JamomaTimeEvent::getState() const
 {
   return mState;

@@ -24,6 +24,7 @@ namespace OSSIA
 
 class Expression;
 class State;
+class TimeConstraint;
 class TimeEvent;
 class TimeValue;
 
@@ -91,8 +92,34 @@ public:
   const Container<TimeEvent>& timeEvents() const
   { return m_timeEvents; }
 
+# pragma mark -
+# pragma mark TimeConstraints
+
+  /*! get previous time contraints attached to the node
+   \return #Container<#TimeConstraint> container */
+  Container<TimeConstraint>& previousTimeConstraints()
+  { return m_previousTimeConstraints; }
+  
+  /*! get previous time contraints attached to the node
+   \return #Container<#TimeProcess> container */
+  const Container<TimeConstraint>& previousTimeConstraints() const
+  { return m_previousTimeConstraints; }
+  
+  /*! get next time contraints attached to the node
+   \return #Container<#TimeConstraint> container */
+  Container<TimeConstraint>& nextTimeConstraints()
+  { return m_nextTimeConstraints; }
+  
+  /*! get next time contraints attached to the node
+   \return #Container<#TimeProcess> container */
+  const Container<TimeConstraint>& nextTimeConstraints() const
+  { return m_nextTimeConstraints; }
+
 private:
-  Container<TimeEvent> m_timeEvents;
+  Container<TimeEvent>      m_timeEvents;
+  Container<TimeConstraint> m_previousTimeConstraints;
+  Container<TimeConstraint> m_nextTimeConstraints;
+
 };
 
 }

@@ -86,7 +86,7 @@ int main()
     auto main_scenario = Scenario::create();
     
     // create the main TimeConstraint
-    main_constraint = TimeConstraint::create(main_start_event, main_end_event);
+    main_constraint = TimeConstraint::create(main_start_node, main_end_node);
     
     // add the scenario to the main TimeConstraint
     main_constraint->timeProcesses().push_back(main_scenario);
@@ -109,7 +109,7 @@ int main()
     
     // create a TimeConstraint between the two TimeEvents
     TimeValue first_duration(3000.);
-    auto first_constraint = TimeConstraint::create(first_start_event, first_end_event, first_duration, first_duration, first_duration);
+    auto first_constraint = TimeConstraint::create(scenario_start_node, first_end_node, first_duration, first_duration, first_duration);
     
     // add the first TimeConstraint to the main Scenario
     main_scenario->addConstraint(first_constraint);

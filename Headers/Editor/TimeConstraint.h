@@ -23,7 +23,7 @@
 namespace OSSIA
 {
 
-class TimeEvent;
+class TimeNode;
 class TimeProcess;
 class TimeValue;
 
@@ -37,14 +37,14 @@ public:
 
   /*! factory
    \details if the 3 duration are equals it means ...
-   \param #std::shared_ptr<TimeEvent> event where the constraint starts
-   \param #std::shared_ptr<TimeEvent> event where the constraint ends
+   \param #std::shared_ptr<TimeNode> node where the constraint starts
+   \param #std::shared_ptr<TimeNode> node where the constraint ends
    \param const #TimeValue& duration of the constraint
    \param const #TimeValue& minimal duration of the constraint
    \param const #TimeValue& maximal duration of the constraint
    \return std::shared_ptr<#TimeConstraint> */
-  static std::shared_ptr<TimeConstraint> create(std::shared_ptr<TimeEvent>,
-                                                std::shared_ptr<TimeEvent>,
+  static std::shared_ptr<TimeConstraint> create(std::shared_ptr<TimeNode>,
+                                                std::shared_ptr<TimeNode>,
                                                 const TimeValue& = Infinite,
                                                 const TimeValue& = 0.,
                                                 const TimeValue& = Infinite);
@@ -79,13 +79,13 @@ public:
    \return const #TimeValue& maximal duration */
   virtual const TimeValue & getDurationMax() const = 0;
   
-  /*! get the event from where the constraint starts
-   \return std::shared_ptr<#TimeEvent> start event */
-  virtual const std::shared_ptr<TimeEvent> & getStartEvent() const = 0;
+  /*! get the node from where the constraint starts
+   \return std::shared_ptr<#TimeNode> start node */
+  virtual const std::shared_ptr<TimeNode> & getStartNode() const = 0;
   
-  /*! get the event from where the constraint starts
-   \return std::shared_ptr<#TimeEvent> start event */
-  virtual const std::shared_ptr<TimeEvent> & getEndEvent() const = 0;
+  /*! get the node from where the constraint ends
+   \return std::shared_ptr<#TimeNode> end node */
+  virtual const std::shared_ptr<TimeNode> & getEndNode() const = 0;
 
 # pragma mark -
 # pragma mark Time Processes

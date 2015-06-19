@@ -14,7 +14,7 @@
 #pragma once
 
 #include "Editor/TimeConstraint.h"
-#include "Editor/TimeEvent.h"
+#include "Editor/TimeNode.h"
 #include "Editor/TimeProcess.h"
 #include "Editor/TimeValue.h"
 
@@ -27,8 +27,8 @@ class JamomaTimeConstraint : public TimeConstraint
 private:
   
   // Implementation specific
-  shared_ptr<TimeEvent>   mStartEvent;
-  shared_ptr<TimeEvent>   mEndEvent;
+  shared_ptr<TimeNode>    mStartNode;
+  shared_ptr<TimeNode>    mEndNode;
   
   TimeValue               mDuration;
   TimeValue               mDurationMin;
@@ -39,8 +39,8 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaTimeConstraint(shared_ptr<TimeEvent>,
-                       shared_ptr<TimeEvent>,
+  JamomaTimeConstraint(shared_ptr<TimeNode>,
+                       shared_ptr<TimeNode>,
                        const TimeValue& = Infinite,
                        const TimeValue& = 0.,
                        const TimeValue& = Infinite);
@@ -65,7 +65,7 @@ public:
 
   const TimeValue & getDurationMax() const override;
   
-  const shared_ptr<TimeEvent> & getStartEvent() const override;
+  const shared_ptr<TimeNode> & getStartNode() const override;
   
-  const shared_ptr<TimeEvent> & getEndEvent() const override;
+  const shared_ptr<TimeNode> & getEndNode() const override;
 };
