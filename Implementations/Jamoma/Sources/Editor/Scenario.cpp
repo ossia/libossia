@@ -1,6 +1,8 @@
 #include "Editor/JamomaScenario.h"
 #include "Editor/JamomaTimeConstraint.h"
 
+#include <iostream>
+
 # pragma mark -
 # pragma mark Life cycle
 
@@ -21,6 +23,10 @@ mClock(clock)
   // create the start and the end time nodes
   mTimeNodes.push_back(TimeNode::create());
   mTimeNodes.push_back(TimeNode::create());
+  
+  // pass callback to the clock
+  Clock::ExecutionCallback callback = std::bind(&JamomaScenario::ClockCallback, this, _1, _2);
+  mClock->setExecutionCallback(callback);
 }
 
 JamomaScenario::JamomaScenario(const JamomaScenario * other)
@@ -39,58 +45,7 @@ shared_ptr<Scenario> JamomaScenario::clone() const
 
 void JamomaScenario::play(bool log, string name) const
 {
-  // reset all timenodes to waiting status
-  for (auto & timenode : mTimeNodes)
-    ; //! \todo timenode->setStatus(TimeNode::Status::WAITING);
-
-  // sort timenodes in 2 lists depending of their timeconstraint position relative to the time offset
-  TimeValue timeOffset = mClock->getOffset();
-  
-  Container<TimeNode> timenodesToSetHappened;
-  Container<TimeNode> timenodesToRequestHappen;
-  
-  for (auto & timeconstraint : mTimeContraints)
-  {
-    auto startNode = timeconstraint->getStartEvent()->getTimeNode();
-    auto endNode = timeconstraint->getEndEvent()->getTimeNode();
-    
-    TimeValue startNodeDate = startNode->getDate();
-    TimeValue endNodeDate = endNode->getDate();
-    
-    if (startNodeDate < timeOffset && endNodeDate < timeOffset)
-    {
-      // if the start node is not already into the list of timenodes to request happened
-      if (find(timenodesToRequestHappen.begin(),
-               timenodesToRequestHappen.end(),
-               startNode) == timenodesToRequestHappen.end())
-        // if the start node is not already into the list of timenodes to set happened
-        if (find(timenodesToSetHappened.begin(),
-                 timenodesToSetHappened.end(),
-                 startNode) == timenodesToSetHappened.end())
-          // store the start node to set it happened
-          timenodesToSetHappened.push_back(startNode);
-    }
-    else if (startNodeDate < timeOffset && endNodeDate > timeOffset)
-    {
-      // if the start node is not already into the list of timenodes to request happened
-      if (find(timenodesToRequestHappen.begin(),
-               timenodesToRequestHappen.end(),
-               startNode) == timenodesToRequestHappen.end())
-        // store the start node to request happened
-        timenodesToRequestHappen.push_back(startNode);
-      
-      // remove the start node from the list of timenodes to set happened
-      timenodesToSetHappened.erase(find(timenodesToSetHappened.begin(),
-                                        timenodesToSetHappened.end(),
-                                        startNode));
-    }
-  }
-  
-  for (auto & timenode : timenodesToSetHappened)
-    ; //! \todo timenode->setStatus(TimeNode::Status::HAPPENED);
-  
-  for (auto & timenode : timenodesToRequestHappen)
-    ; //! \todo timenode->happen();
+  mClock->go();
 }
 
 # pragma mark -
@@ -171,3 +126,12 @@ const shared_ptr<Clock> & JamomaScenario::getClock() const
 {
   return mClock;
 }
+
+# pragma mark -
+# pragma mark Implementation specific
+
+void JamomaScenario::ClockCallback(const TimeValue& position, const TimeValue& date)
+{
+  cout << double(position) << ", " << double(date) << "\n";
+}
+

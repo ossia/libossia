@@ -46,9 +46,27 @@ public:
   
   /*! soustraction operator */
   TimeValue & operator-= (const double);
-
-  /*! int casting operator */
-  operator double();
+  
+  /*! equal operator */
+  bool operator== (const TimeValue& t);
+  
+  /*! different operator */
+  bool operator!= (const TimeValue& t);
+  
+  /*! greater than operator */
+  bool operator> (const TimeValue& t);
+  
+  /*! greater than and equal operator */
+  bool operator>= (const TimeValue& t);
+  
+  /*! less than operator */
+  bool operator< (const TimeValue& t);
+  
+  /*! less than and equal operator */
+  bool operator<= (const TimeValue& t);
+  
+  /*! double casting operator */
+  operator double() const;
   
 # pragma mark -
 # pragma mark Accessors
@@ -64,5 +82,6 @@ protected:
 };
   
 static TimeValue Infinite = TimeValue(true);
+static TimeValue Zero = TimeValue(0.);
 
 }

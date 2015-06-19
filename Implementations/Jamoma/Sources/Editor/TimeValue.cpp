@@ -56,7 +56,37 @@ TimeValue& TimeValue::operator-=(const double d)
   return *this;
 }
 
-TimeValue::operator double()
+bool TimeValue::operator== (const TimeValue& t)
+{
+  return m_infinite ? t.m_infinite : (t.m_infinite ? false : m_value == t.m_value);
+}
+
+bool TimeValue::operator!= (const TimeValue& t)
+{
+  return !(*this == t);
+}
+
+bool TimeValue::operator> (const TimeValue& t)
+{
+  return m_infinite ? !t.m_infinite : (t.m_infinite ? false : m_value > t.m_value);
+}
+
+bool TimeValue::operator>= (const TimeValue& t)
+{
+  return m_infinite ? t.m_infinite : (t.m_infinite ? false : m_value >= t.m_value);
+}
+
+bool TimeValue::operator< (const TimeValue& t)
+{
+  return t >= *this;
+}
+
+bool TimeValue::operator<= (const TimeValue& t)
+{
+  return t > *this;
+}
+
+TimeValue::operator double() const
 {
   return m_value;
 }

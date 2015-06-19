@@ -35,7 +35,6 @@ private:
   double            mSpeed;         /// the speed factor of the clock
   
   bool              mExternalTick;  /// if true the tick() method is called from outside
-  //! bool              mInfinite;      /// if true the clock will run until stop method call (this attribute overrides mDuration) \todo use TimeValue::Inf
   
   bool              mRunning;       /// is the clock running right now ?
   bool              mPaused;        /// is the clock paused right now ?
@@ -55,11 +54,15 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaClock(const TimeValue& = 0.,
-              const TimeValue& = 0.,
-              float = 0.);
+  JamomaClock(const TimeValue&,
+              const TimeValue&,
+              float);
+  
+  JamomaClock(const JamomaClock * other);
   
   ~JamomaClock();
+  
+  shared_ptr<Clock> clone() const override;
   
 # pragma mark -
 # pragma mark Execution

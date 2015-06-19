@@ -13,6 +13,7 @@
 
 #pragma once
 
+#include "Editor/Clock.h"
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeEvent.h"
 #include "Editor/TimeProcess.h"

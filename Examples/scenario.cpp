@@ -144,7 +144,8 @@ int main()
     // play the scenario
     local_play_address->sendValue(&True);
 
-    return 0;
+    while (true)
+        ;
 }
 
 void local_play_callback(const Value * v)

@@ -9,7 +9,7 @@ std::shared_ptr<Clock> Clock::create(const TimeValue& duration,
                                      const TimeValue& offset,
                                      float speed)
 {
-  return nullptr;
+  return make_shared<JamomaClock>(duration, offset, speed);
 }
 
 JamomaClock::JamomaClock(const TimeValue& duration,
@@ -20,9 +20,15 @@ mOffset(offset),
 mSpeed(speed)
 {}
 
+JamomaClock::JamomaClock(const JamomaClock * other)
+{}
+
 JamomaClock::~JamomaClock()
+{}
+
+shared_ptr<Clock> JamomaClock::clone() const
 {
-  
+  return make_shared<JamomaClock>(this);
 }
 
 # pragma mark -
@@ -39,7 +45,7 @@ void JamomaClock::go()
     mPosition = 0.;
     mDate = 0.;
     
-    (mCallback)(mPosition, mDate);
+    mCallback(mPosition, mDate);
     
     //! \todo notify each observers
     // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
@@ -57,7 +63,7 @@ void JamomaClock::go()
     // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
     
     // launch a first tick if the duration is valid
-    if (mDuration > 0.)
+    if (mDuration > Zero)
       tick();
   }
   // if the thread is not running
@@ -108,7 +114,7 @@ void JamomaClock::tick()
   mPosition += delta / mDuration;
   mDate += delta;
   
-  if (mPosition < 1. /*!|| mInfinite \todo use TimeValue::Inf */)
+  if (mPosition < 1. || mDuration.isInfinite())
   {
     // notify the owner
     (mCallback)(mPosition, mDate);
@@ -242,7 +248,7 @@ void JamomaClock::threadCallback()
   // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
   
   // launch the tick if the duration is valid and while it have to run
-  if (mDuration > 0.)
+  if (mDuration > Zero)
     while (mRunning)
       tick();
 }

@@ -59,7 +59,10 @@ shared_ptr<TimeConstraint> JamomaTimeConstraint::clone() const
 void JamomaTimeConstraint::play(bool log, string name) const
 {
   for (const auto & timeprocess : timeProcesses())
+  {
+    timeprocess->getClock()->setDuration(mDuration);
     timeprocess->play();
+  }
 }
 
 # pragma mark -
