@@ -3,7 +3,7 @@
  *
  * \brief #TimeNode is use to describe temporal structure to synchronize each attached #TimeEvent evaluation.
  *
- * \details #TimeNode is a #TimeEvent container that can be executed once each attached #TimeEvent are ready.
+ * \details #TimeNode is also a #TimeEvent container.
  *
  * \author Clément Bossut
  * \author Théo de la Hogue

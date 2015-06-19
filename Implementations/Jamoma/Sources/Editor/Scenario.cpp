@@ -1,8 +1,6 @@
 #include "Editor/JamomaScenario.h"
 #include "Editor/JamomaTimeConstraint.h"
 
-#include <iostream>
-
 # pragma mark -
 # pragma mark Life cycle
 
@@ -46,6 +44,7 @@ shared_ptr<Scenario> JamomaScenario::clone() const
 void JamomaScenario::play(bool log, string name) const
 {
   mClock->go();
+  mTimeNodes[0]->play();
 }
 
 # pragma mark -
@@ -132,6 +131,6 @@ const shared_ptr<Clock> & JamomaScenario::getClock() const
 
 void JamomaScenario::ClockCallback(const TimeValue& position, const TimeValue& date)
 {
-  cout << double(position) << ", " << double(date) << "\n";
+  // cout << double(position) << ", " << double(date) << "\n";
 }
 

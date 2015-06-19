@@ -26,7 +26,10 @@ shared_ptr<TimeNode> JamomaTimeNode::clone() const
 # pragma mark Execution
 
 void JamomaTimeNode::play(bool log, string name) const
-{}
+{
+  for (auto & timeevent : timeEvents())
+    timeevent->play();
+}
 
 # pragma mark -
 # pragma mark Accessors

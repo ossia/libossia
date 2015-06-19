@@ -86,7 +86,8 @@ int main()
     auto main_scenario = Scenario::create();
     
     // create the main TimeConstraint
-    main_constraint = TimeConstraint::create(main_start_event, main_end_event);
+    TimeValue main_duration(10000.);
+    main_constraint = TimeConstraint::create(main_start_event, main_end_event, main_duration);
     
     // add the scenario to the main TimeConstraint
     main_constraint->timeProcesses().push_back(main_scenario);

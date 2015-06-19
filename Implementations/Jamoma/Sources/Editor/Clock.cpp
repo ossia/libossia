@@ -53,7 +53,6 @@ void JamomaClock::go()
   }
   else if (mExternalTick)
   {
-    
     // reset timing informations
     mRunning = true;
     mPaused = false;
