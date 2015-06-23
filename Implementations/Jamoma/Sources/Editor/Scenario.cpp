@@ -20,11 +20,19 @@ mStartState(startState),
 mEndState(endState),
 mClock(clock)
 {
-  // create the start and the end time nodes
+  // create the start and the end TimeNodes
   mTimeNodes.push_back(TimeNode::create());
   mTimeNodes.push_back(TimeNode::create());
   
-  // pass callback to the clock
+  // create a TimeEvent into each TimeNode
+  auto startEvent = *(mTimeNodes[0]->emplace(mTimeNodes[0]->timeEvents().begin()));
+  auto endEvent = *(mTimeNodes[1]->emplace(mTimeNodes[1]->timeEvents().begin()));
+  
+  // add States to TimeEvents
+  startEvent->addState(startState);
+  endEvent->addState(endState);
+  
+  // pass callback to the Clock
   Clock::ExecutionCallback callback = std::bind(&JamomaScenario::ClockCallback, this, _1, _2);
   mClock->setExecutionCallback(callback);
 }
@@ -54,7 +62,7 @@ void JamomaScenario::play(bool log, string name) const
 
 void JamomaScenario::addConstraint(const shared_ptr<TimeConstraint> constraint)
 {
-  // store the constraint if it is not already stored
+  // store the TimeConstraint if it is not already stored
   if (find(mTimeContraints.begin(),
            mTimeContraints.end(),
            constraint) == mTimeContraints.end())
@@ -76,7 +84,7 @@ void JamomaScenario::removeConstraint(const shared_ptr<TimeConstraint> constrain
 
 void JamomaScenario::addTimeNode(const shared_ptr<TimeNode> timeNode)
 {
-  // store a time node if it is not already stored
+  // store a TimeNode if it is not already stored
   if (find(mTimeNodes.begin(),
            mTimeNodes.end(),
            timeNode) == mTimeNodes.end())
