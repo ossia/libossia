@@ -1,7 +1,7 @@
 #include "Editor/JamomaScenario.h"
 #include "Editor/JamomaTimeConstraint.h"
 
-#include <iostream> //! \todo to remove. only for debug purpose
+#include <iostream> //! \todo to remove. only here for debug purpose
 
 # pragma mark -
 # pragma mark Life cycle
@@ -23,14 +23,6 @@ mClock(clock)
   // create the start and the end TimeNodes
   mTimeNodes.push_back(TimeNode::create());
   mTimeNodes.push_back(TimeNode::create());
-  
-  // create a TimeEvent into each TimeNode
-  auto startEvent = *(mTimeNodes[0]->emplace(mTimeNodes[0]->timeEvents().begin()));
-  auto endEvent = *(mTimeNodes[1]->emplace(mTimeNodes[1]->timeEvents().begin()));
-  
-  // add States to TimeEvents
-  startEvent->addState(startState);
-  endEvent->addState(endState);
   
   // pass callback to the Clock
   Clock::ExecutionCallback callback = std::bind(&JamomaScenario::ClockCallback, this, _1, _2);
@@ -141,6 +133,6 @@ const shared_ptr<Clock> & JamomaScenario::getClock() const
 
 void JamomaScenario::ClockCallback(const TimeValue& position, const TimeValue& date)
 {
-  cout << double(position) << ", " << double(date) << "\n";
+  cout << "JamomaScenario::ClockCallback : " << double(position) << ", " << double(date) << "\n";
 }
 
