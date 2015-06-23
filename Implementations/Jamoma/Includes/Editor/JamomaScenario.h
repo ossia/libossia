@@ -31,8 +31,8 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  shared_ptr<State>           mStartState;
-  shared_ptr<State>           mEndState;
+  shared_ptr<State>           mStartState;        // this is the State stored into the TimeEvent where the Scenario starts (not the one stored into the TimeEvent of the first TimeNode)
+  shared_ptr<State>           mEndState;          // this is the State stored into the TimeEvent where the Scenario ends (not the one stored into the TimeEvent of the second TimeNode)
   shared_ptr<Clock>           mClock;
   
   Container<TimeConstraint>   mTimeContraints;

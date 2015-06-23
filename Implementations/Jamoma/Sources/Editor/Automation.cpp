@@ -1,5 +1,7 @@
 #include "Editor/JamomaAutomation.h"
 
+#include <iostream> //! \todo to remove. only here for debug purpose
+
 using namespace OSSIA;
 using namespace std;
 
@@ -19,7 +21,11 @@ JamomaAutomation::JamomaAutomation(shared_ptr<State> startState,
 mStartState(startState),
 mEndState(endState),
 mClock(clock)
-{}
+{
+  // pass callback to the Clock
+  Clock::ExecutionCallback callback = std::bind(&JamomaAutomation::ClockCallback, this, _1, _2);
+  mClock->setExecutionCallback(callback);
+}
 
 JamomaAutomation::JamomaAutomation(const JamomaAutomation * other)
 {}
@@ -86,4 +92,9 @@ const shared_ptr<State> & JamomaAutomation::getEndState() const
 const shared_ptr<Clock> & JamomaAutomation::getClock() const
 {
   return mClock;
+}
+
+void JamomaAutomation::ClockCallback(const TimeValue& position, const TimeValue& date)
+{
+  cout << "JamomaScenario::ClockCallback : " << double(position) << ", " << double(date) << "\n";
 }

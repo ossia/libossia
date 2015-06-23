@@ -22,6 +22,7 @@
 
 using namespace OSSIA;
 using namespace std;
+using namespace std::placeholders;
 
 class JamomaAutomation : public Automation<double>
 {
@@ -83,4 +84,11 @@ public:
   const shared_ptr<State> & getEndState() const override;
   
   const shared_ptr<Clock> & getClock() const override;
+  
+private:
+  
+# pragma mark -
+# pragma mark Implementation specific
+  
+  void ClockCallback(const TimeValue&, const TimeValue&);
 };
