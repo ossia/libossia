@@ -27,8 +27,8 @@ shared_ptr<TimeNode> JamomaTimeNode::clone() const
 
 void JamomaTimeNode::play(bool log, string name) const
 {
-  for (auto & timeevent : timeEvents())
-    timeevent->play();
+  for (auto & timeEvent : timeEvents())
+    timeEvent->play();
 }
 
 # pragma mark -
@@ -48,7 +48,7 @@ void JamomaTimeNode::setSimultaneityMargin(TimeValue)
 {}
 
 # pragma mark -
-# pragma mark TimeEvents
+# pragma mark #TimeEvents
 
 JamomaTimeNode::iterator JamomaTimeNode::emplace(const_iterator pos,
                                                  shared_ptr<Expression> expression)

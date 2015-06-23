@@ -1,5 +1,5 @@
 /*!
- * \file TimeEvent.h
+ * \file #TimeEvent.h
  *
  * \brief #TimeEvent is use to describe temporal structure to launch the start or the end of each attached #TimeConstraint.
  *
@@ -60,38 +60,38 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
-  /*! get the time node where the event is
-   \return std::shared_ptr<#TimeNode> time node */
+  /*! get the #TimeNode where the event is
+   \return std::shared_ptr<#TimeNode> */
   virtual const std::shared_ptr<TimeNode> & getTimeNode() const = 0;
   
   /*! get the state of the event
-  \return std::shared_ptr<#State> state */
+  \return std::shared_ptr<#State> */
   virtual const std::shared_ptr<State> & getState() const = 0;
   
   /*! get the expression of the event
-  \return std::shared_ptr<#Expression> expression */
+  \return std::shared_ptr<#Expression> */
   virtual const std::shared_ptr<Expression> & getExpression() const = 0;
   
 # pragma mark -
 # pragma mark Time Constraints
   
   /*! get previous time contraints attached to the event
-   \return #Container<#TimeConstraint> container */
+   \return #Container<#TimeConstraint> */
   Container<TimeConstraint>& previousTimeConstraints()
   { return m_previousTimeConstraints; }
   
   /*! get previous time contraints attached to the event
-   \return #Container<#TimeProcess> container */
+   \return #Container<#TimeProcess> */
   const Container<TimeConstraint>& previousTimeConstraints() const
   { return m_previousTimeConstraints; }
   
   /*! get next time contraints attached to the event
-   \return #Container<#TimeConstraint> container */
+   \return #Container<#TimeConstraint> */
   Container<TimeConstraint>& nextTimeConstraints()
   { return m_nextTimeConstraints; }
   
   /*! get next time contraints attached to the event
-   \return #Container<#TimeProcess> container */
+   \return #Container<#TimeProcess> */
   const Container<TimeConstraint>& nextTimeConstraints() const
   { return m_nextTimeConstraints; }
   

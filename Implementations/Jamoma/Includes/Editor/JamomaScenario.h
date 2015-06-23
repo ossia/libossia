@@ -36,7 +36,7 @@ private:
   shared_ptr<Clock>           mClock;
   
   Container<TimeConstraint>   mTimeContraints;
-  Container<TimeNode>         mTimeNodes;         // list of all time nodes of the scenario (the first is the start node, the second is the end node)
+  Container<TimeNode>         mTimeNodes;         // list of all TimeNodes of the scenario (the first is the start node, the second is the end node)
   
   bool                        mIsKiller;
   
@@ -63,9 +63,9 @@ public:
 # pragma mark -
 # pragma mark Edition
   
-  void addConstraint(const shared_ptr<TimeConstraint> constraint) override;
+  void addConstraint(const shared_ptr<TimeConstraint>) override;
   
-  void removeConstraint(const shared_ptr<TimeConstraint> constraint) override;
+  void removeConstraint(const shared_ptr<TimeConstraint>) override;
   
   void addTimeNode(const shared_ptr<TimeNode>) override;
 

@@ -1,10 +1,10 @@
 /*!
  * \file TimeConstraint.h
  *
- * \brief #TimeConstraint is use to describe temporal structure precising which amount of time (the duration) are between two TimeEvents.
+ * \brief #TimeConstraint is use to describe temporal structure precising which amount of time (the duration) are between two #TimeEvents.
  *
  * \details The duration can be fixed or between a minimal and a maximal duration. \n
- * TimeConstraint is also a #TimeProcess container.
+ * #TimeConstraint is also a #TimeProcess container.
  *
  * \author Clément Bossut
  * \author Théo de la Hogue
@@ -38,11 +38,11 @@ public:
 
   /*! factory
    \details by default a #TimeConstraint have an infinite duration with no minimal duration and an infinite maximal duration.
-   \param #std::shared_ptr<TimeEvent> event where the constraint starts
-   \param #std::shared_ptr<TimeEvent> event where the constraint ends
-   \param const #TimeValue& duration of the constraint
-   \param const #TimeValue& minimal duration of the constraint
-   \param const #TimeValue& maximal duration of the constraint
+   \param #std::shared_ptr<TimeEvent> event where the #TimeConstraint starts
+   \param #std::shared_ptr<TimeEvent> event where the #TimeConstraint ends
+   \param const #TimeValue& duration of the #TimeConstraint
+   \param const #TimeValue& minimal duration of the #TimeConstraint
+   \param const #TimeValue& maximal duration of the #TimeConstraint
    \return std::shared_ptr<#TimeConstraint> */
   static std::shared_ptr<TimeConstraint> create(std::shared_ptr<TimeEvent>,
                                                 std::shared_ptr<TimeEvent>,
@@ -68,36 +68,36 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
-  /*! get the time constraint duration
+  /*! get the time #TimeConstraint duration
    \return const #TimeValue& duration */
   virtual const TimeValue & getDuration() const = 0;
   
-  /*! get the time constraint minimal duration
+  /*! get the time #TimeConstraint minimal duration
    \return const #TimeValue& minimal duration */
   virtual const TimeValue & getDurationMin() const = 0;
   
-  /*! get the time constraint maximal duration
+  /*! get the time #TimeConstraint maximal duration
    \return const #TimeValue& maximal duration */
   virtual const TimeValue & getDurationMax() const = 0;
   
-  /*! get the event from where the constraint starts
+  /*! get the event from where the #TimeConstraint starts
    \return std::shared_ptr<#TimeEvent> start event */
   virtual const std::shared_ptr<TimeEvent> & getStartEvent() const = 0;
   
-  /*! get the event from where the constraint starts
+  /*! get the event from where the #TimeConstraint starts
    \return std::shared_ptr<#TimeEvent> start event */
   virtual const std::shared_ptr<TimeEvent> & getEndEvent() const = 0;
 
 # pragma mark -
 # pragma mark Time Processes
   
-  /*! get time processes attached to the time constraint
-   \return #Container<#TimeProcess> container */
+  /*! get time processes attached to the #TimeConstraint
+   \return #Container<#TimeProcess> */
   Container<TimeProcess>& timeProcesses()
   { return m_timeProcesses; }
   
-  /*! get time processes attached to the time constraint
-   \return #Container<#TimeProcess> container */
+  /*! get time processes attached to the #TimeConstraint
+   \return #Container<#TimeProcess> */
   const Container<TimeProcess>& timeProcesses() const
   { return m_timeProcesses; }
 

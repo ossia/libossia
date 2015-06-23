@@ -50,12 +50,12 @@ public:
 # pragma mark State Elements
   
   /*! get the state elements of the state
-   \return #Container<#StateElements> container */
+   \return #Container<#StateElements> */
   Container<StateElement>& stateElements()
   { return m_stateElements; }
   
   /*! get the state elements of the state
-   \return #Container<#StateElements> container */
+   \return #Container<#StateElements> */
   const Container<StateElement>& stateElements() const
   { return m_stateElements; }
 

@@ -73,21 +73,22 @@ public:
   virtual void setSimultaneityMargin(TimeValue) = 0;
 
 # pragma mark -
-# pragma mark TimeEvents
+# pragma mark #TimeEvents
   
-  /*! create and store a time event
-   \param #Container<#TimeEvent>::const_iterator where to store the time event
-   \return std::shared_ptr<#Expression> expression */
+  /*! create and store a #TimeEvent
+   \param #Container<#TimeEvent>::const_iterator where to store the #TimeEvent
+   \param std::shared<#Expression> an optionnal #Expression to apply to the #TimeEvent
+   \return std::shared_ptr<#TimeEvent> */
   virtual iterator emplace(const_iterator,
                            std::shared_ptr<Expression> = nullptr) = 0;
   
-  /*! get the time events of the time node
-   \return #Container<#TimeEvent> container */
+  /*! get the #TimeEvents of the #TimeNode
+   \return #Container<#TimeEvent> */
   Container<TimeEvent>& timeEvents()
   { return m_timeEvents; }
   
-  /*! get the time events of the time node
-   \return #Container<#TimeEvent> container */
+  /*! get the #TimeEvents of the #TimeNode
+   \return #Container<#TimeEvent> */
   const Container<TimeEvent>& timeEvents() const
   { return m_timeEvents; }
 

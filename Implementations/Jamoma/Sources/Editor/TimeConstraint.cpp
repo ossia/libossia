@@ -9,25 +9,25 @@ shared_ptr<TimeConstraint> TimeConstraint::create(shared_ptr<TimeEvent> startEve
                                                   const TimeValue& min,
                                                   const TimeValue& max)
 {
-    auto constraint = make_shared<JamomaTimeConstraint>(startEvent, endEvent, nominal, min, max);
+    auto timeConstraint = make_shared<JamomaTimeConstraint>(startEvent, endEvent, nominal, min, max);
     
-    // store the constraint into the start event as a next constraint
+    // store the TimeConstraint into the start event as a next constraint
     if (find(startEvent->nextTimeConstraints().begin(),
              startEvent->nextTimeConstraints().end(),
-             constraint) == startEvent->nextTimeConstraints().end())
+             timeConstraint) == startEvent->nextTimeConstraints().end())
     {
-        startEvent->nextTimeConstraints().push_back(constraint);
+        startEvent->nextTimeConstraints().push_back(timeConstraint);
     }
     
-    // store the constraint into the end event as a previous constraint
+    // store the TimeConstraint into the end event as a previous constraint
     if (find(endEvent->previousTimeConstraints().begin(),
              endEvent->previousTimeConstraints().end(),
-             constraint) == endEvent->previousTimeConstraints().end())
+             timeConstraint) == endEvent->previousTimeConstraints().end())
     {
-        endEvent->previousTimeConstraints().push_back(constraint);
+        endEvent->previousTimeConstraints().push_back(timeConstraint);
     }
     
-    return constraint;
+    return timeConstraint;
 }
 
 JamomaTimeConstraint::JamomaTimeConstraint(shared_ptr<TimeEvent> startEvent,
@@ -58,10 +58,10 @@ shared_ptr<TimeConstraint> JamomaTimeConstraint::clone() const
 
 void JamomaTimeConstraint::play(bool log, string name) const
 {
-  for (const auto & timeprocess : timeProcesses())
+  for (const auto & timeProcess : timeProcesses())
   {
-    timeprocess->getClock()->setDuration(mDuration);
-    timeprocess->play();
+    timeProcess->getClock()->setDuration(mDuration);
+    timeProcess->play();
   }
 }
 

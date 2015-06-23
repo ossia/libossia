@@ -78,12 +78,12 @@ public:
   virtual iterator emplace(const_iterator, std::string) = 0;
   
   /*! get children of the node
-   \return #Container<#Node> container */
+   \return #Container<#Node> */
   Container<Node>& children()
   { return m_children; }
   
   /*! get children of the node
-   \return #Container<#Node> container */
+   \return #Container<#Node> */
   const Container<Node>& children() const
   { return m_children; }
 
