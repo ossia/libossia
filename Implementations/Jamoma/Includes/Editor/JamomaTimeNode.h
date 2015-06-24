@@ -16,6 +16,7 @@
 #include "Editor/TimeNode.h"
 #include "Editor/TimeValue.h"
 
+#include "JamomaTimeConstraint.h"
 #include "JamomaTimeEvent.h"
 
 using namespace OSSIA;

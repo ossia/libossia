@@ -53,7 +53,14 @@ shared_ptr<State> JamomaTimeNode::state() const
 
 TimeValue JamomaTimeNode::getDate() const
 {
-  return TimeValue();
+  if (timeEvents().empty())
+    return Zero;
+  
+  else if (timeEvents()[0]->previousTimeConstraints().empty())
+    return Zero;
+    
+  else
+    return timeEvents()[0]->previousTimeConstraints()[0]->getDuration() + timeEvents()[0]->previousTimeConstraints()[0]->getStartEvent()->getTimeNode()->getDate();
 }
   
 TimeValue JamomaTimeNode::getSimultaneityMargin() const

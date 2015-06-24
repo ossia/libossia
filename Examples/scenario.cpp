@@ -148,6 +148,15 @@ int main()
     //auto new_event = first_end_event->timeEvents()->begin();
     //event.addState(...);
 */
+    
+    /*
+     Main Scenario operation : miscellaneous
+     */
+    
+    // display TimeNode's date
+    cout << "first_start_node date = " << scenario_start_node->getDate() << "\n";
+    cout << "first_end_node date = " << first_end_node->getDate() << "\n";
+    
     // change scenario speed
     main_scenario->getClock()->setSpeed(0.5);
     
