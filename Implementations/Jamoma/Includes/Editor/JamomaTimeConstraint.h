@@ -14,6 +14,7 @@
 #pragma once
 
 #include "Editor/Clock.h"
+#include "Editor/State.h"
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeEvent.h"
 #include "Editor/TimeProcess.h"
@@ -58,6 +59,8 @@ public:
 # pragma mark Execution
   
   void play(bool log = false, string name = "") const override;
+  
+  shared_ptr<State> state(const TimeValue&, const TimeValue& = Infinite) const override;
 
 # pragma mark -
 # pragma mark Accessors

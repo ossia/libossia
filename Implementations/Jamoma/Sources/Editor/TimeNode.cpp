@@ -31,6 +31,23 @@ void JamomaTimeNode::play(bool log, string name) const
     timeEvent->play();
 }
 
+shared_ptr<State> JamomaTimeNode::state() const
+{
+  shared_ptr<State> state = State::create();
+  
+  for (const auto & timeEvent : timeEvents())
+  {
+    //! \todo have empty expression that return always true when it is evaluated
+    if (timeEvent->getExpression())
+      if (!timeEvent->getExpression()->evaluate())
+        continue;
+    
+    state->stateElements().push_back(timeEvent->getState());
+  }
+  
+  return state;
+}
+
 # pragma mark -
 # pragma mark Accessors
 

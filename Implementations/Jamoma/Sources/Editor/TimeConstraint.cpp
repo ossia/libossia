@@ -65,6 +65,18 @@ void JamomaTimeConstraint::play(bool log, string name) const
   }
 }
 
+shared_ptr<State> JamomaTimeConstraint::state(const TimeValue& position, const TimeValue& date) const
+{
+  shared_ptr<State> state = State::create();
+  
+  for (const auto & timeProcess : timeProcesses())
+  {
+    state->stateElements().push_back(timeProcess->state(position, date));
+  }
+  
+  return state;
+}
+
 # pragma mark -
 # pragma mark Accessors
 

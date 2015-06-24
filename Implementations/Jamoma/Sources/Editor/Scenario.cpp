@@ -45,8 +45,28 @@ shared_ptr<Scenario> JamomaScenario::clone() const
 
 void JamomaScenario::play(bool log, string name) const
 {
+  //! \todo reset each element's status
+  
   mClock->go();
-  mTimeNodes[0]->play();
+}
+
+shared_ptr<State> JamomaScenario::state(const TimeValue& position, const TimeValue& date) const
+{
+  // on start
+  if (position == Zero)
+  {
+    cout << "JamomaScenario::state : " << "starts\n";
+    return mTimeNodes[0]->state();
+  }
+  // on end
+  else if (position == One)
+  {
+    cout << "JamomaScenario::state : " << "ends\n";
+    return mTimeNodes[1]->state();
+  }
+  
+  //! \todo the algorithme !
+  return State::create();
 }
 
 # pragma mark -
@@ -134,5 +154,6 @@ const shared_ptr<Clock> & JamomaScenario::getClock() const
 void JamomaScenario::ClockCallback(const TimeValue& position, const TimeValue& date)
 {
   cout << "JamomaScenario::ClockCallback : " << double(position) << ", " << double(date) << "\n";
+  state(position, date)->launch();
 }
 

@@ -173,8 +173,9 @@ float JamomaClock::getSpeed() const
   return mSpeed;
 }
 
-Clock & JamomaClock::setSpeed(float)
+Clock & JamomaClock::setSpeed(float speed)
 {
+  mSpeed = speed;
   return *this;
 }
 

@@ -44,6 +44,23 @@ shared_ptr<Automation<double>> JamomaAutomation::clone() const
 void JamomaAutomation::play(bool log, string name) const
 {}
 
+shared_ptr<State> JamomaAutomation::state(const TimeValue& position, const TimeValue& date) const
+{
+  // on start
+  if (position == Zero)
+  {
+    cout << "JamomaAutomation::state : " << "starts\n";
+  }
+  // on end
+  else if (position == One)
+  {
+    cout << "JamomaAutomation::state : " << "ends\n";
+  }
+  
+  //! \todo the algorithme !
+  return State::create();
+}
+
 # pragma mark -
 # pragma mark Accessors
 
@@ -96,5 +113,6 @@ const shared_ptr<Clock> & JamomaAutomation::getClock() const
 
 void JamomaAutomation::ClockCallback(const TimeValue& position, const TimeValue& date)
 {
-  cout << "JamomaScenario::ClockCallback : " << double(position) << ", " << double(date) << "\n";
+  cout << "JamomaAutomation::ClockCallback : " << double(position) << ", " << double(date) << "\n";
+  state(position)->launch();
 }

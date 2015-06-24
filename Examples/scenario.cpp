@@ -86,7 +86,7 @@ int main()
     auto main_scenario = Scenario::create();
     
     // create the main TimeConstraint
-    TimeValue main_duration(10000.);
+    TimeValue main_duration(5000.);
     main_constraint = TimeConstraint::create(main_start_event, main_end_event, main_duration);
     
     // add the scenario to the main TimeConstraint
@@ -109,7 +109,7 @@ int main()
     auto first_end_event = *(first_end_node->emplace(first_end_node->timeEvents().begin()));
     
     // create a TimeConstraint between the two TimeEvents
-    TimeValue first_duration(3000.);
+    TimeValue first_duration(1500.);
     auto first_constraint = TimeConstraint::create(first_start_event, first_end_event, first_duration, first_duration, first_duration);
     
     // add the first TimeConstraint to the main Scenario
@@ -119,18 +119,24 @@ int main()
      Main Scenario edition : creation of an Automation
      */
     
-    // create an automation
+    // create an Automation
     auto first_automation = Automation<double>::create();
     
     // add it to the first TimeConstraint
     first_constraint->timeProcesses().push_back(first_automation);
     
-    // add "/test 0." message to Automation's start state
+    // add the Automation start State to the first start TimeEvent
+    first_start_event->addState(first_automation->getStartState());
+    
+    // add the Automation end State to the first end TimeEvent
+    first_end_event->addState(first_automation->getEndState());
+    
+    // add "/test 0." message to Automation's start State
     Float zero(0.);
     auto first_start_message = Message::create(local_test_address, &zero);
     first_automation->getStartState()->stateElements().push_back(first_start_message);
     
-    // add "/test 1." message to Automation's end state
+    // add "/test 1." message to Automation's end State
     Float one(1.);
     auto first_end_message = Message::create(local_test_address, &one);
     first_automation->getEndState()->stateElements().push_back(first_end_message);
@@ -142,6 +148,9 @@ int main()
     //auto new_event = first_end_event->timeEvents()->begin();
     //event.addState(...);
 */
+    // change scenario speed
+    main_scenario->getClock()->setSpeed(0.5);
+    
     // play the scenario
     local_play_address->sendValue(&True);
 
@@ -166,6 +175,6 @@ void local_test_callback(const Value * v)
     if (v->getType() == Value::Type::FLOAT)
     {
         Float * f = (Float*)v;
-        cout << f->value;
+        cout << "/i-score/test = "<< f->value << "\n";
     }
 }

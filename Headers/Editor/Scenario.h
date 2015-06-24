@@ -54,6 +54,12 @@ public:
    \param bool to enable log
    \param string to give a log file name where to write */
   virtual void play(bool log = false, std::string name = "") const override = 0;
+  
+  /*! get the #State at a position or a date
+   \param const TimeValue& time position
+   \param const TimeValue& date which is infinite by default
+   \return std::shared_ptr<State> */
+  virtual std::shared_ptr<State> state(const TimeValue&, const TimeValue& = Infinite) const override = 0;
 
 # pragma mark -
 # pragma mark Edition

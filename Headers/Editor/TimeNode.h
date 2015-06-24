@@ -55,6 +55,10 @@ public:
    \param bool to enable log
    \param string to give a log file name where to write */
   virtual void play(bool log = false, std::string name = "") const = 0;
+  
+  /*! get the #State after evaluating each #TimeEvent's #Expression
+   \return std::shared_ptr<State> */
+  virtual std::shared_ptr<State> state() const = 0;
 
 # pragma mark -
 # pragma mark Accessors
