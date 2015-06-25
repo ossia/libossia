@@ -45,8 +45,17 @@ shared_ptr<Scenario> JamomaScenario::clone() const
 
 void JamomaScenario::play(bool log, string name) const
 {
-  //! \todo reset each element's status
-  
+ /* reset each element's status
+  for (const auto& timeNode : mTimeNodes)
+  {
+    // reset each TimeEvent's status
+    for (auto& timeEvent : timeNode->timeEvents())
+    {
+      shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
+      e->mStatus = TimeEvent::Status::WAITING;
+    }
+  }
+*/
   mClock->go();
 }
 
@@ -55,17 +64,14 @@ shared_ptr<State> JamomaScenario::state(const TimeValue& position, const TimeVal
   // on start
   if (position == Zero)
   {
-    cout << "JamomaScenario::state : " << "starts\n";
     return mTimeNodes[0]->state();
   }
   // on end
   else if (position == One)
   {
-    cout << "JamomaScenario::state : " << "ends\n";
     return mTimeNodes[1]->state();
   }
   
-  //! \todo the algorithme !
   return State::create();
 }
 
@@ -153,7 +159,26 @@ const shared_ptr<Clock> & JamomaScenario::getClock() const
 
 void JamomaScenario::ClockCallback(const TimeValue& position, const TimeValue& date)
 {
-  cout << "JamomaScenario::ClockCallback : " << double(position) << ", " << double(date) << "\n";
-  state(position, date)->launch();
+  // cout << "JamomaScenario::ClockCallback : " << double(position) << ", " << double(date) << "\n";
+  
+  // on start
+  if (position == Zero)
+  {
+    cout << "JamomaScenario starts\n";
+    mTimeNodes[0]->play();
+  }
+  // on end
+  else if (position == One)
+  {
+    cout << "JamomaScenario ends\n";
+    mTimeNodes[1]->play();
+  }
+  
+  // process each running TimeProcess
+  for (const auto& timeConstraint : mTimeContraints)
+    for (auto& timeProcess : timeConstraint->timeProcesses())
+      if (timeProcess->getClock()->getRunning())
+        timeProcess->getClock()->tick();
+  
+  //state(position, date)->launch();
 }
-
