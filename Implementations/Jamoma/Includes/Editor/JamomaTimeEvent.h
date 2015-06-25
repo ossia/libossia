@@ -15,42 +15,30 @@
 
 #include "Editor/Expression.h"
 #include "Editor/TimeEvent.h"
+#include "Editor/TimeNode.h"
 #include "Editor/State.h"
 
-#include "JamomaTimeNode.h"
+#include "JamomaScenario.h"
 
 using namespace OSSIA;
 using namespace std;
 
+class JamomaScenario;
 class JamomaTimeNode;
 
 class JamomaTimeEvent : public TimeEvent
 {
   
-public:
-  
-# pragma mark -
-# pragma mark Enumerations
-  
-  /*! event status */
-  enum class Status
-  {
-    WAITING,
-    PENDING,
-    HAPPENED,
-    DISPOSED
-  };
+  friend JamomaScenario;
   
 private:
   
 # pragma mark -
 # pragma mark Implementation specific
   
-  // Implementation specific
   shared_ptr<TimeNode>    mTimeNode;
   shared_ptr<State>       mState;
   shared_ptr<Expression>  mExpression;
-  
   Status                  mStatus;
 
 public:
@@ -83,4 +71,13 @@ public:
   const shared_ptr<State> & getState() const override;
   
   const shared_ptr<Expression> & getExpression() const override;
+  
+  Status getStatus() const override;
+  
+private:
+  
+# pragma mark -
+# pragma mark Implementation specific
+  
+  void setStatus(Status);
 };

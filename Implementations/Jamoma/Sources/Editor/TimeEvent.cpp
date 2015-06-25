@@ -21,10 +21,19 @@ void JamomaTimeEvent::play(bool log, string name) const
 {
   //! \todo have empty expression that return always true when it is evaluated
   if (!mExpression)
-    return mState->launch();
-
-  if (mExpression->evaluate())
     mState->launch();
+
+  else if (mExpression->evaluate())
+    mState->launch();
+  
+  else
+    return;
+  
+  // propagate execution to next TimeConstraints
+  for (auto& timeConstraint : nextTimeConstraints())
+  {
+    timeConstraint->play();
+  }
 }
 
 # pragma mark -
@@ -62,4 +71,19 @@ const shared_ptr<State> & JamomaTimeEvent::getState() const
 const shared_ptr<Expression> & JamomaTimeEvent::getExpression() const
 {
   return mExpression;
+}
+
+TimeEvent::Status JamomaTimeEvent::getStatus() const
+{
+  return mStatus;
+}
+
+# pragma mark -
+# pragma mark Implementation specific
+
+void JamomaTimeEvent::setStatus(Status status)
+{
+  mStatus = status;
+  
+  //! \todo notify it changes
 }

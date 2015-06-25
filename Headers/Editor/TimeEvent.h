@@ -29,8 +29,20 @@ class TimeNode;
   
 class TimeEvent
 {
-  
+
 public:
+  
+# pragma mark -
+# pragma mark Enumerations
+  
+  /*! event status */
+  enum class Status
+  {
+    WAITING,
+    PENDING,
+    HAPPENED,
+    DISPOSED
+  };
   
 # pragma mark -
 # pragma mark Life cycle
@@ -71,6 +83,10 @@ public:
   /*! get the expression of the event
   \return std::shared_ptr<#Expression> */
   virtual const std::shared_ptr<Expression> & getExpression() const = 0;
+  
+  /*! get the status of the event
+   \return #Status */
+  virtual Status getStatus() const = 0;
   
 # pragma mark -
 # pragma mark Time Constraints
