@@ -11,7 +11,9 @@ class JamomaAddress : public Address
 
 private:
 
-  // Implementation specific
+# pragma mark -
+# pragma mark Implementation specific
+  
   mutable TTObject    mData;
   mutable Value *     mValue{};
   Value::Type         mValueType;

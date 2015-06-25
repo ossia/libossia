@@ -13,7 +13,9 @@ class JamomaDevice : public Device, public JamomaNode
 
 private:
 
-  // Implementation specific
+# pragma mark -
+# pragma mark Implementation specific
+  
   TTObject mApplicationManager;
   TTObject mApplication;
 

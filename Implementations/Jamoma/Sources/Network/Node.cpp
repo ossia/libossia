@@ -13,7 +13,9 @@ class JamomaNode : public virtual Node, public enable_shared_from_this<JamomaNod
 
 protected:
 
-  // Implementation specific
+# pragma mark -
+# pragma mark Implementation specific
+  
   TTNodeDirectory *       mDirectory{};
   TTNode *                mNode{};
 
