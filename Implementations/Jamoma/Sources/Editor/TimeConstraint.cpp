@@ -1,5 +1,5 @@
 #include "Editor/JamomaTimeConstraint.h"
-
+#include <algorithm>
 # pragma mark -
 # pragma mark Life cycle
 
@@ -10,23 +10,23 @@ shared_ptr<TimeConstraint> TimeConstraint::create(shared_ptr<TimeEvent> startEve
                                                   const TimeValue& max)
 {
     auto timeConstraint = make_shared<JamomaTimeConstraint>(startEvent, endEvent, nominal, min, max);
-    
+
     // store the TimeConstraint into the start event as a next constraint
-    if (find(startEvent->nextTimeConstraints().begin(),
+    if (std::find(startEvent->nextTimeConstraints().begin(),
              startEvent->nextTimeConstraints().end(),
              timeConstraint) == startEvent->nextTimeConstraints().end())
     {
         startEvent->nextTimeConstraints().push_back(timeConstraint);
     }
-    
+
     // store the TimeConstraint into the end event as a previous constraint
-    if (find(endEvent->previousTimeConstraints().begin(),
+    if (std::find(endEvent->previousTimeConstraints().begin(),
              endEvent->previousTimeConstraints().end(),
              timeConstraint) == endEvent->previousTimeConstraints().end())
     {
         endEvent->previousTimeConstraints().push_back(timeConstraint);
     }
-    
+
     return timeConstraint;
 }
 
@@ -68,12 +68,12 @@ void JamomaTimeConstraint::play(bool log, string name) const
 shared_ptr<State> JamomaTimeConstraint::state(const TimeValue& position, const TimeValue& date) const
 {
   shared_ptr<State> state = State::create();
-  
+
   for (const auto & timeProcess : timeProcesses())
   {
     state->stateElements().push_back(timeProcess->state(position, date));
   }
-  
+
   return state;
 }
 

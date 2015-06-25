@@ -2,6 +2,7 @@
 #include "Editor/JamomaTimeConstraint.h"
 
 #include <iostream> //! \todo to remove. only here for debug purpose
+#include <algorithm>
 
 # pragma mark -
 # pragma mark Life cycle
@@ -23,7 +24,7 @@ mClock(clock)
   // create the start and the end TimeNodes
   mTimeNodes.push_back(TimeNode::create());
   mTimeNodes.push_back(TimeNode::create());
-  
+
   // pass callback to the Clock
   Clock::ExecutionCallback callback = std::bind(&JamomaScenario::ClockCallback, this, _1, _2);
   mClock->setExecutionCallback(callback);
@@ -46,7 +47,7 @@ shared_ptr<Scenario> JamomaScenario::clone() const
 void JamomaScenario::play(bool log, string name) const
 {
   //! \todo reset each element's status
-  
+
   mClock->go();
 }
 
@@ -64,7 +65,7 @@ shared_ptr<State> JamomaScenario::state(const TimeValue& position, const TimeVal
     cout << "JamomaScenario::state : " << "ends\n";
     return mTimeNodes[1]->state();
   }
-  
+
   //! \todo the algorithme !
   return State::create();
 }
@@ -75,16 +76,16 @@ shared_ptr<State> JamomaScenario::state(const TimeValue& position, const TimeVal
 void JamomaScenario::addConstraint(const shared_ptr<TimeConstraint> constraint)
 {
   // store the TimeConstraint if it is not already stored
-  if (find(mTimeContraints.begin(),
+  if (std::find(mTimeContraints.begin(),
            mTimeContraints.end(),
            constraint) == mTimeContraints.end())
   {
     mTimeContraints.push_back(constraint);
   }
-  
+
   // store constraint's start node if it is not already stored
   addTimeNode(constraint->getStartEvent()->getTimeNode());
-  
+
   // store constraint's end node if it is not already stored
   addTimeNode(constraint->getEndEvent()->getTimeNode());
 }
