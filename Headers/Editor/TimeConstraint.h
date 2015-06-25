@@ -24,6 +24,7 @@
 namespace OSSIA
 {
 
+class State;
 class TimeEvent;
 class TimeProcess;
 class TimeValue;

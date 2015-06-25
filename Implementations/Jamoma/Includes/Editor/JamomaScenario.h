@@ -16,6 +16,7 @@
 #include "Editor/Clock.h"
 #include "Editor/Scenario.h"
 #include "Editor/TimeConstraint.h"
+#include "Editor/TimeEvent.h"
 #include "Editor/TimeNode.h"
 #include "Editor/TimeValue.h"
 
@@ -96,5 +97,4 @@ private:
 # pragma mark Implementation specific
   
   void ClockCallback(const TimeValue&, const TimeValue&);
-  
 };

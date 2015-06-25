@@ -14,23 +14,17 @@
 #pragma once
 
 #include "Editor/Expression.h"
+#include "Editor/TimeConstraint.h"
 #include "Editor/TimeEvent.h"
 #include "Editor/TimeNode.h"
 #include "Editor/State.h"
 
-#include "JamomaScenario.h"
-
 using namespace OSSIA;
 using namespace std;
 
-class JamomaScenario;
-class JamomaTimeNode;
-
 class JamomaTimeEvent : public TimeEvent
 {
-  
-  friend JamomaScenario;
-  
+
 private:
   
 # pragma mark -

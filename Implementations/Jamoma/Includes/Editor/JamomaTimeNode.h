@@ -13,11 +13,11 @@
 
 #pragma once
 
+#include "Editor/TimeConstraint.h"
 #include "Editor/TimeNode.h"
 #include "Editor/TimeValue.h"
 
-#include "JamomaTimeConstraint.h"
-#include "JamomaTimeEvent.h"
+#include "JamomaTimeEvent.h" // because the TimeNode::emplace method is a JamomaTimeEvent factory
 
 using namespace OSSIA;
 using namespace std;
