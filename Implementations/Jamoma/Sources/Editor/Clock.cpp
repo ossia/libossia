@@ -8,19 +8,22 @@ using namespace OSSIA;
 std::shared_ptr<Clock> Clock::create(const TimeValue& duration,
                                      const TimeValue& granularity,
                                      const TimeValue& offset,
-                                     float speed)
+                                     float speed,
+                                     bool external)
 {
-  return make_shared<JamomaClock>(duration, granularity, offset, speed);
+  return make_shared<JamomaClock>(duration, granularity, offset, speed, external);
 }
 
 JamomaClock::JamomaClock(const TimeValue& duration,
                          const TimeValue& granularity,
                          const TimeValue& offset,
-                         float speed) :
+                         float speed,
+                         bool external) :
 mDuration(duration),
 mGranularity(granularity),
 mOffset(offset),
-mSpeed(speed)
+mSpeed(speed),
+mExternal(external)
 {}
 
 JamomaClock::JamomaClock(const JamomaClock * other)
@@ -45,8 +48,8 @@ void JamomaClock::go()
     threadStop();
     mRunning = false;
     mPaused = false;
-    mPosition = 0.;
-    mDate = 0.;
+    mPosition = Zero;
+    mDate = Zero;
     
     mCallback(mPosition, mDate);
     
@@ -54,7 +57,7 @@ void JamomaClock::go()
     // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
     // sendNotification(TTSymbol("ClockTicked"), TTValue(mPosition, mDate));
   }
-  else if (mExternalTick)
+  else if (mExternal)
   {
     // reset timing informations
     mRunning = true;
@@ -90,9 +93,9 @@ void JamomaClock::stop()
   // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
   
   // reset all time info
-  mOffset = 0.;
-  mPosition = 0.;
-  mDate = 0.;
+  mOffset = Zero;
+  mPosition = Zero;
+  mDate = Zero;
 }
 
 void JamomaClock::pause()
@@ -117,7 +120,7 @@ void JamomaClock::tick()
   mPosition += delta / mDuration;
   mDate += delta;
   
-  if ((1. - mPosition) > epsilon || mDuration.isInfinite())
+  if ((One - mPosition) > epsilon || mDuration.isInfinite())
   {
     // notify the owner
     (mCallback)(mPosition, mDate);
@@ -128,7 +131,7 @@ void JamomaClock::tick()
   else
   {
     // forcing position to 1. to allow filtering
-    mPosition = 1.;
+    mPosition = One;
     
     // notify the owner
     (mCallback)(mPosition, mDate);
@@ -177,6 +180,32 @@ Clock & JamomaClock::setSpeed(float speed)
 {
   mSpeed = speed;
   return *this;
+}
+
+bool JamomaClock::getExternal() const
+{
+  return mExternal;
+}
+
+Clock & JamomaClock::setExternal(bool external)
+{
+  mExternal = external;
+  return *this;
+}
+
+bool JamomaClock::getRunning() const
+{
+  return mRunning;
+}
+
+const TimeValue & JamomaClock::getPosition() const
+{
+  return mPosition;
+}
+
+const TimeValue & JamomaClock::getDate() const
+{
+  return mDate;
 }
 
 # pragma mark -

@@ -35,11 +35,13 @@ public:
    \param granularity
    \param offset
    \param speed
+   \param external drive
    \return std::shared_ptr<#Clock> */
   static std::shared_ptr<Clock> create(const TimeValue& = Infinite,
                                        const TimeValue& = 1.,
                                        const TimeValue& = 0.,
-                                       float = 1.);
+                                       float = 1.,
+                                       bool = false);
   
   /*! clone */
   virtual std::shared_ptr<Clock> clone() const = 0;
@@ -92,9 +94,30 @@ public:
   virtual float getSpeed() const = 0;
   
   /** set the speed factor attribute
-   \param const float speed factor
+   \param float speed factor
    \return #Clock the clock */
   virtual Clock & setSpeed(float) = 0;
+  
+  /*! is the clock in external drive mode
+   \return bool true if the clock is in external drive mode */
+  virtual bool getExternal() const = 0;
+  
+  /** set is the clock in external drive mode
+   \param bool
+   \return #Clock the clock */
+  virtual Clock & setExternal(bool) = 0;
+  
+  /*! get the running status of the clock
+   \return bool true if is running */
+  virtual bool getRunning() const = 0;
+  
+  /*! get the position of the clock
+   \return const #TimeValue position */
+  virtual const TimeValue & getPosition() const = 0;
+  
+  /*! get the date of the clock
+   \return const #TimeValue date */
+  virtual const TimeValue & getDate() const = 0;
   
 # pragma mark -
 # pragma mark Callback

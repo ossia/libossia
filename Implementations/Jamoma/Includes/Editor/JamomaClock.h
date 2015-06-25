@@ -36,11 +36,11 @@ private:
   double            mSpeed;         /// the speed factor of the clock
  
   
-  bool              mExternalTick;  /// if true the tick() method is called from outside
+  bool              mExternal;      /// if true the tick() method is called from outside
   
   bool              mRunning;       /// is the clock running right now ?
   bool              mPaused;        /// is the clock paused right now ?
-  double            mPosition;      /// the progression of the clock between the beginning and the end [0. :: 1.]
+  TimeValue         mPosition;      /// the progression of the clock between the beginning and the end [0. :: 1.]
   TimeValue         mDate;          /// how many time the clock is running (without no speed factor consideration)
   
   thread            mThread;        /// a thread to launch the clock execution
@@ -57,7 +57,8 @@ public:
   JamomaClock(const TimeValue&,
               const TimeValue&,
               const TimeValue&,
-              float);
+              float,
+              bool);
   
   JamomaClock(const JamomaClock * other);
   
@@ -92,6 +93,16 @@ public:
   float getSpeed() const override;
   
   Clock & setSpeed(float) override;
+  
+  bool getExternal() const override;
+  
+  Clock & setExternal(bool) override;
+  
+  bool getRunning() const override;
+  
+  const TimeValue & getPosition() const override;
+  
+  const TimeValue & getDate() const override;
   
 # pragma mark -
 # pragma mark Callback
