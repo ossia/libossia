@@ -9,7 +9,9 @@ class JamomaExpressionAtom : public ExpressionAtom
   
 private:
   
-  // Implementation specific
+# pragma mark -
+# pragma mark Implementation specific
+  
   Value* first_expr;
   Value* second_expr;
   

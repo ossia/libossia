@@ -8,7 +8,9 @@ class JamomaExpressionComposition : public ExpressionComposition
   
 private:
   
-  // Implementation specific
+# pragma mark -
+# pragma mark Implementation specific
+  
   shared_ptr<Expression> first_expr;
   shared_ptr<Expression> second_expr;
 

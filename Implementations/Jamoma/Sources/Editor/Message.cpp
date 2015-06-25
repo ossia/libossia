@@ -9,7 +9,9 @@ class JamomaMessage : public Message
   
 private:
   
-  // Implementation specific
+# pragma mark -
+# pragma mark Implementation specific
+  
   shared_ptr<Address> address;
   Value * value;
 

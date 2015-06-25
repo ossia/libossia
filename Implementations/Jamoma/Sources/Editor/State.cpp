@@ -8,7 +8,9 @@ class JamomaState : public State
   
 private:
   
-  // Implementation specific
+# pragma mark -
+# pragma mark Implementation specific
+  
   shared_ptr<StateElement> element;
   
 public:
