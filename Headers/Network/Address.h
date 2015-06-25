@@ -69,7 +69,7 @@ public:
   virtual const Value * getValue() const = 0;
   
   /*! send a value to the address
-   \param #Value* the value */
+   \param const #Value* the value */
   virtual bool sendValue(const Value*) const = 0;
 
 # pragma mark -

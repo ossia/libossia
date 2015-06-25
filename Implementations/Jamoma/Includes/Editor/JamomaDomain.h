@@ -29,33 +29,33 @@ private:
   
   Value * mMin;
   Value * mMax;
-  vector<Value*> mValues;
+  vector<const Value*> mValues;
   
 public:
   
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaDomain(Value * = new Impulse(),
-               Value * = new Impulse(),
-               vector<Value*> = vector<Value*>());
+  JamomaDomain(const Value * = new Impulse(),
+               const Value * = new Impulse(),
+               vector<const Value*> = vector<const Value*>());
   
   ~JamomaDomain();
 
 # pragma mark -
 # pragma mark Accessors
   
-  Value * getMin() const;
+  const Value * getMin() const;
   
-  void setMin(Value * min);
+  void setMin(const Value*);
   
-  Value * getMax() const;
+  const Value * getMax() const;
 
-  void setMax(Value * max);
+  void setMax(const Value*);
   
-  vector<Value*> getValues() const;
+  vector<const Value*> getValues() const;
   
-  void setValues(vector<Value*> values);
+  void setValues(vector<const Value*> values);
   
 };
 

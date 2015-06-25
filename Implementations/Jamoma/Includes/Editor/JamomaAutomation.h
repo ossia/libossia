@@ -39,6 +39,7 @@ private:
   shared_ptr<Curve<double>>   curve;
   shared_ptr<Address>         addr;
   shared_ptr<Address>         element;
+  Value*                      value;
   
 public:
   
@@ -65,13 +66,13 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
-  Value getStartValue() const override;
+  const Value * getStartValue() const override;
   
-  void setStartValue(Value) override;
+  void setStartValue(const Value*) override;
   
-  Value getEndValue() const override;
+  const Value * getEndValue() const override;
   
-  void setEndValue(Value) override;
+  void setEndValue(const Value*) override;
   
   const shared_ptr<Curve<double>> & getCurve() const override;
   

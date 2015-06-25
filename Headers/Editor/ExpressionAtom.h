@@ -44,11 +44,13 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  /*! factory for logical condition `
+  /*! factory for logical condition
+   \param const #Value*
+   \param #Operator
    \return std::shared_ptr<#ExpressionAtom> */
-  static std::shared_ptr<ExpressionAtom> create(Value*,
+  static std::shared_ptr<ExpressionAtom> create(const Value*,
                                                 Operator,
-                                                Value*);
+                                                const Value*);
          
   /*! factory for event condition
    \return std::shared_ptr<#ExpressionAtom> */
@@ -72,7 +74,7 @@ public:
 # pragma mark Accessors
   
   /*! get first operand
-   \return const std::shared_ptr<#Expression> first operand */
+   \return const #Value* first operand */
   virtual const Value* getFirstOperand() const = 0;
   
   /*! get operator
@@ -80,7 +82,7 @@ public:
   virtual Operator getOperator() const = 0;
   
   /*! get second operand
-   \return const std::shared_ptr<#Expression> second operand */
+   \return const #Value* second operand */
   virtual const Value* getSecondOperand() const = 0;
 };
 

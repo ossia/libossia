@@ -69,11 +69,11 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
-  virtual Value getStartValue() const = 0; //TODO doublon avec Curve ?
-  virtual void setStartValue(Value) = 0;
+  virtual const Value * getStartValue() const = 0; //TODO doublon avec Curve ?
+  virtual void setStartValue(const Value*) = 0;
   
-  virtual Value getEndValue() const = 0;
-  virtual void setEndValue(Value) = 0;
+  virtual const Value * getEndValue() const = 0;
+  virtual void setEndValue(const Value*) = 0;
   
   virtual const std::shared_ptr<Curve<T>> & getCurve() const = 0;
   virtual void setCurve(std::shared_ptr<Curve<T>>) = 0;

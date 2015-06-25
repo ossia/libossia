@@ -19,9 +19,9 @@ public:
   
 # pragma mark -
 # pragma mark Life cycle
-  JamomaMessage(shared_ptr<Address> a, Value * v) :
+  JamomaMessage(shared_ptr<Address> a, const Value * v) :
   address(a),
-  value(v)
+  value(v->clone())
   {}
   
   JamomaMessage(const JamomaMessage * other)
@@ -55,7 +55,7 @@ public:
   }
 };
 
-shared_ptr<Message> Message::create(shared_ptr<Address> a, Value * v)
+shared_ptr<Message> Message::create(shared_ptr<Address> a, const Value * v)
 {
   return make_shared<JamomaMessage>(a, v);
 }

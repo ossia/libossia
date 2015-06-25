@@ -20,7 +20,9 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaExpressionAtom(Value* expr1, Operator op, Value* expr2)
+  JamomaExpressionAtom(const Value* expr1, Operator op, const Value* expr2) :
+  first_expr(expr1->clone()),
+  second_expr(expr2->clone())
   {}
   
   JamomaExpressionAtom(const JamomaExpressionAtom * other)
@@ -62,7 +64,7 @@ public:
 
 };
 
-shared_ptr<ExpressionAtom> ExpressionAtom::create(Value* expr1, Operator op, Value* expr2)
+shared_ptr<ExpressionAtom> ExpressionAtom::create(const Value* expr1, Operator op, const Value* expr2)
 {
   return make_shared<JamomaExpressionAtom>(expr1, op, expr2);
 }

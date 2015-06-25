@@ -44,6 +44,9 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
+  /*! clone */
+  virtual Value * clone() const = 0;
+  
   /*! destructor */
   virtual ~Value() = default;
 
@@ -70,6 +73,12 @@ struct Impulse : public Value
   {
     m_type = Type::IMPULSE;
   }
+  
+  /*! clone */
+  Value * clone() const override
+  {
+    return new Impulse();
+  }
 };
 
 # pragma mark -
@@ -83,6 +92,12 @@ struct Bool : public Value
   Bool(bool v = false) : value(v)
   {
     m_type = Type::BOOL;
+  }
+  
+  /*! clone */
+  Value * clone() const override
+  {
+    return new Bool(value);
   }
   
   bool value;
@@ -104,6 +119,12 @@ struct Int : public Value
     m_type = Type::INT;
   }
   
+  /*! clone */
+  Value * clone() const override
+  {
+    return new Int(value);
+  }
+  
   int value;
 };
   
@@ -118,6 +139,12 @@ struct Float : public Value
   Float(float v = 0.) : value(v)
   {
     m_type = Type::FLOAT;
+  }
+  
+  /*! clone */
+  Value * clone() const override
+  {
+    return new Float(value);
   }
   
   float value;
@@ -136,6 +163,12 @@ struct Char : public Value
     m_type = Type::CHAR;
   }
   
+  /*! clone */
+  Value * clone() const override
+  {
+    return new Char(value);
+  }
+  
   char value;
 };
   
@@ -152,6 +185,12 @@ struct String : public Value
     m_type = Type::STRING;
   }
   
+  /*! clone */
+  Value * clone() const override
+  {
+    return new String(value);
+  }
+  
   std::string value;
 };
 
@@ -162,12 +201,25 @@ struct String : public Value
 struct Tuple : public Value
 {
   /*! constructor
-  \param std::vector<#Value> value*/
-  Tuple(std::vector<Value*> v = std::vector<Value*>()) : value(v)
+  \param std::vector<const #Value> value*/
+  Tuple(std::vector<const Value*> v = std::vector<const Value*>())
   {
     m_type = Type::TUPLE;
-  }
     
+    for (const auto & e : v)
+      value.push_back(e->clone());
+  }
+  
+  /*! clone */
+  Value * clone() const override
+  {
+    std::vector<const Value*> newValue;
+    for (const auto & e : value)
+      newValue.push_back(e->clone());
+      
+    return new Tuple(newValue);
+  }
+  
   std::vector<Value*> value;
 };
   

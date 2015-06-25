@@ -66,20 +66,20 @@ shared_ptr<State> JamomaAutomation::state(const TimeValue& position, const TimeV
 # pragma mark -
 # pragma mark Accessors
 
-Value JamomaAutomation::getStartValue() const
+const Value * JamomaAutomation::getStartValue() const
 {
-  return Value();
+  return value;
 }
 
-void JamomaAutomation::setStartValue(Value)
+void JamomaAutomation::setStartValue(const Value*)
 {}
 
-Value JamomaAutomation::getEndValue() const
+const Value * JamomaAutomation::getEndValue() const
 {
-  return Value();
+  return value;
 }
 
-void JamomaAutomation::setEndValue(Value)
+void JamomaAutomation::setEndValue(const Value*)
 {}
 
 const shared_ptr<Curve<double>> & JamomaAutomation::getCurve() const

@@ -3,20 +3,22 @@
 # pragma mark -
 # pragma mark Life cycle
 
-shared_ptr<Domain> Domain::create(Value * min,
-                                  Value * max,
-                                  vector<Value*> values)
+shared_ptr<Domain> Domain::create(const Value * min,
+                                  const Value * max,
+                                  vector<const Value*> values)
 {
   return make_shared<JamomaDomain>(min, max, values);
 }
 
-JamomaDomain::JamomaDomain(Value * min,
-                           Value * max,
-                           vector<Value*> values) :
-mMin(min),
-mMax(max),
-mValues(values)
-{}
+JamomaDomain::JamomaDomain(const Value * min,
+                           const Value * max,
+                           vector<const Value*> values) :
+mMin(min->clone()),
+mMax(max->clone())
+{
+  for (const auto& e : values)
+    mValues.push_back(e->clone());
+}
   
 JamomaDomain::~JamomaDomain()
 {}
@@ -24,33 +26,36 @@ JamomaDomain::~JamomaDomain()
 # pragma mark -
 # pragma mark Accessors
 
-Value * JamomaDomain::getMin() const
+const Value * JamomaDomain::getMin() const
 {
   return mMin;
 }
 
-void JamomaDomain::setMin(Value * min)
+void JamomaDomain::setMin(const Value * min)
 {
-  mMin = min;
+  mMin = min->clone();
 }
 
-Value * JamomaDomain::getMax() const
+const Value * JamomaDomain::getMax() const
 {
   return mMax;
 }
 
-void JamomaDomain::setMax(Value * max)
+void JamomaDomain::setMax(const Value * max)
 {
-  mMax = max;
+  mMax = max->clone();
 }
 
-vector<Value*> JamomaDomain::getValues() const
+vector<const Value*> JamomaDomain::getValues() const
 {
   return mValues;
 }
 
-void JamomaDomain::setValues(vector<Value*> values)
+void JamomaDomain::setValues(vector<const Value*> values)
 {
-  mValues = values;
+  mValues.clear();
+  
+  for (const auto& e : values)
+    mValues.push_back(e->clone());
 }
 

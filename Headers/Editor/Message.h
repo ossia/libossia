@@ -34,10 +34,10 @@ public:
   
   /*! factory
    \param std::shared_ptr<#Address> where to send the value
-   \param #Value the value
+   \param const #Value the value
    \return std::shared_ptr<#Message> */
   static std::shared_ptr<Message> create(std::shared_ptr<Address>,
-                                         Value*);
+                                         const Value*);
   
   /*! clone */
   virtual std::shared_ptr<Message> clone() const = 0;
@@ -60,7 +60,7 @@ public:
   
   /*! get message's value
    \return #Value the value */
-  virtual Value * getValue() const = 0;
+  virtual const Value * getValue() const = 0;
 };
 
 }

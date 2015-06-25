@@ -103,6 +103,12 @@ struct Destination : public Value
     m_type = Type::DESTINATION;
   }
   
+  /*! clone */
+  Value * clone() const override
+  {
+    return new Destination(value);
+  }
+  
   std::shared_ptr<Node> value;
 };
   

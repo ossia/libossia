@@ -122,7 +122,7 @@ int main()
     Destination d(oscFloatNode);
     oscDestinationAddress->sendValue(&d);
       
-    vector<Value*> value = {new Float(0.1), new Float(0.2), new Float(0.3)};
+    vector<const Value*> value = {new Float(0.1), new Float(0.2), new Float(0.3)};
     Tuple t(value);
     oscTupleAddress->sendValue(&t);
   }

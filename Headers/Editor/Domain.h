@@ -36,9 +36,9 @@ public:
    \param #Value* maximal value of the domain
    \param std::vector<#Value*> set of values allowed into the domain
    \return std::shared_ptr<#Domain> */
-  static std::shared_ptr<Domain> create(Value * = new Impulse(),
-                                        Value * = new Impulse(),
-                                        std::vector<Value*> = std::vector<Value*>());
+  static std::shared_ptr<Domain> create(const Value * = new Impulse(),
+                                        const Value * = new Impulse(),
+                                        std::vector<const Value*> = std::vector<const Value*>());
 
   /*! destructor */
   virtual ~Domain() = default;
@@ -47,28 +47,28 @@ public:
 # pragma mark Accessors
 
   /*! get the minimal value
-   \return #Value* minimal value */
-  virtual Value * getMin() const = 0;
+   \return const #Value* minimal value */
+  virtual const Value * getMin() const = 0;
 
   /*! set the minimal value
-   \param #Value* minimal value */
-  virtual void setMin(Value * min) = 0;
+   \param const #Value* minimal value */
+  virtual void setMin(const Value*) = 0;
 
   /*! get the maximal value
-   \return #Value* maximal value */
-  virtual Value * getMax() const = 0;
+   \return const #Value* maximal value */
+  virtual const Value * getMax() const = 0;
 
   /*! set the maximal value
-   \param #Value* maximal value */
-  virtual void setMax(Value * max) = 0;
+   \param const #Value* maximal value */
+  virtual void setMax(const Value*) = 0;
 
   /*! get authorized values
-   \return std::vector<#Value*> authorized values */
-  virtual std::vector<Value*> getValues() const = 0;
+   \return std::vector<const #Value*> authorized values */
+  virtual std::vector<const Value*> getValues() const = 0;
 
   /*! set authorized values
-   \param std::vector<#Value*> authorized values */
-  virtual void setValues(std::vector<Value*> values) = 0;
+   \param std::vector<const #Value*> authorized values */
+  virtual void setValues(std::vector<const Value*> values) = 0;
 };
 }
 

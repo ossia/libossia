@@ -142,8 +142,8 @@ public:
           TTValue v;
           mData.get("value", v);
           
-          vector<Value*> tuple_min;
-          vector<Value*> tuple_max;
+          vector<const Value*> tuple_min;
+          vector<const Value*> tuple_max;
           for (int i = 0; i < v.size(); i++)
             tuple_min.push_back(new OSSIA::Float(range[0]));
             tuple_max.push_back(new OSSIA::Float(range[1]));
@@ -153,7 +153,7 @@ public:
         else if (type == kTTSym_string)
         {
           // string values enumeration
-          vector<Value*> values;
+          vector<const Value*> values;
           for (const auto & e : range)
           {
             TTSymbol s = e;
@@ -215,14 +215,19 @@ public:
 
   virtual const Value * getValue() const override
   {
-    updateValue();
     return mValue;
   }
 
   virtual bool sendValue(const Value * value) const override
   {
+    // clear former value
+    delete mValue;
+    
+    // copy the new value
+    mValue = value->clone();
+    
     TTValue v;
-    convertValueIntoTTValue(value, v);
+    convertValueIntoTTValue(mValue, v);
 
     if (mData.name() == "Data")
       return !mData.send("Command", v);
@@ -453,7 +458,7 @@ private:
 
       case Value::Type::TUPLE :
       {
-        vector<Value*> t_value;
+        vector<const Value*> t_value;
 
         for (const auto & e : v)
         {
