@@ -90,7 +90,7 @@ int main()
     main_constraint = TimeConstraint::create(main_start_event, main_end_event, main_duration);
     
     // add the scenario to the main TimeConstraint
-    main_constraint->timeProcesses().push_back(main_scenario);
+    main_constraint->addTimeProcess(main_scenario);
 
     /* 
      Main Scenario edition : creation of a TimeConstraint
@@ -123,13 +123,7 @@ int main()
     auto first_automation = Automation<double>::create();
     
     // add it to the first TimeConstraint
-    first_constraint->timeProcesses().push_back(first_automation);
-    
-    // add the Automation start State to the first start TimeEvent
-    first_start_event->addState(first_automation->getStartState());
-    
-    // add the Automation end State to the first end TimeEvent
-    first_end_event->addState(first_automation->getEndState());
+    first_constraint->addTimeProcess(first_automation);
     
     // add "/test 0." message to Automation's start State
     Float zero(0.);

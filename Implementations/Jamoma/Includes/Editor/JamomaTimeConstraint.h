@@ -74,4 +74,11 @@ public:
   const shared_ptr<TimeEvent> & getStartEvent() const override;
   
   const shared_ptr<TimeEvent> & getEndEvent() const override;
+  
+# pragma mark -
+# pragma mark TimeProcesses
+  
+  void addTimeProcess(std::shared_ptr<TimeProcess>) override;
+
+  void removeTimeProcess(std::shared_ptr<TimeProcess>) override;
 };

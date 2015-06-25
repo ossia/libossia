@@ -96,7 +96,17 @@ public:
   virtual const std::shared_ptr<TimeEvent> & getEndEvent() const = 0;
 
 # pragma mark -
-# pragma mark Time Processes
+# pragma mark TimeProcesses
+  
+  /*! add a #TimeProcess
+   \details it also stores the #TimeProcess's start and end #States into the #TimeConstraint's start and end #TimeEvents
+   \param std::shared_ptr<#TimeProcess> to insert */
+  virtual void addTimeProcess(std::shared_ptr<TimeProcess>) = 0;
+  
+  /*! remove a #TimeProcess
+   \details it also removes the #TimeProcess's start and end #States from the #TimeConstraint's start and end #TimeEvents
+   \param std::shared_ptr<#TimeProcess> to insert */
+  virtual void removeTimeProcess(std::shared_ptr<TimeProcess>) = 0;
   
   /*! get time processes attached to the #TimeConstraint
    \return #Container<#TimeProcess> */

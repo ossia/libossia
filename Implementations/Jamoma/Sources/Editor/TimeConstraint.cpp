@@ -104,3 +104,26 @@ const shared_ptr<TimeEvent> & JamomaTimeConstraint::getEndEvent() const
 {
   return mEndEvent;
 }
+
+# pragma mark -
+# pragma mark TimeProcesses
+
+void JamomaTimeConstraint::addTimeProcess(shared_ptr<TimeProcess> timeProcess)
+{
+  // store a TimeProcess if it is not already stored
+  if (find(timeProcesses().begin(),
+           timeProcesses().end(),
+           timeProcess) == timeProcesses().end())
+  {
+    timeProcesses().push_back(timeProcess);
+    mStartEvent->addState(timeProcess->getStartState());
+    mEndEvent->addState(timeProcess->getEndState());
+  }
+}
+
+void JamomaTimeConstraint::removeTimeProcess(std::shared_ptr<TimeProcess> timeProcess)
+{
+  timeProcesses().erase(find(timeProcesses().begin(), timeProcesses().end(), timeProcess));
+  mStartEvent->removeState(timeProcess->getStartState());
+  mEndEvent->removeState(timeProcess->getEndState());
+}
