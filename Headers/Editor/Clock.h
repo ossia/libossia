@@ -80,6 +80,15 @@ public:
    \return #Clock the clock */
   virtual Clock & setDuration(const TimeValue&) = 0;
   
+  /*! get the granularity of the clock
+   \return const #TimeValue granularity */
+  virtual const TimeValue & getGranularity() const = 0;
+  
+  /*! set the granularity of the clock execution
+   \param const #TimeValue granularity
+   \return #Clock the clock */
+  virtual Clock & setGranularity(const TimeValue&) = 0;
+  
   /*! get the offset of the clock
    \return const #TimeValue offset */
   virtual const TimeValue & getOffset() const = 0;
