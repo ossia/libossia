@@ -151,8 +151,13 @@ int main()
     cout << "first_start_node date = " << scenario_start_node->getDate() << "\n";
     cout << "first_end_node date = " << first_end_node->getDate() << "\n";
     
-    // change scenario speed
+    // change scenario speed and granularity
     main_scenario->getClock()->setSpeed(0.5);
+    main_scenario->getClock()->setGranularity(50.);
+    
+    // change automation speed and granularity
+    first_automation->getClock()->setSpeed(2.);
+    first_automation->getClock()->setGranularity(200.);
     
     // play the scenario
     local_play_address->sendValue(&True);
