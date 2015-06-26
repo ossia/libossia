@@ -115,7 +115,7 @@ const shared_ptr<Clock> & JamomaAutomation::getClock() const
 
 void JamomaAutomation::ClockCallback(const TimeValue& position, const TimeValue& date)
 {
-  // cout << "JamomaAutomation::ClockCallback : " << double(position) << ", " << double(date) << "\n";
+  cout << "JamomaAutomation::ClockCallback : " << double(position) << ", " << double(date) << "\n";
   
   // on start
   if (position == Zero)

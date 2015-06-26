@@ -51,18 +51,18 @@ void JamomaClock::go()
     mPosition = Zero;
     mDate = Zero;
     
+    // notify the owner
     mCallback(mPosition, mDate);
     
     //! \todo notify each observers
     // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
-    // sendNotification(TTSymbol("ClockTicked"), TTValue(mPosition, mDate));
   }
   else if (mExternal)
   {
     // reset timing informations
     mRunning = true;
     mPaused = false;
-    mLastTime = 0.;
+    mLastTime = steady_clock::now();
     
     //! \todo notify each observers
     // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
@@ -110,23 +110,26 @@ void JamomaClock::resume()
 
 void JamomaClock::tick()
 {
-  double delta = computeDeltaTime() * mSpeed;
-  double epsilon = mGranularity / mDuration;
+  // in external drive mode : don't wait to not block external driver
+  TimeValue elapsedTime = computeElapsedTime(!mExternal);
   
   // test paused and running status after the computeDeltatTime because there is a sleep inside
   if (mPaused || !mRunning)
     return;
   
+  // in external drive mode : allow to tick only if elapsed time is greater than granularity
+  if (mExternal && elapsedTime < mGranularity)
+    return;
+  
+  TimeValue delta = elapsedTime * mSpeed;
+  
   mPosition += delta / mDuration;
   mDate += delta;
   
-  if ((One - mPosition) > epsilon || mDuration.isInfinite())
+  if ((mDuration - mDate) >= mGranularity || mDuration.isInfinite())
   {
     // notify the owner
     (mCallback)(mPosition, mDate);
-    
-    //! \todo notify each observers
-    //sendNotification(TTSymbol("ClockTicked"), TTValue(mPosition, mDate));
   }
   else
   {
@@ -135,9 +138,6 @@ void JamomaClock::tick()
     
     // notify the owner
     (mCallback)(mPosition, mDate);
-    
-    //! \todo notify each observers
-    //sendNotification(TTSymbol("ClockTicked"), TTValue(mPosition, mDate));
     
     // if the clock is still running : stop it
     // note : because it is possible that another thread stops the clock before
@@ -157,6 +157,17 @@ const TimeValue & JamomaClock::getDuration() const
 Clock & JamomaClock::setDuration(const TimeValue& duration)
 {
   mDuration = duration;
+  return *this;
+}
+
+const TimeValue & JamomaClock::getGranularity() const
+{
+  return mGranularity;
+}
+
+Clock & JamomaClock::setGranularity(const TimeValue& granularity)
+{
+  mGranularity = granularity;
   return *this;
 }
 
@@ -224,36 +235,16 @@ void JamomaClock::setExecutionCallback(ExecutionCallback callback)
 # pragma mark -
 # pragma mark Internal
 
-double JamomaClock::computeDeltaTime()
+TimeValue JamomaClock::computeElapsedTime(bool wait)
 {
-  uint64_t deltaInUs = 0;
-  uint64_t granularityInUs = mGranularity * 1000;
+  // compute the duration in microseconds between the last tick and now
+  steady_clock::time_point currentTime = steady_clock::now();
+  long long deltaInUs = duration_cast<microseconds>(currentTime - mLastTime).count();
+  long long granularityInUs(mGranularity * 1000);
   
-  struct timeval tv;
-  
-  // get the current time (in µs)
-#ifdef PLATFORM_WIN
-		Time2 time2;
-		time2.gettimeofday(&tv, NULL);
-#else
-		struct timezone tz;
-		gettimeofday(&tv, &tz);
-#endif
-  
-  uint64_t currentTime = tv.tv_sec * 1000000L + tv.tv_usec;
-  
-  if (mLastTime != 0)
+  if (wait)
   {
-    // it seems the currentTime is lower than the lastTime sometimes ...
-    if (currentTime < mLastTime)
-    {
-      //! \todo should we throw an exception here ?
-      // cout << "JamomaClock::computeDeltaTime() : current time is lower than last time\n";
-      deltaInUs = 0;
-    }
-    else
-      deltaInUs = (currentTime - mLastTime);
-    
+    // wait if the duration is less than granularity
     if (deltaInUs < granularityInUs)
     {
       this_thread::sleep_for(std::chrono::microseconds(granularityInUs - deltaInUs));
@@ -261,13 +252,12 @@ double JamomaClock::computeDeltaTime()
       deltaInUs = granularityInUs;
     }
     
-    mLastTime += deltaInUs;
+    // memorise new time point
+    mLastTime = steady_clock::now();
   }
-  else
-    mLastTime = currentTime;
   
   // return the delta in ms
-  return double(deltaInUs / 1000.);
+  return TimeValue(deltaInUs / 1000.);
 }
 
 void JamomaClock::threadCallback()
@@ -275,7 +265,7 @@ void JamomaClock::threadCallback()
   // reset timing informations
   mRunning = true;
   mPaused = false;
-  mLastTime = 0.;
+  mLastTime = steady_clock::now();
   
   //! \todo notify each observers
   // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);

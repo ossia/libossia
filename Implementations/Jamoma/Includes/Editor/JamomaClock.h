@@ -13,7 +13,9 @@
 
 #pragma once
 
-#include <sys/time.h> //! \todo this file doesn't exist on Windows system
+#include <ctime>
+#include <ratio>
+#include <chrono>
 #include <thread>
 #include <mutex>
 
@@ -21,6 +23,7 @@
 
 using namespace OSSIA;
 using namespace std;
+using namespace std::chrono;
 
 class JamomaClock : public Clock
 {
@@ -34,7 +37,6 @@ private:
   TimeValue         mGranularity;   /// the minimum time between each tick (in ms)
   TimeValue         mOffset;        /// the date (in ms) the clock will run from
   double            mSpeed;         /// the speed factor of the clock
- 
   
   bool              mExternal;      /// if true the tick() method is called from outside
   
@@ -45,7 +47,8 @@ private:
   
   thread            mThread;        /// a thread to launch the clock execution
   mutex             mThreadMutex;   /// prevents the thread object from being used concurrently
-  uint64_t          mLastTime;      /// a time reference used to compute delta time between each tick (in µs)
+  
+  steady_clock::time_point mLastTime; /// a time reference used to compute delta time between each tick
   
   ExecutionCallback mCallback;      /// the callback to use for each step
   
@@ -86,6 +89,10 @@ public:
   
   Clock & setDuration(const TimeValue&) override;
   
+  const TimeValue & getGranularity() const override;
+  
+  Clock & setGranularity(const TimeValue&) override;
+  
   const TimeValue & getOffset() const override;
   
   Clock & setOffset(const TimeValue&) override;
@@ -116,8 +123,9 @@ public:
   
 private:
   
-  /*! compute the amount of time spent since the last call */
-  double computeDeltaTime();
+  /*! compute the amount of time spent since the last call
+   \param bool wait if the delta is less than granularity */
+  TimeValue computeElapsedTime(bool wait = true);
   
   /*! called back by the internal thread */
   void threadCallback();

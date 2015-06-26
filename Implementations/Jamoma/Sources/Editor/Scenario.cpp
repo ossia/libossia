@@ -161,7 +161,7 @@ const shared_ptr<Clock> & JamomaScenario::getClock() const
 
 void JamomaScenario::ClockCallback(const TimeValue& position, const TimeValue& date)
 {
-  // cout << "JamomaScenario::ClockCallback : " << double(position) << ", " << double(date) << "\n";
+  cout << "JamomaScenario::ClockCallback : " << double(position) << ", " << double(date) << "\n";
   
   // on start
   if (position == Zero)
