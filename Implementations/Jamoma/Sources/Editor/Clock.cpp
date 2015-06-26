@@ -126,7 +126,7 @@ void JamomaClock::tick()
   mPosition += delta / mDuration;
   mDate += delta;
   
-  if ((mDuration - mDate) >= mGranularity || mDuration.isInfinite())
+  if ((mDuration - mDate) >= (mGranularity * mSpeed) || mDuration.isInfinite())
   {
     // notify the owner
     (mCallback)(mPosition, mDate);
