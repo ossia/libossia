@@ -67,9 +67,15 @@ public:
   
   const TimeValue & getDuration() const override;
   
+  TimeConstraint & setDuration(const TimeValue&) override;
+  
   const TimeValue & getDurationMin() const override;
+  
+  TimeConstraint & setDurationMin(const TimeValue&) override;
 
   const TimeValue & getDurationMax() const override;
+  
+  TimeConstraint & setDurationMax(const TimeValue&) override;
   
   const shared_ptr<TimeEvent> & getStartEvent() const override;
   

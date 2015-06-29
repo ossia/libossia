@@ -85,14 +85,32 @@ const TimeValue & JamomaTimeConstraint::getDuration() const
   return mDuration;
 }
 
+TimeConstraint & JamomaTimeConstraint::setDuration(const TimeValue& duration)
+{
+  mDuration = duration;
+  return *this;
+}
+
 const TimeValue & JamomaTimeConstraint::getDurationMin() const
 {
   return mDurationMin;
 }
 
+TimeConstraint & JamomaTimeConstraint::setDurationMin(const TimeValue& durationMin)
+{
+  mDurationMin = durationMin;
+  return *this;
+}
+
 const TimeValue & JamomaTimeConstraint::getDurationMax() const
 {
   return mDurationMax;
+}
+
+TimeConstraint & JamomaTimeConstraint::setDurationMax(const TimeValue& durationMax)
+{
+  mDurationMax = durationMax;
+  return *this;
 }
 
 const shared_ptr<TimeEvent> & JamomaTimeConstraint::getStartEvent() const

@@ -75,17 +75,29 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
-  /*! get the time #TimeConstraint duration
+  /*! get the #TimeConstraint duration
    \return const #TimeValue& duration */
   virtual const TimeValue & getDuration() const = 0;
   
-  /*! get the time #TimeConstraint minimal duration
+  /*! set the #TimeConstraint duration
+   \param const #TimeValue& duration */
+  virtual TimeConstraint & setDuration(const TimeValue&) = 0;
+  
+  /*! get the #TimeConstraint minimal duration
    \return const #TimeValue& minimal duration */
   virtual const TimeValue & getDurationMin() const = 0;
   
-  /*! get the time #TimeConstraint maximal duration
+  /*! set the #TimeConstraint minimal duration
+   \param const #TimeValue& minimal duration */
+  virtual TimeConstraint & setDurationMin(const TimeValue&) = 0;
+  
+  /*! get the #TimeConstraint maximal duration
    \return const #TimeValue& maximal duration */
   virtual const TimeValue & getDurationMax() const = 0;
+  
+  /*! set the #TimeConstraint maximal duration
+   \param const #TimeValue& maximal duration */
+  virtual TimeConstraint & setDurationMax(const TimeValue&) = 0;
   
   /*! get the event from where the #TimeConstraint starts
    \return std::shared_ptr<#TimeEvent> start event */
