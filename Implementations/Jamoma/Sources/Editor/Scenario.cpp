@@ -8,16 +8,19 @@
 # pragma mark -
 # pragma mark Life cycle
 
-shared_ptr<Scenario> Scenario::create(shared_ptr<State> startState,
+shared_ptr<Scenario> Scenario::create(TimeProcess::ExecutionCallback callback,
+                                      shared_ptr<State> startState,
                                       shared_ptr<State> endState,
                                       shared_ptr<Clock> clock)
 {
-  return make_shared<JamomaScenario>(startState, endState, clock);
+  return make_shared<JamomaScenario>(callback, startState, endState, clock);
 }
 
-JamomaScenario::JamomaScenario(shared_ptr<State> startState,
+JamomaScenario::JamomaScenario(TimeProcess::ExecutionCallback callback,
+                               shared_ptr<State> startState,
                                shared_ptr<State> endState,
                                shared_ptr<Clock> clock) :
+mCallback(callback),
 mStartState(startState),
 mEndState(endState),
 mClock(clock)
@@ -27,8 +30,11 @@ mClock(clock)
   mTimeNodes.push_back(TimeNode::create());
 
   // pass callback to the Clock
-  Clock::ExecutionCallback callback = std::bind(&JamomaScenario::ClockCallback, this, _1, _2);
-  mClock->setExecutionCallback(callback);
+  Clock::ExecutionCallback clockCallback = std::bind(&JamomaScenario::ClockCallback, this, _1, _2);
+  mClock->setExecutionCallback(clockCallback);
+  
+  // build an internal State to update at each tick of the clock
+  mCurrentState = State::create();
 }
 
 JamomaScenario::JamomaScenario(const JamomaScenario * other)
@@ -47,7 +53,10 @@ shared_ptr<Scenario> JamomaScenario::clone() const
 
 void JamomaScenario::play(bool log, string name) const
 {
-  // reset TimeEvent's status
+  // reset internal State
+  mCurrentState->stateElements().clear();
+  
+  // reset TimeEvent's status and build state
   for (const auto& timeNode : mTimeNodes)
   {
     TimeEvent::Status status = timeNode->getDate() < mClock->getOffset() ?
@@ -57,8 +66,15 @@ void JamomaScenario::play(bool log, string name) const
     {
       shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
       e->mStatus = status;
+      
+      if (status == TimeEvent::Status::HAPPENED)
+        mCurrentState->stateElements().push_back(e->getState());
     }
   }
+  
+  // notify our owner
+  //! \todo remove redundancy before
+  (mCallback)(mClock->getPosition(), mClock->getDate(), mCurrentState);
   
   // activate TimeProcess's clock
   for (const auto& timeConstraint : mTimeContraints)
@@ -85,21 +101,9 @@ void JamomaScenario::play(bool log, string name) const
   mClock->go();
 }
 
-shared_ptr<State> JamomaScenario::state(const TimeValue& position, const TimeValue& date) const
+shared_ptr<State> JamomaScenario::state() const
 {
-  // on start
-  if (position == Zero)
-  {
-    return mTimeNodes[0]->state();
-  }
-  // on end
-  else if (position == One)
-  {
-    return mTimeNodes[1]->state();
-  }
-
-  //! \todo the algorithm !
-  return State::create();
+  return mCurrentState;
 }
 
 # pragma mark -
@@ -186,27 +190,41 @@ const shared_ptr<Clock> & JamomaScenario::getClock() const
 
 void JamomaScenario::ClockCallback(const TimeValue& position, const TimeValue& date)
 {
-  cout << "Scenario : " << double(position) << ", " << double(date) << "\n";
+  // reset internal State
+  mCurrentState->stateElements().clear();
   
-  // on start
-  if (position == Zero)
+  // process each TimeNode
+  for (const auto& timeNode : mTimeNodes)
   {
-    cout << "Scenario starts\n";
-    mTimeNodes[0]->play();
-  }
-  // on end
-  else if (position == One)
-  {
-    cout << "Scenario ends\n";
-    mTimeNodes[1]->play();
+    TimeValue d = timeNode->getDate();
+    
+    for (auto& timeEvent : timeNode->timeEvents())
+    {
+      shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
+      
+      if (date > d && timeEvent->getStatus() == TimeEvent::Status::WAITING)
+      {
+        mCurrentState->stateElements().push_back(e->getState());
+        e->mStatus = TimeEvent::Status::HAPPENED;
+      }
+    }
   }
   
-  // process each running TimeProcess in external drive mode
+  // process each running TimeProcess
   for (const auto& timeConstraint : mTimeContraints)
+  {
     for (auto& timeProcess : timeConstraint->timeProcesses())
-      if (timeProcess->getClock()->getRunning() &&
-          timeProcess->getClock()->getExternal())
-        timeProcess->getClock()->tick();
+    {
+      if (timeProcess->getClock()->getRunning())
+      {
+        if (timeProcess->getClock()->getExternal())
+          timeProcess->getClock()->tick();
+        
+        mCurrentState->stateElements().push_back(timeProcess->state());
+      }
+    }
+  }
   
-  state(position, date)->launch();
+  // notify our owner
+  (mCallback)(position, date, mCurrentState);
 }

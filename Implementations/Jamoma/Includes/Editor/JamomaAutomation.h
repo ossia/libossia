@@ -32,8 +32,11 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
+  ExecutionCallback           mCallback;
+  
   shared_ptr<State>           mStartState;
   shared_ptr<State>           mEndState;
+  shared_ptr<State>           mCurrentState;
   shared_ptr<Clock>           mClock;
   
   shared_ptr<Curve<double>>   curve;
@@ -46,7 +49,8 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaAutomation(shared_ptr<State>,
+  JamomaAutomation(TimeProcess::ExecutionCallback callback,
+                   shared_ptr<State>,
                    shared_ptr<State>,
                    shared_ptr<Clock>);
   
@@ -60,9 +64,9 @@ public:
 # pragma mark Execution
   
   void play(bool log = false, string name = "") const override;
-  
-  shared_ptr<State> state(const TimeValue&, const TimeValue& = Infinite) const override;
 
+  shared_ptr<State> state() const override;
+  
 # pragma mark -
 # pragma mark Accessors
   

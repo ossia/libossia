@@ -19,16 +19,6 @@ JamomaTimeEvent::~JamomaTimeEvent()
 
 void JamomaTimeEvent::play(bool log, string name) const
 {
-  //! \todo have empty expression that return always true when it is evaluated
-  if (!mExpression)
-    mState->launch();
-
-  else if (mExpression->evaluate())
-    mState->launch();
-  
-  else
-    return;
-  
   // propagate execution to next TimeConstraints
   for (auto& timeConstraint : nextTimeConstraints())
   {

@@ -42,12 +42,16 @@ public:
    \param string to give a log file name where to write */
   virtual void play(bool log = false, std::string name = "") const = 0;
   
-  /*! get the #State at a position or a date
-   \param const TimeValue& position [0::1] or date to state
-   \param const TimeValue& true if the first parameter is a date
+  /*! to get the process execution back
+   \param process clock position
+   \param process clock date
+   \param state */
+  using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, std::shared_ptr<State>)>;
+  
+  /*! get the execution #State of the process
    \return std::shared_ptr<State> */
-  virtual std::shared_ptr<State> state(const TimeValue&, const TimeValue& = Infinite) const = 0;
-
+  virtual std::shared_ptr<State> state() const = 0;
+  
 # pragma mark -
 # pragma mark Accessors
   

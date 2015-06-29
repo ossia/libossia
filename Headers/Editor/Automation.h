@@ -38,11 +38,13 @@ public:
 # pragma mark Life cycle
   
   /*! factory
+   \param #TimeProcess::ExecutionCallback the function to use to be notified at each step
    \param std::shared_ptr<#State> the state at start
    \param std::shared_ptr<#State> the state at end
    \param std::shared_ptr<#Clock> the clock use to run
    \return std::shared_ptr<#Automation<T>> */
-  static std::shared_ptr<Automation<T>> create(std::shared_ptr<State> = State::create(),
+  static std::shared_ptr<Automation<T>> create(TimeProcess::ExecutionCallback,
+                                               std::shared_ptr<State> = State::create(),
                                                std::shared_ptr<State> = State::create(),
                                                std::shared_ptr<Clock> = Clock::create());
   
@@ -51,20 +53,6 @@ public:
   
   /*! destructor */
   virtual ~Automation() = default;
-
-# pragma mark -
-# pragma mark Execution
-  
-  /*! execute and optionnaly log the execution into a file
-   \param bool to enable log
-   \param string to give a log file name where to write */
-  virtual void play(bool log = false, std::string name = "") const override = 0;
-  
-  /*! get the #State at a position or a date
-   \param const TimeValue& time position
-   \param const TimeValue& date which is infinite by default
-   \return std::shared_ptr<State> */
-  virtual std::shared_ptr<State> state(const TimeValue&, const TimeValue& = Infinite) const override = 0;
 
 # pragma mark -
 # pragma mark Accessors

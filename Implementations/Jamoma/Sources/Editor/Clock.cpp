@@ -183,6 +183,16 @@ void JamomaClock::tick()
   mLastTime = steady_clock::now();
 }
 
+JamomaClock::ExecutionCallback JamomaClock::getExecutionCallback() const
+{
+  return mCallback;
+}
+
+void JamomaClock::setExecutionCallback(ExecutionCallback callback)
+{
+  mCallback = callback;
+}
+
 # pragma mark -
 # pragma mark Accessors
 
@@ -254,19 +264,6 @@ const TimeValue & JamomaClock::getPosition() const
 const TimeValue & JamomaClock::getDate() const
 {
   return mDate;
-}
-
-# pragma mark -
-# pragma mark Callback
-
-JamomaClock::ExecutionCallback JamomaClock::getExecutionCallback() const
-{
-  return mCallback;
-}
-
-void JamomaClock::setExecutionCallback(ExecutionCallback callback)
-{
-  mCallback = callback;
 }
 
 # pragma mark -

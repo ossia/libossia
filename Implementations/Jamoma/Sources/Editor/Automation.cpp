@@ -8,23 +8,29 @@ using namespace std;
 # pragma mark -
 # pragma mark Life cycle
 
-template<> shared_ptr<Automation<double>> Automation<double>::create(shared_ptr<State> startState,
+template<> shared_ptr<Automation<double>> Automation<double>::create(TimeProcess::ExecutionCallback callback,
+                                                                     shared_ptr<State> startState,
                                                                      shared_ptr<State> endState,
                                                                      shared_ptr<Clock> clock)
 {
-  return make_shared<JamomaAutomation>(startState, endState, clock);
+  return make_shared<JamomaAutomation>(callback, startState, endState, clock);
 }
 
-JamomaAutomation::JamomaAutomation(shared_ptr<State> startState,
+JamomaAutomation::JamomaAutomation(TimeProcess::ExecutionCallback callback,
+                                   shared_ptr<State> startState,
                                    shared_ptr<State> endState,
                                    shared_ptr<Clock> clock) :
+mCallback(callback),
 mStartState(startState),
 mEndState(endState),
 mClock(clock)
 {
   // pass callback to the Clock
-  Clock::ExecutionCallback callback = std::bind(&JamomaAutomation::ClockCallback, this, _1, _2);
-  mClock->setExecutionCallback(callback);
+  Clock::ExecutionCallback clockCallback = std::bind(&JamomaAutomation::ClockCallback, this, _1, _2);
+  mClock->setExecutionCallback(clockCallback);
+  
+  // build an internal State to update at each tick of the clock
+  mCurrentState = State::create();
 }
 
 JamomaAutomation::JamomaAutomation(const JamomaAutomation * other)
@@ -46,21 +52,9 @@ void JamomaAutomation::play(bool log, string name) const
   mClock->go();
 }
 
-shared_ptr<State> JamomaAutomation::state(const TimeValue& position, const TimeValue& date) const
+shared_ptr<State> JamomaAutomation::state() const
 {
-  // on start
-  if (position == Zero)
-  {
-    ;
-  }
-  // on end
-  else if (position == One)
-  {
-    ;
-  }
-  
-  //! \todo the algorithme !
-  return State::create();
+  return mCurrentState;
 }
 
 # pragma mark -
@@ -115,21 +109,5 @@ const shared_ptr<Clock> & JamomaAutomation::getClock() const
 
 void JamomaAutomation::ClockCallback(const TimeValue& position, const TimeValue& date)
 {
-  cout << "Automation : " << double(position) << ", " << double(date) << "\n";
-  
-  // on start
-  if (position == Zero)
-  {
-    cout << "Automation starts\n";
-    return;
-  }
-  // on end
-  else if (position == One)
-  {
-    cout << "Automation ends\n";
-    return;
-  }
-  
-  //state(position, date)->launch();
-  return;
+  (mCallback)(position, date, mCurrentState);
 }

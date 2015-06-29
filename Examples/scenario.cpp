@@ -34,6 +34,9 @@ using namespace std;
 void local_play_callback(const Value * v);
 void local_test_callback(const Value * v);
 
+void main_scenario_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
+void first_automation_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
+
 shared_ptr<TimeConstraint> main_constraint;
 
 int main()
@@ -83,7 +86,7 @@ int main()
     auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), play_expression_end));
 
     // create the main Scenario
-    auto main_scenario = Scenario::create();
+    auto main_scenario = Scenario::create(main_scenario_callback);
     
     // create the main TimeConstraint
     TimeValue main_duration(5000.);
@@ -120,7 +123,7 @@ int main()
      */
     
     // create an Automation
-    auto first_automation = Automation<double>::create();
+    auto first_automation = Automation<double>::create(first_automation_callback);
     
     // add it to the first TimeConstraint
     first_constraint->addTimeProcess(first_automation);
@@ -189,4 +192,16 @@ void local_test_callback(const Value * v)
         Float * f = (Float*)v;
         cout << "/i-score/test = "<< f->value << "\n";
     }
+}
+
+void main_scenario_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
+{
+    cout << "Scenario : " << double(position) << ", " << double(date) << "\n";
+    state->launch();
+}
+
+void first_automation_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
+{
+    cout << "Automation : " << double(position) << ", " << double(date) << "\n";
+    state->launch();
 }

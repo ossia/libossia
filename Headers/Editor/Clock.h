@@ -68,6 +68,19 @@ public:
    \details can be use to force step processing in case of external drive */
   virtual void tick() = 0;
   
+  /*! to get the clock execution back
+   \param clock position
+   \param clock date */
+  using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&)>;
+  
+  /*! get the clock execution callback function
+   \return #ValueCallback function */
+  virtual ExecutionCallback getExecutionCallback() const = 0;
+  
+  /*! set the clock execution callback function
+   \param #ValueCallback function */
+  virtual void setExecutionCallback(ExecutionCallback) = 0;
+  
 # pragma mark -
 # pragma mark Accessors
   
@@ -127,22 +140,5 @@ public:
   /*! get the date of the clock
    \return const #TimeValue date */
   virtual const TimeValue & getDate() const = 0;
-  
-# pragma mark -
-# pragma mark Callback
-  
-  /*! to get the clock execution back
-   \param clock position 
-   \param clock date */
-  using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&)>;
-  
-  /*! get the clock execution callback function
-   \return #ValueCallback function */
-  virtual ExecutionCallback getExecutionCallback() const = 0;
-  
-  /*! set the clock execution callback function
-   \param #ValueCallback function */
-  virtual void setExecutionCallback(ExecutionCallback) = 0;
-  
 };
 }

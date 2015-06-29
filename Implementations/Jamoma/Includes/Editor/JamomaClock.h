@@ -83,6 +83,10 @@ public:
   
   void tick() override;
   
+  ExecutionCallback getExecutionCallback() const override;
+  
+  void setExecutionCallback(ExecutionCallback) override;
+  
 # pragma mark -
 # pragma mark Accessors
   
@@ -112,13 +116,6 @@ public:
   
   const TimeValue & getDate() const override;
   
-# pragma mark -
-# pragma mark Callback
-  
-  ExecutionCallback getExecutionCallback() const override;
-  
-  void setExecutionCallback(ExecutionCallback) override;
-
 # pragma mark -
 # pragma mark Internal
   
