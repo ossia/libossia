@@ -56,10 +56,11 @@ void JamomaClock::go()
   mPosition = mOffset / mDuration;
   mDate = mOffset;
   mLastTime = steady_clock::now();
-  mElapsedTime = 0;
+  mElapsedTime = mOffset * 1000;
   
   // notify the owner
-  (mCallback)(mPosition, mDate);
+  if (!mExternal)
+    (mCallback)(mPosition, mDate);
   
   //! \todo notify each observers
   // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
@@ -151,11 +152,9 @@ void JamomaClock::tick()
   }
   
   // how many time elapsed from the start ?
+  mDate = TimeValue(mElapsedTime / 1000.) + TimeValue(deltaInUs / 1000.) * mSpeed;
   mElapsedTime += deltaInUs;
 
-  // compute the date in ms
-  mDate = TimeValue(mElapsedTime / 1000.) * mSpeed + mOffset;
-  
   // test also paused and running status after computing the date because there is a sleep before
   if (!mPaused && mRunning)
   {
@@ -204,6 +203,8 @@ const TimeValue & JamomaClock::getDuration() const
 Clock & JamomaClock::setDuration(const TimeValue& duration)
 {
   mDuration = duration;
+  mDate = mOffset;
+  mPosition = mDate / mDuration;
   return *this;
 }
 
@@ -226,6 +227,8 @@ const TimeValue & JamomaClock::getOffset() const
 Clock & JamomaClock::setOffset(const TimeValue& offset)
 {
   mOffset = offset;
+  mDate = mOffset;
+  mPosition = mDate / mDuration;
   return *this;
 }
 
