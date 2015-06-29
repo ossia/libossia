@@ -139,7 +139,7 @@ void JamomaClock::tick()
     // how many time to pause to reach the next time grain ?
     long long pauseInUs = granularityInUs - mElapsedTime % granularityInUs;
     
-    // if too early : wait
+    // if too early: wait
     if (pauseInUs > 0)
     {
       // pause the thread
