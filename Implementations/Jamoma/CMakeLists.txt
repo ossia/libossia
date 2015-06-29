@@ -19,6 +19,7 @@ file(GLOB_RECURSE SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/TimeConstraint.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/Scenario.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/State.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/Message.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/Domain.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Misc/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Includes/*.h"
