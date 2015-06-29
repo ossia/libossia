@@ -91,8 +91,9 @@ void JamomaClock::stop()
       }
       catch (std::system_error& e)
       {
-        //! \todo should we throw an exception here ?
-        cout << "JamomaClock::threadStop() : " << e.what() << "\n";
+        // thread::join failed: Resource deadlock avoided
+        // this error is expected as the clock have to close its thread it self when reaching the end
+        ;
       }
     }
     
