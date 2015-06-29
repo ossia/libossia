@@ -161,25 +161,26 @@ const shared_ptr<Clock> & JamomaScenario::getClock() const
 
 void JamomaScenario::ClockCallback(const TimeValue& position, const TimeValue& date)
 {
-  cout << "JamomaScenario::ClockCallback : " << double(position) << ", " << double(date) << "\n";
+  cout << "Scenario : " << double(position) << ", " << double(date) << "\n";
   
   // on start
   if (position == Zero)
   {
-    cout << "JamomaScenario starts\n";
+    cout << "Scenario starts\n";
     mTimeNodes[0]->play();
   }
   // on end
   else if (position == One)
   {
-    cout << "JamomaScenario ends\n";
+    cout << "Scenario ends\n";
     mTimeNodes[1]->play();
   }
   
-  // process each running TimeProcess
+  // process each running TimeProcess in external drive mode
   for (const auto& timeConstraint : mTimeContraints)
     for (auto& timeProcess : timeConstraint->timeProcesses())
-      if (timeProcess->getClock()->getRunning())
+      if (timeProcess->getClock()->getRunning() &&
+          timeProcess->getClock()->getExternal())
         timeProcess->getClock()->tick();
   
   //state(position, date)->launch();

@@ -1,5 +1,7 @@
 #include "Editor/JamomaClock.h"
 
+#include <iostream> //! \todo to remove. only here for debug purpose
+
 using namespace OSSIA;
 
 # pragma mark -
@@ -42,37 +44,27 @@ shared_ptr<Clock> JamomaClock::clone() const
 
 void JamomaClock::go()
 {
-  // do we need to ramp at all ?
   if (mDuration <= mOffset)
-  {
-    threadStop();
-    mRunning = false;
-    mPaused = false;
-    mPosition = Zero;
-    mDate = Zero;
-    
-    // notify the owner
-    mCallback(mPosition, mDate);
-    
-    //! \todo notify each observers
-    // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
-  }
-  else if (mExternal)
-  {
-    // reset timing informations
-    mRunning = true;
-    mPaused = false;
-    mLastTime = steady_clock::now();
-    
-    //! \todo notify each observers
-    // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
-    
-    // launch a first tick if the duration is valid
-    if (mDuration > Zero)
-      tick();
-  }
-  // if the thread is not running
-  else if (!mRunning)
+    return stop();
+  
+  if (mRunning)
+    return;
+  
+  // reset timing informations
+  mRunning = true;
+  mPaused = false;
+  mPosition = mOffset / mDuration;
+  mDate = mOffset;
+  mLastTime = steady_clock::now();
+  mElapsedTime = 0;
+  
+  // notify the owner
+  (mCallback)(mPosition, mDate);
+  
+  //! \todo notify each observers
+  // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
+
+  if (!mExternal)
   {
     if (mThread.joinable())
       mThread.join();
@@ -84,18 +76,35 @@ void JamomaClock::go()
 
 void JamomaClock::stop()
 {
-  mPaused = false;
-  
-  // stop thread execution
-  threadStop();
-  
-  //! \todo notify each observers
-  // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
-  
-  // reset all time info
-  mOffset = Zero;
-  mPosition = Zero;
-  mDate = Zero;
+  if (mRunning)
+  {
+    mRunning = false;
+    
+    if (!mExternal)
+    {
+      while (!mThread.joinable())
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+      
+      try
+      {
+        mThread.join();
+      }
+      catch (std::system_error& e)
+      {
+        //! \todo should we throw an exception here ?
+        cout << "JamomaClock::threadStop() : " << e.what() << "\n";
+      }
+    }
+    
+    // reset all time info
+    mPaused = false;
+    mOffset = Zero;
+    mPosition = Zero;
+    mDate = Zero;
+    
+    //! \todo notify each observers
+    // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
+  }
 }
 
 void JamomaClock::pause()
@@ -110,40 +119,67 @@ void JamomaClock::resume()
 
 void JamomaClock::tick()
 {
-  // in external drive mode : don't wait to not block external driver
-  TimeValue elapsedTime = computeElapsedTime(!mExternal);
-  
-  // test paused and running status after the computeDeltatTime because there is a sleep inside
   if (mPaused || !mRunning)
-    return;
+     return;
   
-  // in external drive mode : allow to tick only if elapsed time is greater than granularity
-  if (mExternal && elapsedTime < mGranularity)
-    return;
+  long long granularityInUs(mGranularity * 1000);
   
-  TimeValue delta = elapsedTime * mSpeed;
+  // how many time since the last tick ?
+  long long deltaInUs = duration_cast<microseconds>(steady_clock::now() - mLastTime).count();
   
-  mPosition += delta / mDuration;
-  mDate += delta;
-  
-  if ((mDuration - mDate) >= (mGranularity * mSpeed) || mDuration.isInfinite())
+  if (mExternal)
   {
-    // notify the owner
-    (mCallback)(mPosition, mDate);
+    // if too early: avoid this tick
+    if (mElapsedTime / granularityInUs == (mElapsedTime + deltaInUs) / granularityInUs)
+      return;
   }
   else
   {
-    // forcing position to 1. to allow filtering
-    mPosition = One;
+    // how many time to pause to reach the next time grain ?
+    long long pauseInUs = granularityInUs - mElapsedTime % granularityInUs;
     
-    // notify the owner
-    (mCallback)(mPosition, mDate);
-    
-    // if the clock is still running : stop it
-    // note : because it is possible that another thread stops the clock before
-    if (mRunning)
-      stop();
+    // if too early : wait
+    if (pauseInUs > 0)
+    {
+      // pause the thread
+      this_thread::sleep_for(std::chrono::microseconds(pauseInUs));
+      
+      // how many time since the last tick ?
+      deltaInUs = duration_cast<microseconds>(steady_clock::now() - mLastTime).count();
+    }
   }
+  
+  // how many time elapsed from the start ?
+  mElapsedTime += deltaInUs;
+
+  // compute the date in ms
+  mDate = TimeValue(mElapsedTime / 1000.) * mSpeed;
+  
+  // test also paused and running status after computing the date because there is a sleep before
+  if (!mPaused && mRunning)
+  {
+    if (mDuration - mDate >= 0. || mDuration.isInfinite())
+    {
+      mPosition = mDate / mDuration;
+      
+      // notify the owner
+      (mCallback)(mPosition, mDate);
+    }
+    else
+    {
+      // forcing position to 1. to allow filtering
+      mPosition = One;
+      
+      // notify the owner
+      (mCallback)(mPosition, mDate);
+      
+      // stop the clock
+      stop();
+    }
+  }
+  
+  // tick is done now
+  mLastTime = steady_clock::now();
 }
 
 # pragma mark -
@@ -235,63 +271,10 @@ void JamomaClock::setExecutionCallback(ExecutionCallback callback)
 # pragma mark -
 # pragma mark Internal
 
-TimeValue JamomaClock::computeElapsedTime(bool wait)
-{
-  // compute the duration in microseconds between the last tick and now
-  steady_clock::time_point currentTime = steady_clock::now();
-  long long deltaInUs = duration_cast<microseconds>(currentTime - mLastTime).count();
-  long long granularityInUs(mGranularity * 1000);
-  
-  if (wait)
-  {
-    // wait if the duration is less than granularity
-    if (deltaInUs < granularityInUs)
-    {
-      this_thread::sleep_for(std::chrono::microseconds(granularityInUs - deltaInUs));
-      
-      deltaInUs = granularityInUs;
-    }
-    
-    // memorise new time point
-    mLastTime = steady_clock::now();
-  }
-  
-  // return the delta in ms
-  return TimeValue(deltaInUs / 1000.);
-}
-
 void JamomaClock::threadCallback()
 {
-  // reset timing informations
-  mRunning = true;
-  mPaused = false;
-  mLastTime = steady_clock::now();
-  
-  //! \todo notify each observers
-  // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
-  
   // launch the tick if the duration is valid and while it have to run
   if (mDuration > Zero)
     while (mRunning)
       tick();
-}
-
-void JamomaClock::threadStop()
-{
-  if (mRunning)
-  {
-    mRunning = false;
-    while (!mThread.joinable())
-      std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    
-    try
-    {
-      mThread.join();
-    }
-    catch (std::system_error& e)
-    {
-      //! \todo should we throw an exception here ?
-      // cout << "JamomaClock::threadStop() : " << e.what() << "\n";
-    }
-  }
 }

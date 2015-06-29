@@ -48,7 +48,8 @@ private:
   thread            mThread;        /// a thread to launch the clock execution
   mutex             mThreadMutex;   /// prevents the thread object from being used concurrently
   
-  steady_clock::time_point mLastTime; /// a time reference used to compute delta time between each tick
+  steady_clock::time_point mLastTime;/// a time reference used to compute time tick
+  long long         mElapsedTime;   /// a time reference used to know how many time are elapsed in microsecond
   
   ExecutionCallback mCallback;      /// the callback to use for each step
   
@@ -123,14 +124,6 @@ public:
   
 private:
   
-  /*! compute the amount of time spent since the last call
-   \param bool wait if the delta is less than granularity */
-  TimeValue computeElapsedTime(bool wait = true);
-  
   /*! called back by the internal thread */
   void threadCallback();
-  
-  /*! stop the internal thread execution */
-  void threadStop();
-
 };
