@@ -154,7 +154,7 @@ void JamomaClock::tick()
   mElapsedTime += deltaInUs;
 
   // compute the date in ms
-  mDate = TimeValue(mElapsedTime / 1000.) * mSpeed;
+  mDate = TimeValue(mElapsedTime / 1000.) * mSpeed + mOffset;
   
   // test also paused and running status after computing the date because there is a sleep before
   if (!mPaused && mRunning)

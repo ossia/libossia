@@ -151,15 +151,16 @@ int main()
     cout << "first_start_node date = " << scenario_start_node->getDate() << "\n";
     cout << "first_end_node date = " << first_end_node->getDate() << "\n";
     
-    // change Scenario speed and granularity
+    // change Scenario Clock speed, granularity and offset
     main_scenario->getClock()->setSpeed(0.5);
     main_scenario->getClock()->setGranularity(50.);
+    main_scenario->getClock()->setOffset(500.);
     
-    // change Automation speed and granularity
+    // change Automation Clock speed and granularity
     first_automation->getClock()->setSpeed(2.);
     first_automation->getClock()->setGranularity(200.);
     
-    // set the Automation in external drive mode be handled by the Scenario clock
+    // set the Automation Clock in external drive mode to be handled by the Scenario clock
     first_automation->getClock()->setExternal(true);
     
     // play the Scenario

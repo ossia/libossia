@@ -1,5 +1,6 @@
 #include "Editor/JamomaScenario.h"
 #include "Editor/JamomaTimeConstraint.h"
+#include "Editor/JamomaTimeEvent.h"
 
 #include <iostream> //! \todo to remove. only here for debug purpose
 #include <algorithm>
@@ -46,17 +47,41 @@ shared_ptr<Scenario> JamomaScenario::clone() const
 
 void JamomaScenario::play(bool log, string name) const
 {
- /* reset each element's status
+  // reset TimeEvent's status
   for (const auto& timeNode : mTimeNodes)
   {
-    // reset each TimeEvent's status
+    TimeEvent::Status status = timeNode->getDate() < mClock->getOffset() ?
+    TimeEvent::Status::HAPPENED : TimeEvent::Status::WAITING;
+    
     for (auto& timeEvent : timeNode->timeEvents())
     {
       shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
-      e->mStatus = TimeEvent::Status::WAITING;
+      e->mStatus = status;
     }
   }
-*/
+  
+  // activate TimeProcess's clock
+  for (const auto& timeConstraint : mTimeContraints)
+  {
+    TimeValue offset = Zero;
+    TimeEvent::Status startStatus = timeConstraint->getStartEvent()->getStatus();
+    TimeEvent::Status endStatus = timeConstraint->getEndEvent()->getStatus();
+    
+    if (startStatus == TimeEvent::Status::HAPPENED &&
+        endStatus == TimeEvent::Status::WAITING)
+    {
+      offset = mClock->getOffset() - timeConstraint->getStartEvent()->getTimeNode()->getDate();
+    }
+    
+    for (auto& timeProcess : timeConstraint->timeProcesses())
+    {
+      timeProcess->getClock()->setOffset(offset);
+    }
+    
+    if (offset != Zero)
+      timeConstraint->getStartEvent()->getTimeNode()->play();
+  }
+  
   mClock->go();
 }
 
@@ -183,5 +208,5 @@ void JamomaScenario::ClockCallback(const TimeValue& position, const TimeValue& d
           timeProcess->getClock()->getExternal())
         timeProcess->getClock()->tick();
   
-  //state(position, date)->launch();
+  state(position, date)->launch();
 }

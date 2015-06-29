@@ -19,11 +19,15 @@
 #include "Editor/TimeNode.h"
 #include "Editor/State.h"
 
+#include "JamomaScenario.h"
+
 using namespace OSSIA;
 using namespace std;
 
 class JamomaTimeEvent : public TimeEvent
 {
+  
+  friend JamomaScenario;
 
 private:
   
