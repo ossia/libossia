@@ -1,4 +1,5 @@
 #include "Editor/JamomaTimeEvent.h"
+#include <algorithm>
 
 # pragma mark -
 # pragma mark Life cycle
@@ -32,7 +33,7 @@ void JamomaTimeEvent::play(bool log, string name) const
 void JamomaTimeEvent::addState(const std::shared_ptr<State> state)
 {
   // store a state if it is not already stored
-  if (find(mState->stateElements().begin(),
+  if (std::find(mState->stateElements().begin(),
            mState->stateElements().end(),
            state) == mState->stateElements().end())
   {
@@ -42,7 +43,7 @@ void JamomaTimeEvent::addState(const std::shared_ptr<State> state)
 
 void JamomaTimeEvent::removeState(const std::shared_ptr<State> state)
 {
-  mState->stateElements().erase(find(mState->stateElements().begin(), mState->stateElements().end(), state));
+  mState->stateElements().erase(std::find(mState->stateElements().begin(), mState->stateElements().end(), state));
 }
 
 # pragma mark -
@@ -52,7 +53,7 @@ const shared_ptr<TimeNode> & JamomaTimeEvent::getTimeNode() const
 {
   return mTimeNode;
 }
-  
+
 const shared_ptr<State> & JamomaTimeEvent::getState() const
 {
   return mState;
@@ -74,6 +75,6 @@ TimeEvent::Status JamomaTimeEvent::getStatus() const
 void JamomaTimeEvent::setStatus(Status status)
 {
   mStatus = status;
-  
+
   //! \todo notify it changes
 }
