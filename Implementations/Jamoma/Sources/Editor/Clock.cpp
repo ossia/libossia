@@ -58,10 +58,6 @@ void JamomaClock::go()
   mLastTime = steady_clock::now();
   mElapsedTime = mOffset * 1000;
   
-  // notify the owner
-  if (!mExternal)
-    (mCallback)(mPosition, mDate);
-  
   //! \todo notify each observers
   // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
 
