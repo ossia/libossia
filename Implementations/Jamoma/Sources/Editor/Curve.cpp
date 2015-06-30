@@ -67,13 +67,13 @@ map<double, std::pair<T, std::shared_ptr<CurveSegment<T>>>> JamomaCurve<T>::getP
 # pragma mark CurveSegments
 
 template <typename T>
-bool JamomaCurve<T>::addSegment(double, T, CurveSegment<T>&)
+bool JamomaCurve<T>::addPoint(double, T, CurveSegment<T>&)
 {
   return false;
 }
 
 template <typename T>
-bool JamomaCurve<T>::removeSegment(double)
+bool JamomaCurve<T>::removePoint(double)
 {
   return false;
 }

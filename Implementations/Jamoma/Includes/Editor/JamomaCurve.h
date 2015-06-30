@@ -59,8 +59,8 @@ public:
 # pragma mark -
 # pragma mark CurveSegments
   
-  bool addSegment(double, T, CurveSegment<T>&) override;
+  bool addPoint(double, T, CurveSegment<T>&) override;
   
-  bool removeSegment(double) override;
+  bool removePoint(double) override;
 
 };

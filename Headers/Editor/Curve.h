@@ -73,17 +73,17 @@ public:
 # pragma mark -
 # pragma mark CurveSegments
   
-  /*! add a segment to the curve
-   \param double abscissa between 0. and 1.
-   \param T initial segment value
+  /*! add a point to the curve
+   \param double point abscissa between 0. and 1.
+   \param T point value
    \param #CurveSegment<T> segment
    \return bool */
-  virtual bool addSegment(double, T, CurveSegment<T>&) = 0;
+  virtual bool addPoint(double, T, CurveSegment<T>&) = 0;
   
-  /*! remove a segment from the curve
-   \param double abscissa between 0. and 1.
+  /*! remove a point from the curve
+   \param double point abscissa between 0. and 1.
    \return bool */
-  virtual bool removeSegment(double) = 0;
+  virtual bool removePoint(double) = 0;
 
   /*! get curve segments of the curve
    \return #Container<#CurveSegment<T>> */
