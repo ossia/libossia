@@ -17,44 +17,86 @@
 #include <map>
 #include <utility>
 #include <memory>
+
 #include "Misc/Container.h"
 
-namespace OSSIA {
+namespace OSSIA
+{
 
 template <typename T>
 class CurveSegment;
 
 template <typename T>
-class Curve {
+class Curve
+{
 
-    public:
-      typedef T value_type;
+public:
+  
+  typedef T value_type;
+  
+# pragma mark -
+# pragma mark Life cycle
+  
+  /*! factory
+   \return std::shared_ptr<#Curve> */
+  static std::shared_ptr<Curve> create();
+  
+  /*! clone */
+  virtual std::shared_ptr<Curve> clone() const = 0;
+  
+  /*! destructor */
+  virtual ~Curve() = default;
 
-      static std::shared_ptr<Curve> create();
-      virtual std::shared_ptr<Curve> clone() const = 0;
-      virtual ~Curve() = default;
+# pragma mark -
+# pragma mark Execution
+  
+  /*! get value at an abscissa
+   \param double abscissa between 0. and 1.
+   \return T value */
+  virtual T valueAt(double) const = 0;
 
-      // Manage points (abscissa in double between 0. and 1.)
-      virtual bool addPoint(double, T, CurveSegment<T>&) = 0;
-      virtual bool removePoint(double) = 0;
-
-    # pragma mark -
+# pragma mark -
 # pragma mark Accessors
-      virtual T getInitialValue() const = 0;
-      virtual void setInitialValue(const T) = 0;
-      virtual std::map<double, std::pair<T, std::shared_ptr<CurveSegment<T> > > > getPointsMap() const = 0;
-        // {abscissa, {value, previous segment}}
+  
+  /*! get initial curve value
+   \return T value */
+  virtual T getInitialValue() const = 0;
+  
+  /*! set initial curve value
+   \param const T value */
+  virtual void setInitialValue(const T) = 0;
+  
+  /*! get initial curve value
+   \return std::map<double, std::pair<T, std::shared_ptr<CurveSegment<T>>>> map of {abscissa, {value, previous segment} */
+  virtual std::map<double, std::pair<T, std::shared_ptr<CurveSegment<T>>>> getPointsMap() const = 0;
 
-      // Computation
-      virtual T valueAt(double) const = 0; // Between 0. and 1.
+# pragma mark -
+# pragma mark CurveSegments
+  
+  /*! add a segment to the curve
+   \param double abscissa between 0. and 1.
+   \param T initial segment value
+   \param #CurveSegment<T> segment
+   \return bool */
+  virtual bool addSegment(double, T, CurveSegment<T>&) = 0;
+  
+  /*! remove a segment from the curve
+   \param double abscissa between 0. and 1.
+   \return bool */
+  virtual bool removeSegment(double) = 0;
 
-      Container<CurveSegment<T>>& curveSegments()
-      { return m_curveSegments; }
-      const Container<CurveSegment<T>>& curveSegments() const
-      { return m_curveSegments; }
+  /*! get curve segments of the curve
+   \return #Container<#CurveSegment<T>> */
+  Container<CurveSegment<T>>& curveSegments()
+  { return m_curveSegments; }
+  
+  /*! get curve segments of the curve
+   \return const #Container<#CurveSegment<T>> */
+  const Container<CurveSegment<T>>& curveSegments() const
+  { return m_curveSegments; }
 
-    private:
-      Container<CurveSegment<T>> m_curveSegments;
+private:
+  Container<CurveSegment<T>> m_curveSegments;
 };
 
 }

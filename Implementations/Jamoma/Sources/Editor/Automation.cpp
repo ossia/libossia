@@ -8,7 +8,8 @@ using namespace std;
 # pragma mark -
 # pragma mark Life cycle
 
-namespace OSSIA{
+namespace OSSIA
+{
 template<> shared_ptr<Automation<double>> Automation<double>::create(TimeProcess::ExecutionCallback callback,
                                                                      shared_ptr<State> startState,
                                                                      shared_ptr<State> endState,
@@ -17,6 +18,7 @@ template<> shared_ptr<Automation<double>> Automation<double>::create(TimeProcess
   return make_shared<JamomaAutomation>(callback, startState, endState, clock);
 }
 }
+
 JamomaAutomation::JamomaAutomation(TimeProcess::ExecutionCallback callback,
                                    shared_ptr<State> startState,
                                    shared_ptr<State> endState,

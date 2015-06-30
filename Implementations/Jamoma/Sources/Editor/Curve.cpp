@@ -1,182 +1,79 @@
-/*!
- * \file Curve.cpp
- *
- * \brief
- *
- * \details
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
+#include "Editor/JamomaCurve.h"
 
-#include "Editor/Curve.h"
+#include <iostream> //! \todo to remove. only here for debug purpose
 
-#include "TTScore.h"
+using namespace OSSIA;
+using namespace std;
 
-#include "Editor/CurveSegment.h"
+# pragma mark -
+# pragma mark Life cycle
 
-#include "../Implementations/Jamoma/Sources/Editor/CurveSegment.cpp" // because we use the parent curve into the segment (see : valueAt)
-
-namespace OSSIA {
-  
-template <typename T>
-class Curve<T>::Impl {
-  
-public:
-  
-  TTObject mCurve;
-  
-  T mInitialValue;
-  map<double, pair<T, CurveSegment<T>&>> mPointsMap;
-  
-  Impl() : /*mCurve("Curve"),*/ mInitialValue(), mPointsMap()
-  {
-    // todo : move this else where ...
-    TTFoundationInit("/usr/local/jamoma/");
-    TTModularInit("/usr/local/jamoma/");
-    TTScoreInit("/usr/local/jamoma/");
-    
-    mCurve = TTObject("Curve");
-  };
-  
-  Impl(const Impl & other) = default;
-  ~Impl() = default;
-  
-  // edit parameters for the mPointsMap as a value containing <x1 y1 c1 x2 y2 c2 x3 y3 c3 ...>
-  TTValue editParameters()
-  {
-    TTValue   parameters;
-    auto      it = mPointsMap.begin();
-    
-    parameters.resize((mPointsMap.size() + 1) * 3);
-    
-    for (TTUInt32 i = 0; i <= mPointsMap.size(); i++)
-    {
-      // edit xi yi
-      if (i == 0) {
-          
-        parameters[0] = 0.;
-        parameters[1] = mInitialValue;
-      }
-      else {
-        
-        parameters[i*3] = TTFloat64(it->first);
-        parameters[i*3+1] = TTFloat64(it->second.first);
-          
-        // go to next curve segment
-        it++;
-      }
-        
-      if (it == mPointsMap.end()) {
-        parameters[i*3+2] = TTFloat64(1.);
-        break;
-      }
-      
-      // edit ci
-      if (it->second.second.getType() == CurveSegment<T>::CurveSegmentType::POWER)
-        // TODO : parameters[i+2] = TTFloat64(ExponentialCurveSegment(it->second->second)->getCoefficient());
-        parameters[i*3+2] = TTFloat64(1.);
-      else
-        parameters[i*3+2] = TTFloat64(1.);
-    }
-    
-    return parameters;
-  }
-  
-};
 
 template <typename T>
-Curve<T>::Curve() :
-pimpl(new Impl)
+shared_ptr<Curve<T>> Curve<T>::create()
+{
+  return nullptr; // make_shared<JamomaCurve>();
+}
+
+template <typename T>
+JamomaCurve<T>::JamomaCurve()
 {}
 
 template <typename T>
-Curve<T>::Curve(const Curve & other) :
-pimpl(new Impl(*(other.pimpl)))
+JamomaCurve<T>::JamomaCurve(const JamomaCurve * other)
 {}
 
 template <typename T>
-Curve<T>::~Curve()
+JamomaCurve<T>::~JamomaCurve()
+{}
+
+template <typename T>
+shared_ptr<Curve<T>> JamomaCurve<T>::clone() const
 {
-  delete pimpl;
+  return make_shared<JamomaCurve>(this);
+}
+
+# pragma mark -
+# pragma mark Execution
+
+template <typename T>
+T JamomaCurve<T>::valueAt(double) const
+{
+  
+}
+
+# pragma mark -
+# pragma mark Accessors
+
+template <typename T>
+T JamomaCurve<T>::getInitialValue() const
+{
+  
 }
 
 template <typename T>
-Curve<T>& Curve<T>::operator= (const Curve & other)
+void JamomaCurve<T>::setInitialValue(const T)
 {
-  delete pimpl;
-  pimpl = new Impl(*(other.pimpl));
-  return *this;
-}
-
-// Iterators
-
-// todo ...
-
-template <typename T>
-bool Curve<T>::addPoint(double abscissa, T value, CurveSegment<T> & segment)
-{
-  pair <T,CurveSegment<T>&> pair(value, segment);
   
-  // update the points map
-  pimpl->mPointsMap.emplace(abscissa, pair);
-  
-  // update the internal curve object
-  return pimpl->mCurve.set("functionParameters", pimpl->editParameters()) == kTTErrNone;
 }
 
 template <typename T>
-bool Curve<T>::removePoint(double abscissa)
+map<double, std::pair<T, std::shared_ptr<CurveSegment<T>>>> JamomaCurve<T>::getPointsMap() const
 {
-  // update the points map
-  if (pimpl->mPointsMap.erase(abscissa) > 0) {
-    
-    // update the internal curve object
-    pimpl->mCurve.set("functionParameters", pimpl->editParameters());
-    
-    return true;
-  }
-  
+  return mMap;
+}
+
+# pragma mark -
+# pragma mark CurveSegments
+
+template <typename T>
+bool JamomaCurve<T>::addSegment(double, T, CurveSegment<T>&)
+{
   return false;
 }
 
 template <typename T>
-T Curve<T>::getInitialValue() const
+bool JamomaCurve<T>::removeSegment(double)
 {
-  return pimpl->mInitialValue;
-}
-
-template <typename T>
-void Curve<T>::setInitialValue(const T value)
-{
-  pimpl->mInitialValue = value;
-  
-  // update the internal curve object
-  pimpl->mCurve.set("functionParameters", pimpl->editParameters());
-}
-
-template <typename T>
-map<double, pair<T, CurveSegment<T>&>> Curve<T>::getPointsMap() const
-{
-  return pimpl->mPointsMap;
-}
-
-template <typename T>
-T Curve<T>::valueAt(double abscissa) const
-{
-  if (pimpl->mPointsMap.size() > 0) {
-    TTValue out;
-    pimpl->mCurve.send("ValueAt", TTFloat64(abscissa), out);
-    return T(out[0]);
-  }
-    
-  return pimpl->mInitialValue;
-}
-
-// explicit instantiation for double
-template class Curve<double>;
-
+  return false;
 }

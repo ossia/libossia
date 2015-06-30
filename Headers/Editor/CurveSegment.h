@@ -15,36 +15,54 @@
 #pragma once
 #include <memory>
 
-namespace OSSIA {
+namespace OSSIA
+{
 
-  template <typename T>
-  class Curve;
+template <typename T>
+class Curve;
 
-  template <typename T>
-  class CurveSegment {
+template <typename T>
+class CurveSegment
+{
 
-  public:
-
-    // Constructor, Destructor
-    virtual ~CurveSegment() = default;
-
-    # pragma mark -
-# pragma mark Navigation
-    virtual std::shared_ptr<Curve<T>> getParent() const = 0;
-
-    // Computation
-    virtual T valueAt(double) const = 0; // Between 0. and 1.
-
-    // Curve segment types
-    enum class CurveSegmentType {
-      IMPULSE,
-      LINEAR,
-      POWER
-    };
-
-    virtual CurveSegmentType getType() const = 0;
-
+public:
+  
+# pragma mark -
+# pragma mark Enumerations
+  
+  /*! type of segment */
+  enum class Type
+  {
+    IMPULSE,
+    LINEAR,
+    POWER
   };
 
+# pragma mark -
+# pragma mark Life cycle
+  
+  /*! destructor */
+  virtual ~CurveSegment() = default;
+ 
+# pragma mark -
+# pragma mark Execution
+  
+  /*! get value at an abscissa
+   \param double abscissa between 0. and 1.
+   \return T value */
+  virtual T valueAt(double) const = 0;
+
+# pragma mark -
+# pragma mark Accessors
+  
+  /* get the type of the segment 
+   \return #Type */
+  virtual Type getType() const = 0;
+  
+  /*! get the curve where the segment is
+   \return std::shared_ptr<Curve<T>> */
+  virtual std::shared_ptr<Curve<T>> getParent() const = 0;
+  
+};
 }
 

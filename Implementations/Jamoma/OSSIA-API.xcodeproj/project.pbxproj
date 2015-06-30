@@ -20,6 +20,8 @@
 		461116681B3049AF00D6C968 /* Value.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Value.h; sourceTree = "<group>"; };
 		461116691B304B2600D6C968 /* Domain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Domain.h; sourceTree = "<group>"; };
 		463DC5A61B42929000EEF0CB /* JamomaTimeProcess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaTimeProcess.h; sourceTree = "<group>"; };
+		463DC5A81B42B7AC00EEF0CB /* JamomaCurve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaCurve.h; sourceTree = "<group>"; };
+		463DC5AB1B42BF6A00EEF0CB /* JamomaCurveSegmentLinear.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaCurveSegmentLinear.h; sourceTree = "<group>"; };
 		464201CE19BF370300893C87 /* CurveSegmentLinear.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentLinear.h; sourceTree = "<group>"; };
 		464258761B26EC7900324157 /* JamomaScenario.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaScenario.h; sourceTree = "<group>"; };
 		464D5F5E1B297CFB001C22E6 /* JamomaTimeNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaTimeNode.h; sourceTree = "<group>"; };
@@ -112,6 +114,14 @@
 				4689BAE31ABA223800D1BA4E /* Protocol.h */,
 			);
 			path = Network;
+			sourceTree = "<group>";
+		};
+		463DC5AA1B42BF6A00EEF0CB /* CurveSegment */ = {
+			isa = PBXGroup;
+			children = (
+				463DC5AB1B42BF6A00EEF0CB /* JamomaCurveSegmentLinear.h */,
+			);
+			path = CurveSegment;
 			sourceTree = "<group>";
 		};
 		464201CA19BF28F300893C87 /* CurveSegment */ = {
@@ -214,6 +224,8 @@
 			children = (
 				464D5F601B29C0D5001C22E6 /* JamomaAutomation.h */,
 				46995FA61B32A9CA00BDF2C8 /* JamomaClock.h */,
+				463DC5A81B42B7AC00EEF0CB /* JamomaCurve.h */,
+				463DC5AA1B42BF6A00EEF0CB /* CurveSegment */,
 				46995FA31B31A42700BDF2C8 /* JamomaDomain.h */,
 				464258761B26EC7900324157 /* JamomaScenario.h */,
 				46D2C60D1B260B9900C04D8A /* JamomaTimeConstraint.h */,

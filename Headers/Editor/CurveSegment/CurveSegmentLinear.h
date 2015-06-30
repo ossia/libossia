@@ -16,26 +16,34 @@
 
 #include "Editor/CurveSegment.h"
 
-namespace OSSIA {
+namespace OSSIA
+{
 
-  template <typename T>
-  class CurveSegmentLinear : public CurveSegment<T> {
+template <typename T>
+class CurveSegmentLinear : public CurveSegment<T>
+{
 
-  public:
+public:
 
-    // Constructors, destructor, assignment
-    CurveSegmentLinear(Curve<T>*);
-    CurveSegmentLinear(const CurveSegmentLinear&);
-    virtual ~CurveSegmentLinear();
-    CurveSegmentLinear & operator= (const CurveSegmentLinear&);
+# pragma mark -
+# pragma mark Life cycle
+  
+  /*! constructor */
+  CurveSegmentLinear(Curve<T>*);
+  
+  /*! destructor */
+  virtual ~CurveSegmentLinear();
 
-    // Computation
-    virtual T valueAt(double) const override;
+# pragma mark -
+# pragma mark Execution
+  
+  virtual T valueAt(double) const override;
 
-    // Curve segment type
-    virtual typename CurveSegment<T>::CurveSegmentType getType() const override final
-    {return CurveSegment<T>::CurveSegmentType::LINEAR;}
+# pragma mark -
+# pragma mark Accessors
 
-  };
+  typename CurveSegment<T>::Type getType() const override final
+  {return CurveSegment<T>::Type::LINEAR;}
 
+};
 }

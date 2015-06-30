@@ -14,9 +14,10 @@
 
 #include "Editor/CurveSegment.h"
 
-namespace OSSIA {
-  
+namespace OSSIA
+{
+
 // explicit instantiation for double
 template class CurveSegment<double>;
-
+  
 }

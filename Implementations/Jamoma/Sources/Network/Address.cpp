@@ -144,7 +144,7 @@ public:
           
           vector<const Value*> tuple_min;
           vector<const Value*> tuple_max;
-          for (int i = 0; i < v.size(); i++)
+          for (unsigned long i = 0; i < v.size(); i++)
             tuple_min.push_back(new OSSIA::Float(range[0]));
             tuple_max.push_back(new OSSIA::Float(range[1]));
       

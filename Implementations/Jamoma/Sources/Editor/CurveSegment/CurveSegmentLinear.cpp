@@ -12,57 +12,25 @@
  * http://www.cecill.info
  */
 
-#include "Editor/CurveSegment/CurveSegmentLinear.h"
+#include "Editor/CurveSegment/JamomaCurveSegmentLinear.h"
 
-#include "TTCurve.h"
-
-#include "../Implementations/Jamoma/Sources/Editor/Curve.cpp" // because we use the parent curve into the segment (see : valueAt)
-
-namespace OSSIA {
-  
-template <typename T>
-class CurveSegmentLinear<T>::Impl {
-  
-public:
-  
-  Impl() {};
-  
-  Impl(const Impl & other) = default;
-  ~Impl() = default;
-  
-};
 
 template <typename T>
-CurveSegmentLinear<T>::CurveSegmentLinear(Curve<T> * parent) :
-CurveSegment<T>(parent),
-pimpl(new Impl)
+JamomaCurveSegmentLinear<T>::JamomaCurveSegmentLinear(Curve<T> * parent) :
+mParent(parent)
 {}
 
 template <typename T>
-CurveSegmentLinear<T>::CurveSegmentLinear(const CurveSegmentLinear & other) :
-CurveSegment<T>(other.getParent()),
-pimpl(new Impl(*(other.pimpl)))
+JamomaCurveSegmentLinear<T>::~JamomaCurveSegmentLinear()
 {}
 
-template <typename T>
-CurveSegmentLinear<T>::~CurveSegmentLinear()
-{
-  delete pimpl;
-}
+# pragma mark -
+# pragma mark Execution
 
 template <typename T>
-CurveSegmentLinear<T>& CurveSegmentLinear<T>::operator= (const CurveSegmentLinear & other)
+T JamomaCurveSegmentLinear<T>::valueAt(double abscissa) const
 {
-  delete pimpl;
-  pimpl = new Impl(*(other.pimpl));
-  return *this;
-}
-
-template <typename T>
-T CurveSegmentLinear<T>::valueAt(double abscissa) const
-{
-  TTValue   out;
-  TTFloat64 previousAbscissa = 0.;
+  double previousAbscissa = 0.;
 
   // get the previous point abscissa to add it to the given abscissa
   auto pointsMap = CurveSegment<T>::mParent->getPointsMap();
@@ -85,8 +53,19 @@ T CurveSegmentLinear<T>::valueAt(double abscissa) const
   
   return CurveSegment<T>::mParent->valueAt(previousAbscissa + abscissa);
 }
-  
+
+# pragma mark -
+# pragma mark Accessors
+
+template <typename T>
+shared_ptr<Curve<T>> JamomaCurveSegmentLinear<T>::getParent() const
+{
+  return mParent;
+}
+
+namespace OSSIA
+{
   // explicit instantiation for double
   template class CurveSegmentLinear<double>;
-
 }
+
