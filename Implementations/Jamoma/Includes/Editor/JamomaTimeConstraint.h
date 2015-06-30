@@ -20,10 +20,12 @@
 #include "Editor/TimeProcess.h"
 #include "Editor/TimeValue.h"
 
+#include "JamomaTimeProcess.h"
+
 using namespace OSSIA;
 using namespace std;
 
-class JamomaTimeConstraint : public TimeConstraint
+class JamomaTimeConstraint : public TimeConstraint, public enable_shared_from_this<JamomaTimeConstraint>
 {
 
 private:

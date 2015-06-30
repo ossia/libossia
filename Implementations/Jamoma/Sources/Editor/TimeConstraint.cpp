@@ -59,10 +59,7 @@ shared_ptr<TimeConstraint> JamomaTimeConstraint::clone() const
 void JamomaTimeConstraint::play(bool log, string name) const
 {
   for (const auto & timeProcess : timeProcesses())
-  {
-    timeProcess->getClock()->setDuration(mDuration);
     timeProcess->play();
-  }
 }
 
 # pragma mark -
@@ -124,6 +121,9 @@ void JamomaTimeConstraint::addTimeProcess(shared_ptr<TimeProcess> timeProcess)
     timeProcesses().push_back(timeProcess);
     mStartEvent->addState(timeProcess->getStartState());
     mEndEvent->addState(timeProcess->getEndState());
+    
+    JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
+    t->mParent = shared_from_this();
   }
 }
 
@@ -132,4 +132,7 @@ void JamomaTimeConstraint::removeTimeProcess(std::shared_ptr<TimeProcess> timePr
   timeProcesses().erase(find(timeProcesses().begin(), timeProcesses().end(), timeProcess));
   mStartEvent->removeState(timeProcess->getStartState());
   mEndEvent->removeState(timeProcess->getEndState());
+  
+  JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
+  t->mParent = nullptr;
 }

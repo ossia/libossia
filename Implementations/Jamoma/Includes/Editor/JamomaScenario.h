@@ -21,11 +21,13 @@
 #include "Editor/TimeProcess.h"
 #include "Editor/TimeValue.h"
 
+#include "JamomaTimeProcess.h"
+
 using namespace OSSIA;
 using namespace std;
 using namespace std::placeholders;
 
-class JamomaScenario : public Scenario
+class JamomaScenario : public Scenario, public JamomaTimeProcess
 {
 
 private:
@@ -34,7 +36,7 @@ private:
 # pragma mark Implementation specific
   
   ExecutionCallback           mCallback;
-  
+
   shared_ptr<State>           mStartState;        // this is the State stored into the TimeEvent where the Scenario starts (not the one stored into the TimeEvent of the first TimeNode)
   shared_ptr<State>           mEndState;          // this is the State stored into the TimeEvent where the Scenario ends (not the one stored into the TimeEvent of the second TimeNode)
   shared_ptr<State>           mCurrentState;      // this State is updated at each tick of the Clock and is returned by the state method
@@ -95,6 +97,8 @@ public:
   const shared_ptr<State> & getEndState() const override;
   
   const shared_ptr<Clock> & getClock() const override;
+  
+  const shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
   
 private:
   

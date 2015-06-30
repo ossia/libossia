@@ -50,6 +50,9 @@ shared_ptr<Automation<double>> JamomaAutomation::clone() const
 
 void JamomaAutomation::play(bool log, string name) const
 {
+  // setup clock duration with parent constraint duration
+  mClock->setDuration(mParent->getDuration());
+  
   mClock->go();
 }
 
@@ -106,6 +109,11 @@ const shared_ptr<State> & JamomaAutomation::getEndState() const
 const shared_ptr<Clock> & JamomaAutomation::getClock() const
 {
   return mClock;
+}
+
+const shared_ptr<TimeConstraint> & JamomaAutomation::getParentTimeConstraint() const
+{
+  return mParent;
 }
 
 void JamomaAutomation::ClockCallback(const TimeValue& position, const TimeValue& date)

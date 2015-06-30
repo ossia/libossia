@@ -15,16 +15,19 @@
 
 #include "Editor/Clock.h"
 #include "Editor/Automation.h"
+#include "Editor/TimeConstraint.h"
 #include "Editor/TimeNode.h"
 #include "Editor/TimeValue.h"
 #include "Editor/Value.h"
 #include "Network/Address.h"
 
+#include "JamomaTimeProcess.h"
+
 using namespace OSSIA;
 using namespace std;
 using namespace std::placeholders;
 
-class JamomaAutomation : public Automation<double>
+class JamomaAutomation : public Automation<double>, public JamomaTimeProcess
 {
   
 private:
@@ -91,6 +94,8 @@ public:
   const shared_ptr<State> & getEndState() const override;
   
   const shared_ptr<Clock> & getClock() const override;
+  
+  const shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
   
 private:
   

@@ -53,6 +53,9 @@ shared_ptr<Scenario> JamomaScenario::clone() const
 
 void JamomaScenario::play(bool log, string name) const
 {
+  // setup clock duration with parent constraint duration
+  mClock->setDuration(mParent->getDuration());
+  
   // reset internal State
   mCurrentState->stateElements().clear();
   
@@ -183,6 +186,11 @@ const shared_ptr<State> & JamomaScenario::getEndState() const
 const shared_ptr<Clock> & JamomaScenario::getClock() const
 {
   return mClock;
+}
+
+const shared_ptr<TimeConstraint> & JamomaScenario::getParentTimeConstraint() const
+{
+  return mParent;
 }
 
 # pragma mark -
