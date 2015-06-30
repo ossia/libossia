@@ -8,12 +8,15 @@
 # pragma mark -
 # pragma mark Life cycle
 
-shared_ptr<Scenario> Scenario::create(TimeProcess::ExecutionCallback callback,
-                                      shared_ptr<State> startState,
-                                      shared_ptr<State> endState,
-                                      shared_ptr<Clock> clock)
+namespace OSSIA
 {
-  return make_shared<JamomaScenario>(callback, startState, endState, clock);
+  shared_ptr<Scenario> Scenario::create(TimeProcess::ExecutionCallback callback,
+                                        shared_ptr<State> startState,
+                                        shared_ptr<State> endState,
+                                        shared_ptr<Clock> clock)
+  {
+    return make_shared<JamomaScenario>(callback, startState, endState, clock);
+  }
 }
 
 JamomaScenario::JamomaScenario(TimeProcess::ExecutionCallback callback,

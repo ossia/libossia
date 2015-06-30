@@ -42,7 +42,10 @@ public:
   }
 };
 
-shared_ptr<State> State::create()
+namespace OSSIA
 {
-  return make_shared<JamomaState>();
+  shared_ptr<State> State::create()
+  {
+    return make_shared<JamomaState>();
+  }
 }

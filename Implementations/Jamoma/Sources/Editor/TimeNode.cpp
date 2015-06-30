@@ -3,9 +3,12 @@
 # pragma mark -
 # pragma mark Life cycle
 
-shared_ptr<TimeNode> TimeNode::create()
+namespace OSSIA
 {
-  return make_shared<JamomaTimeNode>();
+  shared_ptr<TimeNode> TimeNode::create()
+  {
+    return make_shared<JamomaTimeNode>();
+  }
 }
 
 JamomaTimeNode::JamomaTimeNode()

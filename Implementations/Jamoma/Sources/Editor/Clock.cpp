@@ -7,13 +7,16 @@ using namespace OSSIA;
 # pragma mark -
 # pragma mark Life cycle
 
-std::shared_ptr<Clock> Clock::create(const TimeValue& duration,
-                                     const TimeValue& granularity,
-                                     const TimeValue& offset,
-                                     float speed,
-                                     bool external)
+namespace OSSIA
 {
-  return make_shared<JamomaClock>(duration, granularity, offset, speed, external);
+  shared_ptr<Clock> Clock::create(const TimeValue& duration,
+                                       const TimeValue& granularity,
+                                       const TimeValue& offset,
+                                       float speed,
+                                       bool external)
+  {
+    return make_shared<JamomaClock>(duration, granularity, offset, speed, external);
+  }
 }
 
 JamomaClock::JamomaClock(const TimeValue& duration,

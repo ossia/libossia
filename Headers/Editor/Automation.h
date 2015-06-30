@@ -48,12 +48,12 @@ public:
                                                std::shared_ptr<State> = State::create(),
                                                std::shared_ptr<Clock> = Clock::create());
   
+  /*! destructor */
+  virtual ~Automation() = default;
+  
   /*! clone */
   virtual std::shared_ptr<Automation<T>> clone() const = 0;
   
-  /*! destructor */
-  virtual ~Automation() = default;
-
 # pragma mark -
 # pragma mark Accessors
   

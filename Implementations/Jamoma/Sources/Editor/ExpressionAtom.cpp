@@ -64,7 +64,10 @@ public:
 
 };
 
-shared_ptr<ExpressionAtom> ExpressionAtom::create(const Value* expr1, Operator op, const Value* expr2)
+namespace OSSIA
 {
-  return make_shared<JamomaExpressionAtom>(expr1, op, expr2);
+  shared_ptr<ExpressionAtom> ExpressionAtom::create(const Value* expr1, Operator op, const Value* expr2)
+  {
+    return make_shared<JamomaExpressionAtom>(expr1, op, expr2);
+  }
 }

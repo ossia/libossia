@@ -3,31 +3,34 @@
 # pragma mark -
 # pragma mark Life cycle
 
-shared_ptr<TimeConstraint> TimeConstraint::create(shared_ptr<TimeEvent> startEvent,
-                                                  shared_ptr<TimeEvent> endEvent,
-                                                  const TimeValue& nominal,
-                                                  const TimeValue& min,
-                                                  const TimeValue& max)
+namespace OSSIA
 {
+  shared_ptr<TimeConstraint> TimeConstraint::create(shared_ptr<TimeEvent> startEvent,
+                                                    shared_ptr<TimeEvent> endEvent,
+                                                    const TimeValue& nominal,
+                                                    const TimeValue& min,
+                                                    const TimeValue& max)
+  {
     auto timeConstraint = make_shared<JamomaTimeConstraint>(startEvent, endEvent, nominal, min, max);
-
+    
     // store the TimeConstraint into the start event as a next constraint
     if (std::find(startEvent->nextTimeConstraints().begin(),
-             startEvent->nextTimeConstraints().end(),
-             timeConstraint) == startEvent->nextTimeConstraints().end())
+                  startEvent->nextTimeConstraints().end(),
+                  timeConstraint) == startEvent->nextTimeConstraints().end())
     {
-        startEvent->nextTimeConstraints().push_back(timeConstraint);
+      startEvent->nextTimeConstraints().push_back(timeConstraint);
     }
-
+    
     // store the TimeConstraint into the end event as a previous constraint
     if (std::find(endEvent->previousTimeConstraints().begin(),
-             endEvent->previousTimeConstraints().end(),
-             timeConstraint) == endEvent->previousTimeConstraints().end())
+                  endEvent->previousTimeConstraints().end(),
+                  timeConstraint) == endEvent->previousTimeConstraints().end())
     {
-        endEvent->previousTimeConstraints().push_back(timeConstraint);
+      endEvent->previousTimeConstraints().push_back(timeConstraint);
     }
-
+    
     return timeConstraint;
+  }
 }
 
 JamomaTimeConstraint::JamomaTimeConstraint(shared_ptr<TimeEvent> startEvent,

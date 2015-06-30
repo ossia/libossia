@@ -3,11 +3,14 @@
 # pragma mark -
 # pragma mark Life cycle
 
-shared_ptr<Domain> Domain::create(const Value * min,
-                                  const Value * max,
-                                  vector<const Value*> values)
+namespace OSSIA
 {
-  return make_shared<JamomaDomain>(min, max, values);
+  shared_ptr<Domain> Domain::create(const Value * min,
+                                    const Value * max,
+                                    vector<const Value*> values)
+  {
+    return make_shared<JamomaDomain>(min, max, values);
+  }
 }
 
 JamomaDomain::JamomaDomain(const Value * min,

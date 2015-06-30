@@ -36,7 +36,7 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  ExecutionCallback           mCallback;
+  TimeProcess::ExecutionCallback  mCallback;
   
   shared_ptr<State>           mStartState;
   shared_ptr<State>           mEndState;
@@ -62,7 +62,7 @@ public:
   
   ~JamomaAutomation();
   
-  shared_ptr<Automation> clone() const override;
+  shared_ptr<Automation<T>> clone() const override;
 
 # pragma mark -
 # pragma mark Execution

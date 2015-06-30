@@ -10,6 +10,9 @@ using namespace std;
 
 namespace OSSIA
 {
+  // explicit instantiation for double
+  template class Automation<double>;
+  
   template<>
   shared_ptr<Automation<double>> Automation<double>::create(TimeProcess::ExecutionCallback callback,
                                                            shared_ptr<State> startState,
@@ -73,6 +76,7 @@ shared_ptr<State> JamomaAutomation<T>::state() const
 # pragma mark -
 # pragma mark Accessors
 
+template <typename T>
 const Value * JamomaAutomation<T>::getStartValue() const
 {
   return value;
@@ -112,6 +116,7 @@ template <typename T>
 void JamomaAutomation<T>::setInputAddress(shared_ptr<Address>)
 {}
 
+template <typename T>
 const shared_ptr<State> & JamomaAutomation<T>::getStartState() const
 {
   return mStartState;
