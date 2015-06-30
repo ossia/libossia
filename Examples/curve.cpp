@@ -18,8 +18,8 @@ using namespace OSSIA;
 
 using namespace std;
 
-int main() {
-/*
+int main()
+{
     Curve<double> myCurve;
     CurveSegmentLinear<double> firstCurveSegment(&myCurve);
     CurveSegmentLinear<double> secondCurveSegment(&myCurve);
@@ -43,5 +43,4 @@ int main() {
     cout << "value at 1. = " << myCurve.valueAt(1.) << "\n";
     cout << "value at 1.5 = " << myCurve.valueAt(1.5) << "\n";
     cout << "value at 2. = " << myCurve.valueAt(2.) << "\n";
-    */
 }
