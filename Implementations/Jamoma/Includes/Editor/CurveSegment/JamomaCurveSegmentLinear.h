@@ -34,7 +34,7 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaCurveSegmentLinear(Curve<T>*);
+  JamomaCurveSegmentLinear(shared_ptr<Curve<T>>);
 
   ~JamomaCurveSegmentLinear();
   

@@ -10,39 +10,44 @@ using namespace std;
 
 namespace OSSIA
 {
-template<> shared_ptr<Automation<double>> Automation<double>::create(TimeProcess::ExecutionCallback callback,
-                                                                     shared_ptr<State> startState,
-                                                                     shared_ptr<State> endState,
-                                                                     shared_ptr<Clock> clock)
-{
-  return make_shared<JamomaAutomation>(callback, startState, endState, clock);
-}
+  template<>
+  shared_ptr<Automation<double>> Automation<double>::create(TimeProcess::ExecutionCallback callback,
+                                                           shared_ptr<State> startState,
+                                                           shared_ptr<State> endState,
+                                                           shared_ptr<Clock> clock)
+  {
+    return make_shared<JamomaAutomation<double>>(callback, startState, endState, clock);
+  }
 }
 
-JamomaAutomation::JamomaAutomation(TimeProcess::ExecutionCallback callback,
-                                   shared_ptr<State> startState,
-                                   shared_ptr<State> endState,
-                                   shared_ptr<Clock> clock) :
+template <typename T>
+JamomaAutomation<T>::JamomaAutomation(TimeProcess::ExecutionCallback callback,
+                                      shared_ptr<State> startState,
+                                      shared_ptr<State> endState,
+                                      shared_ptr<Clock> clock) :
 mCallback(callback),
 mStartState(startState),
 mEndState(endState),
 mClock(clock)
 {
   // pass callback to the Clock
-  Clock::ExecutionCallback clockCallback = std::bind(&JamomaAutomation::ClockCallback, this, _1, _2);
+  Clock::ExecutionCallback clockCallback = std::bind(&JamomaAutomation<T>::ClockCallback, this, _1, _2);
   mClock->setExecutionCallback(clockCallback);
 
   // build an internal State to update at each tick of the clock
   mCurrentState = State::create();
 }
 
-JamomaAutomation::JamomaAutomation(const JamomaAutomation * other)
+template <typename T>
+JamomaAutomation<T>::JamomaAutomation(const JamomaAutomation * other)
 {}
 
-JamomaAutomation::~JamomaAutomation()
+template <typename T>
+JamomaAutomation<T>::~JamomaAutomation()
 {}
 
-shared_ptr<Automation<double>> JamomaAutomation::clone() const
+template <typename T>
+shared_ptr<Automation<T>> JamomaAutomation<T>::clone() const
 {
   return make_shared<JamomaAutomation>(this);
 }
@@ -50,7 +55,8 @@ shared_ptr<Automation<double>> JamomaAutomation::clone() const
 # pragma mark -
 # pragma mark Execution
 
-void JamomaAutomation::play(bool log, string name) const
+template <typename T>
+void JamomaAutomation<T>::play(bool log, string name) const
 {
   // setup clock duration with parent constraint duration
   mClock->setDuration(mParent->getDuration());
@@ -58,7 +64,8 @@ void JamomaAutomation::play(bool log, string name) const
   mClock->go();
 }
 
-shared_ptr<State> JamomaAutomation::state() const
+template <typename T>
+shared_ptr<State> JamomaAutomation<T>::state() const
 {
   return mCurrentState;
 }
@@ -66,59 +73,70 @@ shared_ptr<State> JamomaAutomation::state() const
 # pragma mark -
 # pragma mark Accessors
 
-const Value * JamomaAutomation::getStartValue() const
+const Value * JamomaAutomation<T>::getStartValue() const
 {
   return value;
 }
 
-void JamomaAutomation::setStartValue(const Value*)
+template <typename T>
+void JamomaAutomation<T>::setStartValue(const Value*)
 {}
 
-const Value * JamomaAutomation::getEndValue() const
+template <typename T>
+const Value * JamomaAutomation<T>::getEndValue() const
 {
   return value;
 }
 
-void JamomaAutomation::setEndValue(const Value*)
+template <typename T>
+void JamomaAutomation<T>::setEndValue(const Value*)
 {}
 
-const shared_ptr<Curve<double>> & JamomaAutomation::getCurve() const
+template <typename T>
+const shared_ptr<Curve<T>> & JamomaAutomation<T>::getCurve() const
 {
   return curve;
 }
 
-void JamomaAutomation::setCurve(shared_ptr<Curve<double>>)
+template <typename T>
+void JamomaAutomation<T>::setCurve(shared_ptr<Curve<T>>)
 {}
 
-const shared_ptr<Address> & JamomaAutomation::getInputAddress() const
+template <typename T>
+const shared_ptr<Address> & JamomaAutomation<T>::getInputAddress() const
 {
   return addr;
 }
 
-void JamomaAutomation::setInputAddress(shared_ptr<Address>)
+template <typename T>
+void JamomaAutomation<T>::setInputAddress(shared_ptr<Address>)
 {}
 
-const shared_ptr<State> & JamomaAutomation::getStartState() const
+const shared_ptr<State> & JamomaAutomation<T>::getStartState() const
 {
   return mStartState;
 }
 
-const shared_ptr<State> & JamomaAutomation::getEndState() const
+template <typename T>
+const shared_ptr<State> & JamomaAutomation<T>::getEndState() const
 {
   return mEndState;
 }
 
-const shared_ptr<Clock> & JamomaAutomation::getClock() const
+template <typename T>
+const shared_ptr<Clock> & JamomaAutomation<T>::getClock() const
 {
   return mClock;
 }
 
-const shared_ptr<TimeConstraint> & JamomaAutomation::getParentTimeConstraint() const
+template <typename T>
+const shared_ptr<TimeConstraint> & JamomaAutomation<T>::getParentTimeConstraint() const
 {
   return mParent;
 }
 
-void JamomaAutomation::ClockCallback(const TimeValue& position, const TimeValue& date)
+template <typename T>
+void JamomaAutomation<T>::ClockCallback(const TimeValue& position, const TimeValue& date)
 {
   (mCallback)(position, date, mCurrentState);
 }

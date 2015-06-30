@@ -28,17 +28,14 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  /*! constructor */
-  CurveSegmentLinear(Curve<T>*);
+  /*! factory
+   \param std::shared_ptr<Curve<T>> parent
+   \return std::shared_ptr<CurveSegmentLinear<T>> */
+  static std::shared_ptr<CurveSegmentLinear<T>> create(std::shared_ptr<Curve<T>>);
   
   /*! destructor */
-  virtual ~CurveSegmentLinear();
-
-# pragma mark -
-# pragma mark Execution
+  virtual ~CurveSegmentLinear() = default;
   
-  virtual T valueAt(double) const override;
-
 # pragma mark -
 # pragma mark Accessors
 

@@ -76,9 +76,9 @@ public:
   /*! add a point to the curve
    \param double point abscissa between 0. and 1.
    \param T point value
-   \param #CurveSegment<T> segment
+   \param std::shared_ptr<#CurveSegment<T>> segment
    \return bool */
-  virtual bool addPoint(double, T, CurveSegment<T>&) = 0;
+  virtual bool addPoint(double, T, std::shared_ptr<CurveSegment<T>>) = 0;
   
   /*! remove a point from the curve
    \param double point abscissa between 0. and 1.

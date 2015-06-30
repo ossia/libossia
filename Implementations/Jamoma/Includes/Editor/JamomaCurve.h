@@ -27,7 +27,7 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  map<double, std::pair<T, std::shared_ptr<CurveSegment<T>>>> mMap;
+  map<double, pair<T, shared_ptr<CurveSegment<T>>>> mMap;
   
 public:
   
@@ -54,12 +54,12 @@ public:
   
   void setInitialValue(const T) override;
   
-  map<double, std::pair<T, std::shared_ptr<CurveSegment<T>>>> getPointsMap() const override;
+  map<double, pair<T, shared_ptr<CurveSegment<T>>>> getPointsMap() const override;
   
 # pragma mark -
 # pragma mark CurveSegments
   
-  bool addPoint(double, T, CurveSegment<T>&) override;
+  bool addPoint(double, T, shared_ptr<CurveSegment<T>>) override;
   
   bool removePoint(double) override;
 

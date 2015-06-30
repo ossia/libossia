@@ -52,7 +52,6 @@
 		46A4923119C2E2D6003691A8 /* CurveSegmentPower.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentPower.cpp; sourceTree = "<group>"; };
 		46BA2A5B19C09A21009630B5 /* Curve.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Curve.cpp; sourceTree = "<group>"; };
 		46BA2A5D19C09A21009630B5 /* CurveSegmentLinear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentLinear.cpp; sourceTree = "<group>"; };
-		46BA2A5F19C09A21009630B5 /* CurveSegment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegment.cpp; sourceTree = "<group>"; };
 		46BA2A6019C09A21009630B5 /* Scenario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scenario.cpp; sourceTree = "<group>"; };
 		46D2C60D1B260B9900C04D8A /* JamomaTimeConstraint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaTimeConstraint.h; sourceTree = "<group>"; };
 		46D435DA1AB731330041D8AF /* Automation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Automation.cpp; sourceTree = "<group>"; };
@@ -186,7 +185,6 @@
 				46D435DA1AB731330041D8AF /* Automation.cpp */,
 				4689BAE41ABA24B700D1BA4E /* Clock.cpp */,
 				46BA2A5B19C09A21009630B5 /* Curve.cpp */,
-				46BA2A5F19C09A21009630B5 /* CurveSegment.cpp */,
 				46BA2A5C19C09A21009630B5 /* CurveSegment */,
 				46995FA21B31A22200BDF2C8 /* Domain.cpp */,
 				46D435DB1AB735220041D8AF /* ExpressionAtom.cpp */,

@@ -8,11 +8,16 @@ using namespace std;
 # pragma mark -
 # pragma mark Life cycle
 
-
-template <typename T>
-shared_ptr<Curve<T>> Curve<T>::create()
+namespace OSSIA
 {
-  return nullptr; // make_shared<JamomaCurve>();
+  // explicit instantiation for double
+  template class Curve<double>;
+  
+  template <>
+  shared_ptr<Curve<double>> Curve<double>::create()
+  {
+    return make_shared<JamomaCurve<double>>();
+  }
 }
 
 template <typename T>
@@ -58,7 +63,7 @@ void JamomaCurve<T>::setInitialValue(const T)
 }
 
 template <typename T>
-map<double, std::pair<T, std::shared_ptr<CurveSegment<T>>>> JamomaCurve<T>::getPointsMap() const
+map<double, pair<T, shared_ptr<CurveSegment<T>>>> JamomaCurve<T>::getPointsMap() const
 {
   return mMap;
 }
@@ -67,7 +72,7 @@ map<double, std::pair<T, std::shared_ptr<CurveSegment<T>>>> JamomaCurve<T>::getP
 # pragma mark CurveSegments
 
 template <typename T>
-bool JamomaCurve<T>::addPoint(double, T, CurveSegment<T>&)
+bool JamomaCurve<T>::addPoint(double, T, shared_ptr<CurveSegment<T>>)
 {
   return false;
 }

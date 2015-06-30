@@ -14,9 +14,23 @@
 
 #include "Editor/CurveSegment/JamomaCurveSegmentLinear.h"
 
+# pragma mark -
+# pragma mark Life Cycle
+
+namespace OSSIA
+{
+  // explicit instantiation for double
+  template class CurveSegmentLinear<double>;
+  
+  template <>
+  shared_ptr<CurveSegmentLinear<double>> CurveSegmentLinear<double>::create(shared_ptr<Curve<double>> parent)
+  {
+    return make_shared<JamomaCurveSegmentLinear<double>>(parent);
+  }
+}
 
 template <typename T>
-JamomaCurveSegmentLinear<T>::JamomaCurveSegmentLinear(Curve<T> * parent) :
+JamomaCurveSegmentLinear<T>::JamomaCurveSegmentLinear(shared_ptr<Curve<T>> parent) :
 mParent(parent)
 {}
 
@@ -30,10 +44,11 @@ JamomaCurveSegmentLinear<T>::~JamomaCurveSegmentLinear()
 template <typename T>
 T JamomaCurveSegmentLinear<T>::valueAt(double abscissa) const
 {
+  /*
   double previousAbscissa = 0.;
 
   // get the previous point abscissa to add it to the given abscissa
-  auto pointsMap = CurveSegment<T>::mParent->getPointsMap();
+  auto pointsMap = mParent->getPointsMap();
   
   for (auto it = pointsMap.begin(); it != pointsMap.end(); it++)
   {
@@ -51,7 +66,8 @@ T JamomaCurveSegmentLinear<T>::valueAt(double abscissa) const
     }
   }
   
-  return CurveSegment<T>::mParent->valueAt(previousAbscissa + abscissa);
+  return mParent->valueAt(previousAbscissa + abscissa);
+   */
 }
 
 # pragma mark -
@@ -62,10 +78,3 @@ shared_ptr<Curve<T>> JamomaCurveSegmentLinear<T>::getParent() const
 {
   return mParent;
 }
-
-namespace OSSIA
-{
-  // explicit instantiation for double
-  template class CurveSegmentLinear<double>;
-}
-

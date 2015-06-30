@@ -27,7 +27,8 @@ using namespace OSSIA;
 using namespace std;
 using namespace std::placeholders;
 
-class JamomaAutomation : public Automation<double>, public JamomaTimeProcess
+template <typename T>
+class JamomaAutomation : public Automation<T>, public JamomaTimeProcess
 {
   
 private:
@@ -42,7 +43,7 @@ private:
   shared_ptr<State>           mCurrentState;
   shared_ptr<Clock>           mClock;
   
-  shared_ptr<Curve<double>>   curve;
+  shared_ptr<Curve<T>>        curve;
   shared_ptr<Address>         addr;
   shared_ptr<Address>         element;
   Value*                      value;
@@ -81,9 +82,9 @@ public:
   
   void setEndValue(const Value*) override;
   
-  const shared_ptr<Curve<double>> & getCurve() const override;
+  const shared_ptr<Curve<T>> & getCurve() const override;
   
-  void setCurve(shared_ptr<Curve<double>>) override;
+  void setCurve(shared_ptr<Curve<T>>) override;
   
   const shared_ptr<Address> & getInputAddress() const override;
 
