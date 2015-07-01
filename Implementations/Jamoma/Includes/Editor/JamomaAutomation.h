@@ -48,8 +48,7 @@ public:
   
   JamomaAutomation(TimeProcess::ExecutionCallback,
                    shared_ptr<State>,
-                   shared_ptr<State>,
-                   shared_ptr<Clock>);
+                   shared_ptr<State>);
   
   JamomaAutomation(const JamomaAutomation * other);
   

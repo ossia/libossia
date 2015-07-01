@@ -12,18 +12,16 @@ namespace OSSIA
 {
   shared_ptr<Scenario> Scenario::create(TimeProcess::ExecutionCallback callback,
                                         shared_ptr<State> startState,
-                                        shared_ptr<State> endState,
-                                        shared_ptr<Clock> clock)
+                                        shared_ptr<State> endState)
   {
-    return make_shared<JamomaScenario>(callback, startState, endState, clock);
+    return make_shared<JamomaScenario>(callback, startState, endState);
   }
 }
 
 JamomaScenario::JamomaScenario(TimeProcess::ExecutionCallback callback,
                                shared_ptr<State> startState,
-                               shared_ptr<State> endState,
-                               shared_ptr<Clock> clock) :
-JamomaTimeProcess(callback, startState, endState, clock)
+                               shared_ptr<State> endState) :
+JamomaTimeProcess(callback, startState, endState)
 {
   // create the start and the end TimeNodes
   mTimeNodes.push_back(TimeNode::create());
@@ -35,7 +33,7 @@ JamomaTimeProcess(callback, startState, endState, clock)
 }
 
 JamomaScenario::JamomaScenario(const JamomaScenario * other) :
-JamomaTimeProcess(other->mCallback, other->mStartState, other->mEndState, other->mClock)
+JamomaTimeProcess(other->mCallback, other->mStartState, other->mEndState)
 {}
 
 JamomaScenario::~JamomaScenario()

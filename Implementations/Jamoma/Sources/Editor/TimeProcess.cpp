@@ -8,12 +8,11 @@ using namespace std;
 
 JamomaTimeProcess::JamomaTimeProcess(TimeProcess::ExecutionCallback callback,
                                      shared_ptr<State> startState,
-                                     shared_ptr<State> endState,
-                                     shared_ptr<Clock> clock) :
+                                     shared_ptr<State> endState) :
 mCallback(callback),
 mStartState(startState),
-mEndState(endState),
-mClock(clock)
+mEndState(endState)
 {
   mCurrentState = State::create();
+  mClock = Clock::create();
 }

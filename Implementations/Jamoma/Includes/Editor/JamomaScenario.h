@@ -47,8 +47,7 @@ public:
   
   JamomaScenario(TimeProcess::ExecutionCallback,
                  shared_ptr<State>,
-                 shared_ptr<State>,
-                 shared_ptr<Clock>);
+                 shared_ptr<State>);
   
   JamomaScenario(const JamomaScenario * other);
   

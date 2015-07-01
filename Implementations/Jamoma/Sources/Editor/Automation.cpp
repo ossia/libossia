@@ -16,19 +16,17 @@ namespace OSSIA
   template<>
   shared_ptr<Automation<double>> Automation<double>::create(TimeProcess::ExecutionCallback callback,
                                                            shared_ptr<State> startState,
-                                                           shared_ptr<State> endState,
-                                                           shared_ptr<Clock> clock)
+                                                           shared_ptr<State> endState)
   {
-    return make_shared<JamomaAutomation<double>>(callback, startState, endState, clock);
+    return make_shared<JamomaAutomation<double>>(callback, startState, endState);
   }
 }
 
 template <typename T>
 JamomaAutomation<T>::JamomaAutomation(TimeProcess::ExecutionCallback callback,
                                       shared_ptr<State> startState,
-                                      shared_ptr<State> endState,
-                                      shared_ptr<Clock> clock) :
-JamomaTimeProcess(callback, startState, endState, clock)
+                                      shared_ptr<State> endState) :
+JamomaTimeProcess(callback, startState, endState)
 {
   // pass callback to the Clock
   Clock::ExecutionCallback clockCallback = std::bind(&JamomaAutomation<T>::ClockCallback, this, _1, _2);
@@ -37,7 +35,7 @@ JamomaTimeProcess(callback, startState, endState, clock)
 
 template <typename T>
 JamomaAutomation<T>::JamomaAutomation(const JamomaAutomation * other) :
-JamomaTimeProcess(other->mCallback, other->mStartState, other->mEndState, other->mClock)
+JamomaTimeProcess(other->mCallback, other->mStartState, other->mEndState)
 {}
 
 template <typename T>

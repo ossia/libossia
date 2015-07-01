@@ -13,6 +13,7 @@
 
 #pragma once
 
+#include "Editor/Clock.h"
 #include "Editor/State.h"
 #include "Editor/TimeProcess.h"
 
@@ -49,10 +50,8 @@ public:
   /*! constructor
   \param #TimeProcess::ExecutionCallback the function to use to be notified at each step
   \param std::shared_ptr<#State> the state at start
-  \param std::shared_ptr<#State> the state at end
-  \param std::shared_ptr<#Clock> the clock use to run */
+  \param std::shared_ptr<#State> the state at end */
   JamomaTimeProcess(TimeProcess::ExecutionCallback,
                     shared_ptr<State>,
-                    shared_ptr<State>,
-                    shared_ptr<Clock>);
+                    shared_ptr<State>);
 };

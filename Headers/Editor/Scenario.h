@@ -36,12 +36,10 @@ public:
    \param #TimeProcess::ExecutionCallback the function to use to be notified at each step
    \param std::shared_ptr<#State> the state at start
    \param std::shared_ptr<#State> the state at end
-   \param std::shared_ptr<#Clock> the clock use to run
    \return std::shared_ptr<#Scenario> */
   static std::shared_ptr<Scenario> create(TimeProcess::ExecutionCallback,
                                           std::shared_ptr<State> = State::create(),
-                                          std::shared_ptr<State> = State::create(),
-                                          std::shared_ptr<Clock> = Clock::create());
+                                          std::shared_ptr<State> = State::create());
 
   /*! clone */
   virtual std::shared_ptr<Scenario> clone() const = 0;
