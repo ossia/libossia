@@ -41,7 +41,7 @@ public:
 # pragma mark -
 # pragma mark Execution
 
-  T valueAt(double) const override;
+  T valueAt(double, T) const override;
   
 # pragma mark -
 # pragma mark Accessors

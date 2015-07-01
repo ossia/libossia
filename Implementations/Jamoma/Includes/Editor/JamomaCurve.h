@@ -27,7 +27,8 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  map<double, pair<T, shared_ptr<CurveSegment<T>>>> mMap;
+  T mInitialValue;
+  map<double, pair<T, shared_ptr<CurveSegment<T>>>> mPointsMap;
   
 public:
   

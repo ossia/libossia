@@ -12,13 +12,14 @@
  * http://www.cecill.info
  */
 
+#include "Editor/JamomaCurve.h"
 #include "Editor/CurveSegment/JamomaCurveSegmentLinear.h"
 
 # pragma mark -
 # pragma mark Life Cycle
 
 namespace OSSIA
-{
+{  
   // explicit instantiation for double
   template class CurveSegmentLinear<double>;
   
@@ -42,32 +43,9 @@ JamomaCurveSegmentLinear<T>::~JamomaCurveSegmentLinear()
 # pragma mark Execution
 
 template <typename T>
-T JamomaCurveSegmentLinear<T>::valueAt(double abscissa) const
+T JamomaCurveSegmentLinear<T>::valueAt(double abscissa, T target) const
 {
-  /*
-  double previousAbscissa = 0.;
-
-  // get the previous point abscissa to add it to the given abscissa
-  auto pointsMap = mParent->getPointsMap();
-  
-  for (auto it = pointsMap.begin(); it != pointsMap.end(); it++)
-  {
-    // when this curve is found
-    if (&(it->second.second) == dynamic_cast<const CurveSegment<T>*>(this))
-    {
-      // get the previous point abscissa
-      if (it != pointsMap.begin())
-      {
-        it--;
-        previousAbscissa = it->first;
-      }
-      
-      break;
-    }
-  }
-  
-  return mParent->valueAt(previousAbscissa + abscissa);
-   */
+  return abscissa * target;
 }
 
 # pragma mark -

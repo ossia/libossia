@@ -1,4 +1,5 @@
 #include "Editor/JamomaCurve.h"
+#include "Editor/CurveSegment/JamomaCurveSegmentLinear.h"
 
 #include <iostream> //! \todo to remove. only here for debug purpose
 
@@ -42,9 +43,32 @@ shared_ptr<Curve<T>> JamomaCurve<T>::clone() const
 # pragma mark Execution
 
 template <typename T>
-T JamomaCurve<T>::valueAt(double) const
+T JamomaCurve<T>::valueAt(double abscissa) const
 {
+  double lastAbscissa = 0.;
+  T lastValue = mInitialValue;
   
+  for (auto it = mPointsMap.begin(); it != mPointsMap.end(); it++)
+  {
+    if (abscissa > lastAbscissa &&
+        abscissa <= it->first)
+    {
+      double segmentAbscissa = (abscissa - lastAbscissa) / (it->first - lastAbscissa);
+      T segmentDistance = it->second.first - lastValue;
+      
+      lastValue += it->second.second->valueAt(segmentAbscissa, segmentDistance);
+      break;
+    }
+    else if (abscissa > it->first)
+    {
+      lastAbscissa = it->first;
+      lastValue = it->second.first;
+    }
+    else
+      break;
+  }
+  
+  return lastValue;
 }
 
 # pragma mark -
@@ -53,32 +77,38 @@ T JamomaCurve<T>::valueAt(double) const
 template <typename T>
 T JamomaCurve<T>::getInitialValue() const
 {
-  
+  return mInitialValue;
 }
 
 template <typename T>
-void JamomaCurve<T>::setInitialValue(const T)
+void JamomaCurve<T>::setInitialValue(const T value)
 {
-  
+  mInitialValue = value;
 }
 
 template <typename T>
 map<double, pair<T, shared_ptr<CurveSegment<T>>>> JamomaCurve<T>::getPointsMap() const
 {
-  return mMap;
+  return mPointsMap;
 }
 
 # pragma mark -
 # pragma mark CurveSegments
 
 template <typename T>
-bool JamomaCurve<T>::addPoint(double, T, shared_ptr<CurveSegment<T>>)
+bool JamomaCurve<T>::addPoint(double abscissa, T value, shared_ptr<CurveSegment<T>> segment)
 {
-  return false;
+  pair<T,shared_ptr<CurveSegment<T>>> p(value, segment);
+  
+  //! \todo check if there is already a point
+  
+  mPointsMap.emplace(abscissa, p);
+  
+  return true;
 }
 
 template <typename T>
-bool JamomaCurve<T>::removePoint(double)
+bool JamomaCurve<T>::removePoint(double abscissa)
 {
-  return false;
+  return mPointsMap.erase(abscissa) > 0;
 }
