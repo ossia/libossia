@@ -36,6 +36,7 @@ void local_test_callback(const Value * v);
 
 void main_scenario_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
 void first_automation_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
+void event_callback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus);
 
 shared_ptr<TimeConstraint> main_constraint;
 
@@ -82,8 +83,8 @@ int main()
                                                       &False);
     
     // create TimeEvents inside TimeNodes and make them interactive to the /play address
-    auto main_start_event = *(main_start_node->emplace(main_start_node->timeEvents().begin(), play_expression_start));
-    auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), play_expression_end));
+    auto main_start_event = *(main_start_node->emplace(main_start_node->timeEvents().begin(), &event_callback, play_expression_start));
+    auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), &event_callback, play_expression_end));
 
     // create the main Scenario
     auto main_scenario = Scenario::create(main_scenario_callback);
@@ -106,10 +107,10 @@ int main()
     auto first_end_node = TimeNode::create();
 
     // create a TimeEvent inside the scenario start node without Expression
-    auto first_start_event = *(scenario_start_node->emplace(scenario_start_node->timeEvents().begin()));
+    auto first_start_event = *(scenario_start_node->emplace(scenario_start_node->timeEvents().begin(), &event_callback));
     
     // create a TimeEvent inside the end node without Expression
-    auto first_end_event = *(first_end_node->emplace(first_end_node->timeEvents().begin()));
+    auto first_end_event = *(first_end_node->emplace(first_end_node->timeEvents().begin(), &event_callback));
     
     // create a TimeConstraint between the two TimeEvents
     TimeValue first_duration(1500.);
@@ -204,4 +205,9 @@ void first_automation_callback(const TimeValue& position, const TimeValue& date,
 {
     cout << "Automation : " << double(position) << ", " << double(date) << "\n";
     state->launch();
+}
+
+void event_callback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus)
+{
+    cout << "Event : " << "new status received" << "\n";
 }

@@ -13,8 +13,10 @@
  */
 
 #pragma once
+
 #include <memory>
 #include <string>
+#include <functional>
 
 namespace OSSIA
 {
@@ -44,13 +46,13 @@ public:
   virtual void play(bool log = false, std::string name = "") const = 0;
   
   /*! to get the process execution back
-   \param process clock position
-   \param process clock date
-   \param state */
+   \param const #TimeValue process clock position
+   \param const #TimeValue process clock date
+   \param std::shared_ptr<#State> */
   using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, std::shared_ptr<State>)>;
   
   /*! get the execution #State of the process
-   \return std::shared_ptr<State> */
+   \return std::shared_ptr<#State> */
   virtual std::shared_ptr<State> state() const = 0;
   
 # pragma mark -

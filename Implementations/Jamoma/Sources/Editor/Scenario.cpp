@@ -71,7 +71,7 @@ void JamomaScenario::play(bool log, string name) const
     for (auto& timeEvent : timeNode->timeEvents())
     {
       shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
-      e->mStatus = status;
+      e->setStatus(status);
       
       if (status == TimeEvent::Status::HAPPENED)
         mCurrentState->stateElements().push_back(e->getState());
@@ -216,7 +216,7 @@ void JamomaScenario::ClockCallback(const TimeValue& position, const TimeValue& d
       if (date > d && timeEvent->getStatus() == TimeEvent::Status::WAITING)
       {
         mCurrentState->stateElements().push_back(e->getState());
-        e->mStatus = TimeEvent::Status::HAPPENED;
+        e->setStatus(TimeEvent::Status::HAPPENED);
       }
     }
   }

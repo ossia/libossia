@@ -53,7 +53,7 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaAutomation(TimeProcess::ExecutionCallback callback,
+  JamomaAutomation(TimeProcess::ExecutionCallback,
                    shared_ptr<State>,
                    shared_ptr<State>,
                    shared_ptr<Clock>);

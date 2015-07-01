@@ -61,5 +61,6 @@ public:
 # pragma mark #TimeEvents
   
   iterator emplace(const_iterator,
+                   TimeEvent::ExecutionCallback,
                    shared_ptr<Expression> = nullptr) override;
 };

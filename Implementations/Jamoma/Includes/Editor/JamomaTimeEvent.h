@@ -34,17 +34,20 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  shared_ptr<TimeNode>    mTimeNode;
-  shared_ptr<State>       mState;
-  shared_ptr<Expression>  mExpression;
-  Status                  mStatus;
+  TimeEvent::ExecutionCallback  mCallback;
+  
+  shared_ptr<TimeNode>          mTimeNode;
+  shared_ptr<State>             mState;
+  shared_ptr<Expression>        mExpression;
+  Status                        mStatus;
 
 public:
   
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaTimeEvent(shared_ptr<TimeNode> aTimeNode = nullptr,
+  JamomaTimeEvent(TimeEvent::ExecutionCallback,
+                  shared_ptr<TimeNode> aTimeNode = nullptr,
                   shared_ptr<Expression> anExpression = nullptr);
   
   ~JamomaTimeEvent();

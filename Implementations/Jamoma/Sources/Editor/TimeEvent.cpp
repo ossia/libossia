@@ -4,8 +4,10 @@
 # pragma mark -
 # pragma mark Life cycle
 
-JamomaTimeEvent::JamomaTimeEvent(shared_ptr<TimeNode> aTimeNode,
+JamomaTimeEvent::JamomaTimeEvent(TimeEvent::ExecutionCallback callback,
+                                 shared_ptr<TimeNode> aTimeNode,
                                  shared_ptr<Expression> anExpression) :
+mCallback(callback),
 mTimeNode(aTimeNode),
 mExpression(anExpression)
 {
@@ -74,7 +76,8 @@ TimeEvent::Status JamomaTimeEvent::getStatus() const
 
 void JamomaTimeEvent::setStatus(Status status)
 {
+  Status lastStatus = mStatus;
   mStatus = status;
 
-  //! \todo notify it changes
+  (mCallback)(mStatus, lastStatus);
 }

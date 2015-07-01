@@ -16,6 +16,7 @@
 
 #include <memory>
 #include <string>
+#include <functional>
 
 #include "Misc/Container.h"
 
@@ -57,6 +58,11 @@ public:
   \param bool to enable log
   \param string to give a log file name where to write */
   virtual void play(bool log = false, std::string name = "") const = 0;
+  
+  /*! to get the event status back
+   \param #Status new status
+   \param #Status last status */
+  using ExecutionCallback = std::function<void(Status, Status)>;
   
 # pragma mark -
 # pragma mark Edition

@@ -17,6 +17,7 @@
 #include <memory>
 #include <string>
 
+#include "TimeEvent.h"
 #include "Misc/Container.h"
 
 namespace OSSIA
@@ -77,9 +78,11 @@ public:
   
   /*! create and store a #TimeEvent
    \param #Container<#TimeEvent>::const_iterator where to store the #TimeEvent
+   \param #TimeEvent::ExecutionCallback to get #TimeEvent's status back,
    \param std::shared<#Expression> an optionnal #Expression to apply to the #TimeEvent
    \return std::shared_ptr<#TimeEvent> */
   virtual iterator emplace(const_iterator,
+                           TimeEvent::ExecutionCallback,
                            std::shared_ptr<Expression> = nullptr) = 0;
   
   /*! get the #TimeEvents of the #TimeNode
