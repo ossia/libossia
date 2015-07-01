@@ -34,13 +34,6 @@ private:
   
 # pragma mark -
 # pragma mark Implementation specific
-  
-  ExecutionCallback           mCallback;
-
-  shared_ptr<State>           mStartState;        // this is the State stored into the TimeEvent where the Scenario starts (not the one stored into the TimeEvent of the first TimeNode)
-  shared_ptr<State>           mEndState;          // this is the State stored into the TimeEvent where the Scenario ends (not the one stored into the TimeEvent of the second TimeNode)
-  shared_ptr<State>           mCurrentState;      // this State is updated at each tick of the Clock and is returned by the state method
-  shared_ptr<Clock>           mClock;
 
   Container<TimeConstraint>   mTimeContraints;
   Container<TimeNode>         mTimeNodes;         // list of all TimeNodes of the scenario (the first is the start node, the second is the end node)

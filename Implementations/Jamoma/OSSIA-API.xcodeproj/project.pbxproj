@@ -31,6 +31,7 @@
 		46502A761AC2AB410067AB66 /* Node.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Node.cpp; sourceTree = "<group>"; };
 		4658445C1B14A95200612FBD /* Container.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
 		465FD2F11B0CEF220025B500 /* Container.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Container.cpp; sourceTree = "<group>"; };
+		467BE0381B442DC9006B772A /* TimeProcess.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeProcess.cpp; sourceTree = "<group>"; };
 		4689BADE1ABA20BD00D1BA4E /* Clock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
 		4689BADF1ABA223800D1BA4E /* Address.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Address.h; sourceTree = "<group>"; };
 		4689BAE11ABA223800D1BA4E /* Device.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Device.h; sourceTree = "<group>"; };
@@ -195,6 +196,7 @@
 				46D435DF1AB73D360041D8AF /* TimeConstraint.cpp */,
 				46D435E01AB73D360041D8AF /* TimeEvent.cpp */,
 				46D435E11AB73D360041D8AF /* TimeNode.cpp */,
+				467BE0381B442DC9006B772A /* TimeProcess.cpp */,
 				46D435E41AB73D360041D8AF /* TimeValue.cpp */,
 			);
 			path = Editor;

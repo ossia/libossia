@@ -36,13 +36,6 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  TimeProcess::ExecutionCallback  mCallback;
-  
-  shared_ptr<State>           mStartState;
-  shared_ptr<State>           mEndState;
-  shared_ptr<State>           mCurrentState;
-  shared_ptr<Clock>           mClock;
-  
   shared_ptr<Curve<T>>        curve;
   shared_ptr<Address>         addr;
   shared_ptr<Address>         element;

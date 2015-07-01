@@ -28,21 +28,16 @@ JamomaAutomation<T>::JamomaAutomation(TimeProcess::ExecutionCallback callback,
                                       shared_ptr<State> startState,
                                       shared_ptr<State> endState,
                                       shared_ptr<Clock> clock) :
-mCallback(callback),
-mStartState(startState),
-mEndState(endState),
-mClock(clock)
+JamomaTimeProcess(callback, startState, endState, clock)
 {
   // pass callback to the Clock
   Clock::ExecutionCallback clockCallback = std::bind(&JamomaAutomation<T>::ClockCallback, this, _1, _2);
   mClock->setExecutionCallback(clockCallback);
-
-  // build an internal State to update at each tick of the clock
-  mCurrentState = State::create();
 }
 
 template <typename T>
-JamomaAutomation<T>::JamomaAutomation(const JamomaAutomation * other)
+JamomaAutomation<T>::JamomaAutomation(const JamomaAutomation * other) :
+JamomaTimeProcess(other->mCallback, other->mStartState, other->mEndState, other->mClock)
 {}
 
 template <typename T>
