@@ -68,6 +68,24 @@ void JamomaAutomation<T>::play(bool log, string name) const
 }
 
 template <typename T>
+void JamomaAutomation<T>::stop() const
+{
+  mClock->stop();
+}
+
+template <typename T>
+void JamomaAutomation<T>::pause() const
+{
+  mClock->pause();
+}
+
+template <typename T>
+void JamomaAutomation<T>::resume() const
+{
+  mClock->resume();
+}
+
+template <typename T>
 shared_ptr<State> JamomaAutomation<T>::state() const
 {
   return mCurrentState;

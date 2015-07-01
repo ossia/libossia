@@ -107,6 +107,21 @@ void JamomaScenario::play(bool log, string name) const
   mClock->go();
 }
 
+void JamomaScenario::stop() const
+{
+  mClock->stop();
+}
+
+void JamomaScenario::pause() const
+{
+  mClock->pause();
+}
+
+void JamomaScenario::resume() const
+{
+  mClock->resume();
+}
+
 shared_ptr<State> JamomaScenario::state() const
 {
   return mCurrentState;

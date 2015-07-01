@@ -68,6 +68,12 @@ public:
   
   void play(bool log = false, string name = "") const override;
   
+  void stop() const override;
+  
+  void pause() const override;
+  
+  void resume() const override;
+  
   shared_ptr<State> state() const override;
   
 # pragma mark -

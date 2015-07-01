@@ -65,6 +65,24 @@ void JamomaTimeConstraint::play(bool log, string name) const
     timeProcess->play();
 }
 
+void JamomaTimeConstraint::stop() const
+{
+  for (const auto & timeProcess : timeProcesses())
+    timeProcess->stop();
+}
+
+void JamomaTimeConstraint::pause() const
+{
+  for (const auto & timeProcess : timeProcesses())
+    timeProcess->pause();
+}
+
+void JamomaTimeConstraint::resume() const
+{
+  for (const auto & timeProcess : timeProcesses())
+    timeProcess->resume();
+}
+
 # pragma mark -
 # pragma mark Accessors
 

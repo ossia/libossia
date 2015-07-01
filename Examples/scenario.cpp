@@ -169,8 +169,10 @@ int main()
     
     // play the Scenario
     local_play_address->sendValue(&True);
-
-    while (true)
+    
+    // wait the Scenario
+    //! \todo add TimeProcess::isRunning() to ease the access ?
+    while (main_scenario->getClock()->getRunning())
         ;
 }
 
@@ -182,7 +184,7 @@ void local_play_callback(const Value * v)
         if (b->value)
             main_constraint->play();
         else
-            ; //! main_constraint->stop(); \todo how to stop execution ?
+            main_constraint->stop();
     }
 }
 

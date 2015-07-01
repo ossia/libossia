@@ -44,6 +44,15 @@ public:
    \param bool to enable log
    \param string to give a log file name where to write */
   virtual void play(bool log = false, std::string name = "") const = 0;
+    
+  /*! stop the execution */
+  virtual void stop() const = 0;
+  
+  /*! pause the execution */
+  virtual void pause() const = 0;
+  
+  /*! resume the execution */
+  virtual void resume() const = 0;
   
   /*! to get the process execution back
    \param const #TimeValue process clock position
