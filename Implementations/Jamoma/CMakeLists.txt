@@ -26,6 +26,7 @@ file(GLOB_RECURSE SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/TimeEvent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/TimeValue.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/ExpressionAtom.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/TimeProcess.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/Automation.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Misc/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Includes/*.h"
