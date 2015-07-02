@@ -18,12 +18,23 @@
 #include <utility>
 #include <memory>
 
-#include "CurveAbstract.h"
 #include "TimeValue.h"
 #include "Misc/Container.h"
 
 namespace OSSIA
 {
+  
+class CurveAbstract
+{
+    
+public:
+    
+# pragma mark -
+# pragma mark Life cycle
+    
+  /*! destructor */
+  virtual ~CurveAbstract() = default;
+};
 
 template <typename T>
 class CurveSegment;
