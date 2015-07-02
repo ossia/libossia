@@ -28,7 +28,7 @@ private:
 # pragma mark Implementation specific
   
   T mInitialValue;
-  map<double, pair<T, shared_ptr<CurveSegment<T>>>> mPointsMap;
+  map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> mPointsMap;
   
 public:
   
@@ -46,7 +46,7 @@ public:
 # pragma mark -
 # pragma mark Execution
   
-  T valueAt(double) const override;
+  T valueAt(const TimeValue&) const override;
   
 # pragma mark -
 # pragma mark Accessors
@@ -55,13 +55,13 @@ public:
   
   void setInitialValue(const T) override;
   
-  map<double, pair<T, shared_ptr<CurveSegment<T>>>> getPointsMap() const override;
+  map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> getPointsMap() const override;
   
 # pragma mark -
 # pragma mark CurveSegments
   
-  bool addPoint(double, T, shared_ptr<CurveSegment<T>>) override;
+  bool addPoint(const TimeValue&, T, shared_ptr<CurveSegment<T>>) override;
   
-  bool removePoint(double) override;
+  bool removePoint(const TimeValue&) override;
 
 };

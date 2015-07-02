@@ -124,7 +124,7 @@ int main()
      */
     
     // create an Automation
-    auto first_automation = Automation<double>::create(first_automation_callback);
+    auto first_automation = Automation::create(first_automation_callback, local_test_address);
     
     // add it to the first TimeConstraint
     first_constraint->addTimeProcess(first_automation);
@@ -139,7 +139,7 @@ int main()
     auto first_end_message = Message::create(local_test_address, &one);
     first_automation->getEndState()->stateElements().push_back(first_end_message);
     
-/*
+/*!
     //! \todo create a curve
     
     //! \todo create an independent state into an event

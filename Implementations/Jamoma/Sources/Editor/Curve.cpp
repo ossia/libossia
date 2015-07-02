@@ -11,13 +11,31 @@ using namespace std;
 
 namespace OSSIA
 {
-  // explicit instantiation for double
-  template class Curve<double>;
+  // explicit instantiation for bool
+  template class Curve<bool>;
   
   template <>
-  shared_ptr<Curve<double>> Curve<double>::create()
+  shared_ptr<Curve<bool>> Curve<bool>::create()
   {
-    return make_shared<JamomaCurve<double>>();
+    return make_shared<JamomaCurve<bool>>();
+  }
+  
+  // explicit instantiation for int
+  template class Curve<int>;
+  
+  template <>
+  shared_ptr<Curve<int>> Curve<int>::create()
+  {
+    return make_shared<JamomaCurve<int>>();
+  }
+  
+  // explicit instantiation for float
+  template class Curve<float>;
+  
+  template <>
+  shared_ptr<Curve<float>> Curve<float>::create()
+  {
+    return make_shared<JamomaCurve<float>>();
   }
 }
 
@@ -43,7 +61,7 @@ shared_ptr<Curve<T>> JamomaCurve<T>::clone() const
 # pragma mark Execution
 
 template <typename T>
-T JamomaCurve<T>::valueAt(double abscissa) const
+T JamomaCurve<T>::valueAt(const TimeValue& abscissa) const
 {
   double lastAbscissa = 0.;
   T lastValue = mInitialValue;
@@ -52,11 +70,8 @@ T JamomaCurve<T>::valueAt(double abscissa) const
   {
     if (abscissa > lastAbscissa &&
         abscissa <= it->first)
-    {
-      double segmentAbscissa = (abscissa - lastAbscissa) / (it->first - lastAbscissa);
-      T segmentDistance = it->second.first - lastValue;
-      
-      lastValue += it->second.second->valueAt(segmentAbscissa, segmentDistance);
+    {      
+      lastValue = it->second.second->valueAt((abscissa - lastAbscissa) / (it->first - lastAbscissa), lastValue , it->second.first);
       break;
     }
     else if (abscissa > it->first)
@@ -87,7 +102,7 @@ void JamomaCurve<T>::setInitialValue(const T value)
 }
 
 template <typename T>
-map<double, pair<T, shared_ptr<CurveSegment<T>>>> JamomaCurve<T>::getPointsMap() const
+map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> JamomaCurve<T>::getPointsMap() const
 {
   return mPointsMap;
 }
@@ -96,7 +111,7 @@ map<double, pair<T, shared_ptr<CurveSegment<T>>>> JamomaCurve<T>::getPointsMap()
 # pragma mark CurveSegments
 
 template <typename T>
-bool JamomaCurve<T>::addPoint(double abscissa, T value, shared_ptr<CurveSegment<T>> segment)
+bool JamomaCurve<T>::addPoint(const TimeValue& abscissa, T value, shared_ptr<CurveSegment<T>> segment)
 {
   pair<T,shared_ptr<CurveSegment<T>>> p(value, segment);
   
@@ -108,7 +123,7 @@ bool JamomaCurve<T>::addPoint(double abscissa, T value, shared_ptr<CurveSegment<
 }
 
 template <typename T>
-bool JamomaCurve<T>::removePoint(double abscissa)
+bool JamomaCurve<T>::removePoint(const TimeValue& abscissa)
 {
   return mPointsMap.erase(abscissa) > 0;
 }

@@ -48,10 +48,11 @@ public:
 # pragma mark Execution
   
   /*! get value at an abscissa
-   \param double abscissa between 0. and 1.
-   \param T target value
+   \param const #TimeValue ratio between 0. and 1.
+   \param T segment start value
+   \param T segment end value
    \return T value */
-  virtual T valueAt(double, T) const = 0;
+  virtual T valueAt(const TimeValue&, T, T) const = 0;
 
 # pragma mark -
 # pragma mark Accessors

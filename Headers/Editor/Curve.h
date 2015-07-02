@@ -18,6 +18,8 @@
 #include <utility>
 #include <memory>
 
+#include "CurveAbstract.h"
+#include "TimeValue.h"
 #include "Misc/Container.h"
 
 namespace OSSIA
@@ -27,7 +29,7 @@ template <typename T>
 class CurveSegment;
 
 template <typename T>
-class Curve
+class Curve : public CurveAbstract
 {
 
 public:
@@ -51,9 +53,9 @@ public:
 # pragma mark Execution
   
   /*! get value at an abscissa
-   \param double abscissa between 0. and 1.
+   \param const TimeValue& abscissa between 0. and 1.
    \return T value */
-  virtual T valueAt(double) const = 0;
+  virtual T valueAt(const TimeValue&) const = 0;
 
 # pragma mark -
 # pragma mark Accessors
@@ -67,36 +69,36 @@ public:
   virtual void setInitialValue(const T) = 0;
   
   /*! get initial curve value
-   \return std::map<double, std::pair<T, std::shared_ptr<CurveSegment<T>>>> map of {abscissa, {value, previous segment} */
-  virtual std::map<double, std::pair<T, std::shared_ptr<CurveSegment<T>>>> getPointsMap() const = 0;
+   \return std::map<const TimeValue, std::pair<T, std::shared_ptr<CurveSegment<T>>>> map of {abscissa, {value, previous segment} */
+  virtual std::map<const TimeValue, std::pair<T, std::shared_ptr<CurveSegment<T>>>> getPointsMap() const = 0;
 
 # pragma mark -
 # pragma mark CurveSegments
   
   /*! add a point to the curve
-   \param double point abscissa between 0. and 1.
+   \param const TimeValue& point abscissa between 0. and 1.
    \param T point value
    \param std::shared_ptr<#CurveSegment<T>> segment
    \return bool */
-  virtual bool addPoint(double, T, std::shared_ptr<CurveSegment<T>>) = 0;
+  virtual bool addPoint(const TimeValue&, T, std::shared_ptr<CurveSegment<T>>) = 0;
   
   /*! remove a point from the curve
-   \param double point abscissa between 0. and 1.
+   \param const TimeValue& point abscissa between 0. and 1.
    \return bool */
-  virtual bool removePoint(double) = 0;
+  virtual bool removePoint(const TimeValue&) = 0;
 
-  /*! get curve segments of the curve
+  /*! get all segments of the curve
    \return #Container<#CurveSegment<T>> */
-  Container<CurveSegment<T>>& curveSegments()
-  { return m_curveSegments; }
+  Container<CurveSegment<T>>& segments()
+  { return m_segments; }
   
-  /*! get curve segments of the curve
+  /*! get all segments of the curve
    \return const #Container<#CurveSegment<T>> */
-  const Container<CurveSegment<T>>& curveSegments() const
-  { return m_curveSegments; }
+  const Container<CurveSegment<T>>& segments() const
+  { return m_segments; }
 
 private:
-  Container<CurveSegment<T>> m_curveSegments;
+  Container<CurveSegment<T>> m_segments;
 };
 
 }

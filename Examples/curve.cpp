@@ -20,9 +20,9 @@ using namespace std;
 
 int main()
 {
-    auto myCurve = Curve<double>::create();
-    auto firstCurveSegment = CurveSegmentLinear<double>::create(myCurve);
-    auto secondCurveSegment = CurveSegmentLinear<double>::create(myCurve);
+    auto myCurve = Curve<float>::create();
+    auto firstCurveSegment = CurveSegmentLinear<float>::create(myCurve);
+    auto secondCurveSegment = CurveSegmentLinear<float>::create(myCurve);
 
     cout << "*** test 1 ***" << "\n";
     myCurve->setInitialValue(0.);

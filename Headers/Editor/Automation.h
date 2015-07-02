@@ -25,10 +25,9 @@ namespace OSSIA
 
 class Address;
 class Value;
-template <typename T> class Curve;
+class CurveAbstract;
 class TimeValue;
 
-template <typename T>
 class Automation : public virtual TimeProcess
 {
   
@@ -39,41 +38,32 @@ public:
   
   /*! factory
    \param #TimeProcess::ExecutionCallback the function to use to be notified at each step
-   \param std::shared_ptr<#State> the state at start
-   \param std::shared_ptr<#State> the state at end
-   \return std::shared_ptr<#Automation<T>> */
-  static std::shared_ptr<Automation<T>> create(TimeProcess::ExecutionCallback,
-                                               std::shared_ptr<State> = State::create(),
-                                               std::shared_ptr<State> = State::create());
+   \param std::shared_ptr<#Address> to drive
+   \return std::shared_ptr<#Automation> */
+  static std::shared_ptr<Automation> create(TimeProcess::ExecutionCallback,
+                                            std::shared_ptr<Address>);
   
   /*! destructor */
   virtual ~Automation() = default;
   
   /*! clone */
-  virtual std::shared_ptr<Automation<T>> clone() const = 0;
+  virtual std::shared_ptr<Automation> clone() const = 0;
+  
+# pragma mark -
+# pragma mark Execution
+  
+  /*! \todo record */
   
 # pragma mark -
 # pragma mark Accessors
   
-  virtual const Value * getStartValue() const = 0; //TODO doublon avec Curve ?
-  virtual void setStartValue(const Value*) = 0;
+  Container<CurveAbstract>& curves()
+  { return m_curves; }
   
-  virtual const Value * getEndValue() const = 0;
-  virtual void setEndValue(const Value*) = 0;
-  
-  virtual const std::shared_ptr<Curve<T>> & getCurve() const = 0;
-  virtual void setCurve(std::shared_ptr<Curve<T>>) = 0;
-  
-  virtual const std::shared_ptr<Address> & getInputAddress() const = 0;
-  virtual void setInputAddress(std::shared_ptr<Address>) = 0;
-
-  Container<Address>& addresses()
-  { return m_addresses; }
-  
-  const Container<Address>& addresses() const
-  { return m_addresses; }
+  const Container<CurveAbstract>& curves() const
+  { return m_curves; }
 
 private:
-  Container<Address> m_addresses;
+  Container<CurveAbstract> m_curves;
 };
 }

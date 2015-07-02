@@ -18,8 +18,9 @@
 
 namespace OSSIA {
 
-  template <typename T>
-  class CurveSegmentPower : public CurveSegment<T> {
+template <typename T>
+class CurveSegmentPower : public CurveSegment<T> 
+{
 
   public:
 
@@ -30,7 +31,7 @@ namespace OSSIA {
     CurveSegmentPower & operator= (const CurveSegmentPower&);
 
     // Computation
-    virtual T valueAt(double) const override;
+    virtual T valueAt(const TimeValue&) const override;
 
     // Curve segment type
     virtual typename CurveSegment<T>::CurveSegmentType getType() const override final

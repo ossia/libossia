@@ -19,14 +19,32 @@
 # pragma mark Life Cycle
 
 namespace OSSIA
-{  
-  // explicit instantiation for double
-  template class CurveSegmentLinear<double>;
+{
+  // explicit instantiation for bool
+  template class CurveSegmentLinear<bool>;
   
   template <>
-  shared_ptr<CurveSegmentLinear<double>> CurveSegmentLinear<double>::create(shared_ptr<Curve<double>> parent)
+  shared_ptr<CurveSegmentLinear<bool>> CurveSegmentLinear<bool>::create(shared_ptr<Curve<bool>> parent)
   {
-    return make_shared<JamomaCurveSegmentLinear<double>>(parent);
+    return make_shared<JamomaCurveSegmentLinear<bool>>(parent);
+  }
+  
+  // explicit instantiation for int
+  template class CurveSegmentLinear<int>;
+  
+  template <>
+  shared_ptr<CurveSegmentLinear<int>> CurveSegmentLinear<int>::create(shared_ptr<Curve<int>> parent)
+  {
+    return make_shared<JamomaCurveSegmentLinear<int>>(parent);
+  }
+  
+  // explicit instantiation for float
+  template class CurveSegmentLinear<float>;
+  
+  template <>
+  shared_ptr<CurveSegmentLinear<float>> CurveSegmentLinear<float>::create(shared_ptr<Curve<float>> parent)
+  {
+    return make_shared<JamomaCurveSegmentLinear<float>>(parent);
   }
 }
 
@@ -43,9 +61,9 @@ JamomaCurveSegmentLinear<T>::~JamomaCurveSegmentLinear()
 # pragma mark Execution
 
 template <typename T>
-T JamomaCurveSegmentLinear<T>::valueAt(double abscissa, T target) const
+T JamomaCurveSegmentLinear<T>::valueAt(const TimeValue& ratio, T start, T end) const
 {
-  return abscissa * target;
+  return start + ratio * (end - start);
 }
 
 # pragma mark -
