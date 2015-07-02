@@ -93,8 +93,8 @@ void JamomaScenario::play(bool log, string name) const
       timeProcess->getClock()->setOffset(offset);
     }
     
-    if (offset != Zero)
-      timeConstraint->getStartEvent()->getTimeNode()->play();
+    // activate start node
+    timeConstraint->getStartEvent()->getTimeNode()->play();
   }
   
   mClock->go();
