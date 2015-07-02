@@ -203,7 +203,12 @@ Clock & JamomaClock::setDuration(const TimeValue& duration)
 {
   mDuration = duration;
   mDate = mOffset;
-  mPosition = mDate / mDuration;
+  
+  if (mDuration != Zero)
+    mPosition = mDate / mDuration;
+  else
+    mPosition = Zero;
+  
   return *this;
 }
 
@@ -227,7 +232,12 @@ Clock & JamomaClock::setOffset(const TimeValue& offset)
 {
   mOffset = offset;
   mDate = mOffset;
-  mPosition = mDate / mDuration;
+  
+  if (mDuration != Zero)
+    mPosition = mDate / mDuration;
+  else
+    mPosition = Zero;
+  
   return *this;
 }
 
