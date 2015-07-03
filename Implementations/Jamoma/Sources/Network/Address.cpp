@@ -564,9 +564,9 @@ private:
           
           if (n.size())
             v.append(n[0]);
-          
-          break;
         }
+        
+        break;
       }
         
       case Value::Type::GENERIC :
