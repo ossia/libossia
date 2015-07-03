@@ -36,7 +36,8 @@ public:
     FLOAT,
     CHAR,
     STRING,
-    DESTINATION, //! \note see Destination structure declaration in Node.h
+    DESTINATION,  //! \note see Destination structure declaration in Node.h
+    BEHAVIOR,     //! \note see Behavior structure declaration in Curve.h
     TUPLE,
     GENERIC
   };

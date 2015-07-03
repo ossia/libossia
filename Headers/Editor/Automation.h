@@ -25,7 +25,6 @@ namespace OSSIA
 
 class Address;
 class Value;
-class CurveAbstract;
 class TimeValue;
 
 class Automation : public virtual TimeProcess
@@ -39,9 +38,11 @@ public:
   /*! factory
    \param #TimeProcess::ExecutionCallback the function to use to be notified at each step
    \param std::shared_ptr<#Address> to drive
+   \param #Value* how to drive the #Address
    \return std::shared_ptr<#Automation> */
   static std::shared_ptr<Automation> create(TimeProcess::ExecutionCallback,
-                                            std::shared_ptr<Address>);
+                                            std::shared_ptr<Address>,
+                                            const Value*);
   
   /*! destructor */
   virtual ~Automation() = default;
@@ -57,13 +58,12 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
-  Container<CurveAbstract>& curves()
-  { return m_curves; }
+  /*! get the address to drive
+   \return std::shared_ptr<Address> drived address */
+  virtual const std::shared_ptr<Address> getDrivenAddress() const = 0;
   
-  const Container<CurveAbstract>& curves() const
-  { return m_curves; }
-
-private:
-  Container<CurveAbstract> m_curves;
+  /*! get the driving value
+   \return const #Value driving value */
+  virtual const Value * getDriving() const = 0;
 };
 }

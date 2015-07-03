@@ -19,6 +19,7 @@
 #include <memory>
 
 #include "TimeValue.h"
+#include "Value.h"
 #include "Misc/Container.h"
 
 namespace OSSIA
@@ -110,6 +111,27 @@ public:
 
 private:
   Container<CurveSegment<T>> m_segments;
+};
+  
+# pragma mark -
+# pragma mark Behavior
+  
+/*! \details Behavior value */
+struct Behavior : public Value
+{
+  /*! constructor */
+  Behavior(std::shared_ptr<CurveAbstract> v) : value(v)
+  {
+    m_type = Type::BEHAVIOR;
+  }
+    
+  /*! clone */
+  Value * clone() const override
+  {
+    return new Behavior(value);
+  }
+    
+  std::shared_ptr<CurveAbstract> value;
 };
 
 }

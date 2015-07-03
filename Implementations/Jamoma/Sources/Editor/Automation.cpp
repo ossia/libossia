@@ -11,15 +11,19 @@ using namespace std;
 namespace OSSIA
 {
   shared_ptr<Automation> Automation::create(TimeProcess::ExecutionCallback callback,
-                                            shared_ptr<Address> address)
+                                            shared_ptr<Address> address,
+                                            const Value* drive)
   {
-    return make_shared<JamomaAutomation>(callback, address);
+    return make_shared<JamomaAutomation>(callback, address, drive);
   }
 }
 
 JamomaAutomation::JamomaAutomation(TimeProcess::ExecutionCallback callback,
-                                   shared_ptr<Address> address) :
-JamomaTimeProcess(callback, State::create(), State::create())
+                                   shared_ptr<Address> address,
+                                   const Value* drive) :
+JamomaTimeProcess(callback, State::create(), State::create()),
+mDrivenAddress(address),
+mDrive(drive->clone())
 {
   // pass callback to the Clock
   Clock::ExecutionCallback clockCallback = std::bind(&JamomaAutomation::ClockCallback, this, _1, _2);
@@ -71,6 +75,16 @@ shared_ptr<State> JamomaAutomation::state() const
 
 # pragma mark -
 # pragma mark Accessors
+
+const shared_ptr<Address> JamomaAutomation::getDrivenAddress() const
+{
+  
+}
+
+const Value * JamomaAutomation::getDriving() const
+{
+  
+}
 
 const shared_ptr<State> & JamomaAutomation::getStartState() const
 {

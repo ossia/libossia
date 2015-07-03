@@ -12,6 +12,9 @@
 
 #include "Editor/Automation.h"
 #include "Editor/Clock.h"
+#include "Editor/Curve.h"
+#include "Editor/CurveSegment.h"
+#include "Editor/CurveSegment/CurveSegmentLinear.h"
 #include "Editor/Expression.h"
 #include "Editor/ExpressionAtom.h"
 #include "Editor/Message.h"
@@ -123,8 +126,20 @@ int main()
      Main Scenario edition : creation of an Automation
      */
     
-    // create an Automation
-    auto first_automation = Automation::create(first_automation_callback, local_test_address);
+    // create one curve to drive all element of the Tuple value
+    auto curve = Curve<float>::create();
+    auto linearSegment = CurveSegmentLinear<float>::create(curve);
+    
+    curve->setInitialValue(0.);
+    curve->addPoint(1., 1., linearSegment);
+    curve->addPoint(2., 0., linearSegment);
+    
+    // create a Tuple value of 3 Behavior values based on the same curve
+    vector<const Value*> t_curves = {new Behavior(curve), new Behavior(curve), new Behavior(curve)};
+    Tuple curves(t_curves);
+    
+    // create an Automation for /test address drived by one curve
+    auto first_automation = Automation::create(first_automation_callback, local_test_address, &curves);
     
     // add it to the first TimeConstraint
     first_constraint->addTimeProcess(first_automation);
@@ -142,8 +157,7 @@ int main()
     first_automation->getEndState()->stateElements().push_back(first_end_message);
     
 /*!
-    //! \todo create a curve
-    
+
     //! \todo create an independent state into an event
     //auto new_event = first_end_event->timeEvents()->begin();
     //event.addState(...);

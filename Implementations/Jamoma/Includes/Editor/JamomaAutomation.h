@@ -35,13 +35,17 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
+  shared_ptr<Address> mDrivenAddress;
+  Value *             mDrive;
+  
 public:
   
 # pragma mark -
 # pragma mark Life cycle
   
   JamomaAutomation(TimeProcess::ExecutionCallback,
-                   shared_ptr<Address>);
+                   shared_ptr<Address>,
+                   const Value*);
   
   JamomaAutomation(const JamomaAutomation * other);
   
@@ -64,6 +68,10 @@ public:
   
 # pragma mark -
 # pragma mark Accessors
+  
+  const shared_ptr<Address> getDrivenAddress() const override;
+  
+  const Value * getDriving() const override;
   
   const shared_ptr<State> & getStartState() const override;
   
