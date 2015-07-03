@@ -225,15 +225,25 @@ struct Tuple : public Value
   
 # pragma mark -
 # pragma mark Generic
-
-/*! \details Generic value */
-struct Generic : public Value
-{
-  /*! constructor 
-   \todo */
-  char * start{};
-  int size;
-};
+  
+  /*! \details Generic value */
+  template<typename T>
+  struct Generic : public Value
+  {
+    /*! constructor */
+    Generic(T v) : value(v)
+    {
+      m_type = Type::GENERIC;
+    }
+    
+    /*! clone */
+    Value * clone() const override
+    {
+      return new Generic(value);
+    }
+    
+    T value;
+  };
 
 }
 
