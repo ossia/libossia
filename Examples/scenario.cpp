@@ -59,7 +59,7 @@ int main()
     
     // add a /test address
     auto local_test_node = *(local_device->emplace(local_device->children().cend(), "test"));
-    auto local_test_address = local_test_node->createAddress(Value::Type::FLOAT);
+    auto local_test_address = local_test_node->createAddress(Value::Type::TUPLE);
     
     // attach /test address to a callback
     local_test_address->setValueCallback(local_test_callback);
@@ -129,13 +129,15 @@ int main()
     // add it to the first TimeConstraint
     first_constraint->addTimeProcess(first_automation);
     
-    // add "/test 0." message to Automation's start State
-    Float zero(0.);
+    // add "/test 0. 0. 0." message to Automation's start State
+    vector<const Value*> t_zero = {new Float(0.), new Float(0.), new Float(0.)};
+    Tuple zero(t_zero);
     auto first_start_message = Message::create(local_test_address, &zero);
     first_automation->getStartState()->stateElements().push_back(first_start_message);
     
-    // add "/test 1." message to Automation's end State
-    Float one(1.);
+    // add "/test 1. 1. 1." message to Automation's end State
+    vector<const Value*> t_one = {new Float(1.), new Float(1.), new Float(1.)};
+    Tuple one(t_one);
     auto first_end_message = Message::create(local_test_address, &one);
     first_automation->getEndState()->stateElements().push_back(first_end_message);
     
@@ -190,11 +192,23 @@ void local_play_callback(const Value * v)
 
 void local_test_callback(const Value * v)
 {
-    if (v->getType() == Value::Type::FLOAT)
+    cout << "/i-score/test = ";
+    
+    if (v->getType() == Value::Type::TUPLE)
     {
-        Float * f = (Float*)v;
-        cout << "/i-score/test = "<< f->value << "\n";
+        Tuple * t = (Tuple*)v;
+        
+        for (auto e : t->value)
+        {
+            if (e->getType() == Value::Type::FLOAT)
+            {
+                Float * f = (Float*)e;
+                cout << f->value << " ";
+            }
+        }
     }
+    
+    cout << endl;
 }
 
 void main_scenario_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
