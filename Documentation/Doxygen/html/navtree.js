@@ -1,7 +1,7 @@
 var NAVTREE =
 [
   [ "OSSIA", "index.html", [
-    [ "Todo List", "todo.html", null ],
+    [ "Modules", "modules.html", "modules" ],
     [ "Classes", null, [
       [ "Class List", "annotated.html", "annotated" ],
       [ "Class Index", "classes.html", null ],

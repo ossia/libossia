@@ -45,7 +45,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -94,7 +94,7 @@ $(document).ready(function(){initNavTree('class_o_s_s_i_a_1_1_automation.html','
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Groups</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -262,13 +262,13 @@ Additional Inherited Members</h2></td></tr>
 <p>factory </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramtype"></td><td class="paramname"><a class="el" href="class_o_s_s_i_a_1_1_time_process.html#a4b149d5019f48d999abe2d2679ee9107">TimeProcess::ExecutionCallback</a></td><td>the function to use to be notified at each step </td></tr>
-    <tr><td class="paramtype">std::shared_ptr&lt;</td><td class="paramname">Address&gt;</td><td>to drive </td></tr>
-    <tr><td class="paramtype"></td><td class="paramname">Value*</td><td>how to drive the #Address </td></tr>
+    <tr><td class="paramname">the</td><td>function to use to be notified at each step </td></tr>
+    <tr><td class="paramname">the</td><td>address to drive </td></tr>
+    <tr><td class="paramname">how</td><td>to drive the address </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>std::shared_ptr&lt;#Automation&gt; </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>a new automation </dd></dl>
 
 </div>
 </div>
@@ -292,9 +292,8 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>record </dd></dl>
 <p>get the address to drive </p>
-<dl class="section return"><dt>Returns</dt><dd>std::shared_ptr&lt;Address&gt; drived address </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>driven address </dd></dl>
 
 </div>
 </div>
@@ -319,12 +318,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>get the driving value </p>
-<dl class="section return"><dt>Returns</dt><dd>const #Value driving value </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>driving value </dd></dl>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>Editor/<a class="el" href="_automation_8h_source.html">Automation.h</a></li>
+<li><a class="el" href="_automation_8h_source.html">Automation.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -332,7 +331,7 @@ Additional Inherited Members</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>OSSIA</b></li><li class="navelem"><a class="el" href="class_o_s_s_i_a_1_1_automation.html">Automation</a></li>
-    <li class="footer">Generated on Mon Jul 6 2015 15:44:28 for OSSIA by
+    <li class="footer">Generated on Mon Jul 6 2015 17:00:47 for OSSIA by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.4 </li>
   </ul>
