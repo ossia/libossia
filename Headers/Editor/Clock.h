@@ -65,8 +65,9 @@ public:
   virtual void resume() = 0;
   
   /*! called every time a new step should be processed.
-   \details can be use to force step processing in case of external drive */
-  virtual void tick() = 0;
+   \details can be use to force step processing in case of external drive 
+   \return bool true if the clock ticks */
+  virtual bool tick() = 0;
   
   /*! to get the clock execution back
    \param clock position

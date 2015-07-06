@@ -131,8 +131,8 @@ int main()
     auto linearSegment = CurveSegmentLinear<float>::create(curve);
     
     curve->setInitialValue(0.);
-    curve->addPoint(1., 1., linearSegment);
-    curve->addPoint(2., 0., linearSegment);
+    curve->addPoint(0.5, 1., linearSegment);
+    curve->addPoint(1., 0., linearSegment);
     
     // create a Tuple value of 3 Behavior values based on the same curve
     vector<const Value*> t_curves = {new Behavior(curve), new Behavior(curve), new Behavior(curve)};
@@ -156,8 +156,7 @@ int main()
     auto first_end_message = Message::create(local_test_address, &one);
     first_automation->getEndState()->stateElements().push_back(first_end_message);
     
-/*!
-
+/*
     //! \todo create an independent state into an event
     //auto new_event = first_end_event->timeEvents()->begin();
     //event.addState(...);
@@ -234,7 +233,8 @@ void main_scenario_callback(const TimeValue& position, const TimeValue& date, sh
 void first_automation_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
 {
     cout << "Automation : " << double(position) << ", " << double(date) << "\n";
-    state->launch();
+    
+    // don't launch state here as the state produced by the Automation is handled by the main scenario
 }
 
 void event_callback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus)

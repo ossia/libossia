@@ -17,6 +17,7 @@
 #include <memory>
 
 #include "StateElement.h"
+#include "Value.h"
 
 namespace OSSIA
 {
@@ -37,7 +38,7 @@ public:
    \param const #Value the value
    \return std::shared_ptr<#Message> */
   static std::shared_ptr<Message> create(std::shared_ptr<Address>,
-                                         const Value*);
+                                         const Value* = new Impulse());
 
   /*! clone */
   virtual std::shared_ptr<Message> clone() const = 0;

@@ -118,10 +118,10 @@ void JamomaClock::resume()
   mPaused = false;
 }
 
-void JamomaClock::tick()
+bool JamomaClock::tick()
 {
   if (mPaused || !mRunning)
-     return;
+     return false;
   
   long long granularityInUs(mGranularity * 1000);
   
@@ -132,7 +132,7 @@ void JamomaClock::tick()
   {
     // if too early: avoid this tick
     if (mElapsedTime / granularityInUs == (mElapsedTime + deltaInUs) / granularityInUs)
-      return;
+      return false;
   }
   else
   {
@@ -179,6 +179,8 @@ void JamomaClock::tick()
   
   // tick is done now
   mLastTime = steady_clock::now();
+  
+  return true;
 }
 
 JamomaClock::ExecutionCallback JamomaClock::getExecutionCallback() const

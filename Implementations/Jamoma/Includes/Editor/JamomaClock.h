@@ -81,7 +81,7 @@ public:
   
   void resume() override;
   
-  void tick() override;
+  bool tick() override;
   
   ExecutionCallback getExecutionCallback() const override;
   

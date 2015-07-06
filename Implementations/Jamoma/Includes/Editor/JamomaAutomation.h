@@ -13,8 +13,10 @@
 
 #pragma once
 
-#include "Editor/Clock.h"
 #include "Editor/Automation.h"
+#include "Editor/Clock.h"
+#include "Editor/Curve.h"
+#include "Editor/Message.h"
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeNode.h"
 #include "Editor/TimeValue.h"
@@ -35,8 +37,11 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  shared_ptr<Address> mDrivenAddress;
-  Value *             mDrive;
+  shared_ptr<Address>   mDrivenAddress;
+  Value *               mDrive;
+  
+  shared_ptr<Message>   mMessageToSend;
+  Value*                mValueToSend;
   
 public:
   
@@ -87,4 +92,6 @@ private:
 # pragma mark Implementation specific
   
   void ClockCallback(const TimeValue&, const TimeValue&);
+  
+  Value* computeValueAtPosition(const Value* drive, const TimeValue& position);
 };

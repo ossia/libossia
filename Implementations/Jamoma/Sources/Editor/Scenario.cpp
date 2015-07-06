@@ -237,9 +237,12 @@ void JamomaScenario::ClockCallback(const TimeValue& position, const TimeValue& d
       if (timeProcess->getClock()->getRunning())
       {
         if (timeProcess->getClock()->getExternal())
-          timeProcess->getClock()->tick();
-        
-        mCurrentState->stateElements().push_back(timeProcess->state());
+        {
+          if (timeProcess->getClock()->tick())
+            mCurrentState->stateElements().push_back(timeProcess->state());
+        }
+        else
+          mCurrentState->stateElements().push_back(timeProcess->state());
       }
     }
   }
