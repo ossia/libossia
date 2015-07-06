@@ -10,7 +10,7 @@ include_directories(Headers)
 
 add_subdirectory(Implementations)
 #if(NOT OSSIA_NO_EXAMPLES)
-    add_subdirectory(Examples)
+    add_subdirectory(Documentation/Examples)
 #endif()
 if(NOT OSSIA_NO_TESTS)
     add_subdirectory(Tests)
