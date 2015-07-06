@@ -73,7 +73,7 @@ namespace OSSIA
     TTObject applicationManager;
     TTObject application;
     
-    // todo : we shouldn't init each time we create an object ...
+    //! \todo we shouldn't init each time we create an object ...
     TTFoundationInit("/usr/local/jamoma/extensions/", true);
     TTModularInit("/usr/local/jamoma/extensions", true);
     
@@ -92,7 +92,7 @@ namespace OSSIA
     }
     
     // which protocol is it ?
-    // todo: this is not a good way to do as if a new protocol appears we have to create a case for it here
+    //! \todo this is not a good way to do as if a new protocol appears we have to create a case for it here
     Local* local_protocol = dynamic_cast<Local*>(&protocol);
     if (local_protocol)
     {
@@ -132,7 +132,7 @@ namespace OSSIA
       protocolMinuit.set("port", minuit_protocol->in_port);
       protocolMinuit.set("ip", TTSymbol(minuit_protocol->ip));
       
-      // todo : change Minuit mechanism to setup one out_port per distant device
+      //! \todo change Minuit mechanism to setup one out_port per distant device
       protocolMinuit.send("ApplicationSelect", local_device_name);
       protocolMinuit.set("port", minuit_protocol->out_port);
       
