@@ -34,20 +34,23 @@ int main()
   cout << "\nLocal device example\n";
   Local localDeviceParameters{};
   auto localDevice = Device::create(localDeviceParameters, "i-score");
-/*  {
+  {
     // tree building
     auto localTestNode = localDevice->emplace(localDevice->children().cend(), "test");
     auto localTestAddress = (*localTestNode)->createAddress(Value::Type::BOOL);
+      
+    // attach /test address to a callback
+    localTestAddress->setValueCallback(printValueCallback);
     
     // updating local tree value
     Bool b(true);
     localTestAddress->sendValue(&b);
   }
-*/
+
   // Minuit device
   cout << "\nMinuit device example\n";
   Minuit minuitDeviceParameters{"127.0.0.1", 9998, 13579};
-  auto minuitDevice = Device::create(minuitDeviceParameters, "MinuitDevice");
+  auto minuitDevice = Device::create(minuitDeviceParameters, "newDevice");
   {
     // tree building
     minuitDevice->updateNamespace();
@@ -144,6 +147,9 @@ void explore(const shared_ptr<Node> node)
             // attach to callback
             OSSIA::Address::ValueCallback callback = printValueCallback;
             address->setValueCallback(callback);
+            
+            // update the value
+            address->updateValue();
             
             // display address info
             cout << " : ";
