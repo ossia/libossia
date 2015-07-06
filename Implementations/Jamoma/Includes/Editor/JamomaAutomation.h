@@ -38,10 +38,10 @@ private:
 # pragma mark Implementation specific
   
   shared_ptr<Address>   mDrivenAddress;
-  Value *               mDrive;
+  Value *               mDrive = nullptr;
   
   shared_ptr<Message>   mMessageToSend;
-  Value*                mValueToSend;
+  Value*                mValueToSend = nullptr;
   
 public:
   
