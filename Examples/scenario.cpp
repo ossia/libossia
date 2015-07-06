@@ -156,12 +156,6 @@ int main()
     auto first_end_message = Message::create(local_test_address, &one);
     first_automation->getEndState()->stateElements().push_back(first_end_message);
     
-/*
-    //! \todo create an independent state into an event
-    //auto new_event = first_end_event->timeEvents()->begin();
-    //event.addState(...);
-*/
-    
     /*
      Main Scenario operation : miscellaneous
      */
