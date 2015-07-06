@@ -1,6 +1,8 @@
 /*!
  * \file TimeProcess.h
  *
+ * \defgroup Editor
+ *
  * \brief #TimeProcess is the mother class to describe temporal content ...
  *
  * \details

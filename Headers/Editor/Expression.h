@@ -1,6 +1,8 @@
 /*!
  * \file Expression.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details

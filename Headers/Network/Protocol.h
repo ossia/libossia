@@ -1,6 +1,8 @@
 /*!
  * \file Protocol.h
  *
+ * \defgroup Network
+ *
  * \brief
  *
  * \details

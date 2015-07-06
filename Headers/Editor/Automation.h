@@ -1,6 +1,8 @@
 /*!
  * \file Automation.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details
@@ -36,10 +38,10 @@ public:
 # pragma mark Life cycle
   
   /*! factory
-   \param #TimeProcess::ExecutionCallback the function to use to be notified at each step
-   \param std::shared_ptr<#Address> to drive
-   \param #Value* how to drive the #Address
-   \return std::shared_ptr<#Automation> */
+   \param the function to use to be notified at each step
+   \param the address to drive
+   \param how to drive the address
+   \return a new automation */
   static std::shared_ptr<Automation> create(TimeProcess::ExecutionCallback,
                                             std::shared_ptr<Address>,
                                             const Value*);
@@ -59,11 +61,11 @@ public:
 # pragma mark Accessors
   
   /*! get the address to drive
-   \return std::shared_ptr<Address> drived address */
+   \return driven address */
   virtual const std::shared_ptr<Address> getDrivenAddress() const = 0;
   
   /*! get the driving value
-   \return const #Value driving value */
+   \return driving value */
   virtual const Value * getDriving() const = 0;
 };
 }

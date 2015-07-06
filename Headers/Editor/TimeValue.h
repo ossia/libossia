@@ -1,6 +1,8 @@
 /*!
  * \file TimeValue.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details

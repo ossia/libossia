@@ -1,6 +1,8 @@
 /*!
  * \file Clock.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details

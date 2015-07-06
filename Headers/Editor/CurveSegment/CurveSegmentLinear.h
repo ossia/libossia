@@ -1,6 +1,8 @@
 /*!
  * \file CurveSegmentLinear.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details

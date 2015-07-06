@@ -1,6 +1,8 @@
 /*!
  * \file ExpressionNot.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details

@@ -1,6 +1,8 @@
 /*!
  * \file Curve.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details

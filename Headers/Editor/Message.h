@@ -1,6 +1,8 @@
 /*!
  * \file Message.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details

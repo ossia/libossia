@@ -1,6 +1,8 @@
 /*!
  * \file ExpressionAtom.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details

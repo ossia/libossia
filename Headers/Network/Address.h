@@ -1,5 +1,7 @@
 /*!
  * \file Address.h
+ * 
+ * \defgroup Network
  *
  * \brief
  *

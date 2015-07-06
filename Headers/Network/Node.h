@@ -1,6 +1,8 @@
 /*!
  * \file Node.h
  *
+ * \defgroup Network
+ *
  * \brief
  *
  * \details

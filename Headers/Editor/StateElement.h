@@ -1,6 +1,8 @@
 /*!
  * \file StateElement.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details

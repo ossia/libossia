@@ -1,6 +1,8 @@
 /*!
  * \file CurveSegmentPower.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details

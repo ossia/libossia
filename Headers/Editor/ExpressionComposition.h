@@ -1,6 +1,8 @@
 /*!
  * \file ExpressionComposition.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details

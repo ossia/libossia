@@ -1,6 +1,8 @@
 /*!
  * \file Device.h
  *
+ * \defgroup Network
+ *
  * \brief
  *
  * \details

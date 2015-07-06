@@ -1,6 +1,8 @@
 /*!
  * \file #TimeEvent.h
  *
+ * \defgroup Editor
+ *
  * \brief #TimeEvent is use to describe temporal structure to launch the start or the end of each attached #TimeConstraint.
  *
  * \details #TimeEvent has a #State and can also be submitted to an #Expression.

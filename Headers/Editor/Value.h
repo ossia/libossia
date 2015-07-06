@@ -1,6 +1,8 @@
 /*!
  * \file Value.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details

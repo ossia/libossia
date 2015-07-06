@@ -1,6 +1,8 @@
 /*!
  * \file Scenario.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details

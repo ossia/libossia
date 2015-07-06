@@ -1,6 +1,8 @@
 /*!
  * \file State.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details

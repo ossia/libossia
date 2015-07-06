@@ -1,6 +1,8 @@
 /*!
  * \file TimeNode.h
  *
+ * \defgroup Editor
+ *
  * \brief #TimeNode is use to describe temporal structure to synchronize each attached #TimeEvent evaluation.
  *
  * \details #TimeNode is also a #TimeEvent container.

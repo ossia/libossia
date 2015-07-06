@@ -1,6 +1,8 @@
 /*!
  * \file Domain.h
  *
+ * \defgroup Editor
+ *
  * \brief
  *
  * \details

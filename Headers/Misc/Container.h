@@ -1,6 +1,8 @@
 /*!
  * \file Container.h
  *
+ * \defgroup Misc
+ *
  * \brief
  *
  * \details
