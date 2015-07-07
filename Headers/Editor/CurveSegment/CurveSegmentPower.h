@@ -18,26 +18,40 @@
 
 #include "Editor/CurveSegment.h"
 
-namespace OSSIA {
-
-template <typename T>
-class CurveSegmentPower : public CurveSegment<T> 
+namespace OSSIA
 {
-
+  
+  template <typename T>
+  class CurveSegmentPower : public CurveSegment<T>
+  {
+    
   public:
-
-    // Constructors, destructor, assignment
-    CurveSegmentPower(Curve<T>*);
-    CurveSegmentPower(const CurveSegmentPower&);
-    virtual ~CurveSegmentPower();
-    CurveSegmentPower & operator= (const CurveSegmentPower&);
-
-    // Computation
-    virtual T valueAt(const TimeValue&) const override;
-
-    // Curve segment type
-    virtual typename CurveSegment<T>::CurveSegmentType getType() const override final
-    {return CurveSegment<T>::CurveSegmentType::POWER;}
-  };
-
+    
+# pragma mark -
+# pragma mark Life cycle
+    
+    /*! factory
+     \param std::shared_ptr<Curve<T>> parent
+     \return std::shared_ptr<CurveSegmentPower<T>> */
+    static std::shared_ptr<CurveSegmentPower<T>> create(std::shared_ptr<Curve<T>>);
+    
+    /*! destructor */
+    virtual ~CurveSegmentPower() = default;
+    
+# pragma mark -
+# pragma mark Accessors
+    
+    /*! get power value
+     \return double */
+    virtual double getPower() const = 0;
+    
+    /*! set power value
+     \param double
+     \return CurveSegmentPower */
+    virtual CurveSegmentPower<T> & setPower(double) = 0;
+    
+    typename CurveSegment<T>::Type getType() const override final
+    {return CurveSegment<T>::Type::LINEAR;}
+  
+};
 }

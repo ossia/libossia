@@ -15,6 +15,7 @@
 #include "Editor/Curve.h"
 #include "Editor/CurveSegment.h"
 #include "Editor/CurveSegment/CurveSegmentLinear.h"
+#include "Editor/CurveSegment/CurveSegmentPower.h"
 #include "Editor/Expression.h"
 #include "Editor/ExpressionAtom.h"
 #include "Editor/Message.h"
@@ -128,11 +129,12 @@ int main()
     
     // create one curve to drive all element of the Tuple value
     auto curve = Curve<float>::create();
-    auto linearSegment = CurveSegmentLinear<float>::create(curve);
+    auto powerSegment = CurveSegmentPower<float>::create(curve);
+    powerSegment->setPower(0.5);
     
     curve->setInitialValue(0.);
-    curve->addPoint(0.5, 1., linearSegment);
-    curve->addPoint(1., 0., linearSegment);
+    curve->addPoint(0.5, 1., powerSegment);
+    curve->addPoint(1., 0., powerSegment);
     
     // create a Tuple value of 3 Behavior values based on the same curve
     vector<const Value*> t_curves = {new Behavior(curve), new Behavior(curve), new Behavior(curve)};

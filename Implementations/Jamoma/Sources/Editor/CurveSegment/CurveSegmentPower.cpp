@@ -12,81 +12,78 @@
  * http://www.cecill.info
  */
 
-#include "Editor/CurveSegment/CurveSegmentPower.h"
+#include "Editor/JamomaCurve.h"
+#include "Editor/CurveSegment/JamomaCurveSegmentPower.h"
 
-#include "TTCurve.h"
+# pragma mark -
+# pragma mark Life Cycle
 
-#include "../Implementations/Jamoma/Sources/Editor/Curve.cpp" // because we use the parent curve into the segment (see : valueAt)
-
-namespace OSSIA {
-  
-template <typename T>
-class CurveSegmentPower<T>::Impl {
-  
-public:
-  
-  Impl() {};
-  
-  Impl(const Impl & other) = default;
-  ~Impl() = default;
-  
-};
-
-template <typename T>
-CurveSegmentPower<T>::CurveSegmentPower(Curve<T> * parent) :
-CurveSegment<T>(parent),
-pimpl(new Impl)
-{}
-
-template <typename T>
-CurveSegmentPower<T>::CurveSegmentPower(const CurveSegmentPower & other) :
-CurveSegment<T>(other.getParent()),
-pimpl(new Impl(*(other.pimpl)))
-{}
-
-template <typename T>
-CurveSegmentPower<T>::~CurveSegmentPower()
+namespace OSSIA
 {
-  delete pimpl;
-}
-
-template <typename T>
-CurveSegmentPower<T>& CurveSegmentPower<T>::operator= (const CurveSegmentPower & other)
-{
-  delete pimpl;
-  pimpl = new Impl(*(other.pimpl));
-  return *this;
-}
-
-template <typename T>
-T CurveSegmentPower<T>::valueAt(double abscissa) const
-{
-  TTValue   out;
-  TTFloat64 previousAbscissa = 0.;
-
-  // get the previous point abscissa to add it to the given abscissa
-  auto pointsMap = CurveSegment<T>::mParent->getPointsMap();
+  // explicit instantiation for bool
+  template class CurveSegmentPower<bool>;
   
-  for (auto it = pointsMap.begin(); it != pointsMap.end(); it++)
+  template <>
+  shared_ptr<CurveSegmentPower<bool>> CurveSegmentPower<bool>::create(shared_ptr<Curve<bool>> parent)
   {
-    // when this curve is found
-    if (&(it->second.second) == dynamic_cast<const CurveSegment<T>*>(this))
-    {
-      // get the previous point abscissa
-      if (it != pointsMap.begin())
-      {
-        it--;
-        previousAbscissa = it->first;
-      }
-      
-      break;
-    }
+    return make_shared<JamomaCurveSegmentPower<bool>>(parent);
   }
   
-  return CurveSegment<T>::mParent->valueAt(previousAbscissa + abscissa);
-}
+  // explicit instantiation for int
+  template class CurveSegmentPower<int>;
   
-  // explicit instantiation for double
-  template class CurveSegmentPower<double>;
+  template <>
+  shared_ptr<CurveSegmentPower<int>> CurveSegmentPower<int>::create(shared_ptr<Curve<int>> parent)
+  {
+    return make_shared<JamomaCurveSegmentPower<int>>(parent);
+  }
+  
+  // explicit instantiation for float
+  template class CurveSegmentPower<float>;
+  
+  template <>
+  shared_ptr<CurveSegmentPower<float>> CurveSegmentPower<float>::create(shared_ptr<Curve<float>> parent)
+  {
+    return make_shared<JamomaCurveSegmentPower<float>>(parent);
+  }
+}
 
+template <typename T>
+JamomaCurveSegmentPower<T>::JamomaCurveSegmentPower(shared_ptr<Curve<T>> parent) :
+mParent(parent)
+{}
+
+template <typename T>
+JamomaCurveSegmentPower<T>::~JamomaCurveSegmentPower()
+{}
+
+# pragma mark -
+# pragma mark Execution
+
+template <typename T>
+T JamomaCurveSegmentPower<T>::valueAt(const TimeValue& ratio, T start, T end) const
+{
+  return start + pow(ratio, mPower) * (end - start);
+}
+
+# pragma mark -
+# pragma mark Accessors
+
+template <typename T>
+shared_ptr<Curve<T>> JamomaCurveSegmentPower<T>::getParent() const
+{
+  return mParent;
+}
+
+template <typename T>
+double JamomaCurveSegmentPower<T>::getPower() const
+{
+  return mPower;
+}
+
+template <typename T>
+CurveSegmentPower<T> & JamomaCurveSegmentPower<T>::setPower(double power)
+{
+  mPower = power;
+  return *this;
 }

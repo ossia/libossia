@@ -51,6 +51,7 @@
 		46995FA61B32A9CA00BDF2C8 /* JamomaClock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaClock.h; sourceTree = "<group>"; };
 		46A4923019C2E264003691A8 /* CurveSegmentPower.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentPower.h; sourceTree = "<group>"; };
 		46A4923119C2E2D6003691A8 /* CurveSegmentPower.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentPower.cpp; sourceTree = "<group>"; };
+		46AD82A01B4C229C0094E2DB /* JamomaCurveSegmentPower.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaCurveSegmentPower.h; sourceTree = "<group>"; };
 		46BA2A5B19C09A21009630B5 /* Curve.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Curve.cpp; sourceTree = "<group>"; };
 		46BA2A5D19C09A21009630B5 /* CurveSegmentLinear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentLinear.cpp; sourceTree = "<group>"; };
 		46BA2A6019C09A21009630B5 /* Scenario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scenario.cpp; sourceTree = "<group>"; };
@@ -120,6 +121,7 @@
 			isa = PBXGroup;
 			children = (
 				463DC5AB1B42BF6A00EEF0CB /* JamomaCurveSegmentLinear.h */,
+				46AD82A01B4C229C0094E2DB /* JamomaCurveSegmentPower.h */,
 			);
 			path = CurveSegment;
 			sourceTree = "<group>";
