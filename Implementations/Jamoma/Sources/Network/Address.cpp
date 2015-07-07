@@ -462,6 +462,9 @@ private:
         return new OSSIA::Destination();
          */
       }
+        
+      case Value::Type::BEHAVIOR :
+      {}
 
       case Value::Type::TUPLE :
       {
@@ -559,6 +562,9 @@ private:
         v = TTAddress(buildNodePath(d->value).data());
         break;
       }
+        
+      case Value::Type::BEHAVIOR :
+      {}
         
       case Value::Type::TUPLE :
       {
