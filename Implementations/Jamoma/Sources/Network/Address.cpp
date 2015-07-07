@@ -256,10 +256,17 @@ public:
     return mAccessMode;
   }
 
-  virtual Address & setAccessMode(AccessMode) override
+  virtual Address & setAccessMode(AccessMode accessMode) override
   {
-    // note : it is not possible to change the service attribute of Data after its creation
-    throw runtime_error("access mode cannot be set afterward");
+    mAccessMode = accessMode;
+    
+    if (mAccessMode == AccessMode::BI)
+      mData.set("service", kTTSym_parameter);
+    else if (mAccessMode == AccessMode::SET)
+      mData.set("service", kTTSym_message);
+    else if (mAccessMode == AccessMode::GET)
+      mData.set("service", kTTSym_return);
+
     return *this;
   }
   
