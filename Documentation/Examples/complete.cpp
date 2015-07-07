@@ -3,67 +3,192 @@
  *
  * \author Clément Bossut
  * \author Théo de la Hogue
- * \author Jean-Michaël Celerier
  *
  * This code is licensed under the terms of the "CeCILL-C"
  * http://www.cecill.info
  */
 
+#include <iostream>
+#include <memory>
+#include <functional>
+
+#include "Editor/Automation.h"
+#include "Editor/Clock.h"
+#include "Editor/Curve.h"
+#include "Editor/CurveSegment.h"
+#include "Editor/CurveSegment/CurveSegmentLinear.h"
+#include "Editor/Expression.h"
+#include "Editor/ExpressionAtom.h"
+#include "Editor/Message.h"
+#include "Editor/Scenario.h"
+#include "Editor/State.h"
+#include "Editor/TimeConstraint.h"
+#include "Editor/TimeEvent.h"
+#include "Editor/TimeNode.h"
+#include "Editor/TimeValue.h"
+#include "Editor/Value.h"
+
+#include "Network/Address.h"
+#include "Network/Device.h"
+#include "Network/Node.h"
+#include "Network/Protocol.h"
+
+using namespace OSSIA;
+using namespace std;
+
+void explore(const shared_ptr<Node> node);
+void printValue(const Value * v);
+void printValueCallback(const Value * v);
+void automationCallback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
+void eventCallback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus);
+
 int main()
-{/*
-  // Peut aussi être {addr, port} ou addr, port...
-  Device<OSC> player{"127.0.0.1:1234",
-    "player"};
-  Device<Minuit> video{"127.0.0.1:1235",
-    "video"};
+{
+    // Local device
+    cout << "\nLocal device example\n";
+    Local localDeviceParameters{};
+    auto localDevice = Device::create(localDeviceParameters, "i-score");
+    
+    // Minuit device
+    cout << "\nMinuit device example\n";
+    Minuit minuitDeviceParameters{"127.0.0.1", 9998, 13579};
+    auto minuitDevice = Device::create(minuitDeviceParameters, "newDevice");
+    minuitDevice->updateNamespace();
+    
+    // find the /deg/bitdepth address
+    shared_ptr<Address> bitdepthAddress;
+    for (const auto& module : minuitDevice->children())
+    {
+        if (module->getName() == "deg")
+        {
+            for (const auto& parameter : module->children())
+            {
+                string parameter_name = parameter->getName();
+                
+                if (parameter_name == "bitdepth")
+                {
+                    cout << "\n/deg/bitdepth node found\n";
+                    bitdepthAddress = parameter->getAddress();
+                }
+            }
+        }
+    }
 
-  Device<MIDI> keyboard{"127.0.0.1:1236",
-    "keyboard"};
+    // create one curve to drive /deg/bitdepth
+    auto curve = Curve<int>::create();
+    auto linearSegment = CurveSegmentLinear<int>::create(curve);
+    
+    curve->setInitialValue(1);
+    curve->addPoint(0.5, 24, linearSegment);
+    curve->addPoint(1., 1, linearSegment);
+    
+    // create an Automation for /test address drived by one curve
+    auto automation = Automation::create(automationCallback, bitdepthAddress, new Behavior(curve));
+    
+    // create the start and the end TimeNodes
+    auto start_node = TimeNode::create();
+    auto end_node = TimeNode::create();
+    
+    // create TimeEvents inside TimeNodes
+    auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), &eventCallback));
+    auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &eventCallback));
+    
+    // create a TimeConstraint
+    TimeValue duration(5000.);
+    auto constraint = TimeConstraint::create(start_event, end_event, duration);
+    
+    // add the Automation to the TimeConstraint
+    constraint->addTimeProcess(automation);
+    
+    // go !
+    constraint->play();
+    
+    // wait the Automation ends
+    //! \todo add TimeProcess::isRunning() to ease the access ?
+    while (automation->getClock()->getRunning())
+        ;
+}
 
-  // Contrainte "originelle"
-  Event firstEvent;
-  Constraint c0{firstEvent}; // Par défaut, il y a un lastEvent "vide", p-ê ?
-  c0.setDuration(10_s); // Utilise std::literals::chrono_literals
+void printValue(const Value * v)
+{
+    switch (v->getType())
+    {
+        case Value::Type::IMPULSE :
+        {
+            cout << "-";
+            break;
+        }
+        case Value::Type::BOOL :
+        {
+            Bool * b = (Bool*)v;
+            cout << b->value;
+            break;
+        }
+        case Value::Type::INT :
+        {
+            Int * i = (Int*)v;
+            cout << i->value;
+            break;
+        }
+        case Value::Type::FLOAT :
+        {
+            Float * f = (Float*)v;
+            cout << f->value;
+            break;
+        }
+        case Value::Type::CHAR :
+        {
+            Char * c = (Char*)v;
+            cout << c->value;
+            break;
+        }
+        case Value::Type::STRING :
+        {
+            String * s = (String*)v;
+            cout << s->value;
+            break;
+        }
+        case Value::Type::DESTINATION :
+        {
+            Destination * d = (Destination*)v;
+            cout << d->value;
+            break;
+        }
+        case Value::Type::TUPLE :
+        {
+            Tuple * t = (Tuple*)v;
+            bool first = true;
+            for (const auto & e : t->value)
+            {
+                if (!first) cout << " ";
+                printValue(e);
+                first = false;
+            }
+            break;
+        }
+        case Value::Type::GENERIC :
+        {
+            // todo
+            break;
+        }
+        default:
+            break;
+    }
+}
 
-  // Elle a un processus scenario
-  Scenario s;
-  s.setDuration(4500_ms); // dans i-score, le reste (jusqu'à 10s) serait affiché en grisé
-  c0.addProcess(s);
+void printValueCallback(const Value * v)
+{
+    printValue(v);
+    cout << "\n";
+}
 
-  // Dans le scenario, une contrainte
-  Constraint c1;
-  c1.setDuration(pos_infin); // Utilise boost::posix_time ?
+void automationCallback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
+{
+    cout << "Automation : " << double(position) << ", " << double(date) << "\n";
+    state->launch();
+}
 
-  // Dans la contrainte, une courbe
-  LinearAutomationProcess curve{
-    player.addr("volume"), // /player/volume
-	2_s, // Durée du process
-	{{0.0, 0.0}, // Points
-	    {0.5, 0.8},
-	    {1.0, 0.0}}}; // Note : ctor peut utiliser std::initializer_list ou std::some_container<std::pair<T(double),U(double)>>
-  c1.addProcess(curve);
-
-  // États au début et à la fin de la contrainte / du scénario
-  State s1{player.addr("start")}; // /player/start
-  State s2{player.addr("stop"), // /player/stop
-    video.addr("flash", 255, 255, 255)}; // /player/flash <255,255,255> (le Tuple dont on parle dans la spec)
-
-  Event e1, e2;
-  e1.addState(s1);
-  e2.addState(s2);
-  e2.setCondition(keyboard.condition("channel.1/note_on == 64"));
-  c1.setStartEvent(e1);
-  c1.setEndEvent(e2);
-
-  Node n1 = s.getStartNode();
-  n1.addEvent(e1);
-
-  Node n2;
-  n2.addEvent(e2);
-
-  s.addConstraint(c1, n1, n2); // c1 et n2 sont ajoutés.
-
-  firstEvent.play();
-
-  return 0; // Bière si on arrive ici sans crash :)*/
+void eventCallback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus)
+{
+    cout << "Event : " << "new status received" << "\n";
 }
