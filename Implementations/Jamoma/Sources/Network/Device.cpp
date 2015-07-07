@@ -49,7 +49,8 @@ public:
     // update root node
     this->mNode = this->mDirectory->getRoot();
     
-    // todo : erase all former nodes
+    // erase all former nodes
+    m_children.clear();
 
     // build tree from the root
     buildChildren();

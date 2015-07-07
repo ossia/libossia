@@ -89,7 +89,7 @@ public:
   const Container<Node>& children() const
   { return m_children; }
 
-private:
+protected:
   Container<Node> m_children;
 };
   
