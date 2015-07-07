@@ -211,4 +211,6 @@ Value* JamomaAutomation::computeValueAtPosition(const Value* drive, const TimeVa
       break;
     }
   }
+  
+  return nullptr;
 }
