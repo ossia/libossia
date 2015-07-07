@@ -28,6 +28,8 @@ file(GLOB_RECURSE SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/ExpressionAtom.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/TimeProcess.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/Automation.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/Curve.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/CurveSegmentLinear.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Misc/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Includes/*.h"
     )
