@@ -11,15 +11,19 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  shared_ptr<Expression> first_expr;
-  shared_ptr<Expression> second_expr;
+  shared_ptr<Expression>  mFirstExpression;
+  Operator                mOperator;
+  shared_ptr<Expression>  mSecondExpression;
 
 public:
   
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaExpressionComposition(shared_ptr<Expression> first_expr, Operator op, shared_ptr<Expression> second_expr)
+  JamomaExpressionComposition(shared_ptr<Expression> expr1, Operator op, shared_ptr<Expression> expr2) :
+  mFirstExpression(expr1),
+  mOperator(op),
+  mSecondExpression(expr2)
   {}
   
   JamomaExpressionComposition(const JamomaExpressionComposition * other)
@@ -38,7 +42,23 @@ public:
   
   virtual bool evaluate() const override
   {
-    return true;
+    switch (mOperator)
+    {
+    case Operator::AND :
+      {
+        return mFirstExpression->evaluate() && mSecondExpression->evaluate();
+      }
+    case Operator::OR :
+      {
+        return mFirstExpression->evaluate() || mSecondExpression->evaluate();
+      }
+    case Operator::XOR :
+      {
+        return mFirstExpression->evaluate() ^ mSecondExpression->evaluate();
+      }
+    default :
+        return false;
+    }
   }
 
 # pragma mark -
@@ -46,17 +66,17 @@ public:
   
   virtual const shared_ptr<Expression> & getFirstOperand() const override
   {
-    return first_expr;
+    return mFirstExpression;
   }
   
   virtual Operator getOperator() const override
   {
-    return Operator::AND;
+    return mOperator;
   }
   
   virtual const shared_ptr<Expression> & getSecondOperand() const
   {
-    return second_expr;
+    return mSecondExpression;
   }
 };
 

@@ -52,6 +52,27 @@ public:
   
   /*! destructor */
   virtual ~Value() = default;
+  
+# pragma mark -
+# pragma mark Operators
+  
+  /*! equal operator */
+  bool operator== (const Value* v);
+  
+  /*! different operator */
+  bool operator!= (const Value* v);
+  
+  /*! greater than operator */
+  bool operator> (const Value* v);
+  
+  /*! greater than and equal operator */
+  bool operator>= (const Value* v);
+  
+  /*! less than operator */
+  bool operator< (const Value* v);
+  
+  /*! less than and equal operator */
+  bool operator<= (const Value* v);
 
 # pragma mark -
 # pragma mark Accessors
@@ -82,6 +103,42 @@ struct Impulse : public Value
   {
     return new Impulse();
   }
+  
+  /*! equal operator */
+  bool operator== (const Value* v)
+  {
+    return v->getType() == m_type;
+  }
+  
+  /*! different operator */
+  bool operator!= (const Value* v)
+  {
+    return v->getType() != m_type;
+  }
+  
+  /*! greater than operator */
+  bool operator> (const Value* v)
+  {
+    return v->getType() != m_type;
+  }
+  
+  /*! greater than and equal operator */
+  bool operator>= (const Value* v)
+  {
+    return v->getType() == m_type;
+  }
+  
+  /*! less than operator */
+  bool operator< (const Value* v)
+  {
+    return v->getType() != m_type;
+  }
+  
+  /*! less than and equal operator */
+  bool operator<= (const Value* v)
+  {
+    return v->getType() == m_type;
+  }
 };
 
 # pragma mark -
@@ -90,7 +147,9 @@ struct Impulse : public Value
 /*! \details Bool value */
 struct Bool : public Value
 {
-  /*! constructor 
+  bool value;
+  
+  /*! constructor
    \param bool value */
   Bool(bool v = false) : value(v)
   {
@@ -103,7 +162,77 @@ struct Bool : public Value
     return new Bool(value);
   }
   
-  bool value;
+  /*! equal operator */
+  bool operator== (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Bool* b = (Bool*)v;
+      return b->value == value;
+    }
+    
+    return false;
+  }
+  
+  /*! different operator */
+  bool operator!= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Bool* b = (Bool*)v;
+      return b->value != value;
+    }
+    
+    return false;
+  }
+  
+  /*! greater than operator */
+  bool operator> (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Bool* b = (Bool*)v;
+      return b->value > value;
+    }
+    
+    return false;
+  }
+  
+  /*! greater than and equal operator */
+  bool operator>= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Bool* b = (Bool*)v;
+      return b->value >= value;
+    }
+    
+    return false;
+  }
+  
+  /*! less than operator */
+  bool operator< (const Value* v)
+  {
+    if (v->getType() < m_type)
+    {
+      Bool* b = (Bool*)v;
+      return b->value < value;
+    }
+    
+    return false;
+  }
+  
+  /*! less than and equal operator */
+  bool operator<= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Bool* b = (Bool*)v;
+      return b->value <= value;
+    }
+    
+    return false;
+  }
 };
 
 static Bool False = Bool(false);
@@ -115,6 +244,8 @@ static Bool True = Bool(true);
 /*! \details Int value */
 struct Int : public Value
 {
+  int value;
+  
   /*! constructor
    \param int value */
   Int(int v = 0) : value(v)
@@ -128,7 +259,77 @@ struct Int : public Value
     return new Int(value);
   }
   
-  int value;
+  /*! equal operator */
+  bool operator== (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Int* i = (Int*)v;
+      return i->value == value;
+    }
+    
+    return false;
+  }
+  
+  /*! different operator */
+  bool operator!= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Int* i = (Int*)v;
+      return i->value != value;
+    }
+    
+    return false;
+  }
+  
+  /*! greater than operator */
+  bool operator> (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Int* i = (Int*)v;
+      return i->value > value;
+    }
+    
+    return false;
+  }
+  
+  /*! greater than and equal operator */
+  bool operator>= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Int* i = (Int*)v;
+      return i->value >= value;
+    }
+    
+    return false;
+  }
+  
+  /*! less than operator */
+  bool operator< (const Value* v)
+  {
+    if (v->getType() < m_type)
+    {
+      Int* i = (Int*)v;
+      return i->value < value;
+    }
+    
+    return false;
+  }
+  
+  /*! less than and equal operator */
+  bool operator<= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Int* i = (Int*)v;
+      return i->value <= value;
+    }
+    
+    return false;
+  }
 };
   
 # pragma mark -
@@ -137,6 +338,8 @@ struct Int : public Value
 /*! \details Float value */
 struct Float : public Value
 {
+  float value;
+  
   /*! constructor
    \param float value */
   Float(float v = 0.) : value(v)
@@ -150,7 +353,77 @@ struct Float : public Value
     return new Float(value);
   }
   
-  float value;
+  /*! equal operator */
+  bool operator== (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Float* f = (Float*)v;
+      return f->value == value;
+    }
+    
+    return false;
+  }
+  
+  /*! different operator */
+  bool operator!= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Float* f = (Float*)v;
+      return f->value != value;
+    }
+    
+    return false;
+  }
+  
+  /*! greater than operator */
+  bool operator> (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Float* f = (Float*)v;
+      return f->value > value;
+    }
+    
+    return false;
+  }
+  
+  /*! greater than and equal operator */
+  bool operator>= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Float* f = (Float*)v;
+      return f->value >= value;
+    }
+    
+    return false;
+  }
+  
+  /*! less than operator */
+  bool operator< (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Float* f = (Float*)v;
+      return f->value < value;
+    }
+    
+    return false;
+  }
+  
+  /*! less than and equal operator */
+  bool operator<= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Float* f = (Float*)v;
+      return f->value <= value;
+    }
+    
+    return false;
+  }
 };
   
 # pragma mark -
@@ -159,6 +432,8 @@ struct Float : public Value
 /*! \details Char value */
 struct Char : public Value
 {
+  char value;
+  
   /*! constructor
    \param char value */
   Char(char v = 0x00) : value(v)
@@ -172,7 +447,77 @@ struct Char : public Value
     return new Char(value);
   }
   
-  char value;
+  /*! equal operator */
+  bool operator== (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Char* c = (Char*)v;
+      return c->value == value;
+    }
+    
+    return false;
+  }
+  
+  /*! different operator */
+  bool operator!= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Char* c = (Char*)v;
+      return c->value != value;
+    }
+    
+    return false;
+  }
+  
+  /*! greater than operator */
+  bool operator> (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Char* c = (Char*)v;
+      return c->value > value;
+    }
+    
+    return false;
+  }
+  
+  /*! greater than and equal operator */
+  bool operator>= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Char* c = (Char*)v;
+      return c->value >= value;
+    }
+    
+    return false;
+  }
+  
+  /*! less than operator */
+  bool operator< (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Char* c = (Char*)v;
+      return c->value < value;
+    }
+    
+    return false;
+  }
+  
+  /*! less than and equal operator */
+  bool operator<= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Char* c = (Char*)v;
+      return c->value <= value;
+    }
+    
+    return false;
+  }
 };
   
 # pragma mark -
@@ -181,6 +526,8 @@ struct Char : public Value
 /*! \details String value */
 struct String : public Value
 {
+  std::string value;
+  
   /*! constructor
    \param std::string value */
   String(std::string v = "") : value(v)
@@ -194,7 +541,78 @@ struct String : public Value
     return new String(value);
   }
   
-  std::string value;
+  
+  /*! equal operator */
+  bool operator== (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      String* s = (String*)v;
+      return s->value == value;
+    }
+    
+    return false;
+  }
+  
+  /*! different operator */
+  bool operator!= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      String* s = (String*)v;
+      return s->value != value;
+    }
+    
+    return false;
+  }
+  
+  /*! greater than operator */
+  bool operator> (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      String* s = (String*)v;
+      return s->value > value;;
+    }
+    
+    return false;
+  }
+  
+  /*! greater than and equal operator */
+  bool operator>= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      String* s = (String*)v;
+      return s->value >= value;
+    }
+    
+    return false;
+  }
+  
+  /*! less than operator */
+  bool operator< (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      String* s = (String*)v;
+      return s->value < value;
+    }
+    
+    return false;
+  }
+  
+  /*! less than and equal operator */
+  bool operator<= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      String* s = (String*)v;
+      return s->value <= value;
+    }
+    
+    return false;
+  }
 };
 
 # pragma mark -
@@ -203,6 +621,8 @@ struct String : public Value
 /*! \details Tuple value */
 struct Tuple : public Value
 {
+  std::vector<Value*> value;
+  
   /*! constructor
   \param std::vector<const #Value> value*/
   Tuple(std::vector<const Value*> v = std::vector<const Value*>())
@@ -223,30 +643,160 @@ struct Tuple : public Value
     return new Tuple(newValue);
   }
   
-  std::vector<Value*> value;
+  /*! equal operator */
+  bool operator== (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      return false;
+    }
+    
+    return false;
+  }
+  
+  /*! different operator */
+  bool operator!= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      return false;
+    }
+    
+    return false;
+  }
+  
+  /*! greater than operator */
+  bool operator> (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      return false;
+    }
+    
+    return false;
+  }
+  
+  /*! greater than and equal operator */
+  bool operator>= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      return false;
+    }
+    
+    return false;
+  }
+  
+  /*! less than operator */
+  bool operator< (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      return false;
+    }
+    
+    return false;
+  }
+  
+  /*! less than and equal operator */
+  bool operator<= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      return false;
+    }
+    
+    return false;
+  }
 };
   
 # pragma mark -
 # pragma mark Generic
   
-  /*! \details Generic value */
-  template<typename T>
-  struct Generic : public Value
+/*! \details Generic value */
+template<typename T>
+struct Generic : public Value
+{
+  T value;
+  
+  /*! constructor */
+  Generic(T v) : value(v)
   {
-    /*! constructor */
-    Generic(T v) : value(v)
+    m_type = Type::GENERIC;
+  }
+  
+  /*! clone */
+  Value * clone() const override
+  {
+    return new Generic(value);
+  }
+  
+  /*! equal operator */
+  bool operator== (const Value* v)
+  {
+    if (v->getType() == m_type)
     {
-      m_type = Type::GENERIC;
+      return false;
     }
     
-    /*! clone */
-    Value * clone() const override
+    return false;
+  }
+  
+  /*! different operator */
+  bool operator!= (const Value* v)
+  {
+    if (v->getType() == m_type)
     {
-      return new Generic(value);
+      return false;
     }
     
-    T value;
-  };
+    return false;
+  }
+  
+  /*! greater than operator */
+  bool operator> (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      return false;
+    }
+    
+    return false;
+  }
+  
+  /*! greater than and equal operator */
+  bool operator>= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      return false;
+    }
+    
+    return false;
+  }
+  
+  /*! less than operator */
+  bool operator< (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      return false;
+    }
+    
+    return false;
+  }
+  
+  /*! less than and equal operator */
+  bool operator<= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      return false;
+    }
+    
+    return false;
+  }
+};
 
 }
 

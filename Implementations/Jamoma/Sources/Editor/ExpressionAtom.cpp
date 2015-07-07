@@ -12,8 +12,9 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  Value* first_expr;
-  Value* second_expr;
+  Value*    mFirstExpression;
+  Operator  mOperator;
+  Value*    mSecondExpression;
   
 public:
   
@@ -21,8 +22,9 @@ public:
 # pragma mark Life cycle
   
   JamomaExpressionAtom(const Value* expr1, Operator op, const Value* expr2) :
-  first_expr(expr1->clone()),
-  second_expr(expr2->clone())
+  mFirstExpression(expr1->clone()),
+  mOperator(op),
+  mSecondExpression(expr2->clone())
   {}
   
   JamomaExpressionAtom(const JamomaExpressionAtom * other)
@@ -41,7 +43,31 @@ public:
   
   virtual bool evaluate() const override
   {
-    return true;
+    switch (mOperator)
+    {
+      case Operator::EQUAL :
+      {
+        return mFirstExpression == mSecondExpression;
+      }
+    case Operator::GREATER_THAN :
+      {
+        return mFirstExpression > mSecondExpression;
+      }
+    case Operator::LOWER_THAN :
+      {
+        return mFirstExpression < mSecondExpression;
+      }
+    case Operator::GREATER_THAN_OR_EQUAL :
+      {
+        return mFirstExpression >= mSecondExpression;
+      }
+    case Operator::LOWER_THAN_OR_EQUAL :
+      {
+        return mFirstExpression <= mSecondExpression;
+      }
+    default :
+        return false;
+    }
   }
 
 # pragma mark -
@@ -49,17 +75,17 @@ public:
   
   virtual const Value* getFirstOperand() const override
   {
-    return first_expr;
+    return mFirstExpression;
   }
   
   virtual Operator getOperator() const override
   {
-    return Operator::EQUAL;
+    return mOperator;
   }
   
   virtual const Value* getSecondOperand() const override
   {
-    return second_expr;
+    return mSecondExpression;
   }
 
 };
