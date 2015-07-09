@@ -161,6 +161,10 @@ public:
           }
           mDomain = Domain::create(new OSSIA::Impulse(), new OSSIA::Impulse(), values);
         }
+        else
+        {
+          mDomain = Domain::create();
+        }
         
         TTSymbol clipmode;
         mData.get("rangeClipmode", clipmode);
