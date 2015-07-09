@@ -17,7 +17,7 @@
 #pragma once
 
 #include "Editor/Value.h"
-
+#include "Network/Address.h"
 #include "Misc/Container.h"
 
 namespace OSSIA
@@ -99,6 +99,8 @@ protected:
 /*! \details Destination value */
 struct Destination : public Value
 {
+  std::shared_ptr<Node> value;
+  
   /*! constructor */
   Destination(std::shared_ptr<Node> v) : value(v)
   {
@@ -110,8 +112,126 @@ struct Destination : public Value
   {
     return new Destination(value);
   }
+
+  /*! equal operator */
+  bool operator== (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Destination* d = (Destination*)v;
+      if (value->getAddress() && d->value->getAddress())
+        return value->getAddress()->getValue() == d->value->getAddress()->getValue();
+    }
+    else if (value->getAddress())
+    {
+      if (v->getType() == value->getAddress()->getValueType())
+      {
+        return value->getAddress()->getValue() == v;
+      }
+    }
+    
+    return false;
+  }
   
-  std::shared_ptr<Node> value;
+  /*! different operator */
+  bool operator!= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Destination* d = (Destination*)v;
+      if (value->getAddress() && d->value->getAddress())
+        return value->getAddress()->getValue() != d->value->getAddress()->getValue();
+    }
+    else if (value->getAddress())
+    {
+      if (v->getType() == value->getAddress()->getValueType())
+      {
+        return value->getAddress()->getValue() != v;
+      }
+    }
+    
+    return false;
+  }
+  
+  /*! greater than operator */
+  bool operator> (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Destination* d = (Destination*)v;
+      if (value->getAddress() && d->value->getAddress())
+        return value->getAddress()->getValue() > d->value->getAddress()->getValue();
+    }
+    else if (value->getAddress())
+    {
+      if (v->getType() == value->getAddress()->getValueType())
+      {
+        return value->getAddress()->getValue() > v;
+      }
+    }
+    
+    return false;
+  }
+  
+  /*! greater than and equal operator */
+  bool operator>= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Destination* d = (Destination*)v;
+      if (value->getAddress() && d->value->getAddress())
+        return value->getAddress()->getValue() >= d->value->getAddress()->getValue();
+    }
+    else if (value->getAddress())
+    {
+      if (v->getType() == value->getAddress()->getValueType())
+      {
+        return value->getAddress()->getValue() >= v;
+      }
+    }
+    
+    return false;
+  }
+  
+  /*! less than operator */
+  bool operator< (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Destination* d = (Destination*)v;
+      if (value->getAddress() && d->value->getAddress())
+        return value->getAddress()->getValue() < d->value->getAddress()->getValue();
+    }
+    else if (value->getAddress())
+    {
+      if (v->getType() == value->getAddress()->getValueType())
+      {
+        return value->getAddress()->getValue() < v;
+      }
+    }
+    
+    return false;
+  }
+  
+  /*! less than and equal operator */
+  bool operator<= (const Value* v)
+  {
+    if (v->getType() == m_type)
+    {
+      Destination* d = (Destination*)v;
+      if (value->getAddress() && d->value->getAddress())
+        return value->getAddress()->getValue() <= d->value->getAddress()->getValue();
+    }
+    else if (value->getAddress())
+    {
+      if (v->getType() == value->getAddress()->getValueType())
+      {
+        return value->getAddress()->getValue() <= v;
+      }
+    }
+    
+    return false;
+  }
 };
   
 }

@@ -12,19 +12,19 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  Value*    mFirstExpression;
+  Value*    mFirstValue;
   Operator  mOperator;
-  Value*    mSecondExpression;
+  Value*    mSecondValue;
   
 public:
   
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaExpressionAtom(const Value* expr1, Operator op, const Value* expr2) :
-  mFirstExpression(expr1->clone()),
+  JamomaExpressionAtom(const Value* value1, Operator op, const Value* value2) :
+  mFirstValue(value1->clone()),
   mOperator(op),
-  mSecondExpression(expr2->clone())
+  mSecondValue(value2->clone())
   {}
   
   JamomaExpressionAtom(const JamomaExpressionAtom * other)
@@ -47,23 +47,23 @@ public:
     {
       case Operator::EQUAL :
       {
-        return mFirstExpression == mSecondExpression;
+        return mFirstValue == mSecondValue;
       }
     case Operator::GREATER_THAN :
       {
-        return mFirstExpression > mSecondExpression;
+        return mFirstValue > mSecondValue;
       }
     case Operator::LOWER_THAN :
       {
-        return mFirstExpression < mSecondExpression;
+        return mFirstValue < mSecondValue;
       }
     case Operator::GREATER_THAN_OR_EQUAL :
       {
-        return mFirstExpression >= mSecondExpression;
+        return mFirstValue >= mSecondValue;
       }
     case Operator::LOWER_THAN_OR_EQUAL :
       {
-        return mFirstExpression <= mSecondExpression;
+        return mFirstValue <= mSecondValue;
       }
     default :
         return false;
@@ -75,7 +75,7 @@ public:
   
   virtual const Value* getFirstOperand() const override
   {
-    return mFirstExpression;
+    return mFirstValue;
   }
   
   virtual Operator getOperator() const override
@@ -85,15 +85,15 @@ public:
   
   virtual const Value* getSecondOperand() const override
   {
-    return mSecondExpression;
+    return mSecondValue;
   }
 
 };
 
 namespace OSSIA
 {
-  shared_ptr<ExpressionAtom> ExpressionAtom::create(const Value* expr1, Operator op, const Value* expr2)
+  shared_ptr<ExpressionAtom> ExpressionAtom::create(const Value* value1, Operator op, const Value* value2)
   {
-    return make_shared<JamomaExpressionAtom>(expr1, op, expr2);
+    return make_shared<JamomaExpressionAtom>(value1, op, value2);
   }
 }

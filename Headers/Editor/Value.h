@@ -168,7 +168,7 @@ struct Bool : public Value
     if (v->getType() == m_type)
     {
       Bool* b = (Bool*)v;
-      return b->value == value;
+      return value == b->value;
     }
     
     return false;
@@ -180,7 +180,7 @@ struct Bool : public Value
     if (v->getType() == m_type)
     {
       Bool* b = (Bool*)v;
-      return b->value != value;
+      return value != b->value;
     }
     
     return false;
@@ -192,7 +192,7 @@ struct Bool : public Value
     if (v->getType() == m_type)
     {
       Bool* b = (Bool*)v;
-      return b->value > value;
+      return value > b->value;
     }
     
     return false;
@@ -204,7 +204,7 @@ struct Bool : public Value
     if (v->getType() == m_type)
     {
       Bool* b = (Bool*)v;
-      return b->value >= value;
+      return value >= b->value;
     }
     
     return false;
@@ -216,7 +216,7 @@ struct Bool : public Value
     if (v->getType() < m_type)
     {
       Bool* b = (Bool*)v;
-      return b->value < value;
+      return value < b->value;
     }
     
     return false;
@@ -228,7 +228,7 @@ struct Bool : public Value
     if (v->getType() == m_type)
     {
       Bool* b = (Bool*)v;
-      return b->value <= value;
+      return value <= b->value;
     }
     
     return false;
@@ -265,7 +265,7 @@ struct Int : public Value
     if (v->getType() == m_type)
     {
       Int* i = (Int*)v;
-      return i->value == value;
+      return value == i->value;
     }
     
     return false;
@@ -277,7 +277,7 @@ struct Int : public Value
     if (v->getType() == m_type)
     {
       Int* i = (Int*)v;
-      return i->value != value;
+      return value != i->value;
     }
     
     return false;
@@ -289,7 +289,7 @@ struct Int : public Value
     if (v->getType() == m_type)
     {
       Int* i = (Int*)v;
-      return i->value > value;
+      return value > i->value;
     }
     
     return false;
@@ -301,7 +301,7 @@ struct Int : public Value
     if (v->getType() == m_type)
     {
       Int* i = (Int*)v;
-      return i->value >= value;
+      return value >= i->value;
     }
     
     return false;
@@ -313,7 +313,7 @@ struct Int : public Value
     if (v->getType() < m_type)
     {
       Int* i = (Int*)v;
-      return i->value < value;
+      return value < i->value;
     }
     
     return false;
@@ -325,7 +325,7 @@ struct Int : public Value
     if (v->getType() == m_type)
     {
       Int* i = (Int*)v;
-      return i->value <= value;
+      return value <= i->value;
     }
     
     return false;
@@ -359,7 +359,7 @@ struct Float : public Value
     if (v->getType() == m_type)
     {
       Float* f = (Float*)v;
-      return f->value == value;
+      return value == f->value;
     }
     
     return false;
@@ -371,7 +371,7 @@ struct Float : public Value
     if (v->getType() == m_type)
     {
       Float* f = (Float*)v;
-      return f->value != value;
+      return value != f->value;
     }
     
     return false;
@@ -383,7 +383,7 @@ struct Float : public Value
     if (v->getType() == m_type)
     {
       Float* f = (Float*)v;
-      return f->value > value;
+      return value > f->value;
     }
     
     return false;
@@ -395,7 +395,7 @@ struct Float : public Value
     if (v->getType() == m_type)
     {
       Float* f = (Float*)v;
-      return f->value >= value;
+      return value >= f->value;
     }
     
     return false;
@@ -407,7 +407,7 @@ struct Float : public Value
     if (v->getType() == m_type)
     {
       Float* f = (Float*)v;
-      return f->value < value;
+      return value < f->value;
     }
     
     return false;
@@ -419,7 +419,7 @@ struct Float : public Value
     if (v->getType() == m_type)
     {
       Float* f = (Float*)v;
-      return f->value <= value;
+      return value <= f->value;
     }
     
     return false;
@@ -453,7 +453,7 @@ struct Char : public Value
     if (v->getType() == m_type)
     {
       Char* c = (Char*)v;
-      return c->value == value;
+      return value == c->value;
     }
     
     return false;
@@ -465,7 +465,7 @@ struct Char : public Value
     if (v->getType() == m_type)
     {
       Char* c = (Char*)v;
-      return c->value != value;
+      return value != c->value;
     }
     
     return false;
@@ -477,7 +477,7 @@ struct Char : public Value
     if (v->getType() == m_type)
     {
       Char* c = (Char*)v;
-      return c->value > value;
+      return value > c->value;
     }
     
     return false;
@@ -489,7 +489,7 @@ struct Char : public Value
     if (v->getType() == m_type)
     {
       Char* c = (Char*)v;
-      return c->value >= value;
+      return value >= c->value;
     }
     
     return false;
@@ -501,7 +501,7 @@ struct Char : public Value
     if (v->getType() == m_type)
     {
       Char* c = (Char*)v;
-      return c->value < value;
+      return value < c->value;
     }
     
     return false;
@@ -513,7 +513,7 @@ struct Char : public Value
     if (v->getType() == m_type)
     {
       Char* c = (Char*)v;
-      return c->value <= value;
+      return value <= c->value;
     }
     
     return false;
@@ -541,14 +541,13 @@ struct String : public Value
     return new String(value);
   }
   
-  
   /*! equal operator */
   bool operator== (const Value* v)
   {
     if (v->getType() == m_type)
     {
       String* s = (String*)v;
-      return s->value == value;
+      return value == s->value;
     }
     
     return false;
@@ -560,7 +559,7 @@ struct String : public Value
     if (v->getType() == m_type)
     {
       String* s = (String*)v;
-      return s->value != value;
+      return value != s->value;
     }
     
     return false;
@@ -572,7 +571,7 @@ struct String : public Value
     if (v->getType() == m_type)
     {
       String* s = (String*)v;
-      return s->value > value;;
+      return value > s->value;
     }
     
     return false;
@@ -584,7 +583,7 @@ struct String : public Value
     if (v->getType() == m_type)
     {
       String* s = (String*)v;
-      return s->value >= value;
+      return value >= s->value;
     }
     
     return false;
@@ -596,7 +595,7 @@ struct String : public Value
     if (v->getType() == m_type)
     {
       String* s = (String*)v;
-      return s->value < value;
+      return value < s->value;
     }
     
     return false;
@@ -608,7 +607,7 @@ struct String : public Value
     if (v->getType() == m_type)
     {
       String* s = (String*)v;
-      return s->value <= value;
+      return value <= s->value;
     }
     
     return false;
@@ -648,7 +647,22 @@ struct Tuple : public Value
   {
     if (v->getType() == m_type)
     {
-      return false;
+      Tuple* t = (Tuple*)v;
+      
+      if (value.size() != t->value.size())
+        return false;
+      
+      bool result = true;
+      auto tit = t->value.begin();
+      for (auto it = value.begin(); it != value.end();it++)
+      {
+        result &= *it == *tit;
+        if (!result)
+          break;
+        tit++;
+      }
+      
+      return result;
     }
     
     return false;
@@ -659,7 +673,21 @@ struct Tuple : public Value
   {
     if (v->getType() == m_type)
     {
-      return false;
+      Tuple* t = (Tuple*)v;
+      
+      if (value.size() != t->value.size())
+        return false;
+      
+      bool result = true;
+      auto tit = t->value.begin();
+      for (auto it = value.begin(); it != value.end();it++)
+      {
+        result &= *it != *tit;
+        if (!result)
+          break;
+      }
+      
+      return result;
     }
     
     return false;
@@ -670,7 +698,21 @@ struct Tuple : public Value
   {
     if (v->getType() == m_type)
     {
-      return false;
+      Tuple* t = (Tuple*)v;
+      
+      if (value.size() != t->value.size())
+        return false;
+      
+      bool result = true;
+      auto tit = t->value.begin();
+      for (auto it = value.begin(); it != value.end();it++)
+      {
+        result &= *it > *tit;
+        if (!result)
+          break;
+      }
+      
+      return result;
     }
     
     return false;
@@ -681,7 +723,21 @@ struct Tuple : public Value
   {
     if (v->getType() == m_type)
     {
-      return false;
+      Tuple* t = (Tuple*)v;
+      
+      if (value.size() != t->value.size())
+        return false;
+      
+      bool result = true;
+      auto tit = t->value.begin();
+      for (auto it = value.begin(); it != value.end();it++)
+      {
+        result &= *it >= *tit;
+        if (!result)
+          break;
+      }
+      
+      return result;
     }
     
     return false;
@@ -692,7 +748,21 @@ struct Tuple : public Value
   {
     if (v->getType() == m_type)
     {
-      return false;
+      Tuple* t = (Tuple*)v;
+      
+      if (value.size() != t->value.size())
+        return false;
+      
+      bool result = true;
+      auto tit = t->value.begin();
+      for (auto it = value.begin(); it != value.end();it++)
+      {
+        result &= *it < *tit;
+        if (!result)
+          break;
+      }
+      
+      return result;
     }
     
     return false;
@@ -703,7 +773,21 @@ struct Tuple : public Value
   {
     if (v->getType() == m_type)
     {
-      return false;
+      Tuple* t = (Tuple*)v;
+      
+      if (value.size() != t->value.size())
+        return false;
+      
+      bool result = true;
+      auto tit = t->value.begin();
+      for (auto it = value.begin(); it != value.end();it++)
+      {
+        result &= *it <= *tit;
+        if (!result)
+          break;
+      }
+      
+      return result;
     }
     
     return false;
@@ -736,7 +820,8 @@ struct Generic : public Value
   {
     if (v->getType() == m_type)
     {
-      return false;
+      Generic<T>* g = (Generic<T>*)v;
+      return value == g->value;
     }
     
     return false;
@@ -747,7 +832,8 @@ struct Generic : public Value
   {
     if (v->getType() == m_type)
     {
-      return false;
+      Generic<T>* g = (Generic<T>*)v;
+      return value != g->value;
     }
     
     return false;
@@ -758,7 +844,8 @@ struct Generic : public Value
   {
     if (v->getType() == m_type)
     {
-      return false;
+      Generic<T>* g = (Generic<T>*)v;
+      return value > g->value;
     }
     
     return false;
@@ -769,7 +856,8 @@ struct Generic : public Value
   {
     if (v->getType() == m_type)
     {
-      return false;
+      Generic<T>* g = (Generic<T>*)v;
+      return value >= g->value;
     }
     
     return false;
@@ -780,7 +868,8 @@ struct Generic : public Value
   {
     if (v->getType() == m_type)
     {
-      return false;
+      Generic<T>* g = (Generic<T>*)v;
+      return value < g->value;
     }
     
     return false;
@@ -791,7 +880,8 @@ struct Generic : public Value
   {
     if (v->getType() == m_type)
     {
-      return false;
+      Generic<T>* g = (Generic<T>*)v;
+      return value <= g->value;
     }
     
     return false;
