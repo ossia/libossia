@@ -49,8 +49,8 @@ int main()
 
   // Minuit device
   cout << "\nMinuit device example\n";
-  Minuit minuitDeviceParameters{"127.0.0.1", 9998, 13579};
-  auto minuitDevice = Device::create(minuitDeviceParameters, "newDevice");
+  Minuit minuitDeviceParameters{"127.0.0.1", 10001, 13579};
+  auto minuitDevice = Device::create(minuitDeviceParameters, "myPdApp");
   {
     // tree building
     minuitDevice->updateNamespace();
