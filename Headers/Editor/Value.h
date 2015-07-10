@@ -685,6 +685,7 @@ struct Tuple : public Value
         result &= (**it) != (**tit);
         if (!result)
           break;
+        tit++;
       }
       
       return result;
@@ -710,6 +711,7 @@ struct Tuple : public Value
         result &= (**it) > (**tit);
         if (!result)
           break;
+        tit++;
       }
       
       return result;
@@ -735,6 +737,7 @@ struct Tuple : public Value
         result &= (**it) >= (**tit);
         if (!result)
           break;
+        tit++;
       }
       
       return result;
@@ -760,6 +763,7 @@ struct Tuple : public Value
         result &= (**it) < (**tit);
         if (!result)
           break;
+        tit++;
       }
       
       return result;
@@ -785,6 +789,7 @@ struct Tuple : public Value
         result &= (**it) <= (**tit);
         if (!result)
           break;
+        tit++;
       }
       
       return result;
