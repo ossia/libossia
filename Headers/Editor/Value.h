@@ -57,22 +57,22 @@ public:
 # pragma mark Operators
   
   /*! equal operator */
-  bool operator== (const Value* v);
+  virtual bool operator== (const Value& v) const = 0;
   
   /*! different operator */
-  bool operator!= (const Value* v);
+  virtual bool operator!= (const Value& v) const = 0;
   
   /*! greater than operator */
-  bool operator> (const Value* v);
+  virtual bool operator> (const Value& v) const = 0;
   
   /*! greater than and equal operator */
-  bool operator>= (const Value* v);
+  virtual bool operator>= (const Value& v) const = 0;
   
   /*! less than operator */
-  bool operator< (const Value* v);
+  virtual bool operator< (const Value& v) const = 0;
   
   /*! less than and equal operator */
-  bool operator<= (const Value* v);
+  virtual bool operator<= (const Value& v) const = 0;
 
 # pragma mark -
 # pragma mark Accessors
@@ -105,39 +105,39 @@ struct Impulse : public Value
   }
   
   /*! equal operator */
-  bool operator== (const Value* v)
+  bool operator== (const Value& v) const override
   {
-    return v->getType() == m_type;
+    return v.getType() == m_type;
   }
   
   /*! different operator */
-  bool operator!= (const Value* v)
+  bool operator!= (const Value& v) const override
   {
-    return v->getType() != m_type;
+    return v.getType() != m_type;
   }
   
   /*! greater than operator */
-  bool operator> (const Value* v)
+  bool operator> (const Value& v) const override
   {
-    return v->getType() != m_type;
+    return v.getType() != m_type;
   }
   
   /*! greater than and equal operator */
-  bool operator>= (const Value* v)
+  bool operator>= (const Value& v) const override
   {
-    return v->getType() == m_type;
+    return v.getType() == m_type;
   }
   
   /*! less than operator */
-  bool operator< (const Value* v)
+  bool operator< (const Value& v) const override
   {
-    return v->getType() != m_type;
+    return v.getType() != m_type;
   }
   
   /*! less than and equal operator */
-  bool operator<= (const Value* v)
+  bool operator<= (const Value& v) const override
   {
-    return v->getType() == m_type;
+    return v.getType() == m_type;
   }
 };
 
@@ -163,11 +163,11 @@ struct Bool : public Value
   }
   
   /*! equal operator */
-  bool operator== (const Value* v)
+  bool operator== (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Bool* b = (Bool*)v;
+      Bool* b = (Bool*)&v;
       return value == b->value;
     }
     
@@ -175,11 +175,11 @@ struct Bool : public Value
   }
   
   /*! different operator */
-  bool operator!= (const Value* v)
+  bool operator!= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Bool* b = (Bool*)v;
+      Bool* b = (Bool*)&v;
       return value != b->value;
     }
     
@@ -187,11 +187,11 @@ struct Bool : public Value
   }
   
   /*! greater than operator */
-  bool operator> (const Value* v)
+  bool operator> (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Bool* b = (Bool*)v;
+      Bool* b = (Bool*)&v;
       return value > b->value;
     }
     
@@ -199,11 +199,11 @@ struct Bool : public Value
   }
   
   /*! greater than and equal operator */
-  bool operator>= (const Value* v)
+  bool operator>= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Bool* b = (Bool*)v;
+      Bool* b = (Bool*)&v;
       return value >= b->value;
     }
     
@@ -211,11 +211,11 @@ struct Bool : public Value
   }
   
   /*! less than operator */
-  bool operator< (const Value* v)
+  bool operator< (const Value& v) const override
   {
-    if (v->getType() < m_type)
+    if (v.getType() < m_type)
     {
-      Bool* b = (Bool*)v;
+      Bool* b = (Bool*)&v;
       return value < b->value;
     }
     
@@ -223,11 +223,11 @@ struct Bool : public Value
   }
   
   /*! less than and equal operator */
-  bool operator<= (const Value* v)
+  bool operator<= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Bool* b = (Bool*)v;
+      Bool* b = (Bool*)&v;
       return value <= b->value;
     }
     
@@ -260,11 +260,11 @@ struct Int : public Value
   }
   
   /*! equal operator */
-  bool operator== (const Value* v)
+  bool operator== (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Int* i = (Int*)v;
+      Int* i = (Int*)&v;
       return value == i->value;
     }
     
@@ -272,11 +272,11 @@ struct Int : public Value
   }
   
   /*! different operator */
-  bool operator!= (const Value* v)
+  bool operator!= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Int* i = (Int*)v;
+      Int* i = (Int*)&v;
       return value != i->value;
     }
     
@@ -284,11 +284,11 @@ struct Int : public Value
   }
   
   /*! greater than operator */
-  bool operator> (const Value* v)
+  bool operator> (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Int* i = (Int*)v;
+      Int* i = (Int*)&v;
       return value > i->value;
     }
     
@@ -296,11 +296,11 @@ struct Int : public Value
   }
   
   /*! greater than and equal operator */
-  bool operator>= (const Value* v)
+  bool operator>= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Int* i = (Int*)v;
+      Int* i = (Int*)&v;
       return value >= i->value;
     }
     
@@ -308,11 +308,11 @@ struct Int : public Value
   }
   
   /*! less than operator */
-  bool operator< (const Value* v)
+  bool operator< (const Value& v) const override
   {
-    if (v->getType() < m_type)
+    if (v.getType() < m_type)
     {
-      Int* i = (Int*)v;
+      Int* i = (Int*)&v;
       return value < i->value;
     }
     
@@ -320,11 +320,11 @@ struct Int : public Value
   }
   
   /*! less than and equal operator */
-  bool operator<= (const Value* v)
+  bool operator<= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Int* i = (Int*)v;
+      Int* i = (Int*)&v;
       return value <= i->value;
     }
     
@@ -354,11 +354,11 @@ struct Float : public Value
   }
   
   /*! equal operator */
-  bool operator== (const Value* v)
+  bool operator== (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Float* f = (Float*)v;
+      Float* f = (Float*)&v;
       return value == f->value;
     }
     
@@ -366,11 +366,11 @@ struct Float : public Value
   }
   
   /*! different operator */
-  bool operator!= (const Value* v)
+  bool operator!= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Float* f = (Float*)v;
+      Float* f = (Float*)&v;
       return value != f->value;
     }
     
@@ -378,11 +378,11 @@ struct Float : public Value
   }
   
   /*! greater than operator */
-  bool operator> (const Value* v)
+  bool operator> (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Float* f = (Float*)v;
+      Float* f = (Float*)&v;
       return value > f->value;
     }
     
@@ -390,11 +390,11 @@ struct Float : public Value
   }
   
   /*! greater than and equal operator */
-  bool operator>= (const Value* v)
+  bool operator>= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Float* f = (Float*)v;
+      Float* f = (Float*)&v;
       return value >= f->value;
     }
     
@@ -402,11 +402,11 @@ struct Float : public Value
   }
   
   /*! less than operator */
-  bool operator< (const Value* v)
+  bool operator< (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Float* f = (Float*)v;
+      Float* f = (Float*)&v;
       return value < f->value;
     }
     
@@ -414,11 +414,11 @@ struct Float : public Value
   }
   
   /*! less than and equal operator */
-  bool operator<= (const Value* v)
+  bool operator<= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Float* f = (Float*)v;
+      Float* f = (Float*)&v;
       return value <= f->value;
     }
     
@@ -448,11 +448,11 @@ struct Char : public Value
   }
   
   /*! equal operator */
-  bool operator== (const Value* v)
+  bool operator== (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Char* c = (Char*)v;
+      Char* c = (Char*)&v;
       return value == c->value;
     }
     
@@ -460,11 +460,11 @@ struct Char : public Value
   }
   
   /*! different operator */
-  bool operator!= (const Value* v)
+  bool operator!= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Char* c = (Char*)v;
+      Char* c = (Char*)&v;
       return value != c->value;
     }
     
@@ -472,11 +472,11 @@ struct Char : public Value
   }
   
   /*! greater than operator */
-  bool operator> (const Value* v)
+  bool operator> (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Char* c = (Char*)v;
+      Char* c = (Char*)&v;
       return value > c->value;
     }
     
@@ -484,11 +484,11 @@ struct Char : public Value
   }
   
   /*! greater than and equal operator */
-  bool operator>= (const Value* v)
+  bool operator>= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Char* c = (Char*)v;
+      Char* c = (Char*)&v;
       return value >= c->value;
     }
     
@@ -496,11 +496,11 @@ struct Char : public Value
   }
   
   /*! less than operator */
-  bool operator< (const Value* v)
+  bool operator< (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Char* c = (Char*)v;
+      Char* c = (Char*)&v;
       return value < c->value;
     }
     
@@ -508,11 +508,11 @@ struct Char : public Value
   }
   
   /*! less than and equal operator */
-  bool operator<= (const Value* v)
+  bool operator<= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Char* c = (Char*)v;
+      Char* c = (Char*)&v;
       return value <= c->value;
     }
     
@@ -542,11 +542,11 @@ struct String : public Value
   }
   
   /*! equal operator */
-  bool operator== (const Value* v)
+  bool operator== (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      String* s = (String*)v;
+      String* s = (String*)&v;
       return value == s->value;
     }
     
@@ -554,11 +554,11 @@ struct String : public Value
   }
   
   /*! different operator */
-  bool operator!= (const Value* v)
+  bool operator!= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      String* s = (String*)v;
+      String* s = (String*)&v;
       return value != s->value;
     }
     
@@ -566,11 +566,11 @@ struct String : public Value
   }
   
   /*! greater than operator */
-  bool operator> (const Value* v)
+  bool operator> (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      String* s = (String*)v;
+      String* s = (String*)&v;
       return value > s->value;
     }
     
@@ -578,11 +578,11 @@ struct String : public Value
   }
   
   /*! greater than and equal operator */
-  bool operator>= (const Value* v)
+  bool operator>= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      String* s = (String*)v;
+      String* s = (String*)&v;
       return value >= s->value;
     }
     
@@ -590,11 +590,11 @@ struct String : public Value
   }
   
   /*! less than operator */
-  bool operator< (const Value* v)
+  bool operator< (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      String* s = (String*)v;
+      String* s = (String*)&v;
       return value < s->value;
     }
     
@@ -602,11 +602,11 @@ struct String : public Value
   }
   
   /*! less than and equal operator */
-  bool operator<= (const Value* v)
+  bool operator<= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      String* s = (String*)v;
+      String* s = (String*)&v;
       return value <= s->value;
     }
     
@@ -643,11 +643,11 @@ struct Tuple : public Value
   }
   
   /*! equal operator */
-  bool operator== (const Value* v)
+  bool operator== (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Tuple* t = (Tuple*)v;
+      Tuple* t = (Tuple*)&v;
       
       if (value.size() != t->value.size())
         return false;
@@ -669,11 +669,11 @@ struct Tuple : public Value
   }
   
   /*! different operator */
-  bool operator!= (const Value* v)
+  bool operator!= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Tuple* t = (Tuple*)v;
+      Tuple* t = (Tuple*)&v;
       
       if (value.size() != t->value.size())
         return false;
@@ -694,11 +694,11 @@ struct Tuple : public Value
   }
   
   /*! greater than operator */
-  bool operator> (const Value* v)
+  bool operator> (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Tuple* t = (Tuple*)v;
+      Tuple* t = (Tuple*)&v;
       
       if (value.size() != t->value.size())
         return false;
@@ -719,11 +719,11 @@ struct Tuple : public Value
   }
   
   /*! greater than and equal operator */
-  bool operator>= (const Value* v)
+  bool operator>= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Tuple* t = (Tuple*)v;
+      Tuple* t = (Tuple*)&v;
       
       if (value.size() != t->value.size())
         return false;
@@ -744,11 +744,11 @@ struct Tuple : public Value
   }
   
   /*! less than operator */
-  bool operator< (const Value* v)
+  bool operator< (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Tuple* t = (Tuple*)v;
+      Tuple* t = (Tuple*)&v;
       
       if (value.size() != t->value.size())
         return false;
@@ -769,11 +769,11 @@ struct Tuple : public Value
   }
   
   /*! less than and equal operator */
-  bool operator<= (const Value* v)
+  bool operator<= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Tuple* t = (Tuple*)v;
+      Tuple* t = (Tuple*)&v;
       
       if (value.size() != t->value.size())
         return false;
@@ -816,11 +816,11 @@ struct Generic : public Value
   }
   
   /*! equal operator */
-  bool operator== (const Value* v)
+  bool operator== (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Generic<T>* g = (Generic<T>*)v;
+      Generic<T>* g = (Generic<T>*)&v;
       return value == g->value;
     }
     
@@ -828,11 +828,11 @@ struct Generic : public Value
   }
   
   /*! different operator */
-  bool operator!= (const Value* v)
+  bool operator!= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Generic<T>* g = (Generic<T>*)v;
+      Generic<T>* g = (Generic<T>*)&v;
       return value != g->value;
     }
     
@@ -840,11 +840,11 @@ struct Generic : public Value
   }
   
   /*! greater than operator */
-  bool operator> (const Value* v)
+  bool operator> (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Generic<T>* g = (Generic<T>*)v;
+      Generic<T>* g = (Generic<T>*)&v;
       return value > g->value;
     }
     
@@ -852,11 +852,11 @@ struct Generic : public Value
   }
   
   /*! greater than and equal operator */
-  bool operator>= (const Value* v)
+  bool operator>= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Generic<T>* g = (Generic<T>*)v;
+      Generic<T>* g = (Generic<T>*)&v;
       return value >= g->value;
     }
     
@@ -864,11 +864,11 @@ struct Generic : public Value
   }
   
   /*! less than operator */
-  bool operator< (const Value* v)
+  bool operator< (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Generic<T>* g = (Generic<T>*)v;
+      Generic<T>* g = (Generic<T>*)&v;
       return value < g->value;
     }
     
@@ -876,11 +876,11 @@ struct Generic : public Value
   }
   
   /*! less than and equal operator */
-  bool operator<= (const Value* v)
+  bool operator<= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Generic<T>* g = (Generic<T>*)v;
+      Generic<T>* g = (Generic<T>*)&v;
       return value <= g->value;
     }
     

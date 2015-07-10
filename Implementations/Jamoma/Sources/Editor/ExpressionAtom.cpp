@@ -47,25 +47,29 @@ public:
     {
       case Operator::EQUAL :
       {
-        return mFirstValue == mSecondValue;
+        return (*mFirstValue) == (*mSecondValue);
       }
-    case Operator::GREATER_THAN :
+      case Operator::DIFFERENT :
       {
-        return mFirstValue > mSecondValue;
+        return (*mFirstValue) != (*mSecondValue);
       }
-    case Operator::LOWER_THAN :
+      case Operator::GREATER_THAN :
       {
-        return mFirstValue < mSecondValue;
+        return (*mFirstValue) > (*mSecondValue);
       }
-    case Operator::GREATER_THAN_OR_EQUAL :
+      case Operator::LOWER_THAN :
       {
-        return mFirstValue >= mSecondValue;
+        return (*mFirstValue) < (*mSecondValue);
       }
-    case Operator::LOWER_THAN_OR_EQUAL :
+      case Operator::GREATER_THAN_OR_EQUAL :
       {
-        return mFirstValue <= mSecondValue;
+        return (*mFirstValue) >= (*mSecondValue);
       }
-    default :
+      case Operator::LOWER_THAN_OR_EQUAL :
+      {
+        return (*mFirstValue) <= (*mSecondValue);
+      }
+      default :
         return false;
     }
   }

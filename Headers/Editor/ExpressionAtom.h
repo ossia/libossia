@@ -37,6 +37,7 @@ public:
   enum class Operator
   {
     EQUAL,
+    DIFFERENT,
     GREATER_THAN,
     LOWER_THAN,
     GREATER_THAN_OR_EQUAL,

@@ -114,19 +114,19 @@ struct Destination : public Value
   }
 
   /*! equal operator */
-  bool operator== (const Value* v)
+  bool operator== (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Destination* d = (Destination*)v;
+      Destination* d = (Destination*)&v;
       if (value->getAddress() && d->value->getAddress())
-        return value->getAddress()->getValue() == d->value->getAddress()->getValue();
+        return (*value->getAddress()->getValue()) == (*d->value->getAddress()->getValue());
     }
     else if (value->getAddress())
     {
-      if (v->getType() == value->getAddress()->getValueType())
+      if (v.getType() == value->getAddress()->getValueType())
       {
-        return value->getAddress()->getValue() == v;
+        return (*value->getAddress()->getValue()) == v;
       }
     }
     
@@ -134,19 +134,19 @@ struct Destination : public Value
   }
   
   /*! different operator */
-  bool operator!= (const Value* v)
+  bool operator!= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Destination* d = (Destination*)v;
+      Destination* d = (Destination*)&v;
       if (value->getAddress() && d->value->getAddress())
-        return value->getAddress()->getValue() != d->value->getAddress()->getValue();
+        return (*value->getAddress()->getValue()) != (*d->value->getAddress()->getValue());
     }
     else if (value->getAddress())
     {
-      if (v->getType() == value->getAddress()->getValueType())
+      if (v.getType() == value->getAddress()->getValueType())
       {
-        return value->getAddress()->getValue() != v;
+        return (*value->getAddress()->getValue()) != v;
       }
     }
     
@@ -154,19 +154,19 @@ struct Destination : public Value
   }
   
   /*! greater than operator */
-  bool operator> (const Value* v)
+  bool operator> (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Destination* d = (Destination*)v;
+      Destination* d = (Destination*)&v;
       if (value->getAddress() && d->value->getAddress())
-        return value->getAddress()->getValue() > d->value->getAddress()->getValue();
+        return (*value->getAddress()->getValue()) > (*d->value->getAddress()->getValue());
     }
     else if (value->getAddress())
     {
-      if (v->getType() == value->getAddress()->getValueType())
+      if (v.getType() == value->getAddress()->getValueType())
       {
-        return value->getAddress()->getValue() > v;
+        return (*value->getAddress()->getValue()) > v;
       }
     }
     
@@ -174,19 +174,19 @@ struct Destination : public Value
   }
   
   /*! greater than and equal operator */
-  bool operator>= (const Value* v)
+  bool operator>= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Destination* d = (Destination*)v;
+      Destination* d = (Destination*)&v;
       if (value->getAddress() && d->value->getAddress())
-        return value->getAddress()->getValue() >= d->value->getAddress()->getValue();
+        return (*value->getAddress()->getValue()) >= (*d->value->getAddress()->getValue());
     }
     else if (value->getAddress())
     {
-      if (v->getType() == value->getAddress()->getValueType())
+      if (v.getType() == value->getAddress()->getValueType())
       {
-        return value->getAddress()->getValue() >= v;
+        return (*value->getAddress()->getValue()) >= v;
       }
     }
     
@@ -194,19 +194,19 @@ struct Destination : public Value
   }
   
   /*! less than operator */
-  bool operator< (const Value* v)
+  bool operator< (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Destination* d = (Destination*)v;
+      Destination* d = (Destination*)&v;
       if (value->getAddress() && d->value->getAddress())
-        return value->getAddress()->getValue() < d->value->getAddress()->getValue();
+        return (*value->getAddress()->getValue()) < (*d->value->getAddress()->getValue());
     }
     else if (value->getAddress())
     {
-      if (v->getType() == value->getAddress()->getValueType())
+      if (v.getType() == value->getAddress()->getValueType())
       {
-        return value->getAddress()->getValue() < v;
+        return (*value->getAddress()->getValue()) < v;
       }
     }
     
@@ -214,19 +214,19 @@ struct Destination : public Value
   }
   
   /*! less than and equal operator */
-  bool operator<= (const Value* v)
+  bool operator<= (const Value& v) const override
   {
-    if (v->getType() == m_type)
+    if (v.getType() == m_type)
     {
-      Destination* d = (Destination*)v;
+      Destination* d = (Destination*)&v;
       if (value->getAddress() && d->value->getAddress())
-        return value->getAddress()->getValue() <= d->value->getAddress()->getValue();
+        return (*value->getAddress()->getValue()) <= (*d->value->getAddress()->getValue());
     }
     else if (value->getAddress())
     {
-      if (v->getType() == value->getAddress()->getValueType())
+      if (v.getType() == value->getAddress()->getValueType())
       {
-        return value->getAddress()->getValue() <= v;
+        return (*value->getAddress()->getValue()) <= v;
       }
     }
     

@@ -121,6 +121,8 @@ private:
 /*! \details Behavior value */
 struct Behavior : public Value
 {
+  std::shared_ptr<CurveAbstract> value;
+  
   /*! constructor */
   Behavior(std::shared_ptr<CurveAbstract> v) : value(v)
   {
@@ -132,8 +134,42 @@ struct Behavior : public Value
   {
     return new Behavior(value);
   }
-    
-  std::shared_ptr<CurveAbstract> value;
+  
+  /*! equal operator */
+  bool operator== (const Value& v) const override
+  {
+    return v.getType() == m_type;
+  }
+  
+  /*! different operator */
+  bool operator!= (const Value& v) const override
+  {
+    return v.getType() != m_type;
+  }
+  
+  /*! greater than operator */
+  bool operator> (const Value& v) const override
+  {
+    return v.getType() != m_type;
+  }
+  
+  /*! greater than and equal operator */
+  bool operator>= (const Value& v) const override
+  {
+    return v.getType() == m_type;
+  }
+  
+  /*! less than operator */
+  bool operator< (const Value& v) const override
+  {
+    return v.getType() != m_type;
+  }
+  
+  /*! less than and equal operator */
+  bool operator<= (const Value& v) const override
+  {
+    return v.getType() == m_type;
+  }
 };
 
 }
