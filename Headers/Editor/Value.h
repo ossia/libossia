@@ -656,7 +656,7 @@ struct Tuple : public Value
       auto tit = t->value.begin();
       for (auto it = value.begin(); it != value.end();it++)
       {
-        result &= *it == *tit;
+        result &= (**it) == (**tit);
         if (!result)
           break;
         tit++;
@@ -682,7 +682,7 @@ struct Tuple : public Value
       auto tit = t->value.begin();
       for (auto it = value.begin(); it != value.end();it++)
       {
-        result &= *it != *tit;
+        result &= (**it) != (**tit);
         if (!result)
           break;
       }
@@ -707,7 +707,7 @@ struct Tuple : public Value
       auto tit = t->value.begin();
       for (auto it = value.begin(); it != value.end();it++)
       {
-        result &= *it > *tit;
+        result &= (**it) > (**tit);
         if (!result)
           break;
       }
@@ -732,7 +732,7 @@ struct Tuple : public Value
       auto tit = t->value.begin();
       for (auto it = value.begin(); it != value.end();it++)
       {
-        result &= *it >= *tit;
+        result &= (**it) >= (**tit);
         if (!result)
           break;
       }
@@ -757,7 +757,7 @@ struct Tuple : public Value
       auto tit = t->value.begin();
       for (auto it = value.begin(); it != value.end();it++)
       {
-        result &= *it < *tit;
+        result &= (**it) < (**tit);
         if (!result)
           break;
       }
@@ -782,7 +782,7 @@ struct Tuple : public Value
       auto tit = t->value.begin();
       for (auto it = value.begin(); it != value.end();it++)
       {
-        result &= *it <= *tit;
+        result &= (**it) <= (**tit);
         if (!result)
           break;
       }
