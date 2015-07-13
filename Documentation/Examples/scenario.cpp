@@ -121,7 +121,7 @@ int main()
     auto first_constraint = TimeConstraint::create(first_start_event, first_end_event, first_duration, first_duration, first_duration);
     
     // add the first TimeConstraint to the main Scenario
-    main_scenario->addConstraint(first_constraint);
+    main_scenario->addTimeConstraint(first_constraint);
 
     /*
      Main Scenario edition : creation of an Automation
