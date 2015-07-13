@@ -38,7 +38,7 @@ private:
   Container<TimeConstraint>   mTimeContraints;
   Container<TimeNode>         mTimeNodes;         // list of all TimeNodes of the scenario (the first is the start node, the second is the end node)
   
-  bool                        mIsKiller;
+  bool                        mKiller;
   
 public:
   

@@ -21,7 +21,8 @@ namespace OSSIA
 JamomaScenario::JamomaScenario(TimeProcess::ExecutionCallback callback,
                                shared_ptr<State> startState,
                                shared_ptr<State> endState) :
-JamomaTimeProcess(callback, startState, endState)
+JamomaTimeProcess(callback, startState, endState),
+mKiller(false)
 {
   // create the start and the end TimeNodes
   mTimeNodes.push_back(TimeNode::create());
@@ -166,12 +167,12 @@ void JamomaScenario::removeTimeNode(const shared_ptr<TimeNode> timeNode)
 
 bool JamomaScenario::isKiller() const
 {
-  return mIsKiller;
+  return mKiller;
 }
 
 void JamomaScenario::setKiller(bool isKiller)
 {
-  mIsKiller = isKiller;
+  mKiller = isKiller;
 }
 
 const shared_ptr<TimeNode> & JamomaScenario::getStartNode() const
