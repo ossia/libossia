@@ -15,6 +15,7 @@ class TimeNodeTest : public QObject
 
 private Q_SLOTS:
     
+    /*! test life cycle and accessors functions */
     void test_basic()
     {
         auto node = TimeNode::create();
@@ -33,6 +34,7 @@ private Q_SLOTS:
         QVERIFY(node->timeEvents().size() == 0);
     }
     
+    /*! test edition functions */
     void test_edition()
     {
         auto node = TimeNode::create();

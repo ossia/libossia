@@ -7,23 +7,51 @@ using namespace OSSIA;
 class AddressTest : public QObject
 {
     Q_OBJECT
+    
 private Q_SLOTS:
-    void addressMainTest()
+    
+    /*! test life cycle and accessors functions */
+    void test_basic()
     {
-        Local loc{};
-        auto localDev = Device::create(loc, "localDev");
-        localDev->emplace(localDev->children().begin(), "child");
-
-        auto node = localDev->children().front();
-        auto addr = node->createAddress(Value::Type::INT);
-
-        Int i(1);
-        QCOMPARE(addr->sendValue(&i), true);
-        QCOMPARE(addr->getValueType(), Value::Type::INT);
-
-        QCOMPARE(addr->updateValue(), true);
-        QCOMPARE((static_cast<Int*>(addr->getValue()))->value, 1);
-        QCOMPARE((static_cast<Int*>(addr->getValue()))->value, 1);
+        Local local_protocol{};
+        auto local_device = Device::create(local_protocol, "test");
+        
+        local_device->emplace(local_device->children().begin(), "child");
+        auto address = local_device->children().front()->createAddress();
+        QVERIFY(address != nullptr);
+        
+        QVERIFY(address->getDevice() != nullptr);
+        
+        QVERIFY(address->getValueType() == Value::Type::IMPULSE);
+        
+        //! \todo verify setValueType
+        
+        QVERIFY(address->getAccessMode() == Address::AccessMode::BI);
+        
+        address->setAccessMode(Address::AccessMode::SET);
+        QVERIFY(address->getAccessMode() == Address::AccessMode::SET);
+        
+        QVERIFY(address->getDomain() != nullptr);
+        
+        //! \todo verify setDomain
+        
+        QVERIFY(address->getBoundingMode() == Address::BoundingMode::FREE);
+        
+        address->setBoundingMode(Address::BoundingMode::CLIP);
+        QVERIFY(address->getBoundingMode() == Address::BoundingMode::CLIP);
+        
+        QVERIFY(address->getRepetitionFilter() == false);
+        
+        address->setRepetitionFilter(true);
+        QVERIFY(address->getRepetitionFilter() == true);
+        
+        //! \todo verify getValueCallback
+        
+        //! \todo verify setValueCallback
+        
+        //! \todo verify getValue
+        
+        //! \todo verify sendValue
     }
 };
 

@@ -15,6 +15,7 @@ class TimeEventTest : public QObject
     
 private Q_SLOTS:
     
+    /*! test life cycle and accessors functions */
     void test_basic()
     {
         auto node = TimeNode::create();
@@ -34,6 +35,7 @@ private Q_SLOTS:
         QVERIFY(event->getStatus() == TimeEvent::Status::WAITING);
     }
     
+    /*! test edition functions */
     void test_edition()
     {
         auto nodeA = TimeNode::create();

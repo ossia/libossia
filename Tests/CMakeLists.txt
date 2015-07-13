@@ -21,7 +21,7 @@ addAPIQtTest(APIScenarioTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioTes
 addAPIQtTest(APITimeEventTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeEventTest.cpp")
 addAPIQtTest(APITimeNodeTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeNodeTest.cpp")
 
-#addAPIQtTest(APIAddressTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Network/AddressTest.cpp")
+addAPIQtTest(APIAddressTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Network/AddressTest.cpp")
 #addAPIQtTest(APIDeviceTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Network/DeviceTest.cpp")
 #addAPIQtTest(APINodeTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Network/NodeTest.cpp")
 
