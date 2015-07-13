@@ -18,7 +18,7 @@ function(addAPIQtTest TESTNAME TESTSRCS)
 endFunction()
 
 addAPIQtTest(APIScenarioTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioTest.cpp")
-#addAPIQtTest(APITimeEventTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeEventTest.cpp")
+addAPIQtTest(APITimeEventTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeEventTest.cpp")
 addAPIQtTest(APITimeNodeTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeNodeTest.cpp")
 
 #addAPIQtTest(APIAddressTest	    "${CMAKE_CURRENT_SOURCE_DIR}/Network/AddressTest.cpp")
