@@ -30,6 +30,8 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
+  TimeValue mSimultaneityMargin;
+  
 public:
 
 # pragma mark -
@@ -55,7 +57,7 @@ public:
   
   TimeValue getSimultaneityMargin() const override;
   
-  void setSimultaneityMargin(TimeValue) override;
+  void setSimultaneityMargin(const TimeValue&) override;
   
 # pragma mark -
 # pragma mark #TimeEvents

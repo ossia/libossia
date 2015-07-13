@@ -73,7 +73,7 @@ public:
   /*! set the simultaneity margin
    \todo remove setter and move the setting into constructor (?)
    \param #TimeValue the simultaneity margin */
-  virtual void setSimultaneityMargin(TimeValue) = 0;
+  virtual void setSimultaneityMargin(const TimeValue&) = 0;
 
 # pragma mark -
 # pragma mark #TimeEvents

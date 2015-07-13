@@ -51,11 +51,13 @@ TimeValue JamomaTimeNode::getDate() const
   
 TimeValue JamomaTimeNode::getSimultaneityMargin() const
 {
-  return TimeValue();
+  return mSimultaneityMargin;
 }
   
-void JamomaTimeNode::setSimultaneityMargin(TimeValue)
-{}
+void JamomaTimeNode::setSimultaneityMargin(const TimeValue& simultaneityMargin)
+{
+  mSimultaneityMargin = simultaneityMargin;
+}
 
 # pragma mark -
 # pragma mark #TimeEvents
