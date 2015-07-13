@@ -71,9 +71,9 @@ public:
 # pragma mark -
 # pragma mark Edition
   
-  void addConstraint(const shared_ptr<TimeConstraint>) override;
+  void addTimeConstraint(const shared_ptr<TimeConstraint>) override;
   
-  void removeConstraint(const shared_ptr<TimeConstraint>) override;
+  void removeTimeConstraint(const shared_ptr<TimeConstraint>) override;
   
   void addTimeNode(const shared_ptr<TimeNode>) override;
 

@@ -123,7 +123,7 @@ shared_ptr<State> JamomaScenario::state() const
 # pragma mark -
 # pragma mark Edition
 
-void JamomaScenario::addConstraint(const shared_ptr<TimeConstraint> constraint)
+void JamomaScenario::addTimeConstraint(const shared_ptr<TimeConstraint> constraint)
 {
   // store the TimeConstraint if it is not already stored
   if (std::find(mTimeContraints.begin(),
@@ -140,7 +140,7 @@ void JamomaScenario::addConstraint(const shared_ptr<TimeConstraint> constraint)
   addTimeNode(constraint->getEndEvent()->getTimeNode());
 }
 
-void JamomaScenario::removeConstraint(const shared_ptr<TimeConstraint> constraint)
+void JamomaScenario::removeTimeConstraint(const shared_ptr<TimeConstraint> constraint)
 {
   mTimeContraints.erase(find(mTimeContraints.begin(), mTimeContraints.end(), constraint));
 }

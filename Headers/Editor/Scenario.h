@@ -54,11 +54,11 @@ public:
 
   /*! add a #TimeConstraint and its #TimeNodes into the scenario if they don't already be added
    \param std::shared_ptr<#TimeConstraint> to add */
-  virtual void addConstraint(const std::shared_ptr<TimeConstraint>) = 0;
+  virtual void addTimeConstraint(const std::shared_ptr<TimeConstraint>) = 0;
 
   /*! remove a #TimeConstraint from the scenario
    \param std::shared_ptr<#TimeConstraint> to remove */
-  virtual void removeConstraint(const std::shared_ptr<TimeConstraint>) = 0;
+  virtual void removeTimeConstraint(const std::shared_ptr<TimeConstraint>) = 0;
   
   /*! add a #TimeNode into the scenario if it is not already added
    \param std::shared_ptr<#TimeNode> to add */
