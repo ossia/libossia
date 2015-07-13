@@ -1,10 +1,5 @@
 #include <QtTest>
-
-#include "Network/Address.h"
-#include "Network/Device.h"
-#include "Network/Node.h"
-#include "Network/Protocol.h"
-
+#include "../ForwardDeclaration.h"
 #include <iostream>
 
 using namespace OSSIA;
@@ -20,11 +15,11 @@ private Q_SLOTS:
         localDev->emplace(localDev->children().begin(), "child");
 
         auto node = localDev->children().front();
-        auto addr = node->createAddress(AddressValue::Type::INT);
+        auto addr = node->createAddress(Value::Type::INT);
 
         Int i(1);
         QCOMPARE(addr->sendValue(&i), true);
-        QCOMPARE(addr->getValueType(), AddressValue::Type::INT);
+        QCOMPARE(addr->getValueType(), Value::Type::INT);
 
         QCOMPARE(addr->updateValue(), true);
         QCOMPARE((static_cast<Int*>(addr->getValue()))->value, 1);

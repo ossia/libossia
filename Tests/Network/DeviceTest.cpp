@@ -1,8 +1,6 @@
 #include <QtTest>
-
-#include "Network/Device.h"
-#include "Network/Node.h"
-#include "Network/Protocol.h"
+#include "../ForwardDeclaration.h"
+#include <iostream>
 
 using namespace OSSIA;
 

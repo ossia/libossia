@@ -1,12 +1,6 @@
 #include <QtTest>
-
-#include "Editor/Curve.h"
-#include "Editor/Automation.h"
-#include "Editor/Scenario.h"
-#include "Editor/TimeConstraint.h"
-#include "Editor/TimeNode.h"
-#include "Editor/TimeEvent.h"
-#include "Editor/TimeValue.h"
+#include "../ForwardDeclaration.h"
+#include <iostream>
 
 using namespace OSSIA;
 

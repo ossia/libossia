@@ -1,5 +1,0 @@
-#include "../Sources/Editor/Scenario.cpp"
-#include "../Sources/Editor/TimeConstraint.cpp"
-#include "../Sources/Editor/TimeNode.cpp"
-#include "../Sources/Editor/TimeEvent.cpp"
-#include "../Sources/Editor/TimeValue.cpp"
