@@ -33,7 +33,7 @@ public:
   /*! factory
    \param std::shared_ptr<Curve<T>> parent
    \return std::shared_ptr<CurveSegmentLinear<T>> */
-  static std::shared_ptr<CurveSegmentLinear<T>> create(std::shared_ptr<Curve<T>>);
+  static std::shared_ptr<CurveSegmentLinear<T>> create(std::shared_ptr<Curve<T>> = nullptr);
   
   /*! destructor */
   virtual ~CurveSegmentLinear() = default;

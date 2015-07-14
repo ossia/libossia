@@ -153,9 +153,10 @@ public:
   {
     if (mNode)
     {
+      mAddress = nullptr;
       return !mNode->setObject();
     }
-    
+
     return false;
   }
 

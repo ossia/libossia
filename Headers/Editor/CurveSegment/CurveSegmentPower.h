@@ -33,7 +33,7 @@ namespace OSSIA
     /*! factory
      \param std::shared_ptr<Curve<T>> parent
      \return std::shared_ptr<CurveSegmentPower<T>> */
-    static std::shared_ptr<CurveSegmentPower<T>> create(std::shared_ptr<Curve<T>>);
+    static std::shared_ptr<CurveSegmentPower<T>> create(std::shared_ptr<Curve<T>> = nullptr);
     
     /*! destructor */
     virtual ~CurveSegmentPower() = default;
@@ -51,7 +51,7 @@ namespace OSSIA
     virtual CurveSegmentPower<T> & setPower(double) = 0;
     
     typename CurveSegment<T>::Type getType() const override final
-    {return CurveSegment<T>::Type::LINEAR;}
+    {return CurveSegment<T>::Type::POWER;}
   
 };
 }

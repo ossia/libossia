@@ -50,7 +50,8 @@ namespace OSSIA
 
 template <typename T>
 JamomaCurveSegmentPower<T>::JamomaCurveSegmentPower(shared_ptr<Curve<T>> parent) :
-mParent(parent)
+mParent(parent),
+mPower(1.)
 {}
 
 template <typename T>
