@@ -10,9 +10,9 @@ function(addAPIExample TESTNAME TESTSRCS)
 
 endFunction()
 
-#addAPIExample(branching	    "${CMAKE_CURRENT_SOURCE_DIR}/branching.cpp")
-#addAPIExample(complete		    "${CMAKE_CURRENT_SOURCE_DIR}/complete.cpp")
+addAPIExample(complete		    "${CMAKE_CURRENT_SOURCE_DIR}/complete.cpp")
 addAPIExample(curve		    "${CMAKE_CURRENT_SOURCE_DIR}/curve.cpp")
+addAPIExample(expression	    "${CMAKE_CURRENT_SOURCE_DIR}/expression.cpp")
 addAPIExample(network	    	    "${CMAKE_CURRENT_SOURCE_DIR}/network.cpp")
 addAPIExample(scenario	    	    "${CMAKE_CURRENT_SOURCE_DIR}/scenario.cpp")
 addAPIExample(state		    "${CMAKE_CURRENT_SOURCE_DIR}/state.cpp")
