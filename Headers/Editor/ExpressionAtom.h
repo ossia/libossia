@@ -52,8 +52,8 @@ public:
    \param #Operator
    \return std::shared_ptr<#ExpressionAtom> */
   static std::shared_ptr<ExpressionAtom> create(const Value*,
-                                                Operator,
-                                                const Value*);
+                                                Operator = Operator::EQUAL,
+                                                const Value* = new Impulse());
   
   /*! clone
    \return std::shared_ptr<#ExpressionAtom> */
