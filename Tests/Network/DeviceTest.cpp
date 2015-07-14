@@ -9,15 +9,13 @@ class DeviceTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
-    void createDeviceTest()
+
+    /*! test life cycle and accessors functions */
+    void test_basic()
     {
-        Local none;
-        auto deviceNoProtocole = Device::create(none, "void protocol");
-
-        Minuit minuit{"127.0.0.1", 7000, 7001};
-
-        auto minDev = Device::create(minuit, "minuitDevice");
-        QCOMPARE(minDev->updateNamespace(), false);
+        Local local_protocol{};
+        auto local_device = Device::create(local_protocol, "test");
+        QVERIFY(local_device != nullptr);
     }
 };
 

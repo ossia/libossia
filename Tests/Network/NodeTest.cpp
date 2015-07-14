@@ -4,64 +4,48 @@
 
 using namespace OSSIA;
 
-class NodeTest :public QObject
+class NodeTest : public QObject
 {
     Q_OBJECT
 
 private Q_SLOTS:
-    void basicnodetest()
+
+    /*! test life cycle and accessors functions */
+    void test_basic()
     {
-        Local local{};
-        auto localDevice = Device::create(local, "localProtocol");
+        Local local_protocol{};
+        auto local_device = Device::create(local_protocol, "test");
 
-        Minuit minuit{"127.0.0.1", 7000, 7001};
-        auto minuitDev = Device::create(minuit, "minuit_device");
+        local_device->emplace(local_device->children().begin(), "child");
+        auto node = local_device->children().front();
+        QVERIFY(node != nullptr);
+        QVERIFY(local_device->children().size() == 1);
 
-        std::string nodeName("fils");
-        minuitDev->emplace(minuitDev->children().begin(), nodeName);
-        QCOMPARE(int(minuitDev->children().size()), 1 );
+        QVERIFY(node->getParent() == local_device);
 
-        auto node = minuitDev->children().front();
-        QCOMPARE(node->getName(), nodeName);
+        QVERIFY(node->getName() == "child");
 
-        QCOMPARE(node->getParent()->getName(), minuitDev->getName());
-
-        OSC osc{"127.0.0.1", 9998, 9999};
-        auto oscDevice = Device::create(osc, "osc_device");
-
-
-        auto address = node->createAddress(AddressValue::Type::BOOL);
-        QVERIFY(address != nullptr );
-        QCOMPARE(node->getAddress(), address);
-
-        QCOMPARE(node->removeAddress(), true);
-
+        QVERIFY(node->getAddress() == nullptr);
     }
 
-    void childNodetest()
+    /*! test edition functions */
+    void test_edition()
     {
-        Local local{};
-        auto localDevice = Device::create(local, "localProtocol");
+        Local local_protocol{};
+        auto local_device = Device::create(local_protocol, "test");
 
-        std::string nodeName("parent");
-        localDevice->emplace(localDevice->children().begin(), nodeName);
-        QCOMPARE(int(localDevice->children().size()), 1 );
+        local_device->emplace(local_device->children().begin(), "child");
+        auto node = local_device->children().front();
 
-        auto parentNode = localDevice->children().front();
+        auto address = node->createAddress();
+        QVERIFY(address != nullptr);
+        QVERIFY(address == node->getAddress());
 
-        parentNode->emplace(parentNode->children().begin(), "fils1");
-        parentNode->emplace(parentNode->children().begin(), "fils2");
-        parentNode->emplace(parentNode->children().begin(), "fils3");
-        //TODO ordre de rangement de emplace
-
-        auto first_child = parentNode->children().begin();
-
-        //QCOMPARE(first_child->getName(), std::string("fils3"));
-
+        QVERIFY(node->removeAddress());
+        QVERIFY(node->getAddress() == nullptr);
     }
 };
 
 QTEST_APPLESS_MAIN(NodeTest)
 
 #include "NodeTest.moc"
-
