@@ -107,37 +107,39 @@ struct Impulse : public Value
   /*! equal operator */
   bool operator== (const Value& v) const override
   {
-    return v.getType() == m_type;
+    //! \note an impulse is equal to anything
+    return true;
   }
   
   /*! different operator */
   bool operator!= (const Value& v) const override
   {
-    return v.getType() != m_type;
+    //! \note an impulse cannot be different to anything
+    return false;
   }
   
   /*! greater than operator */
   bool operator> (const Value& v) const override
   {
-    return v.getType() != m_type;
+    return false;
   }
   
   /*! greater than and equal operator */
   bool operator>= (const Value& v) const override
   {
-    return v.getType() == m_type;
+    return true;
   }
   
   /*! less than operator */
   bool operator< (const Value& v) const override
   {
-    return v.getType() != m_type;
+    return false;
   }
   
   /*! less than and equal operator */
   bool operator<= (const Value& v) const override
   {
-    return v.getType() == m_type;
+    return true;
   }
 };
 

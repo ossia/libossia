@@ -54,10 +54,6 @@ public:
   static std::shared_ptr<ExpressionAtom> create(const Value*,
                                                 Operator,
                                                 const Value*);
-         
-  /*! factory for event condition
-   \return std::shared_ptr<#ExpressionAtom> */
-  static std::shared_ptr<ExpressionAtom> create(std::shared_ptr<Address>);
   
   /*! clone
    \return std::shared_ptr<#ExpressionAtom> */
