@@ -104,6 +104,7 @@ public:
       if (applicationType == kTTSym_local)
       {
         object = TTObject("Data", "parameter");
+        object.set("rampDrive", kTTSym_none);
         mNode->setObject(object);
       }
 
@@ -114,6 +115,7 @@ public:
         mNode->getAddress(nodeAddress);
         TTValue args(nodeAddress, "parameter");
         object = getApplication().send("ProxyDataInstantiate", args);
+        object.set("rampDrive", kTTSym_none);
       }
 
       // for mirror application
