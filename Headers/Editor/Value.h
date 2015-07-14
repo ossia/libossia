@@ -105,39 +105,39 @@ struct Impulse : public Value
   }
   
   /*! equal operator */
-  bool operator== (const Value& v) const override
+  bool operator== (const Value&) const override
   {
     //! \note an impulse is equal to anything
     return true;
   }
   
   /*! different operator */
-  bool operator!= (const Value& v) const override
+  bool operator!= (const Value&) const override
   {
     //! \note an impulse cannot be different to anything
     return false;
   }
   
   /*! greater than operator */
-  bool operator> (const Value& v) const override
+  bool operator> (const Value&) const override
   {
     return false;
   }
   
   /*! greater than and equal operator */
-  bool operator>= (const Value& v) const override
+  bool operator>= (const Value&) const override
   {
     return true;
   }
   
   /*! less than operator */
-  bool operator< (const Value& v) const override
+  bool operator< (const Value&) const override
   {
     return false;
   }
   
   /*! less than and equal operator */
-  bool operator<= (const Value& v) const override
+  bool operator<= (const Value&) const override
   {
     return true;
   }
