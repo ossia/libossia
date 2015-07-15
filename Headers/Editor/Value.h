@@ -38,10 +38,10 @@ public:
     FLOAT,
     CHAR,
     STRING,
+    TUPLE,
+    GENERIC,
     DESTINATION,  //! \note see Destination structure declaration in Node.h
     BEHAVIOR,     //! \note see Behavior structure declaration in Curve.h
-    TUPLE,
-    GENERIC
   };
   
 # pragma mark -
@@ -93,54 +93,28 @@ protected:
 struct Impulse : public Value
 {
   /*! constructor */
-  Impulse()
-  {
-    m_type = Type::IMPULSE;
-  }
+  Impulse();
   
   /*! clone */
-  Value * clone() const override
-  {
-    return new Impulse();
-  }
+  Value * clone() const override;
   
   /*! equal operator */
-  bool operator== (const Value&) const override
-  {
-    //! \note an impulse is equal to anything
-    return true;
-  }
+  bool operator== (const Value&) const override;
   
   /*! different operator */
-  bool operator!= (const Value&) const override
-  {
-    //! \note an impulse cannot be different to anything
-    return false;
-  }
+  bool operator!= (const Value&) const override;
   
   /*! greater than operator */
-  bool operator> (const Value&) const override
-  {
-    return false;
-  }
+  bool operator> (const Value&) const override;
   
   /*! greater than and equal operator */
-  bool operator>= (const Value&) const override
-  {
-    return true;
-  }
+  bool operator>= (const Value&) const override;
   
   /*! less than operator */
-  bool operator< (const Value&) const override
-  {
-    return false;
-  }
+  bool operator< (const Value&) const override;
   
   /*! less than and equal operator */
-  bool operator<= (const Value&) const override
-  {
-    return true;
-  }
+  bool operator<= (const Value&) const override;
 };
 
 # pragma mark -
@@ -151,90 +125,29 @@ struct Bool : public Value
 {
   bool value;
   
-  /*! constructor
-   \param bool value */
-  Bool(bool v = false) : value(v)
-  {
-    m_type = Type::BOOL;
-  }
+  /*! constructor */
+  Bool(bool = false);
   
   /*! clone */
-  Value * clone() const override
-  {
-    return new Bool(value);
-  }
+  Value * clone() const override;
   
   /*! equal operator */
-  bool operator== (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Bool* b = (Bool*)&v;
-      return value == b->value;
-    }
-    
-    return false;
-  }
+  bool operator== (const Value&) const override;
   
   /*! different operator */
-  bool operator!= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Bool* b = (Bool*)&v;
-      return value != b->value;
-    }
-    
-    return false;
-  }
+  bool operator!= (const Value&) const override;
   
   /*! greater than operator */
-  bool operator> (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Bool* b = (Bool*)&v;
-      return value > b->value;
-    }
-    
-    return false;
-  }
+  bool operator> (const Value&) const override;
   
   /*! greater than and equal operator */
-  bool operator>= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Bool* b = (Bool*)&v;
-      return value >= b->value;
-    }
-    
-    return false;
-  }
+  bool operator>= (const Value&) const override;
   
   /*! less than operator */
-  bool operator< (const Value& v) const override
-  {
-    if (v.getType() < m_type)
-    {
-      Bool* b = (Bool*)&v;
-      return value < b->value;
-    }
-    
-    return false;
-  }
+  bool operator< (const Value&) const override;
   
   /*! less than and equal operator */
-  bool operator<= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Bool* b = (Bool*)&v;
-      return value <= b->value;
-    }
-    
-    return false;
-  }
+  bool operator<= (const Value&) const override;
 };
 
 static Bool False = Bool(false);
@@ -250,88 +163,28 @@ struct Int : public Value
   
   /*! constructor
    \param int value */
-  Int(int v = 0) : value(v)
-  {
-    m_type = Type::INT;
-  }
+  Int(int = 0);
   
   /*! clone */
-  Value * clone() const override
-  {
-    return new Int(value);
-  }
+  Value * clone() const override;
   
   /*! equal operator */
-  bool operator== (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Int* i = (Int*)&v;
-      return value == i->value;
-    }
-    
-    return false;
-  }
+  bool operator== (const Value&) const override;
   
   /*! different operator */
-  bool operator!= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Int* i = (Int*)&v;
-      return value != i->value;
-    }
-    
-    return false;
-  }
+  bool operator!= (const Value&) const override;
   
   /*! greater than operator */
-  bool operator> (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Int* i = (Int*)&v;
-      return value > i->value;
-    }
-    
-    return false;
-  }
+  bool operator> (const Value&) const override;
   
   /*! greater than and equal operator */
-  bool operator>= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Int* i = (Int*)&v;
-      return value >= i->value;
-    }
-    
-    return false;
-  }
+  bool operator>= (const Value&) const override;
   
   /*! less than operator */
-  bool operator< (const Value& v) const override
-  {
-    if (v.getType() < m_type)
-    {
-      Int* i = (Int*)&v;
-      return value < i->value;
-    }
-    
-    return false;
-  }
+  bool operator< (const Value&) const override;
   
   /*! less than and equal operator */
-  bool operator<= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Int* i = (Int*)&v;
-      return value <= i->value;
-    }
-    
-    return false;
-  }
+  bool operator<= (const Value&) const override;
 };
   
 # pragma mark -
@@ -344,88 +197,28 @@ struct Float : public Value
   
   /*! constructor
    \param float value */
-  Float(float v = 0.) : value(v)
-  {
-    m_type = Type::FLOAT;
-  }
+  Float(float = 0.);
   
   /*! clone */
-  Value * clone() const override
-  {
-    return new Float(value);
-  }
+  Value * clone() const override;
   
   /*! equal operator */
-  bool operator== (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Float* f = (Float*)&v;
-      return value == f->value;
-    }
-    
-    return false;
-  }
+  bool operator== (const Value&) const override;
   
   /*! different operator */
-  bool operator!= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Float* f = (Float*)&v;
-      return value != f->value;
-    }
-    
-    return false;
-  }
+  bool operator!= (const Value&) const override;
   
   /*! greater than operator */
-  bool operator> (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Float* f = (Float*)&v;
-      return value > f->value;
-    }
-    
-    return false;
-  }
+  bool operator> (const Value&) const override;
   
   /*! greater than and equal operator */
-  bool operator>= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Float* f = (Float*)&v;
-      return value >= f->value;
-    }
-    
-    return false;
-  }
+  bool operator>= (const Value&) const override;
   
   /*! less than operator */
-  bool operator< (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Float* f = (Float*)&v;
-      return value < f->value;
-    }
-    
-    return false;
-  }
+  bool operator< (const Value&) const override;
   
   /*! less than and equal operator */
-  bool operator<= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Float* f = (Float*)&v;
-      return value <= f->value;
-    }
-    
-    return false;
-  }
+  bool operator<= (const Value&) const override;
 };
   
 # pragma mark -
@@ -438,88 +231,28 @@ struct Char : public Value
   
   /*! constructor
    \param char value */
-  Char(char v = 0x00) : value(v)
-  {
-    m_type = Type::CHAR;
-  }
+  Char(char = 0x00);
   
   /*! clone */
-  Value * clone() const override
-  {
-    return new Char(value);
-  }
+  Value * clone() const override;
   
   /*! equal operator */
-  bool operator== (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Char* c = (Char*)&v;
-      return value == c->value;
-    }
-    
-    return false;
-  }
+  bool operator== (const Value&) const override;
   
   /*! different operator */
-  bool operator!= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Char* c = (Char*)&v;
-      return value != c->value;
-    }
-    
-    return false;
-  }
+  bool operator!= (const Value&) const override;
   
   /*! greater than operator */
-  bool operator> (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Char* c = (Char*)&v;
-      return value > c->value;
-    }
-    
-    return false;
-  }
+  bool operator> (const Value&) const override;
   
   /*! greater than and equal operator */
-  bool operator>= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Char* c = (Char*)&v;
-      return value >= c->value;
-    }
-    
-    return false;
-  }
+  bool operator>= (const Value&) const override;
   
   /*! less than operator */
-  bool operator< (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Char* c = (Char*)&v;
-      return value < c->value;
-    }
-    
-    return false;
-  }
+  bool operator< (const Value&) const override;
   
   /*! less than and equal operator */
-  bool operator<= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Char* c = (Char*)&v;
-      return value <= c->value;
-    }
-    
-    return false;
-  }
+  bool operator<= (const Value&) const override;
 };
   
 # pragma mark -
@@ -532,88 +265,28 @@ struct String : public Value
   
   /*! constructor
    \param std::string value */
-  String(std::string v = "") : value(v)
-  {
-    m_type = Type::STRING;
-  }
+  String(std::string = "");
   
   /*! clone */
-  Value * clone() const override
-  {
-    return new String(value);
-  }
+  Value * clone() const override;
   
   /*! equal operator */
-  bool operator== (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      String* s = (String*)&v;
-      return value == s->value;
-    }
-    
-    return false;
-  }
+  bool operator== (const Value&) const override;
   
   /*! different operator */
-  bool operator!= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      String* s = (String*)&v;
-      return value != s->value;
-    }
-    
-    return false;
-  }
+  bool operator!= (const Value&) const override;
   
   /*! greater than operator */
-  bool operator> (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      String* s = (String*)&v;
-      return value > s->value;
-    }
-    
-    return false;
-  }
+  bool operator> (const Value&) const override;
   
   /*! greater than and equal operator */
-  bool operator>= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      String* s = (String*)&v;
-      return value >= s->value;
-    }
-    
-    return false;
-  }
+  bool operator>= (const Value&) const override;
   
   /*! less than operator */
-  bool operator< (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      String* s = (String*)&v;
-      return value < s->value;
-    }
-    
-    return false;
-  }
+  bool operator< (const Value&) const override;
   
   /*! less than and equal operator */
-  bool operator<= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      String* s = (String*)&v;
-      return value <= s->value;
-    }
-    
-    return false;
-  }
+  bool operator<= (const Value&) const override;
 };
 
 # pragma mark -
@@ -626,179 +299,28 @@ struct Tuple : public Value
   
   /*! constructor
   \param std::vector<const #Value> value*/
-  Tuple(std::vector<const Value*> v = std::vector<const Value*>())
-  {
-    m_type = Type::TUPLE;
-    
-    for (const auto & e : v)
-      value.push_back(e->clone());
-  }
+  Tuple(std::vector<const Value*> = std::vector<const Value*>());
   
   /*! clone */
-  Value * clone() const override
-  {
-    std::vector<const Value*> newValue;
-    for (const auto & e : value)
-      newValue.push_back(e->clone());
-      
-    return new Tuple(newValue);
-  }
+  Value * clone() const override;
   
   /*! equal operator */
-  bool operator== (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Tuple* t = (Tuple*)&v;
-      
-      if (value.size() != t->value.size())
-        return false;
-      
-      bool result = true;
-      auto tit = t->value.begin();
-      for (auto it = value.begin(); it != value.end();it++)
-      {
-        result &= (**it) == (**tit);
-        if (!result)
-          break;
-        tit++;
-      }
-      
-      return result;
-    }
-    
-    return false;
-  }
+  bool operator== (const Value&) const override;
   
   /*! different operator */
-  bool operator!= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Tuple* t = (Tuple*)&v;
-      
-      if (value.size() != t->value.size())
-        return false;
-      
-      bool result = true;
-      auto tit = t->value.begin();
-      for (auto it = value.begin(); it != value.end();it++)
-      {
-        result &= (**it) != (**tit);
-        if (!result)
-          break;
-        tit++;
-      }
-      
-      return result;
-    }
-    
-    return false;
-  }
+  bool operator!= (const Value&) const override;
   
   /*! greater than operator */
-  bool operator> (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Tuple* t = (Tuple*)&v;
-      
-      if (value.size() != t->value.size())
-        return false;
-      
-      bool result = true;
-      auto tit = t->value.begin();
-      for (auto it = value.begin(); it != value.end();it++)
-      {
-        result &= (**it) > (**tit);
-        if (!result)
-          break;
-        tit++;
-      }
-      
-      return result;
-    }
-    
-    return false;
-  }
+  bool operator> (const Value&) const override;
   
   /*! greater than and equal operator */
-  bool operator>= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Tuple* t = (Tuple*)&v;
-      
-      if (value.size() != t->value.size())
-        return false;
-      
-      bool result = true;
-      auto tit = t->value.begin();
-      for (auto it = value.begin(); it != value.end();it++)
-      {
-        result &= (**it) >= (**tit);
-        if (!result)
-          break;
-        tit++;
-      }
-      
-      return result;
-    }
-    
-    return false;
-  }
+  bool operator>= (const Value&) const override;
   
   /*! less than operator */
-  bool operator< (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Tuple* t = (Tuple*)&v;
-      
-      if (value.size() != t->value.size())
-        return false;
-      
-      bool result = true;
-      auto tit = t->value.begin();
-      for (auto it = value.begin(); it != value.end();it++)
-      {
-        result &= (**it) < (**tit);
-        if (!result)
-          break;
-        tit++;
-      }
-      
-      return result;
-    }
-    
-    return false;
-  }
+  bool operator< (const Value&) const override;
   
   /*! less than and equal operator */
-  bool operator<= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Tuple* t = (Tuple*)&v;
-      
-      if (value.size() != t->value.size())
-        return false;
-      
-      bool result = true;
-      auto tit = t->value.begin();
-      for (auto it = value.begin(); it != value.end();it++)
-      {
-        result &= (**it) <= (**tit);
-        if (!result)
-          break;
-        tit++;
-      }
-      
-      return result;
-    }
-    
-    return false;
-  }
+  bool operator<= (const Value&) const override;
 };
   
 # pragma mark -
@@ -811,88 +333,28 @@ struct Generic : public Value
   T value;
   
   /*! constructor */
-  Generic(T v) : value(v)
-  {
-    m_type = Type::GENERIC;
-  }
+  Generic(T v);
   
   /*! clone */
-  Value * clone() const override
-  {
-    return new Generic(value);
-  }
+  Value * clone() const override;
   
   /*! equal operator */
-  bool operator== (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Generic<T>* g = (Generic<T>*)&v;
-      return value == g->value;
-    }
-    
-    return false;
-  }
+  bool operator== (const Value&) const override;
   
   /*! different operator */
-  bool operator!= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Generic<T>* g = (Generic<T>*)&v;
-      return value != g->value;
-    }
-    
-    return false;
-  }
+  bool operator!= (const Value&) const override;
   
   /*! greater than operator */
-  bool operator> (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Generic<T>* g = (Generic<T>*)&v;
-      return value > g->value;
-    }
-    
-    return false;
-  }
+  bool operator> (const Value&) const override;
   
   /*! greater than and equal operator */
-  bool operator>= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Generic<T>* g = (Generic<T>*)&v;
-      return value >= g->value;
-    }
-    
-    return false;
-  }
+  bool operator>= (const Value&) const override;
   
   /*! less than operator */
-  bool operator< (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Generic<T>* g = (Generic<T>*)&v;
-      return value < g->value;
-    }
-    
-    return false;
-  }
+  bool operator< (const Value&) const override;
   
   /*! less than and equal operator */
-  bool operator<= (const Value& v) const override
-  {
-    if (v.getType() == m_type)
-    {
-      Generic<T>* g = (Generic<T>*)&v;
-      return value <= g->value;
-    }
-    
-    return false;
-  }
+  bool operator<= (const Value&) const override;
 };
 
 }

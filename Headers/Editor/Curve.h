@@ -124,52 +124,28 @@ struct Behavior : public Value
   std::shared_ptr<CurveAbstract> value;
   
   /*! constructor */
-  Behavior(std::shared_ptr<CurveAbstract> v) : value(v)
-  {
-    m_type = Type::BEHAVIOR;
-  }
-    
+  Behavior(std::shared_ptr<CurveAbstract> v);
+  
   /*! clone */
-  Value * clone() const override
-  {
-    return new Behavior(value);
-  }
+  Value * clone() const override;
   
   /*! equal operator */
-  bool operator== (const Value& v) const override
-  {
-    return v.getType() == m_type;
-  }
+  bool operator== (const Value&) const override;
   
   /*! different operator */
-  bool operator!= (const Value& v) const override
-  {
-    return v.getType() != m_type;
-  }
+  bool operator!= (const Value&) const override;
   
   /*! greater than operator */
-  bool operator> (const Value& v) const override
-  {
-    return v.getType() != m_type;
-  }
+  bool operator> (const Value&) const override;
   
   /*! greater than and equal operator */
-  bool operator>= (const Value& v) const override
-  {
-    return v.getType() == m_type;
-  }
+  bool operator>= (const Value&) const override;
   
   /*! less than operator */
-  bool operator< (const Value& v) const override
-  {
-    return v.getType() != m_type;
-  }
+  bool operator< (const Value&) const override;
   
   /*! less than and equal operator */
-  bool operator<= (const Value& v) const override
-  {
-    return v.getType() == m_type;
-  }
+  bool operator<= (const Value&) const override;
 };
 
 }
