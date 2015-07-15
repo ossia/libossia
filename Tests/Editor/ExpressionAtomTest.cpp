@@ -25,6 +25,42 @@ private Q_SLOTS:
                                                        new Impulse());
 
         QVERIFY(testImpulseExprB->evaluate() == false);
+
+        auto testImpulseExprC = ExpressionAtom::create(new Impulse(),
+                                                       ExpressionAtom::Operator::EQUAL,
+                                                       new Bool(true));
+
+        QVERIFY(testImpulseExprC->evaluate() == true);
+
+        auto testImpulseExprD = ExpressionAtom::create(new Impulse(),
+                                                       ExpressionAtom::Operator::EQUAL,
+                                                       new Int());
+
+        QVERIFY(testImpulseExprD->evaluate() == true);
+
+        auto testImpulseExprE = ExpressionAtom::create(new Impulse(),
+                                                       ExpressionAtom::Operator::EQUAL,
+                                                       new Float());
+
+        QVERIFY(testImpulseExprE->evaluate() == true);
+
+        auto testImpulseExprF = ExpressionAtom::create(new Impulse(),
+                                                       ExpressionAtom::Operator::EQUAL,
+                                                       new Char());
+
+        QVERIFY(testImpulseExprF->evaluate() == true);
+
+        auto testImpulseExprG = ExpressionAtom::create(new Impulse(),
+                                                       ExpressionAtom::Operator::EQUAL,
+                                                       new String());
+
+        QVERIFY(testImpulseExprG->evaluate() == true);
+
+        auto testImpulseExprH = ExpressionAtom::create(new Impulse(),
+                                                       ExpressionAtom::Operator::EQUAL,
+                                                       new Tuple());
+
+        QVERIFY(testImpulseExprH->evaluate() == true);
     }
 
     /*! evaluate expressions with bool values */
@@ -41,6 +77,12 @@ private Q_SLOTS:
                                                     new Bool(true));
 
         QVERIFY(testBoolExprB->evaluate() == false);
+
+        auto testBoolExprC = ExpressionAtom::create(new Bool(true),
+                                                    ExpressionAtom::Operator::EQUAL,
+                                                    new Impulse());
+
+        QVERIFY(testBoolExprC->evaluate() == true);
     }
 
     /*! evaluate expressions with int values */
@@ -57,6 +99,12 @@ private Q_SLOTS:
                                                    new Int(5));
 
         QVERIFY(testIntExprB->evaluate() == false);
+
+        auto testIntExprC = ExpressionAtom::create(new Int(10),
+                                                    ExpressionAtom::Operator::EQUAL,
+                                                    new Impulse());
+
+        QVERIFY(testIntExprC->evaluate() == true);
     }
 
     /*! evaluate expressions with float values */
@@ -73,14 +121,20 @@ private Q_SLOTS:
                                                      new Float(10.));
 
         QVERIFY(testFloatExprB->evaluate() == true);
+
+        auto testFloatExprC = ExpressionAtom::create(new Float(10.),
+                                                     ExpressionAtom::Operator::EQUAL,
+                                                     new Impulse());
+
+        QVERIFY(testFloatExprC->evaluate() == true);
     }
 
     /*! evaluate expressions with string values */
     void test_string()
     {
         auto testStringExprA = ExpressionAtom::create(new String("abc"),
-                                                     ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
-                                                     new String("bcd"));
+                                                      ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
+                                                      new String("bcd"));
 
         QVERIFY(testStringExprA->evaluate() == false);
 
@@ -89,6 +143,12 @@ private Q_SLOTS:
                                                       new String("bcd"));
 
         QVERIFY(testStringExprB->evaluate() == true);
+
+        auto testStringExprC = ExpressionAtom::create(new String("abc"),
+                                                      ExpressionAtom::Operator::EQUAL,
+                                                      new Impulse());
+
+        QVERIFY(testStringExprC->evaluate() == true);
     }
 
     /*! evaluate expressions with tuple values */
@@ -108,6 +168,12 @@ private Q_SLOTS:
                                                      new Tuple(value2));
 
         QVERIFY(testTupleExprB->evaluate() == true);
+
+        auto testTupleExprC = ExpressionAtom::create(new Tuple(value1),
+                                                     ExpressionAtom::Operator::EQUAL,
+                                                     new Impulse());
+
+        QVERIFY(testTupleExprC->evaluate() == true);
     }
 
     /*! evaluate expressions with destination values */
@@ -118,10 +184,10 @@ private Q_SLOTS:
         auto device = Device::create(device_parameters, "i-score");
 
         // Local tree building
-        //auto localImpulseNode1 = *(device->emplace(device->children().cend(), "my_impulse.1"));
-        //auto localImpulseAddress1 = localImpulseNode1->createAddress(Value::Type::IMPULSE);
-        //auto localImpulseNode2 = *(device->emplace(device->children().cend(), "my_impulse.2"));
-        //auto localImpulseAddress2 = localImpulseNode2->createAddress(Value::Type::IMPULSE);
+        auto localImpulseNode1 = *(device->emplace(device->children().cend(), "my_impulse.1"));
+        auto localImpulseAddress1 = localImpulseNode1->createAddress(Value::Type::IMPULSE);
+        auto localImpulseNode2 = *(device->emplace(device->children().cend(), "my_impulse.2"));
+        auto localImpulseAddress2 = localImpulseNode2->createAddress(Value::Type::IMPULSE);
 
         auto localBoolNode1 = *(device->emplace(device->children().cend(), "my_bool.1"));
         auto localBoolAddress1 = localBoolNode1->createAddress(Value::Type::BOOL);
@@ -193,41 +259,47 @@ private Q_SLOTS:
         localTupleAddress2->sendValue(&t2);
 
         // evaluate expressions with Destination
-        auto testDestinationExprA = ExpressionAtom::create(new Destination(localBoolNode1),
+        auto testDestinationExprA = ExpressionAtom::create(new Destination(localImpulseNode1),
+                                                          ExpressionAtom::Operator::EQUAL,
+                                                          new Destination(localImpulseNode2));
+
+        QVERIFY(testDestinationExprA->evaluate() == true);
+
+        auto testDestinationExprB = ExpressionAtom::create(new Destination(localBoolNode1),
                                                            ExpressionAtom::Operator::EQUAL,
                                                            new Destination(localBoolNode2));
 
-        QVERIFY(testDestinationExprA->evaluate() == false);
+        QVERIFY(testDestinationExprB->evaluate() == false);
 
-        auto testDestinationExprB = ExpressionAtom::create(new Destination(localIntNode1),
+        auto testDestinationExprC = ExpressionAtom::create(new Destination(localIntNode1),
                                                            ExpressionAtom::Operator::DIFFERENT,
                                                            new Destination(localIntNode2));
 
-        QVERIFY(testDestinationExprB->evaluate() == true);
+        QVERIFY(testDestinationExprC->evaluate() == true);
 
-        auto testDestinationExprC = ExpressionAtom::create(new Destination(localFloatNode1),
+        auto testDestinationExprD = ExpressionAtom::create(new Destination(localFloatNode1),
                                                            ExpressionAtom::Operator::GREATER_THAN,
                                                            new Destination(localFloatNode2));
 
-        QVERIFY(testDestinationExprC->evaluate() == true);
+        QVERIFY(testDestinationExprD->evaluate() == true);
 
-        auto testDestinationExprD = ExpressionAtom::create(new Destination(localStringNode1),
+        auto testDestinationExprE = ExpressionAtom::create(new Destination(localStringNode1),
                                                            ExpressionAtom::Operator::LOWER_THAN,
                                                            new Destination(localStringNode2));
 
-        QVERIFY(testDestinationExprD->evaluate() == true);
+        QVERIFY(testDestinationExprE->evaluate() == true);
 
-        auto testDestinationExprE = ExpressionAtom::create(new Destination(localDestinationNode1),
+        auto testDestinationExprF = ExpressionAtom::create(new Destination(localDestinationNode1),
                                                            ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
                                                            new Destination(localDestinationNode2));
 
-        QVERIFY(testDestinationExprE->evaluate() == true);
+        QVERIFY(testDestinationExprF->evaluate() == true);
 
-        auto testDestinationExprF = ExpressionAtom::create(new Destination(localTupleNode1),
+        auto testDestinationExprG = ExpressionAtom::create(new Destination(localTupleNode1),
                                                            ExpressionAtom::Operator::LOWER_THAN_OR_EQUAL,
                                                            new Destination(localTupleNode2));
 
-        QVERIFY(testDestinationExprF->evaluate() == true);
+        QVERIFY(testDestinationExprG->evaluate() == true);
     }
 };
 
