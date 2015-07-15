@@ -10,8 +10,108 @@ class ExpressionAtomTest : public QObject
 
 private Q_SLOTS:
     
-    /*! test life cycle and accessors functions */
-    void test_basic()
+    /*! evaluate expressions with impulse values */
+    void test_impulse()
+    {
+        // evaluate expressions with Impulse
+        auto testImpulseExprA = ExpressionAtom::create(new Impulse(),
+                                                       ExpressionAtom::Operator::EQUAL,
+                                                       new Impulse());
+
+        QVERIFY(testImpulseExprA->evaluate() == true);
+
+        auto testImpulseExprB = ExpressionAtom::create(new Impulse(),
+                                                       ExpressionAtom::Operator::DIFFERENT,
+                                                       new Impulse());
+
+        QVERIFY(testImpulseExprB->evaluate() == false);
+    }
+
+    /*! evaluate expressions with bool values */
+    void test_bool()
+    {
+        auto testBoolExprA = ExpressionAtom::create(new Bool(true),
+                                                    ExpressionAtom::Operator::EQUAL,
+                                                    new Bool(true));
+
+        QVERIFY(testBoolExprA->evaluate() == true);
+
+        auto testBoolExprB = ExpressionAtom::create(new Bool(true),
+                                                    ExpressionAtom::Operator::DIFFERENT,
+                                                    new Bool(true));
+
+        QVERIFY(testBoolExprB->evaluate() == false);
+    }
+
+    /*! evaluate expressions with int values */
+    void test_int()
+    {
+        auto testIntExprA = ExpressionAtom::create(new Int(10),
+                                                   ExpressionAtom::Operator::GREATER_THAN,
+                                                   new Int(5));
+
+        QVERIFY(testIntExprA->evaluate() == true);
+
+        auto testIntExprB = ExpressionAtom::create(new Int(10),
+                                                   ExpressionAtom::Operator::LOWER_THAN,
+                                                   new Int(5));
+
+        QVERIFY(testIntExprB->evaluate() == false);
+    }
+
+    /*! evaluate expressions with float values */
+    void test_float()
+    {
+        auto testFloatExprA = ExpressionAtom::create(new Float(10.),
+                                                     ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
+                                                     new Float(10.));
+
+        QVERIFY(testFloatExprA->evaluate() == true);
+
+        auto testFloatExprB = ExpressionAtom::create(new Float(10.),
+                                                     ExpressionAtom::Operator::LOWER_THAN_OR_EQUAL,
+                                                     new Float(10.));
+
+        QVERIFY(testFloatExprB->evaluate() == true);
+    }
+
+    /*! evaluate expressions with string values */
+    void test_string()
+    {
+        auto testStringExprA = ExpressionAtom::create(new String("abc"),
+                                                     ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
+                                                     new String("bcd"));
+
+        QVERIFY(testStringExprA->evaluate() == false);
+
+        auto testStringExprB = ExpressionAtom::create(new String("abc"),
+                                                      ExpressionAtom::Operator::LOWER_THAN_OR_EQUAL,
+                                                      new String("bcd"));
+
+        QVERIFY(testStringExprB->evaluate() == true);
+    }
+
+    /*! evaluate expressions with tuple values */
+    void test_tuple()
+    {
+        std::vector<const Value*> value1 = {new Float(0.1), new Float(0.2), new Float(0.3)};
+        std::vector<const Value*> value2 = {new Float(0.2), new Float(0.3), new Float(0.4)};
+
+        auto testTupleExprA = ExpressionAtom::create(new Tuple(value1),
+                                                     ExpressionAtom::Operator::GREATER_THAN,
+                                                     new Tuple(value2));
+
+        QVERIFY(testTupleExprA->evaluate() == false);
+
+        auto testTupleExprB = ExpressionAtom::create(new Tuple(value1),
+                                                     ExpressionAtom::Operator::LOWER_THAN,
+                                                     new Tuple(value2));
+
+        QVERIFY(testTupleExprB->evaluate() == true);
+    }
+
+    /*! evaluate expressions with destination values */
+    void test_destination()
     {
         // Local device
         Local device_parameters{};
@@ -53,87 +153,6 @@ private Q_SLOTS:
         auto localDestinationNode2 = *(device->emplace(device->children().cend(), "my_destination.2"));
         auto localDestinationAddress2 = localDestinationNode2->createAddress(Value::Type::DESTINATION);
 
-        // evaluate expression with Impulse
-        auto testImpulseExprA = ExpressionAtom::create(new Impulse(),
-                                                       ExpressionAtom::Operator::EQUAL,
-                                                       new Impulse());
-
-        QVERIFY(testImpulseExprA->evaluate() == true);
-
-        auto testImpulseExprB = ExpressionAtom::create(new Impulse(),
-                                                       ExpressionAtom::Operator::DIFFERENT,
-                                                       new Impulse());
-
-        QVERIFY(testImpulseExprB->evaluate() == false);
-
-        // evaluate expression with Bool
-        auto testBoolExprA = ExpressionAtom::create(new Bool(true),
-                                                    ExpressionAtom::Operator::EQUAL,
-                                                    new Bool(true));
-
-        QVERIFY(testBoolExprA->evaluate() == true);
-
-        auto testBoolExprB = ExpressionAtom::create(new Bool(true),
-                                                    ExpressionAtom::Operator::DIFFERENT,
-                                                    new Bool(true));
-
-        QVERIFY(testBoolExprB->evaluate() == false);
-
-        // evaluate expression with Int
-        auto testIntExprA = ExpressionAtom::create(new Int(10),
-                                                   ExpressionAtom::Operator::GREATER_THAN,
-                                                   new Int(5));
-
-        QVERIFY(testIntExprA->evaluate() == true);
-
-        auto testIntExprB = ExpressionAtom::create(new Int(10),
-                                                   ExpressionAtom::Operator::LOWER_THAN,
-                                                   new Int(5));
-
-        QVERIFY(testIntExprB->evaluate() == false);
-
-        // evaluate expression with Float
-        auto testFloatExprA = ExpressionAtom::create(new Float(10.),
-                                                     ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
-                                                     new Float(10.));
-
-        QVERIFY(testFloatExprA->evaluate() == true);
-
-        auto testFloatExprB = ExpressionAtom::create(new Float(10.),
-                                                     ExpressionAtom::Operator::LOWER_THAN_OR_EQUAL,
-                                                     new Float(10.));
-
-        QVERIFY(testFloatExprB->evaluate() == true);
-
-        // evaluate expression with String
-        auto testStringExprA = ExpressionAtom::create(new String("abc"),
-                                                     ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
-                                                     new String("bcd"));
-
-        QVERIFY(testStringExprA->evaluate() == false);
-
-        auto testStringExprB = ExpressionAtom::create(new String("abc"),
-                                                      ExpressionAtom::Operator::LOWER_THAN_OR_EQUAL,
-                                                      new String("bcd"));
-
-        QVERIFY(testStringExprB->evaluate() == true);
-
-        // evaluate expression with Tuple
-        std::vector<const Value*> value1 = {new Float(0.1), new Float(0.2), new Float(0.3)};
-        std::vector<const Value*> value2 = {new Float(0.2), new Float(0.3), new Float(0.4)};
-
-        auto testTupleExprA = ExpressionAtom::create(new Tuple(value1),
-                                                     ExpressionAtom::Operator::GREATER_THAN,
-                                                     new Tuple(value2));
-
-        QVERIFY(testTupleExprA->evaluate() == false);
-
-        auto testTupleExprB = ExpressionAtom::create(new Tuple(value1),
-                                                     ExpressionAtom::Operator::LOWER_THAN,
-                                                     new Tuple(value2));
-
-        QVERIFY(testTupleExprB->evaluate() == true);
-
         // update node's value
         Bool b1(false);
         localBoolAddress1->sendValue(&b1);
@@ -165,13 +184,15 @@ private Q_SLOTS:
         Destination d2(localFloatNode2);
         localDestinationAddress2->sendValue(&d2);
 
+        std::vector<const Value*> value1 = {new Float(0.1), new Float(0.2), new Float(0.3)};
         Tuple t1(value1);
         localTupleAddress1->sendValue(&t1);
 
+        std::vector<const Value*> value2 = {new Float(0.2), new Float(0.3), new Float(0.4)};
         Tuple t2(value2);
         localTupleAddress2->sendValue(&t2);
 
-        // evaluate expression with Destination
+        // evaluate expressions with Destination
         auto testDestinationExprA = ExpressionAtom::create(new Destination(localBoolNode1),
                                                            ExpressionAtom::Operator::EQUAL,
                                                            new Destination(localBoolNode2));
