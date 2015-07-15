@@ -181,7 +181,7 @@ private Q_SLOTS:
     {
         // Local device
         Local device_parameters{};
-        auto device = Device::create(device_parameters, "i-score");
+        auto device = Device::create(device_parameters, "test");
 
         // Local tree building
         auto localImpulseNode1 = *(device->emplace(device->children().cend(), "my_impulse.1"));
