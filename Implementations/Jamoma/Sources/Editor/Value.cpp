@@ -64,68 +64,194 @@ Value * Bool::clone() const
 
 bool Bool::operator== (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Bool* b = (Bool*)&v;
-    return value == b->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      Bool* b = (Bool*)&v;
+      return value == b->value;
+    }
+    case Value::Type::INT :
+    {
+      Int* i = (Int*)&v;
+      return value == i->value;
+    }
+    case Value::Type::FLOAT :
+    {
+      Float* f = (Float*)&v;
+      return value == f->value;
+    }
+    case Value::Type::CHAR :
+    {
+      Char* c = (Char*)&v;
+      return value == c->value;
+    }
+    case Value::Type::STRING :
+    {
+      return false;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this == *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      return false;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this == (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 bool Bool::operator!= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Bool* b = (Bool*)&v;
-    return value != b->value;
-  }
-  
-  return false;
+  return !(*this == v);
 }
 
 bool Bool::operator> (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Bool* b = (Bool*)&v;
-    return value > b->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      Bool* b = (Bool*)&v;
+      return value > b->value;
+    }
+    case Value::Type::INT :
+    {
+      Int* i = (Int*)&v;
+      return value > i->value;
+    }
+    case Value::Type::FLOAT :
+    {
+      Float* f = (Float*)&v;
+      return value > f->value;
+    }
+    case Value::Type::CHAR :
+    {
+      Char* c = (Char*)&v;
+      return value > c->value;
+    }
+    case Value::Type::STRING :
+    {
+      return false;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this > *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      return false;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this > (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 bool Bool::operator>= (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Bool* b = (Bool*)&v;
-    return value >= b->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      Bool* b = (Bool*)&v;
+      return value >= b->value;
+    }
+    case Value::Type::INT :
+    {
+      Int* i = (Int*)&v;
+      return value >= i->value;
+    }
+    case Value::Type::FLOAT :
+    {
+      Float* f = (Float*)&v;
+      return value >= f->value;
+    }
+    case Value::Type::CHAR :
+    {
+      Char* c = (Char*)&v;
+      return value >= c->value;
+    }
+    case Value::Type::STRING :
+    {
+      return false;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this >= *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      return false;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this >= (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 bool Bool::operator< (const Value& v) const
 {
-  if (v.getType() < m_type)
-  {
-    Bool* b = (Bool*)&v;
-    return value < b->value;
-  }
-  
-  return false;
+  return !(*this >= v);
 }
 
 bool Bool::operator<= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Bool* b = (Bool*)&v;
-    return value <= b->value;
-  }
-  
-  return false;
+  return !(*this > v);
 }
 
 # pragma mark -
@@ -143,68 +269,194 @@ Value * Int::clone() const
 
 bool Int::operator== (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Int* i = (Int*)&v;
-    return value == i->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      Bool* b = (Bool*)&v;
+      return value == b->value;
+    }
+    case Value::Type::INT :
+    {
+      Int* i = (Int*)&v;
+      return value == i->value;
+    }
+    case Value::Type::FLOAT :
+    {
+      Float* f = (Float*)&v;
+      return value == f->value;
+    }
+    case Value::Type::CHAR :
+    {
+      Char* c = (Char*)&v;
+      return value == c->value;
+    }
+    case Value::Type::STRING :
+    {
+      return false;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this == *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      return false;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this == (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 bool Int::operator!= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Int* i = (Int*)&v;
-    return value != i->value;
-  }
-  
-  return false;
+  return !(*this == v);
 }
 
 bool Int::operator> (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Int* i = (Int*)&v;
-    return value > i->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      Bool* b = (Bool*)&v;
+      return value > b->value;
+    }
+    case Value::Type::INT :
+    {
+      Int* i = (Int*)&v;
+      return value > i->value;
+    }
+    case Value::Type::FLOAT :
+    {
+      Float* f = (Float*)&v;
+      return value > f->value;
+    }
+    case Value::Type::CHAR :
+    {
+      Char* c = (Char*)&v;
+      return value > c->value;
+    }
+    case Value::Type::STRING :
+    {
+      return false;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this > *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      return false;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this > (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 bool Int::operator>= (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Int* i = (Int*)&v;
-    return value >= i->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      Bool* b = (Bool*)&v;
+      return value >= b->value;
+    }
+    case Value::Type::INT :
+    {
+      Int* i = (Int*)&v;
+      return value >= i->value;
+    }
+    case Value::Type::FLOAT :
+    {
+      Float* f = (Float*)&v;
+      return value >= f->value;
+    }
+    case Value::Type::CHAR :
+    {
+      Char* c = (Char*)&v;
+      return value >= c->value;
+    }
+    case Value::Type::STRING :
+    {
+      return false;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this >= *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      return false;
+    }
+    case Value::Type::DESTINATION :
+    {
+      return false;
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this >= (*d->value->getAddress()->getValue());
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 bool Int::operator< (const Value& v) const
 {
-  if (v.getType() < m_type)
-  {
-    Int* i = (Int*)&v;
-    return value < i->value;
-  }
-  
-  return false;
+  return !(*this >= v);
 }
 
 bool Int::operator<= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Int* i = (Int*)&v;
-    return value <= i->value;
-  }
-  
-  return false;
+  return !(*this > v);
 }
 
 # pragma mark -
@@ -222,68 +474,194 @@ Value * Float::clone() const
 
 bool Float::operator== (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Float* f = (Float*)&v;
-    return value == f->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      Bool* b = (Bool*)&v;
+      return value == b->value;
+    }
+    case Value::Type::INT :
+    {
+      Int* i = (Int*)&v;
+      return value == i->value;
+    }
+    case Value::Type::FLOAT :
+    {
+      Float* f = (Float*)&v;
+      return value == f->value;
+    }
+    case Value::Type::CHAR :
+    {
+      Char* c = (Char*)&v;
+      return value == c->value;
+    }
+    case Value::Type::STRING :
+    {
+      return false;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this == *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      return false;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this == (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 bool Float::operator!= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Float* f = (Float*)&v;
-    return value != f->value;
-  }
-  
-  return false;
+  return !(*this == v);
 }
 
 bool Float::operator> (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Float* f = (Float*)&v;
-    return value > f->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      Bool* b = (Bool*)&v;
+      return value > b->value;
+    }
+    case Value::Type::INT :
+    {
+      Int* i = (Int*)&v;
+      return value > i->value;
+    }
+    case Value::Type::FLOAT :
+    {
+      Float* f = (Float*)&v;
+      return value > f->value;
+    }
+    case Value::Type::CHAR :
+    {
+      Char* c = (Char*)&v;
+      return value > c->value;
+    }
+    case Value::Type::STRING :
+    {
+      return false;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this > *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      return false;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this > (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 bool Float::operator>= (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Float* f = (Float*)&v;
-    return value >= f->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      Bool* b = (Bool*)&v;
+      return value >= b->value;
+    }
+    case Value::Type::INT :
+    {
+      Int* i = (Int*)&v;
+      return value >= i->value;
+    }
+    case Value::Type::FLOAT :
+    {
+      Float* f = (Float*)&v;
+      return value >= f->value;
+    }
+    case Value::Type::CHAR :
+    {
+      Char* c = (Char*)&v;
+      return value >= c->value;
+    }
+    case Value::Type::STRING :
+    {
+      return false;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this >= *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      return false;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this >= (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 bool Float::operator< (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Float* f = (Float*)&v;
-    return value < f->value;
-  }
-  
-  return false;
+  return !(*this >= v);
 }
 
 bool Float::operator<= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Float* f = (Float*)&v;
-    return value <= f->value;
-  }
-  
-  return false;
+  return !(*this > v);
 }
 
 # pragma mark -
@@ -302,68 +680,194 @@ Value * Char::clone() const
 
 bool Char::operator== (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Char* c = (Char*)&v;
-    return value == c->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      Bool* b = (Bool*)&v;
+      return value == b->value;
+    }
+    case Value::Type::INT :
+    {
+      Int* i = (Int*)&v;
+      return value == i->value;
+    }
+    case Value::Type::FLOAT :
+    {
+      Float* f = (Float*)&v;
+      return value == f->value;
+    }
+    case Value::Type::CHAR :
+    {
+      Char* c = (Char*)&v;
+      return value == c->value;
+    }
+    case Value::Type::STRING :
+    {
+      return false;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this == *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      return false;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this == (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 bool Char::operator!= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Char* c = (Char*)&v;
-    return value != c->value;
-  }
-  
-  return false;
+  return !(*this == v);
 }
 
 bool Char::operator> (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Char* c = (Char*)&v;
-    return value > c->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      Bool* b = (Bool*)&v;
+      return value > b->value;
+    }
+    case Value::Type::INT :
+    {
+      Int* i = (Int*)&v;
+      return value > i->value;
+    }
+    case Value::Type::FLOAT :
+    {
+      Float* f = (Float*)&v;
+      return value > f->value;
+    }
+    case Value::Type::CHAR :
+    {
+      Char* c = (Char*)&v;
+      return value > c->value;
+    }
+    case Value::Type::STRING :
+    {
+      return false;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this > *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      return false;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this > (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 bool Char::operator>= (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Char* c = (Char*)&v;
-    return value >= c->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      Bool* b = (Bool*)&v;
+      return value >= b->value;
+    }
+    case Value::Type::INT :
+    {
+      Int* i = (Int*)&v;
+      return value >= i->value;
+    }
+    case Value::Type::FLOAT :
+    {
+      Float* f = (Float*)&v;
+      return value >= f->value;
+    }
+    case Value::Type::CHAR :
+    {
+      Char* c = (Char*)&v;
+      return value >= c->value;
+    }
+    case Value::Type::STRING :
+    {
+      return false;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this >= *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      return false;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this >= (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 bool Char::operator< (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Char* c = (Char*)&v;
-    return value < c->value;
-  }
-  
-  return false;
+  return !(*this >= v);
 }
 
 bool Char::operator<= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Char* c = (Char*)&v;
-    return value <= c->value;
-  }
-  
-  return false;
+  return !(*this > v);
 }
 
 # pragma mark -
@@ -381,68 +885,185 @@ Value * String::clone() const
 
 bool String::operator== (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    String* s = (String*)&v;
-    return value == s->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      return false;
+    }
+    case Value::Type::INT :
+    {
+      return false;
+    }
+    case Value::Type::FLOAT :
+    {
+      return false;
+    }
+    case Value::Type::CHAR :
+    {
+      return false;
+    }
+    case Value::Type::STRING :
+    {
+      String* s = (String*)&v;
+      return value == s->value;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this == *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      return false;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this == (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 bool String::operator!= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    String* s = (String*)&v;
-    return value != s->value;
-  }
-  
-  return false;
+  return !(*this == v);
 }
 
 bool String::operator> (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    String* s = (String*)&v;
-    return value > s->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      return false;
+    }
+    case Value::Type::INT :
+    {
+      return false;
+    }
+    case Value::Type::FLOAT :
+    {
+      return false;
+    }
+    case Value::Type::CHAR :
+    {
+      return false;
+    }
+    case Value::Type::STRING :
+    {
+      String* s = (String*)&v;
+      return value > s->value;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this > *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      return false;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this > (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 bool String::operator>= (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    String* s = (String*)&v;
-    return value >= s->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      return false;
+    }
+    case Value::Type::INT :
+    {
+      return false;
+    }
+    case Value::Type::FLOAT :
+    {
+      return false;
+    }
+    case Value::Type::CHAR :
+    {
+      return false;
+    }
+    case Value::Type::STRING :
+    {
+      String* s = (String*)&v;
+      return value >= s->value;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this >= *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      return false;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this >= (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 bool String::operator< (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    String* s = (String*)&v;
-    return value < s->value;
-  }
-  
-  return false;
+  return !(*this >= v);
 }
 
 bool String::operator<= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    String* s = (String*)&v;
-    return value <= s->value;
-  }
-  
-  return false;
+  return !(*this > v);
 }
 
 # pragma mark -
@@ -467,152 +1088,128 @@ Value * Tuple::clone() const
 
 bool Tuple::operator== (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Tuple* t = (Tuple*)&v;
-    
-    if (value.size() != t->value.size())
-      return false;
-    
-    bool result = true;
-    auto tit = t->value.begin();
-    for (auto it = value.begin(); it != value.end();it++)
+    case Value::Type::IMPULSE :
     {
-      result &= (**it) == (**tit);
-      if (!result)
-        break;
-      tit++;
+      return true;
     }
-    
-    return result;
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      
+      if (value.size() != t->value.size())
+        return false;
+      
+      bool result = true;
+      auto tit = t->value.begin();
+      for (auto it = value.begin(); it != value.end();it++)
+      {
+        result &= (**it) == (**tit);
+        if (!result)
+          break;
+        tit++;
+      }
+      
+      return result;
+    }
+    default :
+    {
+      if (value.size() == 1)
+        return *value[0] == v;
+      
+      return false;
+    }
   }
-  
-  return false;
 }
 
 bool Tuple::operator!= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Tuple* t = (Tuple*)&v;
-    
-    if (value.size() != t->value.size())
-      return false;
-    
-    bool result = true;
-    auto tit = t->value.begin();
-    for (auto it = value.begin(); it != value.end();it++)
-    {
-      result &= (**it) != (**tit);
-      if (!result)
-        break;
-      tit++;
-    }
-    
-    return result;
-  }
-  
-  return false;
+  return !(*this == v);
 }
 
 bool Tuple::operator> (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Tuple* t = (Tuple*)&v;
-    
-    if (value.size() != t->value.size())
-      return false;
-    
-    bool result = true;
-    auto tit = t->value.begin();
-    for (auto it = value.begin(); it != value.end();it++)
+    case Value::Type::IMPULSE :
     {
-      result &= (**it) > (**tit);
-      if (!result)
-        break;
-      tit++;
+      return true;
     }
-    
-    return result;
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      
+      if (value.size() != t->value.size())
+        return false;
+      
+      bool result = true;
+      auto tit = t->value.begin();
+      for (auto it = value.begin(); it != value.end();it++)
+      {
+        result &= (**it) > (**tit);
+        if (!result)
+          break;
+        tit++;
+      }
+      
+      return result;
+    }
+    default :
+    {
+      if (value.size() == 1)
+        return *value[0] > v;
+      
+      return false;
+    }
   }
-  
-  return false;
 }
 
 bool Tuple::operator>= (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Tuple* t = (Tuple*)&v;
-    
-    if (value.size() != t->value.size())
-      return false;
-    
-    bool result = true;
-    auto tit = t->value.begin();
-    for (auto it = value.begin(); it != value.end();it++)
+    case Value::Type::IMPULSE :
     {
-      result &= (**it) >= (**tit);
-      if (!result)
-        break;
-      tit++;
+      return true;
     }
-    
-    return result;
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      
+      if (value.size() != t->value.size())
+        return false;
+      
+      bool result = true;
+      auto tit = t->value.begin();
+      for (auto it = value.begin(); it != value.end();it++)
+      {
+        result &= (**it) >= (**tit);
+        if (!result)
+          break;
+        tit++;
+      }
+      
+      return result;
+    }
+    default :
+    {
+      if (value.size() == 1)
+        return *value[0] >= v;
+      
+      return false;
+    }
   }
-  
-  return false;
 }
 
 bool Tuple::operator< (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Tuple* t = (Tuple*)&v;
-    
-    if (value.size() != t->value.size())
-      return false;
-    
-    bool result = true;
-    auto tit = t->value.begin();
-    for (auto it = value.begin(); it != value.end();it++)
-    {
-      result &= (**it) < (**tit);
-      if (!result)
-        break;
-      tit++;
-    }
-    
-    return result;
-  }
-  
-  return false;
+  return !(*this >= v);
 }
 
 bool Tuple::operator<= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Tuple* t = (Tuple*)&v;
-    
-    if (value.size() != t->value.size())
-      return false;
-    
-    bool result = true;
-    auto tit = t->value.begin();
-    for (auto it = value.begin(); it != value.end();it++)
-    {
-      result &= (**it) <= (**tit);
-      if (!result)
-        break;
-      tit++;
-    }
-    
-    return result;
-  }
-  
-  return false;
+  return !(*this > v);
 }
 
 # pragma mark -
@@ -633,73 +1230,202 @@ Value * Generic<T>::clone() const
 template<typename T>
 bool Generic<T>::operator== (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Generic<T>* g = (Generic<T>*)&v;
-    return value == g->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      Bool* b = (Bool*)&v;
+      return value == b->value;
+    }
+    case Value::Type::INT :
+    {
+      Int* i = (Int*)&v;
+      return value == i->value;
+    }
+    case Value::Type::FLOAT :
+    {
+      Float* f = (Float*)&v;
+      return value == f->value;
+    }
+    case Value::Type::CHAR :
+    {
+      Char* c = (Char*)&v;
+      return value == c->value;
+    }
+    case Value::Type::STRING :
+    {
+      return false;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this == *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      Generic<T>* g = (Generic<T>*)&v;
+      return value == g->value;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this == (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 template<typename T>
 bool Generic<T>::operator!= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Generic<T>* g = (Generic<T>*)&v;
-    return value != g->value;
-  }
-  
-  return false;
+  return !(*this == v);
 }
 
 template<typename T>
 bool Generic<T>::operator> (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Generic<T>* g = (Generic<T>*)&v;
-    return value > g->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      Bool* b = (Bool*)&v;
+      return value == b->value;
+    }
+    case Value::Type::INT :
+    {
+      Int* i = (Int*)&v;
+      return value > i->value;
+    }
+    case Value::Type::FLOAT :
+    {
+      Float* f = (Float*)&v;
+      return value > f->value;
+    }
+    case Value::Type::CHAR :
+    {
+      Char* c = (Char*)&v;
+      return value > c->value;
+    }
+    case Value::Type::STRING :
+    {
+      return false;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this > *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      Generic<T>* g = (Generic<T>*)&v;
+      return value > g->value;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this > (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 template<typename T>
 bool Generic<T>::operator>= (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Generic<T>* g = (Generic<T>*)&v;
-    return value >= g->value;
+    case Value::Type::IMPULSE :
+    {
+      return true;
+    }
+    case Value::Type::BOOL :
+    {
+      Bool* b = (Bool*)&v;
+      return value >= b->value;
+    }
+    case Value::Type::INT :
+    {
+      Int* i = (Int*)&v;
+      return value >= i->value;
+    }
+    case Value::Type::FLOAT :
+    {
+      Float* f = (Float*)&v;
+      return value >= f->value;
+    }
+    case Value::Type::CHAR :
+    {
+      Char* c = (Char*)&v;
+      return value >= c->value;
+    }
+    case Value::Type::STRING :
+    {
+      return false;
+    }
+    case Value::Type::TUPLE :
+    {
+      Tuple* t = (Tuple*)&v;
+      if (t->value.size() == 1)
+        return *this >= *t->value[0];
+      else
+        return false;
+    }
+    case Value::Type::GENERIC :
+    {
+      Generic<T>* g = (Generic<T>*)&v;
+      return value >= g->value;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (d->value->getAddress())
+        return *this >= (*d->value->getAddress()->getValue());
+    }
+    case Value::Type::BEHAVIOR :
+    {
+      return false;
+    }
+    default :
+      return false;
   }
-  
-  return false;
 }
 
 template<typename T>
 bool Generic<T>::operator< (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Generic<T>* g = (Generic<T>*)&v;
-    return value < g->value;
-  }
-  
-  return false;
+  return !(*this >= v);
 }
 
 template<typename T>
 bool Generic<T>::operator<= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Generic<T>* g = (Generic<T>*)&v;
-    return value <= g->value;
-  }
-  
-  return false;
+  return !(*this > v);
 }
 
 # pragma mark -
@@ -717,116 +1443,95 @@ Value * Destination::clone() const
 
 bool Destination::operator== (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Destination* d = (Destination*)&v;
-    if (value->getAddress() && d->value->getAddress())
-      return (*value->getAddress()->getValue()) == (*d->value->getAddress()->getValue());
-  }
-  else if (value->getAddress())
-  {
-    if (v.getType() == value->getAddress()->getValueType())
+    case Value::Type::IMPULSE :
     {
-      return (*value->getAddress()->getValue()) == v;
+      return true;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (value->getAddress() && d->value->getAddress())
+        return (*value->getAddress()->getValue()) == (*d->value->getAddress()->getValue());
+    }
+    default :
+    {
+      if (value->getAddress())
+      {
+        return (*value->getAddress()->getValue()) == v;
+      }
+      
+      return false;
     }
   }
-  
-  return false;
 }
 
 bool Destination::operator!= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Destination* d = (Destination*)&v;
-    if (value->getAddress() && d->value->getAddress())
-      return (*value->getAddress()->getValue()) != (*d->value->getAddress()->getValue());
-  }
-  else if (value->getAddress())
-  {
-    if (v.getType() == value->getAddress()->getValueType())
-    {
-      return (*value->getAddress()->getValue()) != v;
-    }
-  }
-  
-  return false;
+  return !(*this == v);
 }
 
 bool Destination::operator> (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Destination* d = (Destination*)&v;
-    if (value->getAddress() && d->value->getAddress())
-      return (*value->getAddress()->getValue()) > (*d->value->getAddress()->getValue());
-  }
-  else if (value->getAddress())
-  {
-    if (v.getType() == value->getAddress()->getValueType())
+    case Value::Type::IMPULSE :
     {
-      return (*value->getAddress()->getValue()) > v;
+      return true;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (value->getAddress() && d->value->getAddress())
+        return (*value->getAddress()->getValue()) > (*d->value->getAddress()->getValue());
+    }
+    default :
+    {
+      if (value->getAddress())
+      {
+        return (*value->getAddress()->getValue()) > v;
+      }
+      
+      return false;
     }
   }
-  
-  return false;
 }
 
 bool Destination::operator>= (const Value& v) const
 {
-  if (v.getType() == m_type)
+  switch (v.getType())
   {
-    Destination* d = (Destination*)&v;
-    if (value->getAddress() && d->value->getAddress())
-      return (*value->getAddress()->getValue()) >= (*d->value->getAddress()->getValue());
-  }
-  else if (value->getAddress())
-  {
-    if (v.getType() == value->getAddress()->getValueType())
+    case Value::Type::IMPULSE :
     {
-      return (*value->getAddress()->getValue()) >= v;
+      return true;
+    }
+    case Value::Type::DESTINATION :
+    {
+      Destination* d = (Destination*)&v;
+      if (value->getAddress() && d->value->getAddress())
+        return (*value->getAddress()->getValue()) >= (*d->value->getAddress()->getValue());
+    }
+    default :
+    {
+      if (value->getAddress())
+      {
+        return (*value->getAddress()->getValue()) >= v;
+      }
+      
+      return false;
     }
   }
-  
-  return false;
 }
 
 bool Destination::operator< (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Destination* d = (Destination*)&v;
-    if (value->getAddress() && d->value->getAddress())
-      return (*value->getAddress()->getValue()) < (*d->value->getAddress()->getValue());
-  }
-  else if (value->getAddress())
-  {
-    if (v.getType() == value->getAddress()->getValueType())
-    {
-      return (*value->getAddress()->getValue()) < v;
-    }
-  }
-  
-  return false;
+  return !(*this >= v);
 }
 
 bool Destination::operator<= (const Value& v) const
 {
-  if (v.getType() == m_type)
-  {
-    Destination* d = (Destination*)&v;
-    if (value->getAddress() && d->value->getAddress())
-      return (*value->getAddress()->getValue()) <= (*d->value->getAddress()->getValue());
-  }
-  else if (value->getAddress())
-  {
-    if (v.getType() == value->getAddress()->getValueType())
-    {
-      return (*value->getAddress()->getValue()) <= v;
-    }
-  }
-  
-  return false;
+  return !(*this > v);
 }
 
 # pragma mark -
@@ -844,30 +1549,30 @@ Value * Behavior::clone() const
 
 bool Behavior::operator== (const Value& v) const
 {
-  return v.getType() == m_type;
+  return false;
 }
 
 bool Behavior::operator!= (const Value& v) const
 {
-  return v.getType() != m_type;
+  return false;
 }
 
 bool Behavior::operator> (const Value& v) const
 {
-  return v.getType() != m_type;
+  return false;
 }
 
 bool Behavior::operator>= (const Value& v) const
 {
-  return v.getType() == m_type;
+  return false;
 }
 
 bool Behavior::operator< (const Value& v) const
 {
-  return v.getType() != m_type;
+  return false;
 }
 
 bool Behavior::operator<= (const Value& v) const
 {
-  return v.getType() == m_type;
+  return false;
 }
