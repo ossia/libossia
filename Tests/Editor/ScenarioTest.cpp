@@ -48,8 +48,6 @@ private Q_SLOTS:
         
         scenario->setKiller(true);
         QVERIFY(scenario->isKiller() == true);
-
-        //! \todo test clone()
     }
     
     /*! test edition functions */
