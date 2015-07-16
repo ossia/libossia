@@ -15,6 +15,8 @@
  */
 
 #pragma once
+#include <memory>
+
 #include "Editor/Expression.h"
 
 namespace OSSIA
@@ -29,6 +31,7 @@ public:
 # pragma mark Life cycle
   
   /*! factory
+   \param std::shared_ptr<Expression>
    \return std::shared_ptr<#ExpressionNot> */
   static std::shared_ptr<ExpressionNot> create(std::shared_ptr<Expression>);
   
