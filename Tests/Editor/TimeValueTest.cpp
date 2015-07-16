@@ -13,13 +13,49 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        ;
+        TimeValue zero;
+        QVERIFY(zero == Zero);
+        QVERIFY(zero.isInfinite() == false);
+
+        TimeValue one(1.);
+        QVERIFY(one == One);
+        QVERIFY(one.isInfinite() == false);
+
+        TimeValue infinite(true);
+        QVERIFY(infinite == Infinite);
+        QVERIFY(infinite.isInfinite() == true);
     }
     
-    /*! test edition functions */
-    void test_edition()
+    /*! test comparison operators */
+    void test_comparison()
     {
-        ;
+        TimeValue five(5.);
+        TimeValue ten(10.);
+
+        QVERIFY(five == five);
+        QVERIFY(!(five == ten));
+        QVERIFY(!(five == Infinite));
+        QVERIFY(!(Infinite == ten));
+
+        QVERIFY(five != ten);
+        QVERIFY(five != Infinite);
+        QVERIFY(Infinite != ten);
+        QVERIFY(!(five != five));
+
+        QVERIFY(five < ten);
+        QVERIFY(five <= ten);
+        QVERIFY(ten > five);
+        QVERIFY(ten >= five);
+
+        QVERIFY(Infinite > five);
+        QVERIFY(Infinite >= five);
+        QVERIFY(five < Infinite);
+        QVERIFY(five <= Infinite);
+
+        QVERIFY(!(Infinite > Infinite));
+        QVERIFY(Infinite >= Infinite);
+        QVERIFY(!(Infinite < Infinite));
+        QVERIFY(Infinite <= Infinite);
     }
 };
 

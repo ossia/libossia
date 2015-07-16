@@ -27,12 +27,13 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  /*! constructor */
+  /*! constructor
+    \param bool infinite */
   TimeValue(const bool = false);
   
   /*! constructor
    \param int value */
-  TimeValue(const double, const bool = false);
+  TimeValue(const double);
   
   /*! destructor */
   ~TimeValue();
