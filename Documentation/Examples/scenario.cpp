@@ -147,14 +147,12 @@ int main()
     first_constraint->addTimeProcess(first_automation);
     
     // add "/test 0. 0. 0." message to Automation's start State
-    vector<const Value*> t_zero = {new Float(0.), new Float(0.), new Float(0.)};
-    Tuple zero(t_zero);
+    Tuple zero(new Float(0.), new Float(0.), new Float(0.));
     auto first_start_message = Message::create(local_test_address, &zero);
     first_automation->getStartState()->stateElements().push_back(first_start_message);
     
     // add "/test 1. 1. 1." message to Automation's end State
-    vector<const Value*> t_one = {new Float(1.), new Float(1.), new Float(1.)};
-    Tuple one(t_one);
+    Tuple one(new Float(1.), new Float(1.), new Float(1.));
     auto first_end_message = Message::create(local_test_address, &one);
     first_automation->getEndState()->stateElements().push_back(first_end_message);
     
