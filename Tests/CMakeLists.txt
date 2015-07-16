@@ -25,7 +25,7 @@ addAPIQtTest(APICurveSegmentPowerTest       "${CMAKE_CURRENT_SOURCE_DIR}/Editor/
 addAPIQtTest(APIDomainTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Editor/DomainTest.cpp")
 addAPIQtTest(APIExpressionAtomTest          "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ExpressionAtomTest.cpp")
 addAPIQtTest(APIExpressionCompositionTest   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ExpressionCompositionTest.cpp")
-#addAPIQtTest(APIExpressionNotTest           "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ExpressionNotTest.cpp")
+addAPIQtTest(APIExpressionNotTest           "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ExpressionNotTest.cpp")
 addAPIQtTest(APIMessageTest                 "${CMAKE_CURRENT_SOURCE_DIR}/Editor/MessageTest.cpp")
 addAPIQtTest(APIScenarioTest                "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioTest.cpp")
 addAPIQtTest(APIStateTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/StateTest.cpp")
