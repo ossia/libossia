@@ -22,7 +22,20 @@ mMax(max->clone())
   for (const auto& e : values)
     mValues.push_back(e->clone());
 }
-  
+
+JamomaDomain::JamomaDomain(const JamomaDomain * other) :
+mMin(other->mMin->clone()),
+mMax(other->mMax->clone())
+{
+  for (const auto& e : other->mValues)
+    mValues.push_back(e->clone());
+}
+
+shared_ptr<Domain> JamomaDomain::clone() const
+{
+  return make_shared<JamomaDomain>(this);
+}
+
 JamomaDomain::~JamomaDomain()
 {}
 

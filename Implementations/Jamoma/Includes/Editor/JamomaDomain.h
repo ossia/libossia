@@ -40,6 +40,10 @@ public:
                const Value * = new Impulse(),
                vector<const Value*> = vector<const Value*>());
   
+  JamomaDomain(const JamomaDomain *);
+  
+  shared_ptr<Domain> clone() const override;
+  
   ~JamomaDomain();
 
 # pragma mark -

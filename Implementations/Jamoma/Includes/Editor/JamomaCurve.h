@@ -37,11 +37,11 @@ public:
   
   JamomaCurve();
   
-  JamomaCurve(const JamomaCurve * other);
-  
-  ~JamomaCurve();
+  JamomaCurve(const JamomaCurve *);
   
   shared_ptr<Curve<T>> clone() const override;
+  
+  ~JamomaCurve();
   
 # pragma mark -
 # pragma mark Execution

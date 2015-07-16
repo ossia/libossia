@@ -34,6 +34,9 @@ namespace OSSIA
      \param std::shared_ptr<Curve<T>> parent
      \return std::shared_ptr<CurveSegmentPower<T>> */
     static std::shared_ptr<CurveSegmentPower<T>> create(std::shared_ptr<Curve<T>> = nullptr);
+
+    /*! clone */
+    virtual std::shared_ptr<CurveSegmentPower<T>> clone() const = 0;
     
     /*! destructor */
     virtual ~CurveSegmentPower() = default;

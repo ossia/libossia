@@ -46,11 +46,11 @@ public:
                                             std::shared_ptr<Address>,
                                             const Value*);
   
-  /*! destructor */
-  virtual ~Automation() = default;
-  
   /*! clone */
   virtual std::shared_ptr<Automation> clone() const = 0;
+  
+  /*! destructor */
+  virtual ~Automation() = default;
   
 # pragma mark -
 # pragma mark Execution

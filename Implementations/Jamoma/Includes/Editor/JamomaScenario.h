@@ -49,11 +49,11 @@ public:
                  shared_ptr<State>,
                  shared_ptr<State>);
   
-  JamomaScenario(const JamomaScenario * other);
-  
-  ~JamomaScenario();
+  JamomaScenario(const JamomaScenario *);
   
   shared_ptr<Scenario> clone() const override;
+  
+  ~JamomaScenario();
 
 # pragma mark -
 # pragma mark Execution

@@ -64,11 +64,11 @@ public:
               float,
               bool);
   
-  JamomaClock(const JamomaClock * other);
-  
-  ~JamomaClock();
+  JamomaClock(const JamomaClock *);
   
   shared_ptr<Clock> clone() const override;
+  
+  ~JamomaClock();
   
 # pragma mark -
 # pragma mark Execution

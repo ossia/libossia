@@ -24,13 +24,13 @@ public:
   JamomaState(const JamomaState * other)
   {}
   
-  virtual ~JamomaState()
-  {}
-  
   virtual shared_ptr<State> clone() const override
   {
     return make_shared<JamomaState>(this);
   }
+
+  virtual ~JamomaState()
+  {}
 
 # pragma mark -
 # pragma mark Execution

@@ -45,6 +45,8 @@ private Q_SLOTS:
         QVERIFY(clock->getRunning() == false);
         QVERIFY(clock->getPosition() == 0.5);
         QVERIFY(clock->getDate() == 500.);
+
+        //! \todo test clone()
     }
     
     /*! test execution functions */

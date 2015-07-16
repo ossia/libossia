@@ -52,11 +52,11 @@ public:
                    shared_ptr<Address>,
                    const Value*);
   
-  JamomaAutomation(const JamomaAutomation * other);
-  
-  ~JamomaAutomation();
+  JamomaAutomation(const JamomaAutomation *);
   
   shared_ptr<Automation> clone() const override;
+  
+  ~JamomaAutomation();
 
 # pragma mark -
 # pragma mark Execution

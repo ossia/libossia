@@ -28,6 +28,8 @@ private Q_SLOTS:
         std::vector<const Value*> values = {new Int(1), new Int(10), new Int(24)};
         domain->setValues(values);
         QVERIFY(domain->getValues().size() == 3);
+
+        //! \todo test clone()
     }
 };
 

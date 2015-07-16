@@ -29,13 +29,13 @@ public:
   JamomaExpressionComposition(const JamomaExpressionComposition * other)
   {}
   
-  virtual ~JamomaExpressionComposition()
-  {}
-  
   virtual shared_ptr<ExpressionComposition> clone() const override
   {
     return make_shared<JamomaExpressionComposition>(this);
   }
+  
+  virtual ~JamomaExpressionComposition()
+  {}
 
 # pragma mark -
 # pragma mark Execution

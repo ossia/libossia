@@ -32,6 +32,8 @@ private Q_SLOTS:
         QVERIFY(simultaneity_margin == TimeValue(50.));
         
         QVERIFY(node->timeEvents().size() == 0);
+
+        //! \todo test clone()
     }
     
     /*! test edition functions */

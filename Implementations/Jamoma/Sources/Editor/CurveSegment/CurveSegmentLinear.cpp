@@ -54,6 +54,16 @@ mParent(parent)
 {}
 
 template <typename T>
+JamomaCurveSegmentLinear<T>::JamomaCurveSegmentLinear(const JamomaCurveSegmentLinear * other)
+{}
+
+template <typename T>
+shared_ptr<CurveSegmentLinear<T>> JamomaCurveSegmentLinear<T>::clone() const
+{
+    return make_shared<JamomaCurveSegmentLinear<T>>(this);
+}
+
+template <typename T>
 JamomaCurveSegmentLinear<T>::~JamomaCurveSegmentLinear()
 {}
 

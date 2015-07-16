@@ -48,14 +48,14 @@ JamomaCurve<T>::JamomaCurve(const JamomaCurve * other)
 {}
 
 template <typename T>
-JamomaCurve<T>::~JamomaCurve()
-{}
-
-template <typename T>
 shared_ptr<Curve<T>> JamomaCurve<T>::clone() const
 {
   return make_shared<JamomaCurve>(this);
 }
+
+template <typename T>
+JamomaCurve<T>::~JamomaCurve()
+{}
 
 # pragma mark -
 # pragma mark Execution

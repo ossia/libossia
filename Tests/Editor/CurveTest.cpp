@@ -53,6 +53,8 @@ private Q_SLOTS:
         QVERIFY(curve->valueAt(1.) == 1.);
         QVERIFY(curve->valueAt(1.5) == 0.5);
         QVERIFY(curve->valueAt(2.) == 0.);
+
+        //! \todo test clone()
     }
 };
 

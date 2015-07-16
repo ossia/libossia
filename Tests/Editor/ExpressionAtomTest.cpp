@@ -61,6 +61,8 @@ private Q_SLOTS:
                                                        new Tuple());
 
         QVERIFY(testImpulseExprH->evaluate() == true);
+
+        //! \todo test clone()
     }
 
     /*! evaluate expressions with bool values */
@@ -83,6 +85,8 @@ private Q_SLOTS:
                                                     new Impulse());
 
         QVERIFY(testBoolExprC->evaluate() == true);
+
+        //! \todo test clone()
     }
 
     /*! evaluate expressions with int values */
@@ -105,6 +109,8 @@ private Q_SLOTS:
                                                     new Impulse());
 
         QVERIFY(testIntExprC->evaluate() == true);
+
+        //! \todo test clone()
     }
 
     /*! evaluate expressions with float values */
@@ -127,6 +133,8 @@ private Q_SLOTS:
                                                      new Impulse());
 
         QVERIFY(testFloatExprC->evaluate() == true);
+
+        //! \todo test clone()
     }
 
     /*! evaluate expressions with string values */
@@ -149,6 +157,8 @@ private Q_SLOTS:
                                                       new Impulse());
 
         QVERIFY(testStringExprC->evaluate() == true);
+
+        //! \todo test clone()
     }
 
     /*! evaluate expressions with tuple values */
@@ -174,6 +184,8 @@ private Q_SLOTS:
                                                      new Impulse());
 
         QVERIFY(testTupleExprC->evaluate() == true);
+
+        //! \todo test clone()
     }
 
     /*! evaluate expressions with destination values */
@@ -300,6 +312,8 @@ private Q_SLOTS:
                                                            new Destination(localTupleNode2));
 
         QVERIFY(testDestinationExprG->evaluate() == true);
+
+        //! \todo test clone()
     }
 };
 

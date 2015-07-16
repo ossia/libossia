@@ -30,13 +30,13 @@ public:
   JamomaExpressionAtom(const JamomaExpressionAtom * other)
   {}
   
-  virtual ~JamomaExpressionAtom()
-  {}
-  
   virtual shared_ptr<ExpressionAtom> clone() const override
   {
     return make_shared<JamomaExpressionAtom>(this);
   }
+  
+  virtual ~JamomaExpressionAtom()
+  {}
 
 # pragma mark -
 # pragma mark Execution

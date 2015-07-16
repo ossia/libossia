@@ -34,13 +34,13 @@ mExternal(external)
 JamomaClock::JamomaClock(const JamomaClock * other)
 {}
 
-JamomaClock::~JamomaClock()
-{}
-
 shared_ptr<Clock> JamomaClock::clone() const
 {
   return make_shared<JamomaClock>(this);
 }
+
+JamomaClock::~JamomaClock()
+{}
 
 # pragma mark -
 # pragma mark Execution

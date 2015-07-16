@@ -37,13 +37,13 @@ JamomaScenario::JamomaScenario(const JamomaScenario * other) :
 JamomaTimeProcess(other->mCallback, other->mStartState, other->mEndState)
 {}
 
-JamomaScenario::~JamomaScenario()
-{}
-
 shared_ptr<Scenario> JamomaScenario::clone() const
 {
   return make_shared<JamomaScenario>(this);
 }
+
+JamomaScenario::~JamomaScenario()
+{}
 
 # pragma mark -
 # pragma mark Execution

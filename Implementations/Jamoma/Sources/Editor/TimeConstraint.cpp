@@ -48,13 +48,13 @@ mDurationMax(max)
 JamomaTimeConstraint::JamomaTimeConstraint(const JamomaTimeConstraint * other)
 {}
 
-JamomaTimeConstraint::~JamomaTimeConstraint()
-{}
-
 shared_ptr<TimeConstraint> JamomaTimeConstraint::clone() const
 {
   return make_shared<JamomaTimeConstraint>(this);
 }
+
+JamomaTimeConstraint::~JamomaTimeConstraint()
+{}
 
 # pragma mark -
 # pragma mark Execution

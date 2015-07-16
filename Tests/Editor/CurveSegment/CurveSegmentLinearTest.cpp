@@ -25,6 +25,8 @@ private Q_SLOTS:
         QVERIFY(curveSegment->valueAt(0.5, false, true) == true);
         QVERIFY(curveSegment->valueAt(0.75, false, true) == true);
         QVERIFY(curveSegment->valueAt(1., false, true) == true);
+
+        //! \todo test clone()
     }
 
     /*! test life cycle and accessors functions for int type */
@@ -42,6 +44,8 @@ private Q_SLOTS:
         QVERIFY(curveSegment->valueAt(0.5, 0, 1) == 0);
         QVERIFY(curveSegment->valueAt(0.75, 0, 1) == 0);
         QVERIFY(curveSegment->valueAt(1., 0, 1) == 1);
+
+        //! \todo test clone()
     }
     
     /*! test life cycle and accessors functions for float type */
@@ -59,6 +63,8 @@ private Q_SLOTS:
         QVERIFY(curveSegment->valueAt(0.5, 0., 1.) == 0.5);
         QVERIFY(curveSegment->valueAt(0.75, 0., 1.) == 0.75);
         QVERIFY(curveSegment->valueAt(1., 0., 1.) == 1.);
+
+        //! \todo test clone()
     }
 };
 

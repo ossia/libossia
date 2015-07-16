@@ -27,13 +27,13 @@ public:
   JamomaMessage(const JamomaMessage * other)
   {}
   
-  virtual ~JamomaMessage()
-  {}
-  
   virtual shared_ptr<Message> clone() const override
   {
     return make_shared<JamomaMessage>(this);
   }
+
+  virtual ~JamomaMessage()
+  {}
 
 # pragma mark -
 # pragma mark Execution

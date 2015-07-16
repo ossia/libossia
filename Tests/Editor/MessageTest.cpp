@@ -27,6 +27,8 @@ private Q_SLOTS:
         QVERIFY(message->getAddress() == localIntAddress);
 
         QVERIFY(*message->getValue() == Int(10));
+
+        //! \todo test clone()
     }
     
     /*! test execution functions */

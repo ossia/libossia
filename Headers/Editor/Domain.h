@@ -42,6 +42,9 @@ public:
                                         const Value * = new Impulse(),
                                         std::vector<const Value*> = std::vector<const Value*>());
 
+  /*! clone */
+  virtual std::shared_ptr<Domain> clone() const = 0;
+
   /*! destructor */
   virtual ~Domain() = default;
 

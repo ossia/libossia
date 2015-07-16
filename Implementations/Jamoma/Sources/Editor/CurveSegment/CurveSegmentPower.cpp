@@ -55,6 +55,18 @@ mPower(1.)
 {}
 
 template <typename T>
+JamomaCurveSegmentPower<T>::JamomaCurveSegmentPower(const JamomaCurveSegmentPower * other) :
+mParent(other->mParent),
+mPower(other->mPower)
+{}
+
+template <typename T>
+shared_ptr<CurveSegmentPower<T>> JamomaCurveSegmentPower<T>::clone() const
+{
+  return make_shared<JamomaCurveSegmentPower<T>>(this);
+}
+
+template <typename T>
 JamomaCurveSegmentPower<T>::~JamomaCurveSegmentPower()
 {}
 

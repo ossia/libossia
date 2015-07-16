@@ -51,11 +51,11 @@ public:
                        const TimeValue& = 0.,
                        const TimeValue& = Infinite);
   
-  JamomaTimeConstraint(const JamomaTimeConstraint * other);
-  
-  ~JamomaTimeConstraint();
+  JamomaTimeConstraint(const JamomaTimeConstraint *);
   
   shared_ptr<TimeConstraint> clone() const override;
+  
+  ~JamomaTimeConstraint();
 
 # pragma mark -
 # pragma mark Execution

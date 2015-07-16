@@ -33,6 +33,8 @@ private Q_SLOTS:
         QVERIFY(event_expression == expression);
         
         QVERIFY(event->getStatus() == TimeEvent::Status::WAITING);
+
+        //! \todo test clone()
     }
     
     /*! test edition functions */

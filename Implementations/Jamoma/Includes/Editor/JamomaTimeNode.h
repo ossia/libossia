@@ -39,11 +39,11 @@ public:
   
   JamomaTimeNode();
   
-  JamomaTimeNode(const JamomaTimeNode * other);
-  
-  ~JamomaTimeNode();
+  JamomaTimeNode(const JamomaTimeNode *);
   
   shared_ptr<TimeNode> clone() const override;
+  
+  ~JamomaTimeNode();
 
 # pragma mark -
 # pragma mark Execution

@@ -34,13 +34,13 @@ JamomaAutomation::JamomaAutomation(const JamomaAutomation * other) :
 JamomaTimeProcess(other->mCallback, other->mStartState, other->mEndState)
 {}
 
-JamomaAutomation::~JamomaAutomation()
-{}
-
 shared_ptr<Automation> JamomaAutomation::clone() const
 {
   return make_shared<JamomaAutomation>(this);
 }
+
+JamomaAutomation::~JamomaAutomation()
+{}
 
 # pragma mark -
 # pragma mark Execution

@@ -31,6 +31,8 @@ private Q_SLOTS:
         QVERIFY(automation->getDrivenAddress() == address);
 
         QVERIFY(*automation->getDriving() == f);
+
+        //! \todo test clone()
     }
     
     /*! test execution functions */

@@ -39,6 +39,10 @@ public:
 # pragma mark Life cycle
   
   JamomaCurveSegmentPower(shared_ptr<Curve<T>>);
+  
+  JamomaCurveSegmentPower(const JamomaCurveSegmentPower *);
+  
+  shared_ptr<CurveSegmentPower<T>> clone() const override;
 
   ~JamomaCurveSegmentPower();
   

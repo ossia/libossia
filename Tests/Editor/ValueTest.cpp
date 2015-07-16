@@ -13,7 +13,7 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        ;
+        //! \todo test clone()
     }
     
     /*! test edition functions */

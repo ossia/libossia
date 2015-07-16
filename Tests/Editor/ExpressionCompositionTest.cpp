@@ -36,6 +36,8 @@ private Q_SLOTS:
                                                           exprC);
         QVERIFY(composition2 != nullptr);
         QVERIFY(composition2->evaluate() == false);
+
+        //! \todo test clone()
     }
 
     /*! test OR operator */
@@ -64,6 +66,8 @@ private Q_SLOTS:
                                                           exprC);
         QVERIFY(composition2 != nullptr);
         QVERIFY(composition2->evaluate() == true);
+
+        //! \todo test clone()
     }
 
     /*! test XOR operator */
@@ -92,6 +96,8 @@ private Q_SLOTS:
                                                           exprC);
         QVERIFY(composition2 != nullptr);
         QVERIFY(composition2->evaluate() == true);
+
+        //! \todo test clone()
     }
 };
 

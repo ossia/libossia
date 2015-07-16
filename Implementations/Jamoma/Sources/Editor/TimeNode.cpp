@@ -16,14 +16,14 @@ JamomaTimeNode::JamomaTimeNode()
   
 JamomaTimeNode::JamomaTimeNode(const JamomaTimeNode * other)
 {}
-  
-JamomaTimeNode::~JamomaTimeNode()
-{}
-  
+
 shared_ptr<TimeNode> JamomaTimeNode::clone() const
 {
   return make_shared<JamomaTimeNode>(this);
 }
+
+JamomaTimeNode::~JamomaTimeNode()
+{}
 
 # pragma mark -
 # pragma mark Execution
