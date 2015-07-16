@@ -16,7 +16,7 @@ private Q_SLOTS:
         Impulse p1;
         QVERIFY(p1.getType() == Value::Type::IMPULSE);
 
-        Value* p2 = p1.clone();
+        Impulse* p2 = (Impulse*)p1.clone();
         QVERIFY(p2->getType() == Value::Type::IMPULSE);
 
         QVERIFY(p1 == *p2);
@@ -24,7 +24,7 @@ private Q_SLOTS:
         QVERIFY(!(p1 > *p2));
         QVERIFY(p1 >= *p2);
         QVERIFY(!(p1 < *p2));
-        QVERIFY(p1 >= *p2);
+        QVERIFY(p1 <= *p2);
 
         QVERIFY(p1 == Bool());
         QVERIFY(p1 == Int());
@@ -93,7 +93,7 @@ private Q_SLOTS:
         Bool b1(true);
         QVERIFY(b1.getType() == Value::Type::BOOL);
 
-        Value* b2 = b1.clone();
+        Bool* b2 = (Bool*)b1.clone();
         QVERIFY(b2->getType() == Value::Type::BOOL);
 
         QVERIFY(b1 == *b2);
@@ -101,7 +101,7 @@ private Q_SLOTS:
         QVERIFY(!(b1 > *b2));
         QVERIFY(b1 >= *b2);
         QVERIFY(!(b1 < *b2));
-        QVERIFY(b1 >= *b2);
+        QVERIFY(b1 <= *b2);
 
         QVERIFY(b1 == Impulse());
         QVERIFY(b1 == Int(1));
@@ -167,31 +167,392 @@ private Q_SLOTS:
     /*! test int */
     void test_int()
     {
-        //! \todo test clone()
+        Int i1(5);
+        QVERIFY(i1.getType() == Value::Type::INT);
+
+        Int* i2 = (Int*)i1.clone();
+        QVERIFY(i2->getType() == Value::Type::INT);
+
+        QVERIFY(i1 == *i2);
+        QVERIFY(!(i1 != *i2));
+        QVERIFY(!(i1 > *i2));
+        QVERIFY(i1 >= *i2);
+        QVERIFY(!(i1 < *i2));
+        QVERIFY(i1 <= *i2);
+
+        QVERIFY(i1 == Impulse());
+        QVERIFY(!(i1 == Bool(true)));
+        QVERIFY(!(i1 == Float(1)));
+        QVERIFY(i1 == Char(0x05));
+        QVERIFY(!(i1 == String()));
+        QVERIFY(i1 == Tuple(new Int(5)));
+        //! \todo == comparison with generic
+        //! \todo == comparison with destination
+        //! \todo == comparison with behavior
+
+        QVERIFY(!(i1 != Impulse()));
+        QVERIFY(i1 != Bool());
+        QVERIFY(i1 != Float());
+        QVERIFY(i1 != Char(0x00));
+        QVERIFY(i1 != String());
+        QVERIFY(i1 != Tuple(new Int(0)));
+        //! \todo != comparison with generic
+        //! \todo != comparison with destination
+        //! \todo != comparison with behavior
+
+        QVERIFY(!(i1 > Impulse()));
+        QVERIFY(i1 > Bool(false));
+        QVERIFY(i1 > Float(2));
+        QVERIFY(i1 > Char(0x00));
+        QVERIFY(!(i1 > String()));
+        QVERIFY(!(i1 > Tuple(new Int(0), new Int(0))));
+        //! \todo > comparison with generic
+        //! \todo > comparison with destination
+        //! \todo > comparison with behavior
+
+        QVERIFY(i1 >= Impulse());
+        QVERIFY(i1 >= Bool(true));
+        QVERIFY(i1 >= Float(1));
+        QVERIFY(i1 >= Char(0x03));
+        QVERIFY(!(i1 >= String()));
+        QVERIFY(!(i1 >= Tuple()));
+        //! \todo >= comparison with generic
+        //! \todo >= comparison with destination
+        //! \todo >= comparison with behavior
+
+        QVERIFY(!(i1 < Impulse()));
+        QVERIFY(!(i1 < Bool(true)));
+        QVERIFY(!(i1 < Float(1)));
+        QVERIFY(!(i1 < Char()));
+        QVERIFY(!(i1 < String()));
+        QVERIFY(!(i1 < Tuple(new Float(3))));
+        //! \todo < comparison with generic
+        //! \todo < comparison with destination
+        //! \todo < comparison with behavior
+
+        QVERIFY(i1 <= Impulse());
+        QVERIFY(!(i1 <= Bool()));
+        QVERIFY(!(i1 <= Float(1)));
+        QVERIFY(i1 <= Char(0x32));
+        QVERIFY(!(i1 <= String()));
+        QVERIFY(!(i1 <= Tuple()));
+        //! \todo <= comparison with generic
+        //! \todo <= comparison with destination
+        //! \todo <= comparison with behavior
     }
 
     /*! test flaot */
     void test_float()
     {
-        //! \todo test clone()
+        Float f1(5);
+        QVERIFY(f1.getType() == Value::Type::FLOAT);
+
+        Float* f2 = (Float*)f1.clone();
+        QVERIFY(f2->getType() == Value::Type::FLOAT);
+
+        QVERIFY(f1 == *f2);
+        QVERIFY(!(f1 != *f2));
+        QVERIFY(!(f1 > *f2));
+        QVERIFY(f1 >= *f2);
+        QVERIFY(!(f1 < *f2));
+        QVERIFY(f1 <= *f2);
+
+        QVERIFY(f1 == Impulse());
+        QVERIFY(!(f1 == Bool(true)));
+        QVERIFY(!(f1 == Int(1)));
+        QVERIFY(f1 == Char(0x05));
+        QVERIFY(!(f1 == String()));
+        QVERIFY(f1 == Tuple(new Int(5)));
+        //! \todo == comparison with generic
+        //! \todo == comparison with destination
+        //! \todo == comparison with behavior
+
+        QVERIFY(!(f1 != Impulse()));
+        QVERIFY(f1 != Bool());
+        QVERIFY(f1 != Int());
+        QVERIFY(f1 != Char(0x00));
+        QVERIFY(f1 != String());
+        QVERIFY(f1 != Tuple(new Int(0)));
+        //! \todo != comparison with generic
+        //! \todo != comparison with destination
+        //! \todo != comparison with behavior
+
+        QVERIFY(!(f1 > Impulse()));
+        QVERIFY(f1 > Bool(false));
+        QVERIFY(f1 > Int(2));
+        QVERIFY(f1 > Char(0x00));
+        QVERIFY(!(f1 > String()));
+        QVERIFY(!(f1 > Tuple(new Int(0), new Int(0))));
+        //! \todo > comparison with generic
+        //! \todo > comparison with destination
+        //! \todo > comparison with behavior
+
+        QVERIFY(f1 >= Impulse());
+        QVERIFY(f1 >= Bool(true));
+        QVERIFY(f1 >= Int(1));
+        QVERIFY(f1 >= Char(0x03));
+        QVERIFY(!(f1 >= String()));
+        QVERIFY(!(f1 >= Tuple()));
+        //! \todo >= comparison with generic
+        //! \todo >= comparison with destination
+        //! \todo >= comparison with behavior
+
+        QVERIFY(!(f1 < Impulse()));
+        QVERIFY(!(f1 < Bool(true)));
+        QVERIFY(!(f1 < Int(1)));
+        QVERIFY(!(f1 < Char()));
+        QVERIFY(!(f1 < String()));
+        QVERIFY(!(f1 < Tuple(new Float(3))));
+        //! \todo < comparison with generic
+        //! \todo < comparison with destination
+        //! \todo < comparison with behavior
+
+        QVERIFY(f1 <= Impulse());
+        QVERIFY(!(f1 <= Bool()));
+        QVERIFY(!(f1 <= Int(1)));
+        QVERIFY(f1 <= Char(0x32));
+        QVERIFY(!(f1 <= String()));
+        QVERIFY(!(f1 <= Tuple()));
+        //! \todo <= comparison with generic
+        //! \todo <= comparison with destination
+        //! \todo <= comparison with behavior
     }
 
     /*! test char */
     void test_char()
     {
-        //! \todo test clone()
+        Char c1(5);
+        QVERIFY(c1.getType() == Value::Type::CHAR);
+
+        Char* c2 = (Char*)c1.clone();
+        QVERIFY(c2->getType() == Value::Type::CHAR);
+
+        QVERIFY(c1 == *c2);
+        QVERIFY(!(c1 != *c2));
+        QVERIFY(!(c1 > *c2));
+        QVERIFY(c1 >= *c2);
+        QVERIFY(!(c1 < *c2));
+        QVERIFY(c1 <= *c2);
+
+        QVERIFY(c1 == Impulse());
+        QVERIFY(!(c1 == Bool(true)));
+        QVERIFY(!(c1 == Int(1)));
+        QVERIFY(c1 == Char(0x05));
+        QVERIFY(!(c1 == String()));
+        QVERIFY(c1 == Tuple(new Int(5)));
+        //! \todo == comparison with generic
+        //! \todo == comparison with destination
+        //! \todo == comparison with behavior
+
+        QVERIFY(!(c1 != Impulse()));
+        QVERIFY(c1 != Bool());
+        QVERIFY(c1 != Int());
+        QVERIFY(c1 != Char(0x00));
+        QVERIFY(c1 != String());
+        QVERIFY(c1 != Tuple(new Int(0)));
+        //! \todo != comparison with generic
+        //! \todo != comparison with destination
+        //! \todo != comparison with behavior
+
+        QVERIFY(!(c1 > Impulse()));
+        QVERIFY(c1 > Bool(false));
+        QVERIFY(c1 > Int(2));
+        QVERIFY(c1 > Char(0x00));
+        QVERIFY(!(c1 > String()));
+        QVERIFY(!(c1 > Tuple(new Int(0), new Int(0))));
+        //! \todo > comparison with generic
+        //! \todo > comparison with destination
+        //! \todo > comparison with behavior
+
+        QVERIFY(c1 >= Impulse());
+        QVERIFY(c1 >= Bool(true));
+        QVERIFY(c1 >= Int(1));
+        QVERIFY(c1 >= Char(0x03));
+        QVERIFY(!(c1 >= String()));
+        QVERIFY(!(c1 >= Tuple()));
+        //! \todo >= comparison with generic
+        //! \todo >= comparison with destination
+        //! \todo >= comparison with behavior
+
+        QVERIFY(!(c1 < Impulse()));
+        QVERIFY(!(c1 < Bool(true)));
+        QVERIFY(!(c1 < Int(1)));
+        QVERIFY(!(c1 < Char()));
+        QVERIFY(!(c1 < String()));
+        QVERIFY(!(c1 < Tuple(new Float(3))));
+        //! \todo < comparison with generic
+        //! \todo < comparison with destination
+        //! \todo < comparison with behavior
+
+        QVERIFY(c1 <= Impulse());
+        QVERIFY(!(c1 <= Bool()));
+        QVERIFY(!(c1 <= Int(1)));
+        QVERIFY(c1 <= Char(0x32));
+        QVERIFY(!(c1 <= String()));
+        QVERIFY(!(c1 <= Tuple()));
+        //! \todo <= comparison with generic
+        //! \todo <= comparison with destination
+        //! \todo <= comparison with behavior
     }
 
     /*! test string */
     void test_string()
     {
-        //! \todo test clone()
+        String s1("qsd");
+        QVERIFY(s1.getType() == Value::Type::STRING);
+
+        String* s2 = (String*)s1.clone();
+        QVERIFY(s2->getType() == Value::Type::STRING);
+
+        QVERIFY(s1 == *s2);
+        QVERIFY(!(s1 != *s2));
+        QVERIFY(!(s1 > *s2));
+        QVERIFY(s1 >= *s2);
+        QVERIFY(!(s1 < *s2));
+        QVERIFY(s1 <= *s2);
+
+        QVERIFY(s1 == Impulse());
+        QVERIFY(!(s1 == Bool(true)));
+        QVERIFY(!(s1 == Int(1)));
+        QVERIFY(!(s1 == Float(0)));
+        QVERIFY(!(s1 == Char(0x05)));
+        QVERIFY(!(s1 == Tuple(new Int(5))));
+        //! \todo == comparison with generic
+        //! \todo == comparison with destination
+        //! \todo == comparison with behavior
+
+        QVERIFY(!(s1 != Impulse()));
+        QVERIFY(s1 != Bool());
+        QVERIFY(s1 != Int());
+        QVERIFY(s1 != Float(1));
+        QVERIFY(s1 != Char(0x00));
+        QVERIFY(!(s1 != Tuple(new String("qsd"))));
+        //! \todo != comparison with generic
+        //! \todo != comparison with destination
+        //! \todo != comparison with behavior
+
+        QVERIFY(!(s1 > Impulse()));
+        QVERIFY(!(s1 > Bool(false)));
+        QVERIFY(!(s1 > Int(2)));
+        QVERIFY(!(s1 > Float(0.1)));
+        QVERIFY(!(s1 > Char(0x00)));
+        QVERIFY(!(s1 > Tuple(new Int(0), new Int(0))));
+        //! \todo > comparison with generic
+        //! \todo > comparison with destination
+        //! \todo > comparison with behavior
+
+        QVERIFY(s1 >= Impulse());
+        QVERIFY(!(s1 >= Bool(true)));
+        QVERIFY(!(s1 >= Int(1)));
+        QVERIFY(!(s1 >= Float(5)));
+        QVERIFY(!(s1 >= Char(0x03)));
+        QVERIFY(!(s1 >= Tuple()));
+        //! \todo >= comparison with generic
+        //! \todo >= comparison with destination
+        //! \todo >= comparison with behavior
+
+        QVERIFY(!(s1 < Impulse()));
+        QVERIFY(!(s1 < Bool(true)));
+        QVERIFY(!(s1 < Int(1)));
+        QVERIFY(!(s1 < Float(3)));
+        QVERIFY(!(s1 < Char()));
+        QVERIFY(s1 < Tuple(new String("wxc")));
+        //! \todo < comparison with generic
+        //! \todo < comparison with destination
+        //! \todo < comparison with behavior
+
+        QVERIFY(s1 <= Impulse());
+        QVERIFY(!(s1 <= Bool()));
+        QVERIFY(!(s1 <= Int(1)));
+        QVERIFY(!(s1 <= Float()));
+        QVERIFY(!(s1 <= Char(0x32)));
+        QVERIFY(!(s1 <= Tuple()));
+        //! \todo <= comparison with generic
+        //! \todo <= comparison with destination
+        //! \todo <= comparison with behavior
     }
 
     /*! test tuple */
     void test_tuple()
     {
-        //! \todo test clone()
+        Tuple t1(new Int(5), new Float(0.2), new String("abc"));
+        QVERIFY(t1.getType() == Value::Type::TUPLE);
+        QVERIFY(t1.value[0]->getType() == Value::Type::INT);
+        QVERIFY(t1.value[1]->getType() == Value::Type::FLOAT);
+        QVERIFY(t1.value[2]->getType() == Value::Type::STRING);
+
+        Tuple* t2 = (Tuple*)t1.clone();
+        QVERIFY(t2->getType() == Value::Type::TUPLE);
+        QVERIFY(t2->value[0]->getType() == Value::Type::INT);
+        QVERIFY(t2->value[1]->getType() == Value::Type::FLOAT);
+        QVERIFY(t2->value[2]->getType() == Value::Type::STRING);
+
+        QVERIFY(t1 == *t2);
+        QVERIFY(!(t1 != *t2));
+        QVERIFY(!(t1 > *t2));
+        QVERIFY(t1 >= *t2);
+        QVERIFY(!(t1 < *t2));
+        QVERIFY(t1 <= *t2);
+
+        QVERIFY(t1 == Impulse());
+        QVERIFY(!(t1 == Bool(true)));
+        QVERIFY(!(t1 == Int(1)));
+        QVERIFY(!(t1 == Float(5)));
+        QVERIFY(!(t1 == Char(0x05)));
+        QVERIFY(!(t1 == String()));
+        //! \todo == comparison with generic
+        //! \todo == comparison with destination
+        //! \todo == comparison with behavior
+
+        QVERIFY(!(t1 != Impulse()));
+        QVERIFY(t1 != Bool());
+        QVERIFY(t1 != Int());
+        QVERIFY(t1 != Float(5));
+        QVERIFY(t1 != Char(0x00));
+        QVERIFY(t1 != String());
+        //! \todo != comparison with generic
+        //! \todo != comparison with destination
+        //! \todo != comparison with behavior
+
+        QVERIFY(!(t1 > Impulse()));
+        QVERIFY(!(t1 > Bool(false)));
+        QVERIFY(!(t1 > Int(2)));
+        QVERIFY(!(t1 > Float(15)));
+        QVERIFY(!(t1 > Char(0x00)));
+        QVERIFY(!(t1 > String("abc")));
+        //! \todo > comparison with generic
+        //! \todo > comparison with destination
+        //! \todo > comparison with behavior
+
+        QVERIFY(t1 >= Impulse());
+        QVERIFY(!(t1 >= Bool(true)));
+        QVERIFY(!(t1 >= Int(1)));
+        QVERIFY(!(t1 >= Float(-23)));
+        QVERIFY(!(t1 >= Char(0x03)));
+        QVERIFY(!(t1 >= String("wxc")));
+        //! \todo >= comparison with generic
+        //! \todo >= comparison with destination
+        //! \todo >= comparison with behavior
+
+        QVERIFY(!(t1 < Impulse()));
+        QVERIFY(!(t1 < Bool(true)));
+        QVERIFY(!(t1 < Int(1)));
+        QVERIFY(!(t1 < Float(0.098)));
+        QVERIFY(!(t1 < Char()));
+        QVERIFY(!(t1 < String("wxc")));
+        //! \todo < comparison with generic
+        //! \todo < comparison with destination
+        //! \todo < comparison with behavior
+
+        QVERIFY(t1 <= Impulse());
+        QVERIFY(!(t1 <= Bool()));
+        QVERIFY(!(t1 <= Int(1)));
+        QVERIFY(!(t1 <= Float()));
+        QVERIFY(!(t1 <= Char(0x32)));
+        QVERIFY(!(t1 <= String()));
+        //! \todo <= comparison with generic
+        //! \todo <= comparison with destination
+        //! \todo <= comparison with behavior
     }
 
     /*! test generic */
