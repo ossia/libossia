@@ -26,24 +26,13 @@ private Q_SLOTS:
         auto scenario = Scenario::create(&scenario_callback);
         QVERIFY(scenario != nullptr);
         
-        auto start_state = scenario->getStartState();
-        QVERIFY(start_state != nullptr);
+        QVERIFY(scenario->getStartState() != nullptr);
+        QVERIFY(scenario->getEndState() != nullptr);
+        QVERIFY(scenario->getClock() != nullptr);
+        QVERIFY(scenario->getParentTimeConstraint() == nullptr);
         
-        auto end_state = scenario->getEndState();
-        QVERIFY(end_state != nullptr);
-        
-        auto clock = scenario->getClock();
-        QVERIFY(clock != nullptr);
-        
-        auto parent_constraint = scenario->getParentTimeConstraint();
-        QVERIFY(parent_constraint == nullptr);
-        
-        auto scenario_start_node = scenario->getStartNode();
-        QVERIFY(scenario_start_node != nullptr);
-        
-        auto scenario_end_node = scenario->getEndNode();
-        QVERIFY(scenario_end_node != nullptr);
-        
+        QVERIFY(scenario->getStartNode() != nullptr);
+        QVERIFY(scenario->getEndNode() != nullptr);
         QVERIFY(scenario->isKiller() == false);
         
         scenario->setKiller(true);
@@ -79,6 +68,16 @@ private Q_SLOTS:
 
         //! \todo how to verify something here ?
         auto scenario_copy = scenario->clone();
+    }
+
+    /*! test execution functions */
+    void test_execution()
+    {
+        //! \todo test play()
+        //! \todo test stop()
+        //! \todo test pause()
+        //! \todo test resume()
+        //! \todo test state()
     }
 };
 

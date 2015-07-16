@@ -28,8 +28,12 @@ private Q_SLOTS:
         auto automation = Automation::create(&automation_callback, address, &f);
         QVERIFY(automation != nullptr);
 
-        QVERIFY(automation->getDrivenAddress() == address);
+        QVERIFY(automation->getStartState() != nullptr);
+        QVERIFY(automation->getEndState() != nullptr);
+        QVERIFY(automation->getClock() != nullptr);
+        QVERIFY(automation->getParentTimeConstraint() == nullptr);
 
+        QVERIFY(automation->getDrivenAddress() == address);
         QVERIFY(*automation->getDriving() == f);
 
         //! \todo test clone()
@@ -38,7 +42,11 @@ private Q_SLOTS:
     /*! test execution functions */
     void test_execution()
     {
-        ;
+        //! \todo test play()
+        //! \todo test stop()
+        //! \todo test pause()
+        //! \todo test resume()
+        //! \todo test state()
     }
 };
 
