@@ -297,8 +297,30 @@ struct Tuple : public Value
 {
   std::vector<Value*> value;
   
-  /*! constructor
-  \param std::vector<const #Value> value*/
+  /*! constructor for one value tuple
+  \param const value */
+  Tuple(const Value*);
+
+  /*! constructor for two value tuple
+  \param const value
+  \param const value */
+  Tuple(const Value*, const Value*);
+
+  /*! constructor for three value tuple
+  \param const value
+  \param const value
+  \param const value */
+  Tuple(const Value*, const Value*, const Value*);
+
+  /*! constructor for four value tuple
+  \param const value
+  \param const value
+  \param const value
+  \param const value */
+  Tuple(const Value*, const Value*, const Value*, const Value*);
+
+  /*! constructor for N value tuple
+  \param std::vector<const #Value> value */
   Tuple(std::vector<const Value*> = std::vector<const Value*>());
   
   /*! clone */
