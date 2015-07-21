@@ -63,7 +63,7 @@ JamomaCurve<T>::~JamomaCurve()
 template <typename T>
 T JamomaCurve<T>::valueAt(const TimeValue& abscissa) const
 {
-  double lastAbscissa = 0.;
+  TimeValue lastAbscissa(0.);
   T lastValue = mInitialValue;
   
   for (auto it = mPointsMap.begin(); it != mPointsMap.end(); it++)

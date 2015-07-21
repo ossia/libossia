@@ -29,11 +29,11 @@ public:
   
   /*! constructor
     \param bool infinite */
-  TimeValue(const bool = false);
+  TimeValue(bool = false);
   
   /*! constructor
    \param int value */
-  TimeValue(const double);
+  TimeValue(double);
   
   /*! destructor */
   ~TimeValue();
@@ -42,31 +42,48 @@ public:
 # pragma mark Operator
   
   /*! assignation operator */
-  TimeValue & operator= (const double);
+  TimeValue & operator= (double);
+  TimeValue & operator= (const TimeValue&);
+  
+  /*! self addition operator */
+  TimeValue & operator+= (double);
+  TimeValue & operator+= (const TimeValue&);
+  
+  /*! self substraction operator */
+  TimeValue & operator-= (double);
+  TimeValue & operator-= (const TimeValue&);
   
   /*! addition operator */
-  TimeValue & operator+= (const double);
+  TimeValue operator+ (double) const;
+  TimeValue operator+ (const TimeValue&) const;
   
-  /*! soustraction operator */
-  TimeValue & operator-= (const double);
+  /*! substraction operator */
+  TimeValue operator- (double) const;
+  TimeValue operator- (const TimeValue&) const;
   
   /*! equal operator */
-  bool operator== (const TimeValue& t);
+  bool operator== (double) const;
+  bool operator== (const TimeValue&) const;
   
   /*! different operator */
-  bool operator!= (const TimeValue& t);
+  bool operator!= (double) const;
+  bool operator!= (const TimeValue&) const;
   
   /*! greater than operator */
-  bool operator> (const TimeValue& t);
+  bool operator> (double) const;
+  bool operator> (const TimeValue&) const;
   
   /*! greater than and equal operator */
-  bool operator>= (const TimeValue& t);
+  bool operator>= (double) const;
+  bool operator>= (const TimeValue&) const;
   
   /*! less than operator */
-  bool operator< (const TimeValue& t);
+  bool operator< (double) const;
+  bool operator< (const TimeValue&) const;
   
   /*! less than and equal operator */
-  bool operator<= (const TimeValue& t);
+  bool operator<= (double) const;
+  bool operator<= (const TimeValue&) const;
   
   /*! double casting operator */
   operator double() const;

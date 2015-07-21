@@ -46,7 +46,6 @@ private:
   TimeValue         mDate;          /// how many time the clock is running (without no speed factor consideration)
   
   thread            mThread;        /// a thread to launch the clock execution
-  mutex             mThreadMutex;   /// prevents the thread object from being used concurrently
   
   steady_clock::time_point mLastTime;/// a time reference used to compute time tick
   long long         mElapsedTime;   /// a time reference used to know how many time are elapsed in microsecond
@@ -123,4 +122,6 @@ private:
   
   /*! called back by the internal thread */
   void threadCallback();
+  
+  void resetTimeInfo();
 };
