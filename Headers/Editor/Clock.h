@@ -143,5 +143,9 @@ public:
   /*! get the date of the clock
    \return const #TimeValue date */
   virtual const TimeValue & getDate() const = 0;
+
+  /*! get how many ticks have been dropped since the last go
+   \return int number of dropped ticks */
+  virtual int getDroppedTicks() const = 0;
 };
 }
