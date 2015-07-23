@@ -59,10 +59,12 @@ void JamomaClock::go()
   // reset timing informations
   mRunning = true;
   mPaused = false;
-  mPosition = mOffset / mDuration;
-  mDate = mOffset;
+
+  // set clock at a time grain
+  mDate = std::floor(mOffset / (mGranularity * mSpeed)) * (mGranularity * mSpeed);
+  mPosition = mDate / mDuration;
   mLastTime = steady_clock::now();
-  mElapsedTime = mOffset * 1000;
+  mElapsedTime = std::floor(mOffset / mGranularity) * mGranularity * 1000;
   
   //! \todo notify each observers
   // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
@@ -122,6 +124,8 @@ bool JamomaClock::tick()
   {
     // how many time to pause to reach the next time grain ?
     long long pauseInUs = granularityInUs - mElapsedTime % granularityInUs;
+    
+    //! \debug cout << "pause = " << pauseInUs / 1000. << endl;
 
     // if too early: wait
     if (pauseInUs > 0)
@@ -132,6 +136,8 @@ bool JamomaClock::tick()
       // how many time since the last tick ?
       deltaInUs = duration_cast<microseconds>(steady_clock::now() - mLastTime).count();
     }
+    
+    //! \debug cout << "delta = " << deltaInUs / 1000. << endl;
   }
   
   // how many time elapsed from the start ?

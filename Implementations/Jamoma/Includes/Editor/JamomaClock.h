@@ -18,6 +18,7 @@
 #include <chrono>
 #include <thread>
 #include <mutex>
+#include <cmath>
 
 #include "Editor/Clock.h"
 
