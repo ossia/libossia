@@ -5,6 +5,7 @@
 #include <iostream>
 
 using namespace OSSIA;
+using namespace std::chrono;
 using namespace std::placeholders;
 
 class ClockTest : public QObject
@@ -19,7 +20,64 @@ class ClockTest : public QObject
         m_clock_positions.push_back(position);
         m_clock_dates.push_back(date);
 
-        std::cout << (double)position << ", " << (double)date << std::endl;
+        //std::cout << (double)position << ", " << (double)date << std::endl;
+    }
+
+    void make_clock_test(const TimeValue& duration,
+                         const TimeValue& granularity,
+                         const TimeValue& offset,
+                         float speed)
+    {
+        std::cout << "make_clock_test(" << duration << ", " << granularity << ", " << offset << ", " << speed << ") : ";
+
+        int nbFrame;
+
+        // setup clock
+        auto clock = Clock::create(duration, granularity, offset, speed);
+        auto callback = std::bind(&ClockTest::clock_callback, this, _1, _2);
+        clock->setExecutionCallback(callback);
+
+        // clear frame vectors
+        m_clock_positions.clear();
+        m_clock_dates.clear();
+
+        // launch the clock and check running status : it have to be true after the launch
+        QVERIFY(clock->getRunning() == false);
+        steady_clock::time_point start_date = steady_clock::now();
+        clock->go();
+        QVERIFY(clock->getRunning() == true);
+
+        // wait the clock end
+        while (clock->getRunning())
+            ;
+
+        // check how long the clock ran : it shouldn't be longer than one time grain
+        long long effective_duration = duration_cast<milliseconds>(steady_clock::now() - start_date).count();
+        long long expected_duration = (duration - offset) / speed;
+
+        if (effective_duration == expected_duration)
+            std::cout << "done in " << effective_duration << " ms" << std::endl;
+        else
+            std::cout << "done in " << effective_duration << " ms instead of " << expected_duration << " ms" << std::endl;
+
+        QVERIFY(effective_duration >= expected_duration);
+        QVERIFY(effective_duration - expected_duration  <= granularity / speed);
+
+        // check time info after execution : they have to be the same
+        QVERIFY(clock->getDuration() == duration);
+        QVERIFY(clock->getGranularity() == granularity);
+        QVERIFY(clock->getOffset() == offset);
+        QVERIFY(clock->getSpeed() == speed);
+
+        // check frame info
+        nbFrame = round((duration - offset) / granularity / speed);
+
+        QVERIFY(m_clock_positions.size() == nbFrame);
+        QVERIFY(m_clock_positions[nbFrame-1] == One);
+
+        QVERIFY(m_clock_dates.size() == nbFrame);
+        QVERIFY(m_clock_dates[0] >= offset + (granularity * speed));
+        QVERIFY(m_clock_dates[nbFrame-1] >= duration);
     }
 
 private Q_SLOTS:
@@ -61,50 +119,21 @@ private Q_SLOTS:
     /*! test execution functions */
     void test_execution()
     {
-        auto clock = Clock::create(1000., 20.);
+        make_clock_test(100., 10., 0., 1.);
+        make_clock_test(100., 10., 0., 2.);
+        make_clock_test(100., 10., 0., 0.5);
 
-        auto callback = std::bind(&ClockTest::clock_callback, this, _1, _2);
-        clock->setExecutionCallback(callback);
+        make_clock_test(100., 10., 50., 1.);
+        make_clock_test(100., 10., 50., 2.);
+        make_clock_test(100., 10., 50., 0.5);
 
-        m_clock_positions.clear();
-        m_clock_dates.clear();
+        make_clock_test(100., 1., 0., 1.);
+        make_clock_test(100., 1., 0., 2.);
+        make_clock_test(100., 1., 0., 0.5);
 
-        QVERIFY(clock->getRunning() == false);
-        clock->go();
-        QVERIFY(clock->getRunning() == true);
-
-        std::cout << "test_execution() : waiting 1 seconds for the clock end" << std::endl;
-        while (clock->getRunning())
-            ;
-
-        QVERIFY(m_clock_positions.size() == 50);
-        QVERIFY(m_clock_positions[49] == One);
-
-        QVERIFY(m_clock_dates.size() == 50);
-        QVERIFY(m_clock_dates[0] >= clock->getOffset() + clock->getGranularity());
-        QVERIFY(m_clock_dates[49] >= clock->getDuration());
-
-        clock->setOffset(500.);
-        clock->setSpeed(2.);
-
-        m_clock_positions.clear();
-        m_clock_dates.clear();
-
-        QVERIFY(clock->getRunning() == false);
-        clock->go();
-        QVERIFY(clock->getRunning() == true);
-
-        std::cout << "test_execution() : waiting 0.5 seconds for the clock end" << std::endl;
-        while (clock->getRunning())
-            ;
-        std::cout << "test_execution() : nb frame = " << m_clock_positions.size() << std::endl;
-
-        QVERIFY(m_clock_positions.size() == 25);
-        QVERIFY(m_clock_positions[24] == One);
-
-        QVERIFY(m_clock_dates.size() == 25);
-        QVERIFY(m_clock_dates[0] >= clock->getOffset() + clock->getGranularity());
-        QVERIFY(m_clock_dates[24] >= clock->getDuration());
+        make_clock_test(100., 1., 50., 1.);
+        make_clock_test(100., 1., 50., 2.);
+        make_clock_test(100., 1., 50., 0.5);
 
         //! \todo test stop()
         //! \todo test pause()

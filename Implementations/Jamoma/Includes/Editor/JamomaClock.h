@@ -122,6 +122,4 @@ private:
   
   /*! called back by the internal thread */
   void threadCallback();
-  
-  void resetTimeInfo();
 };

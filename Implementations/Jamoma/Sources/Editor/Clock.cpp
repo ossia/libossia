@@ -79,10 +79,8 @@ void JamomaClock::go()
 
 void JamomaClock::stop()
 {
-  // reset time info
-  //! \details this will set mRunning to false which will stop the thread
-  //! \see JamomaClock::threadCallback()
-  resetTimeInfo();
+  mRunning = false;
+  mPaused = false;
   
   if (!mExternal)
   {
@@ -125,8 +123,6 @@ bool JamomaClock::tick()
     // how many time to pause to reach the next time grain ?
     long long pauseInUs = granularityInUs - mElapsedTime % granularityInUs;
 
-    std::cout << "pauseInUs = " << pauseInUs / 1000. << std::endl;
-    
     // if too early: wait
     if (pauseInUs > 0)
     {
@@ -136,12 +132,10 @@ bool JamomaClock::tick()
       // how many time since the last tick ?
       deltaInUs = duration_cast<microseconds>(steady_clock::now() - mLastTime).count();
     }
-
-    std::cout << "deltaInUs = " << deltaInUs / 1000. << std::endl;
   }
   
   // how many time elapsed from the start ?
-  mDate = (mElapsedTime / 1000.) + (deltaInUs / 1000.) * mSpeed;
+  mDate += (deltaInUs / 1000.) * mSpeed;
   mElapsedTime += deltaInUs;
 
   // test also paused and running status after computing the date because there is a sleep before
@@ -159,10 +153,8 @@ bool JamomaClock::tick()
       // notify the owner forcing position to 1. to allow filtering
       (mCallback)(One, mDate);
       
-      // reset time info
-      //! \details this will set mRunning to false which will stop the thread
-      //! \see JamomaClock::threadCallback()
-      resetTimeInfo();
+      mRunning = false;
+      mPaused = false;
     }
   }
   
@@ -278,14 +270,4 @@ void JamomaClock::threadCallback()
   if (mDuration > Zero)
     while (mRunning)
       tick();
-}
-
-void JamomaClock::resetTimeInfo()
-{
-  // reset all time info
-  mRunning = false;
-  mPaused = false;
-  mOffset = Zero;
-  mPosition = Zero;
-  mDate = Zero;
 }
