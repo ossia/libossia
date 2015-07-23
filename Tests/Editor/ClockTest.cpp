@@ -16,7 +16,7 @@ class ClockTest : public QObject
     std::vector<TimeValue> m_clock_dates;
     bool display_frames = false;
 
-    void clock_callback(const TimeValue& position, const TimeValue& date)
+    void clock_callback_light(const TimeValue& position, const TimeValue& date)
     {
         m_clock_positions.push_back(position);
         m_clock_dates.push_back(date);
@@ -25,10 +25,26 @@ class ClockTest : public QObject
             std::cout << (double)position << ", " << (double)date << std::endl;
     }
 
+    void clock_callback_heavy(const TimeValue& position, const TimeValue& date)
+    {
+        m_clock_positions.push_back(position);
+        m_clock_dates.push_back(date);
+
+        if (display_frames)
+            std::cout << (double)position << ", " << (double)date << std::endl;
+
+        // an heavy processing ...
+        long r;
+        for (int i = 0; i < 1000; i++)
+            for (int j = 0; j < 1000; j++)
+                r++;
+    }
+
     void make_clock_test(const TimeValue& duration,
                          const TimeValue& granularity,
                          const TimeValue& offset,
                          float speed,
+                         Clock::ExecutionCallback callback,
                          bool display = false)
     {
         display_frames = display;
@@ -40,7 +56,6 @@ class ClockTest : public QObject
 
         // setup clock
         auto clock = Clock::create(duration, granularity, offset, speed);
-        auto callback = std::bind(&ClockTest::clock_callback, this, _1, _2);
         clock->setExecutionCallback(callback);
 
         // clear frame vectors
@@ -67,7 +82,7 @@ class ClockTest : public QObject
 
         // how many frames ?
         int effective_nbFrame = m_clock_positions.size();
-        int expected_nbFrame = duration_in_grain - offset_in_grain;
+        int expected_nbFrame = duration_in_grain - offset_in_grain - clock->getDroppedTicks();
 
         // display test summary before verifications
         if (effective_nbFrame == expected_nbFrame)
@@ -103,7 +118,7 @@ private Q_SLOTS:
     void test_basic()
     {
         auto clock = Clock::create();
-        auto callback = std::bind(&ClockTest::clock_callback, this, _1, _2);
+        auto callback = std::bind(&ClockTest::clock_callback_light, this, _1, _2);
 
         QVERIFY(clock->getDuration() == Infinite);
         QVERIFY(clock->getGranularity() == 1.);
@@ -134,38 +149,71 @@ private Q_SLOTS:
     }
     
     /*! test execution functions */
-    void test_execution()
+    //! \todo test stop()
+    //! \todo test pause()
+    //! \todo test resume()
+    void test_execution_light()
     {
-        // 30 ms time grain accuracy
-        make_clock_test(100., 30., 0., 1.);
-        make_clock_test(100., 30., 0., 2.);
-        make_clock_test(100., 30., 0., 0.5);
+        auto callback = std::bind(&ClockTest::clock_callback_light, this, _1, _2);
 
-        make_clock_test(100., 30., 50., 1.);
-        make_clock_test(100., 30., 50., 2.);
-        make_clock_test(100., 30., 50., 0.5);
+        // 30 ms time grain accuracy
+        make_clock_test(100., 30., 0., 1., callback);
+        make_clock_test(100., 30., 0., 2., callback);
+        make_clock_test(100., 30., 0., 0.5, callback);
+
+        make_clock_test(100., 30., 50., 1., callback);
+        make_clock_test(100., 30., 50., 2., callback);
+        make_clock_test(100., 30., 50., 0.5, callback);
 
         // 10 ms time grain accuracy
-        make_clock_test(100., 10., 0., 1.);
-        make_clock_test(100., 10., 0., 2.);
-        make_clock_test(100., 10., 0., 0.5);
+        make_clock_test(100., 10., 0., 1., callback);
+        make_clock_test(100., 10., 0., 2., callback);
+        make_clock_test(100., 10., 0., 0.5, callback);
 
-        make_clock_test(100., 10., 50., 1.);
-        make_clock_test(100., 10., 50., 2.);
-        make_clock_test(100., 10., 50., 0.5);
+        make_clock_test(100., 10., 50., 1., callback);
+        make_clock_test(100., 10., 50., 2., callback);
+        make_clock_test(100., 10., 50., 0.5, callback);
 
         // 1 ms time grain accuracy
-        make_clock_test(100., 1., 0., 1.);
-        make_clock_test(100., 1., 0., 2.);
-        make_clock_test(100., 1., 0., 0.5);
+        make_clock_test(100., 1., 0., 1., callback);
+        make_clock_test(100., 1., 0., 2., callback);
+        make_clock_test(100., 1., 0., 0.5, callback);
 
-        make_clock_test(100., 1., 50., 1.);
-        make_clock_test(100., 1., 50., 2.);
-        make_clock_test(100., 1., 50., 0.5);
+        make_clock_test(100., 1., 50., 1., callback);
+        make_clock_test(100., 1., 50., 2., callback);
+        make_clock_test(100., 1., 50., 0.5, callback);
+    }
 
-        //! \todo test stop()
-        //! \todo test pause()
-        //! \todo test resume()
+    void test_execution_heavy()
+    {
+        auto callback = std::bind(&ClockTest::clock_callback_heavy, this, _1, _2);
+
+        // 30 ms time grain accuracy
+        make_clock_test(100., 30., 0., 1., callback);
+        make_clock_test(100., 30., 0., 2., callback);
+        make_clock_test(100., 30., 0., 0.5, callback);
+
+        make_clock_test(100., 30., 50., 1., callback);
+        make_clock_test(100., 30., 50., 2., callback);
+        make_clock_test(100., 30., 50., 0.5, callback);
+
+        // 10 ms time grain accuracy
+        make_clock_test(100., 10., 0., 1., callback);
+        make_clock_test(100., 10., 0., 2., callback);
+        make_clock_test(100., 10., 0., 0.5, callback);
+
+        make_clock_test(100., 10., 50., 1., callback);
+        make_clock_test(100., 10., 50., 2., callback);
+        make_clock_test(100., 10., 50., 0.5, callback);
+
+        // 1 ms time grain accuracy
+        make_clock_test(100., 1., 0., 1., callback);
+        make_clock_test(100., 1., 0., 2., callback, true);
+        make_clock_test(100., 1., 0., 0.5, callback, true);
+
+        make_clock_test(100., 1., 50., 1., callback, true);
+        make_clock_test(100., 1., 50., 2., callback);
+        make_clock_test(100., 1., 50., 0.5, callback);
     }
 };
 

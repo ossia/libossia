@@ -10,10 +10,10 @@ using namespace OSSIA;
 namespace OSSIA
 {
   shared_ptr<Clock> Clock::create(const TimeValue& duration,
-                                       const TimeValue& granularity,
-                                       const TimeValue& offset,
-                                       float speed,
-                                       bool external)
+                                  const TimeValue& granularity,
+                                  const TimeValue& offset,
+                                  float speed,
+                                  bool external)
   {
     return make_shared<JamomaClock>(duration, granularity, offset, speed, external);
   }
@@ -59,21 +59,22 @@ void JamomaClock::go()
   // reset timing informations
   mRunning = true;
   mPaused = false;
-
-  // set clock at a time grain
+  
+  // set clock at a tick
   mDate = std::floor(mOffset / (mGranularity * mSpeed)) * (mGranularity * mSpeed);
   mPosition = mDate / mDuration;
+  mDroppedTicks = 0;
   mLastTime = steady_clock::now();
   mElapsedTime = std::floor(mOffset / mGranularity) * mGranularity * 1000;
   
   //! \todo notify each observers
   // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
-
+  
   if (!mExternal)
   {
     if (mThread.joinable())
-        mThread.join();
-      
+      mThread.join();
+    
     // launch a new thread to run the clock execution
     mThread = thread(&JamomaClock::threadCallback, this);
   }
@@ -87,9 +88,9 @@ void JamomaClock::stop()
   if (!mExternal)
   {
     if (mThread.joinable())
-        mThread.join();
+      mThread.join();
   }
-    
+  
   //! \todo notify each observers
   // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
 }
@@ -107,13 +108,37 @@ void JamomaClock::resume()
 bool JamomaClock::tick()
 {
   if (mPaused || !mRunning)
-     return false;
+    return false;
   
   long long granularityInUs(mGranularity * 1000);
   
   // how many time since the last tick ?
   long long deltaInUs = duration_cast<microseconds>(steady_clock::now() - mLastTime).count();
   
+  // how much ticks it represents ?
+  int droppedTicks = std::floor(deltaInUs / granularityInUs);
+  
+  // adjust date and elapsed time considering the dropped ticks
+  if (droppedTicks)
+  {
+    mDroppedTicks += droppedTicks;
+    mDate += droppedTicks * mGranularity * mSpeed;
+    mElapsedTime += droppedTicks * granularityInUs;
+    mLastTime = steady_clock::now();
+
+    // maybe the clock reaches the end ?
+    if (mDuration - mDate < Zero)
+    {
+      // notify the owner forcing position to 1. to allow filtering
+      (mCallback)(One, mDate);
+
+      mRunning = false;
+      mPaused = false;
+
+      return true;
+    }
+  }
+
   if (mExternal)
   {
     // if too early: avoid this tick
@@ -122,11 +147,11 @@ bool JamomaClock::tick()
   }
   else
   {
-    // how many time to pause to reach the next time grain ?
+    // how many time to pause to reach the next tick ?
     long long pauseInUs = granularityInUs - mElapsedTime % granularityInUs;
     
     //! \debug cout << "pause = " << pauseInUs / 1000. << endl;
-
+    
     // if too early: wait
     if (pauseInUs > 0)
     {
@@ -143,7 +168,10 @@ bool JamomaClock::tick()
   // how many time elapsed from the start ?
   mDate += (deltaInUs / 1000.) * mSpeed;
   mElapsedTime += deltaInUs;
-
+  
+  // note the time now to evaluate how long is the callback processing
+  mLastTime = steady_clock::now();
+  
   // test also paused and running status after computing the date because there is a sleep before
   if (!mPaused && mRunning)
   {
@@ -163,9 +191,6 @@ bool JamomaClock::tick()
       mPaused = false;
     }
   }
-  
-  // tick is done now
-  mLastTime = steady_clock::now();
   
   return true;
 }
@@ -265,6 +290,11 @@ const TimeValue & JamomaClock::getPosition() const
 const TimeValue & JamomaClock::getDate() const
 {
   return mDate;
+}
+
+int JamomaClock::getDroppedTicks() const
+{
+  return mDroppedTicks;
 }
 
 # pragma mark -
