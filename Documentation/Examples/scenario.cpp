@@ -101,7 +101,7 @@ int main()
     main_constraint->addTimeProcess(main_scenario);
 
     /* 
-     Main Scenario edition : creation of a TimeConstraint
+     Main Scenario edition : creation of a two TimeConstraints
      */
     
     // get the start node of the main Scenario
@@ -122,6 +122,19 @@ int main()
     
     // add the first TimeConstraint to the main Scenario
     main_scenario->addTimeConstraint(first_constraint);
+    
+    // create a TimeNode
+    auto second_end_node = TimeNode::create();
+    
+    // create a TimeEvent inside the end node without Expression
+    auto second_end_event = *(second_end_node->emplace(second_end_node->timeEvents().begin(), &event_callback));
+    
+    // create a TimeConstraint between the two TimeEvents
+    TimeValue second_duration(2000.);
+    auto second_constraint = TimeConstraint::create(first_end_event, second_end_event, second_duration, second_duration, second_duration);
+    
+    // add the second TimeConstraint to the main Scenario
+    main_scenario->addTimeConstraint(second_constraint);
 
     /*
      Main Scenario edition : creation of an Automation
