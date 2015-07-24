@@ -107,9 +107,11 @@ class ClockTest : public QObject
 
         // display test summary before verifications
         if (effective_nbFrame == expected_nbFrame)
-            std::cout << expected_duration / 1000. << " + " << m_last_frame_duration / 1000. << " + " << (effective_duration - expected_duration) / 1000. << " ms (" << effective_nbFrame << " frames)" << std::endl;
-        else
-            std::cout << expected_duration / 1000. << " + " << m_last_frame_duration / 1000. << " + " << (effective_duration - expected_duration) / 1000. << " ms (" << duration_in_grain - offset_in_grain << " - " << m_dropped_ticks << " = " << expected_nbFrame << " frames)" << std::endl;
+            std::cout << expected_duration / 1000. << " + " << m_last_frame_duration / 1000. << " + " << (effective_duration - expected_duration) / 1000. << " ms (in " << effective_nbFrame << " frames)" << std::endl;
+        else if (effective_nbFrame > expected_nbFrame)
+            std::cout << expected_duration / 1000. << " + " << m_last_frame_duration / 1000. << " + " << (effective_duration - expected_duration) / 1000. << " ms (+" << effective_nbFrame - expected_nbFrame << " frames)" << std::endl;
+        else if (effective_nbFrame < expected_nbFrame)
+            std::cout << expected_duration / 1000. << " + " << m_last_frame_duration / 1000. << " + " << (effective_duration - expected_duration) / 1000. << " ms (" << effective_nbFrame - expected_nbFrame << " frames)" << std::endl;
 
         // check duration
         QVERIFY(effective_duration >= expected_duration);

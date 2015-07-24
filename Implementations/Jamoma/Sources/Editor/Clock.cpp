@@ -123,7 +123,7 @@ bool JamomaClock::tick()
     mDate += droppedTicks * mGranularity * mSpeed;
     mElapsedTime += droppedTicks * granularityInUs;
     
-    //! \debug cout << "+ " << droppedTicks * mGranularity * mSpeed; << endl;
+    //! \debug cout << "+ " << droppedTicks * mGranularity * mSpeed << endl;
 
     // maybe the clock reaches the end ?
     if (mDuration - mDate < Zero && !mDuration.isInfinite())
