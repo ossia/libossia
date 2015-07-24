@@ -29,7 +29,7 @@ mKiller(false)
   mTimeNodes.push_back(TimeNode::create());
 
   // pass callback to the Clock
-  Clock::ExecutionCallback clockCallback = std::bind(&JamomaScenario::ClockCallback, this, _1, _2);
+  Clock::ExecutionCallback clockCallback = std::bind(&JamomaScenario::ClockCallback, this, _1, _2, _3);
   mClock->setExecutionCallback(clockCallback);
 }
 
@@ -208,7 +208,7 @@ const shared_ptr<TimeConstraint> & JamomaScenario::getParentTimeConstraint() con
 # pragma mark -
 # pragma mark Implementation specific
 
-void JamomaScenario::ClockCallback(const TimeValue& position, const TimeValue& date)
+void JamomaScenario::ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks)
 {
   // reset internal State
   mCurrentState->stateElements().clear();

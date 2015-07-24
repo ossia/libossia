@@ -63,7 +63,6 @@ void JamomaClock::go()
   // set clock at a tick
   mDate = std::floor(mOffset / (mGranularity * mSpeed)) * (mGranularity * mSpeed);
   mPosition = mDate / mDuration;
-  mDroppedTicks = 0;
   mLastTime = steady_clock::now();
   mElapsedTime = std::floor(mOffset / mGranularity) * mGranularity * 1000;
   
@@ -121,16 +120,18 @@ bool JamomaClock::tick()
   // adjust date and elapsed time considering the dropped ticks
   if (droppedTicks)
   {
-    mDroppedTicks += droppedTicks;
     mDate += droppedTicks * mGranularity * mSpeed;
     mElapsedTime += droppedTicks * granularityInUs;
-    mLastTime = steady_clock::now();
+    
+    //! \debug cout << "+ " << droppedTicks * mGranularity * mSpeed; << endl;
 
     // maybe the clock reaches the end ?
-    if (mDuration - mDate < Zero)
+    if (mDuration - mDate < Zero && !mDuration.isInfinite())
     {
-      // notify the owner forcing position to 1. to allow filtering
-      (mCallback)(One, mDate);
+      mPosition = mDate / mDuration;
+      
+      // notify the owner
+      (mCallback)(mPosition, mDate, droppedTicks);
 
       mRunning = false;
       mPaused = false;
@@ -149,44 +150,38 @@ bool JamomaClock::tick()
   {
     // how many time to pause to reach the next tick ?
     long long pauseInUs = granularityInUs - mElapsedTime % granularityInUs;
-    
-    //! \debug cout << "pause = " << pauseInUs / 1000. << endl;
-    
+
     // if too early: wait
     if (pauseInUs > 0)
     {
       // pause the thread
       this_thread::sleep_for(std::chrono::microseconds(pauseInUs));
       
-      // how many time since the last tick ?
-      deltaInUs = duration_cast<microseconds>(steady_clock::now() - mLastTime).count();
+      // how many time since the last tick ? (minus dropped ticks)
+      deltaInUs = duration_cast<microseconds>(steady_clock::now() - mLastTime).count() - droppedTicks * granularityInUs;
     }
-    
-    //! \debug cout << "delta = " << deltaInUs / 1000. << endl;
   }
   
   // how many time elapsed from the start ?
   mDate += (deltaInUs / 1000.) * mSpeed;
   mElapsedTime += deltaInUs;
+
+  //! \debug cout << "+ " << (deltaInUs / 1000.) * mSpeed << endl;
   
   // note the time now to evaluate how long is the callback processing
   mLastTime = steady_clock::now();
   
-  // test also paused and running status after computing the date because there is a sleep before
+  // test paused and running status after computing the date because there is a sleep before
   if (!mPaused && mRunning)
   {
-    if (mDuration - mDate >= Zero || mDuration.isInfinite())
+    mPosition = mDate / mDuration;
+    
+    // notify the owner
+    (mCallback)(mPosition, mDate, droppedTicks);
+    
+    // is this the end
+    if (mDuration - mDate < Zero && !mDuration.isInfinite())
     {
-      mPosition = mDate / mDuration;
-      
-      // notify the owner
-      (mCallback)(mPosition, mDate);
-    }
-    else
-    {
-      // notify the owner forcing position to 1. to allow filtering
-      (mCallback)(One, mDate);
-      
       mRunning = false;
       mPaused = false;
     }
@@ -290,11 +285,6 @@ const TimeValue & JamomaClock::getPosition() const
 const TimeValue & JamomaClock::getDate() const
 {
   return mDate;
-}
-
-int JamomaClock::getDroppedTicks() const
-{
-  return mDroppedTicks;
 }
 
 # pragma mark -

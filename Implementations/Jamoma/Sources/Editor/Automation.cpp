@@ -26,7 +26,7 @@ mDrivenAddress(address),
 mDrive(drive->clone())
 {
   // pass callback to the Clock
-  Clock::ExecutionCallback clockCallback = std::bind(&JamomaAutomation::ClockCallback, this, _1, _2);
+  Clock::ExecutionCallback clockCallback = std::bind(&JamomaAutomation::ClockCallback, this, _1, _2, _3);
   mClock->setExecutionCallback(clockCallback);
 }
 
@@ -106,7 +106,7 @@ const shared_ptr<TimeConstraint> & JamomaAutomation::getParentTimeConstraint() c
   return mParent;
 }
 
-void JamomaAutomation::ClockCallback(const TimeValue& position, const TimeValue& date)
+void JamomaAutomation::ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks)
 {
   // clear internal State, Message and Value
   mCurrentState->stateElements().clear();

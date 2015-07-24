@@ -103,5 +103,5 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  void ClockCallback(const TimeValue&, const TimeValue&);
+  void ClockCallback(const TimeValue&, const TimeValue&, unsigned char);
 };

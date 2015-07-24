@@ -73,8 +73,9 @@ public:
   
   /*! to get the clock execution back
    \param clock position
-   \param clock date */
-  using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&)>;
+   \param clock date 
+   \param dropped ticks */
+  using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, unsigned char)>;
   
   /*! get the clock execution callback function
    \return #ValueCallback function */
@@ -143,9 +144,5 @@ public:
   /*! get the date of the clock
    \return const #TimeValue date */
   virtual const TimeValue & getDate() const = 0;
-
-  /*! get how many ticks have been dropped since the last go
-   \return int number of dropped ticks */
-  virtual int getDroppedTicks() const = 0;
 };
 }

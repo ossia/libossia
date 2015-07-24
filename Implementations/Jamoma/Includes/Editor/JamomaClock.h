@@ -45,8 +45,7 @@ private:
   bool              mPaused;        /// is the clock paused right now ?
   TimeValue         mPosition;      /// the progression of the clock between the beginning and the end [0. :: 1.]
   TimeValue         mDate;          /// how many time the clock is running (without no speed factor consideration)
-  int               mDroppedTicks;  /// how many ticks have been dropped since the last go
-  
+
   thread            mThread;        /// a thread to launch the clock execution
   
   steady_clock::time_point mLastTime;/// a time reference used to compute time tick
@@ -116,8 +115,6 @@ public:
   const TimeValue & getPosition() const override;
   
   const TimeValue & getDate() const override;
-  
-  int getDroppedTicks() const override;
   
 # pragma mark -
 # pragma mark Internal
