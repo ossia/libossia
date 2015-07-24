@@ -1,5 +1,6 @@
 #include "Editor/JamomaAutomation.h"
 
+#include <assert.h>
 #include <iostream> //! \todo to remove. only here for debug purpose
 
 using namespace OSSIA;
@@ -47,6 +48,8 @@ JamomaAutomation::~JamomaAutomation()
 
 void JamomaAutomation::play(bool log, string name) const
 {
+  assert(mParent != nullptr);
+
   // setup clock duration with parent constraint duration
   mClock->setDuration(mParent->getDuration());
   
