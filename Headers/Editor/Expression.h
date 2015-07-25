@@ -32,7 +32,7 @@ public:
   /*! factory
    \param bool result to return
    \return std::shared_ptr<#Expression> */
-  static std::shared_ptr<Expression> create(bool = true);
+  static std::shared_ptr<Expression> create(bool = false);
   
   /*! destructor */
   virtual ~Expression() = default;

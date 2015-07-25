@@ -29,7 +29,7 @@ private Q_SLOTS:
         QVERIFY(state != nullptr);
         
         auto event_expression = event->getExpression();
-        QVERIFY(event_expression == ExpressionTrue);
+        QVERIFY(event_expression == ExpressionFalse);
         
         QVERIFY(event->getStatus() == TimeEvent::Status::WAITING);
 
