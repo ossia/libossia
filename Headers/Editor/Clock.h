@@ -124,15 +124,6 @@ public:
    \return #Clock the clock */
   virtual Clock & setSpeed(float) = 0;
   
-  /*! is the clock in external drive mode
-   \return bool true if the clock is in external drive mode */
-  virtual bool getExternal() const = 0;
-  
-  /** set is the clock in external drive mode
-   \param bool
-   \return #Clock the clock */
-  virtual Clock & setExternal(bool) = 0;
-  
   /*! get the running status of the clock
    \return bool true if is running */
   virtual bool getRunning() const = 0;

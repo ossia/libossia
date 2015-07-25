@@ -1,3 +1,4 @@
+#include "Editor/JamomaClock.h"
 #include "Editor/JamomaScenario.h"
 #include "Editor/JamomaTimeConstraint.h"
 #include "Editor/JamomaTimeEvent.h"
@@ -108,12 +109,14 @@ shared_ptr<State> JamomaScenario::state(const TimeValue& position, const TimeVal
   // process each running TimeConstraints
   for (const auto& timeConstraint : mTimeContraints)
   {
-    if (timeConstraint->getClock()->getRunning())
+    shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint->getClock());
+    
+    if (clock->getRunning())
     {
-      if (timeConstraint->getClock()->getExternal())
+      if (clock->getExternal())
       {
-        if (timeConstraint->getClock()->tick())
-          mCurrentState->stateElements().push_back(timeConstraint->state(timeConstraint->getClock()->getPosition(), timeConstraint->getClock()->getDate()));
+        if (clock->tick())
+          mCurrentState->stateElements().push_back(timeConstraint->state(clock->getPosition(), clock->getDate()));
       }
       else
         mCurrentState->stateElements().push_back(timeConstraint->state(position, date));
@@ -126,26 +129,34 @@ shared_ptr<State> JamomaScenario::state(const TimeValue& position, const TimeVal
 # pragma mark -
 # pragma mark Edition
 
-void JamomaScenario::addTimeConstraint(const shared_ptr<TimeConstraint> constraint)
+void JamomaScenario::addTimeConstraint(const shared_ptr<TimeConstraint> timeConstraint)
 {
   // store the TimeConstraint if it is not already stored
   if (std::find(mTimeContraints.begin(),
            mTimeContraints.end(),
-           constraint) == mTimeContraints.end())
+           timeConstraint) == mTimeContraints.end())
   {
-    mTimeContraints.push_back(constraint);
+    mTimeContraints.push_back(timeConstraint);
   }
 
-  // store constraint's start node if it is not already stored
-  addTimeNode(constraint->getStartEvent()->getTimeNode());
+  // store TimeConstraint's start node if it is not already stored
+  addTimeNode(timeConstraint->getStartEvent()->getTimeNode());
 
-  // store constraint's end node if it is not already stored
-  addTimeNode(constraint->getEndEvent()->getTimeNode());
+  // store TimeConstraint's end node if it is not already stored
+  addTimeNode(timeConstraint->getEndEvent()->getTimeNode());
+  
+  // set the TimeConstraint's clock in external mode
+  shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint->getClock());
+  clock->setExternal(true);
 }
 
-void JamomaScenario::removeTimeConstraint(const shared_ptr<TimeConstraint> constraint)
+void JamomaScenario::removeTimeConstraint(const shared_ptr<TimeConstraint> timeConstraint)
 {
-  mTimeContraints.erase(find(mTimeContraints.begin(), mTimeContraints.end(), constraint));
+  mTimeContraints.erase(find(mTimeContraints.begin(), mTimeContraints.end(), timeConstraint));
+  
+  // set the TimeConstraint's clock in none external mode
+  shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint->getClock());
+  clock->setExternal(false);
 }
 
 void JamomaScenario::addTimeNode(const shared_ptr<TimeNode> timeNode)

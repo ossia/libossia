@@ -28,8 +28,8 @@ mDuration(duration),
 mGranularity(granularity),
 mOffset(offset),
 mSpeed(speed),
-mExternal(external),
-mRunning(false)
+mRunning(false),
+mExternal(external)
 {}
 
 JamomaClock::JamomaClock(const JamomaClock * other)
@@ -263,17 +263,6 @@ Clock & JamomaClock::setSpeed(float speed)
   return *this;
 }
 
-bool JamomaClock::getExternal() const
-{
-  return mExternal;
-}
-
-Clock & JamomaClock::setExternal(bool external)
-{
-  mExternal = external;
-  return *this;
-}
-
 bool JamomaClock::getRunning() const
 {
   return mRunning;
@@ -291,6 +280,17 @@ const TimeValue & JamomaClock::getDate() const
 
 # pragma mark -
 # pragma mark Internal
+
+bool JamomaClock::getExternal() const
+{
+  return mExternal;
+}
+
+Clock & JamomaClock::setExternal(bool external)
+{
+  mExternal = external;
+  return *this;
+}
 
 void JamomaClock::threadCallback()
 {

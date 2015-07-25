@@ -66,7 +66,7 @@ int main()
     auto local_test_node = *(local_device->emplace(local_device->children().cend(), "test"));
     auto local_test_address = local_test_node->createAddress(Value::Type::TUPLE);
     
-    // attach /test address to a callback
+    // attach /test address to their callback
     local_test_address->setValueCallback(local_test_callback);
     
     /*
@@ -138,37 +138,58 @@ int main()
     main_scenario->addTimeConstraint(second_constraint);
 
     /*
-     Main Scenario edition : creation of an Automation
+     Main Scenario edition : creation of two Automations
      */
     
-    // create one curve to drive all element of the Tuple value
-    auto curve = Curve<float>::create();
-    auto powerSegment = CurveSegmentPower<float>::create(curve);
-    powerSegment->setPower(0.5);
+    // create a linear curve to drive all element of the Tuple value from 0. to 1.
+    auto first_curve = Curve<float>::create();
+    auto first_linearSegment = CurveSegmentLinear<float>::create(first_curve);
     
-    curve->setInitialValue(0.);
-    curve->addPoint(0.5, 1., powerSegment);
-    curve->addPoint(1., 0., powerSegment);
+    first_curve->setInitialValue(0.);
+    first_curve->addPoint(1., 1., first_linearSegment);
+    
+    // create a power curve to drive all element of the Tuple value from 0. to 2.
+    auto second_curve = Curve<float>::create();
+    auto second_powerSegment = CurveSegmentPower<float>::create(first_curve);
+    second_powerSegment->setPower(0.5);
+    
+    second_curve->setInitialValue(0.);
+    second_curve->addPoint(1., 2., second_powerSegment);
     
     // create a Tuple value of 3 Behavior values based on the same curve
-    vector<const Value*> t_curves = {new Behavior(curve), new Behavior(curve), new Behavior(curve)};
-    Tuple curves(t_curves);
+    vector<const Value*> t_first_curves = {new Behavior(first_curve), new Behavior(first_curve), new Behavior(first_curve)};
+    Tuple first_curves(t_first_curves);
     
-    // create an Automation for /test address drived by one curve
-    auto first_automation = Automation::create(local_test_address, &curves);
+    // create a Tuple value of 3 Behavior values based on the same curve
+    vector<const Value*> t_second_curves = {new Behavior(second_curve), new Behavior(second_curve), new Behavior(second_curve)};
+    Tuple second_curves(t_second_curves);
     
-    // add it to the first TimeConstraint
+    // create a first Automation to drive /test address by the linear curve
+    auto first_automation = Automation::create(local_test_address, &first_curves);
+    
+    // create a second Automation to drive /test address by the power curve
+    auto second_automation = Automation::create(local_test_address, &second_curves);
+    
+    // add the first Automation to the first TimeConstraint
     first_constraint->addTimeProcess(first_automation);
     
-    // add "/test 0. 0. 0." message to Automation's start State
+    // add the second Automation to the second TimeConstraint
+    second_constraint->addTimeProcess(second_automation);
+    
+    // add "/test 0. 0. 0." message to first Automation's start State
     Tuple zero(new Float(0.), new Float(0.), new Float(0.));
     auto first_start_message = Message::create(local_test_address, &zero);
     first_automation->getStartState()->stateElements().push_back(first_start_message);
     
-    // add "/test 1. 1. 1." message to Automation's end State
+    // add "/test 1. 1. 1." message to first Automation's end State
     Tuple one(new Float(1.), new Float(1.), new Float(1.));
     auto first_end_message = Message::create(local_test_address, &one);
     first_automation->getEndState()->stateElements().push_back(first_end_message);
+    
+    // add "/test 2. 2. 2." message to second Automation's end State
+    Tuple two(new Float(2.), new Float(2.), new Float(2.));
+    auto second_end_message = Message::create(local_test_address, &two);
+    second_automation->getEndState()->stateElements().push_back(second_end_message);
     
     /*
      Main Scenario operation : miscellaneous
@@ -180,15 +201,14 @@ int main()
     
     // change main TimeConstraint's Clock speed, granularity and offset
     main_constraint->getClock()->setSpeed(1.);
-    main_constraint->getClock()->setGranularity(50.);
+    main_constraint->getClock()->setGranularity(10.);
     main_constraint->getClock()->setOffset(500.);
     
-    // change first TimeConstraint's Clock speed and granularity
+    // change first and second TimeConstraint's Clock speed and granularity
     first_constraint->getClock()->setSpeed(1.);
-    first_constraint->getClock()->setGranularity(250.);
-    
-    // set the first TimeConstraint's Clock in external drive mode to be handled by the Scenario clock
-    first_constraint->getClock()->setExternal(true);
+    first_constraint->getClock()->setGranularity(50.);
+    second_constraint->getClock()->setSpeed(1.);
+    second_constraint->getClock()->setGranularity(50.);
     
     // play the main TimeConstraint
     local_play_address->sendValue(&True);
