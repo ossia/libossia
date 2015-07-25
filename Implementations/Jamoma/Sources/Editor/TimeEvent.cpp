@@ -9,7 +9,8 @@ JamomaTimeEvent::JamomaTimeEvent(TimeEvent::ExecutionCallback callback,
                                  shared_ptr<Expression> anExpression) :
 mCallback(callback),
 mTimeNode(aTimeNode),
-mExpression(anExpression)
+mExpression(anExpression),
+mStatus(TimeEvent::Status::WAITING)
 {
   mState = State::create();
 }

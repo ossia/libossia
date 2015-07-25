@@ -121,7 +121,7 @@ public:
       // for mirror application
       else if (applicationType == kTTSym_mirror)
       {
-        ; // todo : allow to use TTApplication::appendMirrorObject method
+        ; //! \todo : allow to use TTApplication::appendMirrorObject method
       }
 
       if (object.valid())

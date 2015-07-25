@@ -19,6 +19,7 @@
 		460D07EF19BDD62500235124 /* TimeValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeValue.h; sourceTree = "<group>"; };
 		461116681B3049AF00D6C968 /* Value.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Value.h; sourceTree = "<group>"; };
 		461116691B304B2600D6C968 /* Domain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Domain.h; sourceTree = "<group>"; };
+		463D40CC1B63B2A600E9C7C6 /* Expression.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Expression.cpp; sourceTree = "<group>"; };
 		463DC5A61B42929000EEF0CB /* JamomaTimeProcess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaTimeProcess.h; sourceTree = "<group>"; };
 		463DC5A81B42B7AC00EEF0CB /* JamomaCurve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaCurve.h; sourceTree = "<group>"; };
 		463DC5AB1B42BF6A00EEF0CB /* JamomaCurveSegmentLinear.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaCurveSegmentLinear.h; sourceTree = "<group>"; };
@@ -192,6 +193,7 @@
 				46BA2A5B19C09A21009630B5 /* Curve.cpp */,
 				46BA2A5C19C09A21009630B5 /* CurveSegment */,
 				46995FA21B31A22200BDF2C8 /* Domain.cpp */,
+				463D40CC1B63B2A600E9C7C6 /* Expression.cpp */,
 				46D435DB1AB735220041D8AF /* ExpressionAtom.cpp */,
 				46D435DC1AB735220041D8AF /* ExpressionComposition.cpp */,
 				46CF2A8D1B57DC860027D537 /* ExpressionNot.cpp */,

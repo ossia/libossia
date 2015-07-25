@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <memory>
+
 namespace OSSIA
 {
 
@@ -26,6 +28,11 @@ public:
   
 # pragma mark -
 # pragma mark Life cycle
+  
+  /*! factory
+   \param bool result to return
+   \return std::shared_ptr<#Expression> */
+  static std::shared_ptr<Expression> create(bool = true);
   
   /*! destructor */
   virtual ~Expression() = default;
@@ -38,5 +45,9 @@ public:
   virtual bool evaluate() const = 0;
 
 };
+  
+static std::shared_ptr<Expression> ExpressionFalse = Expression::create(false);
+static std::shared_ptr<Expression> ExpressionTrue = Expression::create(true);
+  
 }
 

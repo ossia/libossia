@@ -19,8 +19,7 @@ private Q_SLOTS:
     void test_basic()
     {
         auto node = TimeNode::create();
-        auto expression = ExpressionAtom::create(&True, ExpressionAtom::Operator::EQUAL, &True);
-        auto event = *(node->emplace(node->timeEvents().begin(), &event_callback, expression));
+        auto event = *(node->emplace(node->timeEvents().begin(), &event_callback));
         QVERIFY(event != nullptr);
         
         auto event_node = event->getTimeNode();
@@ -30,7 +29,7 @@ private Q_SLOTS:
         QVERIFY(state != nullptr);
         
         auto event_expression = event->getExpression();
-        QVERIFY(event_expression == expression);
+        QVERIFY(event_expression == ExpressionTrue);
         
         QVERIFY(event->getStatus() == TimeEvent::Status::WAITING);
 

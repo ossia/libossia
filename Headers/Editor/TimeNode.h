@@ -19,6 +19,7 @@
 #include <memory>
 #include <string>
 
+#include "Expression.h"
 #include "TimeEvent.h"
 #include "Misc/Container.h"
 
@@ -85,7 +86,7 @@ public:
    \return std::shared_ptr<#TimeEvent> */
   virtual iterator emplace(const_iterator,
                            TimeEvent::ExecutionCallback,
-                           std::shared_ptr<Expression> = nullptr) = 0;
+                           std::shared_ptr<Expression> = ExpressionTrue) = 0;
   
   /*! get the #TimeEvents of the #TimeNode
    \return #Container<#TimeEvent> */
