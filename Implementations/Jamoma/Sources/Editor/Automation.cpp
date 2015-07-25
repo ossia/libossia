@@ -11,28 +11,22 @@ using namespace std;
 
 namespace OSSIA
 {
-  shared_ptr<Automation> Automation::create(TimeProcess::ExecutionCallback callback,
-                                            shared_ptr<Address> address,
+  shared_ptr<Automation> Automation::create(shared_ptr<Address> address,
                                             const Value* drive)
   {
-    return make_shared<JamomaAutomation>(callback, address, drive);
+    return make_shared<JamomaAutomation>(address, drive);
   }
 }
 
-JamomaAutomation::JamomaAutomation(TimeProcess::ExecutionCallback callback,
-                                   shared_ptr<Address> address,
+JamomaAutomation::JamomaAutomation(shared_ptr<Address> address,
                                    const Value* drive) :
-JamomaTimeProcess(callback, State::create(), State::create()),
+JamomaTimeProcess(State::create(), State::create()),
 mDrivenAddress(address),
 mDrive(drive->clone())
-{
-  // pass callback to the Clock
-  Clock::ExecutionCallback clockCallback = std::bind(&JamomaAutomation::ClockCallback, this, _1, _2, _3);
-  mClock->setExecutionCallback(clockCallback);
-}
+{}
 
 JamomaAutomation::JamomaAutomation(const JamomaAutomation * other) :
-JamomaTimeProcess(other->mCallback, other->mStartState, other->mEndState)
+JamomaTimeProcess(other->mStartState, other->mEndState)
 {}
 
 shared_ptr<Automation> JamomaAutomation::clone() const
@@ -46,33 +40,19 @@ JamomaAutomation::~JamomaAutomation()
 # pragma mark -
 # pragma mark Execution
 
-void JamomaAutomation::play(bool log, string name) const
+shared_ptr<State> JamomaAutomation::state(const TimeValue& position, const TimeValue& date)
 {
-  assert(mParent != nullptr);
-
-  // setup clock duration with parent constraint duration
-  mClock->setDuration(mParent->getDuration());
+  // clear internal State, Message and Value
+  mCurrentState->stateElements().clear();
+  if (mValueToSend) delete mValueToSend;
   
-  mClock->go();
-}
-
-void JamomaAutomation::stop() const
-{
-  mClock->stop();
-}
-
-void JamomaAutomation::pause() const
-{
-  mClock->pause();
-}
-
-void JamomaAutomation::resume() const
-{
-  mClock->resume();
-}
-
-shared_ptr<State> JamomaAutomation::state() const
-{
+  // compute a new value from the Curves
+  mValueToSend = computeValueAtPosition(mDrive, position);
+  
+  // fill internal State with a Message handling the Value
+  mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
+  mCurrentState->stateElements().push_back(mMessageToSend);
+  
   return mCurrentState;
 }
 
@@ -99,30 +79,9 @@ const shared_ptr<State> & JamomaAutomation::getEndState() const
   return mEndState;
 }
 
-const shared_ptr<Clock> & JamomaAutomation::getClock() const
-{
-  return mClock;
-}
-
 const shared_ptr<TimeConstraint> & JamomaAutomation::getParentTimeConstraint() const
 {
   return mParent;
-}
-
-void JamomaAutomation::ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks)
-{
-  // clear internal State, Message and Value
-  mCurrentState->stateElements().clear();
-  if (mValueToSend) delete mValueToSend;
-  
-  // compute a new value from the Curves
-  mValueToSend = computeValueAtPosition(mDrive, position);
-  
-  // fill internal State with a Message handling the Value
-  mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
-  mCurrentState->stateElements().push_back(mMessageToSend);
-  
-  (mCallback)(position, date, mCurrentState);
 }
 
 Value* JamomaAutomation::computeValueAtPosition(const Value* drive, const TimeValue& position)

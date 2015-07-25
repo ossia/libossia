@@ -38,12 +38,10 @@ public:
 # pragma mark Life cycle
   
   /*! factory
-   \param the function to use to be notified at each step
    \param the address to drive
    \param how to drive the address
    \return a new automation */
-  static std::shared_ptr<Automation> create(TimeProcess::ExecutionCallback,
-                                            std::shared_ptr<Address>,
+  static std::shared_ptr<Automation> create(std::shared_ptr<Address>,
                                             const Value*);
   
   /*! clone */

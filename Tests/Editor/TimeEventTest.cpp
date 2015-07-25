@@ -4,6 +4,11 @@
 
 using namespace OSSIA;
 
+void constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<State> state)
+{
+    ;
+}
+
 void event_callback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus)
 {
     ;
@@ -47,9 +52,9 @@ private Q_SLOTS:
         auto nodeC = TimeNode::create();
         auto eventC = *(nodeC->emplace(nodeC->timeEvents().begin(), &event_callback));
         
-        auto constraint1 = TimeConstraint::create(eventA, eventB, 1000.);
-        auto constraint2 = TimeConstraint::create(eventB, eventC, 1000.);
-        auto constraint3 = TimeConstraint::create(eventA, eventC, 2000.);
+        auto constraint1 = TimeConstraint::create(&constraint_callback, eventA, eventB, 1000.);
+        auto constraint2 = TimeConstraint::create(&constraint_callback, eventB, eventC, 1000.);
+        auto constraint3 = TimeConstraint::create(&constraint_callback, eventA, eventC, 2000.);
         
         QVERIFY(eventA->previousTimeConstraints().size() == 0);
         QVERIFY(eventA->nextTimeConstraints().size() == 2);

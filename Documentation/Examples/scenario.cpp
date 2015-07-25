@@ -38,8 +38,9 @@ using namespace std;
 void local_play_callback(const Value * v);
 void local_test_callback(const Value * v);
 
-void main_scenario_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
-void first_automation_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
+void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
+void first_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
+void second_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
 void event_callback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus);
 
 shared_ptr<TimeConstraint> main_constraint;
@@ -91,11 +92,11 @@ int main()
     auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), &event_callback, play_expression_end));
 
     // create the main Scenario
-    auto main_scenario = Scenario::create(main_scenario_callback);
+    auto main_scenario = Scenario::create();
     
     // create the main TimeConstraint
     TimeValue main_duration(5000.);
-    main_constraint = TimeConstraint::create(main_start_event, main_end_event, main_duration);
+    main_constraint = TimeConstraint::create(main_constraint_callback, main_start_event, main_end_event, main_duration);
     
     // add the scenario to the main TimeConstraint
     main_constraint->addTimeProcess(main_scenario);
@@ -118,7 +119,7 @@ int main()
     
     // create a TimeConstraint between the two TimeEvents
     TimeValue first_duration(1500.);
-    auto first_constraint = TimeConstraint::create(first_start_event, first_end_event, first_duration, first_duration, first_duration);
+    auto first_constraint = TimeConstraint::create(first_constraint_callback, first_start_event, first_end_event, first_duration, first_duration, first_duration);
     
     // add the first TimeConstraint to the main Scenario
     main_scenario->addTimeConstraint(first_constraint);
@@ -131,7 +132,7 @@ int main()
     
     // create a TimeConstraint between the two TimeEvents
     TimeValue second_duration(2000.);
-    auto second_constraint = TimeConstraint::create(first_end_event, second_end_event, second_duration, second_duration, second_duration);
+    auto second_constraint = TimeConstraint::create(second_constraint_callback, first_end_event, second_end_event, second_duration, second_duration, second_duration);
     
     // add the second TimeConstraint to the main Scenario
     main_scenario->addTimeConstraint(second_constraint);
@@ -154,7 +155,7 @@ int main()
     Tuple curves(t_curves);
     
     // create an Automation for /test address drived by one curve
-    auto first_automation = Automation::create(first_automation_callback, local_test_address, &curves);
+    auto first_automation = Automation::create(local_test_address, &curves);
     
     // add it to the first TimeConstraint
     first_constraint->addTimeProcess(first_automation);
@@ -177,24 +178,24 @@ int main()
     cout << "first_start_node date = " << scenario_start_node->getDate() << "\n";
     cout << "first_end_node date = " << first_end_node->getDate() << "\n";
     
-    // change Scenario Clock speed, granularity and offset
-    main_scenario->getClock()->setSpeed(1.);
-    main_scenario->getClock()->setGranularity(50.);
-    main_scenario->getClock()->setOffset(500.);
+    // change main TimeConstraint's Clock speed, granularity and offset
+    main_constraint->getClock()->setSpeed(1.);
+    main_constraint->getClock()->setGranularity(50.);
+    main_constraint->getClock()->setOffset(500.);
     
-    // change Automation Clock speed and granularity
-    first_automation->getClock()->setSpeed(1.);
-    first_automation->getClock()->setGranularity(250.);
+    // change first TimeConstraint's Clock speed and granularity
+    first_constraint->getClock()->setSpeed(1.);
+    first_constraint->getClock()->setGranularity(250.);
     
-    // set the Automation Clock in external drive mode to be handled by the Scenario clock
-    first_automation->getClock()->setExternal(true);
+    // set the first TimeConstraint's Clock in external drive mode to be handled by the Scenario clock
+    first_constraint->getClock()->setExternal(true);
     
-    // play the Scenario
+    // play the main TimeConstraint
     local_play_address->sendValue(&True);
     
-    // wait the Scenario
-    //! \todo add TimeProcess::isRunning() to ease the access ?
-    while (main_scenario->getClock()->getRunning())
+    // wait the main TimeConstraint end
+    //! \todo add TimeConstraint::isRunning() to ease the access ?
+    while (main_constraint->getClock()->getRunning())
         ;
 }
 
@@ -231,17 +232,24 @@ void local_test_callback(const Value * v)
     cout << endl;
 }
 
-void main_scenario_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
+void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
 {
-    cout << "Scenario : " << double(position) << ", " << double(date) << "\n";
+    cout << "Main Constraint : " << double(position) << ", " << double(date) << "\n";
     state->launch();
 }
 
-void first_automation_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
+void first_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
 {
-    cout << "Automation : " << double(position) << ", " << double(date) << "\n";
+    cout << "First Constraint : " << double(position) << ", " << double(date) << "\n";
     
-    // don't launch state here as the state produced by the Automation is handled by the main scenario
+    // don't launch state here as the state produced by the first TimeConstraint is handled by the main TimeConstraint
+}
+
+void second_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
+{
+    cout << "Second Constraint : " << double(position) << ", " << double(date) << "\n";
+
+    // don't launch state here as the state produced by the second TimeConstraint is handled by the main TimeConstraint
 }
 
 void event_callback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus)

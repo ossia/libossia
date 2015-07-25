@@ -130,8 +130,9 @@ bool JamomaClock::tick()
     {
       mPosition = mDate / mDuration;
       
-      // notify the owner
-      (mCallback)(mPosition, mDate, droppedTicks);
+      // notify the owner in none external mode
+      if (!mExternal)
+        (mCallback)(mPosition, mDate, droppedTicks);
 
       mRunning = false;
       mPaused = false;
@@ -176,8 +177,9 @@ bool JamomaClock::tick()
   {
     mPosition = mDate / mDuration;
     
-    // notify the owner
-    (mCallback)(mPosition, mDate, droppedTicks);
+    // notify the owner in none external mode
+    if (!mExternal)
+      (mCallback)(mPosition, mDate, droppedTicks);
     
     // is this the end
     if (mDuration - mDate < Zero && !mDuration.isInfinite())

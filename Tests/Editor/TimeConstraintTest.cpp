@@ -4,7 +4,7 @@
 
 using namespace OSSIA;
 
-void scenario_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<State> state)
+void constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<State> state)
 {
     ;
 }
@@ -29,9 +29,10 @@ private Q_SLOTS:
         auto end_node = TimeNode::create();
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback));
 
-        auto constraint = TimeConstraint::create(start_event, end_event, 1000.);
+        auto constraint = TimeConstraint::create(&constraint_callback, start_event, end_event, 1000.);
         QVERIFY(constraint != nullptr);
 
+        QVERIFY(constraint->getClock() != nullptr);
         QVERIFY(constraint->getDuration() == 1000.);
         QVERIFY(constraint->getDurationMin() == 0.);
         QVERIFY(constraint->getDurationMax() == Infinite);
@@ -59,8 +60,8 @@ private Q_SLOTS:
         auto end_node = TimeNode::create();
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback));
 
-        auto constraint = TimeConstraint::create(start_event, end_event, 1000.);
-        auto scenario = Scenario::create(&scenario_callback);
+        auto constraint = TimeConstraint::create(&constraint_callback, start_event, end_event, 1000.);
+        auto scenario = Scenario::create();
 
         constraint->addTimeProcess(scenario);
         QVERIFY(constraint->timeProcesses().size() == 1);

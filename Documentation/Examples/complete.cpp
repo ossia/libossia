@@ -39,7 +39,7 @@ using namespace std;
 void explore(const shared_ptr<Node> node);
 void printValue(const Value * v);
 void printValueCallback(const Value * v);
-void automationCallback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
+void constraintCallback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
 void eventCallback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus);
 
 int main()
@@ -83,7 +83,7 @@ int main()
     curve->addPoint(1., 1, linearSegment);
     
     // create an Automation for /test address drived by one curve
-    auto automation = Automation::create(automationCallback, bitdepthAddress, new Behavior(curve));
+    auto automation = Automation::create(bitdepthAddress, new Behavior(curve));
     
     // create the start and the end TimeNodes
     auto start_node = TimeNode::create();
@@ -95,7 +95,7 @@ int main()
     
     // create a TimeConstraint
     TimeValue duration(5000.);
-    auto constraint = TimeConstraint::create(start_event, end_event, duration);
+    auto constraint = TimeConstraint::create(constraintCallback, start_event, end_event, duration);
     
     // add the Automation to the TimeConstraint
     constraint->addTimeProcess(automation);
@@ -103,9 +103,9 @@ int main()
     // go !
     constraint->play();
     
-    // wait the Automation ends
-    //! \todo add TimeProcess::isRunning() to ease the access ?
-    while (automation->getClock()->getRunning())
+    // wait the TimeConstraint ends
+    //! \todo add TimeConstraint::isRunning() to ease the access ?
+    while (constraint->getClock()->getRunning())
         ;
 }
 
@@ -182,9 +182,9 @@ void printValueCallback(const Value * v)
     cout << "\n";
 }
 
-void automationCallback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
+void constraintCallback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
 {
-    cout << "Automation : " << double(position) << ", " << double(date) << "\n";
+    cout << "Constraint : " << double(position) << ", " << double(date) << "\n";
     state->launch();
 }
 

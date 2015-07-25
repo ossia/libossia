@@ -5,13 +5,14 @@
 
 namespace OSSIA
 {
-  shared_ptr<TimeConstraint> TimeConstraint::create(shared_ptr<TimeEvent> startEvent,
+  shared_ptr<TimeConstraint> TimeConstraint::create(TimeConstraint::ExecutionCallback callback,
+                                                    shared_ptr<TimeEvent> startEvent,
                                                     shared_ptr<TimeEvent> endEvent,
                                                     const TimeValue& nominal,
                                                     const TimeValue& min,
                                                     const TimeValue& max)
   {
-    auto timeConstraint = make_shared<JamomaTimeConstraint>(startEvent, endEvent, nominal, min, max);
+    auto timeConstraint = make_shared<JamomaTimeConstraint>(callback, startEvent, endEvent, nominal, min, max);
     
     // store the TimeConstraint into the start event as a next constraint
     if (std::find(startEvent->nextTimeConstraints().begin(),
@@ -33,19 +34,34 @@ namespace OSSIA
   }
 }
 
-JamomaTimeConstraint::JamomaTimeConstraint(shared_ptr<TimeEvent> startEvent,
+JamomaTimeConstraint::JamomaTimeConstraint(TimeConstraint::ExecutionCallback callback,
+                                           shared_ptr<TimeEvent> startEvent,
                                            shared_ptr<TimeEvent> endEvent,
                                            const TimeValue& nominal,
                                            const TimeValue& min,
                                            const TimeValue& max) :
+mCallback(callback),
 mStartEvent(startEvent),
 mEndEvent(endEvent),
 mDuration(nominal),
 mDurationMin(min),
 mDurationMax(max)
-{}
+{
+  mCurrentState = State::create();
+  mClock = Clock::create();
+  
+  // pass callback to the Clock
+  Clock::ExecutionCallback clockCallback = std::bind(&JamomaTimeConstraint::ClockCallback, this, _1, _2, _3);
+  mClock->setExecutionCallback(clockCallback);
+}
 
-JamomaTimeConstraint::JamomaTimeConstraint(const JamomaTimeConstraint * other)
+JamomaTimeConstraint::JamomaTimeConstraint(const JamomaTimeConstraint * other) :
+mCallback(other->mCallback),
+mStartEvent(other->mStartEvent),
+mEndEvent(other->mEndEvent),
+mDuration(other->mDuration),
+mDurationMin(other->mDurationMin),
+mDurationMax(other->mDurationMax)
 {}
 
 shared_ptr<TimeConstraint> JamomaTimeConstraint::clone() const
@@ -61,30 +77,47 @@ JamomaTimeConstraint::~JamomaTimeConstraint()
 
 void JamomaTimeConstraint::play(bool log, string name) const
 {
-  for (const auto & timeProcess : timeProcesses())
-    timeProcess->play();
+  // setup clock duration
+  mClock->setDuration(mDuration);
+  mClock->go();
 }
 
 void JamomaTimeConstraint::stop() const
 {
-  for (const auto & timeProcess : timeProcesses())
-    timeProcess->stop();
+  mClock->stop();
 }
 
 void JamomaTimeConstraint::pause() const
 {
-  for (const auto & timeProcess : timeProcesses())
-    timeProcess->pause();
+  mClock->pause();
 }
 
 void JamomaTimeConstraint::resume() const
 {
-  for (const auto & timeProcess : timeProcesses())
-    timeProcess->resume();
+  mClock->resume();
+}
+
+shared_ptr<State> JamomaTimeConstraint::state(const TimeValue& position, const TimeValue& date)
+{
+  // clear internal State, Message and Value
+  mCurrentState->stateElements().clear();
+  
+  // get the state of each TimeProcess for the position and the date
+  for (auto& timeProcess : timeProcesses())
+  {
+    mCurrentState->stateElements().push_back(timeProcess->state(position, date));
+  }
+  
+  return mCurrentState;
 }
 
 # pragma mark -
 # pragma mark Accessors
+
+const shared_ptr<Clock> & JamomaTimeConstraint::getClock() const
+{
+  return mClock;
+}
 
 const TimeValue & JamomaTimeConstraint::getDuration() const
 {
@@ -156,4 +189,12 @@ void JamomaTimeConstraint::removeTimeProcess(std::shared_ptr<TimeProcess> timePr
   
   JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
   t->mParent = nullptr;
+}
+
+# pragma mark -
+# pragma mark Implementation specific
+
+void JamomaTimeConstraint::ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks)
+{
+  (mCallback)(position, date, state(position, date));
 }

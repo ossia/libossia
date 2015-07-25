@@ -12,7 +12,7 @@ class AutomationTest : public QObject
 
     std::vector<Value*> m_address_values;
 
-    void automation_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<State> state)
+    void constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<State> state)
     {
         state->launch();
     }
@@ -36,8 +36,6 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto callback = std::bind(&AutomationTest::automation_callback, this, _1, _2, _3);
-
         Local local_protocol{};
         auto local_device = Device::create(local_protocol, "test");
         local_device->emplace(local_device->children().begin(), "child");
@@ -45,12 +43,11 @@ private Q_SLOTS:
 
         Float f(0);
 
-        auto automation = Automation::create(callback, address, &f);
+        auto automation = Automation::create(address, &f);
         QVERIFY(automation != nullptr);
 
         QVERIFY(automation->getStartState() != nullptr);
         QVERIFY(automation->getEndState() != nullptr);
-        QVERIFY(automation->getClock() != nullptr);
         QVERIFY(automation->getParentTimeConstraint() == nullptr);
 
         QVERIFY(automation->getDrivenAddress() == address);
@@ -66,8 +63,6 @@ private Q_SLOTS:
     //! \todo test state()
     void test_execution()
     {
-        auto automation_callback = std::bind(&AutomationTest::automation_callback, this, _1, _2, _3);
-
         Local local_protocol{};
         auto local_device = Device::create(local_protocol, "test");
         local_device->emplace(local_device->children().begin(), "child");
@@ -81,24 +76,25 @@ private Q_SLOTS:
         curve->addPoint(0.5, 1., linearSegment);
         curve->addPoint(1., 0., linearSegment);
         Behavior b(curve);
+        auto automation = Automation::create(address, &b);
 
-        auto automation = Automation::create(automation_callback, address, &b);
-        automation->getClock()->setGranularity(10.);
 
         auto start_node = TimeNode::create();
         auto end_node = TimeNode::create();
         auto event_callback = std::bind(&AutomationTest::event_callback, this, _1, _2);
         auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
-        auto constraint = TimeConstraint::create(start_event, end_event, 100.);
+        auto constraint_callback = std::bind(&AutomationTest::constraint_callback, this, _1, _2, _3);
+        auto constraint = TimeConstraint::create(constraint_callback, start_event, end_event, 100.);
         constraint->addTimeProcess(automation);
 
         m_address_values.clear();
 
+        constraint->getClock()->setGranularity(10.);
         constraint->play();
 
-        //! \todo check the running status of the constraint itself
-        while (automation->getClock()->getRunning())
+        //! \todo add TimeConstraint::isRunning() to ease the access ?
+        while (constraint->getClock()->getRunning())
             ;
 
         QVERIFY(m_address_values.size() == 10);

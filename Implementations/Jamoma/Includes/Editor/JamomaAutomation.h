@@ -14,7 +14,6 @@
 #pragma once
 
 #include "Editor/Automation.h"
-#include "Editor/Clock.h"
 #include "Editor/Curve.h"
 #include "Editor/Message.h"
 #include "Editor/TimeConstraint.h"
@@ -27,7 +26,6 @@
 
 using namespace OSSIA;
 using namespace std;
-using namespace std::placeholders;
 
 class JamomaAutomation : public Automation, public JamomaTimeProcess
 {
@@ -48,8 +46,7 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaAutomation(TimeProcess::ExecutionCallback,
-                   shared_ptr<Address>,
+  JamomaAutomation(shared_ptr<Address>,
                    const Value*);
   
   JamomaAutomation(const JamomaAutomation *);
@@ -60,16 +57,8 @@ public:
 
 # pragma mark -
 # pragma mark Execution
-  
-  void play(bool log = false, string name = "") const override;
-  
-  void stop() const override;
-  
-  void pause() const override;
-  
-  void resume() const override;
 
-  shared_ptr<State> state() const override;
+  shared_ptr<State> state(const TimeValue&, const TimeValue&) override;
   
 # pragma mark -
 # pragma mark Accessors
@@ -81,8 +70,6 @@ public:
   const shared_ptr<State> & getStartState() const override;
   
   const shared_ptr<State> & getEndState() const override;
-  
-  const shared_ptr<Clock> & getClock() const override;
   
   const shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
   

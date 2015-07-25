@@ -24,6 +24,7 @@
 
 using namespace OSSIA;
 using namespace std;
+using namespace std::placeholders;
 
 class JamomaTimeConstraint : public TimeConstraint, public enable_shared_from_this<JamomaTimeConstraint>
 {
@@ -33,19 +34,26 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  shared_ptr<TimeEvent>   mStartEvent;
-  shared_ptr<TimeEvent>   mEndEvent;
+  TimeConstraint::ExecutionCallback   mCallback;
   
-  TimeValue               mDuration;
-  TimeValue               mDurationMin;
-  TimeValue               mDurationMax;
+  shared_ptr<Clock>                   mClock;
+  
+  shared_ptr<State>                   mCurrentState;    // an internal State to update at each tick of the clock
+  
+  shared_ptr<TimeEvent>               mStartEvent;
+  shared_ptr<TimeEvent>               mEndEvent;
+  
+  TimeValue                           mDuration;
+  TimeValue                           mDurationMin;
+  TimeValue                           mDurationMax;
   
 public:
   
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaTimeConstraint(shared_ptr<TimeEvent>,
+  JamomaTimeConstraint(TimeConstraint::ExecutionCallback,
+                       shared_ptr<TimeEvent>,
                        shared_ptr<TimeEvent>,
                        const TimeValue& = Infinite,
                        const TimeValue& = 0.,
@@ -67,9 +75,13 @@ public:
   void pause() const override;
   
   void resume() const override;
+  
+  shared_ptr<State> state(const TimeValue&, const TimeValue&) override;
 
 # pragma mark -
 # pragma mark Accessors
+  
+  const shared_ptr<Clock> & getClock() const override;
   
   const TimeValue & getDuration() const override;
   
@@ -93,4 +105,11 @@ public:
   void addTimeProcess(std::shared_ptr<TimeProcess>) override;
 
   void removeTimeProcess(std::shared_ptr<TimeProcess>) override;
+
+private:
+  
+# pragma mark -
+# pragma mark Implementation specific
+  
+  void ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks);
 };

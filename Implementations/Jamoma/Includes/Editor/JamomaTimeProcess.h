@@ -34,24 +34,15 @@ protected:
   
   std::shared_ptr<TimeConstraint> mParent;
   
-  TimeProcess::ExecutionCallback  mCallback;
-  
   shared_ptr<State>               mStartState;
   shared_ptr<State>               mEndState;
-  shared_ptr<State>               mCurrentState;  // an internal State to update at each tick of the clock
-  
-  shared_ptr<Clock>               mClock;
+  shared_ptr<State>               mCurrentState;  // an internal State to return on state call
 
 public:
   
 # pragma mark -
 # pragma mark Life cycle
   
-  /*! constructor
-  \param #TimeProcess::ExecutionCallback the function to use to be notified at each step
-  \param std::shared_ptr<#State> the state at start
-  \param std::shared_ptr<#State> the state at end */
-  JamomaTimeProcess(TimeProcess::ExecutionCallback,
-                    shared_ptr<State>,
+  JamomaTimeProcess(shared_ptr<State>,
                     shared_ptr<State>);
 };

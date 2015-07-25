@@ -19,7 +19,9 @@
 
 #include <memory>
 #include <string>
+#include <functional>
 
+#include "Editor/Clock.h"
 #include "Editor/TimeValue.h"
 #include "Misc/Container.h"
 
@@ -36,18 +38,26 @@ class TimeConstraint
   
 public:
   
+  /*! to get the constraint execution back
+   \param const #TimeValue process clock position
+   \param const #TimeValue process clock date
+   \param std::shared_ptr<#State> */
+  using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, std::shared_ptr<State>)>;
+  
 # pragma mark -
 # pragma mark Life cycle
 
   /*! factory
    \details by default a #TimeConstraint have an infinite duration with no minimal duration and an infinite maximal duration.
+   \param the function to use to be notified at each step
    \param #std::shared_ptr<TimeEvent> event where the #TimeConstraint starts
    \param #std::shared_ptr<TimeEvent> event where the #TimeConstraint ends
    \param const #TimeValue& duration of the #TimeConstraint
    \param const #TimeValue& minimal duration of the #TimeConstraint
    \param const #TimeValue& maximal duration of the #TimeConstraint
    \return std::shared_ptr<#TimeConstraint> */
-  static std::shared_ptr<TimeConstraint> create(std::shared_ptr<TimeEvent>,
+  static std::shared_ptr<TimeConstraint> create(TimeConstraint::ExecutionCallback,
+                                                std::shared_ptr<TimeEvent>,
                                                 std::shared_ptr<TimeEvent>,
                                                 const TimeValue& = Infinite,
                                                 const TimeValue& = 0.,
@@ -76,9 +86,19 @@ public:
   
   /*! resume the execution */
   virtual void resume() const = 0;
+  
+  /*! get the #State of the constraint for a position or a date
+   \param const #TimeValue position
+   \param const #TimeValue date
+   \return std::shared_ptr<#State> */
+  virtual std::shared_ptr<State> state(const TimeValue&, const TimeValue&) = 0;
 
 # pragma mark -
 # pragma mark Accessors
+  
+  /*! get the #Clock
+   \return std::shared_ptr<#Clock> clock */
+  virtual const std::shared_ptr<Clock> & getClock() const = 0;
   
   /*! get the #TimeConstraint duration
    \return const #TimeValue& duration */

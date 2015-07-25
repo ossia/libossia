@@ -18,12 +18,10 @@
 
 #include <memory>
 #include <string>
-#include <functional>
 
 namespace OSSIA
 {
 
-class Clock;
 class State;
 class TimeConstraint;
 class TimeValue;
@@ -42,29 +40,11 @@ public:
 # pragma mark -
 # pragma mark Execution
   
-  /*! execute and optionnaly log the execution into a file
-   \param bool to enable log
-   \param string to give a log file name where to write */
-  virtual void play(bool log = false, std::string name = "") const = 0;
-    
-  /*! stop the execution */
-  virtual void stop() const = 0;
-  
-  /*! pause the execution */
-  virtual void pause() const = 0;
-  
-  /*! resume the execution */
-  virtual void resume() const = 0;
-  
-  /*! to get the process execution back
-   \param const #TimeValue process clock position
-   \param const #TimeValue process clock date
-   \param std::shared_ptr<#State> */
-  using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, std::shared_ptr<State>)>;
-  
-  /*! get the execution #State of the process
+  /*! get the #State of the process for a position or a date
+   \param const #TimeValue position
+   \param const #TimeValue date
    \return std::shared_ptr<#State> */
-  virtual std::shared_ptr<State> state() const = 0;
+  virtual std::shared_ptr<State> state(const TimeValue&, const TimeValue&) = 0;
   
 # pragma mark -
 # pragma mark Accessors
@@ -76,10 +56,6 @@ public:
   /*! get the end #State
    \return std::shared_ptr<#State> end state */
   virtual const std::shared_ptr<State> & getEndState() const = 0;
-  
-  /*! get the #Clock
-   \return std::shared_ptr<#Clock> clock */
-  virtual const std::shared_ptr<Clock> & getClock() const = 0;
   
   /*! get the parent #TimeConstraint
    \return std::shared_ptr<#TimeConstraint> */

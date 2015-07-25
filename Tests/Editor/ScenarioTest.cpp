@@ -4,7 +4,7 @@
 
 using namespace OSSIA;
 
-void scenario_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<State> state)
+void constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<State> state)
 {
     ;
 }
@@ -23,12 +23,11 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto scenario = Scenario::create(&scenario_callback);
+        auto scenario = Scenario::create();
         QVERIFY(scenario != nullptr);
         
         QVERIFY(scenario->getStartState() != nullptr);
         QVERIFY(scenario->getEndState() != nullptr);
-        QVERIFY(scenario->getClock() != nullptr);
         QVERIFY(scenario->getParentTimeConstraint() == nullptr);
         
         QVERIFY(scenario->getStartNode() != nullptr);
@@ -42,7 +41,7 @@ private Q_SLOTS:
     /*! test edition functions */
     void test_edition()
     {
-        auto scenario = Scenario::create(&scenario_callback);
+        auto scenario = Scenario::create();
         
         auto start_node = scenario->getStartNode();
         auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), &event_callback));
@@ -50,7 +49,7 @@ private Q_SLOTS:
         auto end_node = TimeNode::create();
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback));
         
-        auto constraint = TimeConstraint::create(start_event, end_event, 1000.);
+        auto constraint = TimeConstraint::create(&constraint_callback, start_event, end_event, 1000.);
         
         //! \todo how to verify something here ?
         scenario->addTimeConstraint(constraint);

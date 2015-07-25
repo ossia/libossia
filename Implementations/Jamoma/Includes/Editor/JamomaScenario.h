@@ -13,7 +13,6 @@
 
 #pragma once
 
-#include "Editor/Clock.h"
 #include "Editor/Scenario.h"
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeEvent.h"
@@ -25,7 +24,6 @@
 
 using namespace OSSIA;
 using namespace std;
-using namespace std::placeholders;
 
 class JamomaScenario : public Scenario, public JamomaTimeProcess
 {
@@ -40,13 +38,14 @@ private:
   
   bool                        mKiller;
   
+  bool                        mInitialized;
+  
 public:
   
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaScenario(TimeProcess::ExecutionCallback,
-                 shared_ptr<State>,
+  JamomaScenario(shared_ptr<State>,
                  shared_ptr<State>);
   
   JamomaScenario(const JamomaScenario *);
@@ -58,15 +57,7 @@ public:
 # pragma mark -
 # pragma mark Execution
   
-  void play(bool log = false, string name = "") const override;
-  
-  void stop() const override;
-  
-  void pause() const override;
-  
-  void resume() const override;
-  
-  shared_ptr<State> state() const override;
+  shared_ptr<State> state(const TimeValue&, const TimeValue&) override;
   
 # pragma mark -
 # pragma mark Edition
@@ -94,8 +85,6 @@ public:
   
   const shared_ptr<State> & getEndState() const override;
   
-  const shared_ptr<Clock> & getClock() const override;
-  
   const shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
   
 private:
@@ -103,5 +92,6 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  void ClockCallback(const TimeValue&, const TimeValue&, unsigned char);
+  /*! initialize the scenario to prepare its execution */
+  void init();
 };

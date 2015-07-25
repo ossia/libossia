@@ -35,12 +35,10 @@ public:
 # pragma mark Life cycle
 
   /*! factory
-   \param #TimeProcess::ExecutionCallback the function to use to be notified at each step
    \param std::shared_ptr<#State> the state at start
    \param std::shared_ptr<#State> the state at end
    \return std::shared_ptr<#Scenario> */
-  static std::shared_ptr<Scenario> create(TimeProcess::ExecutionCallback,
-                                          std::shared_ptr<State> = State::create(),
+  static std::shared_ptr<Scenario> create(std::shared_ptr<State> = State::create(),
                                           std::shared_ptr<State> = State::create());
 
   /*! clone */
@@ -48,6 +46,9 @@ public:
 
   /*! destructor */
   virtual ~Scenario() = default;
+  
+# pragma mark -
+# pragma mark Execution
   
 # pragma mark -
 # pragma mark Edition
