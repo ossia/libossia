@@ -213,7 +213,8 @@ void JamomaScenario::ClockCallback(const TimeValue& position, const TimeValue& d
   // reset internal State
   mCurrentState->stateElements().clear();
   
-  // process each TimeNode
+  // process each TimeNode to find events to make HAPPENED
+  vector<shared_ptr<TimeEvent>> eventsToHappend;
   for (const auto& timeNode : mTimeNodes)
   {
     TimeValue d = timeNode->getDate();
@@ -221,13 +222,37 @@ void JamomaScenario::ClockCallback(const TimeValue& position, const TimeValue& d
     for (auto& timeEvent : timeNode->timeEvents())
     {
       shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
+      TimeEvent::Status status = timeEvent->getStatus();
       
-      if (date > d && timeEvent->getStatus() == TimeEvent::Status::WAITING)
+      // HAPPEND or DISPOSED TimeEvents are ignored
+      if (status == TimeEvent::Status::HAPPENED || status == TimeEvent::Status::DISPOSED)
+        continue;
+      
+      // if the TimeEvent has no previous TimeConstraints
+      if (timeEvent->previousTimeConstraints().size() == 0)
       {
-        mCurrentState->stateElements().push_back(e->getState());
-        e->setStatus(TimeEvent::Status::HAPPENED);
+        // WAITING TimeEvent in the past becomes HAPPENED
+        if (date > d && status == TimeEvent::Status::WAITING)
+        {
+          eventsToHappend.push_back(timeEvent);
+        }
+      }
+      // if the TimeEvent has previous TimeConstraints
+      else
+      {
+        // process each TimeConstraint to see if they
+        ;
       }
     }
+  }
+  
+  // for each TimeEvent to make HAPPENED
+  for (auto& timeEvent : eventsToHappend)
+  {
+    shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
+    
+    mCurrentState->stateElements().push_back(e->getState());
+    e->setStatus(TimeEvent::Status::HAPPENED);
   }
   
   // process each running TimeProcess
