@@ -22,16 +22,15 @@ private Q_SLOTS:
         auto event = *(node->emplace(node->timeEvents().begin(), &event_callback));
         QVERIFY(event != nullptr);
         
-        auto event_node = event->getTimeNode();
-        QVERIFY(event_node == node);
-        
-        auto state = event->getState();
-        QVERIFY(state != nullptr);
-        
-        auto event_expression = event->getExpression();
-        QVERIFY(event_expression == ExpressionFalse);
-        
+        QVERIFY(event->getTimeNode() == node);
+        QVERIFY(event->getState() != nullptr);
+        QVERIFY(event->getExpression() == nullptr);
         QVERIFY(event->getStatus() == TimeEvent::Status::WAITING);
+
+        auto event_with_expression = *(node->emplace(node->timeEvents().begin(), &event_callback, ExpressionTrue));
+        QVERIFY(event_with_expression != nullptr);
+
+        QVERIFY(event_with_expression->getExpression() == ExpressionTrue);
 
         //! \todo test clone()
     }
