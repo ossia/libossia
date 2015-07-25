@@ -78,7 +78,6 @@ private Q_SLOTS:
         Behavior b(curve);
         auto automation = Automation::create(address, &b);
 
-
         auto start_node = TimeNode::create();
         auto end_node = TimeNode::create();
         auto event_callback = std::bind(&AutomationTest::event_callback, this, _1, _2);
