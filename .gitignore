@@ -4,6 +4,9 @@
 *.i386.o-*
 *.x64.o-*
 
+# QtCreator files
+*.txt.user.*
+
 # Eclipse files
 .cproject
 .project
