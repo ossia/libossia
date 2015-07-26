@@ -67,12 +67,6 @@ public:
   
   const Value * getDriving() const override;
   
-  const shared_ptr<State> & getStartState() const override;
-  
-  const shared_ptr<State> & getEndState() const override;
-  
-  const shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
-  
 private:
   
 # pragma mark -

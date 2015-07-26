@@ -72,10 +72,6 @@ private Q_SLOTS:
     /*! test execution functions */
     void test_execution()
     {
-        //! \todo test play()
-        //! \todo test stop()
-        //! \todo test pause()
-        //! \todo test resume()
         //! \todo test state()
     }
 };

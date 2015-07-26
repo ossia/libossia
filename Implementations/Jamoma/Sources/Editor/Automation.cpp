@@ -69,21 +69,6 @@ const Value * JamomaAutomation::getDriving() const
   return mDrive;
 }
 
-const shared_ptr<State> & JamomaAutomation::getStartState() const
-{
-  return mStartState;
-}
-
-const shared_ptr<State> & JamomaAutomation::getEndState() const
-{
-  return mEndState;
-}
-
-const shared_ptr<TimeConstraint> & JamomaAutomation::getParentTimeConstraint() const
-{
-  return mParent;
-}
-
 Value* JamomaAutomation::computeValueAtPosition(const Value* drive, const TimeValue& position)
 {
   switch (drive->getType())

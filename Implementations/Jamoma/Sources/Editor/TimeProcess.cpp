@@ -13,3 +13,21 @@ mEndState(endState)
 {
   mCurrentState = State::create();
 }
+
+# pragma mark -
+# pragma mark Accessors
+
+const shared_ptr<State> & JamomaTimeProcess::getStartState() const
+{
+  return mStartState;
+}
+
+const shared_ptr<State> & JamomaTimeProcess::getEndState() const
+{
+  return mEndState;
+}
+
+const shared_ptr<TimeConstraint> & JamomaTimeProcess::getParentTimeConstraint() const
+{
+  return mParent;
+}

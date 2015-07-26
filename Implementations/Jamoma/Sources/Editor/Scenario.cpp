@@ -198,21 +198,6 @@ const shared_ptr<TimeNode> & JamomaScenario::getEndNode() const
   return mTimeNodes[1];
 }
 
-const shared_ptr<State> & JamomaScenario::getStartState() const
-{
-  return mStartState;
-}
-
-const shared_ptr<State> & JamomaScenario::getEndState() const
-{
-  return mEndState;
-}
-
-const shared_ptr<TimeConstraint> & JamomaScenario::getParentTimeConstraint() const
-{
-  return mParent;
-}
-
 # pragma mark -
 # pragma mark Implementation specific
 

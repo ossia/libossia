@@ -22,7 +22,7 @@ using namespace std;
 
 class JamomaTimeConstraint;
 
-class JamomaTimeProcess
+class JamomaTimeProcess : public virtual TimeProcess
 {
   
   friend JamomaTimeConstraint;
@@ -45,4 +45,13 @@ public:
   
   JamomaTimeProcess(shared_ptr<State>,
                     shared_ptr<State>);
+  
+# pragma mark -
+# pragma mark Accessors
+  
+  const shared_ptr<State> & getStartState() const override;
+  
+  const shared_ptr<State> & getEndState() const override;
+  
+  const shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
 };
