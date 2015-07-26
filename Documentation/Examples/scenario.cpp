@@ -69,6 +69,9 @@ int main()
     // attach /test address to their callback
     local_test_address->setValueCallback(local_test_callback);
     
+    // filter repetitions
+    local_test_address->setRepetitionFilter(true);
+    
     /*
      Main Scenario setup
      */
@@ -153,7 +156,7 @@ int main()
     auto second_powerSegment = CurveSegmentPower<float>::create(first_curve);
     second_powerSegment->setPower(0.5);
     
-    second_curve->setInitialValue(0.);
+    second_curve->setInitialValue(1.);
     second_curve->addPoint(1., 2., second_powerSegment);
     
     // create a Tuple value of 3 Behavior values based on the same curve
