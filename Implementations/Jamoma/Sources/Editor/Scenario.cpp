@@ -46,17 +46,17 @@ JamomaScenario::~JamomaScenario()
 
 shared_ptr<State> JamomaScenario::state(const TimeValue& position, const TimeValue& date)
 {
-  if (!mInitialized)
-    init();
-  
   // reset internal State
   mCurrentState->stateElements().clear();
+  
+  if (!mInitialized)
+    init(position, date);
   
   // process each TimeNode to find events to make happen
   vector<shared_ptr<TimeEvent>> eventsToHappen;
   for (const auto& timeNode : mTimeNodes)
   {
-    TimeValue d = timeNode->getDate();
+    TimeValue timeNodeDate = timeNode->getDate();
     
     for (auto& timeEvent : timeNode->timeEvents())
     {
@@ -82,7 +82,7 @@ shared_ptr<State> JamomaScenario::state(const TimeValue& position, const TimeVal
             }
           }
           // or if it is in the past
-          else if (date > d)
+          else if (date > timeNodeDate)
           {
             eventsToHappen.push_back(timeEvent);
           }
@@ -216,45 +216,94 @@ const shared_ptr<TimeConstraint> & JamomaScenario::getParentTimeConstraint() con
 # pragma mark -
 # pragma mark Implementation specific
 
-void JamomaScenario::init()
+void JamomaScenario::init(const TimeValue& position, const TimeValue& date)
 {
-  // reset internal State
-  mCurrentState->stateElements().clear();
-  
-  // reset TimeEvent's status and build state
+  // reset TimeEvent's status and prepare the state at this date
   for (const auto& timeNode : mTimeNodes)
   {
-    TimeEvent::Status status = timeNode->getDate() < mParent->getClock()->getOffset() ?
+    TimeEvent::Status status = timeNode->getDate() < date ?
     TimeEvent::Status::HAPPENED : TimeEvent::Status::WAITING;
+    
+    //! \todo what about PENDING status ?
+    //! \todo what about DISPOSED status ?
     
     for (auto& timeEvent : timeNode->timeEvents())
     {
       shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
       e->setStatus(status);
       
+      //! \todo we shouldn't take all events because some of them could be conccurent
+      //! if they are on two different branches separated by some expressions
       if (status == TimeEvent::Status::HAPPENED)
-        mCurrentState->stateElements().push_back(e->getState());
+      {
+        flattenState(e->getState());
+      }
     }
   }
   
-  // activate TimeConstraint's clock
+  // reset TimeConstraint's status and setup the clock
   for (const auto& timeConstraint : mTimeContraints)
   {
-    TimeValue offset = Zero;
     TimeEvent::Status startStatus = timeConstraint->getStartEvent()->getStatus();
     TimeEvent::Status endStatus = timeConstraint->getEndEvent()->getStatus();
     
-    if (startStatus == TimeEvent::Status::HAPPENED &&
+    if (startStatus == TimeEvent::Status::WAITING &&
         endStatus == TimeEvent::Status::WAITING)
     {
-      offset = mParent->getClock()->getOffset() - timeConstraint->getStartEvent()->getTimeNode()->getDate();
+      //! \todo set the TimeConstraint's status to WAITING ?
+    }
+    else if (startStatus == TimeEvent::Status::HAPPENED &&
+        endStatus == TimeEvent::Status::WAITING)
+    {
+      TimeValue offset = date - timeConstraint->getStartEvent()->getTimeNode()->getDate();
+      timeConstraint->getClock()->setOffset(offset);
+      
+      //! \todo set the TimeConstraint's status to STARTED ?
+    }
+    else if (startStatus == TimeEvent::Status::HAPPENED &&
+             endStatus == TimeEvent::Status::HAPPENED)
+    {
+      //! \todo set the TimeConstraint's status to ENDED ?
     }
     
-    timeConstraint->getClock()->setOffset(offset);
-    
-    // activate start node
-    timeConstraint->getStartEvent()->getTimeNode()->play();
+    //! \todo what about DISPOSED status ?
   }
   
   mInitialized = true;
+}
+
+void JamomaScenario::flattenState(const shared_ptr<State> stateToFlatten)
+{
+  for (const auto& element : stateToFlatten->stateElements())
+  {
+    switch (element->getType())
+    {
+      case StateElement::Type::MESSAGE :
+      {
+        shared_ptr<Message> messageToAppend = dynamic_pointer_cast<Message>(element);
+        
+        // find message with the same address
+        for (auto it = mCurrentState->stateElements().begin();
+             it != mCurrentState->stateElements().end();
+             it++)
+        {
+          shared_ptr<Message> messageToCheck = dynamic_pointer_cast<Message>(*it);
+          
+          // replace if addresses are the same
+          if (messageToCheck->getAddress() == messageToAppend->getAddress())
+          {
+            *it = element;
+            break;
+          }
+        }
+        
+        break;
+      }
+      case StateElement::Type::STATE :
+      {
+        flattenState(dynamic_pointer_cast<State>(element));
+        break;
+      }
+    }
+  }
 }

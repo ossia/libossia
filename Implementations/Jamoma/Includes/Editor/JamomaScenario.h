@@ -13,7 +13,9 @@
 
 #pragma once
 
+#include "Editor/Message.h"
 #include "Editor/Scenario.h"
+#include "Editor/State.h"
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeEvent.h"
 #include "Editor/TimeNode.h"
@@ -92,6 +94,9 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  /*! initialize the scenario to prepare its execution */
-  void init();
+  /*! initialize the scenario to prepare its execution from a position or a date */
+  void init(const TimeValue&, const TimeValue&);
+  
+  /*! append each message of the state to the current state in order to eliminate address redundancy */
+  void flattenState(const shared_ptr<State>);
 };
