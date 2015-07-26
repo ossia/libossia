@@ -57,6 +57,11 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
+  
+  /*! get the type of the state element
+   \return #Type of the state element */
+  StateElement::Type getType() const override final
+  {return StateElement::Type::MESSAGE;}
 
   /*! get message's address
    \return std::shared_ptr<#Address> the address */

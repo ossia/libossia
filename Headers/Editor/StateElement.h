@@ -21,8 +21,18 @@ namespace OSSIA
 
 class StateElement
 {
-
+  
 public:
+  
+# pragma mark -
+# pragma mark Enumerations
+  
+  /*! type of element */
+  enum class Type
+  {
+    MESSAGE,
+    STATE,
+  };
 
 # pragma mark -
 # pragma mark Life cycle
@@ -35,6 +45,13 @@ public:
   
   /*! what to do at execution time */
   virtual void launch() const = 0;
+  
+# pragma mark -
+# pragma mark Accessors
+  
+  /*! get the type of the state element
+   \return #Type of the state element */
+  virtual Type getType() const = 0;
 };
 
 }

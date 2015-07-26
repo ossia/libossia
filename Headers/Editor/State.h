@@ -47,6 +47,14 @@ public:
   
   /*! launch each state elements of the state */
   virtual void launch() const override = 0;
+  
+# pragma mark -
+# pragma mark Accessors
+  
+  /*! get the type of the state element
+   \return #Type of the state element */
+  StateElement::Type getType() const override final
+  {return StateElement::Type::STATE;}
 
 # pragma mark -
 # pragma mark State Elements
