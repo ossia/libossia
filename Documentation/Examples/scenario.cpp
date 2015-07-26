@@ -41,7 +41,7 @@ void local_test_callback(const Value * v);
 void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
 void first_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
 void second_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
-void event_callback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus);
+void event_callback(TimeEvent::Status newStatus);
 
 shared_ptr<TimeConstraint> main_constraint;
 
@@ -201,14 +201,14 @@ int main()
     
     // change main TimeConstraint speed, granularity and offset
     main_constraint->setSpeed(1.);
-    main_constraint->setGranularity(10.);
+    main_constraint->setGranularity(50.);
     main_constraint->setOffset(500.);
     
     // change first and second TimeConstraint speed and granularity
     first_constraint->setSpeed(1.);
-    first_constraint->setGranularity(50.);
+    first_constraint->setGranularity(250.);
     second_constraint->setSpeed(1.);
-    second_constraint->setGranularity(50.);
+    second_constraint->setGranularity(250.);
     
     // play the main TimeConstraint
     local_play_address->sendValue(&True);
@@ -253,25 +253,47 @@ void local_test_callback(const Value * v)
 
 void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
 {
-    cout << "Main Constraint : " << double(position) << ", " << double(date) << "\n";
+    cout << "Main Constraint : " << double(position) << ", " << double(date) << endl;
     state->launch();
 }
 
 void first_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
 {
-    cout << "First Constraint : " << double(position) << ", " << double(date) << "\n";
+    cout << "First Constraint : " << double(position) << ", " << double(date) << endl;
     
     // don't launch state here as the state produced by the first TimeConstraint is handled by the main TimeConstraint
 }
 
 void second_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
 {
-    cout << "Second Constraint : " << double(position) << ", " << double(date) << "\n";
+    cout << "Second Constraint : " << double(position) << ", " << double(date) << endl;
 
     // don't launch state here as the state produced by the second TimeConstraint is handled by the main TimeConstraint
 }
 
-void event_callback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus)
+void event_callback(TimeEvent::Status newStatus)
 {
-    cout << "Event : " << "new status received" << "\n";
+    switch (newStatus)
+    {
+        case TimeEvent::Status::NONE:
+        {
+            cout << "Event NONE" << endl;
+            break;
+        }
+        case TimeEvent::Status::PENDING:
+        {
+            cout << "Event PENDING" << endl;
+            break;
+        }
+        case TimeEvent::Status::HAPPENED:
+        {
+            cout << "Event HAPPENED" << endl;
+            break;
+        }
+        case TimeEvent::Status::DISPOSED:
+        {
+            cout << "Event DISPOSED" << endl;
+            break;
+        }
+    }
 }

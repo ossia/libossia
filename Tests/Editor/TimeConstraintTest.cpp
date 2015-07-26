@@ -9,7 +9,7 @@ void constraint_callback(const TimeValue& position, const TimeValue& date, std::
     ;
 }
 
-void event_callback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus)
+void event_callback(TimeEvent::Status newStatus)
 {
     ;
 }

@@ -21,6 +21,9 @@
 #include "Editor/TimeValue.h"
 
 #include "JamomaClock.h"
+#include "JamomaTimeConstraint.h"
+#include "JamomaTimeEvent.h"
+#include "JamomaTimeNode.h"
 #include "JamomaTimeProcess.h"
 
 using namespace OSSIA;
@@ -91,10 +94,12 @@ public:
 
   void removeTimeProcess(std::shared_ptr<TimeProcess>) override;
 
-private:
-  
 # pragma mark -
 # pragma mark Implementation specific
+  
+  void process();
+
+private:
   
   void ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks);
 };

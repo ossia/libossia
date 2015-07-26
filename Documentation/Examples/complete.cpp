@@ -40,7 +40,7 @@ void explore(const shared_ptr<Node> node);
 void printValue(const Value * v);
 void printValueCallback(const Value * v);
 void constraintCallback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
-void eventCallback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus);
+void eventCallback(TimeEvent::Status newStatus);
 
 int main()
 {
@@ -187,7 +187,7 @@ void constraintCallback(const TimeValue& position, const TimeValue& date, shared
     state->launch();
 }
 
-void eventCallback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus)
+void eventCallback(TimeEvent::Status newStatus)
 {
     cout << "Event : " << "new status received" << "\n";
 }

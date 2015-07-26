@@ -41,7 +41,7 @@ public:
   /*! event status */
   enum class Status
   {
-    WAITING,
+    NONE,
     PENDING,
     HAPPENED,
     DISPOSED
@@ -56,15 +56,19 @@ public:
 # pragma mark -
 # pragma mark Execution
   
-  /*! execute and optionnaly log the execution into a file
-  \param bool to enable log
-  \param string to give a log file name where to write */
-  virtual void play(bool log = false, std::string name = "") const = 0;
-  
   /*! to get the event status back
-   \param #Status new status
-   \param #Status last status */
-  using ExecutionCallback = std::function<void(Status, Status)>;
+   \param #Status new status */
+  using ExecutionCallback = std::function<void(Status)>;
+  
+  /*! make the event happen to propagate the execution to next TimeConstraints
+   \details the event have to be in WAITING or PENDING status to call this method otherwise it will raise a runtime_error
+   \details turn the event' status into HAPPENED calling the callback to notify its owner */
+  virtual void happen() = 0;
+  
+  /*! dispose the event to not propagate the execution to next TimeConstraints
+   \details the event have to be in WAITING or PENDING status to call this method otherwise it will raise a runtime_error
+   \details turn the event' status into DISPOSED  calling the callback to notify its owner */
+  virtual void dispose() = 0;
   
 # pragma mark -
 # pragma mark Edition

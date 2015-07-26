@@ -20,13 +20,9 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaTimeConstraint;
-
 class JamomaTimeProcess : public virtual TimeProcess
 {
-  
-  friend JamomaTimeConstraint;
-  
+
 protected:
   
 # pragma mark -
@@ -54,4 +50,9 @@ public:
   const shared_ptr<State> & getEndState() const override;
   
   const shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
+  
+# pragma mark -
+# pragma mark Implementation specific
+  
+  void setParentTimeConstraint(const shared_ptr<TimeConstraint>);
 };

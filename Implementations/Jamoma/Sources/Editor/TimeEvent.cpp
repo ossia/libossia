@@ -1,5 +1,7 @@
 #include "Editor/JamomaTimeEvent.h"
+
 #include <algorithm>
+#include <iostream> //! \todo to remove. only here for debug purpose
 
 # pragma mark -
 # pragma mark Life cycle
@@ -10,7 +12,7 @@ JamomaTimeEvent::JamomaTimeEvent(TimeEvent::ExecutionCallback callback,
 mCallback(callback),
 mTimeNode(aTimeNode),
 mExpression(anExpression),
-mStatus(TimeEvent::Status::WAITING)
+mStatus(TimeEvent::Status::NONE)
 {
   mState = State::create();
 }
@@ -21,13 +23,29 @@ JamomaTimeEvent::~JamomaTimeEvent()
 # pragma mark -
 # pragma mark Execution
 
-void JamomaTimeEvent::play(bool log, string name) const
+void JamomaTimeEvent::happen()
 {
-  // propagate execution to next TimeConstraints
+  if (mStatus != TimeEvent::Status::PENDING)
+    throw runtime_error("only PENDING event can happens");
+  
+  mStatus = TimeEvent::Status::HAPPENED;
+  
   for (auto& timeConstraint : nextTimeConstraints())
   {
     timeConstraint->play();
   }
+  
+  (mCallback)(mStatus);
+}
+
+void JamomaTimeEvent::dispose()
+{
+  if (mStatus != TimeEvent::Status::PENDING)
+    throw runtime_error("only PENDING event can be disposed");
+  
+  mStatus = TimeEvent::Status::DISPOSED;
+  
+  (mCallback)(mStatus);
 }
 
 # pragma mark -
@@ -75,10 +93,58 @@ TimeEvent::Status JamomaTimeEvent::getStatus() const
 # pragma mark -
 # pragma mark Implementation specific
 
+void JamomaTimeEvent::process()
+{
+  switch (mStatus)
+  {
+    case TimeEvent::Status::NONE:
+    {
+      // nothing to do
+      
+      //! \debug
+      cout << "TimeEvent::process() : NONE => do nothing" << endl;
+      
+      break;
+    }
+    case TimeEvent::Status::PENDING:
+    {
+      // if the event has an expression: evaluate its expression to make it happen or to dispose it
+      // else make the event happen
+      
+      //! \debug
+      cout << "TimeEvent::process() : PENDING => evaluate expression if exist else happen" << endl;
+      
+      mExpression != nullptr ? mExpression->evaluate() ? happen() : dispose() : happen();
+      break;
+    }
+    case TimeEvent::Status::HAPPENED:
+    {
+      // process the next TimeConstraints
+      
+      //! \debug
+      //cout << "TimeEvent::process() : HAPPENED => process next constraints" << endl;
+      
+      for (auto& timeConstraint : nextTimeConstraints())
+      {
+        shared_ptr<JamomaTimeConstraint> c = dynamic_pointer_cast<JamomaTimeConstraint>(timeConstraint);
+        c->process();
+      }
+      break;
+    }
+    case TimeEvent::Status::DISPOSED:
+    {
+      // nothing to do
+      
+      //! \debug
+      cout << "TimeEvent::process() : DISPOSED => do nothing" << endl;
+      
+      break;
+    }
+  }
+}
+
 void JamomaTimeEvent::setStatus(Status status)
 {
-  Status lastStatus = mStatus;
   mStatus = status;
-
-  (mCallback)(mStatus, lastStatus);
+  (mCallback)(mStatus);
 }

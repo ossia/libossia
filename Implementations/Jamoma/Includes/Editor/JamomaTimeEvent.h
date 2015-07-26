@@ -19,6 +19,8 @@
 #include "Editor/TimeNode.h"
 #include "Editor/State.h"
 
+#include "JamomaTimeConstraint.h"
+#include "JamomaTimeNode.h"
 #include "JamomaScenario.h"
 
 using namespace OSSIA;
@@ -27,8 +29,6 @@ using namespace std;
 class JamomaTimeEvent : public TimeEvent
 {
   
-  friend JamomaScenario;
-
 private:
   
 # pragma mark -
@@ -55,7 +55,9 @@ public:
 # pragma mark -
 # pragma mark Execution
   
-  void play(bool log = false, string name = "") const override;
+  void happen() override;
+  
+  void dispose() override;
   
 # pragma mark -
 # pragma mark Edition
@@ -75,10 +77,10 @@ public:
   
   Status getStatus() const override;
   
-private:
-  
 # pragma mark -
 # pragma mark Implementation specific
+  
+  void process();
   
   void setStatus(Status);
 };

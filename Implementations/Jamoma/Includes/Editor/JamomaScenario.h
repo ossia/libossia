@@ -22,7 +22,12 @@
 #include "Editor/TimeProcess.h"
 #include "Editor/TimeValue.h"
 
+#include "JamomaClock.h"
+#include "JamomaScenario.h"
+#include "JamomaTimeConstraint.h"
+#include "JamomaTimeEvent.h"
 #include "JamomaTimeProcess.h"
+#include "JamomaTimeNode.h"
 
 using namespace OSSIA;
 using namespace std;

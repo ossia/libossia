@@ -4,7 +4,7 @@
 
 using namespace OSSIA;
 
-void event_callback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus)
+void event_callback(TimeEvent::Status newStatus)
 {
     ;
 }

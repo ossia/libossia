@@ -29,7 +29,7 @@ using namespace std::chrono;
 class JamomaClock : public virtual Clock
 {
   
-private:
+protected:
   
 # pragma mark -
 # pragma mark Implementation specific

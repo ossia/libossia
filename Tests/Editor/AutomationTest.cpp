@@ -17,7 +17,7 @@ class AutomationTest : public QObject
         state->launch();
     }
 
-    void event_callback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus)
+    void event_callback(TimeEvent::Status newStatus)
     {
         std::cout << "Event : " << "new status received" << std::endl;
     }
@@ -77,7 +77,7 @@ private Q_SLOTS:
 
         auto start_node = TimeNode::create();
         auto end_node = TimeNode::create();
-        auto event_callback = std::bind(&AutomationTest::event_callback, this, _1, _2);
+        auto event_callback = std::bind(&AutomationTest::event_callback, this, _1);
         auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
         auto constraint_callback = std::bind(&AutomationTest::constraint_callback, this, _1, _2, _3);

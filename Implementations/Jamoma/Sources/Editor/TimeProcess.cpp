@@ -31,3 +31,11 @@ const shared_ptr<TimeConstraint> & JamomaTimeProcess::getParentTimeConstraint() 
 {
   return mParent;
 }
+
+# pragma mark -
+# pragma mark Implementation specific
+
+void JamomaTimeProcess::setParentTimeConstraint(const shared_ptr<TimeConstraint> timeConstraint)
+{
+  mParent = timeConstraint;
+}

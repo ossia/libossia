@@ -65,4 +65,10 @@ public:
   iterator emplace(const_iterator,
                    TimeEvent::ExecutionCallback,
                    shared_ptr<Expression> = nullptr) override;
+  
+# pragma mark -
+# pragma mark Implementation specific
+  
+  void process();
+
 };

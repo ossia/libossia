@@ -9,7 +9,7 @@ void constraint_callback(const TimeValue& position, const TimeValue& date, std::
     ;
 }
 
-void event_callback(TimeEvent::Status newStatus, TimeEvent::Status oldStatus)
+void event_callback(TimeEvent::Status newStatus)
 {
     ;
 }
@@ -30,7 +30,7 @@ private Q_SLOTS:
         QVERIFY(event->getTimeNode() == node);
         QVERIFY(event->getState() != nullptr);
         QVERIFY(event->getExpression() == nullptr);
-        QVERIFY(event->getStatus() == TimeEvent::Status::WAITING);
+        QVERIFY(event->getStatus() == TimeEvent::Status::NONE);
 
         auto event_with_expression = *(node->emplace(node->timeEvents().begin(), &event_callback, ExpressionTrue));
         QVERIFY(event_with_expression != nullptr);
