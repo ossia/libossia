@@ -20,13 +20,14 @@
 #include "Editor/TimeProcess.h"
 #include "Editor/TimeValue.h"
 
+#include "JamomaClock.h"
 #include "JamomaTimeProcess.h"
 
 using namespace OSSIA;
 using namespace std;
 using namespace std::placeholders;
 
-class JamomaTimeConstraint : public TimeConstraint, public enable_shared_from_this<JamomaTimeConstraint>
+class JamomaTimeConstraint : public TimeConstraint, public JamomaClock, public enable_shared_from_this<JamomaTimeConstraint>
 {
 
 private:
@@ -35,8 +36,6 @@ private:
 # pragma mark Implementation specific
   
   TimeConstraint::ExecutionCallback   mCallback;
-  
-  shared_ptr<Clock>                   mClock;
   
   shared_ptr<State>                   mCurrentState;    // an internal State to update at each tick of the clock
   
@@ -68,24 +67,10 @@ public:
 # pragma mark -
 # pragma mark Execution
   
-  void play(bool log = false, string name = "") const override;
-  
-  void stop() const override;
-  
-  void pause() const override;
-  
-  void resume() const override;
-  
   shared_ptr<State> state(const TimeValue&, const TimeValue&) override;
 
 # pragma mark -
 # pragma mark Accessors
-  
-  const shared_ptr<Clock> & getClock() const override;
-  
-  const TimeValue & getDuration() const override;
-  
-  TimeConstraint & setDuration(const TimeValue&) override;
   
   const TimeValue & getDurationMin() const override;
   

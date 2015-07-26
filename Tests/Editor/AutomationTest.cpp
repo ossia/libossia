@@ -89,11 +89,10 @@ private Q_SLOTS:
 
         m_address_values.clear();
 
-        constraint->getClock()->setGranularity(10.);
+        constraint->setGranularity(10.);
         constraint->play();
 
-        //! \todo add TimeConstraint::isRunning() to ease the access ?
-        while (constraint->getClock()->getRunning())
+        while (constraint->getRunning())
             ;
 
         QVERIFY(m_address_values.size() == 10);

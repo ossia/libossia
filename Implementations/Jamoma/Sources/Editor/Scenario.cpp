@@ -109,7 +109,7 @@ shared_ptr<State> JamomaScenario::state(const TimeValue& position, const TimeVal
   // process each running TimeConstraints
   for (const auto& timeConstraint : mTimeContraints)
   {
-    shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint->getClock());
+    shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint);
     
     if (clock->getRunning())
     {
@@ -146,7 +146,7 @@ void JamomaScenario::addTimeConstraint(const shared_ptr<TimeConstraint> timeCons
   addTimeNode(timeConstraint->getEndEvent()->getTimeNode());
   
   // set the TimeConstraint's clock in external mode
-  shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint->getClock());
+  shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint);
   clock->setExternal(true);
 }
 
@@ -155,7 +155,7 @@ void JamomaScenario::removeTimeConstraint(const shared_ptr<TimeConstraint> timeC
   mTimeContraints.erase(find(mTimeContraints.begin(), mTimeContraints.end(), timeConstraint));
   
   // set the TimeConstraint's clock in none external mode
-  shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint->getClock());
+  shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint);
   clock->setExternal(false);
 }
 
@@ -256,7 +256,7 @@ void JamomaScenario::init(const TimeValue& position, const TimeValue& date)
         endStatus == TimeEvent::Status::WAITING)
     {
       TimeValue offset = date - timeConstraint->getStartEvent()->getTimeNode()->getDate();
-      timeConstraint->getClock()->setOffset(offset);
+      timeConstraint->setOffset(offset);
       
       //! \todo set the TimeConstraint's status to STARTED ?
     }

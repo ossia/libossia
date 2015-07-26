@@ -199,23 +199,22 @@ int main()
     cout << "first_start_node date = " << scenario_start_node->getDate() << "\n";
     cout << "first_end_node date = " << first_end_node->getDate() << "\n";
     
-    // change main TimeConstraint's Clock speed, granularity and offset
-    main_constraint->getClock()->setSpeed(1.);
-    main_constraint->getClock()->setGranularity(10.);
-    main_constraint->getClock()->setOffset(500.);
+    // change main TimeConstraint speed, granularity and offset
+    main_constraint->setSpeed(1.);
+    main_constraint->setGranularity(10.);
+    main_constraint->setOffset(500.);
     
-    // change first and second TimeConstraint's Clock speed and granularity
-    first_constraint->getClock()->setSpeed(1.);
-    first_constraint->getClock()->setGranularity(50.);
-    second_constraint->getClock()->setSpeed(1.);
-    second_constraint->getClock()->setGranularity(50.);
+    // change first and second TimeConstraint speed and granularity
+    first_constraint->setSpeed(1.);
+    first_constraint->setGranularity(50.);
+    second_constraint->setSpeed(1.);
+    second_constraint->setGranularity(50.);
     
     // play the main TimeConstraint
     local_play_address->sendValue(&True);
     
     // wait the main TimeConstraint end
-    //! \todo add TimeConstraint::isRunning() to ease the access ?
-    while (main_constraint->getClock()->getRunning())
+    while (main_constraint->getRunning())
         ;
 }
 

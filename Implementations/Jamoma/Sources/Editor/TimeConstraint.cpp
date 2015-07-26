@@ -40,26 +40,21 @@ JamomaTimeConstraint::JamomaTimeConstraint(TimeConstraint::ExecutionCallback cal
                                            const TimeValue& nominal,
                                            const TimeValue& min,
                                            const TimeValue& max) :
+JamomaClock(std::bind(&JamomaTimeConstraint::ClockCallback, this, _1, _2, _3), nominal),
 mCallback(callback),
 mStartEvent(startEvent),
 mEndEvent(endEvent),
-mDuration(nominal),
 mDurationMin(min),
 mDurationMax(max)
 {
   mCurrentState = State::create();
-  mClock = Clock::create();
-  
-  // pass callback to the Clock
-  Clock::ExecutionCallback clockCallback = std::bind(&JamomaTimeConstraint::ClockCallback, this, _1, _2, _3);
-  mClock->setExecutionCallback(clockCallback);
 }
 
 JamomaTimeConstraint::JamomaTimeConstraint(const JamomaTimeConstraint * other) :
+JamomaClock(other),
 mCallback(other->mCallback),
 mStartEvent(other->mStartEvent),
 mEndEvent(other->mEndEvent),
-mDuration(other->mDuration),
 mDurationMin(other->mDurationMin),
 mDurationMax(other->mDurationMax)
 {}
@@ -74,28 +69,6 @@ JamomaTimeConstraint::~JamomaTimeConstraint()
 
 # pragma mark -
 # pragma mark Execution
-
-void JamomaTimeConstraint::play(bool log, string name) const
-{
-  // setup clock duration
-  mClock->setDuration(mDuration);
-  mClock->go();
-}
-
-void JamomaTimeConstraint::stop() const
-{
-  mClock->stop();
-}
-
-void JamomaTimeConstraint::pause() const
-{
-  mClock->pause();
-}
-
-void JamomaTimeConstraint::resume() const
-{
-  mClock->resume();
-}
 
 shared_ptr<State> JamomaTimeConstraint::state(const TimeValue& position, const TimeValue& date)
 {
@@ -113,22 +86,6 @@ shared_ptr<State> JamomaTimeConstraint::state(const TimeValue& position, const T
 
 # pragma mark -
 # pragma mark Accessors
-
-const shared_ptr<Clock> & JamomaTimeConstraint::getClock() const
-{
-  return mClock;
-}
-
-const TimeValue & JamomaTimeConstraint::getDuration() const
-{
-  return mDuration;
-}
-
-TimeConstraint & JamomaTimeConstraint::setDuration(const TimeValue& duration)
-{
-  mDuration = duration;
-  return *this;
-}
 
 const TimeValue & JamomaTimeConstraint::getDurationMin() const
 {

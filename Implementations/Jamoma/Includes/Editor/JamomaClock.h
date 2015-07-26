@@ -26,7 +26,7 @@ using namespace OSSIA;
 using namespace std;
 using namespace std::chrono;
 
-class JamomaClock : public Clock
+class JamomaClock : public virtual Clock
 {
   
 private:
@@ -58,22 +58,21 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaClock(const TimeValue&,
-              const TimeValue&,
-              const TimeValue&,
-              float,
-              bool);
+  JamomaClock(Clock::ExecutionCallback,
+              const TimeValue& = Infinite,
+              const TimeValue& = 1.,
+              const TimeValue& = 0.,
+              float = 1.,
+              bool = false);
   
   JamomaClock(const JamomaClock *);
-  
-  shared_ptr<Clock> clone() const override;
   
   ~JamomaClock();
   
 # pragma mark -
 # pragma mark Execution
   
-  void go() override;
+  void play() override;
   
   void stop() override;
   
@@ -82,10 +81,6 @@ public:
   void resume() override;
   
   bool tick() override;
-  
-  ExecutionCallback getExecutionCallback() const override;
-  
-  void setExecutionCallback(ExecutionCallback) override;
   
 # pragma mark -
 # pragma mark Accessors

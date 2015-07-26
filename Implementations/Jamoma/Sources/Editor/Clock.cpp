@@ -9,17 +9,18 @@ using namespace OSSIA;
 
 namespace OSSIA
 {
-  shared_ptr<Clock> Clock::create(const TimeValue& duration,
+  shared_ptr<Clock> Clock::create(Clock::ExecutionCallback callback,
+                                  const TimeValue& duration,
                                   const TimeValue& granularity,
                                   const TimeValue& offset,
-                                  float speed,
-                                  bool external)
+                                  float speed)
   {
-    return make_shared<JamomaClock>(duration, granularity, offset, speed, external);
+    return make_shared<JamomaClock>(callback, duration, granularity, offset, speed);
   }
 }
 
-JamomaClock::JamomaClock(const TimeValue& duration,
+JamomaClock::JamomaClock(Clock::ExecutionCallback callback,
+                         const TimeValue& duration,
                          const TimeValue& granularity,
                          const TimeValue& offset,
                          float speed,
@@ -29,16 +30,19 @@ mGranularity(granularity),
 mOffset(offset),
 mSpeed(speed),
 mRunning(false),
+mCallback(callback),
 mExternal(external)
 {}
 
-JamomaClock::JamomaClock(const JamomaClock * other)
+JamomaClock::JamomaClock(const JamomaClock * other) :
+mDuration(other->mDuration),
+mGranularity(other->mGranularity),
+mOffset(other->mOffset),
+mSpeed(other->mSpeed),
+mRunning(false),
+mCallback(other->mCallback),
+mExternal(other->mExternal)
 {}
-
-shared_ptr<Clock> JamomaClock::clone() const
-{
-  return make_shared<JamomaClock>(this);
-}
 
 JamomaClock::~JamomaClock()
 {
@@ -48,7 +52,7 @@ JamomaClock::~JamomaClock()
 # pragma mark -
 # pragma mark Execution
 
-void JamomaClock::go()
+void JamomaClock::play()
 {
   if (mDuration <= mOffset)
     return stop();
@@ -190,16 +194,6 @@ bool JamomaClock::tick()
   }
   
   return true;
-}
-
-JamomaClock::ExecutionCallback JamomaClock::getExecutionCallback() const
-{
-  return mCallback;
-}
-
-void JamomaClock::setExecutionCallback(ExecutionCallback callback)
-{
-  mCallback = callback;
 }
 
 # pragma mark -

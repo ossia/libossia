@@ -74,8 +74,7 @@ class ClockTest : public QObject
             std::cout << std::endl;
 
         // setup clock
-        auto clock = Clock::create(duration, granularity, offset, speed);
-        clock->setExecutionCallback(callback);
+        auto clock = Clock::create(callback, duration, granularity, offset, speed);
 
         // clear frame vectors
         m_clock_positions.clear();
@@ -85,7 +84,7 @@ class ClockTest : public QObject
         // launch the clock and check running status : it have to be true after the launch
         QVERIFY(clock->getRunning() == false);
         m_clock_start_date = steady_clock::now();
-        clock->go();
+        clock->play();
         QVERIFY(clock->getRunning() == true);
 
         // wait the clock end
@@ -140,26 +139,23 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto clock = Clock::create();
         auto callback = std::bind(&ClockTest::clock_callback_light, this, _1, _2, _3);
+        auto clock = Clock::create(callback);
 
         QVERIFY(clock->getDuration() == Infinite);
         QVERIFY(clock->getGranularity() == 1.);
         QVERIFY(clock->getOffset() == 0.);
         QVERIFY(clock->getSpeed() == 1.);
-        QVERIFY(clock->getExecutionCallback() == nullptr);
 
         clock->setDuration(1000.);
         clock->setGranularity(50.);
         clock->setOffset(500.);
         clock->setSpeed(2.);
-        clock->setExecutionCallback(callback);
 
         QVERIFY(clock->getDuration() == 1000.);
         QVERIFY(clock->getGranularity() == 50.);
         QVERIFY(clock->getOffset() == 500.);
         QVERIFY(clock->getSpeed() == 2.);
-        QVERIFY(clock->getExecutionCallback() != nullptr);
 
         QVERIFY(clock->getRunning() == false);
         QVERIFY(clock->getPosition() == 0.5);

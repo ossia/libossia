@@ -33,7 +33,7 @@ class TimeEvent;
 class TimeProcess;
 class TimeValue;
 
-class TimeConstraint
+class TimeConstraint : public virtual Clock
 {
   
 public:
@@ -72,20 +72,6 @@ public:
 
 # pragma mark -
 # pragma mark Execution
-
-  /*! execute and optionnaly log the execution into a file
-   \param bool to enable log
-   \param std::string to give a log file name where to write */
-  virtual void play(bool log = false, std::string name = "") const = 0;
-  
-  /*! stop the execution */
-  virtual void stop() const = 0;
-  
-  /*! pause the execution */
-  virtual void pause() const = 0;
-  
-  /*! resume the execution */
-  virtual void resume() const = 0;
   
   /*! get the #State of the constraint for a position or a date
    \param const #TimeValue position
@@ -95,18 +81,6 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
-  
-  /*! get the #Clock
-   \return std::shared_ptr<#Clock> clock */
-  virtual const std::shared_ptr<Clock> & getClock() const = 0;
-  
-  /*! get the #TimeConstraint duration
-   \return const #TimeValue& duration */
-  virtual const TimeValue & getDuration() const = 0;
-  
-  /*! set the #TimeConstraint duration
-   \param const #TimeValue& duration */
-  virtual TimeConstraint & setDuration(const TimeValue&) = 0;
   
   /*! get the #TimeConstraint minimal duration
    \return const #TimeValue& minimal duration */

@@ -104,8 +104,7 @@ int main()
     constraint->play();
     
     // wait the TimeConstraint ends
-    //! \todo add TimeConstraint::isRunning() to ease the access ?
-    while (constraint->getClock()->getRunning())
+    while (constraint->getRunning())
         ;
 }
 
