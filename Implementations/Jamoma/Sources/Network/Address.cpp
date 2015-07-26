@@ -337,7 +337,7 @@ public:
   {
     mRepetitionFilter = repetitionFilter;
     
-    mData.set("repetitionFilter", repetitionFilter);
+    mData.set("repetitionsFilter", repetitionFilter);
 
     return *this;
   }
