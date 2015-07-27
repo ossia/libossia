@@ -236,9 +236,9 @@ void JamomaScenario::flattenAndFilter(const shared_ptr<StateElement> element)
     }
     case StateElement::Type::STATE :
     {
-      shared_ptr<State> stateToAppend = dynamic_pointer_cast<State>(element);
+      shared_ptr<State> stateToFlatAndFilter = dynamic_pointer_cast<State>(element);
       
-      for (const auto& e : stateToAppend->stateElements())
+      for (const auto& e : stateToFlatAndFilter->stateElements())
       {
         flattenAndFilter(e);
       }

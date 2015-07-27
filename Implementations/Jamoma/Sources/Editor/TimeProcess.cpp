@@ -9,7 +9,8 @@ using namespace std;
 JamomaTimeProcess::JamomaTimeProcess(shared_ptr<State> startState,
                                      shared_ptr<State> endState) :
 mStartState(startState),
-mEndState(endState)
+mEndState(endState),
+mLastPosition(-1.)
 {
   ;
 }
