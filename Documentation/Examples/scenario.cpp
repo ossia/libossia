@@ -80,19 +80,9 @@ int main()
     auto main_start_node = TimeNode::create();
     auto main_end_node = TimeNode::create();
     
-    // create "/play == true" and "/play == false" Expressions
-    Destination local_play(local_play_node);
-    auto play_expression_start = ExpressionAtom::create(&local_play,
-                                                        ExpressionAtom::Operator::EQUAL,
-                                                        &True);
-    
-    auto play_expression_end = ExpressionAtom::create(&local_play,
-                                                      ExpressionAtom::Operator::EQUAL,
-                                                      &False);
-    
     // create TimeEvents inside TimeNodes and make them interactive to the /play address
-    auto main_start_event = *(main_start_node->emplace(main_start_node->timeEvents().begin(), &event_callback, play_expression_start));
-    auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), &event_callback, play_expression_end));
+    auto main_start_event = *(main_start_node->emplace(main_start_node->timeEvents().begin(), &event_callback));
+    auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), &event_callback));
 
     // create the main Scenario
     auto main_scenario = Scenario::create();
@@ -139,7 +129,21 @@ int main()
     
     // add the second TimeConstraint to the main Scenario
     main_scenario->addTimeConstraint(second_constraint);
-
+    
+    /*
+     Main Scenario edition : make an event interactive
+     */
+    
+    // create an expression : /i-score/test >= {0.7, 0.7, 0.7}
+    Destination local_test(local_test_node);
+    Tuple threshold1(new Float(0.7), new Float(0.7), new Float(0.7));
+    auto next_expression1 = ExpressionAtom::create(&local_test,
+                                                  ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
+                                                  &threshold1);
+    
+    // set first end event expression to make it interactive
+    first_end_event->setExpression(next_expression1);
+    
     /*
      Main Scenario edition : creation of two Automations
      */
@@ -221,6 +225,15 @@ int main()
     // wait the main TimeConstraint end
     while (main_constraint->getRunning())
         ;
+    
+    // changing expression to : /i-score/test >= {0.9, 0.9, 0.9}
+    Tuple threshold2(new Float(0.9), new Float(0.9), new Float(0.9));
+    auto next_expression2 = ExpressionAtom::create(&local_test,
+                                                   ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
+                                                   &threshold2);
+    
+    // set first end event expression to make it interactive
+    first_end_event->setExpression(next_expression2);
     
     // play it again faster
     main_constraint->setSpeed(2.);
