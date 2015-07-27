@@ -30,6 +30,13 @@ void JamomaTimeEvent::happen()
   
   mStatus = TimeEvent::Status::HAPPENED;
   
+  // stop previous TimeConstraints
+  for (auto& timeConstraint : previousTimeConstraints())
+  {
+    timeConstraint->stop();
+  }
+  
+  // start next TimeConstraints
   for (auto& timeConstraint : nextTimeConstraints())
   {
     timeConstraint->start();
