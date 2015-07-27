@@ -83,7 +83,7 @@ public:
   
   bool isKiller() const override;
   
-  void setKiller(bool isKiller) override;
+  Scenario & setKiller(bool isKiller) override;
   
   const shared_ptr<TimeNode> & getStartNode() const override;
   

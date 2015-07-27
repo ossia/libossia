@@ -142,9 +142,10 @@ bool JamomaScenario::isKiller() const
   return mKiller;
 }
 
-void JamomaScenario::setKiller(bool isKiller)
+Scenario & JamomaScenario::setKiller(bool isKiller)
 {
   mKiller = isKiller;
+  return *this;
 }
 
 const shared_ptr<TimeNode> & JamomaScenario::getStartNode() const

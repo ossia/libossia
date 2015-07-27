@@ -83,8 +83,9 @@ public:
   virtual bool isKiller() const = 0;
 
   /*! allow scenario to kill sub process when it ends
-   \param bool as killer status */
-  virtual void setKiller(bool) = 0;
+   \param bool as killer status 
+   \return #Scenario the scenario */
+  virtual Scenario & setKiller(bool) = 0;
 
   /*! get the node from where the scenario starts
    \return std::shared_ptr<#TimeNode> start node */

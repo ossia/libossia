@@ -51,15 +51,15 @@ public:
   
   const Value * getMin() const;
   
-  void setMin(const Value*);
+  Domain & setMin(const Value*);
   
   const Value * getMax() const;
 
-  void setMax(const Value*);
+  Domain & setMax(const Value*);
   
   vector<const Value*> getValues() const;
   
-  void setValues(vector<const Value*> values);
+  Domain & setValues(vector<const Value*> values);
   
 };
 
