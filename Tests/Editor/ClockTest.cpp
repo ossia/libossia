@@ -84,7 +84,7 @@ class ClockTest : public QObject
         // launch the clock and check running status : it have to be true after the launch
         QVERIFY(clock->getRunning() == false);
         m_clock_start_date = steady_clock::now();
-        clock->play();
+        clock->start();
         QVERIFY(clock->getRunning() == true);
 
         // wait the clock end

@@ -57,7 +57,7 @@ public:
 # pragma mark Execution
   
   /*! start the clock */
-  virtual void play() = 0;
+  virtual void start() = 0;
   
   /*! halt the clock */
   virtual void stop() = 0;

@@ -32,7 +32,7 @@ void JamomaTimeEvent::happen()
   
   for (auto& timeConstraint : nextTimeConstraints())
   {
-    timeConstraint->play();
+    timeConstraint->start();
   }
   
   (mCallback)(mStatus);

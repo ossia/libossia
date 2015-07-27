@@ -87,7 +87,7 @@ private Q_SLOTS:
         m_address_values.clear();
 
         constraint->setGranularity(10.);
-        constraint->play();
+        constraint->start();
 
         while (constraint->getRunning())
             ;

@@ -237,7 +237,7 @@ void local_play_callback(const Value * v)
     {
         Bool * b = (Bool*)v;
         if (b->value)
-            main_constraint->play();
+            main_constraint->start();
         else
             main_constraint->stop();
     }

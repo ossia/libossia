@@ -101,7 +101,7 @@ int main()
     constraint->addTimeProcess(automation);
     
     // go !
-    constraint->play();
+    constraint->start();
     
     // wait the TimeConstraint ends
     while (constraint->getRunning())

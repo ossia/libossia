@@ -52,7 +52,7 @@ JamomaClock::~JamomaClock()
 # pragma mark -
 # pragma mark Execution
 
-void JamomaClock::play()
+void JamomaClock::start()
 {
   if (mDuration <= mOffset)
     return stop();
