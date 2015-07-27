@@ -199,8 +199,9 @@ int main()
      */
     
     // display TimeNode's date
-    cout << "first_start_node date = " << scenario_start_node->getDate() << "\n";
-    cout << "first_end_node date = " << first_end_node->getDate() << "\n";
+    cout << "first_start_node date = " << scenario_start_node->getDate() << endl;
+    cout << "first_end_node date = " << first_end_node->getDate() << endl;
+    cout << "second_end_node date = " << second_end_node->getDate() << endl;
     
     // change main TimeConstraint speed, granularity and offset
     main_constraint->setSpeed(1.);
