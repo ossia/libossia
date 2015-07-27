@@ -53,6 +53,12 @@ public:
 # pragma mark -
 # pragma mark Execution
   
+  /*! get a #Message for a position or a date
+   \param const #TimeValue position
+   \param const #TimeValue date
+   \return std::shared_ptr<#StateElement> */
+  virtual std::shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) = 0;
+  
   /*! \todo record */
   
 # pragma mark -

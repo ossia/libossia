@@ -4,7 +4,7 @@
 
 using namespace OSSIA;
 
-void constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<State> state)
+void constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<StateElement> element)
 {
     ;
 }

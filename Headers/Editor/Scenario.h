@@ -50,6 +50,12 @@ public:
 # pragma mark -
 # pragma mark Execution
   
+  /*! get a #State as a flatten set of Messages with no Address redundancy for a position or a date
+   \param const #TimeValue position
+   \param const #TimeValue date
+   \return std::shared_ptr<#StateElement> */
+  virtual std::shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) = 0;
+  
 # pragma mark -
 # pragma mark Edition
 

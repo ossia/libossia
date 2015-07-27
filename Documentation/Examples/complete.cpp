@@ -39,7 +39,7 @@ using namespace std;
 void explore(const shared_ptr<Node> node);
 void printValue(const Value * v);
 void printValueCallback(const Value * v);
-void constraintCallback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
+void constraintCallback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element);
 void eventCallback(TimeEvent::Status newStatus);
 
 int main()
@@ -178,13 +178,13 @@ void printValue(const Value * v)
 void printValueCallback(const Value * v)
 {
     printValue(v);
-    cout << "\n";
+    cout << endl;
 }
 
-void constraintCallback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
+void constraintCallback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
 {
     cout << "Constraint : " << double(position) << ", " << double(date) << "\n";
-    state->launch();
+    element->launch();
 }
 
 void eventCallback(TimeEvent::Status newStatus)

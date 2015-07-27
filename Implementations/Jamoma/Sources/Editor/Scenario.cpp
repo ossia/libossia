@@ -24,6 +24,8 @@ mInitialized(false)
   // create the start and the end TimeNodes
   mTimeNodes.push_back(TimeNode::create());
   mTimeNodes.push_back(TimeNode::create());
+  
+  mCurrentState = State::create();
 }
 
 JamomaScenario::JamomaScenario(const JamomaScenario * other) :
@@ -41,7 +43,7 @@ JamomaScenario::~JamomaScenario()
 # pragma mark -
 # pragma mark Execution
 
-shared_ptr<State> JamomaScenario::state(const TimeValue& position, const TimeValue& date)
+shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const TimeValue& date)
 {
   if (position != mLastPosition)
   {
@@ -71,7 +73,7 @@ shared_ptr<State> JamomaScenario::state(const TimeValue& position, const TimeVal
     {
       if (timeConstraint->getRunning())
       {
-        flattenAndFilterState(timeConstraint->state(timeConstraint->getPosition(), timeConstraint->getDate()));
+        flattenAndFilter(timeConstraint->state(timeConstraint->getPosition(), timeConstraint->getDate()));
       }
     }
     
@@ -201,44 +203,46 @@ void JamomaScenario::init(const TimeValue& position, const TimeValue& date)
   mInitialized = true;
 }
 
-void JamomaScenario::flattenAndFilterState(const shared_ptr<State> stateToFlatten)
+void JamomaScenario::flattenAndFilter(const shared_ptr<StateElement> element)
 {
-  for (const auto& element : stateToFlatten->stateElements())
+  switch (element->getType())
   {
-    switch (element->getType())
+    case StateElement::Type::MESSAGE :
     {
-      case StateElement::Type::MESSAGE :
+      shared_ptr<Message> messageToAppend = dynamic_pointer_cast<Message>(element);
+      
+      // find message with the same address to replace it
+      bool found = false;
+      for (auto it = mCurrentState->stateElements().begin();
+           it != mCurrentState->stateElements().end();
+           it++)
       {
-        shared_ptr<Message> messageToAppend = dynamic_pointer_cast<Message>(element);
+        shared_ptr<Message> messageToCheck = dynamic_pointer_cast<Message>(*it);
         
-        // find message with the same address to replace it
-        bool found = false;
-        for (auto it = mCurrentState->stateElements().begin();
-             it != mCurrentState->stateElements().end();
-             it++)
+        // replace if addresses are the same
+        if (messageToCheck->getAddress() == messageToAppend->getAddress())
         {
-          shared_ptr<Message> messageToCheck = dynamic_pointer_cast<Message>(*it);
-          
-          // replace if addresses are the same
-          if (messageToCheck->getAddress() == messageToAppend->getAddress())
-          {
-            *it = element;
-            found = true;
-            break;
-          }
+          *it = element;
+          found = true;
+          break;
         }
-        
-        // if not found append it
-        if (!found)
-          mCurrentState->stateElements().push_back(element);
-        
-        break;
       }
-      case StateElement::Type::STATE :
+      
+      // if not found append it
+      if (!found)
+        mCurrentState->stateElements().push_back(element);
+      
+      break;
+    }
+    case StateElement::Type::STATE :
+    {
+      shared_ptr<State> stateToAppend = dynamic_pointer_cast<State>(element);
+      
+      for (const auto& e : stateToAppend->stateElements())
       {
-        flattenAndFilterState(dynamic_pointer_cast<State>(element));
-        break;
+        flattenAndFilter(e);
       }
+      break;
     }
   }
 }

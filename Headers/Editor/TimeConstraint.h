@@ -28,7 +28,7 @@
 namespace OSSIA
 {
 
-class State;
+class StateElement;
 class TimeEvent;
 class TimeProcess;
 class TimeValue;
@@ -41,8 +41,8 @@ public:
   /*! to get the constraint execution back
    \param const #TimeValue process clock position
    \param const #TimeValue process clock date
-   \param std::shared_ptr<#State> */
-  using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, std::shared_ptr<State>)>;
+   \param std::shared_ptr<#StateElement> */
+  using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, std::shared_ptr<StateElement>)>;
   
 # pragma mark -
 # pragma mark Life cycle
@@ -74,10 +74,11 @@ public:
 # pragma mark Execution
   
   /*! get the #State of the constraint for a position or a date
+   \details the returned #State is made of as many as sub States for each TimeProcess the constraint manages
    \param const #TimeValue position
    \param const #TimeValue date
-   \return std::shared_ptr<#State> */
-  virtual std::shared_ptr<State> state(const TimeValue&, const TimeValue&) = 0;
+   \return std::shared_ptr<#StateElement> */
+  virtual std::shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) = 0;
 
 # pragma mark -
 # pragma mark Accessors

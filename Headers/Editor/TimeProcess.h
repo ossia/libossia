@@ -40,11 +40,11 @@ public:
 # pragma mark -
 # pragma mark Execution
   
-  /*! get the #State of the process for a position or a date
+  /*! get a #StateElement of the process for a position or a date
    \param const #TimeValue position
    \param const #TimeValue date
-   \return std::shared_ptr<#State> */
-  virtual std::shared_ptr<State> state(const TimeValue&, const TimeValue&) = 0;
+   \return std::shared_ptr<#StateElement> */
+  virtual std::shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) = 0;
   
 # pragma mark -
 # pragma mark Accessors

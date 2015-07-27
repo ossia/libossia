@@ -38,9 +38,9 @@ using namespace std;
 void local_play_callback(const Value * v);
 void local_test_callback(const Value * v);
 
-void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
-void first_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
-void second_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
+void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element);
+void first_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element);
+void second_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element);
 void event_callback(TimeEvent::Status newStatus);
 
 shared_ptr<TimeConstraint> main_constraint;
@@ -256,24 +256,24 @@ void local_test_callback(const Value * v)
     cout << endl;
 }
 
-void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
+void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
 {
     cout << "Main Constraint : " << double(position) << ", " << double(date) << endl;
-    state->launch();
+    element->launch();
 }
 
-void first_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
+void first_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
 {
     cout << "First Constraint : " << double(position) << ", " << double(date) << endl;
     
-    // don't launch state here as the state produced by the first TimeConstraint is handled by the main TimeConstraint
+    // don't launch element here as the element produced by the first TimeConstraint is handled by the main TimeConstraint
 }
 
-void second_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
+void second_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
 {
     cout << "Second Constraint : " << double(position) << ", " << double(date) << endl;
 
-    // don't launch state here as the state produced by the second TimeConstraint is handled by the main TimeConstraint
+    // don't launch element here as the element produced by the second TimeConstraint is handled by the main TimeConstraint
 }
 
 void event_callback(TimeEvent::Status newStatus)

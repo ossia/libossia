@@ -45,6 +45,7 @@ private:
   
   bool                        mKiller;
   
+  shared_ptr<State>           mCurrentState;      // an internal State to return on state call
   bool                        mInitialized;
   
 public:
@@ -64,7 +65,7 @@ public:
 # pragma mark -
 # pragma mark Execution
   
-  shared_ptr<State> state(const TimeValue&, const TimeValue&) override;
+  shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) override;
   
 # pragma mark -
 # pragma mark Edition
@@ -97,5 +98,5 @@ private:
   void init(const TimeValue&, const TimeValue&);
   
   /*! append each message of the state to the current state in order to eliminate address redundancy */
-  void flattenAndFilterState(const shared_ptr<State>);
+  void flattenAndFilter(const shared_ptr<StateElement>);
 };

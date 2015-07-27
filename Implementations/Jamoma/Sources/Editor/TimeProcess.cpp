@@ -11,7 +11,7 @@ JamomaTimeProcess::JamomaTimeProcess(shared_ptr<State> startState,
 mStartState(startState),
 mEndState(endState)
 {
-  mCurrentState = State::create();
+  ;
 }
 
 # pragma mark -

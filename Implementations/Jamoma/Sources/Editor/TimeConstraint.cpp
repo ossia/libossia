@@ -73,7 +73,7 @@ JamomaTimeConstraint::~JamomaTimeConstraint()
 # pragma mark -
 # pragma mark Execution
 
-shared_ptr<State> JamomaTimeConstraint::state(const TimeValue& position, const TimeValue& date)
+shared_ptr<StateElement> JamomaTimeConstraint::state(const TimeValue& position, const TimeValue& date)
 {
   // clear internal State, Message and Value
   mCurrentState->stateElements().clear();
