@@ -112,11 +112,8 @@ void JamomaTimeEvent::process()
   {
     case TimeEvent::Status::NONE:
     {
-      // nothing to do
-      
-      //! \debug
-      cout << "TimeEvent::process() : NONE => do nothing" << endl;
-      
+      // error
+      throw runtime_error("NONE status event shouldn't be processed");
       break;
     }
     case TimeEvent::Status::PENDING:
@@ -125,7 +122,15 @@ void JamomaTimeEvent::process()
       // else make the event happen
       
       //! \debug
-      cout << "TimeEvent::process() : PENDING => evaluate expression if exist else happen" << endl;
+      if (mExpression)
+      {
+        if (mExpression->evaluate())
+          cout << "TimeEvent::process() : PENDING => expression returns TRUE => happen" << endl;
+        else
+          cout << "TimeEvent::process() : PENDING => expression returns FALSE => dispose" << endl;
+      }
+      else
+        cout << "TimeEvent::process() : PENDING => no expression => happen" << endl;
       
       mExpression != nullptr ? mExpression->evaluate() ? happen() : dispose() : happen();
       break;
@@ -149,7 +154,7 @@ void JamomaTimeEvent::process()
       // nothing to do
       
       //! \debug
-      cout << "TimeEvent::process() : DISPOSED => do nothing" << endl;
+      //cout << "TimeEvent::process() : DISPOSED => do nothing" << endl;
       
       break;
     }
