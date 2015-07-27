@@ -96,6 +96,11 @@ public:
   \return std::shared_ptr<#Expression> */
   virtual const std::shared_ptr<Expression> & getExpression() const = 0;
   
+  /*! get the expression of the event
+   \param std::shared_ptr<#Expression> 
+   \return #TimeEvent the event */
+  virtual TimeEvent & setExpression(const std::shared_ptr<Expression>) = 0;
+  
   /*! get the status of the event
    \return #Status */
   virtual Status getStatus() const = 0;

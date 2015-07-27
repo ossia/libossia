@@ -92,6 +92,12 @@ const shared_ptr<Expression> & JamomaTimeEvent::getExpression() const
   return mExpression;
 }
 
+TimeEvent & JamomaTimeEvent::setExpression(const std::shared_ptr<Expression> expression)
+{
+  mExpression = expression;
+  return *this;
+}
+
 TimeEvent::Status JamomaTimeEvent::getStatus() const
 {
   return mStatus;

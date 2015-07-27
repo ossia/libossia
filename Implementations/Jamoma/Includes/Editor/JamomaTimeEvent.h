@@ -75,6 +75,8 @@ public:
   
   const shared_ptr<Expression> & getExpression() const override;
   
+  TimeEvent & setExpression(const std::shared_ptr<Expression>) override;
+  
   Status getStatus() const override;
   
 # pragma mark -
