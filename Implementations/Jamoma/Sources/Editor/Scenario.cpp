@@ -45,15 +45,17 @@ JamomaScenario::~JamomaScenario()
 
 shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const TimeValue& date)
 {
-  if (position != mLastPosition)
+  // if the time goes backward or the sceanrio has not been initialized
+  if (position < mLastPosition || !mInitialized)
+  {
+    init(position, date);
+    
+    mLastPosition = position;
+  }
+  else if (position != mLastPosition)
   {
     // reset internal State
     mCurrentState->stateElements().clear();
-    
-    // initialize once
-    //! \todo when should we turn mInitialized to false again ?
-    if (!mInitialized)
-      init(position, date);
     
     // process the scenario from the first node until running constraints
     shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(mTimeNodes[0]);
@@ -160,6 +162,9 @@ const shared_ptr<TimeNode> & JamomaScenario::getEndNode() const
 
 void JamomaScenario::init(const TimeValue& position, const TimeValue& date)
 {
+  // reset internal State
+  mCurrentState->stateElements().clear();
+  
   // reset TimeEvent's status to NONE status
   // but set the first TimeNode TimeEvent's status to WAITING status
   for (const auto& timeNode : mTimeNodes)
