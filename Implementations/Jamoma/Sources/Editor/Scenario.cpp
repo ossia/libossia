@@ -92,8 +92,8 @@ void JamomaScenario::addTimeConstraint(const shared_ptr<TimeConstraint> timeCons
 {
   // store the TimeConstraint if it is not already stored
   if (std::find(mTimeContraints.begin(),
-           mTimeContraints.end(),
-           timeConstraint) == mTimeContraints.end())
+                mTimeContraints.end(),
+                timeConstraint) == mTimeContraints.end())
   {
     mTimeContraints.push_back(timeConstraint);
   }
@@ -155,6 +155,19 @@ const shared_ptr<TimeNode> & JamomaScenario::getStartNode() const
 const shared_ptr<TimeNode> & JamomaScenario::getEndNode() const
 {
   return mTimeNodes[1];
+}
+
+# pragma mark -
+# pragma mark TimeNodes and TimeConstraints
+
+const Container<TimeNode>& JamomaScenario::timeNodes() const
+{
+  return mTimeNodes;
+}
+
+const Container<TimeConstraint>& JamomaScenario::timeConstraints() const
+{
+  return mTimeContraints;
 }
 
 # pragma mark -

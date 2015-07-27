@@ -89,6 +89,13 @@ public:
   
   const shared_ptr<TimeNode> & getEndNode() const override;
   
+# pragma mark -
+# pragma mark TimeNodes and TimeConstraints
+  
+  const Container<TimeNode>& timeNodes() const override;
+  
+  const Container<TimeConstraint>& timeConstraints() const override;
+  
 private:
   
 # pragma mark -

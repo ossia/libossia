@@ -63,7 +63,7 @@ public:
    \param std::shared_ptr<#TimeConstraint> to add */
   virtual void addTimeConstraint(const std::shared_ptr<TimeConstraint>) = 0;
 
-  /*! remove a #TimeConstraint from the scenario
+  /*! remove a #TimeConstraint from the scenario without removing any #TimeNode
    \param std::shared_ptr<#TimeConstraint> to remove */
   virtual void removeTimeConstraint(const std::shared_ptr<TimeConstraint>) = 0;
   
@@ -93,6 +93,17 @@ public:
   /*! get the node where the scenario ends
    \return std::shared_ptr<#TimeNode> end node */
   virtual const std::shared_ptr<TimeNode> & getEndNode() const = 0;
+  
+# pragma mark -
+# pragma mark TimeNodes and TimeConstraints
+  
+  /*! get all TimeNodes of the scenario
+   \return #Container<#TimeNode> */
+  virtual const Container<TimeNode>& timeNodes() const = 0;
+  
+  /*! get all TimeConstraints of the scenario
+   \return #Container<#TimeConstraint> */
+  virtual const Container<TimeConstraint>& timeConstraints() const = 0;
 };
 
 }

@@ -36,34 +36,39 @@ private Q_SLOTS:
         
         scenario->setKiller(true);
         QVERIFY(scenario->isKiller() == true);
+
+        QVERIFY(scenario->timeNodes().size() == 2);
+        QVERIFY(scenario->timeConstraints().size() == 0);
     }
     
     /*! test edition functions */
     void test_edition()
     {
         auto scenario = Scenario::create();
-        
+
         auto start_node = scenario->getStartNode();
         auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), &event_callback));
-        
+
         auto end_node = TimeNode::create();
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback));
-        
+
         auto constraint = TimeConstraint::create(&constraint_callback, start_event, end_event, 1000.);
-        
-        //! \todo how to verify something here ?
+
         scenario->addTimeConstraint(constraint);
-        
-        //! \todo how to verify something here ?
+        QVERIFY(scenario->timeConstraints().size() == 1);
+        QVERIFY(scenario->timeNodes().size() == 3);
+
         scenario->removeTimeConstraint(constraint);
+        QVERIFY(scenario->timeConstraints().size() == 0);
+        QVERIFY(scenario->timeNodes().size() == 3);
 
         auto lonely_node = TimeNode::create();
-        
-        //! \todo how to verify something here ?
+
         scenario->addTimeNode(lonely_node);
-        
-        //! \todo how to verify something here ?
+        QVERIFY(scenario->timeNodes().size() == 4);
+
         scenario->removeTimeNode(lonely_node);
+        QVERIFY(scenario->timeNodes().size() == 3);
 
         //! \todo how to verify something here ?
         auto scenario_copy = scenario->clone();
