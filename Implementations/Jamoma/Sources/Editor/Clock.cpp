@@ -70,9 +70,6 @@ void JamomaClock::play()
   mLastTime = steady_clock::now();
   mElapsedTime = std::floor(mOffset / mGranularity) * mGranularity * 1000;
   
-  //! \todo notify each observers
-  // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
-  
   if (!mExternal)
   {
     if (mThread.joinable())
@@ -93,9 +90,6 @@ void JamomaClock::stop()
     if (mThread.joinable())
       mThread.join();
   }
-  
-  //! \todo notify each observers
-  // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
 }
 
 void JamomaClock::pause()

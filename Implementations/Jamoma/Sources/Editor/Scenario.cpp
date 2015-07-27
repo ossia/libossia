@@ -177,7 +177,7 @@ void JamomaScenario::init(const TimeValue& position, const TimeValue& date)
   }
   
 /*
-  // reset TimeConstraint's status and setup the clock
+  //! \todo reset TimeConstraint's status and setup the clock
   for (const auto& timeConstraint : mTimeContraints)
   {
     TimeEvent::Status startStatus = timeConstraint->getStartEvent()->getStatus();
@@ -186,23 +186,19 @@ void JamomaScenario::init(const TimeValue& position, const TimeValue& date)
     if (startStatus == TimeEvent::Status::WAITING &&
         endStatus == TimeEvent::Status::WAITING)
     {
-      //! \todo set the TimeConstraint's status to WAITING ?
+      ;
     }
     else if (startStatus == TimeEvent::Status::HAPPENED &&
         endStatus == TimeEvent::Status::WAITING)
     {
       TimeValue offset = date - timeConstraint->getStartEvent()->getTimeNode()->getDate();
       timeConstraint->setOffset(offset);
-      
-      //! \todo set the TimeConstraint's status to STARTED ?
     }
     else if (startStatus == TimeEvent::Status::HAPPENED &&
              endStatus == TimeEvent::Status::HAPPENED)
     {
-      //! \todo set the TimeConstraint's status to ENDED ?
+      ;
     }
-    
-    //! \todo what about DISPOSED status ?
   }
 */
   mInitialized = true;
