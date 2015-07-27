@@ -45,7 +45,6 @@ private:
   shared_ptr<TimeEvent>               mStartEvent;
   shared_ptr<TimeEvent>               mEndEvent;
   
-  TimeValue                           mDuration;
   TimeValue                           mDurationMin;
   TimeValue                           mDurationMax;
   

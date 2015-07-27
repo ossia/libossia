@@ -178,7 +178,7 @@ void JamomaTimeConstraint::process()
       // do nothing and wait for the clock end
       
       //! \debug
-      cout << "TimeConstraint::process() : duration are equals => do nothing" << endl;
+      //cout << "TimeConstraint::process() : duration are equals => do nothing" << endl;
       
       return;
     }
