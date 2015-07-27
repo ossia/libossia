@@ -236,7 +236,7 @@ void JamomaScenario::flattenAndFilterState(const shared_ptr<State> stateToFlatte
       }
       case StateElement::Type::STATE :
       {
-        flattenState(dynamic_pointer_cast<State>(element));
+        flattenAndFilterState(dynamic_pointer_cast<State>(element));
         break;
       }
     }
