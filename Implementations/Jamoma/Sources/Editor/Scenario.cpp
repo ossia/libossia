@@ -104,7 +104,7 @@ void JamomaScenario::addTimeConstraint(const shared_ptr<TimeConstraint> timeCons
   // store TimeConstraint's end node if it is not already stored
   addTimeNode(timeConstraint->getEndEvent()->getTimeNode());
   
-  // set the TimeConstraint's clock in external mode
+  // set TimeConstraint's clock in external mode
   shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint);
   clock->setExternal(true);
 }
