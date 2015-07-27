@@ -221,6 +221,14 @@ int main()
     // wait the main TimeConstraint end
     while (main_constraint->getRunning())
         ;
+    
+    // play it again faster
+    main_constraint->setSpeed(2.);
+    local_play_address->sendValue(&True);
+    
+    // wait the main TimeConstraint end
+    while (main_constraint->getRunning())
+        ;
 }
 
 void local_play_callback(const Value * v)
