@@ -37,6 +37,9 @@ private Q_SLOTS:
 
         QVERIFY(event_with_expression->getExpression() == ExpressionTrue);
 
+        event_with_expression->setExpression(ExpressionFalse);
+        QVERIFY(event_with_expression->getExpression() == ExpressionFalse);
+
         //! \todo test clone()
     }
     
