@@ -42,16 +42,21 @@ JamomaAutomation::~JamomaAutomation()
 
 shared_ptr<State> JamomaAutomation::state(const TimeValue& position, const TimeValue& date)
 {
-  // clear internal State, Message and Value
-  mCurrentState->stateElements().clear();
-  if (mValueToSend) delete mValueToSend;
-  
-  // compute a new value from the Curves
-  mValueToSend = computeValueAtPosition(mDrive, position);
-  
-  // fill internal State with a Message handling the Value
-  mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
-  mCurrentState->stateElements().push_back(mMessageToSend);
+  if (position != mLastPosition)
+  {
+    // clear internal State, Message and Value
+    mCurrentState->stateElements().clear();
+    if (mValueToSend) delete mValueToSend;
+    
+    // compute a new value from the Curves
+    mValueToSend = computeValueAtPosition(mDrive, position);
+    
+    // fill internal State with a Message handling the Value
+    mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
+    mCurrentState->stateElements().push_back(mMessageToSend);
+
+    mLastPosition = position;
+  }
   
   return mCurrentState;
 }

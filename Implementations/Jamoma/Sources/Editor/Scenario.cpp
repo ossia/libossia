@@ -43,32 +43,39 @@ JamomaScenario::~JamomaScenario()
 
 shared_ptr<State> JamomaScenario::state(const TimeValue& position, const TimeValue& date)
 {
-  // reset internal State
-  mCurrentState->stateElements().clear();
-  
-  if (!mInitialized)
-    init(position, date);
-  
-  // process the scenario from the beginning
-  shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(mTimeNodes[0]);
-  n->process();
-  
-  // get the state of newly HAPPENED TimeEvents
-  for (const auto& timeNode : mTimeNodes)
+  if (position != mLastPosition)
   {
-    for (const auto& timeEvent : timeNode->timeEvents())
+    // reset internal State
+    mCurrentState->stateElements().clear();
+    
+    // initialize once
+    //! \todo when should we turn mInitialized to false again ?
+    if (!mInitialized)
+      init(position, date);
+    
+    // process the scenario from the first node until running constraints
+    shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(mTimeNodes[0]);
+    n->process();
+    
+    //! \todo get the state of newly HAPPENED TimeEvents
+    for (const auto& timeNode : mTimeNodes)
     {
-      ;//! \todo how to know that an event is newly HAPPENED ?
+      for (const auto& timeEvent : timeNode->timeEvents())
+      {
+        ;//! \todo how to know that an event is newly HAPPENED ?
+      }
     }
-  }
-  
-  // get the state of each running TimeConstraint
-  for (const auto& timeConstraint : mTimeContraints)
-  {
-    if (timeConstraint->getRunning())
+    
+    // get the state of each running TimeConstraint
+    for (const auto& timeConstraint : mTimeContraints)
     {
-      mCurrentState->stateElements().push_back(timeConstraint->state(timeConstraint->getPosition(), timeConstraint->getDate()));
+      if (timeConstraint->getRunning())
+      {
+        flattenAndFilterState(timeConstraint->state(timeConstraint->getPosition(), timeConstraint->getDate()));
+      }
     }
+    
+    mLastPosition = position;
   }
   
   return mCurrentState;
@@ -194,7 +201,7 @@ void JamomaScenario::init(const TimeValue& position, const TimeValue& date)
   mInitialized = true;
 }
 
-void JamomaScenario::flattenState(const shared_ptr<State> stateToFlatten)
+void JamomaScenario::flattenAndFilterState(const shared_ptr<State> stateToFlatten)
 {
   for (const auto& element : stateToFlatten->stateElements())
   {
@@ -204,7 +211,8 @@ void JamomaScenario::flattenState(const shared_ptr<State> stateToFlatten)
       {
         shared_ptr<Message> messageToAppend = dynamic_pointer_cast<Message>(element);
         
-        // find message with the same address
+        // find message with the same address to replace it
+        bool found = false;
         for (auto it = mCurrentState->stateElements().begin();
              it != mCurrentState->stateElements().end();
              it++)
@@ -215,9 +223,14 @@ void JamomaScenario::flattenState(const shared_ptr<State> stateToFlatten)
           if (messageToCheck->getAddress() == messageToAppend->getAddress())
           {
             *it = element;
+            found = true;
             break;
           }
         }
+        
+        // if not found append it
+        if (!found)
+          mCurrentState->stateElements().push_back(element);
         
         break;
       }

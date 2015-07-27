@@ -114,37 +114,11 @@ bool JamomaClock::tick()
     return false;
   
   long long granularityInUs(mGranularity * 1000);
+  int droppedTicks = 0;
   
   // how many time since the last tick ?
   long long deltaInUs = duration_cast<microseconds>(steady_clock::now() - mLastTime).count();
   
-  // how much ticks it represents ?
-  int droppedTicks = std::floor(deltaInUs / granularityInUs);
-  
-  // adjust date and elapsed time considering the dropped ticks
-  if (droppedTicks)
-  {
-    mDate += droppedTicks * mGranularity * mSpeed;
-    mElapsedTime += droppedTicks * granularityInUs;
-    
-    //! \debug cout << "+ " << droppedTicks * mGranularity * mSpeed << endl;
-
-    // maybe the clock reaches the end ?
-    if (mDuration - mDate < Zero && !mDuration.isInfinite())
-    {
-      mPosition = mDate / mDuration;
-      
-      // notify the owner in none external mode
-      if (!mExternal)
-        (mCallback)(mPosition, mDate, droppedTicks);
-
-      mRunning = false;
-      mPaused = false;
-
-      return true;
-    }
-  }
-
   if (mExternal)
   {
     // if too early: avoid this tick
@@ -153,6 +127,32 @@ bool JamomaClock::tick()
   }
   else
   {
+    // how much ticks it represents ?
+    droppedTicks = std::floor(deltaInUs / granularityInUs);
+    
+    // adjust date and elapsed time considering the dropped ticks
+    if (droppedTicks)
+    {
+      mDate += droppedTicks * mGranularity * mSpeed;
+      mElapsedTime += droppedTicks * granularityInUs;
+      
+      //! \debug cout << "+ " << droppedTicks * mGranularity * mSpeed << endl;
+      
+      // maybe the clock reaches the end ?
+      if (mDuration - mDate < Zero && !mDuration.isInfinite())
+      {
+        mPosition = mDate / mDuration;
+        
+        // notify the owner in none external mode
+        (mCallback)(mPosition, mDate, droppedTicks);
+        
+        mRunning = false;
+        mPaused = false;
+        
+        return true;
+      }
+    }
+    
     // how many time to pause to reach the next tick ?
     long long pauseInUs = granularityInUs - mElapsedTime % granularityInUs;
 
@@ -182,8 +182,7 @@ bool JamomaClock::tick()
     mPosition = mDate / mDuration;
     
     // notify the owner in none external mode
-    if (!mExternal)
-      (mCallback)(mPosition, mDate, droppedTicks);
+    (mCallback)(mPosition, mDate, droppedTicks);
     
     // is this the end
     if (mDuration - mDate < Zero && !mDuration.isInfinite())

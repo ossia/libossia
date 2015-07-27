@@ -33,6 +33,8 @@ protected:
   shared_ptr<State>               mStartState;
   shared_ptr<State>               mEndState;
   shared_ptr<State>               mCurrentState;  // an internal State to return on state call
+  
+  TimeValue                       mLastPosition;  // used to filter multiple state calls at the same time
 
 public:
   

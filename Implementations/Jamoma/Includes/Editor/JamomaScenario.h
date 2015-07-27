@@ -97,5 +97,5 @@ private:
   void init(const TimeValue&, const TimeValue&);
   
   /*! append each message of the state to the current state in order to eliminate address redundancy */
-  void flattenState(const shared_ptr<State>);
+  void flattenAndFilterState(const shared_ptr<State>);
 };
