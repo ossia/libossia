@@ -71,7 +71,7 @@ JamomaTimeNode::iterator JamomaTimeNode::emplace(const_iterator pos,
   return timeEvents().insert(pos, make_shared<JamomaTimeEvent>(callback, shared_from_this(), expression));
 }
 
-void JamomaTimeNode::process()
+void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
 {
   //! \debug
   //cout << "TimeNode::process() : check all events have a status" << endl;
@@ -90,6 +90,6 @@ void JamomaTimeNode::process()
   for (auto& timeEvent : timeEvents())
   {
     shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
-    e->process();
+    e->process(statusChangedEvents);
   }
 }

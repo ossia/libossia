@@ -69,6 +69,6 @@ public:
 # pragma mark -
 # pragma mark Implementation specific
   
-  void process();
+  void process(Container<TimeEvent>& statusChangedEvents);
 
 };

@@ -106,22 +106,23 @@ TimeEvent::Status JamomaTimeEvent::getStatus() const
 # pragma mark -
 # pragma mark Implementation specific
 
-void JamomaTimeEvent::process()
+void JamomaTimeEvent::process(Container<TimeEvent>& statusChangedEvents)
 {
+  TimeEvent::Status lastStatus = mStatus;
+  
   switch (mStatus)
   {
     case TimeEvent::Status::NONE:
     {
       // error
       throw runtime_error("NONE status event shouldn't be processed");
-      break;
     }
     case TimeEvent::Status::PENDING:
     {
       // if the event has an expression: evaluate its expression to make it happen or to dispose it
       // else make the event happen
       
-      //! \debug
+      /* \debug
       if (mExpression)
       {
         if (mExpression->evaluate())
@@ -131,6 +132,7 @@ void JamomaTimeEvent::process()
       }
       else
         cout << "TimeEvent::process() : PENDING => no expression => happen" << endl;
+      */
       
       mExpression != nullptr ? mExpression->evaluate() ? happen() : dispose() : happen();
       break;
@@ -145,7 +147,7 @@ void JamomaTimeEvent::process()
       for (auto& timeConstraint : nextTimeConstraints())
       {
         shared_ptr<JamomaTimeConstraint> c = dynamic_pointer_cast<JamomaTimeConstraint>(timeConstraint);
-        c->process();
+        c->process(statusChangedEvents);
       }
       break;
     }
@@ -159,6 +161,10 @@ void JamomaTimeEvent::process()
       break;
     }
   }
+  
+  // is the event status changed ?
+  if (mStatus != lastStatus)
+    statusChangedEvents.push_back(shared_from_this());
 }
 
 void JamomaTimeEvent::setStatus(Status status)

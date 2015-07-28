@@ -18,8 +18,7 @@ namespace OSSIA
 JamomaScenario::JamomaScenario(shared_ptr<State> startState,
                                shared_ptr<State> endState) :
 JamomaTimeProcess(startState, endState),
-mKiller(false),
-mInitialized(false)
+mKiller(false)
 {
   // create the start and the end TimeNodes
   mTimeNodes.push_back(TimeNode::create());
@@ -45,32 +44,92 @@ JamomaScenario::~JamomaScenario()
 
 shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const TimeValue& date)
 {
-  // if the time goes backward or the sceanrio has not been initialized
-  if (position < mLastPosition || !mInitialized)
+  // if the time goes backward : initialize TimeEvent's status and TimeConstraint's clock
+  if (position < mLastPosition)
   {
-    init(position, date);
+    // set TimeEvent's status depending on their TimeNode's absolute date
+    for (const auto& timeNode : mTimeNodes)
+    {
+      TimeValue date = timeNode->getDate();
+      TimeEvent::Status status = date <= position ? TimeEvent::Status::HAPPENED : TimeEvent::Status::NONE;
+      
+      //! \note maybe we should initialized TimeEvents with an Expression returning false to DISPOSED status ?
+      
+      for (auto& timeEvent : timeNode->timeEvents())
+      {
+        shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
+        e->setStatus(status);
+        
+        // add the state of each HAPPENED TimeEvent
+        if (status == TimeEvent::Status::HAPPENED)
+        {
+          flattenAndFilter(timeEvent->getState());
+        }
+      }
+    }
     
-    mLastPosition = position;
+    // TimeConstraint's TimeEvent's status and setup the clock
+    for (const auto& timeConstraint : mTimeContraints)
+    {
+      TimeEvent::Status startStatus = timeConstraint->getStartEvent()->getStatus();
+      TimeEvent::Status endStatus = timeConstraint->getEndEvent()->getStatus();
+      
+      // the constraint is in the past
+      if (startStatus == TimeEvent::Status::HAPPENED &&
+          endStatus == TimeEvent::Status::HAPPENED)
+      {}
+      // the constraint is running
+      else if (startStatus == TimeEvent::Status::HAPPENED &&
+               endStatus == TimeEvent::Status::NONE)
+      {
+        TimeValue startDate = timeConstraint->getStartEvent()->getTimeNode()->getDate();
+        TimeValue endDate = timeConstraint->getEndEvent()->getTimeNode()->getDate();
+        
+        // set clock offset
+        TimeValue offset = date - startDate;
+        timeConstraint->setOffset(offset);
+        
+        // set end TimeEvent status depending on duration min and max
+        //! \note this test have to be made according tests made into JamomaTimeConstraint::process
+        if (endDate > timeConstraint->getDurationMin() &&
+            endDate <= timeConstraint->getDurationMax())
+        {
+          shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeConstraint->getEndEvent());
+          e->setStatus(TimeEvent::Status::PENDING);
+        }
+        
+        // launch the clock
+        timeConstraint->start();
+      }
+      // the constraint is in the future
+      else if (startStatus == TimeEvent::Status::NONE &&
+               endStatus == TimeEvent::Status::NONE)
+      {}
+      // error
+      else
+        throw runtime_error("TimeEvent's status configuration of a TimeConstraint is not handled at initialization");
+    }
   }
-  else if (position != mLastPosition)
+  
+  // if position hasn't been processed already
+  if (position != mLastPosition)
   {
     // reset internal State
     mCurrentState->stateElements().clear();
     
-    // process the scenario from the first node until running constraints
+    // process the scenario from the first TimeNode until running constraints
+    Container<TimeEvent> statusChangedEvents;
     shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(mTimeNodes[0]);
-    n->process();
+    n->process(statusChangedEvents);
     
-    //! \todo get the state of newly HAPPENED TimeEvents
-    for (const auto& timeNode : mTimeNodes)
+    // add the state of each newly HAPPENED TimeEvent
+    for (const auto& timeEvent : statusChangedEvents)
     {
-      for (const auto& timeEvent : timeNode->timeEvents())
-      {
-        ;//! \todo how to know that an event is newly HAPPENED ?
-      }
+      if (timeEvent->getStatus() == TimeEvent::Status::HAPPENED)
+        flattenAndFilter(timeEvent->getState());
     }
     
-    // get the state of each running TimeConstraint
+    // add the state of each running TimeConstraint
     for (const auto& timeConstraint : mTimeContraints)
     {
       if (timeConstraint->getRunning())
@@ -173,50 +232,6 @@ const Container<TimeConstraint>& JamomaScenario::timeConstraints() const
 
 # pragma mark -
 # pragma mark Implementation specific
-
-void JamomaScenario::init(const TimeValue& position, const TimeValue& date)
-{
-  // reset internal State
-  mCurrentState->stateElements().clear();
-  
-  // reset TimeEvent's status to NONE status
-  // but set the first TimeNode TimeEvent's status to WAITING status
-  for (const auto& timeNode : mTimeNodes)
-  {
-    for (auto& timeEvent : timeNode->timeEvents())
-    {
-      shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
-      e->setStatus(timeNode == mTimeNodes[0] ? TimeEvent::Status::PENDING : TimeEvent::Status::NONE);
-    }
-  }
-  
-/*
-  //! \todo reset TimeConstraint's status and setup the clock
-  for (const auto& timeConstraint : mTimeContraints)
-  {
-    TimeEvent::Status startStatus = timeConstraint->getStartEvent()->getStatus();
-    TimeEvent::Status endStatus = timeConstraint->getEndEvent()->getStatus();
-    
-    if (startStatus == TimeEvent::Status::WAITING &&
-        endStatus == TimeEvent::Status::WAITING)
-    {
-      ;
-    }
-    else if (startStatus == TimeEvent::Status::HAPPENED &&
-        endStatus == TimeEvent::Status::WAITING)
-    {
-      TimeValue offset = date - timeConstraint->getStartEvent()->getTimeNode()->getDate();
-      timeConstraint->setOffset(offset);
-    }
-    else if (startStatus == TimeEvent::Status::HAPPENED &&
-             endStatus == TimeEvent::Status::HAPPENED)
-    {
-      ;
-    }
-  }
-*/
-  mInitialized = true;
-}
 
 void JamomaScenario::flattenAndFilter(const shared_ptr<StateElement> element)
 {

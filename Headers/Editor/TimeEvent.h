@@ -61,12 +61,12 @@ public:
   using ExecutionCallback = std::function<void(Status)>;
   
   /*! make the event happen to propagate the execution to next TimeConstraints
-   \details the event have to be in WAITING or PENDING status to call this method otherwise it will raise a runtime_error
+   \details the event have to be in PENDING status to call this method otherwise it will raise a runtime_error
    \details turn the event' status into HAPPENED calling the callback to notify its owner */
   virtual void happen() = 0;
   
   /*! dispose the event to not propagate the execution to next TimeConstraints
-   \details the event have to be in WAITING or PENDING status to call this method otherwise it will raise a runtime_error
+   \details the event have to be in PENDING status to call this method otherwise it will raise a runtime_error
    \details turn the event' status into DISPOSED  calling the callback to notify its owner */
   virtual void dispose() = 0;
   

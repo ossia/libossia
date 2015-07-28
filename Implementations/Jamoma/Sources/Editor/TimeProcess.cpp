@@ -10,7 +10,7 @@ JamomaTimeProcess::JamomaTimeProcess(shared_ptr<State> startState,
                                      shared_ptr<State> endState) :
 mStartState(startState),
 mEndState(endState),
-mLastPosition(-1.)
+mLastPosition(Infinite)
 {
   ;
 }

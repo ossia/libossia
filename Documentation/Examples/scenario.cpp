@@ -219,12 +219,16 @@ int main()
     second_constraint->setSpeed(1.);
     second_constraint->setGranularity(250.);
     
+    cout << "***** START *****" << endl;
+    
     // play the main TimeConstraint
     local_play_address->sendValue(&True);
     
     // wait the main TimeConstraint end
     while (main_constraint->getRunning())
         ;
+    
+    cout << "***** END *****" << endl;
     
     // changing expression to : /i-score/test >= {0.9, 0.9, 0.9}
     Tuple threshold2(new Float(0.9), new Float(0.9), new Float(0.9));
@@ -235,13 +239,18 @@ int main()
     // set first end event expression to make it interactive
     first_end_event->setExpression(next_expression2);
     
-    // play it again faster
+    cout << "***** START *****" << endl;
+    
+    // play it again faster starting at 500 ms
     main_constraint->setSpeed(2.);
+    main_constraint->setOffset(500.);
     local_play_address->sendValue(&True);
     
     // wait the main TimeConstraint end
     while (main_constraint->getRunning())
         ;
+    
+    cout << "***** END *****" << endl;
 }
 
 void local_play_callback(const Value * v)

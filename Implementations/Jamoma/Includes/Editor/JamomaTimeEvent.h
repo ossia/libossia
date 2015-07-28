@@ -26,7 +26,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaTimeEvent : public TimeEvent
+class JamomaTimeEvent : public TimeEvent, public enable_shared_from_this<JamomaTimeEvent>
 {
   
 private:
@@ -82,7 +82,8 @@ public:
 # pragma mark -
 # pragma mark Implementation specific
   
-  void process();
+  /*! process the event to propagate execution */
+  void process(Container<TimeEvent>& statusChangedEvents);
   
   void setStatus(Status);
 };

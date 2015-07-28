@@ -160,7 +160,7 @@ void JamomaTimeConstraint::removeTimeProcess(std::shared_ptr<TimeProcess> timePr
 # pragma mark -
 # pragma mark Implementation specific
 
-void JamomaTimeConstraint::process()
+void JamomaTimeConstraint::process(Container<TimeEvent>& statusChangedEvents)
 {
   // make the time flow for external drived clock
   if (mExternal)
@@ -183,18 +183,20 @@ void JamomaTimeConstraint::process()
       return;
     }
     // else if the minimal duration is reached
+    //! \note this test have to be made according the test made into JamomaScenario::state
     else if (mDate >= mDurationMin &&
              mDate < mDurationMax &&
              mEndEvent->getStatus() == TimeEvent::Status::NONE)
     {
-      
       //! \debug
       cout << "TimeConstraint::process() : date > duration min => set PENDING" << endl;
       
       shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(mEndEvent);
       e->setStatus(TimeEvent::Status::PENDING);
+      statusChangedEvents.push_back(mEndEvent);
     }
     // else if the maximal duration is reached
+    //! \note this test have to be made according the test made into JamomaScenario::state
     else if (mDate >= mDurationMax &&
              mEndEvent->getStatus() == TimeEvent::Status::PENDING)
     {
@@ -215,15 +217,12 @@ void JamomaTimeConstraint::process()
   {
     shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(mEndEvent);
     e->setStatus(TimeEvent::Status::PENDING);
+    statusChangedEvents.push_back(mEndEvent);
   }
   
-  //! \debug
-  //cout << "TimeConstraint::process() : process node" << endl;
-  
-  // process the end event TimeNode
+  // process the end event TimeNode anyway
   shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(mEndEvent->getTimeNode());
-  n->process();
-  
+  n->process(statusChangedEvents);
 }
 
 void JamomaTimeConstraint::ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks)

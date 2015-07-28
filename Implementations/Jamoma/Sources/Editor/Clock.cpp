@@ -70,6 +70,9 @@ void JamomaClock::start()
   mLastTime = steady_clock::now();
   mElapsedTime = std::floor(mOffset / mGranularity) * mGranularity * 1000;
   
+  // notify the owner
+  (mCallback)(mPosition, mDate, 0);
+  
   if (!mExternal)
   {
     if (mThread.joinable())
@@ -137,7 +140,7 @@ bool JamomaClock::tick()
       {
         mPosition = mDate / mDuration;
         
-        // notify the owner in none external mode
+        // notify the owner
         (mCallback)(mPosition, mDate, droppedTicks);
         
         mRunning = false;
@@ -175,7 +178,7 @@ bool JamomaClock::tick()
   {
     mPosition = mDate / mDuration;
     
-    // notify the owner in none external mode
+    // notify the owner
     (mCallback)(mPosition, mDate, droppedTicks);
     
     // is this the end

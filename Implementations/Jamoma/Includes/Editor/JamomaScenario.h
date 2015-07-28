@@ -46,7 +46,6 @@ private:
   bool                        mKiller;
   
   shared_ptr<State>           mCurrentState;      // an internal State to return on state call
-  bool                        mInitialized;
   
 public:
   
