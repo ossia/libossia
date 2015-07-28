@@ -32,7 +32,7 @@ class ClockTest : public QObject
         m_dropped_ticks += droppedTicks;
 
         if (display_frames)
-            std::cout << "= " << (double)date << "(" << m_clock_positions.size() << " + " << m_dropped_ticks << " = " << m_clock_positions.size() + m_dropped_ticks << ")" << std::endl;
+            std::cout << "= " << (double)date << " (" << m_clock_positions.size() << " + " << m_dropped_ticks << " = " << m_clock_positions.size() + m_dropped_ticks << ")" << std::endl;
 
         if (position >= One)
             m_last_frame_duration = duration_cast<microseconds>(steady_clock::now() - frame_start_date).count();
@@ -102,7 +102,7 @@ class ClockTest : public QObject
 
         // how many frames ?
         int effective_nbFrame = m_clock_positions.size();
-        int expected_nbFrame = duration_in_grain - offset_in_grain - m_dropped_ticks;
+        int expected_nbFrame = 1 + duration_in_grain - offset_in_grain - m_dropped_ticks;
 
         // display test summary before verifications
         if (effective_nbFrame == expected_nbFrame)
@@ -119,7 +119,8 @@ class ClockTest : public QObject
         // ckeck frame info
         QVERIFY(effective_nbFrame == expected_nbFrame);
         QVERIFY(m_clock_positions[effective_nbFrame-1] >= One);
-        QVERIFY(m_clock_dates[0] >= (floor(offset / (granularity*speed)) + 1) * (granularity*speed));
+        QVERIFY(m_clock_dates[0] == floor(offset / (granularity*speed)) * (granularity * speed));
+        QVERIFY(m_clock_dates[1] >= (floor(offset / (granularity*speed)) + 1) * (granularity*speed));
         QVERIFY(m_clock_dates[effective_nbFrame-1] >= duration);
 
         // check time info after execution : they have to be the same
