@@ -40,6 +40,8 @@ private:
   shared_ptr<State>             mState;
   shared_ptr<Expression>        mExpression;
   Status                        mStatus;
+  
+  bool                          mObserveExpression;
 
 public:
   
@@ -82,8 +84,8 @@ public:
 # pragma mark -
 # pragma mark Implementation specific
   
-  /*! process the event to propagate execution */
-  void process(Container<TimeEvent>& statusChangedEvents);
-  
   void setStatus(Status);
+  
+  bool getObserveExpression();
+  void setObserveExpression(bool);
 };
