@@ -12,7 +12,8 @@ JamomaTimeEvent::JamomaTimeEvent(TimeEvent::ExecutionCallback callback,
 mCallback(callback),
 mTimeNode(aTimeNode),
 mExpression(anExpression),
-mStatus(TimeEvent::Status::NONE)
+mStatus(TimeEvent::Status::NONE),
+mObserveExpression(false)
 {
   mState = State::create();
 }
@@ -106,69 +107,23 @@ TimeEvent::Status JamomaTimeEvent::getStatus() const
 # pragma mark -
 # pragma mark Implementation specific
 
-void JamomaTimeEvent::process(Container<TimeEvent>& statusChangedEvents)
-{
-  TimeEvent::Status lastStatus = mStatus;
-  
-  switch (mStatus)
-  {
-    case TimeEvent::Status::NONE:
-    {
-      // error
-      throw runtime_error("NONE status event shouldn't be processed");
-    }
-    case TimeEvent::Status::PENDING:
-    {
-      // if the event has an expression: evaluate its expression to make it happen or to dispose it
-      // else make the event happen
-      
-      /* \debug
-      if (mExpression)
-      {
-        if (mExpression->evaluate())
-          cout << "TimeEvent::process() : PENDING => expression returns TRUE => happen" << endl;
-        else
-          cout << "TimeEvent::process() : PENDING => expression returns FALSE => dispose" << endl;
-      }
-      else
-        cout << "TimeEvent::process() : PENDING => no expression => happen" << endl;
-      */
-      
-      mExpression != nullptr ? mExpression->evaluate() ? happen() : dispose() : happen();
-      break;
-    }
-    case TimeEvent::Status::HAPPENED:
-    {
-      // process the next TimeConstraints
-      
-      //! \debug
-      //cout << "TimeEvent::process() : HAPPENED => process next constraints" << endl;
-      
-      for (auto& timeConstraint : nextTimeConstraints())
-      {
-        shared_ptr<JamomaTimeConstraint> c = dynamic_pointer_cast<JamomaTimeConstraint>(timeConstraint);
-        c->process(statusChangedEvents);
-      }
-      break;
-    }
-    case TimeEvent::Status::DISPOSED:
-    {
-      // nothing to do
-      
-      //! \debug
-      //cout << "TimeEvent::process() : DISPOSED => do nothing" << endl;
-      
-      break;
-    }
-  }
-  
-  // is the event status changed ?
-  if (mStatus != lastStatus)
-    statusChangedEvents.push_back(shared_from_this());
-}
-
 void JamomaTimeEvent::setStatus(Status status)
 {
   mStatus = status;
   (mCallback)(mStatus);
+}
+
+bool JamomaTimeEvent::getObserveExpression()
+{
+  return mObserveExpression;
+}
+
+void JamomaTimeEvent::setObserveExpression(bool observeExpression)
+{
+  if (observeExpression != mObserveExpression)
+  {
+    mObserveExpression = observeExpression;
+    
+    //! \todo active expression observation
+  }
 }
