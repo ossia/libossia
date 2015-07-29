@@ -31,7 +31,6 @@
 		46502A751AC2AB340067AB66 /* Address.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		46502A761AC2AB410067AB66 /* Node.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Node.cpp; sourceTree = "<group>"; };
 		4658445C1B14A95200612FBD /* Container.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
-		465FD2F11B0CEF220025B500 /* Container.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Container.cpp; sourceTree = "<group>"; };
 		467BE0381B442DC9006B772A /* TimeProcess.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeProcess.cpp; sourceTree = "<group>"; };
 		4689BADE1ABA20BD00D1BA4E /* Clock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
 		4689BADF1ABA223800D1BA4E /* Address.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Address.h; sourceTree = "<group>"; };
@@ -53,6 +52,10 @@
 		46A4923019C2E264003691A8 /* CurveSegmentPower.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentPower.h; sourceTree = "<group>"; };
 		46A4923119C2E2D6003691A8 /* CurveSegmentPower.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentPower.cpp; sourceTree = "<group>"; };
 		46AD82A01B4C229C0094E2DB /* JamomaCurveSegmentPower.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaCurveSegmentPower.h; sourceTree = "<group>"; };
+		46B329881B6911DF0006B1BB /* JamomaDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaDevice.h; sourceTree = "<group>"; };
+		46B329891B6911DF0006B1BB /* JamomaNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaNode.h; sourceTree = "<group>"; };
+		46B3298A1B69141A0006B1BB /* JamomaAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaAddress.h; sourceTree = "<group>"; };
+		46B3298C1B691A3A0006B1BB /* JamomaContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaContainer.h; sourceTree = "<group>"; };
 		46BA2A5B19C09A21009630B5 /* Curve.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Curve.cpp; sourceTree = "<group>"; };
 		46BA2A5D19C09A21009630B5 /* CurveSegmentLinear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentLinear.cpp; sourceTree = "<group>"; };
 		46BA2A6019C09A21009630B5 /* Scenario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scenario.cpp; sourceTree = "<group>"; };
@@ -138,14 +141,6 @@
 			path = CurveSegment;
 			sourceTree = "<group>";
 		};
-		46502A771AC2AD380067AB66 /* Misc */ = {
-			isa = PBXGroup;
-			children = (
-				465FD2F11B0CEF220025B500 /* Container.cpp */,
-			);
-			path = Misc;
-			sourceTree = "<group>";
-		};
 		4658445B1B14A95200612FBD /* Misc */ = {
 			isa = PBXGroup;
 			children = (
@@ -160,6 +155,7 @@
 				468AC7C5197EB1D600FB2B18 /* Makefile */,
 				460D07E119BDD62500235124 /* Headers */,
 				46D2C60B1B260B9900C04D8A /* Includes */,
+				46B3298B1B691A3A0006B1BB /* Misc */,
 				46BA2A5919C09A21009630B5 /* Sources */,
 			);
 			indentWidth = 2;
@@ -175,12 +171,30 @@
 			path = Network;
 			sourceTree = "<group>";
 		};
+		46B329871B6911DF0006B1BB /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				46B3298A1B69141A0006B1BB /* JamomaAddress.h */,
+				46B329881B6911DF0006B1BB /* JamomaDevice.h */,
+				46B329891B6911DF0006B1BB /* JamomaNode.h */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		46B3298B1B691A3A0006B1BB /* Misc */ = {
+			isa = PBXGroup;
+			children = (
+				46B3298C1B691A3A0006B1BB /* JamomaContainer.h */,
+			);
+			name = Misc;
+			path = Includes/Misc;
+			sourceTree = "<group>";
+		};
 		46BA2A5919C09A21009630B5 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				46AA0ED21A0122C3007374E9 /* Network */,
 				46BA2A5A19C09A21009630B5 /* Editor */,
-				46502A771AC2AD380067AB66 /* Misc */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -223,6 +237,7 @@
 			isa = PBXGroup;
 			children = (
 				46D2C60C1B260B9900C04D8A /* Editor */,
+				46B329871B6911DF0006B1BB /* Network */,
 			);
 			path = Includes;
 			sourceTree = "<group>";

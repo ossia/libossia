@@ -32,6 +32,20 @@ public:
   
   /*! destructor */
   virtual ~Protocol() = default;
+  
+# pragma mark -
+# pragma mark Operation
+  
+  /*! get the value of an address sending a request
+   \details some protocols cannot do this operation
+   \return bool true if the operation succeeded */
+  //virtual bool getAddressValue(std::shared_ptr<Address>) const = 0;
+  
+  /*! enable/disable observation on the value of an address sending a request
+   \details some protocols cannot do this operation
+   \return bool true if the operation succeeded */
+  //virtual bool observeAddressValue(std::shared_ptr<Address>, bool) const = 0;
+  
 };
 
 # pragma mark -

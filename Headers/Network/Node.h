@@ -29,9 +29,6 @@ class Node
 {
 
 public:
-  
-  using iterator = Container<Node>::iterator;
-  using const_iterator = Container<Node>::const_iterator;
 
 # pragma mark -
 # pragma mark Life cycle
@@ -77,7 +74,7 @@ public:
    \param #Container<#Node>::const_iterator where to store the child
    \param std::string child name
    \return #Container<#Node>::iterator */
-  virtual iterator emplace(const_iterator, std::string) = 0;
+  virtual Container<Node>::iterator emplace(Container<Node>::const_iterator, std::string) = 0;
   
   /*! get children of the node
    \return #Container<#Node> */

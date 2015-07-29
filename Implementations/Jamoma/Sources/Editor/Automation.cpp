@@ -3,9 +3,6 @@
 #include <assert.h>
 #include <iostream> //! \todo to remove. only here for debug purpose
 
-using namespace OSSIA;
-using namespace std;
-
 # pragma mark -
 # pragma mark Life cycle
 

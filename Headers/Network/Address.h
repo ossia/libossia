@@ -78,7 +78,6 @@ public:
 # pragma mark Network
 
   /*! get the device where the address is
-   \note is this really needed ? how to provide it on implementation side ?
    \return std::shared_ptr<#Device> the device where the address is */
   virtual const std::shared_ptr<Device> & getDevice() const = 0;
 

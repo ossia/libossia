@@ -1,67 +1,4 @@
-#include "Network/Device.h"
-#include "Network/Protocol.h"
-#include "Node.cpp"
-
-#include "TTFoundation.h"
-#include "TTModular.h"
-
-using namespace OSSIA;
-using namespace std;
-
-class JamomaDevice : public Device, public JamomaNode
-{
-
-private:
-
-# pragma mark -
-# pragma mark Implementation specific
-  
-  TTObject mApplicationManager;
-  TTObject mApplication;
-
-public:
-
-# pragma mark -
-# pragma mark Life cycle
-  
-  JamomaDevice(Protocol & protocol, TTObject applicationManager = TTObject(), TTObject application = TTObject(), TTNodeDirectoryPtr aDirectory = nullptr) :
-  JamomaNode(aDirectory, aDirectory->getRoot()),
-  mApplicationManager(applicationManager),
-  mApplication(application)
-  {
-    return ;
-  }
-
-  ~JamomaDevice()
-  {
-    TTSymbol device_name;
-    mApplication.get("name", device_name);
-    mApplicationManager.send("ApplicationRelease", device_name);
-  }
-
-# pragma mark -
-# pragma mark Network
-  
-  virtual bool updateNamespace() override
-  {
-    TTErr err = mApplication.send("DirectoryBuild");
-    
-    // update root node
-    this->mNode = this->mDirectory->getRoot();
-    
-    // erase all former nodes
-    m_children.clear();
-
-    // build tree from the root
-    buildChildren();
-    
-    // is there children below ?
-    if (children().size() == 0)
-      throw runtime_error("namespace empty after the update");
-
-    return err == kTTErrNone;
-  }
-};
+#include "Network/JamomaDevice.h"
 
 # pragma mark -
 # pragma mark Life cycle
@@ -184,36 +121,40 @@ namespace OSSIA
   }
 }
 
-/* old code
-
-bool Device::save(string filepath) const
+JamomaDevice::JamomaDevice(Protocol & protocol, TTObject applicationManager, TTObject application, TTNodeDirectoryPtr aDirectory) :
+JamomaNode(aDirectory, aDirectory->getRoot()),
+mApplicationManager(applicationManager),
+mApplication(application)
 {
-  // create a xml handler
-  TTObject aXmlHandler(kTTSym_XmlHandler);
-
-  // pass it the application
-  aXmlHandler.set(kTTSym_object, pimpl->mApplication);
-
-  // write
-  TTValue none;
-  TTErr err = aXmlHandler.send(kTTSym_Write, filepath, none);
-
-  return err == kTTErrNone;
+  return ;
 }
 
-bool Device::load(string filepath)
+JamomaDevice::~JamomaDevice()
 {
-  // create a xml handler
-  TTObject aXmlHandler(kTTSym_XmlHandler);
-
-  // pass it the application
-  aXmlHandler.set(kTTSym_object, pimpl->mApplication);
-
-  // read
-  TTValue none;
-  TTErr err = aXmlHandler.send(kTTSym_Read, filepath, none);
-
-  return err == kTTErrNone;
+  TTSymbol device_name;
+  mApplication.get("name", device_name);
+  mApplicationManager.send("ApplicationRelease", device_name);
 }
 
-*/
+# pragma mark -
+# pragma mark Network
+
+bool JamomaDevice::updateNamespace()
+{
+  TTErr err = mApplication.send("DirectoryBuild");
+  
+  // update root node
+  this->mNode = this->mDirectory->getRoot();
+  
+  // erase all former nodes
+  m_children.clear();
+  
+  // build tree from the root
+  buildChildren();
+  
+  // is there children below ?
+  if (children().size() == 0)
+    throw runtime_error("namespace empty after the update");
+  
+  return err == kTTErrNone;
+}
