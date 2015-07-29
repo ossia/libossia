@@ -157,7 +157,7 @@ Value* JamomaAutomation::computeValueAtPosition(const Value* drive, const TimeVa
       
     case Value::Type::GENERIC :
     {
-      //! \todo
+      //! \todo GENERIC case
       break;
     }
   }

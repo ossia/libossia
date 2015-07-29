@@ -588,7 +588,7 @@ private:
         
       case Value::Type::GENERIC :
       {
-        //! \todo
+        //! \todo GENERIC case
         break;
       }
     }
