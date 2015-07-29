@@ -210,8 +210,6 @@ int main()
     // change main TimeConstraint speed, granularity and offset
     main_constraint->setSpeed(1.);
     main_constraint->setGranularity(50.);
-    //! \todo properly setup each constraint offset considering the main constraint offset
-    //! main_constraint->setOffset(500.);
     
     // change first and second TimeConstraint speed and granularity
     first_constraint->setSpeed(1.);
