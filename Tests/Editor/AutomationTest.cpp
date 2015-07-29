@@ -25,10 +25,6 @@ class AutomationTest : public QObject
     void address_callback(const Value * v)
     {
         m_address_values.push_back(v->clone());
-
-        //! \debug
-        Float* f = (Float*)v;
-        std::cout << f->value << std::endl;
     }
 
 private Q_SLOTS:
@@ -92,8 +88,11 @@ private Q_SLOTS:
         while (constraint->getRunning())
             ;
 
-        QVERIFY(m_address_values.size() == 10);
-        QVERIFY(m_address_values[9] == new Float(0.));
+        QVERIFY(m_address_values.size() == 11);
+
+        Float zero(0);
+        QVERIFY(*m_address_values[0] == zero);
+        QVERIFY(*m_address_values[10] == zero);
     }
 };
 
