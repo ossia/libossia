@@ -93,12 +93,10 @@ public:
 
   void removeTimeProcess(std::shared_ptr<TimeProcess>) override;
 
+private:
+  
 # pragma mark -
 # pragma mark Implementation specific
-  
-  void process(Container<TimeEvent>& statusChangedEvents);
-
-private:
   
   void ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks);
 };
