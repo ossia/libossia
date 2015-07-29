@@ -230,8 +230,11 @@ int main()
     
     cout << "***** END *****" << endl;
     
-    // changing expression to : /i-score/test >= {0.9, 0.9, 0.9}
-    Tuple threshold2(new Float(0.9), new Float(0.9), new Float(0.9));
+    // set minimal duration of the first constraint to 1000 ms
+    first_constraint->setDurationMin(1000.);
+    
+    // changing expression to : /i-score/test >= {0.5, 0.5, 0.5}
+    Tuple threshold2(new Float(0.5), new Float(0.5), new Float(0.5));
     auto next_expression2 = ExpressionAtom::create(&local_test,
                                                    ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
                                                    &threshold2);
@@ -288,8 +291,8 @@ void local_test_callback(const Value * v)
 
 void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
 {
-    cout << "Main Constraint : " << double(position) << ", " << double(date) << endl;
     element->launch();
+    cout << "Main Constraint : " << double(position) << ", " << double(date) << endl;
 }
 
 void first_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
