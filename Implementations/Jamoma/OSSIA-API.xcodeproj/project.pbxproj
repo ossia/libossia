@@ -155,7 +155,6 @@
 				468AC7C5197EB1D600FB2B18 /* Makefile */,
 				460D07E119BDD62500235124 /* Headers */,
 				46D2C60B1B260B9900C04D8A /* Includes */,
-				46B3298B1B691A3A0006B1BB /* Misc */,
 				46BA2A5919C09A21009630B5 /* Sources */,
 			);
 			indentWidth = 2;
@@ -186,8 +185,7 @@
 			children = (
 				46B3298C1B691A3A0006B1BB /* JamomaContainer.h */,
 			);
-			name = Misc;
-			path = Includes/Misc;
+			path = Misc;
 			sourceTree = "<group>";
 		};
 		46BA2A5919C09A21009630B5 /* Sources */ = {
@@ -238,6 +236,7 @@
 			children = (
 				46B329871B6911DF0006B1BB /* Network */,
 				46D2C60C1B260B9900C04D8A /* Editor */,
+				46B3298B1B691A3A0006B1BB /* Misc */,
 			);
 			path = Includes;
 			sourceTree = "<group>";
