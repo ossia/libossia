@@ -25,7 +25,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaDevice : public Device, public JamomaNode, public enable_shared_from_this<JamomaDevice>
+class JamomaDevice : public Device, public JamomaNode
 {
 
 private:
