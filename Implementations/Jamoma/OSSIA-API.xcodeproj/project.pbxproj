@@ -236,8 +236,8 @@
 		46D2C60B1B260B9900C04D8A /* Includes */ = {
 			isa = PBXGroup;
 			children = (
-				46D2C60C1B260B9900C04D8A /* Editor */,
 				46B329871B6911DF0006B1BB /* Network */,
+				46D2C60C1B260B9900C04D8A /* Editor */,
 			);
 			path = Includes;
 			sourceTree = "<group>";
