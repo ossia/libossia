@@ -51,6 +51,15 @@ namespace OSSIA
       // create a distant application
       application = applicationManager.send("ApplicationInstantiateDistant", device_name);
       
+      // setup attribute to be cached : all attributes handled by Address class should be declared here
+      TTValue args;
+      args.append(kTTSym_service);
+      args.append(kTTSym_type);
+      args.append(kTTSym_rangeBounds);
+      args.append(kTTSym_rangeClipmode);
+      args.append(kTTSym_repetitionsFilter);
+      application.set("cachedAttributes", args);
+      
       // create a Minuit protocol unit
       TTObject protocolMinuit = applicationManager.send("ProtocolFind", "Minuit");
       if (!protocolMinuit.valid())

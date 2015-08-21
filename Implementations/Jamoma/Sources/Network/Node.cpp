@@ -98,7 +98,14 @@ shared_ptr<Address> JamomaNode::createAddress(Value::Type type)
     // for mirror application
     else if (applicationType == kTTSym_mirror)
     {
-      ; //! \todo : allow to use TTApplication::appendMirrorObject method
+      TTAddress nodeAddress;
+      mNode->getAddress(nodeAddress);
+      TTValue args(nodeAddress, "Data");
+      object = getApplication().send("MirrorDataInstantiate", args);
+      object.set("service", "parameter");
+      
+      //! \see in Device::create method, when creating Minuit protocol, some attributes are setup to be cached
+      // all attributes handled by Address class should be in this list
     }
     
     if (object.valid())
