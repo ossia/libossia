@@ -249,7 +249,7 @@ private Q_SLOTS:
         m_clock_dates.clear();
         m_dropped_ticks = 0;
 
-        // launch the clock and check running status : it have to be true after the launch
+        // launch the clock
         clock->start();
 
         // wait the clock to pass 50 ms
@@ -278,6 +278,21 @@ private Q_SLOTS:
 
         // check frames
         QVERIFY(m_clock_positions.size() == 9);
+
+        // clear frame vectors
+        m_clock_positions.clear();
+        m_clock_dates.clear();
+        m_dropped_ticks = 0;
+
+        // launch the clock
+        clock->start();
+
+        // wait the clock to end
+        while (clock->getRunning())
+            ;
+
+        // check frames
+        QVERIFY(m_clock_positions.size() == 11);
 
         if (display_frames)
             std::cout << std::endl;
