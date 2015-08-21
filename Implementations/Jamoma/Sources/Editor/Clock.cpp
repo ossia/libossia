@@ -103,6 +103,9 @@ void JamomaClock::pause()
 void JamomaClock::resume()
 {
   mPaused = false;
+
+  // reset the time reference
+  mLastTime = steady_clock::now();
 }
 
 bool JamomaClock::tick()
