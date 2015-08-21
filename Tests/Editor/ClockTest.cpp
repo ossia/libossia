@@ -232,6 +232,58 @@ private Q_SLOTS:
         make_clock_test(100., 1., 50., 2., callback);
         make_clock_test(100., 1., 50., 0.5, callback);
     }
+
+    void test_transport()
+    {
+        display_frames = true;
+
+        if (display_frames)
+            std::cout << std::endl;
+
+        // setup clock
+        auto callback = std::bind(&ClockTest::clock_callback_light, this, _1, _2, _3);
+        auto clock = Clock::create(callback, 100., 10., 0., 1.);
+
+        // clear frame vectors
+        m_clock_positions.clear();
+        m_clock_dates.clear();
+        m_dropped_ticks = 0;
+
+        // launch the clock and check running status : it have to be true after the launch
+        clock->start();
+
+        // wait the clock to pass 50 ms
+        while (clock->getDate() < 50.)
+            ;
+
+        // then pause: the clock should be still running
+        clock->pause();
+        QVERIFY(clock->getRunning() == true);
+
+        // wait a little bit before to resume ...
+        std::cout << "clock paused for 20 ms" << std::endl;
+        std::this_thread::sleep_for( std::chrono::milliseconds(20));
+
+        // then resume
+        clock->resume();
+        QVERIFY(clock->getRunning() == true);
+
+        // wait the clock to pass 80 ms
+        while (clock->getDate() < 80.)
+            ;
+
+        // then stop
+        clock->stop();
+        QVERIFY(clock->getRunning() == false);
+
+        // check frames
+        QVERIFY(m_clock_positions.size() == 9);
+
+        if (display_frames)
+            std::cout << std::endl;
+
+        display_frames = false;
+    }
 };
 
 QTEST_APPLESS_MAIN(ClockTest)
