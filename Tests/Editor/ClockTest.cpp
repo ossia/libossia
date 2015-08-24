@@ -276,7 +276,7 @@ private Q_SLOTS:
         clock->stop();
         QVERIFY(clock->getRunning() == false);
 
-        // check frames
+        // check number of frames
         QVERIFY(m_clock_positions.size() == 9);
 
         // clear frame vectors
@@ -291,7 +291,7 @@ private Q_SLOTS:
         while (clock->getRunning())
             ;
 
-        // check frames
+        // check number of frames
         QVERIFY(m_clock_positions.size() == 11);
 
         if (display_frames)
