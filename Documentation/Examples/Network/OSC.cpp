@@ -14,7 +14,7 @@
 
 #include "Network/Address.h"
 #include "Network/Device.h"
-#include "Network/Protocol.h"
+#include "Network/Protocol/OSC.h"
 
 using namespace OSSIA;
 using namespace std;

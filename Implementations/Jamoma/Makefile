@@ -50,6 +50,14 @@ SRC32 += Sources/Network/Device.i386.o
 SRC64 += Sources/Network/Device.x64.o
 SRC32 += Sources/Network/Node.i386.o
 SRC64 += Sources/Network/Node.x64.o
+SRC32 += Sources/Network/Protocol/Local.i386.o
+SRC64 += Sources/Network/Protocol/Local.x64.o
+SRC32 += Sources/Network/Protocol/MIDI.i386.o
+SRC64 += Sources/Network/Protocol/MIDI.x64.o
+SRC32 += Sources/Network/Protocol/Minuit.i386.o
+SRC64 += Sources/Network/Protocol/Minuit.x64.o
+SRC32 += Sources/Network/Protocol/OSC.i386.o
+SRC64 += Sources/Network/Protocol/OSC.x64.o
 
 #########################################
 

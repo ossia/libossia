@@ -28,9 +28,12 @@ namespace OSSIA
 {
 
 class Device;
+class Protocol;
 
 class Address : public Expression
 {
+
+friend Protocol;
 
 public:
 

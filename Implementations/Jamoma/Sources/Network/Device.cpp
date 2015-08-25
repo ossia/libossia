@@ -1,4 +1,8 @@
 #include "Network/JamomaDevice.h"
+#include "Network/Protocol/Local.h"
+#include "Network/Protocol/MIDI.h"
+#include "Network/Protocol/Minuit.h"
+#include "Network/Protocol/OSC.h"
 
 # pragma mark -
 # pragma mark Life cycle

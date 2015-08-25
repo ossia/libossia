@@ -14,7 +14,8 @@
 
 #include "Network/Address.h"
 #include "Network/Device.h"
-#include "Network/Protocol.h"
+#include "Network/Protocol/Local.h"
+#include "Network/Protocol/Minuit.h"
 
 using namespace OSSIA;
 using namespace std;
