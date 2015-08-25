@@ -16,36 +16,44 @@
 
 #pragma once
 
-#include <string>
-
 #include "Network/Protocol.h"
 
 namespace OSSIA
 {
 
-struct OSC : public Protocol
+class OSC : public virtual Protocol
 {
-  std::string ip;
-  int in_port;
-  int out_port;
   
+public:
+
 # pragma mark -
 # pragma mark Life cycle
   
-  /*! constructor
-   \param std::string ip of the OSC device
+  /*! factory
+   \param std::string ip of the Minuit device
    \param int port where to send messages
-   \param int port where messages are sent to */
-  OSC(std::string, int, int);
-
+   \param int port where messages are sent to
+   \return std::shared_ptr<OSC> */
+  static std::shared_ptr<OSC> create(std::string, int, int);
+  
+  /*! destructor */
+  virtual ~OSC() = default;
+  
 # pragma mark -
-# pragma mark Operation
+# pragma mark Accessors
   
-  bool pullAddressValue(std::shared_ptr<Address>) const override;
+  Protocol::Type getType() const override final
+  {return Protocol::Type::OSC;}
   
-  bool pushAddressValue(std::shared_ptr<Address>) const override;
+  /*! get IP */
+  virtual std::string getIp() = 0;
   
-  bool observeAddressValue(std::shared_ptr<Address>, bool) const override;
+  /*! get port where to send messages */
+  virtual int getInPort() = 0;
+  
+  /*! get port where messages are sent back */
+  virtual int getOutPort() = 0;
+  
 };
 
 }

@@ -27,13 +27,10 @@
 namespace OSSIA
 {
 
-class Device;
-class Protocol;
+class Node;
 
 class Address : public Expression
 {
-
-friend Protocol;
 
 public:
 
@@ -62,9 +59,16 @@ public:
   
   /*! destructor */
   virtual ~Address() = default;
+  
+# pragma mark -
+# pragma mark Network
+  
+  /*! get the node where the address is
+   \return std::shared_ptr<#Node> the node where the address is */
+  virtual const std::shared_ptr<Node> & getNode() const = 0;
 
 # pragma mark -
-# pragma mark Value
+# pragma mark Editor
   
   /*! update the address value internaly without updating client */
   virtual bool updateValue() const = 0;
@@ -76,13 +80,6 @@ public:
   /*! send a value to the address
    \param const #Value* the value */
   virtual bool sendValue(const Value*) const = 0;
-
-# pragma mark -
-# pragma mark Network
-
-  /*! get the device where the address is
-   \return std::shared_ptr<#Device> the device where the address is */
-  virtual const std::shared_ptr<Device> & getDevice() const = 0;
 
 # pragma mark -
 # pragma mark Accessors

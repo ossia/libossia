@@ -24,6 +24,7 @@ namespace OSSIA
 {
 
 class Address;
+class Device;
 
 class Node
 {
@@ -37,12 +38,16 @@ public:
   virtual ~Node() = default;
 
 # pragma mark -
-# pragma mark Navigation
+# pragma mark Network
   
-  /*! get node's parent 
+  /*! get node's device
+   \return std::shared_ptr<Device> the device */
+  virtual std::shared_ptr<Device> getDevice() const = 0;
+  
+  /*! get node's parent
    \return std::shared_ptr<Node> the parent */
   virtual std::shared_ptr<Node> getParent() const = 0;
-
+  
 # pragma mark -
 # pragma mark Accessors
   

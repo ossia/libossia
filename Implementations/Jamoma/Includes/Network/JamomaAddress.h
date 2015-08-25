@@ -29,9 +29,9 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  shared_ptr<Device>  mDevice;
+  shared_ptr<Node>    mNode;
   
-  mutable TTObject    mData;
+  mutable TTObject    mObject;
   mutable Value *     mValue{};
   Value::Type         mValueType;
   AccessMode          mAccessMode;
@@ -47,23 +47,23 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaAddress(shared_ptr<Device> device, TTObject aData = TTObject());
+  JamomaAddress(shared_ptr<Node> node, TTObject aData = TTObject());
   
   ~JamomaAddress();
+  
+# pragma mark -
+# pragma mark Network
+  
+  const shared_ptr<Node> & getNode() const override;
 
 # pragma mark -
-# pragma mark Value
+# pragma mark Editor
 
   bool updateValue() const override;
 
   const Value * getValue() const override;
 
   bool sendValue(const Value *) const override;
-
-# pragma mark -
-# pragma mark Network
-
-  const shared_ptr<Device> & getDevice() const override;
 
 # pragma mark -
 # pragma mark Accessors

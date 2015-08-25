@@ -33,20 +33,24 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  TTObject mApplicationManager;
-  TTObject mApplication;
+  shared_ptr<Protocol>  mProtocol;
+  
+  TTObject              mApplicationManager;
+  TTObject              mApplication;
 
 public:
 
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaDevice(Protocol & protocol, TTObject applicationManager = TTObject(), TTObject application = TTObject(), TTNodeDirectoryPtr aDirectory = nullptr);
+  JamomaDevice(shared_ptr<Protocol> protocol, TTObject applicationManager = TTObject(), TTObject application = TTObject(), TTNodeDirectoryPtr aDirectory = nullptr);
 
   ~JamomaDevice();
-
+  
 # pragma mark -
 # pragma mark Network
+  
+  shared_ptr<Protocol> getProtocol() const override;
   
   bool updateNamespace() override;
   

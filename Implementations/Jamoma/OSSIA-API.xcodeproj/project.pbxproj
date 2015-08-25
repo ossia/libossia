@@ -40,6 +40,10 @@
 		4682EEC41B8C731500E4C5CF /* MIDI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MIDI.cpp; sourceTree = "<group>"; };
 		4682EEC51B8C731500E4C5CF /* Minuit.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Minuit.cpp; sourceTree = "<group>"; };
 		4682EEC61B8C731500E4C5CF /* OSC.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OSC.cpp; sourceTree = "<group>"; };
+		4682EEC91B8CB84A00E4C5CF /* JamomaLocal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaLocal.h; sourceTree = "<group>"; };
+		4682EECA1B8CB84A00E4C5CF /* JamomaMIDI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaMIDI.h; sourceTree = "<group>"; };
+		4682EECB1B8CB84A00E4C5CF /* JamomaMinuit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaMinuit.h; sourceTree = "<group>"; };
+		4682EECC1B8CB84A00E4C5CF /* JamomaOSC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaOSC.h; sourceTree = "<group>"; };
 		4689BADE1ABA20BD00D1BA4E /* Clock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
 		4689BADF1ABA223800D1BA4E /* Address.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Address.h; sourceTree = "<group>"; };
 		4689BAE11ABA223800D1BA4E /* Device.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Device.h; sourceTree = "<group>"; };
@@ -180,6 +184,17 @@
 			path = Protocol;
 			sourceTree = "<group>";
 		};
+		4682EEC81B8CB84A00E4C5CF /* Protocol */ = {
+			isa = PBXGroup;
+			children = (
+				4682EEC91B8CB84A00E4C5CF /* JamomaLocal.h */,
+				4682EECA1B8CB84A00E4C5CF /* JamomaMIDI.h */,
+				4682EECB1B8CB84A00E4C5CF /* JamomaMinuit.h */,
+				4682EECC1B8CB84A00E4C5CF /* JamomaOSC.h */,
+			);
+			path = Protocol;
+			sourceTree = "<group>";
+		};
 		468AC7BA197EB19500FB2B18 = {
 			isa = PBXGroup;
 			children = (
@@ -208,6 +223,7 @@
 				46B3298A1B69141A0006B1BB /* JamomaAddress.h */,
 				46B329881B6911DF0006B1BB /* JamomaDevice.h */,
 				46B329891B6911DF0006B1BB /* JamomaNode.h */,
+				4682EEC81B8CB84A00E4C5CF /* Protocol */,
 			);
 			path = Network;
 			sourceTree = "<group>";

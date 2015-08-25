@@ -3,14 +3,12 @@
 # pragma mark -
 # pragma mark Life cycle
 
-JamomaNode::JamomaNode(TTNodeDirectory * aDirectory, TTNode * aNode, shared_ptr<JamomaNode> aParent) :
+JamomaNode::JamomaNode(TTNodeDirectory * aDirectory, TTNode * aNode, shared_ptr<Device> aDevice, shared_ptr<JamomaNode> aParent) :
 mDirectory(aDirectory),
 mNode(aNode),
+mDevice(aDevice),
 mParent(aParent)
 {
-  if (aParent != nullptr)
-    mDevice = aParent->mDevice;
-
   if (mNode)
   {
     // auto edit address if the node already manages a valid Data or Mirror object
@@ -24,7 +22,7 @@ mParent(aParent)
       
       if (objectName == "Data")
       {
-        mAddress = shared_ptr<Address>(new JamomaAddress(mDevice, object));
+        mAddress = shared_ptr<Address>(new JamomaAddress(shared_from_this(), object));
       }
     }
   }
@@ -35,6 +33,11 @@ JamomaNode::~JamomaNode()
 
 # pragma mark -
 # pragma mark Navigation
+
+shared_ptr<Device> JamomaNode::getDevice() const
+{
+  return mDevice;
+}
 
 shared_ptr<Node> JamomaNode::getParent() const
 {
@@ -131,7 +134,7 @@ shared_ptr<Address> JamomaNode::createAddress(Value::Type type)
     }
     
     // edit new address
-    mAddress = shared_ptr<Address>(new JamomaAddress(mDevice, object));
+    mAddress = shared_ptr<Address>(new JamomaAddress(shared_from_this(), object));
   }
   
   return mAddress;
@@ -167,7 +170,7 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
   if (!err)
   {
     // store the new node into the Container
-    return children().insert(pos, make_shared<JamomaNode>(mDirectory, node, shared_from_this()));
+    return children().insert(pos, make_shared<JamomaNode>(mDirectory, node, mDevice, shared_from_this()));
   }
   
   return Container<Node>::iterator();
@@ -203,7 +206,7 @@ void JamomaNode::buildChildren()
       TTNodePtr child = TTNodePtr(TTPtr(childrenList.current()[0]));
       
       // build child node
-      shared_ptr<JamomaNode> newNode = make_shared<JamomaNode>(mDirectory, child, shared_from_this());
+      shared_ptr<JamomaNode> newNode = make_shared<JamomaNode>(mDirectory, child, mDevice, shared_from_this());
       
       // store the child node
       children().push_back(newNode);

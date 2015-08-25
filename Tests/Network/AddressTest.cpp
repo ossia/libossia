@@ -13,14 +13,15 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        Local local_protocol{};
+        auto local_protocol = Local::create();
         auto local_device = Device::create(local_protocol, "test");
         
         local_device->emplace(local_device->children().begin(), "child");
         auto address = local_device->children().front()->createAddress();
         QVERIFY(address != nullptr);
         
-        QVERIFY(address->getDevice() == local_device);
+        QVERIFY(address->getNode() == local_device->children().front());
+        QVERIFY(address->getNode()->getDevice() == local_device);
         
         QVERIFY(address->getValueType() == Value::Type::IMPULSE);
         

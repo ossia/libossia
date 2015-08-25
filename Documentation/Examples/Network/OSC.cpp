@@ -25,8 +25,8 @@ void printValue(const Value * v);
 int main()
 {
     // declare this program "P" as an OSC device
-    OSC oscDeviceParameters{"127.0.0.1", 9996, 9997};
-    auto oscDevice = Device::create(oscDeviceParameters, "P");
+    auto oscProtocol = OSC::create("127.0.0.1", 9996, 9997);
+    auto oscDevice = Device::create(oscProtocol, "P");
     
     /* publish each feature of program "P" as address into a tree
      /test

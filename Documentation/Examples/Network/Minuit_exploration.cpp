@@ -28,12 +28,12 @@ void printValueCallback(const Value * v);
 int main()
 {
   // declare this program "A" as Local device
-  Local localDeviceParameters{};
-  auto localDevice = Device::create(localDeviceParameters, "A");
+  auto localProtocol = Local::create();
+  auto localDevice = Device::create(localProtocol, "A");
 
   // declare a distant program "B" as a Minuit device
-  Minuit minuitDeviceParameters{"127.0.0.1", 6666, 9999};
-  auto minuitDevice = Device::create(minuitDeviceParameters, "B");
+  auto minuitProtocol = Minuit::create("127.0.0.1", 6666, 9999);
+  auto minuitDevice = Device::create(minuitProtocol, "B");
   {
     // explore the tree of B
     minuitDevice->updateNamespace();

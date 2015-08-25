@@ -21,22 +21,27 @@
 namespace OSSIA
 {
 
-struct Local : public Protocol
+class Local : public virtual Protocol
 {
+  
+public:
   
 # pragma mark -
 # pragma mark Life cycle
   
-  Local();
+  /*! factory
+   \return std::shared_ptr<Local> */
+  static std::shared_ptr<Local> create();
+  
+  /*! destructor */
+  virtual ~Local() = default;
   
 # pragma mark -
-# pragma mark Operation
+# pragma mark Accessors
   
-  bool pullAddressValue(std::shared_ptr<Address>) const override;
-  
-  bool pushAddressValue(std::shared_ptr<Address>) const override;
-  
-  bool observeAddressValue(std::shared_ptr<Address>, bool) const override;
+  Protocol::Type getType() const override final
+  {return Protocol::Type::LOCAL;}
+
 };
 
 }

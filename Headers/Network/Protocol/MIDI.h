@@ -23,29 +23,33 @@
 namespace OSSIA
 {
 
-struct MIDI : public Protocol
+class MIDI : public virtual Protocol
 {
   
+public:
+
 # pragma mark -
 # pragma mark Life cycle
 
-  MIDI();
+  /*! factory
+   \return std::shared_ptr<MIDI> */
+  static std::shared_ptr<MIDI> create();
+  
+  /*! destructor */
+  virtual ~MIDI() = default;
+  
+# pragma mark -
+# pragma mark Accessors
+  
+  Protocol::Type getType() const override final
+  {return Protocol::Type::MIDI;}
   
 # pragma mark -
 # pragma mark Operation
   
-  bool pullAddressValue(std::shared_ptr<Address>) const override;
-  
-  bool pushAddressValue(std::shared_ptr<Address>) const override;
-  
-  bool observeAddressValue(std::shared_ptr<Address>, bool) const override;
-
-# pragma mark -
-# pragma mark Specific Operation
-  
   /*! to see IPs of connected Midi devices
    \todo add options */
-  std::vector<MIDI> scan();
+  virtual std::vector<std::shared_ptr<MIDI>> scan() = 0;
 };
 
 }

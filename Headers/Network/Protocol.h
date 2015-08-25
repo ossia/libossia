@@ -29,10 +29,29 @@ class Protocol
 public:
   
 # pragma mark -
+# pragma mark Enumerations
+  
+  /*! type of protocol */
+  enum class Type
+  {
+    LOCAL,
+    MIDI,
+    MINUIT,
+    OSC
+  };
+  
+# pragma mark -
 # pragma mark Life cycle
   
   /*! destructor */
   virtual ~Protocol() = default;
+  
+# pragma mark -
+# pragma mark Accessors
+  
+  /* get the type of the segment
+   \return #Type */
+  virtual Type getType() const = 0;
   
 # pragma mark -
 # pragma mark Operation

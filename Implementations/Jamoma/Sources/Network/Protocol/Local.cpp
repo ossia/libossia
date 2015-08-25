@@ -1,27 +1,41 @@
-#include "Network/Protocol/Local.h"
+#include "Network/Protocol/JamomaLocal.h"
 
 using namespace OSSIA;
 
 # pragma mark -
 # pragma mark Life Cycle
 
-Local::Local()
+shared_ptr<Local> Local::create()
+{
+  return make_shared<JamomaLocal>();
+}
+
+JamomaLocal::JamomaLocal()
+{}
+
+JamomaLocal::~JamomaLocal()
 {}
 
 # pragma mark -
 # pragma mark Operation
 
-bool Local::pullAddressValue(std::shared_ptr<Address>) const
+bool JamomaLocal::pullAddressValue(std::shared_ptr<Address>) const
 {
   return false;
 }
 
-bool Local::pushAddressValue(std::shared_ptr<Address>) const
+bool JamomaLocal::pushAddressValue(std::shared_ptr<Address> address) const
 {
-  return false;
+  /*
+  TTValue v;
+  address->convertValueIntoTTValue(address->mValue, v);
+  
+  // because local TTApplication use Data
+  return !address->mObject.send("Command", v);
+  */
 }
 
-bool Local::observeAddressValue(std::shared_ptr<Address>, bool) const
+bool JamomaLocal::observeAddressValue(std::shared_ptr<Address>, bool) const
 {
   return false;
 }

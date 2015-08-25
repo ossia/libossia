@@ -22,8 +22,8 @@ using namespace std;
 int main()
 {
     // Local device
-    Local localDeviceParameters{};
-    auto localDevice = Device::create(localDeviceParameters, "i-score");
+    auto localProtocol = Local::create();
+    auto localDevice = Device::create(localProtocol, "i-score");
 
     // Local tree building
     auto localImpulseNode1 = *(localDevice->emplace(localDevice->children().cend(), "my_impulse.1"));

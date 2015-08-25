@@ -52,8 +52,8 @@ int main()
      */
     
     // create a Local device "i-score"
-    Local local_device_parameters{};
-    auto local_device = Device::create(local_device_parameters, "i-score");
+    auto local_protocol = Local::create();
+    auto local_device = Device::create(local_protocol, "i-score");
     
     // add a /play address
     auto local_play_node = *(local_device->emplace(local_device->children().cend(), "play"));

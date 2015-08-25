@@ -26,8 +26,8 @@ void printValue(const Value * v);
 int main()
 {
     // declare this program "B" as Local device
-    Local localDeviceParameters{};
-    auto localDevice = Device::create(localDeviceParameters, "B");
+    auto localProtocol = Local::create();
+    auto localDevice = Device::create(localProtocol, "B");
 
     /* publish each feature of program "B" as address into a tree
      /test
@@ -96,8 +96,8 @@ int main()
     localTupleAddress->sendValue(&t);
     
     // declare a distant program "A" as a Minuit device
-    Minuit minuitDeviceParameters{"127.0.0.1", 9999, 6666};
-    auto minuitDevice = Device::create(minuitDeviceParameters, "A");
+    auto minuitProtocol = Minuit::create("127.0.0.1", 9999, 6666);
+    auto minuitDevice = Device::create(minuitProtocol, "A");
 
     while (true)
         ;

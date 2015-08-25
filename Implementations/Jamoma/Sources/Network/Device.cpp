@@ -1,15 +1,15 @@
 #include "Network/JamomaDevice.h"
-#include "Network/Protocol/Local.h"
-#include "Network/Protocol/MIDI.h"
-#include "Network/Protocol/Minuit.h"
-#include "Network/Protocol/OSC.h"
+#include "Network/Protocol/JamomaLocal.h"
+#include "Network/Protocol/JamomaMIDI.h"
+#include "Network/Protocol/JamomaMinuit.h"
+#include "Network/Protocol/JamomaOSC.h"
 
 # pragma mark -
 # pragma mark Life cycle
 
 namespace OSSIA
 {
-  shared_ptr<Device> Device::create(Protocol & protocol, string name)
+  shared_ptr<Device> Device::create(shared_ptr<Protocol> protocol, string name)
   {
     TTSymbol device_name(name);
     TTObject applicationManager;
@@ -35,7 +35,7 @@ namespace OSSIA
     
     // which protocol is it ?
     //! \todo this is not a good way to do as if a new protocol appears we have to create a case for it here
-    Local* local_protocol = dynamic_cast<Local*>(&protocol);
+    shared_ptr<JamomaLocal> local_protocol = dynamic_pointer_cast<JamomaLocal>(protocol);
     if (local_protocol)
     {
       // create a local application
@@ -55,7 +55,7 @@ namespace OSSIA
       return device;
     }
     
-    Minuit* minuit_protocol = dynamic_cast<Minuit*>(&protocol);
+    shared_ptr<JamomaMinuit> minuit_protocol = dynamic_pointer_cast<JamomaMinuit>(protocol);
     if (minuit_protocol)
     {
       // create a distant application
@@ -86,12 +86,12 @@ namespace OSSIA
       protocolMinuit.send("Stop");
       protocolMinuit.send("ApplicationRegister", device_name);
       protocolMinuit.send("ApplicationSelect", device_name);
-      protocolMinuit.set("port", minuit_protocol->in_port);
-      protocolMinuit.set("ip", TTSymbol(minuit_protocol->ip));
+      protocolMinuit.set("port", minuit_protocol->getInPort());
+      protocolMinuit.set("ip", TTSymbol(minuit_protocol->getIp()));
       
       //! \todo change Minuit mechanism to setup one out_port per distant device
       protocolMinuit.send("ApplicationSelect", local_device_name);
-      protocolMinuit.set("port", minuit_protocol->out_port);
+      protocolMinuit.set("port", minuit_protocol->getOutPort());
       
       protocolMinuit.send("Run");
       
@@ -108,7 +108,7 @@ namespace OSSIA
       return device;
     }
     
-    OSC* osc_protocol = dynamic_cast<OSC*>(&protocol);
+    shared_ptr<JamomaOSC> osc_protocol = dynamic_pointer_cast<JamomaOSC>(protocol);
     if (osc_protocol)
     {
       // create a distante application
@@ -130,9 +130,9 @@ namespace OSSIA
       protocolOSC.send("Stop");
       protocolOSC.send("ApplicationRegister", device_name);
       protocolOSC.send("ApplicationSelect", device_name);
-      TTValue ports(osc_protocol->in_port, osc_protocol->out_port);
+      TTValue ports(osc_protocol->getInPort(), osc_protocol->getOutPort());
       protocolOSC.set("port", ports);
-      protocolOSC.set("ip", TTSymbol(osc_protocol->ip));
+      protocolOSC.set("ip", TTSymbol(osc_protocol->getIp()));
       protocolOSC.send("Run");
       
       TTLogMessage("OSC device created\n");
@@ -147,13 +147,14 @@ namespace OSSIA
       
       return device;
     }
-    
+
     return nullptr;
   }
 }
 
-JamomaDevice::JamomaDevice(Protocol & protocol, TTObject applicationManager, TTObject application, TTNodeDirectoryPtr aDirectory) :
+JamomaDevice::JamomaDevice(shared_ptr<Protocol> protocol, TTObject applicationManager, TTObject application, TTNodeDirectoryPtr aDirectory) :
 JamomaNode(aDirectory, aDirectory->getRoot()),
+mProtocol(protocol),
 mApplicationManager(applicationManager),
 mApplication(application)
 {
@@ -169,6 +170,11 @@ JamomaDevice::~JamomaDevice()
 
 # pragma mark -
 # pragma mark Network
+
+shared_ptr<Protocol> JamomaDevice::getProtocol() const
+{
+  return mProtocol;
+}
 
 bool JamomaDevice::updateNamespace()
 {

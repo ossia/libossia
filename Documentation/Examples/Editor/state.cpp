@@ -24,13 +24,13 @@ int main()
 {
     // Local device
     cout << "\nLocal device\n";
-    Local localDeviceParameters{};
-    auto localDevice = Device::create(localDeviceParameters, "i-score");
+    auto localProtocol = Local::create();
+    auto localDevice = Device::create(localProtocol, "i-score");
 
     // Minuit device creation
     cout << "\nMinuit device\n";
-    Minuit minuitDeviceParameters{"127.0.0.1", 9998, 13579};
-    auto minuitDevice = Device::create(minuitDeviceParameters, "newDevice");
+    auto minuitProtocol = Minuit::create("127.0.0.1", 9998, 13579);
+    auto minuitDevice = Device::create(minuitProtocol, "newDevice");
 
     // Minuit tree building
     minuitDevice->updateNamespace();

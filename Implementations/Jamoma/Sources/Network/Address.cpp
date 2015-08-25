@@ -3,26 +3,26 @@
 # pragma mark -
 # pragma mark Life cycle
 
-JamomaAddress::JamomaAddress(shared_ptr<Device> device, TTObject aData) :
-mDevice(device),
-mData(aData),
+JamomaAddress::JamomaAddress(shared_ptr<Node> node, TTObject aData) :
+mNode(node),
+mObject(aData),
 mValueType(Value::Type::IMPULSE),
 mAccessMode(AccessMode::BI),
 mBoundingMode(BoundingMode::FREE),
 mRepetitionFilter(false)
 {
   // edit value type, access mode, bounding mode and repetition filter attribute
-  if (mData.valid())
+  if (mObject.valid())
   {
-    TTSymbol objectName = mData.name();
+    TTSymbol objectName = mObject.name();
     
     if (objectName == kTTSym_Mirror)
-      objectName = TTMirrorPtr(mData.instance())->getName();
+      objectName = TTMirrorPtr(mObject.instance())->getName();
     
     if (objectName == "Data")
     {
       TTSymbol type;
-      mData.get("type", type);
+      mObject.get("type", type);
       
       if (type == kTTSym_none)
       {
@@ -61,7 +61,7 @@ mRepetitionFilter(false)
       }
       
       TTSymbol service;
-      mData.get("service", service);
+      mObject.get("service", service);
       
       if (service == kTTSym_parameter)
         mAccessMode = AccessMode::BI;
@@ -71,7 +71,7 @@ mRepetitionFilter(false)
         mAccessMode = AccessMode::GET;
       
       TTValue range;
-      mData.get("rangeBounds", range);
+      mObject.get("rangeBounds", range);
       
       if (type == kTTSym_none)
       {
@@ -112,7 +112,7 @@ mRepetitionFilter(false)
       {
         // we need to know the size of the array to setup the domain
         TTValue v;
-        mData.get("value", v);
+        mObject.get("value", v);
         
         vector<const Value*> tuple_min;
         vector<const Value*> tuple_max;
@@ -139,7 +139,7 @@ mRepetitionFilter(false)
       }
       
       TTSymbol clipmode;
-      mData.get("rangeClipmode", clipmode);
+      mObject.get("rangeClipmode", clipmode);
       
       if (clipmode == kTTSym_none)
         mBoundingMode = BoundingMode::FREE;
@@ -154,16 +154,16 @@ mRepetitionFilter(false)
       else if (clipmode == kTTSym_fold)
         mBoundingMode = BoundingMode::FOLD;
       
-      mData.get("repetitionFilter", mRepetitionFilter);
+      mObject.get("repetitionFilter", mRepetitionFilter);
       
       // enable callback to be notified each time the value change
       TTObject    callback("callback");
-      TTValue     args(TTPtr(this), mData);
+      TTValue     args(TTPtr(this), mObject);
       callback.set("baton", args);
       callback.set("function", TTPtr(&JamomaAddress::ValueCallback));
       
       TTAttributePtr attribute;
-      mData.instance()->findAttribute("value", &attribute);
+      mObject.instance()->findAttribute("value", &attribute);
       attribute->registerObserverForNotifications(callback);
     }
   }
@@ -178,7 +178,7 @@ JamomaAddress::~JamomaAddress()
 bool JamomaAddress::updateValue() const
 {
   TTValue v;
-  mData.get("value", v);
+  mObject.get("value", v);
   
   // clear former value
   delete mValue;
@@ -202,21 +202,16 @@ bool JamomaAddress::sendValue(const Value * value) const
   // copy the new value
   mValue = value->clone();
   
-  TTValue v;
-  convertValueIntoTTValue(mValue, v);
-  
-  if (mData.name() == "Data")
-    return !mData.send("Command", v);
-  else
-    return !mData.set("value", v);
+  // use Device Protocol
+  return false; //mNode->getDevice()->getProtocol()->pushAddressValue(this);
 }
 
 # pragma mark -
 # pragma mark Network
 
-const shared_ptr<Device> & JamomaAddress::getDevice() const
+const shared_ptr<Node> & JamomaAddress::getNode() const
 {
-  return mDevice;
+  return mNode;
 }
 
 # pragma mark -
@@ -237,11 +232,11 @@ Address & JamomaAddress::setAccessMode(AccessMode accessMode)
   mAccessMode = accessMode;
   
   if (mAccessMode == AccessMode::BI)
-    mData.set("service", kTTSym_parameter);
+    mObject.set("service", kTTSym_parameter);
   else if (mAccessMode == AccessMode::SET)
-    mData.set("service", kTTSym_message);
+    mObject.set("service", kTTSym_message);
   else if (mAccessMode == AccessMode::GET)
-    mData.set("service", kTTSym_return);
+    mObject.set("service", kTTSym_return);
   
   return *this;
 }
@@ -274,7 +269,7 @@ Address & JamomaAddress::setDomain(shared_ptr<Domain> domain)
     }
   }
   
-  mData.set("rangeBounds", range);
+  mObject.set("rangeBounds", range);
   
   return *this;
 }
@@ -289,13 +284,13 @@ Address & JamomaAddress::setBoundingMode(BoundingMode boundingMode)
   mBoundingMode = boundingMode;
   
   if (mBoundingMode == BoundingMode::FREE)
-    mData.set("rangeClipmode", kTTSym_none);
+    mObject.set("rangeClipmode", kTTSym_none);
   else if (mBoundingMode == BoundingMode::CLIP)
-    mData.set("rangeClipmode", kTTSym_both);
+    mObject.set("rangeClipmode", kTTSym_both);
   else if (mBoundingMode == BoundingMode::WRAP)
-    mData.set("rangeClipmode", kTTSym_wrap);
+    mObject.set("rangeClipmode", kTTSym_wrap);
   else if (mBoundingMode == BoundingMode::FOLD)
-    mData.set("rangeClipmode", kTTSym_fold);
+    mObject.set("rangeClipmode", kTTSym_fold);
   
   return *this;
 }
@@ -309,7 +304,7 @@ Address & JamomaAddress::setRepetitionFilter(bool repetitionFilter)
 {
   mRepetitionFilter = repetitionFilter;
   
-  mData.set("repetitionsFilter", repetitionFilter);
+  mObject.set("repetitionsFilter", repetitionFilter);
   
   return *this;
 }
@@ -350,7 +345,7 @@ TTErr JamomaAddress::ValueCallback(const TTValue& baton, const TTValue& value)
   TTObject aData = baton[1];
   
   // check data object
-  if (aData.instance() == self->mData.instance())
+  if (aData.instance() == self->mObject.instance())
   {
     if (self->callbacks().size() > 0)
     {
