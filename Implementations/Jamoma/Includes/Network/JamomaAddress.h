@@ -58,7 +58,7 @@ public:
 
   const Value * getValue() const override;
 
-  bool sendValue(const Value * value) const override;
+  bool sendValue(const Value *) const override;
 
 # pragma mark -
 # pragma mark Network
@@ -72,26 +72,26 @@ public:
 
   AccessMode getAccessMode() const override;
 
-  Address & setAccessMode(AccessMode accessMode) override;
+  Address & setAccessMode(AccessMode) override;
   
   const shared_ptr<Domain> & getDomain() const override;
   
-  Address & setDomain(shared_ptr<Domain> domain) override;
+  Address & setDomain(shared_ptr<Domain>) override;
   
   BoundingMode getBoundingMode() const override;
 
-  Address & setBoundingMode(BoundingMode boundingMode) override;
+  Address & setBoundingMode(BoundingMode) override;
 
   bool getRepetitionFilter() const override;
 
-  Address & setRepetitionFilter(bool repetitionFilter) override;
+  Address & setRepetitionFilter(bool) override;
 
 # pragma mark -
 # pragma mark Callback
 
-  Address::ValueCallback getValueCallback() const override;
- 
-  void setValueCallback(Address::ValueCallback callback) override;
+  Address::ValueCallbackIterator addValueCallback(Address::ValueCallback) override;
+  
+  void removeValueCallback(Address::ValueCallbackIterator) override;
 
 # pragma mark -
 # pragma mark Expression
@@ -103,11 +103,11 @@ public:
 
 private:
 
-  static TTErr ValueCallback(const TTValue& baton, const TTValue& value);
+  static TTErr ValueCallback(const TTValue&, const TTValue&);
 
-  Value * convertTTValueIntoValue(const TTValue& v, Value::Type valueType) const;
+  Value * convertTTValueIntoValue(const TTValue&, Value::Type) const;
   
-  void convertValueIntoTTValue(const Value * value, TTValue & v) const;
+  void convertValueIntoTTValue(const Value *, TTValue &) const;
   
-  string buildNodePath(shared_ptr<Node> node) const;
+  string buildNodePath(shared_ptr<Node>) const;
 };

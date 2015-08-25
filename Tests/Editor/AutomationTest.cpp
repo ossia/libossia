@@ -61,7 +61,7 @@ private Q_SLOTS:
         local_device->emplace(local_device->children().begin(), "child");
         auto address = local_device->children().front()->createAddress(Value::Type::FLOAT);
         auto address_callback = std::bind(&AutomationTest::address_callback, this, _1);
-        address->setValueCallback(address_callback);
+        address->addValueCallback(address_callback);
 
         auto curve = Curve<float>::create();
         auto linearSegment = CurveSegmentLinear<float>::create(curve);

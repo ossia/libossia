@@ -46,31 +46,31 @@ int main()
     
     auto oscImpulseNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_impulse"));
     auto oscImpulseAddress = oscImpulseNode->createAddress(Value::Type::IMPULSE);
-    oscImpulseAddress->setValueCallback(callback);
+    oscImpulseAddress->addValueCallback(callback);
     
     auto oscBoolNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_bool"));
     auto oscBoolAddress = oscBoolNode->createAddress(Value::Type::BOOL);
-    oscBoolAddress->setValueCallback(callback);
+    oscBoolAddress->addValueCallback(callback);
     
     auto oscIntNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_int"));
     auto oscIntAddress = oscIntNode->createAddress(Value::Type::INT);
-    oscIntAddress->setValueCallback(callback);
+    oscIntAddress->addValueCallback(callback);
     
     auto oscFloatNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_float"));
     auto oscFloatAddress = oscFloatNode->createAddress(Value::Type::FLOAT);
-    oscFloatAddress->setValueCallback(callback);
+    oscFloatAddress->addValueCallback(callback);
     
     auto oscStringNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_string"));
     auto oscStringAddress = oscStringNode->createAddress(Value::Type::STRING);
-    oscStringAddress->setValueCallback(callback);
+    oscStringAddress->addValueCallback(callback);
     
     auto oscDestinationNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_destination"));
     auto oscDestinationAddress = oscDestinationNode->createAddress(Value::Type::DESTINATION);
-    oscDestinationAddress->setValueCallback(callback);
+    oscDestinationAddress->addValueCallback(callback);
     
     auto oscTupleNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_tuple"));
     auto oscTupleAddress = oscTupleNode->createAddress(Value::Type::TUPLE);
-    oscTupleAddress->setValueCallback(callback);
+    oscTupleAddress->addValueCallback(callback);
     
     // update tree value
     Impulse n;

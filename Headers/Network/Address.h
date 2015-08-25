@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <memory>
+#include <list>
 #include <string>
 #include <functional>
 
@@ -132,13 +132,34 @@ public:
   /*! to get the value back */
   using ValueCallback = std::function<void(const Value *)>;
   
-  /*! get the address value callback function
-   \return #ValueCallback function */
-  virtual ValueCallback getValueCallback() const = 0;
+  /*! to store a set of ValueCallback functions */
+  using ValueCallbackContainer = std::list<ValueCallback>;
   
-  /*! set the address value callback function
-   \param #ValueCallback function */
-  virtual void setValueCallback(ValueCallback) = 0;
+  /*! to retreive a ValueCallback function into ValueCallbackContainer */
+  using ValueCallbackIterator = std::list<ValueCallback>::iterator;
+  
+  /*! add an value callback function
+   \param #ValueCallback function
+   \return #ValueCallbackIterator where the function is stored */
+  virtual ValueCallbackIterator addValueCallback(ValueCallback) = 0;
+  
+  /*! remove a value callback function
+   \param #ValueCallbackIterator where the function is stored
+   \return #ValueCallback function */
+  virtual void removeValueCallback(ValueCallbackIterator) = 0;
+  
+  /*! get value callback functions of the address
+   \return #ValueCallbackContainer */
+  ValueCallbackContainer& callbacks()
+  { return m_callbacks; }
+  
+  /*! get value callback functions of the address
+   \return #ValueCallbackContainer */
+  const ValueCallbackContainer& callbacks() const
+  { return m_callbacks; }
+  
+protected:
+  ValueCallbackContainer m_callbacks;
   
 };
 }

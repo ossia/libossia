@@ -317,14 +317,20 @@ Address & JamomaAddress::setRepetitionFilter(bool repetitionFilter)
 # pragma mark -
 # pragma mark Callback
 
-Address::ValueCallback JamomaAddress::getValueCallback() const
+Address::ValueCallbackIterator JamomaAddress::addValueCallback(Address::ValueCallback callback)
 {
-  return mCallback;
+  callbacks().push_back(callback);
+    
+  //! \todo if (callbacks().size() == 1) call Protocol::addAddressValueListener()
+  
+  return callbacks().end();
 }
 
-void JamomaAddress::setValueCallback(Address::ValueCallback callback)
+void JamomaAddress::removeValueCallback(Address::ValueCallbackIterator iterator)
 {
-  mCallback = callback;
+  callbacks().erase(iterator);
+  
+  //! \todo if (callbacks().size() == 0) call Protocol::removeAddressValueListener()
 }
 
 # pragma mark -
@@ -346,10 +352,12 @@ TTErr JamomaAddress::ValueCallback(const TTValue& baton, const TTValue& value)
   // check data object
   if (aData.instance() == self->mData.instance())
   {
-    if (self->mCallback)
+    if (self->callbacks().size() > 0)
     {
       Value * v = self->convertTTValueIntoValue(value, self->mValueType);
-      self->mCallback(v);
+      
+      for (auto callback : self->callbacks())
+        callback(v);
       
       return kTTErrNone;
     }
