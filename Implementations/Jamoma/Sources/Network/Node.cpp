@@ -4,11 +4,13 @@
 # pragma mark Life cycle
 
 JamomaNode::JamomaNode(TTNodeDirectory * aDirectory, TTNode * aNode, shared_ptr<JamomaNode> aParent) :
-mDevice(nullptr),
 mDirectory(aDirectory),
 mNode(aNode),
 mParent(aParent)
 {
+  if (aParent != nullptr)
+    mDevice = aParent->mDevice;
+
   if (mNode)
   {
     // auto edit address if the node already manages a valid Data or Mirror object

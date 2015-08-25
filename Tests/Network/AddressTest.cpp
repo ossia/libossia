@@ -20,7 +20,7 @@ private Q_SLOTS:
         auto address = local_device->children().front()->createAddress();
         QVERIFY(address != nullptr);
         
-        QVERIFY(address->getDevice() != nullptr);
+        QVERIFY(address->getDevice() == local_device);
         
         QVERIFY(address->getValueType() == Value::Type::IMPULSE);
         

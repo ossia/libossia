@@ -49,4 +49,10 @@ public:
 # pragma mark Network
   
   bool updateNamespace() override;
+  
+# pragma mark -
+# pragma mark Implementation specific
+  
+  /* fill JamomaNode::mDevice member after contructor */
+  void setDevice(shared_ptr<Device>);
 };

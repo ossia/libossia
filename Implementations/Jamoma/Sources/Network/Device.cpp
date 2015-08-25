@@ -46,7 +46,13 @@ namespace OSSIA
       
       TTValue v;
       application.get("directory", v);
-      return make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+      
+      shared_ptr<JamomaDevice> device = make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+      
+       // as it is not possible to call shared_from_this() into the constructor
+      device->setDevice(device);
+      
+      return device;
     }
     
     Minuit* minuit_protocol = dynamic_cast<Minuit*>(&protocol);
@@ -93,7 +99,13 @@ namespace OSSIA
       
       TTValue v;
       application.get("directory", v);
-      return make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+      
+      shared_ptr<JamomaDevice> device = make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+      
+      // as it is not possible to call shared_from_this() into the constructor
+      device->setDevice(device);
+      
+      return device;
     }
     
     OSC* osc_protocol = dynamic_cast<OSC*>(&protocol);
@@ -127,7 +139,13 @@ namespace OSSIA
       
       TTValue v;
       application.get("directory", v);
-      return make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+      
+      shared_ptr<JamomaDevice> device = make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+      
+      // as it is not possible to call shared_from_this() into the constructor
+      device->setDevice(device);
+      
+      return device;
     }
     
     return nullptr;
@@ -170,4 +188,12 @@ bool JamomaDevice::updateNamespace()
     throw runtime_error("namespace empty after the update");
   
   return err == kTTErrNone;
+}
+
+# pragma mark -
+# pragma mark Implementation specific
+
+void JamomaDevice::setDevice(shared_ptr<Device> device)
+{
+  mDevice = device;
 }
