@@ -36,7 +36,7 @@ JamomaNode::~JamomaNode()
 
 shared_ptr<Device> JamomaNode::getDevice() const
 {
-  return mDevice;
+  return mDevice.lock();
 }
 
 shared_ptr<Node> JamomaNode::getParent() const
@@ -170,7 +170,7 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
   if (!err)
   {
     // store the new node into the Container
-    return children().insert(pos, make_shared<JamomaNode>(mDirectory, node, mDevice, shared_from_this()));
+    return children().insert(pos, make_shared<JamomaNode>(mDirectory, node, mDevice.lock(), shared_from_this()));
   }
   
   return Container<Node>::iterator();
@@ -206,7 +206,7 @@ void JamomaNode::buildChildren()
       TTNodePtr child = TTNodePtr(TTPtr(childrenList.current()[0]));
       
       // build child node
-      shared_ptr<JamomaNode> newNode = make_shared<JamomaNode>(mDirectory, child, mDevice, shared_from_this());
+      shared_ptr<JamomaNode> newNode = make_shared<JamomaNode>(mDirectory, child, mDevice.lock(), shared_from_this());
       
       // store the child node
       children().push_back(newNode);

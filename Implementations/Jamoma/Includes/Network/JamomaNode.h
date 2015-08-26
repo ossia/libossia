@@ -37,8 +37,7 @@ protected:
   TTNodeDirectory *         mDirectory{};
   TTNode *                  mNode{};
   
-  shared_ptr<Device>        mDevice;
-  
+  weak_ptr<Device>          mDevice;
   weak_ptr<JamomaNode>      mParent;
   shared_ptr<Address>       mAddress;
   
