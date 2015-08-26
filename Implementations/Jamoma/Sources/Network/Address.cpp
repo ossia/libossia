@@ -183,7 +183,7 @@ const shared_ptr<Node> & JamomaAddress::getNode() const
   return mNode;
 }
 
-bool JamomaAddress::pullValue()
+const Value * JamomaAddress::pullValue()
 {
   //! \todo use the device protocol to pull address value
   
@@ -196,20 +196,25 @@ bool JamomaAddress::pullValue()
   // create new value
   mValue = convertTTValueIntoValue(v, mValueType);
   
-  return mValue != nullptr;
+  return mValue;
 }
 
-bool JamomaAddress::pushValue() const
+Address & JamomaAddress::pushValue(const Value * value)
 {
+  if (value != nullptr)
+    setValue(value);
+  
   //! \todo use the device protocol to push address value
   
   TTValue v;
   convertValueIntoTTValue(mValue, v);
-  
+
   if (mObject.name() == "Data")
-    return !mObject.send("Command", v);
+    mObject.send("Command", v);
   else
-    return !mObject.set("value", v);
+    mObject.set("value", v);
+  
+  return *this;
 }
 
 # pragma mark -

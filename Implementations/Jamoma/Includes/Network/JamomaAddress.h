@@ -63,9 +63,9 @@ public:
   
   const shared_ptr<Node> & getNode() const override;
   
-  bool pullValue() override;
+  const Value * pullValue() override;
   
-  bool pushValue() const override;
+  Address & pushValue(const Value * = nullptr) override;
   
 # pragma mark -
 # pragma mark Accessors
