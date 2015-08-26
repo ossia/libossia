@@ -44,6 +44,8 @@
 		4682EECA1B8CB84A00E4C5CF /* JamomaMIDI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaMIDI.h; sourceTree = "<group>"; };
 		4682EECB1B8CB84A00E4C5CF /* JamomaMinuit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaMinuit.h; sourceTree = "<group>"; };
 		4682EECC1B8CB84A00E4C5CF /* JamomaOSC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaOSC.h; sourceTree = "<group>"; };
+		4682EECD1B8DC35B00E4C5CF /* JamomaProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaProtocol.h; sourceTree = "<group>"; };
+		4682EECE1B8DC43E00E4C5CF /* Protocol.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Protocol.cpp; sourceTree = "<group>"; };
 		4689BADE1ABA20BD00D1BA4E /* Clock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
 		4689BADF1ABA223800D1BA4E /* Address.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Address.h; sourceTree = "<group>"; };
 		4689BAE11ABA223800D1BA4E /* Device.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Device.h; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 				46502A751AC2AB340067AB66 /* Address.cpp */,
 				46502A741AC2AB2C0067AB66 /* Device.cpp */,
 				46502A761AC2AB410067AB66 /* Node.cpp */,
+				4682EECE1B8DC43E00E4C5CF /* Protocol.cpp */,
 				4682EEC21B8C731500E4C5CF /* Protocol */,
 			);
 			path = Network;
@@ -223,6 +226,7 @@
 				46B3298A1B69141A0006B1BB /* JamomaAddress.h */,
 				46B329881B6911DF0006B1BB /* JamomaDevice.h */,
 				46B329891B6911DF0006B1BB /* JamomaNode.h */,
+				4682EECD1B8DC35B00E4C5CF /* JamomaProtocol.h */,
 				4682EEC81B8CB84A00E4C5CF /* Protocol */,
 			);
 			path = Network;

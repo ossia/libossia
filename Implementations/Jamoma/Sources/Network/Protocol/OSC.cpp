@@ -47,13 +47,7 @@ bool JamomaOSC::pullAddressValue(std::shared_ptr<Address>) const
 
 bool JamomaOSC::pushAddressValue(std::shared_ptr<Address>) const
 {
-  /*
-  TTValue v;
-  address->convertValueIntoTTValue(address->mValue, v);
-  
-  // because TTApplication with OSC protocol use proxy Data
-  return !address->mObject.send("Command", v);
-   */
+  return false;
 }
 
 bool JamomaOSC::observeAddressValue(std::shared_ptr<Address>, bool) const

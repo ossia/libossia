@@ -47,13 +47,7 @@ bool JamomaMinuit::pullAddressValue(std::shared_ptr<Address>) const
 
 bool JamomaMinuit::pushAddressValue(std::shared_ptr<Address>) const
 {
-   /*
-  TTValue v;
-  address->convertValueIntoTTValue(address->mValue, v);
-  
-  // because TTApplication with Minuit protocol use Mirror
-  return !address->mObject.set("value", v);
-    */
+  return false;
 }
 
 bool JamomaMinuit::observeAddressValue(std::shared_ptr<Address>, bool) const

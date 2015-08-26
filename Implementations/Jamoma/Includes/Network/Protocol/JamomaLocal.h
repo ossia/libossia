@@ -15,10 +15,14 @@
 
 #include "Network/Protocol/Local.h"
 
+#include "Network/JamomaProtocol.h"
+
+#include "TTModular.h"
+
 using namespace OSSIA;
 using namespace std;
 
-class JamomaLocal : public Local
+class JamomaLocal : public Local, public JamomaProtocol
 {
   
 public:

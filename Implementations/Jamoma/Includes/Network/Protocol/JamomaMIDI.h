@@ -15,10 +15,14 @@
 
 #include "Network/Protocol/MIDI.h"
 
+#include "Network/JamomaProtocol.h"
+
+#include "TTModular.h"
+
 using namespace OSSIA;
 using namespace std;
 
-class JamomaMIDI : public MIDI
+class JamomaMIDI : public MIDI, public JamomaProtocol
 {
 
 private:

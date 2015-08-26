@@ -41,7 +41,10 @@ public:
   
   virtual void launch() const override
   {
-    address->sendValue(value);
+    address->setValue(value);
+    
+    //! \todo use address->pushValue()
+    //address->getNode()->getDevice()->getProtocol()->pushAddressValue(address);
   }
 
 # pragma mark -

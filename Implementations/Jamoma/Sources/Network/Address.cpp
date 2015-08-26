@@ -170,13 +170,23 @@ mRepetitionFilter(false)
 }
 
 JamomaAddress::~JamomaAddress()
-{}
+{
+  // stop observation
+  //mNode->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), false);
+}
 
 # pragma mark -
-# pragma mark Value
+# pragma mark Network
 
-bool JamomaAddress::updateValue() const
+const shared_ptr<Node> & JamomaAddress::getNode() const
 {
+  return mNode;
+}
+
+bool JamomaAddress::pullValue()
+{
+  //! \todo use the device protocol to pull address value
+  
   TTValue v;
   mObject.get("value", v);
   
@@ -189,12 +199,28 @@ bool JamomaAddress::updateValue() const
   return mValue != nullptr;
 }
 
+bool JamomaAddress::pushValue() const
+{
+  //! \todo use the device protocol to push address value
+  
+  TTValue v;
+  convertValueIntoTTValue(mValue, v);
+  
+  if (mObject.name() == "Data")
+    return !mObject.send("Command", v);
+  else
+    return !mObject.set("value", v);
+}
+
+# pragma mark -
+# pragma mark Accessors
+
 const Value * JamomaAddress::getValue() const
 {
   return mValue;
 }
 
-bool JamomaAddress::sendValue(const Value * value) const
+Address & JamomaAddress::setValue(const Value * value)
 {
   // clear former value
   delete mValue;
@@ -202,20 +228,8 @@ bool JamomaAddress::sendValue(const Value * value) const
   // copy the new value
   mValue = value->clone();
   
-  // use Device Protocol
-  return false; //mNode->getDevice()->getProtocol()->pushAddressValue(this);
+  return *this;
 }
-
-# pragma mark -
-# pragma mark Network
-
-const shared_ptr<Node> & JamomaAddress::getNode() const
-{
-  return mNode;
-}
-
-# pragma mark -
-# pragma mark Accessors
 
 Value::Type JamomaAddress::getValueType() const
 {
@@ -316,7 +330,8 @@ Address::ValueCallbackIterator JamomaAddress::addValueCallback(Address::ValueCal
 {
   callbacks().push_back(callback);
     
-  //! \todo if (callbacks().size() == 1) call Protocol::addAddressValueListener()
+  if (callbacks().size() == 1)
+    ;//mNode->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), true);
   
   return callbacks().end();
 }
@@ -325,7 +340,8 @@ void JamomaAddress::removeValueCallback(Address::ValueCallbackIterator iterator)
 {
   callbacks().erase(iterator);
   
-  //! \todo if (callbacks().size() == 0) call Protocol::removeAddressValueListener()
+  if (callbacks().size() == 0)
+    ;//mNode->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), false);
 }
 
 # pragma mark -

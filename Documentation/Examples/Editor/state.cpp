@@ -59,7 +59,7 @@ int main()
 
                     // change the value
                     Int i(10);
-                    bitdepthAddress->sendValue(&i);
+                    bitdepthAddress->setValue(&i);
                 }
                 else if (parameter_name == "samplerateRatio")
                 {
@@ -70,7 +70,7 @@ int main()
 
                     // change the value
                     Float f(0.5);
-                    samplerateAddress->sendValue(&f);
+                    samplerateAddress->setValue(&f);
                 }
             }
         }

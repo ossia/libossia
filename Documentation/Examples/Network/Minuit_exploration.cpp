@@ -58,7 +58,7 @@ void explore(const shared_ptr<Node> node)
             address->addValueCallback(callback);
             
             // update the value
-            address->updateValue();
+            address->pullValue();
             
             // display address info
             cout << " : ";

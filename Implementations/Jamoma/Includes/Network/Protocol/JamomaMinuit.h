@@ -17,10 +17,14 @@
 
 #include "Network/Protocol/Minuit.h"
 
+#include "Network/JamomaProtocol.h"
+
+#include "TTModular.h"
+
 using namespace OSSIA;
 using namespace std;
 
-class JamomaMinuit : public Minuit
+class JamomaMinuit : public Minuit, public JamomaProtocol
 {
 
 private:

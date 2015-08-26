@@ -74,25 +74,25 @@ int main()
     
     // update tree value
     Impulse n;
-    oscImpulseAddress->sendValue(&n);
+    oscImpulseAddress->setValue(&n);
     
     Bool b(true);
-    oscBoolAddress->sendValue(&b);
+    oscBoolAddress->setValue(&b);
     
     Int i(5);
-    oscIntAddress->sendValue(&i);
+    oscIntAddress->setValue(&i);
     
     Float f(0.5);
-    oscFloatAddress->sendValue(&f);
+    oscFloatAddress->setValue(&f);
     
     String s("hello world !");
-    oscStringAddress->sendValue(&s);
+    oscStringAddress->setValue(&s);
     
     Destination d(oscFloatNode);
-    oscDestinationAddress->sendValue(&d);
+    oscDestinationAddress->setValue(&d);
     
     Tuple t(new Float(0.1), new Float(0.2), new Float(0.3));
-    oscTupleAddress->sendValue(&t);
+    oscTupleAddress->setValue(&t);
     
     while (true)
         ;

@@ -66,23 +66,30 @@ public:
   /*! get the node where the address is
    \return std::shared_ptr<#Node> the node where the address is */
   virtual const std::shared_ptr<Node> & getNode() const = 0;
-
-# pragma mark -
-# pragma mark Editor
   
-  /*! update the address value internaly without updating client */
-  virtual bool updateValue() const = 0;
+  /*! pull the address value from a device using its protocol
+   \see Protocol::pullAddressValue method
+   \return true if it succeeds */
+  virtual bool pullValue() = 0;
   
-  /*! get the address value
-   \return const #Value* the value */
-  virtual const Value * getValue() const = 0;
-  
-  /*! send a value to the address
-   \param const #Value* the value */
-  virtual bool sendValue(const Value*) const = 0;
+  /*! push the address value to a device using its protocol
+   \see Protocol::pushAddressValue method
+   \return true if it succeeds */
+  virtual bool pushValue() const = 0;
 
 # pragma mark -
 # pragma mark Accessors
+  
+  /*! get the address value
+   \details call pullValue before to sync the value with the device
+   \return const #Value* the value */
+  virtual const Value * getValue() const = 0;
+  
+  /*! set the address value
+   \details call pushValue after to sync the value with the device
+   \param const #Value* the value 
+   \return #Address the address */
+  virtual Address & setValue(const Value*) = 0;
   
   /*! get the address type
    \return #Value::Type of the address */

@@ -233,42 +233,42 @@ private Q_SLOTS:
 
         // update node's value
         Bool b1(false);
-        localBoolAddress1->sendValue(&b1);
+        localBoolAddress1->setValue(&b1);
 
         Bool b2(true);
-        localBoolAddress2->sendValue(&b2);
+        localBoolAddress2->setValue(&b2);
 
         Int i1(5);
-        localIntAddress1->sendValue(&i1);
+        localIntAddress1->setValue(&i1);
 
         Int i2(10);
-        localIntAddress2->sendValue(&i2);
+        localIntAddress2->setValue(&i2);
 
         Float f1(0.5);
-        localFloatAddress1->sendValue(&f1);
+        localFloatAddress1->setValue(&f1);
 
         Float f2(0.2);
-        localFloatAddress2->sendValue(&f2);
+        localFloatAddress2->setValue(&f2);
 
         String s1("abc");
-        localStringAddress1->sendValue(&s1);
+        localStringAddress1->setValue(&s1);
 
         String s2("bcd");
-        localStringAddress2->sendValue(&s2);
+        localStringAddress2->setValue(&s2);
 
         Destination d1(localFloatNode1);
-        localDestinationAddress1->sendValue(&d1);
+        localDestinationAddress1->setValue(&d1);
 
         Destination d2(localFloatNode2);
-        localDestinationAddress2->sendValue(&d2);
+        localDestinationAddress2->setValue(&d2);
 
         std::vector<const Value*> value1 = {new Float(0.1), new Float(0.2), new Float(0.3)};
         Tuple t1(value1);
-        localTupleAddress1->sendValue(&t1);
+        localTupleAddress1->setValue(&t1);
 
         std::vector<const Value*> value2 = {new Float(0.2), new Float(0.3), new Float(0.4)};
         Tuple t2(value2);
-        localTupleAddress2->sendValue(&t2);
+        localTupleAddress2->setValue(&t2);
 
         // evaluate expressions with Destination
         auto testDestinationExprA = ExpressionAtom::create(new Destination(localImpulseNode1),

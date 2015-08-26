@@ -220,7 +220,7 @@ int main()
     cout << "***** START *****" << endl;
     
     // play the main TimeConstraint
-    local_play_address->sendValue(&True);
+    local_play_address->setValue(&True);
     
     // wait the main TimeConstraint end
     while (main_constraint->getRunning())
@@ -245,7 +245,7 @@ int main()
     // play it again faster starting at 500 ms
     main_constraint->setSpeed(2.);
     main_constraint->setOffset(500.);
-    local_play_address->sendValue(&True);
+    local_play_address->setValue(&True);
     
     // wait the main TimeConstraint end
     while (main_constraint->getRunning())

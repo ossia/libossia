@@ -15,7 +15,6 @@ namespace OSSIA
     TTObject applicationManager;
     TTObject application;
     
-    //! \todo we shouldn't init each time we create an object ...
     TTFoundationInit("/usr/local/jamoma/extensions/", true);
     TTModularInit("/usr/local/jamoma/extensions", true);
     

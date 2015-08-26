@@ -14,16 +14,23 @@
 #pragma once
 
 #include "Network/Address.h"
+#include "Network/Device.h"
 #include "Network/Node.h"
+
+#include "Network/JamomaProtocol.h"
 
 #include "TTModular.h"
 
 using namespace OSSIA;
 using namespace std;
 
+class JamomaProtocol;
+
 class JamomaAddress : public Address
 {
 
+  friend JamomaProtocol;
+  
 private:
 
 # pragma mark -
@@ -55,18 +62,17 @@ public:
 # pragma mark Network
   
   const shared_ptr<Node> & getNode() const override;
-
+  
+  bool pullValue() override;
+  
+  bool pushValue() const override;
+  
 # pragma mark -
-# pragma mark Editor
-
-  bool updateValue() const override;
+# pragma mark Accessors
 
   const Value * getValue() const override;
 
-  bool sendValue(const Value *) const override;
-
-# pragma mark -
-# pragma mark Accessors
+  Address & setValue(const Value *) override;
 
   Value::Type getValueType() const override;
 

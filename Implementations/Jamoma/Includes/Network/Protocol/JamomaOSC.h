@@ -17,10 +17,14 @@
 
 #include "Network/Protocol/OSC.h"
 
+#include "Network/JamomaProtocol.h"
+
+#include "TTModular.h"
+
 using namespace OSSIA;
 using namespace std;
 
-class JamomaOSC : public OSC
+class JamomaOSC : public OSC, public JamomaProtocol
 {
 
 private:

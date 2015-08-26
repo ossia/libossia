@@ -19,20 +19,14 @@ JamomaLocal::~JamomaLocal()
 # pragma mark -
 # pragma mark Operation
 
-bool JamomaLocal::pullAddressValue(std::shared_ptr<Address>) const
+bool JamomaLocal::pullAddressValue(std::shared_ptr<Address> address) const
 {
   return false;
 }
 
 bool JamomaLocal::pushAddressValue(std::shared_ptr<Address> address) const
 {
-  /*
-  TTValue v;
-  address->convertValueIntoTTValue(address->mValue, v);
-  
-  // because local TTApplication use Data
-  return !address->mObject.send("Command", v);
-  */
+  return false;
 }
 
 bool JamomaLocal::observeAddressValue(std::shared_ptr<Address>, bool) const
