@@ -8,25 +8,7 @@ mDirectory(aDirectory),
 mNode(aNode),
 mDevice(aDevice),
 mParent(aParent)
-{
-  if (mNode)
-  {
-    // auto edit address if the node already manages a valid Data or Mirror object
-    TTObject object = mNode->getObject();
-    if (object.valid())
-    {
-      TTSymbol objectName = object.name();
-      
-      if (objectName == kTTSym_Mirror)
-        objectName = TTMirrorPtr(object.instance())->getName();
-      
-      if (objectName == "Data")
-      {
-        mAddress = shared_ptr<Address>(new JamomaAddress(shared_from_this(), object));
-      }
-    }
-  }
-}
+{}
 
 JamomaNode::~JamomaNode()
 {}
@@ -208,11 +190,34 @@ void JamomaNode::buildChildren()
       // build child node
       shared_ptr<JamomaNode> newNode = make_shared<JamomaNode>(mDirectory, child, mDevice.lock(), shared_from_this());
       
+      // build address if the node already manages a valid Data or Mirror object
+      newNode->buildAddress();
+      
       // store the child node
       children().push_back(newNode);
       
       // continue recursively
       newNode->buildChildren();
+    }
+  }
+}
+
+void JamomaNode::buildAddress()
+{
+  if (mNode)
+  {
+    TTObject object = mNode->getObject();
+    if (object.valid())
+    {
+      TTSymbol objectName = object.name();
+      
+      if (objectName == kTTSym_Mirror)
+        objectName = TTMirrorPtr(object.instance())->getName();
+      
+      if (objectName == "Data")
+      {
+        mAddress = shared_ptr<Address>(new JamomaAddress(shared_from_this(), object));
+      }
     }
   }
 }

@@ -88,4 +88,5 @@ private:
 protected:
   
   void buildChildren();
+  void buildAddress();
 };

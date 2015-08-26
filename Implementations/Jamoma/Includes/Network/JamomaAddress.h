@@ -36,7 +36,7 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  shared_ptr<Node>    mNode;
+  weak_ptr<Node>      mNode;
   
   mutable TTObject    mObject;
   mutable Value *     mValue{};

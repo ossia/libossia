@@ -75,25 +75,25 @@ int main()
     
     // update tree value
     Impulse n;
-    localImpulseAddress->setValue(&n);
+    localImpulseAddress->pushValue(&n);
     
     Bool b(true);
-    localBoolAddress->setValue(&b);
+    localBoolAddress->pushValue(&b);
     
     Int i(5);
-    localIntAddress->setValue(&i);
+    localIntAddress->pushValue(&i);
     
     Float f(0.5);
-    localFloatAddress->setValue(&f);
+    localFloatAddress->pushValue(&f);
     
     String s("hello world !");
-    localStringAddress->setValue(&s);
+    localStringAddress->pushValue(&s);
     
     Destination d(localFloatNode);
-    localDestinationAddress->setValue(&d);
+    localDestinationAddress->pushValue(&d);
     
     Tuple t(new Float(0.1), new Float(0.2), new Float(0.3));
-    localTupleAddress->setValue(&t);
+    localTupleAddress->pushValue(&t);
     
     // declare a distant program "A" as a Minuit device
     auto minuitProtocol = Minuit::create("127.0.0.1", 9999, 6666);

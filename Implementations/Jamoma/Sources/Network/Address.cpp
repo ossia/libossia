@@ -180,7 +180,7 @@ JamomaAddress::~JamomaAddress()
 
 const shared_ptr<Node> & JamomaAddress::getNode() const
 {
-  return mNode;
+  return mNode.lock();
 }
 
 const Value * JamomaAddress::pullValue()
