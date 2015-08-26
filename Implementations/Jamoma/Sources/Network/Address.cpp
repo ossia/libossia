@@ -172,19 +172,20 @@ mRepetitionFilter(false)
 JamomaAddress::~JamomaAddress()
 {
   // stop observation
-  //mNode->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), false);
+  //! \todo use the device protocol to stop address value observation
 }
 
 # pragma mark -
 # pragma mark Network
 
-const shared_ptr<Node> & JamomaAddress::getNode() const
+const shared_ptr<Node> JamomaAddress::getNode() const
 {
   return mNode.lock();
 }
 
 const Value * JamomaAddress::pullValue()
 {
+  //! \todo move the code below into each protocol pullAddressValue method
   //! \todo use the device protocol to pull address value
   
   TTValue v;
@@ -204,6 +205,7 @@ Address & JamomaAddress::pushValue(const Value * value)
   if (value != nullptr)
     setValue(value);
   
+  //! \todo move the code below into each protocol pushAddressValue method
   //! \todo use the device protocol to push address value
   
   TTValue v;
@@ -336,7 +338,7 @@ Address::ValueCallbackIterator JamomaAddress::addValueCallback(Address::ValueCal
   callbacks().push_back(callback);
     
   if (callbacks().size() == 1)
-    ;//mNode->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), true);
+    ;//! \todo use the device protocol to start address value observation
   
   return callbacks().end();
 }
@@ -346,7 +348,7 @@ void JamomaAddress::removeValueCallback(Address::ValueCallbackIterator iterator)
   callbacks().erase(iterator);
   
   if (callbacks().size() == 0)
-    ;//mNode->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), false);
+    ;//! \todo use the device protocol to stop address value observation
 }
 
 # pragma mark -

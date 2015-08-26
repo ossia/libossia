@@ -61,7 +61,7 @@ public:
 # pragma mark -
 # pragma mark Network
   
-  const shared_ptr<Node> & getNode() const override;
+  const shared_ptr<Node> getNode() const override;
   
   const Value * pullValue() override;
   

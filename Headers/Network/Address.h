@@ -65,7 +65,7 @@ public:
   
   /*! get the node where the address is
    \return std::shared_ptr<#Node> the node where the address is */
-  virtual const std::shared_ptr<Node> & getNode() const = 0;
+  virtual const std::shared_ptr<Node> getNode() const = 0;
   
   /*! pull and return the address value from a device using its protocol
    \see Protocol::pullAddressValue method
