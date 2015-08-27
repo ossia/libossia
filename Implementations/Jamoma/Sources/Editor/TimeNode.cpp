@@ -189,8 +189,8 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
       if (e->getObserveExpression())
         noEventObserveExpression = false;
       
-      //! \note should we pull addresses value if there are expressions containing Destination ?
-      //! \note or maybe enabling observation when observing Expression is enough ?
+      //! \note evaluation of expression on Destination implies the value is pulled (see in Value.cpp)
+      //! and as everything is synchrone, is there a real interest to observe the value ?
       
       timeEvent->getExpression() != nullptr ? timeEvent->getExpression()->evaluate() ? eventsToHappen.push_back(timeEvent) : eventsToDispose.push_back(timeEvent) : eventsToHappen.push_back(timeEvent);
     }

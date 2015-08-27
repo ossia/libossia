@@ -22,11 +22,13 @@ public:
 # pragma mark Life cycle
 
   JamomaExpressionNot(shared_ptr<Expression> expr) :
-  mExpression(expr)
+  mExpression(expr),
+  mResultCallback(std::bind(&JamomaExpressionNot::resultCallback, this, _1))
   {}
 
   JamomaExpressionNot(const JamomaExpressionNot * other) :
-  mExpression(other->mExpression)
+  //! \todo mExpression(other->mExpression->clone()),
+  mResultCallback(std::bind(&JamomaExpressionNot::resultCallback, this, _1))
   {}
 
   shared_ptr<ExpressionNot> clone() const override
@@ -55,7 +57,6 @@ public:
     if (callbacks().size() == 1)
     {
       // start expression observation
-      mResultCallback = std::bind(&JamomaExpressionNot::resultCallback, this, _1);
       mExpression->addCallback(&mResultCallback);
     }
   }
