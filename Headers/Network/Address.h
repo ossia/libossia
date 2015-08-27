@@ -27,11 +27,12 @@ namespace OSSIA
 {
 
 class Node;
-  
-/*! to get the value back */
-using ValueCallback = std::function<void(const Value *)>;
 
-class Address : public Expression, public CallbackContainer<ValueCallback>
+/*! to get the value back
+ \param the returned value */
+using ValueCallback = std::function<void(const Value *)>;
+  
+class Address : public CallbackContainer<ValueCallback>
 {
 
 public:

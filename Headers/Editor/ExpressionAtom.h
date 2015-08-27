@@ -25,7 +25,7 @@
 namespace OSSIA
 {
 
-class ExpressionAtom : public Expression, public CallbackContainer<ResultCallback>
+class ExpressionAtom : public Expression
 {
 
 public:

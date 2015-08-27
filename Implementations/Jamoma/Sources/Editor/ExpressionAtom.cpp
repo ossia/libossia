@@ -135,6 +135,8 @@ public:
     return mSecondValue;
   }
   
+private:
+  
 # pragma mark -
 # pragma mark Implementation Specific
   

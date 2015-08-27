@@ -24,14 +24,15 @@
 namespace OSSIA
 {
   
-/*! to get the result back */
+/*! to get the result back
+ \param the returned result */
 using ResultCallback = std::function<void(bool)>;
 
-class Expression
+class Expression : public CallbackContainer<ResultCallback>
 {
 
 public:
-  
+
 # pragma mark -
 # pragma mark Life cycle
   

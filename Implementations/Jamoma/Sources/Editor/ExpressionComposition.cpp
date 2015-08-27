@@ -2,6 +2,7 @@
 
 using namespace OSSIA;
 using namespace std;
+using namespace std::placeholders;
 
 class JamomaExpressionComposition : public ExpressionComposition
 {
@@ -14,6 +15,9 @@ private:
   shared_ptr<Expression>  mFirstExpression;
   Operator                mOperator;
   shared_ptr<Expression>  mSecondExpression;
+  
+  ResultCallback          mFirstResultCallback;
+  ResultCallback          mSecondResultCallback;
 
 public:
   
@@ -42,23 +46,7 @@ public:
   
   bool evaluate() const override
   {
-    switch (mOperator)
-    {
-    case Operator::AND :
-      {
-        return mFirstExpression->evaluate() && mSecondExpression->evaluate();
-      }
-    case Operator::OR :
-      {
-        return mFirstExpression->evaluate() || mSecondExpression->evaluate();
-      }
-    case Operator::XOR :
-      {
-        return mFirstExpression->evaluate() ^ mSecondExpression->evaluate();
-      }
-    default :
-        return false;
-    }
+    return do_evaluation(mFirstExpression->evaluate(), mSecondExpression->evaluate());
   }
   
 # pragma mark -
@@ -69,7 +57,15 @@ public:
     callbacks().push_back(callback);
     
     if (callbacks().size() == 1)
-      ;//! \todo start operands observation
+    {
+      // start first expression observation
+      mFirstResultCallback = std::bind(&JamomaExpressionComposition::firstResultCallback, this, _1);
+      mFirstExpression->addCallback(&mFirstResultCallback);
+      
+      // start second expression observation
+      mSecondResultCallback = std::bind(&JamomaExpressionComposition::secondResultCallback, this, _1);
+      mSecondExpression->addCallback(&mSecondResultCallback);
+    }
   }
   
   void removeCallback(ResultCallback* callback) override
@@ -77,7 +73,13 @@ public:
     callbacks().erase(find(callbacks().begin(), callbacks().end(), callback));
     
     if (callbacks().size() == 0)
-      ;//! \todo stop operands observation
+    {
+      // stop first expression observation
+      mFirstExpression->removeCallback(&mFirstResultCallback);
+      
+      // stop second expression observation
+      mSecondExpression->removeCallback(&mSecondResultCallback);
+    }
   }
 
 # pragma mark -
@@ -97,6 +99,49 @@ public:
   {
     return mSecondExpression;
   }
+  
+private:
+  
+# pragma mark -
+# pragma mark Implementation Specific
+  
+  bool do_evaluation(bool first, bool second) const
+  {
+    switch (mOperator)
+    {
+      case Operator::AND :
+      {
+        return first && second;
+      }
+      case Operator::OR :
+      {
+        return first || second;
+      }
+      case Operator::XOR :
+      {
+        return first ^ second;
+      }
+      default :
+        return false;
+    }
+  }
+  
+  void firstResultCallback(bool first_result)
+  {
+    bool result = do_evaluation(first_result, mSecondExpression->evaluate());
+    
+    for (auto callback : callbacks())
+      (*callback)(result);
+  }
+  
+  void secondResultCallback(bool second_result)
+  {
+    bool result = do_evaluation(mFirstExpression->evaluate(), second_result);
+    
+    for (auto callback : callbacks())
+      (*callback)(result);
+  }
+
 };
 
 namespace OSSIA

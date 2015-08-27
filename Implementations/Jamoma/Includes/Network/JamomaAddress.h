@@ -91,11 +91,6 @@ public:
   bool getRepetitionFilter() const override;
 
   Address & setRepetitionFilter(bool) override;
-
-# pragma mark -
-# pragma mark Expression
-
-  bool evaluate() const override;
  
 # pragma mark -
 # pragma mark Callback Container

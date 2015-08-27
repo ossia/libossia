@@ -34,6 +34,14 @@ public:
     return m_result;
   }
   
+# pragma mark -
+# pragma mark Callback Container
+  
+  void addCallback(ResultCallback* callback) override
+  {}
+  
+  void removeCallback(ResultCallback* callback) override
+  {}
 };
 
 namespace OSSIA

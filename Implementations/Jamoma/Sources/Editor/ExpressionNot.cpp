@@ -2,6 +2,7 @@
 
 using namespace OSSIA;
 using namespace std;
+using namespace std::placeholders;
 
 class JamomaExpressionNot : public ExpressionNot
 {
@@ -12,6 +13,8 @@ private:
 # pragma mark Implementation specific
   
   shared_ptr<Expression>  mExpression;
+  
+  ResultCallback          mResultCallback;
 
 public:
   
@@ -50,7 +53,11 @@ public:
     callbacks().push_back(callback);
     
     if (callbacks().size() == 1)
-      ;//! \todo start operands observation
+    {
+      // start expression observation
+      mResultCallback = std::bind(&JamomaExpressionNot::resultCallback, this, _1);
+      mExpression->addCallback(&mResultCallback);
+    }
   }
   
   void removeCallback(ResultCallback* callback) override
@@ -58,7 +65,10 @@ public:
     callbacks().erase(find(callbacks().begin(), callbacks().end(), callback));
     
     if (callbacks().size() == 0)
-      ;//! \todo stop operands observation
+    {
+      // stop expression observation
+      mExpression->removeCallback(&mResultCallback);
+    }
   }
 
 # pragma mark -
@@ -67,6 +77,17 @@ public:
   const shared_ptr<Expression> & getExpression() const override
   {
     return mExpression;
+  }
+  
+private:
+  
+# pragma mark -
+# pragma mark Implementation Specific
+  
+  void resultCallback(bool result)
+  {
+    for (auto callback : callbacks())
+      (*callback)(!result);
   }
 };
 

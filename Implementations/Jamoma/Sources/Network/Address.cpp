@@ -331,14 +331,6 @@ Address & JamomaAddress::setRepetitionFilter(bool repetitionFilter)
 }
 
 # pragma mark -
-# pragma mark Expression
-
-bool JamomaAddress::evaluate() const
-{
-  return false;
-}
-
-# pragma mark -
 # pragma mark Callback
 
 void JamomaAddress::addCallback(ValueCallback* callback)

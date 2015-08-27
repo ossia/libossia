@@ -23,7 +23,7 @@
 namespace OSSIA
 {
 
-class ExpressionComposition : public Expression, public CallbackContainer<ResultCallback>
+class ExpressionComposition : public Expression
 {
 
 public:
