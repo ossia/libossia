@@ -54,7 +54,8 @@ void explore(const shared_ptr<Node> node)
         if (address)
         {
             // attach to callback to display value update
-            address->addCallback(printValueCallback);
+            ValueCallback callback = printValueCallback;
+            address->addCallback(&callback);
             
             // update the value
             address->pullValue();

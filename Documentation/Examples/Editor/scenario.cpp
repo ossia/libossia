@@ -60,14 +60,16 @@ int main()
     auto local_play_address = local_play_node->createAddress(Value::Type::BOOL);
     
     // attach /play address to a callback
-    local_play_address->addCallback(local_play_callback);
+    ValueCallback local_play_value_callback = local_play_callback;
+    local_play_address->addCallback(&local_play_value_callback);
     
     // add a /test address
     auto local_test_node = *(local_device->emplace(local_device->children().cend(), "test"));
     auto local_test_address = local_test_node->createAddress(Value::Type::TUPLE);
     
     // attach /test address to their callback
-    local_test_address->addCallback(local_test_callback);
+    ValueCallback local_test_value_callback = local_play_callback;
+    local_test_address->addCallback((ValueCallback*)&local_test_value_callback);
     
     // filter repetitions
     local_test_address->setRepetitionFilter(true);

@@ -100,9 +100,9 @@ public:
 # pragma mark -
 # pragma mark Callback Container
   
-  CallbackContainer<ValueCallback>::CallbackIterator addCallback(ValueCallback) override;
+  void addCallback(ValueCallback*) override;
   
-  void removeCallback(typename CallbackContainer<ValueCallback>::CallbackIterator) override;
+  void removeCallback(ValueCallback*) override;
 
 # pragma mark -
 # pragma mark Implementation specific

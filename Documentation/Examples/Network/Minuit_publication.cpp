@@ -39,36 +39,38 @@ int main()
      /test/my_destination
      /test/my_tuple
      */
+
+    ValueCallback callback = printValueCallback;
     
     auto localTestNode = *(localDevice->emplace(localDevice->children().cend(), "test"));
     
     auto localImpulseNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_impulse"));
     auto localImpulseAddress = localImpulseNode->createAddress(Value::Type::IMPULSE);
-    localImpulseAddress->addCallback(printValueCallback);
+    localImpulseAddress->addCallback(&callback);
     
     auto localBoolNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_bool"));
     auto localBoolAddress = localBoolNode->createAddress(Value::Type::BOOL);
-    localBoolAddress->addCallback(printValueCallback);
+    localBoolAddress->addCallback(&callback);
     
     auto localIntNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_int"));
     auto localIntAddress = localIntNode->createAddress(Value::Type::INT);
-    localIntAddress->addCallback(printValueCallback);
+    localIntAddress->addCallback(&callback);
     
     auto localFloatNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_float"));
     auto localFloatAddress = localFloatNode->createAddress(Value::Type::FLOAT);
-    localFloatAddress->addCallback(printValueCallback);
+    localFloatAddress->addCallback(&callback);
     
     auto localStringNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_string"));
     auto localStringAddress = localStringNode->createAddress(Value::Type::STRING);
-    localStringAddress->addCallback(printValueCallback);
+    localStringAddress->addCallback(&callback);
     
     auto localDestinationNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_destination"));
     auto localDestinationAddress = localDestinationNode->createAddress(Value::Type::DESTINATION);
-    localDestinationAddress->addCallback(printValueCallback);
+    localDestinationAddress->addCallback(&callback);
     
     auto localTupleNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_tuple"));
     auto localTupleAddress = localTupleNode->createAddress(Value::Type::TUPLE);
-    localTupleAddress->addCallback(printValueCallback);
+    localTupleAddress->addCallback(&callback);
     
     // update tree value
     Impulse n;

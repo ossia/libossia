@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <list>
+#include <vector>
 
 namespace OSSIA
 {
@@ -36,33 +36,28 @@ public:
 # pragma mark Callback
   
   /*! to store a set of callback functions */
-  using CallbackList = typename std::list<T>;
-  
-  /*! to retreive a callback function into CallbackList */
-  using CallbackIterator = typename CallbackList::iterator;
+  using CallbackVector = typename std::vector<T*>;
   
   /*! add a callback function
-   \param #T function
-   \return #CallbackIterator where the function is stored */
-  virtual CallbackIterator addCallback(T) = 0;
+   \param #T function pointer */
+  virtual void addCallback(T*) = 0;
   
   /*! remove a result callback function
-   \param #CallbackIterator where the function is stored
-   \return #Callback function */
-  virtual void removeCallback(CallbackIterator) = 0;
+   \param #T function pointer */
+  virtual void removeCallback(T*) = 0;
   
   /*! get callback functions
    \return #CallbackList */
-  CallbackList& callbacks()
+  CallbackVector& callbacks()
   { return m_callbacks; }
   
   /*! get callback functions
    \return #CallbackList */
-  const CallbackList& callbacks() const
+  const CallbackVector& callbacks() const
   { return m_callbacks; }
   
 protected:
-  CallbackList m_callbacks;
+  CallbackVector m_callbacks;
   
 };
   

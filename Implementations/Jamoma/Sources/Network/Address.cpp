@@ -341,19 +341,17 @@ bool JamomaAddress::evaluate() const
 # pragma mark -
 # pragma mark Callback
 
-CallbackContainer<ValueCallback>::CallbackIterator JamomaAddress::addCallback(ValueCallback callback)
+void JamomaAddress::addCallback(ValueCallback* callback)
 {
   callbacks().push_back(callback);
   
   if (callbacks().size() == 1)
     ;//! \todo use the device protocol to start address value observation
-  
-  return callbacks().end();
 }
 
-void JamomaAddress::removeCallback(CallbackContainer<ValueCallback>::CallbackIterator iterator)
+void JamomaAddress::removeCallback(ValueCallback* callback)
 {
-  callbacks().erase(iterator);
+  callbacks().erase(find(callbacks().begin(), callbacks().end(), callback));
   
   if (callbacks().size() == 0)
     ;//! \todo use the device protocol to stop address value observation
@@ -375,7 +373,7 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
       Value * v = self->convertTTValueIntoValue(value, self->mValueType);
       
       for (auto callback : self->callbacks())
-        callback(v);
+        (*callback)(v);
       
       return kTTErrNone;
     }

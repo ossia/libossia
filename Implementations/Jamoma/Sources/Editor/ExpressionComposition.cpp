@@ -64,19 +64,17 @@ public:
 # pragma mark -
 # pragma mark Callback Container
   
-  CallbackContainer<ResultCallback>::CallbackIterator addCallback(ResultCallback callback) override
+  void addCallback(ResultCallback* callback) override
   {
     callbacks().push_back(callback);
     
     if (callbacks().size() == 1)
       ;//! \todo start operands observation
-    
-    return callbacks().end();
   }
   
-  void removeCallback(CallbackContainer<ResultCallback>::CallbackIterator iterator) override
+  void removeCallback(ResultCallback* callback) override
   {
-    callbacks().erase(iterator);
+    callbacks().erase(find(callbacks().begin(), callbacks().end(), callback));
     
     if (callbacks().size() == 0)
       ;//! \todo stop operands observation

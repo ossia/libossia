@@ -343,8 +343,8 @@ private Q_SLOTS:
                                                            ExpressionAtom::Operator::EQUAL,
                                                            new Destination(localIntNode2));
 
-        auto callback = std::bind(&ExpressionAtomTest::result_callback, this, _1);
-        auto callback_iterator = testDestinationExpr->addCallback(callback);
+        ResultCallback callback = std::bind(&ExpressionAtomTest::result_callback, this, _1);
+        testDestinationExpr->addCallback(&callback);
 
         QVERIFY(testDestinationExpr->callbacks().size() == 1);
 
@@ -353,7 +353,7 @@ private Q_SLOTS:
 
         Int i1(5);
         localIntAddress1->pushValue(&i1);
-std::cout << "A" << std::endl;
+
         QVERIFY(m_result_callback_called == true && m_result == false);
 
         m_result = false;
@@ -361,19 +361,19 @@ std::cout << "A" << std::endl;
 
         Int i2(5);
         localIntAddress2->pushValue(&i2);
-std::cout << "B" << std::endl;
+
         QVERIFY(m_result_callback_called == true && m_result == true);
 
-        testDestinationExpr->removeCallback(callback_iterator);
+        testDestinationExpr->removeCallback(&callback);
 
         QVERIFY(testDestinationExpr->callbacks().size() == 0);
 
         m_result = false;
         m_result_callback_called = false;
-std::cout << "C" << std::endl;
+
         Int i3(10);
         localIntAddress2->pushValue(&i3);
-std::cout << "D" << std::endl;
+
         QVERIFY(m_result_callback_called == false && m_result == false);
     }
 };

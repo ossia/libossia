@@ -38,36 +38,38 @@ int main()
      /test/my_destination
      /test/my_tuple
      */
+
+    ValueCallback callback = printValueCallback;
     
     auto oscTestNode = *(oscDevice->emplace(oscDevice->children().cend(), "test"));
     
     auto oscImpulseNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_impulse"));
     auto oscImpulseAddress = oscImpulseNode->createAddress(Value::Type::IMPULSE);
-    oscImpulseAddress->addCallback(printValueCallback);
+    oscImpulseAddress->addCallback(&callback);
     
     auto oscBoolNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_bool"));
     auto oscBoolAddress = oscBoolNode->createAddress(Value::Type::BOOL);
-    oscBoolAddress->addCallback(printValueCallback);
+    oscBoolAddress->addCallback(&callback);
     
     auto oscIntNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_int"));
     auto oscIntAddress = oscIntNode->createAddress(Value::Type::INT);
-    oscIntAddress->addCallback(printValueCallback);
+    oscIntAddress->addCallback(&callback);
     
     auto oscFloatNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_float"));
     auto oscFloatAddress = oscFloatNode->createAddress(Value::Type::FLOAT);
-    oscFloatAddress->addCallback(printValueCallback);
+    oscFloatAddress->addCallback(&callback);
     
     auto oscStringNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_string"));
     auto oscStringAddress = oscStringNode->createAddress(Value::Type::STRING);
-    oscStringAddress->addCallback(printValueCallback);
+    oscStringAddress->addCallback(&callback);
     
     auto oscDestinationNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_destination"));
     auto oscDestinationAddress = oscDestinationNode->createAddress(Value::Type::DESTINATION);
-    oscDestinationAddress->addCallback(printValueCallback);
+    oscDestinationAddress->addCallback(&callback);
     
     auto oscTupleNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_tuple"));
     auto oscTupleAddress = oscTupleNode->createAddress(Value::Type::TUPLE);
-    oscTupleAddress->addCallback(printValueCallback);
+    oscTupleAddress->addCallback(&callback);
     
     // update tree value
     Impulse n;

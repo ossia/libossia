@@ -19,8 +19,8 @@ private:
   Operator  mOperator;
   Value*    mSecondValue;
   
-  CallbackContainer<ValueCallback>::CallbackIterator mFirstValueCallback;
-  CallbackContainer<ValueCallback>::CallbackIterator mSecondValueCallback;
+  ValueCallback mFirstValueCallback;
+  ValueCallback mSecondValueCallback;
   
 public:
   
@@ -55,7 +55,7 @@ public:
 # pragma mark -
 # pragma mark Callback Container
   
-  CallbackContainer<ResultCallback>::CallbackIterator addCallback(ResultCallback callback) override
+  void addCallback(ResultCallback* callback) override
   {
     callbacks().push_back(callback);
     
@@ -68,8 +68,8 @@ public:
         Destination* d = (Destination*)mFirstValue;
         if (d->value->getAddress())
         {
-          auto callback = std::bind(&JamomaExpressionAtom::firstValueCallback, this, _1);
-          mFirstValueCallback = d->value->getAddress()->addCallback(callback);
+          mFirstValueCallback = std::bind(&JamomaExpressionAtom::firstValueCallback, this, _1);
+          d->value->getAddress()->addCallback(&mFirstValueCallback);
         }
       }
       
@@ -80,18 +80,16 @@ public:
         Destination* d = (Destination*)mSecondValue;
         if (d->value->getAddress())
         {
-          auto callback = std::bind(&JamomaExpressionAtom::secondValueCallback, this, _1);
-          mSecondValueCallback = d->value->getAddress()->addCallback(callback);
+          mSecondValueCallback = std::bind(&JamomaExpressionAtom::secondValueCallback, this, _1);
+          d->value->getAddress()->addCallback(&mSecondValueCallback);
         }
       }
     }
-    
-    return callbacks().end();
   }
   
-  void removeCallback(CallbackContainer<ResultCallback>::CallbackIterator iterator) override
+  void removeCallback(ResultCallback* callback) override
   {
-    callbacks().erase(iterator);
+    callbacks().erase(find(callbacks().begin(), callbacks().end(), callback));
     
     if (callbacks().size() == 0)
     {
@@ -102,7 +100,7 @@ public:
         Destination* d = (Destination*)mFirstValue;
         if (d->value->getAddress())
         {
-          d->value->getAddress()->removeCallback(mFirstValueCallback);
+          d->value->getAddress()->removeCallback(&mFirstValueCallback);
         }
       }
       
@@ -113,7 +111,7 @@ public:
         Destination* d = (Destination*)mSecondValue;
         if (d->value->getAddress())
         {
-          d->value->getAddress()->removeCallback(mSecondValueCallback);
+          d->value->getAddress()->removeCallback(&mSecondValueCallback);
         }
       }
     }
@@ -178,7 +176,7 @@ public:
     bool result = do_evaluation(value, mSecondValue);
     
     for (auto callback : callbacks())
-      callback(result);
+      (*callback)(result);
   }
   
   void secondValueCallback(const Value * value)
@@ -186,7 +184,7 @@ public:
     bool result = do_evaluation(mFirstValue, value);
     
     for (auto callback : callbacks())
-      callback(result);
+      (*callback)(result);
   }
 
 };

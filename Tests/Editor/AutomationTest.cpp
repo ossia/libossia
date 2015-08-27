@@ -60,8 +60,8 @@ private Q_SLOTS:
         auto local_device = Device::create(local_protocol, "test");
         local_device->emplace(local_device->children().begin(), "child");
         auto address = local_device->children().front()->createAddress(Value::Type::FLOAT);
-        auto address_callback = std::bind(&AutomationTest::address_callback, this, _1);
-        address->addCallback(address_callback);
+        ValueCallback callback = std::bind(&AutomationTest::address_callback, this, _1);
+        address->addCallback(&callback);
 
         auto curve = Curve<float>::create();
         auto linearSegment = CurveSegmentLinear<float>::create(curve);
