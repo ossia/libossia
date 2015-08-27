@@ -338,7 +338,16 @@ void JamomaAddress::addCallback(ValueCallback* callback)
   callbacks().push_back(callback);
   
   if (callbacks().size() == 1)
-    ;//! \todo use the device protocol to start address value observation
+  {
+    //! \todo use the device protocol to start address value observation
+    // for Mirror object : enable listening
+    if (mObject.name() == kTTSym_Mirror)
+    {
+      TTAttributePtr	valueAttribute = NULL;
+      mObject.instance()->findAttribute("value", &valueAttribute);
+      TTMirrorPtr(mObject.instance())->enableListening(*valueAttribute, true);
+    }
+  }
 }
 
 void JamomaAddress::removeCallback(ValueCallback* callback)
@@ -346,7 +355,16 @@ void JamomaAddress::removeCallback(ValueCallback* callback)
   callbacks().erase(find(callbacks().begin(), callbacks().end(), callback));
   
   if (callbacks().size() == 0)
-    ;//! \todo use the device protocol to stop address value observation
+  {
+    //! \todo use the device protocol to stop address value observation
+    // for Mirror object : disable listening
+    if (mObject.name() == kTTSym_Mirror)
+    {
+      TTAttributePtr	valueAttribute = NULL;
+      mObject.instance()->findAttribute("value", &valueAttribute);
+      TTMirrorPtr(mObject.instance())->enableListening(*valueAttribute, false);
+    }
+  }
 }
 
 # pragma mark -
@@ -360,15 +378,12 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
   // check data object
   if (aData.instance() == self->mObject.instance())
   {
-    if (self->callbacks().size() > 0)
-    {
-      Value * v = self->convertTTValueIntoValue(value, self->mValueType);
+    self->setValue(self->convertTTValueIntoValue(value, self->mValueType));
       
-      for (auto callback : self->callbacks())
-        (*callback)(v);
+    for (auto callback : self->callbacks())
+      (*callback)(self->mValue);
       
-      return kTTErrNone;
-    }
+    return kTTErrNone;
   }
   
   return kTTErrGeneric;
