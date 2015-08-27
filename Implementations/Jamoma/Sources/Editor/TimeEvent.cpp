@@ -121,6 +121,9 @@ bool JamomaTimeEvent::getObserveExpression()
 
 void JamomaTimeEvent::setObserveExpression(bool observeExpression)
 {
+  if (mExpression == nullptr)
+    return;
+    
   if (observeExpression != mObserveExpression)
   {
     mObserveExpression = observeExpression;
