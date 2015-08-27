@@ -35,4 +35,6 @@ bool JamomaMIDI::observeAddressValue(std::shared_ptr<Address>, bool) const
 }
 
 vector<std::shared_ptr<MIDI>> JamomaMIDI::scan()
-{}
+{
+    return {};
+}
