@@ -189,13 +189,14 @@ const Value * JamomaAddress::pullValue()
   //! \todo use the device protocol to pull address value
   
   TTValue v;
-  mObject.get("value", v);
+  if (!mObject.get("value", v))
+  {
+    // clear former value
+    delete mValue;
   
-  // clear former value
-  delete mValue;
-  
-  // create new value
-  mValue = convertTTValueIntoValue(v, mValueType);
+    // create new value
+    mValue = convertTTValueIntoValue(v, mValueType);
+  }
   
   return mValue;
 }
