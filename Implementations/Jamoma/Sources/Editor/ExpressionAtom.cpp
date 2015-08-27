@@ -4,6 +4,8 @@
 #include "Network/Node.h"
 
 #include <algorithm>
+#include <iostream> //! \todo to remove. only here for debug purpose
+
 using namespace OSSIA;
 using namespace std;
 using namespace std::placeholders;
