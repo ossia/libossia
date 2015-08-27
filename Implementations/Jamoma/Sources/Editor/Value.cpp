@@ -110,7 +110,7 @@ bool Bool::operator== (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this == (*d->value->getAddress()->pullValue());
+        return *this == (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -174,7 +174,7 @@ bool Bool::operator> (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this > (*d->value->getAddress()->pullValue());
+        return *this > (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -233,7 +233,7 @@ bool Bool::operator>= (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this >= (*d->value->getAddress()->pullValue());
+        return *this >= (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -292,7 +292,7 @@ bool Bool::operator< (const Value& v) const
       {
         Destination* d = (Destination*)&v;
         if (d->value->getAddress())
-          return *this < (*d->value->getAddress()->pullValue());
+          return *this < (*d->value->getAddress()->getValue());
       }
       case Value::Type::BEHAVIOR :
       {
@@ -351,7 +351,7 @@ bool Bool::operator<= (const Value& v) const
       {
         Destination* d = (Destination*)&v;
         if (d->value->getAddress())
-          return *this <= (*d->value->getAddress()->pullValue());
+          return *this <= (*d->value->getAddress()->getValue());
       }
       case Value::Type::BEHAVIOR :
       {
@@ -423,7 +423,7 @@ bool Int::operator== (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this == (*d->value->getAddress()->pullValue());
+        return *this == (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -487,7 +487,7 @@ bool Int::operator> (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this > (*d->value->getAddress()->pullValue());
+        return *this > (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -550,7 +550,7 @@ bool Int::operator>= (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this >= (*d->value->getAddress()->pullValue());
+        return *this >= (*d->value->getAddress()->getValue());
     }
     default :
       return false;
@@ -605,7 +605,7 @@ bool Int::operator< (const Value& v) const
       {
         Destination* d = (Destination*)&v;
         if (d->value->getAddress())
-          return *this < (*d->value->getAddress()->pullValue());
+          return *this < (*d->value->getAddress()->getValue());
       }
       case Value::Type::BEHAVIOR :
       {
@@ -668,7 +668,7 @@ bool Int::operator<= (const Value& v) const
       {
         Destination* d = (Destination*)&v;
         if (d->value->getAddress())
-          return *this <= (*d->value->getAddress()->pullValue());
+          return *this <= (*d->value->getAddress()->getValue());
       }
       default :
         return false;
@@ -736,7 +736,7 @@ bool Float::operator== (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this == (*d->value->getAddress()->pullValue());
+        return *this == (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -800,7 +800,7 @@ bool Float::operator> (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this > (*d->value->getAddress()->pullValue());
+        return *this > (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -859,7 +859,7 @@ bool Float::operator>= (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this >= (*d->value->getAddress()->pullValue());
+        return *this >= (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -918,7 +918,7 @@ bool Float::operator< (const Value& v) const
       {
         Destination* d = (Destination*)&v;
         if (d->value->getAddress())
-          return *this < (*d->value->getAddress()->pullValue());
+          return *this < (*d->value->getAddress()->getValue());
       }
       case Value::Type::BEHAVIOR :
       {
@@ -977,7 +977,7 @@ bool Float::operator<= (const Value& v) const
       {
         Destination* d = (Destination*)&v;
         if (d->value->getAddress())
-          return *this <= (*d->value->getAddress()->pullValue());
+          return *this <= (*d->value->getAddress()->getValue());
       }
       case Value::Type::BEHAVIOR :
       {
@@ -1050,7 +1050,7 @@ bool Char::operator== (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this == (*d->value->getAddress()->pullValue());
+        return *this == (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -1114,7 +1114,7 @@ bool Char::operator> (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this > (*d->value->getAddress()->pullValue());
+        return *this > (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -1173,7 +1173,7 @@ bool Char::operator>= (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this >= (*d->value->getAddress()->pullValue());
+        return *this >= (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -1232,7 +1232,7 @@ bool Char::operator< (const Value& v) const
       {
         Destination* d = (Destination*)&v;
         if (d->value->getAddress())
-          return *this < (*d->value->getAddress()->pullValue());
+          return *this < (*d->value->getAddress()->getValue());
       }
       case Value::Type::BEHAVIOR :
       {
@@ -1291,7 +1291,7 @@ bool Char::operator<= (const Value& v) const
       {
         Destination* d = (Destination*)&v;
         if (d->value->getAddress())
-          return *this <= (*d->value->getAddress()->pullValue());
+          return *this <= (*d->value->getAddress()->getValue());
       }
       case Value::Type::BEHAVIOR :
       {
@@ -1360,7 +1360,7 @@ bool String::operator== (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this == (*d->value->getAddress()->pullValue());
+        return *this == (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -1421,7 +1421,7 @@ bool String::operator> (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this > (*d->value->getAddress()->pullValue());
+        return *this > (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -1477,7 +1477,7 @@ bool String::operator>= (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this >= (*d->value->getAddress()->pullValue());
+        return *this >= (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -1533,7 +1533,7 @@ bool String::operator< (const Value& v) const
       {
         Destination* d = (Destination*)&v;
         if (d->value->getAddress())
-          return *this < (*d->value->getAddress()->pullValue());
+          return *this < (*d->value->getAddress()->getValue());
       }
       case Value::Type::BEHAVIOR :
       {
@@ -1589,7 +1589,7 @@ bool String::operator<= (const Value& v) const
       {
         Destination* d = (Destination*)&v;
         if (d->value->getAddress())
-          return *this <= (*d->value->getAddress()->pullValue());
+          return *this <= (*d->value->getAddress()->getValue());
       }
       case Value::Type::BEHAVIOR :
       {
@@ -1909,7 +1909,7 @@ bool Generic<T>::operator== (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this == (*d->value->getAddress()->pullValue());
+        return *this == (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -1976,7 +1976,7 @@ bool Generic<T>::operator> (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this > (*d->value->getAddress()->pullValue());
+        return *this > (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -2037,7 +2037,7 @@ bool Generic<T>::operator>= (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (d->value->getAddress())
-        return *this >= (*d->value->getAddress()->pullValue());
+        return *this >= (*d->value->getAddress()->getValue());
     }
     case Value::Type::BEHAVIOR :
     {
@@ -2085,13 +2085,13 @@ bool Destination::operator== (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (value->getAddress() && d->value->getAddress())
-        return (*value->getAddress()->pullValue()) == (*d->value->getAddress()->pullValue());
+        return (*value->getAddress()->getValue()) == (*d->value->getAddress()->getValue());
     }
     default :
     {
       if (value->getAddress())
       {
-        return (*value->getAddress()->pullValue()) == v;
+        return (*value->getAddress()->getValue()) == v;
       }
       
       return false;
@@ -2116,13 +2116,13 @@ bool Destination::operator> (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (value->getAddress() && d->value->getAddress())
-        return (*value->getAddress()->pullValue()) > (*d->value->getAddress()->pullValue());
+        return (*value->getAddress()->getValue()) > (*d->value->getAddress()->getValue());
     }
     default :
     {
       if (value->getAddress())
       {
-        return (*value->getAddress()->pullValue()) > v;
+        return (*value->getAddress()->getValue()) > v;
       }
       
       return false;
@@ -2142,13 +2142,13 @@ bool Destination::operator>= (const Value& v) const
     {
       Destination* d = (Destination*)&v;
       if (value->getAddress() && d->value->getAddress())
-        return (*value->getAddress()->pullValue()) >= (*d->value->getAddress()->pullValue());
+        return (*value->getAddress()->getValue()) >= (*d->value->getAddress()->getValue());
     }
     default :
     {
       if (value->getAddress())
       {
-        return (*value->getAddress()->pullValue()) >= v;
+        return (*value->getAddress()->getValue()) >= v;
       }
       
       return false;
