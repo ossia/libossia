@@ -68,8 +68,8 @@ int main()
     auto local_test_address = local_test_node->createAddress(Value::Type::TUPLE);
     
     // attach /test address to their callback
-    ValueCallback local_test_value_callback = local_play_callback;
-    local_test_address->addCallback((ValueCallback*)&local_test_value_callback);
+    ValueCallback local_test_value_callback = local_test_callback;
+    local_test_address->addCallback(&local_test_value_callback);
     
     // filter repetitions
     local_test_address->setRepetitionFilter(true);
