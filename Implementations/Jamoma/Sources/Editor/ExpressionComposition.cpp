@@ -1,4 +1,5 @@
 #include "Editor/ExpressionComposition.h"
+#include <algorithm>
 
 using namespace OSSIA;
 using namespace std;
@@ -6,12 +7,12 @@ using namespace std::placeholders;
 
 class JamomaExpressionComposition : public ExpressionComposition
 {
-  
+
 private:
-  
+
 # pragma mark -
 # pragma mark Implementation specific
-  
+
   shared_ptr<Expression>  mFirstExpression;
   Operator                mOperator;
   shared_ptr<Expression>  mSecondExpression;
@@ -20,42 +21,42 @@ private:
   ResultCallback          mSecondResultCallback;
 
 public:
-  
+
 # pragma mark -
 # pragma mark Life cycle
-  
+
   JamomaExpressionComposition(shared_ptr<Expression> expr1, Operator op, shared_ptr<Expression> expr2) :
   mFirstExpression(expr1),
   mOperator(op),
   mSecondExpression(expr2)
   {}
-  
+
   JamomaExpressionComposition(const JamomaExpressionComposition * other)
   {}
-  
+
   shared_ptr<ExpressionComposition> clone() const override
   {
     return make_shared<JamomaExpressionComposition>(this);
   }
-  
+
   ~JamomaExpressionComposition()
   {}
 
 # pragma mark -
 # pragma mark Execution
-  
+
   bool evaluate() const override
   {
     return do_evaluation(mFirstExpression->evaluate(), mSecondExpression->evaluate());
   }
-  
+
 # pragma mark -
 # pragma mark Callback Container
-  
+
   void addCallback(ResultCallback* callback) override
   {
     callbacks().push_back(callback);
-    
+
     if (callbacks().size() == 1)
     {
       // start first expression observation
@@ -67,11 +68,11 @@ public:
       mSecondExpression->addCallback(&mSecondResultCallback);
     }
   }
-  
+
   void removeCallback(ResultCallback* callback) override
   {
-    callbacks().erase(find(callbacks().begin(), callbacks().end(), callback));
-    
+    callbacks().erase(std::find(callbacks().begin(), callbacks().end(), callback));
+
     if (callbacks().size() == 0)
     {
       // stop first expression observation
@@ -84,17 +85,17 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
-  
+
   const shared_ptr<Expression> & getFirstOperand() const override
   {
     return mFirstExpression;
   }
-  
+
   Operator getOperator() const override
   {
     return mOperator;
   }
-  
+
   const shared_ptr<Expression> & getSecondOperand() const override
   {
     return mSecondExpression;
