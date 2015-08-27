@@ -23,16 +23,17 @@ public:
   m_result(result)
   {}
   
-  virtual ~JamomaExpression()
+  ~JamomaExpression()
   {}
 
 # pragma mark -
 # pragma mark Execution
   
-  virtual bool evaluate() const override
+  bool evaluate() const override
   {
     return m_result;
   }
+  
 };
 
 namespace OSSIA

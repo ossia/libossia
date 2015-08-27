@@ -54,8 +54,7 @@ void explore(const shared_ptr<Node> node)
         if (address)
         {
             // attach to callback to display value update
-            OSSIA::Address::ValueCallback callback = printValueCallback;
-            address->addValueCallback(callback);
+            address->addCallback(printValueCallback);
             
             // update the value
             address->pullValue();

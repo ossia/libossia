@@ -93,7 +93,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
         
         // NONE TimeEvent without previous TimeConstraints is PENDING
         // if each previous TimeConstraint ends or reaches their minimal duration
-        // and it starts to observe its Expression if all previous TimeConstraints have reche their minimal duration
+        // and it starts to observe its Expression if all previous TimeConstraints have reach their minimal duration
         else
         {
           // for each previous TimeConstraints
@@ -106,7 +106,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
             // when running
             if (c->getRunning())
             {
-              // when all durations are equals
+              // when all constraint durations are equals
               if (c->getDurationMin() == c->getDuration() &&
                   c->getDurationMax() == c->getDuration())
               {
@@ -188,6 +188,9 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
       
       if (e->getObserveExpression())
         noEventObserveExpression = false;
+      
+      //! \note should we pull addresses value if there are expressions containing Destination ?
+      //! \note or maybe enabling observation when observing Expression is enough ?
       
       timeEvent->getExpression() != nullptr ? timeEvent->getExpression()->evaluate() ? eventsToHappen.push_back(timeEvent) : eventsToDispose.push_back(timeEvent) : eventsToHappen.push_back(timeEvent);
     }

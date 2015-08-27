@@ -160,7 +160,7 @@ mRepetitionFilter(false)
       TTObject    callback("callback");
       TTValue     args(TTPtr(this), mObject);
       callback.set("baton", args);
-      callback.set("function", TTPtr(&JamomaAddress::ValueCallback));
+      callback.set("function", TTPtr(&JamomaAddress::TTValueCallback));
       
       TTAttributePtr attribute;
       mObject.instance()->findAttribute("value", &attribute);
@@ -331,27 +331,6 @@ Address & JamomaAddress::setRepetitionFilter(bool repetitionFilter)
 }
 
 # pragma mark -
-# pragma mark Callback
-
-Address::ValueCallbackIterator JamomaAddress::addValueCallback(Address::ValueCallback callback)
-{
-  callbacks().push_back(callback);
-    
-  if (callbacks().size() == 1)
-    ;//! \todo use the device protocol to start address value observation
-  
-  return callbacks().end();
-}
-
-void JamomaAddress::removeValueCallback(Address::ValueCallbackIterator iterator)
-{
-  callbacks().erase(iterator);
-  
-  if (callbacks().size() == 0)
-    ;//! \todo use the device protocol to stop address value observation
-}
-
-# pragma mark -
 # pragma mark Expression
 
 bool JamomaAddress::evaluate() const
@@ -360,9 +339,30 @@ bool JamomaAddress::evaluate() const
 }
 
 # pragma mark -
+# pragma mark Callback
+
+CallbackContainer<ValueCallback>::CallbackIterator JamomaAddress::addCallback(ValueCallback callback)
+{
+  callbacks().push_back(callback);
+  
+  if (callbacks().size() == 1)
+    ;//! \todo use the device protocol to start address value observation
+  
+  return callbacks().end();
+}
+
+void JamomaAddress::removeCallback(CallbackContainer<ValueCallback>::CallbackIterator iterator)
+{
+  callbacks().erase(iterator);
+  
+  if (callbacks().size() == 0)
+    ;//! \todo use the device protocol to stop address value observation
+}
+
+# pragma mark -
 # pragma mark Implementation specific
 
-TTErr JamomaAddress::ValueCallback(const TTValue& baton, const TTValue& value)
+TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
 {
   JamomaAddress * self = static_cast<JamomaAddress*>(TTPtr(baton[0]));
   TTObject aData = baton[1];

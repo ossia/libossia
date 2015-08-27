@@ -46,6 +46,8 @@
 		4682EECC1B8CB84A00E4C5CF /* JamomaOSC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaOSC.h; sourceTree = "<group>"; };
 		4682EECD1B8DC35B00E4C5CF /* JamomaProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaProtocol.h; sourceTree = "<group>"; };
 		4682EECE1B8DC43E00E4C5CF /* Protocol.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Protocol.cpp; sourceTree = "<group>"; };
+		4682EECF1B8E0D3900E4C5CF /* CallbackContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CallbackContainer.h; sourceTree = "<group>"; };
+		4682EED21B8E10AA00E4C5CF /* CallbackContainer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CallbackContainer.cpp; sourceTree = "<group>"; };
 		4689BADE1ABA20BD00D1BA4E /* Clock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
 		4689BADF1ABA223800D1BA4E /* Address.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Address.h; sourceTree = "<group>"; };
 		4689BAE11ABA223800D1BA4E /* Device.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Device.h; sourceTree = "<group>"; };
@@ -159,6 +161,7 @@
 		4658445B1B14A95200612FBD /* Misc */ = {
 			isa = PBXGroup;
 			children = (
+				4682EECF1B8E0D3900E4C5CF /* CallbackContainer.h */,
 				4658445C1B14A95200612FBD /* Container.h */,
 			);
 			path = Misc;
@@ -195,6 +198,14 @@
 				4682EECC1B8CB84A00E4C5CF /* JamomaOSC.h */,
 			);
 			path = Protocol;
+			sourceTree = "<group>";
+		};
+		4682EED11B8E10AA00E4C5CF /* Misc */ = {
+			isa = PBXGroup;
+			children = (
+				4682EED21B8E10AA00E4C5CF /* CallbackContainer.cpp */,
+			);
+			path = Misc;
 			sourceTree = "<group>";
 		};
 		468AC7BA197EB19500FB2B18 = {
@@ -245,6 +256,7 @@
 			children = (
 				46AA0ED21A0122C3007374E9 /* Network */,
 				46BA2A5A19C09A21009630B5 /* Editor */,
+				4682EED11B8E10AA00E4C5CF /* Misc */,
 			);
 			path = Sources;
 			sourceTree = "<group>";

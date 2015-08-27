@@ -17,9 +17,15 @@
 #pragma once
 
 #include <memory>
+#include <functional>
+
+#include "Misc/CallbackContainer.h"
 
 namespace OSSIA
 {
+  
+/*! to get the result back */
+using ResultCallback = std::function<void(bool)>;
 
 class Expression
 {
@@ -43,7 +49,7 @@ public:
   /*! evaluate the expression 
    \return bool result of the evaluation */
   virtual bool evaluate() const = 0;
-
+  
 };
   
 static std::shared_ptr<Expression> ExpressionFalse = Expression::create(false);

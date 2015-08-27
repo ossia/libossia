@@ -22,7 +22,7 @@
 namespace OSSIA
 {
 
-class ExpressionNot : public Expression
+class ExpressionNot : public Expression, public CallbackContainer<ResultCallback>
 {
 
 public:

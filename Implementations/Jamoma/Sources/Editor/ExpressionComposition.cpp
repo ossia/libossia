@@ -29,18 +29,18 @@ public:
   JamomaExpressionComposition(const JamomaExpressionComposition * other)
   {}
   
-  virtual shared_ptr<ExpressionComposition> clone() const override
+  shared_ptr<ExpressionComposition> clone() const override
   {
     return make_shared<JamomaExpressionComposition>(this);
   }
   
-  virtual ~JamomaExpressionComposition()
+  ~JamomaExpressionComposition()
   {}
 
 # pragma mark -
 # pragma mark Execution
   
-  virtual bool evaluate() const override
+  bool evaluate() const override
   {
     switch (mOperator)
     {
@@ -60,21 +60,42 @@ public:
         return false;
     }
   }
+  
+# pragma mark -
+# pragma mark Callback Container
+  
+  CallbackContainer<ResultCallback>::CallbackIterator addCallback(ResultCallback callback) override
+  {
+    callbacks().push_back(callback);
+    
+    if (callbacks().size() == 1)
+      ;//! \todo start operands observation
+    
+    return callbacks().end();
+  }
+  
+  void removeCallback(typename CallbackContainer<ResultCallback>::CallbackIterator iterator) override
+  {
+    callbacks().erase(iterator);
+    
+    if (callbacks().size() == 0)
+      ;//! \todo stop operands observation
+  }
 
 # pragma mark -
 # pragma mark Accessors
   
-  virtual const shared_ptr<Expression> & getFirstOperand() const override
+  const shared_ptr<Expression> & getFirstOperand() const override
   {
     return mFirstExpression;
   }
   
-  virtual Operator getOperator() const override
+  Operator getOperator() const override
   {
     return mOperator;
   }
   
-  virtual const shared_ptr<Expression> & getSecondOperand() const
+  const shared_ptr<Expression> & getSecondOperand() const override
   {
     return mSecondExpression;
   }

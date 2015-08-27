@@ -26,26 +26,47 @@ public:
   mExpression(other->mExpression)
   {}
   
-  virtual shared_ptr<ExpressionNot> clone() const override
+  shared_ptr<ExpressionNot> clone() const override
   {
     return make_shared<JamomaExpressionNot>(this);
   }
   
-  virtual ~JamomaExpressionNot()
+  ~JamomaExpressionNot()
   {}
 
 # pragma mark -
 # pragma mark Execution
   
-  virtual bool evaluate() const override
+  bool evaluate() const override
   {
     return !mExpression->evaluate();
+  }
+  
+# pragma mark -
+# pragma mark Callback Container
+  
+  CallbackContainer<ResultCallback>::CallbackIterator addCallback(ResultCallback callback) override
+  {
+    callbacks().push_back(callback);
+    
+    if (callbacks().size() == 1)
+      ;//! \todo start expression observation
+    
+    return callbacks().end();
+  }
+  
+  void removeCallback(typename CallbackContainer<ResultCallback>::CallbackIterator iterator) override
+  {
+    callbacks().erase(iterator);
+    
+    if (callbacks().size() == 0)
+      ;//! \todo stop expression observation
   }
 
 # pragma mark -
 # pragma mark Accessors
   
-  virtual const shared_ptr<Expression> & getExpression() const override
+  const shared_ptr<Expression> & getExpression() const override
   {
     return mExpression;
   }

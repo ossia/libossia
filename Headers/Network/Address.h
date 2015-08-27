@@ -28,8 +28,11 @@ namespace OSSIA
 {
 
 class Node;
+  
+/*! to get the value back */
+using ValueCallback = std::function<void(const Value *)>;
 
-class Address : public Expression
+class Address : public Expression, public CallbackContainer<ValueCallback>
 {
 
 public:
@@ -133,42 +136,6 @@ public:
    \param bool true is to enable repetition filter
    \return #Address the address */
   virtual Address & setRepetitionFilter(bool = true) = 0;
-
-# pragma mark -
-# pragma mark Callback
-  
-  /*! to get the value back */
-  using ValueCallback = std::function<void(const Value *)>;
-  
-  /*! to store a set of ValueCallback functions */
-  using ValueCallbackContainer = std::list<ValueCallback>;
-  
-  /*! to retreive a ValueCallback function into ValueCallbackContainer */
-  using ValueCallbackIterator = std::list<ValueCallback>::iterator;
-  
-  /*! add an value callback function
-   \param #ValueCallback function
-   \return #ValueCallbackIterator where the function is stored */
-  virtual ValueCallbackIterator addValueCallback(ValueCallback) = 0;
-  
-  /*! remove a value callback function
-   \param #ValueCallbackIterator where the function is stored
-   \return #ValueCallback function */
-  virtual void removeValueCallback(ValueCallbackIterator) = 0;
-  
-  /*! get value callback functions of the address
-   \return #ValueCallbackContainer */
-  ValueCallbackContainer& callbacks()
-  { return m_callbacks; }
-  
-  /*! get value callback functions of the address
-   \return #ValueCallbackContainer */
-  const ValueCallbackContainer& callbacks() const
-  { return m_callbacks; }
-  
-protected:
-  ValueCallbackContainer m_callbacks;
-  
 };
 }
 

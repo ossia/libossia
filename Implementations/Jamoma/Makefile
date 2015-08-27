@@ -60,6 +60,8 @@ SRC32 += Sources/Network/Protocol/Minuit.i386.o
 SRC64 += Sources/Network/Protocol/Minuit.x64.o
 SRC32 += Sources/Network/Protocol/OSC.i386.o
 SRC64 += Sources/Network/Protocol/OSC.x64.o
+SRC32 += Sources/Misc/CallbackContainer.i386.o
+SRC64 += Sources/Misc/CallbackContainer.x64.o
 
 #########################################
 

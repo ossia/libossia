@@ -93,23 +93,23 @@ public:
   Address & setRepetitionFilter(bool) override;
 
 # pragma mark -
-# pragma mark Callback
-
-  Address::ValueCallbackIterator addValueCallback(Address::ValueCallback) override;
-  
-  void removeValueCallback(Address::ValueCallbackIterator) override;
-
-# pragma mark -
 # pragma mark Expression
 
   bool evaluate() const override;
+ 
+# pragma mark -
+# pragma mark Callback Container
+  
+  CallbackContainer<ValueCallback>::CallbackIterator addCallback(ValueCallback) override;
+  
+  void removeCallback(typename CallbackContainer<ValueCallback>::CallbackIterator) override;
 
 # pragma mark -
 # pragma mark Implementation specific
 
 private:
 
-  static TTErr ValueCallback(const TTValue&, const TTValue&);
+  static TTErr TTValueCallback(const TTValue&, const TTValue&);
 
   Value * convertTTValueIntoValue(const TTValue&, Value::Type) const;
   
