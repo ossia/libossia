@@ -140,5 +140,6 @@ void JamomaTimeEvent::setObserveExpression(bool observeExpression)
 
 void JamomaTimeEvent::resultCallback(bool result)
 {
-  ;//! \todo do we make the event to happen if its true ? if yes => asynchronous execution ?
+  //! \note the result of the expression is not exploited here.
+  //! \note the observation of the expression is to observe all Destination value contained into it.
 }

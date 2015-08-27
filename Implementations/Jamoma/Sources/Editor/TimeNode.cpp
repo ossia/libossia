@@ -143,6 +143,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
             pendingEvents.push_back(timeEvent);
           }
           
+          // observe the expression to observe all Destination value contained into it
           e->setObserveExpression(observeExpression);
         }
         
@@ -188,9 +189,6 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
       
       if (e->getObserveExpression())
         noEventObserveExpression = false;
-      
-      //! \note evaluation of expression on Destination implies the value is pulled (see in Value.cpp)
-      //! and as everything is synchrone, is there a real interest to observe the value ?
       
       timeEvent->getExpression() != nullptr ? timeEvent->getExpression()->evaluate() ? eventsToHappen.push_back(timeEvent) : eventsToDispose.push_back(timeEvent) : eventsToHappen.push_back(timeEvent);
     }
