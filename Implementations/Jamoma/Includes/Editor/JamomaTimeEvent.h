@@ -42,6 +42,7 @@ private:
   Status                        mStatus;
   
   bool                          mObserveExpression;
+  ResultCallback                mResultCallback;
 
 public:
   
@@ -88,4 +89,6 @@ public:
   
   bool getObserveExpression();
   void setObserveExpression(bool);
+  
+  void resultCallback(bool result);
 };

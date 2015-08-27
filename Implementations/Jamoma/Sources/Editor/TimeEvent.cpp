@@ -13,7 +13,8 @@ mCallback(callback),
 mTimeNode(aTimeNode),
 mExpression(anExpression),
 mStatus(TimeEvent::Status::NONE),
-mObserveExpression(false)
+mObserveExpression(false),
+mResultCallback(std::bind(&JamomaTimeEvent::resultCallback, this, _1))
 {
   mState = State::create();
 }
@@ -124,6 +125,20 @@ void JamomaTimeEvent::setObserveExpression(bool observeExpression)
   {
     mObserveExpression = observeExpression;
     
-    //! \todo active expression observation
+    if (mObserveExpression)
+    {
+      // start expression observation
+      mExpression->addCallback(&mResultCallback);
+    }
+    else
+    {
+      // stop expression observation
+      mExpression->removeCallback(&mResultCallback);
+    }
   }
+}
+
+void JamomaTimeEvent::resultCallback(bool result)
+{
+  ;//! \todo do we make the event to happen if its true ? if yes => asynchronous execution ?
 }
