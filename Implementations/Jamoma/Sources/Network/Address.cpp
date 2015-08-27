@@ -173,6 +173,14 @@ JamomaAddress::~JamomaAddress()
 {
   // stop observation
   //! \todo use the device protocol to stop address value observation
+  // for Mirror object : disable listening
+  if (mObject.name() == kTTSym_Mirror)
+  {
+    TTAttributePtr	valueAttribute = NULL;
+    mObject.instance()->findAttribute("value", &valueAttribute);
+    //! \bug for Minuit Device the request is never sent because the Application is released before. in ~JamomaDevice() clearing Device children before was not a good solution ...
+    TTMirrorPtr(mObject.instance())->enableListening(*valueAttribute, false);
+  }
 }
 
 # pragma mark -
