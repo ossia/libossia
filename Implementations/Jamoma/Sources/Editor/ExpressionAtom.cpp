@@ -1,8 +1,11 @@
 #include "Editor/ExpressionAtom.h"
 #include "Editor/Value.h"
+#include "Network/Address.h"
+#include "Network/Node.h"
 
 using namespace OSSIA;
 using namespace std;
+using namespace std::placeholders;
 
 class JamomaExpressionAtom : public ExpressionAtom
 {
@@ -15,6 +18,9 @@ private:
   Value*    mFirstValue;
   Operator  mOperator;
   Value*    mSecondValue;
+  
+  CallbackContainer<ValueCallback>::CallbackIterator mFirstValueCallback;
+  CallbackContainer<ValueCallback>::CallbackIterator mSecondValueCallback;
   
 public:
   
@@ -43,35 +49,7 @@ public:
   
   bool evaluate() const override
   {
-    switch (mOperator)
-    {
-      case Operator::EQUAL :
-      {
-        return (*mFirstValue) == (*mSecondValue);
-      }
-      case Operator::DIFFERENT :
-      {
-        return (*mFirstValue) != (*mSecondValue);
-      }
-      case Operator::GREATER_THAN :
-      {
-        return (*mFirstValue) > (*mSecondValue);
-      }
-      case Operator::LOWER_THAN :
-      {
-        return (*mFirstValue) < (*mSecondValue);
-      }
-      case Operator::GREATER_THAN_OR_EQUAL :
-      {
-        return (*mFirstValue) >= (*mSecondValue);
-      }
-      case Operator::LOWER_THAN_OR_EQUAL :
-      {
-        return (*mFirstValue) <= (*mSecondValue);
-      }
-      default :
-        return false;
-    }
+    return do_evaluation(mFirstValue, mSecondValue);
   }
   
 # pragma mark -
@@ -82,17 +60,63 @@ public:
     callbacks().push_back(callback);
     
     if (callbacks().size() == 1)
-      ;//! \todo start operands observation if they are Destinations
+    {
+      // start first operand observation if it is a Destination
+      //! \todo what about Tuple of Destinations ?
+      if (mFirstValue->getType() == Value::Type::DESTINATION)
+      {
+        Destination* d = (Destination*)mFirstValue;
+        if (d->value->getAddress())
+        {
+          auto callback = std::bind(&JamomaExpressionAtom::firstValueCallback, this, _1);
+          mFirstValueCallback = d->value->getAddress()->addCallback(callback);
+        }
+      }
+      
+      // start second operand observation if it is a Destination
+      //! \todo what about Tuple of Destinations ?
+      if (mSecondValue->getType() == Value::Type::DESTINATION)
+      {
+        Destination* d = (Destination*)mSecondValue;
+        if (d->value->getAddress())
+        {
+          auto callback = std::bind(&JamomaExpressionAtom::secondValueCallback, this, _1);
+          mSecondValueCallback = d->value->getAddress()->addCallback(callback);
+        }
+      }
+    }
     
     return callbacks().end();
   }
   
-  void removeCallback(typename CallbackContainer<ResultCallback>::CallbackIterator iterator) override
+  void removeCallback(CallbackContainer<ResultCallback>::CallbackIterator iterator) override
   {
     callbacks().erase(iterator);
     
     if (callbacks().size() == 0)
-      ;//! \todo stop operands observation if they are Destinations
+    {
+      // stop first operand observation if it is a Destination
+      //! \todo what about Tuple of Destinations ?
+      if (mFirstValue->getType() == Value::Type::DESTINATION)
+      {
+        Destination* d = (Destination*)mFirstValue;
+        if (d->value->getAddress())
+        {
+          d->value->getAddress()->removeCallback(mFirstValueCallback);
+        }
+      }
+      
+      // start second operand observation if it is a Destination
+      //! \todo what about Tuple of Destinations ?
+      if (mSecondValue->getType() == Value::Type::DESTINATION)
+      {
+        Destination* d = (Destination*)mSecondValue;
+        if (d->value->getAddress())
+        {
+          d->value->getAddress()->removeCallback(mSecondValueCallback);
+        }
+      }
+    }
   }
 
 # pragma mark -
@@ -111,6 +135,58 @@ public:
   const Value* getSecondOperand() const override
   {
     return mSecondValue;
+  }
+  
+# pragma mark -
+# pragma mark Implementation Specific
+  
+  bool do_evaluation(const Value* first, const Value* second) const
+  {
+    switch (mOperator)
+    {
+      case Operator::EQUAL :
+      {
+        return (*first) == (*second);
+      }
+      case Operator::DIFFERENT :
+      {
+        return (*first) != (*second);
+      }
+      case Operator::GREATER_THAN :
+      {
+        return (*first) > (*second);
+      }
+      case Operator::LOWER_THAN :
+      {
+        return (*first) < (*second);
+      }
+      case Operator::GREATER_THAN_OR_EQUAL :
+      {
+        return (*first) >= (*second);
+      }
+      case Operator::LOWER_THAN_OR_EQUAL :
+      {
+        return (*first) <= (*second);
+      }
+      default :
+        return false;
+    }
+  }
+  
+  void firstValueCallback(const Value * value)
+  {
+    bool result = do_evaluation(value, mSecondValue);
+    
+    for (auto callback : callbacks())
+      callback(result);
+  }
+  
+  void secondValueCallback(const Value * value)
+  {
+    bool result = do_evaluation(mFirstValue, value);
+    
+    for (auto callback : callbacks())
+      callback(result);
   }
 
 };

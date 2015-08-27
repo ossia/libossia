@@ -1,12 +1,23 @@
 #include <QtTest>
 #include "../ForwardDeclaration.h"
+#include <functional>
 #include <iostream>
 
 using namespace OSSIA;
+using namespace std::placeholders;
 
 class ExpressionAtomTest : public QObject
 {
     Q_OBJECT
+
+    bool m_result;
+    bool m_result_callback_called;
+
+    void result_callback(bool result)
+    {
+        m_result = result;
+        m_result_callback_called = true;
+    }
 
 private Q_SLOTS:
     
@@ -314,6 +325,56 @@ private Q_SLOTS:
         QVERIFY(testDestinationExprG->evaluate() == true);
 
         //! \todo test clone()
+    }
+
+    /*! test callback managment */
+    void test_callback()
+    {
+        // Local device
+        auto local_protocol = Local::create();
+        auto device = Device::create(local_protocol, "test");
+
+        auto localIntNode1 = *(device->emplace(device->children().cend(), "my_int.1"));
+        auto localIntAddress1 = localIntNode1->createAddress(Value::Type::INT);
+        auto localIntNode2 = *(device->emplace(device->children().cend(), "my_int.2"));
+        auto localIntAddress2 = localIntNode2->createAddress(Value::Type::INT);
+
+        auto testDestinationExpr = ExpressionAtom::create(new Destination(localIntNode1),
+                                                           ExpressionAtom::Operator::EQUAL,
+                                                           new Destination(localIntNode2));
+
+        auto callback = std::bind(&ExpressionAtomTest::result_callback, this, _1);
+        auto callback_iterator = testDestinationExpr->addCallback(callback);
+
+        QVERIFY(testDestinationExpr->callbacks().size() == 1);
+
+        m_result = false;
+        m_result_callback_called = false;
+
+        Int i1(5);
+        localIntAddress1->pushValue(&i1);
+std::cout << "A" << std::endl;
+        QVERIFY(m_result_callback_called == true && m_result == false);
+
+        m_result = false;
+        m_result_callback_called = false;
+
+        Int i2(5);
+        localIntAddress2->pushValue(&i2);
+std::cout << "B" << std::endl;
+        QVERIFY(m_result_callback_called == true && m_result == true);
+
+        testDestinationExpr->removeCallback(callback_iterator);
+
+        QVERIFY(testDestinationExpr->callbacks().size() == 0);
+
+        m_result = false;
+        m_result_callback_called = false;
+std::cout << "C" << std::endl;
+        Int i3(10);
+        localIntAddress2->pushValue(&i3);
+std::cout << "D" << std::endl;
+        QVERIFY(m_result_callback_called == false && m_result == false);
     }
 };
 

@@ -74,7 +74,7 @@ public:
     return callbacks().end();
   }
   
-  void removeCallback(typename CallbackContainer<ResultCallback>::CallbackIterator iterator) override
+  void removeCallback(CallbackContainer<ResultCallback>::CallbackIterator iterator) override
   {
     callbacks().erase(iterator);
     

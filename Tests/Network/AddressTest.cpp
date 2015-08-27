@@ -46,13 +46,17 @@ private Q_SLOTS:
         address->setRepetitionFilter(true);
         QVERIFY(address->getRepetitionFilter() == true);
         
-        //! \todo verify getValueCallback
+        //! \todo verify addCallback
         
-        //! \todo verify setValueCallback
+        //! \todo verify removeCallback
         
         //! \todo verify getValue
         
-        //! \todo verify sendValue
+        //! \todo verify setValue
+
+        //! \todo verify pushValue
+
+        //! \todo verify pullValue
     }
 };
 
