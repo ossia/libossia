@@ -96,7 +96,12 @@ const shared_ptr<Expression> & JamomaTimeEvent::getExpression() const
 
 TimeEvent & JamomaTimeEvent::setExpression(const std::shared_ptr<Expression> expression)
 {
+  if (mExpression != nullptr)
+    mExpression->removeCallback(&mResultCallback);
+  
   mExpression = expression;
+  mObserveExpression = false;
+  
   return *this;
 }
 
