@@ -1,5 +1,7 @@
 #include "Network/JamomaNode.h"
 
+#include <assert.h>
+
 # pragma mark -
 # pragma mark Life cycle
 
@@ -138,6 +140,8 @@ bool JamomaNode::removeAddress()
 
 Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator pos, string name)
 {
+  assert(!name.empty());
+  
   TTAddress nodeAddress;
   mNode->getAddress(nodeAddress);
   
