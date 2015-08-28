@@ -272,12 +272,10 @@ private Q_SLOTS:
         Destination d2(localFloatNode2);
         localDestinationAddress2->setValue(&d2);
 
-        std::vector<const Value*> value1 = {new Float(0.1), new Float(0.2), new Float(0.3)};
-        Tuple t1(value1);
+        Tuple t1 = {new Float(0.1), new Float(0.2), new Float(0.3)};
         localTupleAddress1->setValue(&t1);
 
-        std::vector<const Value*> value2 = {new Float(0.2), new Float(0.3), new Float(0.4)};
-        Tuple t2(value2);
+        Tuple t2 = {new Float(0.2), new Float(0.3), new Float(0.4)};
         localTupleAddress2->setValue(&t2);
 
         // evaluate expressions with Destination

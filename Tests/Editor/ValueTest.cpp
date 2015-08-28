@@ -128,7 +128,7 @@ private Q_SLOTS:
         QVERIFY(!(b1 > Float(2)));
         QVERIFY(b1 > Char(0x00));
         QVERIFY(!(b1 > String()));
-        QVERIFY(!(b1 > Tuple(new Int(0), new Int(0))));
+        QVERIFY(!(b1 > Tuple({new Int(0), new Int(0)})));
         //! \todo > comparison with generic
         //! \todo > comparison with destination
         //! \todo > comparison with behavior
@@ -205,7 +205,7 @@ private Q_SLOTS:
         QVERIFY(i1 > Float(2));
         QVERIFY(i1 > Char(0x00));
         QVERIFY(!(i1 > String()));
-        QVERIFY(!(i1 > Tuple(new Int(0), new Int(0))));
+        QVERIFY(!(i1 > Tuple({new Int(0), new Int(0)})));
         //! \todo > comparison with generic
         //! \todo > comparison with destination
         //! \todo > comparison with behavior
@@ -282,7 +282,7 @@ private Q_SLOTS:
         QVERIFY(f1 > Int(2));
         QVERIFY(f1 > Char(0x00));
         QVERIFY(!(f1 > String()));
-        QVERIFY(!(f1 > Tuple(new Int(0), new Int(0))));
+        QVERIFY(!(f1 > Tuple({new Int(0), new Int(0)})));
         //! \todo > comparison with generic
         //! \todo > comparison with destination
         //! \todo > comparison with behavior
@@ -359,7 +359,7 @@ private Q_SLOTS:
         QVERIFY(c1 > Int(2));
         QVERIFY(c1 > Char(0x00));
         QVERIFY(!(c1 > String()));
-        QVERIFY(!(c1 > Tuple(new Int(0), new Int(0))));
+        QVERIFY(!(c1 > Tuple({new Int(0), new Int(0)})));
         //! \todo > comparison with generic
         //! \todo > comparison with destination
         //! \todo > comparison with behavior
@@ -436,7 +436,7 @@ private Q_SLOTS:
         QVERIFY(!(s1 > Int(2)));
         QVERIFY(!(s1 > Float(0.1)));
         QVERIFY(!(s1 > Char(0x00)));
-        QVERIFY(!(s1 > Tuple(new Int(0), new Int(0))));
+        QVERIFY(!(s1 > Tuple({new Int(0), new Int(0)})));
         //! \todo > comparison with generic
         //! \todo > comparison with destination
         //! \todo > comparison with behavior
@@ -475,7 +475,7 @@ private Q_SLOTS:
     /*! test tuple */
     void test_tuple()
     {
-        Tuple t1(new Int(5), new Float(0.2), new String("abc"));
+        Tuple t1 = {new Int(5), new Float(0.2), new String("abc")};
         QVERIFY(t1.getType() == Value::Type::TUPLE);
         QVERIFY(t1.value[0]->getType() == Value::Type::INT);
         QVERIFY(t1.value[1]->getType() == Value::Type::FLOAT);

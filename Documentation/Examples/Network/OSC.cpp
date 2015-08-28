@@ -90,7 +90,7 @@ int main()
     Destination d(oscFloatNode);
     oscDestinationAddress->setValue(&d);
     
-    Tuple t(new Float(0.1), new Float(0.2), new Float(0.3));
+    Tuple t = {new Float(0.1), new Float(0.2), new Float(0.3)};
     oscTupleAddress->setValue(&t);
     
     while (true)

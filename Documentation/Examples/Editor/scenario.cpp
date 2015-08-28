@@ -138,7 +138,7 @@ int main()
     
     // create an expression : /i-score/test >= {0.7, 0.7, 0.7}
     Destination local_test(local_test_node);
-    Tuple threshold1(new Float(0.7), new Float(0.7), new Float(0.7));
+    Tuple threshold1 = {new Float(0.7), new Float(0.7), new Float(0.7)};
     auto next_expression1 = ExpressionAtom::create(&local_test,
                                                   ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
                                                   &threshold1);
@@ -186,17 +186,17 @@ int main()
     second_constraint->addTimeProcess(second_automation);
     
     // add "/test 0. 0. 0." message to first Automation's start State
-    Tuple zero(new Float(0.), new Float(0.), new Float(0.));
+    Tuple zero = {new Float(0.), new Float(0.), new Float(0.)};
     auto first_start_message = Message::create(local_test_address, &zero);
     first_automation->getStartState()->stateElements().push_back(first_start_message);
     
     // add "/test 1. 1. 1." message to first Automation's end State
-    Tuple one(new Float(1.), new Float(1.), new Float(1.));
+    Tuple one = {new Float(1.), new Float(1.), new Float(1.)};
     auto first_end_message = Message::create(local_test_address, &one);
     first_automation->getEndState()->stateElements().push_back(first_end_message);
     
     // add "/test 2. 2. 2." message to second Automation's end State
-    Tuple two(new Float(2.), new Float(2.), new Float(2.));
+    Tuple two = {new Float(2.), new Float(2.), new Float(2.)};
     auto second_end_message = Message::create(local_test_address, &two);
     second_automation->getEndState()->stateElements().push_back(second_end_message);
     
@@ -234,7 +234,7 @@ int main()
     first_constraint->setDurationMin(1000.);
     
     // changing expression to : /i-score/test >= {0.5, 0.5, 0.5}
-    Tuple threshold2(new Float(0.5), new Float(0.5), new Float(0.5));
+    Tuple threshold2 = {new Float(0.5), new Float(0.5), new Float(0.5)};
     auto next_expression2 = ExpressionAtom::create(&local_test,
                                                    ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
                                                    &threshold2);
