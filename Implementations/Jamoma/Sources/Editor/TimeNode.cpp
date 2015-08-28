@@ -77,77 +77,17 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   
   for (auto& timeEvent : timeEvents())
   {
-    shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
-    
     switch (timeEvent->getStatus())
     {
-      // check if NONE TimeEvent could becomes PENDING
+      // check if NONE TimeEvent is ready to become PENDING
       case TimeEvent::Status::NONE:
       {
-        // NONE TimeEvent without previous TimeConstraint is PENDING
-        if (timeEvent->previousTimeConstraints().empty())
-        {
-          e->setStatus(TimeEvent::Status::PENDING);
-          pendingEvents.push_back(timeEvent);
-        }
+        shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
+        e->process();
         
-        // NONE TimeEvent without previous TimeConstraints is PENDING
-        // if each previous TimeConstraint ends or reaches their minimal duration
-        // and it starts to observe its Expression if all previous TimeConstraints have reach their minimal duration
-        else
-        {
-          // for each previous TimeConstraints
-          bool setPending = false;
-          bool observeExpression = true;
-          for (auto& timeConstraint : timeEvent->previousTimeConstraints())
-          {
-            shared_ptr<JamomaTimeConstraint> c = dynamic_pointer_cast<JamomaTimeConstraint>(timeConstraint);
-            
-            // when running
-            if (c->getRunning())
-            {
-              // when all constraint durations are equals
-              if (c->getDurationMin() == c->getDuration() &&
-                  c->getDurationMax() == c->getDuration())
-              {
-                // wait and avoid expression observation
-                observeExpression = false;
-                break;
-              }
-              // when the minimal duration is not reached
-              else if (c->getDate() < c->getDurationMin())
-              {
-                // wait and avoid expression observation
-                observeExpression = false;
-                break;
-              }
-              // when the minimal duration is reached
-              else if (c->getDate() >= c->getDurationMin() &&
-                       c->getDate() < c->getDurationMax())
-              {
-                // observe expression if all other previous constraints allow it too
-                observeExpression &= true;
-              }
-              else if (c->getDate() >= c->getDurationMax())
-              {
-                observeExpression = false;
-              }
-            }
-            
-            setPending = true;
-          }
-          
-          if (setPending)
-          {
-            e->setStatus(TimeEvent::Status::PENDING);
-            pendingEvents.push_back(timeEvent);
-          }
-          
-          // observe the expression to observe all Destination value contained into it
-          e->setObserveExpression(observeExpression);
-        }
-        
-        break;
+        // don't break if the TimeEvent became PENDING
+        if (timeEvent->getStatus() == TimeEvent::Status::NONE)
+            break;
       }
       
       // PENDING TimeEvent is ready for evaluation
@@ -187,7 +127,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
     {
       shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
       
-      if (e->getObserveExpression())
+      if (e->isObservingExpression())
         noEventObserveExpression = false;
       
       timeEvent->getExpression() != nullptr ? timeEvent->getExpression()->evaluate() ? eventsToHappen.push_back(timeEvent) : eventsToDispose.push_back(timeEvent) : eventsToHappen.push_back(timeEvent);
@@ -196,7 +136,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
     // if at least one TimeEvent happens
     // or if all TimeEvents needs to be disposed and none of them is observing its Expression
     if (eventsToHappen.size() > 0 ||
-        (eventsToDispose.size() == timeEvents().size() && noEventObserveExpression))
+       (eventsToDispose.size() == timeEvents().size() && noEventObserveExpression))
     {
       for (auto& timeEvent : eventsToHappen)
       {

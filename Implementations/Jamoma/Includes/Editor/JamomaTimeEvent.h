@@ -85,10 +85,18 @@ public:
 # pragma mark -
 # pragma mark Implementation specific
   
+  /* edit status and call ExecutionCallback 
+   \param #Status new status */
   void setStatus(Status);
   
-  bool getObserveExpression();
-  void setObserveExpression(bool);
+  /* check if NONE TimeEvent is ready to become PENDING */
+  void process();
   
+  /* is the TimeEvent observing its Expression ? */
+  bool isObservingExpression();
+  
+private:
+  
+  void observeExpressionResult(bool);
   void resultCallback(bool result);
 };

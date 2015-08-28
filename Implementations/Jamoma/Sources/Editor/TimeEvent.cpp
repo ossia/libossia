@@ -113,25 +113,99 @@ TimeEvent::Status JamomaTimeEvent::getStatus() const
 # pragma mark -
 # pragma mark Implementation specific
 
+void JamomaTimeEvent::process()
+{
+  // NONE TimeEvent without previous TimeConstraint is PENDING
+  if (previousTimeConstraints().empty())
+  {
+    setStatus(TimeEvent::Status::PENDING);
+  }
+  
+  // NONE TimeEvent without previous TimeConstraints is PENDING
+  // if each previous TimeConstraint ends or reaches their minimal duration
+  // and it starts to observe its Expression if all previous TimeConstraints have reach their minimal duration
+  else
+  {
+    // for each previous TimeConstraints
+    bool setPending = false;
+    bool observe = true;
+    for (auto& timeConstraint : previousTimeConstraints())
+    {
+      shared_ptr<JamomaTimeConstraint> c = dynamic_pointer_cast<JamomaTimeConstraint>(timeConstraint);
+      
+      // when running
+      if (c->getRunning())
+      {
+        // when all constraint durations are equals
+        if (c->getDurationMin() == c->getDuration() &&
+            c->getDurationMax() == c->getDuration())
+        {
+          // don't observe expression
+          observe = false;
+          
+          // stay NONE status
+          break;
+        }
+        // when the minimal duration is not reached
+        else if (c->getDate() < c->getDurationMin())
+        {
+          // don't observe expression
+          observe = false;
+          
+          // stay NONE status
+          break;
+        }
+        // when the minimal duration is reached
+        else if (c->getDate() >= c->getDurationMin() &&
+                 c->getDate() < c->getDurationMax())
+        {
+          // observe expression if all other previous constraints allow it too
+          observe &= true;
+          
+          // and access to PENDING status (see below)
+        }
+        else if (c->getDate() >= c->getDurationMax())
+        {
+          // don't observe expression
+          observe = false;
+          
+          // and access to PENDING status (see below)
+        }
+      }
+      
+      setPending = true;
+    }
+    
+    // access to PENDING status once all previous TimeConstraints allow it
+    if (setPending)
+    {
+      setStatus(TimeEvent::Status::PENDING);
+    }
+    
+    // observe the expression to observe all Destination value contained into it
+    observeExpressionResult(observe);
+  }
+}
+
 void JamomaTimeEvent::setStatus(Status status)
 {
   mStatus = status;
   (mCallback)(mStatus);
 }
 
-bool JamomaTimeEvent::getObserveExpression()
+bool JamomaTimeEvent::isObservingExpression()
 {
   return mObserveExpression;
 }
 
-void JamomaTimeEvent::setObserveExpression(bool observeExpression)
+void JamomaTimeEvent::observeExpressionResult(bool observe)
 {
   if (mExpression == nullptr)
     return;
-    
-  if (observeExpression != mObserveExpression)
+  
+  if (observe != mObserveExpression)
   {
-    mObserveExpression = observeExpression;
+    mObserveExpression = observe;
     
     if (mObserveExpression)
     {
