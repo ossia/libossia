@@ -4,7 +4,7 @@
 
 using namespace OSSIA;
 
-void constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<State> state)
+void constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<StateElement> element)
 {
     ;
 }
@@ -36,6 +36,9 @@ private Q_SLOTS:
         QVERIFY(event_with_expression != nullptr);
 
         QVERIFY(event_with_expression->getExpression() == ExpressionTrue);
+
+        event_with_expression->setExpression(ExpressionFalse);
+        QVERIFY(event_with_expression->getExpression() == ExpressionFalse);
 
         //! \todo test clone()
     }

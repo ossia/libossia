@@ -47,9 +47,10 @@ const Value * JamomaDomain::getMin() const
   return mMin;
 }
 
-void JamomaDomain::setMin(const Value * min)
+Domain & JamomaDomain::setMin(const Value * min)
 {
   mMin = min->clone();
+  return *this;
 }
 
 const Value * JamomaDomain::getMax() const
@@ -57,9 +58,10 @@ const Value * JamomaDomain::getMax() const
   return mMax;
 }
 
-void JamomaDomain::setMax(const Value * max)
+Domain & JamomaDomain::setMax(const Value * max)
 {
   mMax = max->clone();
+  return *this;
 }
 
 vector<const Value*> JamomaDomain::getValues() const
@@ -67,11 +69,13 @@ vector<const Value*> JamomaDomain::getValues() const
   return mValues;
 }
 
-void JamomaDomain::setValues(vector<const Value*> values)
+Domain & JamomaDomain::setValues(vector<const Value*> values)
 {
   mValues.clear();
   
   for (const auto& e : values)
     mValues.push_back(e->clone());
+
+  return *this;
 }
 

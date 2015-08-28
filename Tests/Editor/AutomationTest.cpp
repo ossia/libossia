@@ -12,9 +12,9 @@ class AutomationTest : public QObject
 
     std::vector<Value*> m_address_values;
 
-    void constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<State> state)
+    void constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<StateElement> element)
     {
-        state->launch();
+        element->launch();
     }
 
     void event_callback(TimeEvent::Status newStatus)
@@ -25,10 +25,6 @@ class AutomationTest : public QObject
     void address_callback(const Value * v)
     {
         m_address_values.push_back(v->clone());
-
-        //! \debug
-        Float* f = (Float*)v;
-        std::cout << f->value << std::endl;
     }
 
 private Q_SLOTS:
@@ -36,7 +32,7 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        Local local_protocol{};
+        auto local_protocol = Local::create();
         auto local_device = Device::create(local_protocol, "test");
         local_device->emplace(local_device->children().begin(), "child");
         auto address = local_device->children().front()->createAddress(Value::Type::FLOAT);
@@ -60,12 +56,12 @@ private Q_SLOTS:
     //! \todo test state()
     void test_execution()
     {
-        Local local_protocol{};
+        auto local_protocol = Local::create();
         auto local_device = Device::create(local_protocol, "test");
         local_device->emplace(local_device->children().begin(), "child");
         auto address = local_device->children().front()->createAddress(Value::Type::FLOAT);
-        auto address_callback = std::bind(&AutomationTest::address_callback, this, _1);
-        address->setValueCallback(address_callback);
+        ValueCallback callback = std::bind(&AutomationTest::address_callback, this, _1);
+        address->addCallback(&callback);
 
         auto curve = Curve<float>::create();
         auto linearSegment = CurveSegmentLinear<float>::create(curve);
@@ -87,13 +83,16 @@ private Q_SLOTS:
         m_address_values.clear();
 
         constraint->setGranularity(10.);
-        constraint->play();
+        constraint->start();
 
         while (constraint->getRunning())
             ;
 
-        QVERIFY(m_address_values.size() == 10);
-        QVERIFY(m_address_values[9] == new Float(0.));
+        QVERIFY(m_address_values.size() == 11);
+
+        Float zero(0);
+        QVERIFY(*m_address_values[0] == zero);
+        QVERIFY(*m_address_values[10] == zero);
     }
 };
 

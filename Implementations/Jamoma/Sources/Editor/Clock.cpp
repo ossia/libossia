@@ -52,7 +52,7 @@ JamomaClock::~JamomaClock()
 # pragma mark -
 # pragma mark Execution
 
-void JamomaClock::play()
+void JamomaClock::start()
 {
   if (mDuration <= mOffset)
     return stop();
@@ -70,8 +70,8 @@ void JamomaClock::play()
   mLastTime = steady_clock::now();
   mElapsedTime = std::floor(mOffset / mGranularity) * mGranularity * 1000;
   
-  //! \todo notify each observers
-  // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
+  // notify the owner
+  (mCallback)(mPosition, mDate, 0);
   
   if (!mExternal)
   {
@@ -93,9 +93,6 @@ void JamomaClock::stop()
     if (mThread.joinable())
       mThread.join();
   }
-  
-  //! \todo notify each observers
-  // sendNotification(TTSymbol("ClockRunningChanged"), mRunning);
 }
 
 void JamomaClock::pause()
@@ -106,6 +103,9 @@ void JamomaClock::pause()
 void JamomaClock::resume()
 {
   mPaused = false;
+
+  // reset the time reference
+  mLastTime = steady_clock::now();
 }
 
 bool JamomaClock::tick()
@@ -143,7 +143,7 @@ bool JamomaClock::tick()
       {
         mPosition = mDate / mDuration;
         
-        // notify the owner in none external mode
+        // notify the owner
         (mCallback)(mPosition, mDate, droppedTicks);
         
         mRunning = false;
@@ -181,7 +181,7 @@ bool JamomaClock::tick()
   {
     mPosition = mDate / mDuration;
     
-    // notify the owner in none external mode
+    // notify the owner
     (mCallback)(mPosition, mDate, droppedTicks);
     
     // is this the end

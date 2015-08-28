@@ -13,14 +13,15 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        Local local_protocol{};
+        auto local_protocol = Local::create();
         auto local_device = Device::create(local_protocol, "test");
         
         local_device->emplace(local_device->children().begin(), "child");
         auto address = local_device->children().front()->createAddress();
         QVERIFY(address != nullptr);
         
-        QVERIFY(address->getDevice() != nullptr);
+        QVERIFY(address->getNode() == local_device->children().front());
+        QVERIFY(address->getNode()->getDevice() == local_device);
         
         QVERIFY(address->getValueType() == Value::Type::IMPULSE);
         
@@ -45,13 +46,17 @@ private Q_SLOTS:
         address->setRepetitionFilter(true);
         QVERIFY(address->getRepetitionFilter() == true);
         
-        //! \todo verify getValueCallback
+        //! \todo verify addCallback
         
-        //! \todo verify setValueCallback
+        //! \todo verify removeCallback
         
         //! \todo verify getValue
         
-        //! \todo verify sendValue
+        //! \todo verify setValue
+
+        //! \todo verify pushValue
+
+        //! \todo verify pullValue
     }
 };
 

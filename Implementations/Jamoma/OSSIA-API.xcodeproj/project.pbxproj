@@ -31,8 +31,23 @@
 		46502A751AC2AB340067AB66 /* Address.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		46502A761AC2AB410067AB66 /* Node.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Node.cpp; sourceTree = "<group>"; };
 		4658445C1B14A95200612FBD /* Container.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
-		465FD2F11B0CEF220025B500 /* Container.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Container.cpp; sourceTree = "<group>"; };
 		467BE0381B442DC9006B772A /* TimeProcess.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeProcess.cpp; sourceTree = "<group>"; };
+		4682EEBE1B8C705F00E4C5CF /* Local.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Local.h; sourceTree = "<group>"; };
+		4682EEBF1B8C705F00E4C5CF /* MIDI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MIDI.h; sourceTree = "<group>"; };
+		4682EEC01B8C705F00E4C5CF /* Minuit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Minuit.h; sourceTree = "<group>"; };
+		4682EEC11B8C705F00E4C5CF /* OSC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OSC.h; sourceTree = "<group>"; };
+		4682EEC31B8C731500E4C5CF /* Local.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Local.cpp; sourceTree = "<group>"; };
+		4682EEC41B8C731500E4C5CF /* MIDI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MIDI.cpp; sourceTree = "<group>"; };
+		4682EEC51B8C731500E4C5CF /* Minuit.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Minuit.cpp; sourceTree = "<group>"; };
+		4682EEC61B8C731500E4C5CF /* OSC.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OSC.cpp; sourceTree = "<group>"; };
+		4682EEC91B8CB84A00E4C5CF /* JamomaLocal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaLocal.h; sourceTree = "<group>"; };
+		4682EECA1B8CB84A00E4C5CF /* JamomaMIDI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaMIDI.h; sourceTree = "<group>"; };
+		4682EECB1B8CB84A00E4C5CF /* JamomaMinuit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaMinuit.h; sourceTree = "<group>"; };
+		4682EECC1B8CB84A00E4C5CF /* JamomaOSC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaOSC.h; sourceTree = "<group>"; };
+		4682EECD1B8DC35B00E4C5CF /* JamomaProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaProtocol.h; sourceTree = "<group>"; };
+		4682EECE1B8DC43E00E4C5CF /* Protocol.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Protocol.cpp; sourceTree = "<group>"; };
+		4682EECF1B8E0D3900E4C5CF /* CallbackContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CallbackContainer.h; sourceTree = "<group>"; };
+		4682EED21B8E10AA00E4C5CF /* CallbackContainer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CallbackContainer.cpp; sourceTree = "<group>"; };
 		4689BADE1ABA20BD00D1BA4E /* Clock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
 		4689BADF1ABA223800D1BA4E /* Address.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Address.h; sourceTree = "<group>"; };
 		4689BAE11ABA223800D1BA4E /* Device.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Device.h; sourceTree = "<group>"; };
@@ -53,6 +68,10 @@
 		46A4923019C2E264003691A8 /* CurveSegmentPower.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentPower.h; sourceTree = "<group>"; };
 		46A4923119C2E2D6003691A8 /* CurveSegmentPower.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentPower.cpp; sourceTree = "<group>"; };
 		46AD82A01B4C229C0094E2DB /* JamomaCurveSegmentPower.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaCurveSegmentPower.h; sourceTree = "<group>"; };
+		46B329881B6911DF0006B1BB /* JamomaDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaDevice.h; sourceTree = "<group>"; };
+		46B329891B6911DF0006B1BB /* JamomaNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaNode.h; sourceTree = "<group>"; };
+		46B3298A1B69141A0006B1BB /* JamomaAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaAddress.h; sourceTree = "<group>"; };
+		46B3298C1B691A3A0006B1BB /* JamomaContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaContainer.h; sourceTree = "<group>"; };
 		46BA2A5B19C09A21009630B5 /* Curve.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Curve.cpp; sourceTree = "<group>"; };
 		46BA2A5D19C09A21009630B5 /* CurveSegmentLinear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentLinear.cpp; sourceTree = "<group>"; };
 		46BA2A6019C09A21009630B5 /* Scenario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scenario.cpp; sourceTree = "<group>"; };
@@ -116,6 +135,7 @@
 				4689BAE11ABA223800D1BA4E /* Device.h */,
 				4689BAE21ABA223800D1BA4E /* Node.h */,
 				4689BAE31ABA223800D1BA4E /* Protocol.h */,
+				4682EEBD1B8C705F00E4C5CF /* Protocol */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -138,18 +158,52 @@
 			path = CurveSegment;
 			sourceTree = "<group>";
 		};
-		46502A771AC2AD380067AB66 /* Misc */ = {
+		4658445B1B14A95200612FBD /* Misc */ = {
 			isa = PBXGroup;
 			children = (
-				465FD2F11B0CEF220025B500 /* Container.cpp */,
+				4682EECF1B8E0D3900E4C5CF /* CallbackContainer.h */,
+				4658445C1B14A95200612FBD /* Container.h */,
 			);
 			path = Misc;
 			sourceTree = "<group>";
 		};
-		4658445B1B14A95200612FBD /* Misc */ = {
+		4682EEBD1B8C705F00E4C5CF /* Protocol */ = {
 			isa = PBXGroup;
 			children = (
-				4658445C1B14A95200612FBD /* Container.h */,
+				4682EEBE1B8C705F00E4C5CF /* Local.h */,
+				4682EEBF1B8C705F00E4C5CF /* MIDI.h */,
+				4682EEC01B8C705F00E4C5CF /* Minuit.h */,
+				4682EEC11B8C705F00E4C5CF /* OSC.h */,
+			);
+			path = Protocol;
+			sourceTree = "<group>";
+		};
+		4682EEC21B8C731500E4C5CF /* Protocol */ = {
+			isa = PBXGroup;
+			children = (
+				4682EEC31B8C731500E4C5CF /* Local.cpp */,
+				4682EEC41B8C731500E4C5CF /* MIDI.cpp */,
+				4682EEC51B8C731500E4C5CF /* Minuit.cpp */,
+				4682EEC61B8C731500E4C5CF /* OSC.cpp */,
+			);
+			path = Protocol;
+			sourceTree = "<group>";
+		};
+		4682EEC81B8CB84A00E4C5CF /* Protocol */ = {
+			isa = PBXGroup;
+			children = (
+				4682EEC91B8CB84A00E4C5CF /* JamomaLocal.h */,
+				4682EECA1B8CB84A00E4C5CF /* JamomaMIDI.h */,
+				4682EECB1B8CB84A00E4C5CF /* JamomaMinuit.h */,
+				4682EECC1B8CB84A00E4C5CF /* JamomaOSC.h */,
+			);
+			path = Protocol;
+			sourceTree = "<group>";
+		};
+		4682EED11B8E10AA00E4C5CF /* Misc */ = {
+			isa = PBXGroup;
+			children = (
+				4682EED21B8E10AA00E4C5CF /* CallbackContainer.cpp */,
 			);
 			path = Misc;
 			sourceTree = "<group>";
@@ -171,8 +225,30 @@
 				46502A751AC2AB340067AB66 /* Address.cpp */,
 				46502A741AC2AB2C0067AB66 /* Device.cpp */,
 				46502A761AC2AB410067AB66 /* Node.cpp */,
+				4682EECE1B8DC43E00E4C5CF /* Protocol.cpp */,
+				4682EEC21B8C731500E4C5CF /* Protocol */,
 			);
 			path = Network;
+			sourceTree = "<group>";
+		};
+		46B329871B6911DF0006B1BB /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				46B3298A1B69141A0006B1BB /* JamomaAddress.h */,
+				46B329881B6911DF0006B1BB /* JamomaDevice.h */,
+				46B329891B6911DF0006B1BB /* JamomaNode.h */,
+				4682EECD1B8DC35B00E4C5CF /* JamomaProtocol.h */,
+				4682EEC81B8CB84A00E4C5CF /* Protocol */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		46B3298B1B691A3A0006B1BB /* Misc */ = {
+			isa = PBXGroup;
+			children = (
+				46B3298C1B691A3A0006B1BB /* JamomaContainer.h */,
+			);
+			path = Misc;
 			sourceTree = "<group>";
 		};
 		46BA2A5919C09A21009630B5 /* Sources */ = {
@@ -180,7 +256,7 @@
 			children = (
 				46AA0ED21A0122C3007374E9 /* Network */,
 				46BA2A5A19C09A21009630B5 /* Editor */,
-				46502A771AC2AD380067AB66 /* Misc */,
+				4682EED11B8E10AA00E4C5CF /* Misc */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -222,7 +298,9 @@
 		46D2C60B1B260B9900C04D8A /* Includes */ = {
 			isa = PBXGroup;
 			children = (
+				46B329871B6911DF0006B1BB /* Network */,
 				46D2C60C1B260B9900C04D8A /* Editor */,
+				46B3298B1B691A3A0006B1BB /* Misc */,
 			);
 			path = Includes;
 			sourceTree = "<group>";

@@ -1610,31 +1610,12 @@ Tuple::Tuple(const Value* v)
   value.push_back(v->clone());
 }
 
-Tuple::Tuple(const Value* v1, const Value* v2)
+Tuple::Tuple(std::initializer_list<const Value*> v)
 {
   m_type = Type::TUPLE;
-
-  value.push_back(v1->clone());
-  value.push_back(v2->clone());
-}
-
-Tuple::Tuple(const Value* v1, const Value* v2, const Value* v3)
-{
-  m_type = Type::TUPLE;
-
-  value.push_back(v1->clone());
-  value.push_back(v2->clone());
-  value.push_back(v3->clone());
-}
-
-Tuple::Tuple(const Value* v1, const Value* v2, const Value* v3, const Value* v4)
-{
-  m_type = Type::TUPLE;
-
-  value.push_back(v1->clone());
-  value.push_back(v2->clone());
-  value.push_back(v3->clone());
-  value.push_back(v4->clone());
+  
+  for (const auto & e : v)
+    value.push_back(e->clone());
 }
 
 Tuple::Tuple(std::vector<const Value*> v)

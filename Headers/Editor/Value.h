@@ -17,6 +17,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <initializer_list>
 
 namespace OSSIA
 {
@@ -297,30 +298,18 @@ struct Tuple : public Value
 {
   std::vector<Value*> value;
   
-  /*! constructor for one value tuple
-  \param const value */
-  Tuple(const Value*);
-
-  /*! constructor for two value tuple
-  \param const value
-  \param const value */
-  Tuple(const Value*, const Value*);
-
-  /*! constructor for three value tuple
+  /*! constructor for one value
+   \param const value */
+  Tuple(const Value* v);
+  
+  /*! constructor for any number of values
   \param const value
   \param const value
-  \param const value */
-  Tuple(const Value*, const Value*, const Value*);
-
-  /*! constructor for four value tuple
-  \param const value
-  \param const value
-  \param const value
-  \param const value */
-  Tuple(const Value*, const Value*, const Value*, const Value*);
-
-  /*! constructor for N value tuple
-  \param std::vector<const #Value> value */
+  \param ... */
+  Tuple(std::initializer_list<const Value*>);
+  
+  /*! constructor passign a value vector
+   \param std::vector<const #Value> value */
   Tuple(std::vector<const Value*> = std::vector<const Value*>());
   
   /*! clone */

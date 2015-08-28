@@ -45,7 +45,6 @@ private:
   shared_ptr<TimeEvent>               mStartEvent;
   shared_ptr<TimeEvent>               mEndEvent;
   
-  TimeValue                           mDuration;
   TimeValue                           mDurationMin;
   TimeValue                           mDurationMax;
   
@@ -70,7 +69,7 @@ public:
 # pragma mark -
 # pragma mark Execution
   
-  shared_ptr<State> state(const TimeValue&, const TimeValue&) override;
+  shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) override;
 
 # pragma mark -
 # pragma mark Accessors
@@ -94,12 +93,10 @@ public:
 
   void removeTimeProcess(std::shared_ptr<TimeProcess>) override;
 
+private:
+  
 # pragma mark -
 # pragma mark Implementation specific
-  
-  void process();
-
-private:
   
   void ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks);
 };

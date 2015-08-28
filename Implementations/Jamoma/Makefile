@@ -44,14 +44,24 @@ SRC32 += Sources/Editor/TimeValue.i386.o
 SRC64 += Sources/Editor/TimeValue.x64.o
 SRC32 += Sources/Editor/Value.i386.o
 SRC64 += Sources/Editor/Value.x64.o
-SRC32 += Sources/Misc/Container.i386.o
-SRC64 += Sources/Misc/Container.x64.o
 SRC32 += Sources/Network/Address.i386.o
 SRC64 += Sources/Network/Address.x64.o
 SRC32 += Sources/Network/Device.i386.o
 SRC64 += Sources/Network/Device.x64.o
 SRC32 += Sources/Network/Node.i386.o
 SRC64 += Sources/Network/Node.x64.o
+SRC32 += Sources/Network/Protocol.i386.o
+SRC64 += Sources/Network/Protocol.x64.o
+SRC32 += Sources/Network/Protocol/Local.i386.o
+SRC64 += Sources/Network/Protocol/Local.x64.o
+SRC32 += Sources/Network/Protocol/MIDI.i386.o
+SRC64 += Sources/Network/Protocol/MIDI.x64.o
+SRC32 += Sources/Network/Protocol/Minuit.i386.o
+SRC64 += Sources/Network/Protocol/Minuit.x64.o
+SRC32 += Sources/Network/Protocol/OSC.i386.o
+SRC64 += Sources/Network/Protocol/OSC.x64.o
+SRC32 += Sources/Misc/CallbackContainer.i386.o
+SRC64 += Sources/Misc/CallbackContainer.x64.o
 
 #########################################
 

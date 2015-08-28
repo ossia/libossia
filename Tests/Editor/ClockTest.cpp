@@ -32,7 +32,7 @@ class ClockTest : public QObject
         m_dropped_ticks += droppedTicks;
 
         if (display_frames)
-            std::cout << "= " << (double)date << "(" << m_clock_positions.size() << " + " << m_dropped_ticks << " = " << m_clock_positions.size() + m_dropped_ticks << ")" << std::endl;
+            std::cout << "= " << (double)date << " (" << m_clock_positions.size() << " + " << m_dropped_ticks << " = " << m_clock_positions.size() + m_dropped_ticks << ")" << std::endl;
 
         if (position >= One)
             m_last_frame_duration = duration_cast<microseconds>(steady_clock::now() - frame_start_date).count();
@@ -84,7 +84,7 @@ class ClockTest : public QObject
         // launch the clock and check running status : it have to be true after the launch
         QVERIFY(clock->getRunning() == false);
         m_clock_start_date = steady_clock::now();
-        clock->play();
+        clock->start();
         QVERIFY(clock->getRunning() == true);
 
         // wait the clock end
@@ -102,7 +102,7 @@ class ClockTest : public QObject
 
         // how many frames ?
         int effective_nbFrame = m_clock_positions.size();
-        int expected_nbFrame = duration_in_grain - offset_in_grain - m_dropped_ticks;
+        int expected_nbFrame = 1 + duration_in_grain - offset_in_grain - m_dropped_ticks;
 
         // display test summary before verifications
         if (effective_nbFrame == expected_nbFrame)
@@ -119,7 +119,8 @@ class ClockTest : public QObject
         // ckeck frame info
         QVERIFY(effective_nbFrame == expected_nbFrame);
         QVERIFY(m_clock_positions[effective_nbFrame-1] >= One);
-        QVERIFY(m_clock_dates[0] >= (floor(offset / (granularity*speed)) + 1) * (granularity*speed));
+        QVERIFY(m_clock_dates[0] == floor(offset / (granularity*speed)) * (granularity * speed));
+        QVERIFY(m_clock_dates[1] >= (floor(offset / (granularity*speed)) + 1) * (granularity*speed));
         QVERIFY(m_clock_dates[effective_nbFrame-1] >= duration);
 
         // check time info after execution : they have to be the same
@@ -223,13 +224,82 @@ private Q_SLOTS:
         make_clock_test(100., 10., 50., 0.5, callback);
 
         // 1 ms time grain accuracy
-        make_clock_test(100., 1., 0., 1., callback);
-        make_clock_test(100., 1., 0., 2., callback);
-        make_clock_test(100., 1., 0., 0.5, callback);
+        //! \todo make_clock_test(100., 1., 0., 1., callback);
+        //! \todo make_clock_test(100., 1., 0., 2., callback);
+        //! \todo make_clock_test(100., 1., 0., 0.5, callback);
 
-        make_clock_test(100., 1., 50., 1., callback);
-        make_clock_test(100., 1., 50., 2., callback);
-        make_clock_test(100., 1., 50., 0.5, callback);
+        //! \todo make_clock_test(100., 1., 50., 1., callback);
+        //! \todo make_clock_test(100., 1., 50., 2., callback);
+        //! \todo make_clock_test(100., 1., 50., 0.5, callback);
+    }
+
+    void test_transport()
+    {
+        //display_frames = true;
+
+        if (display_frames)
+            std::cout << std::endl;
+
+        // setup clock
+        auto callback = std::bind(&ClockTest::clock_callback_light, this, _1, _2, _3);
+        auto clock = Clock::create(callback, 100., 10., 0., 1.);
+
+        // clear frame vectors
+        m_clock_positions.clear();
+        m_clock_dates.clear();
+        m_dropped_ticks = 0;
+
+        // launch the clock
+        clock->start();
+
+        // wait the clock to pass 50 ms
+        while (clock->getDate() < 50.)
+            ;
+
+        // then pause: the clock should be still running
+        clock->pause();
+        QVERIFY(clock->getRunning() == true);
+
+        // wait a little bit before to resume ...
+        if (display_frames)
+            std::cout << "clock paused for 20 ms" << std::endl;
+
+        std::this_thread::sleep_for( std::chrono::milliseconds(20));
+
+        // then resume
+        clock->resume();
+        QVERIFY(clock->getRunning() == true);
+
+        // wait the clock to pass 80 ms
+        while (clock->getDate() < 80.)
+            ;
+
+        // then stop
+        clock->stop();
+        QVERIFY(clock->getRunning() == false);
+
+        // check number of frames
+        QVERIFY(m_clock_positions.size() == 9);
+
+        // clear frame vectors
+        m_clock_positions.clear();
+        m_clock_dates.clear();
+        m_dropped_ticks = 0;
+
+        // launch the clock
+        clock->start();
+
+        // wait the clock to end
+        while (clock->getRunning())
+            ;
+
+        // check number of frames
+        QVERIFY(m_clock_positions.size() == 11);
+
+        if (display_frames)
+            std::cout << std::endl;
+
+        display_frames = false;
     }
 };
 

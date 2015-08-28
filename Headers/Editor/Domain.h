@@ -56,24 +56,27 @@ public:
   virtual const Value * getMin() const = 0;
 
   /*! set the minimal value
-   \param const #Value* minimal value */
-  virtual void setMin(const Value*) = 0;
+   \param const #Value* minimal value 
+   \return #Domain the domain */
+  virtual Domain & setMin(const Value*) = 0;
 
   /*! get the maximal value
    \return const #Value* maximal value */
   virtual const Value * getMax() const = 0;
 
   /*! set the maximal value
-   \param const #Value* maximal value */
-  virtual void setMax(const Value*) = 0;
+   \param const #Value* maximal value 
+   \return #Domain the domain */
+  virtual Domain & setMax(const Value*) = 0;
 
   /*! get authorized values
    \return std::vector<const #Value*> authorized values */
   virtual std::vector<const Value*> getValues() const = 0;
 
   /*! set authorized values
-   \param std::vector<const #Value*> authorized values */
-  virtual void setValues(std::vector<const Value*> values) = 0;
+   \param std::vector<const #Value*> authorized values 
+   \return #Domain the domain */
+  virtual Domain & setValues(std::vector<const Value*> values) = 0;
 };
 }
 

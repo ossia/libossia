@@ -1,80 +1,20 @@
-#include "Network/Device.h"
-#include "Network/Protocol.h"
-#include "Node.cpp"
-
-#include "TTFoundation.h"
-#include "TTModular.h"
-
-using namespace OSSIA;
-using namespace std;
-
-class JamomaDevice : public Device, public JamomaNode
-{
-
-private:
-
-# pragma mark -
-# pragma mark Implementation specific
-
-  TTObject mApplicationManager;
-  TTObject mApplication;
-
-public:
-
-# pragma mark -
-# pragma mark Life cycle
-
-  JamomaDevice(const Protocol & protocol, TTObject applicationManager = TTObject(), TTObject application = TTObject(), TTNodeDirectoryPtr aDirectory = nullptr) :
-  JamomaNode(aDirectory, aDirectory->getRoot()),
-  mApplicationManager(applicationManager),
-  mApplication(application)
-  {
-    return ;
-  }
-
-  ~JamomaDevice()
-  {
-    TTSymbol device_name;
-    mApplication.get("name", device_name);
-    mApplicationManager.send("ApplicationRelease", device_name);
-  }
-
-# pragma mark -
-# pragma mark Network
-
-  virtual bool updateNamespace() override
-  {
-    TTErr err = mApplication.send("DirectoryBuild");
-
-    // update root node
-    this->mNode = this->mDirectory->getRoot();
-
-    // erase all former nodes
-    m_children.clear();
-
-    // build tree from the root
-    buildChildren();
-
-    // is there children below ?
-    if (children().size() == 0)
-      throw runtime_error("namespace empty after the update");
-
-    return err == kTTErrNone;
-  }
-};
+#include "Network/JamomaDevice.h"
+#include "Network/Protocol/JamomaLocal.h"
+#include "Network/Protocol/JamomaMIDI.h"
+#include "Network/Protocol/JamomaMinuit.h"
+#include "Network/Protocol/JamomaOSC.h"
 
 # pragma mark -
 # pragma mark Life cycle
 
 namespace OSSIA
 {
-  shared_ptr<Device> Device::create(const Protocol & protocol, string name)
+  shared_ptr<Device> Device::create(shared_ptr<Protocol> protocol, string name)
   {
     TTSymbol device_name(name);
     TTObject applicationManager;
     TTObject application;
-
-    //! \todo we shouldn't init each time we create an object ...
+    
     TTFoundationInit("/usr/local/jamoma/extensions/", true);
     TTModularInit("/usr/local/jamoma/extensions", true);
 
@@ -94,7 +34,7 @@ namespace OSSIA
 
     // which protocol is it ?
     //! \todo this is not a good way to do as if a new protocol appears we have to create a case for it here
-    auto local_protocol = dynamic_cast<const Local*>(&protocol);
+    shared_ptr<JamomaLocal> local_protocol = dynamic_pointer_cast<JamomaLocal>(protocol);
     if (local_protocol)
     {
       // create a local application
@@ -105,15 +45,30 @@ namespace OSSIA
 
       TTValue v;
       application.get("directory", v);
-      return make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+      
+      shared_ptr<JamomaDevice> device = make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+      
+       // as it is not possible to call shared_from_this() into the constructor
+      device->setDevice(device);
+      
+      return device;
     }
-
-    auto minuit_protocol = dynamic_cast<const Minuit*>(&protocol);
+    
+    shared_ptr<JamomaMinuit> minuit_protocol = dynamic_pointer_cast<JamomaMinuit>(protocol);
     if (minuit_protocol)
     {
       // create a distant application
       application = applicationManager.send("ApplicationInstantiateDistant", device_name);
-
+      
+      // setup attribute to be cached : all attributes handled by Address class should be declared here
+      TTValue args;
+      args.append(kTTSym_service);
+      args.append(kTTSym_type);
+      args.append(kTTSym_rangeBounds);
+      args.append(kTTSym_rangeClipmode);
+      args.append(kTTSym_repetitionsFilter);
+      application.set("cachedAttributes", args);
+      
       // create a Minuit protocol unit
       TTObject protocolMinuit = applicationManager.send("ProtocolFind", "Minuit");
       if (!protocolMinuit.valid())
@@ -130,23 +85,29 @@ namespace OSSIA
       protocolMinuit.send("Stop");
       protocolMinuit.send("ApplicationRegister", device_name);
       protocolMinuit.send("ApplicationSelect", device_name);
-      protocolMinuit.set("port", minuit_protocol->in_port);
-      protocolMinuit.set("ip", TTSymbol(minuit_protocol->ip));
-
+      protocolMinuit.set("port", minuit_protocol->getInPort());
+      protocolMinuit.set("ip", TTSymbol(minuit_protocol->getIp()));
+      
       //! \todo change Minuit mechanism to setup one out_port per distant device
       protocolMinuit.send("ApplicationSelect", local_device_name);
-      protocolMinuit.set("port", minuit_protocol->out_port);
-
+      protocolMinuit.set("port", minuit_protocol->getOutPort());
+      
       protocolMinuit.send("Run");
 
       TTLogMessage("Minuit device created\n");
 
       TTValue v;
       application.get("directory", v);
-      return make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+      
+      shared_ptr<JamomaDevice> device = make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+      
+      // as it is not possible to call shared_from_this() into the constructor
+      device->setDevice(device);
+      
+      return device;
     }
-
-    auto osc_protocol = dynamic_cast<const OSC*>(&protocol);
+    
+    shared_ptr<JamomaOSC> osc_protocol = dynamic_pointer_cast<JamomaOSC>(protocol);
     if (osc_protocol)
     {
       // create a distante application
@@ -168,52 +129,76 @@ namespace OSSIA
       protocolOSC.send("Stop");
       protocolOSC.send("ApplicationRegister", device_name);
       protocolOSC.send("ApplicationSelect", device_name);
-      TTValue ports(osc_protocol->in_port, osc_protocol->out_port);
+      TTValue ports(osc_protocol->getInPort(), osc_protocol->getOutPort());
       protocolOSC.set("port", ports);
-      protocolOSC.set("ip", TTSymbol(osc_protocol->ip));
+      protocolOSC.set("ip", TTSymbol(osc_protocol->getIp()));
       protocolOSC.send("Run");
 
       TTLogMessage("OSC device created\n");
 
       TTValue v;
       application.get("directory", v);
-      return make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+      
+      shared_ptr<JamomaDevice> device = make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+      
+      // as it is not possible to call shared_from_this() into the constructor
+      device->setDevice(device);
+      
+      return device;
     }
 
     return nullptr;
   }
 }
 
-/* old code
-
-bool Device::save(string filepath) const
+JamomaDevice::JamomaDevice(shared_ptr<Protocol> protocol, TTObject applicationManager, TTObject application, TTNodeDirectoryPtr aDirectory) :
+JamomaNode(aDirectory, aDirectory->getRoot()),
+mProtocol(protocol),
+mApplicationManager(applicationManager),
+mApplication(application)
 {
-  // create a xml handler
-  TTObject aXmlHandler(kTTSym_XmlHandler);
+  return ;
+}
 
-  // pass it the application
-  aXmlHandler.set(kTTSym_object, pimpl->mApplication);
+JamomaDevice::~JamomaDevice()
+{
+  TTSymbol device_name;
+  mApplication.get("name", device_name);
+  mApplicationManager.send("ApplicationRelease", device_name);
+}
 
-  // write
-  TTValue none;
-  TTErr err = aXmlHandler.send(kTTSym_Write, filepath, none);
+# pragma mark -
+# pragma mark Network
 
+shared_ptr<Protocol> JamomaDevice::getProtocol() const
+{
+  return mProtocol;
+}
+
+bool JamomaDevice::updateNamespace()
+{
+  TTErr err = mApplication.send("DirectoryBuild");
+  
+  // update root node
+  this->mNode = this->mDirectory->getRoot();
+  
+  // erase all former nodes
+  m_children.clear();
+  
+  // build tree from the root
+  buildChildren();
+  
+  // is there children below ?
+  if (children().size() == 0)
+    throw runtime_error("namespace empty after the update");
+  
   return err == kTTErrNone;
 }
 
-bool Device::load(string filepath)
+# pragma mark -
+# pragma mark Implementation specific
+
+void JamomaDevice::setDevice(shared_ptr<Device> device)
 {
-  // create a xml handler
-  TTObject aXmlHandler(kTTSym_XmlHandler);
-
-  // pass it the application
-  aXmlHandler.set(kTTSym_object, pimpl->mApplication);
-
-  // read
-  TTValue none;
-  TTErr err = aXmlHandler.send(kTTSym_Read, filepath, none);
-
-  return err == kTTErrNone;
+  mDevice = device;
 }
-
-*/

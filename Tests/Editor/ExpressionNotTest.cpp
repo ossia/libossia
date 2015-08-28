@@ -3,10 +3,20 @@
 #include <iostream>
 
 using namespace OSSIA;
+using namespace std::placeholders;
 
 class ExpressionNotTest : public QObject
 {
     Q_OBJECT
+
+    bool m_result;
+    bool m_result_callback_called;
+
+    void result_callback(bool result)
+    {
+        m_result = result;
+        m_result_callback_called = true;
+    }
 
 private Q_SLOTS:
     
@@ -20,6 +30,65 @@ private Q_SLOTS:
         auto not_expression = ExpressionNot::create(expression);
         QVERIFY(not_expression != nullptr);
         QVERIFY(not_expression->evaluate() == true);
+    }
+
+    /*! test callback managment */
+    void test_callback()
+    {
+        // Local device
+        auto local_protocol = Local::create();
+        auto device = Device::create(local_protocol, "test");
+
+        auto localIntNode1 = *(device->emplace(device->children().cend(), "my_int.1"));
+        auto localIntAddress1 = localIntNode1->createAddress(Value::Type::INT);
+        auto localIntNode2 = *(device->emplace(device->children().cend(), "my_int.2"));
+        auto localIntAddress2 = localIntNode2->createAddress(Value::Type::INT);
+
+        auto testDestinationExpr = ExpressionAtom::create(new Destination(localIntNode1),
+                                                          ExpressionAtom::Operator::DIFFERENT,
+                                                          new Destination(localIntNode2));
+
+        auto testDestinationExprNot = ExpressionNot::create(testDestinationExpr);
+
+        ResultCallback callback = std::bind(&ExpressionNotTest::result_callback, this, _1);
+        testDestinationExprNot->addCallback(&callback);
+
+        QVERIFY(testDestinationExprNot->callbacks().size() == 1);
+
+        m_result = false;
+        m_result_callback_called = false;
+
+        Int i1(5);
+        localIntAddress1->pushValue(&i1);
+
+        QVERIFY(m_result_callback_called == true && m_result == false);
+
+        m_result = false;
+        m_result_callback_called = false;
+
+        Int i2(5);
+        localIntAddress2->pushValue(&i2);
+
+        QVERIFY(m_result_callback_called == true && m_result == true);
+
+        m_result = false;
+        m_result_callback_called = false;
+
+        Int i3(10);
+        localIntAddress2->pushValue(&i3);
+
+        QVERIFY(m_result_callback_called == true && m_result == false);
+
+        testDestinationExprNot->removeCallback(&callback);
+
+        QVERIFY(testDestinationExprNot->callbacks().size() == 0);
+
+        m_result = false;
+        m_result_callback_called = false;
+
+        localIntAddress2->pushValue(&i2);
+
+        QVERIFY(m_result_callback_called == false && m_result == false);
     }
 };
 

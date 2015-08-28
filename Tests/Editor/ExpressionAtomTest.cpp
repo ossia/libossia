@@ -3,10 +3,20 @@
 #include <iostream>
 
 using namespace OSSIA;
+using namespace std::placeholders;
 
 class ExpressionAtomTest : public QObject
 {
     Q_OBJECT
+
+    bool m_result;
+    bool m_result_callback_called;
+
+    void result_callback(bool result)
+    {
+        m_result = result;
+        m_result_callback_called = true;
+    }
 
 private Q_SLOTS:
     
@@ -192,8 +202,8 @@ private Q_SLOTS:
     void test_destination()
     {
         // Local device
-        Local device_parameters{};
-        auto device = Device::create(device_parameters, "test");
+        auto local_protocol = Local::create();
+        auto device = Device::create(local_protocol, "test");
 
         // Local tree building
         auto localImpulseNode1 = *(device->emplace(device->children().cend(), "my_impulse.1"));
@@ -233,42 +243,40 @@ private Q_SLOTS:
 
         // update node's value
         Bool b1(false);
-        localBoolAddress1->sendValue(&b1);
+        localBoolAddress1->setValue(&b1);
 
         Bool b2(true);
-        localBoolAddress2->sendValue(&b2);
+        localBoolAddress2->setValue(&b2);
 
         Int i1(5);
-        localIntAddress1->sendValue(&i1);
+        localIntAddress1->setValue(&i1);
 
         Int i2(10);
-        localIntAddress2->sendValue(&i2);
+        localIntAddress2->setValue(&i2);
 
         Float f1(0.5);
-        localFloatAddress1->sendValue(&f1);
+        localFloatAddress1->setValue(&f1);
 
         Float f2(0.2);
-        localFloatAddress2->sendValue(&f2);
+        localFloatAddress2->setValue(&f2);
 
         String s1("abc");
-        localStringAddress1->sendValue(&s1);
+        localStringAddress1->setValue(&s1);
 
         String s2("bcd");
-        localStringAddress2->sendValue(&s2);
+        localStringAddress2->setValue(&s2);
 
         Destination d1(localFloatNode1);
-        localDestinationAddress1->sendValue(&d1);
+        localDestinationAddress1->setValue(&d1);
 
         Destination d2(localFloatNode2);
-        localDestinationAddress2->sendValue(&d2);
+        localDestinationAddress2->setValue(&d2);
 
-        std::vector<const Value*> value1 = {new Float(0.1), new Float(0.2), new Float(0.3)};
-        Tuple t1(value1);
-        localTupleAddress1->sendValue(&t1);
+        Tuple t1 = {new Float(0.1), new Float(0.2), new Float(0.3)};
+        localTupleAddress1->setValue(&t1);
 
-        std::vector<const Value*> value2 = {new Float(0.2), new Float(0.3), new Float(0.4)};
-        Tuple t2(value2);
-        localTupleAddress2->sendValue(&t2);
+        Tuple t2 = {new Float(0.2), new Float(0.3), new Float(0.4)};
+        localTupleAddress2->setValue(&t2);
 
         // evaluate expressions with Destination
         auto testDestinationExprA = ExpressionAtom::create(new Destination(localImpulseNode1),
@@ -314,6 +322,56 @@ private Q_SLOTS:
         QVERIFY(testDestinationExprG->evaluate() == true);
 
         //! \todo test clone()
+    }
+
+    /*! test callback managment */
+    void test_callback()
+    {
+        // Local device
+        auto local_protocol = Local::create();
+        auto device = Device::create(local_protocol, "test");
+
+        auto localIntNode1 = *(device->emplace(device->children().cend(), "my_int.1"));
+        auto localIntAddress1 = localIntNode1->createAddress(Value::Type::INT);
+        auto localIntNode2 = *(device->emplace(device->children().cend(), "my_int.2"));
+        auto localIntAddress2 = localIntNode2->createAddress(Value::Type::INT);
+
+        auto testDestinationExpr = ExpressionAtom::create(new Destination(localIntNode1),
+                                                           ExpressionAtom::Operator::EQUAL,
+                                                           new Destination(localIntNode2));
+
+        ResultCallback callback = std::bind(&ExpressionAtomTest::result_callback, this, _1);
+        testDestinationExpr->addCallback(&callback);
+
+        QVERIFY(testDestinationExpr->callbacks().size() == 1);
+
+        m_result = false;
+        m_result_callback_called = false;
+
+        Int i1(5);
+        localIntAddress1->pushValue(&i1);
+
+        QVERIFY(m_result_callback_called == true && m_result == false);
+
+        m_result = false;
+        m_result_callback_called = false;
+
+        Int i2(5);
+        localIntAddress2->pushValue(&i2);
+
+        QVERIFY(m_result_callback_called == true && m_result == true);
+
+        testDestinationExpr->removeCallback(&callback);
+
+        QVERIFY(testDestinationExpr->callbacks().size() == 0);
+
+        m_result = false;
+        m_result_callback_called = false;
+
+        Int i3(10);
+        localIntAddress2->pushValue(&i3);
+
+        QVERIFY(m_result_callback_called == false && m_result == false);
     }
 };
 

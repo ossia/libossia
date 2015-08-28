@@ -37,7 +37,6 @@ private Q_SLOTS:
         QVERIFY(five == five);
         QVERIFY(!(five == 10.));
         QVERIFY(!(five == ten));
-        QVERIFY(!(5. == Infinite));
         QVERIFY(!(five == Infinite));
         QVERIFY(!(Infinite == 10.));
         QVERIFY(!(Infinite == ten));
@@ -45,7 +44,6 @@ private Q_SLOTS:
         QVERIFY(five != ten);
         QVERIFY(five != 10.);
         QVERIFY(five != Infinite);
-        QVERIFY(5. != Infinite);
         QVERIFY(Infinite != ten);
         QVERIFY(Infinite != 10.);
         QVERIFY(!(five != five));
@@ -64,14 +62,18 @@ private Q_SLOTS:
         QVERIFY(Infinite >= five);
         QVERIFY(Infinite >= 5.);
         QVERIFY(five < Infinite);
-        QVERIFY(5. < Infinite);
         QVERIFY(five <= Infinite);
-        QVERIFY(5. <= Infinite);
 
         QVERIFY(!(Infinite > Infinite));
         QVERIFY(Infinite >= Infinite);
         QVERIFY(!(Infinite < Infinite));
         QVERIFY(Infinite <= Infinite);
+
+        //! \note those tests fails because Infinite in casted into double and so the m_value (0.) is returned
+        QVERIFY(!(0. == Infinite));
+        QVERIFY(0. != Infinite);
+        QVERIFY(5. < Infinite);
+        QVERIFY(5. <= Infinite);
     }
 };
 

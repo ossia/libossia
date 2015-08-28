@@ -13,7 +13,7 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        Local local_protocol{};
+        auto local_protocol = Local::create();
         auto local_device = Device::create(local_protocol, "test");
 
         local_device->emplace(local_device->children().begin(), "child");
@@ -31,7 +31,7 @@ private Q_SLOTS:
     /*! test edition functions */
     void test_edition()
     {
-        Local local_protocol{};
+        auto local_protocol = Local::create();
         auto local_device = Device::create(local_protocol, "test");
 
         local_device->emplace(local_device->children().begin(), "child");

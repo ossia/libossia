@@ -1,10 +1,7 @@
 #include "Editor/JamomaAutomation.h"
 
-#include <assert.h>
-#include <iostream> //! \todo to remove. only here for debug purpose
 
-using namespace OSSIA;
-using namespace std;
+#include <iostream> //! \todo to remove. only here for debug purpose
 
 # pragma mark -
 # pragma mark Life cycle
@@ -40,25 +37,23 @@ JamomaAutomation::~JamomaAutomation()
 # pragma mark -
 # pragma mark Execution
 
-shared_ptr<State> JamomaAutomation::state(const TimeValue& position, const TimeValue& date)
+shared_ptr<StateElement> JamomaAutomation::state(const TimeValue& position, const TimeValue& date)
 {
   if (position != mLastPosition)
   {
-    // clear internal State, Message and Value
-    mCurrentState->stateElements().clear();
+    // clear the former Value
     if (mValueToSend) delete mValueToSend;
     
     // compute a new value from the Curves
     mValueToSend = computeValueAtPosition(mDrive, position);
     
-    // fill internal State with a Message handling the Value
+    // edit a Message handling the new Value
     mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
-    mCurrentState->stateElements().push_back(mMessageToSend);
 
     mLastPosition = position;
   }
   
-  return mCurrentState;
+  return mMessageToSend;
 }
 
 # pragma mark -
@@ -159,7 +154,7 @@ Value* JamomaAutomation::computeValueAtPosition(const Value* drive, const TimeVa
       
     case Value::Type::GENERIC :
     {
-      //! \todo
+      //! \todo GENERIC case
       break;
     }
   }

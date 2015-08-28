@@ -20,4 +20,7 @@
 #include "Network/Address.h"
 #include "Network/Device.h"
 #include "Network/Node.h"
-#include "Network/Protocol.h"
+#include "Network/Protocol/Local.h"
+#include "Network/Protocol/MIDI.h"
+#include "Network/Protocol/Minuit.h"
+#include "Network/Protocol/OSC.h"

@@ -14,8 +14,8 @@ private Q_SLOTS:
     void test_basic()
     {
         // Local device
-        Local device_parameters{};
-        auto device = Device::create(device_parameters, "test");
+        auto local_protocol = Local::create();
+        auto device = Device::create(local_protocol, "test");
 
         // Local tree building
         auto localIntNode = *(device->emplace(device->children().cend(), "my_int"));

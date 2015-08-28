@@ -71,25 +71,84 @@ JamomaTimeNode::iterator JamomaTimeNode::emplace(const_iterator pos,
   return timeEvents().insert(pos, make_shared<JamomaTimeEvent>(callback, shared_from_this(), expression));
 }
 
-void JamomaTimeNode::process()
+void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
 {
-  //! \debug
-  //cout << "TimeNode::process() : check all events have a status" << endl;
+  Container<TimeEvent> pendingEvents;
   
-  // check if each TimeEvent's status are not NONE before to process them
   for (auto& timeEvent : timeEvents())
   {
-    if (timeEvent->getStatus() == TimeEvent::Status::NONE)
-      return;
+    switch (timeEvent->getStatus())
+    {
+      // check if NONE TimeEvent is ready to become PENDING
+      case TimeEvent::Status::NONE:
+      {
+        shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
+        e->process();
+        
+        // don't break if the TimeEvent became PENDING
+        if (timeEvent->getStatus() == TimeEvent::Status::NONE)
+            break;
+      }
+      
+      // PENDING TimeEvent is ready for evaluation
+      case TimeEvent::Status::PENDING:
+      {
+        pendingEvents.push_back(timeEvent);
+        break;
+      }
+      
+      // HAPPENED TimeEvent propagates recursively the execution to the end of each next TimeConstraints
+      case TimeEvent::Status::HAPPENED:
+      {
+        for (auto& timeConstraint : timeEvent->nextTimeConstraints())
+        {
+          shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(timeConstraint->getEndEvent()->getTimeNode());
+          n->process(statusChangedEvents);
+        }
+        
+        break;
+      }
+        
+      // DISPOSED TimeEvent stops the propagation of the execution
+      case TimeEvent::Status::DISPOSED:
+      {
+        break;
+      }
+    }
   }
   
-  //! \debug
-  //cout << "TimeNode::process() : process events" << endl;
-  
-  // process each TimeEvent
-  for (auto& timeEvent : timeEvents())
+  // if all TimeEvents are PENDING
+  if (pendingEvents.size() == timeEvents().size())
   {
-    shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
-    e->process();
+    // dispatched them into TimeEvents to happen and TimeEvents to dispose
+    Container<TimeEvent> eventsToHappen, eventsToDispose;
+    bool noEventObserveExpression = true;
+    for (auto& timeEvent : pendingEvents)
+    {
+      shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
+      
+      if (e->isObservingExpression())
+        noEventObserveExpression = false;
+      
+      timeEvent->getExpression() != nullptr ? timeEvent->getExpression()->evaluate() ? eventsToHappen.push_back(timeEvent) : eventsToDispose.push_back(timeEvent) : eventsToHappen.push_back(timeEvent);
+    }
+    
+    // if at least one TimeEvent happens
+    // or if all TimeEvents needs to be disposed and none of them is observing its Expression
+    if (eventsToHappen.size() > 0 ||
+       (eventsToDispose.size() == timeEvents().size() && noEventObserveExpression))
+    {
+      for (auto& timeEvent : eventsToHappen)
+      {
+        timeEvent->happen();
+        statusChangedEvents.push_back(timeEvent);
+      }
+      
+      for (auto& timeEvent : eventsToDispose)
+      {
+        timeEvent->dispose();
+        statusChangedEvents.push_back (timeEvent);
+      }
+    }
   }
 }

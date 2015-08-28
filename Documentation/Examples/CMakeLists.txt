@@ -10,9 +10,11 @@ function(addAPIExample TESTNAME TESTSRCS)
 
 endFunction()
 
-addAPIExample(complete		    "${CMAKE_CURRENT_SOURCE_DIR}/complete.cpp")
-addAPIExample(curve		    "${CMAKE_CURRENT_SOURCE_DIR}/curve.cpp")
-addAPIExample(expression	    "${CMAKE_CURRENT_SOURCE_DIR}/expression.cpp")
-addAPIExample(network	    	    "${CMAKE_CURRENT_SOURCE_DIR}/network.cpp")
-addAPIExample(scenario	    	    "${CMAKE_CURRENT_SOURCE_DIR}/scenario.cpp")
-addAPIExample(state		    "${CMAKE_CURRENT_SOURCE_DIR}/state.cpp")
+addAPIExample(editor_curve			"${CMAKE_CURRENT_SOURCE_DIR}/Editor/curve.cpp")
+addAPIExample(editor_expression			"${CMAKE_CURRENT_SOURCE_DIR}/Editor/expression.cpp")
+addAPIExample(editor_scenario			"${CMAKE_CURRENT_SOURCE_DIR}/Editor/scenario.cpp")
+addAPIExample(editor_state			"${CMAKE_CURRENT_SOURCE_DIR}/Editor/state.cpp")
+
+addAPIExample(network_minuit_exploration	"${CMAKE_CURRENT_SOURCE_DIR}/Network/Minuit_exploration.cpp")
+addAPIExample(network_minuit_publication	"${CMAKE_CURRENT_SOURCE_DIR}/Network/Minuit_publication.cpp")
+addAPIExample(network_osc                       "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC.cpp")

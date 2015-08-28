@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include <memory>
 #include <string>
 #include <functional>
 
@@ -27,9 +26,13 @@
 namespace OSSIA
 {
 
-class Device;
+class Node;
 
-class Address : public Expression
+/*! to get the value back
+ \param the returned value */
+using ValueCallback = std::function<void(const Value *)>;
+  
+class Address : public CallbackContainer<ValueCallback>
 {
 
 public:
@@ -59,31 +62,38 @@ public:
   
   /*! destructor */
   virtual ~Address() = default;
-
-# pragma mark -
-# pragma mark Value
   
-  /*! update the address value internaly without updating client */
-  virtual bool updateValue() const = 0;
-  
-  /*! get the address value
-   \return const #Value* the value */
-  virtual const Value * getValue() const = 0;
-  
-  /*! send a value to the address
-   \param const #Value* the value */
-  virtual bool sendValue(const Value*) const = 0;
-
 # pragma mark -
 # pragma mark Network
-
-  /*! get the device where the address is
-   \note is this really needed ? how to provide it on implementation side ?
-   \return std::shared_ptr<#Device> the device where the address is */
-  virtual const std::shared_ptr<Device> & getDevice() const = 0;
+  
+  /*! get the node where the address is
+   \return std::shared_ptr<#Node> the node where the address is */
+  virtual const std::shared_ptr<Node> getNode() const = 0;
+  
+  /*! pull and return the address value from a device using its protocol
+   \see Protocol::pullAddressValue method
+   \return const #Value* the value */
+  virtual const Value * pullValue() = 0;
+  
+  /*! set then push the address value to a device using its protocol
+   \see Protocol::pushAddressValue method
+   \param const #Value* the value (push the current value if no argument)
+   \return #Address the address */
+  virtual Address & pushValue(const Value* = nullptr) = 0;
 
 # pragma mark -
 # pragma mark Accessors
+  
+  /*! get the address value
+   \details call pullValue if you need to sync the value with the device
+   \return const #Value* the value */
+  virtual const Value * getValue() const = 0;
+  
+  /*! set the address value
+   \note call pushValue if you need to sync the value with the device
+   \param const #Value* the value 
+   \return #Address the address */
+  virtual Address & setValue(const Value*) = 0;
   
   /*! get the address type
    \return #Value::Type of the address */
@@ -126,21 +136,6 @@ public:
    \param bool true is to enable repetition filter
    \return #Address the address */
   virtual Address & setRepetitionFilter(bool = true) = 0;
-
-# pragma mark -
-# pragma mark Callback
-  
-  /*! to get the value back */
-  using ValueCallback = std::function<void(const Value *)>;
-  
-  /*! get the address value callback function
-   \return #ValueCallback function */
-  virtual ValueCallback getValueCallback() const = 0;
-  
-  /*! set the address value callback function
-   \param #ValueCallback function */
-  virtual void setValueCallback(ValueCallback) = 0;
-  
 };
 }
 

@@ -17,15 +17,22 @@
 #pragma once
 
 #include <memory>
+#include <functional>
+
+#include "Misc/CallbackContainer.h"
 
 namespace OSSIA
 {
+  
+/*! to get the result back
+ \param the returned result */
+using ResultCallback = std::function<void(bool)>;
 
-class Expression
+class Expression : public CallbackContainer<ResultCallback>
 {
 
 public:
-  
+
 # pragma mark -
 # pragma mark Life cycle
   
@@ -43,7 +50,7 @@ public:
   /*! evaluate the expression 
    \return bool result of the evaluation */
   virtual bool evaluate() const = 0;
-
+  
 };
   
 static std::shared_ptr<Expression> ExpressionFalse = Expression::create(false);

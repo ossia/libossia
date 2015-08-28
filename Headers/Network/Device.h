@@ -32,19 +32,23 @@ public:
 
 # pragma mark -
 # pragma mark Life cycle
-
-  /*! factory
-   \param #Protocol protool parameters
-   \param device name
+  
+  /*! factory 
+   \param std::shared_ptr<Protocol>
+   \param device name 
    \return std::shared_ptr<#Device> */
-  static std::shared_ptr<Device> create(const Protocol &, std::string = "");
-
+  static std::shared_ptr<Device> create(std::shared_ptr<Protocol>, std::string = "");
+  
   /*! destructor */
   virtual ~Device() = default;
 
 # pragma mark -
 # pragma mark Network
-
+  
+  /*! get device's protocol
+   \return std::shared_ptr<#Protocol> */
+  virtual std::shared_ptr<Protocol> getProtocol() const = 0;
+  
   /*! factory
    \return bool true if the namespace update succeeded */
   virtual bool updateNamespace() = 0;

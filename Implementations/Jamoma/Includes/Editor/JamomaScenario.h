@@ -45,7 +45,7 @@ private:
   
   bool                        mKiller;
   
-  bool                        mInitialized;
+  shared_ptr<State>           mCurrentState;      // an internal State to return on state call
   
 public:
   
@@ -64,7 +64,7 @@ public:
 # pragma mark -
 # pragma mark Execution
   
-  shared_ptr<State> state(const TimeValue&, const TimeValue&) override;
+  shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) override;
   
 # pragma mark -
 # pragma mark Edition
@@ -82,11 +82,18 @@ public:
   
   bool isKiller() const override;
   
-  void setKiller(bool isKiller) override;
+  Scenario & setKiller(bool isKiller) override;
   
   const shared_ptr<TimeNode> & getStartNode() const override;
   
   const shared_ptr<TimeNode> & getEndNode() const override;
+  
+# pragma mark -
+# pragma mark TimeNodes and TimeConstraints
+  
+  const Container<TimeNode>& timeNodes() const override;
+  
+  const Container<TimeConstraint>& timeConstraints() const override;
   
 private:
   
@@ -97,5 +104,5 @@ private:
   void init(const TimeValue&, const TimeValue&);
   
   /*! append each message of the state to the current state in order to eliminate address redundancy */
-  void flattenAndFilterState(const shared_ptr<State>);
+  void flattenAndFilter(const shared_ptr<StateElement>);
 };

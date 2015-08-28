@@ -26,7 +26,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaTimeEvent : public TimeEvent
+class JamomaTimeEvent : public TimeEvent, public enable_shared_from_this<JamomaTimeEvent>
 {
   
 private:
@@ -40,6 +40,9 @@ private:
   shared_ptr<State>             mState;
   shared_ptr<Expression>        mExpression;
   Status                        mStatus;
+  
+  bool                          mObserveExpression;
+  ResultCallback                mResultCallback;
 
 public:
   
@@ -75,12 +78,25 @@ public:
   
   const shared_ptr<Expression> & getExpression() const override;
   
+  TimeEvent & setExpression(const std::shared_ptr<Expression>) override;
+  
   Status getStatus() const override;
   
 # pragma mark -
 # pragma mark Implementation specific
   
+  /* edit status and call ExecutionCallback 
+   \param #Status new status */
+  void setStatus(Status);
+  
+  /* check if NONE TimeEvent is ready to become PENDING */
   void process();
   
-  void setStatus(Status);
+  /* is the TimeEvent observing its Expression ? */
+  bool isObservingExpression();
+  
+private:
+  
+  void observeExpressionResult(bool);
+  void resultCallback(bool result);
 };

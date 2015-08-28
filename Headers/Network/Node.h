@@ -24,14 +24,12 @@ namespace OSSIA
 {
 
 class Address;
+class Device;
 
 class Node
 {
 
 public:
-  
-  using iterator = Container<Node>::iterator;
-  using const_iterator = Container<Node>::const_iterator;
 
 # pragma mark -
 # pragma mark Life cycle
@@ -40,12 +38,16 @@ public:
   virtual ~Node() = default;
 
 # pragma mark -
-# pragma mark Navigation
+# pragma mark Network
   
-  /*! get node's parent 
+  /*! get node's device
+   \return std::shared_ptr<Device> the device */
+  virtual std::shared_ptr<Device> getDevice() const = 0;
+  
+  /*! get node's parent
    \return std::shared_ptr<Node> the parent */
   virtual std::shared_ptr<Node> getParent() const = 0;
-
+  
 # pragma mark -
 # pragma mark Accessors
   
@@ -77,7 +79,7 @@ public:
    \param #Container<#Node>::const_iterator where to store the child
    \param std::string child name
    \return #Container<#Node>::iterator */
-  virtual iterator emplace(const_iterator, std::string) = 0;
+  virtual Container<Node>::iterator emplace(Container<Node>::const_iterator, std::string) = 0;
   
   /*! get children of the node
    \return #Container<#Node> */

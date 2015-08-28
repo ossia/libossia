@@ -30,7 +30,7 @@
 #include "Network/Address.h"
 #include "Network/Device.h"
 #include "Network/Node.h"
-#include "Network/Protocol.h"
+#include "Network/Protocol/Local.h"
 
 using namespace OSSIA;
 using namespace std;
@@ -38,9 +38,9 @@ using namespace std;
 void local_play_callback(const Value * v);
 void local_test_callback(const Value * v);
 
-void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
-void first_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
-void second_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state);
+void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element);
+void first_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element);
+void second_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element);
 void event_callback(TimeEvent::Status newStatus);
 
 shared_ptr<TimeConstraint> main_constraint;
@@ -52,22 +52,24 @@ int main()
      */
     
     // create a Local device "i-score"
-    Local local_device_parameters{};
-    auto local_device = Device::create(local_device_parameters, "i-score");
+    auto local_protocol = Local::create();
+    auto local_device = Device::create(local_protocol, "i-score");
     
     // add a /play address
     auto local_play_node = *(local_device->emplace(local_device->children().cend(), "play"));
     auto local_play_address = local_play_node->createAddress(Value::Type::BOOL);
     
     // attach /play address to a callback
-    local_play_address->setValueCallback(local_play_callback);
+    ValueCallback local_play_value_callback = local_play_callback;
+    local_play_address->addCallback(&local_play_value_callback);
     
     // add a /test address
     auto local_test_node = *(local_device->emplace(local_device->children().cend(), "test"));
     auto local_test_address = local_test_node->createAddress(Value::Type::TUPLE);
     
     // attach /test address to their callback
-    local_test_address->setValueCallback(local_test_callback);
+    ValueCallback local_test_value_callback = local_test_callback;
+    local_test_address->addCallback(&local_test_value_callback);
     
     // filter repetitions
     local_test_address->setRepetitionFilter(true);
@@ -80,19 +82,9 @@ int main()
     auto main_start_node = TimeNode::create();
     auto main_end_node = TimeNode::create();
     
-    // create "/play == true" and "/play == false" Expressions
-    Destination local_play(local_play_node);
-    auto play_expression_start = ExpressionAtom::create(&local_play,
-                                                        ExpressionAtom::Operator::EQUAL,
-                                                        &True);
-    
-    auto play_expression_end = ExpressionAtom::create(&local_play,
-                                                      ExpressionAtom::Operator::EQUAL,
-                                                      &False);
-    
     // create TimeEvents inside TimeNodes and make them interactive to the /play address
-    auto main_start_event = *(main_start_node->emplace(main_start_node->timeEvents().begin(), &event_callback, play_expression_start));
-    auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), &event_callback, play_expression_end));
+    auto main_start_event = *(main_start_node->emplace(main_start_node->timeEvents().begin(), &event_callback));
+    auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), &event_callback));
 
     // create the main Scenario
     auto main_scenario = Scenario::create();
@@ -139,7 +131,21 @@ int main()
     
     // add the second TimeConstraint to the main Scenario
     main_scenario->addTimeConstraint(second_constraint);
-
+    
+    /*
+     Main Scenario edition : make an event interactive
+     */
+    
+    // create an expression : /i-score/test >= {0.7, 0.7, 0.7}
+    Destination local_test(local_test_node);
+    Tuple threshold1 = {new Float(0.7), new Float(0.7), new Float(0.7)};
+    auto next_expression1 = ExpressionAtom::create(&local_test,
+                                                  ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
+                                                  &threshold1);
+    
+    // set first end event expression to make it interactive
+    first_end_event->setExpression(next_expression1);
+    
     /*
      Main Scenario edition : creation of two Automations
      */
@@ -180,17 +186,17 @@ int main()
     second_constraint->addTimeProcess(second_automation);
     
     // add "/test 0. 0. 0." message to first Automation's start State
-    Tuple zero(new Float(0.), new Float(0.), new Float(0.));
+    Tuple zero = {new Float(0.), new Float(0.), new Float(0.)};
     auto first_start_message = Message::create(local_test_address, &zero);
     first_automation->getStartState()->stateElements().push_back(first_start_message);
     
     // add "/test 1. 1. 1." message to first Automation's end State
-    Tuple one(new Float(1.), new Float(1.), new Float(1.));
+    Tuple one = {new Float(1.), new Float(1.), new Float(1.)};
     auto first_end_message = Message::create(local_test_address, &one);
     first_automation->getEndState()->stateElements().push_back(first_end_message);
     
     // add "/test 2. 2. 2." message to second Automation's end State
-    Tuple two(new Float(2.), new Float(2.), new Float(2.));
+    Tuple two = {new Float(2.), new Float(2.), new Float(2.)};
     auto second_end_message = Message::create(local_test_address, &two);
     second_automation->getEndState()->stateElements().push_back(second_end_message);
     
@@ -206,8 +212,6 @@ int main()
     // change main TimeConstraint speed, granularity and offset
     main_constraint->setSpeed(1.);
     main_constraint->setGranularity(50.);
-    //! \todo properly setup each constraint offset considering the main constraint offset
-    //! main_constraint->setOffset(500.);
     
     // change first and second TimeConstraint speed and granularity
     first_constraint->setSpeed(1.);
@@ -215,12 +219,41 @@ int main()
     second_constraint->setSpeed(1.);
     second_constraint->setGranularity(250.);
     
+    cout << "***** START *****" << endl;
+    
     // play the main TimeConstraint
-    local_play_address->sendValue(&True);
+    local_play_address->pushValue(&True);
     
     // wait the main TimeConstraint end
     while (main_constraint->getRunning())
         ;
+    
+    cout << "***** END *****" << endl;
+    
+    // set minimal duration of the first constraint to 1000 ms
+    first_constraint->setDurationMin(1000.);
+    
+    // changing expression to : /i-score/test >= {0.5, 0.5, 0.5}
+    Tuple threshold2 = {new Float(0.5), new Float(0.5), new Float(0.5)};
+    auto next_expression2 = ExpressionAtom::create(&local_test,
+                                                   ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
+                                                   &threshold2);
+    
+    // set first end event expression to make it interactive
+    first_end_event->setExpression(next_expression2);
+    
+    cout << "***** START *****" << endl;
+    
+    // play it again faster starting at 500 ms
+    main_constraint->setSpeed(2.);
+    main_constraint->setOffset(500.);
+    local_play_address->pushValue(&True);
+    
+    // wait the main TimeConstraint end
+    while (main_constraint->getRunning())
+        ;
+    
+    cout << "***** END *****" << endl;
 }
 
 void local_play_callback(const Value * v)
@@ -229,7 +262,7 @@ void local_play_callback(const Value * v)
     {
         Bool * b = (Bool*)v;
         if (b->value)
-            main_constraint->play();
+            main_constraint->start();
         else
             main_constraint->stop();
     }
@@ -256,24 +289,24 @@ void local_test_callback(const Value * v)
     cout << endl;
 }
 
-void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
+void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
 {
+    element->launch();
     cout << "Main Constraint : " << double(position) << ", " << double(date) << endl;
-    state->launch();
 }
 
-void first_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
+void first_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
 {
     cout << "First Constraint : " << double(position) << ", " << double(date) << endl;
     
-    // don't launch state here as the state produced by the first TimeConstraint is handled by the main TimeConstraint
+    // don't launch element here as the element produced by the first TimeConstraint is handled by the main TimeConstraint
 }
 
-void second_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<State> state)
+void second_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
 {
     cout << "Second Constraint : " << double(position) << ", " << double(date) << endl;
 
-    // don't launch state here as the state produced by the second TimeConstraint is handled by the main TimeConstraint
+    // don't launch element here as the element produced by the second TimeConstraint is handled by the main TimeConstraint
 }
 
 void event_callback(TimeEvent::Status newStatus)
