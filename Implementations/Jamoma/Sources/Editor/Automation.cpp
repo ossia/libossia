@@ -1,6 +1,6 @@
 #include "Editor/JamomaAutomation.h"
 
-#include <assert.h>
+
 #include <iostream> //! \todo to remove. only here for debug purpose
 
 # pragma mark -
