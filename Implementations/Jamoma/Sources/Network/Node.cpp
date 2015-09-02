@@ -186,6 +186,9 @@ void JamomaNode::buildChildren()
   
   if (!childrenList.isEmpty())
   {
+    // sort children by priority
+    childrenList.sort(&compareNodePriorityThenNameThenInstance);
+    
     // build a node for each child
     for (childrenList.begin(); childrenList.end(); childrenList.next())
     {
