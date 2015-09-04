@@ -34,15 +34,39 @@ private Q_SLOTS:
         auto local_protocol = Local::create();
         auto local_device = Device::create(local_protocol, "test");
 
-        local_device->emplace(local_device->children().begin(), "child");
-        auto node = local_device->children().front();
+        // edit a node and its address and then remove it
+        {
+            local_device->emplace(local_device->children().begin(), "child");
+            auto node = local_device->children().front();
 
-        auto address = node->createAddress();
-        QVERIFY(address != nullptr);
-        QVERIFY(address == node->getAddress());
+            auto address = node->createAddress();
+            QVERIFY(address != nullptr);
+            QVERIFY(address == node->getAddress());
 
-        QVERIFY(node->removeAddress());
-        QVERIFY(node->getAddress() == nullptr);
+            QVERIFY(node->removeAddress());
+            QVERIFY(node->getAddress() == nullptr);
+
+            bool removed = false;
+            auto& children = local_device->children();
+            auto it = std::find_if(children.begin(), children.end(),
+                                   [&] (const std::shared_ptr<OSSIA::Node>& elt) { return elt->getName() == "child"; });
+            if(it != children.end())
+            {
+               children.erase(it);
+               removed = true;
+            }
+
+            QVERIFY(removed);
+        }
+
+        // edit the same node again to see if it have been
+        // correctly destroyed and removed from the namespace
+        {
+            local_device->emplace(local_device->children().begin(), "child");
+            auto node = local_device->children().front();
+
+            QVERIFY(node->getName() == "child");
+        }
     }
 };
 
