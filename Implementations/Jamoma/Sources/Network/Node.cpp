@@ -8,12 +8,28 @@
 JamomaNode::JamomaNode(TTNodeDirectory * aDirectory, TTNode * aNode, shared_ptr<Device> aDevice, shared_ptr<JamomaNode> aParent) :
 mDirectory(aDirectory),
 mNode(aNode),
+mObject("NodeInfo"),
 mDevice(aDevice),
 mParent(aParent)
-{}
+{
+    // add a NodeInfo object otherwise TTNodeDirectory
+    // automatically removes empty parent binding on no object
+    // when destroying the last child
+    mNode->setObject(mObject);
+}
 
 JamomaNode::~JamomaNode()
-{}
+{
+  mAddress = nullptr;
+
+  // if not a device node
+  if (getParent() != nullptr)
+  {
+    TTAddress adrs;
+    mNode->getAddress(adrs);
+    mDirectory->TTNodeRemove(adrs);
+  }
+}
 
 # pragma mark -
 # pragma mark Navigation
@@ -64,14 +80,13 @@ shared_ptr<Address> JamomaNode::createAddress(Value::Type type)
   if (mNode)
   {
     TTSymbol applicationType = getApplicationType();
-    TTObject object;
     
     // for local application case
     if (applicationType == kTTSym_local)
     {
-      object = TTObject("Data", "parameter");
-      object.set("rampDrive", kTTSym_none);
-      mNode->setObject(object);
+      mObject = TTObject("Data", "parameter");
+      mObject.set("rampDrive", kTTSym_none);
+      mNode->setObject(mObject);
     }
     
     // for proxy application
@@ -80,8 +95,8 @@ shared_ptr<Address> JamomaNode::createAddress(Value::Type type)
       TTAddress nodeAddress;
       mNode->getAddress(nodeAddress);
       TTValue args(nodeAddress, "parameter");
-      object = getApplication().send("ProxyDataInstantiate", args);
-      object.set("rampDrive", kTTSym_none);
+      mObject = getApplication().send("ProxyDataInstantiate", args);
+      mObject.set("rampDrive", kTTSym_none);
     }
     
     // for mirror application
@@ -90,35 +105,32 @@ shared_ptr<Address> JamomaNode::createAddress(Value::Type type)
       TTAddress nodeAddress;
       mNode->getAddress(nodeAddress);
       TTValue args(nodeAddress, "Data");
-      object = getApplication().send("MirrorDataInstantiate", args);
-      object.set("service", "parameter");
+      mObject = getApplication().send("MirrorDataInstantiate", args);
+      mObject.set("service", "parameter");
       
       //! \see in Device::create method, when creating Minuit protocol, some attributes are setup to be cached
       // all attributes handled by Address class should be in this list
     }
     
-    if (object.valid())
-    {
-      if (type == Value::Type::IMPULSE)
-        object.set("type", kTTSym_none);
-      else if (type == Value::Type::BOOL)
-        object.set("type", kTTSym_boolean);
-      else if (type == Value::Type::INT)
-        object.set("type", kTTSym_integer);
-      else if (type == Value::Type::FLOAT)
-        object.set("type", kTTSym_decimal);
-      else if (type == Value::Type::CHAR)
-        object.set("type", kTTSym_string);
-      else if (type == Value::Type::STRING)
-        object.set("type", kTTSym_string);
-      else if (type == Value::Type::TUPLE)
-        object.set("type", kTTSym_array);
-      else if (type == Value::Type::GENERIC)
-        object.set("type", kTTSym_generic);
-    }
+    if (type == Value::Type::IMPULSE)
+      mObject.set("type", kTTSym_none);
+    else if (type == Value::Type::BOOL)
+      mObject.set("type", kTTSym_boolean);
+    else if (type == Value::Type::INT)
+      mObject.set("type", kTTSym_integer);
+    else if (type == Value::Type::FLOAT)
+      mObject.set("type", kTTSym_decimal);
+    else if (type == Value::Type::CHAR)
+      mObject.set("type", kTTSym_string);
+    else if (type == Value::Type::STRING)
+      mObject.set("type", kTTSym_string);
+    else if (type == Value::Type::TUPLE)
+      mObject.set("type", kTTSym_array);
+    else if (type == Value::Type::GENERIC)
+      mObject.set("type", kTTSym_generic);
     
     // edit new address
-    mAddress = shared_ptr<Address>(new JamomaAddress(shared_from_this(), object));
+    mAddress = shared_ptr<Address>(new JamomaAddress(shared_from_this(), mObject));
   }
   
   return mAddress;
@@ -129,7 +141,12 @@ bool JamomaNode::removeAddress()
   if (mNode)
   {
     mAddress = nullptr;
-    return !mNode->setObject();
+      
+    // add a NodeInfo object otherwise TTNodeDirectory
+    // automatically removes empty parent binding on no object
+    // when destroying the last child
+    mObject = TTObject("NodeInfo");
+    return !mNode->setObject(mObject);
   }
   
   return false;

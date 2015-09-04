@@ -36,6 +36,7 @@ protected:
   
   TTNodeDirectory *         mDirectory{};
   TTNode *                  mNode{};
+  TTObject                  mObject;
   
   weak_ptr<Device>          mDevice;
   weak_ptr<JamomaNode>      mParent;

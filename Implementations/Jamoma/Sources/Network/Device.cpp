@@ -157,7 +157,7 @@ mProtocol(protocol),
 mApplicationManager(applicationManager),
 mApplication(application)
 {
-  return ;
+  mNode->setObject(application);
 }
 
 JamomaDevice::~JamomaDevice()
