@@ -37,7 +37,7 @@ int main()
   {
     // explore the tree of B
     minuitDevice->updateNamespace();
-    
+
     // display tree in console
     explore(minuitDevice);
   }
@@ -48,18 +48,17 @@ void explore(const shared_ptr<Node> node)
     for (const auto& child : node->children())
     {
         cout << child->getName();
-        
+
         auto address = child->getAddress();
-        
+
         if (address)
         {
             // attach to callback to display value update
-            ValueCallback callback = printValueCallback;
-            address->addCallback(&callback);
-            
+            address->addCallback(printValueCallback);
+
             // update the value
             address->pullValue();
-            
+
             // display address info
             cout << " : ";
             switch (address->getValueType())
@@ -128,7 +127,7 @@ void explore(const shared_ptr<Node> node)
                 default:
                     break;
             }
-            
+
             cout << ", AccessMode(";
             switch (address->getAccessMode())
             {
@@ -150,7 +149,7 @@ void explore(const shared_ptr<Node> node)
                 default:
                     break;
             }
-            
+
             cout << "), BoundingMode(";
             switch (address->getBoundingMode())
             {
@@ -177,14 +176,14 @@ void explore(const shared_ptr<Node> node)
                 default:
                     break;
             }
-            
+
             cout << "), Domain(";
             printDomain(address->getDomain());
             cout << ")";
         }
-        
+
         cout << "\n";
-        
+
         explore(child);
     }
 }

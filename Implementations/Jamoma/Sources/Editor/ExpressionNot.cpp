@@ -13,8 +13,9 @@ private:
 # pragma mark Implementation specific
 
   shared_ptr<Expression>  mExpression;
-  
+
   ResultCallback          mResultCallback;
+  Expression::iterator    mResultCallbackIndex;
 
 public:
 
@@ -50,25 +51,27 @@ public:
 # pragma mark -
 # pragma mark Callback Container
 
-  void addCallback(ResultCallback* callback) override
+  Expression::iterator addCallback(ResultCallback callback) override
   {
-    callbacks().push_back(callback);
+    auto it = CallbackContainer::addCallback(std::move(callback));
 
     if (callbacks().size() == 1)
     {
       // start expression observation
-      mExpression->addCallback(&mResultCallback);
+      mResultCallbackIndex = mExpression->addCallback(mResultCallback);
     }
+
+    return it;
   }
 
-  void removeCallback(ResultCallback* callback) override
+  void removeCallback(Expression::iterator callback) override
   {
-    callbacks().erase(std::find(callbacks().begin(), callbacks().end(), callback));
+    CallbackContainer::removeCallback(callback);
 
     if (callbacks().size() == 0)
     {
       // stop expression observation
-      mExpression->removeCallback(&mResultCallback);
+      mExpression->removeCallback(mResultCallbackIndex);
     }
   }
 
@@ -79,16 +82,16 @@ public:
   {
     return mExpression;
   }
-  
+
 private:
-  
+
 # pragma mark -
 # pragma mark Implementation Specific
-  
+
   void resultCallback(bool result)
   {
     for (auto callback : callbacks())
-      (*callback)(!result);
+      callback(!result);
   }
 };
 

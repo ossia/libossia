@@ -15,15 +15,15 @@ mRepetitionFilter(false)
   if (mObject.valid())
   {
     TTSymbol objectName = mObject.name();
-    
+
     if (objectName == kTTSym_Mirror)
       objectName = TTMirrorPtr(mObject.instance())->getName();
-    
+
     if (objectName == "Data")
     {
       TTSymbol type;
       mObject.get("type", type);
-      
+
       if (type == kTTSym_none)
       {
         mValue = new Impulse();
@@ -59,20 +59,20 @@ mRepetitionFilter(false)
         mValue = new OSSIA::String();
         mValueType = Value::Type::STRING;
       }
-      
+
       TTSymbol service;
       mObject.get("service", service);
-      
+
       if (service == kTTSym_parameter)
         mAccessMode = AccessMode::BI;
       else if (service == kTTSym_message)
         mAccessMode = AccessMode::SET;
       else if (service == kTTSym_return)
         mAccessMode = AccessMode::GET;
-      
+
       TTValue range;
       mObject.get("rangeBounds", range);
-      
+
       if (type == kTTSym_none)
       {
         mDomain = Domain::create();
@@ -113,13 +113,13 @@ mRepetitionFilter(false)
         // we need to know the size of the array to setup the domain
         TTValue v;
         mObject.get("value", v);
-        
+
         vector<const Value*> tuple_min;
         vector<const Value*> tuple_max;
         for (unsigned long i = 0; i < v.size(); i++)
           tuple_min.push_back(new OSSIA::Float(range[0]));
         tuple_max.push_back(new OSSIA::Float(range[1]));
-        
+
         mDomain = Domain::create(new OSSIA::Tuple(tuple_min), new OSSIA::Tuple(tuple_max));
       }
       else if (type == kTTSym_string)
@@ -137,10 +137,10 @@ mRepetitionFilter(false)
       {
         mDomain = Domain::create();
       }
-      
+
       TTSymbol clipmode;
       mObject.get("rangeClipmode", clipmode);
-      
+
       if (clipmode == kTTSym_none)
         mBoundingMode = BoundingMode::FREE;
       else if (clipmode == kTTSym_low)
@@ -153,15 +153,15 @@ mRepetitionFilter(false)
         mBoundingMode = BoundingMode::WRAP;
       else if (clipmode == kTTSym_fold)
         mBoundingMode = BoundingMode::FOLD;
-      
+
       mObject.get("repetitionFilter", mRepetitionFilter);
-      
+
       // enable callback to be notified each time the value change
       TTObject    callback("callback");
       TTValue     args(TTPtr(this), mObject);
       callback.set("baton", args);
       callback.set("function", TTPtr(&JamomaAddress::TTValueCallback));
-      
+
       TTAttributePtr attribute;
       mObject.instance()->findAttribute("value", &attribute);
       attribute->registerObserverForNotifications(callback);
@@ -195,17 +195,17 @@ const Value * JamomaAddress::pullValue()
 {
   //! \todo move the code below into each protocol pullAddressValue method
   //! \todo use the device protocol to pull address value
-  
+
   TTValue v;
   if (!mObject.get("value", v))
   {
     // clear former value
     delete mValue;
-  
+
     // create new value
     mValue = convertTTValueIntoValue(v, mValueType);
   }
-  
+
   return mValue;
 }
 
@@ -213,10 +213,10 @@ Address & JamomaAddress::pushValue(const Value * value)
 {
   if (value != nullptr)
     setValue(value);
-  
+
   //! \todo move the code below into each protocol pushAddressValue method
   //! \todo use the device protocol to push address value
-  
+
   TTValue v;
   convertValueIntoTTValue(mValue, v);
 
@@ -224,7 +224,7 @@ Address & JamomaAddress::pushValue(const Value * value)
     mObject.send("Command", v);
   else
     mObject.set("value", v);
-  
+
   return *this;
 }
 
@@ -240,10 +240,10 @@ Address & JamomaAddress::setValue(const Value * value)
 {
   // clear former value
   delete mValue;
-  
+
   // copy the new value
   mValue = value->clone();
-  
+
   return *this;
 }
 
@@ -260,14 +260,14 @@ JamomaAddress::AccessMode JamomaAddress::getAccessMode() const
 Address & JamomaAddress::setAccessMode(AccessMode accessMode)
 {
   mAccessMode = accessMode;
-  
+
   if (mAccessMode == AccessMode::BI)
     mObject.set("service", kTTSym_parameter);
   else if (mAccessMode == AccessMode::SET)
     mObject.set("service", kTTSym_message);
   else if (mAccessMode == AccessMode::GET)
     mObject.set("service", kTTSym_return);
-  
+
   return *this;
 }
 
@@ -279,14 +279,14 @@ const shared_ptr<Domain> & JamomaAddress::getDomain() const
 Address & JamomaAddress::setDomain(shared_ptr<Domain> domain)
 {
   mDomain = domain;
-  
+
   TTValue range, v;
-  
+
   if (mDomain->getValues().empty())
   {
     convertValueIntoTTValue(mDomain->getMin(), v);
     range.append(v);
-    
+
     convertValueIntoTTValue(mDomain->getMax(), v);
     range.append(v);
   }
@@ -298,9 +298,9 @@ Address & JamomaAddress::setDomain(shared_ptr<Domain> domain)
       range.append(v);
     }
   }
-  
+
   mObject.set("rangeBounds", range);
-  
+
   return *this;
 }
 
@@ -312,7 +312,7 @@ JamomaAddress::BoundingMode JamomaAddress::getBoundingMode() const
 Address & JamomaAddress::setBoundingMode(BoundingMode boundingMode)
 {
   mBoundingMode = boundingMode;
-  
+
   if (mBoundingMode == BoundingMode::FREE)
     mObject.set("rangeClipmode", kTTSym_none);
   else if (mBoundingMode == BoundingMode::CLIP)
@@ -321,7 +321,7 @@ Address & JamomaAddress::setBoundingMode(BoundingMode boundingMode)
     mObject.set("rangeClipmode", kTTSym_wrap);
   else if (mBoundingMode == BoundingMode::FOLD)
     mObject.set("rangeClipmode", kTTSym_fold);
-  
+
   return *this;
 }
 
@@ -333,19 +333,19 @@ bool JamomaAddress::getRepetitionFilter() const
 Address & JamomaAddress::setRepetitionFilter(bool repetitionFilter)
 {
   mRepetitionFilter = repetitionFilter;
-  
+
   mObject.set("repetitionsFilter", repetitionFilter);
-  
+
   return *this;
 }
 
 # pragma mark -
 # pragma mark Callback
 
-void JamomaAddress::addCallback(ValueCallback* callback)
+Address::iterator JamomaAddress::addCallback(ValueCallback callback)
 {
-  callbacks().push_back(callback);
-  
+  auto it = CallbackContainer::addCallback(std::move(callback));
+
   if (callbacks().size() == 1)
   {
     //! \todo use the device protocol to start address value observation
@@ -357,12 +357,14 @@ void JamomaAddress::addCallback(ValueCallback* callback)
       TTMirrorPtr(mObject.instance())->enableListening(*valueAttribute, true);
     }
   }
+
+  return it;
 }
 
-void JamomaAddress::removeCallback(ValueCallback* callback)
+void JamomaAddress::removeCallback(Address::iterator callback)
 {
-  callbacks().erase(find(callbacks().begin(), callbacks().end(), callback));
-  
+  CallbackContainer::removeCallback(callback);
+
   if (callbacks().size() == 0)
   {
     //! \todo use the device protocol to stop address value observation
@@ -383,18 +385,18 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
 {
   JamomaAddress * self = static_cast<JamomaAddress*>(TTPtr(baton[0]));
   TTObject aData = baton[1];
-  
+
   // check data object
   if (aData.instance() == self->mObject.instance())
   {
     self->setValue(self->convertTTValueIntoValue(value, self->mValueType));
-      
+
     for (auto callback : self->callbacks())
-      (*callback)(self->mValue);
-      
+      callback(self->mValue);
+
     return kTTErrNone;
   }
-  
+
   return kTTErrGeneric;
 }
 
@@ -406,31 +408,31 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
     {
       return new OSSIA::Impulse();
     }
-      
+
     case Value::Type::BOOL :
     {
       if (v.size() == 1)
         return new OSSIA::Bool(v[0]);
-      
+
       return new OSSIA::Bool();
     }
-      
+
     case Value::Type::INT :
     {
       if (v.size() == 1)
         return new OSSIA::Int(v[0]);
-      
+
       return new OSSIA::Int();
     }
-      
+
     case Value::Type::FLOAT :
     {
       if (v.size() == 1)
         return new OSSIA::Float(v[0]);
-      
+
       return new OSSIA::Float();
     }
-      
+
     case Value::Type::CHAR :
     {
       if (v.size() == 1)
@@ -441,10 +443,10 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
           return new OSSIA::Char(c_value[0]);
         }
       }
-      
+
       return new OSSIA::Char();
     }
-      
+
     case Value::Type::STRING :
     {
       if (v.size() == 1)
@@ -455,10 +457,10 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
           return new OSSIA::String(s_value.c_str());
         }
       }
-      
+
       return new OSSIA::String();
     }
-      
+
     case Value::Type::DESTINATION :
     {
       /*
@@ -468,26 +470,26 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
        {
        //! \todo retreive the Address from the symbol
        //TTAddress s_value = v[0];
-       
+
        return new OSSIA::Destination();
        }
        }
-       
+
        return new OSSIA::Destination();
        */
     }
-      
+
     case Value::Type::BEHAVIOR :
     {}
-      
+
     case Value::Type::TUPLE :
     {
       vector<const Value*> t_value;
-      
+
       for (const auto & e : v)
       {
         Value::Type type;
-        
+
         if (e.type() == kTypeBoolean)
         {
           type = Value::Type::BOOL;
@@ -511,14 +513,14 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
         {
           continue;
         }
-        
+
         TTValue t(e);
         t_value.push_back(convertTTValueIntoValue(t, type));
       }
-      
+
       return new OSSIA::Tuple(t_value);
     }
-      
+
     case Value::Type::GENERIC :
     {
       return nullptr; // todo
@@ -534,68 +536,68 @@ void JamomaAddress::convertValueIntoTTValue(const Value * value, TTValue & v) co
     {
       break;
     }
-      
+
     case Value::Type::BOOL :
     {
       Bool * b = (Bool*)value;
       v = TTBoolean(b->value);
       break;
     }
-      
+
     case Value::Type::INT :
     {
       Int * i = (Int*)value;
       v = TTInt32(i->value);
       break;
     }
-      
+
     case Value::Type::FLOAT :
     {
       Float * f = (Float*)value;
       v = TTFloat64(f->value);
       break;
     }
-      
+
     case Value::Type::CHAR :
     {
       Char * c = (Char*)value;
       v = TTSymbol(c->value);
       break;
     }
-      
+
     case Value::Type::STRING :
     {
       String * s = (String*)value;
       v = TTSymbol(s->value);
       break;
     }
-      
+
     case Value::Type::DESTINATION :
     {
       Destination * d = (Destination*)value;
       v = TTAddress(buildNodePath(d->value).data());
       break;
     }
-      
+
     case Value::Type::BEHAVIOR :
     {}
-      
+
     case Value::Type::TUPLE :
     {
       Tuple * t = (Tuple*)value;
-      
+
       for (const auto & e : t->value)
       {
         TTValue n;
         convertValueIntoTTValue(e, n);
-        
+
         if (n.size())
           v.append(n[0]);
       }
-      
+
       break;
     }
-      
+
     case Value::Type::GENERIC :
     {
       //! \todo GENERIC case
@@ -609,7 +611,7 @@ string JamomaAddress::buildNodePath(shared_ptr<Node> node) const
   string path;
   string name = node->getName();
   shared_ptr<Node> parent = node->getParent();
-  
+
   if (parent != nullptr)
   {
     path += buildNodePath(parent);
@@ -622,6 +624,6 @@ string JamomaAddress::buildNodePath(shared_ptr<Node> node) const
     //! \todo use device name
     path = name;
   }
-  
+
   return path;
 }

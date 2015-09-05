@@ -55,7 +55,7 @@ int main()
             for (const auto& parameter : module->children())
             {
                 string parameter_name = parameter->getName();
-                
+
                 if (parameter_name == "bitdepth")
                 {
                     cout << "/deg/bitdepth node found" << endl;
@@ -66,10 +66,9 @@ int main()
                     // change the value
                     Int i(10);
                     bitdepthAddress->pushValue(&i);
-                    
+
                     // attach to callback to display later value update
-                    ValueCallback callback = printValueCallback;
-                    bitdepthAddress->addCallback(&callback);
+                    bitdepthAddress->addCallback(printValueCallback);
                 }
                 else if (parameter_name == "samplerate_ratio")
                 {
@@ -81,15 +80,14 @@ int main()
                     // change the value
                     Float f(0.5);
                     samplerateAddress->pushValue(&f);
-                    
+
                     // attach to callback to display later value update
-                    ValueCallback callback = printValueCallback;
-                    samplerateAddress->addCallback(&callback);
+                    samplerateAddress->addCallback(printValueCallback);
                 }
             }
         }
     }
-    
+
     cout << "editing and launching state" << endl;
 
     // fill the state
@@ -98,18 +96,18 @@ int main()
 
     // trigger the message
     test->launch();
-    
+
     cout << "waiting for /deg/samplerate_ratio > 0.5" << endl;
-    
+
     // wait while samplerate_ratio > 0.5
     bool wait = true;
     while (wait)
     {
         this_thread::sleep_for( std::chrono::milliseconds(500));
-        
+
         Float* f = (Float*)samplerateAddress->getValue();
         wait = f->value > 0.5;
-        
+
         if (!wait)
              cout << "done !" << endl;
     }
