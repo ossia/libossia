@@ -25,7 +25,15 @@ private Q_SLOTS:
 
         QVERIFY(node->getName() == "child");
 
+        node->setName("foo");
+        QVERIFY(node->getName() == "foo");
+
         QVERIFY(node->getAddress() == nullptr);
+
+        local_device->emplace(local_device->children().begin(), "foo");
+        auto brother = local_device->children().front();
+
+        QVERIFY(brother->getName() == "foo.1");
     }
 
     /*! test edition functions */

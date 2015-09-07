@@ -55,6 +55,12 @@ public:
    \return std::string the name */
   virtual std::string getName() const = 0;
   
+  /*! set node's name
+   \details as each node name is unique (among its brothers), call getName() afterward to have the effective name of the node
+   \param std::string a new name
+   \return #Node the node */
+  virtual Node & setName(std::string) = 0;
+  
   /*! get node's address
    \return std::shared_ptr<#Address> the address */
   virtual const std::shared_ptr<OSSIA::Address> & getAddress() const = 0;

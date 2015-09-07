@@ -65,6 +65,17 @@ string JamomaNode::getName() const
   return "";
 }
 
+Node & JamomaNode::setName(std::string name)
+{
+  TTAddress nameInstance(name.data());
+  TTSymbol newInstance;
+  TTBoolean newInstanceCreated;
+  
+  mNode->setNameInstance(nameInstance, newInstance, &newInstanceCreated);
+  
+  return *this;
+}
+
 const shared_ptr<Address> & JamomaNode::getAddress() const
 {
   return mAddress;
