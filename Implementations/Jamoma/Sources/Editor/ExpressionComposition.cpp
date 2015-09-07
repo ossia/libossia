@@ -16,9 +16,12 @@ private:
   shared_ptr<Expression>  mFirstExpression;
   Operator                mOperator;
   shared_ptr<Expression>  mSecondExpression;
-  
+
   ResultCallback          mFirstResultCallback;
   ResultCallback          mSecondResultCallback;
+
+  Expression::iterator    mFirstResultCallbackIndex;
+  Expression::iterator    mSecondResultCallbackIndex;
 
 public:
 
@@ -60,31 +63,33 @@ public:
 # pragma mark -
 # pragma mark Callback Container
 
-  void addCallback(ResultCallback* callback) override
+  Expression::iterator addCallback(ResultCallback callback) override
   {
-    callbacks().push_back(callback);
+    auto it = CallbackContainer::addCallback(std::move(callback));
 
     if (callbacks().size() == 1)
     {
       // start first expression observation
-      mFirstExpression->addCallback(&mFirstResultCallback);
-      
+      mFirstResultCallbackIndex = mFirstExpression->addCallback(mFirstResultCallback);
+
       // start second expression observation
-      mSecondExpression->addCallback(&mSecondResultCallback);
+      mSecondResultCallbackIndex = mSecondExpression->addCallback(mSecondResultCallback);
     }
+
+    return it;
   }
 
-  void removeCallback(ResultCallback* callback) override
+  void removeCallback(Expression::iterator callback) override
   {
-    callbacks().erase(std::find(callbacks().begin(), callbacks().end(), callback));
+    CallbackContainer::removeCallback(callback);
 
     if (callbacks().size() == 0)
     {
       // stop first expression observation
-      mFirstExpression->removeCallback(&mFirstResultCallback);
-      
+      mFirstExpression->removeCallback(mFirstResultCallbackIndex);
+
       // stop second expression observation
-      mSecondExpression->removeCallback(&mSecondResultCallback);
+      mSecondExpression->removeCallback(mSecondResultCallbackIndex);
     }
   }
 
@@ -105,12 +110,12 @@ public:
   {
     return mSecondExpression;
   }
-  
+
 private:
-  
+
 # pragma mark -
 # pragma mark Implementation Specific
-  
+
   bool do_evaluation(bool first, bool second) const
   {
     switch (mOperator)
@@ -131,21 +136,21 @@ private:
         return false;
     }
   }
-  
+
   void firstResultCallback(bool first_result)
   {
     bool result = do_evaluation(first_result, mSecondExpression->evaluate());
-    
+
     for (auto callback : callbacks())
-      (*callback)(result);
+      callback(result);
   }
-  
+
   void secondResultCallback(bool second_result)
   {
     bool result = do_evaluation(mFirstExpression->evaluate(), second_result);
-    
+
     for (auto callback : callbacks())
-      (*callback)(result);
+      callback(result);
   }
 
 };

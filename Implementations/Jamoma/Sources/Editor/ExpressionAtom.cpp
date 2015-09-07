@@ -25,6 +25,9 @@ private:
   ValueCallback mFirstValueCallback;
   ValueCallback mSecondValueCallback;
 
+  Address::iterator mFirstValueCallbackIndex;
+  Address::iterator mSecondValueCallbackIndex;
+
 public:
 
 # pragma mark -
@@ -65,9 +68,9 @@ public:
 # pragma mark -
 # pragma mark Callback Container
 
-  void addCallback(ResultCallback* callback) override
+  Expression::iterator addCallback(ResultCallback callback) override
   {
-    callbacks().push_back(callback);
+    auto it = CallbackContainer::addCallback(std::move(callback));
 
     if (callbacks().size() == 1)
     {
@@ -78,7 +81,7 @@ public:
         Destination* d = (Destination*)mFirstValue;
         if (d->value->getAddress())
         {
-          d->value->getAddress()->addCallback(&mFirstValueCallback);
+          mFirstValueCallbackIndex = d->value->getAddress()->addCallback(mFirstValueCallback);
         }
       }
 
@@ -89,15 +92,17 @@ public:
         Destination* d = (Destination*)mSecondValue;
         if (d->value->getAddress())
         {
-          d->value->getAddress()->addCallback(&mSecondValueCallback);
+          mSecondValueCallbackIndex = d->value->getAddress()->addCallback(mSecondValueCallback);
         }
       }
     }
+
+    return it;
   }
 
-  void removeCallback(ResultCallback* callback) override
+  void removeCallback(Expression::iterator callback) override
   {
-    callbacks().erase(std::find(callbacks().begin(), callbacks().end(), callback));
+    CallbackContainer::removeCallback(callback);
 
     if (callbacks().size() == 0)
     {
@@ -108,7 +113,7 @@ public:
         Destination* d = (Destination*)mFirstValue;
         if (d->value->getAddress())
         {
-          d->value->getAddress()->removeCallback(&mFirstValueCallback);
+          d->value->getAddress()->removeCallback(mFirstValueCallbackIndex);
         }
       }
 
@@ -119,7 +124,7 @@ public:
         Destination* d = (Destination*)mSecondValue;
         if (d->value->getAddress())
         {
-          d->value->getAddress()->removeCallback(&mSecondValueCallback);
+          d->value->getAddress()->removeCallback(mSecondValueCallbackIndex);
         }
       }
     }
@@ -142,9 +147,9 @@ public:
   {
     return mSecondValue;
   }
-  
+
 private:
-  
+
 # pragma mark -
 # pragma mark Implementation Specific
 
@@ -186,7 +191,7 @@ private:
     bool result = do_evaluation(value, mSecondValue);
 
     for (auto callback : callbacks())
-      (*callback)(result);
+      callback(result);
   }
 
   void secondValueCallback(const Value * value)
@@ -194,7 +199,7 @@ private:
     bool result = do_evaluation(mFirstValue, value);
 
     for (auto callback : callbacks())
-      (*callback)(result);
+      callback(result);
   }
 
 };

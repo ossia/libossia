@@ -19,7 +19,7 @@ class ExpressionAtomTest : public QObject
     }
 
 private Q_SLOTS:
-    
+
     /*! evaluate expressions with impulse values */
     void test_impulse()
     {
@@ -340,8 +340,8 @@ private Q_SLOTS:
                                                            ExpressionAtom::Operator::EQUAL,
                                                            new Destination(localIntNode2));
 
-        ResultCallback callback = std::bind(&ExpressionAtomTest::result_callback, this, _1);
-        testDestinationExpr->addCallback(&callback);
+        auto callback = [&] (bool b) { result_callback(b); };
+        auto callback_index = testDestinationExpr->addCallback(callback);
 
         QVERIFY(testDestinationExpr->callbacks().size() == 1);
 
@@ -361,7 +361,7 @@ private Q_SLOTS:
 
         QVERIFY(m_result_callback_called == true && m_result == true);
 
-        testDestinationExpr->removeCallback(&callback);
+        testDestinationExpr->removeCallback(callback_index);
 
         QVERIFY(testDestinationExpr->callbacks().size() == 0);
 

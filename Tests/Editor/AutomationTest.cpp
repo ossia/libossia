@@ -28,7 +28,7 @@ class AutomationTest : public QObject
     }
 
 private Q_SLOTS:
-    
+
     /*! test life cycle and accessors functions */
     void test_basic()
     {
@@ -51,7 +51,7 @@ private Q_SLOTS:
 
         //! \todo test clone()
     }
-    
+
     /*! test execution functions */
     //! \todo test state()
     void test_execution()
@@ -60,8 +60,7 @@ private Q_SLOTS:
         auto local_device = Device::create(local_protocol, "test");
         local_device->emplace(local_device->children().begin(), "child");
         auto address = local_device->children().front()->createAddress(Value::Type::FLOAT);
-        ValueCallback callback = std::bind(&AutomationTest::address_callback, this, _1);
-        address->addCallback(&callback);
+        address->addCallback([&] (const Value* v) { address_callback(v); });
 
         auto curve = Curve<float>::create();
         auto linearSegment = CurveSegmentLinear<float>::create(curve);

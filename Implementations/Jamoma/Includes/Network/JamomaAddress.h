@@ -30,23 +30,23 @@ class JamomaAddress : public Address
 {
 
   friend JamomaProtocol;
-  
+
 private:
 
 # pragma mark -
 # pragma mark Implementation specific
-  
+
   weak_ptr<Node>      mNode;
-  
+
   mutable TTObject    mObject;
   mutable Value *     mValue{};
   Value::Type         mValueType;
   AccessMode          mAccessMode;
   BoundingMode        mBoundingMode;
   bool                mRepetitionFilter;
-  
+
   shared_ptr<Domain>  mDomain;
-  
+
   ValueCallback       mCallback;
 
 public:
@@ -55,18 +55,18 @@ public:
 # pragma mark Life cycle
 
   JamomaAddress(shared_ptr<Node> node, TTObject aData = TTObject());
-  
+
   ~JamomaAddress();
-  
+
 # pragma mark -
 # pragma mark Network
-  
+
   const shared_ptr<Node> getNode() const override;
-  
+
   const Value * pullValue() override;
-  
+
   Address & pushValue(const Value * = nullptr) override;
-  
+
 # pragma mark -
 # pragma mark Accessors
 
@@ -79,11 +79,11 @@ public:
   AccessMode getAccessMode() const override;
 
   Address & setAccessMode(AccessMode) override;
-  
+
   const shared_ptr<Domain> & getDomain() const override;
-  
+
   Address & setDomain(shared_ptr<Domain>) override;
-  
+
   BoundingMode getBoundingMode() const override;
 
   Address & setBoundingMode(BoundingMode) override;
@@ -91,13 +91,13 @@ public:
   bool getRepetitionFilter() const override;
 
   Address & setRepetitionFilter(bool) override;
- 
+
 # pragma mark -
 # pragma mark Callback Container
-  
-  void addCallback(ValueCallback*) override;
-  
-  void removeCallback(ValueCallback*) override;
+
+  Address::iterator addCallback(ValueCallback) override;
+
+  void removeCallback(Address::iterator) override;
 
 # pragma mark -
 # pragma mark Implementation specific
@@ -107,8 +107,8 @@ private:
   static TTErr TTValueCallback(const TTValue&, const TTValue&);
 
   Value * convertTTValueIntoValue(const TTValue&, Value::Type) const;
-  
+
   void convertValueIntoTTValue(const Value *, TTValue &) const;
-  
+
   string buildNodePath(shared_ptr<Node>) const;
 };

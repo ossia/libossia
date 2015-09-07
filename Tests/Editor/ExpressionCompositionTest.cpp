@@ -19,7 +19,7 @@ class ExpressionCompositionTest : public QObject
     }
 
 private Q_SLOTS:
-    
+
     /*! test AND operator */
     void test_AND()
     {
@@ -137,7 +137,7 @@ private Q_SLOTS:
                                                                         testDestinationExprB);
 
         ResultCallback callback = std::bind(&ExpressionCompositionTest::result_callback, this, _1);
-        testDestinationComposition->addCallback(&callback);
+        auto callback_index = testDestinationComposition->addCallback(callback);
 
         QVERIFY(testDestinationComposition->callbacks().size() == 1);
 
@@ -165,7 +165,7 @@ private Q_SLOTS:
 
         QVERIFY(m_result_callback_called == true && m_result == true);
 
-        testDestinationComposition->removeCallback(&callback);
+        testDestinationComposition->removeCallback(callback_index);
 
         QVERIFY(testDestinationComposition->callbacks().size() == 0);
 

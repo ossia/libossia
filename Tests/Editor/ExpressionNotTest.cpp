@@ -19,7 +19,7 @@ class ExpressionNotTest : public QObject
     }
 
 private Q_SLOTS:
-    
+
     /*! test life cycle and accessors functions */
     void test_basic()
     {
@@ -51,7 +51,7 @@ private Q_SLOTS:
         auto testDestinationExprNot = ExpressionNot::create(testDestinationExpr);
 
         ResultCallback callback = std::bind(&ExpressionNotTest::result_callback, this, _1);
-        testDestinationExprNot->addCallback(&callback);
+        auto callback_index = testDestinationExprNot->addCallback(callback);
 
         QVERIFY(testDestinationExprNot->callbacks().size() == 1);
 
@@ -79,7 +79,7 @@ private Q_SLOTS:
 
         QVERIFY(m_result_callback_called == true && m_result == false);
 
-        testDestinationExprNot->removeCallback(&callback);
+        testDestinationExprNot->removeCallback(callback_index);
 
         QVERIFY(testDestinationExprNot->callbacks().size() == 0);
 

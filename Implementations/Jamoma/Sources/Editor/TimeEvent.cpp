@@ -29,21 +29,21 @@ void JamomaTimeEvent::happen()
 {
   if (mStatus != TimeEvent::Status::PENDING)
     throw runtime_error("only PENDING event can happens");
-  
+
   mStatus = TimeEvent::Status::HAPPENED;
-  
+
   // stop previous TimeConstraints
   for (auto& timeConstraint : previousTimeConstraints())
   {
     timeConstraint->stop();
   }
-  
+
   // start next TimeConstraints
   for (auto& timeConstraint : nextTimeConstraints())
   {
     timeConstraint->start();
   }
-  
+
   (mCallback)(mStatus);
 }
 
@@ -51,9 +51,9 @@ void JamomaTimeEvent::dispose()
 {
   if (mStatus != TimeEvent::Status::PENDING)
     throw runtime_error("only PENDING event can be disposed");
-  
+
   mStatus = TimeEvent::Status::DISPOSED;
-  
+
   (mCallback)(mStatus);
 }
 
@@ -97,11 +97,11 @@ const shared_ptr<Expression> & JamomaTimeEvent::getExpression() const
 TimeEvent & JamomaTimeEvent::setExpression(const std::shared_ptr<Expression> expression)
 {
   if (mExpression != nullptr)
-    mExpression->removeCallback(&mResultCallback);
-  
+    mExpression->removeCallback(mResultCallbackIndex);
+
   mExpression = expression;
   mObserveExpression = false;
-  
+
   return *this;
 }
 
@@ -120,7 +120,7 @@ void JamomaTimeEvent::process()
   {
     setStatus(TimeEvent::Status::PENDING);
   }
-  
+
   // NONE TimeEvent without previous TimeConstraints is PENDING
   // if each previous TimeConstraint ends or reaches their minimal duration
   // and it starts to observe its Expression if all previous TimeConstraints have reach their minimal duration
@@ -132,7 +132,7 @@ void JamomaTimeEvent::process()
     for (auto& timeConstraint : previousTimeConstraints())
     {
       shared_ptr<JamomaTimeConstraint> c = dynamic_pointer_cast<JamomaTimeConstraint>(timeConstraint);
-      
+
       // when running
       if (c->getRunning())
       {
@@ -142,7 +142,7 @@ void JamomaTimeEvent::process()
         {
           // don't observe expression
           observe = false;
-          
+
           // stay NONE status
           break;
         }
@@ -151,7 +151,7 @@ void JamomaTimeEvent::process()
         {
           // don't observe expression
           observe = false;
-          
+
           // stay NONE status
           break;
         }
@@ -161,27 +161,27 @@ void JamomaTimeEvent::process()
         {
           // observe expression if all other previous constraints allow it too
           observe &= true;
-          
+
           // and access to PENDING status (see below)
         }
         else if (c->getDate() >= c->getDurationMax())
         {
           // don't observe expression
           observe = false;
-          
+
           // and access to PENDING status (see below)
         }
       }
-      
+
       setPending = true;
     }
-    
+
     // access to PENDING status once all previous TimeConstraints allow it
     if (setPending)
     {
       setStatus(TimeEvent::Status::PENDING);
     }
-    
+
     // observe the expression to observe all Destination value contained into it
     observeExpressionResult(observe);
   }
@@ -202,20 +202,20 @@ void JamomaTimeEvent::observeExpressionResult(bool observe)
 {
   if (mExpression == nullptr)
     return;
-  
+
   if (observe != mObserveExpression)
   {
     mObserveExpression = observe;
-    
+
     if (mObserveExpression)
     {
       // start expression observation
-      mExpression->addCallback(&mResultCallback);
+      mResultCallbackIndex = mExpression->addCallback(mResultCallback);
     }
     else
     {
       // stop expression observation
-      mExpression->removeCallback(&mResultCallback);
+      mExpression->removeCallback(mResultCallbackIndex);
     }
   }
 }
