@@ -32,9 +32,11 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  string  mIp;
-  int     mInPort;
-  int     mOutPort;
+  TTObject  mProtocol;
+  
+  string    mIp;
+  int       mInPort;            /// the port that a remote device open to receive OSC messages
+  int       mOutPort;           /// the port where a remote device sends OSC messages to give some feeback (like "echo")
   
 public:
   
@@ -48,11 +50,17 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
-  string getIp() override;
+  std::string getIp() override;
+  
+  Protocol & setIp(std::string);
   
   int getInPort() override;
   
+  Protocol & setInPort(int);
+  
   int getOutPort() override;
+  
+  Protocol & setOutPort(int);
   
 # pragma mark -
 # pragma mark Operation
