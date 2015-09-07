@@ -157,7 +157,8 @@ mProtocol(protocol),
 mApplicationManager(applicationManager),
 mApplication(application)
 {
-  mNode->setObject(application);
+  if (mNode->getObject() == nullptr)
+    mNode->setObject(application);
 }
 
 JamomaDevice::~JamomaDevice()

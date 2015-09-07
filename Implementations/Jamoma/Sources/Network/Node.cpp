@@ -12,10 +12,11 @@ mObject("NodeInfo"),
 mDevice(aDevice),
 mParent(aParent)
 {
-    // add a NodeInfo object otherwise TTNodeDirectory
-    // automatically removes empty parent binding on no object
-    // when destroying the last child
-    mNode->setObject(mObject);
+    // if no object add a default NodeInfo object
+    // otherwise TTNodeDirectory automatically removes
+    // empty parent binding on no object when destroying the last child
+    if (mNode->getObject() == nullptr)
+      mNode->setObject(mObject);
 }
 
 JamomaNode::~JamomaNode()
@@ -62,6 +63,17 @@ string JamomaNode::getName() const
   }
   
   return "";
+}
+
+Node & JamomaNode::setName(std::string name)
+{
+  TTAddress nameInstance(name.data());
+  TTSymbol newInstance;
+  TTBoolean newInstanceCreated;
+  
+  mNode->setNameInstance(nameInstance, newInstance, &newInstanceCreated);
+  
+  return *this;
 }
 
 const shared_ptr<Address> & JamomaNode::getAddress() const

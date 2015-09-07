@@ -63,6 +63,8 @@ public:
   
   string getName() const override;
   
+  Node & setName(std::string) override;
+  
   const shared_ptr<Address> & getAddress() const override;
   
 # pragma mark -
