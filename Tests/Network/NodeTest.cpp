@@ -16,6 +16,11 @@ private Q_SLOTS:
         auto local_protocol = Local::create();
         auto local_device = Device::create(local_protocol, "test");
 
+        QVERIFY(local_device->getName() == "test");
+
+        local_device->setName("app");
+        QVERIFY(local_device->getName() == "app");
+
         local_device->emplace(local_device->children().begin(), "child");
         auto node = local_device->children().front();
         QVERIFY(node != nullptr);

@@ -169,6 +169,23 @@ JamomaDevice::~JamomaDevice()
 }
 
 # pragma mark -
+# pragma mark Accessors
+
+string JamomaDevice::getName() const
+{
+  TTSymbol device_name;
+  mApplication.get("name", device_name);
+  return device_name.c_str();
+}
+
+Node & JamomaDevice::setName(std::string name)
+{
+  mApplication.set("name", TTSymbol(name));
+
+  return *this;
+}
+
+# pragma mark -
 # pragma mark Network
 
 shared_ptr<Protocol> JamomaDevice::getProtocol() const

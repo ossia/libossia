@@ -48,6 +48,13 @@ public:
   ~JamomaDevice();
   
 # pragma mark -
+# pragma mark Accessors
+  
+  string getName() const override;
+  
+  Node & setName(std::string) override;
+  
+# pragma mark -
 # pragma mark Network
   
   shared_ptr<Protocol> getProtocol() const override;
