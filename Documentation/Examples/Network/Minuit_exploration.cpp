@@ -47,6 +47,14 @@ void explore(const shared_ptr<Node> node)
 {
     for (const auto& child : node->children())
     {
+        // indentation
+        shared_ptr<Node> parent = node->getParent();
+        while (parent != nullptr)
+        {
+            cout << "\t";
+            parent = parent->getParent();
+        }
+        
         cout << child->getName();
         
         auto address = child->getAddress();
