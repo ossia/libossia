@@ -22,9 +22,6 @@ private:
   Operator  mOperator;
   Value*    mSecondValue;
 
-  ValueCallback mFirstValueCallback;
-  ValueCallback mSecondValueCallback;
-
   Address::iterator mFirstValueCallbackIndex;
   Address::iterator mSecondValueCallbackIndex;
 
@@ -36,17 +33,13 @@ public:
   JamomaExpressionAtom(const Value* value1, Operator op, const Value* value2) :
   mFirstValue(value1->clone()),
   mOperator(op),
-  mSecondValue(value2->clone()),
-  mFirstValueCallback(std::bind(&JamomaExpressionAtom::firstValueCallback, this, _1)),
-  mSecondValueCallback(std::bind(&JamomaExpressionAtom::secondValueCallback, this, _1))
+  mSecondValue(value2->clone())
   {}
 
   JamomaExpressionAtom(const JamomaExpressionAtom * other) :
   mFirstValue(other->mFirstValue->clone()),
   mOperator(other->mOperator),
-  mSecondValue(other->mSecondValue->clone()),
-  mFirstValueCallback(std::bind(&JamomaExpressionAtom::firstValueCallback, this, _1)),
-  mSecondValueCallback(std::bind(&JamomaExpressionAtom::secondValueCallback, this, _1))
+  mSecondValue(other->mSecondValue->clone())
   {}
 
   shared_ptr<ExpressionAtom> clone() const override
@@ -81,7 +74,7 @@ public:
         Destination* d = (Destination*)mFirstValue;
         if (d->value->getAddress())
         {
-          mFirstValueCallbackIndex = d->value->getAddress()->addCallback(mFirstValueCallback);
+          mFirstValueCallbackIndex = d->value->getAddress()->addCallback(std::bind(&JamomaExpressionAtom::firstValueCallback, this, _1));
         }
       }
 
@@ -92,7 +85,7 @@ public:
         Destination* d = (Destination*)mSecondValue;
         if (d->value->getAddress())
         {
-          mSecondValueCallbackIndex = d->value->getAddress()->addCallback(mSecondValueCallback);
+          mSecondValueCallbackIndex = d->value->getAddress()->addCallback(std::bind(&JamomaExpressionAtom::secondValueCallback, this, _1));
         }
       }
     }

@@ -34,16 +34,15 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  TimeEvent::ExecutionCallback  mCallback;
+  TimeEvent::ExecutionCallback      mCallback;
 
-  shared_ptr<TimeNode>          mTimeNode;
-  shared_ptr<State>             mState;
-  shared_ptr<Expression>        mExpression;
-  Status                        mStatus;
+  shared_ptr<TimeNode>              mTimeNode;
+  shared_ptr<State>                 mState;
+  Status                            mStatus;
 
-  bool                          mObserveExpression;
-  ResultCallback                mResultCallback;
-  Expression::iterator          mResultCallbackIndex;
+  shared_ptr<Expression>            mExpression;
+  bool                              mObserveExpression;
+  Expression::iterator              mResultCallbackIndex;
 
 public:
 

@@ -14,7 +14,6 @@ private:
 
   shared_ptr<Expression>  mExpression;
 
-  ResultCallback          mResultCallback;
   Expression::iterator    mResultCallbackIndex;
 
 public:
@@ -23,13 +22,11 @@ public:
 # pragma mark Life cycle
 
   JamomaExpressionNot(shared_ptr<Expression> expr) :
-  mExpression(expr),
-  mResultCallback(std::bind(&JamomaExpressionNot::resultCallback, this, _1))
+  mExpression(expr)
   {}
 
-  JamomaExpressionNot(const JamomaExpressionNot * other) :
-  //! \todo mExpression(other->mExpression->clone()),
-  mResultCallback(std::bind(&JamomaExpressionNot::resultCallback, this, _1))
+  JamomaExpressionNot(const JamomaExpressionNot * other)
+  //! \todo mExpression(other->mExpression->clone())
   {}
 
   shared_ptr<ExpressionNot> clone() const override
@@ -58,7 +55,7 @@ public:
     if (callbacks().size() == 1)
     {
       // start expression observation
-      mResultCallbackIndex = mExpression->addCallback(mResultCallback);
+      mResultCallbackIndex = mExpression->addCallback(std::bind(&JamomaExpressionNot::resultCallback, this, _1));
     }
 
     return it;

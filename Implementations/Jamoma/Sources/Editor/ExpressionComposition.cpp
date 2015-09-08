@@ -17,9 +17,6 @@ private:
   Operator                mOperator;
   shared_ptr<Expression>  mSecondExpression;
 
-  ResultCallback          mFirstResultCallback;
-  ResultCallback          mSecondResultCallback;
-
   Expression::iterator    mFirstResultCallbackIndex;
   Expression::iterator    mSecondResultCallbackIndex;
 
@@ -31,17 +28,13 @@ public:
   JamomaExpressionComposition(shared_ptr<Expression> expr1, Operator op, shared_ptr<Expression> expr2) :
   mFirstExpression(expr1),
   mOperator(op),
-  mSecondExpression(expr2),
-  mFirstResultCallback(std::bind(&JamomaExpressionComposition::firstResultCallback, this, _1)),
-  mSecondResultCallback(std::bind(&JamomaExpressionComposition::secondResultCallback, this, _1))
+  mSecondExpression(expr2)
   {}
 
   JamomaExpressionComposition(const JamomaExpressionComposition * other) :
   //! \todo mFirstExpression(other->mFirstExpression->clone()),
-  mOperator(other->mOperator),
-  //! \todo mSecondExpression(other->mSecondExpression->clone()),
-  mFirstResultCallback(std::bind(&JamomaExpressionComposition::firstResultCallback, this, _1)),
-  mSecondResultCallback(std::bind(&JamomaExpressionComposition::secondResultCallback, this, _1))
+  mOperator(other->mOperator)
+  //! \todo mSecondExpression(other->mSecondExpression->clone())
   {}
 
   shared_ptr<ExpressionComposition> clone() const override
@@ -70,10 +63,10 @@ public:
     if (callbacks().size() == 1)
     {
       // start first expression observation
-      mFirstResultCallbackIndex = mFirstExpression->addCallback(mFirstResultCallback);
+      mFirstResultCallbackIndex = mFirstExpression->addCallback(std::bind(&JamomaExpressionComposition::firstResultCallback, this, _1));
 
       // start second expression observation
-      mSecondResultCallbackIndex = mSecondExpression->addCallback(mSecondResultCallback);
+      mSecondResultCallbackIndex = mSecondExpression->addCallback(std::bind(&JamomaExpressionComposition::secondResultCallback, this, _1));
     }
 
     return it;

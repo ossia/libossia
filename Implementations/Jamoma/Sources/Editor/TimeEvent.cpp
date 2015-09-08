@@ -11,10 +11,9 @@ JamomaTimeEvent::JamomaTimeEvent(TimeEvent::ExecutionCallback callback,
                                  shared_ptr<Expression> anExpression) :
 mCallback(callback),
 mTimeNode(aTimeNode),
-mExpression(anExpression),
 mStatus(TimeEvent::Status::NONE),
-mObserveExpression(false),
-mResultCallback(std::bind(&JamomaTimeEvent::resultCallback, this, _1))
+mExpression(anExpression),
+mObserveExpression(false)
 {
   mState = State::create();
 }
@@ -96,11 +95,9 @@ const shared_ptr<Expression> & JamomaTimeEvent::getExpression() const
 
 TimeEvent & JamomaTimeEvent::setExpression(const std::shared_ptr<Expression> expression)
 {
-  if (mExpression != nullptr)
-    mExpression->removeCallback(mResultCallbackIndex);
-
+  observeExpressionResult(false);
+  
   mExpression = expression;
-  mObserveExpression = false;
 
   return *this;
 }
@@ -121,7 +118,7 @@ void JamomaTimeEvent::process()
     setStatus(TimeEvent::Status::PENDING);
   }
 
-  // NONE TimeEvent without previous TimeConstraints is PENDING
+  // NONE TimeEvent with previous TimeConstraints is PENDING
   // if each previous TimeConstraint ends or reaches their minimal duration
   // and it starts to observe its Expression if all previous TimeConstraints have reach their minimal duration
   else
@@ -210,7 +207,7 @@ void JamomaTimeEvent::observeExpressionResult(bool observe)
     if (mObserveExpression)
     {
       // start expression observation
-      mResultCallbackIndex = mExpression->addCallback(mResultCallback);
+      mResultCallbackIndex = mExpression->addCallback(std::bind(&JamomaTimeEvent::resultCallback, this, _1));
     }
     else
     {
