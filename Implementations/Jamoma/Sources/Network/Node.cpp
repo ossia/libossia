@@ -117,7 +117,7 @@ shared_ptr<Address> JamomaNode::createAddress(Value::Type type)
       TTAddress nodeAddress;
       mNode->getAddress(nodeAddress);
       TTValue args(nodeAddress, "Data");
-      mObject = getApplication().send("MirrorDataInstantiate", args);
+      mObject = getApplication().send("MirrorObjectInstantiate", args);
       mObject.set("service", "parameter");
       
       //! \see in Device::create method, when creating Minuit protocol, some attributes are setup to be cached
