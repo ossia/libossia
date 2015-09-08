@@ -74,6 +74,9 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
       TimeEvent::Status startStatus = timeConstraint->getStartEvent()->getStatus();
       TimeEvent::Status endStatus = timeConstraint->getEndEvent()->getStatus();
       
+      // be sure the clock is stopped
+      timeConstraint->stop();
+      
       // the constraint is in the past
       if (startStatus == TimeEvent::Status::HAPPENED &&
           endStatus == TimeEvent::Status::HAPPENED)
