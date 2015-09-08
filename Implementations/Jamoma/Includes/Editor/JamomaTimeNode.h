@@ -30,7 +30,8 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  TimeValue mSimultaneityMargin;
+  shared_ptr<Expression>        mExpression;
+  TimeValue                     mSimultaneityMargin;
   
 public:
 
@@ -55,9 +56,13 @@ public:
   
   TimeValue getDate() const override;
   
+  const std::shared_ptr<Expression> & getExpression() const override;
+  
+  TimeNode & setExpression(const std::shared_ptr<Expression>) override;
+  
   TimeValue getSimultaneityMargin() const override;
   
-  void setSimultaneityMargin(const TimeValue&) override;
+  TimeNode & setSimultaneityMargin(const TimeValue&) override;
   
 # pragma mark -
 # pragma mark #TimeEvents

@@ -15,7 +15,7 @@ namespace OSSIA
 
 JamomaTimeNode::JamomaTimeNode()
 {}
-  
+
 JamomaTimeNode::JamomaTimeNode(const JamomaTimeNode * other)
 {}
 
@@ -46,19 +46,31 @@ TimeValue JamomaTimeNode::getDate() const
   
   else if (timeEvents()[0]->previousTimeConstraints().empty())
     return Zero;
-    
+  
   else
     return timeEvents()[0]->previousTimeConstraints()[0]->getDuration() + timeEvents()[0]->previousTimeConstraints()[0]->getStartEvent()->getTimeNode()->getDate();
 }
-  
+
+const std::shared_ptr<Expression> & JamomaTimeNode::getExpression() const
+{
+  return mExpression;
+}
+
+TimeNode & JamomaTimeNode::setExpression(const std::shared_ptr<Expression> expression)
+{
+  mExpression = expression;
+  return *this;
+}
+
 TimeValue JamomaTimeNode::getSimultaneityMargin() const
 {
   return mSimultaneityMargin;
 }
-  
-void JamomaTimeNode::setSimultaneityMargin(const TimeValue& simultaneityMargin)
+
+TimeNode & JamomaTimeNode::setSimultaneityMargin(const TimeValue& simultaneityMargin)
 {
   mSimultaneityMargin = simultaneityMargin;
+  return *this;
 }
 
 # pragma mark -
@@ -79,7 +91,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   {
     switch (timeEvent->getStatus())
     {
-      // check if NONE TimeEvent is ready to become PENDING
+        // check if NONE TimeEvent is ready to become PENDING
       case TimeEvent::Status::NONE:
       {
         shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
@@ -87,17 +99,17 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
         
         // don't break if the TimeEvent became PENDING
         if (timeEvent->getStatus() == TimeEvent::Status::NONE)
-            break;
+          break;
       }
-      
-      // PENDING TimeEvent is ready for evaluation
+        
+        // PENDING TimeEvent is ready for evaluation
       case TimeEvent::Status::PENDING:
       {
         pendingEvents.push_back(timeEvent);
         break;
       }
-      
-      // HAPPENED TimeEvent propagates recursively the execution to the end of each next TimeConstraints
+        
+        // HAPPENED TimeEvent propagates recursively the execution to the end of each next TimeConstraints
       case TimeEvent::Status::HAPPENED:
       {
         for (auto& timeConstraint : timeEvent->nextTimeConstraints())
@@ -109,7 +121,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
         break;
       }
         
-      // DISPOSED TimeEvent stops the propagation of the execution
+        // DISPOSED TimeEvent stops the propagation of the execution
       case TimeEvent::Status::DISPOSED:
       {
         break;
@@ -136,7 +148,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
     // if at least one TimeEvent happens
     // or if all TimeEvents needs to be disposed and none of them is observing its Expression
     if (eventsToHappen.size() > 0 ||
-       (eventsToDispose.size() == timeEvents().size() && noEventObserveExpression))
+        (eventsToDispose.size() == timeEvents().size() && noEventObserveExpression))
     {
       for (auto& timeEvent : eventsToHappen)
       {

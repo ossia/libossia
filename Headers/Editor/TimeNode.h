@@ -66,6 +66,15 @@ public:
   /*! get the date
    \return #TimeValue the date */
   virtual TimeValue getDate() const = 0;
+    
+  /*! get the expression of the #TimeNode
+   \return std::shared_ptr<#Expression> */
+  virtual const std::shared_ptr<Expression> & getExpression() const = 0;
+  
+  /*! get the expression of the #TimeNode
+   \param std::shared_ptr<#Expression>
+   \return #TimeNode the time node */
+  virtual TimeNode & setExpression(const std::shared_ptr<Expression>) = 0;
   
   /*! get the simultaneity margin
    \return #TimeValue the simultaneity margin */
@@ -73,8 +82,9 @@ public:
   
   /*! set the simultaneity margin
    \todo remove setter and move the setting into constructor (?)
-   \param #TimeValue the simultaneity margin */
-  virtual void setSimultaneityMargin(const TimeValue&) = 0;
+   \param #TimeValue the simultaneity margin 
+   \return #TimeNode the time node */
+  virtual TimeNode & setSimultaneityMargin(const TimeValue&) = 0;
 
 # pragma mark -
 # pragma mark #TimeEvents
