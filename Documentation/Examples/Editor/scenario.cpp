@@ -210,12 +210,15 @@ int main()
     // change main TimeConstraint speed, granularity and offset
     main_constraint->setSpeed(1.);
     main_constraint->setGranularity(50.);
+    
+    // set minimal duration of the first constraint to 1000 ms
+    first_constraint->setDurationMin(1000.);
 
     // change first and second TimeConstraint speed and granularity
     first_constraint->setSpeed(1.);
-    first_constraint->setGranularity(250.);
+    first_constraint->setGranularity(150.);
     second_constraint->setSpeed(1.);
-    second_constraint->setGranularity(250.);
+    second_constraint->setGranularity(150.);
 
     cout << "***** START *****" << endl;
 
@@ -228,17 +231,13 @@ int main()
 
     cout << "***** END *****" << endl;
 
-    // set minimal duration of the first constraint to 1000 ms
-    first_constraint->setDurationMin(1000.);
+    // set minimal duration of the first constraint to 500 ms
+    first_constraint->setDurationMin(750.);
 
-    // changing expression to : /i-score/test >= {0.5, 0.5, 0.5}
-    Tuple threshold2 = {new Float(0.5), new Float(0.5), new Float(0.5)};
-    auto next_expression2 = ExpressionAtom::create(&local_test,
-                                                   ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
-                                                   &threshold2);
-
-    // set first end event expression to make it interactive
-    first_end_event->setExpression(next_expression2);
+    // set first end time node expression to make it interactive
+    // (instead of first end event)
+    first_end_node->setExpression(next_expression1);
+    first_end_event->setExpression(nullptr);
 
     cout << "***** START *****" << endl;
 

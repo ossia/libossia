@@ -30,8 +30,11 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  shared_ptr<Expression>        mExpression;
-  TimeValue                     mSimultaneityMargin;
+  shared_ptr<Expression>    mExpression;
+  bool                      mObserveExpression;
+  Expression::iterator      mResultCallbackIndex;
+  
+  TimeValue                 mSimultaneityMargin;
   
 public:
 
@@ -74,6 +77,15 @@ public:
 # pragma mark -
 # pragma mark Implementation specific
   
+  /* process all TimeEvents to propagate execution */
   void process(Container<TimeEvent>& statusChangedEvents);
+  
+  /* is the TimeNode observing its Expression ? */
+  bool isObservingExpression();
+  
+private:
+  
+  void observeExpressionResult(bool);
 
+  void resultCallback(bool result);
 };

@@ -132,6 +132,14 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   // if all TimeEvents are PENDING
   if (pendingEvents.size() == timeEvents().size())
   {
+    // observe and evaluate TimeNode's expression before to go further
+    if (mExpression != nullptr)
+    {
+      observeExpressionResult(true);
+      if (!mExpression->evaluate())
+        return;
+    }
+    
     // dispatched them into TimeEvents to happen and TimeEvents to dispose
     Container<TimeEvent> eventsToHappen, eventsToDispose;
     bool noEventObserveExpression = true;
@@ -142,7 +150,15 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
       if (e->isObservingExpression())
         noEventObserveExpression = false;
       
-      timeEvent->getExpression() != nullptr ? timeEvent->getExpression()->evaluate() ? eventsToHappen.push_back(timeEvent) : eventsToDispose.push_back(timeEvent) : eventsToHappen.push_back(timeEvent);
+      if (timeEvent->getExpression() != nullptr)
+      {
+        if (timeEvent->getExpression()->evaluate())
+          eventsToHappen.push_back(timeEvent);
+        else
+          eventsToDispose.push_back(timeEvent);
+      }
+      else
+        eventsToHappen.push_back(timeEvent);
     }
     
     // if at least one TimeEvent happens
@@ -161,6 +177,45 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
         timeEvent->dispose();
         statusChangedEvents.push_back (timeEvent);
       }
+      
+      // stop expression observation now the TimeNode has been processed
+      observeExpressionResult(false);
     }
   }
+  else
+    // stop expression observation because the TimeNode is not ready to be processed
+    observeExpressionResult(false);
+}
+
+bool JamomaTimeNode::isObservingExpression()
+{
+  return mObserveExpression;
+}
+
+void JamomaTimeNode::observeExpressionResult(bool observe)
+{
+  if (mExpression == nullptr)
+    return;
+  
+  if (observe != mObserveExpression)
+  {
+    mObserveExpression = observe;
+    
+    if (mObserveExpression)
+    {
+      // start expression observation
+      mResultCallbackIndex = mExpression->addCallback(std::bind(&JamomaTimeNode::resultCallback, this, _1));
+    }
+    else
+    {
+      // stop expression observation
+      mExpression->removeCallback(mResultCallbackIndex);
+    }
+  }
+}
+
+void JamomaTimeNode::resultCallback(bool result)
+{
+  //! \note the result of the expression is not exploited here.
+  //! \note the observation of the expression is to observe all Destination value contained into it.
 }
