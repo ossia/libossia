@@ -29,26 +29,42 @@ class Clock
 
 public:
 
+# pragma mark -
+# pragma mark Definitions
+  
   /*! to get the clock execution back
    \param clock position
    \param clock date
    \param dropped ticks */
   using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, unsigned char)>;
+  
+# pragma mark -
+# pragma mark Enumerations
+  
+  /*! how the time flows for the clock */
+  enum class DriveMode
+  {
+    INTERNAL, // the tick method is called by the clock itself
+    EXTERNAL  // the tick method is called from outside the clock
+  };
 
 # pragma mark -
 # pragma mark Life cycle
 
   /*! factory
+   \param #ExecutionCallback
    \param duration
    \param granularity
    \param offset
    \param speed
+   \param drive mode
    \return std::shared_ptr<#Clock> */
   static std::shared_ptr<Clock> create(Clock::ExecutionCallback,
                                        const TimeValue& = Infinite,
                                        const TimeValue& = 1.,
                                        const TimeValue& = 0.,
-                                       float = 1.);
+                                       float = 1.,
+                                       DriveMode = Clock::DriveMode::INTERNAL);
 
   /*! destructor */
   virtual ~Clock() = default;
@@ -111,6 +127,15 @@ public:
    \param float speed factor
    \return #Clock the clock */
   virtual Clock & setSpeed(float) = 0;
+  
+  /*! get the clock drive mode
+   \return #DriveMode */
+  virtual DriveMode getDriveMode() const = 0;
+  
+  /** set is the clock drive mode
+   \param #DriveMode
+   \return #Clock the clock */
+  virtual Clock & setDriveMode(DriveMode) = 0;
 
   /*! get the running status of the clock
    \return bool true if is running */

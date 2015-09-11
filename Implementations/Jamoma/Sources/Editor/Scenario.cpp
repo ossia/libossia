@@ -141,7 +141,7 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
       if (timeConstraint->getRunning())
       {
         shared_ptr<JamomaTimeConstraint> c = dynamic_pointer_cast<JamomaTimeConstraint>(timeConstraint);
-        if (c->getExternal())
+        if (c->getDriveMode() == Clock::DriveMode::EXTERNAL)
           c->tick();
         
         flattenAndFilter(timeConstraint->state(c->getPosition(), c->getDate()));
@@ -175,7 +175,7 @@ void JamomaScenario::addTimeConstraint(const shared_ptr<TimeConstraint> timeCons
   
   // set TimeConstraint's clock in external mode
   shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint);
-  clock->setExternal(true);
+  clock->setDriveMode(Clock::DriveMode::EXTERNAL);
 }
 
 void JamomaScenario::removeTimeConstraint(const shared_ptr<TimeConstraint> timeConstraint)
@@ -184,7 +184,7 @@ void JamomaScenario::removeTimeConstraint(const shared_ptr<TimeConstraint> timeC
   
   // set the TimeConstraint's clock in none external mode
   shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint);
-  clock->setExternal(false);
+  clock->setDriveMode(Clock::DriveMode::INTERNAL);
 }
 
 void JamomaScenario::addTimeNode(const shared_ptr<TimeNode> timeNode)

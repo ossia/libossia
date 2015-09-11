@@ -36,7 +36,12 @@ class Address : public CallbackContainer<ValueCallback>
 {
 
 public:
+  
+# pragma mark -
+# pragma mark Definitions
+  
   using iterator = typename CallbackContainer<ValueCallback>::iterator;
+  
 # pragma mark -
 # pragma mark Enumerations
 

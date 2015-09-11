@@ -13,9 +13,10 @@ namespace OSSIA
                                   const TimeValue& duration,
                                   const TimeValue& granularity,
                                   const TimeValue& offset,
-                                  float speed)
+                                  float speed,
+                                  Clock::DriveMode driveMode)
   {
-    return make_shared<JamomaClock>(callback, duration, granularity, offset, speed);
+    return make_shared<JamomaClock>(callback, duration, granularity, offset, speed, driveMode);
   }
 }
 
@@ -24,14 +25,14 @@ JamomaClock::JamomaClock(Clock::ExecutionCallback callback,
                          const TimeValue& granularity,
                          const TimeValue& offset,
                          float speed,
-                         bool external) :
+                         Clock::DriveMode driveMode) :
 mDuration(duration),
 mGranularity(granularity),
 mOffset(offset),
 mSpeed(speed),
+mDriveMode(driveMode),
 mRunning(false),
-mCallback(callback),
-mExternal(external)
+mCallback(callback)
 {}
 
 JamomaClock::JamomaClock(const JamomaClock * other) :
@@ -39,9 +40,9 @@ mDuration(other->mDuration),
 mGranularity(other->mGranularity),
 mOffset(other->mOffset),
 mSpeed(other->mSpeed),
+mDriveMode(other->mDriveMode),
 mRunning(false),
-mCallback(other->mCallback),
-mExternal(other->mExternal)
+mCallback(other->mCallback)
 {}
 
 JamomaClock::~JamomaClock()
@@ -73,7 +74,7 @@ void JamomaClock::start()
   // notify the owner
   (mCallback)(mPosition, mDate, 0);
   
-  if (!mExternal)
+  if (mDriveMode == Clock::DriveMode::INTERNAL)
   {
     if (mThread.joinable())
       mThread.join();
@@ -88,7 +89,7 @@ void JamomaClock::stop()
   mRunning = false;
   mPaused = false;
   
-  if (!mExternal)
+  if (mDriveMode == Clock::DriveMode::INTERNAL)
   {
     if (mThread.joinable())
       mThread.join();
@@ -119,7 +120,7 @@ bool JamomaClock::tick()
   // how many time since the last tick ?
   long long deltaInUs = duration_cast<microseconds>(steady_clock::now() - mLastTime).count();
   
-  if (mExternal)
+  if (mDriveMode == Clock::DriveMode::EXTERNAL)
   {
     // if too early: avoid this tick
     if (mElapsedTime / granularityInUs == (mElapsedTime + deltaInUs) / granularityInUs)
@@ -256,6 +257,17 @@ Clock & JamomaClock::setSpeed(float speed)
   return *this;
 }
 
+Clock::DriveMode JamomaClock::getDriveMode() const
+{
+  return mDriveMode;
+}
+
+Clock & JamomaClock::setDriveMode(Clock::DriveMode driveMode)
+{
+  mDriveMode = driveMode;
+  return *this;
+}
+
 bool JamomaClock::getRunning() const
 {
   return mRunning;
@@ -273,17 +285,6 @@ const TimeValue & JamomaClock::getDate() const
 
 # pragma mark -
 # pragma mark Internal
-
-bool JamomaClock::getExternal() const
-{
-  return mExternal;
-}
-
-Clock & JamomaClock::setExternal(bool external)
-{
-  mExternal = external;
-  return *this;
-}
 
 void JamomaClock::threadCallback()
 {

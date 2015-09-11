@@ -39,6 +39,8 @@ protected:
   TimeValue         mOffset;        /// the date (in ms) the clock will run from
   double            mSpeed;         /// the speed factor of the clock
   
+  Clock::DriveMode  mDriveMode;     /// in EXTERNAL drive mode the tick() method is called from outside
+  
   bool              mRunning;       /// is the clock running right now ?
   bool              mPaused;        /// is the clock paused right now ?
   TimeValue         mPosition;      /// the progression of the clock between the beginning and the end [0. :: 1.]
@@ -50,9 +52,7 @@ protected:
   long long         mElapsedTime;   /// a time reference used to know how many time are elapsed in microsecond
   
   ExecutionCallback mCallback;      /// the callback to use for each step
-  
-  bool              mExternal;      /// if true the tick() method is called from outside
-  
+
 public:
   
 # pragma mark -
@@ -63,7 +63,7 @@ public:
               const TimeValue& = 1.,
               const TimeValue& = 0.,
               float = 1.,
-              bool = false);
+              Clock::DriveMode = Clock::DriveMode::INTERNAL);
   
   JamomaClock(const JamomaClock *);
   
@@ -101,23 +101,15 @@ public:
   
   Clock & setSpeed(float) override;
   
+  Clock::DriveMode getDriveMode() const override;
+  
+  Clock & setDriveMode(Clock::DriveMode) override;
+  
   bool getRunning() const override;
   
   const TimeValue & getPosition() const override;
   
   const TimeValue & getDate() const override;
-  
-# pragma mark -
-# pragma mark Internal
-  
-  /*! is the clock in external drive mode
-   \return bool true if the clock is in external drive mode */
-  bool getExternal() const;
-  
-  /** set is the clock in external drive mode
-   \param bool
-   \return #Clock the clock */
-  Clock & setExternal(bool);
   
 private:
   
