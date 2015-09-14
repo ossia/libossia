@@ -1,5 +1,7 @@
 #include "Network/JamomaAddress.h"
 
+#include <iostream> //! \todo to remove. only here for debug purpose
+
 # pragma mark -
 # pragma mark Life cycle
 
@@ -193,6 +195,8 @@ const shared_ptr<Node> JamomaAddress::getNode() const
 
 const Value * JamomaAddress::pullValue()
 {
+  std::lock_guard<std::mutex> lock(mValueMutex);
+
   //! \todo move the code below into each protocol pullAddressValue method
   //! \todo use the device protocol to pull address value
 
@@ -213,6 +217,8 @@ Address & JamomaAddress::pushValue(const Value * value)
 {
   if (value != nullptr)
     setValue(value);
+  
+  std::lock_guard<std::mutex> lock(mValueMutex);
 
   //! \todo move the code below into each protocol pushAddressValue method
   //! \todo use the device protocol to push address value
@@ -238,6 +244,8 @@ const Value * JamomaAddress::getValue() const
 
 Address & JamomaAddress::setValue(const Value * value)
 {
+  std::lock_guard<std::mutex> lock(mValueMutex);
+  
   // clear former value
   delete mValue;
 
@@ -392,7 +400,11 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
     self->setValue(self->convertTTValueIntoValue(value, self->mValueType));
 
     for (auto callback : self->callbacks())
+    {
+      //! \note théo - do we need to lock here ?
+      std::lock_guard<std::mutex> lock(self->mValueMutex);
       callback(self->mValue);
+    }
 
     return kTTErrNone;
   }

@@ -21,6 +21,9 @@
 
 #include "TTModular.h"
 
+#include <thread>
+#include <mutex>
+
 using namespace OSSIA;
 using namespace std;
 
@@ -48,6 +51,8 @@ private:
   shared_ptr<Domain>  mDomain;
 
   ValueCallback       mCallback;
+  
+  std::mutex          mValueMutex;
 
 public:
 
