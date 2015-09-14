@@ -50,8 +50,7 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
     // set TimeEvent's status depending on their TimeNode's absolute date
     for (const auto& timeNode : mTimeNodes)
     {
-      TimeValue date = timeNode->getDate();
-      TimeEvent::Status status = date <= position ? TimeEvent::Status::HAPPENED : TimeEvent::Status::NONE;
+      TimeEvent::Status status = timeNode->getDate() <= date ? TimeEvent::Status::HAPPENED : TimeEvent::Status::NONE;
       
       //! \note maybe we should initialized TimeEvents with an Expression returning false to DISPOSED status ?
       
