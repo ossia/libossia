@@ -33,13 +33,4 @@ public:
   JamomaLocal();
   
   ~JamomaLocal();
-  
-# pragma mark -
-# pragma mark Operation
-  
-  bool pullAddressValue(shared_ptr<Address>) const override;
-
-  bool pushAddressValue(shared_ptr<Address>) const override;
-  
-  bool observeAddressValue(shared_ptr<Address>, bool) const override;
 };

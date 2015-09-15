@@ -42,12 +42,6 @@ public:
 # pragma mark -
 # pragma mark Operation
   
-  bool pullAddressValue(shared_ptr<Address>) const override;
-  
-  bool pushAddressValue(shared_ptr<Address>) const override;
-  
-  bool observeAddressValue(shared_ptr<Address>, bool) const override;
-  
   /*! to see IPs of connected Midi devices
    \todo add options */
   vector<shared_ptr<MIDI>> scan() override;

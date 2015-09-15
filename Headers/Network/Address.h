@@ -23,10 +23,13 @@
 #include "Editor/Expression.h"
 #include "Editor/Value.h"
 
+#include "Network/Protocol.h"
+
 namespace OSSIA
 {
 
 class Node;
+class Protocol;
 
 /*! to get the value back
  \param the returned value */
@@ -34,6 +37,9 @@ using ValueCallback = std::function<void(const Value *)>;
 
 class Address : public CallbackContainer<ValueCallback>
 {
+
+  // Address is friend to any Protocol to allow them to modify its value
+  friend Protocol;
 
 public:
   

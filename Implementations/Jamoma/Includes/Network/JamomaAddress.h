@@ -29,9 +29,9 @@ using namespace std;
 
 class JamomaProtocol;
 
-class JamomaAddress : public Address
+class JamomaAddress : public Address, public enable_shared_from_this<JamomaAddress>
 {
-
+  // JamomaAddress is friend to any JamomaProtocol to allow them to modify its value
   friend JamomaProtocol;
 
 private:
@@ -42,7 +42,10 @@ private:
   weak_ptr<Node>      mNode;
 
   mutable TTObject    mObject;
+  TTObject            mObjectValueCallback;
   mutable Value *     mValue{};
+  mutable std::mutex  mValueMutex;
+  
   Value::Type         mValueType;
   AccessMode          mAccessMode;
   BoundingMode        mBoundingMode;
@@ -51,8 +54,6 @@ private:
   shared_ptr<Domain>  mDomain;
 
   ValueCallback       mCallback;
-  
-  std::mutex          mValueMutex;
 
 public:
 
@@ -110,6 +111,28 @@ public:
 private:
 
   static TTErr TTValueCallback(const TTValue&, const TTValue&);
+  
+  /*! pull TTValue from mObject
+   \param TTValue pulled value
+   \return true if the operation succeed */
+  bool pullValue(TTValue&) const;
+  
+  /*! push TTValue into mObject
+   \param TTValue value to push
+   \return true if the operation succeed */
+  bool pushValue(const TTValue&) const;
+  
+  /*! get TTValue from internal mValue 
+   \param TTValue returned value */
+  void getValue(TTValue&) const;
+  
+  /*! set TTValue into internal mValue 
+   \param TTValue value to set */
+  void setValue(const TTValue&);
+  
+  /*! register/unregister for mObject value attribute notification
+   \param bool true to enable observation */
+  void observeValue(bool);
 
   Value * convertTTValueIntoValue(const TTValue&, Value::Type) const;
 

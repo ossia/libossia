@@ -8,6 +8,7 @@
 JamomaAddress::JamomaAddress(shared_ptr<Node> node, TTObject aData) :
 mNode(node),
 mObject(aData),
+mObjectValueCallback("callback"),
 mValueType(Value::Type::IMPULSE),
 mAccessMode(AccessMode::BI),
 mBoundingMode(BoundingMode::FREE),
@@ -157,32 +158,19 @@ mRepetitionFilter(false)
         mBoundingMode = BoundingMode::FOLD;
 
       mObject.get("repetitionFilter", mRepetitionFilter);
-
-      // enable callback to be notified each time the value change
-      TTObject    callback("callback");
-      TTValue     args(TTPtr(this), mObject);
-      callback.set("baton", args);
-      callback.set("function", TTPtr(&JamomaAddress::TTValueCallback));
-
-      TTAttributePtr attribute;
-      mObject.instance()->findAttribute("value", &attribute);
-      attribute->registerObserverForNotifications(callback);
     }
+    
+    // prepare callback for value observation
+    TTValue args(TTPtr(this), mObject);
+    mObjectValueCallback.set("baton", args);
+    mObjectValueCallback.set("function", TTPtr(&JamomaAddress::TTValueCallback));
   }
 }
 
 JamomaAddress::~JamomaAddress()
 {
-  // stop observation
-  //! \todo use the device protocol to stop address value observation
-  // for Mirror object : disable listening
-  if (mObject.name() == kTTSym_Mirror)
-  {
-    TTAttributePtr	valueAttribute = NULL;
-    mObject.instance()->findAttribute("value", &valueAttribute);
-    //! \bug for Minuit Device the request is never sent because the Application is released before. in ~JamomaDevice() clearing Device children before was not a good solution ...
-    TTMirrorPtr(mObject.instance())->enableListening(*valueAttribute, false);
-  }
+  // use the device protocol to stop address value observation
+  mNode.lock()->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), false);
 }
 
 # pragma mark -
@@ -195,20 +183,8 @@ const shared_ptr<Node> JamomaAddress::getNode() const
 
 const Value * JamomaAddress::pullValue()
 {
-  std::lock_guard<std::mutex> lock(mValueMutex);
-
-  //! \todo move the code below into each protocol pullAddressValue method
-  //! \todo use the device protocol to pull address value
-
-  TTValue v;
-  if (!mObject.get("value", v))
-  {
-    // clear former value
-    delete mValue;
-
-    // create new value
-    mValue = convertTTValueIntoValue(v, mValueType);
-  }
+  // use the device protocol to pull address value
+  mNode.lock()->getDevice()->getProtocol()->pullAddressValue(*this);
 
   return mValue;
 }
@@ -218,18 +194,8 @@ Address & JamomaAddress::pushValue(const Value * value)
   if (value != nullptr)
     setValue(value);
   
-  std::lock_guard<std::mutex> lock(mValueMutex);
-
-  //! \todo move the code below into each protocol pushAddressValue method
-  //! \todo use the device protocol to push address value
-
-  TTValue v;
-  convertValueIntoTTValue(mValue, v);
-
-  if (mObject.name() == "Data")
-    mObject.send("Command", v);
-  else
-    mObject.set("value", v);
+  // use the device protocol to push address value
+  mNode.lock()->getDevice()->getProtocol()->pushAddressValue(*this);
 
   return *this;
 }
@@ -356,14 +322,8 @@ Address::iterator JamomaAddress::addCallback(ValueCallback callback)
 
   if (callbacks().size() == 1)
   {
-    //! \todo use the device protocol to start address value observation
-    // for Mirror object : enable listening
-    if (mObject.name() == kTTSym_Mirror)
-    {
-      TTAttributePtr	valueAttribute = NULL;
-      mObject.instance()->findAttribute("value", &valueAttribute);
-      TTMirrorPtr(mObject.instance())->enableListening(*valueAttribute, true);
-    }
+    // use the device protocol to start address value observation
+    mNode.lock()->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), true);
   }
 
   return it;
@@ -375,14 +335,8 @@ void JamomaAddress::removeCallback(Address::iterator callback)
 
   if (callbacks().size() == 0)
   {
-    //! \todo use the device protocol to stop address value observation
-    // for Mirror object : disable listening
-    if (mObject.name() == kTTSym_Mirror)
-    {
-      TTAttributePtr	valueAttribute = NULL;
-      mObject.instance()->findAttribute("value", &valueAttribute);
-      TTMirrorPtr(mObject.instance())->enableListening(*valueAttribute, false);
-    }
+    // use the device protocol to stop address value observation
+    mNode.lock()->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), false);
   }
 }
 
@@ -397,7 +351,7 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
   // check data object
   if (aData.instance() == self->mObject.instance())
   {
-    self->setValue(self->convertTTValueIntoValue(value, self->mValueType));
+    self->setValue(value);
 
     for (auto callback : self->callbacks())
     {
@@ -410,6 +364,63 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
   }
 
   return kTTErrGeneric;
+}
+
+bool JamomaAddress::pullValue(TTValue& value) const
+{
+  return !mObject.get("value", value);
+}
+
+bool JamomaAddress::pushValue(const TTValue& value) const
+{
+  TTErr err;
+  
+  if (mObject.name() == "Data")
+    err = mObject.send("Command", value);
+  else
+    err = mObject.set("value", value);
+  
+  return !err;
+}
+
+void JamomaAddress::getValue(TTValue& value) const
+{
+  std::lock_guard<std::mutex> lock(mValueMutex);
+  
+  // convert current value
+  convertValueIntoTTValue(mValue, value);
+}
+
+void JamomaAddress::setValue(const TTValue& value)
+{
+  std::lock_guard<std::mutex> lock(mValueMutex);
+  
+  // clear former value
+  delete mValue;
+  
+  // store new value
+  mValue = convertTTValueIntoValue(value, mValueType);
+}
+
+void JamomaAddress::observeValue(bool enable)
+{
+  TTAttributePtr attribute;
+  mObject.instance()->findAttribute("value", &attribute);
+  
+  if (enable)
+  {
+    attribute->registerObserverForNotifications(mObjectValueCallback);
+  }
+  else
+  {
+    attribute->unregisterObserverForNotifications(mObjectValueCallback);
+  }
+  
+  // for Mirror object : enable listening
+  if (mObject.name() == kTTSym_Mirror)
+  {
+    TTMirrorPtr(mObject.instance())->enableListening(*attribute, enable);
+  }
 }
 
 Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type valueType) const

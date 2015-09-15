@@ -31,7 +31,9 @@ public:
   enum class Type
   {
     MESSAGE,
-    STATE,
+    //! \todo ALIAS to refer to another message,
+    //! \todo QUERY to ask the value of an address,
+    STATE
   };
 
 # pragma mark -

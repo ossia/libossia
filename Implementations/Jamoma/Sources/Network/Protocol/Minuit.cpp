@@ -76,21 +76,3 @@ Protocol & JamomaMinuit::setOutPort(int out_port)
   
   return *this;
 }
-
-# pragma mark -
-# pragma mark Operation
-
-bool JamomaMinuit::pullAddressValue(std::shared_ptr<Address>) const
-{
-  return false;
-}
-
-bool JamomaMinuit::pushAddressValue(std::shared_ptr<Address>) const
-{
-  return false;
-}
-
-bool JamomaMinuit::observeAddressValue(std::shared_ptr<Address>, bool) const
-{
-  return false;
-}

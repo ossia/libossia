@@ -63,7 +63,7 @@ public:
   
   /*! get node's address
    \return std::shared_ptr<#Address> the address */
-  virtual const std::shared_ptr<OSSIA::Address> & getAddress() const = 0;
+  virtual const std::shared_ptr<OSSIA::Address> getAddress() const = 0;
   
 # pragma mark -
 # pragma mark Address
@@ -82,10 +82,18 @@ public:
 # pragma mark Children
   
   /*! create and store a child node
-   \param #Container<#Node>::const_iterator where to store the child
+   \param #Container<#Node>::const_iterator where to create the child
    \param std::string child name
    \return #Container<#Node>::iterator */
   virtual Container<Node>::iterator emplace(Container<Node>::const_iterator, std::string) = 0;
+    
+  /*! store an existing node to create an alias
+   \param #Container<#Node>::const_iterator where to store the child
+   \param shared_ptr<Node> the #Node to store
+   \param std::string child name
+   \return #Container<#Node>::iterator
+   */
+  virtual Container<Node>::iterator insert(Container<Node>::const_iterator, std::shared_ptr<Node>, std::string) = 0;
   
   /*! get children of the node
    \return #Container<#Node> */

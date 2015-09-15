@@ -15,21 +15,3 @@ JamomaLocal::JamomaLocal()
 
 JamomaLocal::~JamomaLocal()
 {}
-
-# pragma mark -
-# pragma mark Operation
-
-bool JamomaLocal::pullAddressValue(std::shared_ptr<Address> address) const
-{
-  return false;
-}
-
-bool JamomaLocal::pushAddressValue(std::shared_ptr<Address> address) const
-{
-  return false;
-}
-
-bool JamomaLocal::observeAddressValue(std::shared_ptr<Address>, bool) const
-{
-  return false;
-}

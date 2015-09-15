@@ -34,13 +34,13 @@ protected:
 # pragma mark -
 # pragma mark Implementation specific
   
-  TTNodeDirectory *         mDirectory{};
-  TTNode *                  mNode{};
-  TTObject                  mObject;
+  TTNodeDirectory *       mDirectory{};
+  TTNode *                mNode{};
+  TTObject                mObject;
   
-  weak_ptr<Device>          mDevice;
-  weak_ptr<JamomaNode>      mParent;
-  shared_ptr<Address>       mAddress;
+  weak_ptr<Device>        mDevice;
+  weak_ptr<JamomaNode>    mParent;
+  shared_ptr<Address>     mAddress;
   
 public:
   
@@ -65,7 +65,7 @@ public:
   
   Node & setName(std::string) override;
   
-  const shared_ptr<Address> & getAddress() const override;
+  const shared_ptr<Address> getAddress() const override;
   
 # pragma mark -
 # pragma mark Address
@@ -78,6 +78,8 @@ public:
 # pragma mark Children
   
   Container<Node>::iterator emplace(Container<Node>::const_iterator pos, string name) override;
+  
+  Container<Node>::iterator insert(Container<Node>::const_iterator, shared_ptr<Node>, std::string) override;
   
 # pragma mark -
 # pragma mark Implementation specific

@@ -76,7 +76,7 @@ Node & JamomaNode::setName(std::string name)
   return *this;
 }
 
-const shared_ptr<Address> & JamomaNode::getAddress() const
+const shared_ptr<Address> JamomaNode::getAddress() const
 {
   return mAddress;
 }
@@ -142,7 +142,7 @@ shared_ptr<Address> JamomaNode::createAddress(Value::Type type)
       mObject.set("type", kTTSym_generic);
     
     // edit new address
-    mAddress = shared_ptr<Address>(new JamomaAddress(shared_from_this(), mObject));
+    mAddress = make_shared<JamomaAddress>(shared_from_this(), mObject);
   }
   
   return mAddress;
@@ -189,6 +189,15 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
   }
   
   return Container<Node>::iterator();
+}
+
+Container<Node>::iterator JamomaNode::insert(Container<Node>::const_iterator pos, shared_ptr<Node> node, std::string name)
+{
+  assert(!name.empty());
+  
+  //! \todo here the alias is not effective into the Jamoma tree so the given name is not used ...
+  
+  return children().insert(pos, node);
 }
 
 # pragma mark -
@@ -252,7 +261,7 @@ void JamomaNode::buildAddress()
       
       if (objectName == "Data")
       {
-        mAddress = shared_ptr<Address>(new JamomaAddress(shared_from_this(), object));
+        mAddress = make_shared<JamomaAddress>(shared_from_this(), object);
       }
     }
   }
