@@ -216,6 +216,32 @@ TTSymbol JamomaNode::getApplicationType() const
   return type;
 }
 
+bool JamomaNode::updateChildren()
+{
+  //! \note this method is only available for root node for the moment
+  if (mNode->getObject() != getApplication())
+    return false;
+  
+  // tell our application to rebuild
+  //! \todo rebuild from ourself
+  TTErr err = getApplication().send("DirectoryBuild");
+  
+  // update root node
+  this->mNode = this->mDirectory->getRoot();
+  
+  // erase all former nodes
+  m_children.clear();
+  
+  // rebuild from tree
+  buildChildren();
+  
+  // is there children below ?
+  if (children().size() == 0)
+    throw runtime_error("children empty after the update");
+  
+  return err == kTTErrNone;
+}
+
 void JamomaNode::buildChildren()
 {
   TTList childrenList;

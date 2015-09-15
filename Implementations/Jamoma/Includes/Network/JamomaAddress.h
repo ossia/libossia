@@ -16,8 +16,7 @@
 #include "Network/Address.h"
 #include "Network/Device.h"
 #include "Network/Node.h"
-
-#include "Network/JamomaProtocol.h"
+#include "Network/Protocol.h"
 
 #include "TTModular.h"
 
@@ -27,12 +26,8 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaProtocol;
-
 class JamomaAddress : public Address, public enable_shared_from_this<JamomaAddress>
 {
-  // JamomaAddress is friend to any JamomaProtocol to allow them to modify its value
-  friend JamomaProtocol;
 
 private:
 
@@ -107,19 +102,18 @@ public:
 
 # pragma mark -
 # pragma mark Implementation specific
-
-private:
-
-  static TTErr TTValueCallback(const TTValue&, const TTValue&);
+  
+  //! \note don't put implementation specifics stuff in private or protected as they are invisible for API users
+  //! \note this allow to avoid friendship for each Protocol for example
   
   /*! pull TTValue from mObject
    \param TTValue pulled value
-   \return true if the operation succeed */
+   \return true if the operation succeeded */
   bool pullValue(TTValue&) const;
   
   /*! push TTValue into mObject
    \param TTValue value to push
-   \return true if the operation succeed */
+   \return true if the operation succeeded */
   bool pushValue(const TTValue&) const;
   
   /*! get TTValue from internal mValue 
@@ -139,4 +133,8 @@ private:
   void convertValueIntoTTValue(const Value *, TTValue &) const;
 
   string buildNodePath(shared_ptr<Node>) const;
+  
+private:
+  
+  static TTErr TTValueCallback(const TTValue&, const TTValue&);
 };

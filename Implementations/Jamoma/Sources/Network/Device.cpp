@@ -185,32 +185,15 @@ Node & JamomaDevice::setName(std::string name)
   return *this;
 }
 
-# pragma mark -
-# pragma mark Network
-
 shared_ptr<Protocol> JamomaDevice::getProtocol() const
 {
   return mProtocol;
 }
 
+//! \deprecated use Protocol::updateChildren
 bool JamomaDevice::updateNamespace()
 {
-  TTErr err = mApplication.send("DirectoryBuild");
-  
-  // update root node
-  this->mNode = this->mDirectory->getRoot();
-  
-  // erase all former nodes
-  m_children.clear();
-  
-  // build tree from the root
-  buildChildren();
-  
-  // is there children below ?
-  if (children().size() == 0)
-    throw runtime_error("namespace empty after the update");
-  
-  return err == kTTErrNone;
+  return mProtocol->updateChildren(*this);
 }
 
 # pragma mark -

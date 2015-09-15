@@ -76,3 +76,48 @@ Protocol & JamomaMinuit::setOutPort(int out_port)
   
   return *this;
 }
+
+# pragma mark -
+# pragma mark Operation
+
+bool JamomaMinuit::pullAddressValue(Address& address) const
+{
+  JamomaAddress& adrs = dynamic_cast<JamomaAddress&>(address);
+  
+  TTValue value;
+  
+  if (adrs.pullValue(value))
+  {
+    adrs.setValue(value);
+    return true;
+  }
+  
+  return false;
+}
+
+bool JamomaMinuit::pushAddressValue(const Address& address) const
+{
+  const JamomaAddress& adrs = dynamic_cast<const JamomaAddress&>(address);
+  
+  TTValue value;
+  
+  adrs.getValue(value);
+  
+  return adrs.pushValue(value);
+}
+
+bool JamomaMinuit::observeAddressValue(std::shared_ptr<Address> address, bool enable) const
+{
+  shared_ptr<JamomaAddress> adrs = dynamic_pointer_cast<JamomaAddress>(address);
+  
+  adrs->observeValue(enable);
+  
+  return true;
+}
+
+bool JamomaMinuit::updateChildren(Node& node) const
+{
+  JamomaNode& n = dynamic_cast<JamomaNode&>(node);
+  
+  return n.updateChildren();
+}

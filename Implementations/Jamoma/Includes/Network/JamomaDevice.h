@@ -54,11 +54,9 @@ public:
   
   Node & setName(std::string) override;
   
-# pragma mark -
-# pragma mark Network
-  
   shared_ptr<Protocol> getProtocol() const override;
   
+  //! \deprecated use Protocol::updateChildren
   bool updateNamespace() override;
   
 # pragma mark -

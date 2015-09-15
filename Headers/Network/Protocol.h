@@ -19,11 +19,13 @@
 #include <memory>
 
 #include "Network/Address.h"
+#include "Network/Node.h"
 
 namespace OSSIA
 {
     
 class Address;
+class Node;
 
 class Protocol
 {
@@ -72,10 +74,15 @@ public:
   
   /*! send a request to enable/disable observation on an address value
    \details some protocols cannot do this operation, some others observe everything
-   \param shared_ptr<Address> the address to observe
+   \param shared_ptr<#Address> the address to observe
    \return bool true if the operation succeeded */
   virtual bool observeAddressValue(std::shared_ptr<Address>, bool) const = 0;
   
+  /*! send a request to update the children of a node
+   \details some protocols cannot do this operation
+   \param #Node the node to update
+   \return bool true if the operation succeeded */
+  virtual bool updateChildren(Node& node) const = 0;
 };
   
 }

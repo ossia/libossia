@@ -17,6 +17,7 @@
 
 #include "Network/Protocol/Minuit.h"
 
+#include "Network/JamomaNode.h"
 #include "Network/JamomaProtocol.h"
 
 #include "TTModular.h"
@@ -61,4 +62,15 @@ public:
   int getOutPort() override;
 
   Protocol & setOutPort(int) override;
+  
+# pragma mark -
+# pragma mark Operation
+  
+  bool pullAddressValue(Address&) const override;
+  
+  bool pushAddressValue(const Address&) const override;
+  
+  bool observeAddressValue(shared_ptr<Address>, bool) const override;
+  
+  bool updateChildren(Node& node) const override;
 };

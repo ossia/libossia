@@ -26,9 +26,11 @@
 using namespace OSSIA;
 using namespace std;
 
+class JamomaProtocol;
+
 class JamomaNode : public virtual Node, public enable_shared_from_this<JamomaNode>
 {
-  
+
 protected:
   
 # pragma mark -
@@ -84,14 +86,19 @@ public:
 # pragma mark -
 # pragma mark Implementation specific
   
-private:
-  
+  //! \note don't put implementation specifics stuff in private or protected as they are invisible for API users
+  //! \note this allow to avoid friendship for each Protocol for example
+
   TTObject & getApplication() const;
   
   TTSymbol getApplicationType() const;
   
-protected:
+  /* start namespace update from this node */
+  bool updateChildren();
   
+  /* recursive method to build children from the Jamoma tree */
   void buildChildren();
+  
+  /* build the address depending of the Jamoma node object */
   void buildAddress();
 };

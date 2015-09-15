@@ -43,16 +43,16 @@ public:
   virtual ~Device() = default;
 
 # pragma mark -
-# pragma mark Network
+# pragma mark Accessors
   
   /*! get device's protocol
    \return std::shared_ptr<#Protocol> */
   virtual std::shared_ptr<Protocol> getProtocol() const = 0;
   
-  /*! factory
+  /*! build the namespace from the root
+   \deprecated use Protocol::updateChildren
    \return bool true if the namespace update succeeded */
   virtual bool updateNamespace() = 0;
-
 };
 
 /*! declare Minuit internal device
