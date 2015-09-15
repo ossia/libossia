@@ -6,6 +6,9 @@ set(API_IMPL_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/Implementations")
 
 file(GLOB_RECURSE HEADERS Headers/*.h)
 add_custom_target(OSSIAHeaders SOURCES ${HEADERS})
+add_library(OSSIAHeadersLib INTERFACE)
+
+target_include_directories(OSSIAHeadersLib INTERFACE "${API_HEADERS_FOLDER}")
 include_directories(Headers)
 
 add_subdirectory(Implementations)
