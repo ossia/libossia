@@ -32,73 +32,73 @@ class JamomaNode : public virtual Node, public enable_shared_from_this<JamomaNod
 {
 
 protected:
-  
+
 # pragma mark -
 # pragma mark Implementation specific
-  
+
   TTNodeDirectory *       mDirectory{};
   TTNode *                mNode{};
   TTObject                mObject;
-  
+
   weak_ptr<Device>        mDevice;
   weak_ptr<JamomaNode>    mParent;
   shared_ptr<Address>     mAddress;
-  
+
 public:
-  
+
 # pragma mark -
 # pragma mark Life cycle
-  
+
   JamomaNode(TTNodeDirectory * aDirectory = nullptr, TTNode * aNode = nullptr, shared_ptr<Device> aDevice = nullptr, shared_ptr<JamomaNode> aParent = nullptr);
-  
+
   ~JamomaNode();
-  
+
 # pragma mark -
 # pragma mark Network
-  
+
   shared_ptr<Device> getDevice() const override;
-  
+
   shared_ptr<Node> getParent() const override;
-  
+
 # pragma mark -
 # pragma mark Accessors
-  
+
   string getName() const override;
-  
+
   Node & setName(std::string) override;
-  
-  const shared_ptr<Address> getAddress() const override;
-  
+
+  shared_ptr<Address> getAddress() const override;
+
 # pragma mark -
 # pragma mark Address
-  
+
   shared_ptr<Address> createAddress(Value::Type type) override;
-  
+
   bool removeAddress() override;
-  
+
 # pragma mark -
 # pragma mark Children
-  
+
   Container<Node>::iterator emplace(Container<Node>::const_iterator pos, string name) override;
-  
+
   Container<Node>::iterator insert(Container<Node>::const_iterator, shared_ptr<Node>, std::string) override;
-  
+
 # pragma mark -
 # pragma mark Implementation specific
-  
+
   //! \note don't put implementation specifics stuff in private or protected as they are invisible for API users
   //! \note this allow to avoid friendship for each Protocol for example
 
   TTObject & getApplication() const;
-  
+
   TTSymbol getApplicationType() const;
-  
+
   /* start namespace update from this node */
   bool updateChildren();
-  
+
   /* recursive method to build children from the Jamoma tree */
   void buildChildren();
-  
+
   /* build the address depending of the Jamoma node object */
   void buildAddress();
 };
