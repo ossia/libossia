@@ -159,7 +159,7 @@ mRepetitionFilter(false)
 
       mObject.get("repetitionFilter", mRepetitionFilter);
     }
-    
+
     // prepare callback for value observation
     TTValue args(TTPtr(this), mObject);
     mObjectValueCallback.set("baton", args);
@@ -170,7 +170,8 @@ mRepetitionFilter(false)
 JamomaAddress::~JamomaAddress()
 {
   // use the device protocol to stop address value observation
-  mNode.lock()->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), false);
+    if(auto node = mNode.lock())
+        node->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), false);
 }
 
 # pragma mark -
@@ -193,7 +194,7 @@ Address & JamomaAddress::pushValue(const Value * value)
 {
   if (value != nullptr)
     setValue(value);
-  
+
   // use the device protocol to push address value
   mNode.lock()->getDevice()->getProtocol()->pushAddressValue(*this);
 
@@ -211,7 +212,7 @@ const Value * JamomaAddress::getValue() const
 Address & JamomaAddress::setValue(const Value * value)
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
-  
+
   // clear former value
   delete mValue;
 
@@ -374,19 +375,19 @@ bool JamomaAddress::pullValue(TTValue& value) const
 bool JamomaAddress::pushValue(const TTValue& value) const
 {
   TTErr err;
-  
+
   if (mObject.name() == "Data")
     err = mObject.send("Command", value);
   else
     err = mObject.set("value", value);
-  
+
   return !err;
 }
 
 void JamomaAddress::getValue(TTValue& value) const
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
-  
+
   // convert current value
   convertValueIntoTTValue(mValue, value);
 }
@@ -394,10 +395,10 @@ void JamomaAddress::getValue(TTValue& value) const
 void JamomaAddress::setValue(const TTValue& value)
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
-  
+
   // clear former value
   delete mValue;
-  
+
   // store new value
   mValue = convertTTValueIntoValue(value, mValueType);
 }
@@ -406,7 +407,7 @@ void JamomaAddress::observeValue(bool enable)
 {
   TTAttributePtr attribute;
   mObject.instance()->findAttribute("value", &attribute);
-  
+
   if (enable)
   {
     attribute->registerObserverForNotifications(mObjectValueCallback);
@@ -415,7 +416,7 @@ void JamomaAddress::observeValue(bool enable)
   {
     attribute->unregisterObserverForNotifications(mObjectValueCallback);
   }
-  
+
   // for Mirror object : enable listening
   if (mObject.name() == kTTSym_Mirror)
   {
