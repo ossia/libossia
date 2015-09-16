@@ -550,6 +550,8 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
       return nullptr; // todo
     }
   }
+
+  return nullptr;
 }
 
 void JamomaAddress::convertValueIntoTTValue(const Value * value, TTValue & v) const
