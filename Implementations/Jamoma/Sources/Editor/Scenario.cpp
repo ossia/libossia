@@ -44,6 +44,9 @@ JamomaScenario::~JamomaScenario()
 
 shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const TimeValue& date)
 {
+  // reset internal State
+  mCurrentState->stateElements().clear();
+  
   // if the time goes backward : initialize TimeEvent's status and TimeConstraint's clock
   if (position < mLastPosition)
   {
@@ -119,9 +122,6 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
   // if position hasn't been processed already
   if (position != mLastPosition)
   {
-    // reset internal State
-    mCurrentState->stateElements().clear();
-    
     // process the scenario from the first TimeNode to the running constraints
     Container<TimeEvent> statusChangedEvents;
     shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(mTimeNodes[0]);
