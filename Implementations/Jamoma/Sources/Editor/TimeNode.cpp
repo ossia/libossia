@@ -13,7 +13,8 @@ namespace OSSIA
   }
 }
 
-JamomaTimeNode::JamomaTimeNode()
+JamomaTimeNode::JamomaTimeNode() :
+mExpression(ExpressionFalse)
 {}
 
 JamomaTimeNode::JamomaTimeNode(const JamomaTimeNode * other)
@@ -133,7 +134,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   if (pendingEvents.size() == timeEvents().size())
   {
     // observe and evaluate TimeNode's expression before to go further
-    if (mExpression != nullptr)
+    if (mExpression != ExpressionTrue && mExpression != ExpressionFalse)
     {
       observeExpressionResult(true);
       if (!mExpression->evaluate())
@@ -150,15 +151,10 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
       if (e->isObservingExpression())
         noEventObserveExpression = false;
       
-      if (timeEvent->getExpression() != nullptr)
-      {
-        if (timeEvent->getExpression()->evaluate())
-          eventsToHappen.push_back(timeEvent);
-        else
-          eventsToDispose.push_back(timeEvent);
-      }
-      else
+      if (timeEvent->getExpression()->evaluate())
         eventsToHappen.push_back(timeEvent);
+      else
+        eventsToDispose.push_back(timeEvent);
     }
     
     // if at least one TimeEvent happens
@@ -194,7 +190,7 @@ bool JamomaTimeNode::isObservingExpression()
 
 void JamomaTimeNode::observeExpressionResult(bool observe)
 {
-  if (mExpression == nullptr)
+  if (mExpression == ExpressionTrue || mExpression == ExpressionFalse)
     return;
   
   if (observe != mObserveExpression)

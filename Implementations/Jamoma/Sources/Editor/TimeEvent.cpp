@@ -152,7 +152,7 @@ void JamomaTimeEvent::process()
           // stay NONE status
           break;
         }
-        // when the minimal duration is reached
+        // when the minimal duration is reached but not the maximal duration
         else if (c->getDate() >= c->getDurationMin() &&
                  c->getDate() < c->getDurationMax())
         {
@@ -161,6 +161,7 @@ void JamomaTimeEvent::process()
 
           // and access to PENDING status (see below)
         }
+        // when the maximal duration is reached
         else if (c->getDate() >= c->getDurationMax())
         {
           // don't observe expression
@@ -197,7 +198,7 @@ bool JamomaTimeEvent::isObservingExpression()
 
 void JamomaTimeEvent::observeExpressionResult(bool observe)
 {
-  if (mExpression == nullptr)
+  if (mExpression == ExpressionTrue || mExpression == ExpressionFalse)
     return;
 
   if (observe != mObserveExpression)

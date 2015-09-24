@@ -51,7 +51,7 @@ public:
 
   JamomaTimeEvent(TimeEvent::ExecutionCallback,
                   shared_ptr<TimeNode> aTimeNode = nullptr,
-                  shared_ptr<Expression> anExpression = nullptr);
+                  shared_ptr<Expression> anExpression = ExpressionTrue);
 
   ~JamomaTimeEvent();
 

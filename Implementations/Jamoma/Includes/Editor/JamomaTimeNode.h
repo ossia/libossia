@@ -72,7 +72,7 @@ public:
   
   iterator emplace(const_iterator,
                    TimeEvent::ExecutionCallback,
-                   shared_ptr<Expression> = nullptr) override;
+                   shared_ptr<Expression> = ExpressionTrue) override;
   
 # pragma mark -
 # pragma mark Implementation specific
