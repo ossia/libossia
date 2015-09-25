@@ -35,15 +35,15 @@ class TimeValue;
 
 class TimeConstraint : public virtual Clock
 {
-  
+
 public:
-  
+
   /*! to get the constraint execution back
    \param const #TimeValue process clock position
    \param const #TimeValue process clock date
    \param std::shared_ptr<#StateElement> */
   using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, std::shared_ptr<StateElement>)>;
-  
+
 # pragma mark -
 # pragma mark Life cycle
 
@@ -62,17 +62,22 @@ public:
                                                 const TimeValue& = Infinite,
                                                 const TimeValue& = 0.,
                                                 const TimeValue& = Infinite);
-  
-  /*! clone 
+
+  /*! clone
    \return std::shared_ptr<#TimeConstraint> */
   virtual std::shared_ptr<TimeConstraint> clone() const = 0;
-  
+
   /*! desctructor */
   virtual ~TimeConstraint() = default;
 
 # pragma mark -
 # pragma mark Execution
-  
+
+  /*! sets a new callback for the constraint
+   */
+  virtual void setCallback(ExecutionCallback) = 0;
+
+
   /*! get the #State of the constraint for a position or a date
    \details the returned #State is made of as many as sub States for each TimeProcess the constraint manages
    \param const #TimeValue position
@@ -82,49 +87,49 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
-  
+
   /*! get the #TimeConstraint minimal duration
    \return const #TimeValue& minimal duration */
   virtual const TimeValue & getDurationMin() const = 0;
-  
+
   /*! set the #TimeConstraint minimal duration
    \param const #TimeValue& minimal duration */
   virtual TimeConstraint & setDurationMin(const TimeValue&) = 0;
-  
+
   /*! get the #TimeConstraint maximal duration
    \return const #TimeValue& maximal duration */
   virtual const TimeValue & getDurationMax() const = 0;
-  
+
   /*! set the #TimeConstraint maximal duration
    \param const #TimeValue& maximal duration */
   virtual TimeConstraint & setDurationMax(const TimeValue&) = 0;
-  
+
   /*! get the event from where the #TimeConstraint starts
    \return std::shared_ptr<#TimeEvent> start event */
   virtual const std::shared_ptr<TimeEvent> & getStartEvent() const = 0;
-  
+
   /*! get the event from where the #TimeConstraint starts
    \return std::shared_ptr<#TimeEvent> start event */
   virtual const std::shared_ptr<TimeEvent> & getEndEvent() const = 0;
 
 # pragma mark -
 # pragma mark TimeProcesses
-  
+
   /*! add a #TimeProcess
    \details it also stores the #TimeProcess's start and end #States into the #TimeConstraint's start and end #TimeEvents
    \param std::shared_ptr<#TimeProcess> to insert */
   virtual void addTimeProcess(std::shared_ptr<TimeProcess>) = 0;
-  
+
   /*! remove a #TimeProcess
    \details it also removes the #TimeProcess's start and end #States from the #TimeConstraint's start and end #TimeEvents
    \param std::shared_ptr<#TimeProcess> to insert */
   virtual void removeTimeProcess(std::shared_ptr<TimeProcess>) = 0;
-  
+
   /*! get time processes attached to the #TimeConstraint
    \return #Container<#TimeProcess> */
   Container<TimeProcess>& timeProcesses()
   { return m_timeProcesses; }
-  
+
   /*! get time processes attached to the #TimeConstraint
    \return #Container<#TimeProcess> */
   const Container<TimeProcess>& timeProcesses() const
