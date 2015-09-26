@@ -45,5 +45,5 @@ addAPIQtTest(APIDeviceBenchmark_Nsec_server "${CMAKE_CURRENT_SOURCE_DIR}/Benchma
 addAPIQtTest(APIDeviceBenchmark_client      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_client.cpp")
 addAPIQtTest(APIDeviceBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark.cpp"
                                             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/Random.hpp")
-addAPIQtTest(APIAutomationBenchmark         "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/AutomationBenchmark.cpp")
+# addAPIQtTest(APIAutomationBenchmark         "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/AutomationBenchmark.cpp")
 include(CTest)
