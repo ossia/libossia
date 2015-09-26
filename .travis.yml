@@ -11,7 +11,7 @@ env:
 osx_image: xcode6.4
 
 before_install:
-- "./tools/travis/deps.sh"
+- "./travis/deps.sh"
 
 script:
-- "./tools/travis/build.sh"
+- "./travis/build.sh"
