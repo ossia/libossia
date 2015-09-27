@@ -10,12 +10,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if (COVERALLS)
-    file(GLOB_RECURSE SRCS
-        "${CMAKE_CURRENT_SOURCE_DIR}/Implementations/Jamoma/Sources/Editor/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Implementations/Jamoma/Sources/Misc/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Implementations/Jamoma/Sources/Network/*.cpp")
-
-    coveralls_setup("${SRCS}" ON)
+    get_property(JAMOMA_API_SRCS TARGET APIJamoma PROPERTY SOURCES)
+    coveralls_setup("${JAMOMA_API_SRCS}" ON)
 endif()
 function(addAPIQtTest TESTNAME TESTSRCS)
     if(${Jamoma_FOUND})
