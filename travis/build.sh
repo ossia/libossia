@@ -6,17 +6,18 @@
 mkdir build
 cd build
 export CMAKE_COMMON_FLAGS="-DCMAKE_BUILD_TYPE=$BUILD_TYPE"
+export CTEST_OUTPUT_ON_FAILURE=1
+
 case "$TRAVIS_OS_NAME" in
   linux)
     source /opt/qt55/bin/qt55-env.sh
     /usr/local/bin/cmake $CMAKE_COMMON_FLAGS ..
-        
     make -j2
     make ExperimentalTest
   ;;
   osx)
     cmake -DCMAKE_PREFIX_PATH="/usr/local/Cellar/qt5/5.5.0/lib/cmake;$(pwd)/../Jamoma/share/cmake" $CMAKE_COMMON_FLAGS ..
-        
+
     make -j2
     make ExperimentalTest
   ;;
