@@ -11,7 +11,11 @@ env:
 osx_image: xcode6.4
 
 before_install:
+- pip install --user cpp-coveralls
 - "./travis/deps.sh"
 
 script:
 - "./travis/build.sh"
+
+after_success:
+- coveralls --gcov-options '\-lp'
