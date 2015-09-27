@@ -7,11 +7,12 @@ mkdir build
 cd build
 export CMAKE_COMMON_FLAGS="-DCMAKE_BUILD_TYPE=$BUILD_TYPE"
 export CTEST_OUTPUT_ON_FAILURE=1
-
 case "$TRAVIS_OS_NAME" in
   linux)
     source /opt/qt55/bin/qt55-env.sh
     /usr/local/bin/cmake $CMAKE_COMMON_FLAGS ..
+    
+    export LD_LIBRARY_PATH="/usr/lib64:$LD_LIBRARY_PATH"
     make -j2
     make ExperimentalTest
   ;;
