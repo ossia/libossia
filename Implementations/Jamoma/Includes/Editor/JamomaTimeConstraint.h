@@ -33,7 +33,7 @@ using namespace std::placeholders;
 class JamomaTimeConstraint : public TimeConstraint, public JamomaClock, public enable_shared_from_this<JamomaTimeConstraint>
 {
 
-private:
+protected:
   
 # pragma mark -
 # pragma mark Implementation specific

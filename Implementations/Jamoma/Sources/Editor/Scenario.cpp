@@ -120,7 +120,7 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
   }
   
   // if position hasn't been processed already
-  if (position != mLastPosition)
+  else if (position != mLastPosition)
   {
     // process the scenario from the first TimeNode to the running constraints
     Container<TimeEvent> statusChangedEvents;
@@ -139,11 +139,10 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
     {
       if (timeConstraint->getRunning())
       {
-        shared_ptr<JamomaTimeConstraint> c = dynamic_pointer_cast<JamomaTimeConstraint>(timeConstraint);
-        if (c->getDriveMode() == Clock::DriveMode::EXTERNAL)
-          c->tick();
+        if (timeConstraint->getDriveMode() == Clock::DriveMode::EXTERNAL)
+          timeConstraint->tick();
         
-        flattenAndFilter(timeConstraint->state(c->getPosition(), c->getDate()));
+        flattenAndFilter(timeConstraint->state(timeConstraint->getPosition(), timeConstraint->getDate()));
       }
     }
     

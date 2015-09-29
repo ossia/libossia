@@ -59,8 +59,6 @@ public:
    \return std::shared_ptr<#StateElement> */
   virtual std::shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) = 0;
   
-  /*! \todo record */
-  
 # pragma mark -
 # pragma mark Accessors
   

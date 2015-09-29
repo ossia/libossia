@@ -72,7 +72,5 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  void ClockCallback(const TimeValue&, const TimeValue&, unsigned char);
-  
   Value* computeValueAtPosition(const Value* drive, const TimeValue& position);
 };

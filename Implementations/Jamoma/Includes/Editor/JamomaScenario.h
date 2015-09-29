@@ -100,9 +100,6 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  /*! initialize the scenario to prepare its execution from a position or a date */
-  void init(const TimeValue&, const TimeValue&);
-  
   /*! append each message of the state to the current state in order to eliminate address redundancy */
   void flattenAndFilter(const shared_ptr<StateElement>);
 };

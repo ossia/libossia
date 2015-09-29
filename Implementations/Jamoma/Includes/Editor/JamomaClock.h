@@ -112,7 +112,10 @@ public:
   const TimeValue & getDate() const override;
   
 private:
-  
+    
+# pragma mark -
+# pragma mark Implementation specific
+    
   /*! called back by the internal thread */
   void threadCallback();
 };

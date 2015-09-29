@@ -95,8 +95,10 @@ public:
   /* is the TimeEvent observing its Expression ? */
   bool isObservingExpression();
 
-private:
-
+  /* enable observation of the Expression ? */
   void observeExpressionResult(bool);
+  
+private:
+  
   void resultCallback(bool result);
 };
