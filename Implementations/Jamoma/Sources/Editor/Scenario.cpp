@@ -120,7 +120,7 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
   }
   
   // if position hasn't been processed already
-  else if (position != mLastPosition)
+  if (position != mLastPosition)
   {
     // process the scenario from the first TimeNode to the running constraints
     Container<TimeEvent> statusChangedEvents;
