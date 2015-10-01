@@ -29,7 +29,35 @@ private Q_SLOTS:
 
         auto not_expression = ExpressionNot::create(expression);
         QVERIFY(not_expression != nullptr);
+        QVERIFY(not_expression->getType() == Expression::Type::NOT);
         QVERIFY(not_expression->evaluate() == true);
+    }
+
+    /*! test comparison operator */
+    void test_comparison()
+    {
+        auto exprA = ExpressionAtom::create(new Bool(true),
+                                            ExpressionAtom::Operator::EQUAL,
+                                            new Bool(true));
+
+        auto exprB = ExpressionAtom::create(new Bool(false),
+                                            ExpressionAtom::Operator::EQUAL,
+                                            new Bool(false));
+
+        auto exprC = ExpressionAtom::create(new Bool(true),
+                                            ExpressionAtom::Operator::EQUAL,
+                                            new Bool(true));
+
+        auto not_exprA = ExpressionNot::create(exprA);
+        auto not_exprB = ExpressionNot::create(exprB);
+        auto not_exprC = ExpressionNot::create(exprC);
+
+        QVERIFY(*ExpressionFalse != *not_exprA);
+        QVERIFY(*ExpressionTrue != *not_exprA);
+
+        QVERIFY(*not_exprA != *not_exprB);
+        QVERIFY(*not_exprA == *not_exprC);
+        QVERIFY(*not_exprB != *not_exprC);
     }
 
     /*! test callback managment */

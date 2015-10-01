@@ -28,6 +28,7 @@ private Q_SLOTS:
                                                        ExpressionAtom::Operator::EQUAL,
                                                        new Impulse());
 
+        QVERIFY(testImpulseExprA->getType() == Expression::Type::ATOM);
         QVERIFY(testImpulseExprA->evaluate() == true);
 
         auto testImpulseExprB = ExpressionAtom::create(new Impulse(),
@@ -82,6 +83,7 @@ private Q_SLOTS:
                                                     ExpressionAtom::Operator::EQUAL,
                                                     new Bool(true));
 
+        QVERIFY(testBoolExprA->getType() == Expression::Type::ATOM);
         QVERIFY(testBoolExprA->evaluate() == true);
 
         auto testBoolExprB = ExpressionAtom::create(new Bool(true),
@@ -106,6 +108,7 @@ private Q_SLOTS:
                                                    ExpressionAtom::Operator::GREATER_THAN,
                                                    new Int(5));
 
+        QVERIFY(testIntExprA->getType() == Expression::Type::ATOM);
         QVERIFY(testIntExprA->evaluate() == true);
 
         auto testIntExprB = ExpressionAtom::create(new Int(10),
@@ -130,6 +133,7 @@ private Q_SLOTS:
                                                      ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
                                                      new Float(10.));
 
+        QVERIFY(testFloatExprA->getType() == Expression::Type::ATOM);
         QVERIFY(testFloatExprA->evaluate() == true);
 
         auto testFloatExprB = ExpressionAtom::create(new Float(10.),
@@ -154,6 +158,7 @@ private Q_SLOTS:
                                                       ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
                                                       new String("bcd"));
 
+        QVERIFY(testStringExprA->getType() == Expression::Type::ATOM);
         QVERIFY(testStringExprA->evaluate() == false);
 
         auto testStringExprB = ExpressionAtom::create(new String("abc"),
@@ -181,6 +186,7 @@ private Q_SLOTS:
                                                      ExpressionAtom::Operator::GREATER_THAN,
                                                      new Tuple(value2));
 
+        QVERIFY(testTupleExprA->getType() == Expression::Type::ATOM);
         QVERIFY(testTupleExprA->evaluate() == false);
 
         auto testTupleExprB = ExpressionAtom::create(new Tuple(value1),
@@ -283,6 +289,7 @@ private Q_SLOTS:
                                                           ExpressionAtom::Operator::EQUAL,
                                                           new Destination(localImpulseNode2));
 
+        QVERIFY(testDestinationExprA->getType() == Expression::Type::ATOM);
         QVERIFY(testDestinationExprA->evaluate() == true);
 
         auto testDestinationExprB = ExpressionAtom::create(new Destination(localBoolNode1),
@@ -322,6 +329,29 @@ private Q_SLOTS:
         QVERIFY(testDestinationExprG->evaluate() == true);
 
         //! \todo test clone()
+    }
+
+    /*! test comparison operator */
+    void test_comparison()
+    {
+        auto testExprA = ExpressionAtom::create(new Bool(true),
+                                                    ExpressionAtom::Operator::EQUAL,
+                                                    new Bool(true));
+
+        auto testExprB = ExpressionAtom::create(new Bool(true),
+                                                    ExpressionAtom::Operator::DIFFERENT,
+                                                    new Bool(true));
+
+        auto testExprC = ExpressionAtom::create(new Bool(true),
+                                                ExpressionAtom::Operator::EQUAL,
+                                                new Bool(true));
+
+        QVERIFY(*ExpressionFalse != *testExprA);
+        QVERIFY(*ExpressionTrue != *testExprA);
+
+        QVERIFY(*testExprA != *testExprB);
+        QVERIFY(*testExprA == *testExprC);
+        QVERIFY(*testExprB != *testExprC);
     }
 
     /*! test callback managment */

@@ -39,12 +39,14 @@ private Q_SLOTS:
                                                           ExpressionComposition::Operator::AND,
                                                           exprB);
         QVERIFY(composition1 != nullptr);
+        QVERIFY(composition1->getType() == Expression::Type::COMPOSITION);
         QVERIFY(composition1->evaluate() == true);
 
         auto composition2 = ExpressionComposition::create(exprA,
                                                           ExpressionComposition::Operator::AND,
                                                           exprC);
         QVERIFY(composition2 != nullptr);
+        QVERIFY(composition2->getType() == Expression::Type::COMPOSITION);
         QVERIFY(composition2->evaluate() == false);
 
         //! \todo test clone()
@@ -69,12 +71,14 @@ private Q_SLOTS:
                                                           ExpressionComposition::Operator::OR,
                                                           exprB);
         QVERIFY(composition1 != nullptr);
+        QVERIFY(composition1->getType() == Expression::Type::COMPOSITION);
         QVERIFY(composition1->evaluate() == true);
 
         auto composition2 = ExpressionComposition::create(exprA,
                                                           ExpressionComposition::Operator::OR,
                                                           exprC);
         QVERIFY(composition2 != nullptr);
+        QVERIFY(composition2->getType() == Expression::Type::COMPOSITION);
         QVERIFY(composition2->evaluate() == true);
 
         //! \todo test clone()
@@ -99,15 +103,47 @@ private Q_SLOTS:
                                                           ExpressionComposition::Operator::XOR,
                                                           exprB);
         QVERIFY(composition1 != nullptr);
+        QVERIFY(composition1->getType() == Expression::Type::COMPOSITION);
         QVERIFY(composition1->evaluate() == false);
 
         auto composition2 = ExpressionComposition::create(exprA,
                                                           ExpressionComposition::Operator::XOR,
                                                           exprC);
         QVERIFY(composition2 != nullptr);
+        QVERIFY(composition2->getType() == Expression::Type::COMPOSITION);
         QVERIFY(composition2->evaluate() == true);
 
         //! \todo test clone()
+    }
+
+    /*! test comparison operator */
+    void test_comparison()
+    {
+        auto exprA = ExpressionAtom::create(new Bool(true),
+                                            ExpressionAtom::Operator::EQUAL,
+                                            new Bool(true));
+
+        auto exprB = ExpressionAtom::create(new Bool(false),
+                                            ExpressionAtom::Operator::EQUAL,
+                                            new Bool(false));
+
+        auto exprC = ExpressionAtom::create(new Bool(false),
+                                            ExpressionAtom::Operator::DIFFERENT,
+                                            new Bool(false));
+
+        auto composition1 = ExpressionComposition::create(exprA,
+                                                          ExpressionComposition::Operator::XOR,
+                                                          exprB);
+
+        auto composition2 = ExpressionComposition::create(exprA,
+                                                          ExpressionComposition::Operator::XOR,
+                                                          exprC);
+
+        QVERIFY(*ExpressionFalse != *composition1);
+        QVERIFY(*ExpressionTrue != *composition1);
+
+        QVERIFY(*composition1 != *composition2);
+        QVERIFY(!(*composition1 == *composition2));
     }
 
     /*! test callback managment */
