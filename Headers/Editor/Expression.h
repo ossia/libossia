@@ -32,7 +32,21 @@ class Expression : public CallbackContainer<ResultCallback>
 {
 
 public:
+  
   using iterator = typename CallbackContainer<ResultCallback>::iterator;
+  
+# pragma mark -
+# pragma mark Enumerations
+  
+  /*! type of expression */
+  enum class Type
+  {
+    BASE,
+    ATOM,
+    COMPOSITION,
+    NOT
+  };
+  
 # pragma mark -
 # pragma mark Life cycle
 
@@ -51,6 +65,22 @@ public:
    \return bool result of the evaluation */
   virtual bool evaluate() const = 0;
 
+# pragma mark -
+# pragma mark Operator
+  
+  /*! equal operator */
+  virtual bool operator== (const Expression&) const = 0;
+  
+  /*! different operator */
+  virtual bool operator!= (const Expression&) const = 0;
+  
+# pragma mark -
+# pragma mark Accessors
+  
+  /*! get the type of the expression
+   \return #Type of the expression */
+  virtual Expression::Type getType() const
+  {return Expression::Type::BASE;}
 };
 
 static std::shared_ptr<Expression> ExpressionFalse = Expression::create(false);

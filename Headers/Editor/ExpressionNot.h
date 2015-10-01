@@ -53,6 +53,11 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
+  /*! get the type of the expression
+   \return #Type of the expression */
+  Expression::Type getType() const override final
+  {return Expression::Type::NOT;}
+  
   /*! get expression
    \return const std::shared_ptr<#Expression> expression */
   virtual const std::shared_ptr<Expression> & getExpression() const = 0;

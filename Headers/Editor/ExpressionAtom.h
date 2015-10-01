@@ -73,6 +73,11 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
+  /*! get the type of the expression
+   \return #Type of the expression */
+  Expression::Type getType() const override final
+  {return Expression::Type::ATOM;}
+  
   /*! get first operand
    \return const #Value* first operand */
   virtual const Value* getFirstOperand() const = 0;

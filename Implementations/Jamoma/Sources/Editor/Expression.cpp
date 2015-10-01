@@ -33,6 +33,31 @@ public:
   {
     return m_result;
   }
+  
+# pragma mark -
+# pragma mark Operator
+  
+  bool operator== (const Expression& expression) const override
+  {
+    if (expression.getType() == Expression::Type::BASE)
+    {
+      const JamomaExpression e = dynamic_cast<const JamomaExpression&>(expression);
+      return m_result == e.m_result;
+    }
+    else
+      return false;
+  }
+  
+  bool operator!= (const Expression& expression) const override
+  {
+    if (expression.getType() == Expression::Type::BASE)
+    {
+      const JamomaExpression e = dynamic_cast<const JamomaExpression&>(expression);
+      return m_result != e.m_result;
+    }
+    else
+      return true;
+  }
 
 # pragma mark -
 # pragma mark Callback Container

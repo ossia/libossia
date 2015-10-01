@@ -44,7 +44,32 @@ public:
   {
     return !mExpression->evaluate();
   }
-
+  
+# pragma mark -
+# pragma mark Operator
+  
+  bool operator== (const Expression& expression) const override
+  {
+    if (expression.getType() == Expression::Type::NOT)
+    {
+      const JamomaExpressionNot e = dynamic_cast<const JamomaExpressionNot&>(expression);
+      return *mExpression == *e.mExpression;
+    }
+    else
+      return false;
+  }
+  
+  bool operator!= (const Expression& expression) const override
+  {
+    if (expression.getType() == Expression::Type::NOT)
+    {
+      const JamomaExpressionNot e = dynamic_cast<const JamomaExpressionNot&>(expression);
+      return *mExpression != *e.mExpression;
+    }
+    else
+      return true;
+  }
+      
 # pragma mark -
 # pragma mark Callback Container
 

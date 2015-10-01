@@ -52,7 +52,32 @@ public:
   {
     return do_evaluation(mFirstExpression->evaluate(), mSecondExpression->evaluate());
   }
-
+  
+# pragma mark -
+# pragma mark Operator
+  
+  bool operator== (const Expression& expression) const override
+  {
+    if (expression.getType() == Expression::Type::COMPOSITION)
+    {
+      const JamomaExpressionComposition e = dynamic_cast<const JamomaExpressionComposition&>(expression);
+      return *mFirstExpression == *e.mFirstExpression && mOperator == e.mOperator && *mSecondExpression == *e.mSecondExpression;
+    }
+    else
+      return false;
+  }
+  
+  bool operator!= (const Expression& expression) const override
+  {
+    if (expression.getType() == Expression::Type::COMPOSITION)
+    {
+      const JamomaExpressionComposition e = dynamic_cast<const JamomaExpressionComposition&>(expression);
+      return *mFirstExpression != *e.mFirstExpression || mOperator != e.mOperator || *mSecondExpression != *e.mSecondExpression;
+    }
+    else
+      return true;
+  }
+  
 # pragma mark -
 # pragma mark Callback Container
 

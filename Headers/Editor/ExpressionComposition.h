@@ -65,6 +65,11 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
+  /*! get the type of the expression
+   \return #Type of the expression */
+  Expression::Type getType() const override final
+  {return Expression::Type::COMPOSITION;}
+  
   /*! get first operand
    \return const std::shared_ptr<#Expression> first operand */
   virtual const std::shared_ptr<Expression> & getFirstOperand() const = 0;
