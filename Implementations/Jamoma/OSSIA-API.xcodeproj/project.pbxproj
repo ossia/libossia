@@ -30,6 +30,9 @@
 		46502A741AC2AB2C0067AB66 /* Device.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Device.cpp; sourceTree = "<group>"; };
 		46502A751AC2AB340067AB66 /* Address.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		46502A761AC2AB410067AB66 /* Node.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Node.cpp; sourceTree = "<group>"; };
+		465341131BBBDB32003599E0 /* Loop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Loop.h; sourceTree = "<group>"; };
+		465341141BBBDB4C003599E0 /* JamomaLoop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaLoop.h; sourceTree = "<group>"; };
+		465341151BBBDB58003599E0 /* Loop.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Loop.cpp; sourceTree = "<group>"; };
 		4658445C1B14A95200612FBD /* Container.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
 		467BE0381B442DC9006B772A /* TimeProcess.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeProcess.cpp; sourceTree = "<group>"; };
 		4682EEBE1B8C705F00E4C5CF /* Local.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Local.h; sourceTree = "<group>"; };
@@ -114,6 +117,7 @@
 				4689BAE51ABA256800D1BA4E /* ExpressionAtom.h */,
 				4689BAE61ABA256800D1BA4E /* ExpressionComposition.h */,
 				4689BAE71ABA256800D1BA4E /* ExpressionNot.h */,
+				465341131BBBDB32003599E0 /* Loop.h */,
 				468E931319C0562900B26BFB /* Message.h */,
 				460D07E919BDD62500235124 /* Scenario.h */,
 				460D07EA19BDD62500235124 /* State.h */,
@@ -273,6 +277,7 @@
 				46D435DB1AB735220041D8AF /* ExpressionAtom.cpp */,
 				46D435DC1AB735220041D8AF /* ExpressionComposition.cpp */,
 				46CF2A8D1B57DC860027D537 /* ExpressionNot.cpp */,
+				465341151BBBDB58003599E0 /* Loop.cpp */,
 				46D435DD1AB735860041D8AF /* Message.cpp */,
 				46BA2A6019C09A21009630B5 /* Scenario.cpp */,
 				46D435DE1AB73A5F0041D8AF /* State.cpp */,
@@ -313,6 +318,7 @@
 				463DC5A81B42B7AC00EEF0CB /* JamomaCurve.h */,
 				463DC5AA1B42BF6A00EEF0CB /* CurveSegment */,
 				46995FA31B31A42700BDF2C8 /* JamomaDomain.h */,
+				465341141BBBDB4C003599E0 /* JamomaLoop.h */,
 				464258761B26EC7900324157 /* JamomaScenario.h */,
 				46D2C60D1B260B9900C04D8A /* JamomaTimeConstraint.h */,
 				4696661D1B307F940082480E /* JamomaTimeEvent.h */,
@@ -345,7 +351,7 @@
 		468AC7BB197EB19500FB2B18 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = OSSIA;
 			};
 			buildConfigurationList = 468AC7BE197EB19500FB2B18 /* Build configuration list for PBXProject "OSSIA-API" */;
@@ -381,6 +387,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
