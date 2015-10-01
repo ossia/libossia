@@ -134,7 +134,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   if (pendingEvents.size() == timeEvents().size())
   {
     // observe and evaluate TimeNode's expression before to go further
-    if (mExpression != ExpressionTrue && mExpression != ExpressionFalse)
+    if (*mExpression != *ExpressionTrue && *mExpression != *ExpressionFalse)
     {
       observeExpressionResult(true);
       if (!mExpression->evaluate())
@@ -190,7 +190,7 @@ bool JamomaTimeNode::isObservingExpression()
 
 void JamomaTimeNode::observeExpressionResult(bool observe)
 {
-  if (mExpression == ExpressionTrue || mExpression == ExpressionFalse)
+  if (*mExpression == *ExpressionTrue || *mExpression == *ExpressionFalse)
     return;
   
   if (observe != mObserveExpression)
