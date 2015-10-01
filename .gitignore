@@ -3,6 +3,7 @@
 *.o
 *.i386.o-*
 *.x64.o-*
+*.dylib
 
 # QtCreator files
 *.txt.user.*
