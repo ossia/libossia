@@ -237,7 +237,7 @@ int main()
     // set first end time node expression to make it interactive
     // (instead of first end event)
     first_end_node->setExpression(next_expression1);
-    first_end_event->setExpression(nullptr);
+    first_end_event->setExpression(ExpressionTrue);
 
     cout << "***** START *****" << endl;
 
