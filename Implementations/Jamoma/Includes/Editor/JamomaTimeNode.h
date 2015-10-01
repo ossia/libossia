@@ -52,7 +52,11 @@ public:
 # pragma mark -
 # pragma mark Execution
   
-  void play(bool log = false, string name = "") const override;
+  void setup(const TimeValue& date = Zero) override;
+  
+  void happen() override;
+  
+  void dispose() override;
 
 # pragma mark -
 # pragma mark Accessors

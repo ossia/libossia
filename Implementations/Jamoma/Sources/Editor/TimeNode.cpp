@@ -31,10 +31,31 @@ JamomaTimeNode::~JamomaTimeNode()
 # pragma mark -
 # pragma mark Execution
 
-void JamomaTimeNode::play(bool log, string name) const
+void JamomaTimeNode::setup(const TimeValue& date)
+{
+  {
+    TimeEvent::Status status = getDate() <= date ? getDate() == date ? TimeEvent::Status::PENDING : TimeEvent::Status::HAPPENED : TimeEvent::Status::NONE;
+    
+    //! \note maybe we should initialized TimeEvents with an Expression returning false to DISPOSED status ?
+    
+    for (auto& timeEvent : timeEvents())
+    {
+      shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
+      e->setStatus(status);
+    }
+  }
+}
+
+void JamomaTimeNode::happen()
 {
   for (auto & timeEvent : timeEvents())
     timeEvent->happen();
+}
+
+void JamomaTimeNode::dispose()
+{
+  for (auto & timeEvent : timeEvents())
+    timeEvent->dispose();
 }
 
 # pragma mark -
@@ -42,14 +63,21 @@ void JamomaTimeNode::play(bool log, string name) const
 
 TimeValue JamomaTimeNode::getDate() const
 {
-  if (timeEvents().empty())
-    return Zero;
+  // compute the date from each first previous time constraint
+  // ignoring zero duration time constraint (used to loop back in time)
+  if (!timeEvents().empty())
+  {
+    for (auto & timeEvent : timeEvents())
+    {
+      if (!timeEvent->previousTimeConstraints().empty())
+      {
+        if (timeEvent->previousTimeConstraints()[0]->getDuration() > Zero)
+          return timeEvent->previousTimeConstraints()[0]->getDuration() + timeEvent->previousTimeConstraints()[0]->getStartEvent()->getTimeNode()->getDate();
+      }
+    }
+  }
   
-  else if (timeEvents()[0]->previousTimeConstraints().empty())
-    return Zero;
-  
-  else
-    return timeEvents()[0]->previousTimeConstraints()[0]->getDuration() + timeEvents()[0]->previousTimeConstraints()[0]->getStartEvent()->getTimeNode()->getDate();
+  return Zero;
 }
 
 const std::shared_ptr<Expression> & JamomaTimeNode::getExpression() const

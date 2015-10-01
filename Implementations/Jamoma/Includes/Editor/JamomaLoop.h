@@ -27,18 +27,20 @@ using namespace OSSIA;
 using namespace std;
 using namespace std::placeholders;
 
-class JamomaLoop : public Loop, public JamomaTimeProcess
+class JamomaLoop : public Loop, public virtual JamomaTimeProcess
 {
   
 private:
   
 # pragma mark -
 # pragma mark Implementation specific
-
-  shared_ptr<TimeConstraint>        mPatternConstraint;
-  shared_ptr<TimeNode>              mPatternNode;
+ 
+  shared_ptr<TimeNode>        mPatternStartNode;
+  shared_ptr<TimeNode>        mPatternEndNode;
   
-  shared_ptr<State>                 mCurrentState;      // an internal State to return on state call
+  shared_ptr<TimeConstraint>  mPatternConstraint;
+
+  shared_ptr<State>           mCurrentState;      // an internal State to return on state call
   
 public:
   
@@ -63,7 +65,9 @@ public:
   
   const shared_ptr<TimeConstraint> getPatternTimeConstraint() const override;
 
-  const shared_ptr<TimeNode> getPatternTimeNode() const override;
+  const shared_ptr<TimeNode> getPatternStartTimeNode() const override;
+  
+  const shared_ptr<TimeNode> getPatternEndTimeNode() const override;
   
 private:
   

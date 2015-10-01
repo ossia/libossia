@@ -64,18 +64,14 @@ private Q_SLOTS:
         QVERIFY(scenario->getEndState() != nullptr);
         QVERIFY(scenario->getParentTimeConstraint() == nullptr);
         
-        QVERIFY(scenario->getStartNode() != nullptr);
-        QVERIFY(scenario->getEndNode() != nullptr);
-        QVERIFY(scenario->isKiller() == false);
-        
-        scenario->setKiller(true);
-        QVERIFY(scenario->isKiller() == true);
+        QVERIFY(scenario->getStartTimeNode() != nullptr);
+        QVERIFY(scenario->getEndTimeNode() != nullptr);
 
         QVERIFY(scenario->timeNodes().size() == 2);
         QVERIFY(scenario->timeConstraints().size() == 0);
 
-        QVERIFY(scenario->getStartNode()->getDate() == 0.);
-        QVERIFY(scenario->getEndNode()->getDate() == Infinite);
+        QVERIFY(scenario->getStartTimeNode()->getDate() == 0.);
+        QVERIFY(scenario->getEndTimeNode()->getDate() == Infinite);
     }
     
     /*! test edition functions */
@@ -86,7 +82,7 @@ private Q_SLOTS:
 
         auto scenario = Scenario::create();
 
-        auto start_node = scenario->getStartNode();
+        auto start_node = scenario->getStartTimeNode();
         auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), e_callback));
 
         auto end_node = TimeNode::create();
@@ -132,7 +128,7 @@ private Q_SLOTS:
 
         main_constraint->addTimeProcess(main_scenario);
 
-        auto scenario_start_node = main_scenario->getStartNode();
+        auto scenario_start_node = main_scenario->getStartTimeNode();
 
         auto first_end_node = TimeNode::create();
         auto first_start_event = *(scenario_start_node->emplace(scenario_start_node->timeEvents().begin(), e_callback));

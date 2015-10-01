@@ -33,7 +33,8 @@ private Q_SLOTS:
         QVERIFY(loop->getParentTimeConstraint() == nullptr);
 
         QVERIFY(loop->getPatternTimeConstraint() != nullptr);
-        QVERIFY(loop->getPatternTimeNode() != nullptr);
+        QVERIFY(loop->getPatternStartTimeNode() != nullptr);
+        QVERIFY(loop->getPatternEndTimeNode() != nullptr);
 
         //! \todo test clone()
     }
@@ -54,7 +55,7 @@ private Q_SLOTS:
         auto constraint = TimeConstraint::create(constraint_callback, start_event, end_event, 100.);
         constraint->addTimeProcess(loop);
 
-        constraint->setGranularity(10.);
+        constraint->setGranularity(1.);
         constraint->start();
 
         while (constraint->getRunning())

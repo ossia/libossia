@@ -16,13 +16,15 @@ namespace OSSIA
 JamomaLoop::JamomaLoop() :
 JamomaTimeProcess(State::create(), State::create())
 {
-  mPatternNode = TimeNode::create();
-  mPatternNode->emplace(mPatternNode->timeEvents().begin(), std::bind(&JamomaLoop::PatternStartEventCallback, this, _1));
-  mPatternNode->emplace(mPatternNode->timeEvents().end(), std::bind(&JamomaLoop::PatternEndEventCallback, this, _1));
+  mPatternStartNode = TimeNode::create();
+  mPatternStartNode->emplace(mPatternStartNode->timeEvents().begin(), std::bind(&JamomaLoop::PatternStartEventCallback, this, _1));
+  
+  mPatternEndNode = TimeNode::create();
+  mPatternEndNode->emplace(mPatternEndNode->timeEvents().begin(), std::bind(&JamomaLoop::PatternEndEventCallback, this, _1));
   
   mPatternConstraint = TimeConstraint::create(std::bind(&JamomaLoop::PatternConstraintCallback, this, _1, _2, _3),
-                                              mPatternNode->timeEvents()[0],
-                                              mPatternNode->timeEvents()[1]);
+                                              mPatternStartNode->timeEvents()[0],
+                                              mPatternEndNode->timeEvents()[0]);
   
   // set pattern TimeConstraint's clock in external mode
   shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(mPatternConstraint);
@@ -33,8 +35,9 @@ JamomaTimeProcess(State::create(), State::create())
 
 JamomaLoop::JamomaLoop(const JamomaLoop * other) :
 JamomaTimeProcess(other->mStartState, other->mEndState),
-mPatternConstraint(other->mPatternConstraint->clone()),
-mPatternNode(other->mPatternNode->clone())
+mPatternStartNode(other->mPatternStartNode->clone()),
+mPatternEndNode(other->mPatternEndNode->clone()),
+mPatternConstraint(other->mPatternConstraint->clone())
 {}
 
 shared_ptr<Loop> JamomaLoop::clone() const
@@ -53,44 +56,18 @@ shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const Time
   // reset internal State
   mCurrentState->stateElements().clear();
   
-  // if the time goes backward : initialize pattern TimeEvent's status and pattern TimeConstraint's clock
+  // if the time goes backward
   if (position < mLastPosition)
   {
     TimeValue offset = std::fmod((double)date, (double)mPatternConstraint->getDuration());
     
-    // be sure the clock is stopped
-    mPatternConstraint->stop();
+    mPatternStartNode->setup(offset);
+    mPatternEndNode->setup(offset);
     
-    //! \note maybe we should initialized TimeEvents with an Expression returning false to DISPOSED status ?
+    if (mPatternStartNode->timeEvents()[0]->getStatus() == TimeEvent::Status::HAPPENED)
+      flattenAndFilter(mPatternStartNode->timeEvents()[0]->getState());
     
-    shared_ptr<JamomaTimeEvent> start = dynamic_pointer_cast<JamomaTimeEvent>(mPatternNode->timeEvents()[0]);
-    shared_ptr<JamomaTimeEvent> end = dynamic_pointer_cast<JamomaTimeEvent>(mPatternNode->timeEvents()[1]);
-    
-    if (offset == Zero)
-    {
-      start->setStatus(TimeEvent::Status::NONE);
-      end->setStatus(TimeEvent::Status::NONE);
-    }
-    else
-    {
-      start->setStatus(TimeEvent::Status::HAPPENED);
-      end->setStatus(TimeEvent::Status::NONE);
-      
-      flattenAndFilter(start->getState());
-      
-      // set end TimeEvent status depending on duration min and max
-      if (date > mPatternConstraint->getDurationMin() &&
-          date <= mPatternConstraint->getDurationMax())
-      {
-        end->setStatus(TimeEvent::Status::PENDING);
-      }
-      
-      // set clock offset
-      mPatternConstraint->setOffset(offset);
-      
-      // launch the clock
-      mPatternConstraint->start();
-    }
+    mPatternConstraint->setup(offset);
   }
   
   // if position hasn't been processed already
@@ -98,133 +75,15 @@ shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const Time
   {
     mLastPosition = position;
     
-    shared_ptr<JamomaTimeNode> node = dynamic_pointer_cast<JamomaTimeNode>(mPatternNode);
-    shared_ptr<JamomaTimeEvent> start = dynamic_pointer_cast<JamomaTimeEvent>(mPatternNode->timeEvents()[0]);
-    shared_ptr<JamomaTimeEvent> end = dynamic_pointer_cast<JamomaTimeEvent>(mPatternNode->timeEvents()[1]);
-    
-    // check if the loop can start
-    switch(start->getStatus())
+    if (mPatternEndNode->timeEvents()[0]->getStatus() == TimeEvent::Status::HAPPENED)
     {
-        // NONE start TimeEvent becomes PENDING
-      case TimeEvent::Status::NONE:
-      {
-        start->setStatus(TimeEvent::Status::PENDING);
-        start->observeExpressionResult(true);
-        
-        end->setStatus(TimeEvent::Status::NONE);
-        end->observeExpressionResult(false);
-        
-        break;
-      }
-        
-        // PENDING start TimeEvent is ready for evaluation
-      case TimeEvent::Status::PENDING:
-      {
-        if (start->getExpression()->evaluate())
-        {
-          start->happen();
-          flattenAndFilter(start->getState());
-        }
-        else
-          start->setStatus(TimeEvent::Status::DISPOSED);
-        
-        start->observeExpressionResult(false);
-        
-        break;
-      }
-        
-        // HAPPENED start TimeEvent  propagates the execution to the end of the loop
-      case TimeEvent::Status::HAPPENED:
-      {
-        // check if the loop can end
-        switch(end->getStatus())
-        {
-            // NONE end TimeEvent becomes PENDING
-          case TimeEvent::Status::NONE:
-          {
-            // when all pattern constraint durations are equals
-            if (mPatternConstraint->getDurationMin() == mPatternConstraint->getDuration() &&
-                mPatternConstraint->getDurationMax() == mPatternConstraint->getDuration())
-            {
-              end->observeExpressionResult(false);
-              
-              // stay NONE status
-              break;
-            }
-            // when the minimal duration is not reached
-            else if (mPatternConstraint->getDate() < mPatternConstraint->getDurationMin())
-            {
-              end->observeExpressionResult(false);
-              
-              // stay NONE status
-              break;
-            }
-            // when the minimal duration is reached but not the maximal duration
-            else if (mPatternConstraint->getDate() >= mPatternConstraint->getDurationMin() &&
-                     mPatternConstraint->getDate() < mPatternConstraint->getDurationMax())
-            {
-              end->setStatus(TimeEvent::Status::PENDING);
-              end->observeExpressionResult(true);
-            }
-            // when the maximal duration is reached
-            else if (mPatternConstraint->getDate() >= mPatternConstraint->getDurationMax())
-            {
-              end->setStatus(TimeEvent::Status::PENDING);
-              end->observeExpressionResult(false);
-            }
-            
-            break;
-          }
-            
-            // PENDING end TimeEvent is ready for evaluation
-          case TimeEvent::Status::PENDING:
-          {/*
-            // observe and evaluate pattern TimeNode's expression before to go further
-            if (node->getExpression() != ExpressionTrue && node->getExpression() != ExpressionFalse)
-            {
-              node->observeExpressionResult(true);
-              if (!node->getExpression()->evaluate())
-                break;
-            }
-            */
-            if (end->getExpression()->evaluate())
-            {
-              end->happen();
-              flattenAndFilter(end->getState());
-            }
-            else
-              end->setStatus(TimeEvent::Status::DISPOSED);
-            
-            end->observeExpressionResult(false);
-            node->observeExpressionResult(false);
-            
-            break;
-          }
-            
-            // HAPPENED end TimeEvent propagates the execution to the start of the loop
-          case TimeEvent::Status::HAPPENED:
-          {
-            start->setStatus(TimeEvent::Status::NONE);
-            break;
-          }
-            
-            // DISPOSED end TimeEvent stops the propagation of the execution
-          case TimeEvent::Status::DISPOSED:
-          {
-            break;
-          }
-        }
-        
-        break;
-      }
-        
-        // DISPOSED start TimeEvent stops the propagation of the execution
-      case TimeEvent::Status::DISPOSED:
-      {
-        break;
-      }
+      flattenAndFilter(mPatternEndNode->timeEvents()[0]->getState());
+      
+      mPatternStartNode->setup(Zero);
+      mPatternEndNode->setup(Zero);
+      mPatternConstraint->setup(Zero);
     }
-
+    
     mPatternConstraint->tick();
   }
 
@@ -240,9 +99,14 @@ const shared_ptr<TimeConstraint> JamomaLoop::getPatternTimeConstraint() const
   return mPatternConstraint;
 }
 
-const shared_ptr<TimeNode> JamomaLoop::getPatternTimeNode() const
+const shared_ptr<TimeNode> JamomaLoop::getPatternStartTimeNode() const
 {
-  return mPatternNode;
+  return mPatternStartNode;
+}
+
+const shared_ptr<TimeNode> JamomaLoop::getPatternEndTimeNode() const
+{
+  return mPatternEndNode;
 }
 
 # pragma mark -

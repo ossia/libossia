@@ -55,10 +55,15 @@ public:
 # pragma mark -
 # pragma mark Execution
   
-  /*! execute and optionnaly log the execution into a file
-   \param bool to enable log
-   \param string to give a log file name where to write */
-  virtual void play(bool log = false, std::string name = "") const = 0;
+  /*! setup status of each #TimeEvent's #TimeNode considering a date
+   \param #TimeValue a date that will be compared to the #TimeNode's date */
+  virtual void setup(const TimeValue& = Zero) = 0;
+  
+  /*! make all #TimeEvent's #TimeNode to happen */
+  virtual void happen() = 0;
+  
+  /*! dispose all #TimeEvent's #TimeNode */
+  virtual void dispose() = 0;
 
 # pragma mark -
 # pragma mark Accessors

@@ -73,6 +73,12 @@ public:
 # pragma mark -
 # pragma mark Execution
   
+  /*! setup #TimeConstraint's #Clock considering the status of its #TimeEvents
+   \details this method is supposed to be called after #TimeNode::setup method
+   \details this method can launch the #Clock if the #TimeConstraint is supposed to be running at the given date
+   \param #TimeValue a date to offset the #Clock in the mean time */
+  virtual void setup(const TimeValue& = Zero) = 0;
+  
   /*! get the #State of the constraint for a position or a date
    \details the returned #State is made of as many as sub States for each TimeProcess the constraint manages
    \param const #TimeValue position

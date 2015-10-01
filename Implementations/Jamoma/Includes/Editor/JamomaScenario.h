@@ -43,8 +43,6 @@ private:
   Container<TimeConstraint>   mTimeContraints;
   Container<TimeNode>         mTimeNodes;         // list of all TimeNodes of the scenario (the first is the start node, the second is the end node)
   
-  bool                        mKiller;
-  
   shared_ptr<State>           mCurrentState;      // an internal State to return on state call
   
 public:
@@ -80,13 +78,9 @@ public:
 # pragma mark -
 # pragma mark Accessors
   
-  bool isKiller() const override;
+  const shared_ptr<TimeNode> & getStartTimeNode() const override;
   
-  Scenario & setKiller(bool isKiller) override;
-  
-  const shared_ptr<TimeNode> & getStartNode() const override;
-  
-  const shared_ptr<TimeNode> & getEndNode() const override;
+  const shared_ptr<TimeNode> & getEndTimeNode() const override;
   
 # pragma mark -
 # pragma mark TimeNodes and TimeConstraints

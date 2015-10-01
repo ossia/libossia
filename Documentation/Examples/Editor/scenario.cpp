@@ -99,7 +99,7 @@ int main()
      */
 
     // get the start node of the main Scenario
-    auto scenario_start_node = main_scenario->getStartNode();
+    auto scenario_start_node = main_scenario->getStartTimeNode();
 
     // create a TimeNode
     auto first_end_node = TimeNode::create();

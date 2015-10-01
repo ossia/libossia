@@ -78,22 +78,13 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  /*! is the scenario allowed to kill sub process when it ends ?
-   \return bool as killer status */
-  virtual bool isKiller() const = 0;
-
-  /*! allow scenario to kill sub process when it ends
-   \param bool as killer status 
-   \return #Scenario the scenario */
-  virtual Scenario & setKiller(bool) = 0;
-
   /*! get the node from where the scenario starts
    \return std::shared_ptr<#TimeNode> start node */
-  virtual const std::shared_ptr<TimeNode> & getStartNode() const = 0;
+  virtual const std::shared_ptr<TimeNode> & getStartTimeNode() const = 0;
 
   /*! get the node where the scenario ends
    \return std::shared_ptr<#TimeNode> end node */
-  virtual const std::shared_ptr<TimeNode> & getEndNode() const = 0;
+  virtual const std::shared_ptr<TimeNode> & getEndTimeNode() const = 0;
   
 # pragma mark -
 # pragma mark TimeNodes and TimeConstraints

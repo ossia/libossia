@@ -61,9 +61,13 @@ public:
    \return std::shared_ptr<TimeConstraint> */
   virtual const std::shared_ptr<TimeConstraint> getPatternTimeConstraint() const = 0;
   
-  /*! get the pattern #TimeNode
+  /*! get the pattern start #TimeNode
    \return std::shared_ptr<TimeNode> */
-  virtual const std::shared_ptr<TimeNode> getPatternTimeNode() const = 0;
+  virtual const std::shared_ptr<TimeNode> getPatternStartTimeNode() const = 0;
+  
+  /*! get the pattern end #TimeNode
+   \return std::shared_ptr<TimeNode> */
+  virtual const std::shared_ptr<TimeNode> getPatternEndTimeNode() const = 0;
 
 };
 }

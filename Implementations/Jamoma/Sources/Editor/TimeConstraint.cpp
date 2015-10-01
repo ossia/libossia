@@ -73,6 +73,51 @@ JamomaTimeConstraint::~JamomaTimeConstraint()
 # pragma mark -
 # pragma mark Execution
 
+void JamomaTimeConstraint::setup(const TimeValue& date)
+{
+  TimeEvent::Status startStatus = mStartEvent->getStatus();
+  TimeEvent::Status endStatus = mEndEvent->getStatus();
+  
+  // be sure the clock is stopped
+  stop();
+  
+  // the constraint is in the past
+  if (startStatus == TimeEvent::Status::HAPPENED &&
+      endStatus == TimeEvent::Status::HAPPENED)
+  {}
+  // the constraint is pending
+  else if (startStatus == TimeEvent::Status::PENDING &&
+           endStatus == TimeEvent::Status::NONE)
+  {}
+  // the constraint is running
+  else if (startStatus == TimeEvent::Status::HAPPENED &&
+           endStatus == TimeEvent::Status::NONE)
+  {
+    TimeValue startDate = mStartEvent->getTimeNode()->getDate();
+    
+    // set clock offset
+    setOffset(date - startDate);
+    
+    // set end TimeEvent status depending on duration min and max
+    //! \note this test have to be made according tests made into JamomaTimeConstraint::process
+    if (date > mDurationMin && date <= mDurationMax)
+    {
+      shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(mEndEvent);
+      e->setStatus(TimeEvent::Status::PENDING);
+    }
+    
+    // launch the clock
+    start();
+  }
+  // the constraint is in the future
+  else if (startStatus == TimeEvent::Status::NONE &&
+           endStatus == TimeEvent::Status::NONE)
+  {}
+  // error
+  else
+    throw runtime_error("TimeEvent's status configuration of the TimeConstraint is not handled");
+}
+
 shared_ptr<StateElement> JamomaTimeConstraint::state(const TimeValue& position, const TimeValue& date)
 {
   // clear internal State, Message and Value

@@ -69,6 +69,8 @@ public:
 # pragma mark -
 # pragma mark Execution
   
+  virtual void setup(const TimeValue& = Zero) override;
+  
   shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) override;
 
 # pragma mark -
