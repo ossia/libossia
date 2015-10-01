@@ -100,6 +100,7 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  /*! append each message of the state to the current state in order to eliminate address redundancy */
+  /*! append each message of the state to the current state in order to eliminate address redundancy
+  \todo this code is also in JamomaLoop so we should find a way to factorise it */
   void flattenAndFilter(const shared_ptr<StateElement>);
 };
