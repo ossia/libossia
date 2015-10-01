@@ -83,9 +83,10 @@ public:
   /* is the TimeNode observing its Expression ? */
   bool isObservingExpression();
   
-private:
-  
+  /* enable observation of the Expression */
   void observeExpressionResult(bool);
+  
+private:
 
   void resultCallback(bool result);
 };
