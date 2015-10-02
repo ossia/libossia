@@ -9,6 +9,10 @@ find_package(Jamoma 0.6)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+if (COVERALLS)
+    get_property(JAMOMA_API_SRCS TARGET APIJamoma PROPERTY SOURCES)
+    coveralls_setup("${JAMOMA_API_SRCS}" ON)
+endif()
 function(addAPIQtTest TESTNAME TESTSRCS)
     if(${Jamoma_FOUND})
         add_executable(Jamoma_${TESTNAME} ${TESTSRCS})
@@ -41,4 +45,12 @@ addAPIQtTest(APIAddressTest                 "${CMAKE_CURRENT_SOURCE_DIR}/Network
 addAPIQtTest(APIDeviceTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/DeviceTest.cpp")
 addAPIQtTest(APINodeTest                    "${CMAKE_CURRENT_SOURCE_DIR}/Network/NodeTest.cpp")
 
+if(OSSIA_BENCHMARKS)
+addAPIQtTest(APIDeviceBenchmark_Nsec_client "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_Nsec_client.cpp")
+addAPIQtTest(APIDeviceBenchmark_Nsec_server "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_Nsec_server.cpp")
+addAPIQtTest(APIDeviceBenchmark_client      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_client.cpp")
+addAPIQtTest(APIDeviceBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark.cpp"
+                                            "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/Random.hpp")
+# addAPIQtTest(APIAutomationBenchmark         "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/AutomationBenchmark.cpp
+endif()
 include(CTest)

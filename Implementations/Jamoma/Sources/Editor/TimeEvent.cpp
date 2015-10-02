@@ -21,6 +21,11 @@ mObserveExpression(false)
 JamomaTimeEvent::~JamomaTimeEvent()
 {}
 
+void JamomaTimeEvent::setCallback(TimeEvent::ExecutionCallback callback)
+{
+    mCallback = callback;
+}
+
 # pragma mark -
 # pragma mark Execution
 
@@ -96,7 +101,7 @@ const shared_ptr<Expression> & JamomaTimeEvent::getExpression() const
 TimeEvent & JamomaTimeEvent::setExpression(const std::shared_ptr<Expression> expression)
 {
   observeExpressionResult(false);
-  
+
   mExpression = expression;
 
   return *this;

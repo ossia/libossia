@@ -58,6 +58,8 @@ public:
 # pragma mark -
 # pragma mark Execution
 
+  void setCallback(TimeEvent::ExecutionCallback) override;
+
   void happen() override;
 
   void dispose() override;

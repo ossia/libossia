@@ -33,8 +33,8 @@ using namespace std::placeholders;
 class JamomaTimeConstraint : public TimeConstraint, public JamomaClock, public enable_shared_from_this<JamomaTimeConstraint>
 {
 
-protected:
-  
+private:
+
 # pragma mark -
 # pragma mark Implementation specific
   
@@ -68,13 +68,15 @@ public:
 
 # pragma mark -
 # pragma mark Execution
-  
+
   virtual void setup(const TimeValue& = Zero) override;
-  
+
   shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) override;
 
 # pragma mark -
 # pragma mark Accessors
+
+  void setCallback(ExecutionCallback) override;
   
   const TimeValue & getDurationMin() const override;
   

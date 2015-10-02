@@ -1,0 +1,17 @@
+language: cpp
+
+os:
+  - osx
+  - linux
+
+env:
+  - BUILD_TYPE=Debug
+  - BUILD_TYPE=Release
+
+osx_image: xcode6.4
+
+before_install:
+- "./travis/deps.sh"
+
+script:
+- "./travis/build.sh"

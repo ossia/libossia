@@ -16,7 +16,7 @@ namespace OSSIA
                                                     const TimeValue& max)
   {
     auto timeConstraint = make_shared<JamomaTimeConstraint>(callback, startEvent, endEvent, nominal, min, max);
-    
+
     // store the TimeConstraint into the start event as a next constraint
     if (std::find(startEvent->nextTimeConstraints().begin(),
                   startEvent->nextTimeConstraints().end(),
@@ -24,7 +24,7 @@ namespace OSSIA
     {
       startEvent->nextTimeConstraints().push_back(timeConstraint);
     }
-    
+
     // store the TimeConstraint into the end event as a previous constraint
     if (std::find(endEvent->previousTimeConstraints().begin(),
                   endEvent->previousTimeConstraints().end(),
@@ -32,7 +32,7 @@ namespace OSSIA
     {
       endEvent->previousTimeConstraints().push_back(timeConstraint);
     }
-    
+
     return timeConstraint;
   }
 }
@@ -122,18 +122,23 @@ shared_ptr<StateElement> JamomaTimeConstraint::state(const TimeValue& position, 
 {
   // clear internal State, Message and Value
   mCurrentState->stateElements().clear();
-  
+
   // get the state of each TimeProcess for the position and the date
   for (auto& timeProcess : timeProcesses())
   {
     mCurrentState->stateElements().push_back(timeProcess->state(position, date));
   }
-  
+
   return mCurrentState;
 }
 
 # pragma mark -
 # pragma mark Accessors
+
+void JamomaTimeConstraint::setCallback(TimeConstraint::ExecutionCallback callback)
+{
+  mCallback = callback;
+}
 
 const TimeValue & JamomaTimeConstraint::getDurationMin() const
 {
@@ -144,7 +149,7 @@ TimeConstraint & JamomaTimeConstraint::setDurationMin(const TimeValue& durationM
 {
   if (durationMin > mDuration)
     throw runtime_error("duration min can't be greater than duration");
-  
+
   mDurationMin = durationMin;
   return *this;
 }
@@ -158,7 +163,7 @@ TimeConstraint & JamomaTimeConstraint::setDurationMax(const TimeValue& durationM
 {
   if (durationMax < mDuration)
     throw runtime_error("duration max can't be less than duration");
-  
+
   mDurationMax = durationMax;
   return *this;
 }
@@ -186,7 +191,7 @@ void JamomaTimeConstraint::addTimeProcess(shared_ptr<TimeProcess> timeProcess)
     timeProcesses().push_back(timeProcess);
     mStartEvent->addState(timeProcess->getStartState());
     mEndEvent->addState(timeProcess->getEndState());
-    
+
     JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
     t->setParentTimeConstraint(shared_from_this());
   }
@@ -197,7 +202,7 @@ void JamomaTimeConstraint::removeTimeProcess(std::shared_ptr<TimeProcess> timePr
   timeProcesses().erase(find(timeProcesses().begin(), timeProcesses().end(), timeProcess));
   mStartEvent->removeState(timeProcess->getStartState());
   mEndEvent->removeState(timeProcess->getEndState());
-  
+
   JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
   t->setParentTimeConstraint(nullptr);
 }
