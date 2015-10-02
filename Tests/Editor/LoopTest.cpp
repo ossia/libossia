@@ -43,20 +43,25 @@ private Q_SLOTS:
     //! \todo test state()
     void test_execution()
     {
-        auto loop = Loop::create();
-        loop->getPatternTimeConstraint()->setDuration(25.);
-
+        auto constraint_callback = std::bind(&LoopTest::constraint_callback, this, _1, _2, _3);
+        auto event_callback = std::bind(&LoopTest::event_callback, this, _1);
+        
         auto start_node = TimeNode::create();
         auto end_node = TimeNode::create();
-        auto event_callback = std::bind(&LoopTest::event_callback, this, _1);
+        
         auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
-        auto constraint_callback = std::bind(&LoopTest::constraint_callback, this, _1, _2, _3);
+        
         auto constraint = TimeConstraint::create(constraint_callback, start_event, end_event, 100.);
+        
+        auto loop = Loop::create(25., constraint_callback, event_callback, event_callback);
+
         constraint->addTimeProcess(loop);
 
-        constraint->setGranularity(1.);
-        constraint->start();
+        start_node->setup();
+        end_node->setup();
+        
+        start_node->happen();
 
         while (constraint->getRunning())
             ;

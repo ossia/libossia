@@ -35,8 +35,15 @@ public:
 # pragma mark Life cycle
   
   /*! factory
+   \param const #TimeValue& duration of the pattern #TimeConstraint
+   \param #TimeConstraint::ExecutionCallback to be notified at each step of the loop
+   \param #TimeEvent::ExecutionCallback to get start pattern #TimeEvent's status back
+   \param #TimeEvent::ExecutionCallback to get end pattern #TimeEvent's status back
    \return a new loop */
-  static std::shared_ptr<Loop> create();
+  static std::shared_ptr<Loop> create(const TimeValue&,
+                                      TimeConstraint::ExecutionCallback,
+                                      TimeEvent::ExecutionCallback,
+                                      TimeEvent::ExecutionCallback);
   
   /*! clone */
   virtual std::shared_ptr<Loop> clone() const = 0;

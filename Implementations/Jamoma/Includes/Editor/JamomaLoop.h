@@ -34,20 +34,27 @@ private:
   
 # pragma mark -
 # pragma mark Implementation specific
- 
-  shared_ptr<TimeNode>        mPatternStartNode;
-  shared_ptr<TimeNode>        mPatternEndNode;
   
-  shared_ptr<TimeConstraint>  mPatternConstraint;
+  shared_ptr<TimeNode>              mPatternStartNode;
+  TimeEvent::ExecutionCallback      mPatternStartEventCallback;
+  
+  shared_ptr<TimeNode>              mPatternEndNode;
+  TimeEvent::ExecutionCallback      mPatternEndEventCallback;
+  
+  shared_ptr<TimeConstraint>        mPatternConstraint;
+  TimeConstraint::ExecutionCallback mPatternConstraintCallback;
 
-  shared_ptr<State>           mCurrentState;      // an internal State to return on state call
+  shared_ptr<State>                 mCurrentState;      // an internal State to return on state call
   
 public:
   
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaLoop();
+  JamomaLoop(const TimeValue&,
+             TimeConstraint::ExecutionCallback,
+             TimeEvent::ExecutionCallback,
+             TimeEvent::ExecutionCallback);
   
   JamomaLoop(const JamomaLoop *);
   

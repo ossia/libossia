@@ -49,7 +49,7 @@ public:
 
   /*! factory
    \details by default a #TimeConstraint have an infinite duration with no minimal duration and an infinite maximal duration.
-   \param the function to use to be notified at each step
+   \param #TimeConstraint::ExecutionCallback to use to be notified at each step
    \param #std::shared_ptr<TimeEvent> event where the #TimeConstraint starts
    \param #std::shared_ptr<TimeEvent> event where the #TimeConstraint ends
    \param const #TimeValue& duration of the #TimeConstraint

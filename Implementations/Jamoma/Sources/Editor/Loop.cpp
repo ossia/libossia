@@ -7,14 +7,23 @@
 
 namespace OSSIA
 {
-  shared_ptr<Loop> Loop::create()
+  shared_ptr<Loop> Loop::create(const TimeValue& patternDuration,
+                                TimeConstraint::ExecutionCallback patternConstraintCallback,
+                                TimeEvent::ExecutionCallback patternStartEventCallback,
+                                TimeEvent::ExecutionCallback patternEndEventCallback)
   {
-    return make_shared<JamomaLoop>();
+    return make_shared<JamomaLoop>(patternDuration, patternConstraintCallback, patternStartEventCallback, patternEndEventCallback);
   }
 }
 
-JamomaLoop::JamomaLoop() :
-JamomaTimeProcess(State::create(), State::create())
+JamomaLoop::JamomaLoop(const TimeValue& patternDuration,
+                       TimeConstraint::ExecutionCallback patternConstraintCallback,
+                       TimeEvent::ExecutionCallback patternStartEventCallback,
+                       TimeEvent::ExecutionCallback patternEndEventCallback) :
+JamomaTimeProcess(State::create(), State::create()),
+mPatternStartEventCallback(patternStartEventCallback),
+mPatternEndEventCallback(patternEndEventCallback),
+mPatternConstraintCallback(patternConstraintCallback)
 {
   mPatternStartNode = TimeNode::create();
   mPatternStartNode->emplace(mPatternStartNode->timeEvents().begin(), std::bind(&JamomaLoop::PatternStartEventCallback, this, _1));
@@ -29,6 +38,11 @@ JamomaTimeProcess(State::create(), State::create())
   // set pattern TimeConstraint's clock in external mode
   shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(mPatternConstraint);
   clock->setDriveMode(Clock::DriveMode::EXTERNAL);
+  
+  // set all pattern TimeConstraint's durations equal by default
+  clock->setDuration(patternDuration);
+  mPatternConstraint->setDurationMin(patternDuration);
+  mPatternConstraint->setDurationMax(patternDuration);
   
   mCurrentState = State::create();
 }
@@ -73,8 +87,23 @@ shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const Time
   // if position hasn't been processed already
   if (position != mLastPosition)
   {
-    mLastPosition = position;
+    // process the loop from the pattern start TimeNode
+    Container<TimeEvent> statusChangedEvents;
+    shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(mPatternStartNode);
+    n->process(statusChangedEvents);
     
+    // make time flow for the pattern constraint
+    if (mPatternConstraint->getRunning())
+    {
+      if (mPatternConstraint->getDriveMode() == Clock::DriveMode::EXTERNAL)
+      {
+        mPatternConstraint->tick();
+      }
+      else
+        throw runtime_error("the pattern constrain clock is supposed to be in EXTERNAL drive mode");
+    }
+    
+    // if the pattern end event happened : reset the loop
     if (mPatternEndNode->timeEvents()[0]->getStatus() == TimeEvent::Status::HAPPENED)
     {
       flattenAndFilter(mPatternEndNode->timeEvents()[0]->getState());
@@ -84,10 +113,10 @@ shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const Time
       mPatternConstraint->setup(Zero);
     }
     
-    mPatternConstraint->tick();
+    mLastPosition = position;
   }
 
-  //! \see JamomaLoop::PatternConstraintCallback below to understand how mCurrentState is filled
+  //! \see mCurrentState is filled below in JamomaLoop::PatternConstraintCallback
   return mCurrentState;
 }
 
@@ -160,60 +189,16 @@ void JamomaLoop::PatternConstraintCallback(const TimeValue& position, const Time
 {
   // add the state of the pattern TimeConstraint
   flattenAndFilter(mPatternConstraint->state(position, date));
+  
+  (mPatternConstraintCallback)(position, date, mCurrentState);
 }
 
 void JamomaLoop::PatternStartEventCallback(TimeEvent::Status newStatus)
 {
-  //! \debug
-  switch (newStatus)
-  {
-    case TimeEvent::Status::NONE:
-    {
-      cout << "Start Pattern Event NONE" << endl;
-      break;
-    }
-    case TimeEvent::Status::PENDING:
-    {
-      cout << "Start Pattern Event PENDING" << endl;
-      break;
-    }
-    case TimeEvent::Status::HAPPENED:
-    {
-      cout << "Start Pattern Event HAPPENED" << endl;
-      break;
-    }
-    case TimeEvent::Status::DISPOSED:
-    {
-      cout << "Start Pattern Event DISPOSED" << endl;
-      break;
-    }
-  }
+  (mPatternStartEventCallback)(newStatus);
 }
 
 void JamomaLoop::PatternEndEventCallback(TimeEvent::Status newStatus)
 {
-  //! \debug
-  switch (newStatus)
-  {
-    case TimeEvent::Status::NONE:
-    {
-      cout << "End Pattern Event NONE" << endl;
-      break;
-    }
-    case TimeEvent::Status::PENDING:
-    {
-      cout << "End Pattern Event PENDING" << endl;
-      break;
-    }
-    case TimeEvent::Status::HAPPENED:
-    {
-      cout << "End Pattern Event HAPPENED" << endl;
-      break;
-    }
-    case TimeEvent::Status::DISPOSED:
-    {
-      cout << "End Pattern Event DISPOSED" << endl;
-      break;
-    }
-  }
+  (mPatternEndEventCallback)(newStatus);
 }
