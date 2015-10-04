@@ -60,7 +60,8 @@ mStartEvent(other->mStartEvent),
 mEndEvent(other->mEndEvent),
 mDurationMin(other->mDurationMin),
 mDurationMax(other->mDurationMax)
-{}
+{
+}
 
 shared_ptr<TimeConstraint> JamomaTimeConstraint::clone() const
 {
@@ -124,7 +125,7 @@ shared_ptr<StateElement> JamomaTimeConstraint::state(const TimeValue& position, 
   mCurrentState->stateElements().clear();
 
   // get the state of each TimeProcess for the position and the date
-  for (auto& timeProcess : timeProcesses())
+  for (const auto& timeProcess : timeProcesses())
   {
     mCurrentState->stateElements().push_back(timeProcess->state(position, date));
   }

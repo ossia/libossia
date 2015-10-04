@@ -50,7 +50,8 @@ protected:
   
   steady_clock::time_point mLastTime;/// a time reference used to compute time tick
   long long         mElapsedTime;   /// a time reference used to know how many time are elapsed in microsecond
-  
+
+private:
   ExecutionCallback mCallback;      /// the callback to use for each step
 
 public:

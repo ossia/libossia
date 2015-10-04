@@ -187,18 +187,23 @@ void JamomaLoop::flattenAndFilter(const shared_ptr<StateElement> element)
 
 void JamomaLoop::PatternConstraintCallback(const TimeValue& position, const TimeValue& date, std::shared_ptr<StateElement> state)
 {
-  // add the state of the pattern TimeConstraint
-  flattenAndFilter(mPatternConstraint->state(position, date));
-  
-  (mPatternConstraintCallback)(position, date, mCurrentState);
+  if(mPatternConstraintCallback)
+  {
+    // add the state of the pattern TimeConstraint
+    flattenAndFilter(mPatternConstraint->state(position, date));
+
+    (mPatternConstraintCallback)(position, date, mCurrentState);
+  }
 }
 
 void JamomaLoop::PatternStartEventCallback(TimeEvent::Status newStatus)
 {
-  (mPatternStartEventCallback)(newStatus);
+  if(mPatternStartEventCallback)
+    (mPatternStartEventCallback)(newStatus);
 }
 
 void JamomaLoop::PatternEndEventCallback(TimeEvent::Status newStatus)
 {
-  (mPatternEndEventCallback)(newStatus);
+  if(mPatternEndEventCallback)
+    (mPatternEndEventCallback)(newStatus);
 }
