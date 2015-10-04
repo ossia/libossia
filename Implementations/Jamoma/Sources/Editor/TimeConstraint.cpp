@@ -223,5 +223,6 @@ void JamomaTimeConstraint::removeTimeProcess(std::shared_ptr<TimeProcess> timePr
 
 void JamomaTimeConstraint::ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks)
 {
-  (mCallback)(position, date, state(position, date));
+  if(mCallback)
+    (mCallback)(position, date, state(position, date));
 }
