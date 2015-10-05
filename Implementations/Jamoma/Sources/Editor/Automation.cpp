@@ -43,16 +43,16 @@ shared_ptr<StateElement> JamomaAutomation::state(const TimeValue& position, cons
   {
     // clear the former Value
     if (mValueToSend) delete mValueToSend;
-    
+
     // compute a new value from the Curves
     mValueToSend = computeValueAtPosition(mDrive, position);
-    
+
     // edit a Message handling the new Value
     mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
 
     mLastPosition = position;
   }
-  
+
   return mMessageToSend;
 }
 
@@ -77,41 +77,41 @@ Value* JamomaAutomation::computeValueAtPosition(const Value* drive, const TimeVa
     {
       return drive->clone();
     }
-      
+
     case Value::Type::BOOL :
     {
       return drive->clone();
     }
-      
+
     case Value::Type::INT :
     {
       return drive->clone();
     }
-      
+
     case Value::Type::FLOAT :
     {
       return drive->clone();
     }
-      
+
     case Value::Type::CHAR :
     {
       return drive->clone();
     }
-      
+
     case Value::Type::STRING :
     {
       return drive->clone();
     }
-      
+
     case Value::Type::DESTINATION :
     {
       return drive->clone();
     }
-      
+
     case Value::Type::BEHAVIOR :
     {
-      Behavior * b = (Behavior*)drive;
-      
+      auto b = static_cast<const Behavior*>(drive);
+
       try
       {
         Curve<bool>* curve = dynamic_cast<Curve<bool>*>(b->value.get());
@@ -119,7 +119,7 @@ Value* JamomaAutomation::computeValueAtPosition(const Value* drive, const TimeVa
           return new Bool(curve->valueAt(position));
       }
       catch (std::bad_cast e) {};
-      
+
       try
       {
         Curve<int>* curve = dynamic_cast<Curve<int>*>(b->value.get());
@@ -135,29 +135,29 @@ Value* JamomaAutomation::computeValueAtPosition(const Value* drive, const TimeVa
           return new Float(curve->valueAt(position));
       }
       catch (std::bad_cast e) {};
-      
+
       break;
     }
-      
+
     case Value::Type::TUPLE :
     {
-      Tuple * t = (Tuple*)drive;
+      auto t = static_cast<const Tuple*>(drive);
       vector<const Value*> t_value;
-      
+
       for (const auto & e : t->value)
       {
         t_value.push_back(computeValueAtPosition(e, position));
       }
-      
+
       return new Tuple(t_value);
     }
-      
+
     case Value::Type::GENERIC :
     {
       //! \todo GENERIC case
       break;
     }
   }
-  
+
   return nullptr;
 }
