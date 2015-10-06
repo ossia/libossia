@@ -14,7 +14,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(API_HEADERS_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/Headers")
 set(API_IMPL_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/Implementations")
 
-file(GLOB_RECURSE HEADERS Headers/*.h)
+file(GLOB_RECURSE HEADERS Headers/*.h Toolkit/*.h)
 add_custom_target(OSSIAHeaders SOURCES ${HEADERS})
 add_library(OSSIAHeadersLib INTERFACE)
 
