@@ -67,26 +67,26 @@ JamomaLoop::~JamomaLoop()
 
 shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const TimeValue& date)
 {
-  // reset internal State
-  mCurrentState->stateElements().clear();
-  
-  // if the time goes backward
-  if (position < mLastPosition)
-  {
-    TimeValue offset = std::fmod((double)date, (double)mPatternConstraint->getDuration());
-    
-    mPatternStartNode->setup(offset);
-    mPatternEndNode->setup(offset);
-    
-    if (mPatternStartNode->timeEvents()[0]->getStatus() == TimeEvent::Status::HAPPENED)
-      flattenAndFilter(mPatternStartNode->timeEvents()[0]->getState());
-    
-    mPatternConstraint->setup(offset);
-  }
-  
   // if position hasn't been processed already
   if (position != mLastPosition)
   {
+    // reset internal State
+    mCurrentState->stateElements().clear();
+    
+    // if the time goes backward
+    if (position < mLastPosition)
+    {
+      TimeValue offset = std::fmod((double)date, (double)mPatternConstraint->getDuration());
+      
+      mPatternStartNode->setup(offset);
+      mPatternEndNode->setup(offset);
+      
+      if (mPatternStartNode->timeEvents()[0]->getStatus() == TimeEvent::Status::HAPPENED)
+        flattenAndFilter(mPatternStartNode->timeEvents()[0]->getState());
+      
+      mPatternConstraint->setup(offset);
+    }
+    
     // process the loop from the pattern start TimeNode
     Container<TimeEvent> statusChangedEvents;
     shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(mPatternStartNode);

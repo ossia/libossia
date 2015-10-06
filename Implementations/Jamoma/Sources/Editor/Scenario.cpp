@@ -43,31 +43,31 @@ JamomaScenario::~JamomaScenario()
 
 shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const TimeValue& date)
 {
-  // reset internal State
-  mCurrentState->stateElements().clear();
-  
-  // if the time goes backward
-  if (position < mLastPosition)
-  {
-    // setup each TimeNode considering the date
-    for (const auto& timeNode : mTimeNodes)
-    {
-      timeNode->setup(date);
-      
-      // add the state of each HAPPENED TimeEvent
-      for (auto& timeEvent : timeNode->timeEvents())
-        if (timeEvent->getStatus() == TimeEvent::Status::HAPPENED)
-          flattenAndFilter(timeEvent->getState());
-    }
-    
-    // setup each TimeConstraint considering the date
-    for (const auto& timeConstraint : mTimeContraints)
-      timeConstraint->setup(date);
-  }
-  
   // if position hasn't been processed already
   if (position != mLastPosition)
   {
+    // reset internal State
+    mCurrentState->stateElements().clear();
+    
+    // if the time goes backward
+    if (position < mLastPosition)
+    {
+      // setup each TimeNode considering the date
+      for (const auto& timeNode : mTimeNodes)
+      {
+        timeNode->setup(date);
+        
+        // add the state of each HAPPENED TimeEvent
+        for (auto& timeEvent : timeNode->timeEvents())
+          if (timeEvent->getStatus() == TimeEvent::Status::HAPPENED)
+            flattenAndFilter(timeEvent->getState());
+      }
+      
+      // setup each TimeConstraint considering the date
+      for (const auto& timeConstraint : mTimeContraints)
+        timeConstraint->setup(date);
+    }
+    
     // process the scenario from the first TimeNode to the running constraints
     Container<TimeEvent> statusChangedEvents;
     shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(mTimeNodes[0]);
