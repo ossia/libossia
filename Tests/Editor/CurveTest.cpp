@@ -23,11 +23,9 @@ private Q_SLOTS:
 
         curve->addPoint(1., 1., linearSegment);
         QVERIFY(curve->getPointsMap().size() == 1);
-        //QVERIFY(curve->segments().size() == 1);
 
         curve->addPoint(2., 0., linearSegment);
         QVERIFY(curve->getPointsMap().size() == 2);
-        //QVERIFY(curve->segments().size() == 2);
 
         QVERIFY(curve->valueAt(0.) == 0.);
         QVERIFY(curve->valueAt(0.5) == 0.5);

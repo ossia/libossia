@@ -58,6 +58,27 @@ JamomaCurve<T>::~JamomaCurve()
 {}
 
 # pragma mark -
+# pragma mark Edition
+
+template <typename T>
+bool JamomaCurve<T>::addPoint(const TimeValue& abscissa, T value, shared_ptr<CurveSegment<T>> segment)
+{
+  pair<T,shared_ptr<CurveSegment<T>>> p(value, segment);
+  
+  //! \todo check if there is already a point
+  
+  mPointsMap.emplace(abscissa, p);
+  
+  return true;
+}
+
+template <typename T>
+bool JamomaCurve<T>::removePoint(const TimeValue& abscissa)
+{
+  return mPointsMap.erase(abscissa) > 0;
+}
+
+# pragma mark -
 # pragma mark Execution
 
 template <typename T>
@@ -105,25 +126,4 @@ template <typename T>
 map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> JamomaCurve<T>::getPointsMap() const
 {
   return mPointsMap;
-}
-
-# pragma mark -
-# pragma mark CurveSegments
-
-template <typename T>
-bool JamomaCurve<T>::addPoint(const TimeValue& abscissa, T value, shared_ptr<CurveSegment<T>> segment)
-{
-  pair<T,shared_ptr<CurveSegment<T>>> p(value, segment);
-  
-  //! \todo check if there is already a point
-  
-  mPointsMap.emplace(abscissa, p);
-  
-  return true;
-}
-
-template <typename T>
-bool JamomaCurve<T>::removePoint(const TimeValue& abscissa)
-{
-  return mPointsMap.erase(abscissa) > 0;
 }

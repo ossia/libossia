@@ -44,6 +44,13 @@ public:
   ~JamomaCurve();
   
 # pragma mark -
+# pragma mark Edition
+  
+  bool addPoint(const TimeValue&, T, shared_ptr<CurveSegment<T>>) override;
+  
+  bool removePoint(const TimeValue&) override;
+  
+# pragma mark -
 # pragma mark Execution
   
   T valueAt(const TimeValue&) const override;
@@ -56,12 +63,5 @@ public:
   void setInitialValue(const T) override;
   
   map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> getPointsMap() const override;
-  
-# pragma mark -
-# pragma mark CurveSegments
-  
-  bool addPoint(const TimeValue&, T, shared_ptr<CurveSegment<T>>) override;
-  
-  bool removePoint(const TimeValue&) override;
 
 };

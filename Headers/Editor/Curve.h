@@ -62,6 +62,21 @@ public:
   
   /*! destructor */
   virtual ~Curve() = default;
+  
+# pragma mark -
+# pragma mark Edition
+  
+  /*! add a point to the curve
+   \param const TimeValue& point abscissa between 0. and 1.
+   \param T point value
+   \param std::shared_ptr<#CurveSegment<T>> segment
+   \return bool */
+  virtual bool addPoint(const TimeValue&, T, std::shared_ptr<CurveSegment<T>>) = 0;
+  
+  /*! remove a point from the curve
+   \param const TimeValue& point abscissa between 0. and 1.
+   \return bool */
+  virtual bool removePoint(const TimeValue&) = 0;
 
 # pragma mark -
 # pragma mark Execution
@@ -86,33 +101,6 @@ public:
    \return std::map<const TimeValue, std::pair<T, std::shared_ptr<CurveSegment<T>>>> map of {abscissa, {value, previous segment} */
   virtual std::map<const TimeValue, std::pair<T, std::shared_ptr<CurveSegment<T>>>> getPointsMap() const = 0;
 
-# pragma mark -
-# pragma mark CurveSegments
-  
-  /*! add a point to the curve
-   \param const TimeValue& point abscissa between 0. and 1.
-   \param T point value
-   \param std::shared_ptr<#CurveSegment<T>> segment
-   \return bool */
-  virtual bool addPoint(const TimeValue&, T, std::shared_ptr<CurveSegment<T>>) = 0;
-  
-  /*! remove a point from the curve
-   \param const TimeValue& point abscissa between 0. and 1.
-   \return bool */
-  virtual bool removePoint(const TimeValue&) = 0;
-
-  /*! get all segments of the curve
-   \return #Container<#CurveSegment<T>> */
-  Container<CurveSegment<T>>& segments()
-  { return m_segments; }
-  
-  /*! get all segments of the curve
-   \return const #Container<#CurveSegment<T>> */
-  const Container<CurveSegment<T>>& segments() const
-  { return m_segments; }
-
-private:
-  Container<CurveSegment<T>> m_segments;
 };
   
 # pragma mark -
