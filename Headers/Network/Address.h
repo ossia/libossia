@@ -97,6 +97,7 @@ public:
   /*! set the address value
    \note call pushValue if you need to sync the value with the device
    \param const #Value* the value
+   \note it is possible to set the value using a #Value::Type::Destination to query the value from another address
    \return #Address the address */
   virtual Address & setValue(const Value*) = 0;
 
