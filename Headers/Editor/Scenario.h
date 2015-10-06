@@ -46,16 +46,16 @@ public:
 
   /*! destructor */
   virtual ~Scenario() = default;
-  
+
 # pragma mark -
 # pragma mark Execution
-  
+
   /*! get a #State as a flatten set of Messages with no Address redundancy for a position or a date
    \param const #TimeValue position
    \param const #TimeValue date
    \return std::shared_ptr<#StateElement> */
-  virtual std::shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) = 0;
-  
+  virtual std::shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) override = 0;
+
 # pragma mark -
 # pragma mark Edition
 
@@ -66,11 +66,11 @@ public:
   /*! remove a #TimeConstraint from the scenario without removing any #TimeNode
    \param std::shared_ptr<#TimeConstraint> to remove */
   virtual void removeTimeConstraint(const std::shared_ptr<TimeConstraint>) = 0;
-  
+
   /*! add a #TimeNode into the scenario if it is not already added
    \param std::shared_ptr<#TimeNode> to add */
   virtual void addTimeNode(const std::shared_ptr<TimeNode>) = 0;
-  
+
   /*! remove a #TimeNode from the scenario
    \param std::shared_ptr<#TimeNode> to remove */
   virtual void removeTimeNode(const std::shared_ptr<TimeNode>) = 0;
@@ -85,14 +85,14 @@ public:
   /*! get the node where the scenario ends
    \return std::shared_ptr<#TimeNode> end node */
   virtual const std::shared_ptr<TimeNode> & getEndTimeNode() const = 0;
-  
+
 # pragma mark -
 # pragma mark TimeNodes and TimeConstraints
-  
+
   /*! get all TimeNodes of the scenario
    \return #Container<#TimeNode> */
   virtual const Container<TimeNode>& timeNodes() const = 0;
-  
+
   /*! get all TimeConstraints of the scenario
    \return #Container<#TimeConstraint> */
   virtual const Container<TimeConstraint>& timeConstraints() const = 0;

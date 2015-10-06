@@ -21,6 +21,7 @@
 
 #include "Expression.h"
 #include "TimeEvent.h"
+#include "TimeValue.h"
 #include "Misc/Container.h"
 
 namespace OSSIA
@@ -41,59 +42,59 @@ public:
 
 # pragma mark -
 # pragma mark Life cycle
-  
-  /*! factory 
+
+  /*! factory
    \return std::shared_ptr<#TimeNode> */
   static std::shared_ptr<TimeNode> create();
-  
+
   /*! clone */
   virtual std::shared_ptr<TimeNode> clone() const = 0;
-  
+
   /*! destructor */
   virtual ~TimeNode() = default;
 
 # pragma mark -
 # pragma mark Execution
-  
+
   /*! setup status of each #TimeEvent's #TimeNode considering a date
    \param #TimeValue a date that will be compared to the #TimeNode's date */
-  virtual void setup(const TimeValue& = Zero) = 0;
-  
+  virtual void setup(const TimeValue& = OSSIA::Zero) = 0;
+
   /*! make all #TimeEvent's #TimeNode to happen */
   virtual void happen() = 0;
-  
+
   /*! dispose all #TimeEvent's #TimeNode */
   virtual void dispose() = 0;
 
 # pragma mark -
 # pragma mark Accessors
-  
+
   /*! get the date
    \return #TimeValue the date */
   virtual TimeValue getDate() const = 0;
-    
+
   /*! get the expression of the #TimeNode
    \return std::shared_ptr<#Expression> */
   virtual const std::shared_ptr<Expression> & getExpression() const = 0;
-  
+
   /*! get the expression of the #TimeNode
    \param std::shared_ptr<#Expression>
    \return #TimeNode the time node */
   virtual TimeNode & setExpression(const std::shared_ptr<Expression>) = 0;
-  
+
   /*! get the simultaneity margin
    \return #TimeValue the simultaneity margin */
   virtual TimeValue getSimultaneityMargin() const = 0;
-  
+
   /*! set the simultaneity margin
    \todo remove setter and move the setting into constructor (?)
-   \param #TimeValue the simultaneity margin 
+   \param #TimeValue the simultaneity margin
    \return #TimeNode the time node */
   virtual TimeNode & setSimultaneityMargin(const TimeValue&) = 0;
 
 # pragma mark -
 # pragma mark #TimeEvents
-  
+
   /*! create and store a #TimeEvent
    \param #Container<#TimeEvent>::const_iterator where to store the #TimeEvent
    \param #TimeEvent::ExecutionCallback to get #TimeEvent's status back,
@@ -102,12 +103,12 @@ public:
   virtual iterator emplace(const_iterator,
                            TimeEvent::ExecutionCallback,
                            std::shared_ptr<Expression> = ExpressionTrue) = 0;
-  
+
   /*! get the #TimeEvents of the #TimeNode
    \return #Container<#TimeEvent> */
   Container<TimeEvent>& timeEvents()
   { return m_timeEvents; }
-  
+
   /*! get the #TimeEvents of the #TimeNode
    \return #Container<#TimeEvent> */
   const Container<TimeEvent>& timeEvents() const

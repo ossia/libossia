@@ -60,7 +60,8 @@ mStartEvent(other->mStartEvent),
 mEndEvent(other->mEndEvent),
 mDurationMin(other->mDurationMin),
 mDurationMax(other->mDurationMax)
-{}
+{
+}
 
 shared_ptr<TimeConstraint> JamomaTimeConstraint::clone() const
 {
@@ -77,10 +78,10 @@ void JamomaTimeConstraint::setup(const TimeValue& date)
 {
   TimeEvent::Status startStatus = mStartEvent->getStatus();
   TimeEvent::Status endStatus = mEndEvent->getStatus();
-  
+
   // be sure the clock is stopped
   stop();
-  
+
   // the constraint is in the past
   if (startStatus == TimeEvent::Status::HAPPENED &&
       endStatus == TimeEvent::Status::HAPPENED)
@@ -94,10 +95,10 @@ void JamomaTimeConstraint::setup(const TimeValue& date)
            endStatus == TimeEvent::Status::NONE)
   {
     TimeValue startDate = mStartEvent->getTimeNode()->getDate();
-    
+
     // set clock offset
     setOffset(date - startDate);
-    
+
     // set end TimeEvent status depending on duration min and max
     //! \note this test have to be made according tests made into JamomaTimeConstraint::process
     if (date > mDurationMin && date <= mDurationMax)
@@ -105,7 +106,7 @@ void JamomaTimeConstraint::setup(const TimeValue& date)
       shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(mEndEvent);
       e->setStatus(TimeEvent::Status::PENDING);
     }
-    
+
     // launch the clock
     start();
   }
@@ -124,7 +125,7 @@ shared_ptr<StateElement> JamomaTimeConstraint::state(const TimeValue& position, 
   mCurrentState->stateElements().clear();
 
   // get the state of each TimeProcess for the position and the date
-  for (auto& timeProcess : timeProcesses())
+  for (const auto& timeProcess : timeProcesses())
   {
     mCurrentState->stateElements().push_back(timeProcess->state(position, date));
   }
@@ -199,12 +200,23 @@ void JamomaTimeConstraint::addTimeProcess(shared_ptr<TimeProcess> timeProcess)
 
 void JamomaTimeConstraint::removeTimeProcess(std::shared_ptr<TimeProcess> timeProcess)
 {
-  timeProcesses().erase(find(timeProcesses().begin(), timeProcesses().end(), timeProcess));
-  mStartEvent->removeState(timeProcess->getStartState());
-  mEndEvent->removeState(timeProcess->getEndState());
+  auto it = find(timeProcesses().begin(), timeProcesses().end(), timeProcess);
+  if(it != timeProcesses().end())
+  {
+      timeProcesses().erase(it);
 
-  JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
-  t->setParentTimeConstraint(nullptr);
+      if(timeProcess)
+      {
+          mStartEvent->removeState(timeProcess->getStartState());
+          mEndEvent->removeState(timeProcess->getEndState());
+
+          JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
+          if(t)
+          {
+              t->setParentTimeConstraint(nullptr);
+          }
+      }
+  }
 }
 
 # pragma mark -
@@ -212,5 +224,6 @@ void JamomaTimeConstraint::removeTimeProcess(std::shared_ptr<TimeProcess> timePr
 
 void JamomaTimeConstraint::ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks)
 {
-  (mCallback)(position, date, state(position, date));
+  if(mCallback)
+    (mCallback)(position, date, state(position, date));
 }

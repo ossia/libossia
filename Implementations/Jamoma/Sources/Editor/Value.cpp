@@ -72,22 +72,22 @@ bool Bool::operator== (const Value& v) const
     }
     case Value::Type::BOOL :
     {
-      Bool* b = (Bool*)&v;
+      auto b = static_cast<const Bool*>(&v);
       return value == b->value;
     }
     case Value::Type::INT :
     {
-      Int* i = (Int*)&v;
+      auto i = static_cast<const Int*>(&v);
       return value == i->value;
     }
     case Value::Type::FLOAT :
     {
-      Float* f = (Float*)&v;
+      auto f = static_cast<const Float*>(&v);
       return value == f->value;
     }
     case Value::Type::CHAR :
     {
-      Char* c = (Char*)&v;
+      auto c = static_cast<const Char*>(&v);
       return value == c->value;
     }
     case Value::Type::STRING :
@@ -96,7 +96,7 @@ bool Bool::operator== (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this == *t->value[0];
       else
@@ -108,7 +108,7 @@ bool Bool::operator== (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this == (*d->value->getAddress()->getValue());
     }
@@ -136,22 +136,22 @@ bool Bool::operator> (const Value& v) const
     }
     case Value::Type::BOOL :
     {
-      Bool* b = (Bool*)&v;
+      auto b = static_cast<const Bool*>(&v);
       return value > b->value;
     }
     case Value::Type::INT :
     {
-      Int* i = (Int*)&v;
+      auto i = static_cast<const Int*>(&v);
       return value > i->value;
     }
     case Value::Type::FLOAT :
     {
-      Float* f = (Float*)&v;
+      auto f = static_cast<const Float*>(&v);
       return value > f->value;
     }
     case Value::Type::CHAR :
     {
-      Char* c = (Char*)&v;
+      auto c = static_cast<const Char*>(&v);
       return value > c->value;
     }
     case Value::Type::STRING :
@@ -160,7 +160,7 @@ bool Bool::operator> (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this > *t->value[0];
       else
@@ -172,7 +172,7 @@ bool Bool::operator> (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this > (*d->value->getAddress()->getValue());
     }
@@ -195,22 +195,22 @@ bool Bool::operator>= (const Value& v) const
     }
     case Value::Type::BOOL :
     {
-      Bool* b = (Bool*)&v;
+      auto b = static_cast<const Bool*>(&v);
       return value >= b->value;
     }
     case Value::Type::INT :
     {
-      Int* i = (Int*)&v;
+      auto i = static_cast<const Int*>(&v);
       return value >= i->value;
     }
     case Value::Type::FLOAT :
     {
-      Float* f = (Float*)&v;
+      auto f = static_cast<const Float*>(&v);
       return value >= f->value;
     }
     case Value::Type::CHAR :
     {
-      Char* c = (Char*)&v;
+      auto c = static_cast<const Char*>(&v);
       return value >= c->value;
     }
     case Value::Type::STRING :
@@ -219,7 +219,7 @@ bool Bool::operator>= (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this >= *t->value[0];
       else
@@ -231,7 +231,7 @@ bool Bool::operator>= (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this >= (*d->value->getAddress()->getValue());
     }
@@ -254,22 +254,22 @@ bool Bool::operator< (const Value& v) const
       }
       case Value::Type::BOOL :
       {
-        Bool* b = (Bool*)&v;
+        auto b = static_cast<const Bool*>(&v);
         return value < b->value;
       }
       case Value::Type::INT :
       {
-        Int* i = (Int*)&v;
+        auto i = static_cast<const Int*>(&v);
         return value < i->value;
       }
       case Value::Type::FLOAT :
       {
-        Float* f = (Float*)&v;
+        auto f = static_cast<const Float*>(&v);
         return value < f->value;
       }
       case Value::Type::CHAR :
       {
-        Char* c = (Char*)&v;
+        auto c = static_cast<const Char*>(&v);
         return value < c->value;
       }
       case Value::Type::STRING :
@@ -278,7 +278,7 @@ bool Bool::operator< (const Value& v) const
       }
       case Value::Type::TUPLE :
       {
-        Tuple* t = (Tuple*)&v;
+        auto t = static_cast<const Tuple*>(&v);
         if (t->value.size() == 1)
           return *this < *t->value[0];
         else
@@ -290,7 +290,7 @@ bool Bool::operator< (const Value& v) const
       }
       case Value::Type::DESTINATION :
       {
-        Destination* d = (Destination*)&v;
+        auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
           return *this < (*d->value->getAddress()->getValue());
       }
@@ -313,22 +313,22 @@ bool Bool::operator<= (const Value& v) const
       }
       case Value::Type::BOOL :
       {
-        Bool* b = (Bool*)&v;
+        auto b = static_cast<const Bool*>(&v);
         return value <= b->value;
       }
       case Value::Type::INT :
       {
-        Int* i = (Int*)&v;
+        auto i = static_cast<const Int*>(&v);
         return value <= i->value;
       }
       case Value::Type::FLOAT :
       {
-        Float* f = (Float*)&v;
+        auto f = static_cast<const Float*>(&v);
         return value <= f->value;
       }
       case Value::Type::CHAR :
       {
-        Char* c = (Char*)&v;
+        auto c = static_cast<const Char*>(&v);
         return value <= c->value;
       }
       case Value::Type::STRING :
@@ -337,7 +337,7 @@ bool Bool::operator<= (const Value& v) const
       }
       case Value::Type::TUPLE :
       {
-        Tuple* t = (Tuple*)&v;
+        auto t = static_cast<const Tuple*>(&v);
         if (t->value.size() == 1)
           return *this <= *t->value[0];
         else
@@ -349,7 +349,7 @@ bool Bool::operator<= (const Value& v) const
       }
       case Value::Type::DESTINATION :
       {
-        Destination* d = (Destination*)&v;
+        auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
           return *this <= (*d->value->getAddress()->getValue());
       }
@@ -385,22 +385,22 @@ bool Int::operator== (const Value& v) const
     }
     case Value::Type::BOOL :
     {
-      Bool* b = (Bool*)&v;
+      auto b = static_cast<const Bool*>(&v);
       return value == b->value;
     }
     case Value::Type::INT :
     {
-      Int* i = (Int*)&v;
+      auto i = static_cast<const Int*>(&v);
       return value == i->value;
     }
     case Value::Type::FLOAT :
     {
-      Float* f = (Float*)&v;
+      auto f = static_cast<const Float*>(&v);
       return value == f->value;
     }
     case Value::Type::CHAR :
     {
-      Char* c = (Char*)&v;
+      auto c = static_cast<const Char*>(&v);
       return value == c->value;
     }
     case Value::Type::STRING :
@@ -409,7 +409,7 @@ bool Int::operator== (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this == *t->value[0];
       else
@@ -421,7 +421,7 @@ bool Int::operator== (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this == (*d->value->getAddress()->getValue());
     }
@@ -449,22 +449,22 @@ bool Int::operator> (const Value& v) const
     }
     case Value::Type::BOOL :
     {
-      Bool* b = (Bool*)&v;
+      auto b = static_cast<const Bool*>(&v);
       return value > b->value;
     }
     case Value::Type::INT :
     {
-      Int* i = (Int*)&v;
+      auto i = static_cast<const Int*>(&v);
       return value > i->value;
     }
     case Value::Type::FLOAT :
     {
-      Float* f = (Float*)&v;
+      auto f = static_cast<const Float*>(&v);
       return value > f->value;
     }
     case Value::Type::CHAR :
     {
-      Char* c = (Char*)&v;
+      auto c = static_cast<const Char*>(&v);
       return value > c->value;
     }
     case Value::Type::STRING :
@@ -473,7 +473,7 @@ bool Int::operator> (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this > *t->value[0];
       else
@@ -485,7 +485,7 @@ bool Int::operator> (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this > (*d->value->getAddress()->getValue());
     }
@@ -508,22 +508,22 @@ bool Int::operator>= (const Value& v) const
     }
     case Value::Type::BOOL :
     {
-      Bool* b = (Bool*)&v;
+      auto b = static_cast<const Bool*>(&v);
       return value >= b->value;
     }
     case Value::Type::INT :
     {
-      Int* i = (Int*)&v;
+      auto i = static_cast<const Int*>(&v);
       return value >= i->value;
     }
     case Value::Type::FLOAT :
     {
-      Float* f = (Float*)&v;
+      auto f = static_cast<const Float*>(&v);
       return value >= f->value;
     }
     case Value::Type::CHAR :
     {
-      Char* c = (Char*)&v;
+      auto c = static_cast<const Char*>(&v);
       return value >= c->value;
     }
     case Value::Type::STRING :
@@ -532,7 +532,7 @@ bool Int::operator>= (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this >= *t->value[0];
       else
@@ -548,7 +548,7 @@ bool Int::operator>= (const Value& v) const
     }
     case Value::Type::BEHAVIOR :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this >= (*d->value->getAddress()->getValue());
     }
@@ -567,22 +567,22 @@ bool Int::operator< (const Value& v) const
       }
       case Value::Type::BOOL :
       {
-        Bool* b = (Bool*)&v;
+        auto b = static_cast<const Bool*>(&v);
         return value < b->value;
       }
       case Value::Type::INT :
       {
-        Int* i = (Int*)&v;
+        auto i = static_cast<const Int*>(&v);
         return value < i->value;
       }
       case Value::Type::FLOAT :
       {
-        Float* f = (Float*)&v;
+        auto f = static_cast<const Float*>(&v);
         return value < f->value;
       }
       case Value::Type::CHAR :
       {
-        Char* c = (Char*)&v;
+        auto c = static_cast<const Char*>(&v);
         return value < c->value;
       }
       case Value::Type::STRING :
@@ -591,7 +591,7 @@ bool Int::operator< (const Value& v) const
       }
       case Value::Type::TUPLE :
       {
-        Tuple* t = (Tuple*)&v;
+        auto t = static_cast<const Tuple*>(&v);
         if (t->value.size() == 1)
           return *this < *t->value[0];
         else
@@ -603,7 +603,7 @@ bool Int::operator< (const Value& v) const
       }
       case Value::Type::DESTINATION :
       {
-        Destination* d = (Destination*)&v;
+        auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
           return *this < (*d->value->getAddress()->getValue());
       }
@@ -626,22 +626,22 @@ bool Int::operator<= (const Value& v) const
       }
       case Value::Type::BOOL :
       {
-        Bool* b = (Bool*)&v;
+        auto b = static_cast<const Bool*>(&v);
         return value <= b->value;
       }
       case Value::Type::INT :
       {
-        Int* i = (Int*)&v;
+        auto i = static_cast<const Int*>(&v);
         return value <= i->value;
       }
       case Value::Type::FLOAT :
       {
-        Float* f = (Float*)&v;
+        auto f = static_cast<const Float*>(&v);
         return value <= f->value;
       }
       case Value::Type::CHAR :
       {
-        Char* c = (Char*)&v;
+        auto c = static_cast<const Char*>(&v);
         return value <= c->value;
       }
       case Value::Type::STRING :
@@ -650,7 +650,7 @@ bool Int::operator<= (const Value& v) const
       }
       case Value::Type::TUPLE :
       {
-        Tuple* t = (Tuple*)&v;
+        auto t = static_cast<const Tuple*>(&v);
         if (t->value.size() == 1)
           return *this <= *t->value[0];
         else
@@ -666,7 +666,7 @@ bool Int::operator<= (const Value& v) const
       }
       case Value::Type::BEHAVIOR :
       {
-        Destination* d = (Destination*)&v;
+        auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
           return *this <= (*d->value->getAddress()->getValue());
       }
@@ -698,22 +698,22 @@ bool Float::operator== (const Value& v) const
     }
     case Value::Type::BOOL :
     {
-      Bool* b = (Bool*)&v;
+      auto b = static_cast<const Bool*>(&v);
       return value == b->value;
     }
     case Value::Type::INT :
     {
-      Int* i = (Int*)&v;
+      auto i = static_cast<const Int*>(&v);
       return value == i->value;
     }
     case Value::Type::FLOAT :
     {
-      Float* f = (Float*)&v;
+      auto f = static_cast<const Float*>(&v);
       return value == f->value;
     }
     case Value::Type::CHAR :
     {
-      Char* c = (Char*)&v;
+      auto c = static_cast<const Char*>(&v);
       return value == c->value;
     }
     case Value::Type::STRING :
@@ -722,7 +722,7 @@ bool Float::operator== (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this == *t->value[0];
       else
@@ -734,7 +734,7 @@ bool Float::operator== (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this == (*d->value->getAddress()->getValue());
     }
@@ -762,22 +762,22 @@ bool Float::operator> (const Value& v) const
     }
     case Value::Type::BOOL :
     {
-      Bool* b = (Bool*)&v;
+      auto b = static_cast<const Bool*>(&v);
       return value > b->value;
     }
     case Value::Type::INT :
     {
-      Int* i = (Int*)&v;
+      auto i = static_cast<const Int*>(&v);
       return value > i->value;
     }
     case Value::Type::FLOAT :
     {
-      Float* f = (Float*)&v;
+      auto f = static_cast<const Float*>(&v);
       return value > f->value;
     }
     case Value::Type::CHAR :
     {
-      Char* c = (Char*)&v;
+      auto c = static_cast<const Char*>(&v);
       return value > c->value;
     }
     case Value::Type::STRING :
@@ -786,7 +786,7 @@ bool Float::operator> (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this > *t->value[0];
       else
@@ -798,7 +798,7 @@ bool Float::operator> (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this > (*d->value->getAddress()->getValue());
     }
@@ -821,22 +821,22 @@ bool Float::operator>= (const Value& v) const
     }
     case Value::Type::BOOL :
     {
-      Bool* b = (Bool*)&v;
+      auto b = static_cast<const Bool*>(&v);
       return value >= b->value;
     }
     case Value::Type::INT :
     {
-      Int* i = (Int*)&v;
+      auto i = static_cast<const Int*>(&v);
       return value >= i->value;
     }
     case Value::Type::FLOAT :
     {
-      Float* f = (Float*)&v;
+      auto f = static_cast<const Float*>(&v);
       return value >= f->value;
     }
     case Value::Type::CHAR :
     {
-      Char* c = (Char*)&v;
+      auto c = static_cast<const Char*>(&v);
       return value >= c->value;
     }
     case Value::Type::STRING :
@@ -845,7 +845,7 @@ bool Float::operator>= (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this >= *t->value[0];
       else
@@ -857,7 +857,7 @@ bool Float::operator>= (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this >= (*d->value->getAddress()->getValue());
     }
@@ -880,22 +880,22 @@ bool Float::operator< (const Value& v) const
       }
       case Value::Type::BOOL :
       {
-        Bool* b = (Bool*)&v;
+        auto b = static_cast<const Bool*>(&v);
         return value < b->value;
       }
       case Value::Type::INT :
       {
-        Int* i = (Int*)&v;
+        auto i = static_cast<const Int*>(&v);
         return value < i->value;
       }
       case Value::Type::FLOAT :
       {
-        Float* f = (Float*)&v;
+        auto f = static_cast<const Float*>(&v);
         return value < f->value;
       }
       case Value::Type::CHAR :
       {
-        Char* c = (Char*)&v;
+        auto c = static_cast<const Char*>(&v);
         return value < c->value;
       }
       case Value::Type::STRING :
@@ -904,7 +904,7 @@ bool Float::operator< (const Value& v) const
       }
       case Value::Type::TUPLE :
       {
-        Tuple* t = (Tuple*)&v;
+        auto t = static_cast<const Tuple*>(&v);
         if (t->value.size() == 1)
           return *this < *t->value[0];
         else
@@ -916,7 +916,7 @@ bool Float::operator< (const Value& v) const
       }
       case Value::Type::DESTINATION :
       {
-        Destination* d = (Destination*)&v;
+        auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
           return *this < (*d->value->getAddress()->getValue());
       }
@@ -939,22 +939,22 @@ bool Float::operator<= (const Value& v) const
       }
       case Value::Type::BOOL :
       {
-        Bool* b = (Bool*)&v;
+        auto b = static_cast<const Bool*>(&v);
         return value <= b->value;
       }
       case Value::Type::INT :
       {
-        Int* i = (Int*)&v;
+        auto i = static_cast<const Int*>(&v);
         return value <= i->value;
       }
       case Value::Type::FLOAT :
       {
-        Float* f = (Float*)&v;
+        auto f = static_cast<const Float*>(&v);
         return value <= f->value;
       }
       case Value::Type::CHAR :
       {
-        Char* c = (Char*)&v;
+        auto c = static_cast<const Char*>(&v);
         return value <= c->value;
       }
       case Value::Type::STRING :
@@ -963,7 +963,7 @@ bool Float::operator<= (const Value& v) const
       }
       case Value::Type::TUPLE :
       {
-        Tuple* t = (Tuple*)&v;
+        auto t = static_cast<const Tuple*>(&v);
         if (t->value.size() == 1)
           return *this <= *t->value[0];
         else
@@ -975,7 +975,7 @@ bool Float::operator<= (const Value& v) const
       }
       case Value::Type::DESTINATION :
       {
-        Destination* d = (Destination*)&v;
+        auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
           return *this <= (*d->value->getAddress()->getValue());
       }
@@ -1012,22 +1012,22 @@ bool Char::operator== (const Value& v) const
     }
     case Value::Type::BOOL :
     {
-      Bool* b = (Bool*)&v;
+      auto b = static_cast<const Bool*>(&v);
       return value == b->value;
     }
     case Value::Type::INT :
     {
-      Int* i = (Int*)&v;
+      auto i = static_cast<const Int*>(&v);
       return value == i->value;
     }
     case Value::Type::FLOAT :
     {
-      Float* f = (Float*)&v;
+      auto f = static_cast<const Float*>(&v);
       return value == f->value;
     }
     case Value::Type::CHAR :
     {
-      Char* c = (Char*)&v;
+      auto c = static_cast<const Char*>(&v);
       return value == c->value;
     }
     case Value::Type::STRING :
@@ -1036,7 +1036,7 @@ bool Char::operator== (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this == *t->value[0];
       else
@@ -1048,7 +1048,7 @@ bool Char::operator== (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this == (*d->value->getAddress()->getValue());
     }
@@ -1076,22 +1076,22 @@ bool Char::operator> (const Value& v) const
     }
     case Value::Type::BOOL :
     {
-      Bool* b = (Bool*)&v;
+      auto b = static_cast<const Bool*>(&v);
       return value > b->value;
     }
     case Value::Type::INT :
     {
-      Int* i = (Int*)&v;
+      auto i = static_cast<const Int*>(&v);
       return value > i->value;
     }
     case Value::Type::FLOAT :
     {
-      Float* f = (Float*)&v;
+      auto f = static_cast<const Float*>(&v);
       return value > f->value;
     }
     case Value::Type::CHAR :
     {
-      Char* c = (Char*)&v;
+      auto c = static_cast<const Char*>(&v);
       return value > c->value;
     }
     case Value::Type::STRING :
@@ -1100,7 +1100,7 @@ bool Char::operator> (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this > *t->value[0];
       else
@@ -1112,7 +1112,7 @@ bool Char::operator> (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this > (*d->value->getAddress()->getValue());
     }
@@ -1135,22 +1135,22 @@ bool Char::operator>= (const Value& v) const
     }
     case Value::Type::BOOL :
     {
-      Bool* b = (Bool*)&v;
+      auto b = static_cast<const Bool*>(&v);
       return value >= b->value;
     }
     case Value::Type::INT :
     {
-      Int* i = (Int*)&v;
+      auto i = static_cast<const Int*>(&v);
       return value >= i->value;
     }
     case Value::Type::FLOAT :
     {
-      Float* f = (Float*)&v;
+      auto f = static_cast<const Float*>(&v);
       return value >= f->value;
     }
     case Value::Type::CHAR :
     {
-      Char* c = (Char*)&v;
+      auto c = static_cast<const Char*>(&v);
       return value >= c->value;
     }
     case Value::Type::STRING :
@@ -1159,7 +1159,7 @@ bool Char::operator>= (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this >= *t->value[0];
       else
@@ -1171,7 +1171,7 @@ bool Char::operator>= (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this >= (*d->value->getAddress()->getValue());
     }
@@ -1194,22 +1194,22 @@ bool Char::operator< (const Value& v) const
       }
       case Value::Type::BOOL :
       {
-        Bool* b = (Bool*)&v;
+        auto b = static_cast<const Bool*>(&v);
         return value < b->value;
       }
       case Value::Type::INT :
       {
-        Int* i = (Int*)&v;
+        auto i = static_cast<const Int*>(&v);
         return value < i->value;
       }
       case Value::Type::FLOAT :
       {
-        Float* f = (Float*)&v;
+        auto f = static_cast<const Float*>(&v);
         return value < f->value;
       }
       case Value::Type::CHAR :
       {
-        Char* c = (Char*)&v;
+        auto c = static_cast<const Char*>(&v);
         return value < c->value;
       }
       case Value::Type::STRING :
@@ -1218,7 +1218,7 @@ bool Char::operator< (const Value& v) const
       }
       case Value::Type::TUPLE :
       {
-        Tuple* t = (Tuple*)&v;
+        auto t = static_cast<const Tuple*>(&v);
         if (t->value.size() == 1)
           return *this < *t->value[0];
         else
@@ -1230,7 +1230,7 @@ bool Char::operator< (const Value& v) const
       }
       case Value::Type::DESTINATION :
       {
-        Destination* d = (Destination*)&v;
+        auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
           return *this < (*d->value->getAddress()->getValue());
       }
@@ -1253,22 +1253,22 @@ bool Char::operator<= (const Value& v) const
       }
       case Value::Type::BOOL :
       {
-        Bool* b = (Bool*)&v;
+        auto b = static_cast<const Bool*>(&v);
         return value <= b->value;
       }
       case Value::Type::INT :
       {
-        Int* i = (Int*)&v;
+        auto i = static_cast<const Int*>(&v);
         return value <= i->value;
       }
       case Value::Type::FLOAT :
       {
-        Float* f = (Float*)&v;
+        auto f = static_cast<const Float*>(&v);
         return value <= f->value;
       }
       case Value::Type::CHAR :
       {
-        Char* c = (Char*)&v;
+        auto c = static_cast<const Char*>(&v);
         return value <= c->value;
       }
       case Value::Type::STRING :
@@ -1277,7 +1277,7 @@ bool Char::operator<= (const Value& v) const
       }
       case Value::Type::TUPLE :
       {
-        Tuple* t = (Tuple*)&v;
+        auto t = static_cast<const Tuple*>(&v);
         if (t->value.size() == 1)
           return *this <= *t->value[0];
         else
@@ -1289,7 +1289,7 @@ bool Char::operator<= (const Value& v) const
       }
       case Value::Type::DESTINATION :
       {
-        Destination* d = (Destination*)&v;
+        auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
           return *this <= (*d->value->getAddress()->getValue());
       }
@@ -1341,12 +1341,12 @@ bool String::operator== (const Value& v) const
     }
     case Value::Type::STRING :
     {
-      String* s = (String*)&v;
+      auto s = static_cast<const String*>(&v);
       return value == s->value;
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this == *t->value[0];
       else
@@ -1358,7 +1358,7 @@ bool String::operator== (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this == (*d->value->getAddress()->getValue());
     }
@@ -1402,12 +1402,12 @@ bool String::operator> (const Value& v) const
     }
     case Value::Type::STRING :
     {
-      String* s = (String*)&v;
+      auto s = static_cast<const String*>(&v);
       return value > s->value;
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this > *t->value[0];
       else
@@ -1419,7 +1419,7 @@ bool String::operator> (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this > (*d->value->getAddress()->getValue());
     }
@@ -1458,12 +1458,12 @@ bool String::operator>= (const Value& v) const
     }
     case Value::Type::STRING :
     {
-      String* s = (String*)&v;
+      auto s = static_cast<const String*>(&v);
       return value >= s->value;
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this >= *t->value[0];
       else
@@ -1475,7 +1475,7 @@ bool String::operator>= (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this >= (*d->value->getAddress()->getValue());
     }
@@ -1514,12 +1514,12 @@ bool String::operator< (const Value& v) const
       }
       case Value::Type::STRING :
       {
-        String* s = (String*)&v;
+        auto s = static_cast<const String*>(&v);
         return value < s->value;
       }
       case Value::Type::TUPLE :
       {
-        Tuple* t = (Tuple*)&v;
+        auto t = static_cast<const Tuple*>(&v);
         if (t->value.size() == 1)
           return *this < *t->value[0];
         else
@@ -1531,7 +1531,7 @@ bool String::operator< (const Value& v) const
       }
       case Value::Type::DESTINATION :
       {
-        Destination* d = (Destination*)&v;
+        auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
           return *this < (*d->value->getAddress()->getValue());
       }
@@ -1570,12 +1570,12 @@ bool String::operator<= (const Value& v) const
       }
       case Value::Type::STRING :
       {
-        String* s = (String*)&v;
+        auto s = static_cast<const String*>(&v);
         return value <= s->value;
       }
       case Value::Type::TUPLE :
       {
-        Tuple* t = (Tuple*)&v;
+        auto t = static_cast<const Tuple*>(&v);
         if (t->value.size() == 1)
           return *this <= *t->value[0];
         else
@@ -1587,7 +1587,7 @@ bool String::operator<= (const Value& v) const
       }
       case Value::Type::DESTINATION :
       {
-        Destination* d = (Destination*)&v;
+        auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
           return *this <= (*d->value->getAddress()->getValue());
       }
@@ -1613,7 +1613,7 @@ Tuple::Tuple(const Value* v)
 Tuple::Tuple(std::initializer_list<const Value*> v)
 {
   m_type = Type::TUPLE;
-  
+
   for (const auto & e : v)
     value.push_back(e->clone());
 }
@@ -1621,7 +1621,7 @@ Tuple::Tuple(std::initializer_list<const Value*> v)
 Tuple::Tuple(std::vector<const Value*> v)
 {
   m_type = Type::TUPLE;
-  
+
   for (const auto & e : v)
     value.push_back(e->clone());
 }
@@ -1631,7 +1631,7 @@ Value * Tuple::clone() const
   std::vector<const Value*> newValue;
   for (const auto & e : value)
     newValue.push_back(e->clone());
-  
+
   return new Tuple(newValue);
 }
 
@@ -1645,11 +1645,11 @@ bool Tuple::operator== (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
-      
+      auto t = static_cast<const Tuple*>(&v);
+
       if (value.size() != t->value.size())
         return false;
-      
+
       bool result = true;
       auto tit = t->value.begin();
       for (auto it = value.begin(); it != value.end();it++)
@@ -1659,14 +1659,14 @@ bool Tuple::operator== (const Value& v) const
           break;
         tit++;
       }
-      
+
       return result;
     }
     default :
     {
       if (value.size() == 1)
         return *value[0] == v;
-      
+
       return false;
     }
   }
@@ -1687,11 +1687,11 @@ bool Tuple::operator> (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
-      
+      auto t = static_cast<const Tuple*>(&v);
+
       if (value.size() != t->value.size())
         return false;
-      
+
       bool result = true;
       auto tit = t->value.begin();
       for (auto it = value.begin(); it != value.end();it++)
@@ -1701,14 +1701,14 @@ bool Tuple::operator> (const Value& v) const
           break;
         tit++;
       }
-      
+
       return result;
     }
     default :
     {
       if (value.size() == 1)
         return *value[0] > v;
-      
+
       return false;
     }
   }
@@ -1724,11 +1724,11 @@ bool Tuple::operator>= (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
-      
+      auto t = static_cast<const Tuple*>(&v);
+
       if (value.size() != t->value.size())
         return false;
-      
+
       bool result = true;
       auto tit = t->value.begin();
       for (auto it = value.begin(); it != value.end();it++)
@@ -1738,14 +1738,14 @@ bool Tuple::operator>= (const Value& v) const
           break;
         tit++;
       }
-      
+
       return result;
     }
     default :
     {
       if (value.size() == 1)
         return *value[0] >= v;
-      
+
       return false;
     }
   }
@@ -1761,7 +1761,7 @@ bool Tuple::operator< (const Value& v) const
       }
       case Value::Type::TUPLE :
       {
-        Tuple* t = (Tuple*)&v;
+        auto t = static_cast<const Tuple*>(&v);
 
         if (value.size() != t->value.size())
           return false;
@@ -1798,7 +1798,7 @@ bool Tuple::operator<= (const Value& v) const
       }
       case Value::Type::TUPLE :
       {
-        Tuple* t = (Tuple*)&v;
+        auto t = static_cast<const Tuple*>(&v);
 
         if (value.size() != t->value.size())
           return false;
@@ -1851,22 +1851,22 @@ bool Generic<T>::operator== (const Value& v) const
     }
     case Value::Type::BOOL :
     {
-      Bool* b = (Bool*)&v;
+      auto b = static_cast<const Bool*>(&v);
       return value == b->value;
     }
     case Value::Type::INT :
     {
-      Int* i = (Int*)&v;
+      auto i = static_cast<const Int*>(&v);
       return value == i->value;
     }
     case Value::Type::FLOAT :
     {
-      Float* f = (Float*)&v;
+      auto f = static_cast<const Float*>(&v);
       return value == f->value;
     }
     case Value::Type::CHAR :
     {
-      Char* c = (Char*)&v;
+      auto c = static_cast<const Char*>(&v);
       return value == c->value;
     }
     case Value::Type::STRING :
@@ -1875,7 +1875,7 @@ bool Generic<T>::operator== (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this == *t->value[0];
       else
@@ -1888,7 +1888,7 @@ bool Generic<T>::operator== (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this == (*d->value->getAddress()->getValue());
     }
@@ -1918,22 +1918,22 @@ bool Generic<T>::operator> (const Value& v) const
     }
     case Value::Type::BOOL :
     {
-      Bool* b = (Bool*)&v;
+      auto b = static_cast<const Bool*>(&v);
       return value == b->value;
     }
     case Value::Type::INT :
     {
-      Int* i = (Int*)&v;
+      auto i = static_cast<const Int*>(&v);
       return value > i->value;
     }
     case Value::Type::FLOAT :
     {
-      Float* f = (Float*)&v;
+      auto f = static_cast<const Float*>(&v);
       return value > f->value;
     }
     case Value::Type::CHAR :
     {
-      Char* c = (Char*)&v;
+      auto c = static_cast<const Char*>(&v);
       return value > c->value;
     }
     case Value::Type::STRING :
@@ -1942,7 +1942,7 @@ bool Generic<T>::operator> (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this > *t->value[0];
       else
@@ -1955,7 +1955,7 @@ bool Generic<T>::operator> (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this > (*d->value->getAddress()->getValue());
     }
@@ -1979,22 +1979,22 @@ bool Generic<T>::operator>= (const Value& v) const
     }
     case Value::Type::BOOL :
     {
-      Bool* b = (Bool*)&v;
+      auto b = static_cast<const Bool*>(&v);
       return value >= b->value;
     }
     case Value::Type::INT :
     {
-      Int* i = (Int*)&v;
+      auto i = static_cast<const Int*>(&v);
       return value >= i->value;
     }
     case Value::Type::FLOAT :
     {
-      Float* f = (Float*)&v;
+      auto f = static_cast<const Float*>(&v);
       return value >= f->value;
     }
     case Value::Type::CHAR :
     {
-      Char* c = (Char*)&v;
+      auto c = static_cast<const Char*>(&v);
       return value >= c->value;
     }
     case Value::Type::STRING :
@@ -2003,7 +2003,7 @@ bool Generic<T>::operator>= (const Value& v) const
     }
     case Value::Type::TUPLE :
     {
-      Tuple* t = (Tuple*)&v;
+      auto t = static_cast<const Tuple*>(&v);
       if (t->value.size() == 1)
         return *this >= *t->value[0];
       else
@@ -2016,7 +2016,7 @@ bool Generic<T>::operator>= (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
         return *this >= (*d->value->getAddress()->getValue());
     }
@@ -2064,7 +2064,7 @@ bool Destination::operator== (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (value->getAddress() && d->value->getAddress())
         return (*value->getAddress()->getValue()) == (*d->value->getAddress()->getValue());
     }
@@ -2074,7 +2074,7 @@ bool Destination::operator== (const Value& v) const
       {
         return (*value->getAddress()->getValue()) == v;
       }
-      
+
       return false;
     }
   }
@@ -2095,7 +2095,7 @@ bool Destination::operator> (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (value->getAddress() && d->value->getAddress())
         return (*value->getAddress()->getValue()) > (*d->value->getAddress()->getValue());
     }
@@ -2105,7 +2105,7 @@ bool Destination::operator> (const Value& v) const
       {
         return (*value->getAddress()->getValue()) > v;
       }
-      
+
       return false;
     }
   }
@@ -2121,7 +2121,7 @@ bool Destination::operator>= (const Value& v) const
     }
     case Value::Type::DESTINATION :
     {
-      Destination* d = (Destination*)&v;
+      auto d = static_cast<const Destination*>(&v);
       if (value->getAddress() && d->value->getAddress())
         return (*value->getAddress()->getValue()) >= (*d->value->getAddress()->getValue());
     }
@@ -2131,7 +2131,7 @@ bool Destination::operator>= (const Value& v) const
       {
         return (*value->getAddress()->getValue()) >= v;
       }
-      
+
       return false;
     }
   }

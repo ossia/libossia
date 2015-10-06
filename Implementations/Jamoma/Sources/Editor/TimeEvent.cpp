@@ -48,7 +48,8 @@ void JamomaTimeEvent::happen()
     timeConstraint->start();
   }
 
-  (mCallback)(mStatus);
+  if(mCallback)
+      (mCallback)(mStatus);
 }
 
 void JamomaTimeEvent::dispose()
@@ -58,7 +59,8 @@ void JamomaTimeEvent::dispose()
 
   mStatus = TimeEvent::Status::DISPOSED;
 
-  (mCallback)(mStatus);
+  if(mCallback)
+      (mCallback)(mStatus);
 }
 
 # pragma mark -
@@ -193,7 +195,8 @@ void JamomaTimeEvent::process()
 void JamomaTimeEvent::setStatus(Status status)
 {
   mStatus = status;
-  (mCallback)(mStatus);
+  if(mCallback)
+      (mCallback)(mStatus);
 }
 
 bool JamomaTimeEvent::isObservingExpression()

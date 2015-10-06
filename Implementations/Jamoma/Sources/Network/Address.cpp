@@ -565,42 +565,42 @@ void JamomaAddress::convertValueIntoTTValue(const Value * value, TTValue & v) co
 
     case Value::Type::BOOL :
     {
-      Bool * b = (Bool*)value;
+      auto b = static_cast<const Bool*>(value);
       v = TTBoolean(b->value);
       break;
     }
 
     case Value::Type::INT :
     {
-      Int * i = (Int*)value;
+      auto i = static_cast<const Int*>(value);
       v = TTInt32(i->value);
       break;
     }
 
     case Value::Type::FLOAT :
     {
-      Float * f = (Float*)value;
+      auto f = static_cast<const Float*>(value);
       v = TTFloat64(f->value);
       break;
     }
 
     case Value::Type::CHAR :
     {
-      Char * c = (Char*)value;
+      auto c = static_cast<const Char*>(value);
       v = TTSymbol(c->value);
       break;
     }
 
     case Value::Type::STRING :
     {
-      String * s = (String*)value;
+      auto s = static_cast<const String*>(value);
       v = TTSymbol(s->value);
       break;
     }
 
     case Value::Type::DESTINATION :
     {
-      Destination * d = (Destination*)value;
+      auto d = static_cast<const Destination*>(value);
       v = TTAddress(buildNodePath(d->value).data());
       break;
     }
@@ -610,7 +610,7 @@ void JamomaAddress::convertValueIntoTTValue(const Value * value, TTValue & v) co
 
     case Value::Type::TUPLE :
     {
-      Tuple * t = (Tuple*)value;
+      auto t = static_cast<const Tuple*>(value);
 
       for (const auto & e : t->value)
       {
