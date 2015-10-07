@@ -28,6 +28,7 @@ private:
 # pragma mark Implementation specific
   
   T mInitialValue;
+  Destination* mInitialDestination;
   map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> mPointsMap;
   
 public:
@@ -62,6 +63,12 @@ public:
   
   void setInitialValue(const T) override;
   
+  void setInitialValue(const Destination*) override;
+  
   map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> getPointsMap() const override;
 
+# pragma mark -
+# pragma mark Implementation specific
+  
+  T convertToTemplateTypeValue(const Value *) const;
 };

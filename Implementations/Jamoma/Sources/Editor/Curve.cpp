@@ -85,7 +85,7 @@ template <typename T>
 T JamomaCurve<T>::valueAt(const TimeValue& abscissa) const
 {
   TimeValue lastAbscissa(0.);
-  T lastValue = mInitialValue;
+  T lastValue = getInitialValue();
   
   for (auto it = mPointsMap.begin(); it != mPointsMap.end(); it++)
   {
@@ -113,17 +113,88 @@ T JamomaCurve<T>::valueAt(const TimeValue& abscissa) const
 template <typename T>
 T JamomaCurve<T>::getInitialValue() const
 {
-  return mInitialValue;
+  if (mInitialDestination == nullptr)
+  {
+    return mInitialValue;
+  }
+  else
+  {
+    auto address = mInitialDestination->value->getAddress();
+    
+    if (!address)
+      throw runtime_error("getting an address value using from a destination without address");
+    
+    return convertToTemplateTypeValue(address->pullValue());
+  }
 }
 
 template <typename T>
 void JamomaCurve<T>::setInitialValue(const T value)
 {
   mInitialValue = value;
+  
+  // clear initial destination
+  mInitialDestination = nullptr;
+}
+
+template <typename T>
+void JamomaCurve<T>::setInitialValue(const Destination* destination)
+{
+  mInitialDestination = static_cast<Destination*>(destination->clone());
 }
 
 template <typename T>
 map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> JamomaCurve<T>::getPointsMap() const
 {
   return mPointsMap;
+}
+
+# pragma mark -
+# pragma mark Implementation specific
+
+template <typename T>
+T JamomaCurve<T>::convertToTemplateTypeValue(const Value * value) const
+{
+  switch (value->getType())
+  {
+    case Value::Type::BOOL :
+    {
+      auto b = static_cast<const Bool*>(value);
+      return b->value;
+    }
+      
+    case Value::Type::INT :
+    {
+      auto i = static_cast<const Int*>(value);
+      return i->value;
+    }
+      
+    case Value::Type::FLOAT :
+    {
+      auto f = static_cast<const Float*>(value);
+      return f->value;
+    }
+      
+    case Value::Type::CHAR :
+    {
+      auto c = static_cast<const Char*>(value);
+      return c->value;
+    }
+    
+    case Value::Type::TUPLE :
+    {
+      auto t = static_cast<const Tuple*>(value);
+      return convertToTemplateTypeValue(t->value[0]);
+    }
+      
+    case Value::Type::GENERIC :
+    {
+      //! \todo GENERIC case
+    }
+      
+    default :
+    {
+      throw runtime_error("converting none numerical value");
+    }
+  }
 }

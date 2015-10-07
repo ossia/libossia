@@ -22,6 +22,7 @@
 
 #include "TimeValue.h"
 #include "Value.h"
+#include "Network/Node.h"
 #include "Misc/Container.h"
 
 namespace OSSIA
@@ -96,6 +97,10 @@ public:
   /*! set initial curve value
    \param const T value */
   virtual void setInitialValue(const T) = 0;
+  
+  /*! set initial curve value using a Destination
+   \param const Destination* */
+  virtual void setInitialValue(const Destination*) = 0;
   
   /*! get initial curve value
    \return std::map<const TimeValue, std::pair<T, std::shared_ptr<CurveSegment<T>>>> map of {abscissa, {value, previous segment} */
