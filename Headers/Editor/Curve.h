@@ -91,16 +91,22 @@ public:
 # pragma mark Accessors
   
   /*! get initial curve value
+   \details if there is an initial destination, it will return the value of the address
    \return T value */
   virtual T getInitialValue() const = 0;
   
   /*! set initial curve value
+   \details if there is an initial destination, this accessor is useless
    \param const T value */
   virtual void setInitialValue(const T) = 0;
   
+  /*! get initial curve destination
+   \return const Destination* */
+  virtual const Destination* getInitialDestination() const = 0;
+  
   /*! set initial curve value using a Destination
    \param const Destination* */
-  virtual void setInitialValue(const Destination*) = 0;
+  virtual void setInitialDestination(const Destination*) = 0;
   
   /*! get initial curve value
    \return std::map<const TimeValue, std::pair<T, std::shared_ptr<CurveSegment<T>>>> map of {abscissa, {value, previous segment} */

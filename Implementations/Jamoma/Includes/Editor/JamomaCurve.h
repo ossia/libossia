@@ -63,7 +63,9 @@ public:
   
   void setInitialValue(const T) override;
   
-  void setInitialValue(const Destination*) override;
+  const Destination* getInitialDestination() const override;
+  
+  void setInitialDestination(const Destination*) override;
   
   map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> getPointsMap() const override;
 

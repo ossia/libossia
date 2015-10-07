@@ -132,13 +132,16 @@ template <typename T>
 void JamomaCurve<T>::setInitialValue(const T value)
 {
   mInitialValue = value;
-  
-  // clear initial destination
-  mInitialDestination = nullptr;
 }
 
 template <typename T>
-void JamomaCurve<T>::setInitialValue(const Destination* destination)
+const Destination* JamomaCurve<T>::getInitialDestination() const
+{
+  return mInitialDestination;
+}
+
+template <typename T>
+void JamomaCurve<T>::setInitialDestination(const Destination* destination)
 {
   mInitialDestination = static_cast<Destination*>(destination->clone());
 }
