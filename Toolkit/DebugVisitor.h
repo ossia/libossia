@@ -83,7 +83,7 @@ class DebugVisitor
         {
             if(auto c = dynamic_cast<OSSIA::Curve<float>*>(curve.get()))
             {
-                std::cerr << space() << "Curve " << c->segments().size() <<  std::endl;
+                std::cerr << space() << "Curve " << c->getPointsMap().size() <<  std::endl;
                 depth++;
                 for(const auto& seg : c->getPointsMap())
                 {
