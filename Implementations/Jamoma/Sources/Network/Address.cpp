@@ -217,11 +217,11 @@ Address & JamomaAddress::setValue(const Value * value)
   delete mValue;
   
   // set value querying the value from another address
-  if (value.getType() == Value::Type::DESTINATION &&
+  if (value->getType() == Value::Type::DESTINATION &&
       mValueType != Value::Type::DESTINATION)
   {
     auto destination = static_cast<const Destination*>(value);
-    auto address = d->value->getAdddress();
+    auto address = destination->value->getAddress();
     
     if (address)
     {
