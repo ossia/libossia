@@ -116,8 +116,8 @@ public:
   virtual std::vector<char> getInitialDestinationIndex() const = 0;
   
   /*! precise which index to take in case the initial destination is a Tuple of Tuple of Tuple ...
-   \param index for first level Tuple
-   \param index for second level Tuple
+   \param char for first level Tuple index
+   \param char for second level Tuple index
    \param ... */
   virtual void setInitialDestinationIndex(std::initializer_list<char>) = 0;
   
