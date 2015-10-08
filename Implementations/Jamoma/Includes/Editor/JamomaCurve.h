@@ -28,6 +28,8 @@ private:
 # pragma mark Implementation specific
   
   T mInitialValue;
+  Destination* mInitialDestination;
+  vector<char> mInitialDestinationIndex;
   map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> mPointsMap;
   
 public:
@@ -62,6 +64,18 @@ public:
   
   void setInitialValue(const T) override;
   
+  const Destination* getInitialDestination() const override;
+  
+  void setInitialDestination(const Destination*) override;
+
+  vector<char> getInitialDestinationIndex() const override;
+
+  void setInitialDestinationIndex(std::initializer_list<char>) override;
+  
   map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> getPointsMap() const override;
 
+# pragma mark -
+# pragma mark Implementation specific
+  
+  T convertToTemplateTypeValue(const Value *, char*) const;
 };

@@ -19,9 +19,12 @@
 #include <map>
 #include <utility>
 #include <memory>
+#include <vector>
+#include <initializer_list>
 
 #include "TimeValue.h"
 #include "Value.h"
+#include "Network/Node.h"
 #include "Misc/Container.h"
 
 namespace OSSIA
@@ -90,12 +93,33 @@ public:
 # pragma mark Accessors
   
   /*! get initial curve value
+   \details if there is an initial destination, it will return the value of the address
    \return T value */
   virtual T getInitialValue() const = 0;
   
   /*! set initial curve value
+   \details if there is an initial destination, this accessor is useless
    \param const T value */
   virtual void setInitialValue(const T) = 0;
+  
+  /*! get initial curve destination
+   \return const Destination* */
+  virtual const Destination* getInitialDestination() const = 0;
+  
+  /*! set initial curve value using a Destination
+   \todo add index selector for Tuple case
+   \param const Destination* */
+  virtual void setInitialDestination(const Destination*) = 0;
+  
+  /*! get which index are taken in case the initial destination is a Tuple of Tuple of Tuple ...
+   \return std::vector<char> */
+  virtual std::vector<char> getInitialDestinationIndex() const = 0;
+  
+  /*! precise which index to take in case the initial destination is a Tuple of Tuple of Tuple ...
+   \param char for first level Tuple index
+   \param char for second level Tuple index
+   \param ... */
+  virtual void setInitialDestinationIndex(std::initializer_list<char>) = 0;
   
   /*! get initial curve value
    \return std::map<const TimeValue, std::pair<T, std::shared_ptr<CurveSegment<T>>>> map of {abscissa, {value, previous segment} */

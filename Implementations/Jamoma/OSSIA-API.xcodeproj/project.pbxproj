@@ -34,6 +34,45 @@
 		465341141BBBDB4C003599E0 /* JamomaLoop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaLoop.h; sourceTree = "<group>"; };
 		465341151BBBDB58003599E0 /* Loop.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Loop.cpp; sourceTree = "<group>"; };
 		4658445C1B14A95200612FBD /* Container.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
+		4673A6951BC66802006B872C /* AddressCorpus.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AddressCorpus.txt; sourceTree = "<group>"; };
+		4673A6961BC66802006B872C /* AutomationBenchmark.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AutomationBenchmark.cpp; sourceTree = "<group>"; };
+		4673A6971BC66802006B872C /* DeviceBenchmark.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceBenchmark.cpp; sourceTree = "<group>"; };
+		4673A6981BC66802006B872C /* DeviceBenchmark_client.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceBenchmark_client.cpp; sourceTree = "<group>"; };
+		4673A6991BC66802006B872C /* DeviceBenchmark_Nsec_client.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceBenchmark_Nsec_client.cpp; sourceTree = "<group>"; };
+		4673A69A1BC66802006B872C /* DeviceBenchmark_Nsec_server.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceBenchmark_Nsec_server.cpp; sourceTree = "<group>"; };
+		4673A69B1BC66802006B872C /* DeviceBenchmarkCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DeviceBenchmarkCommon.hpp; sourceTree = "<group>"; };
+		4673A69C1BC66802006B872C /* Random.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Random.hpp; sourceTree = "<group>"; };
+		4673A69F1BC66802006B872C /* AutomationTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AutomationTest.cpp; sourceTree = "<group>"; };
+		4673A6A01BC66802006B872C /* ClockTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ClockTest.cpp; sourceTree = "<group>"; };
+		4673A6A21BC66802006B872C /* CurveSegmentLinearTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentLinearTest.cpp; sourceTree = "<group>"; };
+		4673A6A31BC66802006B872C /* CurveSegmentPowerTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentPowerTest.cpp; sourceTree = "<group>"; };
+		4673A6A41BC66802006B872C /* CurveTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveTest.cpp; sourceTree = "<group>"; };
+		4673A6A51BC66802006B872C /* DomainTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DomainTest.cpp; sourceTree = "<group>"; };
+		4673A6A61BC66802006B872C /* ExpressionAtomTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ExpressionAtomTest.cpp; sourceTree = "<group>"; };
+		4673A6A71BC66802006B872C /* ExpressionCompositionTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ExpressionCompositionTest.cpp; sourceTree = "<group>"; };
+		4673A6A81BC66802006B872C /* ExpressionNotTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ExpressionNotTest.cpp; sourceTree = "<group>"; };
+		4673A6A91BC66802006B872C /* ExpressionTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ExpressionTest.cpp; sourceTree = "<group>"; };
+		4673A6AA1BC66802006B872C /* LoopTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LoopTest.cpp; sourceTree = "<group>"; };
+		4673A6AB1BC66802006B872C /* MessageTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MessageTest.cpp; sourceTree = "<group>"; };
+		4673A6AC1BC66802006B872C /* ScenarioTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ScenarioTest.cpp; sourceTree = "<group>"; };
+		4673A6AD1BC66802006B872C /* StateTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = StateTest.cpp; sourceTree = "<group>"; };
+		4673A6AE1BC66802006B872C /* TimeConstraintTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeConstraintTest.cpp; sourceTree = "<group>"; };
+		4673A6AF1BC66802006B872C /* TimeEventTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeEventTest.cpp; sourceTree = "<group>"; };
+		4673A6B01BC66802006B872C /* TimeNodeTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeNodeTest.cpp; sourceTree = "<group>"; };
+		4673A6B11BC66802006B872C /* TimeValueTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeValueTest.cpp; sourceTree = "<group>"; };
+		4673A6B21BC66802006B872C /* ValueTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ValueTest.cpp; sourceTree = "<group>"; };
+		4673A6B31BC66802006B872C /* ForwardDeclaration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ForwardDeclaration.h; sourceTree = "<group>"; };
+		4673A6B51BC66802006B872C /* AddressTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AddressTest.cpp; sourceTree = "<group>"; };
+		4673A6B61BC66802006B872C /* DeviceTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceTest.cpp; sourceTree = "<group>"; };
+		4673A6B71BC66802006B872C /* NodeTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NodeTest.cpp; sourceTree = "<group>"; };
+		4673A8A41BC66AEF006B872C /* curve.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = curve.cpp; sourceTree = "<group>"; };
+		4673A8A51BC66AEF006B872C /* expression.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = expression.cpp; sourceTree = "<group>"; };
+		4673A8A61BC66AEF006B872C /* loop.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = loop.cpp; sourceTree = "<group>"; };
+		4673A8A71BC66AEF006B872C /* scenario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = scenario.cpp; sourceTree = "<group>"; };
+		4673A8A81BC66AEF006B872C /* state.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = state.cpp; sourceTree = "<group>"; };
+		4673A8AA1BC66AEF006B872C /* Minuit_exploration.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Minuit_exploration.cpp; sourceTree = "<group>"; };
+		4673A8AB1BC66AEF006B872C /* Minuit_publication.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Minuit_publication.cpp; sourceTree = "<group>"; };
+		4673A8AC1BC66AEF006B872C /* OSC.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OSC.cpp; sourceTree = "<group>"; };
 		467BE0381B442DC9006B772A /* TimeProcess.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeProcess.cpp; sourceTree = "<group>"; };
 		4682EEBE1B8C705F00E4C5CF /* Local.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Local.h; sourceTree = "<group>"; };
 		4682EEBF1B8C705F00E4C5CF /* MIDI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MIDI.h; sourceTree = "<group>"; };
@@ -171,6 +210,117 @@
 			path = Misc;
 			sourceTree = "<group>";
 		};
+		4673A6931BC66802006B872C /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				4673A6B31BC66802006B872C /* ForwardDeclaration.h */,
+				4673A6941BC66802006B872C /* Benchmarks */,
+				4673A69E1BC66802006B872C /* Editor */,
+				4673A6B41BC66802006B872C /* Network */,
+			);
+			name = Tests;
+			path = ../../Tests;
+			sourceTree = "<group>";
+		};
+		4673A6941BC66802006B872C /* Benchmarks */ = {
+			isa = PBXGroup;
+			children = (
+				4673A6951BC66802006B872C /* AddressCorpus.txt */,
+				4673A6961BC66802006B872C /* AutomationBenchmark.cpp */,
+				4673A6971BC66802006B872C /* DeviceBenchmark.cpp */,
+				4673A6981BC66802006B872C /* DeviceBenchmark_client.cpp */,
+				4673A6991BC66802006B872C /* DeviceBenchmark_Nsec_client.cpp */,
+				4673A69A1BC66802006B872C /* DeviceBenchmark_Nsec_server.cpp */,
+				4673A69B1BC66802006B872C /* DeviceBenchmarkCommon.hpp */,
+				4673A69C1BC66802006B872C /* Random.hpp */,
+			);
+			path = Benchmarks;
+			sourceTree = "<group>";
+		};
+		4673A69E1BC66802006B872C /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				4673A69F1BC66802006B872C /* AutomationTest.cpp */,
+				4673A6A01BC66802006B872C /* ClockTest.cpp */,
+				4673A6A11BC66802006B872C /* CurveSegment */,
+				4673A6A41BC66802006B872C /* CurveTest.cpp */,
+				4673A6A51BC66802006B872C /* DomainTest.cpp */,
+				4673A6A61BC66802006B872C /* ExpressionAtomTest.cpp */,
+				4673A6A71BC66802006B872C /* ExpressionCompositionTest.cpp */,
+				4673A6A81BC66802006B872C /* ExpressionNotTest.cpp */,
+				4673A6A91BC66802006B872C /* ExpressionTest.cpp */,
+				4673A6AA1BC66802006B872C /* LoopTest.cpp */,
+				4673A6AB1BC66802006B872C /* MessageTest.cpp */,
+				4673A6AC1BC66802006B872C /* ScenarioTest.cpp */,
+				4673A6AD1BC66802006B872C /* StateTest.cpp */,
+				4673A6AE1BC66802006B872C /* TimeConstraintTest.cpp */,
+				4673A6AF1BC66802006B872C /* TimeEventTest.cpp */,
+				4673A6B01BC66802006B872C /* TimeNodeTest.cpp */,
+				4673A6B11BC66802006B872C /* TimeValueTest.cpp */,
+				4673A6B21BC66802006B872C /* ValueTest.cpp */,
+			);
+			path = Editor;
+			sourceTree = "<group>";
+		};
+		4673A6A11BC66802006B872C /* CurveSegment */ = {
+			isa = PBXGroup;
+			children = (
+				4673A6A21BC66802006B872C /* CurveSegmentLinearTest.cpp */,
+				4673A6A31BC66802006B872C /* CurveSegmentPowerTest.cpp */,
+			);
+			path = CurveSegment;
+			sourceTree = "<group>";
+		};
+		4673A6B41BC66802006B872C /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				4673A6B51BC66802006B872C /* AddressTest.cpp */,
+				4673A6B61BC66802006B872C /* DeviceTest.cpp */,
+				4673A6B71BC66802006B872C /* NodeTest.cpp */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		4673A6B81BC66AEE006B872C /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				4673A8A11BC66AEF006B872C /* Examples */,
+			);
+			name = Documentation;
+			path = ../../Documentation;
+			sourceTree = "<group>";
+		};
+		4673A8A11BC66AEF006B872C /* Examples */ = {
+			isa = PBXGroup;
+			children = (
+				4673A8A31BC66AEF006B872C /* Editor */,
+				4673A8A91BC66AEF006B872C /* Network */,
+			);
+			path = Examples;
+			sourceTree = "<group>";
+		};
+		4673A8A31BC66AEF006B872C /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				4673A8A41BC66AEF006B872C /* curve.cpp */,
+				4673A8A51BC66AEF006B872C /* expression.cpp */,
+				4673A8A61BC66AEF006B872C /* loop.cpp */,
+				4673A8A71BC66AEF006B872C /* scenario.cpp */,
+				4673A8A81BC66AEF006B872C /* state.cpp */,
+			);
+			path = Editor;
+			sourceTree = "<group>";
+		};
+		4673A8A91BC66AEF006B872C /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				4673A8AA1BC66AEF006B872C /* Minuit_exploration.cpp */,
+				4673A8AB1BC66AEF006B872C /* Minuit_publication.cpp */,
+				4673A8AC1BC66AEF006B872C /* OSC.cpp */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		4682EEBD1B8C705F00E4C5CF /* Protocol */ = {
 			isa = PBXGroup;
 			children = (
@@ -219,6 +369,8 @@
 				460D07E119BDD62500235124 /* Headers */,
 				46D2C60B1B260B9900C04D8A /* Includes */,
 				46BA2A5919C09A21009630B5 /* Sources */,
+				4673A6B81BC66AEE006B872C /* Documentation */,
+				4673A6931BC66802006B872C /* Tests */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
