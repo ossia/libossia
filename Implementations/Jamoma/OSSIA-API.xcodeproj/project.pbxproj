@@ -65,6 +65,14 @@
 		4673A6B51BC66802006B872C /* AddressTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AddressTest.cpp; sourceTree = "<group>"; };
 		4673A6B61BC66802006B872C /* DeviceTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceTest.cpp; sourceTree = "<group>"; };
 		4673A6B71BC66802006B872C /* NodeTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NodeTest.cpp; sourceTree = "<group>"; };
+		4673A8A41BC66AEF006B872C /* curve.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = curve.cpp; sourceTree = "<group>"; };
+		4673A8A51BC66AEF006B872C /* expression.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = expression.cpp; sourceTree = "<group>"; };
+		4673A8A61BC66AEF006B872C /* loop.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = loop.cpp; sourceTree = "<group>"; };
+		4673A8A71BC66AEF006B872C /* scenario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = scenario.cpp; sourceTree = "<group>"; };
+		4673A8A81BC66AEF006B872C /* state.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = state.cpp; sourceTree = "<group>"; };
+		4673A8AA1BC66AEF006B872C /* Minuit_exploration.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Minuit_exploration.cpp; sourceTree = "<group>"; };
+		4673A8AB1BC66AEF006B872C /* Minuit_publication.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Minuit_publication.cpp; sourceTree = "<group>"; };
+		4673A8AC1BC66AEF006B872C /* OSC.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OSC.cpp; sourceTree = "<group>"; };
 		467BE0381B442DC9006B772A /* TimeProcess.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeProcess.cpp; sourceTree = "<group>"; };
 		4682EEBE1B8C705F00E4C5CF /* Local.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Local.h; sourceTree = "<group>"; };
 		4682EEBF1B8C705F00E4C5CF /* MIDI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MIDI.h; sourceTree = "<group>"; };
@@ -273,6 +281,46 @@
 			path = Network;
 			sourceTree = "<group>";
 		};
+		4673A6B81BC66AEE006B872C /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				4673A8A11BC66AEF006B872C /* Examples */,
+			);
+			name = Documentation;
+			path = ../../Documentation;
+			sourceTree = "<group>";
+		};
+		4673A8A11BC66AEF006B872C /* Examples */ = {
+			isa = PBXGroup;
+			children = (
+				4673A8A31BC66AEF006B872C /* Editor */,
+				4673A8A91BC66AEF006B872C /* Network */,
+			);
+			path = Examples;
+			sourceTree = "<group>";
+		};
+		4673A8A31BC66AEF006B872C /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				4673A8A41BC66AEF006B872C /* curve.cpp */,
+				4673A8A51BC66AEF006B872C /* expression.cpp */,
+				4673A8A61BC66AEF006B872C /* loop.cpp */,
+				4673A8A71BC66AEF006B872C /* scenario.cpp */,
+				4673A8A81BC66AEF006B872C /* state.cpp */,
+			);
+			path = Editor;
+			sourceTree = "<group>";
+		};
+		4673A8A91BC66AEF006B872C /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				4673A8AA1BC66AEF006B872C /* Minuit_exploration.cpp */,
+				4673A8AB1BC66AEF006B872C /* Minuit_publication.cpp */,
+				4673A8AC1BC66AEF006B872C /* OSC.cpp */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		4682EEBD1B8C705F00E4C5CF /* Protocol */ = {
 			isa = PBXGroup;
 			children = (
@@ -321,6 +369,7 @@
 				460D07E119BDD62500235124 /* Headers */,
 				46D2C60B1B260B9900C04D8A /* Includes */,
 				46BA2A5919C09A21009630B5 /* Sources */,
+				4673A6B81BC66AEE006B872C /* Documentation */,
 				4673A6931BC66802006B872C /* Tests */,
 			);
 			indentWidth = 2;
