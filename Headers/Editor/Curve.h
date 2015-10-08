@@ -19,6 +19,8 @@
 #include <map>
 #include <utility>
 #include <memory>
+#include <vector>
+#include <initializer_list>
 
 #include "TimeValue.h"
 #include "Value.h"
@@ -105,8 +107,19 @@ public:
   virtual const Destination* getInitialDestination() const = 0;
   
   /*! set initial curve value using a Destination
+   \todo add index selector for Tuple case
    \param const Destination* */
   virtual void setInitialDestination(const Destination*) = 0;
+  
+  /*! get which index are taken in case the initial destination is a Tuple of Tuple of Tuple ...
+   \return std::vector<char> */
+  virtual std::vector<char> getInitialDestinationIndex() const = 0;
+  
+  /*! precise which index to take in case the initial destination is a Tuple of Tuple of Tuple ...
+   \param index for first level Tuple
+   \param index for second level Tuple
+   \param ... */
+  virtual void setInitialDestinationIndex(std::initializer_list<char>) = 0;
   
   /*! get initial curve value
    \return std::map<const TimeValue, std::pair<T, std::shared_ptr<CurveSegment<T>>>> map of {abscissa, {value, previous segment} */

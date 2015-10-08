@@ -41,7 +41,9 @@ namespace OSSIA
 
 template <typename T>
 JamomaCurve<T>::JamomaCurve()
-{}
+{
+  mInitialDestinationIndex.push_back(0);
+}
 
 template <typename T>
 JamomaCurve<T>::JamomaCurve(const JamomaCurve * other)
@@ -124,7 +126,8 @@ T JamomaCurve<T>::getInitialValue() const
     if (!address)
       throw runtime_error("getting an address value using from a destination without address");
     
-    return convertToTemplateTypeValue(address->pullValue());
+    char level = 0;
+    return convertToTemplateTypeValue(address->pullValue(), &level);
   }
 }
 
@@ -147,6 +150,21 @@ void JamomaCurve<T>::setInitialDestination(const Destination* destination)
 }
 
 template <typename T>
+vector<char> JamomaCurve<T>::getInitialDestinationIndex() const
+{
+  return mInitialDestinationIndex;
+}
+
+template <typename T>
+void JamomaCurve<T>::setInitialDestinationIndex(std::initializer_list<char> index)
+{
+  mInitialDestinationIndex.clear();
+  
+  for (const auto & i : index)
+    mInitialDestinationIndex.push_back(i);
+}
+
+template <typename T>
 map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> JamomaCurve<T>::getPointsMap() const
 {
   return mPointsMap;
@@ -156,7 +174,7 @@ map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> JamomaCurve<T>::getPo
 # pragma mark Implementation specific
 
 template <typename T>
-T JamomaCurve<T>::convertToTemplateTypeValue(const Value * value) const
+T JamomaCurve<T>::convertToTemplateTypeValue(const Value * value, char* level) const
 {
   switch (value->getType())
   {
@@ -187,7 +205,11 @@ T JamomaCurve<T>::convertToTemplateTypeValue(const Value * value) const
     case Value::Type::TUPLE :
     {
       auto t = static_cast<const Tuple*>(value);
-      return convertToTemplateTypeValue(t->value[0]);
+      
+      char index = mInitialDestinationIndex[*level];
+      (*level)++;
+
+      return convertToTemplateTypeValue(t->value[index], level);
     }
       
     case Value::Type::GENERIC :
