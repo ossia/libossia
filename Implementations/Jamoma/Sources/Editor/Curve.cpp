@@ -40,7 +40,8 @@ namespace OSSIA
 }
 
 template <typename T>
-JamomaCurve<T>::JamomaCurve()
+JamomaCurve<T>::JamomaCurve() :
+mInitialDestination(nullptr)
 {
   mInitialDestinationIndex.push_back(0);
 }
