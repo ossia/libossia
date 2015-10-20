@@ -110,7 +110,7 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
     if (done)
     {
       if (date > mParent->getDurationMin())
-        //! \todo mParent->stop(); // if the parent TimeConstraint's Clock is in EXTERNAL drive mode, it creates a deadlock.
+        ;//! \todo mParent->stop(); // if the parent TimeConstraint's Clock is in EXTERNAL drive mode, it creates a deadlock.
     }
     
     mLastPosition = position;
