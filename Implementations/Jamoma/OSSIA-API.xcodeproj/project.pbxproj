@@ -19,6 +19,10 @@
 		460D07EF19BDD62500235124 /* TimeValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeValue.h; sourceTree = "<group>"; };
 		461116681B3049AF00D6C968 /* Value.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Value.h; sourceTree = "<group>"; };
 		461116691B304B2600D6C968 /* Domain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Domain.h; sourceTree = "<group>"; };
+		4623D52A1BD6808900339C33 /* Mapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mapper.h; sourceTree = "<group>"; };
+		4623D52B1BD680AF00339C33 /* JamomaMapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaMapper.h; sourceTree = "<group>"; };
+		4623D52C1BD680C100339C33 /* Mapper.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper.cpp; sourceTree = "<group>"; };
+		4623D52D1BD6814D00339C33 /* MapperTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MapperTest.cpp; sourceTree = "<group>"; };
 		463D40CC1B63B2A600E9C7C6 /* Expression.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Expression.cpp; sourceTree = "<group>"; };
 		463DC5A61B42929000EEF0CB /* JamomaTimeProcess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaTimeProcess.h; sourceTree = "<group>"; };
 		463DC5A81B42B7AC00EEF0CB /* JamomaCurve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaCurve.h; sourceTree = "<group>"; };
@@ -157,6 +161,7 @@
 				4689BAE61ABA256800D1BA4E /* ExpressionComposition.h */,
 				4689BAE71ABA256800D1BA4E /* ExpressionNot.h */,
 				465341131BBBDB32003599E0 /* Loop.h */,
+				4623D52A1BD6808900339C33 /* Mapper.h */,
 				468E931319C0562900B26BFB /* Message.h */,
 				460D07E919BDD62500235124 /* Scenario.h */,
 				460D07EA19BDD62500235124 /* State.h */,
@@ -250,6 +255,7 @@
 				4673A6A81BC66802006B872C /* ExpressionNotTest.cpp */,
 				4673A6A91BC66802006B872C /* ExpressionTest.cpp */,
 				4673A6AA1BC66802006B872C /* LoopTest.cpp */,
+				4623D52D1BD6814D00339C33 /* MapperTest.cpp */,
 				4673A6AB1BC66802006B872C /* MessageTest.cpp */,
 				4673A6AC1BC66802006B872C /* ScenarioTest.cpp */,
 				4673A6AD1BC66802006B872C /* StateTest.cpp */,
@@ -430,6 +436,7 @@
 				46D435DC1AB735220041D8AF /* ExpressionComposition.cpp */,
 				46CF2A8D1B57DC860027D537 /* ExpressionNot.cpp */,
 				465341151BBBDB58003599E0 /* Loop.cpp */,
+				4623D52C1BD680C100339C33 /* Mapper.cpp */,
 				46D435DD1AB735860041D8AF /* Message.cpp */,
 				46BA2A6019C09A21009630B5 /* Scenario.cpp */,
 				46D435DE1AB73A5F0041D8AF /* State.cpp */,
@@ -471,6 +478,7 @@
 				463DC5AA1B42BF6A00EEF0CB /* CurveSegment */,
 				46995FA31B31A42700BDF2C8 /* JamomaDomain.h */,
 				465341141BBBDB4C003599E0 /* JamomaLoop.h */,
+				4623D52B1BD680AF00339C33 /* JamomaMapper.h */,
 				464258761B26EC7900324157 /* JamomaScenario.h */,
 				46D2C60D1B260B9900C04D8A /* JamomaTimeConstraint.h */,
 				4696661D1B307F940082480E /* JamomaTimeEvent.h */,

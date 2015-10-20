@@ -9,6 +9,7 @@
 #include "Editor/ExpressionComposition.h"
 #include "Editor/ExpressionNot.h"
 #include "Editor/Loop.h"
+#include "Editor/Mapper.h"
 #include "Editor/Message.h"
 #include "Editor/Scenario.h"
 #include "Editor/State.h"
