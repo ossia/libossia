@@ -90,6 +90,29 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
       }
     }
     
+    // if all the TimeEvents are not NONE : the Scenario is done
+    bool done = true;
+    for (const auto& timeNode : mTimeNodes)
+    {
+      for (auto& timeEvent : timeNode->timeEvents())
+      {
+        done = timeEvent->getStatus() != TimeEvent::Status::NONE;
+        
+        if (!done)
+          break;
+      }
+      
+      if (!done)
+        break;
+    }
+    
+    // if the Scenario is done : stop the parent TimeConstraint
+    if (done)
+    {
+      if (date > mParent->getDurationMin())
+        //! \todo mParent->stop(); // if the parent TimeConstraint's Clock is in EXTERNAL drive mode, it creates a deadlock.
+    }
+    
     mLastPosition = position;
   }
 

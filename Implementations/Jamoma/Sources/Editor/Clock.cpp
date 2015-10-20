@@ -286,6 +286,11 @@ const TimeValue & JamomaClock::getDate() const
 # pragma mark -
 # pragma mark Internal
 
+void JamomaClock::request_stop()
+{
+  mRunning = false;
+}
+
 void JamomaClock::threadCallback()
 {
   // launch the tick if the duration is valid and while it have to run
