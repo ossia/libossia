@@ -22,7 +22,7 @@
 		4623D52A1BD6808900339C33 /* Mapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mapper.h; sourceTree = "<group>"; };
 		4623D52B1BD680AF00339C33 /* JamomaMapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaMapper.h; sourceTree = "<group>"; };
 		4623D52C1BD680C100339C33 /* Mapper.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper.cpp; sourceTree = "<group>"; };
-		4623D52D1BD6814D00339C33 /* MapperTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MapperTest.cpp; sourceTree = "<group>"; };
+		4623D52D1BD6814D00339C33 /* MapperTest.cpp */ = {isa = PBXFileReference; indentWidth = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MapperTest.cpp; sourceTree = "<group>"; };
 		463D40CC1B63B2A600E9C7C6 /* Expression.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Expression.cpp; sourceTree = "<group>"; };
 		463DC5A61B42929000EEF0CB /* JamomaTimeProcess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaTimeProcess.h; sourceTree = "<group>"; };
 		463DC5A81B42B7AC00EEF0CB /* JamomaCurve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaCurve.h; sourceTree = "<group>"; };
