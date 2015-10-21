@@ -26,7 +26,7 @@ using namespace std;
 
 int main()
 {
-  auto myCurve = Curve<double, float>::create();
+  auto myCurve = Curve<float>::create();
   auto firstCurveSegment = CurveSegmentLinear<float>::create(myCurve);
   auto secondCurveSegment = CurveSegmentLinear<float>::create(myCurve);
   
