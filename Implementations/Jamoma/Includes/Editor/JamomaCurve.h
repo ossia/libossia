@@ -76,6 +76,6 @@ public:
 
 # pragma mark -
 # pragma mark Implementation specific
-  
+
   Y convertToTemplateTypeValue(const Value *, char*) const;
 };

@@ -1,6 +1,5 @@
 #include "Editor/JamomaAutomation.h"
 
-
 #include <iostream> //! \todo to remove. only here for debug purpose
 
 # pragma mark -
@@ -45,7 +44,7 @@ shared_ptr<StateElement> JamomaAutomation::state(const TimeValue& position, cons
     if (mValueToSend) delete mValueToSend;
 
     // compute a new value from the Curves
-    mValueToSend = computeValueAtPosition(mDrive, position);
+    mValueToSend = computeValue(position, mDrive);
 
     // edit a Message handling the new Value
     mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
@@ -69,52 +68,17 @@ const Value * JamomaAutomation::getDriving() const
   return mDrive;
 }
 
-Value* JamomaAutomation::computeValueAtPosition(const Value* drive, const TimeValue& position)
+Value* JamomaAutomation::computeValue(double position, const Value* drive)
 {
   switch (drive->getType())
   {
-    case Value::Type::IMPULSE :
-    {
-      return drive->clone();
-    }
-
-    case Value::Type::BOOL :
-    {
-      return drive->clone();
-    }
-
-    case Value::Type::INT :
-    {
-      return drive->clone();
-    }
-
-    case Value::Type::FLOAT :
-    {
-      return drive->clone();
-    }
-
-    case Value::Type::CHAR :
-    {
-      return drive->clone();
-    }
-
-    case Value::Type::STRING :
-    {
-      return drive->clone();
-    }
-
-    case Value::Type::DESTINATION :
-    {
-      return drive->clone();
-    }
-
     case Value::Type::BEHAVIOR :
     {
       auto b = static_cast<const Behavior*>(drive);
 
       try
       {
-        Curve<const TimeValue&, bool>* curve = dynamic_cast<Curve<const TimeValue&, bool>*>(b->value.get());
+        Curve<double, bool>* curve = dynamic_cast<Curve<double, bool>*>(b->value.get());
         if (curve)
           return new Bool(curve->valueAt(position));
       }
@@ -122,7 +86,7 @@ Value* JamomaAutomation::computeValueAtPosition(const Value* drive, const TimeVa
 
       try
       {
-        Curve<const TimeValue&, int>* curve = dynamic_cast<Curve<const TimeValue&, int>*>(b->value.get());
+        Curve<double, int>* curve = dynamic_cast<Curve<double, int>*>(b->value.get());
         if (curve)
           return new Int(curve->valueAt(position));
       }
@@ -130,7 +94,7 @@ Value* JamomaAutomation::computeValueAtPosition(const Value* drive, const TimeVa
 
       try
       {
-        Curve<const TimeValue&, float>* curve = dynamic_cast<Curve<const TimeValue&, float>*>(b->value.get());
+        Curve<double, float>* curve = dynamic_cast<Curve<double, float>*>(b->value.get());
         if (curve)
           return new Float(curve->valueAt(position));
       }
@@ -146,16 +110,15 @@ Value* JamomaAutomation::computeValueAtPosition(const Value* drive, const TimeVa
 
       for (const auto & e : t->value)
       {
-        t_value.push_back(computeValueAtPosition(e, position));
+        t_value.push_back(computeValue(position, e));
       }
 
       return new Tuple(t_value);
     }
 
-    case Value::Type::GENERIC :
+    default :
     {
-      //! \todo GENERIC case
-      break;
+      throw runtime_error("none handled drive value type");
     }
   }
 

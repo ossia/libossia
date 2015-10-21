@@ -6,9 +6,6 @@
 using namespace OSSIA;
 using namespace std;
 
-# pragma mark -
-# pragma mark Life cycle
-
 namespace OSSIA
 {
   // explicit instantiation for double and bool
@@ -37,7 +34,90 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<double, float>>();
   }
+  
+  // explicit instantiation for bool and bool
+  template class Curve<bool, bool>;
+  
+  template <>
+  shared_ptr<Curve<bool, bool>> Curve<bool, bool>::create()
+  {
+    return make_shared<JamomaCurve<bool, bool>>();
+  }
+  
+  // explicit instantiation for bool and int
+  template class Curve<bool, int>;
+  
+  template <>
+  shared_ptr<Curve<bool, int>> Curve<bool, int>::create()
+  {
+    return make_shared<JamomaCurve<bool, int>>();
+  }
+  
+  // explicit instantiation for bool and float
+  template class Curve<bool, float>;
+  
+  template <>
+  shared_ptr<Curve<bool, float>> Curve<bool, float>::create()
+  {
+    return make_shared<JamomaCurve<bool, float>>();
+  }
+  
+  // explicit instantiation for int and bool
+  template class Curve<int, bool>;
+  
+  template <>
+  shared_ptr<Curve<int, bool>> Curve<int, bool>::create()
+  {
+    return make_shared<JamomaCurve<int, bool>>();
+  }
+  
+  // explicit instantiation for int and int
+  template class Curve<int, int>;
+  
+  template <>
+  shared_ptr<Curve<int, int>> Curve<int, int>::create()
+  {
+    return make_shared<JamomaCurve<int, int>>();
+  }
+  
+  // explicit instantiation for int and float
+  template class Curve<int, float>;
+  
+  template <>
+  shared_ptr<Curve<int, float>> Curve<int, float>::create()
+  {
+    return make_shared<JamomaCurve<int, float>>();
+  }
+  
+  // explicit instantiation for float and bool
+  template class Curve<float, bool>;
+  
+  template <>
+  shared_ptr<Curve<float, bool>> Curve<float, bool>::create()
+  {
+    return make_shared<JamomaCurve<float, bool>>();
+  }
+  // explicit instantiation for float and int
+  template class Curve<float, int>;
+  
+  template <>
+  shared_ptr<Curve<float, int>> Curve<float, int>::create()
+  {
+    return make_shared<JamomaCurve<float, int>>();
+  }
+  
+  // explicit instantiation for float and float
+  template class Curve<float, float>;
+  
+  template <>
+  shared_ptr<Curve<float, float>> Curve<float, float>::create()
+  {
+    return make_shared<JamomaCurve<float, float>>();
+  }
 }
+
+# pragma mark -
+# pragma mark Life cycle
 
 template <typename X, typename Y>
 JamomaCurve<X,Y>::
@@ -227,12 +307,7 @@ convertToTemplateTypeValue(const Value * value, char* level) const
 
       return convertToTemplateTypeValue(t->value[index], level);
     }
-      
-    case Value::Type::GENERIC :
-    {
-      //! \todo GENERIC case
-    }
-      
+    
     default :
     {
       throw runtime_error("converting none numerical value");

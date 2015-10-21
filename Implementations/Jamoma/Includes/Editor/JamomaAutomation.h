@@ -72,5 +72,5 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  Value* computeValueAtPosition(const Value* drive, const TimeValue& position);
+  Value* computeValue(double, const Value*);
 };

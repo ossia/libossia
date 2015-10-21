@@ -76,7 +76,5 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  vector<const TimeValue> computePositions(const Value*);
-  
-  Value* computeValueAtPositions(const Value* drive, vector<const TimeValue&> position);
+  Value* computeValue(const Value*, const Value*);
 };
