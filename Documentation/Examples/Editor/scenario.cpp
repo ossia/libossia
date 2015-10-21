@@ -149,14 +149,14 @@ int main()
      */
 
     // create a linear curve to drive all element of the Tuple value from 0. to 1.
-    auto first_curve = Curve<float>::create();
+    auto first_curve = Curve<double, float>::create();
     auto first_linearSegment = CurveSegmentLinear<float>::create(first_curve);
 
     first_curve->setInitialValue(0.);
     first_curve->addPoint(1., 1., first_linearSegment);
 
     // create a power curve to drive all element of the Tuple value from 0. to 2.
-    auto second_curve = Curve<float>::create();
+    auto second_curve = Curve<double, float>::create();
     auto second_powerSegment = CurveSegmentPower<float>::create(first_curve);
     second_powerSegment->setPower(0.5);
 

@@ -49,7 +49,7 @@ shared_ptr<StateElement> JamomaMapper::state(const TimeValue& position, const Ti
     
     // compute a new value
     //! \todo observe the driver address value
-    mValueToSend = computeValueAtPositions(mDrive, computePositions(mDriverAddress->pullValue()));
+    //mValueToSend = computeValueAtPositions(mDrive, computePositions(mDriverAddress->pullValue()));
 
     // edit a Message handling the new Value
     mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
@@ -77,7 +77,7 @@ const Value * JamomaMapper::getDriving() const
 {
   return mDrive;
 }
-
+/*
 vector<const TimeValue> computePositions(const Value* driver)
 {
   switch (driver->getType())
@@ -165,7 +165,7 @@ Value* JamomaMapper::computeValueAtPositions(const Value* drive, vector<const Ti
       
       try
       {
-        Curve<bool>* curve = dynamic_cast<Curve<bool>*>(b->value.get());
+        Curve<double, bool>* curve = dynamic_cast<Curve<double, bool>*>(b->value.get());
         if (curve)
           return new Bool(curve->valueAt(positions[0]));
       }
@@ -173,7 +173,7 @@ Value* JamomaMapper::computeValueAtPositions(const Value* drive, vector<const Ti
       
       try
       {
-        Curve<int>* curve = dynamic_cast<Curve<int>*>(b->value.get());
+        Curve<double, int>* curve = dynamic_cast<Curve<double, int>*>(b->value.get());
         if (curve)
           return new Int(curve->valueAt(positions[0]));
       }
@@ -181,7 +181,7 @@ Value* JamomaMapper::computeValueAtPositions(const Value* drive, vector<const Ti
       
       try
       {
-        Curve<float>* curve = dynamic_cast<Curve<float>*>(b->value.get());
+        Curve<double, float>* curve = dynamic_cast<Curve<double, float>*>(b->value.get());
         if (curve)
           return new Float(curve->valueAt(positions[0]));
       }
@@ -212,3 +212,4 @@ Value* JamomaMapper::computeValueAtPositions(const Value* drive, vector<const Ti
   
   return nullptr;
 }
+*/

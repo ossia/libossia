@@ -42,16 +42,17 @@ public:
   virtual ~CurveAbstract() = default;
 };
 
-template <typename T>
+template <typename Y>
 class CurveSegment;
 
-template <typename T>
+template <typename X, typename Y>
 class Curve : public CurveAbstract
 {
 
 public:
   
-  typedef T value_type;
+  typedef X abscissa_type;
+  typedef Y value_type;
   
 # pragma mark -
 # pragma mark Life cycle
@@ -70,37 +71,37 @@ public:
 # pragma mark Edition
   
   /*! add a point to the curve
-   \param const TimeValue& point abscissa
-   \param T point value
-   \param std::shared_ptr<#CurveSegment<T>> segment
+   \param X point abscissa
+   \param Y point value
+   \param std::shared_ptr<#CurveSegment<Y>> segment
    \return bool */
-  virtual bool addPoint(const TimeValue&, T, std::shared_ptr<CurveSegment<T>>) = 0;
+  virtual bool addPoint(X, Y, std::shared_ptr<CurveSegment<Y>>) = 0;
   
   /*! remove a point from the curve
-   \param const TimeValue& point abscissa between 0. and 1.
+   \param X point abscissa
    \return bool */
-  virtual bool removePoint(const TimeValue&) = 0;
+  virtual bool removePoint(X) = 0;
 
 # pragma mark -
 # pragma mark Execution
   
   /*! get value at an abscissa
-   \param const TimeValue& abscissa between 0. and 1.
-   \return T value */
-  virtual T valueAt(const TimeValue&) const = 0;
+   \param X abscissa.
+   \return Y value */
+  virtual Y valueAt(X) const = 0;
 
 # pragma mark -
 # pragma mark Accessors
   
   /*! get initial curve value
    \details if there is an initial destination, it will return the value of the address
-   \return T value */
-  virtual T getInitialValue() const = 0;
+   \return Y value */
+  virtual Y getInitialValue() const = 0;
   
   /*! set initial curve value
    \details if there is an initial destination, this accessor is useless
-   \param const T value */
-  virtual void setInitialValue(const T) = 0;
+   \param Y value */
+  virtual void setInitialValue(Y) = 0;
   
   /*! get initial curve destination
    \return const Destination* */
@@ -122,8 +123,8 @@ public:
   virtual void setInitialDestinationIndex(std::initializer_list<char>) = 0;
   
   /*! get initial curve value
-   \return std::map<const TimeValue, std::pair<T, std::shared_ptr<CurveSegment<T>>>> map of {abscissa, {value, previous segment} */
-  virtual std::map<const TimeValue, std::pair<T, std::shared_ptr<CurveSegment<T>>>> getPointsMap() const = 0;
+   \return std::map<X, std::pair<Y, std::shared_ptr<CurveSegment<Y>>>> map of {abscissa, {value, previous segment} */
+  virtual std::map<X, std::pair<Y, std::shared_ptr<CurveSegment<Y>>>> getPointsMap() const = 0;
 
 };
   

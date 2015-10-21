@@ -24,7 +24,7 @@ namespace OSSIA
   template class CurveSegmentPower<bool>;
   
   template <>
-  shared_ptr<CurveSegmentPower<bool>> CurveSegmentPower<bool>::create(shared_ptr<Curve<bool>> parent)
+  shared_ptr<CurveSegmentPower<bool>> CurveSegmentPower<bool>::create(shared_ptr<CurveAbstract> parent)
   {
     return make_shared<JamomaCurveSegmentPower<bool>>(parent);
   }
@@ -33,7 +33,7 @@ namespace OSSIA
   template class CurveSegmentPower<int>;
   
   template <>
-  shared_ptr<CurveSegmentPower<int>> CurveSegmentPower<int>::create(shared_ptr<Curve<int>> parent)
+  shared_ptr<CurveSegmentPower<int>> CurveSegmentPower<int>::create(shared_ptr<CurveAbstract> parent)
   {
     return make_shared<JamomaCurveSegmentPower<int>>(parent);
   }
@@ -42,39 +42,44 @@ namespace OSSIA
   template class CurveSegmentPower<float>;
   
   template <>
-  shared_ptr<CurveSegmentPower<float>> CurveSegmentPower<float>::create(shared_ptr<Curve<float>> parent)
+  shared_ptr<CurveSegmentPower<float>> CurveSegmentPower<float>::create(shared_ptr<CurveAbstract> parent)
   {
     return make_shared<JamomaCurveSegmentPower<float>>(parent);
   }
 }
 
-template <typename T>
-JamomaCurveSegmentPower<T>::JamomaCurveSegmentPower(shared_ptr<Curve<T>> parent) :
+template <typename Y>
+JamomaCurveSegmentPower<Y>::
+JamomaCurveSegmentPower(shared_ptr<CurveAbstract> parent) :
 mParent(parent),
 mPower(1.)
 {}
 
-template <typename T>
-JamomaCurveSegmentPower<T>::JamomaCurveSegmentPower(const JamomaCurveSegmentPower * other) :
+template <typename Y>
+JamomaCurveSegmentPower<Y>::
+JamomaCurveSegmentPower(const JamomaCurveSegmentPower * other) :
 mParent(other->mParent),
 mPower(other->mPower)
 {}
 
-template <typename T>
-shared_ptr<CurveSegmentPower<T>> JamomaCurveSegmentPower<T>::clone() const
+template <typename Y>
+shared_ptr<CurveSegmentPower<Y>> JamomaCurveSegmentPower<Y>::
+clone() const
 {
-  return make_shared<JamomaCurveSegmentPower<T>>(this);
+  return make_shared<JamomaCurveSegmentPower<Y>>(this);
 }
 
-template <typename T>
-JamomaCurveSegmentPower<T>::~JamomaCurveSegmentPower()
+template <typename Y>
+JamomaCurveSegmentPower<Y>::
+~JamomaCurveSegmentPower()
 {}
 
 # pragma mark -
 # pragma mark Execution
 
-template <typename T>
-T JamomaCurveSegmentPower<T>::valueAt(const TimeValue& ratio, T start, T end) const
+template <typename Y>
+Y JamomaCurveSegmentPower<Y>::
+valueAt(double ratio, Y start, Y end) const
 {
   return start + pow(ratio, mPower) * (end - start);
 }
@@ -82,20 +87,23 @@ T JamomaCurveSegmentPower<T>::valueAt(const TimeValue& ratio, T start, T end) co
 # pragma mark -
 # pragma mark Accessors
 
-template <typename T>
-shared_ptr<Curve<T>> JamomaCurveSegmentPower<T>::getParent() const
+template <typename Y>
+shared_ptr<CurveAbstract> JamomaCurveSegmentPower<Y>::
+getParent() const
 {
   return mParent;
 }
 
-template <typename T>
-double JamomaCurveSegmentPower<T>::getPower() const
+template <typename Y>
+double JamomaCurveSegmentPower<Y>::
+getPower() const
 {
   return mPower;
 }
 
-template <typename T>
-CurveSegmentPower<T> & JamomaCurveSegmentPower<T>::setPower(double power)
+template <typename Y>
+CurveSegmentPower<Y> & JamomaCurveSegmentPower<Y>::
+setPower(double power)
 {
   mPower = power;
   return *this;

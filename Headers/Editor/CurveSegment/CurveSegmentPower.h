@@ -21,40 +21,40 @@
 namespace OSSIA
 {
   
-  template <typename T>
-  class CurveSegmentPower : public CurveSegment<T>
-  {
+template <typename Y>
+class CurveSegmentPower : public CurveSegment<Y>
+{
     
-  public:
+public:
     
 # pragma mark -
 # pragma mark Life cycle
     
-    /*! factory
-     \param std::shared_ptr<Curve<T>> parent
-     \return std::shared_ptr<CurveSegmentPower<T>> */
-    static std::shared_ptr<CurveSegmentPower<T>> create(std::shared_ptr<Curve<T>> = nullptr);
+  /*! factory
+  \param std::shared_ptr<CurveAbstract> parent
+  \return std::shared_ptr<CurveSegmentPower<Y>> */
+  static std::shared_ptr<CurveSegmentPower<Y>> create(std::shared_ptr<CurveAbstract> = nullptr);
 
-    /*! clone */
-    virtual std::shared_ptr<CurveSegmentPower<T>> clone() const = 0;
+  /*! clone */
+  virtual std::shared_ptr<CurveSegmentPower<Y>> clone() const = 0;
     
-    /*! destructor */
-    virtual ~CurveSegmentPower() = default;
+  /*! destructor */
+  virtual ~CurveSegmentPower() = default;
     
 # pragma mark -
 # pragma mark Accessors
     
-    /*! get power value
-     \return double */
-    virtual double getPower() const = 0;
+  /*! get power value
+  \return double */
+  virtual double getPower() const = 0;
     
-    /*! set power value
-     \param double
-     \return CurveSegmentPower */
-    virtual CurveSegmentPower<T> & setPower(double) = 0;
+  /*! set power value
+  \param double
+  \return CurveSegmentPower */
+  virtual CurveSegmentPower<Y> & setPower(double) = 0;
     
-    typename CurveSegment<T>::Type getType() const override final
-    {return CurveSegment<T>::Type::POWER;}
+  typename CurveSegment<Y>::Type getType() const override final
+  {return CurveSegment<Y>::Type::POWER;}
   
 };
 }

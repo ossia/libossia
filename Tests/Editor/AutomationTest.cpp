@@ -62,7 +62,7 @@ private Q_SLOTS:
         auto address = local_device->children().front()->createAddress(Value::Type::FLOAT);
         address->addCallback([&] (const Value* v) { address_callback(v); });
 
-        auto curve = Curve<float>::create();
+        auto curve = Curve<double, float>::create();
         auto linearSegment = CurveSegmentLinear<float>::create(curve);
         curve->setInitialValue(0.);
         curve->addPoint(0.5, 1., linearSegment);

@@ -21,8 +21,8 @@
 namespace OSSIA
 {
 
-template <typename T>
-class CurveSegmentLinear : public CurveSegment<T>
+template <typename Y>
+class CurveSegmentLinear : public CurveSegment<Y>
 {
 
 public:
@@ -31,12 +31,12 @@ public:
 # pragma mark Life cycle
   
   /*! factory
-   \param std::shared_ptr<Curve<T>> parent
-   \return std::shared_ptr<CurveSegmentLinear<T>> */
-  static std::shared_ptr<CurveSegmentLinear<T>> create(std::shared_ptr<Curve<T>> = nullptr);
+   \param std::shared_ptr<CurveAbstract> parent
+   \return std::shared_ptr<CurveSegmentLinear<Y>> */
+  static std::shared_ptr<CurveSegmentLinear<Y>> create(std::shared_ptr<CurveAbstract> = nullptr);
 
   /*! clone */
-  virtual std::shared_ptr<CurveSegmentLinear<T>> clone() const = 0;
+  virtual std::shared_ptr<CurveSegmentLinear<Y>> clone() const = 0;
   
   /*! destructor */
   virtual ~CurveSegmentLinear() = default;
@@ -44,8 +44,8 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  typename CurveSegment<T>::Type getType() const override final
-  {return CurveSegment<T>::Type::LINEAR;}
+  typename CurveSegment<Y>::Type getType() const override final
+  {return CurveSegment<Y>::Type::LINEAR;}
 
 };
 }

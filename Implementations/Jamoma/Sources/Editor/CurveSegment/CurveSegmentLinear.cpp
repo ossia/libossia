@@ -24,7 +24,7 @@ namespace OSSIA
   template class CurveSegmentLinear<bool>;
   
   template <>
-  shared_ptr<CurveSegmentLinear<bool>> CurveSegmentLinear<bool>::create(shared_ptr<Curve<bool>> parent)
+  shared_ptr<CurveSegmentLinear<bool>> CurveSegmentLinear<bool>::create(shared_ptr<CurveAbstract> parent)
   {
     return make_shared<JamomaCurveSegmentLinear<bool>>(parent);
   }
@@ -33,7 +33,7 @@ namespace OSSIA
   template class CurveSegmentLinear<int>;
   
   template <>
-  shared_ptr<CurveSegmentLinear<int>> CurveSegmentLinear<int>::create(shared_ptr<Curve<int>> parent)
+  shared_ptr<CurveSegmentLinear<int>> CurveSegmentLinear<int>::create(shared_ptr<CurveAbstract> parent)
   {
     return make_shared<JamomaCurveSegmentLinear<int>>(parent);
   }
@@ -42,36 +42,41 @@ namespace OSSIA
   template class CurveSegmentLinear<float>;
   
   template <>
-  shared_ptr<CurveSegmentLinear<float>> CurveSegmentLinear<float>::create(shared_ptr<Curve<float>> parent)
+  shared_ptr<CurveSegmentLinear<float>> CurveSegmentLinear<float>::create(shared_ptr<CurveAbstract> parent)
   {
     return make_shared<JamomaCurveSegmentLinear<float>>(parent);
   }
 }
 
-template <typename T>
-JamomaCurveSegmentLinear<T>::JamomaCurveSegmentLinear(shared_ptr<Curve<T>> parent) :
+template <typename Y>
+JamomaCurveSegmentLinear<Y>::
+JamomaCurveSegmentLinear(shared_ptr<CurveAbstract> parent) :
 mParent(parent)
 {}
 
-template <typename T>
-JamomaCurveSegmentLinear<T>::JamomaCurveSegmentLinear(const JamomaCurveSegmentLinear * other)
+template <typename Y>
+JamomaCurveSegmentLinear<Y>::
+JamomaCurveSegmentLinear(const JamomaCurveSegmentLinear * other)
 {}
 
-template <typename T>
-shared_ptr<CurveSegmentLinear<T>> JamomaCurveSegmentLinear<T>::clone() const
+template <typename Y>
+shared_ptr<CurveSegmentLinear<Y>> JamomaCurveSegmentLinear<Y>::
+clone() const
 {
-    return make_shared<JamomaCurveSegmentLinear<T>>(this);
+    return make_shared<JamomaCurveSegmentLinear<Y>>(this);
 }
 
-template <typename T>
-JamomaCurveSegmentLinear<T>::~JamomaCurveSegmentLinear()
+template <typename Y>
+JamomaCurveSegmentLinear<Y>::
+~JamomaCurveSegmentLinear()
 {}
 
 # pragma mark -
 # pragma mark Execution
 
-template <typename T>
-T JamomaCurveSegmentLinear<T>::valueAt(const TimeValue& ratio, T start, T end) const
+template <typename Y>
+Y JamomaCurveSegmentLinear<Y>::
+valueAt(double ratio, Y start, Y end) const
 {
   return start + ratio * (end - start);
 }
@@ -79,8 +84,9 @@ T JamomaCurveSegmentLinear<T>::valueAt(const TimeValue& ratio, T start, T end) c
 # pragma mark -
 # pragma mark Accessors
 
-template <typename T>
-shared_ptr<Curve<T>> JamomaCurveSegmentLinear<T>::getParent() const
+template <typename Y>
+shared_ptr<CurveAbstract> JamomaCurveSegmentLinear<Y>::
+getParent() const
 {
   return mParent;
 }

@@ -13,7 +13,7 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto curve = Curve<float>::create();
+        auto curve = Curve<double, float>::create();
         QVERIFY(curve != nullptr);
 
         auto linearSegment = CurveSegmentLinear<float>::create(curve);
@@ -66,7 +66,7 @@ private Q_SLOTS:
         Tuple t = {new Float(-1.), new Float(0.), new Float(1.)};
         localTupleAddress->setValue(&t);
       
-        auto curve = Curve<float>::create();
+        auto curve = Curve<double, float>::create();
         auto linearSegment = CurveSegmentLinear<float>::create(curve);
       
         Destination d(localTupleNode);

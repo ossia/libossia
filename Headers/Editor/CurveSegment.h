@@ -20,10 +20,9 @@
 namespace OSSIA
 {
 
-template <typename T>
-class Curve;
+class CurveAbstract;
 
-template <typename T>
+template <typename Y>
 class CurveSegment
 {
 
@@ -50,11 +49,11 @@ public:
 # pragma mark Execution
   
   /*! get value at an abscissa
-   \param const #TimeValue ratio between 0. and 1.
-   \param T segment start value
-   \param T segment end value
-   \return T value */
-  virtual T valueAt(const TimeValue&, T, T) const = 0;
+   \param double ratio between 0. and 1.
+   \param Y segment start value
+   \param Y segment end value
+   \return Y value */
+  virtual Y valueAt(double, Y, Y) const = 0;
 
 # pragma mark -
 # pragma mark Accessors
@@ -64,8 +63,8 @@ public:
   virtual Type getType() const = 0;
   
   /*! get the curve where the segment is
-   \return std::shared_ptr<Curve<T>> */
-  virtual std::shared_ptr<Curve<T>> getParent() const = 0;
+   \return std::shared_ptr<CurveAbstract>> */
+  virtual std::shared_ptr<CurveAbstract> getParent() const = 0;
   
 };
 }

@@ -18,8 +18,8 @@
 using namespace OSSIA;
 using namespace std;
 
-template <typename T>
-class JamomaCurve : public Curve<T>
+template <typename X, typename Y>
+class JamomaCurve : public Curve<X,Y>
 {
 
 private:
@@ -27,10 +27,10 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  T mInitialValue;
+  Y mInitialValue;
   Destination* mInitialDestination;
   vector<char> mInitialDestinationIndex;
-  map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> mPointsMap;
+  map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> mPointsMap;
   
 public:
   
@@ -41,28 +41,28 @@ public:
   
   JamomaCurve(const JamomaCurve *);
   
-  shared_ptr<Curve<T>> clone() const override;
+  shared_ptr<Curve<X,Y>> clone() const override;
   
   ~JamomaCurve();
   
 # pragma mark -
 # pragma mark Edition
   
-  bool addPoint(const TimeValue&, T, shared_ptr<CurveSegment<T>>) override;
+  bool addPoint(X, Y, shared_ptr<CurveSegment<Y>>) override;
   
-  bool removePoint(const TimeValue&) override;
+  bool removePoint(X) override;
   
 # pragma mark -
 # pragma mark Execution
   
-  T valueAt(const TimeValue&) const override;
+  Y valueAt(X) const override;
   
 # pragma mark -
 # pragma mark Accessors
   
-  T getInitialValue() const override;
+  Y getInitialValue() const override;
   
-  void setInitialValue(const T) override;
+  void setInitialValue(Y) override;
   
   const Destination* getInitialDestination() const override;
   
@@ -72,10 +72,10 @@ public:
 
   void setInitialDestinationIndex(std::initializer_list<char>) override;
   
-  map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> getPointsMap() const override;
+  map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> getPointsMap() const override;
 
 # pragma mark -
 # pragma mark Implementation specific
   
-  T convertToTemplateTypeValue(const Value *, char*) const;
+  Y convertToTemplateTypeValue(const Value *, char*) const;
 };

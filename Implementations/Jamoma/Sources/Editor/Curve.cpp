@@ -11,62 +11,67 @@ using namespace std;
 
 namespace OSSIA
 {
-  // explicit instantiation for bool
-  template class Curve<bool>;
+  // explicit instantiation for double and bool
+  template class Curve<double, bool>;
   
   template <>
-  shared_ptr<Curve<bool>> Curve<bool>::create()
+  shared_ptr<Curve<double, bool>> Curve<double, bool>::create()
   {
-    return make_shared<JamomaCurve<bool>>();
+    return make_shared<JamomaCurve<double, bool>>();
   }
   
-  // explicit instantiation for int
-  template class Curve<int>;
+  // explicit instantiation for double and int
+  template class Curve<double, int>;
   
   template <>
-  shared_ptr<Curve<int>> Curve<int>::create()
+  shared_ptr<Curve<double, int>> Curve<double, int>::create()
   {
-    return make_shared<JamomaCurve<int>>();
+    return make_shared<JamomaCurve<double, int>>();
   }
   
-  // explicit instantiation for float
-  template class Curve<float>;
+  // explicit instantiation for double and float
+  template class Curve<double, float>;
   
   template <>
-  shared_ptr<Curve<float>> Curve<float>::create()
+  shared_ptr<Curve<double, float>> Curve<double, float>::create()
   {
-    return make_shared<JamomaCurve<float>>();
+    return make_shared<JamomaCurve<double, float>>();
   }
 }
 
-template <typename T>
-JamomaCurve<T>::JamomaCurve() :
+template <typename X, typename Y>
+JamomaCurve<X,Y>::
+JamomaCurve() :
 mInitialDestination(nullptr)
 {
   mInitialDestinationIndex.push_back(0);
 }
 
-template <typename T>
-JamomaCurve<T>::JamomaCurve(const JamomaCurve * other)
+template <typename X, typename Y>
+JamomaCurve<X,Y>::
+JamomaCurve(const JamomaCurve * other)
 {}
 
-template <typename T>
-shared_ptr<Curve<T>> JamomaCurve<T>::clone() const
+template <typename X, typename Y>
+shared_ptr<Curve<X,Y>> JamomaCurve<X,Y>::
+clone() const
 {
   return make_shared<JamomaCurve>(this);
 }
 
-template <typename T>
-JamomaCurve<T>::~JamomaCurve()
+template <typename X, typename Y>
+JamomaCurve<X,Y>::
+~JamomaCurve()
 {}
 
 # pragma mark -
 # pragma mark Edition
 
-template <typename T>
-bool JamomaCurve<T>::addPoint(const TimeValue& abscissa, T value, shared_ptr<CurveSegment<T>> segment)
+template <typename X, typename Y>
+bool JamomaCurve<X,Y>::
+addPoint(X abscissa, Y value, shared_ptr<CurveSegment<Y>> segment)
 {
-  pair<T,shared_ptr<CurveSegment<T>>> p(value, segment);
+  pair<Y,shared_ptr<CurveSegment<Y>>> p(value, segment);
   
   //! \todo check if there is already a point
   
@@ -75,8 +80,9 @@ bool JamomaCurve<T>::addPoint(const TimeValue& abscissa, T value, shared_ptr<Cur
   return true;
 }
 
-template <typename T>
-bool JamomaCurve<T>::removePoint(const TimeValue& abscissa)
+template <typename X, typename Y>
+bool JamomaCurve<X,Y>::
+removePoint(X abscissa)
 {
   return mPointsMap.erase(abscissa) > 0;
 }
@@ -84,11 +90,12 @@ bool JamomaCurve<T>::removePoint(const TimeValue& abscissa)
 # pragma mark -
 # pragma mark Execution
 
-template <typename T>
-T JamomaCurve<T>::valueAt(const TimeValue& abscissa) const
+template <typename X, typename Y>
+Y JamomaCurve<X,Y>::
+valueAt(X abscissa) const
 {
   TimeValue lastAbscissa(0.);
-  T lastValue = getInitialValue();
+  Y lastValue = getInitialValue();
   
   for (auto it = mPointsMap.begin(); it != mPointsMap.end(); it++)
   {
@@ -113,8 +120,9 @@ T JamomaCurve<T>::valueAt(const TimeValue& abscissa) const
 # pragma mark -
 # pragma mark Accessors
 
-template <typename T>
-T JamomaCurve<T>::getInitialValue() const
+template <typename X, typename Y>
+Y JamomaCurve<X,Y>::
+getInitialValue() const
 {
   if (mInitialDestination == nullptr)
   {
@@ -132,32 +140,37 @@ T JamomaCurve<T>::getInitialValue() const
   }
 }
 
-template <typename T>
-void JamomaCurve<T>::setInitialValue(const T value)
+template <typename X, typename Y>
+void JamomaCurve<X,Y>::
+setInitialValue(Y value)
 {
   mInitialValue = value;
 }
 
-template <typename T>
-const Destination* JamomaCurve<T>::getInitialDestination() const
+template <typename X, typename Y>
+const Destination* JamomaCurve<X,Y>::
+getInitialDestination() const
 {
   return mInitialDestination;
 }
 
-template <typename T>
-void JamomaCurve<T>::setInitialDestination(const Destination* destination)
+template <typename X, typename Y>
+void JamomaCurve<X,Y>::
+setInitialDestination(const Destination* destination)
 {
   mInitialDestination = static_cast<Destination*>(destination->clone());
 }
 
-template <typename T>
-vector<char> JamomaCurve<T>::getInitialDestinationIndex() const
+template <typename X, typename Y>
+vector<char> JamomaCurve<X,Y>::
+getInitialDestinationIndex() const
 {
   return mInitialDestinationIndex;
 }
 
-template <typename T>
-void JamomaCurve<T>::setInitialDestinationIndex(std::initializer_list<char> index)
+template <typename X, typename Y>
+void JamomaCurve<X,Y>::
+setInitialDestinationIndex(std::initializer_list<char> index)
 {
   mInitialDestinationIndex.clear();
   
@@ -165,8 +178,9 @@ void JamomaCurve<T>::setInitialDestinationIndex(std::initializer_list<char> inde
     mInitialDestinationIndex.push_back(i);
 }
 
-template <typename T>
-map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> JamomaCurve<T>::getPointsMap() const
+template <typename X, typename Y>
+map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> JamomaCurve<X,Y>::
+getPointsMap() const
 {
   return mPointsMap;
 }
@@ -174,8 +188,9 @@ map<const TimeValue, pair<T, shared_ptr<CurveSegment<T>>>> JamomaCurve<T>::getPo
 # pragma mark -
 # pragma mark Implementation specific
 
-template <typename T>
-T JamomaCurve<T>::convertToTemplateTypeValue(const Value * value, char* level) const
+template <typename X, typename Y>
+Y JamomaCurve<X,Y>::
+convertToTemplateTypeValue(const Value * value, char* level) const
 {
   switch (value->getType())
   {

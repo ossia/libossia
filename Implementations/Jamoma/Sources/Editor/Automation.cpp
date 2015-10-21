@@ -114,7 +114,7 @@ Value* JamomaAutomation::computeValueAtPosition(const Value* drive, const TimeVa
 
       try
       {
-        Curve<bool>* curve = dynamic_cast<Curve<bool>*>(b->value.get());
+        Curve<const TimeValue&, bool>* curve = dynamic_cast<Curve<const TimeValue&, bool>*>(b->value.get());
         if (curve)
           return new Bool(curve->valueAt(position));
       }
@@ -122,7 +122,7 @@ Value* JamomaAutomation::computeValueAtPosition(const Value* drive, const TimeVa
 
       try
       {
-        Curve<int>* curve = dynamic_cast<Curve<int>*>(b->value.get());
+        Curve<const TimeValue&, int>* curve = dynamic_cast<Curve<const TimeValue&, int>*>(b->value.get());
         if (curve)
           return new Int(curve->valueAt(position));
       }
@@ -130,7 +130,7 @@ Value* JamomaAutomation::computeValueAtPosition(const Value* drive, const TimeVa
 
       try
       {
-        Curve<float>* curve = dynamic_cast<Curve<float>*>(b->value.get());
+        Curve<const TimeValue&, float>* curve = dynamic_cast<Curve<const TimeValue&, float>*>(b->value.get());
         if (curve)
           return new Float(curve->valueAt(position));
       }

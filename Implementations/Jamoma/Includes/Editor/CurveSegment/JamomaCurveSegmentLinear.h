@@ -18,8 +18,8 @@
 using namespace OSSIA;
 using namespace std;
 
-template <typename T>
-class JamomaCurveSegmentLinear : public CurveSegmentLinear<T>
+template <typename Y>
+class JamomaCurveSegmentLinear : public CurveSegmentLinear<Y>
 {
   
 private:
@@ -27,29 +27,29 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  shared_ptr<Curve<T>> mParent;
+  shared_ptr<CurveAbstract> mParent;
   
 public:
   
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaCurveSegmentLinear(shared_ptr<Curve<T>>);
+  JamomaCurveSegmentLinear(shared_ptr<CurveAbstract>);
   
   JamomaCurveSegmentLinear(const JamomaCurveSegmentLinear *);
   
-  shared_ptr<CurveSegmentLinear<T>> clone() const override;
+  shared_ptr<CurveSegmentLinear<Y>> clone() const override;
 
   ~JamomaCurveSegmentLinear();
   
 # pragma mark -
 # pragma mark Execution
 
-  T valueAt(const TimeValue&, T, T) const override;
+  Y valueAt(double, Y, Y) const override;
   
 # pragma mark -
 # pragma mark Accessors
   
-  shared_ptr<Curve<T>> getParent() const override;
+  shared_ptr<CurveAbstract> getParent() const override;
 
 };

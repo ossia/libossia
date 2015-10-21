@@ -20,8 +20,8 @@
 using namespace OSSIA;
 using namespace std;
 
-template <typename T>
-class JamomaCurveSegmentPower : public CurveSegmentPower<T>
+template <typename Y>
+class JamomaCurveSegmentPower : public CurveSegmentPower<Y>
 {
   
 private:
@@ -29,35 +29,35 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   
-  shared_ptr<Curve<T>>  mParent;
+  shared_ptr<CurveAbstract> mParent;
   
-  double                mPower;
+  double                    mPower;
   
 public:
   
 # pragma mark -
 # pragma mark Life cycle
   
-  JamomaCurveSegmentPower(shared_ptr<Curve<T>>);
+  JamomaCurveSegmentPower(shared_ptr<CurveAbstract>);
   
   JamomaCurveSegmentPower(const JamomaCurveSegmentPower *);
   
-  shared_ptr<CurveSegmentPower<T>> clone() const override;
+  shared_ptr<CurveSegmentPower<Y>> clone() const override;
 
   ~JamomaCurveSegmentPower();
   
 # pragma mark -
 # pragma mark Execution
 
-  T valueAt(const TimeValue&, T, T) const override;
+  Y valueAt(double, Y, Y) const override;
   
 # pragma mark -
 # pragma mark Accessors
   
-  shared_ptr<Curve<T>> getParent() const override;
+  shared_ptr<CurveAbstract> getParent() const override;
   
   double getPower() const override;
 
-  CurveSegmentPower<T> & setPower(double) override;
+  CurveSegmentPower<Y> & setPower(double) override;
 
 };
