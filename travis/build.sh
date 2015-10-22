@@ -17,7 +17,7 @@ case "$TRAVIS_OS_NAME" in
     make ExperimentalTest
   ;;
   osx)
-    cmake -DCMAKE_PREFIX_PATH="/usr/local/Cellar/qt5/5.5.0/lib/cmake;$(pwd)/../Jamoma/share/cmake" $CMAKE_COMMON_FLAGS ..
+    cmake -DCMAKE_PREFIX_PATH="/usr/local/Cellar/qt5/5.5.1/lib/cmake;$(pwd)/../Jamoma/share/cmake" $CMAKE_COMMON_FLAGS ..
 
     make -j2
     make ExperimentalTest
