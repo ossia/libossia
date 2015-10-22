@@ -168,11 +168,7 @@ mRepetitionFilter(false)
 }
 
 JamomaAddress::~JamomaAddress()
-{
-  // use the device protocol to stop address value observation
-    if(auto node = mNode.lock())
-        node->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), false);
-}
+{}
 
 # pragma mark -
 # pragma mark Network

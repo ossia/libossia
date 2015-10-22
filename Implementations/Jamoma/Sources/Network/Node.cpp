@@ -161,8 +161,12 @@ bool JamomaNode::removeAddress()
 {
   if (mNode)
   {
-    mAddress = nullptr;
-
+    // use the device protocol to stop address value observation
+    if (mAddress)
+      getDevice()->getProtocol()->observeAddressValue(mAddress, false);
+    
+    mAddress.reset();
+    
     // add a NodeInfo object otherwise TTNodeDirectory
     // automatically removes empty parent binding on no object
     // when destroying the last child

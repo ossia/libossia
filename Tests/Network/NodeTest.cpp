@@ -53,7 +53,7 @@ private Q_SLOTS:
             auto node = local_device->children().front();
 
             auto address = node->createAddress();
-            QVERIFY(address != nullptr);
+            QVERIFY(node->getAddress() != nullptr);
             QVERIFY(address == node->getAddress());
 
             QVERIFY(node->removeAddress());
