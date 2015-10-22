@@ -23,9 +23,29 @@ private Q_SLOTS:
         QVERIFY(one == One);
         QVERIFY(one.isInfinite() == false);
 
-        TimeValue infinite(true);
+        TimeValue infinite(INFINITY);
         QVERIFY(infinite == Infinite);
         QVERIFY(infinite.isInfinite() == true);
+    }
+    
+    /*! test =, +, +=, -, -= operators */
+    void test_math()
+    {
+        TimeValue zero;
+        TimeValue one(1.);
+        TimeValue infinite(INFINITY);
+        
+        TimeValue copy = one;
+        QVERIFY(copy == 1.);
+        
+        copy = infinite;
+        QVERIFY(copy == INFINITY);
+        
+        QVERIFY(zero + one == 1.);
+        QVERIFY(one + infinite == INFINITY);
+        
+        QVERIFY(one - one == 0.);
+        QVERIFY(infinite - one == INFINITY);
     }
     
     /*! test comparison operators */
@@ -69,7 +89,6 @@ private Q_SLOTS:
         QVERIFY(!(Infinite < Infinite));
         QVERIFY(Infinite <= Infinite);
 
-        //! \note those tests fails because Infinite in casted into double and so the m_value (0.) is returned
         QVERIFY(!(0. == Infinite));
         QVERIFY(0. != Infinite);
         QVERIFY(5. < Infinite);

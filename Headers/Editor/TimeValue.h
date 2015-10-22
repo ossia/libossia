@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "math.h"
+
 namespace OSSIA
 {
 
@@ -26,14 +28,10 @@ public:
 
 # pragma mark -
 # pragma mark Life cycle
-  
-  /*! constructor
-    \param bool infinite */
-  TimeValue(bool = false);
-  
+    
   /*! constructor
    \param int value */
-  TimeValue(double);
+  TimeValue(double = 0.);
   
   /*! destructor */
   ~TimeValue();
@@ -60,31 +58,7 @@ public:
   /*! substraction operator */
   TimeValue operator- (double) const;
   TimeValue operator- (const TimeValue&) const;
-  
-  /*! equal operator */
-  bool operator== (double) const;
-  bool operator== (const TimeValue&) const;
-  
-  /*! different operator */
-  bool operator!= (double) const;
-  bool operator!= (const TimeValue&) const;
-  
-  /*! greater than operator */
-  bool operator> (double) const;
-  bool operator> (const TimeValue&) const;
-  
-  /*! greater than and equal operator */
-  bool operator>= (double) const;
-  bool operator>= (const TimeValue&) const;
-  
-  /*! less than operator */
-  bool operator< (double) const;
-  bool operator< (const TimeValue&) const;
-  
-  /*! less than and equal operator */
-  bool operator<= (double) const;
-  bool operator<= (const TimeValue&) const;
-  
+
   /*! double casting operator */
   operator double() const;
   
@@ -98,10 +72,9 @@ public:
 protected:
   
   double  m_value;
-  bool    m_infinite;
 };
   
-static TimeValue Infinite = TimeValue(true);
+static TimeValue Infinite = TimeValue(INFINITY);
 static TimeValue Zero = TimeValue(0.);
 static TimeValue One = TimeValue(1.);
 

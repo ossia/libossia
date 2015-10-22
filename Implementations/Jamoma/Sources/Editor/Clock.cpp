@@ -32,6 +32,7 @@ mOffset(offset),
 mSpeed(speed),
 mDriveMode(driveMode),
 mRunning(false),
+mPaused(false),
 mCallback(callback)
 {}
 
@@ -42,6 +43,7 @@ mOffset(other->mOffset),
 mSpeed(other->mSpeed),
 mDriveMode(other->mDriveMode),
 mRunning(false),
+mPaused(false),
 mCallback(other->mCallback)
 {}
 
