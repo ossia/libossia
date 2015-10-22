@@ -2,6 +2,7 @@
 #include "Editor/Clock.h"
 #include "Editor/Curve.h"
 #include "Editor/CurveSegment.h"
+#include "Editor/CurveSegment/CurveSegmentEmpty.h"
 #include "Editor/CurveSegment/CurveSegmentLinear.h"
 #include "Editor/CurveSegment/CurveSegmentPower.h"
 #include "Editor/Expression.h"

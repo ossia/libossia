@@ -41,6 +41,7 @@
 		466C0CC51BD94E3200CF24F0 /* CurveSegmentEmpty.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentEmpty.cpp; sourceTree = "<group>"; };
 		466C0CC61BD94E3C00CF24F0 /* JamomaCurveSegmentEmpty.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaCurveSegmentEmpty.h; sourceTree = "<group>"; };
 		466C0CC71BD94E4A00CF24F0 /* CurveSegmentEmpty.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentEmpty.h; sourceTree = "<group>"; };
+		466C0CC81BD9506000CF24F0 /* CurveSegmentEmptyTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentEmptyTest.cpp; sourceTree = "<group>"; };
 		4673A6951BC66802006B872C /* AddressCorpus.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AddressCorpus.txt; sourceTree = "<group>"; };
 		4673A6961BC66802006B872C /* AutomationBenchmark.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AutomationBenchmark.cpp; sourceTree = "<group>"; };
 		4673A6971BC66802006B872C /* DeviceBenchmark.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceBenchmark.cpp; sourceTree = "<group>"; };
@@ -276,6 +277,7 @@
 		4673A6A11BC66802006B872C /* CurveSegment */ = {
 			isa = PBXGroup;
 			children = (
+				466C0CC81BD9506000CF24F0 /* CurveSegmentEmptyTest.cpp */,
 				4673A6A21BC66802006B872C /* CurveSegmentLinearTest.cpp */,
 				4673A6A31BC66802006B872C /* CurveSegmentPowerTest.cpp */,
 			);
