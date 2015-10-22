@@ -182,7 +182,8 @@ bool JamomaNode::removeAddress()
 
 Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator pos, string name)
 {
-  assert(!name.empty());
+  if (name.empty())
+    throw runtime_error("can't create a node with empty name");
 
   TTAddress nodeAddress;
   mNode->getAddress(nodeAddress);
