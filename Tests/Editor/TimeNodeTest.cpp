@@ -24,12 +24,12 @@ private Q_SLOTS:
         TimeValue date = node->getDate();
         QVERIFY(date == Zero);
 
-        QVERIFY(node->getExpression() == ExpressionFalse);
+        QVERIFY(*node->getExpression() == *ExpressionFalse);
 
         auto expression = Expression::create();
         node->setExpression(expression);
 
-        QVERIFY(node->getExpression() == expression);
+        QVERIFY(*node->getExpression() == *expression);
         
         TimeValue simultaneity_margin = node->getSimultaneityMargin();
         QVERIFY(simultaneity_margin == Zero);
