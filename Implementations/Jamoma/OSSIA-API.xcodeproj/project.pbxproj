@@ -38,6 +38,9 @@
 		465341141BBBDB4C003599E0 /* JamomaLoop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaLoop.h; sourceTree = "<group>"; };
 		465341151BBBDB58003599E0 /* Loop.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Loop.cpp; sourceTree = "<group>"; };
 		4658445C1B14A95200612FBD /* Container.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
+		466C0CC51BD94E3200CF24F0 /* CurveSegmentEmpty.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentEmpty.cpp; sourceTree = "<group>"; };
+		466C0CC61BD94E3C00CF24F0 /* JamomaCurveSegmentEmpty.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaCurveSegmentEmpty.h; sourceTree = "<group>"; };
+		466C0CC71BD94E4A00CF24F0 /* CurveSegmentEmpty.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurveSegmentEmpty.h; sourceTree = "<group>"; };
 		4673A6951BC66802006B872C /* AddressCorpus.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AddressCorpus.txt; sourceTree = "<group>"; };
 		4673A6961BC66802006B872C /* AutomationBenchmark.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AutomationBenchmark.cpp; sourceTree = "<group>"; };
 		4673A6971BC66802006B872C /* DeviceBenchmark.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceBenchmark.cpp; sourceTree = "<group>"; };
@@ -191,6 +194,7 @@
 		463DC5AA1B42BF6A00EEF0CB /* CurveSegment */ = {
 			isa = PBXGroup;
 			children = (
+				466C0CC61BD94E3C00CF24F0 /* JamomaCurveSegmentEmpty.h */,
 				463DC5AB1B42BF6A00EEF0CB /* JamomaCurveSegmentLinear.h */,
 				46AD82A01B4C229C0094E2DB /* JamomaCurveSegmentPower.h */,
 			);
@@ -200,6 +204,7 @@
 		464201CA19BF28F300893C87 /* CurveSegment */ = {
 			isa = PBXGroup;
 			children = (
+				466C0CC71BD94E4A00CF24F0 /* CurveSegmentEmpty.h */,
 				464201CE19BF370300893C87 /* CurveSegmentLinear.h */,
 				46A4923019C2E264003691A8 /* CurveSegmentPower.h */,
 			);
@@ -453,6 +458,7 @@
 		46BA2A5C19C09A21009630B5 /* CurveSegment */ = {
 			isa = PBXGroup;
 			children = (
+				466C0CC51BD94E3200CF24F0 /* CurveSegmentEmpty.cpp */,
 				46BA2A5D19C09A21009630B5 /* CurveSegmentLinear.cpp */,
 				46A4923119C2E2D6003691A8 /* CurveSegmentPower.cpp */,
 			);

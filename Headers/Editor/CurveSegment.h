@@ -34,7 +34,7 @@ public:
   /*! type of segment */
   enum class Type
   {
-    IMPULSE,
+    EMPTY,
     LINEAR,
     POWER
   };
