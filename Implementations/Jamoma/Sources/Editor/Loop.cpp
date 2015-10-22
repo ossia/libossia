@@ -121,6 +121,25 @@ shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const Time
 }
 
 # pragma mark -
+# pragma mark Execution - Implementation specific
+
+void JamomaLoop::start()
+{}
+
+void JamomaLoop::stop()
+{}
+
+void JamomaLoop::pause()
+{
+  mPatternConstraint->pause();
+}
+
+void JamomaLoop::resume()
+{
+  mPatternConstraint->resume();
+}
+
+# pragma mark -
 # pragma mark Accessors
 
 const shared_ptr<TimeConstraint> JamomaLoop::getPatternTimeConstraint() const

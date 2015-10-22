@@ -72,6 +72,10 @@ public:
   virtual void setup(const TimeValue& = Zero) override;
 
   shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) override;
+  
+  void pause() override;
+  
+  void resume() override;
 
 # pragma mark -
 # pragma mark Accessors

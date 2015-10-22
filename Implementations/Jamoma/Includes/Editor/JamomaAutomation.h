@@ -54,11 +54,19 @@ public:
   shared_ptr<Automation> clone() const override;
   
   ~JamomaAutomation();
-
+  
 # pragma mark -
 # pragma mark Execution
-
+  
   shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) override;
+  
+# pragma mark -
+# pragma mark Execution - Implementation specific
+  
+  void start() override;
+  void stop() override;
+  void pause() override;
+  void resume() override;
   
 # pragma mark -
 # pragma mark Accessors

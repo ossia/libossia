@@ -56,6 +56,21 @@ shared_ptr<StateElement> JamomaAutomation::state(const TimeValue& position, cons
 }
 
 # pragma mark -
+# pragma mark Execution - Implementation specific
+
+void JamomaAutomation::start()
+{}
+
+void JamomaAutomation::stop()
+{}
+
+void JamomaAutomation::pause()
+{}
+
+void JamomaAutomation::resume()
+{}
+
+# pragma mark -
 # pragma mark Accessors
 
 const shared_ptr<Address> JamomaAutomation::getDrivenAddress() const
