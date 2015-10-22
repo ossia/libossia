@@ -120,6 +120,39 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
 }
 
 # pragma mark -
+# pragma mark Execution - Implementation specific
+
+void JamomaScenario::start()
+{}
+
+void JamomaScenario::stop()
+{}
+
+void JamomaScenario::pause()
+{
+  // pause all running time constraints
+  for (const auto& timeConstraint : mTimeContraints)
+  {
+    if (timeConstraint->getRunning())
+    {
+      timeConstraint->pause();
+    }
+  }
+}
+
+void JamomaScenario::resume()
+{
+  // resume all running time constraints
+  for (const auto& timeConstraint : mTimeContraints)
+  {
+    if (timeConstraint->getRunning())
+    {
+      timeConstraint->resume();
+    }
+  }
+}
+
+# pragma mark -
 # pragma mark Edition
 
 void JamomaScenario::addTimeConstraint(const shared_ptr<TimeConstraint> timeConstraint)
