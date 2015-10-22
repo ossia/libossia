@@ -71,7 +71,15 @@ private Q_SLOTS:
         QVERIFY(scenario->timeConstraints().size() == 0);
 
         QVERIFY(scenario->getStartTimeNode()->getDate() == 0.);
-        QVERIFY(scenario->getEndTimeNode()->getDate() == Infinite);
+        QVERIFY(scenario->getEndTimeNode()->getDate() == 0.);
+        
+        auto mc_callback = std::bind(&ScenarioTest::main_constraint_callback, this, _1, _2, _3);
+        auto e_callback = std::bind(&ScenarioTest::event_callback, this, _1);
+        auto start_event = *(scenario->getStartTimeNode()->emplace(scenario->getStartTimeNode()->timeEvents().begin(), e_callback));
+        auto end_event = *(scenario->getEndTimeNode()->emplace(scenario->getEndTimeNode()->timeEvents().begin(), e_callback));
+        auto constraint = TimeConstraint::create(mc_callback, start_event, end_event, 1000.);
+        
+        QVERIFY(scenario->getEndTimeNode()->getDate() == 1000.);
     }
     
     /*! test edition functions */

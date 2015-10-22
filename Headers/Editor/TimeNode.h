@@ -70,6 +70,8 @@ public:
 # pragma mark Accessors
 
   /*! get the date
+   \detail the date is the sum of its previous time constraint durations
+   \details a time node with na previous time constraints have a date equals to 0.
    \return #TimeValue the date */
   virtual TimeValue getDate() const = 0;
 

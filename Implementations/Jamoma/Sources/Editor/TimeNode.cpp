@@ -64,7 +64,7 @@ void JamomaTimeNode::dispose()
 TimeValue JamomaTimeNode::getDate() const
 {
   // compute the date from each first previous time constraint
-  // ignoring zero duration time constraint (used to loop back in time)
+  // ignoring zero duration time constraint
   if (!timeEvents().empty())
   {
     for (auto & timeEvent : timeEvents())
