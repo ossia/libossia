@@ -73,7 +73,7 @@ private Q_SLOTS:
         curve->setInitialDestination(&d);
         curve->setInitialDestinationIndex({1});
       
-        QVERIFY(curve->getInitialDestination() == &d);
+        QVERIFY(*curve->getInitialDestination() == d);
         QVERIFY(curve->getInitialDestinationIndex().size() == 1);
         QVERIFY(curve->getInitialDestinationIndex()[0] == 1);
       
