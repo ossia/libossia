@@ -108,7 +108,6 @@ public:
   virtual const Destination* getInitialDestination() const = 0;
   
   /*! set initial curve value using a Destination
-   \todo add index selector for Tuple case
    \param const Destination* */
   virtual void setInitialDestination(const Destination*) = 0;
   
