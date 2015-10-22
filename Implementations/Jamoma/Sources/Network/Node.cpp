@@ -140,9 +140,18 @@ shared_ptr<Address> JamomaNode::createAddress(Value::Type type)
       mObject.set("type", kTTSym_array);
     else if (type == Value::Type::GENERIC)
       mObject.set("type", kTTSym_generic);
+    else if (type == Value::Type::DESTINATION)
+      mObject.set("type", kTTSym_string);
 
     // edit new address
     mAddress = make_shared<JamomaAddress>(shared_from_this(), mObject);
+    
+    // force address value type for some API value type unhandled by Jamoma
+    if (type == Value::Type::DESTINATION)
+    {
+      JamomaAddress* address = dynamic_cast<JamomaAddress*>(mAddress.get());
+      address->setValueType(type);
+    }
   }
 
   return mAddress;

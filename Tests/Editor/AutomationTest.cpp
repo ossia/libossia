@@ -65,8 +65,8 @@ private Q_SLOTS:
         auto curve = Curve<double, float>::create();
         auto linearSegment = CurveSegmentLinear<float>::create(curve);
         curve->setInitialValue(0.);
-        curve->addPoint(0.5, 1., linearSegment);
-        curve->addPoint(1., 0., linearSegment);
+        curve->addPoint(linearSegment, 0.5, 1.);
+        curve->addPoint(linearSegment, 1., 0.);
         Behavior b(curve);
         auto automation = Automation::create(address, &b);
 

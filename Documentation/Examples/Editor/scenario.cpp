@@ -153,7 +153,7 @@ int main()
     auto first_linearSegment = CurveSegmentLinear<float>::create(first_curve);
 
     first_curve->setInitialValue(0.);
-    first_curve->addPoint(1., 1., first_linearSegment);
+    first_curve->addPoint(first_linearSegment, 1., 1.);
 
     // create a power curve to drive all element of the Tuple value from 0. to 2.
     auto second_curve = Curve<double, float>::create();
@@ -161,7 +161,7 @@ int main()
     second_powerSegment->setPower(0.5);
 
     second_curve->setInitialValue(1.);
-    second_curve->addPoint(1., 2., second_powerSegment);
+    second_curve->addPoint(second_powerSegment, 1., 2.);
 
     // create a Tuple value of 3 Behavior values based on the same curve
     vector<const Value*> t_first_curves = {new Behavior(first_curve), new Behavior(first_curve), new Behavior(first_curve)};

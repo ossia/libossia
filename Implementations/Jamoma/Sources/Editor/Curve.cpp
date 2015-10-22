@@ -149,7 +149,7 @@ JamomaCurve<X,Y>::
 
 template <typename X, typename Y>
 bool JamomaCurve<X,Y>::
-addPoint(X abscissa, Y value, shared_ptr<CurveSegment<Y>> segment)
+addPoint(shared_ptr<CurveSegment<Y>> segment, X abscissa, Y value)
 {
   pair<Y,shared_ptr<CurveSegment<Y>>> p(value, segment);
   

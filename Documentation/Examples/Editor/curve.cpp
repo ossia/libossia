@@ -32,8 +32,8 @@ int main()
   
   cout << "*** test 1 ***" << endl;
   myCurve->setInitialValue(0.);
-  myCurve->addPoint(1., 1., firstCurveSegment);
-  myCurve->addPoint(2., 0., secondCurveSegment);
+  myCurve->addPoint(firstCurveSegment, 1., 1.);
+  myCurve->addPoint(secondCurveSegment, 2., 0.);
   
   cout << "value at 0. = " << myCurve->valueAt(0.) << endl;
   cout << "value at 0.5 = " << myCurve->valueAt(0.5) << endl;

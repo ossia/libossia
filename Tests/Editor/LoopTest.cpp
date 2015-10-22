@@ -25,7 +25,10 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto loop = Loop::create();
+        auto constraint_callback = std::bind(&LoopTest::constraint_callback, this, _1, _2, _3);
+        auto event_callback = std::bind(&LoopTest::event_callback, this, _1);
+        
+        auto loop = Loop::create(25., constraint_callback, event_callback, event_callback);
         QVERIFY(loop != nullptr);
 
         QVERIFY(loop->getStartState() != nullptr);

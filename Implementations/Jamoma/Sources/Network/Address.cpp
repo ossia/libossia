@@ -367,6 +367,13 @@ void JamomaAddress::removeCallback(Address::iterator callback)
 # pragma mark -
 # pragma mark Implementation specific
 
+Address & JamomaAddress::setValueType(Value::Type type)
+{
+  mValueType = type;
+  
+  return *this;
+}
+
 TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
 {
   JamomaAddress * self = static_cast<JamomaAddress*>(TTPtr(baton[0]));
@@ -510,6 +517,7 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
 
     case Value::Type::DESTINATION :
     {
+      throw runtime_error("convertion to destination value is not handled");
       /*
        if (v.size() == 1)
        {

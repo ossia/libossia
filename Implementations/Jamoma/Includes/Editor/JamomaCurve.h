@@ -48,7 +48,7 @@ public:
 # pragma mark -
 # pragma mark Edition
   
-  bool addPoint(X, Y, shared_ptr<CurveSegment<Y>>) override;
+  bool addPoint(shared_ptr<CurveSegment<Y>>, X, Y) override;
   
   bool removePoint(X) override;
   

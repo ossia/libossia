@@ -21,10 +21,10 @@ private Q_SLOTS:
         curve->setInitialValue(0.);
         QVERIFY(curve->getInitialValue() == 0.);
 
-        curve->addPoint(1., 1., linearSegment);
+        curve->addPoint(linearSegment, 1., 1.);
         QVERIFY(curve->getPointsMap().size() == 1);
 
-        curve->addPoint(2., 0., linearSegment);
+        curve->addPoint(linearSegment, 2., 0.);
         QVERIFY(curve->getPointsMap().size() == 2);
 
         QVERIFY(curve->valueAt(0.) == 0.);
@@ -73,11 +73,11 @@ private Q_SLOTS:
         curve->setInitialDestination(&d);
         curve->setInitialDestinationIndex({1});
       
-        QVERIFY(curve->getInitialDestination() == d);
+        QVERIFY(curve->getInitialDestination() == &d);
         QVERIFY(curve->getInitialDestinationIndex().size() == 1);
         QVERIFY(curve->getInitialDestinationIndex()[0] == 1);
       
-        curve->addPoint(1., 1., linearSegment);
+        curve->addPoint(linearSegment, 1., 1.);
       
         QVERIFY(curve->valueAt(0.) == 0.);
         QVERIFY(curve->valueAt(0.5) == 0.5);

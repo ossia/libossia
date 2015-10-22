@@ -50,15 +50,34 @@ shared_ptr<StateElement> JamomaMapper::state(const TimeValue& position, const Ti
     // compute a new value
     //! \todo observe the driver address value
     mValueToSend = computeValue(mDriverAddress->pullValue(), mDrive);
-
+    
     // edit a Message handling the new Value
     mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
-
+    
     mLastPosition = position;
   }
-
+  
   return mMessageToSend;
 }
+
+# pragma mark -
+# pragma mark Execution - Implementation specific
+
+void JamomaMapper::start()
+{
+  //! \todo start driver address value observation
+}
+
+void JamomaMapper::stop()
+{
+  //! \todo stop driver address value observation
+}
+
+void JamomaMapper::pause()
+{}
+
+void JamomaMapper::resume()
+{}
 
 # pragma mark -
 # pragma mark Accessors
@@ -180,7 +199,7 @@ Value* JamomaMapper::computeValue(const Value* driver, const Value* drive)
           throw runtime_error("none handled driver value type");
         }
       }
-
+      
       break;
     }
       
@@ -194,7 +213,7 @@ Value* JamomaMapper::computeValue(const Value* driver, const Value* drive)
         
         vector<const Value*> t_value;
         vector<Value*>::const_iterator it_driver = t_driver->value.begin();
-
+        
         for (const auto & e_drive : t_drive->value)
         {
           if (it_driver == t_driver->value.end())

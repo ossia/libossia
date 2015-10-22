@@ -70,12 +70,12 @@ public:
 # pragma mark -
 # pragma mark Edition
   
-  /*! add a point to the curve
-   \param X point abscissa
-   \param Y point value
-   \param std::shared_ptr<#CurveSegment<Y>> segment
+  /*! add a segment to reach a target point to the curve
+   \param std::shared_ptr<#CurveSegment<Y>> segment to target point
+   \param X target point abscissa
+   \param Y target point value
    \return bool */
-  virtual bool addPoint(X, Y, std::shared_ptr<CurveSegment<Y>>) = 0;
+  virtual bool addPoint(std::shared_ptr<CurveSegment<Y>>, X, Y) = 0;
   
   /*! remove a point from the curve
    \param X point abscissa
