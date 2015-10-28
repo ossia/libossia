@@ -112,11 +112,14 @@ public:
   
   const TimeValue & getDate() const override;
   
-private:
-    
 # pragma mark -
 # pragma mark Implementation specific
-    
+  
+  /*! to avoid dead lock in EXTERNAL drive mode if a TimeProcess wants to end its ParentTimeConstraint's clock */
+  void request_stop();
+
+private:
+  
   /*! called back by the internal thread */
   void threadCallback();
 };

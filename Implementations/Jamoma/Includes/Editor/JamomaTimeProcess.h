@@ -22,7 +22,7 @@ using namespace std;
 
 class JamomaTimeProcess : public virtual TimeProcess
 {
-
+  
 protected:
   
 # pragma mark -
@@ -34,7 +34,7 @@ protected:
   shared_ptr<State>               mEndState;
   
   TimeValue                       mLastPosition;  // used to filter multiple state calls at the same time
-
+  
 public:
   
 # pragma mark -
@@ -42,6 +42,14 @@ public:
   
   JamomaTimeProcess(shared_ptr<State>,
                     shared_ptr<State>);
+
+# pragma mark -
+# pragma mark Execution - Implementation specific
+  
+  virtual void start() = 0;
+  virtual void stop() = 0;
+  virtual void pause() = 0;
+  virtual void resume() = 0;
   
 # pragma mark -
 # pragma mark Accessors

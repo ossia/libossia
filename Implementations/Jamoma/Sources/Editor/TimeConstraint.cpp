@@ -133,6 +133,33 @@ shared_ptr<StateElement> JamomaTimeConstraint::state(const TimeValue& position, 
   return mCurrentState;
 }
 
+void JamomaTimeConstraint::pause()
+{
+  mPaused = true;
+  
+  // pause all jamoma time processes
+  for (const auto& timeProcess : timeProcesses())
+  {
+    JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
+    t->pause();
+  }
+}
+
+void JamomaTimeConstraint::resume()
+{
+  mPaused = false;
+  
+  // reset the time reference
+  mLastTime = steady_clock::now();
+  
+  // resume all jamoma time processes
+  for (const auto& timeProcess : timeProcesses())
+  {
+    JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
+    t->resume();
+  }
+}
+
 # pragma mark -
 # pragma mark Accessors
 

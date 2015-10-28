@@ -70,7 +70,7 @@ public:
 # pragma mark Edition
   
   /*! add a point to the curve
-   \param const TimeValue& point abscissa between 0. and 1.
+   \param const TimeValue& point abscissa
    \param T point value
    \param std::shared_ptr<#CurveSegment<T>> segment
    \return bool */
