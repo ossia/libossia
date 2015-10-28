@@ -194,7 +194,10 @@ void JamomaTimeConstraint::addTimeProcess(shared_ptr<TimeProcess> timeProcess)
     mEndEvent->addState(timeProcess->getEndState());
 
     JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
-    t->setParentTimeConstraint(shared_from_this());
+    if(t)
+    {
+        t->setParentTimeConstraint(shared_from_this());
+    }
   }
 }
 
