@@ -25,16 +25,16 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaDevice : public Device, public JamomaNode
+class JamomaDevice final : public Device, public JamomaNode
 {
 
 private:
 
 # pragma mark -
 # pragma mark Implementation specific
-  
+
   shared_ptr<Protocol>  mProtocol;
-  
+
   TTObject              mApplicationManager;
   TTObject              mApplication;
 
@@ -42,26 +42,26 @@ public:
 
 # pragma mark -
 # pragma mark Life cycle
-  
+
   JamomaDevice(shared_ptr<Protocol> protocol, TTObject applicationManager = TTObject(), TTObject application = TTObject(), TTNodeDirectoryPtr aDirectory = nullptr);
 
   ~JamomaDevice();
-  
+
 # pragma mark -
 # pragma mark Accessors
-  
+
   string getName() const override;
-  
+
   Node & setName(std::string) override;
-  
+
   shared_ptr<Protocol> getProtocol() const override;
-  
+
   //! \deprecated use Protocol::updateChildren
   bool updateNamespace() override;
-  
+
 # pragma mark -
 # pragma mark Implementation specific
-  
+
   /* fill JamomaNode::mDevice member after contructor */
   void setDevice(shared_ptr<Device>);
 };

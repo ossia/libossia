@@ -26,7 +26,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaTimeEvent : public TimeEvent, public enable_shared_from_this<JamomaTimeEvent>
+class JamomaTimeEvent final : public TimeEvent, public enable_shared_from_this<JamomaTimeEvent>
 {
 
 private:
@@ -99,8 +99,8 @@ public:
 
   /* enable observation of the Expression */
   void observeExpressionResult(bool);
-  
+
 private:
-  
+
   void resultCallback(bool result);
 };
