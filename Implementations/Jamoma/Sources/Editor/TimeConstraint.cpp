@@ -122,10 +122,12 @@ void JamomaTimeConstraint::setup(const TimeValue& date)
 shared_ptr<StateElement> JamomaTimeConstraint::state(const TimeValue& position, const TimeValue& date)
 {
   // clear internal State, Message and Value
+  const auto& processes = timeProcesses();
   mCurrentState->stateElements().clear();
+  mCurrentState->stateElements().reserve(processes.size());
 
   // get the state of each TimeProcess for the position and the date
-  for (const auto& timeProcess : timeProcesses())
+  for (const auto& timeProcess : processes)
   {
     mCurrentState->stateElements().push_back(timeProcess->state(position, date));
   }
@@ -136,7 +138,7 @@ shared_ptr<StateElement> JamomaTimeConstraint::state(const TimeValue& position, 
 void JamomaTimeConstraint::pause()
 {
   mPaused = true;
-  
+
   // pause all jamoma time processes
   for (const auto& timeProcess : timeProcesses())
   {
@@ -148,10 +150,10 @@ void JamomaTimeConstraint::pause()
 void JamomaTimeConstraint::resume()
 {
   mPaused = false;
-  
+
   // reset the time reference
   mLastTime = steady_clock::now();
-  
+
   // resume all jamoma time processes
   for (const auto& timeProcess : timeProcesses())
   {
