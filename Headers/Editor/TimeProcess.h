@@ -21,7 +21,7 @@
 
 namespace OSSIA
 {
-
+class StateElement;
 class State;
 class TimeConstraint;
 class TimeValue;
@@ -33,30 +33,30 @@ public:
 
 # pragma mark -
 # pragma mark Life cycle
-  
+
   /*! destructor */
   virtual ~TimeProcess() = default;
 
 # pragma mark -
 # pragma mark Execution
-  
+
   /*! get a #StateElement of the process for a position or a date
    \param const #TimeValue position
    \param const #TimeValue date
    \return std::shared_ptr<#StateElement> */
   virtual std::shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) = 0;
-  
+
 # pragma mark -
 # pragma mark Accessors
-  
+
   /*! get the start #State
    \return std::shared_ptr<#State> start state */
   virtual const std::shared_ptr<State> & getStartState() const = 0;
-  
+
   /*! get the end #State
    \return std::shared_ptr<#State> end state */
   virtual const std::shared_ptr<State> & getEndState() const = 0;
-  
+
   /*! get the parent #TimeConstraint
    \return std::shared_ptr<#TimeConstraint> */
   virtual const std::shared_ptr<TimeConstraint> & getParentTimeConstraint() const = 0;

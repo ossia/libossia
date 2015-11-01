@@ -72,7 +72,7 @@ vector<const Value*> JamomaDomain::getValues() const
 Domain & JamomaDomain::setValues(vector<const Value*> values)
 {
   mValues.clear();
-  
+
   for (const auto& e : values)
     mValues.push_back(e->clone());
 

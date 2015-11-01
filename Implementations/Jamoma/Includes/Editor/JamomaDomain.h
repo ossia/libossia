@@ -19,7 +19,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaDomain : public Domain
+class JamomaDomain final : public Domain
 {
 
 private:

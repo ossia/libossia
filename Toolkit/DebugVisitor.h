@@ -81,6 +81,7 @@ class DebugVisitor
 
         void visit(std::shared_ptr<OSSIA::CurveAbstract> curve)
         {
+            /*
             if(auto c = dynamic_cast<OSSIA::Curve<float>*>(curve.get()))
             {
                 std::cerr << space() << "Curve " << c->getPointsMap().size() <<  std::endl;
@@ -91,6 +92,7 @@ class DebugVisitor
                 }
                 depth--;
             }
+            */
         }
 
         void visit(std::shared_ptr<OSSIA::CurveSegment<float>> curve)

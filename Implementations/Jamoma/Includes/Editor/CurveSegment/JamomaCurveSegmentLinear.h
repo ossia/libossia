@@ -19,37 +19,37 @@ using namespace OSSIA;
 using namespace std;
 
 template <typename Y>
-class JamomaCurveSegmentLinear : public CurveSegmentLinear<Y>
+class JamomaCurveSegmentLinear final : public CurveSegmentLinear<Y>
 {
-  
+
 private:
-  
+
 # pragma mark -
 # pragma mark Implementation specific
-  
+
   shared_ptr<CurveAbstract> mParent;
-  
+
 public:
-  
+
 # pragma mark -
 # pragma mark Life cycle
-  
+
   JamomaCurveSegmentLinear(shared_ptr<CurveAbstract>);
-  
+
   JamomaCurveSegmentLinear(const JamomaCurveSegmentLinear *);
-  
+
   shared_ptr<CurveSegmentLinear<Y>> clone() const override;
 
   ~JamomaCurveSegmentLinear();
-  
+
 # pragma mark -
 # pragma mark Execution
 
   Y valueAt(double, Y, Y) const override;
-  
+
 # pragma mark -
 # pragma mark Accessors
-  
+
   shared_ptr<CurveAbstract> getParent() const override;
 
 };

@@ -27,58 +27,58 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaAutomation : public Automation, public JamomaTimeProcess
+class JamomaAutomation final : public Automation, public JamomaTimeProcess
 {
-  
+
 private:
-  
+
 # pragma mark -
 # pragma mark Implementation specific
-  
+
   shared_ptr<Address>   mDrivenAddress;
   Value *               mDrive = nullptr;
-  
+
   shared_ptr<Message>   mMessageToSend;
   Value*                mValueToSend = nullptr;
-  
+
 public:
-  
+
 # pragma mark -
 # pragma mark Life cycle
-  
+
   JamomaAutomation(shared_ptr<Address>,
                    const Value*);
-  
+
   JamomaAutomation(const JamomaAutomation *);
-  
+
   shared_ptr<Automation> clone() const override;
-  
+
   ~JamomaAutomation();
-  
+
 # pragma mark -
 # pragma mark Execution
-  
+
   shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) override;
-  
+
 # pragma mark -
 # pragma mark Execution - Implementation specific
-  
+
   void start() override;
   void stop() override;
   void pause() override;
   void resume() override;
-  
+
 # pragma mark -
 # pragma mark Accessors
-  
+
   const shared_ptr<Address> getDrivenAddress() const override;
-  
+
   const Value * getDriving() const override;
-  
+
 private:
-  
+
 # pragma mark -
 # pragma mark Implementation specific
-  
+
   Value* computeValue(double, const Value*);
 };

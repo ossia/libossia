@@ -27,23 +27,23 @@ mPatternConstraintCallback(patternConstraintCallback)
 {
   mPatternStartNode = TimeNode::create();
   mPatternStartNode->emplace(mPatternStartNode->timeEvents().begin(), std::bind(&JamomaLoop::PatternStartEventCallback, this, _1));
-  
+
   mPatternEndNode = TimeNode::create();
   mPatternEndNode->emplace(mPatternEndNode->timeEvents().begin(), std::bind(&JamomaLoop::PatternEndEventCallback, this, _1));
-  
+
   mPatternConstraint = TimeConstraint::create(std::bind(&JamomaLoop::PatternConstraintCallback, this, _1, _2, _3),
                                               mPatternStartNode->timeEvents()[0],
                                               mPatternEndNode->timeEvents()[0]);
-  
+
   // set pattern TimeConstraint's clock in external mode
   shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(mPatternConstraint);
   clock->setDriveMode(Clock::DriveMode::EXTERNAL);
-  
+
   // set all pattern TimeConstraint's durations equal by default
   clock->setDuration(patternDuration);
   mPatternConstraint->setDurationMin(patternDuration);
   mPatternConstraint->setDurationMax(patternDuration);
-  
+
   mCurrentState = State::create();
 }
 
@@ -72,26 +72,26 @@ shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const Time
   {
     // reset internal State
     mCurrentState->stateElements().clear();
-    
+
     // if the time goes backward
     if (position < mLastPosition)
     {
       TimeValue offset = std::fmod((double)date, (double)mPatternConstraint->getDuration());
-      
+
       mPatternStartNode->setup(offset);
       mPatternEndNode->setup(offset);
-      
+
       if (mPatternStartNode->timeEvents()[0]->getStatus() == TimeEvent::Status::HAPPENED)
         flattenAndFilter(mPatternStartNode->timeEvents()[0]->getState());
-      
+
       mPatternConstraint->setup(offset);
     }
-    
+
     // process the loop from the pattern start TimeNode
     Container<TimeEvent> statusChangedEvents;
     shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(mPatternStartNode);
     n->process(statusChangedEvents);
-    
+
     // make time flow for the pattern constraint
     if (mPatternConstraint->getRunning())
     {
@@ -102,17 +102,17 @@ shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const Time
       else
         throw runtime_error("the pattern constrain clock is supposed to be in EXTERNAL drive mode");
     }
-    
+
     // if the pattern end event happened : reset the loop
     if (mPatternEndNode->timeEvents()[0]->getStatus() == TimeEvent::Status::HAPPENED)
     {
       flattenAndFilter(mPatternEndNode->timeEvents()[0]->getState());
-      
+
       mPatternStartNode->setup(Zero);
       mPatternEndNode->setup(Zero);
       mPatternConstraint->setup(Zero);
     }
-    
+
     mLastPosition = position;
   }
 
@@ -167,7 +167,7 @@ void JamomaLoop::flattenAndFilter(const shared_ptr<StateElement> element)
     case StateElement::Type::MESSAGE :
     {
       shared_ptr<Message> messageToAppend = dynamic_pointer_cast<Message>(element);
-      
+
       // find message with the same address to replace it
       bool found = false;
       for (auto it = mCurrentState->stateElements().begin();
@@ -175,7 +175,7 @@ void JamomaLoop::flattenAndFilter(const shared_ptr<StateElement> element)
            it++)
       {
         shared_ptr<Message> messageToCheck = dynamic_pointer_cast<Message>(*it);
-        
+
         // replace if addresses are the same
         if (messageToCheck->getAddress() == messageToAppend->getAddress())
         {
@@ -184,17 +184,17 @@ void JamomaLoop::flattenAndFilter(const shared_ptr<StateElement> element)
           break;
         }
       }
-      
+
       // if not found append it
       if (!found)
         mCurrentState->stateElements().push_back(element);
-      
+
       break;
     }
     case StateElement::Type::STATE :
     {
       shared_ptr<State> stateToFlatAndFilter = dynamic_pointer_cast<State>(element);
-      
+
       for (const auto& e : stateToFlatAndFilter->stateElements())
       {
         flattenAndFilter(e);

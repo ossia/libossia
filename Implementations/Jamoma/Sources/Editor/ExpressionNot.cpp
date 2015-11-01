@@ -4,7 +4,7 @@ using namespace OSSIA;
 using namespace std;
 using namespace std::placeholders;
 
-class JamomaExpressionNot : public ExpressionNot
+class JamomaExpressionNot final : public ExpressionNot
 {
 
 private:
@@ -44,10 +44,10 @@ public:
   {
     return !mExpression->evaluate();
   }
-  
+
 # pragma mark -
 # pragma mark Operator
-  
+
   bool operator== (const Expression& expression) const override
   {
     if (expression.getType() == Expression::Type::NOT)
@@ -58,7 +58,7 @@ public:
     else
       return false;
   }
-  
+
   bool operator!= (const Expression& expression) const override
   {
     if (expression.getType() == Expression::Type::NOT)
@@ -69,7 +69,7 @@ public:
     else
       return true;
   }
-      
+
 # pragma mark -
 # pragma mark Callback Container
 

@@ -57,10 +57,10 @@ public:
   {
     return do_evaluation(mFirstValue, mSecondValue);
   }
-  
+
 # pragma mark -
 # pragma mark Operator
-  
+
   bool operator== (const Expression& expression) const override
   {
     if (expression.getType() == Expression::Type::ATOM)
@@ -71,7 +71,7 @@ public:
     else
       return false;
   }
-  
+
   bool operator!= (const Expression& expression) const override
   {
     if (expression.getType() == Expression::Type::ATOM)
@@ -82,7 +82,7 @@ public:
     else
       return true;
   }
-  
+
 # pragma mark -
 # pragma mark Callback Container
 

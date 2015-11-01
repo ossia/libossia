@@ -5,7 +5,7 @@ using namespace OSSIA;
 using namespace std;
 using namespace std::placeholders;
 
-class JamomaExpressionComposition : public ExpressionComposition
+class JamomaExpressionComposition final : public ExpressionComposition
 {
 
 private:
@@ -52,10 +52,10 @@ public:
   {
     return do_evaluation(mFirstExpression->evaluate(), mSecondExpression->evaluate());
   }
-  
+
 # pragma mark -
 # pragma mark Operator
-  
+
   bool operator== (const Expression& expression) const override
   {
     if (expression.getType() == Expression::Type::COMPOSITION)
@@ -66,7 +66,7 @@ public:
     else
       return false;
   }
-  
+
   bool operator!= (const Expression& expression) const override
   {
     if (expression.getType() == Expression::Type::COMPOSITION)
@@ -77,7 +77,7 @@ public:
     else
       return true;
   }
-  
+
 # pragma mark -
 # pragma mark Callback Container
 

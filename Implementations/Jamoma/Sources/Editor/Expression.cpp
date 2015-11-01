@@ -33,10 +33,10 @@ public:
   {
     return m_result;
   }
-  
+
 # pragma mark -
 # pragma mark Operator
-  
+
   bool operator== (const Expression& expression) const override
   {
     if (expression.getType() == Expression::Type::BASE)
@@ -47,7 +47,7 @@ public:
     else
       return false;
   }
-  
+
   bool operator!= (const Expression& expression) const override
   {
     if (expression.getType() == Expression::Type::BASE)

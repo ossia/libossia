@@ -21,7 +21,7 @@ using namespace OSSIA;
 using namespace std;
 
 template <typename Y>
-class JamomaCurveSegmentPower : public CurveSegmentPower<Y>
+class JamomaCurveSegmentPower final : public CurveSegmentPower<Y>
 {
   
 private:

@@ -25,18 +25,18 @@ using namespace std;
 
 class JamomaProtocol : public virtual Protocol
 {
-  
+
 protected:
-  
+
 # pragma mark -
 # pragma mark Implementation specific
-  
+
   TTObject mApplicationManager;
-  
+
 public:
-  
+
 # pragma mark -
 # pragma mark Life cycle
-  
+
   JamomaProtocol();
 };

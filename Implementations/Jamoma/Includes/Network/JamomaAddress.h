@@ -26,7 +26,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaAddress : public Address, public enable_shared_from_this<JamomaAddress>
+class JamomaAddress final : public Address, public enable_shared_from_this<JamomaAddress>
 {
 
 private:
@@ -40,7 +40,7 @@ private:
   TTObject            mObjectValueCallback;
   mutable Value *     mValue{};
   mutable std::mutex  mValueMutex;
-  
+
   Value::Type         mValueType;
   AccessMode          mAccessMode;
   BoundingMode        mBoundingMode;
@@ -102,33 +102,33 @@ public:
 
 # pragma mark -
 # pragma mark Implementation specific
-  
+
   //! \note don't put implementation specifics stuff in private or protected as they are invisible for API users
   //! \note this allow to avoid friendship for each Protocol for example
-  
-  /* force value type 
+
+  /* force value type
    \details it isi usefull for value type unhandled by Jamoma like DESTINATION
    \param a new value type */
   Address & setValueType(Value::Type);
-  
+
   /*! pull TTValue from mObject
    \param TTValue pulled value
    \return true if the operation succeeded */
   bool pullValue(TTValue&) const;
-  
+
   /*! push TTValue into mObject
    \param TTValue value to push
    \return true if the operation succeeded */
   bool pushValue(const TTValue&) const;
-  
-  /*! get TTValue from internal mValue 
+
+  /*! get TTValue from internal mValue
    \param TTValue returned value */
   void getValue(TTValue&) const;
-  
-  /*! set TTValue into internal mValue 
+
+  /*! set TTValue into internal mValue
    \param TTValue value to set */
   void setValue(const TTValue&);
-  
+
   /*! register/unregister for mObject value attribute notification
    \param bool true to enable observation */
   void observeValue(bool);
@@ -138,8 +138,8 @@ public:
   void convertValueIntoTTValue(const Value *, TTValue &) const;
 
   string buildNodePath(shared_ptr<Node>) const;
-  
+
 private:
-  
+
   static TTErr TTValueCallback(const TTValue&, const TTValue&);
 };

@@ -10,88 +10,88 @@ namespace OSSIA
 {
   // explicit instantiation for double and bool
   template class Curve<double, bool>;
-  
+
   template <>
   shared_ptr<Curve<double, bool>> Curve<double, bool>::create()
   {
     return make_shared<JamomaCurve<double, bool>>();
   }
-  
+
   // explicit instantiation for double and int
   template class Curve<double, int>;
-  
+
   template <>
   shared_ptr<Curve<double, int>> Curve<double, int>::create()
   {
     return make_shared<JamomaCurve<double, int>>();
   }
-  
+
   // explicit instantiation for double and float
   template class Curve<double, float>;
-  
+
   template <>
   shared_ptr<Curve<double, float>> Curve<double, float>::create()
   {
     return make_shared<JamomaCurve<double, float>>();
   }
-  
+
   // explicit instantiation for bool and bool
   template class Curve<bool, bool>;
-  
+
   template <>
   shared_ptr<Curve<bool, bool>> Curve<bool, bool>::create()
   {
     return make_shared<JamomaCurve<bool, bool>>();
   }
-  
+
   // explicit instantiation for bool and int
   template class Curve<bool, int>;
-  
+
   template <>
   shared_ptr<Curve<bool, int>> Curve<bool, int>::create()
   {
     return make_shared<JamomaCurve<bool, int>>();
   }
-  
+
   // explicit instantiation for bool and float
   template class Curve<bool, float>;
-  
+
   template <>
   shared_ptr<Curve<bool, float>> Curve<bool, float>::create()
   {
     return make_shared<JamomaCurve<bool, float>>();
   }
-  
+
   // explicit instantiation for int and bool
   template class Curve<int, bool>;
-  
+
   template <>
   shared_ptr<Curve<int, bool>> Curve<int, bool>::create()
   {
     return make_shared<JamomaCurve<int, bool>>();
   }
-  
+
   // explicit instantiation for int and int
   template class Curve<int, int>;
-  
+
   template <>
   shared_ptr<Curve<int, int>> Curve<int, int>::create()
   {
     return make_shared<JamomaCurve<int, int>>();
   }
-  
+
   // explicit instantiation for int and float
   template class Curve<int, float>;
-  
+
   template <>
   shared_ptr<Curve<int, float>> Curve<int, float>::create()
   {
     return make_shared<JamomaCurve<int, float>>();
   }
-  
+
   // explicit instantiation for float and bool
   template class Curve<float, bool>;
-  
+
   template <>
   shared_ptr<Curve<float, bool>> Curve<float, bool>::create()
   {
@@ -99,16 +99,16 @@ namespace OSSIA
   }
   // explicit instantiation for float and int
   template class Curve<float, int>;
-  
+
   template <>
   shared_ptr<Curve<float, int>> Curve<float, int>::create()
   {
     return make_shared<JamomaCurve<float, int>>();
   }
-  
+
   // explicit instantiation for float and float
   template class Curve<float, float>;
-  
+
   template <>
   shared_ptr<Curve<float, float>> Curve<float, float>::create()
   {
@@ -152,11 +152,11 @@ bool JamomaCurve<X,Y>::
 addPoint(shared_ptr<CurveSegment<Y>> segment, X abscissa, Y value)
 {
   pair<Y,shared_ptr<CurveSegment<Y>>> p(value, segment);
-  
+
   //! \todo check if there is already a point
-  
+
   mPointsMap.emplace(abscissa, p);
-  
+
   return true;
 }
 
@@ -176,12 +176,12 @@ valueAt(X abscissa) const
 {
   TimeValue lastAbscissa(0.);
   Y lastValue = getInitialValue();
-  
+
   for (auto it = mPointsMap.begin(); it != mPointsMap.end(); it++)
   {
     if (abscissa > lastAbscissa &&
         abscissa <= it->first)
-    {      
+    {
       lastValue = it->second.second->valueAt((abscissa - lastAbscissa) / (it->first - lastAbscissa), lastValue , it->second.first);
       break;
     }
@@ -193,7 +193,7 @@ valueAt(X abscissa) const
     else
       break;
   }
-  
+
   return lastValue;
 }
 
@@ -211,10 +211,10 @@ getInitialValue() const
   else
   {
     auto address = mInitialDestination->value->getAddress();
-    
+
     if (!address)
       throw runtime_error("getting an address value using from a destination without address");
-    
+
     char level = 0;
     return convertToTemplateTypeValue(address->pullValue(), &level);
   }
@@ -253,7 +253,7 @@ void JamomaCurve<X,Y>::
 setInitialDestinationIndex(std::initializer_list<char> index)
 {
   mInitialDestinationIndex.clear();
-  
+
   for (const auto & i : index)
     mInitialDestinationIndex.push_back(i);
 }
@@ -279,35 +279,35 @@ convertToTemplateTypeValue(const Value * value, char* level) const
       auto b = static_cast<const Bool*>(value);
       return b->value;
     }
-      
+
     case Value::Type::INT :
     {
       auto i = static_cast<const Int*>(value);
       return i->value;
     }
-      
+
     case Value::Type::FLOAT :
     {
       auto f = static_cast<const Float*>(value);
       return f->value;
     }
-      
+
     case Value::Type::CHAR :
     {
       auto c = static_cast<const Char*>(value);
       return c->value;
     }
-    
+
     case Value::Type::TUPLE :
     {
       auto t = static_cast<const Tuple*>(value);
-      
+
       char index = mInitialDestinationIndex[*level];
       (*level)++;
 
       return convertToTemplateTypeValue(t->value[index], level);
     }
-    
+
     default :
     {
       throw runtime_error("converting none numerical value");

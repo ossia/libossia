@@ -113,7 +113,7 @@ protected:
 # pragma mark Destination
 
 /*! \details Destination value */
-struct Destination : public Value
+struct Destination final : public Value
 {
   std::shared_ptr<Node> value;
 
