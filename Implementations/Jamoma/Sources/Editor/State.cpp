@@ -3,27 +3,27 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaState : public State
+class JamomaState final : public State
 {
-  
+
 private:
-  
+
 # pragma mark -
 # pragma mark Implementation specific
-  
+
   shared_ptr<StateElement> element;
-  
+
 public:
-  
+
 # pragma mark -
 # pragma mark Life cycle
-  
+
   JamomaState()
   {}
-  
+
   JamomaState(const JamomaState * other)
   {}
-  
+
   virtual shared_ptr<State> clone() const override
   {
     return make_shared<JamomaState>(this);
@@ -34,7 +34,7 @@ public:
 
 # pragma mark -
 # pragma mark Execution
-  
+
   virtual void launch() const override
   {
     for (const auto& element : stateElements())
