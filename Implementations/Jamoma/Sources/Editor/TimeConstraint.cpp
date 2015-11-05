@@ -86,7 +86,7 @@ void JamomaTimeConstraint::setup(const TimeValue& date)
   if (startStatus == TimeEvent::Status::HAPPENED &&
       endStatus == TimeEvent::Status::HAPPENED)
   {}
-  // the constraint is pending
+  // the start of the constraint is pending
   else if (startStatus == TimeEvent::Status::PENDING &&
            endStatus == TimeEvent::Status::NONE)
   {}
@@ -110,6 +110,10 @@ void JamomaTimeConstraint::setup(const TimeValue& date)
     // launch the clock
     start();
   }
+  // the end of the constraint is pending
+  else if (startStatus == TimeEvent::Status::HAPPENED &&
+           endStatus == TimeEvent::Status::PENDING)
+  {}
   // the constraint is in the future
   else if (startStatus == TimeEvent::Status::NONE &&
            endStatus == TimeEvent::Status::NONE)
