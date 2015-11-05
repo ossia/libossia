@@ -114,8 +114,8 @@ Value* JamomaAutomation::computeValue(double position, const Value* drive)
           return new Float(curve->valueAt(position));
       }
       catch (std::bad_cast e) {};
-
-      break;
+      
+      throw runtime_error("none handled drive curve type");
     }
 
     case Value::Type::TUPLE :
