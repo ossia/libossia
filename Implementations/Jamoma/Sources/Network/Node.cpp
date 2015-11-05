@@ -214,6 +214,9 @@ bool JamomaNode::updateChildren()
   //! \note this method is only available for root node for the moment
   if (mNode->getObject() != getApplication())
     return false;
+  
+  // erase all former nodes
+  m_children.clear();
 
   // tell our application to rebuild
   //! \todo rebuild from ourself
@@ -221,9 +224,6 @@ bool JamomaNode::updateChildren()
 
   // update root node
   this->mNode = this->mDirectory->getRoot();
-
-  // erase all former nodes
-  m_children.clear();
 
   // rebuild from tree
   buildChildren();
