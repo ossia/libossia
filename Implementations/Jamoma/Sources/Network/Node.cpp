@@ -118,30 +118,10 @@ shared_ptr<Address> JamomaNode::createAddress(Value::Type type)
       mNode->getAddress(nodeAddress);
       TTValue args(nodeAddress, "Data");
       mObject = getApplication().send("MirrorObjectInstantiate", args);
-      mObject.set("service", "parameter");
 
       //! \see in Device::create method, when creating Minuit protocol, some attributes are setup to be cached
       // all attributes handled by Address class should be in this list
     }
-
-    if (type == Value::Type::IMPULSE)
-      mObject.set("type", kTTSym_none);
-    else if (type == Value::Type::BOOL)
-      mObject.set("type", kTTSym_boolean);
-    else if (type == Value::Type::INT)
-      mObject.set("type", kTTSym_integer);
-    else if (type == Value::Type::FLOAT)
-      mObject.set("type", kTTSym_decimal);
-    else if (type == Value::Type::CHAR)
-      mObject.set("type", kTTSym_string);
-    else if (type == Value::Type::STRING)
-      mObject.set("type", kTTSym_string);
-    else if (type == Value::Type::TUPLE)
-      mObject.set("type", kTTSym_array);
-    else if (type == Value::Type::GENERIC)
-      mObject.set("type", kTTSym_generic);
-    else if (type == Value::Type::DESTINATION)
-      mObject.set("type", kTTSym_string);
 
     // edit new address
     mAddress = make_shared<JamomaAddress>(shared_from_this(), mObject);
@@ -149,8 +129,7 @@ shared_ptr<Address> JamomaNode::createAddress(Value::Type type)
     // force address value type for some API value type unhandled by Jamoma
     if (type == Value::Type::DESTINATION)
     {
-      JamomaAddress* address = dynamic_cast<JamomaAddress*>(mAddress.get());
-      address->setValueType(type);
+      mAddress->setValueType(type);
     }
   }
 
@@ -302,6 +281,145 @@ void JamomaNode::buildAddress()
       if (objectName == "Data")
       {
         mAddress = make_shared<JamomaAddress>(shared_from_this(), object);
+        
+        // edit value type, access mode, bounding mode and repetition filter attribute
+        TTSymbol type;
+        object.get("type", type);
+        
+        if (type == kTTSym_none)
+        {
+          mAddress->setValue(new Impulse());
+          mAddress->setValueType(Value::Type::IMPULSE);
+        }
+        else if (type == kTTSym_generic)
+        {
+          mAddress->setValue(new OSSIA::Tuple());
+          mAddress->setValueType(Value::Type::TUPLE);
+        }
+        else if (type == kTTSym_boolean)
+        {
+          mAddress->setValue(new OSSIA::Bool());
+          mAddress->setValueType(Value::Type::BOOL);
+        }
+        else if (type == kTTSym_integer)
+        {
+          mAddress->setValue(new OSSIA::Int());
+          mAddress->setValueType(Value::Type::INT);
+        }
+        else if (type == kTTSym_decimal)
+        {
+          mAddress->setValue(new OSSIA::Float());
+          mAddress->setValueType(Value::Type::FLOAT);
+        }
+        else if (type == kTTSym_array)
+        {
+          mAddress->setValue(new OSSIA::Tuple());
+          mAddress->setValueType(Value::Type::TUPLE);
+        }
+        else if (type == kTTSym_string)
+        {
+          mAddress->setValue(new OSSIA::String());
+          mAddress->setValueType(Value::Type::STRING);
+        }
+        
+        TTSymbol service;
+        object.get("service", service);
+        
+        if (service == kTTSym_parameter)
+          mAddress->setAccessMode(Address::AccessMode::BI);
+        else if (service == kTTSym_message)
+          mAddress->setAccessMode(Address::AccessMode::SET);
+        else if (service == kTTSym_return)
+          mAddress->setAccessMode(Address::AccessMode::GET);
+        
+        TTValue range;
+        object.get("rangeBounds", range);
+        
+        if (type == kTTSym_none)
+        {
+          mAddress->setDomain(Domain::create());
+        }
+        else if (type == kTTSym_generic)
+        {
+          mAddress->setDomain(Domain::create());
+        }
+        else if (type == kTTSym_boolean)
+        {
+          if (range.size() == 2)
+          {
+            Value * min = new OSSIA::Bool(range[0]);
+            Value * max = new OSSIA::Bool(range[1]);
+            mAddress->setDomain(Domain::create(min, max));
+          }
+        }
+        else if (type == kTTSym_integer)
+        {
+          if (range.size() == 2)
+          {
+            Value * min = new OSSIA::Int(range[0]);
+            Value * max = new OSSIA::Int(range[1]);
+            mAddress->setDomain(Domain::create(min, max));
+          }
+        }
+        else if (type == kTTSym_decimal)
+        {
+          if (range.size() == 2)
+          {
+            Value * min = new OSSIA::Float(range[0]);
+            Value * max = new OSSIA::Float(range[1]);
+            mAddress->setDomain(Domain::create(min, max));
+          }
+        }
+        else if (type == kTTSym_array)
+        {
+          // we need to know the size of the array to setup the domain
+          TTValue v;
+          object.get("value", v);
+          
+          vector<const Value*> tuple_min;
+          vector<const Value*> tuple_max;
+          for (unsigned long i = 0; i < v.size(); i++)
+            tuple_min.push_back(new OSSIA::Float(range[0]));
+          tuple_max.push_back(new OSSIA::Float(range[1]));
+          
+          mAddress->setDomain(Domain::create(new OSSIA::Tuple(tuple_min), new OSSIA::Tuple(tuple_max)));
+        }
+        else if (type == kTTSym_string)
+        {
+          // string values enumeration
+          vector<const Value*> values;
+          for (const auto & e : range)
+          {
+            TTSymbol s = e;
+            values.push_back(new OSSIA::String(s.c_str()));
+          }
+          mAddress->setDomain(Domain::create(new OSSIA::Impulse(), new OSSIA::Impulse(), values));
+        }
+        else
+        {
+          mAddress->setDomain(Domain::create());
+        }
+        
+        TTSymbol clipmode;
+        object.get("rangeClipmode", clipmode);
+        
+        if (clipmode == kTTSym_none)
+          mAddress->setBoundingMode(Address::BoundingMode::FREE);
+        else if (clipmode == kTTSym_low)
+          mAddress->setBoundingMode(Address::BoundingMode::CLIP);
+        else if (clipmode == kTTSym_high)
+          mAddress->setBoundingMode(Address::BoundingMode::CLIP);
+        else if (clipmode == kTTSym_both)
+          mAddress->setBoundingMode(Address::BoundingMode::CLIP);
+        else if (clipmode == kTTSym_wrap)
+          mAddress->setBoundingMode(Address::BoundingMode::WRAP);
+        else if (clipmode == kTTSym_fold)
+          mAddress->setBoundingMode(Address::BoundingMode::FOLD);
+        
+        TTBoolean repetitionFilter;
+        object.get("repetitionFilter", repetitionFilter);
+        
+        mAddress->setRepetitionFilter(repetitionFilter);
       }
     }
   }

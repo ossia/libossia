@@ -14,152 +14,8 @@ mAccessMode(AccessMode::BI),
 mBoundingMode(BoundingMode::FREE),
 mRepetitionFilter(false)
 {
-  // edit value type, access mode, bounding mode and repetition filter attribute
   if (mObject.valid())
   {
-    TTSymbol objectName = mObject.name();
-
-    if (objectName == kTTSym_Mirror)
-      objectName = TTMirrorPtr(mObject.instance())->getName();
-
-    if (objectName == "Data")
-    {
-      TTSymbol type;
-      mObject.get("type", type);
-
-      if (type == kTTSym_none)
-      {
-        mValue = new Impulse();
-        mValueType = Value::Type::IMPULSE;
-      }
-      else if (type == kTTSym_generic)
-      {
-        mValue = new OSSIA::Tuple();
-        mValueType = Value::Type::TUPLE;
-      }
-      else if (type == kTTSym_boolean)
-      {
-        mValue = new OSSIA::Bool();
-        mValueType = Value::Type::BOOL;
-      }
-      else if (type == kTTSym_integer)
-      {
-        mValue = new OSSIA::Int();
-        mValueType = Value::Type::INT;
-      }
-      else if (type == kTTSym_decimal)
-      {
-        mValue = new OSSIA::Float();
-        mValueType = Value::Type::FLOAT;
-      }
-      else if (type == kTTSym_array)
-      {
-        mValue = new OSSIA::Tuple();
-        mValueType = Value::Type::TUPLE;
-      }
-      else if (type == kTTSym_string)
-      {
-        mValue = new OSSIA::String();
-        mValueType = Value::Type::STRING;
-      }
-
-      TTSymbol service;
-      mObject.get("service", service);
-
-      if (service == kTTSym_parameter)
-        mAccessMode = AccessMode::BI;
-      else if (service == kTTSym_message)
-        mAccessMode = AccessMode::SET;
-      else if (service == kTTSym_return)
-        mAccessMode = AccessMode::GET;
-
-      TTValue range;
-      mObject.get("rangeBounds", range);
-
-      if (type == kTTSym_none)
-      {
-        mDomain = Domain::create();
-      }
-      else if (type == kTTSym_generic)
-      {
-        mDomain = Domain::create();
-      }
-      else if (type == kTTSym_boolean)
-      {
-        if (range.size() == 2)
-        {
-          Value * min = new OSSIA::Bool(range[0]);
-          Value * max = new OSSIA::Bool(range[1]);
-          mDomain = Domain::create(min, max);
-        }
-      }
-      else if (type == kTTSym_integer)
-      {
-        if (range.size() == 2)
-        {
-          Value * min = new OSSIA::Int(range[0]);
-          Value * max = new OSSIA::Int(range[1]);
-          mDomain = Domain::create(min, max);
-        }
-      }
-      else if (type == kTTSym_decimal)
-      {
-        if (range.size() == 2)
-        {
-          Value * min = new OSSIA::Float(range[0]);
-          Value * max = new OSSIA::Float(range[1]);
-          mDomain = Domain::create(min, max);
-        }
-      }
-      else if (type == kTTSym_array)
-      {
-        // we need to know the size of the array to setup the domain
-        TTValue v;
-        mObject.get("value", v);
-
-        vector<const Value*> tuple_min;
-        vector<const Value*> tuple_max;
-        for (unsigned long i = 0; i < v.size(); i++)
-          tuple_min.push_back(new OSSIA::Float(range[0]));
-        tuple_max.push_back(new OSSIA::Float(range[1]));
-
-        mDomain = Domain::create(new OSSIA::Tuple(tuple_min), new OSSIA::Tuple(tuple_max));
-      }
-      else if (type == kTTSym_string)
-      {
-        // string values enumeration
-        vector<const Value*> values;
-        for (const auto & e : range)
-        {
-          TTSymbol s = e;
-          values.push_back(new OSSIA::String(s.c_str()));
-        }
-        mDomain = Domain::create(new OSSIA::Impulse(), new OSSIA::Impulse(), values);
-      }
-      else
-      {
-        mDomain = Domain::create();
-      }
-
-      TTSymbol clipmode;
-      mObject.get("rangeClipmode", clipmode);
-
-      if (clipmode == kTTSym_none)
-        mBoundingMode = BoundingMode::FREE;
-      else if (clipmode == kTTSym_low)
-        mBoundingMode = BoundingMode::CLIP;
-      else if (clipmode == kTTSym_high)
-        mBoundingMode = BoundingMode::CLIP;
-      else if (clipmode == kTTSym_both)
-        mBoundingMode = BoundingMode::CLIP;
-      else if (clipmode == kTTSym_wrap)
-        mBoundingMode = BoundingMode::WRAP;
-      else if (clipmode == kTTSym_fold)
-        mBoundingMode = BoundingMode::FOLD;
-
-      mObject.get("repetitionFilter", mRepetitionFilter);
-    }
-
     // prepare callback for value observation
     TTValue args(TTPtr(this), mObject);
     mObjectValueCallback.set("baton", args);
@@ -246,6 +102,35 @@ Value::Type JamomaAddress::getValueType() const
   return mValueType;
 }
 
+Address & JamomaAddress::setValueType(Value::Type type)
+{
+  mValueType = type;
+  
+  if (mObject.name() != kTTSym_Mirror)
+  {
+    if (mValueType == Value::Type::IMPULSE)
+      mObject.set("type", kTTSym_none);
+    else if (mValueType == Value::Type::BOOL)
+      mObject.set("type", kTTSym_boolean);
+    else if (mValueType == Value::Type::INT)
+      mObject.set("type", kTTSym_integer);
+    else if (mValueType == Value::Type::FLOAT)
+      mObject.set("type", kTTSym_decimal);
+    else if (mValueType == Value::Type::CHAR)
+      mObject.set("type", kTTSym_string);
+    else if (mValueType == Value::Type::STRING)
+      mObject.set("type", kTTSym_string);
+    else if (mValueType == Value::Type::TUPLE)
+      mObject.set("type", kTTSym_array);
+    else if (mValueType == Value::Type::GENERIC)
+      mObject.set("type", kTTSym_generic);
+    else if (mValueType == Value::Type::DESTINATION)
+      mObject.set("type", kTTSym_string);
+  }
+  
+  return *this;
+}
+
 JamomaAddress::AccessMode JamomaAddress::getAccessMode() const
 {
   return mAccessMode;
@@ -255,12 +140,15 @@ Address & JamomaAddress::setAccessMode(AccessMode accessMode)
 {
   mAccessMode = accessMode;
 
-  if (mAccessMode == AccessMode::BI)
-    mObject.set("service", kTTSym_parameter);
-  else if (mAccessMode == AccessMode::SET)
-    mObject.set("service", kTTSym_message);
-  else if (mAccessMode == AccessMode::GET)
-    mObject.set("service", kTTSym_return);
+  if (mObject.name() != kTTSym_Mirror)
+  {
+    if (mAccessMode == AccessMode::BI)
+      mObject.set("service", kTTSym_parameter);
+    else if (mAccessMode == AccessMode::SET)
+      mObject.set("service", kTTSym_message);
+    else if (mAccessMode == AccessMode::GET)
+      mObject.set("service", kTTSym_return);
+  }
 
   return *this;
 }
@@ -293,7 +181,10 @@ Address & JamomaAddress::setDomain(shared_ptr<Domain> domain)
     }
   }
 
-  mObject.set("rangeBounds", range);
+  if (mObject.name() != kTTSym_Mirror)
+  {
+    mObject.set("rangeBounds", range);
+  }
 
   return *this;
 }
@@ -307,14 +198,17 @@ Address & JamomaAddress::setBoundingMode(BoundingMode boundingMode)
 {
   mBoundingMode = boundingMode;
 
-  if (mBoundingMode == BoundingMode::FREE)
-    mObject.set("rangeClipmode", kTTSym_none);
-  else if (mBoundingMode == BoundingMode::CLIP)
-    mObject.set("rangeClipmode", kTTSym_both);
-  else if (mBoundingMode == BoundingMode::WRAP)
-    mObject.set("rangeClipmode", kTTSym_wrap);
-  else if (mBoundingMode == BoundingMode::FOLD)
-    mObject.set("rangeClipmode", kTTSym_fold);
+  if (mObject.name() != kTTSym_Mirror)
+  {
+    if (mBoundingMode == BoundingMode::FREE)
+      mObject.set("rangeClipmode", kTTSym_none);
+    else if (mBoundingMode == BoundingMode::CLIP)
+      mObject.set("rangeClipmode", kTTSym_both);
+    else if (mBoundingMode == BoundingMode::WRAP)
+      mObject.set("rangeClipmode", kTTSym_wrap);
+    else if (mBoundingMode == BoundingMode::FOLD)
+      mObject.set("rangeClipmode", kTTSym_fold);
+  }
 
   return *this;
 }
@@ -328,7 +222,10 @@ Address & JamomaAddress::setRepetitionFilter(bool repetitionFilter)
 {
   mRepetitionFilter = repetitionFilter;
 
-  mObject.set("repetitionsFilter", repetitionFilter);
+  if (mObject.name() != kTTSym_Mirror)
+  {
+    mObject.set("repetitionsFilter", repetitionFilter);
+  }
 
   return *this;
 }
@@ -362,13 +259,6 @@ void JamomaAddress::removeCallback(Address::iterator callback)
 
 # pragma mark -
 # pragma mark Implementation specific
-
-Address & JamomaAddress::setValueType(Value::Type type)
-{
-  mValueType = type;
-  
-  return *this;
-}
 
 TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
 {

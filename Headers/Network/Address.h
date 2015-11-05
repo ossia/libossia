@@ -104,6 +104,11 @@ public:
   /*! get the address type
    \return #Value::Type of the address */
   virtual Value::Type getValueType() const = 0;
+  
+  /*! set the address type
+   \param #Value::Type of the address
+   \return #Address the address */
+  virtual Address & setValueType(Value::Type) = 0;
 
   /*! get the address access mode
    \return #AccessMode of the address */

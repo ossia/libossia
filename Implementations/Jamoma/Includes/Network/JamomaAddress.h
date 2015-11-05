@@ -76,6 +76,8 @@ public:
   Address & setValue(const Value *) override;
 
   Value::Type getValueType() const override;
+  
+  Address & setValueType(Value::Type) override;
 
   AccessMode getAccessMode() const override;
 
@@ -107,9 +109,9 @@ public:
   //! \note this allow to avoid friendship for each Protocol for example
 
   /* force value type
-   \details it isi usefull for value type unhandled by Jamoma like DESTINATION
+   \details it is usefull for value type unhandled by Jamoma like DESTINATION
    \param a new value type */
-  Address & setValueType(Value::Type);
+  
 
   /*! pull TTValue from mObject
    \param TTValue pulled value
