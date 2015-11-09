@@ -15,7 +15,7 @@ namespace OSSIA
 }
 
 JamomaTimeNode::JamomaTimeNode() :
-mExpression(ExpressionFalse)
+mExpression(ExpressionTrue)
 {}
 
 JamomaTimeNode::JamomaTimeNode(const JamomaTimeNode * other)
