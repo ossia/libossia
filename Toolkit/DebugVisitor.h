@@ -23,7 +23,7 @@ class DebugVisitor
 
         void visit(std::shared_ptr<OSSIA::TimeConstraint> cst)
         {
-            std::cerr << space() << "TimeConstraint " << OSSIA::convert::time(cst->getDuration()).msec() << std::endl;
+            std::cerr << space() << "TimeConstraint " << double(cst->getDuration()) << std::endl;
             depth++;
             for(const auto& proc : cst->timeProcesses())
             {
