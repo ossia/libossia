@@ -128,6 +128,8 @@ Address & JamomaAddress::setValueType(Value::Type type)
       mObject.set("type", kTTSym_string);
   }
   
+  //! \todo initialize the value member (without getting it from the object to not create a network request)
+  
   return *this;
 }
 
