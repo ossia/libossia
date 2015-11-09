@@ -1,5 +1,6 @@
 #include "Editor/JamomaTimeNode.h"
 
+#include <assert.h>
 #include <iostream> //! \todo to remove. only here for debug purpose
 
 # pragma mark -
@@ -87,6 +88,7 @@ const std::shared_ptr<Expression> & JamomaTimeNode::getExpression() const
 
 TimeNode & JamomaTimeNode::setExpression(const std::shared_ptr<Expression> expression)
 {
+  assert(expression != nullptr);
   mExpression = expression;
   return *this;
 }
@@ -161,8 +163,12 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   // if all TimeEvents are PENDING
   if (pendingEvents.size() == timeEvents().size())
   {
+    // false expression mute TimeNode evaluation
+    if (*mExpression == *ExpressionFalse)
+      return;
+    
     // observe and evaluate TimeNode's expression before to go further
-    if (*mExpression != *ExpressionTrue && *mExpression != *ExpressionFalse)
+    if (*mExpression != *ExpressionTrue)
     {
       observeExpressionResult(true);
       if (!mExpression->evaluate())
@@ -172,6 +178,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
     // dispatched them into TimeEvents to happen and TimeEvents to dispose
     Container<TimeEvent> eventsToHappen, eventsToDispose;
     bool noEventObserveExpression = true;
+    
     for (auto& timeEvent : pendingEvents)
     {
       shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
@@ -188,7 +195,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
     // if at least one TimeEvent happens
     // or if all TimeEvents needs to be disposed and none of them is observing its Expression
     if (eventsToHappen.size() > 0 ||
-        (eventsToDispose.size() == timeEvents().size() && noEventObserveExpression))
+       (eventsToDispose.size() == timeEvents().size() && noEventObserveExpression))
     {
       for (auto& timeEvent : eventsToHappen)
       {

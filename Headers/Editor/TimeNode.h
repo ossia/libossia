@@ -70,8 +70,8 @@ public:
 # pragma mark Accessors
 
   /*! get the date
-   \detail the date is the sum of its previous time constraint durations
-   \details a time node with na previous time constraints have a date equals to 0.
+   \details the date is the sum of its previous #TimeConstraint durations
+   \details a #TimeNode with na previous #TimeConstraints have a date equals to 0.
    \return #TimeValue the date */
   virtual TimeValue getDate() const = 0;
 
@@ -79,10 +79,12 @@ public:
    \return std::shared_ptr<#Expression> */
   virtual const std::shared_ptr<Expression> & getExpression() const = 0;
 
-  /*! get the expression of the #TimeNode
+  /*! set the expression of the #TimeNode
+   \details setting the expression to ExpressionTrue will defer the evaluation on #TimeEvent's expression
+   \details setting the expression to ExpressionFalse will mute TimeNode execution
    \param std::shared_ptr<#Expression>
    \return #TimeNode the time node */
-  virtual TimeNode & setExpression(const std::shared_ptr<Expression>) = 0;
+  virtual TimeNode & setExpression(const std::shared_ptr<Expression> = ExpressionTrue) = 0;
 
   /*! get the simultaneity margin
    \return #TimeValue the simultaneity margin */

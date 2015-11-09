@@ -1,5 +1,6 @@
 #include "Editor/JamomaTimeEvent.h"
 
+#include <assert.h>
 #include <algorithm>
 #include <iostream> //! \todo to remove. only here for debug purpose
 
@@ -102,6 +103,8 @@ const shared_ptr<Expression> & JamomaTimeEvent::getExpression() const
 
 TimeEvent & JamomaTimeEvent::setExpression(const std::shared_ptr<Expression> expression)
 {
+  assert(expression != nullptr);
+  
   observeExpressionResult(false);
 
   mExpression = expression;
