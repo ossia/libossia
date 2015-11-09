@@ -36,9 +36,9 @@ void JamomaTimeNode::setup(const TimeValue& date)
 {
   {
     TimeEvent::Status status = getDate() <= date ? getDate() == date ? TimeEvent::Status::PENDING : TimeEvent::Status::HAPPENED : TimeEvent::Status::NONE;
-    
+
     //! \note maybe we should initialized TimeEvents with an Expression returning false to DISPOSED status ?
-    
+
     for (auto& timeEvent : timeEvents())
     {
       shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
@@ -77,7 +77,7 @@ TimeValue JamomaTimeNode::getDate() const
       }
     }
   }
-  
+
   return Zero;
 }
 
@@ -117,7 +117,7 @@ JamomaTimeNode::iterator JamomaTimeNode::emplace(const_iterator pos,
 void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
 {
   Container<TimeEvent> pendingEvents;
-  
+
   for (auto& timeEvent : timeEvents())
   {
     switch (timeEvent->getStatus())
@@ -127,19 +127,19 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
       {
         shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
         e->process();
-        
+
         // don't break if the TimeEvent became PENDING
         if (timeEvent->getStatus() == TimeEvent::Status::NONE)
           break;
       }
-        
+
         // PENDING TimeEvent is ready for evaluation
       case TimeEvent::Status::PENDING:
       {
         pendingEvents.push_back(timeEvent);
         break;
       }
-        
+
         // HAPPENED TimeEvent propagates recursively the execution to the end of each next TimeConstraints
       case TimeEvent::Status::HAPPENED:
       {
@@ -148,10 +148,10 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
           shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(timeConstraint->getEndEvent()->getTimeNode());
           n->process(statusChangedEvents);
         }
-        
+
         break;
       }
-        
+
         // DISPOSED TimeEvent stops the propagation of the execution
       case TimeEvent::Status::DISPOSED:
       {
@@ -159,7 +159,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
       }
     }
   }
-  
+
   // if all TimeEvents are PENDING
   if (pendingEvents.size() == timeEvents().size())
   {
@@ -174,7 +174,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
       if (!mExpression->evaluate())
         return;
     }
-    
+
     // dispatched them into TimeEvents to happen and TimeEvents to dispose
     Container<TimeEvent> eventsToHappen, eventsToDispose;
     bool noEventObserveExpression = true;
@@ -182,16 +182,16 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
     for (auto& timeEvent : pendingEvents)
     {
       shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
-      
+
       if (e->isObservingExpression())
         noEventObserveExpression = false;
-      
+
       if (timeEvent->getExpression()->evaluate())
         eventsToHappen.push_back(timeEvent);
       else
         eventsToDispose.push_back(timeEvent);
     }
-    
+
     // if at least one TimeEvent happens
     // or if all TimeEvents needs to be disposed and none of them is observing its Expression
     if (eventsToHappen.size() > 0 ||
@@ -202,13 +202,13 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
         timeEvent->happen();
         statusChangedEvents.push_back(timeEvent);
       }
-      
+
       for (auto& timeEvent : eventsToDispose)
       {
         timeEvent->dispose();
         statusChangedEvents.push_back (timeEvent);
       }
-      
+
       // stop expression observation now the TimeNode has been processed
       observeExpressionResult(false);
     }
@@ -225,13 +225,13 @@ bool JamomaTimeNode::isObservingExpression()
 
 void JamomaTimeNode::observeExpressionResult(bool observe)
 {
-  if (*mExpression == *ExpressionTrue || *mExpression == *ExpressionFalse)
+  if (!mExpression || *mExpression == *ExpressionTrue || *mExpression == *ExpressionFalse)
     return;
-  
+
   if (observe != mObserveExpression)
   {
     mObserveExpression = observe;
-    
+
     if (mObserveExpression)
     {
       // start expression observation

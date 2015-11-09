@@ -209,7 +209,7 @@ bool JamomaTimeEvent::isObservingExpression()
 
 void JamomaTimeEvent::observeExpressionResult(bool observe)
 {
-  if (*mExpression == *ExpressionTrue || *mExpression == *ExpressionFalse)
+  if (!mExpression || *mExpression == *ExpressionTrue || *mExpression == *ExpressionFalse)
     return;
 
   if (observe != mObserveExpression)
