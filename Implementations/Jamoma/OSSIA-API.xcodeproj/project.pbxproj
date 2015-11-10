@@ -23,6 +23,12 @@
 		4623D52B1BD680AF00339C33 /* JamomaMapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaMapper.h; sourceTree = "<group>"; };
 		4623D52C1BD680C100339C33 /* Mapper.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper.cpp; sourceTree = "<group>"; };
 		4623D52D1BD6814D00339C33 /* MapperTest.cpp */ = {isa = PBXFileReference; indentWidth = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MapperTest.cpp; sourceTree = "<group>"; };
+		462F869B1BF22D1E00941A9A /* JamomaExpression.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaExpression.h; sourceTree = "<group>"; };
+		462F869C1BF22DED00941A9A /* JamomaExpressionAtom.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaExpressionAtom.h; sourceTree = "<group>"; };
+		462F869D1BF22F0000941A9A /* JamomaExpressionComposition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaExpressionComposition.h; sourceTree = "<group>"; };
+		462F869E1BF22FEA00941A9A /* JamomaExpressionNot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaExpressionNot.h; sourceTree = "<group>"; };
+		462F869F1BF2309400941A9A /* JamomaMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaMessage.h; sourceTree = "<group>"; };
+		462F86A01BF2313700941A9A /* JamomaState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaState.h; sourceTree = "<group>"; };
 		463D40CC1B63B2A600E9C7C6 /* Expression.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Expression.cpp; sourceTree = "<group>"; };
 		463DC5A61B42929000EEF0CB /* JamomaTimeProcess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaTimeProcess.h; sourceTree = "<group>"; };
 		463DC5A81B42B7AC00EEF0CB /* JamomaCurve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaCurve.h; sourceTree = "<group>"; };
@@ -485,9 +491,15 @@
 				463DC5A81B42B7AC00EEF0CB /* JamomaCurve.h */,
 				463DC5AA1B42BF6A00EEF0CB /* CurveSegment */,
 				46995FA31B31A42700BDF2C8 /* JamomaDomain.h */,
+				462F869B1BF22D1E00941A9A /* JamomaExpression.h */,
+				462F869C1BF22DED00941A9A /* JamomaExpressionAtom.h */,
+				462F869D1BF22F0000941A9A /* JamomaExpressionComposition.h */,
+				462F869E1BF22FEA00941A9A /* JamomaExpressionNot.h */,
 				465341141BBBDB4C003599E0 /* JamomaLoop.h */,
 				4623D52B1BD680AF00339C33 /* JamomaMapper.h */,
+				462F869F1BF2309400941A9A /* JamomaMessage.h */,
 				464258761B26EC7900324157 /* JamomaScenario.h */,
+				462F86A01BF2313700941A9A /* JamomaState.h */,
 				46D2C60D1B260B9900C04D8A /* JamomaTimeConstraint.h */,
 				4696661D1B307F940082480E /* JamomaTimeEvent.h */,
 				464D5F5E1B297CFB001C22E6 /* JamomaTimeNode.h */,
