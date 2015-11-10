@@ -40,7 +40,7 @@ public:
   static std::shared_ptr<Device> create(std::shared_ptr<Protocol>, std::string = "");
   
   /*! destructor */
-  virtual ~Device() = default;
+  virtual ~Device();
 
 # pragma mark -
 # pragma mark Accessors

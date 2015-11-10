@@ -28,6 +28,10 @@ namespace OSSIA
     return make_shared<JamomaCurveSegmentEmpty<bool>>(parent);
   }
   
+  template <>
+  CurveSegmentEmpty<bool>::~CurveSegmentEmpty()
+  {}
+  
   // explicit instantiation for int
   template class CurveSegmentEmpty<int>;
   
@@ -37,6 +41,10 @@ namespace OSSIA
     return make_shared<JamomaCurveSegmentEmpty<int>>(parent);
   }
   
+  template <>
+  CurveSegmentEmpty<int>::~CurveSegmentEmpty()
+  {}
+  
   // explicit instantiation for float
   template class CurveSegmentEmpty<float>;
   
@@ -45,6 +53,10 @@ namespace OSSIA
   {
     return make_shared<JamomaCurveSegmentEmpty<float>>(parent);
   }
+  
+  template <>
+  CurveSegmentEmpty<float>::~CurveSegmentEmpty()
+  {}
 }
 
 template <typename Y>
@@ -68,6 +80,10 @@ clone() const
 template <typename Y>
 JamomaCurveSegmentEmpty<Y>::
 ~JamomaCurveSegmentEmpty()
+{}
+
+template <typename Y>
+CurveSegmentEmpty<Y>::~CurveSegmentEmpty()
 {}
 
 # pragma mark -

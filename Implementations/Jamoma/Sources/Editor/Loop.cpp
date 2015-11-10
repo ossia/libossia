@@ -62,6 +62,9 @@ shared_ptr<Loop> JamomaLoop::clone() const
 JamomaLoop::~JamomaLoop()
 {}
 
+Loop::~Loop()
+{}
+
 # pragma mark -
 # pragma mark Execution
 

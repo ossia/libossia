@@ -39,7 +39,7 @@ public:
   virtual std::shared_ptr<CurveSegmentLinear<Y>> clone() const = 0;
   
   /*! destructor */
-  virtual ~CurveSegmentLinear() = default;
+  virtual ~CurveSegmentLinear();
   
 # pragma mark -
 # pragma mark Accessors

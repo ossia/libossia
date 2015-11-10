@@ -38,7 +38,8 @@ public:
 # pragma mark -
 # pragma mark Life cycle
     
-  /*! destructor */
+  /*! destructor 
+   \todo remove = default */
   virtual ~CurveAbstract() = default;
 };
 
@@ -65,7 +66,7 @@ public:
   virtual std::shared_ptr<Curve> clone() const = 0;
   
   /*! destructor */
-  virtual ~Curve() = default;
+  virtual ~Curve();
   
 # pragma mark -
 # pragma mark Edition

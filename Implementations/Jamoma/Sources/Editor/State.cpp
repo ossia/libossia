@@ -1,46 +1,4 @@
-#include "Editor/State.h"
-
-using namespace OSSIA;
-using namespace std;
-
-class JamomaState final : public State
-{
-
-private:
-
-# pragma mark -
-# pragma mark Implementation specific
-
-  shared_ptr<StateElement> element;
-
-public:
-
-# pragma mark -
-# pragma mark Life cycle
-
-  JamomaState()
-  {}
-
-  JamomaState(const JamomaState * other)
-  {}
-
-  virtual shared_ptr<State> clone() const override
-  {
-    return make_shared<JamomaState>(this);
-  }
-
-  virtual ~JamomaState()
-  {}
-
-# pragma mark -
-# pragma mark Execution
-
-  virtual void launch() const override
-  {
-    for (const auto& element : stateElements())
-      element->launch();
-  }
-};
+#include "Editor/JamomaState.h"
 
 namespace OSSIA
 {
@@ -48,4 +6,33 @@ namespace OSSIA
   {
     return make_shared<JamomaState>();
   }
+}
+
+# pragma mark -
+# pragma mark Life cycle
+
+JamomaState::JamomaState()
+{}
+
+JamomaState::JamomaState(const JamomaState * other)
+{}
+
+shared_ptr<State> JamomaState::clone() const
+{
+  return make_shared<JamomaState>(this);
+}
+
+JamomaState::~JamomaState()
+{}
+
+State::~State()
+{}
+
+# pragma mark -
+# pragma mark Execution
+
+void JamomaState::launch() const
+{
+  for (const auto& element : stateElements())
+    element->launch();
 }

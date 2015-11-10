@@ -53,7 +53,7 @@ public:
   virtual std::shared_ptr<ExpressionComposition> clone() const = 0;
   
   /*! destructor */
-  virtual ~ExpressionComposition() = default;
+  virtual ~ExpressionComposition();
 
 # pragma mark -
 # pragma mark Execution

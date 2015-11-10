@@ -29,6 +29,9 @@ shared_ptr<TimeNode> JamomaTimeNode::clone() const
 JamomaTimeNode::~JamomaTimeNode()
 {}
 
+TimeNode::~TimeNode()
+{}
+
 # pragma mark -
 # pragma mark Execution
 

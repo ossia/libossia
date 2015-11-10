@@ -52,6 +52,9 @@ JamomaClock::~JamomaClock()
   stop();
 }
 
+Clock::~Clock()
+{}
+
 # pragma mark -
 # pragma mark Execution
 

@@ -49,7 +49,7 @@ public:
   virtual std::shared_ptr<Loop> clone() const = 0;
 
   /*! destructor */
-  virtual ~Loop() = default;
+  virtual ~Loop();
 
 # pragma mark -
 # pragma mark Execution

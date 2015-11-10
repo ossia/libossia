@@ -38,6 +38,9 @@ shared_ptr<Scenario> JamomaScenario::clone() const
 JamomaScenario::~JamomaScenario()
 {}
 
+Scenario::~Scenario()
+{}
+
 # pragma mark -
 # pragma mark Execution
 

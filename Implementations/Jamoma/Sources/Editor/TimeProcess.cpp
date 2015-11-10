@@ -15,6 +15,9 @@ mLastPosition(Infinite)
   ;
 }
 
+TimeProcess::~TimeProcess()
+{}
+
 # pragma mark -
 # pragma mark Accessors
 

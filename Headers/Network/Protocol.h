@@ -48,7 +48,7 @@ public:
 # pragma mark Life cycle
   
   /*! destructor */
-  virtual ~Protocol() = default;
+  virtual ~Protocol();
   
 # pragma mark -
 # pragma mark Accessors

@@ -67,7 +67,7 @@ public:
                                        DriveMode = Clock::DriveMode::INTERNAL);
 
   /*! destructor */
-  virtual ~Clock() = default;
+  virtual ~Clock();
 
 # pragma mark -
 # pragma mark Execution

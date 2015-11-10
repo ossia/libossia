@@ -48,7 +48,7 @@ public:
   virtual std::shared_ptr<Automation> clone() const = 0;
 
   /*! destructor */
-  virtual ~Automation() = default;
+  virtual ~Automation();
 
 # pragma mark -
 # pragma mark Execution

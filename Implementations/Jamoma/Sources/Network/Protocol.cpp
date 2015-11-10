@@ -16,3 +16,6 @@ JamomaProtocol::JamomaProtocol()
   else
     mApplicationManager = TTObjectBasePtr(TTModularApplicationManager);
 }
+
+Protocol::~Protocol()
+{}

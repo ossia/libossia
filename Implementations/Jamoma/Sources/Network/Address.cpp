@@ -26,6 +26,9 @@ mRepetitionFilter(false)
 JamomaAddress::~JamomaAddress()
 {}
 
+Address::~Address()
+{}
+
 # pragma mark -
 # pragma mark Network
 

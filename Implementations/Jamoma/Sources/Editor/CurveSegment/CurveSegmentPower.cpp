@@ -29,6 +29,10 @@ namespace OSSIA
     return make_shared<JamomaCurveSegmentPower<bool>>(parent);
   }
   
+  template <>
+  CurveSegmentPower<bool>::~CurveSegmentPower()
+  {}
+  
   // explicit instantiation for int
   template class CurveSegmentPower<int>;
   
@@ -38,6 +42,10 @@ namespace OSSIA
     return make_shared<JamomaCurveSegmentPower<int>>(parent);
   }
   
+  template <>
+  CurveSegmentPower<int>::~CurveSegmentPower()
+  {}
+  
   // explicit instantiation for float
   template class CurveSegmentPower<float>;
   
@@ -46,6 +54,10 @@ namespace OSSIA
   {
     return make_shared<JamomaCurveSegmentPower<float>>(parent);
   }
+  
+  template <>
+  CurveSegmentPower<float>::~CurveSegmentPower()
+  {}
 }
 
 template <typename Y>
@@ -72,6 +84,10 @@ clone() const
 template <typename Y>
 JamomaCurveSegmentPower<Y>::
 ~JamomaCurveSegmentPower()
+{}
+
+template <typename Y>
+CurveSegmentPower<Y>::~CurveSegmentPower()
 {}
 
 # pragma mark -

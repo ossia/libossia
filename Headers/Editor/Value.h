@@ -52,7 +52,7 @@ public:
   virtual Value * clone() const = 0;
 
   /*! destructor */
-  virtual ~Value() = default;
+  virtual ~Value();
 
 # pragma mark -
 # pragma mark Operators

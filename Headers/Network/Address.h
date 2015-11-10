@@ -66,7 +66,7 @@ public:
 # pragma mark Life cycle
 
   /*! destructor */
-  virtual ~Address() = default;
+  virtual ~Address();
 
 # pragma mark -
 # pragma mark Network

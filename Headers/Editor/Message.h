@@ -46,7 +46,7 @@ public:
   virtual std::shared_ptr<Message> clone() const = 0;
 
   /*! destructor */
-  virtual ~Message() = default;
+  virtual ~Message();
 
 # pragma mark -
 # pragma mark Execution

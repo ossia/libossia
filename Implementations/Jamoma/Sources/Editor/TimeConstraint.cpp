@@ -71,6 +71,9 @@ shared_ptr<TimeConstraint> JamomaTimeConstraint::clone() const
 JamomaTimeConstraint::~JamomaTimeConstraint()
 {}
 
+TimeConstraint::~TimeConstraint()
+{}
+
 # pragma mark -
 # pragma mark Execution
 

@@ -24,6 +24,9 @@ mOutPort(out_port)
 JamomaMinuit::~JamomaMinuit()
 {}
 
+Minuit::~Minuit()
+{}
+
 # pragma mark -
 # pragma mark Accessors
 

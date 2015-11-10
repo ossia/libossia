@@ -51,7 +51,7 @@ public:
   virtual std::shared_ptr<TimeNode> clone() const = 0;
 
   /*! destructor */
-  virtual ~TimeNode() = default;
+  virtual ~TimeNode();
 
 # pragma mark -
 # pragma mark Execution

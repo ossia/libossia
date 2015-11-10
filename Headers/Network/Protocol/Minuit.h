@@ -36,7 +36,7 @@ public:
   static std::shared_ptr<Minuit> create(std::string, int, int);
 
   /*! destructor */
-  virtual ~Minuit() = default;
+  virtual ~Minuit();
 
 # pragma mark -
 # pragma mark Accessors

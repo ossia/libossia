@@ -33,6 +33,9 @@ shared_ptr<Automation> JamomaAutomation::clone() const
 JamomaAutomation::~JamomaAutomation()
 {}
 
+Automation::~Automation()
+{}
+
 # pragma mark -
 # pragma mark Execution
 

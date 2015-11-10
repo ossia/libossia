@@ -14,6 +14,14 @@ namespace OSSIA
   // explicit instantiation for ValueCallback
   template class CallbackContainer<ValueCallback>;
   
+  template <>
+  CallbackContainer<ValueCallback>::~CallbackContainer()
+  {}
+  
   // explicit instantiation for ResultCallback
   template class CallbackContainer<ResultCallback>;
+  
+  template <>
+  CallbackContainer<ResultCallback>::~CallbackContainer()
+  {}
 }

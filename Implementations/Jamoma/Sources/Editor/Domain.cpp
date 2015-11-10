@@ -39,6 +39,9 @@ shared_ptr<Domain> JamomaDomain::clone() const
 JamomaDomain::~JamomaDomain()
 {}
 
+Domain::~Domain()
+{}
+
 # pragma mark -
 # pragma mark Accessors
 

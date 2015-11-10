@@ -16,6 +16,9 @@ JamomaLocal::JamomaLocal()
 JamomaLocal::~JamomaLocal()
 {}
 
+Local::~Local()
+{}
+
 # pragma mark -
 # pragma mark Operation
 

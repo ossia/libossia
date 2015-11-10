@@ -41,7 +41,7 @@ public:
   virtual std::shared_ptr<ExpressionNot> clone() const = 0;
   
   /*! destructor */
-  virtual ~ExpressionNot() = default;
+  virtual ~ExpressionNot();
 
 # pragma mark -
 # pragma mark Execution

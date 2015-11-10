@@ -168,6 +168,9 @@ JamomaDevice::~JamomaDevice()
   mApplicationManager.send("ApplicationRelease", device_name);
 }
 
+Device::~Device()
+{}
+
 # pragma mark -
 # pragma mark Accessors
 

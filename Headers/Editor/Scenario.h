@@ -45,7 +45,7 @@ public:
   virtual std::shared_ptr<Scenario> clone() const = 0;
 
   /*! destructor */
-  virtual ~Scenario() = default;
+  virtual ~Scenario();
 
 # pragma mark -
 # pragma mark Execution

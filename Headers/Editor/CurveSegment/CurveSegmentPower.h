@@ -39,7 +39,7 @@ public:
   virtual std::shared_ptr<CurveSegmentPower<Y>> clone() const = 0;
 
   /*! destructor */
-  virtual ~CurveSegmentPower() = default;
+  virtual ~CurveSegmentPower();
 
 # pragma mark -
 # pragma mark Accessors

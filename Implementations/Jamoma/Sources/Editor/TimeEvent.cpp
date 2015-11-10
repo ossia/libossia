@@ -27,6 +27,9 @@ void JamomaTimeEvent::setCallback(TimeEvent::ExecutionCallback callback)
     mCallback = callback;
 }
 
+TimeEvent::~TimeEvent()
+{}
+
 # pragma mark -
 # pragma mark Execution
 

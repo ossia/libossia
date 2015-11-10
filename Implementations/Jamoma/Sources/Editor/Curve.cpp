@@ -3,9 +3,6 @@
 
 #include <iostream> //! \todo to remove. only here for debug purpose
 
-using namespace OSSIA;
-using namespace std;
-
 namespace OSSIA
 {
   // explicit instantiation for double and bool
@@ -16,6 +13,10 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<double, bool>>();
   }
+  
+  template <>
+  Curve<double, bool>::~Curve()
+  {}
 
   // explicit instantiation for double and int
   template class Curve<double, int>;
@@ -25,6 +26,10 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<double, int>>();
   }
+  
+  template <>
+  Curve<double, int>::~Curve()
+  {}
 
   // explicit instantiation for double and float
   template class Curve<double, float>;
@@ -34,6 +39,10 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<double, float>>();
   }
+  
+  template <>
+  Curve<double, float>::~Curve()
+  {}
 
   // explicit instantiation for bool and bool
   template class Curve<bool, bool>;
@@ -43,6 +52,10 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<bool, bool>>();
   }
+  
+  template <>
+  Curve<bool, bool>::~Curve()
+  {}
 
   // explicit instantiation for bool and int
   template class Curve<bool, int>;
@@ -52,6 +65,10 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<bool, int>>();
   }
+  
+  template <>
+  Curve<bool, int>::~Curve()
+  {}
 
   // explicit instantiation for bool and float
   template class Curve<bool, float>;
@@ -61,6 +78,10 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<bool, float>>();
   }
+  
+  template <>
+  Curve<bool, float>::~Curve()
+  {}
 
   // explicit instantiation for int and bool
   template class Curve<int, bool>;
@@ -70,6 +91,10 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<int, bool>>();
   }
+  
+  template <>
+  Curve<int, bool>::~Curve()
+  {}
 
   // explicit instantiation for int and int
   template class Curve<int, int>;
@@ -79,6 +104,10 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<int, int>>();
   }
+  
+  template <>
+  Curve<int, int>::~Curve()
+  {}
 
   // explicit instantiation for int and float
   template class Curve<int, float>;
@@ -88,6 +117,10 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<int, float>>();
   }
+  
+  template <>
+  Curve<int, float>::~Curve()
+  {}
 
   // explicit instantiation for float and bool
   template class Curve<float, bool>;
@@ -97,6 +130,11 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<float, bool>>();
   }
+  
+  template <>
+  Curve<float, bool>::~Curve()
+  {}
+  
   // explicit instantiation for float and int
   template class Curve<float, int>;
 
@@ -105,6 +143,10 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<float, int>>();
   }
+  
+  template <>
+  Curve<float, int>::~Curve()
+  {}
 
   // explicit instantiation for float and float
   template class Curve<float, float>;
@@ -114,6 +156,10 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<float, float>>();
   }
+  
+  template <>
+  Curve<float, float>::~Curve()
+  {}
 }
 
 # pragma mark -
@@ -142,6 +188,10 @@ clone() const
 template <typename X, typename Y>
 JamomaCurve<X,Y>::
 ~JamomaCurve()
+{}
+
+template <typename X, typename Y>
+Curve<X,Y>::~Curve()
 {}
 
 # pragma mark -

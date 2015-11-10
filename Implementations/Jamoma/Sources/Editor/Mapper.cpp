@@ -37,6 +37,9 @@ shared_ptr<Mapper> JamomaMapper::clone() const
 JamomaMapper::~JamomaMapper()
 {}
 
+Mapper::~Mapper()
+{}
+
 # pragma mark -
 # pragma mark Execution
 

@@ -32,6 +32,9 @@ JamomaNode::~JamomaNode()
   }
 }
 
+Node::~Node()
+{}
+
 # pragma mark -
 # pragma mark Navigation
 

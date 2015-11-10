@@ -29,7 +29,7 @@ public:
 # pragma mark Life cycle
 
   /*! destructor */
-  virtual ~CallbackContainer() = default;
+  virtual ~CallbackContainer();
 
 # pragma mark -
 # pragma mark Callback

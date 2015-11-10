@@ -24,6 +24,9 @@ mOutPort(out_port)
 JamomaOSC::~JamomaOSC()
 {}
 
+OSC::~OSC()
+{}
+
 # pragma mark -
 # pragma mark Accessors
 

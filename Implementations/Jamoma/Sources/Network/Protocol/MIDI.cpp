@@ -16,6 +16,9 @@ JamomaMIDI::JamomaMIDI()
 JamomaMIDI::~JamomaMIDI()
 {}
 
+MIDI::~MIDI()
+{}
+
 # pragma mark -
 # pragma mark Operation
 

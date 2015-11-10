@@ -37,7 +37,7 @@ public:
   static std::shared_ptr<OSC> create(std::string, int, int);
 
   /*! destructor */
-  virtual ~OSC() = default;
+  virtual ~OSC();
 
 # pragma mark -
 # pragma mark Accessors

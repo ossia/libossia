@@ -35,7 +35,7 @@ public:
 # pragma mark Life cycle
 
   /*! destructor */
-  virtual ~Node() = default;
+  virtual ~Node();
 
 # pragma mark -
 # pragma mark Network

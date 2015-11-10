@@ -50,7 +50,7 @@ public:
   virtual std::shared_ptr<Mapper> clone() const = 0;
 
   /*! destructor */
-  virtual ~Mapper() = default;
+  virtual ~Mapper();
 
 # pragma mark -
 # pragma mark Execution

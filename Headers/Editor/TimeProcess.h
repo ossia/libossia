@@ -35,7 +35,7 @@ public:
 # pragma mark Life cycle
 
   /*! destructor */
-  virtual ~TimeProcess() = default;
+  virtual ~TimeProcess();
 
 # pragma mark -
 # pragma mark Execution

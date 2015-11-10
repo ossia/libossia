@@ -38,7 +38,7 @@ public:
   virtual std::shared_ptr<CurveSegmentEmpty<Y>> clone() const = 0;
   
   /*! destructor */
-  virtual ~CurveSegmentEmpty() = default;
+  virtual ~CurveSegmentEmpty();
   
 # pragma mark -
 # pragma mark Accessors

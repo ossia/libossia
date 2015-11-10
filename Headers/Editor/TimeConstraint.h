@@ -68,7 +68,7 @@ public:
   virtual std::shared_ptr<TimeConstraint> clone() const = 0;
   
   /*! desctructor */
-  virtual ~TimeConstraint() = default;
+  virtual ~TimeConstraint();
 
 # pragma mark -
 # pragma mark Execution

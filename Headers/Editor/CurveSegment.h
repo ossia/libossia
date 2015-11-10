@@ -42,7 +42,8 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  /*! destructor */
+  /*! destructor 
+   \todo remove = default */
   virtual ~CurveSegment() = default;
  
 # pragma mark -

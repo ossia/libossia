@@ -46,7 +46,7 @@ public:
   virtual std::shared_ptr<Domain> clone() const = 0;
 
   /*! destructor */
-  virtual ~Domain() = default;
+  virtual ~Domain();
 
 # pragma mark -
 # pragma mark Accessors

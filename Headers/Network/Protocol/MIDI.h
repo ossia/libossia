@@ -36,7 +36,7 @@ public:
   static std::shared_ptr<MIDI> create();
   
   /*! destructor */
-  virtual ~MIDI() = default;
+  virtual ~MIDI();
   
 # pragma mark -
 # pragma mark Accessors

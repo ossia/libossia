@@ -4,6 +4,9 @@
 
 using namespace OSSIA;
 
+Value::~Value()
+{}
+
 # pragma mark -
 # pragma mark Impulse
 

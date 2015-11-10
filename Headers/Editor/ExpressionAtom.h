@@ -61,7 +61,7 @@ public:
   virtual std::shared_ptr<ExpressionAtom> clone() const = 0;
   
   /*! destructor */
-  virtual ~ExpressionAtom() = default;
+  virtual ~ExpressionAtom();
 
 # pragma mark -
 # pragma mark Execution

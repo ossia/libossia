@@ -56,7 +56,7 @@ public:
   static std::shared_ptr<Expression> create(bool = false);
 
   /*! destructor */
-  virtual ~Expression() = default;
+  virtual ~Expression();
 
 # pragma mark -
 # pragma mark Execution

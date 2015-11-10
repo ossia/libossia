@@ -1,62 +1,4 @@
-#include "Editor/Message.h"
-#include "Network/Address.h"
-
-using namespace OSSIA;
-using namespace std;
-
-class JamomaMessage final : public Message
-{
-
-private:
-
-# pragma mark -
-# pragma mark Implementation specific
-
-  shared_ptr<Address> address;
-  Value * value;
-
-public:
-
-# pragma mark -
-# pragma mark Life cycle
-
-  JamomaMessage(shared_ptr<Address> a, const Value * v) :
-  address(a),
-  value(v->clone())
-  {}
-
-  JamomaMessage(const JamomaMessage * other)
-  {}
-
-  virtual shared_ptr<Message> clone() const override
-  {
-    return make_shared<JamomaMessage>(this);
-  }
-
-  virtual ~JamomaMessage()
-  {}
-
-# pragma mark -
-# pragma mark Execution
-
-  virtual void launch() const override
-  {
-    address->pushValue(value);
-  }
-
-# pragma mark -
-# pragma mark Accessors
-
-  virtual const shared_ptr<Address> & getAddress() const override
-  {
-    return address;
-  }
-
-  virtual Value * getValue() const override
-  {
-    return value;
-  }
-};
+#include "Editor/JamomaMessage.h"
 
 namespace OSSIA
 {
@@ -64,4 +6,47 @@ namespace OSSIA
   {
     return make_shared<JamomaMessage>(a, v);
   }
+}
+
+# pragma mark -
+# pragma mark Life cycle
+
+JamomaMessage::JamomaMessage(shared_ptr<Address> a, const Value * v) :
+address(a),
+value(v->clone())
+{}
+
+JamomaMessage::JamomaMessage(const JamomaMessage * other)
+{}
+
+shared_ptr<Message> JamomaMessage::clone() const
+{
+  return make_shared<JamomaMessage>(this);
+}
+
+JamomaMessage::~JamomaMessage()
+{}
+
+Message::~Message()
+{}
+
+# pragma mark -
+# pragma mark Execution
+
+void JamomaMessage::launch() const
+{
+  address->pushValue(value);
+}
+
+# pragma mark -
+# pragma mark Accessors
+
+const shared_ptr<Address> & JamomaMessage::getAddress() const
+{
+  return address;
+}
+
+Value * JamomaMessage::getValue() const
+{
+  return value;
 }

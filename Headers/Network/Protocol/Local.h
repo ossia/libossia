@@ -34,7 +34,7 @@ public:
   static std::shared_ptr<Local> create();
   
   /*! destructor */
-  virtual ~Local() = default;
+  virtual ~Local();
   
 # pragma mark -
 # pragma mark Accessors

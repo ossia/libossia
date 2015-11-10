@@ -40,7 +40,7 @@ public:
   virtual std::shared_ptr<State> clone() const = 0;
   
   /*! destructor */
-  virtual ~State() = default;
+  virtual ~State();
 
 # pragma mark -
 # pragma mark Execution
