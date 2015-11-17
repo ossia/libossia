@@ -33,6 +33,6 @@ State::~State()
 
 void JamomaState::launch() const
 {
-  for (const auto& element : stateElements())
-    element->launch();
+  for (const auto& elt : stateElements())
+    elt->launch();
 }
