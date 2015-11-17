@@ -181,7 +181,11 @@ void JamomaScenario::addTimeConstraint(const shared_ptr<TimeConstraint> timeCons
 
 void JamomaScenario::removeTimeConstraint(const shared_ptr<TimeConstraint> timeConstraint)
 {
-  mTimeContraints.erase(find(mTimeContraints.begin(), mTimeContraints.end(), timeConstraint));
+  auto it = find(mTimeContraints.begin(), mTimeContraints.end(), timeConstraint);
+  if(it != mTimeContraints.end())
+  {
+      mTimeContraints.erase(it);
+  }
 
   // set the TimeConstraint's clock in none external mode
   shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint);
@@ -201,7 +205,11 @@ void JamomaScenario::addTimeNode(const shared_ptr<TimeNode> timeNode)
 
 void JamomaScenario::removeTimeNode(const shared_ptr<TimeNode> timeNode)
 {
-  mTimeNodes.erase(find(mTimeNodes.begin(), mTimeNodes.end(), timeNode));
+  auto it = find(mTimeNodes.begin(), mTimeNodes.end(), timeNode);
+  if(it != mTimeNodes.end())
+  {
+      mTimeNodes.erase(it);
+  }
 }
 
 # pragma mark -

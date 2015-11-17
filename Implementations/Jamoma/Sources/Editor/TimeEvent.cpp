@@ -73,17 +73,21 @@ void JamomaTimeEvent::dispose()
 void JamomaTimeEvent::addState(const std::shared_ptr<State> state)
 {
   // store a state if it is not already stored
-  if (std::find(mState->stateElements().begin(),
-           mState->stateElements().end(),
-           state) == mState->stateElements().end())
+  auto& se = mState->stateElements();
+  if (std::find(se.begin(), se.end(), state) == se.end())
   {
-    mState->stateElements().push_back(state);
+    se.push_back(state);
   }
 }
 
 void JamomaTimeEvent::removeState(const std::shared_ptr<State> state)
 {
-  mState->stateElements().erase(std::find(mState->stateElements().begin(), mState->stateElements().end(), state));
+  auto& se = mState->stateElements();
+  auto it = std::find(se.begin(), se.end(), state);
+  if(it != se.end())
+  {
+      se.erase(it);
+  }
 }
 
 # pragma mark -
@@ -107,7 +111,7 @@ const shared_ptr<Expression> & JamomaTimeEvent::getExpression() const
 TimeEvent & JamomaTimeEvent::setExpression(const std::shared_ptr<Expression> expression)
 {
   assert(expression != nullptr);
-  
+
   observeExpressionResult(false);
 
   mExpression = expression;
