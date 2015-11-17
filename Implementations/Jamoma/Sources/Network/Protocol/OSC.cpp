@@ -16,9 +16,9 @@ mInPort(in_port),
 mOutPort(out_port)
 {
   // create a OSC protocol unit
-  TTObject mProtocol = mApplicationManager.send("ProtocolFind", "OSC");
-  if (!mProtocol.valid())
-    mProtocol = mApplicationManager.send("ProtocolInstantiate", "OSC");
+  TTObject oscObject = mApplicationManager.send("ProtocolFind", "OSC");
+  if (!oscObject.valid())
+    mApplicationManager.send("ProtocolInstantiate", "OSC");
 }
 
 JamomaOSC::~JamomaOSC()

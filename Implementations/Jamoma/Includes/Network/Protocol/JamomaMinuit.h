@@ -33,8 +33,6 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  TTObject  mProtocol;
-
   string    mIp;
   int       mInPort;            /// the port that a remote device open to receive OSC messages
   int       mOutPort;           /// the port where a remote device sends OSC messages to give some feeback (like "echo")
