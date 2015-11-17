@@ -16,9 +16,9 @@ mInPort(in_port),
 mOutPort(out_port)
 {
   // create a Minuit protocol unit
-  TTObject mProtocol = mApplicationManager.send("ProtocolFind", "Minuit");
-  if (!mProtocol.valid())
-    mProtocol = mApplicationManager.send("ProtocolInstantiate", "Minuit");
+  TTObject minuitObject = mApplicationManager.send("ProtocolFind", "Minuit");
+  if (!minuitObject.valid())
+    mApplicationManager.send("ProtocolInstantiate", "Minuit");
 }
 
 JamomaMinuit::~JamomaMinuit()
