@@ -230,7 +230,7 @@ void JamomaTimeConstraint::addTimeProcess(shared_ptr<TimeProcess> timeProcess)
     mEndEvent->addState(timeProcess->getEndState());
 
     JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
-    if(t)
+    if (t)
     {
         t->setParentTimeConstraint(shared_from_this());
     }
@@ -240,17 +240,17 @@ void JamomaTimeConstraint::addTimeProcess(shared_ptr<TimeProcess> timeProcess)
 void JamomaTimeConstraint::removeTimeProcess(std::shared_ptr<TimeProcess> timeProcess)
 {
   auto it = find(timeProcesses().begin(), timeProcesses().end(), timeProcess);
-  if(it != timeProcesses().end())
+  if (it != timeProcesses().end())
   {
       timeProcesses().erase(it);
 
-      if(timeProcess)
+      if (timeProcess)
       {
           mStartEvent->removeState(timeProcess->getStartState());
           mEndEvent->removeState(timeProcess->getEndState());
 
           JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
-          if(t)
+          if (t)
           {
               t->setParentTimeConstraint(nullptr);
           }
@@ -263,6 +263,6 @@ void JamomaTimeConstraint::removeTimeProcess(std::shared_ptr<TimeProcess> timePr
 
 void JamomaTimeConstraint::ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks)
 {
-  if(mCallback)
+  if (mCallback)
     (mCallback)(position, date, state(position, date));
 }

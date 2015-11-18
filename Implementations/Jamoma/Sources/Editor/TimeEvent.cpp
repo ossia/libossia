@@ -39,7 +39,7 @@ void JamomaTimeEvent::happen()
     throw runtime_error("only PENDING event can happens");
 
   mStatus = TimeEvent::Status::HAPPENED;
-
+  
   // stop previous TimeConstraints
   for (auto& timeConstraint : previousTimeConstraints())
   {
@@ -52,18 +52,36 @@ void JamomaTimeEvent::happen()
     timeConstraint->start();
   }
 
-  if(mCallback)
+  if (mCallback)
       (mCallback)(mStatus);
 }
 
 void JamomaTimeEvent::dispose()
 {
-  if (mStatus != TimeEvent::Status::PENDING)
-    throw runtime_error("only PENDING event can be disposed");
-
+  if (mStatus == TimeEvent::Status::HAPPENED)
+    throw runtime_error("HAPPENED event cannot be disposed");
+  
   mStatus = TimeEvent::Status::DISPOSED;
+  
+  // dispose next TimeConstraints end event if everything is disposed before
+  for (auto& nextTimeConstraint : nextTimeConstraints())
+  {
+    bool dispose = true;
+    
+    for (auto& previousTimeConstraint : nextTimeConstraint->getEndEvent()->previousTimeConstraints())
+    {
+      if (previousTimeConstraint->getStartEvent()->getStatus() != TimeEvent::Status::DISPOSED)
+      {
+        dispose = false;
+        break;
+      }
+    }
+    
+    if (dispose)
+      nextTimeConstraint->getEndEvent()->dispose();
+  }
 
-  if(mCallback)
+  if (mCallback)
       (mCallback)(mStatus);
 }
 
@@ -84,7 +102,7 @@ void JamomaTimeEvent::removeState(const std::shared_ptr<State> state)
 {
   auto& se = mState->stateElements();
   auto it = std::find(se.begin(), se.end(), state);
-  if(it != se.end())
+  if (it != se.end())
   {
       se.erase(it);
   }
@@ -146,6 +164,14 @@ void JamomaTimeEvent::process()
     for (auto& timeConstraint : previousTimeConstraints())
     {
       shared_ptr<JamomaTimeConstraint> c = dynamic_pointer_cast<JamomaTimeConstraint>(timeConstraint);
+      
+      // a previous TimeConstraint with a DISPOSED start event is ignored
+      if (timeConstraint->getStartEvent()->getStatus() == TimeEvent::Status::DISPOSED)
+        continue;
+      
+      // then any TimeConstraint with a none HAPPENED start event implies to quit
+      if (timeConstraint->getStartEvent()->getStatus() != TimeEvent::Status::HAPPENED)
+        return;
 
       // when running
       if (c->getRunning())
@@ -205,7 +231,7 @@ void JamomaTimeEvent::process()
 void JamomaTimeEvent::setStatus(Status status)
 {
   mStatus = status;
-  if(mCallback)
+  if (mCallback)
       (mCallback)(mStatus);
 }
 
