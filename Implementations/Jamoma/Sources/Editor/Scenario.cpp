@@ -182,7 +182,7 @@ void JamomaScenario::addTimeConstraint(const shared_ptr<TimeConstraint> timeCons
 void JamomaScenario::removeTimeConstraint(const shared_ptr<TimeConstraint> timeConstraint)
 {
   auto it = find(mTimeContraints.begin(), mTimeContraints.end(), timeConstraint);
-  if(it != mTimeContraints.end())
+  if (it != mTimeContraints.end())
   {
       mTimeContraints.erase(it);
   }
@@ -206,7 +206,7 @@ void JamomaScenario::addTimeNode(const shared_ptr<TimeNode> timeNode)
 void JamomaScenario::removeTimeNode(const shared_ptr<TimeNode> timeNode)
 {
   auto it = find(mTimeNodes.begin(), mTimeNodes.end(), timeNode);
-  if(it != mTimeNodes.end())
+  if (it != mTimeNodes.end())
   {
       mTimeNodes.erase(it);
   }
@@ -243,7 +243,7 @@ const Container<TimeConstraint>& JamomaScenario::timeConstraints() const
 
 void JamomaScenario::flattenAndFilter(const shared_ptr<StateElement>& element)
 {
-  if(!element)
+  if (!element)
       return;
 
   switch (element->getType())
