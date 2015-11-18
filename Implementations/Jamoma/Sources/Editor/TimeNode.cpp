@@ -233,17 +233,23 @@ void JamomaTimeNode::observeExpressionResult(bool observe)
 
   if (observe != mObserveExpression)
   {
+    bool wasObserving = mObserveExpression;
     mObserveExpression = observe;
 
     if (mObserveExpression)
     {
       // start expression observation
       mResultCallbackIndex = mExpression->addCallback(std::bind(&JamomaTimeNode::resultCallback, this, _1));
+      mCallbackSet = true;
     }
     else
     {
       // stop expression observation
-      mExpression->removeCallback(mResultCallbackIndex);
+      if(wasObserving && mCallbackSet)
+      {
+        mExpression->removeCallback(mResultCallbackIndex);
+        mCallbackSet = false;
+      }
     }
   }
 }

@@ -49,6 +49,8 @@ public:
    \param #it Iterator to remove */
    virtual void removeCallback(iterator it)
    {
+     if(it == m_callbacks.end())
+       return;
      m_callbacks.erase(it);
    }
 
