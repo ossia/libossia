@@ -32,7 +32,7 @@ private:
 
   shared_ptr<Expression>    mExpression;
   bool                      mObserveExpression;
-  bool mCallbackSet = false;
+  bool                      mCallbackSet = false;
   Expression::iterator      mResultCallbackIndex;
 
   TimeValue                 mSimultaneityMargin;
