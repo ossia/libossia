@@ -131,7 +131,25 @@ Address & JamomaAddress::setValueType(Value::Type type)
       mObject.set("type", kTTSym_string);
   }
   
-  //! \todo initialize the value member (without getting it from the object to not create a network request)
+  // initialize the value member
+  if (mValueType == Value::Type::IMPULSE)
+    mValue = new Impulse();
+  else if (mValueType == Value::Type::BOOL)
+    mValue = new Bool();
+  else if (mValueType == Value::Type::INT)
+    mValue = new Int();
+  else if (mValueType == Value::Type::FLOAT)
+    mValue = new Float();
+  else if (mValueType == Value::Type::CHAR)
+    mValue = new Char();
+  else if (mValueType == Value::Type::STRING)
+    mValue = new String();
+  else if (mValueType == Value::Type::TUPLE)
+    mValue = new Tuple();
+  else if (mValueType == Value::Type::GENERIC)
+    mValue = nullptr;
+  else if (mValueType == Value::Type::DESTINATION)
+    mValue = new Destination(nullptr);
   
   return *this;
 }
