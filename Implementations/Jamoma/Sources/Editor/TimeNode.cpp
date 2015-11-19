@@ -50,16 +50,65 @@ void JamomaTimeNode::setup(const TimeValue& date)
   }
 }
 
-void JamomaTimeNode::happen()
+bool JamomaTimeNode::trigger()
 {
-  for (auto & timeEvent : timeEvents())
-    timeEvent->happen();
-}
-
-void JamomaTimeNode::dispose()
-{
-  for (auto & timeEvent : timeEvents())
-    timeEvent->dispose();
+  // prepare to remember which event changed its status
+  // because it is needed in JamomaTimeNode::process
+  mStatusChangedEvents.clear();
+  
+  // if all TimeEvents are not PENDING
+  if (mPendingEvents.size() != timeEvents().size())
+  {
+    // stop expression observation because the TimeNode is not ready to be processed
+    observeExpressionResult(false);
+    
+    // the triggering failed
+    return false;
+  }
+  
+  // dispatched them into TimeEvents to happen and TimeEvents to dispose
+  Container<TimeEvent> eventsToHappen, eventsToDispose;
+  bool noEventObserveExpression = true;
+  
+  for (auto& timeEvent : mPendingEvents)
+  {
+    shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
+    
+    if (e->isObservingExpression())
+      noEventObserveExpression = false;
+    
+    if (timeEvent->getExpression()->evaluate())
+      eventsToHappen.push_back(timeEvent);
+    else
+      eventsToDispose.push_back(timeEvent);
+  }
+  
+  // if at least one TimeEvent happens
+  // or if all TimeEvents needs to be disposed and none of them is observing its Expression
+  if (eventsToHappen.size() > 0 ||
+      (eventsToDispose.size() == timeEvents().size() && noEventObserveExpression))
+  {
+    for (auto& timeEvent : eventsToHappen)
+    {
+      timeEvent->happen();
+      mStatusChangedEvents.push_back(timeEvent);
+    }
+    
+    for (auto& timeEvent : eventsToDispose)
+    {
+      timeEvent->dispose();
+      mStatusChangedEvents.push_back (timeEvent);
+    }
+    
+    // stop expression observation now the TimeNode has been processed
+    observeExpressionResult(false);
+    
+    // the triggering succeded
+    return false;
+  }
+  
+  // the triggering failed
+  return false;
 }
 
 # pragma mark -
@@ -119,13 +168,15 @@ JamomaTimeNode::iterator JamomaTimeNode::emplace(const_iterator pos,
 
 void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
 {
-  Container<TimeEvent> pendingEvents;
+  // prepare to remember which event changed its status to PENDING
+  // because it is needed in JamomaTimeNode::trigger
+  mPendingEvents.clear();
 
   for (auto& timeEvent : timeEvents())
   {
     switch (timeEvent->getStatus())
     {
-        // check if NONE TimeEvent is ready to become PENDING
+      // check if NONE TimeEvent is ready to become PENDING
       case TimeEvent::Status::NONE:
       {
         shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
@@ -136,14 +187,14 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
           break;
       }
 
-        // PENDING TimeEvent is ready for evaluation
+      // PENDING TimeEvent is ready for evaluation
       case TimeEvent::Status::PENDING:
       {
-        pendingEvents.push_back(timeEvent);
+        mPendingEvents.push_back(timeEvent);
         break;
       }
 
-        // HAPPENED TimeEvent propagates recursively the execution to the end of each next TimeConstraints
+      // HAPPENED TimeEvent propagates recursively the execution to the end of each next TimeConstraints
       case TimeEvent::Status::HAPPENED:
       {
         for (auto& timeConstraint : timeEvent->nextTimeConstraints())
@@ -155,70 +206,33 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
         break;
       }
 
-        // DISPOSED TimeEvent stops the propagation of the execution
+      // DISPOSED TimeEvent stops the propagation of the execution
       case TimeEvent::Status::DISPOSED:
       {
         break;
       }
     }
   }
-
-  // if all TimeEvents are PENDING
-  if (pendingEvents.size() == timeEvents().size())
+  
+  // false expression mute TimeNode triggering
+  if (*mExpression == *ExpressionFalse)
+    return;
+  
+  // observe and evaluate TimeNode's expression before to trig
+  if (*mExpression != *ExpressionTrue)
   {
-    // false expression mute TimeNode evaluation
-    if (*mExpression == *ExpressionFalse)
+    observeExpressionResult(true);
+    if (!mExpression->evaluate())
       return;
-    
-    // observe and evaluate TimeNode's expression before to go further
-    if (*mExpression != *ExpressionTrue)
-    {
-      observeExpressionResult(true);
-      if (!mExpression->evaluate())
-        return;
-    }
-
-    // dispatched them into TimeEvents to happen and TimeEvents to dispose
-    Container<TimeEvent> eventsToHappen, eventsToDispose;
-    bool noEventObserveExpression = true;
-    
-    for (auto& timeEvent : pendingEvents)
-    {
-      shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
-
-      if (e->isObservingExpression())
-        noEventObserveExpression = false;
-
-      if (timeEvent->getExpression()->evaluate())
-        eventsToHappen.push_back(timeEvent);
-      else
-        eventsToDispose.push_back(timeEvent);
-    }
-
-    // if at least one TimeEvent happens
-    // or if all TimeEvents needs to be disposed and none of them is observing its Expression
-    if (eventsToHappen.size() > 0 ||
-       (eventsToDispose.size() == timeEvents().size() && noEventObserveExpression))
-    {
-      for (auto& timeEvent : eventsToHappen)
-      {
-        timeEvent->happen();
-        statusChangedEvents.push_back(timeEvent);
-      }
-
-      for (auto& timeEvent : eventsToDispose)
-      {
-        timeEvent->dispose();
-        statusChangedEvents.push_back (timeEvent);
-      }
-
-      // stop expression observation now the TimeNode has been processed
-      observeExpressionResult(false);
-    }
   }
-  else
-    // stop expression observation because the TimeNode is not ready to be processed
-    observeExpressionResult(false);
+
+  // trigger the time node
+  if (trigger())
+  {
+    // gather events which have changed their status
+    for (auto& timeEvent : mStatusChangedEvents)
+      statusChangedEvents.push_back(timeEvent);
+  }
 }
 
 bool JamomaTimeNode::isObservingExpression()

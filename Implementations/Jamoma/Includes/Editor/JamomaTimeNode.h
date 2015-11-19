@@ -36,6 +36,9 @@ private:
   Expression::iterator      mResultCallbackIndex;
 
   TimeValue                 mSimultaneityMargin;
+  
+  Container<TimeEvent>      mPendingEvents;
+  Container<TimeEvent>      mStatusChangedEvents;
 
 public:
 
@@ -55,9 +58,7 @@ public:
 
   void setup(const TimeValue& date = Zero) override;
 
-  void happen() override;
-
-  void dispose() override;
+  bool trigger() override;
 
 # pragma mark -
 # pragma mark Accessors

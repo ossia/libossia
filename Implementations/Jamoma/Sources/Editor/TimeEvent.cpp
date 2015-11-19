@@ -158,9 +158,10 @@ void JamomaTimeEvent::process()
   // and it starts to observe its Expression if all previous TimeConstraints have reach their minimal duration
   else
   {
-    // for each previous TimeConstraints
-    bool setPending = false;
+    TimeEvent::Status status = TimeEvent::Status::NONE;
     bool observe = true;
+    
+    // for each previous TimeConstraints
     for (auto& timeConstraint : previousTimeConstraints())
     {
       shared_ptr<JamomaTimeConstraint> c = dynamic_pointer_cast<JamomaTimeConstraint>(timeConstraint);
@@ -172,56 +173,40 @@ void JamomaTimeEvent::process()
       // then any TimeConstraint with a none HAPPENED start event implies to quit
       if (timeConstraint->getStartEvent()->getStatus() != TimeEvent::Status::HAPPENED)
         return;
-
-      // when running
-      if (c->getRunning())
+      
+      // when the minimal duration is not reached
+      if (c->getDate() < c->getDurationMin())
       {
-        // when all constraint durations are equals
-        if (c->getDurationMin() == c->getDuration() &&
-            c->getDurationMax() == c->getDuration())
-        {
-          // don't observe expression
-          observe = false;
-
-          // stay NONE status
-          break;
-        }
-        // when the minimal duration is not reached
-        else if (c->getDate() < c->getDurationMin())
-        {
-          // don't observe expression
-          observe = false;
-
-          // stay NONE status
-          break;
-        }
-        // when the minimal duration is reached but not the maximal duration
-        else if (c->getDate() >= c->getDurationMin() &&
-                 c->getDate() < c->getDurationMax())
-        {
-          // observe expression if all other previous constraints allow it too
-          observe &= true;
-
-          // and access to PENDING status (see below)
-        }
-        // when the maximal duration is reached
-        else if (c->getDate() >= c->getDurationMax())
-        {
-          // don't observe expression
-          observe = false;
-
-          // and access to PENDING status (see below)
-        }
+        // don't observe expression
+        observe = false;
+        
+        // force NONE status
+        status = TimeEvent::Status::NONE;
+        break;
       }
-
-      setPending = true;
+      // when the minimal duration is reached but not the maximal duration
+      else if (c->getDate() >= c->getDurationMin() &&
+               c->getDate() < c->getDurationMax())
+      {
+        // observe expression if all other previous constraints allow it too
+        observe &= true;
+        
+        // access to PENDING status
+        status = TimeEvent::Status::PENDING;
+      }
+      // when the maximal duration is reached
+      else if (c->getDate() >= c->getDurationMax())
+      {
+        // don't observe expression
+        observe = false;
+        
+        // access to PENDING status
+        status = TimeEvent::Status::PENDING;
+      }
     }
 
     // access to PENDING status once all previous TimeConstraints allow it
-    if (setPending)
-    {
-      setStatus(TimeEvent::Status::PENDING);
-    }
+    setStatus(status);
 
     // observe the expression to observe all Destination value contained into it
     observeExpressionResult(observe);
