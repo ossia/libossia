@@ -228,10 +228,13 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   // observe and evaluate TimeNode's expression before to trig
   if (*mExpression != *ExpressionTrue)
   {
-    // update any Destination value into the expression
-    mExpression->update();
+    // update any Destination value into the expression once
+    if (!isObservingExpression())
+      mExpression->update();
     
+    // then start observation
     observeExpressionResult(true);
+    
     if (!mExpression->evaluate())
       return;
   }
