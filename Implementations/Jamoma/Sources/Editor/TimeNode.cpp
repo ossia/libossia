@@ -68,14 +68,10 @@ bool JamomaTimeNode::trigger()
   
   // dispatched them into TimeEvents to happen and TimeEvents to dispose
   Container<TimeEvent> eventsToHappen, eventsToDispose;
-  bool noEventObserveExpression = true;
-  
+
   for (auto& timeEvent : mPendingEvents)
   {
     shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
-    
-    if (e->isObservingExpression())
-      noEventObserveExpression = false;
     
     // update any Destination value into the expression
     timeEvent->getExpression()->update();
@@ -87,9 +83,7 @@ bool JamomaTimeNode::trigger()
   }
   
   // if at least one TimeEvent happens
-  // or if all TimeEvents needs to be disposed and none of them is observing its Expression
-  if (eventsToHappen.size() > 0 ||
-      (eventsToDispose.size() == timeEvents().size() && noEventObserveExpression))
+  if (eventsToHappen.size() > 0)
   {
     for (auto& timeEvent : eventsToHappen)
     {
@@ -107,7 +101,7 @@ bool JamomaTimeNode::trigger()
     observeExpressionResult(false);
     
     // the triggering succeded
-    return false;
+    return true;
   }
   
   // the triggering failed

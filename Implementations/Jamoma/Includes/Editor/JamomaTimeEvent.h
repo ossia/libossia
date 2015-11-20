@@ -41,8 +41,6 @@ private:
   Status                            mStatus;
 
   shared_ptr<Expression>            mExpression;
-  bool                              mObserveExpression;
-  Expression::iterator              mResultCallbackIndex;
 
 public:
 
@@ -93,14 +91,4 @@ public:
 
   /* check if NONE TimeEvent is ready to become PENDING */
   void process();
-
-  /* is the TimeEvent observing its Expression ? */
-  bool isObservingExpression();
-
-  /* enable observation of the Expression */
-  void observeExpressionResult(bool);
-
-private:
-
-  void resultCallback(bool result);
 };

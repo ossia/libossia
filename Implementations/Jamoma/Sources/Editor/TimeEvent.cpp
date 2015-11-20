@@ -13,8 +13,7 @@ JamomaTimeEvent::JamomaTimeEvent(TimeEvent::ExecutionCallback callback,
 mCallback(callback),
 mTimeNode(aTimeNode),
 mStatus(TimeEvent::Status::NONE),
-mExpression(anExpression),
-mObserveExpression(false)
+mExpression(anExpression)
 {
   mState = State::create();
 }
@@ -130,8 +129,6 @@ TimeEvent & JamomaTimeEvent::setExpression(const std::shared_ptr<Expression> exp
 {
   assert(expression != nullptr);
 
-  observeExpressionResult(false);
-
   mExpression = expression;
 
   return *this;
@@ -147,69 +144,35 @@ TimeEvent::Status JamomaTimeEvent::getStatus() const
 
 void JamomaTimeEvent::process()
 {
-  // NONE TimeEvent without previous TimeConstraint is PENDING
+  // NONE TimeEvent without previous TimeConstraint becomes PENDING
   if (previousTimeConstraints().empty())
   {
     setStatus(TimeEvent::Status::PENDING);
   }
 
-  // NONE TimeEvent with previous TimeConstraints is PENDING
-  // if each previous TimeConstraint ends or reaches their minimal duration
-  // and it starts to observe its Expression if all previous TimeConstraints have reach their minimal duration
+  // NONE TimeEvent with previous TimeConstraints becomes PENDING
+  // if each previous TimeConstraint reaches its minimal duration
   else
   {
-    TimeEvent::Status status = TimeEvent::Status::NONE;
-    bool observe = true;
-    
-    // for each previous TimeConstraints
     for (auto& timeConstraint : previousTimeConstraints())
     {
       shared_ptr<JamomaTimeConstraint> c = dynamic_pointer_cast<JamomaTimeConstraint>(timeConstraint);
       
-      // a previous TimeConstraint with a DISPOSED start event is ignored
+      // previous TimeConstraints with a DISPOSED start event are ignored
       if (timeConstraint->getStartEvent()->getStatus() == TimeEvent::Status::DISPOSED)
         continue;
       
-      // then any TimeConstraint with a none HAPPENED start event implies to quit
+      // previous TimeConstraint with a none HAPPENED start event force to quit
       if (timeConstraint->getStartEvent()->getStatus() != TimeEvent::Status::HAPPENED)
         return;
-      
-      // when the minimal duration is not reached
+
+      // previous TimeConstraint which doesn't reached its minimal duration force to quit
       if (c->getDate() < c->getDurationMin())
-      {
-        // don't observe expression
-        observe = false;
-        
-        // force NONE status
-        status = TimeEvent::Status::NONE;
-        break;
-      }
-      // when the minimal duration is reached but not the maximal duration
-      else if (c->getDate() >= c->getDurationMin() &&
-               c->getDate() < c->getDurationMax())
-      {
-        // observe expression if all other previous constraints allow it too
-        observe &= true;
-        
-        // access to PENDING status
-        status = TimeEvent::Status::PENDING;
-      }
-      // when the maximal duration is reached
-      else if (c->getDate() >= c->getDurationMax())
-      {
-        // don't observe expression
-        observe = false;
-        
-        // access to PENDING status
-        status = TimeEvent::Status::PENDING;
-      }
+        return;
     }
 
     // access to PENDING status once all previous TimeConstraints allow it
-    setStatus(status);
-
-    // observe the expression to observe all Destination value contained into it
-    observeExpressionResult(observe);
+    setStatus(TimeEvent::Status::PENDING);
   }
 }
 
@@ -218,37 +181,4 @@ void JamomaTimeEvent::setStatus(Status status)
   mStatus = status;
   if (mCallback)
       (mCallback)(mStatus);
-}
-
-bool JamomaTimeEvent::isObservingExpression()
-{
-  return mObserveExpression;
-}
-
-void JamomaTimeEvent::observeExpressionResult(bool observe)
-{
-  if (!mExpression || *mExpression == *ExpressionTrue || *mExpression == *ExpressionFalse)
-    return;
-
-  if (observe != mObserveExpression)
-  {
-    mObserveExpression = observe;
-
-    if (mObserveExpression)
-    {
-      // start expression observation
-      mResultCallbackIndex = mExpression->addCallback(std::bind(&JamomaTimeEvent::resultCallback, this, _1));
-    }
-    else
-    {
-      // stop expression observation
-      mExpression->removeCallback(mResultCallbackIndex);
-    }
-  }
-}
-
-void JamomaTimeEvent::resultCallback(bool result)
-{
-  //! \note the result of the expression is not exploited here.
-  //! \note the observation of the expression is to observe all Destination value contained into it.
 }
