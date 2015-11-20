@@ -40,7 +40,7 @@ public:
    \param const #Value the value
    \return std::shared_ptr<#Message> */
   static std::shared_ptr<Message> create(std::shared_ptr<Address>,
-                                         const Value* = new Impulse());
+                                         const Value* = new OSSIA::Impulse());
 
   /*! clone */
   virtual std::shared_ptr<Message> clone() const = 0;
@@ -57,7 +57,7 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
-  
+
   /*! get the type of the state element
    \return #Type of the state element */
   StateElement::Type getType() const override final
