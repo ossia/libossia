@@ -77,6 +77,9 @@ bool JamomaTimeNode::trigger()
     if (e->isObservingExpression())
       noEventObserveExpression = false;
     
+    // update any Destination value into the expression
+    timeEvent->getExpression()->update();
+    
     if (timeEvent->getExpression()->evaluate())
       eventsToHappen.push_back(timeEvent);
     else
@@ -214,6 +217,10 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
     }
   }
   
+  // if all TimeEvents are not PENDING
+  if (mPendingEvents.size() != timeEvents().size())
+    return;
+  
   // false expression mute TimeNode triggering
   if (*mExpression == *ExpressionFalse)
     return;
@@ -221,6 +228,9 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   // observe and evaluate TimeNode's expression before to trig
   if (*mExpression != *ExpressionTrue)
   {
+    // update any Destination value into the expression
+    mExpression->update();
+    
     observeExpressionResult(true);
     if (!mExpression->evaluate())
       return;
@@ -252,6 +262,8 @@ void JamomaTimeNode::observeExpressionResult(bool observe)
 
     if (mObserveExpression)
     {
+      // pull value
+      
       // start expression observation
       mResultCallbackIndex = mExpression->addCallback(std::bind(&JamomaTimeNode::resultCallback, this, _1));
       mCallbackSet = true;

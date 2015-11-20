@@ -38,6 +38,11 @@ bool JamomaExpressionNot::evaluate() const
   return !mExpression->evaluate();
 }
 
+void JamomaExpressionNot::update() const
+{
+  mExpression->update();
+}
+
 # pragma mark -
 # pragma mark Operator
 

@@ -69,6 +69,9 @@ public:
   /*! evaluate the expression atom
    \return bool result of the evaluation */
   virtual bool evaluate() const override = 0;
+  
+  /*! pull the value of any #Destination operand */
+  virtual void update() const override = 0;
 
 # pragma mark -
 # pragma mark Accessors

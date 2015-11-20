@@ -42,6 +42,12 @@ bool JamomaExpressionComposition::evaluate() const
   return do_evaluation(mFirstExpression->evaluate(), mSecondExpression->evaluate());
 }
 
+void JamomaExpressionComposition::update() const
+{
+  mFirstExpression->update();
+  mSecondExpression->update();
+}
+
 # pragma mark -
 # pragma mark Operator
 

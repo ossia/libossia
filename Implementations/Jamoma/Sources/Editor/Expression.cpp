@@ -29,6 +29,9 @@ bool JamomaExpression::evaluate() const
   return m_result;
 }
 
+void JamomaExpression::update() const
+{}
+
 # pragma mark -
 # pragma mark Operator
 

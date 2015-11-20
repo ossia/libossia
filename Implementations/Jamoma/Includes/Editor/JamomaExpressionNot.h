@@ -34,6 +34,8 @@ public:
 # pragma mark Execution
 
   bool evaluate() const override;
+  
+  void update() const override;
 
 # pragma mark -
 # pragma mark Operator

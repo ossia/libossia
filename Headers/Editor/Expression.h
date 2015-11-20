@@ -64,6 +64,9 @@ public:
   /*! evaluate the expression
    \return bool result of the evaluation */
   virtual bool evaluate() const = 0;
+  
+  /*! pull the value of any #Destination operand */
+  virtual void update() const = 0;
 
 # pragma mark -
 # pragma mark Operator

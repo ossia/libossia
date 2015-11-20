@@ -42,6 +42,29 @@ bool JamomaExpressionAtom::evaluate() const
   return do_evaluation(mFirstValue, mSecondValue);
 }
 
+void JamomaExpressionAtom::update() const
+{
+  // pull value of the first operand if it is a Destination
+  if (mFirstValue->getType() == Value::Type::DESTINATION)
+  {
+    Destination* d = (Destination*)mFirstValue;
+    if (d->value->getAddress())
+    {
+      d->value->getAddress()->pullValue();
+    }
+  }
+  
+  // pull value of the second operand if it is a Destination
+  if (mSecondValue->getType() == Value::Type::DESTINATION)
+  {
+    Destination* d = (Destination*)mSecondValue;
+    if (d->value->getAddress())
+    {
+      d->value->getAddress()->pullValue();
+    }
+  }
+}
+
 # pragma mark -
 # pragma mark Operator
 
