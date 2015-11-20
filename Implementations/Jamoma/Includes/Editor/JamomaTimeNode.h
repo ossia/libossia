@@ -38,7 +38,6 @@ private:
   TimeValue                 mSimultaneityMargin;
   
   Container<TimeEvent>      mPendingEvents;
-  Container<TimeEvent>      mStatusChangedEvents;
 
 public:
 

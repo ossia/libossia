@@ -52,10 +52,6 @@ void JamomaTimeNode::setup(const TimeValue& date)
 
 bool JamomaTimeNode::trigger()
 {
-  // prepare to remember which event changed its status
-  // because it is needed in JamomaTimeNode::process
-  mStatusChangedEvents.clear();
-  
   // if all TimeEvents are not PENDING
   if (mPendingEvents.size() != timeEvents().size())
   {
@@ -66,46 +62,18 @@ bool JamomaTimeNode::trigger()
     return false;
   }
   
-  // dispatched them into TimeEvents to happen and TimeEvents to dispose
-  Container<TimeEvent> eventsToHappen, eventsToDispose;
-
+  // now TimeEvents will happen or be disposed
   for (auto& timeEvent : mPendingEvents)
   {
     shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
-    
-    // update any Destination value into the expression
-    timeEvent->getExpression()->update();
-    
-    if (timeEvent->getExpression()->evaluate())
-      eventsToHappen.push_back(timeEvent);
-    else
-      eventsToDispose.push_back(timeEvent);
+    e->process();
   }
-  
-  // if at least one TimeEvent happens
-  if (eventsToHappen.size() > 0)
-  {
-    for (auto& timeEvent : eventsToHappen)
-    {
-      timeEvent->happen();
-      mStatusChangedEvents.push_back(timeEvent);
-    }
     
-    for (auto& timeEvent : eventsToDispose)
-    {
-      timeEvent->dispose();
-      mStatusChangedEvents.push_back (timeEvent);
-    }
+  // stop expression observation now the TimeNode has been processed
+  observeExpressionResult(false);
     
-    // stop expression observation now the TimeNode has been processed
-    observeExpressionResult(false);
-    
-    // the triggering succeded
-    return true;
-  }
-  
-  // the triggering failed
-  return false;
+  // the triggering succeded
+  return true;
 }
 
 # pragma mark -
@@ -168,7 +136,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   // prepare to remember which event changed its status to PENDING
   // because it is needed in JamomaTimeNode::trigger
   mPendingEvents.clear();
-
+  
   for (auto& timeEvent : timeEvents())
   {
     switch (timeEvent->getStatus())
@@ -219,14 +187,13 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   if (*mExpression == *ExpressionFalse)
     return;
   
-  // observe and evaluate TimeNode's expression before to trig
+  // update the expression one time
+  // then observe and evaluate TimeNode's expression before to trig
   if (*mExpression != *ExpressionTrue)
   {
-    // update any Destination value into the expression once
     if (!isObservingExpression())
       mExpression->update();
     
-    // then start observation
     observeExpressionResult(true);
     
     if (!mExpression->evaluate())
@@ -236,8 +203,8 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   // trigger the time node
   if (trigger())
   {
-    // gather events which have changed their status
-    for (auto& timeEvent : mStatusChangedEvents)
+    // former PENDING TimeEvents are now HAPPENED or DISPOSED
+    for (auto& timeEvent : mPendingEvents)
       statusChangedEvents.push_back(timeEvent);
   }
 }
