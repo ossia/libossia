@@ -65,8 +65,13 @@ bool JamomaTimeNode::trigger()
   // now TimeEvents will happen or be disposed
   for (auto& timeEvent : mPendingEvents)
   {
-    shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
-    e->process();
+    // update any Destination value into the expression
+    timeEvent->getExpression()->update();
+    
+    if (timeEvent->getExpression()->evaluate())
+      timeEvent->happen();
+    else
+      timeEvent->dispose();
   }
     
   // stop expression observation now the TimeNode has been processed
@@ -137,18 +142,45 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   // because it is needed in JamomaTimeNode::trigger
   mPendingEvents.clear();
   
+  bool maximalDurationReached = false;
+  
   for (auto& timeEvent : timeEvents())
   {
+    shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
+    
     switch (timeEvent->getStatus())
     {
       // check if NONE TimeEvent is ready to become PENDING
       case TimeEvent::Status::NONE:
       {
-        shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
-        e->process();
-
-        // don't break if the TimeEvent became PENDING
-        if (timeEvent->getStatus() == TimeEvent::Status::NONE)
+        bool minimalDurationReached = true;
+        
+        for (auto& timeConstraint : timeEvent->previousTimeConstraints())
+        {
+          // previous TimeConstraints with a DISPOSED start event are ignored
+          if (timeConstraint->getStartEvent()->getStatus() == TimeEvent::Status::DISPOSED)
+            continue;
+          
+          // previous TimeConstraint with a none HAPPENED start event
+          // can't have reached its minimal duration
+          if (timeConstraint->getStartEvent()->getStatus() != TimeEvent::Status::HAPPENED)
+          {
+            minimalDurationReached = false;
+            break;
+          }
+          
+          // previous TimeConstraint which doesn't reached its minimal duration force to quit
+          if (timeConstraint->getDate() < timeConstraint->getDurationMin())
+          {
+            minimalDurationReached = false;
+            break;
+          }
+        }
+        
+        // access to PENDING status once all previous TimeConstraints allow it
+        if (minimalDurationReached)
+          e->setStatus(TimeEvent::Status::PENDING);
+        else
           break;
       }
 
@@ -156,6 +188,13 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
       case TimeEvent::Status::PENDING:
       {
         mPendingEvents.push_back(timeEvent);
+        
+        for (auto& timeConstraint : timeEvent->previousTimeConstraints())
+        {
+          if (timeConstraint->getDate() >= timeConstraint->getDurationMax())
+            maximalDurationReached = true;
+        }
+        
         break;
       }
 
@@ -187,9 +226,14 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   if (*mExpression == *ExpressionFalse)
     return;
   
+  //! \todo force triggering if at leat one TimeEvent has
+  // at least one TimeConstraint over its maximal duration
+  
   // update the expression one time
   // then observe and evaluate TimeNode's expression before to trig
-  if (*mExpression != *ExpressionTrue)
+  // only if no maximal duration have been reached
+  if (*mExpression != *ExpressionTrue &&
+      !maximalDurationReached)
   {
     if (!isObservingExpression())
       mExpression->update();

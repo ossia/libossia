@@ -142,53 +142,6 @@ TimeEvent::Status JamomaTimeEvent::getStatus() const
 # pragma mark -
 # pragma mark Implementation specific
 
-void JamomaTimeEvent::process()
-{
-  if (mStatus == TimeEvent::Status::NONE)
-  {
-    // NONE TimeEvent without previous TimeConstraint becomes PENDING
-    if (previousTimeConstraints().empty())
-    {
-      setStatus(TimeEvent::Status::PENDING);
-    }
-    
-    // NONE TimeEvent with previous TimeConstraints becomes PENDING
-    // if each previous TimeConstraint reaches its minimal duration
-    else
-    {
-      for (auto& timeConstraint : previousTimeConstraints())
-      {
-        shared_ptr<JamomaTimeConstraint> c = dynamic_pointer_cast<JamomaTimeConstraint>(timeConstraint);
-        
-        // previous TimeConstraints with a DISPOSED start event are ignored
-        if (timeConstraint->getStartEvent()->getStatus() == TimeEvent::Status::DISPOSED)
-          continue;
-        
-        // previous TimeConstraint with a none HAPPENED start event force to quit
-        if (timeConstraint->getStartEvent()->getStatus() != TimeEvent::Status::HAPPENED)
-          return;
-        
-        // previous TimeConstraint which doesn't reached its minimal duration force to quit
-        if (c->getDate() < c->getDurationMin())
-          return;
-      }
-      
-      // access to PENDING status once all previous TimeConstraints allow it
-      setStatus(TimeEvent::Status::PENDING);
-    }
-  }
-  else if (mStatus == TimeEvent::Status::PENDING)
-  {
-    // update any Destination value into the expression
-    mExpression->update();
-    
-    if (mExpression->evaluate())
-      happen();
-    else
-      dispose();
-  }
-}
-
 void JamomaTimeEvent::setStatus(Status status)
 {
   mStatus = status;

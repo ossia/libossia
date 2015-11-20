@@ -88,7 +88,4 @@ public:
   /* edit status and call ExecutionCallback
    \param #Status new status */
   void setStatus(Status);
-
-  /* check if NONE TimeEvent is ready to become PENDING */
-  void process();
 };
