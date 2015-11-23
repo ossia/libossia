@@ -68,9 +68,6 @@ int main()
      Execute
      */
     
-    start_node->setup();
-    end_node->setup();
-
     start_node->happen();
     
     // look at the console to see how things are repeated during the main constraint duration

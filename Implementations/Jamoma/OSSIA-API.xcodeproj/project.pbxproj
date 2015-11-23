@@ -130,7 +130,7 @@
 		46B3298C1B691A3A0006B1BB /* JamomaContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaContainer.h; sourceTree = "<group>"; };
 		46BA2A5B19C09A21009630B5 /* Curve.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Curve.cpp; sourceTree = "<group>"; };
 		46BA2A5D19C09A21009630B5 /* CurveSegmentLinear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentLinear.cpp; sourceTree = "<group>"; };
-		46BA2A6019C09A21009630B5 /* Scenario.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scenario.cpp; sourceTree = "<group>"; };
+		46BA2A6019C09A21009630B5 /* Scenario.cpp */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; path = Scenario.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		46C83F411B563D9C007EF1C4 /* Value.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Value.cpp; sourceTree = "<group>"; };
 		46CF2A8D1B57DC860027D537 /* ExpressionNot.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ExpressionNot.cpp; sourceTree = "<group>"; };
 		46D2C60D1B260B9900C04D8A /* JamomaTimeConstraint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaTimeConstraint.h; sourceTree = "<group>"; };

@@ -73,9 +73,9 @@ public:
 # pragma mark -
 # pragma mark Execution
 
-  void start() final override;
+  void start() override;
 
-  void stop() final override;
+  void stop() override;
 
   void pause() override;
 
@@ -86,29 +86,29 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  const TimeValue & getDuration() const final override;
-
-  Clock & setDuration(const TimeValue&) final override;
-
-  const TimeValue & getGranularity() const override;
-
-  Clock & setGranularity(const TimeValue&) override;
-
-  const TimeValue & getOffset() const override;
-
+  const TimeValue & getDuration() const override;
+  
+  Clock & setDuration(const TimeValue&) override;
+  
+  const TimeValue & getOffset() const final override;
+  
   Clock & setOffset(const TimeValue&) override;
+    
+  const TimeValue & getGranularity() const final override;
 
-  float getSpeed() const override;
+  Clock & setGranularity(const TimeValue&) final override;
 
-  Clock & setSpeed(float) override;
+  float getSpeed() const final override;
 
-  Clock::DriveMode getDriveMode() const override;
+  Clock & setSpeed(float) final override;
+
+  Clock::DriveMode getDriveMode() const final override;
 
   Clock & setDriveMode(Clock::DriveMode) final override;
 
   bool getRunning() const final override;
 
-  const TimeValue & getPosition() const override;
+  const TimeValue & getPosition() const final override;
 
   const TimeValue & getDate() const final override;
 
@@ -117,6 +117,20 @@ public:
 
   /*! to avoid dead lock in EXTERNAL drive mode if a TimeProcess wants to end its ParentTimeConstraint's clock */
   void request_stop();
+  
+protected:
+  
+  /*! to allow TimeConstraint to override start method */
+  void do_start();
+  
+  /*! to allow TimeConstraint to override stop method */
+  void do_stop();
+  
+  /*! to allow TimeConstraint to override setDuration accessor */
+  void do_setDuration(const TimeValue&);
+  
+  /*! to allow TimeConstraint to override setOffset accessor */
+  void do_setOffset(const TimeValue&);
 
 private:
 

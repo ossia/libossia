@@ -56,10 +56,6 @@ public:
 # pragma mark -
 # pragma mark Execution
 
-  /*! setup status of each #TimeEvent's #TimeNode considering a date
-   \param #TimeValue a date that will be compared to the #TimeNode's date */
-  virtual void setup(const TimeValue& = OSSIA::Zero) = 0;
-
   /*! evaluate all #TimeEvent's to make them to happen or to dispose them 
    \return boolean true if the operation succeeded */
   virtual bool trigger() = 0;

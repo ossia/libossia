@@ -55,8 +55,6 @@ public:
 # pragma mark -
 # pragma mark Execution
 
-  void setup(const TimeValue& date = Zero) override;
-
   bool trigger() override;
 
 # pragma mark -

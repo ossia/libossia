@@ -45,6 +45,7 @@ private:
   shared_ptr<TimeEvent>               mStartEvent;
   shared_ptr<TimeEvent>               mEndEvent;
 
+  TimeValue                           mDurationNominal;
   TimeValue                           mDurationMin;
   TimeValue                           mDurationMax;
 
@@ -69,7 +70,9 @@ public:
 # pragma mark -
 # pragma mark Execution
 
-  virtual void setup(const TimeValue& = Zero) override;
+  void start() final override;
+  
+  void stop() final override;
 
   shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) override;
 
@@ -79,8 +82,18 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
+  
+  const TimeValue & getDuration() const final override;
+  
+  Clock & setDuration(const TimeValue&) final override;
+  
+  Clock & setOffset(const TimeValue&) final override;
 
   void setCallback(ExecutionCallback) override;
+  
+  const TimeValue & getDurationNominal() const override;
+  
+  TimeConstraint & setDurationNominal(const TimeValue&) override;
 
   const TimeValue & getDurationMin() const override;
 

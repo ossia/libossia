@@ -35,21 +35,6 @@ TimeNode::~TimeNode()
 # pragma mark -
 # pragma mark Execution
 
-void JamomaTimeNode::setup(const TimeValue& date)
-{
-  {
-    TimeEvent::Status status = getDate() <= date ? getDate() == date ? TimeEvent::Status::PENDING : TimeEvent::Status::HAPPENED : TimeEvent::Status::NONE;
-
-    //! \note maybe we should initialized TimeEvents with an Expression returning false to DISPOSED status ?
-
-    for (auto& timeEvent : timeEvents())
-    {
-      shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
-      e->setStatus(status);
-    }
-  }
-}
-
 bool JamomaTimeNode::trigger()
 {
   // if all TimeEvents are not PENDING
@@ -94,8 +79,8 @@ TimeValue JamomaTimeNode::getDate() const
     {
       if (!timeEvent->previousTimeConstraints().empty())
       {
-        if (timeEvent->previousTimeConstraints()[0]->getDuration() > Zero)
-          return timeEvent->previousTimeConstraints()[0]->getDuration() + timeEvent->previousTimeConstraints()[0]->getStartEvent()->getTimeNode()->getDate();
+        if (timeEvent->previousTimeConstraints()[0]->getDurationNominal() > Zero)
+          return timeEvent->previousTimeConstraints()[0]->getDurationNominal() + timeEvent->previousTimeConstraints()[0]->getStartEvent()->getTimeNode()->getDate();
       }
     }
   }
@@ -191,6 +176,12 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
         
         for (auto& timeConstraint : timeEvent->previousTimeConstraints())
         {
+          //! \debug
+          TimeValue c_date = timeConstraint->getDate();
+          TimeValue c_min = timeConstraint->getDurationMin();
+          TimeValue c_max = timeConstraint->getDurationMax();
+          cout << timeConstraint.get() << " : " << c_date << ", " << c_min << ", " << c_max << ", " << endl;
+          
           if (timeConstraint->getDate() >= timeConstraint->getDurationMax())
             maximalDurationReached = true;
         }

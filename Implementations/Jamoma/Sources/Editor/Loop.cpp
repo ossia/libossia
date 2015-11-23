@@ -40,7 +40,7 @@ mPatternConstraintCallback(patternConstraintCallback)
   clock->setDriveMode(Clock::DriveMode::EXTERNAL);
 
   // set all pattern TimeConstraint's durations equal by default
-  clock->setDuration(patternDuration);
+  mPatternConstraint->setDurationNominal(patternDuration);
   mPatternConstraint->setDurationMin(patternDuration);
   mPatternConstraint->setDurationMax(patternDuration);
 
@@ -79,15 +79,12 @@ shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const Time
     // if the time goes backward
     if (position < mLastPosition)
     {
-      TimeValue offset = std::fmod((double)date, (double)mPatternConstraint->getDuration());
-
-      mPatternStartNode->setup(offset);
-      mPatternEndNode->setup(offset);
+      TimeValue offset = std::fmod((double)date, (double)mPatternConstraint->getDurationNominal());
 
       if (mPatternStartNode->timeEvents()[0]->getStatus() == TimeEvent::Status::HAPPENED)
         flattenAndFilter(mPatternStartNode->timeEvents()[0]->getState());
 
-      mPatternConstraint->setup(offset);
+      mPatternConstraint->setOffset(offset);
     }
 
     // process the loop from the pattern start TimeNode
@@ -110,10 +107,9 @@ shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const Time
     if (mPatternEndNode->timeEvents()[0]->getStatus() == TimeEvent::Status::HAPPENED)
     {
       flattenAndFilter(mPatternEndNode->timeEvents()[0]->getState());
-
-      mPatternStartNode->setup(Zero);
-      mPatternEndNode->setup(Zero);
-      mPatternConstraint->setup(Zero);
+      
+      mPatternConstraint->stop();
+      mPatternConstraint->start();
     }
 
     mLastPosition = position;

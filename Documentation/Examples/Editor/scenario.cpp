@@ -223,7 +223,8 @@ int main()
     cout << "***** START *****" << endl;
 
     // play the main TimeConstraint
-    local_play_address->pushValue(&True);
+    //local_play_address->pushValue(&True);
+    main_constraint->start();
 
     // wait the main TimeConstraint end
     while (main_constraint->getRunning())

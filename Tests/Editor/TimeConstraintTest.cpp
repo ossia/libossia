@@ -32,24 +32,24 @@ private Q_SLOTS:
         auto constraint = TimeConstraint::create(&constraint_callback, start_event, end_event, 1000.);
         QVERIFY(constraint != nullptr);
 
-        QVERIFY(constraint->getDuration() == 1000.);
         QVERIFY(constraint->getGranularity() == 1.);
         QVERIFY(constraint->getOffset() == 0.);
         QVERIFY(constraint->getSpeed() == 1.);
+        QVERIFY(constraint->getDurationNominal() == 1000.);
         QVERIFY(constraint->getDurationMin() == 0.);
         QVERIFY(constraint->getDurationMax() == Infinite);
 
-        constraint->setDuration(2000.);
         constraint->setGranularity(50.);
         constraint->setOffset(500.);
         constraint->setSpeed(2.);
+        constraint->setDurationNominal(2000.);
         constraint->setDurationMin(1000.);
         constraint->setDurationMax(3000.);
 
-        QVERIFY(constraint->getDuration() == 2000.);
         QVERIFY(constraint->getGranularity() == 50.);
         QVERIFY(constraint->getOffset() == 500.);
         QVERIFY(constraint->getSpeed() == 2.);
+        QVERIFY(constraint->getDurationNominal() == 2000.);
         QVERIFY(constraint->getDurationMin() == 1000.);
         QVERIFY(constraint->getDurationMax() == 3000.);
 
@@ -87,7 +87,7 @@ private Q_SLOTS:
     /*! test execution functions */
     void test_execution()
     {
-        //! \todo test play()
+        //! \todo test setup()
         //! \todo test stop()
         //! \todo test pause()
         //! \todo test resume()

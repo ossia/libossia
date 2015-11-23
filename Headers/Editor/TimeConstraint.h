@@ -52,7 +52,7 @@ public:
    \param #TimeConstraint::ExecutionCallback to use to be notified at each step
    \param #std::shared_ptr<TimeEvent> event where the #TimeConstraint starts
    \param #std::shared_ptr<TimeEvent> event where the #TimeConstraint ends
-   \param const #TimeValue& duration of the #TimeConstraint
+   \param const #TimeValue& nominal duration of the #TimeConstraint
    \param const #TimeValue& minimal duration of the #TimeConstraint
    \param const #TimeValue& maximal duration of the #TimeConstraint
    \return std::shared_ptr<#TimeConstraint> */
@@ -72,12 +72,12 @@ public:
 
 # pragma mark -
 # pragma mark Execution
-
-  /*! setup #TimeConstraint's #Clock considering the status of its #TimeEvents
-   \details this method is supposed to be called after #TimeNode::setup method
-   \details this method can launch the #Clock if the #TimeConstraint is supposed to be running at the given date
-   \param #TimeValue a date to offset the #Clock in the mean time */
-  virtual void setup(const TimeValue& = Zero) = 0;
+  
+  /*! start #TimeConstraint's #Clock depending on TimeEvent's status */
+  virtual void start() override = 0;
+  
+  /*! stop #TimeConstraint's #Clock and reset offset to 0. */
+  virtual void stop() override = 0;
 
   /*! get the #State of the constraint for a position or a date
    \details the returned #State is made of as many as sub States for each TimeProcess the constraint manages
@@ -88,17 +88,41 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
-
+  
+  /*! avoid getting #TimeConstraint's #Clock duration. Use getDurationNominal instead.
+   \return const #TimeValue duration */
+  virtual const TimeValue & getDuration() const override = 0;
+  
+  /*! avoid setting #TimeConstraint's #Clock duration. Use setDurationNominal instead.
+   \param const #TimeValue duration
+   \return #Clock the clock */
+  virtual Clock & setDuration(const TimeValue&) override = 0;
+  
+  /*! set #TimeConstraint's #Clock offset and edit TimeEvent's status
+   \param const #TimeValue offset
+   \return #Clock the clock */
+  virtual Clock & setOffset(const TimeValue&) override = 0;
+  
   /*! sets a new callback for the constraint
 	\param #TimeConstraint::ExecutionCallback to use to be notified at each step */
   virtual void setCallback(ExecutionCallback) = 0;
+  
+  /*! get the #TimeConstraint nominal duration
+   \return const #TimeValue& nominal duration */
+  virtual const TimeValue & getDurationNominal() const = 0;
+  
+  /*! set the #TimeConstraint duration
+   \param const #TimeValue& duration
+   \return #TimeConstraint the constraint */
+  virtual TimeConstraint & setDurationNominal(const TimeValue&) = 0;
   
   /*! get the #TimeConstraint minimal duration
    \return const #TimeValue& minimal duration */
   virtual const TimeValue & getDurationMin() const = 0;
   
   /*! set the #TimeConstraint minimal duration
-   \param const #TimeValue& minimal duration */
+   \param const #TimeValue& minimal duration
+   \return #TimeConstraint the constraint */
   virtual TimeConstraint & setDurationMin(const TimeValue&) = 0;
   
   /*! get the #TimeConstraint maximal duration
@@ -106,7 +130,8 @@ public:
   virtual const TimeValue & getDurationMax() const = 0;
   
   /*! set the #TimeConstraint maximal duration
-   \param const #TimeValue& maximal duration */
+   \param const #TimeValue& maximal duration
+   \return #TimeConstraint the constraint */
   virtual TimeConstraint & setDurationMax(const TimeValue&) = 0;
   
   /*! get the event from where the #TimeConstraint starts
