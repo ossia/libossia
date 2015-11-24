@@ -176,12 +176,6 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
         
         for (auto& timeConstraint : timeEvent->previousTimeConstraints())
         {
-          //! \debug
-          TimeValue c_date = timeConstraint->getDate();
-          TimeValue c_min = timeConstraint->getDurationMin();
-          TimeValue c_max = timeConstraint->getDurationMax();
-          cout << timeConstraint.get() << " : " << c_date << ", " << c_min << ", " << c_max << ", " << endl;
-          
           if (timeConstraint->getDate() >= timeConstraint->getDurationMax())
             maximalDurationReached = true;
         }

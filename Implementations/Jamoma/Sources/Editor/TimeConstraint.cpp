@@ -52,9 +52,6 @@ mDurationMin(min),
 mDurationMax(max)
 {
   mCurrentState = State::create();
-  
-  //! \debug
-  cout << this << " : " << mDurationNominal << ", " << mDurationMin << ", " << mDurationMax << ", " << endl;
 }
 
 JamomaTimeConstraint::JamomaTimeConstraint(const JamomaTimeConstraint * other) :

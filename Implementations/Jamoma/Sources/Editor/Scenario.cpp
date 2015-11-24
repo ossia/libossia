@@ -55,11 +55,16 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
     // if the time goes backward
     if (position < mLastPosition)
     {
-      // offset each TimeConstraint considering the date
+      // offset or stop each TimeConstraint considering the date
       for (const auto& timeConstraint : mTimeContraints)
       {
-        TimeValue offset = date - timeConstraint->getStartEvent()->getTimeNode()->getDate();
-        timeConstraint->setOffset(offset);
+        TimeValue start = timeConstraint->getStartEvent()->getTimeNode()->getDate();
+        TimeValue end = start + timeConstraint->getDurationMax();
+        
+        if (date > start && date <= end)
+          timeConstraint->setOffset(date - start);
+        else
+          timeConstraint->stop();
       }
       
       // add the state of each HAPPENED TimeEvent
