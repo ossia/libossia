@@ -33,7 +33,7 @@ protected:
   shared_ptr<State>               mStartState;
   shared_ptr<State>               mEndState;
 
-  TimeValue                       mLastPosition;  // used to filter multiple state calls at the same time
+  TimeValue                       mLastDate;  // used to filter multiple state calls at the same time (use date as position can be always 0 in infinite duration case)
 
 public:
 

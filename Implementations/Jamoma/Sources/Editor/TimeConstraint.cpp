@@ -84,8 +84,7 @@ void JamomaTimeConstraint::start()
     throw runtime_error("cannot start a running time constraint");
   
   // set clock duration using maximal duration
-  //do_setDuration(mDurationMax);
-  do_setDuration(mDurationNominal);
+  do_setDuration(mDurationMax);
 
   // launch the clock
   do_start();

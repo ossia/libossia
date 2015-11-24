@@ -41,7 +41,7 @@ Automation::~Automation()
 
 shared_ptr<StateElement> JamomaAutomation::state(const TimeValue& position, const TimeValue& date)
 {
-  if (position != mLastPosition)
+  if (date != mLastDate)
   {
     // clear the former Value
     if (mValueToSend) delete mValueToSend;
@@ -52,7 +52,7 @@ shared_ptr<StateElement> JamomaAutomation::state(const TimeValue& position, cons
     // edit a Message handling the new Value
     mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
 
-    mLastPosition = position;
+    mLastDate = date;
   }
 
   return mMessageToSend;

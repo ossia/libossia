@@ -70,14 +70,14 @@ Loop::~Loop()
 
 shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const TimeValue& date)
 {
-  // if position hasn't been processed already
-  if (position != mLastPosition)
+  // if date hasn't been processed already
+  if (date != mLastDate)
   {
     // reset internal State
     mCurrentState->stateElements().clear();
 
     // if the time goes backward
-    if (position < mLastPosition)
+    if (date < mLastDate)
     {
       TimeValue offset = std::fmod((double)date, (double)mPatternConstraint->getDurationNominal());
 
@@ -112,7 +112,7 @@ shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const Time
       mPatternConstraint->start();
     }
 
-    mLastPosition = position;
+    mLastDate = date;
   }
 
   //! \see mCurrentState is filled below in JamomaLoop::PatternConstraintCallback

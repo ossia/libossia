@@ -46,14 +46,14 @@ Scenario::~Scenario()
 
 shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const TimeValue& date)
 {
-  // if position hasn't been processed already
-  if (position != mLastPosition)
+  // if date hasn't been processed already
+  if (date != mLastDate)
   {
     // reset internal State
     mCurrentState->stateElements().clear();
 
     // if the time goes backward
-    if (position < mLastPosition)
+    if (date < mLastDate)
     {
       // offset or stop each TimeConstraint considering the date
       for (const auto& timeConstraint : mTimeContraints)
@@ -156,7 +156,7 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
         ;//! \todo mParent->stop(); // if the parent TimeConstraint's Clock is in EXTERNAL drive mode, it creates a deadlock.
     }
 
-    mLastPosition = position;
+    mLastDate = date;
   }
 
   return mCurrentState;
