@@ -60,11 +60,7 @@ private Q_SLOTS:
         auto loop = Loop::create(25., constraint_callback, event_callback, event_callback);
 
         constraint->addTimeProcess(loop);
-
-        start_node->setup();
-        end_node->setup();
-        
-        start_node->happen();
+        constraint->start();
 
         while (constraint->getRunning())
             ;
