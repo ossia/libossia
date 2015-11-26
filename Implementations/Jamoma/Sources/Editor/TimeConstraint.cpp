@@ -82,7 +82,7 @@ void JamomaTimeConstraint::start()
 {
   if (mRunning)
     throw runtime_error("cannot start a running time constraint");
-  
+
   // set clock duration using maximal duration
   do_setDuration(mDurationMax);
 
@@ -119,7 +119,8 @@ void JamomaTimeConstraint::pause()
   for (const auto& timeProcess : timeProcesses())
   {
     JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
-    t->pause();
+    if(t)
+        t->pause();
   }
 }
 
@@ -134,7 +135,8 @@ void JamomaTimeConstraint::resume()
   for (const auto& timeProcess : timeProcesses())
   {
     JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
-    t->resume();
+    if(t)
+        t->resume();
   }
 }
 
@@ -156,19 +158,19 @@ Clock & JamomaTimeConstraint::setDuration(const TimeValue&)
 Clock & JamomaTimeConstraint::setOffset(const TimeValue& offset)
 {
   do_setOffset(offset);
-  
+
   // edit TimeEvent status
   TimeEvent::Status startStatus = mOffset >= Zero ? mOffset == Zero ? TimeEvent::Status::PENDING : TimeEvent::Status::HAPPENED : TimeEvent::Status::NONE;
   TimeEvent::Status endStatus = mOffset > mDurationMin ? mOffset <= mDurationMax ? TimeEvent::Status::PENDING : TimeEvent::Status::HAPPENED : TimeEvent::Status::NONE;
-  
+
   //! \note maybe we should initialized TimeEvents with an Expression returning false to DISPOSED status ?
-  
+
   shared_ptr<JamomaTimeEvent> start = dynamic_pointer_cast<JamomaTimeEvent>(mStartEvent);
   start->setStatus(startStatus);
-  
+
   shared_ptr<JamomaTimeEvent> end = dynamic_pointer_cast<JamomaTimeEvent>(mEndEvent);
   end->setStatus(endStatus);
-  
+
   return *this;
 }
 
@@ -186,12 +188,12 @@ TimeConstraint & JamomaTimeConstraint::setDurationNominal(const TimeValue& durat
 {
   if (durationNominal < mDurationMin)
     throw runtime_error("nominal duration min cannot be lower than minimal duration");
-  
+
   if (durationNominal > mDurationMax)
     throw runtime_error("nominal duration min cannot be greater than maximal duration");
-  
+
   mDurationNominal = durationNominal;
-  
+
   return *this;
 }
 
@@ -206,7 +208,7 @@ TimeConstraint & JamomaTimeConstraint::setDurationMin(const TimeValue& durationM
     throw runtime_error("minimal duration cannot be greater than nominal duration");
 
   mDurationMin = durationMin;
-  
+
   return *this;
 }
 
@@ -221,7 +223,7 @@ TimeConstraint & JamomaTimeConstraint::setDurationMax(const TimeValue& durationM
     throw runtime_error("maximal duration cannot be less than nominal duration");
 
   mDurationMax = durationMax;
-  
+
   return *this;
 }
 
