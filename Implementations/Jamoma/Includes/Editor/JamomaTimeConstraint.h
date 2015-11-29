@@ -82,11 +82,7 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
-  
-  const TimeValue & getDuration() const final override;
-  
-  Clock & setDuration(const TimeValue&) final override;
-  
+    
   Clock & setOffset(const TimeValue&) final override;
 
   void setCallback(ExecutionCallback) override;

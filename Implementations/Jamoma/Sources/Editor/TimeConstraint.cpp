@@ -83,9 +83,6 @@ void JamomaTimeConstraint::start()
   if (mRunning)
     throw runtime_error("cannot start a running time constraint");
   
-  // set clock duration using maximal duration
-  do_setDuration(mDurationMax);
-
   // launch the clock
   do_start();
 }
@@ -141,18 +138,6 @@ void JamomaTimeConstraint::resume()
 # pragma mark -
 # pragma mark Accessors
 
-const TimeValue & JamomaTimeConstraint::getDuration() const
-{
-  throw runtime_error("use getDurationNominal to get the duration of a time constraint");
-  return Zero;
-}
-
-Clock & JamomaTimeConstraint::setDuration(const TimeValue&)
-{
-  throw runtime_error("use setDurationNominal to set the duration of a time constraint");
-  return *this;
-}
-
 Clock & JamomaTimeConstraint::setOffset(const TimeValue& offset)
 {
   do_setOffset(offset);
@@ -184,13 +169,13 @@ const TimeValue & JamomaTimeConstraint::getDurationNominal() const
 
 TimeConstraint & JamomaTimeConstraint::setDurationNominal(const TimeValue& durationNominal)
 {
-  if (durationNominal < mDurationMin)
-    throw runtime_error("nominal duration min cannot be lower than minimal duration");
-  
-  if (durationNominal > mDurationMax)
-    throw runtime_error("nominal duration min cannot be greater than maximal duration");
-  
   mDurationNominal = durationNominal;
+  
+  if (mDurationNominal < mDurationMin)
+    setDurationMin(mDurationNominal);
+  
+  if (mDurationNominal > mDurationMax)
+    setDurationMax(mDurationNominal);
   
   return *this;
 }
@@ -202,10 +187,10 @@ const TimeValue & JamomaTimeConstraint::getDurationMin() const
 
 TimeConstraint & JamomaTimeConstraint::setDurationMin(const TimeValue& durationMin)
 {
-  if (durationMin > mDurationNominal)
-    throw runtime_error("minimal duration cannot be greater than nominal duration");
-
   mDurationMin = durationMin;
+  
+  if (mDurationMin > mDurationNominal)
+    setDurationNominal(mDurationMin);
   
   return *this;
 }
@@ -217,10 +202,13 @@ const TimeValue & JamomaTimeConstraint::getDurationMax() const
 
 TimeConstraint & JamomaTimeConstraint::setDurationMax(const TimeValue& durationMax)
 {
-  if (durationMax < mDurationNominal)
-    throw runtime_error("maximal duration cannot be less than nominal duration");
-
   mDurationMax = durationMax;
+  
+  if (durationMax < mDurationNominal)
+    setDurationNominal(mDurationMax);
+  
+  // set clock duration using maximal duration
+  setDuration(mDurationMax);
   
   return *this;
 }

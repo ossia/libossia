@@ -101,15 +101,6 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  /*! avoid getting #TimeConstraint's #Clock duration. Use getDurationNominal instead.
-   \return const #TimeValue duration */
-  virtual const TimeValue & getDuration() const override = 0;
-
-  /*! avoid setting #TimeConstraint's #Clock duration. Use setDurationNominal instead.
-   \param const #TimeValue duration
-   \return #Clock the clock */
-  virtual Clock & setDuration(const TimeValue&) override = 0;
-
   /*! set #TimeConstraint's #Clock offset and edit TimeEvent's status
    \param const #TimeValue offset
    \return #Clock the clock */
