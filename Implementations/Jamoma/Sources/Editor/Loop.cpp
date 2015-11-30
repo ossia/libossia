@@ -100,7 +100,7 @@ shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const Time
         mPatternConstraint->tick();
       }
       else
-        throw runtime_error("the pattern constrain clock is supposed to be in EXTERNAL drive mode");
+        throw runtime_error("the pattern constraint clock is supposed to be in EXTERNAL drive mode");
     }
 
     // if the pattern end event happened : reset the loop
@@ -109,7 +109,7 @@ shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const Time
       flattenAndFilter(mPatternEndNode->timeEvents()[0]->getState());
       
       mPatternConstraint->stop();
-      mPatternConstraint->start();
+      mPatternConstraint->setOffset(Zero);
     }
 
     mLastDate = date;
