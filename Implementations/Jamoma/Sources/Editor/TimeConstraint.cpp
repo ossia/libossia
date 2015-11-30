@@ -116,7 +116,8 @@ void JamomaTimeConstraint::pause()
   for (const auto& timeProcess : timeProcesses())
   {
     JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
-    t->pause();
+    if(t)
+        t->pause();
   }
 }
 
@@ -131,7 +132,8 @@ void JamomaTimeConstraint::resume()
   for (const auto& timeProcess : timeProcesses())
   {
     JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
-    t->resume();
+    if(t)
+        t->resume();
   }
 }
 
@@ -141,19 +143,19 @@ void JamomaTimeConstraint::resume()
 Clock & JamomaTimeConstraint::setOffset(const TimeValue& offset)
 {
   do_setOffset(offset);
-  
+
   // edit TimeEvent status
   TimeEvent::Status startStatus = mOffset >= Zero ? mOffset == Zero ? TimeEvent::Status::PENDING : TimeEvent::Status::HAPPENED : TimeEvent::Status::NONE;
   TimeEvent::Status endStatus = mOffset > mDurationMin ? mOffset <= mDurationMax ? TimeEvent::Status::PENDING : TimeEvent::Status::HAPPENED : TimeEvent::Status::NONE;
-  
+
   //! \note maybe we should initialized TimeEvents with an Expression returning false to DISPOSED status ?
-  
+
   shared_ptr<JamomaTimeEvent> start = dynamic_pointer_cast<JamomaTimeEvent>(mStartEvent);
   start->setStatus(startStatus);
-  
+
   shared_ptr<JamomaTimeEvent> end = dynamic_pointer_cast<JamomaTimeEvent>(mEndEvent);
   end->setStatus(endStatus);
-  
+
   return *this;
 }
 
