@@ -1,9 +1,11 @@
 #include "Editor/State.h"
 
+#include "JamomaStateElement.h"
+
 using namespace OSSIA;
 using namespace std;
 
-class JamomaState final : public State
+class JamomaState final : public State, public JamomaStateElement
 {
 
 private:
@@ -30,4 +32,6 @@ public:
 # pragma mark Execution
 
   void launch() const override;
+
+  StateElement::Type getType() const override final;
 };

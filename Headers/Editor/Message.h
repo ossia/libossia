@@ -27,7 +27,7 @@ namespace OSSIA
 class Address;
 class Value;
 
-class Message : public StateElement
+class Message : public virtual StateElement
 {
 
 public:
@@ -57,11 +57,6 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
-
-  /*! get the type of the state element
-   \return #Type of the state element */
-  StateElement::Type getType() const override final
-  {return StateElement::Type::MESSAGE;}
 
   /*! get message's address
    \return std::shared_ptr<#Address> the address */

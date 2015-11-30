@@ -39,9 +39,8 @@ public:
 # pragma mark -
 # pragma mark Life cycle
   
-  /*! destructor 
-   \todo remove = default */
-  virtual ~StateElement() = default;
+  /*! destructor */
+  virtual ~StateElement();
   
 # pragma mark -
 # pragma mark Execution
