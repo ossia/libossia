@@ -36,3 +36,11 @@ void JamomaState::launch() const
   for (const auto& elt : stateElements())
     elt->launch();
 }
+
+# pragma mark -
+# pragma mark Accessors
+
+StateElement::Type JamomaState::getType() const
+{
+  return StateElement::Type::STATE;
+}

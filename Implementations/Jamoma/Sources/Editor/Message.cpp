@@ -41,6 +41,11 @@ void JamomaMessage::launch() const
 # pragma mark -
 # pragma mark Accessors
 
+StateElement::Type JamomaMessage::getType() const
+{
+    return StateElement::Type::MESSAGE;
+}
+
 const shared_ptr<Address> & JamomaMessage::getAddress() const
 {
   return address;

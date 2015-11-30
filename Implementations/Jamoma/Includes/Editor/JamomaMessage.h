@@ -1,10 +1,12 @@
 #include "Editor/Message.h"
 #include "Network/Address.h"
 
+#include "JamomaStateElement.h"
+
 using namespace OSSIA;
 using namespace std;
 
-class JamomaMessage final : public Message
+class JamomaMessage final : public Message, public JamomaStateElement
 {
 
 private:
@@ -35,6 +37,8 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
+  
+  StateElement::Type getType() const override final;
 
   const shared_ptr<Address> & getAddress() const override;
 
