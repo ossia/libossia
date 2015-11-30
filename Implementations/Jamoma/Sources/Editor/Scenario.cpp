@@ -60,13 +60,13 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
       {
         TimeValue start = timeConstraint->getStartEvent()->getTimeNode()->getDate();
         TimeValue end = start + timeConstraint->getDurationMax();
-        
+
         if (date > start && date <= end)
           timeConstraint->setOffset(date - start);
         else
           timeConstraint->stop();
       }
-      
+
       // add the state of each HAPPENED TimeEvent
       for (const auto& timeNode : mTimeNodes)
       {
@@ -76,13 +76,13 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
             flattenAndFilter(timeEvent->getState());
         }
       }
-      
+
       // start each TimeConstraint if possible
       for (const auto& timeConstraint : mTimeContraints)
       {
         TimeEvent::Status startStatus = timeConstraint->getStartEvent()->getStatus();
         TimeEvent::Status endStatus = timeConstraint->getEndEvent()->getStatus();
-        
+
         // the constraint is in the past
         if (startStatus == TimeEvent::Status::HAPPENED &&
             endStatus == TimeEvent::Status::HAPPENED)
@@ -323,6 +323,12 @@ void JamomaScenario::flattenAndFilter(const shared_ptr<StateElement>& element)
       {
         flattenAndFilter(e);
       }
+      break;
+    }
+
+    default:
+    {
+      mCurrentState->stateElements().push_back(element);
       break;
     }
   }

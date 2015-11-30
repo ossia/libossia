@@ -107,7 +107,7 @@ shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const Time
     if (mPatternEndNode->timeEvents()[0]->getStatus() == TimeEvent::Status::HAPPENED)
     {
       flattenAndFilter(mPatternEndNode->timeEvents()[0]->getState());
-      
+
       mPatternConstraint->stop();
       mPatternConstraint->setOffset(Zero);
     }
@@ -198,6 +198,11 @@ void JamomaLoop::flattenAndFilter(const shared_ptr<StateElement> element)
       {
         flattenAndFilter(e);
       }
+      break;
+    }
+    default:
+    {
+      mCurrentState->stateElements().push_back(element);
       break;
     }
   }
