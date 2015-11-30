@@ -61,6 +61,7 @@ public:
   using ExecutionCallback = std::function<void(Status)>;
 
   /*! changes the callback in the event
+   \param #TimeEvent::ExecutionCallback to get #TimeEvent's status back
    \details this may be unsafe to do during execution */
   virtual void setCallback(TimeEvent::ExecutionCallback) = 0;
 

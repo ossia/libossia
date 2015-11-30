@@ -21,16 +21,16 @@ mExpression(anExpression)
 JamomaTimeEvent::~JamomaTimeEvent()
 {}
 
-void JamomaTimeEvent::setCallback(TimeEvent::ExecutionCallback callback)
-{
-    mCallback = callback;
-}
-
 TimeEvent::~TimeEvent()
 {}
 
 # pragma mark -
 # pragma mark Execution
+
+void JamomaTimeEvent::setCallback(TimeEvent::ExecutionCallback callback)
+{
+  mCallback = callback;
+}
 
 void JamomaTimeEvent::happen()
 {

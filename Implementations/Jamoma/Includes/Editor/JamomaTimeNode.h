@@ -29,22 +29,24 @@ private:
 
 # pragma mark -
 # pragma mark Implementation specific
-
-  shared_ptr<Expression>    mExpression;
-  bool                      mObserveExpression;
-  bool                      mCallbackSet = false;
-  Expression::iterator      mResultCallbackIndex;
-
-  TimeValue                 mSimultaneityMargin;
   
-  Container<TimeEvent>      mPendingEvents;
+  TimeNode::ExecutionCallback   mCallback;
+
+  shared_ptr<Expression>        mExpression;
+  bool                          mObserveExpression;
+  bool                          mCallbackSet = false;
+  Expression::iterator          mResultCallbackIndex;
+
+  TimeValue                     mSimultaneityMargin;
+  
+  Container<TimeEvent>          mPendingEvents;
 
 public:
 
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaTimeNode();
+  JamomaTimeNode(TimeNode::ExecutionCallback);
 
   JamomaTimeNode(const JamomaTimeNode *);
 
@@ -54,6 +56,8 @@ public:
 
 # pragma mark -
 # pragma mark Execution
+  
+  void setCallback(TimeNode::ExecutionCallback) override;
 
   bool trigger() override;
 

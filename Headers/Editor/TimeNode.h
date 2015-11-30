@@ -39,13 +39,17 @@ public:
 
   using iterator = Container<TimeEvent>::iterator;
   using const_iterator = Container<TimeEvent>::const_iterator;
+  
+  /*! to be notified when it is triggered */
+  using ExecutionCallback = std::function<void()>;
 
 # pragma mark -
 # pragma mark Life cycle
 
   /*! factory
+   \param #TimeNode::ExecutionCallback to be be notified when the #TimeNode is triggered
    \return std::shared_ptr<#TimeNode> */
-  static std::shared_ptr<TimeNode> create();
+  static std::shared_ptr<TimeNode> create(TimeNode::ExecutionCallback = nullptr);
 
   /*! clone */
   virtual std::shared_ptr<TimeNode> clone() const = 0;
@@ -55,6 +59,11 @@ public:
 
 # pragma mark -
 # pragma mark Execution
+  
+  /*! changes the callback in the #TimeNode
+   \param #TimeNode::ExecutionCallback to be be notified when the #TimeNode is triggered
+   \details this may be unsafe to do during execution */
+  virtual void setCallback(TimeNode::ExecutionCallback) = 0;
 
   /*! evaluate all #TimeEvent's to make them to happen or to dispose them 
    \return boolean true if the operation succeeded */
@@ -95,7 +104,7 @@ public:
 
   /*! create and store a #TimeEvent
    \param #Container<#TimeEvent>::const_iterator where to store the #TimeEvent
-   \param #TimeEvent::ExecutionCallback to get #TimeEvent's status back,
+   \param #TimeEvent::ExecutionCallback to get #TimeEvent's status back
    \param std::shared<#Expression> an optionnal #Expression to apply to the #TimeEvent
    \return std::shared_ptr<#TimeEvent> */
   virtual iterator emplace(const_iterator,

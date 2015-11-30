@@ -8,13 +8,14 @@
 
 namespace OSSIA
 {
-  shared_ptr<TimeNode> TimeNode::create()
+  shared_ptr<TimeNode> TimeNode::create(TimeNode::ExecutionCallback callback)
   {
-    return make_shared<JamomaTimeNode>();
+    return make_shared<JamomaTimeNode>(callback);
   }
 }
 
-JamomaTimeNode::JamomaTimeNode() :
+JamomaTimeNode::JamomaTimeNode(TimeNode::ExecutionCallback callback) :
+mCallback(callback),
 mExpression(ExpressionTrue)
 {}
 
@@ -34,6 +35,11 @@ TimeNode::~TimeNode()
 
 # pragma mark -
 # pragma mark Execution
+
+void JamomaTimeNode::setCallback(TimeNode::ExecutionCallback callback)
+{
+  mCallback = callback;
+}
 
 bool JamomaTimeNode::trigger()
 {
@@ -61,6 +67,10 @@ bool JamomaTimeNode::trigger()
     
   // stop expression observation now the TimeNode has been processed
   observeExpressionResult(false);
+  
+  // notify observers
+  if (mCallback)
+    (mCallback)();
     
   // the triggering succeded
   return true;
