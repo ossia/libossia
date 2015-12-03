@@ -13,50 +13,69 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto curve = Curve<double, float>::create();
-        QVERIFY(curve != nullptr);
+        // <double, float> curve
+        auto curveA = Curve<double, float>::create();
+        QVERIFY(curveA != nullptr);
 
-        auto linearSegment = CurveSegmentLinear<float>::create(curve);
+        auto linearSegmentA = CurveSegmentLinear<float>::create(curveA);
 
-        curve->setInitialValue(0.);
-        QVERIFY(curve->getInitialValue() == 0.);
+        curveA->setInitialValue(0.);
+        QVERIFY(curveA->getInitialValue() == 0.);
 
-        curve->addPoint(linearSegment, 1., 1.);
-        QVERIFY(curve->getPointsMap().size() == 1);
+        curveA->addPoint(linearSegmentA, 1., 1.);
+        QVERIFY(curveA->getPointsMap().size() == 1);
 
-        curve->addPoint(linearSegment, 2., 0.);
-        QVERIFY(curve->getPointsMap().size() == 2);
+        curveA->addPoint(linearSegmentA, 2., 0.);
+        QVERIFY(curveA->getPointsMap().size() == 2);
 
-        QVERIFY(curve->valueAt(0.) == 0.);
-        QVERIFY(curve->valueAt(0.5) == 0.5);
-        QVERIFY(curve->valueAt(1.) == 1.);
-        QVERIFY(curve->valueAt(1.5) == 0.5);
-        QVERIFY(curve->valueAt(2.) == 0.);
+        QVERIFY(curveA->valueAt(0.) == 0.);
+        QVERIFY(curveA->valueAt(0.5) == 0.5);
+        QVERIFY(curveA->valueAt(1.) == 1.);
+        QVERIFY(curveA->valueAt(1.5) == 0.5);
+        QVERIFY(curveA->valueAt(2.) == 0.);
 
-        curve->setInitialValue(2.);
-        QVERIFY(curve->getInitialValue() == 2.);
+        curveA->setInitialValue(2.);
+        QVERIFY(curveA->getInitialValue() == 2.);
 
-        QVERIFY(curve->valueAt(0.) == 2.);
-        QVERIFY(curve->valueAt(0.5) == 1.5);
-        QVERIFY(curve->valueAt(1.) == 1.);
-        QVERIFY(curve->valueAt(1.5) == 0.5);
-        QVERIFY(curve->valueAt(2.) == 0.);
+        QVERIFY(curveA->valueAt(0.) == 2.);
+        QVERIFY(curveA->valueAt(0.5) == 1.5);
+        QVERIFY(curveA->valueAt(1.) == 1.);
+        QVERIFY(curveA->valueAt(1.5) == 0.5);
+        QVERIFY(curveA->valueAt(2.) == 0.);
 
-        curve->removePoint(1.);
-        QVERIFY(curve->getPointsMap().size() == 1);
+        curveA->removePoint(1.);
+        QVERIFY(curveA->getPointsMap().size() == 1);
 
-        QVERIFY(curve->valueAt(0.) == 2.);
-        QVERIFY(curve->valueAt(0.5) == 1.5);
-        QVERIFY(curve->valueAt(1.) == 1.);
-        QVERIFY(curve->valueAt(1.5) == 0.5);
-        QVERIFY(curve->valueAt(2.) == 0.);
+        QVERIFY(curveA->valueAt(0.) == 2.);
+        QVERIFY(curveA->valueAt(0.5) == 1.5);
+        QVERIFY(curveA->valueAt(1.) == 1.);
+        QVERIFY(curveA->valueAt(1.5) == 0.5);
+        QVERIFY(curveA->valueAt(2.) == 0.);
+        
+        // <float, float> curve
+        auto curveB = Curve<float, float>::create();
+        QVERIFY(curveB != nullptr);
+        
+        auto linearSegmentB = CurveSegmentLinear<float>::create(curveB);
+        
+        curveB->setInitialValue(-96.);
+        QVERIFY(curveB->getInitialValue() == -96.);
+        
+        curveB->addPoint(linearSegmentB, 0., 0.);
+        QVERIFY(curveB->getPointsMap().size() == 1);
+        
+        QVERIFY(curveB->valueAt(-100.) == -96.);
+        QVERIFY(curveB->valueAt(-96.) == -96.);
+        QVERIFY(curveB->valueAt(-80.) == -80.);
+        QVERIFY(curveB->valueAt(-20.) == -20.);
+        QVERIFY(curveB->valueAt(0.) == 0.);
+        QVERIFY(curveB->valueAt(10.) == 0.);
 
         //! \todo test clone()
     }
   
     void test_destination()
     {
-        // Local device
         auto local_protocol = Local::create();
         auto device = Device::create(local_protocol, "test");
       

@@ -15,6 +15,8 @@
 
 #include "Editor/Curve.h"
 
+#include "math.h"
+
 using namespace OSSIA;
 using namespace std;
 

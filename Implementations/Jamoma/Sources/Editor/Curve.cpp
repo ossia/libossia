@@ -224,7 +224,7 @@ template <typename X, typename Y>
 Y JamomaCurve<X,Y>::
 valueAt(X abscissa) const
 {
-  TimeValue lastAbscissa(0.);
+  X lastAbscissa(-INFINITY);
   Y lastValue = getInitialValue();
 
   for (auto it = mPointsMap.begin(); it != mPointsMap.end(); it++)

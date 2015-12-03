@@ -22,7 +22,6 @@
 #include <vector>
 #include <initializer_list>
 
-#include "TimeValue.h"
 #include "Value.h"
 #include "Network/Node.h"
 #include "Misc/Container.h"
@@ -53,7 +52,7 @@ class Curve : public CurveAbstract
 public:
   
   typedef X abscissa_type;
-  typedef Y value_type;
+  typedef Y ordinate_type;
   
 # pragma mark -
 # pragma mark Life cycle
@@ -74,7 +73,7 @@ public:
   /*! add a segment to reach a target point to the curve
    \param std::shared_ptr<#CurveSegment<Y>> segment to target point
    \param X target point abscissa
-   \param Y target point value
+   \param Y target point ordinate
    \return bool */
   virtual bool addPoint(std::shared_ptr<CurveSegment<Y>>, X, Y) = 0;
   
@@ -88,39 +87,57 @@ public:
   
   /*! get value at an abscissa
    \param X abscissa.
-   \return Y value */
+   \return Y ordinate */
   virtual Y valueAt(X) const = 0;
 
 # pragma mark -
 # pragma mark Accessors
   
-  /*! get initial curve value
-   \details if there is an initial destination, it will return the value of the address
+  /*! get initial point abscissa
+   \details if there is an initial abcissa destination, it will return the value of the address
+   \return X value */
+  virtual X getInitialPointAbscissa() const = 0;
+  
+  /*! get initial point ordinate
+   \details if there is an initial ordinate destination, it will return the value of the address
    \return Y value */
-  virtual Y getInitialValue() const = 0;
+  virtual Y getInitialPointOrdinate() const = 0;
   
-  /*! set initial curve value
-   \details if there is an initial destination, this accessor is useless
-   \param Y value */
-  virtual void setInitialValue(Y) = 0;
+  /*! set initial point abscissa
+   \details if there is an initial abscissa destination, this accessor is useless
+   \param X abscissa */
+  virtual void setInitialPointAbscissa(X) = 0;
   
-  /*! get initial curve destination
+  /*! set initial point ordinate
+   \details if there is an initial ordinate destination, this accessor is useless
+   \param Y ordinate */
+  virtual void setInitialPointOrdinate(Y) = 0;
+  
+  /*! get initial point abscissa destination
    \return const Destination* */
-  virtual const Destination* getInitialDestination() const = 0;
+  virtual const Destination* getInitialPointAbscissaDestination() const = 0;
   
-  /*! set initial curve value using a Destination
+  /*! get initial point ordinate destination
+   \return const Destination* */
+  virtual const Destination* getInitialPointOrdinateDestination() const = 0;
+  
+  /*! set initial curve abscissa using a Destination
    \param const Destination* */
-  virtual void setInitialDestination(const Destination*) = 0;
+  virtual void setInitialPointAbscissaDestination(const Destination*) = 0;
   
-  /*! get which index are taken in case the initial destination is a Tuple of Tuple of Tuple ...
+  /*! set initial curve ordinate using a Destination
+   \param const Destination* */
+  virtual void setInitialPointOrdinateDestination(const Destination*) = 0;
+  
+  /*! get which index are taken in case the initial abscissa destination is a Tuple of Tuple of Tuple ...
    \return std::vector<char> */
-  virtual std::vector<char> getInitialDestinationIndex() const = 0;
+  virtual std::vector<char> getInitialPointAbscissaDestinationIndex() const = 0;
   
   /*! precise which index to take in case the initial destination is a Tuple of Tuple of Tuple ...
    \param char for first level Tuple index
    \param char for second level Tuple index
    \param ... */
-  virtual void setInitialDestinationIndex(std::initializer_list<char>) = 0;
+  virtual void setInitialPointAbscissaDestinationIndex(std::initializer_list<char>) = 0;
   
   /*! get initial curve value
    \return std::map<X, std::pair<Y, std::shared_ptr<CurveSegment<Y>>>> map of {abscissa, {value, previous segment} */
