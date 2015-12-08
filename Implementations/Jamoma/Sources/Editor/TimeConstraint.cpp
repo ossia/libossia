@@ -83,6 +83,9 @@ void JamomaTimeConstraint::start()
   if (mRunning)
     throw runtime_error("cannot start a running time constraint");
   
+  // set clock duration using maximal duration
+  setDuration(mDurationMax);
+  
   // launch the clock
   do_start();
 }
@@ -208,9 +211,6 @@ TimeConstraint & JamomaTimeConstraint::setDurationMax(const TimeValue& durationM
   
   if (durationMax < mDurationNominal)
     setDurationNominal(mDurationMax);
-  
-  // set clock duration using maximal duration
-  setDuration(mDurationMax);
   
   return *this;
 }
