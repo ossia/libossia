@@ -31,18 +31,17 @@ mPatternConstraintCallback(patternConstraintCallback)
   mPatternEndNode = TimeNode::create();
   mPatternEndNode->emplace(mPatternEndNode->timeEvents().begin(), std::bind(&JamomaLoop::PatternEndEventCallback, this, _1));
 
+  // create a pattern TimeConstraint with all durations equal by default
   mPatternConstraint = TimeConstraint::create(std::bind(&JamomaLoop::PatternConstraintCallback, this, _1, _2, _3),
                                               mPatternStartNode->timeEvents()[0],
-                                              mPatternEndNode->timeEvents()[0]);
+                                              mPatternEndNode->timeEvents()[0],
+                                              patternDuration,
+                                              patternDuration,
+                                              patternDuration);
 
   // set pattern TimeConstraint's clock in external mode
   shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(mPatternConstraint);
   clock->setDriveMode(Clock::DriveMode::EXTERNAL);
-
-  // set all pattern TimeConstraint's durations equal by default
-  mPatternConstraint->setDurationNominal(patternDuration);
-  mPatternConstraint->setDurationMin(patternDuration);
-  mPatternConstraint->setDurationMax(patternDuration);
 
   mCurrentState = State::create();
 }
