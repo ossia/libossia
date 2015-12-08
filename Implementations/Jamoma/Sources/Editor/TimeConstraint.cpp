@@ -52,6 +52,10 @@ mDurationMin(min),
 mDurationMax(max)
 {
   mCurrentState = State::create();
+  
+  //! \debug
+  if (mDurationMax == Infinite)
+    cout << "infitie time constraint" << endl;
 }
 
 JamomaTimeConstraint::JamomaTimeConstraint(const JamomaTimeConstraint * other) :
@@ -145,11 +149,21 @@ void JamomaTimeConstraint::resume()
 
 Clock & JamomaTimeConstraint::setOffset(const TimeValue& offset)
 {
-  do_setOffset(offset);
-
-  // edit TimeEvent status
-  TimeEvent::Status startStatus = mOffset >= Zero ? mOffset == Zero ? TimeEvent::Status::PENDING : TimeEvent::Status::HAPPENED : TimeEvent::Status::NONE;
-  TimeEvent::Status endStatus = mOffset > mDurationMin ? mOffset <= mDurationMax ? TimeEvent::Status::PENDING : TimeEvent::Status::HAPPENED : TimeEvent::Status::NONE;
+  TimeEvent::Status startStatus = TimeEvent::Status::NONE;
+  TimeEvent::Status endStatus = TimeEvent::Status::NONE;
+  
+  if (offset >= Zero && offset <= mDurationMax)
+  {
+    do_setOffset(offset);
+    
+    startStatus = mOffset == Zero ? TimeEvent::Status::PENDING : TimeEvent::Status::HAPPENED;
+    endStatus = mOffset > mDurationMin ? TimeEvent::Status::PENDING : TimeEvent::Status::NONE;
+  }
+  else if (offset > mDurationMax)
+  {
+    startStatus = TimeEvent::Status::HAPPENED;
+    endStatus = TimeEvent::Status::HAPPENED;
+  }
 
   //! \note maybe we should initialized TimeEvents with an Expression returning false to DISPOSED status ?
 
@@ -211,6 +225,10 @@ TimeConstraint & JamomaTimeConstraint::setDurationMax(const TimeValue& durationM
   
   if (durationMax < mDurationNominal)
     setDurationNominal(mDurationMax);
+  
+  //! \debug
+  if (mDurationMax == Infinite)
+    cout << "infitie time constraint" << endl;
   
   return *this;
 }
