@@ -298,6 +298,9 @@ struct Tuple final : public Value
 {
   std::vector<Value*> value;
 
+  /*! constructor for an empty tuple */
+  Tuple();
+
   /*! constructor for one value
    \param const value */
   Tuple(const Value* v);
@@ -308,9 +311,10 @@ struct Tuple final : public Value
   \param ... */
   Tuple(std::initializer_list<const Value*>);
 
-  /*! constructor passign a value vector
+
+  /*! constructor passing a value vector
    \param std::vector<const #Value> value */
-  Tuple(std::vector<const Value*> = std::vector<const Value*>());
+  Tuple(const std::vector<const Value*>&);
 
   /*! clone */
   Value * clone() const override;

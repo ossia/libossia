@@ -1606,6 +1606,11 @@ bool String::operator<= (const Value& v) const
 # pragma mark -
 # pragma mark Tuple
 
+Tuple::Tuple()
+{
+    m_type = Type::TUPLE;
+}
+
 Tuple::Tuple(const Value* v)
 {
   m_type = Type::TUPLE;
@@ -1621,7 +1626,7 @@ Tuple::Tuple(std::initializer_list<const Value*> v)
     value.push_back(e->clone());
 }
 
-Tuple::Tuple(std::vector<const Value*> v)
+Tuple::Tuple(const std::vector<const Value*>& v)
 {
   m_type = Type::TUPLE;
 
