@@ -3,7 +3,7 @@ project(APITests)
 
 include_directories("${API_IMPL_FOLDER}/Jamoma/Sources")
 
-find_package(Qt5 5.4 REQUIRED COMPONENTS Core Test)
+find_package(Qt5 5.3 REQUIRED COMPONENTS Core Test)
 find_package(Jamoma 0.6)
 
 set(CMAKE_AUTOMOC ON)
