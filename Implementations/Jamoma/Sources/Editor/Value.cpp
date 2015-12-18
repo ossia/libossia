@@ -2073,8 +2073,14 @@ bool Destination::operator== (const Value& v) const
     case Value::Type::DESTINATION :
     {
       auto d = static_cast<const Destination*>(&v);
+        
+      // if there are addresses compare values
       if (value->getAddress() && d->value->getAddress())
         return (*value->getAddress()->getValue()) == (*d->value->getAddress()->getValue());
+        
+      // if no addresses, compare nodes
+      else if (!value->getAddress() && !d->value->getAddress())
+        return value == d->value;
     }
     default :
     {
