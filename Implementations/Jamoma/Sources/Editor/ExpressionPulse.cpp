@@ -41,6 +41,7 @@ bool JamomaExpressionPulse::evaluate() const
 
 void JamomaExpressionPulse::update() const
 {
+  // the result will be false until the next #JamomaExpressionPulse::destinationCallback call
   mResult = false;
 }
 
