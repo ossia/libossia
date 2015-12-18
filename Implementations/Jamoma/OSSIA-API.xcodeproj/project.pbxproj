@@ -19,6 +19,9 @@
 		460D07EF19BDD62500235124 /* TimeValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeValue.h; sourceTree = "<group>"; };
 		461116681B3049AF00D6C968 /* Value.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Value.h; sourceTree = "<group>"; };
 		461116691B304B2600D6C968 /* Domain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Domain.h; sourceTree = "<group>"; };
+		46138E4B1C246AD2009C1532 /* ExpressionPulse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpressionPulse.h; sourceTree = "<group>"; };
+		46138E4C1C246AE1009C1532 /* JamomaExpressionPulse.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaExpressionPulse.h; sourceTree = "<group>"; };
+		46138E4D1C246AEF009C1532 /* ExpressionPulse.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ExpressionPulse.cpp; sourceTree = "<group>"; };
 		4623D52A1BD6808900339C33 /* Mapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mapper.h; sourceTree = "<group>"; };
 		4623D52B1BD680AF00339C33 /* JamomaMapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaMapper.h; sourceTree = "<group>"; };
 		4623D52C1BD680C100339C33 /* Mapper.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mapper.cpp; sourceTree = "<group>"; };
@@ -131,7 +134,7 @@
 		46BA2A5B19C09A21009630B5 /* Curve.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Curve.cpp; sourceTree = "<group>"; };
 		46BA2A5D19C09A21009630B5 /* CurveSegmentLinear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CurveSegmentLinear.cpp; sourceTree = "<group>"; };
 		46BA2A6019C09A21009630B5 /* Scenario.cpp */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; path = Scenario.cpp; sourceTree = "<group>"; tabWidth = 2; };
-		46C83F411B563D9C007EF1C4 /* Value.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Value.cpp; sourceTree = "<group>"; };
+		46C83F411B563D9C007EF1C4 /* Value.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Value.cpp; sourceTree = "<group>"; tabWidth = 2; };
 		46CF2A8D1B57DC860027D537 /* ExpressionNot.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ExpressionNot.cpp; sourceTree = "<group>"; };
 		46D2C60D1B260B9900C04D8A /* JamomaTimeConstraint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamomaTimeConstraint.h; sourceTree = "<group>"; };
 		46D435DA1AB731330041D8AF /* Automation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Automation.cpp; sourceTree = "<group>"; };
@@ -170,6 +173,7 @@
 				4689BAE51ABA256800D1BA4E /* ExpressionAtom.h */,
 				4689BAE61ABA256800D1BA4E /* ExpressionComposition.h */,
 				4689BAE71ABA256800D1BA4E /* ExpressionNot.h */,
+				46138E4B1C246AD2009C1532 /* ExpressionPulse.h */,
 				465341131BBBDB32003599E0 /* Loop.h */,
 				4623D52A1BD6808900339C33 /* Mapper.h */,
 				468E931319C0562900B26BFB /* Message.h */,
@@ -448,6 +452,7 @@
 				46D435DB1AB735220041D8AF /* ExpressionAtom.cpp */,
 				46D435DC1AB735220041D8AF /* ExpressionComposition.cpp */,
 				46CF2A8D1B57DC860027D537 /* ExpressionNot.cpp */,
+				46138E4D1C246AEF009C1532 /* ExpressionPulse.cpp */,
 				465341151BBBDB58003599E0 /* Loop.cpp */,
 				4623D52C1BD680C100339C33 /* Mapper.cpp */,
 				46D435DD1AB735860041D8AF /* Message.cpp */,
@@ -495,6 +500,7 @@
 				462F869C1BF22DED00941A9A /* JamomaExpressionAtom.h */,
 				462F869D1BF22F0000941A9A /* JamomaExpressionComposition.h */,
 				462F869E1BF22FEA00941A9A /* JamomaExpressionNot.h */,
+				46138E4C1C246AE1009C1532 /* JamomaExpressionPulse.h */,
 				465341141BBBDB4C003599E0 /* JamomaLoop.h */,
 				4623D52B1BD680AF00339C33 /* JamomaMapper.h */,
 				462F869F1BF2309400941A9A /* JamomaMessage.h */,
