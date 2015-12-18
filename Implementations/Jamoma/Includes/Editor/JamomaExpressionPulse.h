@@ -13,10 +13,10 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  Destination*          mDestination;
-  bool                  mResult;
+  Destination*        mDestination;
+  mutable bool        mResult;
 
-  Expression::iterator  mResultCallbackIndex;
+  Address::iterator   mDestinationCallbackIndex;
 
 public:
 

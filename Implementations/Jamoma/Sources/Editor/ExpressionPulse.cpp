@@ -12,7 +12,7 @@ namespace OSSIA
 }
 
 JamomaExpressionPulse::JamomaExpressionPulse(const Destination* destination) :
-mDestination(destination),
+mDestination((Destination*)destination->clone()),
 mResult(false)
 {}
 
@@ -82,7 +82,7 @@ Expression::iterator JamomaExpressionPulse::addCallback(ResultCallback callback)
     // start destination observation
     if (mDestination->value->getAddress())
     {
-      mResultCallbackIndex = mDestination->value->getAddress()->addCallback(std::bind(&JamomaExpressionPulse::destinationCallback, this, _1));
+      mDestinationCallbackIndex = mDestination->value->getAddress()->addCallback(std::bind(&JamomaExpressionPulse::destinationCallback, this, _1));
     }
   }
   
@@ -98,7 +98,7 @@ void JamomaExpressionPulse::removeCallback(Expression::iterator callback)
     // stop destination observation
     if (mDestination->value->getAddress())
     {
-      mDestination->value->getAddress()->removeCallback(mResultCallbackIndex);
+      mDestination->value->getAddress()->removeCallback(mDestinationCallbackIndex);
     }
   }
 }
