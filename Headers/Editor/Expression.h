@@ -44,7 +44,8 @@ public:
     BASE,
     ATOM,
     COMPOSITION,
-    NOT
+    NOT,
+    PULSE
   };
   
 # pragma mark -
