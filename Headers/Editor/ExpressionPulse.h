@@ -19,6 +19,7 @@
 #include <memory>
 
 #include "Editor/Expression.h"
+#include "Network/Node.h"
 
 namespace OSSIA
 {
@@ -49,10 +50,10 @@ public:
   /*! evaluate if an update of the destination have been observed
    \details use #ExpressionTrue::addCallback to enable destination observation
    \return true after the destination being updated */
-  virtual bool evaluate() const override final = 0;
+  virtual bool evaluate() const override = 0;
   
   /*! reset the evaluation to false until the next destination update */
-  virtual void update() const override final = 0;
+  virtual void update() const override = 0;
 
 # pragma mark -
 # pragma mark Accessors
