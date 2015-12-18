@@ -9,6 +9,7 @@
 #include "Editor/ExpressionAtom.h"
 #include "Editor/ExpressionComposition.h"
 #include "Editor/ExpressionNot.h"
+#include "Editor/ExpressionPulse.h"
 #include "Editor/Loop.h"
 #include "Editor/Mapper.h"
 #include "Editor/Message.h"

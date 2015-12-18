@@ -47,8 +47,7 @@ public:
 # pragma mark -
 # pragma mark Execution
   
-  /*! evaluate if an update of the destination have been observed
-   \details use #ExpressionTrue::addCallback to enable destination observation
+  /*! evaluate if a destination value change have been observed since expression creation or since the last update
    \return true after the destination being updated */
   virtual bool evaluate() const override = 0;
   
