@@ -152,7 +152,6 @@ private Q_SLOTS:
     /*! test comparison operator */
     void test_comparison()
     {
-        /*
         // Local device
         auto local_protocol = Local::create();
         auto device = Device::create(local_protocol, "test");
@@ -171,7 +170,6 @@ private Q_SLOTS:
         QVERIFY(*testExprA != *testExprB);
         QVERIFY(*testExprA == *testExprC);
         QVERIFY(*testExprB != *testExprC);
-        */
     }
 
     /*! test callback managment */
