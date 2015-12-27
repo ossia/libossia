@@ -5,6 +5,15 @@
 # pragma mark -
 # pragma mark Life cycle
 
+namespace OSSIA
+{
+// Template instantiations for CallbackContainer
+template<>
+OSSIA::CallbackContainer<Node::NameChangesCallback>::~CallbackContainer()
+{
+
+}
+}
 Container<Node>::iterator OSSIA::Node::emplaceAndNotify(
         Container<Node>::const_iterator requested_it,
         std::string str)
@@ -16,10 +25,7 @@ Container<Node>::iterator OSSIA::Node::emplaceAndNotify(
     auto dev = getDevice();
     if(dev)
     {
-      for(auto cb : dev->addNodeCallbacks)
-      {
-        cb(inserted_node);
-      }
+      dev->addNodeCallbacks.send(inserted_node);
     }
   }
   return it;
@@ -44,10 +50,7 @@ Container<Node>::iterator OSSIA::Node::eraseAndNotify(
     auto dev = getDevice();
     if(dev)
     {
-      for(auto cb : dev->removeNodeCallbacks)
-      {
-        cb(removed_node);
-      }
+        dev->removeNodeCallbacks.send(removed_node);
     }
   }
 
@@ -123,7 +126,14 @@ Node & JamomaNode::setName(std::string name)
   TTSymbol newInstance;
   TTBoolean newInstanceCreated;
 
+  auto oldName = getName();
   mNode->setNameInstance(nameInstance, newInstance, &newInstanceCreated);
+
+  auto newName = getName();
+  nameChangesCallbacks.send(getName());
+
+  if(auto dev = this->getDevice())
+    dev->nameChangesDeviceCallbacks.send(*this, oldName, newName);
 
   return *this;
 }

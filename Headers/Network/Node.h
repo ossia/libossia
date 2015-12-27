@@ -19,6 +19,7 @@
 #include "Editor/Value.h"
 #include "Network/Address.h"
 #include "Misc/Container.h"
+#include "Misc/CallbackContainer.h"
 
 namespace OSSIA
 {
@@ -65,6 +66,11 @@ public:
    \return std::shared_ptr<#Address> the address */
   virtual std::shared_ptr<OSSIA::Address> getAddress() const = 0;
 
+  /*!
+   * Callbacks for when the name of a Node changes
+   */
+  using NameChangesCallback = std::function<void(const std::string&)>;
+  CallbackContainer<NameChangesCallback> nameChangesCallbacks;
 # pragma mark -
 # pragma mark Address
 

@@ -64,6 +64,16 @@ public:
   const ContainerImpl& callbacks() const
   { return m_callbacks; }
 
+  /*! trigger the callbacks
+   * \param #args Arguments to the callback
+   */
+  template<typename... Args>
+  void send(Args&&... args)
+  {
+    for(auto cb : m_callbacks)
+        cb(std::forward<Args>(args)...);
+  }
+
 protected:
   ContainerImpl m_callbacks;
 

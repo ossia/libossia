@@ -19,7 +19,6 @@
 #include <string>
 
 #include "Network/Node.h"
-#include "Misc/CallbackContainer.h"
 
 namespace OSSIA
 {
@@ -65,14 +64,22 @@ public:
    * the node to the tree of the device.
    */
   using AddedNodeCallback = std::function<void(const Node&)>;
+  CallbackContainer<AddedNodeCallback> addNodeCallbacks;
 
   /*! These callbacks shall be called before removing
    * the node from the tree of the device.
    */
   using RemovingNodeCallback = std::function<void(const Node&)>;
-
-  CallbackContainer<AddedNodeCallback> addNodeCallbacks;
   CallbackContainer<RemovingNodeCallback> removeNodeCallbacks;
+
+  /*!
+   * Callbacks for when the name of a Node changes
+  */
+  using NameChangesDeviceCallback = std::function<void(
+      OSSIA::Node&, // Node
+      const std::string&, // Old name
+      const std::string&)>; // New name
+  CallbackContainer<NameChangesDeviceCallback> nameChangesDeviceCallbacks;
 };
 
 /*! declare Minuit internal device

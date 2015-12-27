@@ -15,6 +15,11 @@ OSSIA::CallbackContainer<std::function<void(const Node&)>>::~CallbackContainer()
 
 }
 
+template<>
+OSSIA::CallbackContainer<Device::NameChangesDeviceCallback>::~CallbackContainer()
+{
+
+}
 }
 
 namespace OSSIA
