@@ -95,10 +95,15 @@ public:
    */
   virtual Container<Node>::iterator insert(Container<Node>::const_iterator, std::shared_ptr<Node>, std::string) = 0;
 
-  /*! get children of the node
-   \return #Container<#Node> */
-  Container<Node>& children()
-  { return m_children; }
+  Container<Node>::iterator emplaceAndNotify(
+          Container<Node>::const_iterator requested_it,
+          std::string str);
+
+  Container<Node>::iterator erase(
+          Container<Node>::const_iterator);
+
+  Container<Node>::iterator eraseAndNotify(
+          Container<Node>::const_iterator);
 
   /*! get children of the node
    \return #Container<#Node> */

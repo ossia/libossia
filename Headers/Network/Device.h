@@ -19,6 +19,7 @@
 #include <string>
 
 #include "Network/Node.h"
+#include "Misc/CallbackContainer.h"
 
 namespace OSSIA
 {
@@ -32,27 +33,46 @@ public:
 
 # pragma mark -
 # pragma mark Life cycle
-  
-  /*! factory 
+
+  /*! factory
    \param std::shared_ptr<Protocol>
-   \param device name 
+   \param device name
    \return std::shared_ptr<#Device> */
   static std::shared_ptr<Device> create(std::shared_ptr<Protocol>, std::string = "");
-  
+
   /*! destructor */
   virtual ~Device();
 
 # pragma mark -
 # pragma mark Accessors
-  
+
   /*! get device's protocol
    \return std::shared_ptr<#Protocol> */
   virtual std::shared_ptr<Protocol> getProtocol() const = 0;
-  
+
   /*! build the namespace from the root
    \deprecated use Protocol::updateChildren
    \return bool true if the namespace update succeeded */
   virtual bool updateNamespace() = 0;
+
+
+# pragma mark -
+# pragma mark Callbacks
+  /*! callbacks for dynamic namespace updating
+   */
+
+  /*! These callbacks shall be called after having added
+   * the node to the tree of the device.
+   */
+  using AddedNodeCallback = std::function<void(const Node&)>;
+
+  /*! These callbacks shall be called before removing
+   * the node from the tree of the device.
+   */
+  using RemovingNodeCallback = std::function<void(const Node&)>;
+
+  CallbackContainer<AddedNodeCallback> addNodeCallbacks;
+  CallbackContainer<RemovingNodeCallback> removeNodeCallbacks;
 };
 
 /*! declare Minuit internal device
