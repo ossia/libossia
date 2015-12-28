@@ -477,7 +477,9 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
     }
 
     case Value::Type::BEHAVIOR :
-    {}
+    {
+          break;
+    }
 
     case Value::Type::TUPLE :
     {
@@ -579,7 +581,9 @@ void JamomaAddress::convertValueIntoTTValue(const Value * value, TTValue & v) co
     }
 
     case Value::Type::BEHAVIOR :
-    {}
+    {
+          break;
+    }
 
     case Value::Type::TUPLE :
     {
