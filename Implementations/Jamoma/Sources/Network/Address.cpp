@@ -24,7 +24,11 @@ mRepetitionFilter(false)
 }
 
 JamomaAddress::~JamomaAddress()
-{}
+{
+    if(mValue)
+        delete mValue;
+    // TODO are there other things to free ?
+}
 
 Address::~Address()
 {}
@@ -70,6 +74,7 @@ Address & JamomaAddress::setValue(const Value * value)
 
   // clear former value
   delete mValue;
+  mValue = nullptr;
 
   // set value querying the value from another address
   if (value->getType() == Value::Type::DESTINATION &&
