@@ -38,6 +38,42 @@ Container<Node>::iterator OSSIA::Node::erase(
   // TODO @theod shouldn't we remove the parent here,
   // in case another class keeps a shared_ptr ?
   // (which would cause the node to still be alive)
+
+  // First we remove the address,
+  // because else the callbacks aren't removed properly
+  // if it has children
+  auto& node = *requested_it;
+
+  // This struct is used to remove
+  // the callbacks before deletion.
+  struct AddressRemover
+  {
+          OSSIA::Protocol& proto;
+
+          void operator()(JamomaNode& node)
+          {
+              for(auto& child : node.m_children)
+              {
+                  auto& jnode = dynamic_cast<JamomaNode&>(*child);
+                  cleanup(jnode);
+                  operator()(jnode);
+              }
+
+              cleanup(node);
+          }
+
+          void cleanup(JamomaNode& node)
+          {
+              auto addr = node.getAddress();
+              if(addr)
+                  proto.observeAddressValue(addr, false);
+              addr.reset();
+          }
+  };
+
+  AddressRemover remove{*this->getDevice()->getProtocol()};
+  remove(dynamic_cast<JamomaNode&>(*node));
+
   return m_children.erase(requested_it);
 }
 
@@ -74,7 +110,6 @@ mParent(aParent)
 JamomaNode::~JamomaNode()
 {
   m_children.clear();
-  removeAddress();
 
   if (!mIsDevice)
   {
