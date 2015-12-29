@@ -55,7 +55,7 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaAddress(shared_ptr<Node> node, TTObject aData = TTObject());
+  JamomaAddress(weak_ptr<Node> node, TTObject aData = TTObject());
 
   ~JamomaAddress();
 
@@ -76,7 +76,7 @@ public:
   Address & setValue(const Value *) override;
 
   Value::Type getValueType() const override;
-  
+
   Address & setValueType(Value::Type) override;
 
   AccessMode getAccessMode() const override;
@@ -111,7 +111,7 @@ public:
   /* force value type
    \details it is usefull for value type unhandled by Jamoma like DESTINATION
    \param a new value type */
-  
+
 
   /*! pull TTValue from mObject
    \param TTValue pulled value

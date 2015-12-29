@@ -5,7 +5,7 @@
 # pragma mark -
 # pragma mark Life cycle
 
-JamomaAddress::JamomaAddress(shared_ptr<Node> node, TTObject aData) :
+JamomaAddress::JamomaAddress(weak_ptr<Node> node, TTObject aData) :
 mNode(node),
 mObject(aData),
 mObjectValueCallback("callback"),

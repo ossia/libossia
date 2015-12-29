@@ -172,12 +172,14 @@ mProtocol(protocol),
 mApplicationManager(applicationManager),
 mApplication(application)
 {
+  mIsDevice = true;
   if (mNode->getObject() == nullptr)
     mNode->setObject(application);
 }
 
 JamomaDevice::~JamomaDevice()
 {
+  m_children.clear();
   TTSymbol device_name;
   mApplication.get("name", device_name);
   mApplicationManager.send("ApplicationRelease", device_name);
@@ -185,7 +187,6 @@ JamomaDevice::~JamomaDevice()
 
 Device::~Device()
 {
-
 }
 
 # pragma mark -

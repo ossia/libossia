@@ -1,5 +1,5 @@
 #include "Network/JamomaNode.h"
-
+#include "Network/JamomaDevice.h"
 #include <assert.h>
 
 # pragma mark -
@@ -73,10 +73,10 @@ mParent(aParent)
 
 JamomaNode::~JamomaNode()
 {
-  mAddress = nullptr;
+  m_children.clear();
+  removeAddress();
 
-  // if not a device node
-  if (getParent() != nullptr)
+  if (!mIsDevice)
   {
     TTAddress adrs;
     mNode->getAddress(adrs);
@@ -85,7 +85,8 @@ JamomaNode::~JamomaNode()
 }
 
 Node::~Node()
-{}
+{
+}
 
 # pragma mark -
 # pragma mark Navigation
@@ -204,7 +205,12 @@ bool JamomaNode::removeAddress()
   {
     // use the device protocol to stop address value observation
     if (mAddress)
-      getDevice()->getProtocol()->observeAddressValue(mAddress, false);
+    {
+      if(auto dev = getDevice())
+      {
+        dev->getProtocol()->observeAddressValue(mAddress, false);
+      }
+    }
 
     mAddress.reset();
 

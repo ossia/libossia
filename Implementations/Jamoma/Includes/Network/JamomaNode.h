@@ -44,6 +44,8 @@ protected:
   weak_ptr<JamomaNode>    mParent;
   shared_ptr<Address>     mAddress;
 
+  bool                    mIsDevice{false};
+
 public:
 
 # pragma mark -
