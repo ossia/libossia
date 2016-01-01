@@ -22,6 +22,7 @@
 #include "Editor/Domain.h"
 #include "Editor/Expression.h"
 #include "Editor/Value.h"
+#include "Network/AddressProperties.h"
 
 namespace OSSIA
 {
@@ -36,31 +37,11 @@ class Address : public CallbackContainer<ValueCallback>
 {
 
 public:
-  
+
 # pragma mark -
 # pragma mark Definitions
-  
+
   using iterator = typename CallbackContainer<ValueCallback>::iterator;
-  
-# pragma mark -
-# pragma mark Enumerations
-
-  /*! operation allowed on address */
-  enum class AccessMode
-  {
-    GET,
-    SET,
-    BI
-  };
-
-  /*! address behaviors at crossing domain boundaries time */
-  enum class BoundingMode
-  {
-    FREE,
-    CLIP,
-    WRAP,
-    FOLD
-  };
 
 # pragma mark -
 # pragma mark Life cycle
@@ -104,7 +85,7 @@ public:
   /*! get the address type
    \return #Value::Type of the address */
   virtual Value::Type getValueType() const = 0;
-  
+
   /*! set the address type
    \param #Value::Type of the address
    \return #Address the address */

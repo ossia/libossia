@@ -11,24 +11,17 @@ namespace OSSIA
 template<>
 OSSIA::CallbackContainer<Node::NameChangesCallback>::~CallbackContainer()
 {
+}
 
-}
-}
-Container<Node>::iterator OSSIA::Node::emplaceAndNotify(
-        Container<Node>::const_iterator requested_it,
-        std::string str)
+void Node::notifyAddedNode(const Node& child)
 {
-  auto it = emplace(requested_it, str);
-  if(it != m_children.end())
-  {
-    auto& inserted_node = **it;
     auto dev = getDevice();
     if(dev)
     {
-      dev->addNodeCallbacks.send(inserted_node);
+        dev->addNodeCallbacks.send(child);
     }
-  }
-  return it;
+}
+
 }
 
 
@@ -287,6 +280,47 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
   return Container<Node>::iterator();
 }
 
+Container<Node>::iterator JamomaNode::emplace(
+        Container<Node>::const_iterator pos,
+        const string& name,
+        Value::Type type,
+        AccessMode access,
+        const std::shared_ptr<Domain>& domain,
+        BoundingMode bm,
+        bool repetitionFilter)
+{
+  if (name.empty())
+    throw runtime_error("can't create a node with empty name");
+
+  TTAddress nodeAddress;
+  mNode->getAddress(nodeAddress);
+
+  TTAddress   address = nodeAddress.appendAddress(TTAddress(name.data()));
+  TTObject    empty;
+  TTPtr       context = NULL;
+  TTNodePtr   node;
+  TTBoolean   newInstanceCreated;
+
+  TTErr err = mDirectory->TTNodeCreate(address, empty, context, &node, &newInstanceCreated);
+
+  if (!err)
+  {
+    // store the new node into the Container
+    auto newNode = make_shared<JamomaNode>(mDirectory, node, mDevice.lock(), shared_from_this());
+    std::shared_ptr<OSSIA::Address> addr = newNode->createAddress(type);
+    addr->setBoundingMode(bm);
+    addr->setAccessMode(access);
+    if(domain)
+        addr->setDomain(domain);
+    addr->setBoundingMode(bm);
+    addr->setRepetitionFilter(repetitionFilter);
+
+    return m_children.insert(pos, newNode);
+  }
+
+  return Container<Node>::iterator();
+}
+
 Container<Node>::iterator JamomaNode::insert(Container<Node>::const_iterator pos, shared_ptr<Node> node, std::string name)
 {
   assert(!name.empty());
@@ -429,11 +463,11 @@ void JamomaNode::buildAddress()
         object.get("service", service);
 
         if (service == kTTSym_parameter)
-          mAddress->setAccessMode(Address::AccessMode::BI);
+          mAddress->setAccessMode(OSSIA::AccessMode::BI);
         else if (service == kTTSym_message)
-          mAddress->setAccessMode(Address::AccessMode::SET);
+          mAddress->setAccessMode(OSSIA::AccessMode::SET);
         else if (service == kTTSym_return)
-          mAddress->setAccessMode(Address::AccessMode::GET);
+          mAddress->setAccessMode(OSSIA::AccessMode::GET);
 
         TTValue range;
         object.get("rangeBounds", range);
@@ -507,17 +541,17 @@ void JamomaNode::buildAddress()
         object.get("rangeClipmode", clipmode);
 
         if (clipmode == kTTSym_none)
-          mAddress->setBoundingMode(Address::BoundingMode::FREE);
+          mAddress->setBoundingMode(OSSIA::BoundingMode::FREE);
         else if (clipmode == kTTSym_low)
-          mAddress->setBoundingMode(Address::BoundingMode::CLIP);
+          mAddress->setBoundingMode(OSSIA::BoundingMode::CLIP);
         else if (clipmode == kTTSym_high)
-          mAddress->setBoundingMode(Address::BoundingMode::CLIP);
+          mAddress->setBoundingMode(OSSIA::BoundingMode::CLIP);
         else if (clipmode == kTTSym_both)
-          mAddress->setBoundingMode(Address::BoundingMode::CLIP);
+          mAddress->setBoundingMode(OSSIA::BoundingMode::CLIP);
         else if (clipmode == kTTSym_wrap)
-          mAddress->setBoundingMode(Address::BoundingMode::WRAP);
+          mAddress->setBoundingMode(OSSIA::BoundingMode::WRAP);
         else if (clipmode == kTTSym_fold)
-          mAddress->setBoundingMode(Address::BoundingMode::FOLD);
+          mAddress->setBoundingMode(OSSIA::BoundingMode::FOLD);
 
         TTBoolean repetitionFilter;
         object.get("repetitionFilter", repetitionFilter);

@@ -20,6 +20,7 @@
 #include "Network/Address.h"
 #include "Misc/Container.h"
 #include "Misc/CallbackContainer.h"
+#include "Network/AddressProperties.h"
 
 namespace OSSIA
 {
@@ -91,7 +92,22 @@ public:
    \param #Container<#Node>::const_iterator where to create the child
    \param std::string child name
    \return #Container<#Node>::iterator */
-  virtual Container<Node>::iterator emplace(Container<Node>::const_iterator, std::string) = 0;
+  virtual Container<Node>::iterator emplace(
+          Container<Node>::const_iterator, std::string) = 0;
+
+  /*!
+   * \brief emplace : create and store a child node
+   *
+   * See other definition. Will also create an address.
+   */
+  virtual Container<Node>::iterator emplace(
+          Container<Node>::const_iterator,
+          const std::string&,
+          Value::Type,
+          AccessMode = {},
+          const std::shared_ptr<Domain>& = {},
+          BoundingMode = {},
+          bool repetitionFilter = {}) = 0;
 
   /*! store an existing node to create an alias
    \param #Container<#Node>::const_iterator where to store the child
@@ -99,11 +115,23 @@ public:
    \param std::string child name
    \return #Container<#Node>::iterator
    */
-  virtual Container<Node>::iterator insert(Container<Node>::const_iterator, std::shared_ptr<Node>, std::string) = 0;
+  virtual Container<Node>::iterator insert(
+          Container<Node>::const_iterator,
+          std::shared_ptr<Node>,
+          std::string) = 0;
 
+  template<typename... Args>
   Container<Node>::iterator emplaceAndNotify(
           Container<Node>::const_iterator requested_it,
-          std::string str);
+          Args&&... args)
+  {
+      auto it = emplace(requested_it, std::forward<Args>(args)...);
+      if(it != m_children.end())
+      {
+          notifyAddedNode(**it);
+      }
+      return it;
+  }
 
   Container<Node>::iterator erase(
           Container<Node>::const_iterator);
@@ -118,6 +146,9 @@ public:
 
 protected:
   Container<Node> m_children;
+
+private:
+  void notifyAddedNode(const Node& child);
 };
 
 # pragma mark -

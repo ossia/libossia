@@ -82,6 +82,14 @@ public:
 # pragma mark Children
 
   Container<Node>::iterator emplace(Container<Node>::const_iterator pos, string name) override;
+  Container<Node>::iterator emplace(
+          Container<Node>::const_iterator pos,
+          const string& name,
+          Value::Type type,
+          AccessMode,
+          const std::shared_ptr<Domain>&,
+          BoundingMode,
+          bool repetitionFilter) override;
 
   Container<Node>::iterator insert(Container<Node>::const_iterator, shared_ptr<Node>, std::string) override;
 

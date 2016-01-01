@@ -187,7 +187,7 @@ Address & JamomaAddress::setValueType(Value::Type type)
   return *this;
 }
 
-JamomaAddress::AccessMode JamomaAddress::getAccessMode() const
+AccessMode JamomaAddress::getAccessMode() const
 {
   return mAccessMode;
 }
@@ -245,7 +245,7 @@ Address & JamomaAddress::setDomain(shared_ptr<Domain> domain)
   return *this;
 }
 
-JamomaAddress::BoundingMode JamomaAddress::getBoundingMode() const
+BoundingMode JamomaAddress::getBoundingMode() const
 {
   return mBoundingMode;
 }

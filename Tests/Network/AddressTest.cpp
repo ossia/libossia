@@ -27,19 +27,19 @@ private Q_SLOTS:
         
         //! \todo verify setValueType
         
-        QVERIFY(address->getAccessMode() == Address::AccessMode::BI);
+        QVERIFY(address->getAccessMode() == OSSIA::AccessMode::BI);
         
-        address->setAccessMode(Address::AccessMode::SET);
-        QVERIFY(address->getAccessMode() == Address::AccessMode::SET);
+        address->setAccessMode(OSSIA::AccessMode::SET);
+        QVERIFY(address->getAccessMode() == OSSIA::AccessMode::SET);
         
         QVERIFY(address->getDomain() != nullptr);
         
         //! \todo verify setDomain
         
-        QVERIFY(address->getBoundingMode() == Address::BoundingMode::FREE);
+        QVERIFY(address->getBoundingMode() == OSSIA::BoundingMode::FREE);
         
-        address->setBoundingMode(Address::BoundingMode::CLIP);
-        QVERIFY(address->getBoundingMode() == Address::BoundingMode::CLIP);
+        address->setBoundingMode(OSSIA::BoundingMode::CLIP);
+        QVERIFY(address->getBoundingMode() == OSSIA::BoundingMode::CLIP);
         
         QVERIFY(address->getRepetitionFilter() == false);
         
