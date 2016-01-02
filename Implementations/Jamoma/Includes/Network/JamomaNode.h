@@ -70,6 +70,8 @@ public:
   Node & setName(std::string) override;
 
   shared_ptr<Address> getAddress() const override;
+  shared_ptr<Address>& getAddressRef()
+  { return mAddress; }
 
 # pragma mark -
 # pragma mark Address

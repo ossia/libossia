@@ -57,10 +57,12 @@ Container<Node>::iterator OSSIA::Node::erase(
 
           void cleanup(JamomaNode& node)
           {
-              auto addr = node.getAddress();
+              auto& addr = node.getAddressRef();
               if(addr)
+              {
                   proto.observeAddressValue(addr, false);
-              addr.reset();
+                  addr.reset();
+              }
           }
   };
 
