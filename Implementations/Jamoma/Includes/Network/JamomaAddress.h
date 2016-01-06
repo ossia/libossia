@@ -73,6 +73,8 @@ public:
 
   const Value * getValue() const override;
 
+  const Value * cloneValue() const override;
+
   Address & setValue(const Value *) override;
 
   Value::Type getValueType() const override;
@@ -145,3 +147,4 @@ private:
 
   static TTErr TTValueCallback(const TTValue&, const TTValue&);
 };
+

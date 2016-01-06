@@ -68,6 +68,11 @@ const Value * JamomaAddress::getValue() const
   return mValue;
 }
 
+const Value* JamomaAddress::cloneValue() const
+{
+    std::lock_guard<std::mutex> lock(mValueMutex);
+    return mValue->clone();
+}
 Address & JamomaAddress::setValue(const Value * value)
 {
   std::lock_guard<std::mutex> lock(mValueMutex);

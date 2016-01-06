@@ -75,6 +75,11 @@ public:
    \return const #Value* the value */
   virtual const Value * getValue() const = 0;
 
+  /*! clone the address value
+   \details thread-safe
+   \return const #Value* a cloned value. deletion is the responsibility of the caller. */
+  virtual const Value * cloneValue() const = 0;
+
   /*! set the address value
    \note call pushValue if you need to sync the value with the device
    \param const #Value* the value
