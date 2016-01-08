@@ -1,6 +1,7 @@
 #include "Misc/CallbackContainer.h"
 
 #include "Network/Address.h"
+#include "Network/Node.h"
 #include "Editor/Expression.h"
 
 using namespace OSSIA;
@@ -23,5 +24,10 @@ namespace OSSIA
   
   template <>
   CallbackContainer<ResultCallback>::~CallbackContainer()
+  {}
+  
+  // explicit instantiation for NodeChangeCallback
+  template<>
+  CallbackContainer<NodeChangeCallback>::~CallbackContainer()
   {}
 }

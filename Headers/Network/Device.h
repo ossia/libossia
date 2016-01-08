@@ -53,33 +53,6 @@ public:
    \deprecated use Protocol::updateChildren
    \return bool true if the namespace update succeeded */
   virtual bool updateNamespace() = 0;
-
-
-# pragma mark -
-# pragma mark Callbacks
-  /*! callbacks for dynamic namespace updating
-   */
-
-  /*! These callbacks shall be called after having added
-   * the node to the tree of the device.
-   */
-  using AddedNodeCallback = std::function<void(const Node&)>;
-  CallbackContainer<AddedNodeCallback> addNodeCallbacks;
-
-  /*! These callbacks shall be called before removing
-   * the node from the tree of the device.
-   */
-  using RemovingNodeCallback = std::function<void(const Node&)>;
-  CallbackContainer<RemovingNodeCallback> removeNodeCallbacks;
-
-  /*!
-   * Callbacks for when the name of a Node changes
-  */
-  using NameChangesDeviceCallback = std::function<void(
-      OSSIA::Node&, // Node
-      const std::string&, // Old name
-      const std::string&)>; // New name
-  CallbackContainer<NameChangesDeviceCallback> nameChangesDeviceCallbacks;
 };
 
 /*! declare Minuit internal device

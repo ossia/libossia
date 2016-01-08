@@ -5,89 +5,6 @@
 # pragma mark -
 # pragma mark Life cycle
 
-namespace OSSIA
-{
-// Template instantiations for CallbackContainer
-template<>
-OSSIA::CallbackContainer<Node::NameChangesCallback>::~CallbackContainer()
-{
-}
-
-void Node::notifyAddedNode(const Node& child)
-{
-    auto dev = getDevice();
-    if(dev)
-    {
-        dev->addNodeCallbacks.send(child);
-    }
-}
-
-}
-
-
-Container<Node>::iterator OSSIA::Node::erase(
-        Container<Node>::const_iterator requested_it)
-{
-  // TODO @theod shouldn't we remove the parent here,
-  // in case another class keeps a shared_ptr ?
-  // (which would cause the node to still be alive)
-
-  // First we remove the address,
-  // because else the callbacks aren't removed properly
-  // if it has children
-  auto& node = *requested_it;
-
-  // This struct is used to remove
-  // the callbacks before deletion.
-  struct AddressRemover
-  {
-          OSSIA::Protocol& proto;
-
-          void operator()(JamomaNode& node)
-          {
-              for(auto& child : node.m_children)
-              {
-                  auto& jnode = dynamic_cast<JamomaNode&>(*child);
-                  cleanup(jnode);
-                  operator()(jnode);
-              }
-
-              cleanup(node);
-          }
-
-          void cleanup(JamomaNode& node)
-          {
-              auto& addr = node.getAddressRef();
-              if(addr)
-              {
-                  proto.observeAddressValue(addr, false);
-                  addr.reset();
-              }
-          }
-  };
-
-  AddressRemover remove{*this->getDevice()->getProtocol()};
-  remove(dynamic_cast<JamomaNode&>(*node));
-
-  return m_children.erase(requested_it);
-}
-
-Container<Node>::iterator OSSIA::Node::eraseAndNotify(
-        Container<Node>::const_iterator requested_it)
-{
-  if(requested_it != m_children.end())
-  {
-    auto& removed_node = **requested_it;
-    auto dev = getDevice();
-    if(dev)
-    {
-        dev->removeNodeCallbacks.send(removed_node);
-    }
-  }
-
-  return erase(requested_it);
-}
-
 JamomaNode::JamomaNode(TTNodeDirectory * aDirectory, TTNode * aNode, shared_ptr<Device> aDevice, shared_ptr<JamomaNode> aParent) :
 mDirectory(aDirectory),
 mNode(aNode),
@@ -157,14 +74,10 @@ Node & JamomaNode::setName(std::string name)
   TTSymbol newInstance;
   TTBoolean newInstanceCreated;
 
-  auto oldName = getName();
   mNode->setNameInstance(nameInstance, newInstance, &newInstanceCreated);
 
-  auto newName = getName();
-  nameChangesCallbacks.send(getName());
-
-  if(auto dev = this->getDevice())
-    dev->nameChangesDeviceCallbacks.send(*this, oldName, newName);
+  // notify observers
+  send(shared_from_this(), NodeChange::RENAMED);
 
   return *this;
 }
@@ -276,8 +189,23 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
   if (!err)
   {
     // store the new node into the Container
-    return m_children.insert(pos, make_shared<JamomaNode>(mDirectory, node, mDevice.lock(), shared_from_this()));
+    auto newNode = make_shared<JamomaNode>(mDirectory, node, mDevice.lock(), shared_from_this());
+    Container<Node>::iterator it = m_children.insert(pos, newNode);
+    
+    // notify observers
+    send(newNode, NodeChange::EMPLACED);
+    
+    // start child changes observation if needed
+    if (callbacks().size() >= 1)
+    {
+      pair<shared_ptr<Node>, Node::iterator> p(newNode, newNode->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2)));
+      mChildNodeChangeCallbackIndexes.emplace(p);
+    }
+    
+    return it;
   }
+  
+
 
   return Container<Node>::iterator();
 }
@@ -307,17 +235,31 @@ Container<Node>::iterator JamomaNode::emplace(
 
   if (!err)
   {
-    // store the new node into the Container
+    // create a new node and its address
     auto newNode = make_shared<JamomaNode>(mDirectory, node, mDevice.lock(), shared_from_this());
     std::shared_ptr<OSSIA::Address> addr = newNode->createAddress(type);
+    
     addr->setBoundingMode(bm);
     addr->setAccessMode(access);
     if(domain)
         addr->setDomain(domain);
     addr->setBoundingMode(bm);
     addr->setRepetitionFilter(repetitionFilter);
-
-    return m_children.insert(pos, newNode);
+    
+    // store the new node into the Container
+    Container<Node>::iterator it = m_children.insert(pos, newNode);
+    
+    // notify observers
+    send(*it, NodeChange::EMPLACED);
+    
+    // start child changes observation if needed
+    if (callbacks().size() >= 1)
+    {
+      pair<shared_ptr<Node>, Node::iterator> p(newNode, newNode->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2)));
+      mChildNodeChangeCallbackIndexes.emplace(p);
+    }
+    
+    return it;
   }
 
   return Container<Node>::iterator();
@@ -330,6 +272,61 @@ Container<Node>::iterator JamomaNode::insert(Container<Node>::const_iterator pos
   //! \todo here the alias is not effective into the Jamoma tree so the given name is not used ...
 
   return m_children.insert(pos, node);
+}
+
+Container<Node>::iterator JamomaNode::erase(Container<Node>::const_iterator requested_it)
+{
+  Container<Node>::iterator it = m_children.erase(requested_it);
+  
+  // notify observers
+  send(*requested_it, NodeChange::ERASED);
+  
+  // stop child observation if needed
+  if (callbacks().size() >= 1)
+  {
+    auto node = *requested_it;
+    Node::iterator callbackIndex = mChildNodeChangeCallbackIndexes.find(node)->second;
+    node->removeCallback(callbackIndex);
+  }
+  
+  return it;
+}
+
+# pragma mark -
+# pragma mark Callback
+
+Node::iterator JamomaNode::addCallback(NodeChangeCallback callback)
+{
+  auto it = CallbackContainer::addCallback(std::move(callback));
+  
+  if (callbacks().size() == 1)
+  {
+    // start children changes observation
+    for (auto child : children())
+    {
+      pair<shared_ptr<Node>, Node::iterator> p(child, child->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2)));
+      mChildNodeChangeCallbackIndexes.emplace(p);
+    }
+  }
+  
+  return it;
+}
+
+void JamomaNode::removeCallback(Node::iterator callback)
+{
+  CallbackContainer::removeCallback(callback);
+  
+  if (callbacks().size() == 0)
+  {
+    // stop children changes observation
+    for (auto child : children())
+    {
+      Node::iterator callbackIndex = mChildNodeChangeCallbackIndexes.find(child)->second;
+      child->removeCallback(callbackIndex);
+    }
+    
+    mChildNodeChangeCallbackIndexes.clear();
+  }
 }
 
 # pragma mark -
@@ -562,4 +559,10 @@ void JamomaNode::buildAddress()
       }
     }
   }
+}
+
+void JamomaNode::childNodeChangeCallback(shared_ptr<Node> child, NodeChange change)
+{
+  // notify observers
+  send(child, change);
 }

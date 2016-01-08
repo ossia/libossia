@@ -47,12 +47,12 @@ public:
 
   /*! remove a result callback function
    \param #it Iterator to remove */
-   virtual void removeCallback(iterator it)
-   {
-     if(it == m_callbacks.end())
-       return;
-     m_callbacks.erase(it);
-   }
+  virtual void removeCallback(iterator it)
+  {
+    if (it == m_callbacks.end())
+      return;
+    m_callbacks.erase(it);
+  }
 
   /*! get callback functions
    \return #CallbackList */
@@ -64,14 +64,13 @@ public:
   const ContainerImpl& callbacks() const
   { return m_callbacks; }
 
-  /*! trigger the callbacks
-   * \param #args Arguments to the callback
-   */
+  /*! trigger all callbacks
+   \param #args arguments to all callbacks */
   template<typename... Args>
   void send(Args&&... args)
   {
-    for(auto cb : m_callbacks)
-        cb(std::forward<Args>(args)...);
+    for (auto callback : m_callbacks)
+        callback(std::forward<Args>(args)...);
   }
 
 protected:

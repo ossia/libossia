@@ -23,8 +23,11 @@
 
 #include "TTModular.h"
 
+#include <map>
+
 using namespace OSSIA;
 using namespace std;
+using namespace std::placeholders;
 
 class JamomaProtocol;
 
@@ -45,6 +48,8 @@ protected:
   shared_ptr<Address>     mAddress;
 
   bool                    mIsDevice{false};
+  
+  map<shared_ptr<Node>, Node::iterator> mChildNodeChangeCallbackIndexes;
 
 public:
 
@@ -70,8 +75,6 @@ public:
   Node & setName(std::string) override;
 
   shared_ptr<Address> getAddress() const override;
-  shared_ptr<Address>& getAddressRef()
-  { return mAddress; }
 
 # pragma mark -
 # pragma mark Address
@@ -84,16 +87,25 @@ public:
 # pragma mark Children
 
   Container<Node>::iterator emplace(Container<Node>::const_iterator pos, string name) override;
-  Container<Node>::iterator emplace(
-          Container<Node>::const_iterator pos,
-          const string& name,
-          Value::Type type,
-          AccessMode,
-          const std::shared_ptr<Domain>&,
-          BoundingMode,
-          bool repetitionFilter) override;
+  
+  Container<Node>::iterator emplace(Container<Node>::const_iterator pos,
+                                    const string& name,
+                                    Value::Type type,
+                                    AccessMode,
+                                    const std::shared_ptr<Domain>&,
+                                    BoundingMode,
+                                    bool repetitionFilter) override;
 
   Container<Node>::iterator insert(Container<Node>::const_iterator, shared_ptr<Node>, std::string) override;
+  
+  Container<Node>::iterator erase(Container<Node>::const_iterator) override;
+  
+# pragma mark -
+# pragma mark Callback Container
+  
+  Node::iterator addCallback(NodeChangeCallback) override;
+  
+  void removeCallback(Node::iterator) override;
 
 # pragma mark -
 # pragma mark Implementation specific
@@ -113,4 +125,7 @@ public:
 
   /* build the address depending of the Jamoma node object */
   void buildAddress();
+  
+  /* get any child change back */
+  void childNodeChangeCallback(shared_ptr<Node>, NodeChange);
 };
