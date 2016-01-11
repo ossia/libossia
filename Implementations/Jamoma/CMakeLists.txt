@@ -29,7 +29,7 @@ file(GLOB_RECURSE SRCS
     )
 
 add_library(APIJamoma ${SRCS})
-target_link_libraries(APIJamoma Jamoma::Foundation Jamoma::Modular)
+target_link_libraries(APIJamoma PRIVATE Jamoma::Foundation Jamoma::Modular)
 target_include_directories(APIJamoma PUBLIC "${API_HEADERS_FOLDER}")
 
 if(OSSIA_SANITIZE)
