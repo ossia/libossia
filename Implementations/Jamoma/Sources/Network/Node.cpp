@@ -204,20 +204,17 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
     
     return it;
   }
-  
-
 
   return Container<Node>::iterator();
 }
 
-Container<Node>::iterator JamomaNode::emplace(
-        Container<Node>::const_iterator pos,
-        const string& name,
-        Value::Type type,
-        AccessMode access,
-        const std::shared_ptr<Domain>& domain,
-        BoundingMode bm,
-        bool repetitionFilter)
+Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator pos,
+                                              const string& name,
+                                              Value::Type type,
+                                              AccessMode access,
+                                              const std::shared_ptr<Domain>& domain,
+                                              BoundingMode bm,
+                                              bool repetitionFilter)
 {
   if (name.empty())
     throw runtime_error("can't create a node with empty name");
