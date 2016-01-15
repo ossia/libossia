@@ -16,6 +16,7 @@
 #include "Network/Address.h"
 #include "Network/Device.h"
 #include "Network/Node.h"
+#include "Network/Protocol.h"
 
 #include "Network/JamomaAddress.h"
 
@@ -128,4 +129,9 @@ public:
   
   /* get any child change back */
   void childNodeChangeCallback(shared_ptr<Node>, NodeChange);
+
+  /* remove all Addresses by closing the listening before deletion */
+  void removeAddresses();
 };
+
+

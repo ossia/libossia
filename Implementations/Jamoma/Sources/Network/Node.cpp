@@ -276,6 +276,15 @@ Container<Node>::iterator JamomaNode::insert(Container<Node>::const_iterator pos
 
 Container<Node>::iterator JamomaNode::erase(Container<Node>::const_iterator requested_it)
 {
+  // \todo shouldn't we remove the parent here, in case another class keeps a shared_ptr ?
+  // (which would cause the node to still be alive)
+  
+  // remove the all addresses below this node
+  auto& child = *requested_it;
+  auto& jnode = dynamic_cast<JamomaNode&>(*child);
+  jnode.removeAddresses();
+  
+  // remove the node
   Container<Node>::iterator it = m_children.erase(requested_it);
   
   // notify observers
@@ -565,4 +574,23 @@ void JamomaNode::childNodeChangeCallback(shared_ptr<Node> child, NodeChange chan
 {
   // notify observers
   send(child, change);
+}
+
+void JamomaNode::removeAddresses()
+{
+  if(mAddress)
+  {
+    // close value listening
+    getDevice()->getProtocol()->observeAddressValue(mAddress, false);
+    
+    // reset the shared_ptr
+    mAddress.reset();
+  }
+  
+  // do the same for all children
+  for(auto& child : children())
+  {
+    auto& jnode = dynamic_cast<JamomaNode&>(*child);
+    jnode.removeAddresses();
+  }
 }
