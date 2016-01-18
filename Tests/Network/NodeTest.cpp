@@ -50,7 +50,7 @@ private Q_SLOTS:
         // edit a node and its address and then remove it
         {
             local_device->emplace(local_device->children().begin(), "child");
-            auto node = local_device->children().front();
+            std::shared_ptr<OSSIA::Node> node = local_device->children().front();
 
             auto address = node->createAddress();
             QVERIFY(node->getAddress() != nullptr);
@@ -65,7 +65,7 @@ private Q_SLOTS:
                                    [&] (const std::shared_ptr<OSSIA::Node>& elt) { return elt->getName() == "child"; });
             if(it != children.end())
             {
-               children.erase(it);
+               node->erase(it);
                removed = true;
             }
 
