@@ -199,17 +199,17 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
     // store the new node into the Container
     auto newNode = make_shared<JamomaNode>(mDirectory, node, mDevice.lock(), shared_from_this());
     Container<Node>::iterator it = m_children.insert(pos, newNode);
-    
+
     // notify observers
     send(*newNode, NodeChange::EMPLACED);
-    
+
     // start child changes observation if needed
     if (callbacks().size() >= 1)
     {
       pair<shared_ptr<Node>, Node::iterator> p(newNode, newNode->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2)));
       mChildNodeChangeCallbackIndexes.emplace(p);
     }
-    
+
     return it;
   }
 
@@ -243,27 +243,27 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
     // create a new node and its address
     auto newNode = make_shared<JamomaNode>(mDirectory, node, mDevice.lock(), shared_from_this());
     std::shared_ptr<OSSIA::Address> addr = newNode->createAddress(type);
-    
+
     addr->setBoundingMode(bm);
     addr->setAccessMode(access);
     if(domain)
         addr->setDomain(domain);
     addr->setBoundingMode(bm);
     addr->setRepetitionFilter(repetitionFilter);
-    
+
     // store the new node into the Container
     Container<Node>::iterator it = m_children.insert(pos, newNode);
-    
+
     // notify observers
     send(**it, NodeChange::EMPLACED);
-    
+
     // start child changes observation if needed
     if (callbacks().size() >= 1)
     {
       pair<shared_ptr<Node>, Node::iterator> p(newNode, newNode->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2)));
       mChildNodeChangeCallbackIndexes.emplace(p);
     }
-    
+
     return it;
   }
 
@@ -283,18 +283,18 @@ Container<Node>::iterator JamomaNode::erase(Container<Node>::const_iterator requ
 {
   // \todo shouldn't we remove the parent here, in case another class keeps a shared_ptr ?
   // (which would cause the node to still be alive)
-  
+
   // remove the all addresses below this node
   auto& child = *requested_it;
   auto& jnode = dynamic_cast<JamomaNode&>(*child);
   jnode.removeAddresses();
-  
+
   // remove the node
   Container<Node>::iterator it = m_children.erase(requested_it);
-  
+
   // notify observers
   send(**requested_it, NodeChange::ERASED);
-  
+
   // stop child observation if needed
   if (callbacks().size() >= 1)
   {
@@ -302,7 +302,7 @@ Container<Node>::iterator JamomaNode::erase(Container<Node>::const_iterator requ
     Node::iterator callbackIndex = mChildNodeChangeCallbackIndexes.find(node)->second;
     node->removeCallback(callbackIndex);
   }
-  
+
   return it;
 }
 
@@ -312,7 +312,7 @@ Container<Node>::iterator JamomaNode::erase(Container<Node>::const_iterator requ
 Node::iterator JamomaNode::addCallback(NodeChangeCallback callback)
 {
   auto it = CallbackContainer::addCallback(std::move(callback));
-  
+
   if (callbacks().size() == 1)
   {
     // start children changes observation
@@ -322,14 +322,14 @@ Node::iterator JamomaNode::addCallback(NodeChangeCallback callback)
       mChildNodeChangeCallbackIndexes.emplace(p);
     }
   }
-  
+
   return it;
 }
 
 void JamomaNode::removeCallback(Node::iterator callback)
 {
   CallbackContainer::removeCallback(callback);
-  
+
   if (callbacks().size() == 0)
   {
     // stop children changes observation
@@ -338,7 +338,7 @@ void JamomaNode::removeCallback(Node::iterator callback)
       Node::iterator callbackIndex = mChildNodeChangeCallbackIndexes.find(child)->second;
       child->removeCallback(callbackIndex);
     }
-    
+
     mChildNodeChangeCallbackIndexes.clear();
   }
 }
@@ -578,7 +578,7 @@ void JamomaNode::buildAddress()
 void JamomaNode::childNodeChangeCallback(const Node& child, NodeChange change)
 {
   // only notify tree structure changes to parent
-  if (change == NodeChange::EMPLACED || change == NodeChange::ERASED)
+  if (change == NodeChange::EMPLACED || change == NodeChange::ERASED || change == NodeChange::RENAMED)
     send(child, change);
 }
 
@@ -588,11 +588,11 @@ void JamomaNode::removeAddresses()
   {
     // close value listening
     getDevice()->getProtocol()->observeAddressValue(mAddress, false);
-    
+
     // reset the shared_ptr
     mAddress.reset();
   }
-  
+
   // do the same for all children
   for(auto& child : children())
   {
