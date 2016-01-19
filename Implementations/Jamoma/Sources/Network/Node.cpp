@@ -569,8 +569,9 @@ void JamomaNode::buildAddress()
 
 void JamomaNode::childNodeChangeCallback(shared_ptr<Node> child, NodeChange change)
 {
-  // notify observers
-  send(child, change);
+  // only notify tree structure changes to parent
+  if (change == NodeChange::EMPLACED || change == NodeChange::ERASED)
+    send(child, change);
 }
 
 void JamomaNode::removeAddresses()
