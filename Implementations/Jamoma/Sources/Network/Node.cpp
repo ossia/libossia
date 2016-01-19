@@ -77,7 +77,7 @@ Node & JamomaNode::setName(std::string name)
   mNode->setNameInstance(nameInstance, newInstance, &newInstanceCreated);
 
   // notify observers
-  send(shared_from_this(), NodeChange::RENAMED);
+  send(*this, NodeChange::RENAMED);
 
   return *this;
 }
@@ -137,6 +137,9 @@ shared_ptr<Address> JamomaNode::createAddress(Value::Type type)
     {
       mAddress->setValueType(type);
     }
+
+    // notify observers
+    send(*this, NodeChange::ADDRESS_CREATED);
   }
 
   return mAddress;
@@ -149,9 +152,9 @@ bool JamomaNode::removeAddress()
     // use the device protocol to stop address value observation
     if (mAddress)
     {
-      if(auto dev = getDevice())
+      if (auto device = getDevice())
       {
-        dev->getProtocol()->observeAddressValue(mAddress, false);
+        device->getProtocol()->observeAddressValue(mAddress, false);
       }
     }
 
@@ -161,7 +164,12 @@ bool JamomaNode::removeAddress()
     // automatically removes empty parent binding on no object
     // when destroying the last child
     mObject = TTObject("NodeInfo");
-    return !mNode->setObject(mObject);
+    TTErr err = mNode->setObject(mObject);
+
+    // notify observers
+    send(*this, NodeChange::ADDRESS_REMOVED);
+
+    return !err;
   }
 
   return false;
@@ -193,7 +201,7 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
     Container<Node>::iterator it = m_children.insert(pos, newNode);
     
     // notify observers
-    send(newNode, NodeChange::EMPLACED);
+    send(*newNode, NodeChange::EMPLACED);
     
     // start child changes observation if needed
     if (callbacks().size() >= 1)
@@ -247,7 +255,7 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
     Container<Node>::iterator it = m_children.insert(pos, newNode);
     
     // notify observers
-    send(*it, NodeChange::EMPLACED);
+    send(**it, NodeChange::EMPLACED);
     
     // start child changes observation if needed
     if (callbacks().size() >= 1)
@@ -285,7 +293,7 @@ Container<Node>::iterator JamomaNode::erase(Container<Node>::const_iterator requ
   Container<Node>::iterator it = m_children.erase(requested_it);
   
   // notify observers
-  send(*requested_it, NodeChange::ERASED);
+  send(**requested_it, NodeChange::ERASED);
   
   // stop child observation if needed
   if (callbacks().size() >= 1)
@@ -567,7 +575,7 @@ void JamomaNode::buildAddress()
   }
 }
 
-void JamomaNode::childNodeChangeCallback(shared_ptr<Node> child, NodeChange change)
+void JamomaNode::childNodeChangeCallback(const Node& child, NodeChange change)
 {
   // only notify tree structure changes to parent
   if (change == NodeChange::EMPLACED || change == NodeChange::ERASED)

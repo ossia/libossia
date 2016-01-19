@@ -41,7 +41,7 @@ enum class NodeChange
 /*! to track any modifications done on a node or its children
  \param the node that have changed 
  \param the change type */
-  using NodeChangeCallback = std::function<void(std::shared_ptr<Node>, NodeChange)>;
+using NodeChangeCallback = std::function<void(const Node&, NodeChange)>;
 
 class Node : public CallbackContainer<NodeChangeCallback>
 {

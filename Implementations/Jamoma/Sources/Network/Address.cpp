@@ -27,9 +27,6 @@ JamomaAddress::~JamomaAddress()
 {
   if(mValue)
     delete mValue;
-  
-  // use the device protocol to stop address value observation
-  mNode.lock()->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), false);
 }
 
 Address::~Address()

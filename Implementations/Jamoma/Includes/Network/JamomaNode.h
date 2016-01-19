@@ -128,7 +128,7 @@ public:
   void buildAddress();
   
   /* get any child change back */
-  void childNodeChangeCallback(shared_ptr<Node>, NodeChange);
+  void childNodeChangeCallback(const Node&, NodeChange);
 
   /* remove all Addresses by closing the listening before deletion */
   void removeAddresses();
