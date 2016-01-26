@@ -287,7 +287,7 @@ Container<Node>::iterator JamomaNode::erase(Container<Node>::const_iterator requ
   // (which would cause the node to still be alive)
 
   // remove the all addresses below this node
-  auto& child = *requested_it;
+  auto child = *requested_it;
   auto& jnode = dynamic_cast<JamomaNode&>(*child);
   jnode.removeAddresses();
 
@@ -295,14 +295,13 @@ Container<Node>::iterator JamomaNode::erase(Container<Node>::const_iterator requ
   Container<Node>::iterator it = m_children.erase(requested_it);
 
   // notify observers
-  send(**requested_it, child->getName(), NodeChange::ERASED);
+  send(*child, child->getName(), NodeChange::ERASED);
 
   // stop child observation if needed
   if (callbacks().size() >= 1)
   {
-    auto node = *requested_it;
-    Node::iterator callbackIndex = mChildNodeChangeCallbackIndexes.find(node)->second;
-    node->removeCallback(callbackIndex);
+    Node::iterator callbackIndex = mChildNodeChangeCallbackIndexes.find(child)->second;
+    child->removeCallback(callbackIndex);
   }
 
   return it;
