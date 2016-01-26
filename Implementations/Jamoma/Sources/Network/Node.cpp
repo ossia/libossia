@@ -73,11 +73,13 @@ Node & JamomaNode::setName(std::string name)
   TTAddress nameInstance(name.data());
   TTSymbol newInstance;
   TTBoolean newInstanceCreated;
+  
+  string oldName = getName();
 
   mNode->setNameInstance(nameInstance, newInstance, &newInstanceCreated);
 
   // notify observers
-  send(*this, NodeChange::RENAMED);
+  send(*this, oldName, NodeChange::RENAMED);
 
   return *this;
 }
@@ -139,7 +141,7 @@ shared_ptr<Address> JamomaNode::createAddress(Value::Type type)
     }
 
     // notify observers
-    send(*this, NodeChange::ADDRESS_CREATED);
+    send(*this, getName(), NodeChange::ADDRESS_CREATED);
   }
 
   return mAddress;
@@ -167,7 +169,7 @@ bool JamomaNode::removeAddress()
     TTErr err = mNode->setObject(mObject);
 
     // notify observers
-    send(*this, NodeChange::ADDRESS_REMOVED);
+    send(*this, getName(), NodeChange::ADDRESS_REMOVED);
 
     return !err;
   }
@@ -201,12 +203,12 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
     Container<Node>::iterator it = m_children.insert(pos, newNode);
 
     // notify observers
-    send(*newNode, NodeChange::EMPLACED);
+    send(*newNode, newNode->getName(), NodeChange::EMPLACED);
 
     // start child changes observation if needed
     if (callbacks().size() >= 1)
     {
-      pair<shared_ptr<Node>, Node::iterator> p(newNode, newNode->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2)));
+      pair<shared_ptr<Node>, Node::iterator> p(newNode, newNode->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2, _3)));
       mChildNodeChangeCallbackIndexes.emplace(p);
     }
 
@@ -255,12 +257,12 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
     Container<Node>::iterator it = m_children.insert(pos, newNode);
 
     // notify observers
-    send(**it, NodeChange::EMPLACED);
+    send(**it, getName(), NodeChange::EMPLACED);
 
     // start child changes observation if needed
     if (callbacks().size() >= 1)
     {
-      pair<shared_ptr<Node>, Node::iterator> p(newNode, newNode->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2)));
+      pair<shared_ptr<Node>, Node::iterator> p(newNode, newNode->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2, _3)));
       mChildNodeChangeCallbackIndexes.emplace(p);
     }
 
@@ -293,7 +295,7 @@ Container<Node>::iterator JamomaNode::erase(Container<Node>::const_iterator requ
   Container<Node>::iterator it = m_children.erase(requested_it);
 
   // notify observers
-  send(**requested_it, NodeChange::ERASED);
+  send(**requested_it, child->getName(), NodeChange::ERASED);
 
   // stop child observation if needed
   if (callbacks().size() >= 1)
@@ -318,7 +320,7 @@ Node::iterator JamomaNode::addCallback(NodeChangeCallback callback)
     // start children changes observation
     for (auto child : children())
     {
-      pair<shared_ptr<Node>, Node::iterator> p(child, child->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2)));
+      pair<shared_ptr<Node>, Node::iterator> p(child, child->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2, _3)));
       mChildNodeChangeCallbackIndexes.emplace(p);
     }
   }
@@ -575,11 +577,11 @@ void JamomaNode::buildAddress()
   }
 }
 
-void JamomaNode::childNodeChangeCallback(const Node& child, NodeChange change)
+void JamomaNode::childNodeChangeCallback(const Node& child, const std::string& name, NodeChange change)
 {
   // only notify tree structure changes to parent
   if (change == NodeChange::EMPLACED || change == NodeChange::ERASED || change == NodeChange::RENAMED)
-    send(child, change);
+    send(child, name, change);
 }
 
 void JamomaNode::removeAddresses()

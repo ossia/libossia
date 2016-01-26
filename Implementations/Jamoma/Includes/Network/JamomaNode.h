@@ -128,7 +128,7 @@ public:
   void buildAddress();
   
   /* get any child change back */
-  void childNodeChangeCallback(const Node&, NodeChange);
+  void childNodeChangeCallback(const Node&, const std::string&, NodeChange);
 
   /* remove all Addresses by closing the listening before deletion */
   void removeAddresses();

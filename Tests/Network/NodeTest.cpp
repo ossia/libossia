@@ -15,24 +15,24 @@ class NodeTest : public QObject
     std::string node_address_created;
     std::string node_address_removed;
 
-    void node_change_callback(const OSSIA::Node& node, OSSIA::NodeChange change)
+    void node_change_callback(const OSSIA::Node& node, const std::string& name, OSSIA::NodeChange change)
     {
         switch (change)
         {
         case NodeChange::EMPLACED:
-            node_emplaced = node.getName();
+            node_emplaced = name;
             break;
         case NodeChange::ERASED:
-            node_erased = node.getName();
+            node_erased = name;
             break;
         case NodeChange::RENAMED:
-            node_renamed = node.getName();
+            node_renamed = name;
             break;
         case NodeChange::ADDRESS_CREATED:
-            node_address_created = node.getName();
+            node_address_created = name;
             break;
         case NodeChange::ADDRESS_REMOVED:
-            node_address_removed = node.getName();
+            node_address_removed = name;
             break;
         }
     }
@@ -116,7 +116,7 @@ private Q_SLOTS:
     {
         auto local_protocol = Local::create();
         auto local_device = Device::create(local_protocol, "test");
-        auto callback = std::bind(&NodeTest::node_change_callback, this, _1, _2);
+        auto callback = std::bind(&NodeTest::node_change_callback, this, _1, _2, _3);
 
         CallbackContainer<NodeChangeCallback>::iterator local_device_callback_it = local_device->addCallback(callback);
         QVERIFY(local_device->callbacks().size() == 1);
@@ -142,7 +142,7 @@ private Q_SLOTS:
             QVERIFY(node_address_removed == "child");
 
             node->setName("foo");
-            QVERIFY(node_renamed == "foo");
+            QVERIFY(node_renamed == "child");
 
             // don't need to observe the node itself anymore
             node->removeCallback(node_callback_it);

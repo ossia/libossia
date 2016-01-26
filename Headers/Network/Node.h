@@ -39,9 +39,10 @@ enum class NodeChange
 };
   
 /*! to track any modifications done on a node or its children
- \param the node that have changed 
+ \param the node that have changed
+ \param the name of the node that have changed (when it has been renamed it is the former name)
  \param the change type */
-using NodeChangeCallback = std::function<void(const Node&, NodeChange)>;
+using NodeChangeCallback = std::function<void(const Node&, const std::string&, NodeChange)>;
 
 class Node : public CallbackContainer<NodeChangeCallback>
 {
