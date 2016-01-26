@@ -5,7 +5,7 @@
 # pragma mark -
 # pragma mark Life cycle
 
-JamomaAddress::JamomaAddress(shared_ptr<Node> node, TTObject aData) :
+JamomaAddress::JamomaAddress(weak_ptr<Node> node, TTObject aData) :
 mNode(node),
 mObject(aData),
 mObjectValueCallback("callback"),
@@ -24,7 +24,10 @@ mRepetitionFilter(false)
 }
 
 JamomaAddress::~JamomaAddress()
-{}
+{
+  if(mValue)
+    delete mValue;
+}
 
 Address::~Address()
 {}
@@ -64,12 +67,18 @@ const Value * JamomaAddress::getValue() const
   return mValue;
 }
 
+const Value* JamomaAddress::cloneValue() const
+{
+    std::lock_guard<std::mutex> lock(mValueMutex);
+    return mValue->clone();
+}
 Address & JamomaAddress::setValue(const Value * value)
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
 
   // clear former value
   delete mValue;
+  mValue = nullptr;
 
   // set value querying the value from another address
   if (value->getType() == Value::Type::DESTINATION &&
@@ -182,7 +191,7 @@ Address & JamomaAddress::setValueType(Value::Type type)
   return *this;
 }
 
-JamomaAddress::AccessMode JamomaAddress::getAccessMode() const
+AccessMode JamomaAddress::getAccessMode() const
 {
   return mAccessMode;
 }
@@ -240,7 +249,7 @@ Address & JamomaAddress::setDomain(shared_ptr<Domain> domain)
   return *this;
 }
 
-JamomaAddress::BoundingMode JamomaAddress::getBoundingMode() const
+BoundingMode JamomaAddress::getBoundingMode() const
 {
   return mBoundingMode;
 }
@@ -472,7 +481,9 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
     }
 
     case Value::Type::BEHAVIOR :
-    {}
+    {
+          break;
+    }
 
     case Value::Type::TUPLE :
     {
@@ -574,7 +585,9 @@ void JamomaAddress::convertValueIntoTTValue(const Value * value, TTValue & v) co
     }
 
     case Value::Type::BEHAVIOR :
-    {}
+    {
+          break;
+    }
 
     case Value::Type::TUPLE :
     {

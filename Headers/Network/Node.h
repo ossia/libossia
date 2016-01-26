@@ -19,6 +19,8 @@
 #include "Editor/Value.h"
 #include "Network/Address.h"
 #include "Misc/Container.h"
+#include "Misc/CallbackContainer.h"
+#include "Network/AddressProperties.h"
 
 namespace OSSIA
 {
@@ -26,11 +28,32 @@ namespace OSSIA
 class Address;
 class Device;
 
-class Node
+/*! type of of change on a #Node */
+enum class NodeChange
+{
+  RENAMED,
+  EMPLACED,
+  ERASED,
+  ADDRESS_CREATED,
+  ADDRESS_REMOVED
+};
+  
+/*! to track any modifications done on a node or its children
+ \param the node that have changed
+ \param the name of the node that have changed (when it has been renamed it is the former name)
+ \param the change type */
+using NodeChangeCallback = std::function<void(const Node&, const std::string&, NodeChange)>;
+
+class Node : public CallbackContainer<NodeChangeCallback>
 {
 
 public:
-
+  
+# pragma mark -
+# pragma mark Definitions
+  
+  using iterator = typename CallbackContainer<NodeChangeCallback>::iterator;
+  
 # pragma mark -
 # pragma mark Life cycle
 
@@ -71,8 +94,7 @@ public:
   /*! create node's address
    \param #Value::Type the type of the address to create
    \return std::shared_ptr<#Address> the new address */
-  virtual std::shared_ptr<OSSIA::Address> createAddress(
-                Value::Type = Value::Type::IMPULSE) = 0;
+  virtual std::shared_ptr<OSSIA::Address> createAddress(Value::Type = Value::Type::IMPULSE) = 0;
 
   /*! remove node's address
    \return bool true if the address is correctly removed */
@@ -87,18 +109,36 @@ public:
    \return #Container<#Node>::iterator */
   virtual Container<Node>::iterator emplace(Container<Node>::const_iterator, std::string) = 0;
 
+  /*! create and store a child node and create an address
+   \param #Container<#Node>::const_iterator where to create the child
+   \param std::string child name
+   \param
+   \param
+   \param
+   \param
+   \param
+   \return #Container<#Node>::iterator */
+  virtual Container<Node>::iterator emplace(Container<Node>::const_iterator,
+                                            const std::string&,
+                                            Value::Type,
+                                            AccessMode = {},
+                                            const std::shared_ptr<Domain>& = {},
+                                            BoundingMode = {},
+                                            bool repetitionFilter = {}) = 0;
+
   /*! store an existing node to create an alias
    \param #Container<#Node>::const_iterator where to store the child
    \param shared_ptr<Node> the #Node to store
    \param std::string child name
-   \return #Container<#Node>::iterator
-   */
-  virtual Container<Node>::iterator insert(Container<Node>::const_iterator, std::shared_ptr<Node>, std::string) = 0;
+   \return #Container<#Node>::iterator */
+  virtual Container<Node>::iterator insert(Container<Node>::const_iterator,
+                                           std::shared_ptr<Node>,
+                                           std::string) = 0;
 
-  /*! get children of the node
-   \return #Container<#Node> */
-  Container<Node>& children()
-  { return m_children; }
+  /*! erased a node 
+   \param #Container<#Node>::const_iterator the position of the node to erase 
+   \return #Container<#Node>::iterator */
+  virtual Container<Node>::iterator erase(Container<Node>::const_iterator) = 0;
 
   /*! get children of the node
    \return #Container<#Node> */

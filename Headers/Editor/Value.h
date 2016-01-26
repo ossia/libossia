@@ -303,7 +303,7 @@ struct Tuple final : public Value
 
   /*! constructor for one value
    \param const value */
-  Tuple(const Value* v);
+  explicit Tuple(const Value* v);
 
   /*! constructor for any number of values
   \param const value

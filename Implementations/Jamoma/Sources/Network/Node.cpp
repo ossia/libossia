@@ -1,5 +1,5 @@
 #include "Network/JamomaNode.h"
-
+#include "Network/JamomaDevice.h"
 #include <assert.h>
 
 # pragma mark -
@@ -21,10 +21,9 @@ mParent(aParent)
 
 JamomaNode::~JamomaNode()
 {
-  mAddress = nullptr;
+  m_children.clear();
 
-  // if not a device node
-  if (getParent() != nullptr)
+  if (!mIsDevice)
   {
     TTAddress adrs;
     mNode->getAddress(adrs);
@@ -33,7 +32,8 @@ JamomaNode::~JamomaNode()
 }
 
 Node::~Node()
-{}
+{
+}
 
 # pragma mark -
 # pragma mark Navigation
@@ -73,8 +73,13 @@ Node & JamomaNode::setName(std::string name)
   TTAddress nameInstance(name.data());
   TTSymbol newInstance;
   TTBoolean newInstanceCreated;
+  
+  string oldName = getName();
 
   mNode->setNameInstance(nameInstance, newInstance, &newInstanceCreated);
+
+  // notify observers
+  send(*this, oldName, NodeChange::RENAMED);
 
   return *this;
 }
@@ -128,12 +133,15 @@ shared_ptr<Address> JamomaNode::createAddress(Value::Type type)
 
     // edit new address
     mAddress = make_shared<JamomaAddress>(shared_from_this(), mObject);
-    
+
     // force address value type for some API value type unhandled by Jamoma
     if (type == Value::Type::DESTINATION)
     {
       mAddress->setValueType(type);
     }
+
+    // notify observers
+    send(*this, getName(), NodeChange::ADDRESS_CREATED);
   }
 
   return mAddress;
@@ -145,15 +153,25 @@ bool JamomaNode::removeAddress()
   {
     // use the device protocol to stop address value observation
     if (mAddress)
-      getDevice()->getProtocol()->observeAddressValue(mAddress, false);
-    
+    {
+      if (auto device = getDevice())
+      {
+        device->getProtocol()->observeAddressValue(mAddress, false);
+      }
+    }
+
     mAddress.reset();
-    
+
     // add a NodeInfo object otherwise TTNodeDirectory
     // automatically removes empty parent binding on no object
     // when destroying the last child
     mObject = TTObject("NodeInfo");
-    return !mNode->setObject(mObject);
+    TTErr err = mNode->setObject(mObject);
+
+    // notify observers
+    send(*this, getName(), NodeChange::ADDRESS_REMOVED);
+
+    return !err;
   }
 
   return false;
@@ -181,7 +199,74 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
   if (!err)
   {
     // store the new node into the Container
-    return children().insert(pos, make_shared<JamomaNode>(mDirectory, node, mDevice.lock(), shared_from_this()));
+    auto newNode = make_shared<JamomaNode>(mDirectory, node, mDevice.lock(), shared_from_this());
+    Container<Node>::iterator it = m_children.insert(pos, newNode);
+
+    // notify observers
+    send(*newNode, newNode->getName(), NodeChange::EMPLACED);
+
+    // start child changes observation if needed
+    if (callbacks().size() >= 1)
+    {
+      pair<shared_ptr<Node>, Node::iterator> p(newNode, newNode->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2, _3)));
+      mChildNodeChangeCallbackIndexes.emplace(p);
+    }
+
+    return it;
+  }
+
+  return Container<Node>::iterator();
+}
+
+Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator pos,
+                                              const string& name,
+                                              Value::Type type,
+                                              AccessMode access,
+                                              const std::shared_ptr<Domain>& domain,
+                                              BoundingMode bm,
+                                              bool repetitionFilter)
+{
+  if (name.empty())
+    throw runtime_error("can't create a node with empty name");
+
+  TTAddress nodeAddress;
+  mNode->getAddress(nodeAddress);
+
+  TTAddress   address = nodeAddress.appendAddress(TTAddress(name.data()));
+  TTObject    empty;
+  TTPtr       context = NULL;
+  TTNodePtr   node;
+  TTBoolean   newInstanceCreated;
+
+  TTErr err = mDirectory->TTNodeCreate(address, empty, context, &node, &newInstanceCreated);
+
+  if (!err)
+  {
+    // create a new node and its address
+    auto newNode = make_shared<JamomaNode>(mDirectory, node, mDevice.lock(), shared_from_this());
+    std::shared_ptr<OSSIA::Address> addr = newNode->createAddress(type);
+
+    addr->setBoundingMode(bm);
+    addr->setAccessMode(access);
+    if(domain)
+        addr->setDomain(domain);
+    addr->setBoundingMode(bm);
+    addr->setRepetitionFilter(repetitionFilter);
+
+    // store the new node into the Container
+    Container<Node>::iterator it = m_children.insert(pos, newNode);
+
+    // notify observers
+    send(**it, getName(), NodeChange::EMPLACED);
+
+    // start child changes observation if needed
+    if (callbacks().size() >= 1)
+    {
+      pair<shared_ptr<Node>, Node::iterator> p(newNode, newNode->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2, _3)));
+      mChildNodeChangeCallbackIndexes.emplace(p);
+    }
+
+    return it;
   }
 
   return Container<Node>::iterator();
@@ -193,7 +278,71 @@ Container<Node>::iterator JamomaNode::insert(Container<Node>::const_iterator pos
 
   //! \todo here the alias is not effective into the Jamoma tree so the given name is not used ...
 
-  return children().insert(pos, node);
+  return m_children.insert(pos, node);
+}
+
+Container<Node>::iterator JamomaNode::erase(Container<Node>::const_iterator requested_it)
+{
+  // \todo shouldn't we remove the parent here, in case another class keeps a shared_ptr ?
+  // (which would cause the node to still be alive)
+
+  // remove the all addresses below this node
+  auto& child = *requested_it;
+  auto& jnode = dynamic_cast<JamomaNode&>(*child);
+  jnode.removeAddresses();
+
+  // remove the node
+  Container<Node>::iterator it = m_children.erase(requested_it);
+
+  // notify observers
+  send(**requested_it, child->getName(), NodeChange::ERASED);
+
+  // stop child observation if needed
+  if (callbacks().size() >= 1)
+  {
+    auto node = *requested_it;
+    Node::iterator callbackIndex = mChildNodeChangeCallbackIndexes.find(node)->second;
+    node->removeCallback(callbackIndex);
+  }
+
+  return it;
+}
+
+# pragma mark -
+# pragma mark Callback
+
+Node::iterator JamomaNode::addCallback(NodeChangeCallback callback)
+{
+  auto it = CallbackContainer::addCallback(std::move(callback));
+
+  if (callbacks().size() == 1)
+  {
+    // start children changes observation
+    for (auto child : children())
+    {
+      pair<shared_ptr<Node>, Node::iterator> p(child, child->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2, _3)));
+      mChildNodeChangeCallbackIndexes.emplace(p);
+    }
+  }
+
+  return it;
+}
+
+void JamomaNode::removeCallback(Node::iterator callback)
+{
+  CallbackContainer::removeCallback(callback);
+
+  if (callbacks().size() == 0)
+  {
+    // stop children changes observation
+    for (auto child : children())
+    {
+      Node::iterator callbackIndex = mChildNodeChangeCallbackIndexes.find(child)->second;
+      child->removeCallback(callbackIndex);
+    }
+
+    mChildNodeChangeCallbackIndexes.clear();
+  }
 }
 
 # pragma mark -
@@ -217,7 +366,7 @@ bool JamomaNode::updateChildren()
   //! \note this method is only available for root node for the moment
   if (mNode->getObject() != getApplication())
     return false;
-  
+
   // erase all former nodes
   m_children.clear();
 
@@ -261,7 +410,7 @@ void JamomaNode::buildChildren()
       newNode->buildAddress();
 
       // store the child node
-      children().push_back(newNode);
+      m_children.push_back(newNode);
 
       // continue recursively
       newNode->buildChildren();
@@ -284,11 +433,11 @@ void JamomaNode::buildAddress()
       if (objectName == "Data")
       {
         mAddress = make_shared<JamomaAddress>(shared_from_this(), object);
-        
+
         // edit value type, access mode, bounding mode and repetition filter attribute
         TTSymbol type;
         object.get("type", type);
-        
+
         if (type == kTTSym_none)
         {
           mAddress->setValue(new Impulse());
@@ -324,20 +473,20 @@ void JamomaNode::buildAddress()
           mAddress->setValue(new OSSIA::String());
           mAddress->setValueType(Value::Type::STRING);
         }
-        
+
         TTSymbol service;
         object.get("service", service);
-        
+
         if (service == kTTSym_parameter)
-          mAddress->setAccessMode(Address::AccessMode::BI);
+          mAddress->setAccessMode(OSSIA::AccessMode::BI);
         else if (service == kTTSym_message)
-          mAddress->setAccessMode(Address::AccessMode::SET);
+          mAddress->setAccessMode(OSSIA::AccessMode::SET);
         else if (service == kTTSym_return)
-          mAddress->setAccessMode(Address::AccessMode::GET);
-        
+          mAddress->setAccessMode(OSSIA::AccessMode::GET);
+
         TTValue range;
         object.get("rangeBounds", range);
-        
+
         if (type == kTTSym_none)
         {
           mAddress->setDomain(Domain::create());
@@ -378,13 +527,13 @@ void JamomaNode::buildAddress()
           // we need to know the size of the array to setup the domain
           TTValue v;
           object.get("value", v);
-          
+
           vector<const Value*> tuple_min;
           vector<const Value*> tuple_max;
           for (unsigned long i = 0; i < v.size(); i++)
             tuple_min.push_back(new OSSIA::Float(range[0]));
           tuple_max.push_back(new OSSIA::Float(range[1]));
-          
+
           mAddress->setDomain(Domain::create(new OSSIA::Tuple(tuple_min), new OSSIA::Tuple(tuple_max)));
         }
         else if (type == kTTSym_string)
@@ -402,28 +551,54 @@ void JamomaNode::buildAddress()
         {
           mAddress->setDomain(Domain::create());
         }
-        
+
         TTSymbol clipmode;
         object.get("rangeClipmode", clipmode);
-        
+
         if (clipmode == kTTSym_none)
-          mAddress->setBoundingMode(Address::BoundingMode::FREE);
+          mAddress->setBoundingMode(OSSIA::BoundingMode::FREE);
         else if (clipmode == kTTSym_low)
-          mAddress->setBoundingMode(Address::BoundingMode::CLIP);
+          mAddress->setBoundingMode(OSSIA::BoundingMode::CLIP);
         else if (clipmode == kTTSym_high)
-          mAddress->setBoundingMode(Address::BoundingMode::CLIP);
+          mAddress->setBoundingMode(OSSIA::BoundingMode::CLIP);
         else if (clipmode == kTTSym_both)
-          mAddress->setBoundingMode(Address::BoundingMode::CLIP);
+          mAddress->setBoundingMode(OSSIA::BoundingMode::CLIP);
         else if (clipmode == kTTSym_wrap)
-          mAddress->setBoundingMode(Address::BoundingMode::WRAP);
+          mAddress->setBoundingMode(OSSIA::BoundingMode::WRAP);
         else if (clipmode == kTTSym_fold)
-          mAddress->setBoundingMode(Address::BoundingMode::FOLD);
-        
+          mAddress->setBoundingMode(OSSIA::BoundingMode::FOLD);
+
         TTBoolean repetitionFilter;
         object.get("repetitionFilter", repetitionFilter);
-        
+
         mAddress->setRepetitionFilter(repetitionFilter);
       }
     }
+  }
+}
+
+void JamomaNode::childNodeChangeCallback(const Node& child, const std::string& name, NodeChange change)
+{
+  // only notify tree structure changes to parent
+  if (change == NodeChange::EMPLACED || change == NodeChange::ERASED || change == NodeChange::RENAMED)
+    send(child, name, change);
+}
+
+void JamomaNode::removeAddresses()
+{
+  if(mAddress)
+  {
+    // close value listening
+    getDevice()->getProtocol()->observeAddressValue(mAddress, false);
+
+    // reset the shared_ptr
+    mAddress.reset();
+  }
+
+  // do the same for all children
+  for(auto& child : children())
+  {
+    auto& jnode = dynamic_cast<JamomaNode&>(*child);
+    jnode.removeAddresses();
   }
 }

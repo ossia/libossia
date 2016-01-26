@@ -8,6 +8,7 @@ if(NOT ${Jamoma_FOUND})
     return()
 endif()
 include(Sanitize)
+include(DebugMode)
 include(UseGold)
 include(LinkerWarnings)
 
@@ -28,11 +29,12 @@ file(GLOB_RECURSE SRCS
     )
 
 add_library(APIJamoma ${SRCS})
-target_link_libraries(APIJamoma Jamoma::Foundation Jamoma::Modular)
+target_link_libraries(APIJamoma PRIVATE Jamoma::Foundation Jamoma::Modular)
 target_include_directories(APIJamoma PUBLIC "${API_HEADERS_FOLDER}")
 
 if(OSSIA_SANITIZE)
     sanitize_build(APIJamoma)
+    debugmode_build(APIJamoma)
 endif()
 use_gold(APIJamoma)
 add_linker_warnings(APIJamoma)

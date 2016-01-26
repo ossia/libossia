@@ -38,8 +38,8 @@ public:
    \param #Value* maximal value of the domain
    \param std::vector<#Value*> set of values allowed into the domain
    \return std::shared_ptr<#Domain> */
-  static std::shared_ptr<Domain> create(const Value * = new Impulse(),
-                                        const Value * = new Impulse(),
+  static std::shared_ptr<Domain> create(const Value * = new OSSIA::Impulse(),
+                                        const Value * = new OSSIA::Impulse(),
                                         std::vector<const Value*> = std::vector<const Value*>());
 
   /*! clone */
@@ -56,7 +56,7 @@ public:
   virtual const Value * getMin() const = 0;
 
   /*! set the minimal value
-   \param const #Value* minimal value 
+   \param const #Value* minimal value
    \return #Domain the domain */
   virtual Domain & setMin(const Value*) = 0;
 
@@ -65,7 +65,7 @@ public:
   virtual const Value * getMax() const = 0;
 
   /*! set the maximal value
-   \param const #Value* maximal value 
+   \param const #Value* maximal value
    \return #Domain the domain */
   virtual Domain & setMax(const Value*) = 0;
 
@@ -74,7 +74,7 @@ public:
   virtual std::vector<const Value*> getValues() const = 0;
 
   /*! set authorized values
-   \param std::vector<const #Value*> authorized values 
+   \param std::vector<const #Value*> authorized values
    \return #Domain the domain */
   virtual Domain & setValues(std::vector<const Value*> values) = 0;
 };
