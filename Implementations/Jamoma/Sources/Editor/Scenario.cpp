@@ -64,7 +64,7 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
         timeConstraint->setOffset(date - start);
       }
 
-      // add the state of each HAPPENED TimeEvent
+      // compile a state with all HAPPENED event's states
       for (const auto& timeNode : mTimeNodes)
       {
         for (auto& timeEvent : timeNode->timeEvents())
