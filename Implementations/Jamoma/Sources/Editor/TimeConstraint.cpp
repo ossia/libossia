@@ -228,7 +228,7 @@ TimeConstraint & JamomaTimeConstraint::setDurationMax(const TimeValue& durationM
   
   //! \debug
   if (mDurationMax == Infinite)
-    cout << "infitie time constraint" << endl;
+    cout << "infinite time constraint" << endl;
   
   return *this;
 }
