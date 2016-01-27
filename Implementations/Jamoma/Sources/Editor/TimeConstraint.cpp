@@ -55,7 +55,7 @@ mDurationMax(max)
   
   //! \debug
   if (mDurationMax == Infinite)
-    cout << "infitie time constraint" << endl;
+    cout << "infinite time constraint" << endl;
 }
 
 JamomaTimeConstraint::JamomaTimeConstraint(const JamomaTimeConstraint * other) :
