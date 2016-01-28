@@ -113,7 +113,13 @@ bool Bool::operator== (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this == (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this == *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -177,7 +183,13 @@ bool Bool::operator> (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this > (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this > *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -236,7 +248,13 @@ bool Bool::operator>= (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this >= (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this >= *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -295,7 +313,13 @@ bool Bool::operator< (const Value& v) const
       {
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
-          return *this < (*d->value->getAddress()->getValue());
+        {
+          const Value* c = d->value->getAddress()->cloneValue();
+          bool result = *this < *c;
+          
+          delete c;
+          return result;
+        }
       }
       case Value::Type::BEHAVIOR :
       {
@@ -354,7 +378,13 @@ bool Bool::operator<= (const Value& v) const
       {
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
-          return *this <= (*d->value->getAddress()->getValue());
+        {
+          const Value* c = d->value->getAddress()->cloneValue();
+          bool result = *this <= *c;
+          
+          delete c;
+          return result;
+        }
       }
       case Value::Type::BEHAVIOR :
       {
@@ -426,7 +456,13 @@ bool Int::operator== (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this == (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this == *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -490,7 +526,13 @@ bool Int::operator> (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this > (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this > *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -553,7 +595,13 @@ bool Int::operator>= (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this >= (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this >= *c;
+        
+        delete c;
+        return result;
+      }
     }
     default :
       return false;
@@ -608,7 +656,13 @@ bool Int::operator< (const Value& v) const
       {
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
-          return *this < (*d->value->getAddress()->getValue());
+        {
+          const Value* c = d->value->getAddress()->cloneValue();
+          bool result = *this < *c;
+          
+          delete c;
+          return result;
+        }
       }
       case Value::Type::BEHAVIOR :
       {
@@ -671,7 +725,13 @@ bool Int::operator<= (const Value& v) const
       {
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
-          return *this <= (*d->value->getAddress()->getValue());
+        {
+          const Value* c = d->value->getAddress()->cloneValue();
+          bool result = *this <= *c;
+          
+          delete c;
+          return result;
+        }
       }
       default :
         return false;
@@ -739,7 +799,13 @@ bool Float::operator== (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this == (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this == *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -803,7 +869,13 @@ bool Float::operator> (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this > (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this > *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -862,7 +934,13 @@ bool Float::operator>= (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this >= (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this >= *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -921,7 +999,13 @@ bool Float::operator< (const Value& v) const
       {
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
-          return *this < (*d->value->getAddress()->getValue());
+        {
+          const Value* c = d->value->getAddress()->cloneValue();
+          bool result = *this < *c;
+          
+          delete c;
+          return result;
+        }
       }
       case Value::Type::BEHAVIOR :
       {
@@ -980,7 +1064,13 @@ bool Float::operator<= (const Value& v) const
       {
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
-          return *this <= (*d->value->getAddress()->getValue());
+        {
+          const Value* c = d->value->getAddress()->cloneValue();
+          bool result = *this <= *c;
+          
+          delete c;
+          return result;
+        }
       }
       case Value::Type::BEHAVIOR :
       {
@@ -1053,7 +1143,13 @@ bool Char::operator== (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this == (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this == *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -1117,7 +1213,13 @@ bool Char::operator> (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this > (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this > *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -1176,7 +1278,13 @@ bool Char::operator>= (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this >= (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this >= *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -1235,7 +1343,13 @@ bool Char::operator< (const Value& v) const
       {
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
-          return *this < (*d->value->getAddress()->getValue());
+        {
+          const Value* c = d->value->getAddress()->cloneValue();
+          bool result = *this < *c;
+          
+          delete c;
+          return result;
+        }
       }
       case Value::Type::BEHAVIOR :
       {
@@ -1294,7 +1408,13 @@ bool Char::operator<= (const Value& v) const
       {
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
-          return *this <= (*d->value->getAddress()->getValue());
+        {
+          const Value* c = d->value->getAddress()->cloneValue();
+          bool result = *this <= *c;
+          
+          delete c;
+          return result;
+        }
       }
       case Value::Type::BEHAVIOR :
       {
@@ -1363,7 +1483,13 @@ bool String::operator== (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this == (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this == *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -1424,7 +1550,13 @@ bool String::operator> (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this > (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this > *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -1480,7 +1612,13 @@ bool String::operator>= (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this >= (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this >= *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -1536,7 +1674,13 @@ bool String::operator< (const Value& v) const
       {
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
-          return *this < (*d->value->getAddress()->getValue());
+        {
+          const Value* c = d->value->getAddress()->cloneValue();
+          bool result = *this < *c;
+          
+          delete c;
+          return result;
+        }
       }
       case Value::Type::BEHAVIOR :
       {
@@ -1592,7 +1736,13 @@ bool String::operator<= (const Value& v) const
       {
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
-          return *this <= (*d->value->getAddress()->getValue());
+        {
+          const Value* c = d->value->getAddress()->cloneValue();
+          bool result = *this <= *c;
+          
+          delete c;
+          return result;
+        }
       }
       case Value::Type::BEHAVIOR :
       {
@@ -1898,7 +2048,13 @@ bool Generic<T>::operator== (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this == (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this == *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -1965,7 +2121,13 @@ bool Generic<T>::operator> (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this > (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this > *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -2026,7 +2188,13 @@ bool Generic<T>::operator>= (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
-        return *this >= (*d->value->getAddress()->getValue());
+      {
+        const Value* c = d->value->getAddress()->cloneValue();
+        bool result = *this >= *c;
+        
+        delete c;
+        return result;
+      }
     }
     case Value::Type::BEHAVIOR :
     {
@@ -2076,7 +2244,15 @@ bool Destination::operator== (const Value& v) const
         
       // if there are addresses compare values
       if (value->getAddress() && d->value->getAddress())
-        return (*value->getAddress()->getValue()) == (*d->value->getAddress()->getValue());
+      {
+        const Value* c1 = value->getAddress()->cloneValue();
+        const Value* c2 = d->value->getAddress()->cloneValue();
+        bool result = *c1 == *c2;
+        
+        delete c1;
+        delete c2;
+        return result;
+      }
         
       // if no addresses, compare nodes
       else if (!value->getAddress() && !d->value->getAddress())
@@ -2086,9 +2262,13 @@ bool Destination::operator== (const Value& v) const
     {
       if (value->getAddress())
       {
-        return (*value->getAddress()->getValue()) == v;
+        const Value* c = value->getAddress()->cloneValue();
+        bool result = *c == v;
+        
+        delete c;
+        return result;
       }
-
+      
       return false;
     }
   }
@@ -2111,15 +2291,27 @@ bool Destination::operator> (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (value->getAddress() && d->value->getAddress())
-        return (*value->getAddress()->getValue()) > (*d->value->getAddress()->getValue());
+      {
+        const Value* c1 = value->getAddress()->cloneValue();
+        const Value* c2 = d->value->getAddress()->cloneValue();
+        bool result = *c1 > *c2;
+        
+        delete c1;
+        delete c2;
+        return result;
+      }
     }
     default :
     {
       if (value->getAddress())
       {
-        return (*value->getAddress()->getValue()) > v;
+        const Value* c = value->getAddress()->cloneValue();
+        bool result = *c > v;
+        
+        delete c;
+        return result;
       }
-
+      
       return false;
     }
   }
@@ -2137,15 +2329,27 @@ bool Destination::operator>= (const Value& v) const
     {
       auto d = static_cast<const Destination*>(&v);
       if (value->getAddress() && d->value->getAddress())
-        return (*value->getAddress()->getValue()) >= (*d->value->getAddress()->getValue());
+      {
+        const Value* c1 = value->getAddress()->cloneValue();
+        const Value* c2 = d->value->getAddress()->cloneValue();
+        bool result = *c1 >= *c2;
+        
+        delete c1;
+        delete c2;
+        return result;
+      }
     }
     default :
     {
       if (value->getAddress())
       {
-        return (*value->getAddress()->getValue()) >= v;
+        const Value* c = value->getAddress()->cloneValue();
+        bool result = *c >= v;
+        
+        delete c;
+        return result;
       }
-
+      
       return false;
     }
   }
