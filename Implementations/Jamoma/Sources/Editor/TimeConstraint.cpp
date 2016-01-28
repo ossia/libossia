@@ -52,10 +52,6 @@ mDurationMin(min),
 mDurationMax(max)
 {
   mCurrentState = State::create();
-  
-  //! \debug
-  if (mDurationMax == Infinite)
-    cout << "infinite time constraint" << endl;
 }
 
 JamomaTimeConstraint::JamomaTimeConstraint(const JamomaTimeConstraint * other) :
@@ -225,10 +221,6 @@ TimeConstraint & JamomaTimeConstraint::setDurationMax(const TimeValue& durationM
   
   if (durationMax < mDurationNominal)
     setDurationNominal(mDurationMax);
-  
-  //! \debug
-  if (mDurationMax == Infinite)
-    cout << "infinite time constraint" << endl;
   
   return *this;
 }

@@ -301,6 +301,9 @@ Address::iterator JamomaAddress::addCallback(ValueCallback callback)
   {
     // use the device protocol to start address value observation
     mNode.lock()->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), true);
+    
+    //! \debug
+    cout << "opening listening on " << buildNodePath(mNode.lock()) << endl;
   }
 
   return it;
@@ -314,6 +317,9 @@ void JamomaAddress::removeCallback(Address::iterator callback)
   {
     // use the device protocol to stop address value observation
     mNode.lock()->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), false);
+    
+    //! \debug
+    cout << "closing listening on " << buildNodePath(mNode.lock()) << endl;
   }
 }
 
