@@ -87,8 +87,9 @@ int main()
     String s("hello world !");
     localStringAddress->pushValue(&s);
 
-    Destination d(localFloatNode);
-    localDestinationAddress->pushValue(&d);
+    // FIXME
+    // Destination d(localFloatNode);
+    // localDestinationAddress->pushValue(&d);
 
     Tuple t = {new Float(0.1), new Float(0.2), new Float(0.3)};
     localTupleAddress->pushValue(&t);

@@ -1,1 +1,4 @@
 
+[submodule "CMake/cmake-modules"]
+	path = CMake/cmake-modules
+	url = https://github.com/OSSIA/cmake-modules

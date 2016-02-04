@@ -139,17 +139,17 @@ void explore(const shared_ptr<Node> node)
             cout << ", AccessMode(";
             switch (address->getAccessMode())
             {
-                case Address::AccessMode::SET :
+                case OSSIA::AccessMode::SET :
                 {
                     cout << "set";
                     break;
                 }
-                case Address::AccessMode::GET :
+                case OSSIA::AccessMode::GET :
                 {
                     cout << "get";
                     break;
                 }
-                case Address::AccessMode::BI :
+                case OSSIA::AccessMode::BI :
                 {
                     cout << "bi";
                     break;
@@ -161,22 +161,22 @@ void explore(const shared_ptr<Node> node)
             cout << "), BoundingMode(";
             switch (address->getBoundingMode())
             {
-                case Address::BoundingMode::FREE :
+                case OSSIA::BoundingMode::FREE :
                 {
                     cout << "free";
                     break;
                 }
-                case Address::BoundingMode::CLIP :
+                case OSSIA::BoundingMode::CLIP :
                 {
                     cout << "clip";
                     break;
                 }
-                case Address::BoundingMode::WRAP :
+                case OSSIA::BoundingMode::WRAP :
                 {
                     cout << "wrap";
                     break;
                 }
-                case Address::BoundingMode::FOLD :
+                case OSSIA::BoundingMode::FOLD :
                 {
                     cout << "fold";
                     break;

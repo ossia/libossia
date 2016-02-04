@@ -5,7 +5,7 @@
 # pragma mark -
 # pragma mark Life cycle
 
-JamomaAddress::JamomaAddress(shared_ptr<Node> node, TTObject aData) :
+JamomaAddress::JamomaAddress(weak_ptr<Node> node, TTObject aData) :
 mNode(node),
 mObject(aData),
 mObjectValueCallback("callback"),
@@ -24,7 +24,10 @@ mRepetitionFilter(false)
 }
 
 JamomaAddress::~JamomaAddress()
-{}
+{
+  if(mValue)
+    delete mValue;
+}
 
 Address::~Address()
 {}
@@ -64,20 +67,26 @@ const Value * JamomaAddress::getValue() const
   return mValue;
 }
 
+const Value* JamomaAddress::cloneValue() const
+{
+    std::lock_guard<std::mutex> lock(mValueMutex);
+    return mValue->clone();
+}
 Address & JamomaAddress::setValue(const Value * value)
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
 
   // clear former value
   delete mValue;
-  
+  mValue = nullptr;
+
   // set value querying the value from another address
   if (value->getType() == Value::Type::DESTINATION &&
       mValueType != Value::Type::DESTINATION)
   {
     auto destination = static_cast<const Destination*>(value);
     auto address = destination->value->getAddress();
-    
+
     if (address)
     {
       if (address->getValueType() == mValueType)
@@ -90,11 +99,39 @@ Address & JamomaAddress::setValue(const Value * value)
       throw runtime_error("setting an address value using a destination without address");
     }
   }
-  
+
   // copy the new value
   else
   {
+    if(mValueType != value->getType())
+    {
+        mValueType = value->getType();
+
+        if (mObject.name() != kTTSym_Mirror)
+        {
+          if (mValueType == Value::Type::IMPULSE)
+            mObject.set("type", kTTSym_none);
+          else if (mValueType == Value::Type::BOOL)
+            mObject.set("type", kTTSym_boolean);
+          else if (mValueType == Value::Type::INT)
+            mObject.set("type", kTTSym_integer);
+          else if (mValueType == Value::Type::FLOAT)
+            mObject.set("type", kTTSym_decimal);
+          else if (mValueType == Value::Type::CHAR)
+            mObject.set("type", kTTSym_string);
+          else if (mValueType == Value::Type::STRING)
+            mObject.set("type", kTTSym_string);
+          else if (mValueType == Value::Type::TUPLE)
+            mObject.set("type", kTTSym_array);
+          else if (mValueType == Value::Type::GENERIC)
+            mObject.set("type", kTTSym_generic);
+          else if (mValueType == Value::Type::DESTINATION)
+            mObject.set("type", kTTSym_string);
+        }
+
+    }
     mValue = value->clone();
+
   }
 
   return *this;
@@ -108,7 +145,7 @@ Value::Type JamomaAddress::getValueType() const
 Address & JamomaAddress::setValueType(Value::Type type)
 {
   mValueType = type;
-  
+
   if (mObject.name() != kTTSym_Mirror)
   {
     if (mValueType == Value::Type::IMPULSE)
@@ -130,7 +167,7 @@ Address & JamomaAddress::setValueType(Value::Type type)
     else if (mValueType == Value::Type::DESTINATION)
       mObject.set("type", kTTSym_string);
   }
-  
+
   // initialize the value member
   if (mValueType == Value::Type::IMPULSE)
     mValue = new Impulse();
@@ -150,11 +187,11 @@ Address & JamomaAddress::setValueType(Value::Type type)
     mValue = nullptr;
   else if (mValueType == Value::Type::DESTINATION)
     mValue = new Destination(nullptr);
-  
+
   return *this;
 }
 
-JamomaAddress::AccessMode JamomaAddress::getAccessMode() const
+AccessMode JamomaAddress::getAccessMode() const
 {
   return mAccessMode;
 }
@@ -212,7 +249,7 @@ Address & JamomaAddress::setDomain(shared_ptr<Domain> domain)
   return *this;
 }
 
-JamomaAddress::BoundingMode JamomaAddress::getBoundingMode() const
+BoundingMode JamomaAddress::getBoundingMode() const
 {
   return mBoundingMode;
 }
@@ -264,6 +301,9 @@ Address::iterator JamomaAddress::addCallback(ValueCallback callback)
   {
     // use the device protocol to start address value observation
     mNode.lock()->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), true);
+    
+    //! \debug
+    cout << "opening listening on " << buildNodePath(mNode.lock()) << endl;
   }
 
   return it;
@@ -277,6 +317,9 @@ void JamomaAddress::removeCallback(Address::iterator callback)
   {
     // use the device protocol to stop address value observation
     mNode.lock()->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), false);
+    
+    //! \debug
+    cout << "closing listening on " << buildNodePath(mNode.lock()) << endl;
   }
 }
 
@@ -444,7 +487,9 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
     }
 
     case Value::Type::BEHAVIOR :
-    {}
+    {
+          break;
+    }
 
     case Value::Type::TUPLE :
     {
@@ -546,7 +591,9 @@ void JamomaAddress::convertValueIntoTTValue(const Value * value, TTValue & v) co
     }
 
     case Value::Type::BEHAVIOR :
-    {}
+    {
+          break;
+    }
 
     case Value::Type::TUPLE :
     {

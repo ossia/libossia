@@ -14,7 +14,7 @@ namespace OSSIA
     TTSymbol device_name(name);
     TTObject applicationManager;
     TTObject application;
-    
+
     TTFoundationInit("/usr/local/jamoma/extensions/", true);
     TTModularInit("/usr/local/jamoma/extensions", true);
 
@@ -45,21 +45,21 @@ namespace OSSIA
 
       TTValue v;
       application.get("directory", v);
-      
+
       shared_ptr<JamomaDevice> device = make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
-      
+
        // as it is not possible to call shared_from_this() into the constructor
       device->setDevice(device);
-      
+
       return device;
     }
-    
+
     shared_ptr<JamomaMinuit> minuit_protocol = dynamic_pointer_cast<JamomaMinuit>(protocol);
     if (minuit_protocol)
     {
       // create a distant application
       application = applicationManager.send("ApplicationInstantiateDistant", device_name);
-      
+
       // setup attribute to be cached : all attributes handled by Address class should be declared here
       TTValue args;
       args.append(kTTSym_service);
@@ -68,7 +68,7 @@ namespace OSSIA
       args.append(kTTSym_rangeClipmode);
       args.append(kTTSym_repetitionsFilter);
       application.set("cachedAttributes", args);
-      
+
       // create a Minuit protocol unit
       TTObject protocolMinuit = applicationManager.send("ProtocolFind", "Minuit");
       if (!protocolMinuit.valid())
@@ -87,26 +87,26 @@ namespace OSSIA
       protocolMinuit.send("ApplicationSelect", device_name);
       protocolMinuit.set("port", minuit_protocol->getInPort());
       protocolMinuit.set("ip", TTSymbol(minuit_protocol->getIp()));
-      
+
       //! \todo change Minuit mechanism to setup one out_port per distant device
       protocolMinuit.send("ApplicationSelect", local_device_name);
       protocolMinuit.set("port", minuit_protocol->getOutPort());
-      
+
       protocolMinuit.send("Run");
 
       TTLogMessage("Minuit device created\n");
 
       TTValue v;
       application.get("directory", v);
-      
+
       shared_ptr<JamomaDevice> device = make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
-      
+
       // as it is not possible to call shared_from_this() into the constructor
       device->setDevice(device);
-      
+
       return device;
     }
-    
+
     shared_ptr<JamomaOSC> osc_protocol = dynamic_pointer_cast<JamomaOSC>(protocol);
     if (osc_protocol)
     {
@@ -138,12 +138,12 @@ namespace OSSIA
 
       TTValue v;
       application.get("directory", v);
-      
+
       shared_ptr<JamomaDevice> device = make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
-      
+
       // as it is not possible to call shared_from_this() into the constructor
       device->setDevice(device);
-      
+
       return device;
     }
 
@@ -157,19 +157,22 @@ mProtocol(protocol),
 mApplicationManager(applicationManager),
 mApplication(application)
 {
+  mIsDevice = true;
   if (mNode->getObject() == nullptr)
     mNode->setObject(application);
 }
 
 JamomaDevice::~JamomaDevice()
 {
+  m_children.clear();
   TTSymbol device_name;
   mApplication.get("name", device_name);
   mApplicationManager.send("ApplicationRelease", device_name);
 }
 
 Device::~Device()
-{}
+{
+}
 
 # pragma mark -
 # pragma mark Accessors
