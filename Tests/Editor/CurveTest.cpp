@@ -74,8 +74,8 @@ private Q_SLOTS:
         QVERIFY(curveB->valueAt(-100.) == -100.);
         QVERIFY(curveB->valueAt(-80.) == -80.);
         QVERIFY(curveB->valueAt(-60.) == -60.);
-        //! \todo QVERIFY(curveB->valueAt(-40.) == -40.); //! \note it returns something like ~39.999... ?!?
-        //! \todo QVERIFY(curveB->valueAt(-20.) == -20.); //! \note it returns something like ~19.999... ?!?
+        QVERIFY(curveB->valueAt(-40.) == -40.); //! \note it returns something like ~39.999... ?!?
+        QVERIFY(curveB->valueAt(-20.) == -20.); //! \note it returns something like ~19.999... ?!?
         QVERIFY(curveB->valueAt(0.) == 0.);
         QVERIFY(curveB->valueAt(10.) == 0.);
 
