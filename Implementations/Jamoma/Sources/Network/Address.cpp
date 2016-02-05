@@ -348,8 +348,6 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
 
     for (auto callback : self->callbacks())
     {
-      //! \note théo - do we need to lock here ?
-      std::lock_guard<std::mutex> lock(self->mValueMutex);
       callback(self->mValue);
     }
 
