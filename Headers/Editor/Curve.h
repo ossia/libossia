@@ -19,8 +19,6 @@
 #include <map>
 #include <utility>
 #include <memory>
-#include <vector>
-#include <initializer_list>
 
 #include "Value.h"
 #include "Network/Node.h"

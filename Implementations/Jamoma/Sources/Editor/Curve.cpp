@@ -168,10 +168,9 @@ namespace OSSIA
 template <typename X, typename Y>
 JamomaCurve<X,Y>::
 JamomaCurve() :
-mInitialDestination(nullptr)
-{
-  mInitialDestinationIndex.push_back(0);
-}
+mInitialPointAbscissaDestination(nullptr),
+mInitialPointOrdinateDestination(nullptr)
+{}
 
 template <typename X, typename Y>
 JamomaCurve<X,Y>::
@@ -224,8 +223,8 @@ template <typename X, typename Y>
 Y JamomaCurve<X,Y>::
 valueAt(X abscissa) const
 {
-  X lastAbscissa(-INFINITY);
-  Y lastValue = getInitialValue();
+  X lastAbscissa = getInitialPointAbscissa();
+  Y lastValue = getInitialPointOrdinate();
 
   for (auto it = mPointsMap.begin(); it != mPointsMap.end(); it++)
   {
@@ -251,44 +250,83 @@ valueAt(X abscissa) const
 # pragma mark Accessors
 
 template <typename X, typename Y>
-Y JamomaCurve<X,Y>::
-getInitialValue() const
+X JamomaCurve<X,Y>::
+getInitialPointAbscissa() const
 {
-  if (mInitialDestination == nullptr)
+  if (mInitialPointAbscissaDestination == nullptr)
   {
-    return mInitialValue;
+    return mInitialPointAbscissa;
   }
   else
   {
-    auto address = mInitialDestination->value->getAddress();
+    auto address = mInitialPointAbscissaDestination->value->getAddress();
 
     if (!address)
-      throw runtime_error("getting an address value using from a destination without address");
+      throw runtime_error("getting an address value using from an abscissa destination without address");
 
-    char level = 0;
-    return convertToTemplateTypeValue(address->pullValue(), &level);
+    return convertToTemplateTypeValue(address->pullValue(), mInitialPointAbscissaDestination->index.begin());
+  }
+}
+
+template <typename X, typename Y>
+Y JamomaCurve<X,Y>::
+getInitialPointOrdinate() const
+{
+  if (mInitialPointOrdinateDestination == nullptr)
+  {
+    return mInitialPointOrdinate;
+  }
+  else
+  {
+    auto address = mInitialPointOrdinateDestination->value->getAddress();
+    
+    if (!address)
+      throw runtime_error("getting an address value using from an ordinate destination without address");
+    
+    return convertToTemplateTypeValue(address->pullValue(), mInitialPointOrdinateDestination->index.begin());
   }
 }
 
 template <typename X, typename Y>
 void JamomaCurve<X,Y>::
-setInitialValue(Y value)
+setInitialPointAbscissa(X value)
 {
-  mInitialValue = value;
+  mInitialPointAbscissa = value;
+}
+
+template <typename X, typename Y>
+void JamomaCurve<X,Y>::
+setInitialPointOrdinate(Y value)
+{
+  mInitialPointOrdinate = value;
 }
 
 template <typename X, typename Y>
 const Destination* JamomaCurve<X,Y>::
-getInitialDestination() const
+getInitialPointAbscissaDestination() const
 {
-  return mInitialDestination;
+  return mInitialPointAbscissaDestination;
+}
+
+template <typename X, typename Y>
+const Destination* JamomaCurve<X,Y>::
+getInitialPointOrdinateDestination() const
+{
+  return mInitialPointOrdinateDestination;
 }
 
 template <typename X, typename Y>
 void JamomaCurve<X,Y>::
-setInitialDestination(const Destination* destination)
+setInitialPointAbscissaDestination(const Destination* destination)
 {
-  mInitialDestination = static_cast<Destination*>(destination->clone());
+  mInitialPointAbscissaDestination = static_cast<Destination*>(destination->clone());
+}
+
+template <typename X, typename Y>
+void JamomaCurve<X,Y>::
+setInitialPointOrdinateDestination(const Destination* destination)
+{
+  mInitialPointOrdinateDestination = static_cast<Destination*>(destination->clone());
 }
 
 template <typename X, typename Y>
@@ -303,7 +341,7 @@ getPointsMap() const
 
 template <typename X, typename Y>
 Y JamomaCurve<X,Y>::
-convertToTemplateTypeValue(const Value * value, char* level) const
+convertToTemplateTypeValue(const Value * value, vector<char>::iterator index) const
 {
   switch (value->getType())
   {
@@ -334,11 +372,7 @@ convertToTemplateTypeValue(const Value * value, char* level) const
     case Value::Type::TUPLE :
     {
       auto t = static_cast<const Tuple*>(value);
-
-      char index = mInitialDestination->index[*level];
-      (*level)++;
-
-      return convertToTemplateTypeValue(t->value[index], level);
+      return convertToTemplateTypeValue(t->value[*index], index++);
     }
 
     default :

@@ -19,8 +19,11 @@ private Q_SLOTS:
 
         auto linearSegmentA = CurveSegmentLinear<float>::create(curveA);
 
-        curveA->setInitialValue(0.);
-        QVERIFY(curveA->getInitialValue() == 0.);
+        curveA->setInitialPointAbscissa(0.);
+        QVERIFY(curveA->getInitialPointAbscissa() == 0.);
+
+        curveA->setInitialPointOrdinate(0.);
+        QVERIFY(curveA->getInitialPointOrdinate() == 0.);
 
         curveA->addPoint(linearSegmentA, 1., 1.);
         QVERIFY(curveA->getPointsMap().size() == 1);
@@ -34,8 +37,8 @@ private Q_SLOTS:
         QVERIFY(curveA->valueAt(1.5) == 0.5);
         QVERIFY(curveA->valueAt(2.) == 0.);
 
-        curveA->setInitialValue(2.);
-        QVERIFY(curveA->getInitialValue() == 2.);
+        curveA->setInitialPointOrdinate(2.);
+        QVERIFY(curveA->getInitialPointOrdinate() == 2.);
 
         QVERIFY(curveA->valueAt(0.) == 2.);
         QVERIFY(curveA->valueAt(0.5) == 1.5);
@@ -58,16 +61,21 @@ private Q_SLOTS:
         
         auto linearSegmentB = CurveSegmentLinear<float>::create(curveB);
         
-        curveB->setInitialValue(-96.);
-        QVERIFY(curveB->getInitialValue() == -96.);
+        curveB->setInitialPointAbscissa(-100.);
+        QVERIFY(curveB->getInitialPointAbscissa() == -100.);
+
+        curveB->setInitialPointOrdinate(-100.);
+        QVERIFY(curveB->getInitialPointOrdinate() == -100.);
         
         curveB->addPoint(linearSegmentB, 0., 0.);
         QVERIFY(curveB->getPointsMap().size() == 1);
         
-        QVERIFY(curveB->valueAt(-100.) == -96.);
-        QVERIFY(curveB->valueAt(-96.) == -96.);
+        QVERIFY(curveB->valueAt(-110.) == -100.);
+        QVERIFY(curveB->valueAt(-100.) == -100.);
         QVERIFY(curveB->valueAt(-80.) == -80.);
-        QVERIFY(curveB->valueAt(-20.) == -20.);
+        QVERIFY(curveB->valueAt(-60.) == -60.);
+        QVERIFY(curveB->valueAt(-40.) == -40.); //! \note it returns something like ~39.999... ?!?
+        QVERIFY(curveB->valueAt(-20.) == -20.); //! \note it returns something like ~19.999... ?!?
         QVERIFY(curveB->valueAt(0.) == 0.);
         QVERIFY(curveB->valueAt(10.) == 0.);
 
@@ -88,10 +96,12 @@ private Q_SLOTS:
         auto curve = Curve<double, float>::create();
         auto linearSegment = CurveSegmentLinear<float>::create(curve);
       
-        Destination d(localTupleNode, {1});
-        curve->setInitialDestination(&d);
+        curve->setInitialPointAbscissa(0.);
       
-        QVERIFY(*curve->getInitialDestination() == d);
+        Destination d(localTupleNode, {1});
+        curve->setInitialPointOrdinateDestination(&d);
+      
+        QVERIFY(*curve->getInitialPointOrdinateDestination() == d);
 
         curve->addPoint(linearSegment, 1., 1.);
       

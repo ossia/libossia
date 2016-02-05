@@ -31,7 +31,8 @@ int main()
   auto secondCurveSegment = CurveSegmentLinear<float>::create(myCurve);
   
   cout << "*** test 1 ***" << endl;
-  myCurve->setInitialValue(0.);
+  myCurve->setInitialPointAbscissa(0.);
+  myCurve->setInitialPointOrdinate(0.);
   myCurve->addPoint(firstCurveSegment, 1., 1.);
   myCurve->addPoint(secondCurveSegment, 2., 0.);
   
@@ -42,7 +43,7 @@ int main()
   cout << "value at 2. = " << myCurve->valueAt(2.) << endl;
   
   cout << "*** test 2 ***" << endl;
-  myCurve->setInitialValue(2.);
+  myCurve->setInitialPointOrdinate(2.);
   
   cout << "value at 0. = " << myCurve->valueAt(0.) << endl;
   cout << "value at 0.5 = " << myCurve->valueAt(0.5) << endl;
@@ -62,7 +63,7 @@ int main()
 
   cout << "*** test 3 ***" << endl;
   Destination d1(localTupleNode);
-  myCurve->setInitialDestination(&d1);
+  myCurve->setInitialPointOrdinateDestination(&d1);
   
   cout << "value at 0. = " << myCurve->valueAt(0.) << endl;
   cout << "value at 0.5 = " << myCurve->valueAt(0.5) << endl;
@@ -72,7 +73,7 @@ int main()
   
   cout << "*** test 4 ***" << endl;
   Destination d2(localTupleNode, {1});
-  myCurve->setInitialDestination(&d2);
+  myCurve->setInitialPointOrdinateDestination(&d2);
   
   cout << "value at 0. = " << myCurve->valueAt(0.) << endl;
   cout << "value at 0.5 = " << myCurve->valueAt(0.5) << endl;

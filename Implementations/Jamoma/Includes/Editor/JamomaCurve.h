@@ -29,9 +29,12 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  Y mInitialValue;
-  Destination* mInitialDestination;
-  vector<char> mInitialDestinationIndex;
+  X mInitialPointAbscissa;
+  Destination* mInitialPointAbscissaDestination;
+  
+  Y mInitialPointOrdinate;
+  Destination* mInitialPointOrdinateDestination;
+  
   map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> mPointsMap;
 
 public:
@@ -83,5 +86,5 @@ public:
 # pragma mark -
 # pragma mark Implementation specific
 
-  Y convertToTemplateTypeValue(const Value *, char*) const;
+  Y convertToTemplateTypeValue(const Value *, vector<char>::iterator) const;
 };

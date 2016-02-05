@@ -64,7 +64,9 @@ private Q_SLOTS:
 
         auto curve = Curve<double, float>::create();
         auto linearSegment = CurveSegmentLinear<float>::create(curve);
-        curve->setInitialValue(0.);
+      
+        curve->setInitialPointAbscissa(0.);
+        curve->setInitialPointOrdinate(0.);
         curve->addPoint(linearSegment, 0.5, 1.);
         curve->addPoint(linearSegment, 1., 0.);
         Behavior b(curve);
@@ -76,7 +78,7 @@ private Q_SLOTS:
         auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
         auto constraint_callback = std::bind(&AutomationTest::constraint_callback, this, _1, _2, _3);
-        auto constraint = TimeConstraint::create(constraint_callback, start_event, end_event, 100.);
+        auto constraint = TimeConstraint::create(constraint_callback, start_event, end_event, 100., 100., 100.);
         constraint->addTimeProcess(automation);
 
         m_address_values.clear();
@@ -92,6 +94,18 @@ private Q_SLOTS:
         Float zero(0);
         QVERIFY(*m_address_values[0] == zero);
         QVERIFY(*m_address_values[10] == zero);
+
+        // check if all values are differents from the previous value
+        Value* previous = new Float(-1);
+        bool different_from_previous;
+        for (auto v : m_address_values)
+        {
+            different_from_previous = *v != *previous;
+            if (!different_from_previous)
+                break;
+            previous = v;
+        }
+        QVERIFY(different_from_previous);
     }
 };
 
