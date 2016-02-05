@@ -70,6 +70,9 @@ const Value * JamomaAddress::getValue() const
 const Value* JamomaAddress::cloneValue(std::vector<char> index) const
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
+    
+  if (mValue == nullptr)
+    throw runtime_error("cloning null value");
   
   if (index.empty() || mValueType != Value::Type::TUPLE)
   {
