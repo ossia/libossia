@@ -292,23 +292,6 @@ setInitialDestination(const Destination* destination)
 }
 
 template <typename X, typename Y>
-vector<char> JamomaCurve<X,Y>::
-getInitialDestinationIndex() const
-{
-  return mInitialDestinationIndex;
-}
-
-template <typename X, typename Y>
-void JamomaCurve<X,Y>::
-setInitialDestinationIndex(std::initializer_list<char> index)
-{
-  mInitialDestinationIndex.clear();
-
-  for (const auto & i : index)
-    mInitialDestinationIndex.push_back(i);
-}
-
-template <typename X, typename Y>
 map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> JamomaCurve<X,Y>::
 getPointsMap() const
 {
@@ -352,7 +335,7 @@ convertToTemplateTypeValue(const Value * value, char* level) const
     {
       auto t = static_cast<const Tuple*>(value);
 
-      char index = mInitialDestinationIndex[*level];
+      char index = mInitialDestination->index[*level];
       (*level)++;
 
       return convertToTemplateTypeValue(t->value[index], level);

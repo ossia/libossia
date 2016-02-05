@@ -152,13 +152,23 @@ protected:
 # pragma mark -
 # pragma mark Destination
 
-/*! \details Destination value */
+/*! \details Destination to an Address value and optionnally to several index of this value */
 struct Destination final : public Value
 {
   std::shared_ptr<Node> value;
+  std::vector<char> index;
 
-  /*! constructor */
-  Destination(std::shared_ptr<Node> v);
+  /*! constructor for a node and optionnal index values
+   \param std::shared_ptr<Node>
+   \param char
+   \param char
+   \param ... */
+  Destination(std::shared_ptr<Node> v, std::initializer_list<char> = {});
+  
+  /*! constructor for a node and an index vector
+   \param std::shared_ptr<Node>
+   \param std::vector<const #Value> value */
+  Destination(std::shared_ptr<Node> v, std::vector<char>);
 
   /*! clone */
   Value * clone() const override;

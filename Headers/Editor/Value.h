@@ -311,7 +311,6 @@ struct Tuple final : public Value
   \param ... */
   Tuple(std::initializer_list<const Value*>);
 
-
   /*! constructor passing a value vector
    \param std::vector<const #Value> value */
   Tuple(const std::vector<const Value*>&);

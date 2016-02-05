@@ -68,10 +68,6 @@ public:
 
   void setInitialDestination(const Destination*) override;
 
-  vector<char> getInitialDestinationIndex() const override;
-
-  void setInitialDestinationIndex(std::initializer_list<char>) override;
-
   map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> getPointsMap() const override;
 
 # pragma mark -

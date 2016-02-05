@@ -565,6 +565,24 @@ private Q_SLOTS:
     void test_destination()
     {
         //! \todo test clone()
+
+        // Local device
+        auto local_protocol = Local::create();
+        auto device = Device::create(local_protocol, "test");
+
+        auto localTupleNode = *(device->emplace(device->children().cend(), "my_tuple"));
+        auto localTupleAddress = localTupleNode->createAddress(Value::Type::TUPLE);
+
+        Tuple t = {new Float(-1.), new Float(0.), new Float(1.)};
+        localTupleAddress->setValue(&t);
+
+        Destination d1(localTupleNode);
+        QVERIFY(d1.getType() == Value::Type::DESTINATION);
+        QVERIFY(d1.index.size() == 0);
+
+        Destination d2(localTupleNode, {1});
+        QVERIFY(d2.index.size() == 1);
+        QVERIFY(d2.index[0] == 1);
     }
 
     /*! test behavior */

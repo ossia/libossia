@@ -112,16 +112,6 @@ public:
    \param const Destination* */
   virtual void setInitialDestination(const Destination*) = 0;
   
-  /*! get which index are taken in case the initial destination is a Tuple of Tuple of Tuple ...
-   \return std::vector<char> */
-  virtual std::vector<char> getInitialDestinationIndex() const = 0;
-  
-  /*! precise which index to take in case the initial destination is a Tuple of Tuple of Tuple ...
-   \param char for first level Tuple index
-   \param char for second level Tuple index
-   \param ... */
-  virtual void setInitialDestinationIndex(std::initializer_list<char>) = 0;
-  
   /*! get initial curve value
    \return std::map<X, std::pair<Y, std::shared_ptr<CurveSegment<Y>>>> map of {abscissa, {value, previous segment} */
   virtual std::map<X, std::pair<Y, std::shared_ptr<CurveSegment<Y>>>> getPointsMap() const = 0;
