@@ -110,10 +110,8 @@ public:
   //! \note don't put implementation specifics stuff in private or protected as they are invisible for API users
   //! \note this allow to avoid friendship for each Protocol for example
 
-  /* force value type
-   \details it is usefull for value type unhandled by Jamoma like DESTINATION
-   \param a new value type */
-
+  /* init value member depending on its type to avoid null pointer */
+  void initValue();
 
   /*! pull TTValue from mObject
    \param TTValue pulled value

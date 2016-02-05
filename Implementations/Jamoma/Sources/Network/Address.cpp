@@ -9,6 +9,7 @@ JamomaAddress::JamomaAddress(weak_ptr<Node> node, TTObject aData) :
 mNode(node),
 mObject(aData),
 mObjectValueCallback("callback"),
+mValue(new Impulse()),
 mValueType(Value::Type::IMPULSE),
 mAccessMode(AccessMode::BI),
 mBoundingMode(BoundingMode::FREE),
@@ -25,7 +26,7 @@ mRepetitionFilter(false)
 
 JamomaAddress::~JamomaAddress()
 {
-  if(mValue)
+  if (mValue)
     delete mValue;
 }
 
@@ -195,24 +196,7 @@ Address & JamomaAddress::setValueType(Value::Type type)
   }
 
   // initialize the value member
-  if (mValueType == Value::Type::IMPULSE)
-    mValue = new Impulse();
-  else if (mValueType == Value::Type::BOOL)
-    mValue = new Bool();
-  else if (mValueType == Value::Type::INT)
-    mValue = new Int();
-  else if (mValueType == Value::Type::FLOAT)
-    mValue = new Float();
-  else if (mValueType == Value::Type::CHAR)
-    mValue = new Char();
-  else if (mValueType == Value::Type::STRING)
-    mValue = new String();
-  else if (mValueType == Value::Type::TUPLE)
-    mValue = new Tuple();
-  else if (mValueType == Value::Type::GENERIC)
-    mValue = nullptr;
-  else if (mValueType == Value::Type::DESTINATION)
-    mValue = new Destination(nullptr, {});
+  initValue();
 
   return *this;
 }
@@ -373,6 +357,28 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
   }
 
   return kTTErrGeneric;
+}
+
+void JamomaAddress::initValue()
+{
+  if (mValueType == Value::Type::IMPULSE)
+    mValue = new Impulse();
+  else if (mValueType == Value::Type::BOOL)
+    mValue = new Bool();
+  else if (mValueType == Value::Type::INT)
+    mValue = new Int();
+  else if (mValueType == Value::Type::FLOAT)
+    mValue = new Float();
+  else if (mValueType == Value::Type::CHAR)
+    mValue = new Char();
+  else if (mValueType == Value::Type::STRING)
+    mValue = new String();
+  else if (mValueType == Value::Type::TUPLE)
+    mValue = new Tuple();
+  else if (mValueType == Value::Type::GENERIC)
+    mValue = nullptr;
+  else if (mValueType == Value::Type::DESTINATION)
+    mValue = new Destination(nullptr, {});
 }
 
 bool JamomaAddress::pullValue(TTValue& value) const
