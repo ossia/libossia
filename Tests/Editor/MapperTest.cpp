@@ -52,15 +52,15 @@ private Q_SLOTS:
         Float f(0);
 
         auto mapper = Mapper::create(float_address, int_address, &f);
-        QVERIFY(automation != nullptr);
+        QVERIFY(mapper != nullptr);
 
-        QVERIFY(automation->getStartState() != nullptr);
-        QVERIFY(automation->getEndState() != nullptr);
-        QVERIFY(automation->getParentTimeConstraint() == nullptr);
+        QVERIFY(mapper->getStartState() != nullptr);
+        QVERIFY(mapper->getEndState() != nullptr);
+        QVERIFY(mapper->getParentTimeConstraint() == nullptr);
 
-        QVERIFY(automation->getDriverAddress() == float_address);
-        QVERIFY(automation->getDrivenAddress() == int_address);
-        QVERIFY(*automation->getDriving() == f);
+        QVERIFY(mapper->getDriverAddress() == float_address);
+        QVERIFY(mapper->getDrivenAddress() == int_address);
+        QVERIFY(*mapper->getDriving() == f);
 
         //! \todo test clone()
     }
@@ -81,9 +81,11 @@ private Q_SLOTS:
 
         auto curve = Curve<float, int>::create();
         auto linearSegment = CurveSegmentLinear<int>::create(curve);
-        curve->setInitialValue(0);
-        curve->addPoint(0.5, 5, linearSegment);
-        curve->addPoint(1., 10, linearSegment);
+        curve->setInitialPointAbscissa(-10.);
+        curve->setInitialPointOrdinate(10);
+        curve->addPoint(linearSegment, 0., 0);
+        curve->addPoint(linearSegment, 10., -5);
+
         Behavior b(curve);
         auto mapper = Mapper::create(float_address, int_address, &b);
 
@@ -93,28 +95,36 @@ private Q_SLOTS:
         auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
         auto constraint_callback = std::bind(&MapperTest::constraint_callback, this, _1, _2, _3);
-        auto constraint = TimeConstraint::create(constraint_callback, start_event, end_event, 100.);
+        auto constraint = TimeConstraint::create(constraint_callback, start_event, end_event, 100., 100., 100.);
         constraint->addTimeProcess(mapper);
 
         m_float_address_values.clear();
         m_int_address_values.clear();
 
-        constraint->setGranularity(10.);
+        constraint->setGranularity(5.);
         constraint->start();
 
         while (constraint->getRunning())
         {
             std::this_thread::sleep_for( std::chrono::milliseconds(10));
             const Float* current = static_cast<const Float*>(float_address->getValue());
-            float_address->pushValue(new Float(current->value + 0.1));
+            float_address->pushValue(new Float(current->value + 0.5));
         }
+
+        std::cout << m_float_address_values.size() << endl;
 
         QVERIFY(m_float_address_values.size() == 9 && m_int_address_values.size() == 9);
 
-        Int zero(0);
-        Int dix(10);
-        QVERIFY(*m_float_address_values[0] == zero);
-        QVERIFY(*m_int_address_values[8] == dix);
+        std::vector<Int> expected_result = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5};
+
+        QVERIFY(m_float_address_values.size() == expected_result.size());
+
+        std::vector<Int>::iterator it = expected_result.begin();
+        for (auto v : m_float_address_values)
+        {
+            QVERIFY(*v == *it);
+            it++;
+        }
     }
 };
 

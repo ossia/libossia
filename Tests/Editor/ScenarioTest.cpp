@@ -77,7 +77,7 @@ private Q_SLOTS:
         auto e_callback = std::bind(&ScenarioTest::event_callback, this, _1);
         auto start_event = *(scenario->getStartTimeNode()->emplace(scenario->getStartTimeNode()->timeEvents().begin(), e_callback));
         auto end_event = *(scenario->getEndTimeNode()->emplace(scenario->getEndTimeNode()->timeEvents().begin(), e_callback));
-        auto constraint = TimeConstraint::create(mc_callback, start_event, end_event, 1000.);
+        auto constraint = TimeConstraint::create(mc_callback, start_event, end_event, 1000., 1000., 1000.);
         
         QVERIFY(scenario->getEndTimeNode()->getDate() == 1000.);
     }
@@ -96,7 +96,7 @@ private Q_SLOTS:
         auto end_node = TimeNode::create();
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), e_callback));
 
-        auto constraint = TimeConstraint::create(mc_callback, start_event, end_event, 1000.);
+        auto constraint = TimeConstraint::create(mc_callback, start_event, end_event, 1000., 1000., 1000.);
 
         scenario->addTimeConstraint(constraint);
         QVERIFY(scenario->timeConstraints().size() == 1);
@@ -131,7 +131,7 @@ private Q_SLOTS:
         auto main_end_node = TimeNode::create();
         auto main_start_event = *(main_start_node->emplace(main_start_node->timeEvents().begin(), e_callback));
         auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), e_callback));
-        auto main_constraint = TimeConstraint::create(mc_callback, main_start_event, main_end_event, 5000.);
+        auto main_constraint = TimeConstraint::create(mc_callback, main_start_event, main_end_event, 5000., 5000, 5000.);
         auto main_scenario = Scenario::create();
 
         main_constraint->addTimeProcess(main_scenario);

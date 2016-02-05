@@ -55,7 +55,7 @@ private Q_SLOTS:
         auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
         
-        auto constraint = TimeConstraint::create(constraint_callback, start_event, end_event, 100.);
+        auto constraint = TimeConstraint::create(constraint_callback, start_event, end_event, 100., 100., 100.);
         
         auto loop = Loop::create(25., constraint_callback, event_callback, event_callback);
 
