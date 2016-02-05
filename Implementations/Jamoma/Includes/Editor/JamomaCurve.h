@@ -61,18 +61,30 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
+  
+  X getInitialPointAbscissa() const override;
+  
+  Y getInitialPointOrdinate() const override;
+  
+  void setInitialPointAbscissa(X) override;
 
-  Y getInitialValue() const override;
+  void setInitialPointOrdinate(Y) override;
 
-  void setInitialValue(Y) override;
+  const Destination* getInitialPointAbscissaDestination() const override;
+  
+  const Destination* getInitialPointOrdinateDestination() const override;
+  
+  void setInitialPointAbscissaDestination(const Destination*) override;
+  
+  void setInitialPointOrdinateDestination(const Destination*) override;
+  
+  std::vector<char> getInitialPointAbscissaDestinationIndex() const override;
+  
+  void setInitialPointAbscissaDestinationIndex(std::initializer_list<char>) override;
 
-  const Destination* getInitialDestination() const override;
-
-  void setInitialDestination(const Destination*) override;
-
-  vector<char> getInitialDestinationIndex() const override;
-
-  void setInitialDestinationIndex(std::initializer_list<char>) override;
+  std::vector<char> getInitialPointOrdinateDestinationIndex() const override;
+  
+  void setInitialPointOrdinateDestinationIndex(std::initializer_list<char>) override;
 
   map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> getPointsMap() const override;
 

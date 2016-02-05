@@ -133,11 +133,21 @@ public:
    \return std::vector<char> */
   virtual std::vector<char> getInitialPointAbscissaDestinationIndex() const = 0;
   
-  /*! precise which index to take in case the initial destination is a Tuple of Tuple of Tuple ...
+  /*! precise which index to take in case the initial abscissa destination is a Tuple of Tuple of Tuple ...
    \param char for first level Tuple index
    \param char for second level Tuple index
    \param ... */
   virtual void setInitialPointAbscissaDestinationIndex(std::initializer_list<char>) = 0;
+  
+  /*! get which index are taken in case the initial ordinate destination is a Tuple of Tuple of Tuple ...
+   \return std::vector<char> */
+  virtual std::vector<char> getInitialPointOrdinateDestinationIndex() const = 0;
+  
+  /*! precise which index to take in case the initial ordinate destination is a Tuple of Tuple of Tuple ...
+   \param char for first level Tuple index
+   \param char for second level Tuple index
+   \param ... */
+  virtual void setInitialPointOrdinateDestinationIndex(std::initializer_list<char>) = 0;
   
   /*! get initial curve value
    \return std::map<X, std::pair<Y, std::shared_ptr<CurveSegment<Y>>>> map of {abscissa, {value, previous segment} */
