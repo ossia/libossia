@@ -134,11 +134,8 @@ shared_ptr<Address> JamomaNode::createAddress(Value::Type type)
     // edit new address
     mAddress = make_shared<JamomaAddress>(shared_from_this(), mObject);
 
-    // force address value type for some API value type unhandled by Jamoma
-    if (type == Value::Type::DESTINATION)
-    {
-      mAddress->setValueType(type);
-    }
+    // set type
+    mAddress->setValueType(type);
 
     // notify observers
     send(*this, getName(), NodeChange::ADDRESS_CREATED);
