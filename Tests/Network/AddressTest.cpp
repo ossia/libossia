@@ -25,16 +25,18 @@ private Q_SLOTS:
         
         QVERIFY(address->getValueType() == Value::Type::IMPULSE);
         
-        //! \todo verify setValueType
+        address->setValueType(Value::Type::INT);
+        QVERIFY(address->getValueType() == Value::Type::INT);
         
         QVERIFY(address->getAccessMode() == OSSIA::AccessMode::BI);
         
         address->setAccessMode(OSSIA::AccessMode::SET);
         QVERIFY(address->getAccessMode() == OSSIA::AccessMode::SET);
         
-        QVERIFY(address->getDomain() != nullptr);
-        
-        //! \todo verify setDomain
+        QVERIFY(address->getDomain() == nullptr);
+        auto domain = Domain::create();
+        address->setDomain(domain);
+        QVERIFY(address->getDomain() == domain);
         
         QVERIFY(address->getBoundingMode() == OSSIA::BoundingMode::FREE);
         
