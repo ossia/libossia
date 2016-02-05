@@ -114,7 +114,7 @@ bool Bool::operator== (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this == *c;
         
         delete c;
@@ -184,7 +184,7 @@ bool Bool::operator> (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this > *c;
         
         delete c;
@@ -249,7 +249,7 @@ bool Bool::operator>= (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this >= *c;
         
         delete c;
@@ -314,7 +314,7 @@ bool Bool::operator< (const Value& v) const
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
         {
-          const Value* c = d->value->getAddress()->cloneValue();
+          const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this < *c;
           
           delete c;
@@ -379,7 +379,7 @@ bool Bool::operator<= (const Value& v) const
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
         {
-          const Value* c = d->value->getAddress()->cloneValue();
+          const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this <= *c;
           
           delete c;
@@ -457,7 +457,7 @@ bool Int::operator== (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this == *c;
         
         delete c;
@@ -527,7 +527,7 @@ bool Int::operator> (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this > *c;
         
         delete c;
@@ -596,7 +596,7 @@ bool Int::operator>= (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this >= *c;
         
         delete c;
@@ -657,7 +657,7 @@ bool Int::operator< (const Value& v) const
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
         {
-          const Value* c = d->value->getAddress()->cloneValue();
+          const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this < *c;
           
           delete c;
@@ -726,7 +726,7 @@ bool Int::operator<= (const Value& v) const
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
         {
-          const Value* c = d->value->getAddress()->cloneValue();
+          const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this <= *c;
           
           delete c;
@@ -800,7 +800,7 @@ bool Float::operator== (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this == *c;
         
         delete c;
@@ -870,7 +870,7 @@ bool Float::operator> (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this > *c;
         
         delete c;
@@ -935,7 +935,7 @@ bool Float::operator>= (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this >= *c;
         
         delete c;
@@ -1000,7 +1000,7 @@ bool Float::operator< (const Value& v) const
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
         {
-          const Value* c = d->value->getAddress()->cloneValue();
+          const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this < *c;
           
           delete c;
@@ -1065,7 +1065,7 @@ bool Float::operator<= (const Value& v) const
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
         {
-          const Value* c = d->value->getAddress()->cloneValue();
+          const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this <= *c;
           
           delete c;
@@ -1144,7 +1144,7 @@ bool Char::operator== (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this == *c;
         
         delete c;
@@ -1214,7 +1214,7 @@ bool Char::operator> (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this > *c;
         
         delete c;
@@ -1279,7 +1279,7 @@ bool Char::operator>= (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this >= *c;
         
         delete c;
@@ -1344,7 +1344,7 @@ bool Char::operator< (const Value& v) const
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
         {
-          const Value* c = d->value->getAddress()->cloneValue();
+          const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this < *c;
           
           delete c;
@@ -1409,7 +1409,7 @@ bool Char::operator<= (const Value& v) const
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
         {
-          const Value* c = d->value->getAddress()->cloneValue();
+          const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this <= *c;
           
           delete c;
@@ -1484,7 +1484,7 @@ bool String::operator== (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this == *c;
         
         delete c;
@@ -1551,7 +1551,7 @@ bool String::operator> (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this > *c;
         
         delete c;
@@ -1613,7 +1613,7 @@ bool String::operator>= (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this >= *c;
         
         delete c;
@@ -1675,7 +1675,7 @@ bool String::operator< (const Value& v) const
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
         {
-          const Value* c = d->value->getAddress()->cloneValue();
+          const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this < *c;
           
           delete c;
@@ -1737,7 +1737,7 @@ bool String::operator<= (const Value& v) const
         auto d = static_cast<const Destination*>(&v);
         if (d->value->getAddress())
         {
-          const Value* c = d->value->getAddress()->cloneValue();
+          const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this <= *c;
           
           delete c;
@@ -2049,7 +2049,7 @@ bool Generic<T>::operator== (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this == *c;
         
         delete c;
@@ -2122,7 +2122,7 @@ bool Generic<T>::operator> (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this > *c;
         
         delete c;
@@ -2189,7 +2189,7 @@ bool Generic<T>::operator>= (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (d->value->getAddress())
       {
-        const Value* c = d->value->getAddress()->cloneValue();
+        const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this >= *c;
         
         delete c;
@@ -2220,14 +2220,25 @@ bool Generic<T>::operator<= (const Value& v) const
 # pragma mark -
 # pragma mark Destination
 
-Destination::Destination(std::shared_ptr<Node> v) : value(v)
+Destination::Destination(std::shared_ptr<Node> v, std::initializer_list<char> idx) : value(v)
 {
   m_type = Type::DESTINATION;
+  
+  for (const auto & i : idx)
+    index.push_back(i);
+}
+
+Destination::Destination(std::shared_ptr<Node> v, std::vector<char> idx) : value(v)
+{
+  m_type = Type::DESTINATION;
+  
+  for (const auto & i : idx)
+    index.push_back(i);
 }
 
 Value * Destination::clone() const
 {
-  return new Destination(value);
+  return new Destination(value, index);
 }
 
 bool Destination::operator== (const Value& v) const
@@ -2245,8 +2256,8 @@ bool Destination::operator== (const Value& v) const
       // if there are addresses compare values
       if (value->getAddress() && d->value->getAddress())
       {
-        const Value* c1 = value->getAddress()->cloneValue();
-        const Value* c2 = d->value->getAddress()->cloneValue();
+        const Value* c1 = value->getAddress()->cloneValue(index);
+        const Value* c2 = d->value->getAddress()->cloneValue(d->index);
         bool result = *c1 == *c2;
         
         delete c1;
@@ -2262,7 +2273,7 @@ bool Destination::operator== (const Value& v) const
     {
       if (value->getAddress())
       {
-        const Value* c = value->getAddress()->cloneValue();
+        const Value* c = value->getAddress()->cloneValue(index);
         bool result = *c == v;
         
         delete c;
@@ -2292,8 +2303,8 @@ bool Destination::operator> (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (value->getAddress() && d->value->getAddress())
       {
-        const Value* c1 = value->getAddress()->cloneValue();
-        const Value* c2 = d->value->getAddress()->cloneValue();
+        const Value* c1 = value->getAddress()->cloneValue(index);
+        const Value* c2 = d->value->getAddress()->cloneValue(d->index);
         bool result = *c1 > *c2;
         
         delete c1;
@@ -2305,7 +2316,7 @@ bool Destination::operator> (const Value& v) const
     {
       if (value->getAddress())
       {
-        const Value* c = value->getAddress()->cloneValue();
+        const Value* c = value->getAddress()->cloneValue(index);
         bool result = *c > v;
         
         delete c;
@@ -2330,8 +2341,8 @@ bool Destination::operator>= (const Value& v) const
       auto d = static_cast<const Destination*>(&v);
       if (value->getAddress() && d->value->getAddress())
       {
-        const Value* c1 = value->getAddress()->cloneValue();
-        const Value* c2 = d->value->getAddress()->cloneValue();
+        const Value* c1 = value->getAddress()->cloneValue(index);
+        const Value* c2 = d->value->getAddress()->cloneValue(d->index);
         bool result = *c1 >= *c2;
         
         delete c1;
@@ -2343,7 +2354,7 @@ bool Destination::operator>= (const Value& v) const
     {
       if (value->getAddress())
       {
-        const Value* c = value->getAddress()->cloneValue();
+        const Value* c = value->getAddress()->cloneValue(index);
         bool result = *c >= v;
         
         delete c;

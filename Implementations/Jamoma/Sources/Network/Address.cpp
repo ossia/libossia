@@ -67,10 +67,33 @@ const Value * JamomaAddress::getValue() const
   return mValue;
 }
 
-const Value* JamomaAddress::cloneValue() const
+const Value* JamomaAddress::cloneValue(std::vector<char> index) const
 {
-    std::lock_guard<std::mutex> lock(mValueMutex);
+  std::lock_guard<std::mutex> lock(mValueMutex);
+  
+  if (index.empty() || mValueType != Value::Type::TUPLE)
+  {
     return mValue->clone();
+  }
+  else if (index.size() == 1)
+  {
+    // clone value from tuple element at index
+    auto tuple = static_cast<const Tuple*>(mValue);
+    return tuple->value[index[0]]->clone();
+  }
+  else
+  {
+    // create a new tuple from tuple's values at index
+    auto tuple = static_cast<const Tuple*>(mValue);
+    vector<const Value*> values;
+    
+    for (char i : index)
+    {
+      values.push_back(tuple->value[i]->clone());
+    }
+    
+    return new Tuple(values);
+  }
 }
 Address & JamomaAddress::setValue(const Value * value)
 {
@@ -186,7 +209,7 @@ Address & JamomaAddress::setValueType(Value::Type type)
   else if (mValueType == Value::Type::GENERIC)
     mValue = nullptr;
   else if (mValueType == Value::Type::DESTINATION)
-    mValue = new Destination(nullptr);
+    mValue = new Destination(nullptr, {});
 
   return *this;
 }

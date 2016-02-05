@@ -51,6 +51,8 @@ private Q_SLOTS:
         //! \todo verify removeCallback
         
         //! \todo verify getValue
+
+        //! \todo verify cloneValue
         
         //! \todo verify setValue
 

@@ -59,10 +59,10 @@ int main()
   
   Tuple t = {new Float(-1.), new Float(0.), new Float(1.)};
   localTupleAddress->setValue(&t);
-  Destination d(localTupleNode);
-  
+
   cout << "*** test 3 ***" << endl;
-  myCurve->setInitialDestination(&d);
+  Destination d1(localTupleNode);
+  myCurve->setInitialDestination(&d1);
   
   cout << "value at 0. = " << myCurve->valueAt(0.) << endl;
   cout << "value at 0.5 = " << myCurve->valueAt(0.5) << endl;
@@ -71,7 +71,8 @@ int main()
   cout << "value at 2. = " << myCurve->valueAt(2.) << endl;
   
   cout << "*** test 4 ***" << endl;
-  myCurve->setInitialDestinationIndex({1});
+  Destination d2(localTupleNode, {1});
+  myCurve->setInitialDestination(&d2);
   
   cout << "value at 0. = " << myCurve->valueAt(0.) << endl;
   cout << "value at 0.5 = " << myCurve->valueAt(0.5) << endl;

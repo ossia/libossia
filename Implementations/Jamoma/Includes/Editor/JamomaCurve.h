@@ -77,14 +77,6 @@ public:
   void setInitialPointAbscissaDestination(const Destination*) override;
   
   void setInitialPointOrdinateDestination(const Destination*) override;
-  
-  std::vector<char> getInitialPointAbscissaDestinationIndex() const override;
-  
-  void setInitialPointAbscissaDestinationIndex(std::initializer_list<char>) override;
-
-  std::vector<char> getInitialPointOrdinateDestinationIndex() const override;
-  
-  void setInitialPointOrdinateDestinationIndex(std::initializer_list<char>) override;
 
   map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> getPointsMap() const override;
 

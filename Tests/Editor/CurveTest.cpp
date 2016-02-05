@@ -88,14 +88,11 @@ private Q_SLOTS:
         auto curve = Curve<double, float>::create();
         auto linearSegment = CurveSegmentLinear<float>::create(curve);
       
-        Destination d(localTupleNode);
+        Destination d(localTupleNode, {1});
         curve->setInitialDestination(&d);
-        curve->setInitialDestinationIndex({1});
       
         QVERIFY(*curve->getInitialDestination() == d);
-        QVERIFY(curve->getInitialDestinationIndex().size() == 1);
-        QVERIFY(curve->getInitialDestinationIndex()[0] == 1);
-      
+
         curve->addPoint(linearSegment, 1., 1.);
       
         QVERIFY(curve->valueAt(0.) == 0.);
