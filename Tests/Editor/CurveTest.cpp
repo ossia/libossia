@@ -13,73 +13,96 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        // <double, float> curve
-        auto curveA = Curve<double, float>::create();
-        QVERIFY(curveA != nullptr);
-
-        auto linearSegmentA = CurveSegmentLinear<float>::create(curveA);
-
-        curveA->setInitialPointAbscissa(0.);
-        QVERIFY(curveA->getInitialPointAbscissa() == 0.);
-
-        curveA->setInitialPointOrdinate(0.);
-        QVERIFY(curveA->getInitialPointOrdinate() == 0.);
-
-        curveA->addPoint(linearSegmentA, 1., 1.);
-        QVERIFY(curveA->getPointsMap().size() == 1);
-
-        curveA->addPoint(linearSegmentA, 2., 0.);
-        QVERIFY(curveA->getPointsMap().size() == 2);
-
-        QVERIFY(curveA->valueAt(0.) == 0.);
-        QVERIFY(curveA->valueAt(0.5) == 0.5);
-        QVERIFY(curveA->valueAt(1.) == 1.);
-        QVERIFY(curveA->valueAt(1.5) == 0.5);
-        QVERIFY(curveA->valueAt(2.) == 0.);
-
-        curveA->setInitialPointOrdinate(2.);
-        QVERIFY(curveA->getInitialPointOrdinate() == 2.);
-
-        QVERIFY(curveA->valueAt(0.) == 2.);
-        QVERIFY(curveA->valueAt(0.5) == 1.5);
-        QVERIFY(curveA->valueAt(1.) == 1.);
-        QVERIFY(curveA->valueAt(1.5) == 0.5);
-        QVERIFY(curveA->valueAt(2.) == 0.);
-
-        curveA->removePoint(1.);
-        QVERIFY(curveA->getPointsMap().size() == 1);
-
-        QVERIFY(curveA->valueAt(0.) == 2.);
-        QVERIFY(curveA->valueAt(0.5) == 1.5);
-        QVERIFY(curveA->valueAt(1.) == 1.);
-        QVERIFY(curveA->valueAt(1.5) == 0.5);
-        QVERIFY(curveA->valueAt(2.) == 0.);
-        
-        // <float, float> curve
-        auto curveB = Curve<float, float>::create();
-        QVERIFY(curveB != nullptr);
-        
-        auto linearSegmentB = CurveSegmentLinear<float>::create(curveB);
-        
-        curveB->setInitialPointAbscissa(-100.);
-        QVERIFY(curveB->getInitialPointAbscissa() == -100.);
-
-        curveB->setInitialPointOrdinate(-100.);
-        QVERIFY(curveB->getInitialPointOrdinate() == -100.);
-        
-        curveB->addPoint(linearSegmentB, 0., 0.);
-        QVERIFY(curveB->getPointsMap().size() == 1);
-        
-        QVERIFY(curveB->valueAt(-110.) == -100.);
-        QVERIFY(curveB->valueAt(-100.) == -100.);
-        QVERIFY(curveB->valueAt(-80.) == -80.);
-        QVERIFY(curveB->valueAt(-60.) == -60.);
-        QVERIFY(curveB->valueAt(-40.) == -40.); //! \note it returns something like ~39.999... ?!?
-        QVERIFY(curveB->valueAt(-20.) == -20.); //! \note it returns something like ~19.999... ?!?
-        QVERIFY(curveB->valueAt(0.) == 0.);
-        QVERIFY(curveB->valueAt(10.) == 0.);
-
         //! \todo test clone()
+    }
+
+    void test_double_float()
+    {
+        // <double, float> curve
+        auto curve = Curve<double, float>::create();
+        QVERIFY(curve != nullptr);
+
+        auto linearSegment = CurveSegmentLinear<float>::create(curve);
+
+        curve->setInitialPointAbscissa(0.);
+        QVERIFY(curve->getInitialPointAbscissa() == 0.);
+
+        curve->setInitialPointOrdinate(0.);
+        QVERIFY(curve->getInitialPointOrdinate() == 0.);
+
+        curve->addPoint(linearSegment, 1., 1.);
+        QVERIFY(curve->getPointsMap().size() == 1);
+
+        curve->addPoint(linearSegment, 2., 0.);
+        QVERIFY(curve->getPointsMap().size() == 2);
+
+        QVERIFY(curve->valueAt(0.) == 0.);
+        QVERIFY(curve->valueAt(0.5) == 0.5);
+        QVERIFY(curve->valueAt(1.) == 1.);
+        QVERIFY(curve->valueAt(1.5) == 0.5);
+        QVERIFY(curve->valueAt(2.) == 0.);
+
+        curve->setInitialPointOrdinate(2.);
+        QVERIFY(curve->getInitialPointOrdinate() == 2.);
+
+        QVERIFY(curve->valueAt(0.) == 2.);
+        QVERIFY(curve->valueAt(0.5) == 1.5);
+        QVERIFY(curve->valueAt(1.) == 1.);
+        QVERIFY(curve->valueAt(1.5) == 0.5);
+        QVERIFY(curve->valueAt(2.) == 0.);
+
+        curve->removePoint(1.);
+        QVERIFY(curve->getPointsMap().size() == 1);
+
+        QVERIFY(curve->valueAt(0.) == 2.);
+        QVERIFY(curve->valueAt(0.5) == 1.5);
+        QVERIFY(curve->valueAt(1.) == 1.);
+        QVERIFY(curve->valueAt(1.5) == 0.5);
+        QVERIFY(curve->valueAt(2.) == 0.);
+    }
+
+    void test_float_float()
+    {
+        auto curve = Curve<float, float>::create();
+        QVERIFY(curve != nullptr);
+        
+        auto linearSegment = CurveSegmentLinear<float>::create(curve);
+        
+        curve->setInitialPointAbscissa(-100.);
+        QVERIFY(curve->getInitialPointAbscissa() == -100.);
+
+        curve->setInitialPointOrdinate(-100.);
+        QVERIFY(curve->getInitialPointOrdinate() == -100.);
+        
+        curve->addPoint(linearSegment, 0., 0.);
+        QVERIFY(curve->getPointsMap().size() == 1);
+
+        QVERIFY(qFuzzyCompare(curve->valueAt(-110.), float(-100.)));
+        QVERIFY(qFuzzyCompare(curve->valueAt(-100.), float(-100.)));
+        QVERIFY(qFuzzyCompare(curve->valueAt(-80.), float(-80.)));
+        QVERIFY(qFuzzyCompare(curve->valueAt(-60.), float(-60.)));
+        QVERIFY(qFuzzyCompare(curve->valueAt(-40.), float(-40.)));
+        QVERIFY(qFuzzyCompare(curve->valueAt(-20.), float(-20.)));
+        QVERIFY(qFuzzyCompare(curve->valueAt(-0.), float(0.)));
+        QVERIFY(qFuzzyCompare(curve->valueAt(10.), float(0.)));
+    }
+
+    void test_float_int()
+    {
+        auto curve = Curve<float, int>::create();
+        auto linearSegment = CurveSegmentLinear<int>::create(curve);
+        curve->setInitialPointAbscissa(-10.);
+        curve->setInitialPointOrdinate(-10);
+        curve->addPoint(linearSegment, 10., 10);
+
+        QVERIFY(curve->valueAt(-10.) == -10);
+        QVERIFY(curve->valueAt(-9.5) == -9);
+        QVERIFY(curve->valueAt(-9.) == -9); //! \note it returns -8 ! but it should be equivalent to linearSegment->valueAt(0.05, -10, 10) = -9
+        QVERIFY(curve->valueAt(-8.5) == -8);
+        QVERIFY(curve->valueAt(-8) == -8);
+        QVERIFY(curve->valueAt(-7.5) == -7);
+        QVERIFY(curve->valueAt(0.) == 0);
+        QVERIFY(curve->valueAt(10.) == 10);
     }
   
     void test_destination()
