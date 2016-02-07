@@ -15,6 +15,8 @@
 #include "Editor/JamomaCurve.h"
 #include "Editor/CurveSegment/JamomaCurveSegmentLinear.h"
 
+#include <iostream> //! \todo to remove. only here for debug purpose
+
 # pragma mark -
 # pragma mark Life Cycle
 
@@ -94,7 +96,13 @@ template <typename Y>
 Y JamomaCurveSegmentLinear<Y>::
 valueAt(double ratio, Y start, Y end) const
 {
-  return start + ratio * (end - start);
+  double result = start + ratio * (end - start);
+  Y casted_result = result;
+  
+  //! \debug
+  std::cout << "valueAt(" << ratio << ", " << start << ", " << end << ") = cast(" << result << ") = " << casted_result << endl;
+  
+  return casted_result;
 }
 
 # pragma mark -
