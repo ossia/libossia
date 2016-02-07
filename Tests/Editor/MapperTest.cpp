@@ -89,7 +89,7 @@ private Q_SLOTS:
         auto curve = Curve<float, int>::create();
         auto linearSegment = CurveSegmentLinear<int>::create(curve);
         curve->setInitialPointAbscissa(-10.);
-        curve->setInitialPointOrdinate(-10.);
+        curve->setInitialPointOrdinate(-10);
         curve->addPoint(linearSegment, 10., 10);
 
         Behavior b(curve);
@@ -103,8 +103,6 @@ private Q_SLOTS:
         auto constraint_callback = std::bind(&MapperTest::constraint_callback, this, _1, _2, _3);
         auto constraint = TimeConstraint::create(constraint_callback, start_event, end_event, 400., 400., 400.);
         constraint->addTimeProcess(mapper);
-
-        std::cout << "*** start *** " << std::endl;
 
         m_float_address_values.clear();
         m_int_address_values.clear();
@@ -120,10 +118,6 @@ private Q_SLOTS:
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
 
-        std::cout << "*** end *** " << std::endl;
-        std::cout << "float values size = " << m_float_address_values.size() << std::endl;
-        std::cout << "int values size = " << m_int_address_values.size() << std::endl;
-
         QVERIFY(m_float_address_values.size() == m_int_address_values.size());
 
         // check if each value produced by the mapping is correct
@@ -134,9 +128,7 @@ private Q_SLOTS:
             Float* f = static_cast<Float*>(v);
             Int* i = static_cast<Int*>(*it);
 
-            // the mapping should be equivalent to the formula below
-            double ratio = (f->value + 10.) / 20.;
-            int result = linearSegment->valueAt(ratio, -10, 10);
+            int result = curve->valueAt(f->value);
 
             QVERIFY(i->value == result);
 
