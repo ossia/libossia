@@ -12,7 +12,10 @@ class MapperTest : public QObject
 {
     Q_OBJECT
 
+    std::shared_ptr<Address> m_float_address;
     std::vector<Value*> m_float_address_values;
+
+    std::shared_ptr<Address> m_int_address;
     std::vector<Value*> m_int_address_values;
 
     void constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<StateElement> element)
@@ -25,14 +28,17 @@ class MapperTest : public QObject
         std::cout << "Event : " << "new status received" << std::endl;
     }
 
-    void float_address_callback(const Value * v)
-    {
-        m_float_address_values.push_back(v->clone());
-    }
-    
     void int_address_callback(const Value * v)
     {
+        // store mapping result
         m_int_address_values.push_back(v->clone());
+
+        // store current float value
+        m_float_address_values.push_back(m_float_address->getValue()->clone());
+
+        // prepare next float value
+        const Float* current = static_cast<const Float*>(m_float_address->getValue());
+        m_float_address->pushValue(new Float(current->value + 0.5));
     }
 
 private Q_SLOTS:
@@ -71,23 +77,23 @@ private Q_SLOTS:
     {
         auto local_protocol = Local::create();
         auto local_device = Device::create(local_protocol, "test");
-        
+
         local_device->emplace(local_device->children().begin(), "float");
-        auto float_address = local_device->children().front()->createAddress(Value::Type::FLOAT);
-        float_address->addCallback([&] (const Value* v) { float_address_callback(v); });
-        
-        auto int_address = local_device->children().front()->createAddress(Value::Type::INT);
-        int_address->addCallback([&] (const Value* v) { int_address_callback(v); });
+        m_float_address = local_device->children().front()->createAddress(Value::Type::FLOAT);
+
+        local_device->emplace(local_device->children().begin(), "int");
+        m_int_address = local_device->children().front()->createAddress(Value::Type::INT);
+        auto int_address_callback = std::bind(&MapperTest::int_address_callback, this, _1);
+        m_int_address->addCallback(int_address_callback);
 
         auto curve = Curve<float, int>::create();
         auto linearSegment = CurveSegmentLinear<int>::create(curve);
         curve->setInitialPointAbscissa(-10.);
-        curve->setInitialPointOrdinate(10);
-        curve->addPoint(linearSegment, 0., 0);
-        curve->addPoint(linearSegment, 10., -5);
+        curve->setInitialPointOrdinate(-10.);
+        curve->addPoint(linearSegment, 10., 10);
 
         Behavior b(curve);
-        auto mapper = Mapper::create(float_address, int_address, &b);
+        auto mapper = Mapper::create(m_float_address, m_int_address, &b);
 
         auto start_node = TimeNode::create();
         auto end_node = TimeNode::create();
@@ -95,34 +101,45 @@ private Q_SLOTS:
         auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
         auto constraint_callback = std::bind(&MapperTest::constraint_callback, this, _1, _2, _3);
-        auto constraint = TimeConstraint::create(constraint_callback, start_event, end_event, 100., 100., 100.);
+        auto constraint = TimeConstraint::create(constraint_callback, start_event, end_event, 400., 400., 400.);
         constraint->addTimeProcess(mapper);
+
+        std::cout << "*** start *** " << std::endl;
 
         m_float_address_values.clear();
         m_int_address_values.clear();
 
-        constraint->setGranularity(5.);
+        Float f(-10.);
+        m_float_address->pushValue(&f);
+
+        constraint->setGranularity(10.);
         constraint->start();
 
         while (constraint->getRunning())
         {
-            std::this_thread::sleep_for( std::chrono::milliseconds(10));
-            const Float* current = static_cast<const Float*>(float_address->getValue());
-            float_address->pushValue(new Float(current->value + 0.5));
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
 
-        std::cout << m_float_address_values.size() << endl;
+        std::cout << "*** end *** " << std::endl;
+        std::cout << "float values size = " << m_float_address_values.size() << std::endl;
+        std::cout << "int values size = " << m_int_address_values.size() << std::endl;
 
-        QVERIFY(m_float_address_values.size() == 9 && m_int_address_values.size() == 9);
+        QVERIFY(m_float_address_values.size() == m_int_address_values.size());
 
-        std::vector<Int> expected_result = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5};
+        // check if each value produced by the mapping is correct
+        std::vector<Value*>::iterator it = m_int_address_values.begin();
 
-        QVERIFY(m_float_address_values.size() == expected_result.size());
-
-        std::vector<Int>::iterator it = expected_result.begin();
         for (auto v : m_float_address_values)
         {
-            QVERIFY(*v == *it);
+            Float* f = static_cast<Float*>(v);
+            Int* i = static_cast<Int*>(*it);
+
+            // the mapping should be equivalent to the formula below
+            double ratio = (f->value + 10.) / 20.;
+            int result = linearSegment->valueAt(ratio, -10, 10);
+
+            QVERIFY(i->value == result);
+
             it++;
         }
     }
