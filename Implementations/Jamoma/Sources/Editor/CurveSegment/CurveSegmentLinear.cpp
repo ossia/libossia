@@ -96,13 +96,7 @@ template <typename Y>
 Y JamomaCurveSegmentLinear<Y>::
 valueAt(double ratio, Y start, Y end) const
 {
-  double result = start + ratio * (end - start);
-  Y casted_result = result;
-  
-  //! \debug
-  std::cout << "valueAt(" << ratio << ", " << start << ", " << end << ") = cast(" << result << ") = " << casted_result << endl;
-  
-  return casted_result;
+  return start + ratio * (end - start);
 }
 
 # pragma mark -
