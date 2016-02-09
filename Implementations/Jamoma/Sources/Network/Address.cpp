@@ -99,6 +99,7 @@ const Value* JamomaAddress::cloneValue(std::vector<char> index) const
     return new Tuple(values);
   }
 }
+
 Address & JamomaAddress::setValue(const Value * value)
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
