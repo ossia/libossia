@@ -24,8 +24,12 @@
 
 #include "JamomaTimeProcess.h"
 
+#include <thread>
+#include <mutex>
+
 using namespace OSSIA;
 using namespace std;
+using namespace std::placeholders;
 
 class JamomaMapper : public Mapper, public JamomaTimeProcess
 {
@@ -37,10 +41,14 @@ private:
   
   shared_ptr<Address>   mDriverAddress;
   shared_ptr<Address>   mDrivenAddress;
-  Value *               mDrive = nullptr;
+  Value*                mDrive = nullptr;
   
   shared_ptr<Message>   mMessageToSend;
-  Value*                mValueToSend = nullptr;
+  Value*                mValueToMap = nullptr;
+  mutable std::mutex    mValueToMapMutex;
+  
+  bool                  mDriverValueObserved;
+  Address::iterator     mDriverValueCallbackIndex;
   
 public:
   
@@ -85,4 +93,6 @@ private:
 # pragma mark Implementation specific
   
   Value* computeValue(const Value*, const Value*);
+  
+  void driverValueCallback(const Value * value);
 };

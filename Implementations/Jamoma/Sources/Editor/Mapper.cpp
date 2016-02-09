@@ -47,15 +47,17 @@ shared_ptr<StateElement> JamomaMapper::state(const TimeValue& position, const Ti
 {
   if (date != mLastDate)
   {
-    // clear the former Value
-    if (mValueToSend) delete mValueToSend;
-    
-    // compute a new value
-    //! \todo observe the driver address value
-    mValueToSend = computeValue(mDriverAddress->pullValue(), mDrive);
-    
-    // edit a Message handling the new Value
-    mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
+    if (mValueToMap)
+    {
+      std::lock_guard<std::mutex> lock(mValueToMapMutex);
+      
+      // edit a Message handling the mapped value
+      mMessageToSend = Message::create(mDrivenAddress, computeValue(mValueToMap, mDrive));
+      
+      // forget the former value
+      delete mValueToMap;
+      mValueToMap = nullptr;
+    }
     
     mLastDate = date;
   }
@@ -68,12 +70,22 @@ shared_ptr<StateElement> JamomaMapper::state(const TimeValue& position, const Ti
 
 void JamomaMapper::start()
 {
-  //! \todo start driver address value observation
+  // start driver address value observation
+  if (!mDriverValueObserved)
+  {
+    mDriverValueCallbackIndex = mDriverAddress->addCallback(std::bind(&JamomaMapper::driverValueCallback, this, _1));
+    mDriverValueObserved = true;
+  }
 }
 
 void JamomaMapper::stop()
 {
-  //! \todo stop driver address value observation
+  // stop driver address value observation
+  if (mDriverValueObserved)
+  {
+    mDriverAddress->removeCallback(mDriverValueCallbackIndex);
+    mDriverValueObserved = false;
+  }
 }
 
 void JamomaMapper::pause()
@@ -237,4 +249,19 @@ Value* JamomaMapper::computeValue(const Value* driver, const Value* drive)
   }
   
   return nullptr;
+}
+
+void JamomaMapper::driverValueCallback(const Value * value)
+{
+  std::lock_guard<std::mutex> lock(mValueToMapMutex);
+  
+  // clear the former Value
+  if (mValueToMap)
+  {
+    delete mValueToMap;
+    mValueToMap = nullptr;
+  }
+  
+  // clone the new value
+  mValueToMap = value->clone();
 }
