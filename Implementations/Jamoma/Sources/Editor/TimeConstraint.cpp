@@ -86,13 +86,30 @@ void JamomaTimeConstraint::start()
   // set clock duration using maximal duration
   setDuration(mDurationMax);
   
+  // start all jamoma time processes
+  for (const auto& timeProcess : timeProcesses())
+  {
+    JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
+    if(t)
+      t->start();
+  }
+  
   // launch the clock
   do_start();
 }
 
 void JamomaTimeConstraint::stop()
 {
+  // stop the clock
   do_stop();
+  
+  // stop all jamoma time processes
+  for (const auto& timeProcess : timeProcesses())
+  {
+    JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
+    if(t)
+      t->stop();
+  }
 }
 
 shared_ptr<StateElement> JamomaTimeConstraint::state(const TimeValue& position, const TimeValue& date)
