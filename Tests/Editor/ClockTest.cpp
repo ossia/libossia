@@ -144,7 +144,7 @@ private Q_SLOTS:
         auto clock = Clock::create(callback);
 
         QVERIFY(clock->getDuration() == Infinite);
-        QVERIFY(clock->getGranularity() == 1.);
+        QVERIFY(clock->getGranularity() == 10.);
         QVERIFY(clock->getOffset() == 0.);
         QVERIFY(clock->getSpeed() == 1.);
 

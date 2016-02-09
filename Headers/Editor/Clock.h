@@ -61,7 +61,7 @@ public:
    \return std::shared_ptr<#Clock> */
   static std::shared_ptr<Clock> create(Clock::ExecutionCallback,
                                        const TimeValue& = Infinite,
-                                       const TimeValue& = 1.,
+                                       const TimeValue& = 10.,
                                        const TimeValue& = 0.,
                                        float = 1.,
                                        DriveMode = Clock::DriveMode::INTERNAL);
