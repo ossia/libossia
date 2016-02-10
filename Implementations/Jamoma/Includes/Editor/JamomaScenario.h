@@ -13,9 +13,7 @@
 
 #pragma once
 
-#include "Editor/Message.h"
 #include "Editor/Scenario.h"
-#include "Editor/State.h"
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeEvent.h"
 #include "Editor/TimeNode.h"
@@ -44,6 +42,7 @@ private:
   Container<TimeNode>         mTimeNodes;         // list of all TimeNodes of the scenario (the first is the start node, the second is the end node)
 
   shared_ptr<State>           mCurrentState;      // an internal State to return on state call
+  shared_ptr<State>           mOffsetState;       // an internal State built when offset is called
 
 public:
 
@@ -67,6 +66,7 @@ public:
 # pragma mark -
 # pragma mark Execution - Implementation specific
 
+  void offset(const TimeValue&) override;
   void start() override;
   void stop() override;
   void pause() override;
@@ -96,13 +96,4 @@ public:
   const Container<TimeNode>& timeNodes() const override;
 
   const Container<TimeConstraint>& timeConstraints() const override;
-
-private:
-
-# pragma mark -
-# pragma mark Implementation specific
-
-  /*! append each message of the state to the current state in order to eliminate address redundancy
-  \todo this code is also in JamomaLoop so we should find a way to factorise it */
-  void flattenAndFilter(const shared_ptr<StateElement>&);
 };

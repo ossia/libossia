@@ -45,6 +45,7 @@ private:
   TimeConstraint::ExecutionCallback mPatternConstraintCallback;
 
   shared_ptr<State>                 mCurrentState;      // an internal State to return on state call
+  shared_ptr<State>                 mOffsetState;       // an internal State built when offset is called
 
 public:
 
@@ -70,6 +71,7 @@ public:
 # pragma mark -
 # pragma mark Execution - Implementation specific
 
+  void offset(const TimeValue&) override;
   void start() override;
   void stop() override;
   void pause() override;
@@ -88,10 +90,6 @@ private:
 
 # pragma mark -
 # pragma mark Implementation specific
-
-  /*! append each message of the state to the current state in order to eliminate address redundancy
-   \todo this code is also in JamomaScenario so we should find a way to factorise it */
-  void flattenAndFilter(const shared_ptr<StateElement>);
 
   void PatternConstraintCallback(const TimeValue&, const TimeValue&, std::shared_ptr<StateElement>);
 

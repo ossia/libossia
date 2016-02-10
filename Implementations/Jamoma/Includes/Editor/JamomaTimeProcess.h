@@ -14,6 +14,7 @@
 #pragma once
 
 #include "Editor/Clock.h"
+#include "Editor/Message.h"
 #include "Editor/State.h"
 #include "Editor/TimeProcess.h"
 
@@ -46,6 +47,7 @@ public:
 # pragma mark -
 # pragma mark Execution - Implementation specific
 
+  virtual void offset(const TimeValue&) = 0;
   virtual void start() = 0;
   virtual void stop() = 0;
   virtual void pause() = 0;
@@ -64,4 +66,9 @@ public:
 # pragma mark Implementation specific
 
   void setParentTimeConstraint(const shared_ptr<TimeConstraint>);
+
+  /*! append each message of the state to the current state in order to eliminate address redundancy 
+   \param shared_ptr<State> the State to fill
+   \param shared_ptr<StateElement> the StateElement to store */
+  void flattenAndFilter(shared_ptr<State>, const shared_ptr<StateElement>&);
 };

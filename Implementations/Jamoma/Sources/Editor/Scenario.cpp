@@ -24,6 +24,7 @@ JamomaTimeProcess(startState, endState)
   mTimeNodes.push_back(TimeNode::create());
 
   mCurrentState = State::create();
+  mOffsetState = State::create();
 }
 
 JamomaScenario::JamomaScenario(const JamomaScenario * other) :
@@ -51,61 +52,12 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
   {
     // reset internal State
     mCurrentState->stateElements().clear();
-
-    // if the time goes backward
-    if (date < mLastDate)
+    
+    // append offset state if needed
+    if (!mOffsetState->stateElements().empty())
     {
-      // stop each TimeConstraint and offset them considering the date
-      for (const auto& timeConstraint : mTimeContraints)
-      {
-        timeConstraint->stop();
-        
-        TimeValue start = timeConstraint->getStartEvent()->getTimeNode()->getDate();
-        timeConstraint->setOffset(date - start);
-      }
-
-      // compile a state with all HAPPENED event's states
-      for (const auto& timeNode : mTimeNodes)
-      {
-        for (auto& timeEvent : timeNode->timeEvents())
-        {
-          if (timeEvent->getStatus() == TimeEvent::Status::HAPPENED)
-            flattenAndFilter(timeEvent->getState());
-        }
-      }
-
-      // start each TimeConstraint if possible
-      for (const auto& timeConstraint : mTimeContraints)
-      {
-        TimeEvent::Status startStatus = timeConstraint->getStartEvent()->getStatus();
-        TimeEvent::Status endStatus = timeConstraint->getEndEvent()->getStatus();
-
-        // the constraint is in the past
-        if (startStatus == TimeEvent::Status::HAPPENED &&
-            endStatus == TimeEvent::Status::HAPPENED)
-        {}
-        // the start of the constraint is pending
-        else if (startStatus == TimeEvent::Status::PENDING &&
-                 endStatus == TimeEvent::Status::NONE)
-        {}
-        // the constraint is supposed to be running
-        else if (startStatus == TimeEvent::Status::HAPPENED &&
-                 endStatus == TimeEvent::Status::NONE)
-        {
-          timeConstraint->start();
-        }
-        // the end of the constraint is pending
-        else if (startStatus == TimeEvent::Status::HAPPENED &&
-                 endStatus == TimeEvent::Status::PENDING)
-        {}
-        // the constraint is in the future
-        else if (startStatus == TimeEvent::Status::NONE &&
-                 endStatus == TimeEvent::Status::NONE)
-        {}
-        // error
-        else
-          throw runtime_error("TimeEvent's status configuration of the TimeConstraint is not handled");
-      }
+      flattenAndFilter(mCurrentState, mOffsetState);
+      mOffsetState->stateElements().clear();
     }
 
     // process the scenario from the first TimeNode to the running constraints
@@ -116,7 +68,7 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
     // add the state of each newly HAPPENED TimeEvent
     for (const auto& timeEvent : statusChangedEvents)
       if (timeEvent->getStatus() == TimeEvent::Status::HAPPENED)
-        flattenAndFilter(timeEvent->getState());
+        flattenAndFilter(mCurrentState, timeEvent->getState());
 
     // make the time of each running TimeConstraint flows and add their state
     for (const auto& timeConstraint : mTimeContraints)
@@ -126,7 +78,7 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
         if (timeConstraint->getDriveMode() == Clock::DriveMode::EXTERNAL)
           timeConstraint->tick();
 
-        flattenAndFilter(timeConstraint->state(timeConstraint->getPosition(), timeConstraint->getDate()));
+        flattenAndFilter(mCurrentState, timeConstraint->state(timeConstraint->getPosition(), timeConstraint->getDate()));
       }
     }
 
@@ -162,15 +114,79 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
 # pragma mark -
 # pragma mark Execution - Implementation specific
 
+void JamomaScenario::offset(const TimeValue& offset)
+{
+  // offset each TimeConstraint's Clock considering its start event date
+  for (const auto& timeConstraint : mTimeContraints)
+  {
+    TimeValue start = timeConstraint->getStartEvent()->getTimeNode()->getDate();
+    timeConstraint->setOffset(offset - start);
+  }
+  
+  // compile mOffsetState with all HAPPENED event's states
+  for (const auto& timeNode : mTimeNodes)
+  {
+    for (auto& timeEvent : timeNode->timeEvents())
+    {
+      if (timeEvent->getStatus() == TimeEvent::Status::HAPPENED)
+        flattenAndFilter(mOffsetState, timeEvent->getState());
+    }
+  }
+  
+  // start each TimeConstraint if possible
+  for (const auto& timeConstraint : mTimeContraints)
+  {
+    TimeEvent::Status startStatus = timeConstraint->getStartEvent()->getStatus();
+    TimeEvent::Status endStatus = timeConstraint->getEndEvent()->getStatus();
+    
+    // the constraint is in the past
+    if (startStatus == TimeEvent::Status::HAPPENED &&
+        endStatus == TimeEvent::Status::HAPPENED)
+    {}
+    // the start of the constraint is pending
+    else if (startStatus == TimeEvent::Status::PENDING &&
+             endStatus == TimeEvent::Status::NONE)
+    {}
+    // the constraint is supposed to be running
+    else if (startStatus == TimeEvent::Status::HAPPENED &&
+             endStatus == TimeEvent::Status::NONE)
+    {
+      timeConstraint->start();
+    }
+    // the end of the constraint is pending
+    else if (startStatus == TimeEvent::Status::HAPPENED &&
+             endStatus == TimeEvent::Status::PENDING)
+    {}
+    // the constraint is in the future
+    else if (startStatus == TimeEvent::Status::NONE &&
+             endStatus == TimeEvent::Status::NONE)
+    {}
+    // error
+    else
+      throw runtime_error("TimeEvent's status configuration of the TimeConstraint is not handled");
+  }
+}
+
 void JamomaScenario::start()
-{}
+{
+  //! \see in JamomaScenario::state how scenario's elements are managed in time
+}
 
 void JamomaScenario::stop()
-{}
+{
+  // stop each running TimeConstraints
+  for (const auto& timeConstraint : mTimeContraints)
+  {
+    if (timeConstraint->getRunning())
+    {
+      timeConstraint->stop();
+    }
+  }
+}
 
 void JamomaScenario::pause()
 {
-  // pause all running time constraints
+  // pause all running TimeConstraints
   for (const auto& timeConstraint : mTimeContraints)
   {
     if (timeConstraint->getRunning())
@@ -182,7 +198,7 @@ void JamomaScenario::pause()
 
 void JamomaScenario::resume()
 {
-  // resume all running time constraints
+  // resume all running TimeConstraints
   for (const auto& timeConstraint : mTimeContraints)
   {
     if (timeConstraint->getRunning())
@@ -273,60 +289,4 @@ const Container<TimeNode>& JamomaScenario::timeNodes() const
 const Container<TimeConstraint>& JamomaScenario::timeConstraints() const
 {
   return mTimeContraints;
-}
-
-# pragma mark -
-# pragma mark Implementation specific
-
-void JamomaScenario::flattenAndFilter(const shared_ptr<StateElement>& element)
-{
-  if (!element)
-      return;
-
-  switch (element->getType())
-  {
-    case StateElement::Type::MESSAGE :
-    {
-      shared_ptr<Message> messageToAppend = dynamic_pointer_cast<Message>(element);
-
-      // find message with the same address to replace it
-      bool found = false;
-      for (auto it = mCurrentState->stateElements().begin();
-           it != mCurrentState->stateElements().end();
-           it++)
-      {
-        shared_ptr<Message> messageToCheck = dynamic_pointer_cast<Message>(*it);
-
-        // replace if addresses are the same
-        if (messageToCheck->getAddress() == messageToAppend->getAddress())
-        {
-          *it = element;
-          found = true;
-          break;
-        }
-      }
-
-      // if not found append it
-      if (!found)
-        mCurrentState->stateElements().push_back(element);
-
-      break;
-    }
-    case StateElement::Type::STATE :
-    {
-      shared_ptr<State> stateToFlatAndFilter = dynamic_pointer_cast<State>(element);
-
-      for (const auto& e : stateToFlatAndFilter->stateElements())
-      {
-        flattenAndFilter(e);
-      }
-      break;
-    }
-
-    default:
-    {
-      mCurrentState->stateElements().push_back(element);
-      break;
-    }
-  }
 }

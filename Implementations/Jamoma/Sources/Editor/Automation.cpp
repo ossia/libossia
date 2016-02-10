@@ -61,6 +61,9 @@ shared_ptr<StateElement> JamomaAutomation::state(const TimeValue& position, cons
 # pragma mark -
 # pragma mark Execution - Implementation specific
 
+void JamomaAutomation::offset(const TimeValue& offset)
+{}
+
 void JamomaAutomation::start()
 {}
 

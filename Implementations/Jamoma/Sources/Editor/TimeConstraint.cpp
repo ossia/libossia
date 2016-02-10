@@ -185,6 +185,14 @@ Clock & JamomaTimeConstraint::setOffset(const TimeValue& offset)
 
   shared_ptr<JamomaTimeEvent> end = dynamic_pointer_cast<JamomaTimeEvent>(mEndEvent);
   end->setStatus(endStatus);
+  
+  // offset all jamoma time processes
+  for (const auto& timeProcess : timeProcesses())
+  {
+    JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
+    if(t)
+      t->offset(offset);
+  }
 
   return *this;
 }

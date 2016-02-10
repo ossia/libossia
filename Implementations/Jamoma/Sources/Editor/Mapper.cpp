@@ -68,6 +68,9 @@ shared_ptr<StateElement> JamomaMapper::state(const TimeValue& position, const Ti
 # pragma mark -
 # pragma mark Execution - Implementation specific
 
+void JamomaMapper::offset(const TimeValue& offset)
+{}
+
 void JamomaMapper::start()
 {
   // start driver address value observation
