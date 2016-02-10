@@ -50,7 +50,7 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
   // if date hasn't been processed already
   if (date != mLastDate)
   {
-    // reset internal State
+    // reset internal mCurrentState
     mCurrentState->stateElements().clear();
     
     // append offset state if needed
@@ -116,6 +116,9 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
 
 void JamomaScenario::offset(const TimeValue& offset)
 {
+  // reset internal mOffsetState
+  mOffsetState->stateElements().clear();
+  
   // offset each TimeConstraint's Clock considering its start event date
   for (const auto& timeConstraint : mTimeContraints)
   {
