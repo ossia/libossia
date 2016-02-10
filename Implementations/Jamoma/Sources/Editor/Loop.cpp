@@ -44,6 +44,7 @@ mPatternConstraintCallback(patternConstraintCallback)
   clock->setDriveMode(Clock::DriveMode::EXTERNAL);
 
   mCurrentState = State::create();
+  mOffsetState = State::create();
 }
 
 JamomaLoop::JamomaLoop(const JamomaLoop * other) :
@@ -122,6 +123,9 @@ shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const Time
 
 void JamomaLoop::offset(const TimeValue& offset)
 {
+  // reset internal mOffsetState
+  mOffsetState->stateElements().clear();
+  
   TimeValue patternOffset = std::fmod((double)offset, (double)mPatternConstraint->getDurationNominal());
   mPatternConstraint->setOffset(patternOffset);
   
