@@ -259,7 +259,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   }
 
   // any other case : trigger the time node
-  if (trigger())
+  else if (trigger())
   {
     // former PENDING TimeEvents are now HAPPENED or DISPOSED
     for (auto& timeEvent : mPendingEvents)
