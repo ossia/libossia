@@ -16,7 +16,8 @@ namespace OSSIA
 
 JamomaTimeNode::JamomaTimeNode(TimeNode::ExecutionCallback callback) :
 mCallback(callback),
-mExpression(ExpressionTrue)
+mExpression(ExpressionTrue),
+mDisposeAtMax(false)
 {}
 
 JamomaTimeNode::JamomaTimeNode(const JamomaTimeNode * other)
@@ -72,7 +73,7 @@ bool JamomaTimeNode::trigger()
   if (mCallback)
     (mCallback)();
     
-  // the triggering succeded
+  // the triggering succeeded
   return true;
 }
 
@@ -118,6 +119,17 @@ TimeValue JamomaTimeNode::getSimultaneityMargin() const
 TimeNode & JamomaTimeNode::setSimultaneityMargin(const TimeValue& simultaneityMargin)
 {
   mSimultaneityMargin = simultaneityMargin;
+  return *this;
+}
+
+bool JamomaTimeNode::getDisposeAtMax() const
+{
+  return mDisposeAtMax;
+}
+
+TimeNode & JamomaTimeNode::setDisposeAtMax(bool disposeAtMax)
+{
+  mDisposeAtMax = disposeAtMax;
   return *this;
 }
 
@@ -221,9 +233,6 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   if (*mExpression == *ExpressionFalse)
     return;
   
-  //! \todo force triggering if at leat one TimeEvent has
-  // at least one TimeConstraint over its maximal duration
-  
   // update the expression one time
   // then observe and evaluate TimeNode's expression before to trig
   // only if no maximal duration have been reached
@@ -238,8 +247,18 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
     if (!mExpression->evaluate())
       return;
   }
+  
+  // if the time node have to be disposed when maximal duration is reached
+  if (maximalDurationReached && mDisposeAtMax)
+  {
+    for (auto& timeEvent : mPendingEvents)
+    {
+      timeEvent->dispose();
+      statusChangedEvents.push_back(timeEvent);
+    }
+  }
 
-  // trigger the time node
+  // any other case : trigger the time node
   if (trigger())
   {
     // former PENDING TimeEvents are now HAPPENED or DISPOSED

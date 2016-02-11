@@ -98,6 +98,16 @@ public:
    \param #TimeValue the simultaneity margin
    \return #TimeNode the time node */
   virtual TimeNode & setSimultaneityMargin(const TimeValue&) = 0;
+  
+  /*! does all #TimeEvents are disposed when one previous #TimeConstraint reaches it maximal duration ?
+   \return bool */
+  virtual bool getDisposeAtMax() const = 0;
+  
+  /*! make all #TimeEvents to be disposed when one previous #TimeConstraint reaches it maximal duration
+   \todo remove setter and move the setting into constructor (?)
+   \param bool dispose at max
+   \return #TimeNode the time node */
+  virtual TimeNode & setDisposeAtMax(bool) = 0;
 
 # pragma mark -
 # pragma mark #TimeEvents

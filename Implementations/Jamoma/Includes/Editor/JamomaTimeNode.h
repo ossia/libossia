@@ -39,6 +39,8 @@ private:
 
   TimeValue                     mSimultaneityMargin;
   
+  bool                          mDisposeAtMax;
+  
   Container<TimeEvent>          mPendingEvents;
 
 public:
@@ -73,6 +75,10 @@ public:
   TimeValue getSimultaneityMargin() const override;
 
   TimeNode & setSimultaneityMargin(const TimeValue&) override;
+  
+  bool getDisposeAtMax() const override;
+
+  TimeNode & setDisposeAtMax(bool) override;
 
 # pragma mark -
 # pragma mark #TimeEvents
