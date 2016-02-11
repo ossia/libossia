@@ -119,7 +119,7 @@ private Q_SLOTS:
     }
 
     /*! test execution functions */
-    //! \todo maybe a way to tet many scenario would be to load them from a files
+    //! \todo maybe a way to test many scenario would be to load them from a files
     void test_execution()
     {
         auto mc_callback = std::bind(&ScenarioTest::main_constraint_callback, this, _1, _2, _3);
