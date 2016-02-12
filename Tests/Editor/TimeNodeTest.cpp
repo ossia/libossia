@@ -37,10 +37,6 @@ private Q_SLOTS:
         node->setSimultaneityMargin(50.);
         simultaneity_margin = node->getSimultaneityMargin();
         QVERIFY(simultaneity_margin == TimeValue(50.));
-      
-        QVERIFY(node->getDisposeAtMax() == false);
-        node->setDisposeAtMax(true);
-        QVERIFY(node->getDisposeAtMax() == true);
         
         QVERIFY(node->timeEvents().size() == 0);
 
