@@ -71,12 +71,32 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
         flattenAndFilter(mCurrentState, timeEvent->getState());
 
     // make the time of each running TimeConstraint flows and add their state
+    // note : this means TimeConstraint's state can overwrite TimeEvent's state
     for (const auto& timeConstraint : mTimeContraints)
     {
       if (timeConstraint->getRunning())
       {
         if (timeConstraint->getDriveMode() == Clock::DriveMode::EXTERNAL)
-          timeConstraint->tick();
+        {
+          // don't tick if the TimeConstraint is starting to avoid double ticks
+          bool starting = false;
+          for (const auto& timeEvent : statusChangedEvents)
+          {
+            if (timeEvent == timeConstraint->getStartEvent())
+            {
+              if (timeEvent->getStatus() == TimeEvent::Status::HAPPENED)
+              {
+                starting = true;
+                break;
+              }
+            }
+          }
+          
+          if (!starting)
+          {
+            timeConstraint->tick();
+          }
+        }
 
         flattenAndFilter(mCurrentState, timeConstraint->state(timeConstraint->getPosition(), timeConstraint->getDate()));
       }
