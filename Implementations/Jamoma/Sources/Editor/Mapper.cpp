@@ -19,7 +19,7 @@ namespace OSSIA
 JamomaMapper::JamomaMapper(shared_ptr<Address> driverAddress,
                            shared_ptr<Address> drivenAddress,
                            const Value* drive) :
-JamomaTimeProcess(State::create(), State::create()),
+JamomaTimeProcess(),
 mDriverAddress(driverAddress),
 mDrivenAddress(drivenAddress),
 mDrive(drive->clone()),
@@ -27,7 +27,7 @@ mDriverValueObserved(false)
 {}
 
 JamomaMapper::JamomaMapper(const JamomaMapper * other) :
-JamomaTimeProcess(other->mStartState, other->mEndState)
+JamomaTimeProcess()
 {}
 
 shared_ptr<Mapper> JamomaMapper::clone() const

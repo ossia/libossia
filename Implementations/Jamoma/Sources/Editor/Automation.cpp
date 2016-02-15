@@ -16,13 +16,13 @@ namespace OSSIA
 
 JamomaAutomation::JamomaAutomation(shared_ptr<Address> address,
                                    const Value* drive) :
-JamomaTimeProcess(State::create(), State::create()),
+JamomaTimeProcess(),
 mDrivenAddress(address),
 mDrive(drive->clone())
 {}
 
 JamomaAutomation::JamomaAutomation(const JamomaAutomation * other) :
-JamomaTimeProcess(other->mStartState, other->mEndState)
+JamomaTimeProcess()
 {}
 
 shared_ptr<Automation> JamomaAutomation::clone() const

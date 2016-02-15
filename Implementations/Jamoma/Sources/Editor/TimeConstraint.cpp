@@ -271,8 +271,6 @@ void JamomaTimeConstraint::addTimeProcess(shared_ptr<TimeProcess> timeProcess)
            timeProcess) == timeProcesses().end())
   {
     timeProcesses().push_back(timeProcess);
-    mStartEvent->addState(timeProcess->getStartState());
-    mEndEvent->addState(timeProcess->getEndState());
 
     JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
     if (t)
@@ -291,9 +289,6 @@ void JamomaTimeConstraint::removeTimeProcess(std::shared_ptr<TimeProcess> timePr
 
       if (timeProcess)
       {
-          mStartEvent->removeState(timeProcess->getStartState());
-          mEndEvent->removeState(timeProcess->getEndState());
-
           JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
           if (t)
           {

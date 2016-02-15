@@ -8,19 +8,16 @@
 
 namespace OSSIA
 {
-  shared_ptr<Scenario> Scenario::create(shared_ptr<State> startState,
-                                        shared_ptr<State> endState)
+  shared_ptr<Scenario> Scenario::create()
   {
-    return make_shared<JamomaScenario>(startState, endState);
+    return make_shared<JamomaScenario>();
   }
 }
 
-JamomaScenario::JamomaScenario(shared_ptr<State> startState,
-                               shared_ptr<State> endState) :
-JamomaTimeProcess(startState, endState)
+JamomaScenario::JamomaScenario() :
+JamomaTimeProcess()
 {
-  // create the start and the end TimeNodes
-  mTimeNodes.push_back(TimeNode::create());
+  // create the start TimeNode
   mTimeNodes.push_back(TimeNode::create());
 
   mCurrentState = State::create();
@@ -28,7 +25,7 @@ JamomaTimeProcess(startState, endState)
 }
 
 JamomaScenario::JamomaScenario(const JamomaScenario * other) :
-JamomaTimeProcess(other->mStartState, other->mEndState)
+JamomaTimeProcess()
 {}
 
 shared_ptr<Scenario> JamomaScenario::clone() const
@@ -294,11 +291,6 @@ void JamomaScenario::removeTimeNode(const shared_ptr<TimeNode> timeNode)
 const shared_ptr<TimeNode> & JamomaScenario::getStartTimeNode() const
 {
   return mTimeNodes[0];
-}
-
-const shared_ptr<TimeNode> & JamomaScenario::getEndTimeNode() const
-{
-  return mTimeNodes[1];
 }
 
 # pragma mark -

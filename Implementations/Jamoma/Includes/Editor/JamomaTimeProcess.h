@@ -31,9 +31,6 @@ protected:
 
   std::shared_ptr<TimeConstraint> mParent;
 
-  shared_ptr<State>               mStartState;
-  shared_ptr<State>               mEndState;
-
   TimeValue                       mLastDate;  // used to filter multiple state calls at the same time (use date as position can be always 0 in infinite duration case)
 
 public:
@@ -41,8 +38,7 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaTimeProcess(shared_ptr<State>,
-                    shared_ptr<State>);
+  JamomaTimeProcess();
 
 # pragma mark -
 # pragma mark Execution - Implementation specific
@@ -55,10 +51,6 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
-
-  const shared_ptr<State> & getStartState() const override;
-
-  const shared_ptr<State> & getEndState() const override;
 
   const shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
 

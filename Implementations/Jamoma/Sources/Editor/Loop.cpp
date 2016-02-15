@@ -20,7 +20,7 @@ JamomaLoop::JamomaLoop(const TimeValue& patternDuration,
                        TimeConstraint::ExecutionCallback patternConstraintCallback,
                        TimeEvent::ExecutionCallback patternStartEventCallback,
                        TimeEvent::ExecutionCallback patternEndEventCallback) :
-JamomaTimeProcess(State::create(), State::create()),
+JamomaTimeProcess(),
 mPatternStartEventCallback(patternStartEventCallback),
 mPatternEndEventCallback(patternEndEventCallback),
 mPatternConstraintCallback(patternConstraintCallback)
@@ -48,7 +48,7 @@ mPatternConstraintCallback(patternConstraintCallback)
 }
 
 JamomaLoop::JamomaLoop(const JamomaLoop * other) :
-JamomaTimeProcess(other->mStartState, other->mEndState),
+JamomaTimeProcess(),
 mPatternStartNode(other->mPatternStartNode->clone()),
 mPatternEndNode(other->mPatternEndNode->clone()),
 mPatternConstraint(other->mPatternConstraint->clone())

@@ -49,8 +49,7 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaScenario(shared_ptr<State>,
-                 shared_ptr<State>);
+  JamomaScenario();
 
   JamomaScenario(const JamomaScenario *);
 
@@ -87,8 +86,6 @@ public:
 # pragma mark Accessors
 
   const shared_ptr<TimeNode> & getStartTimeNode() const override;
-
-  const shared_ptr<TimeNode> & getEndTimeNode() const override;
 
 # pragma mark -
 # pragma mark TimeNodes and TimeConstraints
