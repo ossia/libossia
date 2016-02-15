@@ -22,7 +22,6 @@
 namespace OSSIA
 {
 class StateElement;
-class State;
 class TimeConstraint;
 class TimeValue;
 
@@ -48,14 +47,6 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
-
-  /*! get the start #State
-   \return std::shared_ptr<#State> start state */
-  virtual const std::shared_ptr<State> & getStartState() const = 0;
-
-  /*! get the end #State
-   \return std::shared_ptr<#State> end state */
-  virtual const std::shared_ptr<State> & getEndState() const = 0;
 
   /*! get the parent #TimeConstraint
    \return std::shared_ptr<#TimeConstraint> */
