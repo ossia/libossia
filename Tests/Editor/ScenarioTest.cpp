@@ -60,26 +60,24 @@ private Q_SLOTS:
         auto scenario = Scenario::create();
         QVERIFY(scenario != nullptr);
         
-        QVERIFY(scenario->getStartState() != nullptr);
-        QVERIFY(scenario->getEndState() != nullptr);
         QVERIFY(scenario->getParentTimeConstraint() == nullptr);
         
         QVERIFY(scenario->getStartTimeNode() != nullptr);
-        QVERIFY(scenario->getEndTimeNode() != nullptr);
 
-        QVERIFY(scenario->timeNodes().size() == 2);
+        QVERIFY(scenario->timeNodes().size() == 1);
         QVERIFY(scenario->timeConstraints().size() == 0);
 
         QVERIFY(scenario->getStartTimeNode()->getDate() == 0.);
-        QVERIFY(scenario->getEndTimeNode()->getDate() == 0.);
         
         auto mc_callback = std::bind(&ScenarioTest::main_constraint_callback, this, _1, _2, _3);
         auto e_callback = std::bind(&ScenarioTest::event_callback, this, _1);
         auto start_event = *(scenario->getStartTimeNode()->emplace(scenario->getStartTimeNode()->timeEvents().begin(), e_callback));
-        auto end_event = *(scenario->getEndTimeNode()->emplace(scenario->getEndTimeNode()->timeEvents().begin(), e_callback));
+
+        auto end_node = TimeNode::create();
+        auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), e_callback));
         auto constraint = TimeConstraint::create(mc_callback, start_event, end_event, 1000., 1000., 1000.);
         
-        QVERIFY(scenario->getEndTimeNode()->getDate() == 1000.);
+        QVERIFY(end_node->getDate() == 1000.);
     }
     
     /*! test edition functions */
@@ -100,19 +98,19 @@ private Q_SLOTS:
 
         scenario->addTimeConstraint(constraint);
         QVERIFY(scenario->timeConstraints().size() == 1);
-        QVERIFY(scenario->timeNodes().size() == 3);
+        QVERIFY(scenario->timeNodes().size() == 2);
 
         scenario->removeTimeConstraint(constraint);
         QVERIFY(scenario->timeConstraints().size() == 0);
-        QVERIFY(scenario->timeNodes().size() == 3);
+        QVERIFY(scenario->timeNodes().size() == 2);
 
         auto lonely_node = TimeNode::create();
 
         scenario->addTimeNode(lonely_node);
-        QVERIFY(scenario->timeNodes().size() == 4);
+        QVERIFY(scenario->timeNodes().size() == 3);
 
         scenario->removeTimeNode(lonely_node);
-        QVERIFY(scenario->timeNodes().size() == 3);
+        QVERIFY(scenario->timeNodes().size() == 2);
 
         //! \todo how to verify something here ?
         auto scenario_copy = scenario->clone();

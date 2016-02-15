@@ -77,8 +77,6 @@ private Q_SLOTS:
 
         constraint->addTimeProcess(scenario);
         QVERIFY(constraint->timeProcesses().size() == 1);
-        QVERIFY(constraint->getStartEvent()->getState()->stateElements().front() == scenario->getStartState());
-        QVERIFY(constraint->getEndEvent()->getState()->stateElements().front() == scenario->getEndState());
 
         constraint->removeTimeProcess(scenario);
         QVERIFY(constraint->timeProcesses().size() == 0);

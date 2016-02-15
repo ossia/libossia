@@ -42,8 +42,6 @@ private Q_SLOTS:
         auto automation = Automation::create(address, &f);
         QVERIFY(automation != nullptr);
 
-        QVERIFY(automation->getStartState() != nullptr);
-        QVERIFY(automation->getEndState() != nullptr);
         QVERIFY(automation->getParentTimeConstraint() == nullptr);
 
         QVERIFY(automation->getDrivenAddress() == address);
