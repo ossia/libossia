@@ -22,7 +22,8 @@ JamomaMapper::JamomaMapper(shared_ptr<Address> driverAddress,
 JamomaTimeProcess(State::create(), State::create()),
 mDriverAddress(driverAddress),
 mDrivenAddress(drivenAddress),
-mDrive(drive->clone())
+mDrive(drive->clone()),
+mDriverValueObserved(false)
 {}
 
 JamomaMapper::JamomaMapper(const JamomaMapper * other) :
