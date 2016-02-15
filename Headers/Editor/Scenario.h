@@ -35,11 +35,8 @@ public:
 # pragma mark Life cycle
 
   /*! factory
-   \param std::shared_ptr<#State> the state at start
-   \param std::shared_ptr<#State> the state at end
    \return std::shared_ptr<#Scenario> */
-  static std::shared_ptr<Scenario> create(std::shared_ptr<State> = State::create(),
-                                          std::shared_ptr<State> = State::create());
+  static std::shared_ptr<Scenario> create();
 
   /*! clone */
   virtual std::shared_ptr<Scenario> clone() const = 0;
@@ -81,10 +78,6 @@ public:
   /*! get the node from where the scenario starts
    \return std::shared_ptr<#TimeNode> start node */
   virtual const std::shared_ptr<TimeNode> & getStartTimeNode() const = 0;
-
-  /*! get the node where the scenario ends
-   \return std::shared_ptr<#TimeNode> end node */
-  virtual const std::shared_ptr<TimeNode> & getEndTimeNode() const = 0;
 
 # pragma mark -
 # pragma mark TimeNodes and TimeConstraints
