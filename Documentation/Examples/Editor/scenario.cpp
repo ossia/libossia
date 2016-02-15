@@ -184,20 +184,20 @@ int main()
     // add the second Automation to the second TimeConstraint
     second_constraint->addTimeProcess(second_automation);
 
-    // add "/test 0. 0. 0." message to first Automation's start State
+    // add "/test 0. 0. 0." message to first TimeConstraint's start State
     Tuple zero = {new Float(0.), new Float(0.), new Float(0.)};
     auto first_start_message = Message::create(local_test_address, &zero);
-    first_automation->getStartState()->stateElements().push_back(first_start_message);
+    first_constraint->getStartEvent()->getState()->stateElements().push_back(first_start_message);
 
-    // add "/test 1. 1. 1." message to first Automation's end State
+    // add "/test 1. 1. 1." message to first TimeConstraint's end State
     Tuple one = {new Float(1.), new Float(1.), new Float(1.)};
     auto first_end_message = Message::create(local_test_address, &one);
-    first_automation->getEndState()->stateElements().push_back(first_end_message);
+    first_constraint->getEndEvent()->getState()->stateElements().push_back(first_end_message);
 
-    // add "/test 2. 2. 2." message to second Automation's end State
+    // add "/test 2. 2. 2." message to second TimeConstraint's end State
     Tuple two = {new Float(2.), new Float(2.), new Float(2.)};
     auto second_end_message = Message::create(local_test_address, &two);
-    second_automation->getEndState()->stateElements().push_back(second_end_message);
+    second_constraint->getStartEvent()->getState()->stateElements().push_back(second_end_message);
 
     /*
      Main Scenario operation : miscellaneous
