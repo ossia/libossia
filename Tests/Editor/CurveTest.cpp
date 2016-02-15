@@ -97,7 +97,7 @@ private Q_SLOTS:
 
         QVERIFY(curve->valueAt(-10.) == -10);
         QVERIFY(curve->valueAt(-9.5) == -9);
-        QVERIFY(curve->valueAt(-9.) == -9); //! \note it returns -8 ! but it should be equivalent to linearSegment->valueAt(0.05, -10, 10) = -9
+        QVERIFY(curve->valueAt(-9.) == -9);
         QVERIFY(curve->valueAt(-8.5) == -8);
         QVERIFY(curve->valueAt(-8) == -8);
         QVERIFY(curve->valueAt(-7.5) == -7);
