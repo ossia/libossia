@@ -231,7 +231,7 @@ valueAt(X abscissa) const
     if (abscissa > lastAbscissa &&
         abscissa <= it->first)
     {
-      lastValue = it->second.second->valueAt((abscissa - lastAbscissa) / (it->first - lastAbscissa), lastValue , it->second.first);
+      lastValue = it->second.second->valueAt(((double)abscissa - (double)lastAbscissa) / ((double)it->first - (double)lastAbscissa), lastValue , it->second.first);
       break;
     }
     else if (abscissa > it->first)
