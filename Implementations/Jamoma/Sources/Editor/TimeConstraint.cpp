@@ -81,7 +81,7 @@ TimeConstraint::~TimeConstraint()
 void JamomaTimeConstraint::start()
 {
   if (mRunning)
-    throw runtime_error("cannot start a running time constraint");
+    throw runtime_error("time constraint is running");
   
   // set clock duration using maximal duration
   setDuration(mDurationMax);
@@ -112,14 +112,38 @@ void JamomaTimeConstraint::stop()
   }
 }
 
-shared_ptr<StateElement> JamomaTimeConstraint::state()
+shared_ptr<State> JamomaTimeConstraint::offset(const TimeValue& date)
 {
-  // clear internal State, Message and Value
+  if (mRunning)
+    throw runtime_error("time constraint is running");
+  
+  do_setOffset(date);
+  
+  // clear internal offset state
+  const auto& processes = timeProcesses();
+  mOffsetState->stateElements().clear();
+  mOffsetState->stateElements().reserve(processes.size());
+  
+  // get the offset state of each TimeProcess at offset
+  for (const auto& timeProcess : processes)
+  {
+    mOffsetState->stateElements().push_back(timeProcess->offset(date));
+  }
+  
+  return mOffsetState;
+}
+
+shared_ptr<State> JamomaTimeConstraint::state()
+{
+  if (!mRunning)
+    throw runtime_error("time constraint is not running");
+  
+  // clear internal current state
   const auto& processes = timeProcesses();
   mCurrentState->stateElements().clear();
   mCurrentState->stateElements().reserve(processes.size());
 
-  // get the state of each TimeProcess for the position and the date
+  // get the state of each TimeProcess at current clock position and date
   for (const auto& timeProcess : processes)
   {
     mCurrentState->stateElements().push_back(timeProcess->state());
@@ -159,43 +183,6 @@ void JamomaTimeConstraint::resume()
 
 # pragma mark -
 # pragma mark Accessors
-
-Clock & JamomaTimeConstraint::setOffset(const TimeValue& offset)
-{
-  TimeEvent::Status startStatus = TimeEvent::Status::NONE;
-  TimeEvent::Status endStatus = TimeEvent::Status::NONE;
-  
-  if (offset >= Zero && offset <= mDurationMax)
-  {
-    do_setOffset(offset);
-    
-    startStatus = mOffset == Zero ? TimeEvent::Status::PENDING : TimeEvent::Status::HAPPENED;
-    endStatus = mOffset > mDurationMin ? TimeEvent::Status::PENDING : TimeEvent::Status::NONE;
-  }
-  else if (offset > mDurationMax)
-  {
-    startStatus = TimeEvent::Status::HAPPENED;
-    endStatus = TimeEvent::Status::HAPPENED;
-  }
-  
-  //! \note maybe we should initialized TimeEvents with an Expression returning false to DISPOSED status ?
-  
-  shared_ptr<JamomaTimeEvent> start = dynamic_pointer_cast<JamomaTimeEvent>(mStartEvent);
-  start->setStatus(startStatus);
-  
-  shared_ptr<JamomaTimeEvent> end = dynamic_pointer_cast<JamomaTimeEvent>(mEndEvent);
-  end->setStatus(endStatus);
-
-  // offset all jamoma time processes
-  for (const auto& timeProcess : timeProcesses())
-  {
-    JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
-    if(t)
-      t->offset(offset);
-  }
-
-  return *this;
-}
 
 void JamomaTimeConstraint::setCallback(TimeConstraint::ExecutionCallback callback)
 {

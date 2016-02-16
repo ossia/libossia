@@ -40,18 +40,19 @@ private Q_SLOTS:
         QVERIFY(constraint->getDurationMax() == Infinite);
 
         constraint->setGranularity(50.);
-        constraint->setOffset(500.);
         constraint->setSpeed(2.);
         constraint->setDurationNominal(2000.);
         constraint->setDurationMin(1000.);
         constraint->setDurationMax(3000.);
+        std::shared_ptr<State> state = constraint->offset(500.);
 
         QVERIFY(constraint->getGranularity() == 50.);
-        QVERIFY(constraint->getOffset() == 500.);
         QVERIFY(constraint->getSpeed() == 2.);
         QVERIFY(constraint->getDurationNominal() == 2000.);
         QVERIFY(constraint->getDurationMin() == 1000.);
         QVERIFY(constraint->getDurationMax() == 3000.);
+        QVERIFY(constraint->getOffset() == 500.);
+        QVERIFY(state->stateElements().size() == 0);
 
         QVERIFY(constraint->getRunning() == false);
         QVERIFY(constraint->getPosition() == 0.25);

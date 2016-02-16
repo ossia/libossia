@@ -42,8 +42,72 @@ Scenario::~Scenario()
 # pragma mark -
 # pragma mark Execution
 
+shared_ptr<StateElement> JamomaScenario::offset(const TimeValue& offset)
+{
+  if (mParent->getRunning())
+    throw runtime_error("parent time constraint is running");
+  
+  // reset internal mOffsetState
+  mOffsetState->stateElements().clear();
+  
+  // offset each TimeConstraint's Clock considering its start event date
+  for (const auto& timeConstraint : mTimeContraints)
+  {
+    TimeValue start = timeConstraint->getStartEvent()->getTimeNode()->getDate();
+    flattenAndFilter(mOffsetState, timeConstraint->offset(offset - start));
+  }
+  
+  // compile mOffsetState with all HAPPENED event's states
+  for (const auto& timeNode : mTimeNodes)
+  {
+    for (auto& timeEvent : timeNode->timeEvents())
+    {
+      if (timeEvent->getStatus() == TimeEvent::Status::HAPPENED)
+        flattenAndFilter(mOffsetState, timeEvent->getState());
+    }
+  }
+  
+  // start each TimeConstraint if possible
+  for (const auto& timeConstraint : mTimeContraints)
+  {
+    TimeEvent::Status startStatus = timeConstraint->getStartEvent()->getStatus();
+    TimeEvent::Status endStatus = timeConstraint->getEndEvent()->getStatus();
+    
+    // the constraint is in the past
+    if (startStatus == TimeEvent::Status::HAPPENED &&
+        endStatus == TimeEvent::Status::HAPPENED)
+    {}
+    // the start of the constraint is pending
+    else if (startStatus == TimeEvent::Status::PENDING &&
+             endStatus == TimeEvent::Status::NONE)
+    {}
+    // the constraint is supposed to be running
+    else if (startStatus == TimeEvent::Status::HAPPENED &&
+             endStatus == TimeEvent::Status::NONE)
+    {
+      timeConstraint->start();
+    }
+    // the end of the constraint is pending
+    else if (startStatus == TimeEvent::Status::HAPPENED &&
+             endStatus == TimeEvent::Status::PENDING)
+    {}
+    // the constraint is in the future
+    else if (startStatus == TimeEvent::Status::NONE &&
+             endStatus == TimeEvent::Status::NONE)
+    {}
+    // error
+    else
+      throw runtime_error("TimeEvent's status configuration of the TimeConstraint is not handled");
+  }
+
+  return mOffsetState;
+}
+
 shared_ptr<StateElement> JamomaScenario::state()
 {
+  if (!mParent->getRunning())
+    throw runtime_error("parent time constraint is not running");
+  
   // if date hasn't been processed already
   TimeValue date = mParent->getDate();
   if (date != mLastDate)
@@ -52,13 +116,6 @@ shared_ptr<StateElement> JamomaScenario::state()
     
     // reset internal mCurrentState
     mCurrentState->stateElements().clear();
-    
-    // append offset state if needed
-    if (!mOffsetState->stateElements().empty())
-    {
-      flattenAndFilter(mCurrentState, mOffsetState);
-      mOffsetState->stateElements().clear();
-    }
 
     // process the scenario from the first TimeNode to the running constraints
     Container<TimeEvent> statusChangedEvents;
@@ -131,62 +188,6 @@ shared_ptr<StateElement> JamomaScenario::state()
 
 # pragma mark -
 # pragma mark Execution - Implementation specific
-
-void JamomaScenario::offset(const TimeValue& offset)
-{
-  // reset internal mOffsetState
-  mOffsetState->stateElements().clear();
-
-  // offset each TimeConstraint's Clock considering its start event date
-  for (const auto& timeConstraint : mTimeContraints)
-  {
-    TimeValue start = timeConstraint->getStartEvent()->getTimeNode()->getDate();
-    timeConstraint->setOffset(offset - start);
-  }
-  
-  // compile mOffsetState with all HAPPENED event's states
-  for (const auto& timeNode : mTimeNodes)
-  {
-    for (auto& timeEvent : timeNode->timeEvents())
-    {
-      if (timeEvent->getStatus() == TimeEvent::Status::HAPPENED)
-        flattenAndFilter(mOffsetState, timeEvent->getState());
-    }
-  }
-  
-  // start each TimeConstraint if possible
-  for (const auto& timeConstraint : mTimeContraints)
-  {
-    TimeEvent::Status startStatus = timeConstraint->getStartEvent()->getStatus();
-    TimeEvent::Status endStatus = timeConstraint->getEndEvent()->getStatus();
-    
-    // the constraint is in the past
-    if (startStatus == TimeEvent::Status::HAPPENED &&
-        endStatus == TimeEvent::Status::HAPPENED)
-    {}
-    // the start of the constraint is pending
-    else if (startStatus == TimeEvent::Status::PENDING &&
-             endStatus == TimeEvent::Status::NONE)
-    {}
-    // the constraint is supposed to be running
-    else if (startStatus == TimeEvent::Status::HAPPENED &&
-             endStatus == TimeEvent::Status::NONE)
-    {
-      timeConstraint->start();
-    }
-    // the end of the constraint is pending
-    else if (startStatus == TimeEvent::Status::HAPPENED &&
-             endStatus == TimeEvent::Status::PENDING)
-    {}
-    // the constraint is in the future
-    else if (startStatus == TimeEvent::Status::NONE &&
-             endStatus == TimeEvent::Status::NONE)
-    {}
-    // error
-    else
-      throw runtime_error("TimeEvent's status configuration of the TimeConstraint is not handled");
-  }
-}
 
 void JamomaScenario::start()
 {

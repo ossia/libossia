@@ -68,8 +68,29 @@ Loop::~Loop()
 # pragma mark -
 # pragma mark Execution
 
+shared_ptr<StateElement> JamomaLoop::offset(const TimeValue& offset)
+{
+  if (mParent->getRunning())
+    throw runtime_error("parent time constraint is running");
+  
+  // reset internal mOffsetState
+  mOffsetState->stateElements().clear();
+  
+  TimeValue patternOffset = std::fmod((double)offset, (double)mPatternConstraint->getDurationNominal());
+  flattenAndFilter(mOffsetState, mPatternConstraint->offset(patternOffset));
+  
+  // compile mOffsetState with all HAPPENED event's states
+  if (mPatternStartNode->timeEvents()[0]->getStatus() == TimeEvent::Status::HAPPENED)
+    flattenAndFilter(mOffsetState, mPatternStartNode->timeEvents()[0]->getState());
+  
+  return mOffsetState;
+}
+
 shared_ptr<StateElement> JamomaLoop::state()
 {
+  if (!mParent->getRunning())
+    throw runtime_error("parent time constraint is not running");
+  
   // if date hasn't been processed already
   TimeValue date = mParent->getDate();
   if (date != mLastDate)
@@ -78,13 +99,6 @@ shared_ptr<StateElement> JamomaLoop::state()
     
     // reset internal State
     mCurrentState->stateElements().clear();
-
-    // append offset state if needed
-    if (!mOffsetState->stateElements().empty())
-    {
-      flattenAndFilter(mCurrentState, mOffsetState);
-      mOffsetState->stateElements().clear();
-    }
 
     // process the loop from the pattern start TimeNode
     Container<TimeEvent> statusChangedEvents;
@@ -111,7 +125,7 @@ shared_ptr<StateElement> JamomaLoop::state()
     if (mPatternEndNode->timeEvents()[0]->getStatus() == TimeEvent::Status::HAPPENED)
     {
       mPatternConstraint->stop();
-      mPatternConstraint->setOffset(Zero);
+      mPatternConstraint->offset(Zero);
     }
   }
 
@@ -121,19 +135,6 @@ shared_ptr<StateElement> JamomaLoop::state()
 
 # pragma mark -
 # pragma mark Execution - Implementation specific
-
-void JamomaLoop::offset(const TimeValue& offset)
-{
-  // reset internal mOffsetState
-  mOffsetState->stateElements().clear();
-  
-  TimeValue patternOffset = std::fmod((double)offset, (double)mPatternConstraint->getDurationNominal());
-  mPatternConstraint->setOffset(patternOffset);
-  
-  // compile mOffsetState with all HAPPENED event's states
-  if (mPatternStartNode->timeEvents()[0]->getStatus() == TimeEvent::Status::HAPPENED)
-    flattenAndFilter(mOffsetState, mPatternStartNode->timeEvents()[0]->getState());
-}
 
 void JamomaLoop::start()
 {}
@@ -169,7 +170,7 @@ const shared_ptr<TimeNode> JamomaLoop::getPatternEndTimeNode() const
   return mPatternEndNode;
 }
 
-void JamomaLoop::PatternConstraintCallback(const TimeValue& position, const TimeValue& date, std::shared_ptr<StateElement> state)
+void JamomaLoop::PatternConstraintCallback(const TimeValue& position, const TimeValue& date, std::shared_ptr<State> state)
 {
   if (mPatternConstraintCallback)
   {

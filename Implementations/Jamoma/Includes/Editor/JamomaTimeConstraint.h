@@ -41,6 +41,7 @@ private:
   TimeConstraint::ExecutionCallback   mCallback;
 
   shared_ptr<State>                   mCurrentState;    // an internal State to update at each tick of the clock
+  shared_ptr<State>                   mOffsetState;     // an internal State built when offset is called
 
   shared_ptr<TimeEvent>               mStartEvent;
   shared_ptr<TimeEvent>               mEndEvent;
@@ -69,12 +70,14 @@ public:
 
 # pragma mark -
 # pragma mark Execution
-
+  
   void start() final override;
   
   void stop() final override;
-
-  shared_ptr<StateElement> state() override;
+  
+  shared_ptr<State> offset(const TimeValue&) override;
+  
+  shared_ptr<State> state() override;
 
   void pause() final override;
 
@@ -82,8 +85,6 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
-    
-  Clock & setOffset(const TimeValue&) final override;
 
   void setCallback(ExecutionCallback) override;
   

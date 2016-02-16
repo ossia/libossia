@@ -43,7 +43,6 @@ public:
 # pragma mark -
 # pragma mark Execution - Implementation specific
 
-  virtual void offset(const TimeValue&) = 0;
   virtual void start() = 0;
   virtual void stop() = 0;
   virtual void pause() = 0;

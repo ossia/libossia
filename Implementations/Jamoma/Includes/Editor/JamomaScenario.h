@@ -60,12 +60,13 @@ public:
 # pragma mark -
 # pragma mark Execution
 
+  shared_ptr<StateElement> offset(const TimeValue&) override;
+  
   shared_ptr<StateElement> state() override;
 
 # pragma mark -
 # pragma mark Execution - Implementation specific
 
-  void offset(const TimeValue&) override;
   void start() override;
   void stop() override;
   void pause() override;

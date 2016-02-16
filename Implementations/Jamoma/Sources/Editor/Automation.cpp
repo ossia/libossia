@@ -39,8 +39,28 @@ Automation::~Automation()
 # pragma mark -
 # pragma mark Execution
 
+shared_ptr<StateElement> JamomaAutomation::offset(const TimeValue& offset)
+{
+  if (mParent->getRunning())
+    throw runtime_error("parent time constraint is running");
+  
+  // clear the former Value
+  if (mValueToSend) delete mValueToSend;
+    
+  // compute a new value from the Curves
+  mValueToSend = computeValue(mParent->getOffset() / mParent->getDurationNominal(), mDrive);
+    
+  // edit a Message handling the new Value
+  mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
+  
+  return mMessageToSend;
+}
+
 shared_ptr<StateElement> JamomaAutomation::state()
 {
+  if (!mParent->getRunning())
+    throw runtime_error("parent time constraint is not running");
+  
   // if date hasn't been processed already
   TimeValue date = mParent->getDate();
   if (date != mLastDate)
@@ -62,9 +82,6 @@ shared_ptr<StateElement> JamomaAutomation::state()
 
 # pragma mark -
 # pragma mark Execution - Implementation specific
-
-void JamomaAutomation::offset(const TimeValue& offset)
-{}
 
 void JamomaAutomation::start()
 {}

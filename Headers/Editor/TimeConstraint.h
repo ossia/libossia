@@ -28,7 +28,7 @@
 namespace OSSIA
 {
 
-class StateElement;
+class State;
 class TimeEvent;
 class TimeProcess;
 class TimeValue;
@@ -53,8 +53,8 @@ public:
   /*! to get the constraint execution back
    \param const #TimeValue process clock position
    \param const #TimeValue process clock date
-   \param std::shared_ptr<#StateElement> */
-  using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, std::shared_ptr<StateElement>)>;
+   \param std::shared_ptr<#State> */
+  using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, std::shared_ptr<State>)>;
 
 # pragma mark -
 # pragma mark Life cycle
@@ -84,25 +84,28 @@ public:
 
 # pragma mark -
 # pragma mark Execution
-
+  
   /*! start #TimeConstraint's #Clock */
   virtual void start() override = 0;
-
+  
   /*! stop #TimeConstraint's #Clock */
   virtual void stop() override = 0;
+  
+  /*! set #TimeConstraint's #Clock offset and process a state at offset date
+   \details the returned #State is made of as many as sub States for each TimeProcess the #TimeConstraint manages
+   \details don't call offset when the #TimeConstraint is running
+   \param const #TimeValue offset date
+   \return std::shared_ptr<#State> */
+  virtual std::shared_ptr<State> offset(const TimeValue&) = 0;
 
   /*! get a #State from the constraint depending of its #Clock date
    \details the returned #State is made of as many as sub States for each TimeProcess the #TimeConstraint manages
-   \return std::shared_ptr<#StateElement> */
-  virtual std::shared_ptr<StateElement> state() = 0;
-
+   \details don't call state when the #TimeConstraint is not running
+   \return std::shared_ptr<#State> */
+  virtual std::shared_ptr<State> state() = 0;
+  
 # pragma mark -
 # pragma mark Accessors
-
-  /*! set #TimeConstraint's #Clock offset
-   \param const #TimeValue offset
-   \return #Clock the clock */
-  virtual Clock & setOffset(const TimeValue&) override = 0;
 
   /*! sets a new callback for the constraint
     \param #TimeConstraint::ExecutionCallback to use to be notified at each step */

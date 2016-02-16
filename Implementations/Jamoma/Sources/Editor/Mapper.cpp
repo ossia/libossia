@@ -44,8 +44,20 @@ Mapper::~Mapper()
 # pragma mark -
 # pragma mark Execution
 
+shared_ptr<StateElement> JamomaMapper::offset(const TimeValue& offset)
+{
+  if (mParent->getRunning())
+    throw runtime_error("parent time constraint is running");
+  
+  //! \todo return nothing
+  return mMessageToSend;
+}
+
 shared_ptr<StateElement> JamomaMapper::state()
 {
+  if (!mParent->getRunning())
+    throw runtime_error("parent time constraint is not running");
+  
   // if date hasn't been processed already
   TimeValue date = mParent->getDate();
   if (date != mLastDate)
@@ -64,15 +76,12 @@ shared_ptr<StateElement> JamomaMapper::state()
       mValueToMap = nullptr;
     }
   }
-  
+
   return mMessageToSend;
 }
 
 # pragma mark -
 # pragma mark Execution - Implementation specific
-
-void JamomaMapper::offset(const TimeValue& offset)
-{}
 
 void JamomaMapper::start()
 {

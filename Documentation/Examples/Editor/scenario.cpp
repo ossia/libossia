@@ -243,9 +243,12 @@ int main()
 
     cout << "***** START *****" << endl;
 
-    // play it again faster starting at 500 ms
+    // play it again faster
     main_constraint->setSpeed(2.);
-    main_constraint->setOffset(500.);
+
+    // start at 500 ms (and launch the state at this time)
+    main_constraint->offset(500.)->launch();
+
     local_play_address->pushValue(&True);
 
     // wait the main TimeConstraint end
