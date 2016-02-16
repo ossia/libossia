@@ -124,7 +124,7 @@ public:
   /* recursive method to build children from the Jamoma tree */
   void buildChildren();
 
-  /* build the address depending of the Jamoma node object */
+  /* build the address depending on the Jamoma node object */
   void buildAddress();
   
   /* get any child change back */

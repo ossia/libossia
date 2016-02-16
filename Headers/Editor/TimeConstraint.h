@@ -98,7 +98,7 @@ public:
    \return std::shared_ptr<#State> */
   virtual std::shared_ptr<State> offset(const TimeValue&) = 0;
 
-  /*! get a #State from the constraint depending of its #Clock date
+  /*! get a #State from the constraint depending on its #Clock date
    \details the returned #State is made of as many as sub States for each TimeProcess the #TimeConstraint manages
    \details don't call state when the #TimeConstraint is not running
    \return std::shared_ptr<#State> */
