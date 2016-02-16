@@ -136,12 +136,7 @@ void JamomaScenario::offset(const TimeValue& offset)
 {
   // reset internal mOffsetState
   mOffsetState->stateElements().clear();
-/*
-  // process the scenario from the first TimeNode to forward the execution until the offset
-  Container<TimeEvent> statusChangedEvents;
-  shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(mTimeNodes[0]);
-  n->process_offset(offset);
-*/  
+
   // offset each TimeConstraint's Clock considering its start event date
   for (const auto& timeConstraint : mTimeContraints)
   {
