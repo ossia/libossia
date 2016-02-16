@@ -112,7 +112,7 @@ void JamomaTimeConstraint::stop()
   }
 }
 
-shared_ptr<StateElement> JamomaTimeConstraint::state(const TimeValue& position, const TimeValue& date)
+shared_ptr<StateElement> JamomaTimeConstraint::state()
 {
   // clear internal State, Message and Value
   const auto& processes = timeProcesses();
@@ -122,7 +122,7 @@ shared_ptr<StateElement> JamomaTimeConstraint::state(const TimeValue& position, 
   // get the state of each TimeProcess for the position and the date
   for (const auto& timeProcess : processes)
   {
-    mCurrentState->stateElements().push_back(timeProcess->state(position, date));
+    mCurrentState->stateElements().push_back(timeProcess->state());
   }
 
   return mCurrentState;
@@ -177,15 +177,15 @@ Clock & JamomaTimeConstraint::setOffset(const TimeValue& offset)
     startStatus = TimeEvent::Status::HAPPENED;
     endStatus = TimeEvent::Status::HAPPENED;
   }
-
+  
   //! \note maybe we should initialized TimeEvents with an Expression returning false to DISPOSED status ?
-
+  
   shared_ptr<JamomaTimeEvent> start = dynamic_pointer_cast<JamomaTimeEvent>(mStartEvent);
   start->setStatus(startStatus);
-
+  
   shared_ptr<JamomaTimeEvent> end = dynamic_pointer_cast<JamomaTimeEvent>(mEndEvent);
   end->setStatus(endStatus);
-  
+
   // offset all jamoma time processes
   for (const auto& timeProcess : timeProcesses())
   {
@@ -304,5 +304,5 @@ void JamomaTimeConstraint::removeTimeProcess(std::shared_ptr<TimeProcess> timePr
 void JamomaTimeConstraint::ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks)
 {
   if (mCallback)
-    (mCallback)(position, date, state(position, date));
+    (mCallback)(position, date, state());
 }

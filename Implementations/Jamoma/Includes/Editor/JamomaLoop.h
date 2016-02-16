@@ -66,7 +66,7 @@ public:
 # pragma mark -
 # pragma mark Execution
 
-  shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) override;
+  shared_ptr<StateElement> state() override;
 
 # pragma mark -
 # pragma mark Execution - Implementation specific

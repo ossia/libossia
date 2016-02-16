@@ -68,11 +68,14 @@ Loop::~Loop()
 # pragma mark -
 # pragma mark Execution
 
-shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const TimeValue& date)
+shared_ptr<StateElement> JamomaLoop::state()
 {
   // if date hasn't been processed already
+  TimeValue date = mParent->getDate();
   if (date != mLastDate)
   {
+    mLastDate = date;
+    
     // reset internal State
     mCurrentState->stateElements().clear();
 
@@ -110,8 +113,6 @@ shared_ptr<StateElement> JamomaLoop::state(const TimeValue& position, const Time
       mPatternConstraint->stop();
       mPatternConstraint->setOffset(Zero);
     }
-
-    mLastDate = date;
   }
 
   //! \see mCurrentState is filled below in JamomaLoop::PatternConstraintCallback
@@ -173,7 +174,7 @@ void JamomaLoop::PatternConstraintCallback(const TimeValue& position, const Time
   if (mPatternConstraintCallback)
   {
     // add the state of the pattern TimeConstraint
-    flattenAndFilter(mCurrentState, mPatternConstraint->state(position, date));
+    flattenAndFilter(mCurrentState, mPatternConstraint->state());
 
     (mPatternConstraintCallback)(position, date, mCurrentState);
   }

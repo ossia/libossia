@@ -85,23 +85,21 @@ public:
 # pragma mark -
 # pragma mark Execution
 
-  /*! start #TimeConstraint's #Clock depending on TimeEvent's status */
+  /*! start #TimeConstraint's #Clock */
   virtual void start() override = 0;
 
-  /*! stop #TimeConstraint's #Clock and reset offset to 0. */
+  /*! stop #TimeConstraint's #Clock */
   virtual void stop() override = 0;
 
-  /*! get the #State of the constraint for a position or a date
-   \details the returned #State is made of as many as sub States for each TimeProcess the constraint manages
-   \param const #TimeValue position
-   \param const #TimeValue date
+  /*! get a #State from the constraint depending of its #Clock date
+   \details the returned #State is made of as many as sub States for each TimeProcess the #TimeConstraint manages
    \return std::shared_ptr<#StateElement> */
-  virtual std::shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) = 0;
+  virtual std::shared_ptr<StateElement> state() = 0;
 
 # pragma mark -
 # pragma mark Accessors
 
-  /*! set #TimeConstraint's #Clock offset and edit TimeEvent's status
+  /*! set #TimeConstraint's #Clock offset
    \param const #TimeValue offset
    \return #Clock the clock */
   virtual Clock & setOffset(const TimeValue&) override = 0;

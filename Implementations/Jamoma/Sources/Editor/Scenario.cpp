@@ -42,11 +42,14 @@ Scenario::~Scenario()
 # pragma mark -
 # pragma mark Execution
 
-shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const TimeValue& date)
+shared_ptr<StateElement> JamomaScenario::state()
 {
   // if date hasn't been processed already
+  TimeValue date = mParent->getDate();
   if (date != mLastDate)
   {
+    mLastDate = date;
+    
     // reset internal mCurrentState
     mCurrentState->stateElements().clear();
     
@@ -95,7 +98,7 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
           }
         }
 
-        flattenAndFilter(mCurrentState, timeConstraint->state(timeConstraint->getPosition(), timeConstraint->getDate()));
+        flattenAndFilter(mCurrentState, timeConstraint->state());
       }
     }
 
@@ -121,8 +124,6 @@ shared_ptr<StateElement> JamomaScenario::state(const TimeValue& position, const 
       if (date > mParent->getDurationMin())
         ;//! \todo mParent->stop(); // if the parent TimeConstraint's Clock is in EXTERNAL drive mode, it creates a deadlock.
     }
-
-    mLastDate = date;
   }
 
   return mCurrentState;
@@ -135,7 +136,12 @@ void JamomaScenario::offset(const TimeValue& offset)
 {
   // reset internal mOffsetState
   mOffsetState->stateElements().clear();
-  
+/*
+  // process the scenario from the first TimeNode to forward the execution until the offset
+  Container<TimeEvent> statusChangedEvents;
+  shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(mTimeNodes[0]);
+  n->process_offset(offset);
+*/  
   // offset each TimeConstraint's Clock considering its start event date
   for (const auto& timeConstraint : mTimeContraints)
   {

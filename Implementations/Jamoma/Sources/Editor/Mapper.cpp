@@ -44,10 +44,14 @@ Mapper::~Mapper()
 # pragma mark -
 # pragma mark Execution
 
-shared_ptr<StateElement> JamomaMapper::state(const TimeValue& position, const TimeValue& date)
+shared_ptr<StateElement> JamomaMapper::state()
 {
+  // if date hasn't been processed already
+  TimeValue date = mParent->getDate();
   if (date != mLastDate)
   {
+    mLastDate = date;
+    
     if (mValueToMap)
     {
       std::lock_guard<std::mutex> lock(mValueToMapMutex);
@@ -59,8 +63,6 @@ shared_ptr<StateElement> JamomaMapper::state(const TimeValue& position, const Ti
       delete mValueToMap;
       mValueToMap = nullptr;
     }
-    
-    mLastDate = date;
   }
   
   return mMessageToSend;

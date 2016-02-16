@@ -53,11 +53,9 @@ public:
 # pragma mark -
 # pragma mark Execution
 
-  /*! get a #Message for a position or a date
-   \param const #TimeValue position
-   \param const #TimeValue date
+  /*! get a #Message depending on the parent #TimeConstraint date
    \return std::shared_ptr<#StateElement> */
-  virtual std::shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) override = 0;
+  virtual std::shared_ptr<StateElement> state() override = 0;
 
 # pragma mark -
 # pragma mark Accessors

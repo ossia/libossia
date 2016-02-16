@@ -39,20 +39,22 @@ Automation::~Automation()
 # pragma mark -
 # pragma mark Execution
 
-shared_ptr<StateElement> JamomaAutomation::state(const TimeValue& position, const TimeValue& date)
+shared_ptr<StateElement> JamomaAutomation::state()
 {
+  // if date hasn't been processed already
+  TimeValue date = mParent->getDate();
   if (date != mLastDate)
   {
+    mLastDate = date;
+    
     // clear the former Value
     if (mValueToSend) delete mValueToSend;
 
     // compute a new value from the Curves
-    mValueToSend = computeValue(position, mDrive);
+    mValueToSend = computeValue(mParent->getPosition(), mDrive);
 
     // edit a Message handling the new Value
     mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
-
-    mLastDate = date;
   }
 
   return mMessageToSend;

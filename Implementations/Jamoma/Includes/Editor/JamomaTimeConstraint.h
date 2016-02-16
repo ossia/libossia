@@ -74,7 +74,7 @@ public:
   
   void stop() final override;
 
-  shared_ptr<StateElement> state(const TimeValue&, const TimeValue&) override;
+  shared_ptr<StateElement> state() override;
 
   void pause() final override;
 
@@ -114,6 +114,6 @@ private:
 
 # pragma mark -
 # pragma mark Implementation specific
-
+  
   void ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks);
 };
