@@ -16,20 +16,7 @@ TimeProcess::~TimeProcess()
 {}
 
 # pragma mark -
-# pragma mark Accessors
-
-const shared_ptr<TimeConstraint> & JamomaTimeProcess::getParentTimeConstraint() const
-{
-  return mParent;
-}
-
-# pragma mark -
 # pragma mark Implementation specific
-
-void JamomaTimeProcess::setParentTimeConstraint(const shared_ptr<TimeConstraint> timeConstraint)
-{
-  mParent = timeConstraint;
-}
 
 void JamomaTimeProcess::flattenAndFilter(shared_ptr<State> state, const shared_ptr<StateElement>& element)
 {

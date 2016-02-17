@@ -1,5 +1,5 @@
 #include "Editor/JamomaTimeConstraint.h"
-
+#include <cassert>
 #include <algorithm>
 #include <iostream> //! \todo to remove. only here for debug purpose
 
@@ -52,6 +52,7 @@ mDurationMin(min),
 mDurationMax(max)
 {
   mCurrentState = State::create();
+  mOffsetState = State::create();
 }
 
 JamomaTimeConstraint::JamomaTimeConstraint(const JamomaTimeConstraint * other) :
@@ -62,7 +63,10 @@ mEndEvent(other->mEndEvent),
 mDurationNominal(other->mDurationNominal),
 mDurationMin(other->mDurationMin),
 mDurationMax(other->mDurationMax)
-{}
+{
+    mCurrentState = State::create();
+    mOffsetState = State::create();
+}
 
 shared_ptr<TimeConstraint> JamomaTimeConstraint::clone() const
 {
@@ -252,18 +256,14 @@ const shared_ptr<TimeEvent> & JamomaTimeConstraint::getEndEvent() const
 
 void JamomaTimeConstraint::addTimeProcess(shared_ptr<TimeProcess> timeProcess)
 {
+  assert(timeProcess.get());
   // store a TimeProcess if it is not already stored
   if (find(timeProcesses().begin(),
            timeProcesses().end(),
            timeProcess) == timeProcesses().end())
   {
     timeProcesses().push_back(timeProcess);
-
-    JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
-    if (t)
-    {
-        t->setParentTimeConstraint(shared_from_this());
-    }
+    timeProcess->parent = shared_from_this();
   }
 }
 
@@ -273,15 +273,7 @@ void JamomaTimeConstraint::removeTimeProcess(std::shared_ptr<TimeProcess> timePr
   if (it != timeProcesses().end())
   {
       timeProcesses().erase(it);
-
-      if (timeProcess)
-      {
-          JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
-          if (t)
-          {
-              t->setParentTimeConstraint(nullptr);
-          }
-      }
+      timeProcess.reset();
   }
 }
 

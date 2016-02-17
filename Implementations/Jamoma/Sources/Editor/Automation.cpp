@@ -41,14 +41,14 @@ Automation::~Automation()
 
 shared_ptr<StateElement> JamomaAutomation::offset(const TimeValue& offset)
 {
-  if (mParent->getRunning())
+  if (parent->getRunning())
     throw runtime_error("parent time constraint is running");
   
   // clear the former Value
   if (mValueToSend) delete mValueToSend;
     
   // compute a new value from the Curves
-  mValueToSend = computeValue(mParent->getOffset() / mParent->getDurationNominal(), mDrive);
+  mValueToSend = computeValue(parent->getOffset() / parent->getDurationNominal(), mDrive);
     
   // edit a Message handling the new Value
   mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
@@ -58,11 +58,11 @@ shared_ptr<StateElement> JamomaAutomation::offset(const TimeValue& offset)
 
 shared_ptr<StateElement> JamomaAutomation::state()
 {
-  if (!mParent->getRunning())
+  if (!parent->getRunning())
     throw runtime_error("parent time constraint is not running");
   
   // if date hasn't been processed already
-  TimeValue date = mParent->getDate();
+  TimeValue date = parent->getDate();
   if (date != mLastDate)
   {
     mLastDate = date;
@@ -71,7 +71,7 @@ shared_ptr<StateElement> JamomaAutomation::state()
     if (mValueToSend) delete mValueToSend;
 
     // compute a new value from the Curves
-    mValueToSend = computeValue(mParent->getPosition(), mDrive);
+    mValueToSend = computeValue(parent->getPosition(), mDrive);
 
     // edit a Message handling the new Value
     mMessageToSend = Message::create(mDrivenAddress, mValueToSend);

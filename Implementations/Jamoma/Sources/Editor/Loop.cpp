@@ -70,7 +70,7 @@ Loop::~Loop()
 
 shared_ptr<StateElement> JamomaLoop::offset(const TimeValue& offset)
 {
-  if (mParent->getRunning())
+  if (parent->getRunning())
     throw runtime_error("parent time constraint is running");
   
   // reset internal mOffsetState
@@ -88,11 +88,11 @@ shared_ptr<StateElement> JamomaLoop::offset(const TimeValue& offset)
 
 shared_ptr<StateElement> JamomaLoop::state()
 {
-  if (!mParent->getRunning())
+  if (!parent->getRunning())
     throw runtime_error("parent time constraint is not running");
   
   // if date hasn't been processed already
-  TimeValue date = mParent->getDate();
+  TimeValue date = parent->getDate();
   if (date != mLastDate)
   {
     mLastDate = date;

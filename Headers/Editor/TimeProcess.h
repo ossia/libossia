@@ -53,8 +53,7 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  /*! get the parent #TimeConstraint
-   \return std::shared_ptr<#TimeConstraint> */
-  virtual const std::shared_ptr<TimeConstraint> & getParentTimeConstraint() const = 0;
+  std::shared_ptr<TimeConstraint> parent;
+
 };
 }

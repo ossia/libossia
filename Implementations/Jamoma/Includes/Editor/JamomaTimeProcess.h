@@ -29,8 +29,6 @@ protected:
 # pragma mark -
 # pragma mark Implementation specific
 
-  std::shared_ptr<TimeConstraint> mParent;
-
   TimeValue                       mLastDate;  // used to filter multiple state calls at the same time (use date as position can be always 0 in infinite duration case)
 
 public:
@@ -49,14 +47,7 @@ public:
   virtual void resume() = 0;
 
 # pragma mark -
-# pragma mark Accessors
-
-  const shared_ptr<TimeConstraint> & getParentTimeConstraint() const override;
-
-# pragma mark -
 # pragma mark Implementation specific
-
-  void setParentTimeConstraint(const shared_ptr<TimeConstraint>);
 
   /*! append each message of the state to the current state in order to eliminate address redundancy 
    \param shared_ptr<State> the State to fill

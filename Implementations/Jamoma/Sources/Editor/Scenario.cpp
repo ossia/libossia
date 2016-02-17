@@ -44,7 +44,7 @@ Scenario::~Scenario()
 
 shared_ptr<StateElement> JamomaScenario::offset(const TimeValue& offset)
 {
-  if (mParent->getRunning())
+  if (parent->getRunning())
     throw runtime_error("parent time constraint is running");
   
   // reset internal mOffsetState
@@ -105,11 +105,11 @@ shared_ptr<StateElement> JamomaScenario::offset(const TimeValue& offset)
 
 shared_ptr<StateElement> JamomaScenario::state()
 {
-  if (!mParent->getRunning())
+  if (!parent->getRunning())
     throw runtime_error("parent time constraint is not running");
   
   // if date hasn't been processed already
-  TimeValue date = mParent->getDate();
+  TimeValue date = parent->getDate();
   if (date != mLastDate)
   {
     mLastDate = date;
@@ -178,7 +178,7 @@ shared_ptr<StateElement> JamomaScenario::state()
     // if the Scenario is done : stop the parent TimeConstraint
     if (done)
     {
-      if (date > mParent->getDurationMin())
+      if (date > parent->getDurationMin())
         ;//! \todo mParent->stop(); // if the parent TimeConstraint's Clock is in EXTERNAL drive mode, it creates a deadlock.
     }
   }
