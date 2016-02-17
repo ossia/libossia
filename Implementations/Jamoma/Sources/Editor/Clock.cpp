@@ -316,8 +316,14 @@ void JamomaClock::do_setOffset(const TimeValue& offset)
 
 void JamomaClock::threadCallback()
 {
+    try {
   // launch the tick if the duration is valid and while it have to run
   if (mDuration > Zero)
     while (mRunning)
       tick();
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "JamomaClock::threadCallback: " << e.what();
+    }
 }
