@@ -1,4 +1,5 @@
 #include "Editor/JamomaScenario.h"
+#include <Misc/Util.h>
 
 #include <algorithm>
 #include <iostream> //! \todo to remove. only here for debug purpose
@@ -131,28 +132,22 @@ shared_ptr<StateElement> JamomaScenario::state()
     // note : this means TimeConstraint's state can overwrite TimeEvent's state
     for (const auto& timeConstraint : mTimeContraints)
     {
-      if (timeConstraint->getRunning())
+      if (timeConstraint->getRunning() &&
+          timeConstraint->getDriveMode() == Clock::DriveMode::EXTERNAL)
       {
-        if (timeConstraint->getDriveMode() == Clock::DriveMode::EXTERNAL)
+        // don't tick if the TimeConstraint is starting to avoid double ticks
+        auto& startEv = timeConstraint->getStartEvent();
+        bool not_starting = none_of(
+                    statusChangedEvents,
+                    [&] (const std::shared_ptr<TimeEvent>& ev) {
+            return ev->getStatus() == TimeEvent::Status::HAPPENED &&
+                   ev == startEv;
+        });
+
+        if(not_starting)
         {
-          // don't tick if the TimeConstraint is starting to avoid double ticks
-          bool starting = false;
-          for (const auto& timeEvent : statusChangedEvents)
-          {
-            if (timeEvent == timeConstraint->getStartEvent())
-            {
-              if (timeEvent->getStatus() == TimeEvent::Status::HAPPENED)
-              {
-                starting = true;
-                break;
-              }
-            }
-          }
-          
-          if (!starting)
-          {
-            timeConstraint->tick();
-          }
+          // No such event found; not starting
+          timeConstraint->tick();
         }
       }
         
@@ -162,20 +157,15 @@ shared_ptr<StateElement> JamomaScenario::state()
     }
 
     // if all the TimeEvents are not NONE : the Scenario is done
-    bool done = true;
-    for (const auto& timeNode : mTimeNodes)
+    bool done = !any_of(mTimeNodes,
+           [] (const std::shared_ptr<TimeNode>& tn)
     {
-      for (auto& timeEvent : timeNode->timeEvents())
-      {
-        done = timeEvent->getStatus() != TimeEvent::Status::NONE;
-
-        if (!done)
-          break;
-      }
-
-      if (!done)
-        break;
-    }
+        return any_of(tn->timeEvents(),
+            [] (const std::shared_ptr<TimeEvent>& ev)
+        {
+            return ev->getStatus() == TimeEvent::Status::NONE;
+        });
+    });
 
     // if the Scenario is done : stop the parent TimeConstraint
     if (done)
@@ -238,9 +228,7 @@ void JamomaScenario::resume()
 void JamomaScenario::addTimeConstraint(const shared_ptr<TimeConstraint> timeConstraint)
 {
   // store the TimeConstraint if it is not already stored
-  if (std::find(mTimeContraints.begin(),
-                mTimeContraints.end(),
-                timeConstraint) == mTimeContraints.end())
+  if (!contains(mTimeContraints, timeConstraint))
   {
     mTimeContraints.push_back(timeConstraint);
   }
@@ -258,11 +246,7 @@ void JamomaScenario::addTimeConstraint(const shared_ptr<TimeConstraint> timeCons
 
 void JamomaScenario::removeTimeConstraint(const shared_ptr<TimeConstraint> timeConstraint)
 {
-  auto it = find(mTimeContraints.begin(), mTimeContraints.end(), timeConstraint);
-  if (it != mTimeContraints.end())
-  {
-      mTimeContraints.erase(it);
-  }
+  remove_one(mTimeContraints, timeConstraint);
 
   // set the TimeConstraint's clock in none external mode
   shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint);
@@ -272,9 +256,7 @@ void JamomaScenario::removeTimeConstraint(const shared_ptr<TimeConstraint> timeC
 void JamomaScenario::addTimeNode(const shared_ptr<TimeNode> timeNode)
 {
   // store a TimeNode if it is not already stored
-  if (find(mTimeNodes.begin(),
-           mTimeNodes.end(),
-           timeNode) == mTimeNodes.end())
+  if (!contains(mTimeNodes, timeNode))
   {
     mTimeNodes.push_back(timeNode);
   }
@@ -282,11 +264,7 @@ void JamomaScenario::addTimeNode(const shared_ptr<TimeNode> timeNode)
 
 void JamomaScenario::removeTimeNode(const shared_ptr<TimeNode> timeNode)
 {
-  auto it = find(mTimeNodes.begin(), mTimeNodes.end(), timeNode);
-  if (it != mTimeNodes.end())
-  {
-      mTimeNodes.erase(it);
-  }
+  remove_one(mTimeNodes, timeNode);
 }
 
 # pragma mark -
