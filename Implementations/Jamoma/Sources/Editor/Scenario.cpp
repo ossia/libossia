@@ -154,9 +154,11 @@ shared_ptr<StateElement> JamomaScenario::state()
             timeConstraint->tick();
           }
         }
-
-        flattenAndFilter(mCurrentState, timeConstraint->state());
       }
+        
+      // if the time constraint is still running after the tick
+      if (timeConstraint->getRunning())
+          flattenAndFilter(mCurrentState, timeConstraint->state());
     }
 
     // if all the TimeEvents are not NONE : the Scenario is done
