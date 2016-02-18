@@ -60,7 +60,7 @@ private Q_SLOTS:
         auto scenario = Scenario::create();
         QVERIFY(scenario != nullptr);
         
-        QVERIFY(scenario->getParentTimeConstraint() == nullptr);
+        QVERIFY(scenario->parent == nullptr);
         
         QVERIFY(scenario->getStartTimeNode() != nullptr);
 

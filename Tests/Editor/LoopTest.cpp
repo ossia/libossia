@@ -31,7 +31,7 @@ private Q_SLOTS:
         auto loop = Loop::create(25., constraint_callback, event_callback, event_callback);
         QVERIFY(loop != nullptr);
 
-        QVERIFY(loop->getParentTimeConstraint() == nullptr);
+        QVERIFY(loop->parent == nullptr);
 
         QVERIFY(loop->getPatternTimeConstraint() != nullptr);
         QVERIFY(loop->getPatternStartTimeNode() != nullptr);

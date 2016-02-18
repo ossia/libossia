@@ -60,7 +60,7 @@ private Q_SLOTS:
         auto mapper = Mapper::create(float_address, int_address, &f);
         QVERIFY(mapper != nullptr);
 
-        QVERIFY(mapper->getParentTimeConstraint() == nullptr);
+        QVERIFY(mapper->parent == nullptr);
 
         QVERIFY(mapper->getDriverAddress() == float_address);
         QVERIFY(mapper->getDrivenAddress() == int_address);
