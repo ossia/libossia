@@ -34,25 +34,25 @@ protected:
 # pragma mark -
 # pragma mark Implementation specific
 
-  TimeValue         mDuration;      /// the time (in ms) the clock will run at normal speed factor
-  TimeValue         mGranularity;   /// the minimum time between each tick (in ms)
-  TimeValue         mOffset;        /// the date (in ms) the clock will run from
-  double            mSpeed;         /// the speed factor of the clock
+  TimeValue         mDuration{};        /// the time (in ms) the clock will run at normal speed factor
+  TimeValue         mGranularity{};     /// the minimum time between each tick (in ms)
+  TimeValue         mOffset{};          /// the date (in ms) the clock will run from
+  double            mSpeed{};           /// the speed factor of the clock
 
-  Clock::DriveMode  mDriveMode;     /// in EXTERNAL drive mode the tick() method is called from outside
+  Clock::DriveMode  mDriveMode{};       /// in EXTERNAL drive mode the tick() method is called from outside
 
-  bool              mRunning;       /// is the clock running right now ?
-  bool              mPaused;        /// is the clock paused right now ?
-  TimeValue         mPosition;      /// the progression of the clock between the beginning and the end [0. :: 1.]
-  TimeValue         mDate;          /// how many time the clock is running (without no speed factor consideration)
+  bool              mRunning{};         /// is the clock running right now ?
+  bool              mPaused{};          /// is the clock paused right now ?
+  TimeValue         mPosition{};        /// the progression of the clock between the beginning and the end [0. :: 1.]
+  TimeValue         mDate{};            /// how many time the clock is running (without no speed factor consideration)
 
-  thread            mThread;        /// a thread to launch the clock execution
+  thread            mThread;            /// a thread to launch the clock execution
 
-  steady_clock::time_point mLastTime;/// a time reference used to compute time tick
-  long long         mElapsedTime;   /// a time reference used to know how many time are elapsed in microsecond
+  steady_clock::time_point mLastTime{}; /// a time reference used to compute time tick
+  long long         mElapsedTime{};     /// a time reference used to know how many time are elapsed in microsecond
 
 private:
-  ExecutionCallback mCallback;      /// the callback to use for each step
+  ExecutionCallback mCallback;          /// the callback to use for each step
 
 public:
 
