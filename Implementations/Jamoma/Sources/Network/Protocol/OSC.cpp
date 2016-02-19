@@ -1,5 +1,7 @@
 #include "Network/Protocol/JamomaOSC.h"
 
+#include <Network/JamomaDevice.h>
+
 using namespace OSSIA;
 
 # pragma mark -
@@ -30,7 +32,7 @@ OSC::~OSC()
 # pragma mark -
 # pragma mark Accessors
 
-std::string JamomaOSC::getIp()
+std::string JamomaOSC::getIp() const
 {
   return mIp;
 }
@@ -38,15 +40,15 @@ std::string JamomaOSC::getIp()
 Protocol & JamomaOSC::setIp(std::string ip)
 {
   TTObject oscObject = mApplicationManager.send("ProtocolFind", "OSC");
-  
+
   mIp = ip;
-  
+
   oscObject.set("ip", TTSymbol(mIp));
-  
+
   return *this;
 }
 
-int JamomaOSC::getInPort()
+int JamomaOSC::getInPort() const
 {
   return mInPort;
 }
@@ -54,16 +56,16 @@ int JamomaOSC::getInPort()
 Protocol & JamomaOSC::setInPort(int in_port)
 {
   TTObject oscObject = mApplicationManager.send("ProtocolFind", "OSC");
-  
+
   mInPort = in_port;
-  
+
   TTValue v(mInPort, mOutPort);
   oscObject.set("port", v);
-  
+
   return *this;
 }
 
-int JamomaOSC::getOutPort()
+int JamomaOSC::getOutPort() const
 {
   return mOutPort;
 }
@@ -71,13 +73,63 @@ int JamomaOSC::getOutPort()
 Protocol & JamomaOSC::setOutPort(int out_port)
 {
   TTObject oscObject = mApplicationManager.send("ProtocolFind", "OSC");
-  
+
   mOutPort = out_port;
-  
+
   TTValue v(mInPort, mOutPort);
   oscObject.set("port", v);
-  
+
   return *this;
+}
+
+bool JamomaOSC::getLearningStatus() const
+{
+    return mLearning;
+}
+void NamespaceCallback(const TTValue& baton, const TTValue& value)
+{
+    OSSIA::Device* dev = (OSSIA::Device*)((TTPtr)baton[0]);
+    TTSymbol applicationName = baton[1];
+    TTUInt8 flag = value[2];
+
+    if (flag == kAddressCreated)
+    {
+        TTSymbol addr = value[0];
+        TTNodePtr node =  TTNodePtr((TTPtr)value[1]);
+        std::cerr << "addr" << addr.c_str() << std::endl;
+    }
+}
+
+Protocol& JamomaOSC::setLearningStatus(OSSIA::Device& ossiaDevice, bool newLearn)
+{
+    TTSymbol    applicationName(ossiaDevice.getName());
+    TTObject    anApplication = accessApplication(applicationName);
+
+    anApplication.set("learn", newLearn);
+
+    // enable namespace observation
+    if (newLearn && !mNamespaceObserver.valid()) {
+
+        TTValue baton(TTPtr(&ossiaDevice), applicationName);
+
+        // create a TTCallback to observe when a node is created (using NamespaceCallback)
+        mNamespaceObserver = TTObject("callback");
+
+        mNamespaceObserver.set("baton", baton);
+        mNamespaceObserver.set("function",
+                               TTPtr(&NamespaceCallback));
+
+        accessApplicationDirectory(applicationName)->addObserverForNotifications(kTTAdrsRoot, mNamespaceObserver);
+    }
+    // disable namespace observation
+    else if (!newLearn && mNamespaceObserver.valid()) {
+
+        accessApplicationDirectory(applicationName)->removeObserverForNotifications(kTTAdrsRoot, mNamespaceObserver);
+
+        mNamespaceObserver = TTObject();
+    }
+
+    return *this;
 }
 
 # pragma mark -
@@ -86,35 +138,35 @@ Protocol & JamomaOSC::setOutPort(int out_port)
 bool JamomaOSC::pullAddressValue(Address& address) const
 {
   JamomaAddress& adrs = dynamic_cast<JamomaAddress&>(address);
-  
+
   TTValue value;
-  
+
   if (adrs.pullValue(value))
   {
     adrs.setValue(value);
     return true;
   }
-  
+
   return false;
 }
 
 bool JamomaOSC::pushAddressValue(const Address& address) const
 {
   const JamomaAddress& adrs = dynamic_cast<const JamomaAddress&>(address);
-  
+
   TTValue value;
-  
+
   adrs.getValue(value);
-  
+
   return adrs.pushValue(value);
 }
 
 bool JamomaOSC::observeAddressValue(std::shared_ptr<Address> address, bool enable) const
 {
   shared_ptr<JamomaAddress> adrs = dynamic_pointer_cast<JamomaAddress>(address);
-  
+
   adrs->observeValue(enable);
-  
+
   return true;
 }
 

@@ -33,9 +33,11 @@ private:
 # pragma mark Implementation specific
 
   string    mIp;
-  int       mInPort;            /// the port that a remote device open to receive OSC messages
-  int       mOutPort;           /// the port where a remote device sends OSC messages to give some feeback (like "echo")
+  int       mInPort{};            /// the port that a remote device open to receive OSC messages
+  int       mOutPort{};           /// the port where a remote device sends OSC messages to give some feeback (like "echo")
+  bool      mLearning{};          /// if the device is currently learning from inbound messages.
 
+  TTObject  mNamespaceObserver;
 public:
 
 # pragma mark -
@@ -48,17 +50,20 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  std::string getIp() override;
+  std::string getIp() const override;
 
   Protocol & setIp(std::string) override;
 
-  int getInPort() override;
+  int getInPort() const override;
 
   Protocol & setInPort(int) override;
 
-  int getOutPort() override;
+  int getOutPort() const override;
 
   Protocol & setOutPort(int) override;
+
+  bool getLearningStatus() const override;
+  Protocol & setLearningStatus(OSSIA::Device&, bool) override;
 
 # pragma mark -
 # pragma mark Operation

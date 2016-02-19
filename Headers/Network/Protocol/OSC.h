@@ -20,7 +20,7 @@
 
 namespace OSSIA
 {
-
+class Device;
 class OSC : public virtual Protocol
 {
 
@@ -46,16 +46,20 @@ public:
   {return Protocol::Type::OSC;}
 
   /*! get IP */
-  virtual std::string getIp() = 0;
+  virtual std::string getIp() const = 0;
   virtual Protocol & setIp(std::string) = 0;
 
   /*! get port where to send messages */
-  virtual int getInPort() = 0;
+  virtual int getInPort() const = 0;
   virtual Protocol & setInPort(int) = 0;
 
   /*! get port where messages are sent back */
-  virtual int getOutPort() = 0;
+  virtual int getOutPort() const = 0;
   virtual Protocol & setOutPort(int) = 0;
+
+  /*! enable learning of the addresses */
+  virtual bool getLearningStatus() const = 0;
+  virtual Protocol & setLearningStatus(OSSIA::Device& ossiaDevice, bool newLearn) = 0;
 
 };
 
