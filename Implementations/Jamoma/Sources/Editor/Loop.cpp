@@ -91,6 +91,9 @@ shared_ptr<StateElement> JamomaLoop::state()
   if (!parent->getRunning())
     throw runtime_error("parent time constraint is not running");
   
+  //! \debug
+  cout << parent->getDurationMin() << ", " << parent->getDurationNominal() << ", " << parent->getDurationMax() << endl;
+  
   // if date hasn't been processed already
   TimeValue date = parent->getDate();
   if (date != mLastDate)
@@ -115,6 +118,7 @@ shared_ptr<StateElement> JamomaLoop::state()
     {
       if (mPatternConstraint->getDriveMode() == Clock::DriveMode::EXTERNAL)
       {
+        // todo : don't tick if the TimeConstraint is starting to avoid double ticks
         mPatternConstraint->tick();
       }
       else
@@ -122,10 +126,17 @@ shared_ptr<StateElement> JamomaLoop::state()
     }
 
     // if the pattern end event happened : reset the loop
-    if (mPatternEndNode->timeEvents()[0]->getStatus() == TimeEvent::Status::HAPPENED)
+    if (mPatternConstraint->getEndEvent()->getStatus() == TimeEvent::Status::HAPPENED)
     {
       mPatternConstraint->stop();
       mPatternConstraint->offset(Zero);
+      
+      //! \todo make a common way to reset a graph
+      shared_ptr<JamomaTimeEvent> start = dynamic_pointer_cast<JamomaTimeEvent>(mPatternConstraint->getStartEvent());
+      start->setStatus(TimeEvent::Status::PENDING);
+      
+      shared_ptr<JamomaTimeEvent> end = dynamic_pointer_cast<JamomaTimeEvent>(mPatternConstraint->getEndEvent());
+      end->setStatus(TimeEvent::Status::NONE);
     }
   }
 
@@ -140,7 +151,9 @@ void JamomaLoop::start()
 {}
 
 void JamomaLoop::stop()
-{}
+{
+  cout << "stopped !" << endl;
+}
 
 void JamomaLoop::pause()
 {

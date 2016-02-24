@@ -51,18 +51,43 @@ shared_ptr<StateElement> JamomaScenario::offset(const TimeValue& offset)
   // reset internal mOffsetState
   mOffsetState->stateElements().clear();
   
-  // offset each TimeConstraint's Clock considering its start event date
+  // TimeConstraints setup
   for (const auto& timeConstraint : mTimeContraints)
   {
-    TimeValue start = timeConstraint->getStartEvent()->getTimeNode()->getDate();
-    flattenAndFilter(mOffsetState, timeConstraint->offset(offset - start));
+    // offset TimeConstraint's Clock
+    TimeValue constraintOffset = offset - timeConstraint->getStartEvent()->getTimeNode()->getDate();
+    flattenAndFilter(mOffsetState, timeConstraint->offset(constraintOffset));
+    
+    // setup start and end TimeEvent's status
+    TimeEvent::Status startStatus = TimeEvent::Status::NONE;
+    TimeEvent::Status endStatus = TimeEvent::Status::NONE;
+    
+    if (constraintOffset >= Zero && constraintOffset <= timeConstraint->getDurationMax())
+    {
+      startStatus = constraintOffset == Zero ? TimeEvent::Status::PENDING : TimeEvent::Status::HAPPENED;
+      endStatus = constraintOffset > timeConstraint->getDurationMin() ? TimeEvent::Status::PENDING : TimeEvent::Status::NONE;
+    }
+    else if (constraintOffset > timeConstraint->getDurationMax())
+    {
+      startStatus = TimeEvent::Status::HAPPENED;
+      endStatus = TimeEvent::Status::HAPPENED;
+    }
+    
+    //! \note maybe we should initialized TimeEvents with an Expression returning false to DISPOSED status ?
+    
+    shared_ptr<JamomaTimeEvent> start = dynamic_pointer_cast<JamomaTimeEvent>(timeConstraint->getStartEvent());
+    start->setStatus(startStatus);
+    
+    shared_ptr<JamomaTimeEvent> end = dynamic_pointer_cast<JamomaTimeEvent>(timeConstraint->getEndEvent());
+    end->setStatus(endStatus);
   }
   
-  // compile mOffsetState with all HAPPENED event's states
+  // TimeNodes setup
   for (const auto& timeNode : mTimeNodes)
   {
     for (auto& timeEvent : timeNode->timeEvents())
     {
+      // compile mOffsetState with all HAPPENED event's states
       if (timeEvent->getStatus() == TimeEvent::Status::HAPPENED)
         flattenAndFilter(mOffsetState, timeEvent->getState());
     }
