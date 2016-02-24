@@ -80,8 +80,8 @@ shared_ptr<StateElement> JamomaLoop::offset(const TimeValue& offset)
   flattenAndFilter(mOffsetState, mPatternConstraint->offset(patternOffset));
   
   // compile mOffsetState with all HAPPENED event's states
-  if (mPatternStartNode->timeEvents()[0]->getStatus() == TimeEvent::Status::HAPPENED)
-    flattenAndFilter(mOffsetState, mPatternStartNode->timeEvents()[0]->getState());
+  if (mPatternConstraint->getStartEvent()->getStatus() == TimeEvent::Status::HAPPENED)
+    flattenAndFilter(mOffsetState, mPatternConstraint->getStartEvent()->getState());
   
   return mOffsetState;
 }
@@ -90,9 +90,6 @@ shared_ptr<StateElement> JamomaLoop::state()
 {
   if (!parent->getRunning())
     throw runtime_error("parent time constraint is not running");
-  
-  //! \debug
-  cout << parent->getDurationMin() << ", " << parent->getDurationNominal() << ", " << parent->getDurationMax() << endl;
   
   // if date hasn't been processed already
   TimeValue date = parent->getDate();
@@ -131,7 +128,6 @@ shared_ptr<StateElement> JamomaLoop::state()
       mPatternConstraint->stop();
       mPatternConstraint->offset(Zero);
       
-      //! \todo make a common way to reset a graph
       shared_ptr<JamomaTimeEvent> start = dynamic_pointer_cast<JamomaTimeEvent>(mPatternConstraint->getStartEvent());
       start->setStatus(TimeEvent::Status::PENDING);
       
@@ -151,9 +147,7 @@ void JamomaLoop::start()
 {}
 
 void JamomaLoop::stop()
-{
-  cout << "stopped !" << endl;
-}
+{}
 
 void JamomaLoop::pause()
 {
