@@ -48,7 +48,6 @@ void JamomaTimeEvent::happen()
   // setup next TimeConstraints
   for (auto& timeConstraint : nextTimeConstraints())
   {
-    timeConstraint->offset(0);
     timeConstraint->start();
   }
 
