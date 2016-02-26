@@ -56,9 +56,8 @@ shared_ptr<StateElement> JamomaScenario::offset(const TimeValue& offset)
   {
     // offset TimeConstraint's Clock
     TimeValue constraintOffset = offset - timeConstraint->getStartEvent()->getTimeNode()->getDate();
-    flattenAndFilter(mOffsetState, timeConstraint->offset(constraintOffset));
     
-    // setup start and end TimeEvent's status
+    // setup start and end TimeEvent's status and build offset state
     TimeEvent::Status startStatus = TimeEvent::Status::NONE;
     TimeEvent::Status endStatus = TimeEvent::Status::NONE;
     
@@ -66,6 +65,8 @@ shared_ptr<StateElement> JamomaScenario::offset(const TimeValue& offset)
     {
       startStatus = constraintOffset == Zero ? TimeEvent::Status::PENDING : TimeEvent::Status::HAPPENED;
       endStatus = constraintOffset > timeConstraint->getDurationMin() ? TimeEvent::Status::PENDING : TimeEvent::Status::NONE;
+      
+      flattenAndFilter(mOffsetState, timeConstraint->offset(constraintOffset));
     }
     else if (constraintOffset > timeConstraint->getDurationMax())
     {
