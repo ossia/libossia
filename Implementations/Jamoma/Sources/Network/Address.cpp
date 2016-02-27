@@ -71,10 +71,10 @@ const Value * JamomaAddress::getValue() const
 const Value* JamomaAddress::cloneValue(std::vector<char> index) const
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
-    
+
   if (mValue == nullptr)
     throw runtime_error("cloning null value");
-  
+
   if (index.empty() || mValueType != Value::Type::TUPLE)
   {
     return mValue->clone();
@@ -90,12 +90,12 @@ const Value* JamomaAddress::cloneValue(std::vector<char> index) const
     // create a new tuple from tuple's values at index
     auto tuple = static_cast<const Tuple*>(mValue);
     vector<const Value*> values;
-    
+
     for (char i : index)
     {
       values.push_back(tuple->value[i]->clone());
     }
-    
+
     return new Tuple(values);
   }
 }
@@ -312,7 +312,7 @@ Address::iterator JamomaAddress::addCallback(ValueCallback callback)
   {
     // use the device protocol to start address value observation
     mNode.lock()->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), true);
-    
+
     //! \debug
     cout << "opening listening on " << buildNodePath(mNode.lock()) << endl;
   }
@@ -328,7 +328,7 @@ void JamomaAddress::removeCallback(Address::iterator callback)
   {
     // use the device protocol to stop address value observation
     mNode.lock()->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), false);
-    
+
     //! \debug
     cout << "closing listening on " << buildNodePath(mNode.lock()) << endl;
   }
@@ -347,11 +347,14 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
   {
     self->setValue(value);
 
+    // We clone the value to prevent crashes
+    // if it is rewritten afterwards.
+    auto val = self->cloneValue();
     for (auto callback : self->callbacks())
     {
-      callback(self->mValue);
+      callback(val);
     }
-
+    delete val;
     return kTTErrNone;
   }
 
