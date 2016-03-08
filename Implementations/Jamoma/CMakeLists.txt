@@ -8,7 +8,7 @@ include(UseGold)
 include(LinkerWarnings)
 
 function(target_transfer_options TheTarget TheLib)
-    target_include_directories(${TheTarget} PRIVATE
+    target_include_directories(${TheTarget} PUBLIC
         $<TARGET_PROPERTY:${TheLib},INTERFACE_INCLUDE_DIRECTORIES>
         )
     target_compile_definitions(${TheTarget} PRIVATE
