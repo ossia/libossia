@@ -49,7 +49,7 @@ protected:
   shared_ptr<Address>     mAddress;
 
   bool                    mIsDevice{false};
-  
+
   map<shared_ptr<Node>, Node::iterator> mChildNodeChangeCallbackIndexes;
 
 public:
@@ -67,6 +67,8 @@ public:
   shared_ptr<Device> getDevice() const override;
 
   shared_ptr<Node> getParent() const override;
+
+  shared_ptr<Node> getThis() override;
 
 # pragma mark -
 # pragma mark Accessors
@@ -88,7 +90,7 @@ public:
 # pragma mark Children
 
   Container<Node>::iterator emplace(Container<Node>::const_iterator pos, string name) override;
-  
+
   Container<Node>::iterator emplace(Container<Node>::const_iterator pos,
                                     const string& name,
                                     Value::Type type,
@@ -98,14 +100,14 @@ public:
                                     bool repetitionFilter) override;
 
   Container<Node>::iterator insert(Container<Node>::const_iterator, shared_ptr<Node>, std::string) override;
-  
+
   Container<Node>::iterator erase(Container<Node>::const_iterator) override;
-  
+
 # pragma mark -
 # pragma mark Callback Container
-  
+
   Node::iterator addCallback(NodeChangeCallback) override;
-  
+
   void removeCallback(Node::iterator) override;
 
 # pragma mark -
@@ -126,7 +128,7 @@ public:
 
   /* build the address depending on the Jamoma node object */
   void buildAddress();
-  
+
   /* get any child change back */
   void childNodeChangeCallback(const Node&, const std::string&, NodeChange);
 

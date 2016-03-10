@@ -48,6 +48,11 @@ shared_ptr<Node> JamomaNode::getParent() const
   return mParent.lock();
 }
 
+shared_ptr<Node> JamomaNode::getThis()
+{
+  return shared_from_this();
+}
+
 # pragma mark -
 # pragma mark Accessors
 
@@ -73,7 +78,7 @@ Node & JamomaNode::setName(std::string name)
   TTAddress nameInstance(name.data());
   TTSymbol newInstance;
   TTBoolean newInstanceCreated;
-  
+
   string oldName = getName();
 
   mNode->setNameInstance(nameInstance, newInstance, &newInstanceCreated);

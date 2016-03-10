@@ -37,7 +37,7 @@ enum class NodeChange
   ADDRESS_CREATED,
   ADDRESS_REMOVED
 };
-  
+
 /*! to track any modifications done on a node or its children
  \param the node that have changed
  \param the name of the node that have changed (when it has been renamed it is the former name)
@@ -48,12 +48,12 @@ class Node : public CallbackContainer<NodeChangeCallback>
 {
 
 public:
-  
+
 # pragma mark -
 # pragma mark Definitions
-  
+
   using iterator = typename CallbackContainer<NodeChangeCallback>::iterator;
-  
+
 # pragma mark -
 # pragma mark Life cycle
 
@@ -70,6 +70,10 @@ public:
   /*! get node's parent
    \return std::shared_ptr<Node> the parent */
   virtual std::shared_ptr<Node> getParent() const = 0;
+
+  /*! get a shared_ptr to this node
+   \return std::shared_ptr<Node> a shared_ptr to this node */
+  virtual std::shared_ptr<Node> getThis() = 0;
 
 # pragma mark -
 # pragma mark Accessors
@@ -135,8 +139,8 @@ public:
                                            std::shared_ptr<Node>,
                                            std::string) = 0;
 
-  /*! erased a node 
-   \param #Container<#Node>::const_iterator the position of the node to erase 
+  /*! erased a node
+   \param #Container<#Node>::const_iterator the position of the node to erase
    \return #Container<#Node>::iterator */
   virtual Container<Node>::iterator erase(Container<Node>::const_iterator) = 0;
 
@@ -164,7 +168,7 @@ struct Destination final : public Value
    \param char
    \param ... */
   Destination(std::shared_ptr<Node> v, std::initializer_list<char> = {});
-  
+
   /*! constructor for a node and an index vector
    \param std::shared_ptr<Node>
    \param std::vector<const #Value> value */
