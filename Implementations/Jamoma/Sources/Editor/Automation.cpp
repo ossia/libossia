@@ -48,7 +48,7 @@ shared_ptr<StateElement> JamomaAutomation::offset(const TimeValue& offset)
   if (mValueToSend) delete mValueToSend;
     
   // compute a new value from the Curves
-  mValueToSend = computeValue(parent->getOffset() / parent->getDurationNominal(), mDrive);
+  mValueToSend = computeValue(offset / parent->getDurationNominal(), mDrive);
     
   // edit a Message handling the new Value
   mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
