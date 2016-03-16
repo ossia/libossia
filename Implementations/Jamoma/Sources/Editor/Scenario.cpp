@@ -51,47 +51,17 @@ shared_ptr<StateElement> JamomaScenario::offset(const TimeValue& offset)
   // reset internal mOffsetState
   mOffsetState->stateElements().clear();
   
-  // TimeConstraints setup
+  // propagate offset from the first TimeNode
+  process_offset(mTimeNodes[0], offset);
+  
+  // offset all TimeConstraints
   for (const auto& timeConstraint : mTimeContraints)
   {
     // offset TimeConstraint's Clock
     TimeValue constraintOffset = offset - timeConstraint->getStartEvent()->getTimeNode()->getDate();
     
-    // setup start and end TimeEvent's status and build offset state
-    TimeEvent::Status startStatus = TimeEvent::Status::NONE;
-    TimeEvent::Status endStatus = TimeEvent::Status::NONE;
-    
     if (constraintOffset >= Zero && constraintOffset <= timeConstraint->getDurationMax())
-    {
-      startStatus = constraintOffset == Zero ? TimeEvent::Status::PENDING : TimeEvent::Status::HAPPENED;
-      endStatus = constraintOffset > timeConstraint->getDurationMin() ? TimeEvent::Status::PENDING : TimeEvent::Status::NONE;
-      
       flattenAndFilter(mOffsetState, timeConstraint->offset(constraintOffset));
-    }
-    else if (constraintOffset > timeConstraint->getDurationMax())
-    {
-      startStatus = TimeEvent::Status::HAPPENED;
-      endStatus = TimeEvent::Status::HAPPENED;
-    }
-    
-    //! \note maybe we should initialized TimeEvents with an Expression returning false to DISPOSED status ?
-    
-    shared_ptr<JamomaTimeEvent> start = dynamic_pointer_cast<JamomaTimeEvent>(timeConstraint->getStartEvent());
-    start->setStatus(startStatus);
-    
-    shared_ptr<JamomaTimeEvent> end = dynamic_pointer_cast<JamomaTimeEvent>(timeConstraint->getEndEvent());
-    end->setStatus(endStatus);
-  }
-  
-  // TimeNodes setup
-  for (const auto& timeNode : mTimeNodes)
-  {
-    for (auto& timeEvent : timeNode->timeEvents())
-    {
-      // compile mOffsetState with all HAPPENED event's states
-      if (timeEvent->getStatus() == TimeEvent::Status::HAPPENED)
-        flattenAndFilter(mOffsetState, timeEvent->getState());
-    }
   }
   
   return mOffsetState;
@@ -311,3 +281,58 @@ const Container<TimeConstraint>& JamomaScenario::timeConstraints() const
 {
   return mTimeContraints;
 }
+
+# pragma mark -
+# pragma mark Implementation specific
+
+void JamomaScenario::process_offset(shared_ptr<TimeNode> timenode, const TimeValue& offset)
+{
+  TimeValue date = timenode->getDate();
+  
+  for (const auto& event : timenode->timeEvents())
+  {
+    TimeEvent::Status eventStatus;
+    
+    // evaluate event status considering its time node date
+    if (date < offset)
+      eventStatus = event->getExpression()->evaluate() ? TimeEvent::Status::HAPPENED : TimeEvent::Status::DISPOSED;
+    else if (date == offset)
+      eventStatus = TimeEvent::Status::PENDING;
+    else
+      eventStatus = TimeEvent::Status::NONE;
+    
+    // evaluate event status considering previous time constraints
+    for (const auto& timeConstraint : event->previousTimeConstraints())
+    {
+      TimeValue constraintOffset = offset - timeConstraint->getStartEvent()->getTimeNode()->getDate();
+      
+      if (constraintOffset < Zero)
+      {
+        eventStatus = TimeEvent::Status::NONE;
+      }
+      else if (constraintOffset >= Zero && constraintOffset <= timeConstraint->getDurationMax())
+      {
+        eventStatus = constraintOffset > timeConstraint->getDurationMin() ? TimeEvent::Status::PENDING : TimeEvent::Status::NONE;
+      }
+      else if (constraintOffset > timeConstraint->getDurationMax())
+      {
+        eventStatus = event->getExpression()->evaluate() ? TimeEvent::Status::HAPPENED : TimeEvent::Status::DISPOSED;
+      }
+    }
+    
+    // setup event status
+    shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(event);
+    e->setStatus(eventStatus);
+    
+    if (eventStatus == TimeEvent::Status::HAPPENED)
+    {
+      flattenAndFilter(mOffsetState, event->getState());
+      
+      for (const auto& timeConstraint : event->nextTimeConstraints())
+      {
+        process_offset(timeConstraint->getEndEvent()->getTimeNode(), offset);
+      }
+    }
+  }
+}
+

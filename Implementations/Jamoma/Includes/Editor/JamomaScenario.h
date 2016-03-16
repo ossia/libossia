@@ -94,4 +94,9 @@ public:
   const Container<TimeNode>& timeNodes() const override;
 
   const Container<TimeConstraint>& timeConstraints() const override;
+ 
+# pragma mark -
+# pragma mark Implementation specific
+  
+  void process_offset(shared_ptr<TimeNode> timenode, const TimeValue& offset);
 };
