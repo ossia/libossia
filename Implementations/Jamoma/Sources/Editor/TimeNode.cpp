@@ -286,5 +286,5 @@ void JamomaTimeNode::observeExpressionResult(bool observe)
 void JamomaTimeNode::resultCallback(bool result)
 {
   //! \note the result of the expression is not exploited here.
-  //! \note the observation of the expression is to observe all Destination value contained into it.
+  //! \note the observation of the expression allows to observe all Destination value contained into it.
 }
