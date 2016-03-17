@@ -10,6 +10,9 @@ class ScenarioTest : public QObject
 {
     Q_OBJECT
 
+    std::shared_ptr<TimeConstraint> main_constraint;
+    std::vector<TimeValue> events_date;
+
     void main_constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<StateElement> element)
     {
         std::cout << "Main Constraint : " << double(position) << ", " << double(date) << std::endl;
@@ -27,6 +30,8 @@ class ScenarioTest : public QObject
 
     void event_callback(TimeEvent::Status newStatus)
     {
+        TimeValue date = main_constraint->getDate();
+
         switch (newStatus)
         {
             case TimeEvent::Status::NONE:
@@ -36,17 +41,18 @@ class ScenarioTest : public QObject
             }
             case TimeEvent::Status::PENDING:
             {
-                std::cout << "Event PENDING" << std::endl;
+                std::cout << "Event PENDING at " << double(date) << " ms" << std::endl;
                 break;
             }
             case TimeEvent::Status::HAPPENED:
             {
-                std::cout << "Event HAPPENED" << std::endl;
+                std::cout << "Event HAPPENED at " << double(date) << " ms" << std::endl;
+                events_date.push_back(date);
                 break;
             }
             case TimeEvent::Status::DISPOSED:
             {
-                std::cout << "Event DISPOSED" << std::endl;
+                std::cout << "Event DISPOSED at " << double(date) << " ms" << std::endl;
                 break;
             }
         }
@@ -129,7 +135,8 @@ private Q_SLOTS:
         auto main_end_node = TimeNode::create();
         auto main_start_event = *(main_start_node->emplace(main_start_node->timeEvents().begin(), e_callback));
         auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), e_callback));
-        auto main_constraint = TimeConstraint::create(mc_callback, main_start_event, main_end_event, 5000., 5000, 5000.);
+        main_constraint = TimeConstraint::create(mc_callback, main_start_event, main_end_event, 5000., 5000, 5000.);
+
         auto main_scenario = Scenario::create();
 
         main_constraint->addTimeProcess(main_scenario);
@@ -156,10 +163,17 @@ private Q_SLOTS:
         second_constraint->setSpeed(1.);
         second_constraint->setGranularity(250.);
 
+        events_date.clear();
         main_constraint->start();
 
         while (main_constraint->getRunning())
             ;
+
+        // check TimeEvents date
+        QVERIFY(events_date.size() == 3);
+        QVERIFY(events_date[0] == Zero);
+        QVERIFY(events_date[1] >= first_end_node->getDate() && events_date[1] < first_end_node->getDate() + main_constraint->getGranularity());
+        QVERIFY(events_date[2] >= first_end_node->getDate() && events_date[2] < first_end_node->getDate() + main_constraint->getGranularity());
     }
 };
 
