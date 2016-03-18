@@ -147,7 +147,9 @@ void JamomaLoop::start()
 {}
 
 void JamomaLoop::stop()
-{}
+{
+  mPatternConstraint->stop();
+}
 
 void JamomaLoop::pause()
 {
