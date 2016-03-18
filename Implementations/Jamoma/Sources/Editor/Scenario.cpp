@@ -324,14 +324,14 @@ void JamomaScenario::process_offset(shared_ptr<TimeNode> timenode, const TimeVal
     shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(event);
     e->setStatus(eventStatus);
     
+    // add HAPPENED event's state to offset state
     if (eventStatus == TimeEvent::Status::HAPPENED)
-    {
       flattenAndFilter(mOffsetState, event->getState());
-      
-      for (const auto& timeConstraint : event->nextTimeConstraints())
-      {
-        process_offset(timeConstraint->getEndEvent()->getTimeNode(), offset);
-      }
+    
+    // propagate offset processing to setup all TimeEvents
+    for (const auto& timeConstraint : event->nextTimeConstraints())
+    {
+      process_offset(timeConstraint->getEndEvent()->getTimeNode(), offset);
     }
   }
 }
