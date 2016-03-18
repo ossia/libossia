@@ -1,7 +1,6 @@
 #include "Editor/JamomaScenario.h"
 #include <Misc/Util.h>
 
-#include <algorithm>
 #include <iostream> //! \todo to remove. only here for debug purpose
 
 # pragma mark -
@@ -95,21 +94,22 @@ shared_ptr<StateElement> JamomaScenario::state()
     // note : this means TimeConstraint's state can overwrite TimeEvent's state
     for (const auto& timeConstraint : mTimeContraints)
     {
-      if (timeConstraint->getRunning() &&
-          timeConstraint->getDriveMode() == Clock::DriveMode::EXTERNAL)
+      if (timeConstraint->getDriveMode() != Clock::DriveMode::EXTERNAL)
+        throw runtime_error("the pattern constraint clock is supposed to be in EXTERNAL drive mode");
+      
+      if (timeConstraint->getRunning())
       {
         // don't tick if the TimeConstraint is starting to avoid double ticks
-        auto& startEv = timeConstraint->getStartEvent();
-        bool not_starting = none_of(
-                    statusChangedEvents,
-                    [&] (const std::shared_ptr<TimeEvent>& ev) {
-            return ev->getStatus() == TimeEvent::Status::HAPPENED &&
-                   ev == startEv;
-        });
+        auto& startEvent = timeConstraint->getStartEvent();
+        bool not_starting = none_of(statusChangedEvents,
+                                    [&] (const std::shared_ptr<TimeEvent>& ev)
+                                    {
+                                      return ev->getStatus() == TimeEvent::Status::HAPPENED && ev == startEvent;
+                                    });
 
-        if(not_starting)
+        if (not_starting)
         {
-          // No such event found; not starting
+          // no such event found : not starting
           timeConstraint->tick();
         }
       }
