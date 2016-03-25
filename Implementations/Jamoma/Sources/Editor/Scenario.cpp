@@ -47,11 +47,21 @@ shared_ptr<StateElement> JamomaScenario::offset(const TimeValue& offset)
   if (parent->getRunning())
     throw runtime_error("parent time constraint is running");
   
-  // reset internal mOffsetState
+  // reset internal offset list and state
+  mPastEventList.clear();
   mOffsetState->stateElements().clear();
   
   // propagate offset from the first TimeNode
   process_offset(mTimeNodes[0], offset);
+  
+  // sort mPastEventList by date
+  mPastEventList.sort();
+  
+  // build offset state from all ordered past events
+  for (auto p : mPastEventList)
+  {
+    flattenAndFilter(mOffsetState, p.second->getState());
+  }
   
   // offset all TimeConstraints
   for (const auto& timeConstraint : mTimeContraints)
@@ -324,9 +334,9 @@ void JamomaScenario::process_offset(shared_ptr<TimeNode> timenode, const TimeVal
     shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(event);
     e->setStatus(eventStatus);
     
-    // add HAPPENED event's state to offset state
+    // add HAPPENED event to offset event list
     if (eventStatus == TimeEvent::Status::HAPPENED)
-      flattenAndFilter(mOffsetState, event->getState());
+      mPastEventList.push_back(std::make_pair(date, event));
     
     // propagate offset processing to setup all TimeEvents
     for (const auto& timeConstraint : event->nextTimeConstraints())
@@ -335,4 +345,3 @@ void JamomaScenario::process_offset(shared_ptr<TimeNode> timenode, const TimeVal
     }
   }
 }
-

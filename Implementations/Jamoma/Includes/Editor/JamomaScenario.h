@@ -27,6 +27,9 @@
 #include "JamomaTimeProcess.h"
 #include "JamomaTimeNode.h"
 
+#include <list>
+#include <utility>
+
 using namespace OSSIA;
 using namespace std;
 
@@ -43,6 +46,8 @@ private:
 
   shared_ptr<State>           mCurrentState;      // an internal State to return on state call
   shared_ptr<State>           mOffsetState;       // an internal State built when offset is called
+  
+  std::list<std::pair<TimeValue, shared_ptr<TimeEvent>>> mPastEventList; // a temporary list to order all past events to build the offset state
 
 public:
 
@@ -98,5 +103,6 @@ public:
 # pragma mark -
 # pragma mark Implementation specific
   
-  void process_offset(shared_ptr<TimeNode> timenode, const TimeValue& offset);
+  /* order all HAPPENED TimeEvents into mOffetEventMap */
+  void process_offset(shared_ptr<TimeNode>, const TimeValue&);
 };
