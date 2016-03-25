@@ -202,8 +202,6 @@ addPoint(shared_ptr<CurveSegment<Y>> segment, X abscissa, Y value)
 {
   pair<Y,shared_ptr<CurveSegment<Y>>> p(value, segment);
 
-  //! \todo check if there is already a point
-
   mPointsMap.emplace(abscissa, p);
 
   return true;
