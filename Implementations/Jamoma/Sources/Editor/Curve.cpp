@@ -13,7 +13,7 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<double, bool>>();
   }
-  
+
   template <>
   Curve<double, bool>::~Curve()
   {}
@@ -26,7 +26,7 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<double, int>>();
   }
-  
+
   template <>
   Curve<double, int>::~Curve()
   {}
@@ -39,7 +39,7 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<double, float>>();
   }
-  
+
   template <>
   Curve<double, float>::~Curve()
   {}
@@ -52,7 +52,7 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<bool, bool>>();
   }
-  
+
   template <>
   Curve<bool, bool>::~Curve()
   {}
@@ -65,7 +65,7 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<bool, int>>();
   }
-  
+
   template <>
   Curve<bool, int>::~Curve()
   {}
@@ -78,7 +78,7 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<bool, float>>();
   }
-  
+
   template <>
   Curve<bool, float>::~Curve()
   {}
@@ -91,7 +91,7 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<int, bool>>();
   }
-  
+
   template <>
   Curve<int, bool>::~Curve()
   {}
@@ -104,7 +104,7 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<int, int>>();
   }
-  
+
   template <>
   Curve<int, int>::~Curve()
   {}
@@ -117,7 +117,7 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<int, float>>();
   }
-  
+
   template <>
   Curve<int, float>::~Curve()
   {}
@@ -130,11 +130,11 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<float, bool>>();
   }
-  
+
   template <>
   Curve<float, bool>::~Curve()
   {}
-  
+
   // explicit instantiation for float and int
   template class Curve<float, int>;
 
@@ -143,7 +143,7 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<float, int>>();
   }
-  
+
   template <>
   Curve<float, int>::~Curve()
   {}
@@ -156,7 +156,7 @@ namespace OSSIA
   {
     return make_shared<JamomaCurve<float, float>>();
   }
-  
+
   template <>
   Curve<float, float>::~Curve()
   {}
@@ -262,7 +262,11 @@ getInitialPointAbscissa() const
     if (!address)
       throw runtime_error("getting an address value using from an abscissa destination without address");
 
-    return convertToTemplateTypeValue(address->pullValue(), mInitialPointAbscissaDestination->index.begin());
+    address->pullValue();
+    auto val = address->cloneValue();
+    auto res = convertToTemplateTypeValue(val, mInitialPointAbscissaDestination->index.begin());
+    delete val;
+    return res;
   }
 }
 
@@ -277,11 +281,15 @@ getInitialPointOrdinate() const
   else
   {
     auto address = mInitialPointOrdinateDestination->value->getAddress();
-    
+
     if (!address)
       throw runtime_error("getting an address value using from an ordinate destination without address");
-    
-    return convertToTemplateTypeValue(address->pullValue(), mInitialPointOrdinateDestination->index.begin());
+
+    address->pullValue();
+    auto val = address->cloneValue();
+    auto res = convertToTemplateTypeValue(val, mInitialPointOrdinateDestination->index.begin());
+    delete val;
+    return res;
   }
 }
 

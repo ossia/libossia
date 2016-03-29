@@ -68,7 +68,7 @@ const Value * JamomaAddress::getValue() const
   return mValue;
 }
 
-const Value* JamomaAddress::cloneValue(std::vector<char> index) const
+Value* JamomaAddress::cloneValue(std::vector<char> index) const
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
 
@@ -118,7 +118,10 @@ Address & JamomaAddress::setValue(const Value * value)
     if (address)
     {
       if (address->getValueType() == mValueType)
-        mValue = address->pullValue()->clone();
+      {
+        address->pullValue();
+        mValue = address->cloneValue();
+      }
       else
         throw runtime_error("setting an address value using a destination with a bad type address");
     }
