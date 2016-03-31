@@ -352,12 +352,18 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
 
     // We clone the value to prevent crashes
     // if it is rewritten afterwards.
-    auto val = self->cloneValue();
-    for (auto callback : self->callbacks())
-    {
-      callback(val);
+    try {
+        auto val = self->cloneValue();
+        for (auto callback : self->callbacks())
+        {
+            callback(val);
+        }
+        delete val;
     }
-    delete val;
+    catch(...) {
+        return kTTErrGeneric;
+    }
+
     return kTTErrNone;
   }
 

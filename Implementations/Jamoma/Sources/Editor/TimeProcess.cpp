@@ -28,6 +28,8 @@ void JamomaTimeProcess::flattenAndFilter(shared_ptr<State> state, const shared_p
         case StateElement::Type::MESSAGE :
         {
             shared_ptr<Message> messageToAppend = dynamic_pointer_cast<Message>(element);
+            if(!messageToAppend)
+                return;
             
             // find message with the same address to replace it
             bool found = false;
@@ -36,7 +38,8 @@ void JamomaTimeProcess::flattenAndFilter(shared_ptr<State> state, const shared_p
                  it++)
             {
                 shared_ptr<Message> messageToCheck = dynamic_pointer_cast<Message>(*it);
-                
+                if(!messageToCheck)
+                    return;
                 // replace if addresses are the same
                 if (messageToCheck->getAddress() == messageToAppend->getAddress())
                 {
@@ -55,7 +58,8 @@ void JamomaTimeProcess::flattenAndFilter(shared_ptr<State> state, const shared_p
         case StateElement::Type::STATE :
         {
             shared_ptr<State> stateToFlatAndFilter = dynamic_pointer_cast<State>(element);
-            
+            if(!stateToFlatAndFilter)
+                return;
             for (const auto& e : stateToFlatAndFilter->stateElements())
             {
                 flattenAndFilter(state, e);

@@ -211,16 +211,20 @@ bool JamomaExpressionAtom::do_evaluation(const Value* first, const Value* second
 
 void JamomaExpressionAtom::firstValueCallback(const Value * value)
 {
-  bool result = do_evaluation(value, mSecondValue);
-  
-  for (auto callback : callbacks())
-    callback(result);
+    if(value && mSecondValue) {
+        bool result = do_evaluation(value, mSecondValue);
+
+        for (auto callback : callbacks())
+            callback(result);
+    }
 }
 
 void JamomaExpressionAtom::secondValueCallback(const Value * value)
 {
-  bool result = do_evaluation(mFirstValue, value);
-  
-  for (auto callback : callbacks())
-    callback(result);
+    if(mFirstValue && value) {
+        bool result = do_evaluation(mFirstValue, value);
+
+        for (auto callback : callbacks())
+            callback(result);
+    }
 }
