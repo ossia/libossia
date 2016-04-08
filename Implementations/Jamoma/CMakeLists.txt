@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 2.8)
 
 project(APIJamomaImplementation)
 
+if(APPLE)
+  set(CMAKE_INSTALL_NAME_DIR @rpath)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+  set(CMAKE_INSTALL_RPATH "@loader_path/../Frameworks;@loader_path;@executable_path")
+endif()
+
 include(Sanitize)
 include(DebugMode)
 include(UseGold)
