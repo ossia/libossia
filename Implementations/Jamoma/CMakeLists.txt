@@ -77,7 +77,7 @@ target_include_directories(APIJamoma PUBLIC "${API_HEADERS_FOLDER}")
 
 if(OSSIA_SANITIZE)
     sanitize_build(APIJamoma)
-    debugmode_build(APIJamoma)
+    #debugmode_build(APIJamoma)
 endif()
 use_gold(APIJamoma)
 add_linker_warnings(APIJamoma)
