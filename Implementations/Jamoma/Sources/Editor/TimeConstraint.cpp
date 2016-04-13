@@ -131,7 +131,10 @@ shared_ptr<State> JamomaTimeConstraint::offset(const TimeValue& date)
   // get the offset state of each TimeProcess at offset
   for (const auto& timeProcess : processes)
   {
-    mOffsetState->stateElements().push_back(timeProcess->offset(date));
+    if(auto state = timeProcess->offset(date))
+      mOffsetState->stateElements().push_back(std::move(state));
+    else
+      std::cerr << "Warning: empty state for process: " << typeid(*timeProcess).name() << "\n";
   }
   
   return mOffsetState;
@@ -150,7 +153,10 @@ shared_ptr<State> JamomaTimeConstraint::state()
   // get the state of each TimeProcess at current clock position and date
   for (const auto& timeProcess : processes)
   {
-    mCurrentState->stateElements().push_back(timeProcess->state());
+    if(auto state = timeProcess->state())
+      mCurrentState->stateElements().push_back(std::move(state));
+    else
+      std::cerr << "Warning: empty state for process: " << typeid(*timeProcess).name() << "\n";
   }
 
   return mCurrentState;

@@ -161,7 +161,7 @@ void JamomaScenario::start()
   {
     TimeEvent::Status startStatus = timeConstraint->getStartEvent()->getStatus();
     TimeEvent::Status endStatus = timeConstraint->getEndEvent()->getStatus();
-    
+
     // the constraint is in the past
     if (startStatus == TimeEvent::Status::HAPPENED &&
         endStatus == TimeEvent::Status::HAPPENED)
