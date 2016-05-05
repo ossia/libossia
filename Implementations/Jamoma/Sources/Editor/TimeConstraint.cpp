@@ -43,7 +43,7 @@ JamomaTimeConstraint::JamomaTimeConstraint(TimeConstraint::ExecutionCallback cal
                                            const TimeValue& nominal,
                                            const TimeValue& min,
                                            const TimeValue& max) :
-JamomaClock(std::bind(&JamomaTimeConstraint::ClockCallback, this, _1, _2, _3)),
+JamomaClock([=] (const TimeValue& t, const TimeValue& t2, unsigned char c) { return ClockCallback(t, t2, c); }),
 mCallback(callback),
 mStartEvent(startEvent),
 mEndEvent(endEvent),
@@ -86,10 +86,10 @@ void JamomaTimeConstraint::start()
 {
   if (mRunning)
     throw runtime_error("time constraint is running");
-  
+
   // set clock duration using maximal duration
   setDuration(mDurationMax);
-  
+
   // start all jamoma time processes
   for (const auto& timeProcess : timeProcesses())
   {
@@ -97,7 +97,7 @@ void JamomaTimeConstraint::start()
     if(t)
       t->start();
   }
-  
+
   // launch the clock
   do_start();
 }
@@ -106,7 +106,7 @@ void JamomaTimeConstraint::stop()
 {
   // stop the clock
   do_stop();
-  
+
   // stop all jamoma time processes
   for (const auto& timeProcess : timeProcesses())
   {
@@ -120,14 +120,14 @@ shared_ptr<State> JamomaTimeConstraint::offset(const TimeValue& date)
 {
   if (mRunning)
     throw runtime_error("time constraint is running");
-  
+
   do_setOffset(date);
-  
+
   // clear internal offset state
   const auto& processes = timeProcesses();
   mOffsetState->stateElements().clear();
   mOffsetState->stateElements().reserve(processes.size());
-  
+
   // get the offset state of each TimeProcess at offset
   for (const auto& timeProcess : processes)
   {
@@ -136,7 +136,7 @@ shared_ptr<State> JamomaTimeConstraint::offset(const TimeValue& date)
     else
       std::cerr << "Warning: empty state for process: " << typeid(*timeProcess).name() << "\n";
   }
-  
+
   return mOffsetState;
 }
 
@@ -144,7 +144,7 @@ shared_ptr<State> JamomaTimeConstraint::state()
 {
   if (!mRunning)
     throw runtime_error("time constraint is not running");
-  
+
   // clear internal current state
   const auto& processes = timeProcesses();
   mCurrentState->stateElements().clear();
@@ -207,13 +207,13 @@ const TimeValue & JamomaTimeConstraint::getDurationNominal() const
 TimeConstraint & JamomaTimeConstraint::setDurationNominal(const TimeValue& durationNominal)
 {
   mDurationNominal = durationNominal;
-  
+
   if (mDurationNominal < mDurationMin)
     setDurationMin(mDurationNominal);
-  
+
   if (mDurationNominal > mDurationMax)
     setDurationMax(mDurationNominal);
-  
+
   return *this;
 }
 
@@ -225,10 +225,10 @@ const TimeValue & JamomaTimeConstraint::getDurationMin() const
 TimeConstraint & JamomaTimeConstraint::setDurationMin(const TimeValue& durationMin)
 {
   mDurationMin = durationMin;
-  
+
   if (mDurationMin > mDurationNominal)
     setDurationNominal(mDurationMin);
-  
+
   return *this;
 }
 
@@ -240,10 +240,10 @@ const TimeValue & JamomaTimeConstraint::getDurationMax() const
 TimeConstraint & JamomaTimeConstraint::setDurationMax(const TimeValue& durationMax)
 {
   mDurationMax = durationMax;
-  
+
   if (durationMax < mDurationNominal)
     setDurationNominal(mDurationMax);
-  
+
   return *this;
 }
 

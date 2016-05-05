@@ -70,13 +70,13 @@ public:
 
 # pragma mark -
 # pragma mark Execution
-  
+
   void start() final override;
-  
+
   void stop() final override;
-  
+
   shared_ptr<State> offset(const TimeValue&) override;
-  
+
   shared_ptr<State> state() override;
 
   void pause() final override;
@@ -87,9 +87,9 @@ public:
 # pragma mark Accessors
 
   void setCallback(ExecutionCallback) override;
-  
+
   const TimeValue & getDurationNominal() const override;
-  
+
   TimeConstraint & setDurationNominal(const TimeValue&) override;
 
   const TimeValue & getDurationMin() const override;
@@ -115,6 +115,5 @@ private:
 
 # pragma mark -
 # pragma mark Implementation specific
-  
   void ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks);
 };

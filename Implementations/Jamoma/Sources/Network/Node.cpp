@@ -210,8 +210,13 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
     // start child changes observation if needed
     if (callbacks().size() >= 1)
     {
-      pair<shared_ptr<Node>, Node::iterator> p(newNode, newNode->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2, _3)));
-      mChildNodeChangeCallbackIndexes.emplace(p);
+      mChildNodeChangeCallbackIndexes.emplace(
+                  std::make_pair(
+                      newNode,
+                      newNode->addCallback([=] (const Node& child, const std::string& name, NodeChange change) {
+                            return childNodeChangeCallback(child, name, change);
+                      }
+                      )));
     }
 
     return it;
@@ -264,8 +269,13 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
     // start child changes observation if needed
     if (callbacks().size() >= 1)
     {
-      pair<shared_ptr<Node>, Node::iterator> p(newNode, newNode->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2, _3)));
-      mChildNodeChangeCallbackIndexes.emplace(p);
+      mChildNodeChangeCallbackIndexes.emplace(
+                  std::make_pair(
+                      newNode,
+                      newNode->addCallback(
+                          [=] (const Node& child, const std::string& name, NodeChange change) {
+                                                      return childNodeChangeCallback(child, name, change);
+                                                })));
     }
 
     return it;
@@ -321,8 +331,13 @@ Node::iterator JamomaNode::addCallback(NodeChangeCallback callback)
     // start children changes observation
     for (auto child : children())
     {
-      pair<shared_ptr<Node>, Node::iterator> p(child, child->addCallback(std::bind(&JamomaNode::childNodeChangeCallback, this, _1, _2, _3)));
-      mChildNodeChangeCallbackIndexes.emplace(p);
+      mChildNodeChangeCallbackIndexes.emplace(
+                  std::make_pair(
+                      child,
+                      child->addCallback(
+                          [=] (const Node& child, const std::string& name, NodeChange change) {
+                                                      return childNodeChangeCallback(child, name, change);
+                                                })));
     }
   }
 
