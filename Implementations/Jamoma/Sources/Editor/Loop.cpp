@@ -41,8 +41,7 @@ mPatternConstraintCallback(patternConstraintCallback)
                                               patternDuration);
 
   // set pattern TimeConstraint's clock in external mode
-  shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(mPatternConstraint);
-  clock->setDriveMode(Clock::DriveMode::EXTERNAL);
+  mPatternConstraint->setDriveMode(Clock::DriveMode::EXTERNAL);
 
   mCurrentState = State::create();
   mOffsetState = State::create();

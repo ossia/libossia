@@ -46,33 +46,33 @@ shared_ptr<StateElement> JamomaScenario::offset(const TimeValue& offset)
 {
   if (parent->getRunning())
     throw runtime_error("parent time constraint is running");
-  
+
   // reset internal offset list and state
   mPastEventList.clear();
   mOffsetState->stateElements().clear();
-  
+
   // propagate offset from the first TimeNode
   process_offset(mTimeNodes[0], offset);
-  
+
   // sort mPastEventList by date
   mPastEventList.sort();
-  
+
   // build offset state from all ordered past events
   for (auto p : mPastEventList)
   {
     flattenAndFilter(mOffsetState, p.second->getState());
   }
-  
+
   // offset all TimeConstraints
   for (const auto& timeConstraint : mTimeContraints)
   {
     // offset TimeConstraint's Clock
     TimeValue constraintOffset = offset - timeConstraint->getStartEvent()->getTimeNode()->getDate();
-    
+
     if (constraintOffset >= Zero && constraintOffset <= timeConstraint->getDurationMax())
       flattenAndFilter(mOffsetState, timeConstraint->offset(constraintOffset));
   }
-  
+
   return mOffsetState;
 }
 
@@ -80,13 +80,13 @@ shared_ptr<StateElement> JamomaScenario::state()
 {
   if (!parent->getRunning())
     throw runtime_error("parent time constraint is not running");
-  
+
   // if date hasn't been processed already
   TimeValue date = parent->getDate();
   if (date != mLastDate)
   {
     mLastDate = date;
-    
+
     // reset internal mCurrentState
     mCurrentState->stateElements().clear();
 
@@ -106,7 +106,7 @@ shared_ptr<StateElement> JamomaScenario::state()
     {
       if (timeConstraint->getDriveMode() != Clock::DriveMode::EXTERNAL)
         throw runtime_error("the pattern constraint clock is supposed to be in EXTERNAL drive mode");
-      
+
       if (timeConstraint->getRunning())
       {
         // don't tick if the TimeConstraint is starting to avoid double ticks
@@ -123,7 +123,7 @@ shared_ptr<StateElement> JamomaScenario::state()
           timeConstraint->tick();
         }
       }
-        
+
       // if the time constraint is still running after the tick
       if (timeConstraint->getRunning())
           flattenAndFilter(mCurrentState, timeConstraint->state());
@@ -244,8 +244,7 @@ void JamomaScenario::addTimeConstraint(const shared_ptr<TimeConstraint> timeCons
   addTimeNode(timeConstraint->getEndEvent()->getTimeNode());
 
   // set TimeConstraint's clock in external mode
-  shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint);
-  clock->setDriveMode(Clock::DriveMode::EXTERNAL);
+  timeConstraint->setDriveMode(Clock::DriveMode::EXTERNAL);
 }
 
 void JamomaScenario::removeTimeConstraint(const shared_ptr<TimeConstraint> timeConstraint)
@@ -253,8 +252,7 @@ void JamomaScenario::removeTimeConstraint(const shared_ptr<TimeConstraint> timeC
   remove_one(mTimeContraints, timeConstraint);
 
   // set the TimeConstraint's clock in none external mode
-  shared_ptr<JamomaClock> clock = dynamic_pointer_cast<JamomaClock>(timeConstraint);
-  clock->setDriveMode(Clock::DriveMode::INTERNAL);
+  timeConstraint->setDriveMode(Clock::DriveMode::INTERNAL);
 }
 
 void JamomaScenario::addTimeNode(const shared_ptr<TimeNode> timeNode)
@@ -298,11 +296,11 @@ const Container<TimeConstraint>& JamomaScenario::timeConstraints() const
 void JamomaScenario::process_offset(shared_ptr<TimeNode> timenode, const TimeValue& offset)
 {
   TimeValue date = timenode->getDate();
-  
+
   for (const auto& event : timenode->timeEvents())
   {
     TimeEvent::Status eventStatus;
-    
+
     // evaluate event status considering its time node date
     if (date < offset)
       eventStatus = event->getExpression()->evaluate() ? TimeEvent::Status::HAPPENED : TimeEvent::Status::DISPOSED;
@@ -310,12 +308,12 @@ void JamomaScenario::process_offset(shared_ptr<TimeNode> timenode, const TimeVal
       eventStatus = TimeEvent::Status::PENDING;
     else
       eventStatus = TimeEvent::Status::NONE;
-    
+
     // evaluate event status considering previous time constraints
     for (const auto& timeConstraint : event->previousTimeConstraints())
     {
       TimeValue constraintOffset = offset - timeConstraint->getStartEvent()->getTimeNode()->getDate();
-      
+
       if (constraintOffset < Zero)
       {
         eventStatus = TimeEvent::Status::NONE;
@@ -329,15 +327,15 @@ void JamomaScenario::process_offset(shared_ptr<TimeNode> timenode, const TimeVal
         eventStatus = event->getExpression()->evaluate() ? TimeEvent::Status::HAPPENED : TimeEvent::Status::DISPOSED;
       }
     }
-    
+
     // setup event status
     shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(event);
     e->setStatus(eventStatus);
-    
+
     // add HAPPENED event to offset event list
     if (eventStatus == TimeEvent::Status::HAPPENED)
       mPastEventList.push_back(std::make_pair(date, event));
-    
+
     // propagate offset processing to setup all TimeEvents
     for (const auto& timeConstraint : event->nextTimeConstraints())
     {

@@ -40,6 +40,7 @@ public:
   using Clock::getSpeed;
   using Clock::setSpeed;
   using Clock::getDriveMode;
+  using Clock::setDriveMode;
   using Clock::getGranularity;
   using Clock::setGranularity;
   using Clock::getDate;
@@ -84,13 +85,13 @@ public:
 
 # pragma mark -
 # pragma mark Execution
-  
+
   /*! start #TimeConstraint's #Clock */
   virtual void start() override = 0;
-  
+
   /*! stop #TimeConstraint's #Clock */
   virtual void stop() override = 0;
-  
+
   /*! set #TimeConstraint's #Clock offset and process a state at offset date
    \details the returned #State is made of as many as sub States for each TimeProcess the #TimeConstraint manages
    \details don't call offset when the #TimeConstraint is running
@@ -103,7 +104,7 @@ public:
    \details don't call state when the #TimeConstraint is not running
    \return std::shared_ptr<#State> */
   virtual std::shared_ptr<State> state() = 0;
-  
+
 # pragma mark -
 # pragma mark Accessors
 
