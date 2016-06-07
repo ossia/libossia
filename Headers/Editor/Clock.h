@@ -18,7 +18,7 @@
 
 #include <memory>
 #include <functional>
-
+#include <chrono>
 #include "Editor/TimeValue.h"
 
 namespace OSSIA
@@ -88,6 +88,12 @@ public:
    \details can be use to force step processing in case of external drive but the callback will not be called
    \return bool true if the clock ticks */
   virtual bool tick() = 0;
+
+  /*! can be called by hand to advance the clock from a certain number of ticks.
+   * \param usec Number of microseconds to move the clock
+   * \return bool true if the clock ticks
+   */
+  virtual bool tick(TimeValue usec) = 0;
 
 # pragma mark -
 # pragma mark Accessors

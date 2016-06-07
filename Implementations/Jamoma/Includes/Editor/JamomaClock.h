@@ -82,6 +82,7 @@ public:
   void resume() override;
 
   bool tick() final override;
+  bool tick(TimeValue usec) final override;
 
 # pragma mark -
 # pragma mark Accessors
@@ -117,7 +118,7 @@ public:
 
   /*! to avoid dead lock in EXTERNAL drive mode if a TimeProcess wants to end its ParentTimeConstraint's clock */
   void request_stop();
-  
+
 protected:
   
   /*! to allow TimeConstraint to override start method */

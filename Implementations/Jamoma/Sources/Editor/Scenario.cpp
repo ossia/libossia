@@ -85,6 +85,7 @@ shared_ptr<StateElement> JamomaScenario::state()
   TimeValue date = parent->getDate();
   if (date != mLastDate)
   {
+    auto prev_last_date = mLastDate;
     mLastDate = date;
 
     // reset internal mCurrentState
@@ -120,7 +121,7 @@ shared_ptr<StateElement> JamomaScenario::state()
         if (not_starting)
         {
           // no such event found : not starting
-          timeConstraint->tick();
+          timeConstraint->tick((date - prev_last_date) * 1000.);
         }
       }
 

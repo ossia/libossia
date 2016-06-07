@@ -1,7 +1,7 @@
 #include "Editor/JamomaClock.h"
 
 #include <iostream> //! \todo to remove. only here for debug purpose
-
+#include <cassert>
 using namespace OSSIA;
 
 # pragma mark -
@@ -139,6 +139,51 @@ bool JamomaClock::tick()
       deltaInUs = duration_cast<microseconds>(steady_clock::now() - mLastTime).count() - droppedTicks * granularityInUs;
     }
   }
+
+  // how many time elapsed from the start ?
+  mDate += (deltaInUs / 1000.) * mSpeed;
+  mElapsedTime += deltaInUs;
+
+  //! \debug cout << "+ " << (deltaInUs / 1000.) * mSpeed << endl;
+
+  // note the time now to evaluate how long is the callback processing
+  mLastTime = steady_clock::now();
+
+  // test paused and running status after computing the date because there is a sleep before
+  if (!mPaused && mRunning)
+  {
+    mPosition = mDate / mDuration;
+
+    // notify the owner
+    (mCallback)(mPosition, mDate, droppedTicks);
+
+    // is this the end
+    if (mDuration - mDate < Zero && !mDuration.isInfinite())
+    {
+      mRunning = false;
+      mPaused = false;
+    }
+  }
+
+  return true;
+}
+
+
+bool JamomaClock::tick(TimeValue usec)
+{
+  if (mPaused || !mRunning)
+    return false;
+
+  long long granularityInUs(mGranularity * 1000);
+  int droppedTicks = 0;
+
+  // how many time since the last tick ?
+  long long deltaInUs = usec;
+
+  assert(mDriveMode == Clock::DriveMode::EXTERNAL);
+  // if too early: avoid this tick
+  if (mElapsedTime / granularityInUs == (mElapsedTime + deltaInUs) / granularityInUs)
+      return false;
 
   // how many time elapsed from the start ?
   mDate += (deltaInUs / 1000.) * mSpeed;

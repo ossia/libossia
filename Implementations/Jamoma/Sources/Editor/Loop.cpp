@@ -95,6 +95,7 @@ shared_ptr<StateElement> JamomaLoop::state()
   TimeValue date = parent->getDate();
   if (date != mLastDate)
   {
+    auto prev_last_date = mLastDate;
     mLastDate = date;
 
     // reset internal State
@@ -129,7 +130,7 @@ shared_ptr<StateElement> JamomaLoop::state()
         if (not_starting)
         {
           // no such event found : not starting
-          mPatternConstraint->tick();
+          mPatternConstraint->tick((date - prev_last_date) * 1000.);
         }
       }
 
