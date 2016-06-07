@@ -66,13 +66,14 @@ file(GLOB_RECURSE NETWORK_SRCS
 add_library(APIJamoma_Network_Object OBJECT ${NETWORK_SRCS})
 target_transfer_options(APIJamoma_Network_Object Jamoma::Foundation)
 target_transfer_options(APIJamoma_Network_Object Jamoma::Modular)
+target_transfer_options(APIJamoma_Network_Object ModernMIDI)
 
 add_library(APIJamoma
     $<TARGET_OBJECTS:APIJamoma_Misc_Object>
     $<TARGET_OBJECTS:APIJamoma_Network_Object>
     $<TARGET_OBJECTS:APIJamoma_Editor_Object>)
 
-target_link_libraries(APIJamoma PRIVATE Jamoma::Foundation Jamoma::Modular)
+target_link_libraries(APIJamoma PRIVATE Jamoma::Foundation Jamoma::Modular ModernMIDI)
 target_include_directories(APIJamoma PUBLIC "${API_HEADERS_FOLDER}")
 
 if(OSSIA_SANITIZE)

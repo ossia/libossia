@@ -2,3 +2,6 @@
 [submodule "CMake/cmake-modules"]
 	path = CMake/cmake-modules
 	url = https://github.com/OSSIA/cmake-modules
+[submodule "3rdparty/ModernMIDI"]
+	path = 3rdparty/ModernMIDI
+	url = https://github.com/jcelerier/ModernMIDI
