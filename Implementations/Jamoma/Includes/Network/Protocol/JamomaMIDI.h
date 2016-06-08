@@ -21,6 +21,7 @@
 #include "Network/AddressProperties.h"
 #include "Network/Address.h"
 #include <cassert>
+#include <array>
 #include <ModernMIDI/midi_input.h>
 #include <ModernMIDI/midi_output.h>
 

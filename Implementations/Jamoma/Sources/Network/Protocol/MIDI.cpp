@@ -16,8 +16,10 @@ JamomaMIDI::JamomaMIDI():
 
 JamomaMIDI::~JamomaMIDI()
 {
+    std::cerr << "closing\n";
     mInput.closePort();
     mOutput.closePort();
+    std::cerr << "closed\n";
 }
 
 MIDI::~MIDI()
