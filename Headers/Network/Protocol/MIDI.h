@@ -25,8 +25,9 @@ namespace OSSIA
 class Device;
 struct MidiInfo
 {
-        enum class Type { Input, Output };
+        enum class Type { RemoteInput, RemoteOutput };
 
+        MidiInfo() = default;
         MidiInfo(Type t, std::string d, int p):
             type{t},
             device{std::move(d)},
@@ -35,9 +36,9 @@ struct MidiInfo
 
         }
 
-        Type type;
-        std::string device;
-        int port;
+        Type type{};
+        std::string device{};
+        int port{};
 };
 
 class MIDI : public virtual Protocol
@@ -60,6 +61,9 @@ public:
 
   Protocol::Type getType() const override final
   {return Protocol::Type::MIDI;}
+
+  virtual MidiInfo getInfo() const = 0;
+  virtual bool setInfo(MidiInfo) = 0;
 
 # pragma mark -
 # pragma mark Operation
