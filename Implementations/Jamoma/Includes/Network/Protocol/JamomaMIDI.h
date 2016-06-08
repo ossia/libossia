@@ -48,37 +48,37 @@ class JamomaMIDI final : public MIDI, public JamomaProtocol
 {
 # pragma mark -
 # pragma mark Implementation specific
-    mutable mm::MidiInput mInput;
-    mutable mm::MidiOutput mOutput;
+        mutable mm::MidiInput mInput;
+        mutable mm::MidiOutput mOutput;
 
-    std::array<Channel, 16> mChannels;
+        std::array<Channel, 16> mChannels;
 
-    MidiInfo mInfo;
-    bool setInfo(MidiInfo) final override;
-    MidiInfo getInfo() const final override;
-public:
+        MidiInfo mInfo;
+        bool setInfo(MidiInfo) final override;
+        MidiInfo getInfo() const final override;
+    public:
 
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaMIDI();
+        JamomaMIDI();
 
-  ~JamomaMIDI();
+        ~JamomaMIDI();
 
 # pragma mark -
 # pragma mark Operation
 
-  bool pullAddressValue(Address&) const override;
+        bool pullAddressValue(Address&) const override;
 
-  bool pushAddressValue(const Address&) const override;
+        bool pushAddressValue(const Address&) const override;
 
-  bool observeAddressValue(shared_ptr<Address>, bool) const override;
+        bool observeAddressValue(shared_ptr<Address>, bool) const override;
 
-  bool updateChildren(Node& node) const override;
+        bool updateChildren(Node& node) const override;
 
-  /*! to see IPs of connected Midi devices
+        /*! to see IPs of connected Midi devices
    \todo add options */
-  vector<MidiInfo> scan() override;
+        vector<MidiInfo> scan() override;
 };
 
 
@@ -243,7 +243,9 @@ struct MIDIAddressInfo
         midi_size_t note{};
 };
 
-class MIDIAddress final : public OSSIA::Address
+class MIDIAddress final :
+        public OSSIA::Address,
+        public enable_shared_from_this<MIDIAddress>
 {
         MIDIAddressInfo mInfo;
         weak_ptr<OSSIA::Node> mParent;
@@ -353,6 +355,29 @@ class MIDIAddress final : public OSSIA::Address
         Address&setRepetitionFilter(bool) override
         {
             return *this;
+        }
+
+
+        Address::iterator addCallback(ValueCallback callback) override
+        {
+            auto it = CallbackContainer::addCallback(std::move(callback));
+
+            if (callbacks().size() == 1)
+            {
+                mProtocol.lock()->observeAddressValue(shared_from_this(), true);
+            }
+
+            return it;
+        }
+
+        void removeCallback(Address::iterator callback) override
+        {
+            CallbackContainer::removeCallback(callback);
+
+            if (callbacks().size() == 0)
+            {
+                mProtocol.lock()->observeAddressValue(shared_from_this(), false);
+            }
         }
 };
 
