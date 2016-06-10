@@ -49,6 +49,7 @@ public:
   using Clock::getPosition;
   using Clock::tick;
   using Clock::pause;
+  using Clock::paused;
   using Clock::resume;
 
   /*! to get the constraint execution back

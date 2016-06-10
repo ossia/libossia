@@ -73,6 +73,11 @@ void JamomaClock::pause()
   mPaused = true;
 }
 
+bool JamomaClock::paused() const
+{
+    return mPaused;
+}
+
 void JamomaClock::resume()
 {
   mPaused = false;
@@ -298,28 +303,28 @@ void JamomaClock::do_start()
 {
   if (mDuration <= mOffset)
     return stop();
-  
+
   if (mRunning)
     return;
-  
+
   // reset timing informations
   mRunning = true;
   mPaused = false;
-  
+
   // set clock at a tick
   mDate = std::floor(mOffset / (mGranularity * mSpeed)) * (mGranularity * mSpeed);
   mPosition = mDate / mDuration;
   mLastTime = steady_clock::now();
   mElapsedTime = std::floor(mOffset / mGranularity) * mGranularity * 1000;
-  
+
   // notify the owner
   (mCallback)(mPosition, mDate, 0);
-  
+
   if (mDriveMode == Clock::DriveMode::INTERNAL)
   {
     if (mThread.joinable())
       mThread.join();
-    
+
     // launch a new thread to run the clock execution
     mThread = thread(&JamomaClock::threadCallback, this);
   }
@@ -341,7 +346,7 @@ void JamomaClock::do_setDuration(const TimeValue& duration)
 {
   mDuration = duration;
   mDate = mOffset;
-  
+
   if (mDuration != Zero)
     mPosition = mDate / mDuration;
   else
@@ -352,7 +357,7 @@ void JamomaClock::do_setOffset(const TimeValue& offset)
 {
   mOffset = offset;
   mDate = mOffset;
-  
+
   if (mDuration != Zero)
     mPosition = mDate / mDuration;
   else

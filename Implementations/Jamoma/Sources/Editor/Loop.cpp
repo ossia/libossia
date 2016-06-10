@@ -130,7 +130,11 @@ shared_ptr<StateElement> JamomaLoop::state()
         if (not_starting)
         {
           // no such event found : not starting
-          mPatternConstraint->tick((date - prev_last_date) * 1000.);
+            // no such event found : not starting
+            if(prev_last_date == Infinite)
+                mPatternConstraint->tick();
+            else
+                mPatternConstraint->tick((date - prev_last_date) * 1000.);
         }
       }
 

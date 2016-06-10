@@ -31,16 +31,16 @@ public:
 
 # pragma mark -
 # pragma mark Definitions
-  
+
   /*! to get the clock execution back
    \param clock position
    \param clock date
    \param dropped ticks */
   using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, unsigned char)>;
-  
+
 # pragma mark -
 # pragma mark Enumerations
-  
+
   /*! how the time flows for the clock */
   enum class DriveMode
   {
@@ -81,6 +81,9 @@ public:
   /*! pause the clock progression */
   virtual void pause() = 0;
 
+  /*! true if the constraint is running and paused, else false */
+  virtual bool paused() const = 0;
+
   /*! resume the clock progression */
   virtual void resume() = 0;
 
@@ -106,11 +109,11 @@ public:
    \param const #TimeValue duration
    \return #Clock the clock */
   virtual Clock & setDuration(const TimeValue&) = 0;
-  
+
   /*! get the offset of the clock
    \return const #TimeValue offset */
   virtual const TimeValue & getOffset() const = 0;
-  
+
   /** set the offset of the clock
    \param const #TimeValue offset
    \return #Clock the clock */
@@ -133,11 +136,11 @@ public:
    \param float speed factor
    \return #Clock the clock */
   virtual Clock & setSpeed(float) = 0;
-  
+
   /*! get the clock drive mode
    \return #DriveMode */
   virtual DriveMode getDriveMode() const = 0;
-  
+
   /** set is the clock drive mode
    \param #DriveMode
    \return #Clock the clock */

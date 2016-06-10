@@ -79,6 +79,8 @@ public:
 
   void pause() override;
 
+  bool paused() const final override;
+
   void resume() override;
 
   bool tick() final override;
@@ -88,13 +90,13 @@ public:
 # pragma mark Accessors
 
   const TimeValue & getDuration() const override;
-  
+
   Clock & setDuration(const TimeValue&) override;
-  
+
   const TimeValue & getOffset() const final override;
-  
+
   Clock & setOffset(const TimeValue&) override;
-    
+
   const TimeValue & getGranularity() const final override;
 
   Clock & setGranularity(const TimeValue&) final override;
@@ -119,17 +121,17 @@ public:
   /*! to avoid dead lock in EXTERNAL drive mode if a TimeProcess wants to end its ParentTimeConstraint's clock */
   void request_stop();
 
-protected:
-  
+    protected:
+
   /*! to allow TimeConstraint to override start method */
   void do_start();
-  
+
   /*! to allow TimeConstraint to override stop method */
   void do_stop();
-  
+
   /*! to allow TimeConstraint to override setDuration accessor */
   void do_setDuration(const TimeValue&);
-  
+
   /*! to allow TimeConstraint to override setOffset accessor */
   void do_setOffset(const TimeValue&);
 

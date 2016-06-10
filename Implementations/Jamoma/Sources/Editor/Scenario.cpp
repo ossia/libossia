@@ -121,7 +121,10 @@ shared_ptr<StateElement> JamomaScenario::state()
         if (not_starting)
         {
           // no such event found : not starting
-          timeConstraint->tick((date - prev_last_date) * 1000.);
+          if(prev_last_date == Infinite)
+              timeConstraint->tick();
+          else
+              timeConstraint->tick((date - prev_last_date) * 1000.);
         }
       }
 
