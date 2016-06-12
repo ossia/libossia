@@ -16,10 +16,8 @@ JamomaMIDI::JamomaMIDI():
 
 JamomaMIDI::~JamomaMIDI()
 {
-    std::cerr << "closing\n";
     mInput.closePort();
     mOutput.closePort();
-    std::cerr << "closed\n";
 }
 
 MIDI::~MIDI()
@@ -97,9 +95,9 @@ bool JamomaMIDI::pullAddressValue(Address& address) const
 
       case MIDIAddressInfo::Type::NoteOn:
       {
-          OSSIA::Tuple val{
-              new OSSIA::Int{chan.mNoteOn.first},
-              new OSSIA::Int{chan.mNoteOn.second}};
+          OSSIA::Tuple val{OSSIA::Tuple::ValueInit{},
+              OSSIA::Int{chan.mNoteOn.first},
+              OSSIA::Int{chan.mNoteOn.second}};
           address.setValue(&val);
           return true;
       }
@@ -113,9 +111,9 @@ bool JamomaMIDI::pullAddressValue(Address& address) const
 
       case MIDIAddressInfo::Type::NoteOff:
       {
-          OSSIA::Tuple val{
-              new OSSIA::Int{chan.mNoteOff.first},
-              new OSSIA::Int{chan.mNoteOff.second}};
+          OSSIA::Tuple val{OSSIA::Tuple::ValueInit{},
+              OSSIA::Int{chan.mNoteOff.first},
+              OSSIA::Int{chan.mNoteOff.second}};
           address.setValue(&val);
           return true;
       }
@@ -129,9 +127,9 @@ bool JamomaMIDI::pullAddressValue(Address& address) const
 
       case MIDIAddressInfo::Type::CC:
       {
-          OSSIA::Tuple val{
-              new OSSIA::Int{chan.mCC.first},
-              new OSSIA::Int{chan.mCC.second}};
+          OSSIA::Tuple val{OSSIA::Tuple::ValueInit{},
+              OSSIA::Int{chan.mCC.first},
+              OSSIA::Int{chan.mCC.second}};
           address.setValue(&val);
           return true;
       }

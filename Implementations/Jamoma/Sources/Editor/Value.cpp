@@ -116,7 +116,7 @@ bool Bool::operator== (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this == *c;
-        
+
         delete c;
         return result;
       }
@@ -186,7 +186,7 @@ bool Bool::operator> (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this > *c;
-        
+
         delete c;
         return result;
       }
@@ -251,7 +251,7 @@ bool Bool::operator>= (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this >= *c;
-        
+
         delete c;
         return result;
       }
@@ -316,7 +316,7 @@ bool Bool::operator< (const Value& v) const
         {
           const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this < *c;
-          
+
           delete c;
           return result;
         }
@@ -381,7 +381,7 @@ bool Bool::operator<= (const Value& v) const
         {
           const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this <= *c;
-          
+
           delete c;
           return result;
         }
@@ -459,7 +459,7 @@ bool Int::operator== (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this == *c;
-        
+
         delete c;
         return result;
       }
@@ -529,7 +529,7 @@ bool Int::operator> (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this > *c;
-        
+
         delete c;
         return result;
       }
@@ -598,7 +598,7 @@ bool Int::operator>= (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this >= *c;
-        
+
         delete c;
         return result;
       }
@@ -659,7 +659,7 @@ bool Int::operator< (const Value& v) const
         {
           const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this < *c;
-          
+
           delete c;
           return result;
         }
@@ -728,7 +728,7 @@ bool Int::operator<= (const Value& v) const
         {
           const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this <= *c;
-          
+
           delete c;
           return result;
         }
@@ -802,7 +802,7 @@ bool Float::operator== (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this == *c;
-        
+
         delete c;
         return result;
       }
@@ -872,7 +872,7 @@ bool Float::operator> (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this > *c;
-        
+
         delete c;
         return result;
       }
@@ -937,7 +937,7 @@ bool Float::operator>= (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this >= *c;
-        
+
         delete c;
         return result;
       }
@@ -1002,7 +1002,7 @@ bool Float::operator< (const Value& v) const
         {
           const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this < *c;
-          
+
           delete c;
           return result;
         }
@@ -1067,7 +1067,7 @@ bool Float::operator<= (const Value& v) const
         {
           const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this <= *c;
-          
+
           delete c;
           return result;
         }
@@ -1146,7 +1146,7 @@ bool Char::operator== (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this == *c;
-        
+
         delete c;
         return result;
       }
@@ -1216,7 +1216,7 @@ bool Char::operator> (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this > *c;
-        
+
         delete c;
         return result;
       }
@@ -1281,7 +1281,7 @@ bool Char::operator>= (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this >= *c;
-        
+
         delete c;
         return result;
       }
@@ -1346,7 +1346,7 @@ bool Char::operator< (const Value& v) const
         {
           const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this < *c;
-          
+
           delete c;
           return result;
         }
@@ -1411,7 +1411,7 @@ bool Char::operator<= (const Value& v) const
         {
           const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this <= *c;
-          
+
           delete c;
           return result;
         }
@@ -1486,7 +1486,7 @@ bool String::operator== (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this == *c;
-        
+
         delete c;
         return result;
       }
@@ -1553,7 +1553,7 @@ bool String::operator> (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this > *c;
-        
+
         delete c;
         return result;
       }
@@ -1615,7 +1615,7 @@ bool String::operator>= (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this >= *c;
-        
+
         delete c;
         return result;
       }
@@ -1677,7 +1677,7 @@ bool String::operator< (const Value& v) const
         {
           const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this < *c;
-          
+
           delete c;
           return result;
         }
@@ -1739,7 +1739,7 @@ bool String::operator<= (const Value& v) const
         {
           const Value* c = d->value->getAddress()->cloneValue(d->index);
           bool result = *this <= *c;
-          
+
           delete c;
           return result;
         }
@@ -1759,6 +1759,12 @@ bool String::operator<= (const Value& v) const
 Tuple::Tuple()
 {
     m_type = Type::TUPLE;
+}
+
+Tuple::~Tuple()
+{
+    for(auto val : value)
+        delete val;
 }
 
 Tuple::Tuple(const Value* v)
@@ -2051,7 +2057,7 @@ bool Generic<T>::operator== (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this == *c;
-        
+
         delete c;
         return result;
       }
@@ -2124,7 +2130,7 @@ bool Generic<T>::operator> (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this > *c;
-        
+
         delete c;
         return result;
       }
@@ -2191,7 +2197,7 @@ bool Generic<T>::operator>= (const Value& v) const
       {
         const Value* c = d->value->getAddress()->cloneValue(d->index);
         bool result = *this >= *c;
-        
+
         delete c;
         return result;
       }
@@ -2223,7 +2229,7 @@ bool Generic<T>::operator<= (const Value& v) const
 Destination::Destination(std::shared_ptr<Node> v, std::initializer_list<char> idx) : value(v)
 {
   m_type = Type::DESTINATION;
-  
+
   for (const auto & i : idx)
     index.push_back(i);
 }
@@ -2231,7 +2237,7 @@ Destination::Destination(std::shared_ptr<Node> v, std::initializer_list<char> id
 Destination::Destination(std::shared_ptr<Node> v, std::vector<char> idx) : value(v)
 {
   m_type = Type::DESTINATION;
-  
+
   for (const auto & i : idx)
     index.push_back(i);
 }
@@ -2252,19 +2258,19 @@ bool Destination::operator== (const Value& v) const
     case Value::Type::DESTINATION :
     {
       auto d = static_cast<const Destination*>(&v);
-        
+
       // if there are addresses compare values
       if (value->getAddress() && d->value->getAddress())
       {
         const Value* c1 = value->getAddress()->cloneValue(index);
         const Value* c2 = d->value->getAddress()->cloneValue(d->index);
         bool result = *c1 == *c2;
-        
+
         delete c1;
         delete c2;
         return result;
       }
-        
+
       // if no addresses, compare nodes
       else if (!value->getAddress() && !d->value->getAddress())
         return value == d->value;
@@ -2275,11 +2281,11 @@ bool Destination::operator== (const Value& v) const
       {
         const Value* c = value->getAddress()->cloneValue(index);
         bool result = *c == v;
-        
+
         delete c;
         return result;
       }
-      
+
       return false;
     }
   }
@@ -2306,7 +2312,7 @@ bool Destination::operator> (const Value& v) const
         const Value* c1 = value->getAddress()->cloneValue(index);
         const Value* c2 = d->value->getAddress()->cloneValue(d->index);
         bool result = *c1 > *c2;
-        
+
         delete c1;
         delete c2;
         return result;
@@ -2318,11 +2324,11 @@ bool Destination::operator> (const Value& v) const
       {
         const Value* c = value->getAddress()->cloneValue(index);
         bool result = *c > v;
-        
+
         delete c;
         return result;
       }
-      
+
       return false;
     }
   }
@@ -2344,7 +2350,7 @@ bool Destination::operator>= (const Value& v) const
         const Value* c1 = value->getAddress()->cloneValue(index);
         const Value* c2 = d->value->getAddress()->cloneValue(d->index);
         bool result = *c1 >= *c2;
-        
+
         delete c1;
         delete c2;
         return result;
@@ -2356,11 +2362,11 @@ bool Destination::operator>= (const Value& v) const
       {
         const Value* c = value->getAddress()->cloneValue(index);
         bool result = *c >= v;
-        
+
         delete c;
         return result;
       }
-      
+
       return false;
     }
   }

@@ -300,6 +300,27 @@ struct Tuple final : public Value
 
   /*! constructor for an empty tuple */
   Tuple();
+  ~Tuple();
+
+  /*! Mechanism for building a Tuple with a list of
+   * values, to remove the need for spurious memory allocations.
+   * Usage : Tuple t{Tuple::ValueInit, Int{2}, Float{3.145}, String{"foo"}};
+   */
+  struct ValueInit {} ;
+  template<typename... Args>
+  explicit Tuple(ValueInit, Args&&... args)
+  {
+      value.reserve(sizeof...(args));
+      append(std::forward<Args>(args)...);
+  }
+
+  void append() { }
+  template<typename Arg, typename... Args>
+  void append(Arg&& arg, Args&&... args)
+  {
+      value.push_back(arg.clone());
+      append(std::forward<Args>(args)...);
+  }
 
   /*! constructor for one value
    \param const value */
