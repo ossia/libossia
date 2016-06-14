@@ -26,6 +26,7 @@ namespace OSSIA
 
 class Address;
 class Node;
+class NetworkLogger;
 
 class Protocol
 {
@@ -83,6 +84,16 @@ public:
    \param #Node the node to update
    \return bool true if the operation succeeded */
   virtual bool updateChildren(Node& node) const = 0;
+
+  /*! Sets a logger that will record inbound and outbound messages.
+   * \param A logger instance, or a null pointer to disable logging.
+   */
+  virtual void setLogger(std::shared_ptr<NetworkLogger>) = 0;
+
+  /*! Get the logger instance.
+   * @return A logger if it was set, or nullptr if there is none.
+   */
+  virtual std::shared_ptr<NetworkLogger> getLogger() const = 0;
 };
 
 void CleanupProtocols();

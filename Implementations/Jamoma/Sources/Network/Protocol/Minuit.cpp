@@ -19,6 +19,12 @@ mOutPort(out_port)
   TTObject minuitObject = mApplicationManager.send("ProtocolFind", "Minuit");
   if (!minuitObject.valid())
     mApplicationManager.send("ProtocolInstantiate", "Minuit");
+
+  /* example of a basic logger for debugging purposes
+  mLogger = std::make_shared<NetworkLogger>();
+  mLogger->setInboundLogCallback([] (std::string str) { std::cerr << str << std::endl; });
+  mLogger->setOutboundLogCallback([] (std::string str) { std::cerr << str << std::endl; });
+  */
 }
 
 JamomaMinuit::~JamomaMinuit()
@@ -38,11 +44,11 @@ std::string JamomaMinuit::getIp()
 Protocol & JamomaMinuit::setIp(std::string ip)
 {
   TTObject minuitObject = mApplicationManager.send("ProtocolFind", "Minuit");
-  
+
   mIp = ip;
-  
+
   minuitObject.set("ip", TTSymbol(mIp));
-  
+
   return *this;
 }
 
@@ -54,12 +60,12 @@ int JamomaMinuit::getInPort()
 Protocol & JamomaMinuit::setInPort(int in_port)
 {
   TTObject minuitObject = mApplicationManager.send("ProtocolFind", "Minuit");
-  
+
   mInPort = in_port;
-  
+
   //! \note as Minuit is in Jamoma there only an in port (no out port)
   minuitObject.set("port", mInPort);
-  
+
   return *this;
 }
 
@@ -71,12 +77,12 @@ int JamomaMinuit::getOutPort()
 Protocol & JamomaMinuit::setOutPort(int out_port)
 {
   TTObject minuitObject = mApplicationManager.send("ProtocolFind", "Minuit");
-  
+
   mOutPort = out_port;
-  
+
   //! \note as Minuit is in Jamoma there only an in port (no out port)
   // minuitObject.set("port", mOutPort);
-  
+
   return *this;
 }
 
@@ -86,41 +92,57 @@ Protocol & JamomaMinuit::setOutPort(int out_port)
 bool JamomaMinuit::pullAddressValue(Address& address) const
 {
   JamomaAddress& adrs = dynamic_cast<JamomaAddress&>(address);
-  
+
   TTValue value;
-  
+
   if (adrs.pullValue(value))
   {
     adrs.setValue(value);
+
+    if(mLogger)
+    {
+        auto& cb = mLogger->getInboundLogCallback();
+        if(cb)
+            cb(adrs.getTextualAddress() + " <<= " + getValueAsString(*adrs.getValue()));
+    }
     return true;
   }
-  
+
   return false;
 }
 
 bool JamomaMinuit::pushAddressValue(const Address& address) const
 {
   const JamomaAddress& adrs = dynamic_cast<const JamomaAddress&>(address);
-  
+
   TTValue value;
-  
+
   adrs.getValue(value);
-  
-  return adrs.pushValue(value);
+
+  bool res = adrs.pushValue(value);
+
+  if(mLogger)
+  {
+      auto& cb = mLogger->getOutboundLogCallback();
+      if(cb)
+          cb(adrs.getTextualAddress() + " => " + getValueAsString(*adrs.getValue()));
+  }
+
+  return res;
 }
 
 bool JamomaMinuit::observeAddressValue(std::shared_ptr<Address> address, bool enable) const
 {
   shared_ptr<JamomaAddress> adrs = dynamic_pointer_cast<JamomaAddress>(address);
-  
+
   adrs->observeValue(enable);
-  
+
   return true;
 }
 
 bool JamomaMinuit::updateChildren(Node& node) const
 {
   JamomaNode& n = dynamic_cast<JamomaNode&>(node);
-  
+
   return n.updateChildren();
 }

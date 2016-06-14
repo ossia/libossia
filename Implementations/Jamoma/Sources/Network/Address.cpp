@@ -1,4 +1,6 @@
 #include "Network/JamomaAddress.h"
+#include "Editor/Value.h"
+#include "Network/NetworkLogger.h"
 
 #include <iostream> //! \todo to remove. only here for debug purpose
 
@@ -22,6 +24,11 @@ mRepetitionFilter(false)
     mObjectValueCallback.set("baton", args);
     mObjectValueCallback.set("function", TTPtr(&JamomaAddress::TTValueCallback));
   }
+
+  // To set-up the protocol cache.
+  // Note : the cache works because the nodes cannot change parents.
+  getProtocol();
+  mTextualAddress = getAddressFromNode(*mNode.lock());
 }
 
 JamomaAddress::~JamomaAddress()
@@ -44,7 +51,7 @@ const shared_ptr<Node> JamomaAddress::getNode() const
 const Value * JamomaAddress::pullValue()
 {
   // use the device protocol to pull address value
-  mNode.lock()->getDevice()->getProtocol()->pullAddressValue(*this);
+  getProtocol().pullAddressValue(*this);
 
   return mValue;
 }
@@ -55,7 +62,7 @@ Address & JamomaAddress::pushValue(const Value * value)
     setValue(value);
 
   // use the device protocol to push address value
-  mNode.lock()->getDevice()->getProtocol()->pushAddressValue(*this);
+  getProtocol().pushAddressValue(*this);
 
   return *this;
 }
@@ -314,7 +321,7 @@ Address::iterator JamomaAddress::addCallback(ValueCallback callback)
   if (callbacks().size() == 1)
   {
     // use the device protocol to start address value observation
-    mNode.lock()->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), true);
+    getProtocol().observeAddressValue(shared_from_this(), true);
 
     //! \debug
     cout << "opening listening on " << buildNodePath(mNode.lock()) << endl;
@@ -330,7 +337,7 @@ void JamomaAddress::removeCallback(Address::iterator callback)
   if (callbacks().size() == 0)
   {
     // use the device protocol to stop address value observation
-    mNode.lock()->getDevice()->getProtocol()->observeAddressValue(shared_from_this(), false);
+    getProtocol().observeAddressValue(shared_from_this(), false);
 
     //! \debug
     cout << "closing listening on " << buildNodePath(mNode.lock()) << endl;
@@ -354,6 +361,11 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
     // if it is rewritten afterwards.
     try {
         auto val = self->cloneValue();
+        if(auto logger = self->getProtocol().getLogger())
+        {
+            if(auto& log_callback = logger->getInboundLogCallback())
+                log_callback(self->getTextualAddress() + " <= " + getValueAsString(*self->getValue()));
+        }
         for (auto callback : self->callbacks())
         {
             callback(val);
@@ -682,4 +694,168 @@ string JamomaAddress::buildNodePath(shared_ptr<Node> node) const
   }
 
   return path;
+}
+
+Protocol& JamomaAddress::getProtocol() const
+{
+    if(auto cached_proto = mProtocolCache.lock())
+    {
+        return *cached_proto.get();
+    }
+    else
+    {
+        auto node = mNode.lock();
+        if(!node)
+            return getDummyProtocol();
+        auto dev = node->getDevice();
+        if(!dev)
+            return getDummyProtocol();
+        auto proto = dev->getProtocol();
+        if(!proto)
+            return getDummyProtocol();
+
+        // Save in the cache
+        mProtocolCache = proto;
+        return *proto.get();
+    }
+}
+
+Protocol& getDummyProtocol()
+{
+    struct DummyProtocol : public Protocol
+    {
+            Type getType() const override { return Type::OSC; }
+            bool pullAddressValue(Address&) const override { return true; }
+            bool pushAddressValue(const Address&) const override { return true; }
+            bool observeAddressValue(std::shared_ptr<Address>, bool) const override { return false; }
+            bool updateChildren(Node&) const override { return false; }
+            void setLogger(std::shared_ptr<NetworkLogger>) override { }
+            std::shared_ptr<NetworkLogger> getLogger() const override { }
+    };
+
+    static DummyProtocol proto;
+    return proto;
+}
+
+
+
+static void getAddressFromNode_rec(
+        const OSSIA::Node& node,
+        std::vector<std::string>& str)
+{
+    if(auto p = node.getParent())
+        getAddressFromNode_rec(*p, str);
+
+    str.push_back(node.getName());
+}
+std::string getAddressFromNode(const OSSIA::Node& node)
+{
+    std::vector<std::string> vec;
+    getAddressFromNode_rec(node, vec);
+
+    // vec cannot be empty.
+
+    int i = 0;
+
+    std::string str;
+    str.reserve(vec.size() * 5);
+    str.append(vec.at(i++));
+    str.append(":/");
+
+    int n = vec.size();
+    for(; i < n - 1; i++)
+    {
+        str.append(vec.at(i));
+        str.append("/");
+    }
+    if((n - 1) > 0)
+        str.append(vec.at(n-1));
+
+    return str;
+}
+
+std::string getTupleAsString(const OSSIA::Tuple& tuple)
+{
+    std::stringstream s;
+
+    int n = tuple.value.size();
+
+    s << "[";
+    for(int i = 0; i < n; i++)
+    {
+        const OSSIA::Value& val = *tuple.value.at(i);
+        switch(val.getType())
+        {
+            case OSSIA::Value::Type::INT:
+                s << "int: " << static_cast<const OSSIA::Int&>(val).value;
+                break;
+            case OSSIA::Value::Type::FLOAT:
+                s << "float: " << static_cast<const OSSIA::Float&>(val).value;
+                break;
+            case OSSIA::Value::Type::BOOL:
+                s << "bool: " << static_cast<const OSSIA::Bool&>(val).value ? "true" : "false";
+                break;
+            case OSSIA::Value::Type::STRING:
+                s << "string: " << static_cast<const OSSIA::String&>(val).value;
+                break;
+            case OSSIA::Value::Type::CHAR:
+                s << "char: " << static_cast<const OSSIA::Char&>(val).value;
+                break;
+            case OSSIA::Value::Type::IMPULSE:
+                s << "impulse";
+                break;
+            case OSSIA::Value::Type::TUPLE:
+                s << "tuple: " << getTupleAsString(static_cast<const OSSIA::Tuple&>(val));
+                break;
+            case OSSIA::Value::Type::GENERIC:
+                s << "generic";
+                break;
+            case OSSIA::Value::Type::DESTINATION:
+                s << "destination";
+                break;
+        }
+
+        if(i < n - 1)
+            s << ", ";
+    }
+    s << "]";
+
+    return s.str();
+}
+
+std::string getValueAsString(const OSSIA::Value& val)
+{
+    std::stringstream s;
+    switch(val.getType())
+    {
+        case OSSIA::Value::Type::INT:
+            s << "int: " << static_cast<const OSSIA::Int&>(val).value;
+            break;
+        case OSSIA::Value::Type::FLOAT:
+            s << "float: " << static_cast<const OSSIA::Float&>(val).value;
+            break;
+        case OSSIA::Value::Type::BOOL:
+            s << "bool: " << static_cast<const OSSIA::Bool&>(val).value ? "true" : "false";
+            break;
+        case OSSIA::Value::Type::STRING:
+            s << "string: " << static_cast<const OSSIA::String&>(val).value;
+            break;
+        case OSSIA::Value::Type::CHAR:
+            s << "char: " << static_cast<const OSSIA::Char&>(val).value;
+            break;
+        case OSSIA::Value::Type::IMPULSE:
+            s << "impulse";
+            break;
+        case OSSIA::Value::Type::TUPLE:
+            s << "tuple: " << getTupleAsString(static_cast<const OSSIA::Tuple&>(val));
+            break;
+        case OSSIA::Value::Type::GENERIC:
+            s << "generic";
+            break;
+        case OSSIA::Value::Type::DESTINATION:
+            s << "destination";
+            break;
+    }
+
+    return s.str();
 }

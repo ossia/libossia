@@ -49,6 +49,8 @@ private:
   shared_ptr<Domain>  mDomain;
 
   ValueCallback       mCallback;
+  mutable weak_ptr<OSSIA::Protocol>  mProtocolCache;
+  std::string         mTextualAddress;
 
 public:
 
@@ -141,8 +143,36 @@ public:
 
   string buildNodePath(shared_ptr<Node>) const;
 
+
+  Protocol& getProtocol() const;
+  const std::string& getTextualAddress() const
+  { return mTextualAddress; }
 private:
 
   static TTErr TTValueCallback(const TTValue&, const TTValue&);
 };
 
+/*!
+ * \brief getDummyProtocol
+ * \return a simple protocol useful when no protocol is available.
+ */
+Protocol& getDummyProtocol();
+
+/*!
+ * \brief getAddressFromNode
+ * \return the textual address of a node : aDevice:/an/address
+ */
+std::string getAddressFromNode(const OSSIA::Node&);
+
+/*!
+ * \brief getValueAsString Returns a string corresponding to the value
+ * \param val a valid value
+ * \return a string in the format : "type: value".
+ *
+ * ex. "int: 3"
+ *     "string: tutu"
+ *     "tuple: [ int: 2, float: 3 ]"
+ * etc...
+ *
+ */
+std::string getValueAsString(const OSSIA::Value& val);

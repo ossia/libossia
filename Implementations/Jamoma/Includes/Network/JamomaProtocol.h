@@ -19,6 +19,7 @@
 
 #include "TTFoundation.h"
 #include "TTModular.h"
+#include "Network/NetworkLogger.h"
 
 using namespace OSSIA;
 using namespace std;
@@ -32,6 +33,7 @@ protected:
 # pragma mark Implementation specific
 
   TTObject mApplicationManager;
+  std::shared_ptr<NetworkLogger> mLogger;
 
 public:
 
@@ -39,4 +41,7 @@ public:
 # pragma mark Life cycle
 
   JamomaProtocol();
+
+  void setLogger(std::shared_ptr<NetworkLogger>) override;
+  std::shared_ptr<NetworkLogger> getLogger() const override;
 };

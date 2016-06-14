@@ -14,7 +14,17 @@ JamomaProtocol::JamomaProtocol()
   if (TTModularApplicationManager == NULL)
     mApplicationManager = TTObject("ApplicationManager");
   else
-    mApplicationManager = TTObjectBasePtr(TTModularApplicationManager);
+      mApplicationManager = TTObjectBasePtr(TTModularApplicationManager);
+}
+
+void JamomaProtocol::setLogger(std::shared_ptr<NetworkLogger> l)
+{
+    mLogger = l;
+}
+
+std::shared_ptr<NetworkLogger> JamomaProtocol::getLogger() const
+{
+    return mLogger;
 }
 
 Protocol::~Protocol()
