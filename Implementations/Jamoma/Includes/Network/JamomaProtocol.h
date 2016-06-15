@@ -44,4 +44,12 @@ public:
 
   void setLogger(std::shared_ptr<NetworkLogger>) override;
   std::shared_ptr<NetworkLogger> getLogger() const override;
+
+    private:
+
+  bool pullAddressValue(Address& address) const;
+
+  bool pushAddressValue(const Address& address) const;
+
+  bool observeAddressValue(std::shared_ptr<Address> address, bool enable) const;
 };

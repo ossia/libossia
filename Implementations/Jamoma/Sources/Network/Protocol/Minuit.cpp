@@ -89,56 +89,6 @@ Protocol & JamomaMinuit::setOutPort(int out_port)
 # pragma mark -
 # pragma mark Operation
 
-bool JamomaMinuit::pullAddressValue(Address& address) const
-{
-  JamomaAddress& adrs = dynamic_cast<JamomaAddress&>(address);
-
-  TTValue value;
-
-  if (adrs.pullValue(value))
-  {
-    adrs.setValue(value);
-
-    if(mLogger)
-    {
-        auto& cb = mLogger->getInboundLogCallback();
-        if(cb)
-            cb(adrs.getTextualAddress() + " <<= " + getValueAsString(*adrs.getValue()));
-    }
-    return true;
-  }
-
-  return false;
-}
-
-bool JamomaMinuit::pushAddressValue(const Address& address) const
-{
-  const JamomaAddress& adrs = dynamic_cast<const JamomaAddress&>(address);
-
-  TTValue value;
-
-  adrs.getValue(value);
-
-  bool res = adrs.pushValue(value);
-
-  if(mLogger)
-  {
-      auto& cb = mLogger->getOutboundLogCallback();
-      if(cb)
-          cb(adrs.getTextualAddress() + " => " + getValueAsString(*adrs.getValue()));
-  }
-
-  return res;
-}
-
-bool JamomaMinuit::observeAddressValue(std::shared_ptr<Address> address, bool enable) const
-{
-  shared_ptr<JamomaAddress> adrs = dynamic_pointer_cast<JamomaAddress>(address);
-
-  adrs->observeValue(enable);
-
-  return true;
-}
 
 bool JamomaMinuit::updateChildren(Node& node) const
 {
