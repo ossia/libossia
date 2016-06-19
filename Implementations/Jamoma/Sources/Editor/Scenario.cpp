@@ -126,6 +126,16 @@ shared_ptr<StateElement> JamomaScenario::state()
           else
               timeConstraint->tick((date - prev_last_date) * 1000.);
         }
+        else
+        {
+            // We advance the constraint so that we don't loose time
+            // TODO getDate is worst-case linear, maybe we should cache it to
+            // have the executedDate in constant time ?
+            if(prev_last_date == Infinite)
+                timeConstraint->tick();
+            else
+                timeConstraint->tick(((date - timeConstraint->getStartEvent()->getTimeNode()->getDate())* 1000.));
+        }
       }
 
       // if the time constraint is still running after the tick

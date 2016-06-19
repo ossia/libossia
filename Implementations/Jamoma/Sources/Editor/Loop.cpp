@@ -136,6 +136,10 @@ shared_ptr<StateElement> JamomaLoop::state()
             else
                 mPatternConstraint->tick((date - prev_last_date) * 1000.);
         }
+        else
+        {
+            // TODO we should advance the loop a bit at least.
+        }
       }
 
       // if the pattern constraint is still running after the tick
