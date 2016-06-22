@@ -51,6 +51,8 @@ public:
   using Clock::pause;
   using Clock::paused;
   using Clock::resume;
+  using Clock::setExecutionStatusCallback;
+  using Clock::getExecutionStatusCallback;
 
   /*! to get the constraint execution back
    \param const #TimeValue process clock position

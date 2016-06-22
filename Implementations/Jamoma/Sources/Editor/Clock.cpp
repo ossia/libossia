@@ -124,8 +124,7 @@ bool JamomaClock::tick()
         // notify the owner
         (mCallback)(mPosition, mDate, droppedTicks);
 
-        mRunning = false;
-        mPaused = false;
+        request_stop();
 
         return true;
       }
@@ -165,8 +164,7 @@ bool JamomaClock::tick()
     // is this the end
     if (mDuration - mDate < Zero && !mDuration.isInfinite())
     {
-      mRunning = false;
-      mPaused = false;
+        request_stop();
     }
   }
 
@@ -210,8 +208,7 @@ bool JamomaClock::tick(TimeValue usec)
     // is this the end
     if (mDuration - mDate < Zero && !mDuration.isInfinite())
     {
-      mRunning = false;
-      mPaused = false;
+      request_stop();
     }
   }
 
@@ -296,7 +293,13 @@ const TimeValue & JamomaClock::getDate() const
 
 void JamomaClock::request_stop()
 {
-  mRunning = false;
+    if(mRunning)
+    {
+        mRunning = false;
+        mPaused = false;
+        if(mStatusCallback)
+            mStatusCallback(ClockExecutionStatus::STOPPED);
+    }
 }
 
 void JamomaClock::do_start()
@@ -332,8 +335,7 @@ void JamomaClock::do_start()
 
 void JamomaClock::do_stop()
 {
-  mRunning = false;
-  mPaused = false;
+  request_stop();
 
   if (mDriveMode == Clock::DriveMode::INTERNAL)
   {

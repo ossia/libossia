@@ -36,7 +36,10 @@ public:
    \param clock position
    \param clock date
    \param dropped ticks */
-  using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, unsigned char)>;
+   using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, unsigned char)>;
+
+   enum ClockExecutionStatus { RUNNING, STOPPED };
+   using ExecutionStatusCallback = std::function<void(ClockExecutionStatus)>;
 
 # pragma mark -
 # pragma mark Enumerations
@@ -157,5 +160,9 @@ public:
   /*! get the date of the clock
    \return const #TimeValue date */
   virtual const TimeValue & getDate() const = 0;
+
+  // Execution status will be called when the clock starts and stops.
+  virtual void setExecutionStatusCallback(ExecutionStatusCallback) = 0;
+  virtual ExecutionStatusCallback getExecutionStatusCallback() const = 0;
 };
 }

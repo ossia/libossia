@@ -53,6 +53,7 @@ protected:
 
 private:
   ExecutionCallback mCallback;          /// the callback to use for each step
+  ExecutionStatusCallback   mStatusCallback;
 
 public:
 
@@ -114,6 +115,11 @@ public:
   const TimeValue & getPosition() const final override;
 
   const TimeValue & getDate() const final override;
+
+  void setExecutionStatusCallback(ExecutionStatusCallback e) final override
+  { mStatusCallback = e; }
+  ExecutionStatusCallback getExecutionStatusCallback() const final override
+  { return mStatusCallback; }
 
 # pragma mark -
 # pragma mark Implementation specific
