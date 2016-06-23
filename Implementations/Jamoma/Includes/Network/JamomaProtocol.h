@@ -47,9 +47,9 @@ public:
 
     private:
 
-  bool pullAddressValue(Address& address) const;
+  bool pullAddressValue(Address& address) const override;
 
-  bool pushAddressValue(const Address& address) const;
+  bool pushAddressValue(const Address& address) const override;
 
-  bool observeAddressValue(std::shared_ptr<Address> address, bool enable) const;
+  bool observeAddressValue(std::shared_ptr<Address> address, bool enable) const override;
 };

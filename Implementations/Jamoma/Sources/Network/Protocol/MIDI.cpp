@@ -74,6 +74,8 @@ bool JamomaMIDI::setInfo(MidiInfo m)
                         ptr->valueCallback(val);
                     }
                     break;
+                default:
+                    break;
             }
         };
     }
@@ -81,6 +83,8 @@ bool JamomaMIDI::setInfo(MidiInfo m)
     {
         mOutput.openPort(mInfo.port);
     }
+
+    return true;
 }
 
 MidiInfo JamomaMIDI::getInfo() const
