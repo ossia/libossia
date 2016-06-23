@@ -24,11 +24,13 @@
 #include <array>
 #include <ModernMIDI/midi_input.h>
 #include <ModernMIDI/midi_output.h>
+#include <atomic>
 
 using namespace OSSIA;
 using namespace std;
 
 using midi_size_t = uint8_t;
+class MIDIAddress;
 struct Channel
 {
         // [ note, vel ]
@@ -39,9 +41,14 @@ struct Channel
         std::pair<midi_size_t, midi_size_t> mCC;
 
         // velocity or value
-        std::array<midi_size_t, 127> mNoteOn_N;
-        std::array<midi_size_t, 127> mNoteOff_N;
-        std::array<midi_size_t, 127> mCC_N;
+        std::array<midi_size_t, 127> mNoteOn_N = { 64 };
+        std::array<midi_size_t, 127> mNoteOff_N = { 64 };
+        std::array<midi_size_t, 127> mCC_N = { 64 };
+
+        // Callbacks
+        std::array<std::shared_ptr<MIDIAddress>, 127> mCallbackNoteOn_N = { {} };
+        std::array<std::shared_ptr<MIDIAddress>, 127> mCallbackNoteOff_N = { {} };
+        std::array<std::shared_ptr<MIDIAddress>, 127> mCallbackCC_N = { {} };
 };
 
 class JamomaMIDI final : public MIDI, public JamomaProtocol
@@ -51,7 +58,7 @@ class JamomaMIDI final : public MIDI, public JamomaProtocol
         mutable mm::MidiInput mInput;
         mutable mm::MidiOutput mOutput;
 
-        std::array<Channel, 16> mChannels;
+        mutable std::array<Channel, 16> mChannels;
 
         MidiInfo mInfo;
         bool setInfo(MidiInfo) final override;
@@ -378,6 +385,16 @@ class MIDIAddress final :
             if (callbacks().size() == 0)
             {
                 mProtocol.lock()->observeAddressValue(shared_from_this(), false);
+            }
+        }
+
+        void valueCallback(const OSSIA::Value& val)
+        {
+            this->setValue(&val);
+            auto local_val = mValue.get();
+            for(auto& cb : CallbackContainer::callbacks())
+            {
+                cb(local_val);
             }
         }
 };

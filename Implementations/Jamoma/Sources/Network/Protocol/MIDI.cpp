@@ -48,16 +48,31 @@ bool JamomaMIDI::setInfo(MidiInfo m)
                     c.mNoteOn.first = mess.data[1];
                     c.mNoteOn.second = mess.data[2];
                     c.mNoteOn_N[c.mNoteOn.first] = c.mNoteOn.second;
+                    if(auto ptr = c.mCallbackNoteOn_N[c.mNoteOn.first])
+                    {
+                        OSSIA::Int val{c.mNoteOn_N[c.mNoteOn.first]};
+                        ptr->valueCallback(val);
+                    }
                     break;
                 case mm::MessageType::NOTE_OFF:
                     c.mNoteOff.first = mess.data[1];
                     c.mNoteOff.second = mess.data[2];
                     c.mNoteOff_N[c.mNoteOff.first] = c.mNoteOff.second;
+                    if(auto ptr = c.mCallbackNoteOff_N[c.mNoteOff.first])
+                    {
+                        OSSIA::Int val{c.mNoteOff_N[c.mNoteOff.first]};
+                        ptr->valueCallback(val);
+                    }
                     break;
                 case mm::MessageType::CONTROL_CHANGE:
                     c.mCC.first = mess.data[1];
                     c.mCC.second = mess.data[2];
                     c.mCC_N[c.mCC.first] = c.mCC.second;
+                    if(auto ptr = c.mCallbackCC_N[c.mCC.first])
+                    {
+                        OSSIA::Int val{c.mCC_N[c.mCC.first]};
+                        ptr->valueCallback(val);
+                    }
                     break;
             }
         };
@@ -213,6 +228,39 @@ bool JamomaMIDI::pushAddressValue(const Address& address) const
 
 bool JamomaMIDI::observeAddressValue(std::shared_ptr<Address> address, bool enable) const
 {
+    MIDIAddress& adrs = dynamic_cast<MIDIAddress&>(*address);
+    if(mInfo.type != MidiInfo::Type::RemoteOutput)
+        return false;
+
+    auto adrs_ptr = dynamic_pointer_cast<MIDIAddress>(address);
+    auto& adrinfo = adrs.info();
+    Channel& chan = mChannels[adrinfo.channel];
+    switch(adrinfo.type)
+    {
+        case MIDIAddressInfo::Type::NoteOn_N:
+        {
+            chan.mCallbackNoteOn_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
+            return true;
+        }
+
+        case MIDIAddressInfo::Type::NoteOff_N:
+        {
+            chan.mCallbackNoteOff_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
+            return true;
+        }
+
+        case MIDIAddressInfo::Type::CC_N:
+        {
+            chan.mCallbackCC_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
+            return true;
+        }
+
+        default:
+            // TODO do the non-N version
+            return false;
+    }
+
+
   return true;
 }
 
