@@ -252,7 +252,7 @@ class MIDIAddress final :
         weak_ptr<JamomaMIDI> mProtocol;
         std::shared_ptr<OSSIA::Domain> mDomain;
 
-        OSSIA::Value::Type mType;
+        OSSIA::Value::Type mType = OSSIA::Value::Type::INT;
         std::unique_ptr<OSSIA::Value> mValue;
     public:
         MIDIAddress(MIDIAddressInfo info, std::shared_ptr<OSSIA::Node> parent):
@@ -260,6 +260,7 @@ class MIDIAddress final :
             mParent{parent},
             mProtocol{dynamic_pointer_cast<JamomaMIDI>(parent->getDevice()->getProtocol())},
             mDomain{mInfo.defaultDomain()},
+            mType{mInfo.matchingType()},
             mValue{mInfo.defaultValue(64)}
         {
             assert(mProtocol.lock());
