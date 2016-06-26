@@ -16,8 +16,13 @@ JamomaMIDI::JamomaMIDI():
 
 JamomaMIDI::~JamomaMIDI()
 {
+    try {
     mInput.closePort();
     mOutput.closePort();
+    }
+    catch(...) {
+        std::cerr << "dtor MIDI error\n";
+    }
 }
 
 MIDI::~MIDI()
@@ -25,6 +30,7 @@ MIDI::~MIDI()
 
 bool JamomaMIDI::setInfo(MidiInfo m)
 {
+    try {
     // Close current ports
     if(mInfo.type == MidiInfo::Type::RemoteOutput)
     {
@@ -85,6 +91,11 @@ bool JamomaMIDI::setInfo(MidiInfo m)
     }
 
     return true;
+    }
+    catch(...) {
+        std::cerr << "setInfo MIDI error\n";
+        return false;
+    }
 }
 
 MidiInfo JamomaMIDI::getInfo() const
@@ -232,6 +243,7 @@ bool JamomaMIDI::pushAddressValue(const Address& address) const
 
 bool JamomaMIDI::observeAddressValue(std::shared_ptr<Address> address, bool enable) const
 {
+    enable = true;
     MIDIAddress& adrs = dynamic_cast<MIDIAddress&>(*address);
     if(mInfo.type != MidiInfo::Type::RemoteOutput)
         return false;
