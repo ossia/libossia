@@ -75,7 +75,7 @@ public:
   TimeNode & setSimultaneityMargin(const TimeValue&) override;
 
 # pragma mark -
-# pragma mark #TimeEvents
+# pragma mark TimeEvents
 
   iterator emplace(const_iterator,
                    TimeEvent::ExecutionCallback,

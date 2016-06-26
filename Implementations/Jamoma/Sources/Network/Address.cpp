@@ -730,7 +730,7 @@ Protocol& getDummyProtocol()
             bool observeAddressValue(std::shared_ptr<Address>, bool) const override { return false; }
             bool updateChildren(Node&) const override { return false; }
             void setLogger(std::shared_ptr<NetworkLogger>) override { }
-            std::shared_ptr<NetworkLogger> getLogger() const override { }
+			std::shared_ptr<NetworkLogger> getLogger() const override { return{}; }
     };
 
     static DummyProtocol proto;

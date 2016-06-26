@@ -7,7 +7,7 @@ if(APPLE)
   set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
   set(CMAKE_INSTALL_RPATH "@loader_path/../Frameworks;@loader_path/../Frameworks/jamoma;@loader_path/../Frameworks/jamoma/extensions;@executable_path;/usr/local/jamoma/lib;")
 endif()
-
+set(WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 include(Sanitize)
 include(DebugMode)
 include(UseGold)
@@ -17,10 +17,10 @@ function(target_transfer_options TheTarget TheLib)
     target_include_directories(${TheTarget} PUBLIC
         $<TARGET_PROPERTY:${TheLib},INTERFACE_INCLUDE_DIRECTORIES>
         )
-    target_compile_definitions(${TheTarget} PRIVATE
+    target_compile_definitions(${TheTarget} PUBLIC
         $<TARGET_PROPERTY:${TheLib},INTERFACE_COMPILE_DEFINITIONS>
         )
-    target_compile_options(${TheTarget} PRIVATE
+    target_compile_options(${TheTarget} PUBLIC
         $<TARGET_PROPERTY:${TheLib},INTERFACE_COMPILE_OPTIONS>
         )
 endfunction()
@@ -41,39 +41,64 @@ file(GLOB_RECURSE EDITOR_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/*.cpp"
 )
 
+file(GLOB_RECURSE NETWORK_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/Includes/Network/*.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Sources/Network/*.cpp"
+)
+
 # We make OBJECT libraries to reuse the object files
-# for all the targets
-add_library(APIJamoma_Misc_Object   OBJECT ${MISC_SRCS})
-add_library(APIJamoma_Editor_Object OBJECT ${EDITOR_SRCS})
-
-add_library(APIJamoma_Editor
-    $<TARGET_OBJECTS:APIJamoma_Misc_Object>
-    $<TARGET_OBJECTS:APIJamoma_Editor_Object>)
-
-# We can build up to this point without Jamoma
-
+# for all the targets. 
+# Not in win32 due to https://gitlab.kitware.com/cmake/cmake/issues/15857
+if(WIN32)
 find_package(Jamoma 0.6)
 if(NOT ${Jamoma_FOUND})
     message("Jamoma not found - won't build Network API")
     return()
 endif()
 
-file(GLOB_RECURSE NETWORK_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/Includes/Network/*.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Network/*.cpp"
-)
+	
+	add_library(APIJamoma 
+		${MISC_SRCS} 
+		${EDITOR_SRCS} 
+		${NETWORK_SRCS})
+    target_compile_definitions(APIJamoma PUBLIC 
+		TT_PLATFORM_WIN
+		NOMINMAX)
+    target_link_libraries(APIJamoma PUBLIC 
+		Jamoma::Foundation 
+		Jamoma::Modular 
+		ModernMIDI)
+else()
 
-add_library(APIJamoma_Network_Object OBJECT ${NETWORK_SRCS})
-target_transfer_options(APIJamoma_Network_Object Jamoma::Foundation)
-target_transfer_options(APIJamoma_Network_Object Jamoma::Modular)
-target_transfer_options(APIJamoma_Network_Object ModernMIDI)
+	add_library(APIJamoma_Misc_Object   OBJECT ${MISC_SRCS})
+	add_library(APIJamoma_Editor_Object OBJECT ${EDITOR_SRCS})
+	
+	add_library(APIJamoma_Editor
+	    $<TARGET_OBJECTS:APIJamoma_Misc_Object>
+	    $<TARGET_OBJECTS:APIJamoma_Editor_Object>)
+	
+	# We can build up to this point without Jamoma
+	
+	find_package(Jamoma 0.6)
+	if(NOT ${Jamoma_FOUND})
+	    message("Jamoma not found - won't build Network API")
+	    return()
+	endif()
+	
+	
+	add_library(APIJamoma_Network_Object OBJECT ${NETWORK_SRCS})
+	target_transfer_options(APIJamoma_Network_Object Jamoma::Foundation)
+	target_transfer_options(APIJamoma_Network_Object Jamoma::Modular)
+	target_transfer_options(APIJamoma_Network_Object ModernMIDI)
+	
+	add_library(APIJamoma
+	    $<TARGET_OBJECTS:APIJamoma_Misc_Object>
+	    $<TARGET_OBJECTS:APIJamoma_Network_Object>
+	    $<TARGET_OBJECTS:APIJamoma_Editor_Object>)
+    
+    target_link_libraries(APIJamoma PRIVATE Jamoma::Foundation Jamoma::Modular ModernMIDI)
+endif()
 
-add_library(APIJamoma
-    $<TARGET_OBJECTS:APIJamoma_Misc_Object>
-    $<TARGET_OBJECTS:APIJamoma_Network_Object>
-    $<TARGET_OBJECTS:APIJamoma_Editor_Object>)
-
-target_link_libraries(APIJamoma PRIVATE Jamoma::Foundation Jamoma::Modular ModernMIDI)
 target_include_directories(APIJamoma PUBLIC "${API_HEADERS_FOLDER}")
 
 if(OSSIA_SANITIZE)

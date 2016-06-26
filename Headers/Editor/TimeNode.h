@@ -99,8 +99,8 @@ public:
    \return #TimeNode the time node */
   virtual TimeNode & setSimultaneityMargin(const TimeValue&) = 0;
 
-# pragma mark -
-# pragma mark #TimeEvents
+#pragma mark -
+#pragma mark TimeEvents
 
   /*! create and store a #TimeEvent
    \param #Container<#TimeEvent>::const_iterator where to store the #TimeEvent

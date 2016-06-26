@@ -122,7 +122,7 @@ TimeNode & JamomaTimeNode::setSimultaneityMargin(const TimeValue& simultaneityMa
 }
 
 # pragma mark -
-# pragma mark #TimeEvents
+# pragma mark TimeEvents
 
 JamomaTimeNode::iterator JamomaTimeNode::emplace(const_iterator pos,
                                                  TimeEvent::ExecutionCallback callback,
