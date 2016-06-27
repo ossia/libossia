@@ -23,6 +23,7 @@
 #include "Editor/Expression.h"
 #include "Editor/Value.h"
 #include "Network/AddressProperties.h"
+#include <ossia_export.h>
 
 namespace OSSIA
 {
@@ -33,24 +34,30 @@ class Node;
  \param the returned value */
 using ValueCallback = std::function<void(const Value *)>;
 
-class Address : public CallbackContainer<ValueCallback>
+class OSSIA_EXPORT Address : public CallbackContainer<ValueCallback>
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Definitions
+#endif
 
   using iterator = typename CallbackContainer<ValueCallback>::iterator;
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! destructor */
   virtual ~Address();
 
+#if 0
 # pragma mark -
 # pragma mark Network
+#endif
 
   /*! get the node where the address is
    \return std::shared_ptr<#Node> the node where the address is */
@@ -67,8 +74,10 @@ public:
    \return #Address the address */
   virtual Address & pushValue(const Value* = nullptr) = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   /*! get the address value
    \details call pullValue if you need to sync the value with the device

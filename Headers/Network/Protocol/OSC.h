@@ -21,13 +21,15 @@
 namespace OSSIA
 {
 class Device;
-class OSC : public virtual Protocol
+class OSSIA_EXPORT OSC : public virtual Protocol
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! factory
    \param std::string ip of the Minuit device
@@ -39,8 +41,10 @@ public:
   /*! destructor */
   virtual ~OSC();
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   Protocol::Type getType() const override final
   {return Protocol::Type::OSC;}

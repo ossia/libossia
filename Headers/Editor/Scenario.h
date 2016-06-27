@@ -19,6 +19,7 @@
 #include "Editor/Clock.h"
 #include "Editor/State.h"
 #include "Editor/TimeProcess.h"
+#include <ossia_export.h>
 
 namespace OSSIA
 {
@@ -26,13 +27,15 @@ namespace OSSIA
 class TimeConstraint;
 class TimeNode;
 
-class Scenario : public virtual TimeProcess
+class OSSIA_EXPORT Scenario : public virtual TimeProcess
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! factory
    \return std::shared_ptr<#Scenario> */
@@ -44,9 +47,11 @@ public:
   /*! destructor */
   virtual ~Scenario();
 
+#if 0
 # pragma mark -
 # pragma mark Execution
-  
+#endif
+
   /*! get a #State depending on the parent #TimeConstraint offset
    \details the #State is a flatten set of Messages with no Address redundancy
    \details don't call offset when the parent #TimeConstraint is running
@@ -60,8 +65,10 @@ public:
    \return std::shared_ptr<#StateElement> */
   virtual std::shared_ptr<StateElement> state() override = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Edition
+#endif
 
   /*! add a #TimeConstraint and its #TimeNodes into the scenario if they don't already be added
    \param std::shared_ptr<#TimeConstraint> to add */
@@ -79,15 +86,19 @@ public:
    \param std::shared_ptr<#TimeNode> to remove */
   virtual void removeTimeNode(const std::shared_ptr<TimeNode>) = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   /*! get the node from where the scenario starts
    \return std::shared_ptr<#TimeNode> start node */
   virtual const std::shared_ptr<TimeNode> & getStartTimeNode() const = 0;
 
+#if 0
 # pragma mark -
 # pragma mark TimeNodes and TimeConstraints
+#endif
 
   /*! get all TimeNodes of the scenario
    \return #Container<#TimeNode> */

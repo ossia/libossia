@@ -13,51 +13,10 @@
 
 #include "Editor/JamomaCurve.h"
 #include "Editor/CurveSegment/JamomaCurveSegmentEmpty.h"
-
+#if 0
 # pragma mark -
 # pragma mark Life Cycle
-
-namespace OSSIA
-{
-  // explicit instantiation for bool
-  template class CurveSegmentEmpty<bool>;
-  
-  template <>
-  shared_ptr<CurveSegmentEmpty<bool>> CurveSegmentEmpty<bool>::create(shared_ptr<CurveAbstract> parent)
-  {
-    return make_shared<JamomaCurveSegmentEmpty<bool>>(parent);
-  }
-  
-  template <>
-  CurveSegmentEmpty<bool>::~CurveSegmentEmpty()
-  {}
-  
-  // explicit instantiation for int
-  template class CurveSegmentEmpty<int>;
-  
-  template <>
-  shared_ptr<CurveSegmentEmpty<int>> CurveSegmentEmpty<int>::create(shared_ptr<CurveAbstract> parent)
-  {
-    return make_shared<JamomaCurveSegmentEmpty<int>>(parent);
-  }
-  
-  template <>
-  CurveSegmentEmpty<int>::~CurveSegmentEmpty()
-  {}
-  
-  // explicit instantiation for float
-  template class CurveSegmentEmpty<float>;
-  
-  template <>
-  shared_ptr<CurveSegmentEmpty<float>> CurveSegmentEmpty<float>::create(shared_ptr<CurveAbstract> parent)
-  {
-    return make_shared<JamomaCurveSegmentEmpty<float>>(parent);
-  }
-  
-  template <>
-  CurveSegmentEmpty<float>::~CurveSegmentEmpty()
-  {}
-}
+#endif
 
 template <typename Y>
 JamomaCurveSegmentEmpty<Y>::
@@ -82,12 +41,10 @@ JamomaCurveSegmentEmpty<Y>::
 ~JamomaCurveSegmentEmpty()
 {}
 
-template <typename Y>
-CurveSegmentEmpty<Y>::~CurveSegmentEmpty()
-{}
-
+#if 0
 # pragma mark -
 # pragma mark Execution
+#endif
 
 template <typename Y>
 Y JamomaCurveSegmentEmpty<Y>::
@@ -95,13 +52,33 @@ valueAt(double ratio, Y start, Y end) const
 {
   return start;
 }
-
+#if 0
 # pragma mark -
 # pragma mark Accessors
-
+#endif
 template <typename Y>
 shared_ptr<CurveAbstract> JamomaCurveSegmentEmpty<Y>::
 getParent() const
 {
   return mParent;
 }
+
+
+namespace OSSIA
+{
+  template <typename Y>
+  shared_ptr<CurveSegmentEmpty<Y>> CurveSegmentEmpty<Y>::create(shared_ptr<CurveAbstract> parent)
+  {
+    return make_shared<JamomaCurveSegmentEmpty<Y>>(parent);
+  }
+
+  template <typename Y>
+  CurveSegmentEmpty<Y>::~CurveSegmentEmpty()
+  {
+
+  }
+}
+// Explicit instantiation
+template class OSSIA_EXPORT CurveSegmentEmpty<bool>;
+template class OSSIA_EXPORT CurveSegmentEmpty<int>;
+template class OSSIA_EXPORT CurveSegmentEmpty<float>;

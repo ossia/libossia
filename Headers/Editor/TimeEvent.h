@@ -21,6 +21,7 @@
 #include <functional>
 
 #include "Misc/Container.h"
+#include <ossia_export.h>
 
 namespace OSSIA
 {
@@ -30,13 +31,15 @@ class State;
 class TimeConstraint;
 class TimeNode;
 
-class TimeEvent
+class OSSIA_EXPORT TimeEvent
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Enumerations
+#endif
 
   /*! event status */
   enum class Status
@@ -47,14 +50,18 @@ public:
     DISPOSED
   };
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! destructor */
   virtual ~TimeEvent();
 
+#if 0
 # pragma mark -
 # pragma mark Execution
+#endif
 
   /*! to get the event status back
    \param #Status new status */
@@ -75,8 +82,10 @@ public:
    \details turning the event' status into DISPOSED will call the callback to notify its owner */
   virtual void dispose() = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Edition
+#endif
 
   /*! add a sub state into the state of the event
    \param std::shared_ptr<#State> to add */
@@ -86,8 +95,10 @@ public:
    \param std::shared_ptr<#State> to remove */
   virtual void removeState(const std::shared_ptr<State>) = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   /*! get the #TimeNode where the event is
    \return std::shared_ptr<#TimeNode> */
@@ -110,8 +121,10 @@ public:
    \return #Status */
   virtual Status getStatus() const = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Time Constraints
+#endif
 
   /*! get previous time contraints attached to the event
    \return #Container<#TimeConstraint> */

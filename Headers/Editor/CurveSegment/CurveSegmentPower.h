@@ -27,8 +27,10 @@ class CurveSegmentPower : public CurveSegment<Y>
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! factory
   \param std::shared_ptr<CurveAbstract> parent
@@ -41,8 +43,10 @@ public:
   /*! destructor */
   virtual ~CurveSegmentPower();
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   /*! get power value
   \return double */
@@ -58,3 +62,9 @@ public:
 
 };
 }
+
+#if !defined(APIJamoma_EXPORTS)
+extern template class OSSIA_EXPORT OSSIA::CurveSegmentPower<bool>;
+extern template class OSSIA_EXPORT OSSIA::CurveSegmentPower<int>;
+extern template class OSSIA_EXPORT OSSIA::CurveSegmentPower<float>;
+#endif

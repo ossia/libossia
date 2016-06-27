@@ -18,6 +18,7 @@
 
 #include <memory>
 #include <string>
+#include <ossia_export.h>
 
 namespace OSSIA
 {
@@ -25,20 +26,24 @@ class StateElement;
 class TimeConstraint;
 class TimeValue;
 
-class TimeProcess
+class OSSIA_EXPORT TimeProcess
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! destructor */
   virtual ~TimeProcess();
 
+#if 0
 # pragma mark -
 # pragma mark Execution
-  
+#endif
+
   /*! get a #StateElement from the process on its parent #TimeConstraint offset
    \details don't call offset when the parent #TimeConstraint is running
    \param const #TimeValue offset date
@@ -50,8 +55,10 @@ public:
    \return std::shared_ptr<#StateElement> */
   virtual std::shared_ptr<StateElement> state() = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   std::shared_ptr<TimeConstraint> parent;
 

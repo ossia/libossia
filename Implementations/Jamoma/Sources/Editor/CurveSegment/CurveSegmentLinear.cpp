@@ -20,48 +20,6 @@
 # pragma mark -
 # pragma mark Life Cycle
 
-namespace OSSIA
-{
-  // explicit instantiation for bool
-  template class CurveSegmentLinear<bool>;
-  
-  template <>
-  shared_ptr<CurveSegmentLinear<bool>> CurveSegmentLinear<bool>::create(shared_ptr<CurveAbstract> parent)
-  {
-    return make_shared<JamomaCurveSegmentLinear<bool>>(parent);
-  }
-  
-  template <>
-  CurveSegmentLinear<bool>::~CurveSegmentLinear()
-  {}
-  
-  // explicit instantiation for int
-  template class CurveSegmentLinear<int>;
-  
-  template <>
-  shared_ptr<CurveSegmentLinear<int>> CurveSegmentLinear<int>::create(shared_ptr<CurveAbstract> parent)
-  {
-    return make_shared<JamomaCurveSegmentLinear<int>>(parent);
-  }
-  
-  template <>
-  CurveSegmentLinear<int>::~CurveSegmentLinear()
-  {}
-  
-  // explicit instantiation for float
-  template class CurveSegmentLinear<float>;
-  
-  template <>
-  shared_ptr<CurveSegmentLinear<float>> CurveSegmentLinear<float>::create(shared_ptr<CurveAbstract> parent)
-  {
-    return make_shared<JamomaCurveSegmentLinear<float>>(parent);
-  }
-  
-  template <>
-  CurveSegmentLinear<float>::~CurveSegmentLinear()
-  {}
-}
-
 template <typename Y>
 JamomaCurveSegmentLinear<Y>::
 JamomaCurveSegmentLinear(shared_ptr<CurveAbstract> parent) :
@@ -85,10 +43,6 @@ JamomaCurveSegmentLinear<Y>::
 ~JamomaCurveSegmentLinear()
 {}
 
-template <typename Y>
-CurveSegmentLinear<Y>::~CurveSegmentLinear()
-{}
-
 # pragma mark -
 # pragma mark Execution
 
@@ -108,3 +62,23 @@ getParent() const
 {
   return mParent;
 }
+
+
+namespace OSSIA
+{
+  template <typename Y>
+  shared_ptr<CurveSegmentLinear<Y>> CurveSegmentLinear<Y>::create(shared_ptr<CurveAbstract> parent)
+  {
+    return make_shared<JamomaCurveSegmentLinear<Y>>(parent);
+  }
+
+  template <typename Y>
+  CurveSegmentLinear<Y>::~CurveSegmentLinear()
+  {
+
+  }
+}
+// Explicit instantiation
+template class OSSIA_EXPORT CurveSegmentLinear<bool>;
+template class OSSIA_EXPORT CurveSegmentLinear<int>;
+template class OSSIA_EXPORT CurveSegmentLinear<float>;

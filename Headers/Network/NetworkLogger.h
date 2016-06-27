@@ -1,10 +1,11 @@
 #pragma once
 #include <functional>
 #include <string>
+#include <ossia_export.h>
 
 namespace OSSIA
 {
-    class NetworkLogger
+    class OSSIA_EXPORT NetworkLogger
     {
         public:
             using LogCallback = std::function<void(std::string)>;

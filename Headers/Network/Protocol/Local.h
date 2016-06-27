@@ -21,24 +21,28 @@
 namespace OSSIA
 {
 
-class Local : public virtual Protocol
+class OSSIA_EXPORT Local : public virtual Protocol
 {
-  
+
 public:
-  
+
+#if 0
 # pragma mark -
 # pragma mark Life cycle
-  
+#endif
+
   /*! factory
    \return std::shared_ptr<Local> */
   static std::shared_ptr<Local> create();
-  
+
   /*! destructor */
   virtual ~Local();
-  
+
+#if 0
 # pragma mark -
 # pragma mark Accessors
-  
+#endif
+
   Protocol::Type getType() const override final
   {return Protocol::Type::LOCAL;}
 

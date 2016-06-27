@@ -26,9 +26,11 @@ class CurveSegmentEmpty : public CurveSegment<Y>
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
-  
+#endif
+
   /*! factory
    \param std::shared_ptr<CurveAbstract> parent
    \return std::shared_ptr<CurveSegmentEmpty<Y>> */
@@ -36,15 +38,24 @@ public:
 
   /*! clone */
   virtual std::shared_ptr<CurveSegmentEmpty<Y>> clone() const = 0;
-  
+
   /*! destructor */
   virtual ~CurveSegmentEmpty();
-  
+
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   typename CurveSegment<Y>::Type getType() const override final
   {return CurveSegment<Y>::Type::EMPTY;}
 
 };
 }
+
+
+#if !defined(APIJamoma_EXPORTS)
+extern template class OSSIA_EXPORT OSSIA::CurveSegmentEmpty<bool>;
+extern template class OSSIA_EXPORT OSSIA::CurveSegmentEmpty<int>;
+extern template class OSSIA_EXPORT OSSIA::CurveSegmentEmpty<float>;
+#endif

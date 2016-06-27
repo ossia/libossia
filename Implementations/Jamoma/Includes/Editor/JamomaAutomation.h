@@ -31,9 +31,10 @@ class JamomaAutomation final : public Automation, public JamomaTimeProcess
 {
 
 private:
-
+#if 0
 # pragma mark -
 # pragma mark Implementation specific
+#endif
 
   shared_ptr<Address>   mDrivenAddress;
   Value *               mDrive = nullptr;
@@ -42,9 +43,10 @@ private:
   Value*                mValueToSend = nullptr;
 
 public:
-
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   JamomaAutomation(shared_ptr<Address>,
                    const Value*);
@@ -54,33 +56,36 @@ public:
   shared_ptr<Automation> clone() const override;
 
   ~JamomaAutomation();
-
+#if 0
 # pragma mark -
 # pragma mark Execution
+#endif
 
   shared_ptr<StateElement> offset(const TimeValue&) override;
   
   shared_ptr<StateElement> state() override;
-
+#if 0
 # pragma mark -
 # pragma mark Execution - Implementation specific
+#endif
 
   void start() override;
   void stop() override;
   void pause() override;
   void resume() override;
-
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   const shared_ptr<Address> getDrivenAddress() const override;
 
   const Value * getDriving() const override;
 
 private:
-
+#if 0
 # pragma mark -
 # pragma mark Implementation specific
-
+#endif
   Value* computeValue(double, const Value*);
 };

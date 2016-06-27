@@ -23,16 +23,18 @@ class JamomaCurveSegmentEmpty final : public CurveSegmentEmpty<Y>
 {
 
 private:
-
+#if 0
 # pragma mark -
 # pragma mark Implementation specific
+#endif
 
   shared_ptr<CurveAbstract> mParent;
 
 public:
-
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   JamomaCurveSegmentEmpty(shared_ptr<CurveAbstract>);
 
@@ -41,14 +43,16 @@ public:
   shared_ptr<CurveSegmentEmpty<Y>> clone() const override;
 
   ~JamomaCurveSegmentEmpty();
-
+#if 0
 # pragma mark -
 # pragma mark Execution
+#endif
 
   Y valueAt(double, Y, Y) const override;
-
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   shared_ptr<CurveAbstract> getParent() const override;
 

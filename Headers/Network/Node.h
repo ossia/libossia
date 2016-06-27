@@ -21,6 +21,7 @@
 #include "Misc/Container.h"
 #include "Misc/CallbackContainer.h"
 #include "Network/AddressProperties.h"
+#include <ossia_export.h>
 
 namespace OSSIA
 {
@@ -44,24 +45,30 @@ enum class NodeChange
  \param the change type */
 using NodeChangeCallback = std::function<void(const Node&, const std::string&, NodeChange)>;
 
-class Node : public CallbackContainer<NodeChangeCallback>
+class OSSIA_EXPORT Node : public CallbackContainer<NodeChangeCallback>
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Definitions
+#endif
 
   using iterator = typename CallbackContainer<NodeChangeCallback>::iterator;
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! destructor */
   virtual ~Node();
 
+#if 0
 # pragma mark -
 # pragma mark Network
+#endif
 
   /*! get node's device
    \return std::shared_ptr<Device> the device */
@@ -75,8 +82,10 @@ public:
    \return std::shared_ptr<Node> a shared_ptr to this node */
   virtual std::shared_ptr<Node> getThis() = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   /*! get node's name
    \return std::string the name */
@@ -92,8 +101,10 @@ public:
    \return std::shared_ptr<#Address> the address */
   virtual std::shared_ptr<OSSIA::Address> getAddress() const = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Address
+#endif
 
   /*! create node's address
    \param #Value::Type the type of the address to create
@@ -104,8 +115,10 @@ public:
    \return bool true if the address is correctly removed */
   virtual bool removeAddress() = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Children
+#endif
 
   /*! create and store a child node
    \param #Container<#Node>::const_iterator where to create the child
@@ -153,11 +166,13 @@ protected:
   Container<Node> m_children;
 };
 
+#if 0
 # pragma mark -
 # pragma mark Destination
+#endif
 
 /*! \details Destination to an Address value and optionnally to several index of this value */
-struct Destination final : public Value
+struct OSSIA_EXPORT Destination final : public Value
 {
   std::shared_ptr<Node> value;
   std::vector<char> index;

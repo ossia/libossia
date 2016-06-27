@@ -24,6 +24,7 @@
 #include "Editor/Clock.h"
 #include "Editor/TimeValue.h"
 #include "Misc/Container.h"
+#include <ossia_export.h>
 
 namespace OSSIA
 {
@@ -33,7 +34,7 @@ class TimeEvent;
 class TimeProcess;
 class TimeValue;
 
-class TimeConstraint : virtual Clock
+class OSSIA_EXPORT TimeConstraint : virtual Clock
 {
 
 public:
@@ -60,8 +61,10 @@ public:
    \param std::shared_ptr<#State> */
   using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, std::shared_ptr<State>)>;
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! factory
    \details by default a #TimeConstraint have an infinite duration with no minimal duration and an infinite maximal duration.
@@ -86,8 +89,10 @@ public:
   /*! desctructor */
   virtual ~TimeConstraint();
 
+#if 0
 # pragma mark -
 # pragma mark Execution
+#endif
 
   /*! start #TimeConstraint's #Clock */
   virtual void start() override = 0;
@@ -108,8 +113,10 @@ public:
    \return std::shared_ptr<#State> */
   virtual std::shared_ptr<State> state() = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   /*! sets a new callback for the constraint
     \param #TimeConstraint::ExecutionCallback to use to be notified at each step */
@@ -150,8 +157,10 @@ public:
    \return std::shared_ptr<#TimeEvent> start event */
   virtual const std::shared_ptr<TimeEvent> & getEndEvent() const = 0;
 
+#if 0
 # pragma mark -
 # pragma mark TimeProcesses
+#endif
 
   /*! add a #TimeProcess
    \details it also stores the #TimeProcess's start and end #States into the #TimeConstraint's start and end #TimeEvents

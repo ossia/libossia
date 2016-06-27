@@ -19,19 +19,22 @@
 #include <vector>
 #include <memory>
 #include "Editor/Value.h"
+#include <ossia_export.h>
 
 namespace OSSIA
 {
 
 class Value;
 
-class Domain
+class OSSIA_EXPORT Domain
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! factory
    \param #Value* minimal value of the domain
@@ -48,8 +51,10 @@ public:
   /*! destructor */
   virtual ~Domain();
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   /*! get the minimal value
    \return const #Value* minimal value */

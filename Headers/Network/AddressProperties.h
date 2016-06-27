@@ -2,8 +2,10 @@
 
 namespace OSSIA
 {
+#if 0
 # pragma mark -
 # pragma mark Enumerations
+#endif
 
   /*! operation allowed on address */
   enum class AccessMode

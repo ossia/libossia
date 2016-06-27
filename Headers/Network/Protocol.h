@@ -20,6 +20,7 @@
 
 #include "Network/Address.h"
 #include "Network/Node.h"
+#include <ossia_export.h>
 
 namespace OSSIA
 {
@@ -28,13 +29,15 @@ class Address;
 class Node;
 class NetworkLogger;
 
-class Protocol
+class OSSIA_EXPORT Protocol
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Enumerations
+#endif
 
   /*! type of protocol */
   enum class Type
@@ -45,21 +48,27 @@ public:
     OSC
   };
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! destructor */
   virtual ~Protocol();
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   /* get the type of the segment
    \return #Type */
   virtual Type getType() const = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Operation
+#endif
 
   /*! send a request to update an address value
    \details some protocols cannot do this operation
@@ -96,6 +105,6 @@ public:
   virtual std::shared_ptr<NetworkLogger> getLogger() const = 0;
 };
 
-void CleanupProtocols();
+OSSIA_EXPORT void CleanupProtocols();
 }
 

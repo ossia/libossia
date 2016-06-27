@@ -18,48 +18,6 @@
 # pragma mark -
 # pragma mark Life Cycle
 
-namespace OSSIA
-{
-  // explicit instantiation for bool
-  template class CurveSegmentPower<bool>;
-  
-  template <>
-  shared_ptr<CurveSegmentPower<bool>> CurveSegmentPower<bool>::create(shared_ptr<CurveAbstract> parent)
-  {
-    return make_shared<JamomaCurveSegmentPower<bool>>(parent);
-  }
-  
-  template <>
-  CurveSegmentPower<bool>::~CurveSegmentPower()
-  {}
-  
-  // explicit instantiation for int
-  template class CurveSegmentPower<int>;
-  
-  template <>
-  shared_ptr<CurveSegmentPower<int>> CurveSegmentPower<int>::create(shared_ptr<CurveAbstract> parent)
-  {
-    return make_shared<JamomaCurveSegmentPower<int>>(parent);
-  }
-  
-  template <>
-  CurveSegmentPower<int>::~CurveSegmentPower()
-  {}
-  
-  // explicit instantiation for float
-  template class CurveSegmentPower<float>;
-  
-  template <>
-  shared_ptr<CurveSegmentPower<float>> CurveSegmentPower<float>::create(shared_ptr<CurveAbstract> parent)
-  {
-    return make_shared<JamomaCurveSegmentPower<float>>(parent);
-  }
-  
-  template <>
-  CurveSegmentPower<float>::~CurveSegmentPower()
-  {}
-}
-
 template <typename Y>
 JamomaCurveSegmentPower<Y>::
 JamomaCurveSegmentPower(shared_ptr<CurveAbstract> parent) :
@@ -84,10 +42,6 @@ clone() const
 template <typename Y>
 JamomaCurveSegmentPower<Y>::
 ~JamomaCurveSegmentPower()
-{}
-
-template <typename Y>
-CurveSegmentPower<Y>::~CurveSegmentPower()
 {}
 
 # pragma mark -
@@ -124,3 +78,23 @@ setPower(double power)
   mPower = power;
   return *this;
 }
+
+
+namespace OSSIA
+{
+  template <typename Y>
+  std::shared_ptr<OSSIA::CurveSegmentPower<Y>> CurveSegmentPower<Y>::create(shared_ptr<CurveAbstract> parent)
+  {
+    return make_shared<JamomaCurveSegmentPower<Y>>(parent);
+  }
+
+  template <typename Y>
+  CurveSegmentPower<Y>::~CurveSegmentPower()
+  {
+
+  }
+}
+// Explicit instantiation
+template class OSSIA_EXPORT CurveSegmentPower<bool>;
+template class OSSIA_EXPORT CurveSegmentPower<int>;
+template class OSSIA_EXPORT CurveSegmentPower<float>;

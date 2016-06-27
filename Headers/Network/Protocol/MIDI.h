@@ -23,7 +23,7 @@
 namespace OSSIA
 {
 class Device;
-struct MidiInfo
+struct OSSIA_EXPORT MidiInfo
 {
         enum class Type { RemoteInput, RemoteOutput };
 
@@ -41,13 +41,15 @@ struct MidiInfo
         int port{};
 };
 
-class MIDI : public virtual Protocol
+class OSSIA_EXPORT MIDI : public virtual Protocol
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! factory
    \return std::shared_ptr<MIDI> */
@@ -56,8 +58,10 @@ public:
   /*! destructor */
   virtual ~MIDI();
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   Protocol::Type getType() const override final
   {return Protocol::Type::MIDI;}
@@ -65,15 +69,17 @@ public:
   virtual MidiInfo getInfo() const = 0;
   virtual bool setInfo(MidiInfo) = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Operation
+#endif
 
   /*! to see IPs of connected Midi devices
    \todo add options */
   virtual std::vector<MidiInfo> scan() = 0;
 };
 
-std::shared_ptr<OSSIA::Device> createMIDIDevice(std::shared_ptr<MIDI> mid);
+OSSIA_EXPORT std::shared_ptr<OSSIA::Device> createMIDIDevice(std::shared_ptr<MIDI> mid);
 
 }
 

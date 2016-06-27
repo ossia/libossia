@@ -30,9 +30,10 @@ class JamomaClock : public virtual Clock
 {
 
 protected:
-
+#if 0
 # pragma mark -
 # pragma mark Implementation specific
+#endif
 
   TimeValue         mDuration{};        /// the time (in ms) the clock will run at normal speed factor
   TimeValue         mGranularity{};     /// the minimum time between each tick (in ms)
@@ -56,9 +57,10 @@ private:
   ExecutionStatusCallback   mStatusCallback;
 
 public:
-
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   JamomaClock(Clock::ExecutionCallback,
               const TimeValue& = Infinite,
@@ -70,9 +72,10 @@ public:
   JamomaClock(const JamomaClock *);
 
   ~JamomaClock();
-
+#if 0
 # pragma mark -
 # pragma mark Execution
+#endif
 
   void start() override;
 
@@ -86,9 +89,10 @@ public:
 
   bool tick() final override;
   bool tick(TimeValue usec) final override;
-
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   const TimeValue & getDuration() const override;
 
@@ -120,10 +124,10 @@ public:
   { mStatusCallback = e; }
   ExecutionStatusCallback getExecutionStatusCallback() const final override
   { return mStatusCallback; }
-
+#if 0
 # pragma mark -
 # pragma mark Implementation specific
-
+#endif
   /*! to avoid dead lock in EXTERNAL drive mode if a TimeProcess wants to end its ParentTimeConstraint's clock */
   void request_stop();
 

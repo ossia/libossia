@@ -25,10 +25,10 @@ class JamomaCurve final : public Curve<X,Y>
 {
 
 private:
-
+#if 0
 # pragma mark -
 # pragma mark Implementation specific
-
+#endif
   X mInitialPointAbscissa;
   Destination* mInitialPointAbscissaDestination;
   
@@ -39,8 +39,10 @@ private:
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   JamomaCurve();
 
@@ -50,20 +52,26 @@ public:
 
   ~JamomaCurve();
 
+#if 0
 # pragma mark -
 # pragma mark Edition
+#endif
 
   bool addPoint(shared_ptr<CurveSegment<Y>>, X, Y) override;
 
   bool removePoint(X) override;
 
+#if 0
 # pragma mark -
 # pragma mark Execution
+#endif
 
   Y valueAt(X) const override;
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
   
   X getInitialPointAbscissa() const override;
   
@@ -83,8 +91,9 @@ public:
 
   map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> getPointsMap() const override;
 
+#if 0
 # pragma mark -
 # pragma mark Implementation specific
-
+#endif
   Y convertToTemplateTypeValue(const Value *, vector<char>::iterator) const;
 };

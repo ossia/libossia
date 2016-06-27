@@ -20,6 +20,7 @@
 
 #include "StateElement.h"
 #include "Value.h"
+#include <ossia_export.h>
 
 namespace OSSIA
 {
@@ -27,13 +28,15 @@ namespace OSSIA
 class Address;
 class Value;
 
-class Message : public virtual StateElement
+class OSSIA_EXPORT Message : public virtual StateElement
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! factory
    \param std::shared_ptr<#Address> where to send the value
@@ -48,15 +51,19 @@ public:
   /*! destructor */
   virtual ~Message();
 
+#if 0
 # pragma mark -
 # pragma mark Execution
+#endif
 
   /*! send the value to the address */
   // TODO what is the point of this if launch() is already in the parent class?
   virtual void launch() const override = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   /*! get message's address
    \return std::shared_ptr<#Address> the address */

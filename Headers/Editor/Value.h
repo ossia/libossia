@@ -18,17 +18,20 @@
 #include <string>
 #include <vector>
 #include <initializer_list>
+#include <ossia_export.h>
 
 namespace OSSIA
 {
 
-class Value
+class OSSIA_EXPORT Value
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Enumerations
+#endif
 
   /*! type of value */
   enum class Type
@@ -45,8 +48,10 @@ public:
     BEHAVIOR,     //! \note see Behavior structure declaration in Curve.h
   };
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! clone */
   virtual Value * clone() const = 0;
@@ -54,8 +59,10 @@ public:
   /*! destructor */
   virtual ~Value();
 
+#if 0
 # pragma mark -
 # pragma mark Operators
+#endif
 
   /*! equal operator */
   virtual bool operator== (const Value& v) const = 0;
@@ -75,8 +82,10 @@ public:
   /*! less than and equal operator */
   virtual bool operator<= (const Value& v) const = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   /*! get the address value type
    \return #Type of the address value */
@@ -87,11 +96,13 @@ protected:
   Type m_type;
 };
 
+#if 0
 # pragma mark -
 # pragma mark Impulse
+#endif
 
 /*! \details Impulse value */
-struct Impulse final : public Value
+struct OSSIA_EXPORT Impulse final : public Value
 {
   /*! constructor */
   Impulse();
@@ -118,11 +129,13 @@ struct Impulse final : public Value
   bool operator<= (const Value&) const override;
 };
 
+#if 0
 # pragma mark -
 # pragma mark Bool
+#endif
 
 /*! \details Bool value */
-struct Bool final : public Value
+struct OSSIA_EXPORT Bool final : public Value
 {
   bool value;
 
@@ -151,14 +164,16 @@ struct Bool final : public Value
   bool operator<= (const Value&) const override;
 };
 
-static Bool False = Bool(false);
-static Bool True = Bool(true);
+const Bool False{false};
+const Bool True{true};
 
+#if 0
 # pragma mark -
 # pragma mark Int
+#endif
 
 /*! \details Int value */
-struct Int final : public Value
+struct OSSIA_EXPORT Int final : public Value
 {
   int value;
 
@@ -188,11 +203,13 @@ struct Int final : public Value
   bool operator<= (const Value&) const override;
 };
 
+#if 0
 # pragma mark -
 # pragma mark Float
+#endif
 
 /*! \details Float value */
-struct Float final : public Value
+struct OSSIA_EXPORT Float final : public Value
 {
   float value;
 
@@ -222,11 +239,13 @@ struct Float final : public Value
   bool operator<= (const Value&) const override;
 };
 
+#if 0
 # pragma mark -
 # pragma mark Char
+#endif
 
 /*! \details Char value */
-struct Char final : public Value
+struct OSSIA_EXPORT Char final : public Value
 {
   char value;
 
@@ -256,11 +275,13 @@ struct Char final : public Value
   bool operator<= (const Value&) const override;
 };
 
+#if 0
 # pragma mark -
 # pragma mark String
+#endif
 
 /*! \details String value */
-struct String final : public Value
+struct OSSIA_EXPORT String final : public Value
 {
   std::string value;
 
@@ -290,11 +311,13 @@ struct String final : public Value
   bool operator<= (const Value&) const override;
 };
 
+#if 0
 # pragma mark -
 # pragma mark Tuple
+#endif
 
 /*! \details Tuple value */
-struct Tuple final : public Value
+struct OSSIA_EXPORT Tuple final : public Value
 {
   std::vector<Value*> value;
 
@@ -358,38 +381,239 @@ struct Tuple final : public Value
   bool operator<= (const Value&) const override;
 };
 
+#if 0
 # pragma mark -
 # pragma mark Generic
+#endif
 
 /*! \details Generic value */
 template<typename T>
 struct Generic final : public Value
 {
-  T value;
+    T value;
 
-  /*! constructor */
-  Generic(T v);
+    Generic(T v) : value(v)
+    {
+        m_type = Type::GENERIC;
+    }
 
-  /*! clone */
-  Value * clone() const override;
+    Generic* clone() const
+    {
+        return new Generic(value);
+    }
 
-  /*! equal operator */
-  bool operator== (const Value&) const override;
+    bool operator== (const Value& v) const
+    {
+        switch (v.getType())
+        {
+        case Value::Type::IMPULSE:
+        {
+            return true;
+        }
+        case Value::Type::BOOL:
+        {
+            auto b = static_cast<const Bool*>(&v);
+            return value == b->value;
+        }
+        case Value::Type::INT:
+        {
+            auto i = static_cast<const Int*>(&v);
+            return value == i->value;
+        }
+        case Value::Type::FLOAT:
+        {
+            auto f = static_cast<const Float*>(&v);
+            return value == f->value;
+        }
+        case Value::Type::CHAR:
+        {
+            auto c = static_cast<const Char*>(&v);
+            return value == c->value;
+        }
+        case Value::Type::STRING:
+        {
+            return false;
+        }
+        case Value::Type::TUPLE:
+        {
+            auto t = static_cast<const Tuple*>(&v);
+            if (t->value.size() == 1)
+                return *this == *t->value[0];
+            else
+                return false;
+        }
+        case Value::Type::GENERIC:
+        {
+            Generic<T>* g = (Generic<T>*)&v;
+            return value == g->value;
+        }
+        case Value::Type::DESTINATION:
+        {
+            auto d = static_cast<const Destination*>(&v);
+            if (d->value->getAddress())
+            {
+                const Value* c = d->value->getAddress()->cloneValue(d->index);
+                bool result = *this == *c;
 
-  /*! different operator */
-  bool operator!= (const Value&) const override;
+                delete c;
+                return result;
+            }
+        }
+        case Value::Type::BEHAVIOR:
+        {
+            return false;
+        }
+        default:
+            return false;
+        }
+    }
 
-  /*! greater than operator */
-  bool operator> (const Value&) const override;
+    bool operator!= (const Value& v) const
+    {
+        return !(*this == v);
+    }
 
-  /*! greater than and equal operator */
-  bool operator>= (const Value&) const override;
+    bool operator> (const Value& v) const
+    {
+        switch (v.getType())
+        {
+        case Value::Type::IMPULSE:
+        {
+            return true;
+        }
+        case Value::Type::BOOL:
+        {
+            auto b = static_cast<const Bool*>(&v);
+            return value == b->value;
+        }
+        case Value::Type::INT:
+        {
+            auto i = static_cast<const Int*>(&v);
+            return value > i->value;
+        }
+        case Value::Type::FLOAT:
+        {
+            auto f = static_cast<const Float*>(&v);
+            return value > f->value;
+        }
+        case Value::Type::CHAR:
+        {
+            auto c = static_cast<const Char*>(&v);
+            return value > c->value;
+        }
+        case Value::Type::STRING:
+        {
+            return false;
+        }
+        case Value::Type::TUPLE:
+        {
+            auto t = static_cast<const Tuple*>(&v);
+            if (t->value.size() == 1)
+                return *this > *t->value[0];
+            else
+                return false;
+        }
+        case Value::Type::GENERIC:
+        {
+            Generic<T>* g = (Generic<T>*)&v;
+            return value > g->value;
+        }
+        case Value::Type::DESTINATION:
+        {
+            auto d = static_cast<const Destination*>(&v);
+            if (d->value->getAddress())
+            {
+                const Value* c = d->value->getAddress()->cloneValue(d->index);
+                bool result = *this > *c;
 
-  /*! less than operator */
-  bool operator< (const Value&) const override;
+                delete c;
+                return result;
+            }
+        }
+        case Value::Type::BEHAVIOR:
+        {
+            return false;
+        }
+        default:
+            return false;
+        }
+    }
 
-  /*! less than and equal operator */
-  bool operator<= (const Value&) const override;
+    bool operator>= (const Value& v) const
+    {
+        switch (v.getType())
+        {
+        case Value::Type::IMPULSE:
+        {
+            return true;
+        }
+        case Value::Type::BOOL:
+        {
+            auto b = static_cast<const Bool*>(&v);
+            return value >= b->value;
+        }
+        case Value::Type::INT:
+        {
+            auto i = static_cast<const Int*>(&v);
+            return value >= i->value;
+        }
+        case Value::Type::FLOAT:
+        {
+            auto f = static_cast<const Float*>(&v);
+            return value >= f->value;
+        }
+        case Value::Type::CHAR:
+        {
+            auto c = static_cast<const Char*>(&v);
+            return value >= c->value;
+        }
+        case Value::Type::STRING:
+        {
+            return false;
+        }
+        case Value::Type::TUPLE:
+        {
+            auto t = static_cast<const Tuple*>(&v);
+            if (t->value.size() == 1)
+                return *this >= *t->value[0];
+            else
+                return false;
+        }
+        case Value::Type::GENERIC:
+        {
+            Generic<T>* g = (Generic<T>*)&v;
+            return value >= g->value;
+        }
+        case Value::Type::DESTINATION:
+        {
+            auto d = static_cast<const Destination*>(&v);
+            if (d->value->getAddress())
+            {
+                const Value* c = d->value->getAddress()->cloneValue(d->index);
+                bool result = *this >= *c;
+
+                delete c;
+                return result;
+            }
+        }
+        case Value::Type::BEHAVIOR:
+        {
+            return false;
+        }
+        default:
+            return false;
+        }
+    }
+
+    bool operator< (const Value& v) const
+    {
+        return !(*this >= v);
+    }
+
+    bool operator<= (const Value& v) const
+    {
+        return !(*this > v);
+    }
 };
 
 }

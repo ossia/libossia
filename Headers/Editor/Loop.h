@@ -20,19 +20,22 @@
 #include "Editor/TimeEvent.h"
 #include "Editor/TimeProcess.h"
 #include "Misc/Container.h"
+#include <ossia_export.h>
 
 namespace OSSIA
 {
 
 class TimeValue;
 
-class Loop : public virtual TimeProcess
+class OSSIA_EXPORT Loop : public virtual TimeProcess
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! factory
    \param const #TimeValue& duration of the pattern #TimeConstraint
@@ -51,8 +54,10 @@ public:
   /*! destructor */
   virtual ~Loop();
 
+#if 0
 # pragma mark -
 # pragma mark Execution
+#endif
 
   /*! get a #State depending on the parent #TimeConstraint offset
    \details the #State is a flatten set of Messages with no Address redundancy
@@ -67,8 +72,10 @@ public:
   \return std::shared_ptr<#StateElement> */
   virtual std::shared_ptr<StateElement> state() override = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   /*! get the pattern #TimeConstraint
    \return std::shared_ptr<TimeConstraint> */

@@ -1,9 +1,10 @@
 #include "Editor/JamomaAutomation.h"
 
 #include <iostream> //! \todo to remove. only here for debug purpose
-
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
 namespace OSSIA
 {
@@ -11,6 +12,10 @@ namespace OSSIA
                                             const Value* drive)
   {
     return make_shared<JamomaAutomation>(address, drive);
+  }
+
+  Automation::~Automation()
+  {
   }
 }
 
@@ -33,11 +38,10 @@ shared_ptr<Automation> JamomaAutomation::clone() const
 JamomaAutomation::~JamomaAutomation()
 {}
 
-Automation::~Automation()
-{}
-
+#if 0
 # pragma mark -
 # pragma mark Execution
+#endif
 
 shared_ptr<StateElement> JamomaAutomation::offset(const TimeValue& offset)
 {
@@ -79,9 +83,10 @@ shared_ptr<StateElement> JamomaAutomation::state()
 
   return mMessageToSend;
 }
-
+#if 0
 # pragma mark -
 # pragma mark Execution - Implementation specific
+#endif
 
 void JamomaAutomation::start()
 {}
@@ -94,10 +99,10 @@ void JamomaAutomation::pause()
 
 void JamomaAutomation::resume()
 {}
-
+#if 0
 # pragma mark -
 # pragma mark Accessors
-
+#endif
 const shared_ptr<Address> JamomaAutomation::getDrivenAddress() const
 {
   return mDrivenAddress;

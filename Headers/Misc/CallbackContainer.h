@@ -25,14 +25,18 @@ class CallbackContainer
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! destructor */
-  virtual ~CallbackContainer();
+  virtual ~CallbackContainer() = default;
 
+#if 0
 # pragma mark -
 # pragma mark Callback
+#endif
 
   /*! to store a set of callback functions */
   using ContainerImpl = typename std::list<T>;

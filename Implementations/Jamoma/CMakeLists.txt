@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 
 project(APIJamomaImplementation)
+include(GenerateExportHeader)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if(APPLE)
   set(CMAKE_INSTALL_NAME_DIR @rpath)
@@ -50,13 +52,12 @@ file(GLOB_RECURSE NETWORK_SRCS
 # for all the targets. 
 # Not in win32 due to https://gitlab.kitware.com/cmake/cmake/issues/15857
 if(WIN32)
-find_package(Jamoma 0.6)
-if(NOT ${Jamoma_FOUND})
-    message("Jamoma not found - won't build Network API")
-    return()
-endif()
+    find_package(Jamoma 0.6)
+    if(NOT ${Jamoma_FOUND})
+        message("Jamoma not found - won't build Network API")
+        return()
+    endif()
 
-	
 	add_library(APIJamoma 
 		${MISC_SRCS} 
 		${EDITOR_SRCS} 
@@ -68,6 +69,9 @@ endif()
 		Jamoma::Foundation 
 		Jamoma::Modular 
 		ModernMIDI)
+    if(MSVC)
+	    target_compile_options(APIJamoma PUBLIC "/wd4068")
+	endif()
 else()
 
 	add_library(APIJamoma_Misc_Object   OBJECT ${MISC_SRCS})
@@ -98,8 +102,12 @@ else()
     
     target_link_libraries(APIJamoma PRIVATE Jamoma::Foundation Jamoma::Modular ModernMIDI)
 endif()
-
-target_include_directories(APIJamoma PUBLIC "${API_HEADERS_FOLDER}")
+generate_export_header(APIJamoma BASE_NAME OSSIA)
+target_include_directories(APIJamoma PUBLIC 
+	"${API_HEADERS_FOLDER}" 
+	"${CMAKE_CURRENT_SOURCE_DIR}" 
+	"${CMAKE_CURRENT_LIST_DIR}"
+	"${CMAKE_CURRENT_BINARY_DIR}" )
 
 if(OSSIA_SANITIZE)
     sanitize_build(APIJamoma)

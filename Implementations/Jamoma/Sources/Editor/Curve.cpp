@@ -3,165 +3,6 @@
 
 #include <iostream> //! \todo to remove. only here for debug purpose
 
-namespace OSSIA
-{
-  // explicit instantiation for double and bool
-  template class Curve<double, bool>;
-
-  template <>
-  shared_ptr<Curve<double, bool>> Curve<double, bool>::create()
-  {
-    return make_shared<JamomaCurve<double, bool>>();
-  }
-
-  template <>
-  Curve<double, bool>::~Curve()
-  {}
-
-  // explicit instantiation for double and int
-  template class Curve<double, int>;
-
-  template <>
-  shared_ptr<Curve<double, int>> Curve<double, int>::create()
-  {
-    return make_shared<JamomaCurve<double, int>>();
-  }
-
-  template <>
-  Curve<double, int>::~Curve()
-  {}
-
-  // explicit instantiation for double and float
-  template class Curve<double, float>;
-
-  template <>
-  shared_ptr<Curve<double, float>> Curve<double, float>::create()
-  {
-    return make_shared<JamomaCurve<double, float>>();
-  }
-
-  template <>
-  Curve<double, float>::~Curve()
-  {}
-
-  // explicit instantiation for bool and bool
-  template class Curve<bool, bool>;
-
-  template <>
-  shared_ptr<Curve<bool, bool>> Curve<bool, bool>::create()
-  {
-    return make_shared<JamomaCurve<bool, bool>>();
-  }
-
-  template <>
-  Curve<bool, bool>::~Curve()
-  {}
-
-  // explicit instantiation for bool and int
-  template class Curve<bool, int>;
-
-  template <>
-  shared_ptr<Curve<bool, int>> Curve<bool, int>::create()
-  {
-    return make_shared<JamomaCurve<bool, int>>();
-  }
-
-  template <>
-  Curve<bool, int>::~Curve()
-  {}
-
-  // explicit instantiation for bool and float
-  template class Curve<bool, float>;
-
-  template <>
-  shared_ptr<Curve<bool, float>> Curve<bool, float>::create()
-  {
-    return make_shared<JamomaCurve<bool, float>>();
-  }
-
-  template <>
-  Curve<bool, float>::~Curve()
-  {}
-
-  // explicit instantiation for int and bool
-  template class Curve<int, bool>;
-
-  template <>
-  shared_ptr<Curve<int, bool>> Curve<int, bool>::create()
-  {
-    return make_shared<JamomaCurve<int, bool>>();
-  }
-
-  template <>
-  Curve<int, bool>::~Curve()
-  {}
-
-  // explicit instantiation for int and int
-  template class Curve<int, int>;
-
-  template <>
-  shared_ptr<Curve<int, int>> Curve<int, int>::create()
-  {
-    return make_shared<JamomaCurve<int, int>>();
-  }
-
-  template <>
-  Curve<int, int>::~Curve()
-  {}
-
-  // explicit instantiation for int and float
-  template class Curve<int, float>;
-
-  template <>
-  shared_ptr<Curve<int, float>> Curve<int, float>::create()
-  {
-    return make_shared<JamomaCurve<int, float>>();
-  }
-
-  template <>
-  Curve<int, float>::~Curve()
-  {}
-
-  // explicit instantiation for float and bool
-  template class Curve<float, bool>;
-
-  template <>
-  shared_ptr<Curve<float, bool>> Curve<float, bool>::create()
-  {
-    return make_shared<JamomaCurve<float, bool>>();
-  }
-
-  template <>
-  Curve<float, bool>::~Curve()
-  {}
-
-  // explicit instantiation for float and int
-  template class Curve<float, int>;
-
-  template <>
-  shared_ptr<Curve<float, int>> Curve<float, int>::create()
-  {
-    return make_shared<JamomaCurve<float, int>>();
-  }
-
-  template <>
-  Curve<float, int>::~Curve()
-  {}
-
-  // explicit instantiation for float and float
-  template class Curve<float, float>;
-
-  template <>
-  shared_ptr<Curve<float, float>> Curve<float, float>::create()
-  {
-    return make_shared<JamomaCurve<float, float>>();
-  }
-
-  template <>
-  Curve<float, float>::~Curve()
-  {}
-}
-
 # pragma mark -
 # pragma mark Life cycle
 
@@ -187,10 +28,6 @@ clone() const
 template <typename X, typename Y>
 JamomaCurve<X,Y>::
 ~JamomaCurve()
-{}
-
-template <typename X, typename Y>
-Curve<X,Y>::~Curve()
 {}
 
 # pragma mark -
@@ -387,3 +224,48 @@ convertToTemplateTypeValue(const Value * value, vector<char>::iterator index) co
     }
   }
 }
+
+
+
+namespace OSSIA
+{
+    // Curve implementation
+    template<class X, class Y>
+    std::shared_ptr<Curve<X, Y>> Curve<X, Y>::create()
+    {
+        return make_shared<JamomaCurve<X, Y>>();
+    }
+    template<class X, class Y>
+    Curve<X, Y>::~Curve()
+    {
+    }
+
+    // CurveSegment implementation
+    template<class Y>
+    CurveSegment<Y>::~CurveSegment()
+    {
+    }
+}
+
+// Explicit instantiation
+template class OSSIA_EXPORT OSSIA::CurveSegment<bool>;
+template class OSSIA_EXPORT OSSIA::CurveSegment<int>;
+template class OSSIA_EXPORT OSSIA::CurveSegment<float>;
+
+template class OSSIA_EXPORT OSSIA::Curve<double, bool>;
+template class OSSIA_EXPORT OSSIA::Curve<double, int>;
+template class OSSIA_EXPORT OSSIA::Curve<double, float>;
+
+template class OSSIA_EXPORT OSSIA::Curve<bool, bool>;
+template class OSSIA_EXPORT OSSIA::Curve<bool, int>;
+template class OSSIA_EXPORT OSSIA::Curve<bool, float>;
+
+template class OSSIA_EXPORT OSSIA::Curve<int, bool>;
+template class OSSIA_EXPORT OSSIA::Curve<int, int>;
+template class OSSIA_EXPORT OSSIA::Curve<int, float>;
+
+template class OSSIA_EXPORT OSSIA::Curve<float, bool>;
+template class OSSIA_EXPORT OSSIA::Curve<float, int>;
+template class OSSIA_EXPORT OSSIA::Curve<float, float>;
+
+

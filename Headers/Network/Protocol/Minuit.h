@@ -20,13 +20,15 @@
 namespace OSSIA
 {
 
-class Minuit : public virtual Protocol
+class OSSIA_EXPORT Minuit : public virtual Protocol
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! factory
    \param std::string ip of the Minuit device
@@ -38,8 +40,10 @@ public:
   /*! destructor */
   virtual ~Minuit();
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   Protocol::Type getType() const override final
   {return Protocol::Type::MINUIT;}

@@ -19,19 +19,22 @@
 #include <string>
 
 #include "Network/Node.h"
+#include <ossia_export.h>
 
 namespace OSSIA
 {
 
 class Protocol;
 
-class Device : public virtual Node
+class OSSIA_EXPORT Device : public virtual Node
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! factory
    \param std::shared_ptr<Protocol>
@@ -42,8 +45,10 @@ public:
   /*! destructor */
   virtual ~Device();
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   /*! get device's protocol
    \return std::shared_ptr<#Protocol> */
@@ -60,14 +65,14 @@ public:
 \param int in_port where to receive messages
 \param int out_port where to send messages
 \return std::shared_ptr<Node ??? */
-std::shared_ptr<Node> declareMinuitInternDevice(int in_port, int out_port);
+OSSIA_EXPORT std::shared_ptr<Node> declareMinuitInternDevice(int in_port, int out_port);
 
 /*! declare OSC internal device
 \note is this still useful ?
 \param int in_port where to receive messages
 \param int out_port where to send messages
 \return std::shared_ptr<Node ??? */
-std::shared_ptr<Node> declareOSCInternDevice(int in_port, int out_port);
+OSSIA_EXPORT std::shared_ptr<Node> declareOSCInternDevice(int in_port, int out_port);
 
 }
 

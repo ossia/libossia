@@ -20,6 +20,7 @@
 #include <functional>
 
 #include "Misc/CallbackContainer.h"
+#include <ossia_export.h>
 
 namespace OSSIA
 {
@@ -28,16 +29,18 @@ namespace OSSIA
  \param the returned result */
 using ResultCallback = std::function<void(bool)>;
 
-class Expression : public CallbackContainer<ResultCallback>
+class OSSIA_EXPORT Expression : public CallbackContainer<ResultCallback>
 {
 
 public:
-  
+
   using iterator = typename CallbackContainer<ResultCallback>::iterator;
-  
+
+#if 0
 # pragma mark -
 # pragma mark Enumerations
-  
+#endif
+
   /*! type of expression */
   enum class Type
   {
@@ -47,9 +50,11 @@ public:
     NOT,
     PULSE
   };
-  
+
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! factory
    \param bool result to return
@@ -59,28 +64,34 @@ public:
   /*! destructor */
   virtual ~Expression();
 
+#if 0
 # pragma mark -
 # pragma mark Execution
+#endif
 
   /*! evaluate the expression
    \return bool result of the evaluation */
   virtual bool evaluate() const = 0;
-  
+
   /*! pull the value of any #Destination operand */
   virtual void update() const = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Operator
-  
+#endif
+
   /*! equal operator */
   virtual bool operator== (const Expression&) const = 0;
-  
+
   /*! different operator */
   virtual bool operator!= (const Expression&) const = 0;
-  
+
+#if 0
 # pragma mark -
 # pragma mark Accessors
-  
+#endif
+
   /*! get the type of the expression
    \return #Type of the expression */
   virtual Expression::Type getType() const

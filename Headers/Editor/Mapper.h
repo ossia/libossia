@@ -21,6 +21,7 @@
 #include "Editor/State.h"
 #include "Editor/TimeProcess.h"
 #include "Misc/Container.h"
+#include <ossia_export.h>
 
 namespace OSSIA
 {
@@ -29,13 +30,15 @@ class Address;
 class Value;
 class TimeValue;
 
-class Mapper : public virtual TimeProcess
+class OSSIA_EXPORT Mapper : public virtual TimeProcess
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! factory
    \param the driver address
@@ -52,27 +55,31 @@ public:
   /*! destructor */
   virtual ~Mapper();
 
+#if 0
 # pragma mark -
 # pragma mark Execution
-    
+#endif
+
   /*! get a #Message depending on the parent #TimeConstraint offset
    \details don't call offset when the parent #TimeConstraint is running
    \param const #TimeValue offset date
    \return std::shared_ptr<#StateElement> */
   virtual std::shared_ptr<StateElement> offset(const TimeValue&) override = 0;
-  
+
   /*! get a #Message depending on the parent #TimeConstraint date
    \details don't call state when the parent #TimeConstraint is not running
    \return std::shared_ptr<#StateElement> */
   virtual std::shared_ptr<StateElement> state() override = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   /*! get the driver address
    \return observed address */
   virtual const std::shared_ptr<Address> getDriverAddress() const = 0;
-  
+
   /*! get the driven address
    \return driven address */
   virtual const std::shared_ptr<Address> getDrivenAddress() const = 0;

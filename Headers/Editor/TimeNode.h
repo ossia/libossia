@@ -23,6 +23,7 @@
 #include "TimeEvent.h"
 #include "TimeValue.h"
 #include "Misc/Container.h"
+#include <ossia_export.h>
 
 namespace OSSIA
 {
@@ -32,19 +33,21 @@ class State;
 class TimeEvent;
 class TimeValue;
 
-class TimeNode
+class OSSIA_EXPORT TimeNode
 {
 
 public:
 
   using iterator = Container<TimeEvent>::iterator;
   using const_iterator = Container<TimeEvent>::const_iterator;
-  
+
   /*! to be notified when it is triggered */
   using ExecutionCallback = std::function<void()>;
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! factory
    \param #TimeNode::ExecutionCallback to be be notified when the #TimeNode is triggered
@@ -57,20 +60,24 @@ public:
   /*! destructor */
   virtual ~TimeNode();
 
+#if 0
 # pragma mark -
 # pragma mark Execution
-  
+#endif
+
   /*! changes the callback in the #TimeNode
    \param #TimeNode::ExecutionCallback to be be notified when the #TimeNode is triggered
    \details this may be unsafe to do during execution */
   virtual void setCallback(TimeNode::ExecutionCallback) = 0;
 
-  /*! evaluate all #TimeEvent's to make them to happen or to dispose them 
+  /*! evaluate all #TimeEvent's to make them to happen or to dispose them
    \return boolean true if the operation succeeded */
   virtual bool trigger() = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   /*! get the date
    \details the date is the sum of its previous #TimeConstraint durations
@@ -99,8 +106,10 @@ public:
    \return #TimeNode the time node */
   virtual TimeNode & setSimultaneityMargin(const TimeValue&) = 0;
 
+#if 0
 #pragma mark -
 #pragma mark TimeEvents
+#endif
 
   /*! create and store a #TimeEvent
    \param #Container<#TimeEvent>::const_iterator where to store the #TimeEvent

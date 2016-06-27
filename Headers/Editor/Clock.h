@@ -20,17 +20,20 @@
 #include <functional>
 #include <chrono>
 #include "Editor/TimeValue.h"
+#include <ossia_export.h>
 
 namespace OSSIA
 {
 
-class Clock
+class OSSIA_EXPORT Clock
 {
 
 public:
 
+#if 0
 # pragma mark -
 # pragma mark Definitions
+#endif
 
   /*! to get the clock execution back
    \param clock position
@@ -41,8 +44,10 @@ public:
    enum ClockExecutionStatus { RUNNING, STOPPED };
    using ExecutionStatusCallback = std::function<void(ClockExecutionStatus)>;
 
+#if 0
 # pragma mark -
 # pragma mark Enumerations
+#endif
 
   /*! how the time flows for the clock */
   enum class DriveMode
@@ -51,8 +56,10 @@ public:
     EXTERNAL  // the tick method is called from outside the clock
   };
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
+#endif
 
   /*! factory
    \param #ExecutionCallback
@@ -72,8 +79,10 @@ public:
   /*! destructor */
   virtual ~Clock();
 
+#if 0
 # pragma mark -
 # pragma mark Execution
+#endif
 
   /*! start the clock */
   virtual void start() = 0;
@@ -101,8 +110,10 @@ public:
    */
   virtual bool tick(TimeValue usec) = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
+#endif
 
   /*! get the duration of the clock
    \return const #TimeValue duration */

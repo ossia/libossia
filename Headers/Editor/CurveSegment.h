@@ -16,6 +16,7 @@
 
 #pragma once
 #include <memory>
+#include <ossia_export.h>
 
 namespace OSSIA
 {
@@ -27,10 +28,12 @@ class CurveSegment
 {
 
 public:
-  
+
+#if 0
 # pragma mark -
 # pragma mark Enumerations
-  
+#endif
+
   /*! type of segment */
   enum class Type
   {
@@ -39,16 +42,20 @@ public:
     POWER
   };
 
+#if 0
 # pragma mark -
 # pragma mark Life cycle
-  
-  /*! destructor 
+#endif
+
+  /*! destructor
    \todo remove = default */
-  virtual ~CurveSegment() = default;
- 
+  virtual ~CurveSegment();
+
+#if 0
 # pragma mark -
 # pragma mark Execution
-  
+#endif
+
   /*! get value at an abscissa
    \param double ratio between 0. and 1.
    \param Y segment start value
@@ -56,17 +63,24 @@ public:
    \return Y value */
   virtual Y valueAt(double, Y, Y) const = 0;
 
+#if 0
 # pragma mark -
 # pragma mark Accessors
-  
-  /* get the type of the segment 
+#endif
+
+  /* get the type of the segment
    \return #Type */
   virtual Type getType() const = 0;
-  
+
   /*! get the curve where the segment is
    \return std::shared_ptr<CurveAbstract>> */
   virtual std::shared_ptr<CurveAbstract> getParent() const = 0;
-  
+
 };
 }
 
+#if !defined(APIJamoma_EXPORTS)
+extern template class OSSIA_EXPORT OSSIA::CurveSegment<bool>;
+extern template class OSSIA_EXPORT OSSIA::CurveSegment<int>;
+extern template class OSSIA_EXPORT OSSIA::CurveSegment<float>;
+#endif
