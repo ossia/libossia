@@ -11,7 +11,8 @@ if (OSSIA_COVERALLS)
     coveralls_turn_on_coverage()
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_STANDARD 14)
+
 set(API_HEADERS_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/Headers")
 set(API_IMPL_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/Implementations")
 

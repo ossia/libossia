@@ -45,11 +45,11 @@ file(GLOB_RECURSE EDITOR_SRCS
 
 file(GLOB_RECURSE NETWORK_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Includes/Network/*.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Sources/Network/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Network/*.cpp"
 )
 
 # We make OBJECT libraries to reuse the object files
-# for all the targets. 
+# for all the targets.
 # Not in win32 due to https://gitlab.kitware.com/cmake/cmake/issues/15857
 if(WIN32)
     find_package(Jamoma 0.6)
@@ -58,56 +58,60 @@ if(WIN32)
         return()
     endif()
 
-	add_library(APIJamoma 
-		${MISC_SRCS} 
-		${EDITOR_SRCS} 
-		${NETWORK_SRCS})
-    target_compile_definitions(APIJamoma PUBLIC 
-		TT_PLATFORM_WIN
-		NOMINMAX)
-    target_link_libraries(APIJamoma PUBLIC 
-		Jamoma::Foundation 
-		Jamoma::Modular 
-		ModernMIDI)
+    add_library(APIJamoma
+        ${MISC_SRCS}
+        ${EDITOR_SRCS}
+        ${NETWORK_SRCS})
+    target_compile_definitions(APIJamoma PUBLIC
+        TT_PLATFORM_WIN
+        NOMINMAX
+        _CRT_SECURE_NO_WARNINGS)
+    target_link_libraries(APIJamoma PUBLIC
+        Jamoma::Foundation
+        Jamoma::Modular
+        ModernMIDI)
     if(MSVC)
-	    target_compile_options(APIJamoma PUBLIC "/wd4068")
-	endif()
+        target_compile_options(APIJamoma PUBLIC
+        "/wd4068" # pragma mark -
+        "/wd4250" # inherits via dominance
+        )
+    endif()
 else()
 
-	add_library(APIJamoma_Misc_Object   OBJECT ${MISC_SRCS})
-	add_library(APIJamoma_Editor_Object OBJECT ${EDITOR_SRCS})
-	
-	add_library(APIJamoma_Editor
-	    $<TARGET_OBJECTS:APIJamoma_Misc_Object>
-	    $<TARGET_OBJECTS:APIJamoma_Editor_Object>)
-	
-	# We can build up to this point without Jamoma
-	
-	find_package(Jamoma 0.6)
-	if(NOT ${Jamoma_FOUND})
-	    message("Jamoma not found - won't build Network API")
-	    return()
-	endif()
-	
-	
-	add_library(APIJamoma_Network_Object OBJECT ${NETWORK_SRCS})
-	target_transfer_options(APIJamoma_Network_Object Jamoma::Foundation)
-	target_transfer_options(APIJamoma_Network_Object Jamoma::Modular)
-	target_transfer_options(APIJamoma_Network_Object ModernMIDI)
-	
-	add_library(APIJamoma
-	    $<TARGET_OBJECTS:APIJamoma_Misc_Object>
-	    $<TARGET_OBJECTS:APIJamoma_Network_Object>
-	    $<TARGET_OBJECTS:APIJamoma_Editor_Object>)
-    
+    add_library(APIJamoma_Misc_Object   OBJECT ${MISC_SRCS})
+    add_library(APIJamoma_Editor_Object OBJECT ${EDITOR_SRCS})
+
+    add_library(APIJamoma_Editor
+        $<TARGET_OBJECTS:APIJamoma_Misc_Object>
+        $<TARGET_OBJECTS:APIJamoma_Editor_Object>)
+
+    # We can build up to this point without Jamoma
+
+    find_package(Jamoma 0.6)
+    if(NOT ${Jamoma_FOUND})
+        message("Jamoma not found - won't build Network API")
+        return()
+    endif()
+
+
+    add_library(APIJamoma_Network_Object OBJECT ${NETWORK_SRCS})
+    target_transfer_options(APIJamoma_Network_Object Jamoma::Foundation)
+    target_transfer_options(APIJamoma_Network_Object Jamoma::Modular)
+    target_transfer_options(APIJamoma_Network_Object ModernMIDI)
+
+    add_library(APIJamoma
+        $<TARGET_OBJECTS:APIJamoma_Misc_Object>
+        $<TARGET_OBJECTS:APIJamoma_Network_Object>
+        $<TARGET_OBJECTS:APIJamoma_Editor_Object>)
+
     target_link_libraries(APIJamoma PRIVATE Jamoma::Foundation Jamoma::Modular ModernMIDI)
 endif()
 generate_export_header(APIJamoma BASE_NAME OSSIA)
-target_include_directories(APIJamoma PUBLIC 
-	"${API_HEADERS_FOLDER}" 
-	"${CMAKE_CURRENT_SOURCE_DIR}" 
-	"${CMAKE_CURRENT_LIST_DIR}"
-	"${CMAKE_CURRENT_BINARY_DIR}" )
+target_include_directories(APIJamoma PUBLIC
+    "${API_HEADERS_FOLDER}"
+    "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_LIST_DIR}"
+    "${CMAKE_CURRENT_BINARY_DIR}" )
 
 if(OSSIA_SANITIZE)
     sanitize_build(APIJamoma)
