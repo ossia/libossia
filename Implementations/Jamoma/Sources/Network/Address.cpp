@@ -245,21 +245,24 @@ Address & JamomaAddress::setDomain(shared_ptr<Domain> domain)
 
   TTValue range, v;
 
-  if (mDomain->getValues().empty())
+  if(mDomain)
   {
-    convertValueIntoTTValue(mDomain->getMin(), v);
-    range.append(v);
+      if (mDomain->getValues().empty())
+      {
+          convertValueIntoTTValue(mDomain->getMin(), v);
+          range.append(v);
 
-    convertValueIntoTTValue(mDomain->getMax(), v);
-    range.append(v);
-  }
-  else
-  {
-    for (const auto & e : mDomain->getValues())
-    {
-      convertValueIntoTTValue(e, v);
-      range.append(v);
-    }
+          convertValueIntoTTValue(mDomain->getMax(), v);
+          range.append(v);
+      }
+      else
+      {
+          for (const auto & e : mDomain->getValues())
+          {
+              convertValueIntoTTValue(e, v);
+              range.append(v);
+          }
+      }
   }
 
   if (mObject.name() != kTTSym_Mirror)
@@ -730,7 +733,7 @@ Protocol& getDummyProtocol()
             bool observeAddressValue(std::shared_ptr<Address>, bool) const override { return false; }
             bool updateChildren(Node&) const override { return false; }
             void setLogger(std::shared_ptr<NetworkLogger>) override { }
-			std::shared_ptr<NetworkLogger> getLogger() const override { return{}; }
+            std::shared_ptr<NetworkLogger> getLogger() const override { return{}; }
     };
 
     static DummyProtocol proto;
