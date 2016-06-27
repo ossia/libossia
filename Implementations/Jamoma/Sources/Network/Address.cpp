@@ -838,7 +838,7 @@ std::string getValueAsString(const OSSIA::Value& val)
             s << "float: " << static_cast<const OSSIA::Float&>(val).value;
             break;
         case OSSIA::Value::Type::BOOL:
-            s << "bool: " << static_cast<const OSSIA::Bool&>(val).value ? "true" : "false";
+            s << "bool: " << (static_cast<const OSSIA::Bool&>(val).value ? "true" : "false");
             break;
         case OSSIA::Value::Type::STRING:
             s << "string: " << static_cast<const OSSIA::String&>(val).value;

@@ -95,6 +95,6 @@ namespace OSSIA
   }
 }
 // Explicit instantiation
-template class OSSIA_EXPORT CurveSegmentPower<bool>;
-template class OSSIA_EXPORT CurveSegmentPower<int>;
-template class OSSIA_EXPORT CurveSegmentPower<float>;
+template class OSSIA_EXPORT OSSIA::CurveSegmentPower<bool>;
+template class OSSIA_EXPORT OSSIA::CurveSegmentPower<int>;
+template class OSSIA_EXPORT OSSIA::CurveSegmentPower<float>;
