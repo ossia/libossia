@@ -40,15 +40,24 @@ struct Channel
         // [ CC, value ]
         std::pair<midi_size_t, midi_size_t> mCC;
 
+        // PC
+        midi_size_t mPC;
+
         // velocity or value
-        std::array<midi_size_t, 127> mNoteOn_N = { 64 };
-        std::array<midi_size_t, 127> mNoteOff_N = { 64 };
-        std::array<midi_size_t, 127> mCC_N = { 64 };
+        std::array<midi_size_t, 127> mNoteOn_N = { { 64 } };
+        std::array<midi_size_t, 127> mNoteOff_N = { { 64 } };
+        std::array<midi_size_t, 127> mCC_N = { { 64 } };
+        // No need to store PC since they are only impulses
 
         // Callbacks
+        std::shared_ptr<MIDIAddress> mCallbackNoteOn;
+        std::shared_ptr<MIDIAddress> mCallbackNoteOff;
+        std::shared_ptr<MIDIAddress> mCallbackCC;
+        std::shared_ptr<MIDIAddress> mCallbackPC;
         std::array<std::shared_ptr<MIDIAddress>, 127> mCallbackNoteOn_N = { {} };
         std::array<std::shared_ptr<MIDIAddress>, 127> mCallbackNoteOff_N = { {} };
         std::array<std::shared_ptr<MIDIAddress>, 127> mCallbackCC_N = { {} };
+        std::array<std::shared_ptr<MIDIAddress>, 127> mCallbackPC_N = { {} };
 };
 
 class JamomaMIDI final : public MIDI, public JamomaProtocol
@@ -182,7 +191,9 @@ struct MIDIAddressInfo
             NoteOff, // /12/note/off 64 127
             NoteOff_N, // /12/note/off/64 127
             CC, // /12/CC 64 123
-            CC_N // /12/CC/64 123
+            CC_N, // /12/CC/64 123,
+            PC, // /12/PC 32
+            PC_N // /12/PC/32 Impulse
         };
 
         OSSIA::Value::Type matchingType()
@@ -196,7 +207,10 @@ struct MIDIAddressInfo
                 case Type::NoteOn_N:
                 case Type::NoteOff_N:
                 case Type::CC_N:
+                case Type::PC:
                     return OSSIA::Value::Type::INT;
+                case Type::PC_N:
+                    return OSSIA::Value::Type::IMPULSE;
             }
             return {};
         }
@@ -212,7 +226,10 @@ struct MIDIAddressInfo
                 case Type::NoteOn_N:
                 case Type::NoteOff_N:
                 case Type::CC_N:
+                case Type::PC:
                     return new OSSIA::Int{val};
+                case Type::PC_N:
+                    return new OSSIA::Impulse{};
             }
             return {};
         }
@@ -449,6 +466,7 @@ class MIDINoteOff_N final : public MIDINodeImpl
                         getThis());
         }
 };
+
 class MIDI_CC_N final : public MIDINodeImpl
 {
         const std::string mName;
@@ -472,6 +490,60 @@ class MIDI_CC_N final : public MIDINodeImpl
             mAddress = std::make_shared<MIDIAddress>(
                         MIDIAddressInfo{channel, MIDIAddressInfo::Type::CC_N, param},
                         getThis());
+        }
+};
+
+class MIDI_PC_N final : public MIDINodeImpl
+{
+        const std::string mName;
+    public:
+        MIDI_PC_N(
+                midi_size_t param,
+                weak_ptr<Device> aDevice,
+                weak_ptr<OSSIA::Node> aParent):
+            MIDINodeImpl(std::move(aDevice), std::move(aParent)),
+            mName{std::to_string(param)}
+        {
+        }
+
+        std::string getName() const final override
+        {
+            return mName;
+        }
+
+        void init(midi_size_t channel, midi_size_t param)
+        {
+            mAddress = std::make_shared<MIDIAddress>(
+                        MIDIAddressInfo{channel, MIDIAddressInfo::Type::PC_N, param},
+                        getThis());
+        }
+};
+
+class MIDI_PC final : public MIDINodeImpl
+{
+    public:
+        MIDI_PC(weak_ptr<Device> aDevice):
+            MIDINodeImpl(aDevice, aDevice)
+        {
+        }
+
+        std::string getName() const final override
+        {
+            return "program";
+        }
+
+        void init(midi_size_t channel)
+        {
+            mAddress = std::make_shared<MIDIAddress>(
+                        MIDIAddressInfo{channel, MIDIAddressInfo::Type::PC, 0},
+                        getThis());
+
+            for(int i = 0; i < 127; i++)
+            {
+                auto ptr = std::make_shared<MIDI_PC_N>(i, mDevice, this->getThis());
+                ptr->init(channel, i);
+                m_children.push_back(std::move(ptr));
+            }
         }
 };
 
@@ -542,7 +614,7 @@ class MIDI_CC final : public MIDINodeImpl
 
         std::string getName() const final override
         {
-            return "CC";
+            return "control";
         }
 
         void init(midi_size_t channel)
@@ -593,6 +665,11 @@ class MIDIChannel final : public MIDINodeImpl
                 auto cc = std::make_shared<MIDI_CC>(mDevice);
                 cc->init(mChannel);
                 m_children.push_back(std::move(cc));
+            }
+            {
+                auto pc = std::make_shared<MIDI_PC>(mDevice);
+                pc->init(mChannel);
+                m_children.push_back(std::move(pc));
             }
         }
 };

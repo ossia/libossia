@@ -54,6 +54,11 @@ bool JamomaMIDI::setInfo(MidiInfo m)
                     c.mNoteOn.first = mess.data[1];
                     c.mNoteOn.second = mess.data[2];
                     c.mNoteOn_N[c.mNoteOn.first] = c.mNoteOn.second;
+                    if(auto ptr = c.mCallbackNoteOn)
+                    {
+                        OSSIA::Tuple t{OSSIA::Tuple::ValueInit{}, OSSIA::Int{c.mNoteOn.first}, OSSIA::Int{c.mNoteOn.second}};
+                        ptr->valueCallback(t);
+                    }
                     if(auto ptr = c.mCallbackNoteOn_N[c.mNoteOn.first])
                     {
                         OSSIA::Int val{c.mNoteOn_N[c.mNoteOn.first]};
@@ -64,6 +69,11 @@ bool JamomaMIDI::setInfo(MidiInfo m)
                     c.mNoteOff.first = mess.data[1];
                     c.mNoteOff.second = mess.data[2];
                     c.mNoteOff_N[c.mNoteOff.first] = c.mNoteOff.second;
+                    if(auto ptr = c.mCallbackNoteOff)
+                    {
+                        OSSIA::Tuple t{OSSIA::Tuple::ValueInit{}, OSSIA::Int{c.mNoteOff.first}, OSSIA::Int{c.mNoteOff.second}};
+                        ptr->valueCallback(t);
+                    }
                     if(auto ptr = c.mCallbackNoteOff_N[c.mNoteOff.first])
                     {
                         OSSIA::Int val{c.mNoteOff_N[c.mNoteOff.first]};
@@ -74,10 +84,26 @@ bool JamomaMIDI::setInfo(MidiInfo m)
                     c.mCC.first = mess.data[1];
                     c.mCC.second = mess.data[2];
                     c.mCC_N[c.mCC.first] = c.mCC.second;
+                    if(auto ptr = c.mCallbackCC)
+                    {
+                        OSSIA::Tuple t{OSSIA::Tuple::ValueInit{}, OSSIA::Int{c.mCC.first}, OSSIA::Int{c.mCC.second}};
+                        ptr->valueCallback(t);
+                    }
                     if(auto ptr = c.mCallbackCC_N[c.mCC.first])
                     {
                         OSSIA::Int val{c.mCC_N[c.mCC.first]};
                         ptr->valueCallback(val);
+                    }
+                    break;
+                case mm::MessageType::PROGRAM_CHANGE:
+                    c.mPC = mess.data[1];
+                    if(auto ptr = c.mCallbackPC)
+                    {
+                        ptr->valueCallback(OSSIA::Int{c.mPC});
+                    }
+                    if(auto ptr = c.mCallbackPC_N[c.mPC])
+                    {
+                        ptr->valueCallback(OSSIA::Impulse{});
                     }
                     break;
                 default:
@@ -163,6 +189,13 @@ bool JamomaMIDI::pullAddressValue(Address& address) const
           address.setValue(&val);
           return true;
       }
+
+      case MIDIAddressInfo::Type::PC:
+      {
+          OSSIA::Int val{chan.mPC};
+          address.setValue(&val);
+          return true;
+      }
       default:
           return false;
   }
@@ -234,6 +267,23 @@ bool JamomaMIDI::pushAddressValue(const Address& address) const
                              static_cast<const OSSIA::Int*>(val->value[1])->value));
             return true;
         }
+
+        case MIDIAddressInfo::Type::PC:
+        {
+            auto val = static_cast<const OSSIA::Int*>(address.getValue());
+            mOutput.send(mm::MakeProgramChange(
+                             adrinfo.channel,
+                             val->value));
+            return true;
+        }
+
+        case MIDIAddressInfo::Type::PC_N:
+        {
+            mOutput.send(mm::MakeProgramChange(
+                             adrinfo.channel,
+                             adrinfo.note));
+            return true;
+        }
         default:
             return false;
     }
@@ -268,6 +318,12 @@ bool JamomaMIDI::observeAddressValue(std::shared_ptr<Address> address, bool enab
         case MIDIAddressInfo::Type::CC_N:
         {
             chan.mCallbackCC_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
+            return true;
+        }
+
+        case MIDIAddressInfo::Type::PC_N:
+        {
+            chan.mCallbackPC_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
             return true;
         }
 
