@@ -1,6 +1,6 @@
 #include "Editor/JamomaScenario.h"
 #include <Misc/Util.h>
-
+#include <unordered_map>
 #include <iostream> //! \todo to remove. only here for debug purpose
 
 # pragma mark -
@@ -41,6 +41,21 @@ Scenario::~Scenario()
 
 # pragma mark -
 # pragma mark Execution
+using DateMap = std::unordered_map<TimeNode*, TimeValue>;
+using EventPtr = std::shared_ptr<OSSIA::TimeEvent>;
+using ConstraintPtr = std::shared_ptr<OSSIA::TimeConstraint>;
+static void process_timenode_dates(TimeNode& t, DateMap& map)
+{
+    map.insert(std::make_pair(&t, t.getDate()));
+
+    for(EventPtr& ev : t.timeEvents())
+    {
+        for(ConstraintPtr& cst : ev->nextTimeConstraints())
+        {
+            process_timenode_dates(*cst->getEndEvent()->getTimeNode(), map);
+        }
+    }
+}
 
 shared_ptr<StateElement> JamomaScenario::offset(const TimeValue& offset)
 {
@@ -50,6 +65,48 @@ shared_ptr<StateElement> JamomaScenario::offset(const TimeValue& offset)
   // reset internal offset list and state
   mPastEventList.clear();
   mOffsetState->stateElements().clear();
+
+  // Precompute the default date of every timenode.
+  std::unordered_map<TimeNode*, TimeValue> time_map;
+  process_timenode_dates(*mTimeNodes[0], time_map);
+
+  // Set *every* time constraint prior to this one to be rigid
+  // note : this change the semantics of the score and should not be done like this;
+  // it's only a temporary bugfix for https://github.com/OSSIA/i-score/issues/253 .
+  for(auto& elt : time_map)
+  {
+      if(elt.second < offset)
+      {
+          for(EventPtr& ev : elt.first->timeEvents())
+          {
+              for(ConstraintPtr& cst : ev->previousTimeConstraints())
+              {
+                  auto dur = cst->getDurationNominal();
+                  cst->setDurationMin(dur);
+                  cst->setDurationMax(dur);
+              }
+          }
+      }
+      else
+      {
+          for(EventPtr& ev : elt.first->timeEvents())
+          {
+              for(ConstraintPtr& cst : ev->previousTimeConstraints())
+              {
+                  auto& start_tn = cst->getStartEvent()->getTimeNode();
+                  auto start_date = time_map.at(start_tn.get());
+                  if(start_date < offset)
+                  {
+                      auto dur = cst->getDurationNominal();
+                      auto dur_min = cst->getDurationMin();
+                      if(dur_min < dur)
+                          cst->setDurationMin(offset - start_date);
+                  }
+              }
+          }
+      }
+  }
+
 
   // propagate offset from the first TimeNode
   process_offset(mTimeNodes[0], offset);
@@ -70,7 +127,9 @@ shared_ptr<StateElement> JamomaScenario::offset(const TimeValue& offset)
     TimeValue constraintOffset = offset - timeConstraint->getStartEvent()->getTimeNode()->getDate();
 
     if (constraintOffset >= Zero && constraintOffset <= timeConstraint->getDurationMax())
+    {
       flattenAndFilter(mOffsetState, timeConstraint->offset(constraintOffset));
+    }
   }
 
   return mOffsetState;
@@ -195,7 +254,9 @@ void JamomaScenario::start()
     // the end of the constraint is pending
     else if (startStatus == TimeEvent::Status::HAPPENED &&
              endStatus == TimeEvent::Status::PENDING)
-    {}
+    {
+      timeConstraint->start();
+    }
     // the constraint is in the future
     else if (startStatus == TimeEvent::Status::NONE &&
              endStatus == TimeEvent::Status::NONE)
