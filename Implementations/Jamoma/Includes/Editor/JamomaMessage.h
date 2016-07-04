@@ -15,14 +15,14 @@ private:
 # pragma mark Implementation specific
 
   shared_ptr<Address> address;
-  Value * value;
+  Value * value{};
 
 public:
 
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaMessage(shared_ptr<Address> a, const Value * v);
+  JamomaMessage(shared_ptr<Address> a, const Value& v);
 
   JamomaMessage(const JamomaMessage * other);
 
@@ -37,7 +37,7 @@ public:
 
 # pragma mark -
 # pragma mark Accessors
-  
+
   StateElement::Type getType() const override final;
 
   const shared_ptr<Address> & getAddress() const override;

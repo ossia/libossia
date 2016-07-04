@@ -33,6 +33,7 @@ mRepetitionFilter(false)
 
 JamomaAddress::~JamomaAddress()
 {
+  std::lock_guard<std::mutex> lock(mValueMutex);
   if (mValue)
     delete mValue;
 }
@@ -48,19 +49,24 @@ const shared_ptr<Node> JamomaAddress::getNode() const
   return mNode.lock();
 }
 
-const Value * JamomaAddress::pullValue()
+void JamomaAddress::pullValue()
 {
   // use the device protocol to pull address value
   getProtocol().pullAddressValue(*this);
-
-  return mValue;
 }
 
-Address & JamomaAddress::pushValue(const Value * value)
+Address & JamomaAddress::pushValue(const Value& value)
 {
-  if (value != nullptr)
-    setValue(value);
+  setValue(value);
 
+  // use the device protocol to push address value
+  getProtocol().pushAddressValue(*this);
+
+  return *this;
+}
+
+Address & JamomaAddress::pushValue()
+{
   // use the device protocol to push address value
   getProtocol().pushAddressValue(*this);
 
@@ -107,7 +113,7 @@ std::unique_ptr<OSSIA::Value> JamomaAddress::cloneValue(std::vector<char> index)
   }
 }
 
-Address & JamomaAddress::setValue(const Value * value)
+Address & JamomaAddress::setValue(const Value& value)
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
 
@@ -116,11 +122,11 @@ Address & JamomaAddress::setValue(const Value * value)
   mValue = nullptr;
 
   // set value querying the value from another address
-  if (value->getType() == Value::Type::DESTINATION &&
+  if (value.getType() == Value::Type::DESTINATION &&
       mValueType != Value::Type::DESTINATION)
   {
-    auto destination = static_cast<const Destination*>(value);
-    auto address = destination->value->getAddress();
+    auto& destination = static_cast<const Destination&>(value);
+    auto address = destination.value->getAddress();
 
     if (address)
     {
@@ -141,9 +147,9 @@ Address & JamomaAddress::setValue(const Value * value)
   // copy the new value
   else
   {
-    if(mValueType != value->getType())
+    if(mValueType != value.getType())
     {
-        mValueType = value->getType();
+        mValueType = value.getType();
 
         if (mObject.name() != kTTSym_Mirror)
         {
@@ -168,7 +174,7 @@ Address & JamomaAddress::setValue(const Value * value)
         }
 
     }
-    mValue = value->clone();
+    mValue = value.clone();
 
   }
 

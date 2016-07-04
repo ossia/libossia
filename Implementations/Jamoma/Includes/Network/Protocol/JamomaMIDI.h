@@ -298,21 +298,26 @@ class MIDIAddress final :
             return mParent.lock();
         }
 
-        const OSSIA::Value* pullValue() override
+        void pullValue() override
         {
             mProtocol.lock()->pullAddressValue(*this);
-            return getValue();
         }
 
-        Address& pushValue(const Value* val) override
+        Address& pushValue(const Value& val) override
         {
-            mValue.reset(val->clone());
+            mValue.reset(val.clone());
+            mProtocol.lock()->pushAddressValue(*this);
+            return *this;
+        }
+
+        Address& pushValue() override
+        {
             mProtocol.lock()->pushAddressValue(*this);
             return *this;
         }
 
 
-        const OSSIA::Value* getValue() const override
+        const OSSIA::Value* getValue() const
         {
             return mValue.get();
         }
@@ -322,9 +327,9 @@ class MIDIAddress final :
             return std::unique_ptr<OSSIA::Value>(mValue->clone());
         }
 
-        Address& setValue(const Value* v) override
+        Address& setValue(const Value& v) override
         {
-            mValue.reset(v->clone());
+            mValue.reset(v.clone());
             return *this;
         }
 
@@ -407,7 +412,7 @@ class MIDIAddress final :
 
         void valueCallback(const OSSIA::Value& val)
         {
-            this->setValue(&val);
+            this->setValue(val);
             auto local_val = mValue.get();
             for(auto& cb : CallbackContainer::callbacks())
             {

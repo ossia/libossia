@@ -33,68 +33,68 @@ using namespace std::placeholders;
 
 class JamomaMapper : public Mapper, public JamomaTimeProcess
 {
-  
+
 private:
-  
+
 # pragma mark -
 # pragma mark Implementation specific
-  
+
   shared_ptr<Address>   mDriverAddress;
   shared_ptr<Address>   mDrivenAddress;
   Value*                mDrive = nullptr;
-  
+
   shared_ptr<Message>   mMessageToSend;
   Value*                mValueToMap = nullptr;
   mutable std::mutex    mValueToMapMutex;
-  
+
   bool                  mDriverValueObserved;
   Address::iterator     mDriverValueCallbackIndex;
-  
+
 public:
-  
+
 # pragma mark -
 # pragma mark Life cycle
-  
+
   JamomaMapper(shared_ptr<Address>,
                shared_ptr<Address>,
                const Value*);
-  
+
   JamomaMapper(const JamomaMapper *);
-  
+
   shared_ptr<Mapper> clone() const override;
-  
+
   ~JamomaMapper();
-  
+
 # pragma mark -
 # pragma mark Execution
-  
+
   shared_ptr<StateElement> offset(const TimeValue&) override;
-  
+
   shared_ptr<StateElement> state() override;
-  
+
 # pragma mark -
 # pragma mark Execution - Implementation specific
-  
+
   void start() override;
   void stop() override;
   void pause() override;
   void resume() override;
-  
+
 # pragma mark -
 # pragma mark Accessors
-  
+
   const shared_ptr<Address> getDriverAddress() const override;
-  
+
   const shared_ptr<Address> getDrivenAddress() const override;
-  
+
   const Value * getDriving() const override;
-  
+
 private:
-  
+
 # pragma mark -
 # pragma mark Implementation specific
-  
-  Value* computeValue(const Value*, const Value*);
-  
+
+  std::unique_ptr<OSSIA::Value> computeValue(const Value*, const Value*);
+
   void driverValueCallback(const Value * value);
 };

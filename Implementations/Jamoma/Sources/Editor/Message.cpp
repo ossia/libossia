@@ -2,7 +2,7 @@
 
 namespace OSSIA
 {
-  shared_ptr<Message> Message::create(shared_ptr<Address> a, const Value * v)
+  shared_ptr<Message> Message::create(shared_ptr<Address> a, const Value& v)
   {
     return make_shared<JamomaMessage>(a, v);
   }
@@ -11,9 +11,9 @@ namespace OSSIA
 # pragma mark -
 # pragma mark Life cycle
 
-JamomaMessage::JamomaMessage(shared_ptr<Address> a, const Value * v) :
+JamomaMessage::JamomaMessage(shared_ptr<Address> a, const Value& v) :
 address(a),
-value(v->clone())
+value(v.clone())
 {}
 
 JamomaMessage::JamomaMessage(const JamomaMessage * other)
@@ -35,7 +35,7 @@ Message::~Message()
 
 void JamomaMessage::launch() const
 {
-  address->pushValue(value);
+  address->pushValue(*value);
 }
 
 # pragma mark -

@@ -36,11 +36,11 @@ private:
 # pragma mark Implementation specific
 #endif
 
-  shared_ptr<Address>   mDrivenAddress;
-  Value *               mDrive = nullptr;
+  shared_ptr<Address>    mDrivenAddress;
+  std::unique_ptr<Value> mDrive;
 
-  shared_ptr<Message>   mMessageToSend;
-  Value*                mValueToSend = nullptr;
+  shared_ptr<Message>    mMessageToSend;
+  std::unique_ptr<Value> mValueToSend;
 
 public:
 #if 0
@@ -62,7 +62,7 @@ public:
 #endif
 
   shared_ptr<StateElement> offset(const TimeValue&) override;
-  
+
   shared_ptr<StateElement> state() override;
 #if 0
 # pragma mark -
@@ -87,5 +87,5 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 #endif
-  Value* computeValue(double, const Value*);
+  std::unique_ptr<OSSIA::Value> computeValue(double, const Value&);
 };

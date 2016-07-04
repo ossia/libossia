@@ -145,7 +145,7 @@ bool JamomaMIDI::pullAddressValue(Address& address) const
       case MIDIAddressInfo::Type::NoteOn_N:
       {
           OSSIA::Int val{chan.mNoteOn_N[adrinfo.note]};
-          address.setValue(&val);
+          address.setValue(val);
           return true;
       }
 
@@ -154,14 +154,14 @@ bool JamomaMIDI::pullAddressValue(Address& address) const
           OSSIA::Tuple val{OSSIA::Tuple::ValueInit{},
               OSSIA::Int{chan.mNoteOn.first},
               OSSIA::Int{chan.mNoteOn.second}};
-          address.setValue(&val);
+          address.setValue(val);
           return true;
       }
 
       case MIDIAddressInfo::Type::NoteOff_N:
       {
           OSSIA::Int val{chan.mNoteOff_N[adrinfo.note]};
-          address.setValue(&val);
+          address.setValue(val);
           return true;
       }
 
@@ -170,14 +170,14 @@ bool JamomaMIDI::pullAddressValue(Address& address) const
           OSSIA::Tuple val{OSSIA::Tuple::ValueInit{},
               OSSIA::Int{chan.mNoteOff.first},
               OSSIA::Int{chan.mNoteOff.second}};
-          address.setValue(&val);
+          address.setValue(val);
           return true;
       }
 
       case MIDIAddressInfo::Type::CC_N:
       {
           OSSIA::Int val{chan.mCC_N[adrinfo.note]};
-          address.setValue(&val);
+          address.setValue(val);
           return true;
       }
 
@@ -186,14 +186,14 @@ bool JamomaMIDI::pullAddressValue(Address& address) const
           OSSIA::Tuple val{OSSIA::Tuple::ValueInit{},
               OSSIA::Int{chan.mCC.first},
               OSSIA::Int{chan.mCC.second}};
-          address.setValue(&val);
+          address.setValue(val);
           return true;
       }
 
       case MIDIAddressInfo::Type::PC:
       {
           OSSIA::Int val{chan.mPC};
-          address.setValue(&val);
+          address.setValue(val);
           return true;
       }
       default:
@@ -216,13 +216,13 @@ bool JamomaMIDI::pushAddressValue(const Address& address) const
             mOutput.send(mm::MakeNoteOn(
                              adrinfo.channel,
                              adrinfo.note,
-                             static_cast<const OSSIA::Int*>(address.getValue())->value));
+                             static_cast<const OSSIA::Int*>(adrs.getValue())->value));
             return true;
         }
 
         case MIDIAddressInfo::Type::NoteOn:
         {
-            auto val = static_cast<const OSSIA::Tuple*>(address.getValue());
+            auto val = static_cast<const OSSIA::Tuple*>(adrs.getValue());
             mOutput.send(mm::MakeNoteOn(
                              adrinfo.channel,
                              static_cast<const OSSIA::Int*>(val->value[0])->value,
@@ -235,13 +235,13 @@ bool JamomaMIDI::pushAddressValue(const Address& address) const
             mOutput.send(mm::MakeNoteOff(
                              adrinfo.channel,
                              adrinfo.note,
-                             static_cast<const OSSIA::Int*>(address.getValue())->value));
+                             static_cast<const OSSIA::Int*>(adrs.getValue())->value));
             return true;
         }
 
         case MIDIAddressInfo::Type::NoteOff:
         {
-            auto val = static_cast<const OSSIA::Tuple*>(address.getValue());
+            auto val = static_cast<const OSSIA::Tuple*>(adrs.getValue());
             mOutput.send(mm::MakeNoteOff(
                              adrinfo.channel,
                              static_cast<const OSSIA::Int*>(val->value[0])->value,
@@ -254,13 +254,13 @@ bool JamomaMIDI::pushAddressValue(const Address& address) const
             mOutput.send(mm::MakeControlChange(
                              adrinfo.channel,
                              adrinfo.note,
-                             static_cast<const OSSIA::Int*>(address.getValue())->value));
+                             static_cast<const OSSIA::Int*>(adrs.getValue())->value));
             return true;
         }
 
         case MIDIAddressInfo::Type::CC:
         {
-            auto val = static_cast<const OSSIA::Tuple*>(address.getValue());
+            auto val = static_cast<const OSSIA::Tuple*>(adrs.getValue());
             mOutput.send(mm::MakeControlChange(
                              adrinfo.channel,
                              static_cast<const OSSIA::Int*>(val->value[0])->value,
@@ -270,7 +270,7 @@ bool JamomaMIDI::pushAddressValue(const Address& address) const
 
         case MIDIAddressInfo::Type::PC:
         {
-            auto val = static_cast<const OSSIA::Int*>(address.getValue());
+            auto val = static_cast<const OSSIA::Int*>(adrs.getValue());
             mOutput.send(mm::MakeProgramChange(
                              adrinfo.channel,
                              val->value));

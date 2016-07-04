@@ -63,26 +63,27 @@ public:
    \return std::shared_ptr<#Node> the node where the address is */
   virtual const std::shared_ptr<Node> getNode() const = 0;
 
-  /*! pull and return the address value from a device using its protocol
+  /*! pull the address value from a device using its protocol
    \see Protocol::pullAddressValue method
-   \return const #Value* the value */
-  virtual const Value * pullValue() = 0;
+  */
+  virtual void pullValue() = 0;
 
   /*! set then push the address value to a device using its protocol
    \see Protocol::pushAddressValue method
    \param const #Value* the value (push the current value if no argument)
    \return #Address the address */
-  virtual Address & pushValue(const Value* = nullptr) = 0;
+  virtual Address & pushValue(const Value&) = 0;
+
+  /*! set then push the address value to a device using its protocol
+   \see Protocol::pushAddressValue method
+   \param const #Value* the value (push the current value if no argument)
+   \return #Address the address */
+  virtual Address & pushValue() = 0;
 
 #if 0
 # pragma mark -
 # pragma mark Accessors
 #endif
-
-  /*! get the address value
-   \details call pullValue if you need to sync the value with the device
-   \return const #Value* the value */
-  virtual const Value * getValue() const = 0;
 
   /*! clone the address value
    \details thread-safe
@@ -95,7 +96,7 @@ public:
    \param const #Value* the value
    \note it is possible to set the value using a #Value::Type::Destination to query the value from another address
    \return #Address the address */
-  virtual Address & setValue(const Value*) = 0;
+  virtual Address & setValue(const Value&) = 0;
 
   /*! get the address type
    \return #Value::Type of the address */

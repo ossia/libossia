@@ -47,16 +47,13 @@ shared_ptr<StateElement> JamomaAutomation::offset(const TimeValue& offset)
 {
   if (parent->getRunning())
     throw runtime_error("parent time constraint is running");
-  
-  // clear the former Value
-  if (mValueToSend) delete mValueToSend;
-    
+
   // compute a new value from the Curves
-  mValueToSend = computeValue(offset / parent->getDurationNominal(), mDrive);
-    
+  mValueToSend = computeValue(offset / parent->getDurationNominal(), *mDrive);
+
   // edit a Message handling the new Value
-  mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
-  
+  mMessageToSend = Message::create(mDrivenAddress, *mValueToSend);
+
   return mMessageToSend;
 }
 
@@ -64,21 +61,18 @@ shared_ptr<StateElement> JamomaAutomation::state()
 {
   if (!parent->getRunning())
     throw runtime_error("parent time constraint is not running");
-  
+
   // if date hasn't been processed already
   TimeValue date = parent->getDate();
   if (date != mLastDate)
   {
     mLastDate = date;
-    
-    // clear the former Value
-    if (mValueToSend) delete mValueToSend;
 
     // compute a new value from the Curves
-    mValueToSend = computeValue(parent->getPosition(), mDrive);
+    mValueToSend = computeValue(parent->getPosition(), *mDrive);
 
     // edit a Message handling the new Value
-    mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
+    mMessageToSend = Message::create(mDrivenAddress, *mValueToSend);
   }
 
   return mMessageToSend;
@@ -110,55 +104,55 @@ const shared_ptr<Address> JamomaAutomation::getDrivenAddress() const
 
 const Value * JamomaAutomation::getDriving() const
 {
-  return mDrive;
+  return mDrive.get();
 }
 
-Value* JamomaAutomation::computeValue(double position, const Value* drive)
+std::unique_ptr<OSSIA::Value> JamomaAutomation::computeValue(double position, const Value& drive)
 {
-  switch (drive->getType())
+  switch (drive.getType())
   {
     case Value::Type::BEHAVIOR :
     {
-      auto b = static_cast<const Behavior*>(drive);
+      auto b = static_cast<const Behavior&>(drive);
 
       try
       {
-        Curve<double, bool>* curve = dynamic_cast<Curve<double, bool>*>(b->value.get());
+        Curve<double, bool>* curve = dynamic_cast<Curve<double, bool>*>(b.value.get());
         if (curve)
-          return new Bool(curve->valueAt(position));
+          return std::make_unique<Bool>(curve->valueAt(position));
       }
       catch (std::bad_cast e) {};
 
       try
       {
-        Curve<double, int>* curve = dynamic_cast<Curve<double, int>*>(b->value.get());
+        Curve<double, int>* curve = dynamic_cast<Curve<double, int>*>(b.value.get());
         if (curve)
-          return new Int(curve->valueAt(position));
+          return std::make_unique<Int>(curve->valueAt(position));
       }
       catch (std::bad_cast e) {};
 
       try
       {
-        Curve<double, float>* curve = dynamic_cast<Curve<double, float>*>(b->value.get());
+        Curve<double, float>* curve = dynamic_cast<Curve<double, float>*>(b.value.get());
         if (curve)
-          return new Float(curve->valueAt(position));
+          return std::make_unique<Float>(curve->valueAt(position));
       }
       catch (std::bad_cast e) {};
-      
+
       throw runtime_error("none handled drive curve type");
     }
 
     case Value::Type::TUPLE :
     {
-      auto t = static_cast<const Tuple*>(drive);
+      auto& t = static_cast<const Tuple&>(drive);
       vector<const Value*> t_value;
 
-      for (const auto & e : t->value)
+      for (const auto & e : t.value)
       {
-        t_value.push_back(computeValue(position, e));
+        t_value.push_back(computeValue(position, *e).release());
       }
 
-      return new Tuple(t_value);
+      return std::make_unique<Tuple>(t_value);
     }
 
     default :

@@ -69,7 +69,8 @@ shared_ptr<StateElement> JamomaMapper::state()
       std::lock_guard<std::mutex> lock(mValueToMapMutex);
 
       // edit a Message handling the mapped value
-      mMessageToSend = Message::create(mDrivenAddress, computeValue(mValueToMap, mDrive));
+      auto newval = computeValue(mValueToMap, mDrive);
+      mMessageToSend = Message::create(mDrivenAddress, *newval);
 
       // forget the former value
       delete mValueToMap;
@@ -132,7 +133,7 @@ const Value * JamomaMapper::getDriving() const
   return mDrive;
 }
 
-Value* JamomaMapper::computeValue(const Value* driver, const Value* drive)
+std::unique_ptr<OSSIA::Value> JamomaMapper::computeValue(const Value* driver, const Value* drive)
 {
   switch (drive->getType())
   {
@@ -150,7 +151,7 @@ Value* JamomaMapper::computeValue(const Value* driver, const Value* drive)
           {
             Curve<bool, bool>* curve = dynamic_cast<Curve<bool, bool>*>(behavior->value.get());
             if (curve)
-              return new Bool(curve->valueAt(b->value));
+              return std::make_unique<Bool>(curve->valueAt(b->value));
           }
           catch (std::bad_cast e) {};
 
@@ -158,7 +159,7 @@ Value* JamomaMapper::computeValue(const Value* driver, const Value* drive)
           {
             Curve<bool, int>* curve = dynamic_cast<Curve<bool, int>*>(behavior->value.get());
             if (curve)
-              return new Int(curve->valueAt(b->value));
+              return std::make_unique<Int>(curve->valueAt(b->value));
           }
           catch (std::bad_cast e) {};
 
@@ -166,7 +167,7 @@ Value* JamomaMapper::computeValue(const Value* driver, const Value* drive)
           {
             Curve<bool, float>* curve = dynamic_cast<Curve<bool, float>*>(behavior->value.get());
             if (curve)
-              return new Float(curve->valueAt(b->value));
+              return std::make_unique<Float>(curve->valueAt(b->value));
           }
           catch (std::bad_cast e) {};
         }
@@ -179,7 +180,7 @@ Value* JamomaMapper::computeValue(const Value* driver, const Value* drive)
           {
             Curve<int, bool>* curve = dynamic_cast<Curve<int, bool>*>(behavior->value.get());
             if (curve)
-              return new Bool(curve->valueAt(i->value));
+              return std::make_unique<Bool>(curve->valueAt(i->value));
           }
           catch (std::bad_cast e) {};
 
@@ -187,7 +188,7 @@ Value* JamomaMapper::computeValue(const Value* driver, const Value* drive)
           {
             Curve<int, int>* curve = dynamic_cast<Curve<int, int>*>(behavior->value.get());
             if (curve)
-              return new Int(curve->valueAt(i->value));
+              return std::make_unique<Int>(curve->valueAt(i->value));
           }
           catch (std::bad_cast e) {};
 
@@ -195,7 +196,7 @@ Value* JamomaMapper::computeValue(const Value* driver, const Value* drive)
           {
             Curve<int, float>* curve = dynamic_cast<Curve<int, float>*>(behavior->value.get());
             if (curve)
-              return new Float(curve->valueAt(i->value));
+              return std::make_unique<Float>(curve->valueAt(i->value));
           }
           catch (std::bad_cast e) {};
         }
@@ -208,7 +209,7 @@ Value* JamomaMapper::computeValue(const Value* driver, const Value* drive)
           {
             Curve<float, bool>* curve = dynamic_cast<Curve<float, bool>*>(behavior->value.get());
             if (curve)
-              return new Bool(curve->valueAt(f->value));
+              return std::make_unique<Bool>(curve->valueAt(f->value));
           }
           catch (std::bad_cast e) {};
 
@@ -216,7 +217,7 @@ Value* JamomaMapper::computeValue(const Value* driver, const Value* drive)
           {
             Curve<float, int>* curve = dynamic_cast<Curve<float, int>*>(behavior->value.get());
             if (curve)
-              return new Int(curve->valueAt(f->value));
+              return std::make_unique<Int>(curve->valueAt(f->value));
           }
           catch (std::bad_cast e) {};
 
@@ -224,7 +225,7 @@ Value* JamomaMapper::computeValue(const Value* driver, const Value* drive)
           {
             Curve<float, float>* curve = dynamic_cast<Curve<float, float>*>(behavior->value.get());
             if (curve)
-              return new Float(curve->valueAt(f->value));
+              return std::make_unique<Float>(curve->valueAt(f->value));
           }
           catch (std::bad_cast e) {};
         }
@@ -254,11 +255,11 @@ Value* JamomaMapper::computeValue(const Value* driver, const Value* drive)
           if (it_driver == t_driver->value.end())
             break;
 
-          t_value.push_back(computeValue(*it_driver, e_drive));
+          t_value.push_back(computeValue(*it_driver, e_drive).release());
           it_driver++;
         }
 
-        return new Tuple(t_value);
+        return std::make_unique<Tuple>(t_value);
       }
     }
 

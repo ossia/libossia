@@ -456,37 +456,37 @@ void JamomaNode::buildAddress()
 
         if (type == kTTSym_none)
         {
-          mAddress->setValue(new Impulse());
+          mAddress->setValue(Impulse{});
           mAddress->setValueType(Value::Type::IMPULSE);
         }
         else if (type == kTTSym_generic)
         {
-          mAddress->setValue(new OSSIA::Tuple());
+          mAddress->setValue(Tuple{});
           mAddress->setValueType(Value::Type::TUPLE);
         }
         else if (type == kTTSym_boolean)
         {
-          mAddress->setValue(new OSSIA::Bool());
+          mAddress->setValue(Bool{});
           mAddress->setValueType(Value::Type::BOOL);
         }
         else if (type == kTTSym_integer)
         {
-          mAddress->setValue(new OSSIA::Int());
+          mAddress->setValue(Int{});
           mAddress->setValueType(Value::Type::INT);
         }
         else if (type == kTTSym_decimal)
         {
-          mAddress->setValue(new OSSIA::Float());
+          mAddress->setValue(Float{});
           mAddress->setValueType(Value::Type::FLOAT);
         }
         else if (type == kTTSym_array)
         {
-          mAddress->setValue(new OSSIA::Tuple());
+          mAddress->setValue(Tuple{});
           mAddress->setValueType(Value::Type::TUPLE);
         }
         else if (type == kTTSym_string)
         {
-          mAddress->setValue(new OSSIA::String());
+          mAddress->setValue(String{});
           mAddress->setValueType(Value::Type::STRING);
         }
 

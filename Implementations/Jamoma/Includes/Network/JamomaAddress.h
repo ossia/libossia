@@ -66,18 +66,19 @@ public:
 
   const shared_ptr<Node> getNode() const override;
 
-  const Value * pullValue() override;
+  void pullValue() override;
 
-  Address & pushValue(const Value * = nullptr) override;
+  Address & pushValue(const Value&) override;
+  Address & pushValue() override;
 
 # pragma mark -
 # pragma mark Accessors
 
-  const Value * getValue() const override;
+  const Value * getValue() const;
 
   std::unique_ptr<OSSIA::Value> cloneValue(std::vector<char> = {}) const override;
 
-  Address & setValue(const Value *) override;
+  Address & setValue(const Value&) override;
 
   Value::Type getValueType() const override;
 
