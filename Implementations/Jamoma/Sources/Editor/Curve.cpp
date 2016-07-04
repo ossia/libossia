@@ -101,8 +101,7 @@ getInitialPointAbscissa() const
 
     address->pullValue();
     auto val = address->cloneValue();
-    auto res = convertToTemplateTypeValue(val, mInitialPointAbscissaDestination->index.begin());
-    delete val;
+    auto res = convertToTemplateTypeValue(val.get(), mInitialPointAbscissaDestination->index.begin());
     return res;
   }
 }
@@ -124,8 +123,7 @@ getInitialPointOrdinate() const
 
     address->pullValue();
     auto val = address->cloneValue();
-    auto res = convertToTemplateTypeValue(val, mInitialPointOrdinateDestination->index.begin());
-    delete val;
+    auto res = convertToTemplateTypeValue(val.get(), mInitialPointOrdinateDestination->index.begin());
     return res;
   }
 }

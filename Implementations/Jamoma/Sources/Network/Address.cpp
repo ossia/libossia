@@ -75,7 +75,7 @@ const Value * JamomaAddress::getValue() const
   return mValue;
 }
 
-Value* JamomaAddress::cloneValue(std::vector<char> index) const
+std::unique_ptr<OSSIA::Value> JamomaAddress::cloneValue(std::vector<char> index) const
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
 
@@ -84,13 +84,13 @@ Value* JamomaAddress::cloneValue(std::vector<char> index) const
 
   if (index.empty() || mValueType != Value::Type::TUPLE)
   {
-    return mValue->clone();
+    return std::unique_ptr<OSSIA::Value>{mValue->clone()};
   }
   else if (index.size() == 1)
   {
     // clone value from tuple element at index
     auto tuple = static_cast<const Tuple*>(mValue);
-    return tuple->value[index[0]]->clone();
+    return std::unique_ptr<OSSIA::Value>{tuple->value[index[0]]->clone()};
   }
   else
   {
@@ -103,7 +103,7 @@ Value* JamomaAddress::cloneValue(std::vector<char> index) const
       values.push_back(tuple->value[i]->clone());
     }
 
-    return new Tuple(values);
+    return std::make_unique<Tuple>(values);
   }
 }
 
@@ -127,7 +127,7 @@ Address & JamomaAddress::setValue(const Value * value)
       if (address->getValueType() == mValueType)
       {
         address->pullValue();
-        mValue = address->cloneValue();
+        mValue = address->cloneValue().release();
       }
       else
         throw runtime_error("setting an address value using a destination with a bad type address");
@@ -371,9 +371,8 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
         }
         for (auto callback : self->callbacks())
         {
-            callback(val);
+            callback(val.get());
         }
-        delete val;
     }
     catch(...) {
         return kTTErrGeneric;

@@ -18,7 +18,7 @@
 
 #include <string>
 #include <functional>
-
+#include <memory>
 #include "Editor/Domain.h"
 #include "Editor/Expression.h"
 #include "Editor/Value.h"
@@ -87,8 +87,8 @@ public:
   /*! clone the address value
    \details thread-safe
    \param std::initializer_list<char> optionnal index list to clone only some elements from a Tuple value
-   \return const #Value* a cloned value. deletion is the responsibility of the caller. */
-  virtual Value * cloneValue(std::vector<char> = {}) const = 0;
+   \return const #Value a cloned value.  */
+  virtual std::unique_ptr<OSSIA::Value> cloneValue(std::vector<char> = {}) const = 0;
 
   /*! set the address value
    \note call pushValue if you need to sync the value with the device

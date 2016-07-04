@@ -75,7 +75,7 @@ public:
 
   const Value * getValue() const override;
 
-  Value * cloneValue(std::vector<char> = {}) const override;
+  std::unique_ptr<OSSIA::Value> cloneValue(std::vector<char> = {}) const override;
 
   Address & setValue(const Value *) override;
 

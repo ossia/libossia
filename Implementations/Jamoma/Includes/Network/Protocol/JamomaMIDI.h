@@ -317,9 +317,9 @@ class MIDIAddress final :
             return mValue.get();
         }
 
-        OSSIA::Value* cloneValue(std::vector<char>) const override
+        std::unique_ptr<OSSIA::Value> cloneValue(std::vector<char>) const override
         {
-            return mValue->clone();
+            return std::unique_ptr<OSSIA::Value>(mValue->clone());
         }
 
         Address& setValue(const Value* v) override
