@@ -75,9 +75,9 @@ public:
 
   void stop() final override;
 
-  shared_ptr<State> offset(const TimeValue&) override;
+  const std::shared_ptr<State>& offset(const TimeValue&) override;
 
-  shared_ptr<State> state() override;
+  const std::shared_ptr<State>& state() override;
 
   void pause() final override;
 

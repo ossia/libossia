@@ -74,20 +74,20 @@ bool JamomaExpressionNot::operator!= (const Expression& expression) const
 Expression::iterator JamomaExpressionNot::addCallback(ResultCallback callback)
 {
   auto it = CallbackContainer::addCallback(std::move(callback));
-  
+
   if (callbacks().size() == 1)
   {
     // start expression observation
-    mResultCallbackIndex = mExpression->addCallback(std::bind(&JamomaExpressionNot::resultCallback, this, _1));
+    mResultCallbackIndex = mExpression->addCallback([&] (bool result) { resultCallback(result); });
   }
-  
+
   return it;
 }
 
 void JamomaExpressionNot::removeCallback(Expression::iterator callback)
 {
   CallbackContainer::removeCallback(callback);
-  
+
   if (callbacks().size() == 0)
   {
     // stop expression observation
@@ -108,6 +108,5 @@ const shared_ptr<Expression> & JamomaExpressionNot::getExpression() const
 
 void JamomaExpressionNot::resultCallback(bool result)
 {
-  for (auto callback : callbacks())
-    callback(!result);
+  send(!result);
 }

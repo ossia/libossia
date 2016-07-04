@@ -61,12 +61,16 @@ valueAt(X abscissa) const
   X lastAbscissa = getInitialPointAbscissa();
   Y lastValue = getInitialPointOrdinate();
 
-  for (auto it = mPointsMap.begin(); it != mPointsMap.end(); it++)
+  auto end = mPointsMap.end();
+  for (auto it = mPointsMap.begin(); it != end; ++it)
   {
     if (abscissa > lastAbscissa &&
         abscissa <= it->first)
     {
-      lastValue = it->second.second->valueAt(((double)abscissa - (double)lastAbscissa) / ((double)it->first - (double)lastAbscissa), lastValue , it->second.first);
+      lastValue = it->second.second->valueAt(
+            ((double)abscissa - (double)lastAbscissa) / ((double)it->first - (double)lastAbscissa),
+            lastValue,
+            it->second.first);
       break;
     }
     else if (abscissa > it->first)
@@ -83,6 +87,22 @@ valueAt(X abscissa) const
 
 # pragma mark -
 # pragma mark Accessors
+template<typename T>
+constexpr OSSIA::CurveSegmentType OssiaType;
+template<>
+constexpr OSSIA::CurveSegmentType OssiaType<int> = OSSIA::CurveSegmentType::INT;
+template<>
+constexpr OSSIA::CurveSegmentType OssiaType<float> = OSSIA::CurveSegmentType::FLOAT;
+template<>
+constexpr OSSIA::CurveSegmentType OssiaType<double> = OSSIA::CurveSegmentType::DOUBLE;
+template<>
+constexpr OSSIA::CurveSegmentType OssiaType<bool> = OSSIA::CurveSegmentType::BOOL;
+
+template<typename X, typename Y>
+OSSIA::CurveType JamomaCurve<X, Y>::getType() const
+{
+    return std::make_pair(OssiaType<X>, OssiaType<Y>);
+}
 
 template <typename X, typename Y>
 X JamomaCurve<X,Y>::
@@ -174,7 +194,9 @@ template <typename X, typename Y>
 map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> JamomaCurve<X,Y>::
 getPointsMap() const
 {
-  return mPointsMap;
+  map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> m;
+  m.insert(mPointsMap.begin(), mPointsMap.end());
+  return m;
 }
 
 # pragma mark -

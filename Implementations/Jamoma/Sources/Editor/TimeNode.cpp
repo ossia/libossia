@@ -48,30 +48,32 @@ bool JamomaTimeNode::trigger()
   {
     // stop expression observation because the TimeNode is not ready to be processed
     observeExpressionResult(false);
-    
+
     // the triggering failed
     return false;
   }
-  
+
   // now TimeEvents will happen or be disposed
   for (auto& timeEvent : mPendingEvents)
   {
+    auto& ev = *timeEvent;
+    auto& expr = *ev.getExpression();
     // update any Destination value into the expression
-    timeEvent->getExpression()->update();
-    
-    if (timeEvent->getExpression()->evaluate())
-      timeEvent->happen();
+    expr.update();
+
+    if (expr.evaluate())
+      ev.happen();
     else
-      timeEvent->dispose();
+      ev.dispose();
   }
-    
+
   // stop expression observation now the TimeNode has been processed
   observeExpressionResult(false);
-  
+
   // notify observers
   if (mCallback)
     (mCallback)();
-    
+
   // the triggering succeded
   return true;
 }
@@ -136,26 +138,26 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   // prepare to remember which event changed its status to PENDING
   // because it is needed in JamomaTimeNode::trigger
   mPendingEvents.clear();
-  
+
   bool maximalDurationReached = false;
-  
+
   for (auto& timeEvent : timeEvents())
   {
     shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
-    
+
     switch (timeEvent->getStatus())
     {
       // check if NONE TimeEvent is ready to become PENDING
       case TimeEvent::Status::NONE:
       {
         bool minimalDurationReached = true;
-        
+
         for (auto& timeConstraint : timeEvent->previousTimeConstraints())
         {
           // previous TimeConstraints with a DISPOSED start event are ignored
           if (timeConstraint->getStartEvent()->getStatus() == TimeEvent::Status::DISPOSED)
             continue;
-          
+
           // previous TimeConstraint with a none HAPPENED start event
           // can't have reached its minimal duration
           if (timeConstraint->getStartEvent()->getStatus() != TimeEvent::Status::HAPPENED)
@@ -163,7 +165,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
             minimalDurationReached = false;
             break;
           }
-          
+
           // previous TimeConstraint which doesn't reached its minimal duration force to quit
           if (timeConstraint->getDate() < timeConstraint->getDurationMin())
           {
@@ -171,7 +173,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
             break;
           }
         }
-        
+
         // access to PENDING status once all previous TimeConstraints allow it
         if (minimalDurationReached)
           e->setStatus(TimeEvent::Status::PENDING);
@@ -183,13 +185,13 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
       case TimeEvent::Status::PENDING:
       {
         mPendingEvents.push_back(timeEvent);
-        
+
         for (auto& timeConstraint : timeEvent->previousTimeConstraints())
         {
           if (timeConstraint->getDate() >= timeConstraint->getDurationMax())
             maximalDurationReached = true;
         }
-        
+
         break;
       }
 
@@ -212,18 +214,18 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
       }
     }
   }
-  
+
   // if all TimeEvents are not PENDING
   if (mPendingEvents.size() != timeEvents().size())
     return;
-  
+
   // false expression mute TimeNode triggering
   if (*mExpression == *ExpressionFalse)
     return;
-  
+
   //! \todo force triggering if at leat one TimeEvent has
   // at least one TimeConstraint over its maximal duration
-  
+
   // update the expression one time
   // then observe and evaluate TimeNode's expression before to trig
   // only if no maximal duration have been reached
@@ -232,9 +234,9 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   {
     if (!isObservingExpression())
       mExpression->update();
-    
+
     observeExpressionResult(true);
-    
+
     if (!mExpression->evaluate())
       return;
   }
@@ -266,9 +268,9 @@ void JamomaTimeNode::observeExpressionResult(bool observe)
     if (mObserveExpression)
     {
       // pull value
-      
+
       // start expression observation
-      mResultCallbackIndex = mExpression->addCallback(std::bind(&JamomaTimeNode::resultCallback, this, _1));
+      mResultCallbackIndex = mExpression->addCallback([&] (bool result) { resultCallback(result); });
       mCallbackSet = true;
     }
     else

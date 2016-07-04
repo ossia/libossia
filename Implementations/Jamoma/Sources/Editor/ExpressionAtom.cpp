@@ -39,7 +39,7 @@ ExpressionAtom::~ExpressionAtom()
 
 bool JamomaExpressionAtom::evaluate() const
 {
-  return do_evaluation(mFirstValue, mSecondValue);
+  return do_evaluation(*mFirstValue, *mSecondValue);
 }
 
 void JamomaExpressionAtom::update() const
@@ -53,7 +53,7 @@ void JamomaExpressionAtom::update() const
       d->value->getAddress()->pullValue();
     }
   }
-  
+
   // pull value of the second operand if it is a Destination
   if (mSecondValue->getType() == Value::Type::DESTINATION)
   {
@@ -96,7 +96,7 @@ bool JamomaExpressionAtom::operator!= (const Expression& expression) const
 Expression::iterator JamomaExpressionAtom::addCallback(ResultCallback callback)
 {
   auto it = CallbackContainer::addCallback(std::move(callback));
-  
+
   if (callbacks().size() == 1)
   {
     // start first operand observation if it is a Destination
@@ -106,10 +106,10 @@ Expression::iterator JamomaExpressionAtom::addCallback(ResultCallback callback)
       Destination* d = (Destination*)mFirstValue;
       if (d->value->getAddress())
       {
-        mFirstValueCallbackIndex = d->value->getAddress()->addCallback(std::bind(&JamomaExpressionAtom::firstValueCallback, this, _1));
+        mFirstValueCallbackIndex = d->value->getAddress()->addCallback([&] (const OSSIA::Value& result) { firstValueCallback(result); });
       }
     }
-    
+
     // start second operand observation if it is a Destination
     //! \todo what about Tuple of Destinations ?
     if (mSecondValue->getType() == Value::Type::DESTINATION)
@@ -117,18 +117,18 @@ Expression::iterator JamomaExpressionAtom::addCallback(ResultCallback callback)
       Destination* d = (Destination*)mSecondValue;
       if (d->value->getAddress())
       {
-        mSecondValueCallbackIndex = d->value->getAddress()->addCallback(std::bind(&JamomaExpressionAtom::secondValueCallback, this, _1));
+        mSecondValueCallbackIndex = d->value->getAddress()->addCallback([&] (const OSSIA::Value& result) { secondValueCallback(result); });
       }
     }
   }
-  
+
   return it;
 }
 
 void JamomaExpressionAtom::removeCallback(Expression::iterator callback)
 {
   CallbackContainer::removeCallback(callback);
-  
+
   if (callbacks().size() == 0)
   {
     // stop first operand observation if it is a Destination
@@ -141,7 +141,7 @@ void JamomaExpressionAtom::removeCallback(Expression::iterator callback)
         d->value->getAddress()->removeCallback(mFirstValueCallbackIndex);
       }
     }
-    
+
     // start second operand observation if it is a Destination
     //! \todo what about Tuple of Destinations ?
     if (mSecondValue->getType() == Value::Type::DESTINATION)
@@ -176,55 +176,51 @@ const Value* JamomaExpressionAtom::getSecondOperand() const
 # pragma mark -
 # pragma mark Implementation Specific
 
-bool JamomaExpressionAtom::do_evaluation(const Value* first, const Value* second) const
+bool JamomaExpressionAtom::do_evaluation(const Value& first, const Value& second) const
 {
   switch (mOperator)
   {
     case Operator::EQUAL :
     {
-      return (*first) == (*second);
+      return first == second;
     }
     case Operator::DIFFERENT :
     {
-      return (*first) != (*second);
+      return first != second;
     }
     case Operator::GREATER_THAN :
     {
-      return (*first) > (*second);
+      return first > second;
     }
     case Operator::LOWER_THAN :
     {
-      return (*first) < (*second);
+      return first < second;
     }
     case Operator::GREATER_THAN_OR_EQUAL :
     {
-      return (*first) >= (*second);
+      return first >= second;
     }
     case Operator::LOWER_THAN_OR_EQUAL :
     {
-      return (*first) <= (*second);
+      return first <= second;
     }
     default :
       return false;
   }
 }
 
-void JamomaExpressionAtom::firstValueCallback(const Value * value)
+void JamomaExpressionAtom::firstValueCallback(const Value& value)
 {
-    if(value && mSecondValue) {
-        bool result = do_evaluation(value, mSecondValue);
-
-        for (auto callback : callbacks())
-            callback(result);
+    if(mSecondValue)
+    {
+      send(do_evaluation(value, *mSecondValue));
     }
 }
 
-void JamomaExpressionAtom::secondValueCallback(const Value * value)
+void JamomaExpressionAtom::secondValueCallback(const Value& value)
 {
-    if(mFirstValue && value) {
-        bool result = do_evaluation(mFirstValue, value);
-
-        for (auto callback : callbacks())
-            callback(result);
+    if(mFirstValue)
+    {
+      send(do_evaluation(*mFirstValue, value));
     }
 }

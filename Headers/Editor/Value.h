@@ -106,6 +106,7 @@ struct OSSIA_EXPORT Impulse final : public Value
 {
   /*! constructor */
   Impulse();
+  Impulse(const Impulse&) = delete;
 
   /*! clone */
   Value * clone() const override;
@@ -141,6 +142,7 @@ struct OSSIA_EXPORT Bool final : public Value
 
   /*! constructor */
   Bool(bool = false);
+  Bool(const Bool&) = delete;
 
   /*! clone */
   Value * clone() const override;
@@ -180,6 +182,7 @@ struct OSSIA_EXPORT Int final : public Value
   /*! constructor
    \param int value */
   Int(int = 0);
+  Int(const Int&) = delete;
 
   /*! clone */
   Value * clone() const override;
@@ -216,6 +219,7 @@ struct OSSIA_EXPORT Float final : public Value
   /*! constructor
    \param float value */
   Float(float = 0.);
+  Float(const Float&) = delete;
 
   /*! clone */
   Value * clone() const override;
@@ -252,6 +256,7 @@ struct OSSIA_EXPORT Char final : public Value
   /*! constructor
    \param char value */
   Char(char = 0x00);
+  Char(const Char&) = delete;
 
   /*! clone */
   Value * clone() const override;
@@ -288,6 +293,7 @@ struct OSSIA_EXPORT String final : public Value
   /*! constructor
    \param std::string value */
   String(std::string = "");
+  String(const String&) = delete;
 
   /*! clone */
   Value * clone() const override;
@@ -323,6 +329,7 @@ struct OSSIA_EXPORT Tuple final : public Value
 
   /*! constructor for an empty tuple */
   Tuple();
+  Tuple(const Tuple&) = delete;
   ~Tuple();
 
   /*! Mechanism for building a Tuple with a list of

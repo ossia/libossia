@@ -94,7 +94,7 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  std::unique_ptr<OSSIA::Value> computeValue(const Value*, const Value*);
+  std::unique_ptr<OSSIA::Value> computeValue(const Value&, const Value&);
 
-  void driverValueCallback(const Value * value);
+  void driverValueCallback(const Value& value);
 };

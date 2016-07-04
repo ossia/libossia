@@ -35,7 +35,7 @@ public:
 # pragma mark Execution
 
   bool evaluate() const override;
-  
+
   void update() const override;
 
 # pragma mark -
@@ -62,5 +62,5 @@ private:
 # pragma mark -
 # pragma mark Implementation Specific
 
-  void destinationCallback(const Value * value);
+  void destinationCallback(const Value& value);
 };

@@ -46,7 +46,7 @@ private:
 
   shared_ptr<State>           mCurrentState;      // an internal State to return on state call
   shared_ptr<State>           mOffsetState;       // an internal State built when offset is called
-  
+
   std::list<std::pair<TimeValue, shared_ptr<TimeEvent>>> mPastEventList; // a temporary list to order all past events to build the offset state
 
 public:
@@ -66,7 +66,7 @@ public:
 # pragma mark Execution
 
   shared_ptr<StateElement> offset(const TimeValue&) override;
-  
+
   shared_ptr<StateElement> state() override;
 
 # pragma mark -
@@ -80,13 +80,13 @@ public:
 # pragma mark -
 # pragma mark Edition
 
-  void addTimeConstraint(const shared_ptr<TimeConstraint>) override;
+  void addTimeConstraint(shared_ptr<TimeConstraint>) override;
 
-  void removeTimeConstraint(const shared_ptr<TimeConstraint>) override;
+  void removeTimeConstraint(const shared_ptr<TimeConstraint>&) override;
 
-  void addTimeNode(const shared_ptr<TimeNode>) override;
+  void addTimeNode(shared_ptr<TimeNode>) override;
 
-  void removeTimeNode(const shared_ptr<TimeNode>) override;
+  void removeTimeNode(const shared_ptr<TimeNode>&) override;
 
 # pragma mark -
 # pragma mark Accessors
@@ -99,10 +99,10 @@ public:
   const Container<TimeNode>& timeNodes() const override;
 
   const Container<TimeConstraint>& timeConstraints() const override;
- 
+
 # pragma mark -
 # pragma mark Implementation specific
-  
+
   /* order all HAPPENED TimeEvents into mOffetEventMap */
   void process_offset(shared_ptr<TimeNode>, const TimeValue&);
 };

@@ -14,9 +14,17 @@
 #pragma once
 
 #include "Editor/Curve.h"
-
-#include "math.h"
-
+#define OSSIA_BOOST
+#include <cmath>
+#if defined(OSSIA_BOOST)
+#include <boost/container/flat_map.hpp>
+template<typename... Args>
+using curve_map = boost::container::flat_map<Args...>;
+#else
+#include <map>
+template<typename... Args>
+using curve_map = std::map<Args...>;
+#endif
 using namespace OSSIA;
 using namespace std;
 
@@ -31,11 +39,12 @@ private:
 #endif
   X mInitialPointAbscissa;
   Destination* mInitialPointAbscissaDestination;
-  
+
   Y mInitialPointOrdinate;
   Destination* mInitialPointOrdinateDestination;
-  
-  map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> mPointsMap;
+
+  using map_type = curve_map<X, pair<Y, shared_ptr<CurveSegment<Y>>>>;
+  map_type mPointsMap;
 
 public:
 
@@ -72,24 +81,26 @@ public:
 # pragma mark -
 # pragma mark Accessors
 #endif
-  
+
+  OSSIA::CurveType getType() const override;
+
   X getInitialPointAbscissa() const override;
-  
+
   Y getInitialPointOrdinate() const override;
-  
+
   void setInitialPointAbscissa(X) override;
 
   void setInitialPointOrdinate(Y) override;
 
   const Destination* getInitialPointAbscissaDestination() const override;
-  
+
   const Destination* getInitialPointOrdinateDestination() const override;
-  
+
   void setInitialPointAbscissaDestination(const Destination*) override;
-  
+
   void setInitialPointOrdinateDestination(const Destination*) override;
 
-  map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> getPointsMap() const override;
+  std::map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> getPointsMap() const override;
 
 #if 0
 # pragma mark -

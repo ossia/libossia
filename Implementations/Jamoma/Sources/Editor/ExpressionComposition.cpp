@@ -79,28 +79,28 @@ bool JamomaExpressionComposition::operator!= (const Expression& expression) cons
 Expression::iterator JamomaExpressionComposition::addCallback(ResultCallback callback)
 {
   auto it = CallbackContainer::addCallback(std::move(callback));
-  
+
   if (callbacks().size() == 1)
   {
     // start first expression observation
-    mFirstResultCallbackIndex = mFirstExpression->addCallback(std::bind(&JamomaExpressionComposition::firstResultCallback, this, _1));
-    
+    mFirstResultCallbackIndex = mFirstExpression->addCallback([&] (bool result) { firstResultCallback(result); });
+
     // start second expression observation
-    mSecondResultCallbackIndex = mSecondExpression->addCallback(std::bind(&JamomaExpressionComposition::secondResultCallback, this, _1));
+    mSecondResultCallbackIndex = mSecondExpression->addCallback([&] (bool result) { secondResultCallback(result); });
   }
-  
+
   return it;
 }
 
 void JamomaExpressionComposition::removeCallback(Expression::iterator callback)
 {
   CallbackContainer::removeCallback(callback);
-  
+
   if (callbacks().size() == 0)
   {
     // stop first expression observation
     mFirstExpression->removeCallback(mFirstResultCallbackIndex);
-    
+
     // stop second expression observation
     mSecondExpression->removeCallback(mSecondResultCallbackIndex);
   }
@@ -151,15 +151,11 @@ bool JamomaExpressionComposition::do_evaluation(bool first, bool second) const
 void JamomaExpressionComposition::firstResultCallback(bool first_result)
 {
   bool result = do_evaluation(first_result, mSecondExpression->evaluate());
-  
-  for (auto callback : callbacks())
-    callback(result);
+  send(result);
 }
 
 void JamomaExpressionComposition::secondResultCallback(bool second_result)
 {
   bool result = do_evaluation(mFirstExpression->evaluate(), second_result);
-  
-  for (auto callback : callbacks())
-    callback(result);
+  send(result);
 }

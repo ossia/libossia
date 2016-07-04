@@ -1,4 +1,5 @@
 #include "Editor/JamomaAutomation.h"
+#include <Editor/JamomaCurve.h>
 
 #include <iostream> //! \todo to remove. only here for debug purpose
 #if 0
@@ -45,11 +46,12 @@ JamomaAutomation::~JamomaAutomation()
 
 shared_ptr<StateElement> JamomaAutomation::offset(const TimeValue& offset)
 {
-  if (parent->getRunning())
+  auto& par = *parent;
+  if (par.getRunning())
     throw runtime_error("parent time constraint is running");
 
   // compute a new value from the Curves
-  mValueToSend = computeValue(offset / parent->getDurationNominal(), *mDrive);
+  mValueToSend = computeValue(offset / par.getDurationNominal(), *mDrive);
 
   // edit a Message handling the new Value
   mMessageToSend = Message::create(mDrivenAddress, *mValueToSend);
@@ -59,23 +61,28 @@ shared_ptr<StateElement> JamomaAutomation::offset(const TimeValue& offset)
 
 shared_ptr<StateElement> JamomaAutomation::state()
 {
-  if (!parent->getRunning())
-    throw runtime_error("parent time constraint is not running");
-
-  // if date hasn't been processed already
-  TimeValue date = parent->getDate();
-  if (date != mLastDate)
+  auto& par = *parent;
+  if (par.getRunning())
   {
-    mLastDate = date;
+    // if date hasn't been processed already
+    TimeValue date = par.getDate();
+    if (date != mLastDate)
+    {
+      mLastDate = date;
 
-    // compute a new value from the Curves
-    mValueToSend = computeValue(parent->getPosition(), *mDrive);
+      // compute a new value from the Curves
+      mValueToSend = computeValue(par.getPosition(), *mDrive);
 
-    // edit a Message handling the new Value
-    mMessageToSend = Message::create(mDrivenAddress, *mValueToSend);
+      // edit a Message handling the new Value
+      mMessageToSend = Message::create(mDrivenAddress, *mValueToSend);
+    }
+
+    return mMessageToSend;
   }
-
-  return mMessageToSend;
+  else
+  {
+    throw runtime_error("parent time constraint is not running");
+  }
 }
 #if 0
 # pragma mark -
@@ -113,31 +120,31 @@ std::unique_ptr<OSSIA::Value> JamomaAutomation::computeValue(double position, co
   {
     case Value::Type::BEHAVIOR :
     {
-      auto b = static_cast<const Behavior&>(drive);
+      auto& b = static_cast<const Behavior&>(drive);
 
-      try
+      auto base_curve = b.value.get();
+      auto t = base_curve->getType();
+      if(t.first == OSSIA::CurveSegmentType::DOUBLE)
       {
-        Curve<double, bool>* curve = dynamic_cast<Curve<double, bool>*>(b.value.get());
-        if (curve)
-          return std::make_unique<Bool>(curve->valueAt(position));
+          switch(t.second)
+          {
+              case OSSIA::CurveSegmentType::FLOAT:
+              {
+                  auto curve = static_cast<JamomaCurve<double, float>*>(base_curve);
+                  return std::make_unique<Float>(curve->valueAt(position));
+              }
+              case OSSIA::CurveSegmentType::INT:
+              {
+                  auto curve = static_cast<JamomaCurve<double, int>*>(base_curve);
+                  return std::make_unique<Int>(curve->valueAt(position));
+              }
+              case OSSIA::CurveSegmentType::BOOL:
+              {
+                  auto curve = static_cast<JamomaCurve<double, bool>*>(base_curve);
+                  return std::make_unique<Bool>(curve->valueAt(position));
+              }
+          }
       }
-      catch (std::bad_cast e) {};
-
-      try
-      {
-        Curve<double, int>* curve = dynamic_cast<Curve<double, int>*>(b.value.get());
-        if (curve)
-          return std::make_unique<Int>(curve->valueAt(position));
-      }
-      catch (std::bad_cast e) {};
-
-      try
-      {
-        Curve<double, float>* curve = dynamic_cast<Curve<double, float>*>(b.value.get());
-        if (curve)
-          return std::make_unique<Float>(curve->valueAt(position));
-      }
-      catch (std::bad_cast e) {};
 
       throw runtime_error("none handled drive curve type");
     }

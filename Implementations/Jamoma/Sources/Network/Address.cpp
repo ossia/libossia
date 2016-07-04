@@ -375,10 +375,7 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
             if(auto& log_callback = logger->getInboundLogCallback())
                 log_callback(self->getTextualAddress() + " <= " + getValueAsString(*self->getValue()));
         }
-        for (auto callback : self->callbacks())
-        {
-            callback(val.get());
-        }
+        self->send(*val);
     }
     catch(...) {
         return kTTErrGeneric;

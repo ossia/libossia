@@ -15,6 +15,8 @@ include(DebugMode)
 include(UseGold)
 include(LinkerWarnings)
 
+find_package(Boost)
+
 function(target_transfer_options TheTarget TheLib)
     target_include_directories(${TheTarget} PUBLIC
         $<TARGET_PROPERTY:${TheLib},INTERFACE_INCLUDE_DIRECTORIES>
@@ -27,6 +29,7 @@ function(target_transfer_options TheTarget TheLib)
         )
 endfunction()
 
+include_directories(${API_HEADERS_FOLDER})
 include_directories(${API_HEADERS_FOLDER}/Editor)
 include_directories(${API_HEADERS_FOLDER}/Misc)
 include_directories(${API_HEADERS_FOLDER}/Network)
@@ -76,6 +79,12 @@ if(WIN32)
         "/wd4250" # inherits via dominance
         )
     endif()
+
+    if(Boost_FOUND)
+        # Allows the use of faster containers
+        target_compile_definitions(APIJamoma PUBLIC OSSIA_BOOST)
+        target_include_directories(APIJamoma PUBLIC ${Boost_INCLUDE_DIRS})
+    endif()
 else()
 
     add_library(APIJamoma_Misc_Object   OBJECT ${MISC_SRCS})
@@ -84,6 +93,12 @@ else()
     add_library(APIJamoma_Editor
         $<TARGET_OBJECTS:APIJamoma_Misc_Object>
         $<TARGET_OBJECTS:APIJamoma_Editor_Object>)
+
+    if(Boost_FOUND)
+        # Allows the use of faster containers
+        target_compile_definitions(APIJamoma_Editor PUBLIC OSSIA_BOOST)
+        target_include_directories(APIJamoma_Editor PUBLIC ${Boost_INCLUDE_DIRS})
+    endif()
 
     # We can build up to this point without Jamoma
 
@@ -113,6 +128,7 @@ target_include_directories(APIJamoma PUBLIC
     "${CMAKE_CURRENT_LIST_DIR}"
     "${CMAKE_CURRENT_BINARY_DIR}" )
 
+
 if(OSSIA_SANITIZE)
     sanitize_build(APIJamoma)
     #debugmode_build(APIJamoma)
@@ -120,3 +136,5 @@ else()
     use_gold(APIJamoma)
 endif()
 add_linker_warnings(APIJamoma)
+
+target_compile_definitions(APIJamoma PRIVATE OSSIA_BOOST)

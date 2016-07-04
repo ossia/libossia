@@ -65,9 +65,9 @@ public:
 # pragma mark -
 # pragma mark Edition
 
-  void addState(const std::shared_ptr<State>) override;
+  void addState(std::shared_ptr<State>) override;
 
-  void removeState(const std::shared_ptr<State>) override;
+  void removeState(const std::shared_ptr<State>&) override;
 
 # pragma mark -
 # pragma mark Accessors
@@ -78,7 +78,7 @@ public:
 
   const shared_ptr<Expression> & getExpression() const override;
 
-  TimeEvent & setExpression(const std::shared_ptr<Expression>) override;
+  TimeEvent & setExpression(std::shared_ptr<Expression>) override;
 
   Status getStatus() const override;
 

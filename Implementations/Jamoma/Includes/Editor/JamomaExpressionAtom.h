@@ -42,7 +42,7 @@ public:
 # pragma mark Execution
 
   bool evaluate() const override;
-  
+
   void update() const override;
 
 # pragma mark -
@@ -73,10 +73,10 @@ private:
 # pragma mark -
 # pragma mark Implementation Specific
 
-  bool do_evaluation(const Value* first, const Value* second) const;
+  bool do_evaluation(const Value& first, const Value& second) const;
 
-  void firstValueCallback(const Value * value);
+  void firstValueCallback(const Value& value);
 
-  void secondValueCallback(const Value * value);
+  void secondValueCallback(const Value& value);
 
 };

@@ -73,7 +73,7 @@ public:
   template<typename... Args>
   void send(Args&&... args)
   {
-    for (auto callback : m_callbacks)
+    for (auto& callback : m_callbacks)
         callback(std::forward<Args>(args)...);
   }
 

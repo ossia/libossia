@@ -8,26 +8,26 @@
 
 namespace OSSIA
 {
-  shared_ptr<Mapper> Mapper::create(shared_ptr<Address> driverAddress,
-                                    shared_ptr<Address> drivenAddress,
-                                    const Value* drive)
-  {
-    return make_shared<JamomaMapper>(driverAddress, drivenAddress, drive);
-  }
+shared_ptr<Mapper> Mapper::create(shared_ptr<Address> driverAddress,
+                                  shared_ptr<Address> drivenAddress,
+                                  const Value* drive)
+{
+  return make_shared<JamomaMapper>(driverAddress, drivenAddress, drive);
+}
 }
 
 JamomaMapper::JamomaMapper(shared_ptr<Address> driverAddress,
                            shared_ptr<Address> drivenAddress,
                            const Value* drive) :
-JamomaTimeProcess(),
-mDriverAddress(driverAddress),
-mDrivenAddress(drivenAddress),
-mDrive(drive->clone()),
-mDriverValueObserved(false)
+  JamomaTimeProcess(),
+  mDriverAddress(driverAddress),
+  mDrivenAddress(drivenAddress),
+  mDrive(drive->clone()),
+  mDriverValueObserved(false)
 {}
 
 JamomaMapper::JamomaMapper(const JamomaMapper * other) :
-JamomaTimeProcess()
+  JamomaTimeProcess()
 {}
 
 shared_ptr<Mapper> JamomaMapper::clone() const
@@ -55,11 +55,12 @@ shared_ptr<StateElement> JamomaMapper::offset(const TimeValue& offset)
 
 shared_ptr<StateElement> JamomaMapper::state()
 {
-  if (!parent->getRunning())
+  auto& par = *parent;
+  if (!par.getRunning())
     throw runtime_error("parent time constraint is not running");
 
   // if date hasn't been processed already
-  TimeValue date = parent->getDate();
+  TimeValue date = par.getDate();
   if (date != mLastDate)
   {
     mLastDate = date;
@@ -69,7 +70,7 @@ shared_ptr<StateElement> JamomaMapper::state()
       std::lock_guard<std::mutex> lock(mValueToMapMutex);
 
       // edit a Message handling the mapped value
-      auto newval = computeValue(mValueToMap, mDrive);
+      auto newval = computeValue(*mValueToMap, *mDrive);
       mMessageToSend = Message::create(mDrivenAddress, *newval);
 
       // forget the former value
@@ -90,12 +91,12 @@ void JamomaMapper::start()
   if (!mDriverValueObserved)
   {
     mDriverValueCallbackIndex = mDriverAddress->addCallback(
-                [this] (const OSSIA::Value* val) {
-        driverValueCallback(val);
+          [this] (const OSSIA::Value& val) {
+      driverValueCallback(val);
     });
     mDriverValueObserved = true;
-    std::unique_ptr<OSSIA::Value> def_val{mDriverAddress->cloneValue()};
-    driverValueCallback(def_val.get());
+    auto def_val = mDriverAddress->cloneValue();
+    driverValueCallback(*def_val);
   }
 }
 
@@ -133,129 +134,108 @@ const Value * JamomaMapper::getDriving() const
   return mDrive;
 }
 
-std::unique_ptr<OSSIA::Value> JamomaMapper::computeValue(const Value* driver, const Value* drive)
+std::unique_ptr<OSSIA::Value> JamomaMapper::computeValue(const Value& driver, const Value& drive)
 {
-  switch (drive->getType())
+  switch (driver.getType())
   {
     case Value::Type::BEHAVIOR :
     {
-      auto behavior = static_cast<const Behavior*>(drive);
+      auto& b = static_cast<const Behavior&>(drive);
 
-      switch (driver->getType())
+
+      auto base_curve = b.value.get();
+      auto t = base_curve->getType();
+      switch(t.first)
       {
-        case Value::Type::BOOL :
+        case OSSIA::CurveSegmentType::FLOAT:
         {
-          auto b = static_cast<const Bool*>(driver);
-
-          try
+          auto& val = static_cast<const Float&>(driver);
+          switch(t.second)
           {
-            Curve<bool, bool>* curve = dynamic_cast<Curve<bool, bool>*>(behavior->value.get());
-            if (curve)
-              return std::make_unique<Bool>(curve->valueAt(b->value));
+            case OSSIA::CurveSegmentType::FLOAT:
+            {
+              auto curve = static_cast<JamomaCurve<float, float>*>(base_curve);
+              return std::make_unique<Float>(curve->valueAt(val.value));
+            }
+            case OSSIA::CurveSegmentType::INT:
+            {
+              auto curve = static_cast<JamomaCurve<float, int>*>(base_curve);
+              return std::make_unique<Int>(curve->valueAt(val.value));
+            }
+            case OSSIA::CurveSegmentType::BOOL:
+            {
+              auto curve = static_cast<JamomaCurve<float, bool>*>(base_curve);
+              return std::make_unique<Bool>(curve->valueAt(val.value));
+            }
           }
-          catch (std::bad_cast e) {};
-
-          try
-          {
-            Curve<bool, int>* curve = dynamic_cast<Curve<bool, int>*>(behavior->value.get());
-            if (curve)
-              return std::make_unique<Int>(curve->valueAt(b->value));
-          }
-          catch (std::bad_cast e) {};
-
-          try
-          {
-            Curve<bool, float>* curve = dynamic_cast<Curve<bool, float>*>(behavior->value.get());
-            if (curve)
-              return std::make_unique<Float>(curve->valueAt(b->value));
-          }
-          catch (std::bad_cast e) {};
         }
-
-        case Value::Type::INT :
+        case OSSIA::CurveSegmentType::INT:
         {
-          auto i = static_cast<const Int*>(driver);
-
-          try
+          auto& val = static_cast<const Int&>(driver);
+          switch(t.second)
           {
-            Curve<int, bool>* curve = dynamic_cast<Curve<int, bool>*>(behavior->value.get());
-            if (curve)
-              return std::make_unique<Bool>(curve->valueAt(i->value));
+            case OSSIA::CurveSegmentType::FLOAT:
+            {
+              auto curve = static_cast<JamomaCurve<int, float>*>(base_curve);
+              return std::make_unique<Float>(curve->valueAt(val.value));
+            }
+            case OSSIA::CurveSegmentType::INT:
+            {
+              auto curve = static_cast<JamomaCurve<int, int>*>(base_curve);
+              return std::make_unique<Int>(curve->valueAt(val.value));
+            }
+            case OSSIA::CurveSegmentType::BOOL:
+            {
+              auto curve = static_cast<JamomaCurve<int, bool>*>(base_curve);
+              return std::make_unique<Bool>(curve->valueAt(val.value));
+            }
           }
-          catch (std::bad_cast e) {};
-
-          try
-          {
-            Curve<int, int>* curve = dynamic_cast<Curve<int, int>*>(behavior->value.get());
-            if (curve)
-              return std::make_unique<Int>(curve->valueAt(i->value));
-          }
-          catch (std::bad_cast e) {};
-
-          try
-          {
-            Curve<int, float>* curve = dynamic_cast<Curve<int, float>*>(behavior->value.get());
-            if (curve)
-              return std::make_unique<Float>(curve->valueAt(i->value));
-          }
-          catch (std::bad_cast e) {};
         }
-
-        case Value::Type::FLOAT :
+        case OSSIA::CurveSegmentType::BOOL:
         {
-          auto f = static_cast<const Float*>(driver);
-
-          try
+          auto& val = static_cast<const Bool&>(driver);
+          switch(t.second)
           {
-            Curve<float, bool>* curve = dynamic_cast<Curve<float, bool>*>(behavior->value.get());
-            if (curve)
-              return std::make_unique<Bool>(curve->valueAt(f->value));
+            case OSSIA::CurveSegmentType::FLOAT:
+            {
+              auto curve = static_cast<JamomaCurve<bool, float>*>(base_curve);
+              return std::make_unique<Float>(curve->valueAt(val.value));
+            }
+            case OSSIA::CurveSegmentType::INT:
+            {
+              auto curve = static_cast<JamomaCurve<bool, int>*>(base_curve);
+              return std::make_unique<Int>(curve->valueAt(val.value));
+            }
+            case OSSIA::CurveSegmentType::BOOL:
+            {
+              auto curve = static_cast<JamomaCurve<bool, bool>*>(base_curve);
+              return std::make_unique<Bool>(curve->valueAt(val.value));
+            }
           }
-          catch (std::bad_cast e) {};
-
-          try
-          {
-            Curve<float, int>* curve = dynamic_cast<Curve<float, int>*>(behavior->value.get());
-            if (curve)
-              return std::make_unique<Int>(curve->valueAt(f->value));
-          }
-          catch (std::bad_cast e) {};
-
-          try
-          {
-            Curve<float, float>* curve = dynamic_cast<Curve<float, float>*>(behavior->value.get());
-            if (curve)
-              return std::make_unique<Float>(curve->valueAt(f->value));
-          }
-          catch (std::bad_cast e) {};
-        }
-
-        default :
-        {
-          throw runtime_error("none handled driver value type");
         }
       }
+      throw runtime_error("none handled driver value type");
 
       break;
     }
 
     case Value::Type::TUPLE :
     {
-      auto t_drive = static_cast<const Tuple*>(drive);
+      auto& t_drive = static_cast<const Tuple&>(drive);
 
-      if (driver->getType() == Value::Type::TUPLE)
+      if (driver.getType() == Value::Type::TUPLE)
       {
-        auto t_driver = static_cast<const Tuple*>(driver);
+        auto& t_driver = static_cast<const Tuple&>(driver);
 
         vector<const Value*> t_value;
-        vector<Value*>::const_iterator it_driver = t_driver->value.begin();
+        vector<Value*>::const_iterator it_driver = t_driver.value.begin();
 
-        for (const auto & e_drive : t_drive->value)
+        for (const auto & e_drive : t_drive.value)
         {
-          if (it_driver == t_driver->value.end())
+          if (it_driver == t_driver.value.end())
             break;
 
-          t_value.push_back(computeValue(*it_driver, e_drive).release());
+          t_value.push_back(computeValue(**it_driver, *e_drive).release());
           it_driver++;
         }
 
@@ -272,7 +252,7 @@ std::unique_ptr<OSSIA::Value> JamomaMapper::computeValue(const Value* driver, co
   return nullptr;
 }
 
-void JamomaMapper::driverValueCallback(const Value * value)
+void JamomaMapper::driverValueCallback(const Value& value)
 {
   std::lock_guard<std::mutex> lock(mValueToMapMutex);
 
@@ -284,5 +264,5 @@ void JamomaMapper::driverValueCallback(const Value * value)
   }
 
   // clone the new value
-  mValueToMap = value->clone();
+  mValueToMap = value.clone();
 }

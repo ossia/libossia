@@ -18,58 +18,60 @@ TimeProcess::~TimeProcess()
 # pragma mark -
 # pragma mark Implementation specific
 
-void JamomaTimeProcess::flattenAndFilter(shared_ptr<State> state, const shared_ptr<StateElement>& element)
+void JamomaTimeProcess::flattenAndFilter(State& state, const std::shared_ptr<StateElement>& element)
 {
-    if (!element)
+    auto element_ptr = element.get();
+    if (!element_ptr)
         return;
-    
-    switch (element->getType())
+
+    switch (element_ptr->getType())
     {
         case StateElement::Type::MESSAGE :
         {
-            shared_ptr<Message> messageToAppend = dynamic_pointer_cast<Message>(element);
+            auto messageToAppend = dynamic_cast<const Message*>(element_ptr);
             if(!messageToAppend)
                 return;
-            
+
             // find message with the same address to replace it
             bool found = false;
-            for (auto it = state->stateElements().begin();
-                 it != state->stateElements().end();
-                 it++)
+            for(std::shared_ptr<StateElement>& elt : state.stateElements())
             {
-                shared_ptr<Message> messageToCheck = dynamic_pointer_cast<Message>(*it);
-                if(!messageToCheck)
-                    return;
-                // replace if addresses are the same
-                if (messageToCheck->getAddress() == messageToAppend->getAddress())
-                {
-                    *it = element;
-                    found = true;
-                    break;
-                }
+              auto ptr = elt.get();
+
+              auto messageToCheck = dynamic_cast<const Message*>(ptr);
+              if(!messageToCheck)
+                  return;
+              // replace if addresses are the same
+              if (messageToCheck->getAddress() == messageToAppend->getAddress())
+              {
+                  elt = element;
+                  found = true;
+                  break;
+              }
             }
-            
+
             // if not found append it
             if (!found)
-                state->stateElements().push_back(element);
-            
+                state.stateElements().push_back(element);
+
             break;
         }
         case StateElement::Type::STATE :
         {
-            shared_ptr<State> stateToFlatAndFilter = dynamic_pointer_cast<State>(element);
+            auto stateToFlatAndFilter = dynamic_cast<const State*>(element_ptr);
             if(!stateToFlatAndFilter)
                 return;
+
             for (const auto& e : stateToFlatAndFilter->stateElements())
             {
                 flattenAndFilter(state, e);
             }
             break;
         }
-            
+
         default:
         {
-            state->stateElements().push_back(element);
+            state.stateElements().push_back(element);
             break;
         }
     }

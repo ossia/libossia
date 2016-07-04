@@ -18,7 +18,8 @@ mResult(false)
   // start destination observation
   if (mDestination->value->getAddress())
   {
-    mDestinationCallbackIndex = mDestination->value->getAddress()->addCallback(std::bind(&JamomaExpressionPulse::destinationCallback, this, _1));
+    mDestinationCallbackIndex = mDestination->value->getAddress()->addCallback(
+          [&] (const OSSIA::Value& result) { destinationCallback(result); });
   }
 }
 
@@ -107,10 +108,8 @@ const Destination* JamomaExpressionPulse::getDestination() const
 # pragma mark -
 # pragma mark Implementation Specific
 
-void JamomaExpressionPulse::destinationCallback(const Value * value)
+void JamomaExpressionPulse::destinationCallback(const Value& value)
 {
   mResult = true;
-  
-  for (auto callback : callbacks())
-    callback(true);
+  send(true);
 }

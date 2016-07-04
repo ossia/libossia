@@ -188,6 +188,7 @@ struct OSSIA_EXPORT Destination final : public Value
    \param std::shared_ptr<Node>
    \param std::vector<const #Value> value */
   Destination(std::shared_ptr<Node> v, std::vector<char>);
+  Destination(const Destination& other) = delete;
 
   /*! clone */
   Value * clone() const override;

@@ -65,7 +65,7 @@ public:
 
 # pragma mark -
 # pragma mark Execution
-  
+
   shared_ptr<StateElement> offset(const TimeValue&) override;
 
   shared_ptr<StateElement> state() override;
@@ -92,7 +92,10 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  void PatternConstraintCallback(const TimeValue&, const TimeValue&, std::shared_ptr<State>);
+  void PatternConstraintCallback(
+      const TimeValue&,
+      const TimeValue&,
+      const std::shared_ptr<State>&);
 
   void PatternStartEventCallback(TimeEvent::Status);
 

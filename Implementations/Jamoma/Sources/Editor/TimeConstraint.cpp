@@ -116,7 +116,7 @@ void JamomaTimeConstraint::stop()
   }
 }
 
-shared_ptr<State> JamomaTimeConstraint::offset(const TimeValue& date)
+const std::shared_ptr<State>& JamomaTimeConstraint::offset(const TimeValue& date)
 {
   if (mRunning)
     throw runtime_error("time constraint is running");
@@ -125,14 +125,15 @@ shared_ptr<State> JamomaTimeConstraint::offset(const TimeValue& date)
 
   // clear internal offset state
   const auto& processes = timeProcesses();
-  mOffsetState->stateElements().clear();
-  mOffsetState->stateElements().reserve(processes.size());
+  auto& stel = mCurrentState->stateElements();
+  stel.clear();
+  stel.reserve(processes.size());
 
   // get the offset state of each TimeProcess at offset
   for (const auto& timeProcess : processes)
   {
     if(auto state = timeProcess->offset(date))
-      mOffsetState->stateElements().push_back(std::move(state));
+      stel.push_back(std::move(state));
     else
       std::cerr << "Warning: empty state for process: " << typeid(*timeProcess).name() << "\n";
   }
@@ -140,21 +141,22 @@ shared_ptr<State> JamomaTimeConstraint::offset(const TimeValue& date)
   return mOffsetState;
 }
 
-shared_ptr<State> JamomaTimeConstraint::state()
+const std::shared_ptr<State>& JamomaTimeConstraint::state()
 {
   if (!mRunning)
     throw runtime_error("time constraint is not running");
 
   // clear internal current state
   const auto& processes = timeProcesses();
-  mCurrentState->stateElements().clear();
-  mCurrentState->stateElements().reserve(processes.size());
+  auto& stel = mCurrentState->stateElements();
+  stel.clear();
+  stel.reserve(processes.size());
 
   // get the state of each TimeProcess at current clock position and date
   for (const auto& timeProcess : processes)
   {
     if(auto state = timeProcess->state())
-      mCurrentState->stateElements().push_back(std::move(state));
+      stel.push_back(std::move(state));
     else
       std::cerr << "Warning: empty state for process: " << typeid(*timeProcess).name() << "\n";
   }

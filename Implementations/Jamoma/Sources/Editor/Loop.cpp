@@ -27,10 +27,10 @@ mPatternEndEventCallback(patternEndEventCallback),
 mPatternConstraintCallback(patternConstraintCallback)
 {
   mPatternStartNode = TimeNode::create();
-  mPatternStartNode->emplace(mPatternStartNode->timeEvents().begin(), std::bind(&JamomaLoop::PatternStartEventCallback, this, _1));
+  mPatternStartNode->emplace(mPatternStartNode->timeEvents().begin(), [&] (TimeEvent::Status result) { PatternStartEventCallback(result); });
 
   mPatternEndNode = TimeNode::create();
-  mPatternEndNode->emplace(mPatternEndNode->timeEvents().begin(), std::bind(&JamomaLoop::PatternEndEventCallback, this, _1));
+  mPatternEndNode->emplace(mPatternEndNode->timeEvents().begin(), [&] (TimeEvent::Status result) { PatternEndEventCallback(result); });
 
   // create a pattern TimeConstraint with all durations equal by default
   mPatternConstraint = TimeConstraint::create([=] (const TimeValue& position, const TimeValue& date, std::shared_ptr<State> state) { return PatternConstraintCallback(position, date, state); },
@@ -77,11 +77,11 @@ shared_ptr<StateElement> JamomaLoop::offset(const TimeValue& offset)
   mOffsetState->stateElements().clear();
 
   TimeValue patternOffset = std::fmod((double)offset, (double)mPatternConstraint->getDurationNominal());
-  flattenAndFilter(mOffsetState, mPatternConstraint->offset(patternOffset));
+  flattenAndFilter(*mOffsetState, mPatternConstraint->offset(patternOffset));
 
   // compile mOffsetState with all HAPPENED event's states
   if (mPatternConstraint->getStartEvent()->getStatus() == TimeEvent::Status::HAPPENED)
-    flattenAndFilter(mOffsetState, mPatternConstraint->getStartEvent()->getState());
+    flattenAndFilter(*mOffsetState, mPatternConstraint->getStartEvent()->getState());
 
   return mOffsetState;
 }
@@ -109,7 +109,7 @@ shared_ptr<StateElement> JamomaLoop::state()
     // add the state of each newly HAPPENED TimeEvent
     for (const auto& timeEvent : statusChangedEvents)
       if (timeEvent->getStatus() == TimeEvent::Status::HAPPENED)
-        flattenAndFilter(mCurrentState, timeEvent->getState());
+        flattenAndFilter(*mCurrentState, timeEvent->getState());
 
     // make time flow for the pattern constraint
     if (mPatternConstraint->getRunning())
@@ -144,7 +144,7 @@ shared_ptr<StateElement> JamomaLoop::state()
 
       // if the pattern constraint is still running after the tick
       if (mPatternConstraint->getRunning())
-        flattenAndFilter(mCurrentState, mPatternConstraint->state());
+        flattenAndFilter(*mCurrentState, mPatternConstraint->state());
     }
 
     // if the pattern end event happened : stop and reset the loop
@@ -203,12 +203,15 @@ const shared_ptr<TimeNode> JamomaLoop::getPatternEndTimeNode() const
   return mPatternEndNode;
 }
 
-void JamomaLoop::PatternConstraintCallback(const TimeValue& position, const TimeValue& date, std::shared_ptr<State> state)
+void JamomaLoop::PatternConstraintCallback(
+    const TimeValue& position,
+    const TimeValue& date,
+    const std::shared_ptr<State>& state)
 {
   if (mPatternConstraintCallback)
   {
     // add the state of the pattern TimeConstraint
-    flattenAndFilter(mCurrentState, mPatternConstraint->state());
+    flattenAndFilter(*mCurrentState, mPatternConstraint->state());
 
     (mPatternConstraintCallback)(position, date, mCurrentState);
   }

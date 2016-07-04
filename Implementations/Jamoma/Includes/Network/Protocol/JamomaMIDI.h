@@ -412,12 +412,8 @@ class MIDIAddress final :
 
         void valueCallback(const OSSIA::Value& val)
         {
-            this->setValue(val);
-            auto local_val = mValue.get();
-            for(auto& cb : CallbackContainer::callbacks())
-            {
-                cb(local_val);
-            }
+          this->setValue(val);
+          send(*mValue);
         }
 };
 

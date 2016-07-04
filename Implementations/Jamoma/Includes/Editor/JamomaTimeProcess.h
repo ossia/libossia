@@ -53,8 +53,8 @@ public:
 # pragma mark Implementation specific
 #endif
 
-  /*! append each message of the state to the current state in order to eliminate address redundancy 
+  /*! append each message of the state to the current state in order to eliminate address redundancy
    \param shared_ptr<State> the State to fill
    \param shared_ptr<StateElement> the StateElement to store */
-  void flattenAndFilter(shared_ptr<State>, const shared_ptr<StateElement>&);
+  void flattenAndFilter(State& state, const std::shared_ptr<StateElement>& element);
 };

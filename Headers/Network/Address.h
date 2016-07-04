@@ -32,7 +32,7 @@ class Node;
 
 /*! to get the value back
  \param the returned value */
-using ValueCallback = std::function<void(const Value *)>;
+using ValueCallback = std::function<void(const Value&)>;
 
 class OSSIA_EXPORT Address : public CallbackContainer<ValueCallback>
 {
