@@ -88,7 +88,7 @@ valueAt(X abscissa) const
 # pragma mark -
 # pragma mark Accessors
 template<typename T>
-constexpr OSSIA::CurveSegmentType OssiaType;
+constexpr nullptr_t OssiaType{};
 template<>
 constexpr OSSIA::CurveSegmentType OssiaType<int> = OSSIA::CurveSegmentType::INT;
 template<>

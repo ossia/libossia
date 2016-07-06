@@ -283,11 +283,8 @@ struct Generic final : public Value
             auto d = static_cast<const Destination*>(&v);
             if (d->value->getAddress())
             {
-                const Value* c = d->value->getAddress()->cloneValue(d->index);
-                bool result = *this == *c;
-
-                delete c;
-                return result;
+                auto c = d->value->getAddress()->cloneValue(d->index);
+                return *this == *c;
             }
         }
         case Value::Type::BEHAVIOR:
@@ -354,11 +351,8 @@ struct Generic final : public Value
             auto d = static_cast<const Destination*>(&v);
             if (d->value->getAddress())
             {
-                const Value* c = d->value->getAddress()->cloneValue(d->index);
-                bool result = *this > *c;
-
-                delete c;
-                return result;
+                auto c = d->value->getAddress()->cloneValue(d->index);
+                return *this > *c;
             }
         }
         case Value::Type::BEHAVIOR:
@@ -420,11 +414,8 @@ struct Generic final : public Value
             auto d = static_cast<const Destination*>(&v);
             if (d->value->getAddress())
             {
-                const Value* c = d->value->getAddress()->cloneValue(d->index);
-                bool result = *this >= *c;
-
-                delete c;
-                return result;
+                auto c = d->value->getAddress()->cloneValue(d->index);
+                return *this >= *c;
             }
         }
         case Value::Type::BEHAVIOR:
