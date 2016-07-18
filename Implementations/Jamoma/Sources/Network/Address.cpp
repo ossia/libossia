@@ -389,6 +389,12 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
 
 void JamomaAddress::initValue()
 {
+  if(mValue)
+  {
+      delete mValue;
+      mValue = nullptr;
+  }
+
   if (mValueType == Value::Type::IMPULSE)
     mValue = new Impulse();
   else if (mValueType == Value::Type::BOOL)
