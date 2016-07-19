@@ -53,6 +53,9 @@ public:
 # pragma mark Life cycle
 #endif
 
+  Value(Type t):
+      m_type{t} { }
+
   /*! clone */
   virtual Value * clone() const = 0;
 
@@ -92,7 +95,6 @@ public:
   Type getType() const {return m_type;}
 
 protected:
-
   Type m_type;
 };
 
@@ -105,29 +107,34 @@ protected:
 struct OSSIA_EXPORT Impulse final : public Value
 {
   /*! constructor */
-  Impulse();
+    Impulse():
+        Value{Type::IMPULSE}
+    {
+    }
+
+  virtual ~Impulse();
   Impulse(const Impulse&) = delete;
 
   /*! clone */
   Value * clone() const override;
 
   /*! equal operator */
-  bool operator== (const Value&) const override;
+  bool operator== (const Value&) const override { return true; }
 
   /*! different operator */
-  bool operator!= (const Value&) const override;
+  bool operator!= (const Value&) const override { return false; }
 
   /*! greater than operator */
-  bool operator> (const Value&) const override;
+  bool operator> (const Value&) const override { return false; }
 
   /*! greater than and equal operator */
-  bool operator>= (const Value&) const override;
+  bool operator>= (const Value&) const override { return true; }
 
   /*! less than operator */
-  bool operator< (const Value&) const override;
+  bool operator< (const Value&) const override { return false; }
 
   /*! less than and equal operator */
-  bool operator<= (const Value&) const override;
+  bool operator<= (const Value&) const override { return true; }
 };
 
 #if 0
@@ -141,7 +148,13 @@ struct OSSIA_EXPORT Bool final : public Value
   bool value;
 
   /*! constructor */
-  Bool(bool = false);
+  Bool(bool v = false) :
+      Value{Type::BOOL},
+      value(v)
+  {
+  }
+
+  virtual ~Bool();
   Bool(const Bool&) = delete;
 
   /*! clone */
@@ -181,7 +194,12 @@ struct OSSIA_EXPORT Int final : public Value
 
   /*! constructor
    \param int value */
-  Int(int = 0);
+  Int(int v = 0) :
+      Value{Type::INT},
+      value(v)
+  {
+  }
+  virtual ~Int();
   Int(const Int&) = delete;
 
   /*! clone */
@@ -218,7 +236,13 @@ struct OSSIA_EXPORT Float final : public Value
 
   /*! constructor
    \param float value */
-  Float(float = 0.);
+  Float(float v = 0.) :
+      Value{Type::FLOAT},
+      value(v)
+  {
+  }
+
+  virtual ~Float();
   Float(const Float&) = delete;
 
   /*! clone */
@@ -255,7 +279,12 @@ struct OSSIA_EXPORT Char final : public Value
 
   /*! constructor
    \param char value */
-  Char(char = 0x00);
+  Char(char v = 0x00) :
+      Value{Type::CHAR},
+      value(v)
+  {
+  }
+  virtual ~Char();
   Char(const Char&) = delete;
 
   /*! clone */
@@ -292,7 +321,12 @@ struct OSSIA_EXPORT String final : public Value
 
   /*! constructor
    \param std::string value */
-  String(std::string = "");
+  String(std::string v = "") :
+      Value{Type::STRING},
+      value(std::move(v))
+  {
+  }
+  virtual ~String();
   String(const String&) = delete;
 
   /*! clone */
@@ -328,9 +362,12 @@ struct OSSIA_EXPORT Tuple final : public Value
   std::vector<Value*> value;
 
   /*! constructor for an empty tuple */
-  Tuple();
+  Tuple():
+      Value{Type::TUPLE}
+  {
+  }
   Tuple(const Tuple&) = delete;
-  ~Tuple();
+  virtual ~Tuple();
 
   /*! Mechanism for building a Tuple with a list of
    * values, to remove the need for spurious memory allocations.
@@ -338,7 +375,8 @@ struct OSSIA_EXPORT Tuple final : public Value
    */
   struct ValueInit {} ;
   template<typename... Args>
-  explicit Tuple(ValueInit, Args&&... args)
+  explicit Tuple(ValueInit, Args&&... args):
+      Value{Type::TUPLE}
   {
       value.reserve(sizeof...(args));
       append(std::forward<Args>(args)...);
@@ -354,17 +392,31 @@ struct OSSIA_EXPORT Tuple final : public Value
 
   /*! constructor for one value
    \param const value */
-  explicit Tuple(const Value* v);
+  explicit Tuple(const Value* v):
+      Value{Type::TUPLE}
+  {
+      value.push_back(v->clone());
+  }
 
   /*! constructor for any number of values
   \param const value
   \param const value
   \param ... */
-  Tuple(std::initializer_list<const Value*>);
+  Tuple(std::initializer_list<const Value*> v):
+      Value{Type::TUPLE}
+  {
+      for (const auto & e : v)
+          value.push_back(e->clone());
+  }
 
   /*! constructor passing a value vector
    \param std::vector<const #Value> value */
-  Tuple(const std::vector<const Value*>&);
+  Tuple(const std::vector<const Value*>& v):
+      Value{Type::TUPLE}
+  {
+      for (const auto & e : v)
+          value.push_back(e->clone());
+  }
 
   /*! clone */
   Value * clone() const override;

@@ -140,7 +140,7 @@ public:
 
   Value * convertTTValueIntoValue(const TTValue&, Value::Type) const;
 
-  void convertValueIntoTTValue(const Value *, TTValue &) const;
+  void convertValueIntoTTValue(const Value &, TTValue &) const;
 
   string buildNodePath(shared_ptr<Node>) const;
 

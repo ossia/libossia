@@ -255,17 +255,17 @@ Address & JamomaAddress::setDomain(shared_ptr<Domain> domain)
   {
       if (mDomain->getValues().empty())
       {
-          convertValueIntoTTValue(mDomain->getMin(), v);
+          convertValueIntoTTValue(*mDomain->getMin(), v);
           range.append(v);
 
-          convertValueIntoTTValue(mDomain->getMax(), v);
+          convertValueIntoTTValue(*mDomain->getMax(), v);
           range.append(v);
       }
       else
       {
           for (const auto & e : mDomain->getValues())
           {
-              convertValueIntoTTValue(e, v);
+              convertValueIntoTTValue(*e, v);
               range.append(v);
           }
       }
@@ -437,7 +437,7 @@ void JamomaAddress::getValue(TTValue& value) const
   std::lock_guard<std::mutex> lock(mValueMutex);
 
   // convert current value
-  convertValueIntoTTValue(mValue, value);
+  convertValueIntoTTValue(*mValue, value);
 }
 
 void JamomaAddress::setValue(const TTValue& value)
@@ -605,9 +605,9 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
   return nullptr;
 }
 
-void JamomaAddress::convertValueIntoTTValue(const Value * value, TTValue & v) const
+void JamomaAddress::convertValueIntoTTValue(const Value& value, TTValue & v) const
 {
-  switch (value->getType())
+  switch (value.getType())
   {
     case Value::Type::IMPULSE :
     {
@@ -616,43 +616,43 @@ void JamomaAddress::convertValueIntoTTValue(const Value * value, TTValue & v) co
 
     case Value::Type::BOOL :
     {
-      auto b = static_cast<const Bool*>(value);
-      v = TTBoolean(b->value);
+      auto& b = static_cast<const Bool&>(value);
+      v = TTBoolean(b.value);
       break;
     }
 
     case Value::Type::INT :
     {
-      auto i = static_cast<const Int*>(value);
-      v = TTInt32(i->value);
+      auto& i = static_cast<const Int&>(value);
+      v = TTInt32(i.value);
       break;
     }
 
     case Value::Type::FLOAT :
     {
-      auto f = static_cast<const Float*>(value);
-      v = TTFloat64(f->value);
+      auto& f = static_cast<const Float&>(value);
+      v = TTFloat64(f.value);
       break;
     }
 
     case Value::Type::CHAR :
     {
-      auto c = static_cast<const Char*>(value);
-      v = TTSymbol(c->value);
+      auto& c = static_cast<const Char&>(value);
+      v = TTSymbol(c.value);
       break;
     }
 
     case Value::Type::STRING :
     {
-      auto s = static_cast<const String*>(value);
-      v = TTSymbol(s->value);
+      auto& s = static_cast<const String&>(value);
+      v = TTSymbol(s.value);
       break;
     }
 
     case Value::Type::DESTINATION :
     {
-      auto d = static_cast<const Destination*>(value);
-      v = TTAddress(buildNodePath(d->value).data());
+      auto& d = static_cast<const Destination&>(value);
+      v = TTAddress(buildNodePath(d.value).data());
       break;
     }
 
@@ -663,12 +663,12 @@ void JamomaAddress::convertValueIntoTTValue(const Value * value, TTValue & v) co
 
     case Value::Type::TUPLE :
     {
-      auto t = static_cast<const Tuple*>(value);
+      auto& t = static_cast<const Tuple&>(value);
 
-      for (const auto & e : t->value)
+      for (const auto & e : t.value)
       {
         TTValue n;
-        convertValueIntoTTValue(e, n);
+        convertValueIntoTTValue(*e, n);
 
         if (n.size())
           v.append(n[0]);

@@ -4,1687 +4,387 @@
 
 using namespace OSSIA;
 
-Value::~Value()
-{}
+
+template<typename Kind, typename T>
+bool equal(const T& lhs, const OSSIA::Value& rhs)
+{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 == v2; }); }
+
+template<typename Kind, typename T>
+bool different(const T& lhs, const OSSIA::Value& rhs)
+{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 != v2; }); }
+
+
+template<typename Kind, typename T>
+bool greater(const T& lhs, const OSSIA::Value& rhs)
+{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 > v2; }); }
+
+template<typename Kind, typename T>
+bool greater_equal(const T& lhs, const OSSIA::Value& rhs)
+{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 >= v2; }); }
+
+
+template<typename Kind, typename T>
+bool smaller(const T& lhs, const OSSIA::Value& rhs)
+{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 < v2; }); }
+
+template<typename Kind, typename T>
+bool smaller_equal(const T& lhs, const OSSIA::Value& rhs)
+{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 <= v2; }); }
+
+struct Impulse_T
+{
+        template<typename T>
+        friend bool operator==(const T&, Impulse_T) { return true; }
+        template<typename T>
+        friend bool operator!=(const T&, Impulse_T) { return false; }
+        template<typename T>
+        friend bool operator<=(const T&, Impulse_T) { return true; }
+        template<typename T>
+        friend bool operator>=(const T&, Impulse_T) { return true; }
+        template<typename T>
+        friend bool operator<(const T&, Impulse_T) { return false; }
+        template<typename T>
+        friend bool operator>(const T&, Impulse_T) { return true; }
+};
+
+struct NumericValue
+{
+        template<typename T, typename Fun>
+        static bool apply(const T& lhs, const OSSIA::Value& v, Fun fun)
+        {
+            switch (v.getType())
+            {
+                case Value::Type::IMPULSE :
+                {
+                    return fun(lhs.value, Impulse_T{});
+                }
+                case Value::Type::BOOL :
+                {
+                    return fun(lhs.value, static_cast<const Bool&>(v).value);
+                }
+                case Value::Type::INT :
+                {
+                    return fun(lhs.value, static_cast<const Int&>(v).value);
+                }
+                case Value::Type::FLOAT :
+                {
+                    return fun(lhs.value, static_cast<const Float&>(v).value);
+                }
+                case Value::Type::CHAR :
+                {
+                    return fun(lhs.value, static_cast<const Char&>(v).value);
+                }
+                case Value::Type::TUPLE :
+                {
+                    auto& t = static_cast<const Tuple&>(v);
+                    return (t.value.size() == 1) && (fun(lhs, *t.value[0]));
+                }
+                case Value::Type::DESTINATION :
+                {
+                    auto& d = static_cast<const Destination&>(v);
+                    if (d.value->getAddress())
+                    {
+                        auto c = d.value->getAddress()->cloneValue(d.index);
+                        return fun(lhs, *c);
+                    }
+                    return false;
+                }
+                default :
+                    return false;
+            }
+        }
+};
+
+struct StringValue
+{
+        template<typename Fun>
+        static bool apply(const String& lhs, const OSSIA::Value& v, Fun fun)
+        {
+            switch (v.getType())
+            {
+                case Value::Type::IMPULSE :
+                {
+                    return fun(lhs.value, Impulse_T{});
+                }
+                case Value::Type::STRING :
+                {
+                    return fun(lhs.value, static_cast<const String&>(v).value);
+                }
+                case Value::Type::TUPLE :
+                {
+                    auto& t = static_cast<const Tuple&>(v);
+                    return (t.value.size() == 1) && (fun(lhs, *t.value[0]));
+                }
+                case Value::Type::DESTINATION :
+                {
+                    auto& d = static_cast<const Destination&>(v);
+                    if (d.value->getAddress())
+                    {
+                        auto c = d.value->getAddress()->cloneValue(d.index);
+                        return fun(lhs, *c);
+                    }
+                    return false;
+                }
+                default :
+                    return false;
+            }
+        }
+};
+
+struct TupleValue
+{
+        template<typename Fun>
+        static bool apply(const Tuple& lhs, const OSSIA::Value& v, Fun fun)
+        {
+            switch (v.getType())
+            {
+                case Value::Type::IMPULSE :
+                {
+                    return fun(lhs.value, Impulse_T{});
+                }
+
+                case Value::Type::TUPLE :
+                {
+                    auto& t = static_cast<const Tuple&>(v);
+
+                    if (lhs.value.size() != t.value.size())
+                        return false;
+
+                    bool result = true;
+                    auto tit = t.value.begin();
+                    for (const auto& val : lhs.value)
+                    {
+                        result &= fun(*val, **tit);
+                        if (!result)
+                            break;
+                        tit++;
+                    }
+
+                    return result;
+                }
+
+                default :
+                {
+                    if (lhs.value.size() == 1)
+                        return fun(*lhs.value[0], v);
+
+                    return false;
+                }
+            }
+        }
+};
+
+struct DestinationValue
+{
+        template<typename Fun>
+        static bool apply(const Destination& lhs, const OSSIA::Value& v, Fun fun)
+        {
+            switch (v.getType())
+            {
+                case Value::Type::IMPULSE :
+                {
+                    return fun(lhs.value, Impulse_T{});
+                }
+
+                case Value::Type::DESTINATION :
+                {
+                    auto& d = static_cast<const Destination&>(v);
+
+                    // if there are addresses compare values
+                    if (lhs.value->getAddress() && d.value->getAddress())
+                    {
+                        auto c1 = lhs.value->getAddress()->cloneValue(lhs.index);
+                        auto c2 = d.value->getAddress()->cloneValue(d.index);
+                        return fun(*c1, *c2);
+                    }
+
+                    // if no addresses, compare nodes
+                    else if (!lhs.value->getAddress() && !d.value->getAddress())
+                    {
+                        return fun(lhs.value, d.value);
+                    }
+                    // TODO fallthrough ??
+                }
+
+                default :
+                {
+                    if (lhs.value->getAddress())
+                    {
+                        auto c = lhs.value->getAddress()->cloneValue(lhs.index);
+                        return fun(*c, v);
+                    }
+
+                    return false;
+                }
+            }
+        }
+};
+
+Value::~Value() = default;
 
 # pragma mark -
 # pragma mark Impulse
 
-Impulse::Impulse()
-{
-  m_type = Type::IMPULSE;
-}
+
+
+Impulse::~Impulse() = default;
 
 Value * Impulse::clone() const
 {
-  return new Impulse();
-}
-
-bool Impulse::operator== (const Value&) const
-{
-  //! \note an impulse is equal to anything
-  return true;
-}
-
-bool Impulse::operator!= (const Value&) const
-{
-  //! \note an impulse cannot be different to anything
-  return false;
-}
-
-bool Impulse::operator> (const Value&) const
-{
-  return false;
-}
-
-bool Impulse::operator>= (const Value&) const
-{
-  return true;
-}
-
-bool Impulse::operator< (const Value&) const
-{
-  return false;
-}
-
-bool Impulse::operator<= (const Value&) const
-{
-  return true;
+    return new Impulse();
 }
 
 # pragma mark -
 # pragma mark Bool
 
-Bool::Bool(bool v) : value(v)
-{
-  m_type = Type::BOOL;
-}
+
+
+Bool::~Bool() = default;
 
 Value * Bool::clone() const
 {
-  return new Bool(value);
+    return new Bool(value);
 }
 
 bool Bool::operator== (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return true;
-    }
-    case Value::Type::BOOL :
-    {
-      auto b = static_cast<const Bool*>(&v);
-      return value == b->value;
-    }
-    case Value::Type::INT :
-    {
-      auto i = static_cast<const Int*>(&v);
-      return value == i->value;
-    }
-    case Value::Type::FLOAT :
-    {
-      auto f = static_cast<const Float*>(&v);
-      return value == f->value;
-    }
-    case Value::Type::CHAR :
-    {
-      auto c = static_cast<const Char*>(&v);
-      return value == c->value;
-    }
-    case Value::Type::STRING :
-    {
-      return false;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-      if (t->value.size() == 1)
-        return *this == *t->value[0];
-      else
-        return false;
-    }
-    case Value::Type::GENERIC :
-    {
-      return false;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (d->value->getAddress())
-      {
-        auto c = d->value->getAddress()->cloneValue(d->index);
-        return *this == *c;
-      }
-    }
-    case Value::Type::BEHAVIOR :
-    {
-      return false;
-    }
-    default :
-      return false;
-  }
-}
+{ return equal<NumericValue>(*this, v); }
 
 bool Bool::operator!= (const Value& v) const
-{
-  return !(*this == v);
-}
+{ return different<NumericValue>(*this, v); }
 
 bool Bool::operator> (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return false;
-    }
-    case Value::Type::BOOL :
-    {
-      auto b = static_cast<const Bool*>(&v);
-      return value > b->value;
-    }
-    case Value::Type::INT :
-    {
-      auto i = static_cast<const Int*>(&v);
-      return value > i->value;
-    }
-    case Value::Type::FLOAT :
-    {
-      auto f = static_cast<const Float*>(&v);
-      return value > f->value;
-    }
-    case Value::Type::CHAR :
-    {
-      auto c = static_cast<const Char*>(&v);
-      return value > c->value;
-    }
-    case Value::Type::STRING :
-    {
-      return false;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-      if (t->value.size() == 1)
-        return *this > *t->value[0];
-      else
-        return false;
-    }
-    case Value::Type::GENERIC :
-    {
-      return false;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (d->value->getAddress())
-      {
-        auto c = d->value->getAddress()->cloneValue(d->index);
-        return *this > *c;
-      }
-    }
-    case Value::Type::BEHAVIOR :
-    {
-      return false;
-    }
-    default :
-      return false;
-  }
-}
+{ return greater<NumericValue>(*this, v); }
 
 bool Bool::operator>= (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return true;
-    }
-    case Value::Type::BOOL :
-    {
-      auto b = static_cast<const Bool*>(&v);
-      return value >= b->value;
-    }
-    case Value::Type::INT :
-    {
-      auto i = static_cast<const Int*>(&v);
-      return value >= i->value;
-    }
-    case Value::Type::FLOAT :
-    {
-      auto f = static_cast<const Float*>(&v);
-      return value >= f->value;
-    }
-    case Value::Type::CHAR :
-    {
-      auto c = static_cast<const Char*>(&v);
-      return value >= c->value;
-    }
-    case Value::Type::STRING :
-    {
-      return false;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-      if (t->value.size() == 1)
-        return *this >= *t->value[0];
-      else
-        return false;
-    }
-    case Value::Type::GENERIC :
-    {
-      return false;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (d->value->getAddress())
-      {
-          auto c = d->value->getAddress()->cloneValue(d->index);
-          return *this >= *c;
-      }
-    }
-    case Value::Type::BEHAVIOR :
-    {
-      return false;
-    }
-    default :
-      return false;
-  }
-}
+{ return greater_equal<NumericValue>(*this, v); }
 
 bool Bool::operator< (const Value& v) const
-{
-    switch (v.getType())
-    {
-      case Value::Type::IMPULSE :
-      {
-        return false;
-      }
-      case Value::Type::BOOL :
-      {
-        auto b = static_cast<const Bool*>(&v);
-        return value < b->value;
-      }
-      case Value::Type::INT :
-      {
-        auto i = static_cast<const Int*>(&v);
-        return value < i->value;
-      }
-      case Value::Type::FLOAT :
-      {
-        auto f = static_cast<const Float*>(&v);
-        return value < f->value;
-      }
-      case Value::Type::CHAR :
-      {
-        auto c = static_cast<const Char*>(&v);
-        return value < c->value;
-      }
-      case Value::Type::STRING :
-      {
-        return false;
-      }
-      case Value::Type::TUPLE :
-      {
-        auto t = static_cast<const Tuple*>(&v);
-        if (t->value.size() == 1)
-          return *this < *t->value[0];
-        else
-          return false;
-      }
-      case Value::Type::GENERIC :
-      {
-        return false;
-      }
-      case Value::Type::DESTINATION :
-      {
-        auto d = static_cast<const Destination*>(&v);
-        if (d->value->getAddress())
-        {
-            auto c = d->value->getAddress()->cloneValue(d->index);
-            return *this < *c;
-        }
-      }
-      case Value::Type::BEHAVIOR :
-      {
-        return false;
-      }
-      default :
-        return false;
-    }
-}
+{ return smaller<NumericValue>(*this, v); }
 
 bool Bool::operator<= (const Value& v) const
-{
-    switch (v.getType())
-    {
-      case Value::Type::IMPULSE :
-      {
-        return true;
-      }
-      case Value::Type::BOOL :
-      {
-        auto b = static_cast<const Bool*>(&v);
-        return value <= b->value;
-      }
-      case Value::Type::INT :
-      {
-        auto i = static_cast<const Int*>(&v);
-        return value <= i->value;
-      }
-      case Value::Type::FLOAT :
-      {
-        auto f = static_cast<const Float*>(&v);
-        return value <= f->value;
-      }
-      case Value::Type::CHAR :
-      {
-        auto c = static_cast<const Char*>(&v);
-        return value <= c->value;
-      }
-      case Value::Type::STRING :
-      {
-        return false;
-      }
-      case Value::Type::TUPLE :
-      {
-        auto t = static_cast<const Tuple*>(&v);
-        if (t->value.size() == 1)
-          return *this <= *t->value[0];
-        else
-          return false;
-      }
-      case Value::Type::GENERIC :
-      {
-        return false;
-      }
-      case Value::Type::DESTINATION :
-      {
-        auto d = static_cast<const Destination*>(&v);
-        if (d->value->getAddress())
-        {
-            auto c = d->value->getAddress()->cloneValue(d->index);
-            return *this <= *c;
-        }
-      }
-      case Value::Type::BEHAVIOR :
-      {
-        return false;
-      }
-      default :
-        return false;
-    }
-}
+{ return smaller_equal<NumericValue>(*this, v); }
 
 # pragma mark -
 # pragma mark Int
 
-Int::Int(int v) : value(v)
-{
-  m_type = Type::INT;
-}
+
+
+Int::~Int() = default;
 
 Value * Int::clone() const
 {
-  return new Int(value);
+    return new Int(value);
 }
 
 bool Int::operator== (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return true;
-    }
-    case Value::Type::BOOL :
-    {
-      auto b = static_cast<const Bool*>(&v);
-      return value == b->value;
-    }
-    case Value::Type::INT :
-    {
-      auto i = static_cast<const Int*>(&v);
-      return value == i->value;
-    }
-    case Value::Type::FLOAT :
-    {
-      auto f = static_cast<const Float*>(&v);
-      return value == f->value;
-    }
-    case Value::Type::CHAR :
-    {
-      auto c = static_cast<const Char*>(&v);
-      return value == c->value;
-    }
-    case Value::Type::STRING :
-    {
-      return false;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-      if (t->value.size() == 1)
-        return *this == *t->value[0];
-      else
-        return false;
-    }
-    case Value::Type::GENERIC :
-    {
-      return false;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (d->value->getAddress())
-      {
-          auto c = d->value->getAddress()->cloneValue(d->index);
-          return *this == *c;
-      }
-    }
-    case Value::Type::BEHAVIOR :
-    {
-      return false;
-    }
-    default :
-      return false;
-  }
-}
+{ return equal<NumericValue>(*this, v); }
 
 bool Int::operator!= (const Value& v) const
-{
-  return !(*this == v);
-}
+{ return different<NumericValue>(*this, v); }
 
 bool Int::operator> (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return false;
-    }
-    case Value::Type::BOOL :
-    {
-      auto b = static_cast<const Bool*>(&v);
-      return value > b->value;
-    }
-    case Value::Type::INT :
-    {
-      auto i = static_cast<const Int*>(&v);
-      return value > i->value;
-    }
-    case Value::Type::FLOAT :
-    {
-      auto f = static_cast<const Float*>(&v);
-      return value > f->value;
-    }
-    case Value::Type::CHAR :
-    {
-      auto c = static_cast<const Char*>(&v);
-      return value > c->value;
-    }
-    case Value::Type::STRING :
-    {
-      return false;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-      if (t->value.size() == 1)
-        return *this > *t->value[0];
-      else
-        return false;
-    }
-    case Value::Type::GENERIC :
-    {
-      return false;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (d->value->getAddress())
-      {
-        auto c = d->value->getAddress()->cloneValue(d->index);
-        return *this > *c;
-      }
-    }
-    case Value::Type::BEHAVIOR :
-    {
-      return false;
-    }
-    default :
-      return false;
-  }
-}
+{ return greater<NumericValue>(*this, v); }
 
 bool Int::operator>= (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return true;
-    }
-    case Value::Type::BOOL :
-    {
-      auto b = static_cast<const Bool*>(&v);
-      return value >= b->value;
-    }
-    case Value::Type::INT :
-    {
-      auto i = static_cast<const Int*>(&v);
-      return value >= i->value;
-    }
-    case Value::Type::FLOAT :
-    {
-      auto f = static_cast<const Float*>(&v);
-      return value >= f->value;
-    }
-    case Value::Type::CHAR :
-    {
-      auto c = static_cast<const Char*>(&v);
-      return value >= c->value;
-    }
-    case Value::Type::STRING :
-    {
-      return false;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-      if (t->value.size() == 1)
-        return *this >= *t->value[0];
-      else
-        return false;
-    }
-    case Value::Type::GENERIC :
-    {
-      return false;
-    }
-    case Value::Type::DESTINATION :
-    {
-      return false;
-    }
-    case Value::Type::BEHAVIOR :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (d->value->getAddress())
-      {
-          auto c = d->value->getAddress()->cloneValue(d->index);
-          return *this >= *c;
-      }
-    }
-    default :
-      return false;
-  }
-}
+{ return greater_equal<NumericValue>(*this, v); }
 
 bool Int::operator< (const Value& v) const
-{
-    switch (v.getType())
-    {
-      case Value::Type::IMPULSE :
-      {
-        return false;
-      }
-      case Value::Type::BOOL :
-      {
-        auto b = static_cast<const Bool*>(&v);
-        return value < b->value;
-      }
-      case Value::Type::INT :
-      {
-        auto i = static_cast<const Int*>(&v);
-        return value < i->value;
-      }
-      case Value::Type::FLOAT :
-      {
-        auto f = static_cast<const Float*>(&v);
-        return value < f->value;
-      }
-      case Value::Type::CHAR :
-      {
-        auto c = static_cast<const Char*>(&v);
-        return value < c->value;
-      }
-      case Value::Type::STRING :
-      {
-        return false;
-      }
-      case Value::Type::TUPLE :
-      {
-        auto t = static_cast<const Tuple*>(&v);
-        if (t->value.size() == 1)
-          return *this < *t->value[0];
-        else
-          return false;
-      }
-      case Value::Type::GENERIC :
-      {
-        return false;
-      }
-      case Value::Type::DESTINATION :
-      {
-        auto d = static_cast<const Destination*>(&v);
-        if (d->value->getAddress())
-        {
-            auto c = d->value->getAddress()->cloneValue(d->index);
-            return *this < *c;
-        }
-      }
-      case Value::Type::BEHAVIOR :
-      {
-        return false;
-      }
-      default :
-        return false;
-    }
-}
+{ return smaller<NumericValue>(*this, v); }
 
 bool Int::operator<= (const Value& v) const
-{
-    switch (v.getType())
-    {
-      case Value::Type::IMPULSE :
-      {
-        return true;
-      }
-      case Value::Type::BOOL :
-      {
-        auto b = static_cast<const Bool*>(&v);
-        return value <= b->value;
-      }
-      case Value::Type::INT :
-      {
-        auto i = static_cast<const Int*>(&v);
-        return value <= i->value;
-      }
-      case Value::Type::FLOAT :
-      {
-        auto f = static_cast<const Float*>(&v);
-        return value <= f->value;
-      }
-      case Value::Type::CHAR :
-      {
-        auto c = static_cast<const Char*>(&v);
-        return value <= c->value;
-      }
-      case Value::Type::STRING :
-      {
-        return false;
-      }
-      case Value::Type::TUPLE :
-      {
-        auto t = static_cast<const Tuple*>(&v);
-        if (t->value.size() == 1)
-          return *this <= *t->value[0];
-        else
-          return false;
-      }
-      case Value::Type::GENERIC :
-      {
-        return false;
-      }
-      case Value::Type::DESTINATION :
-      {
-        return false;
-      }
-      case Value::Type::BEHAVIOR :
-      {
-        auto d = static_cast<const Destination*>(&v);
-        if (d->value->getAddress())
-        {
-            auto c = d->value->getAddress()->cloneValue(d->index);
-            return *this <= *c;
-        }
-      }
-      default :
-        return false;
-    }
-}
+{ return smaller_equal<NumericValue>(*this, v); }
 
 # pragma mark -
 # pragma mark Float
 
-Float::Float(float v) : value(v)
-{
-  m_type = Type::FLOAT;
-}
+
+
+Float::~Float() = default;
 
 Value * Float::clone() const
 {
-  return new Float(value);
+    return new Float(value);
 }
 
 bool Float::operator== (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return true;
-    }
-    case Value::Type::BOOL :
-    {
-      auto b = static_cast<const Bool*>(&v);
-      return value == b->value;
-    }
-    case Value::Type::INT :
-    {
-      auto i = static_cast<const Int*>(&v);
-      return value == i->value;
-    }
-    case Value::Type::FLOAT :
-    {
-      auto f = static_cast<const Float*>(&v);
-      return value == f->value;
-    }
-    case Value::Type::CHAR :
-    {
-      auto c = static_cast<const Char*>(&v);
-      return value == c->value;
-    }
-    case Value::Type::STRING :
-    {
-      return false;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-      if (t->value.size() == 1)
-        return *this == *t->value[0];
-      else
-        return false;
-    }
-    case Value::Type::GENERIC :
-    {
-      return false;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (d->value->getAddress())
-      {
-          auto c = d->value->getAddress()->cloneValue(d->index);
-          return *this == *c;
-      }
-    }
-    case Value::Type::BEHAVIOR :
-    {
-      return false;
-    }
-    default :
-      return false;
-  }
-}
+{ return equal<NumericValue>(*this, v); }
 
 bool Float::operator!= (const Value& v) const
-{
-  return !(*this == v);
-}
+{ return different<NumericValue>(*this, v); }
 
 bool Float::operator> (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return false;
-    }
-    case Value::Type::BOOL :
-    {
-      auto b = static_cast<const Bool*>(&v);
-      return value > b->value;
-    }
-    case Value::Type::INT :
-    {
-      auto i = static_cast<const Int*>(&v);
-      return value > i->value;
-    }
-    case Value::Type::FLOAT :
-    {
-      auto f = static_cast<const Float*>(&v);
-      return value > f->value;
-    }
-    case Value::Type::CHAR :
-    {
-      auto c = static_cast<const Char*>(&v);
-      return value > c->value;
-    }
-    case Value::Type::STRING :
-    {
-      return false;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-      if (t->value.size() == 1)
-        return *this > *t->value[0];
-      else
-        return false;
-    }
-    case Value::Type::GENERIC :
-    {
-      return false;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (d->value->getAddress())
-      {
-          auto c = d->value->getAddress()->cloneValue(d->index);
-          return *this > *c;
-      }
-    }
-    case Value::Type::BEHAVIOR :
-    {
-      return false;
-    }
-    default :
-      return false;
-  }
-}
+{ return greater<NumericValue>(*this, v); }
 
 bool Float::operator>= (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return true;
-    }
-    case Value::Type::BOOL :
-    {
-      auto b = static_cast<const Bool*>(&v);
-      return value >= b->value;
-    }
-    case Value::Type::INT :
-    {
-      auto i = static_cast<const Int*>(&v);
-      return value >= i->value;
-    }
-    case Value::Type::FLOAT :
-    {
-      auto f = static_cast<const Float*>(&v);
-      return value >= f->value;
-    }
-    case Value::Type::CHAR :
-    {
-      auto c = static_cast<const Char*>(&v);
-      return value >= c->value;
-    }
-    case Value::Type::STRING :
-    {
-      return false;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-      if (t->value.size() == 1)
-        return *this >= *t->value[0];
-      else
-        return false;
-    }
-    case Value::Type::GENERIC :
-    {
-      return false;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (d->value->getAddress())
-      {
-          auto c = d->value->getAddress()->cloneValue(d->index);
-          return *this >= *c;
-      }
-    }
-    case Value::Type::BEHAVIOR :
-    {
-      return false;
-    }
-    default :
-      return false;
-  }
-}
+{ return greater_equal<NumericValue>(*this, v); }
 
 bool Float::operator< (const Value& v) const
-{
-    switch (v.getType())
-    {
-      case Value::Type::IMPULSE :
-      {
-        return false;
-      }
-      case Value::Type::BOOL :
-      {
-        auto b = static_cast<const Bool*>(&v);
-        return value < b->value;
-      }
-      case Value::Type::INT :
-      {
-        auto i = static_cast<const Int*>(&v);
-        return value < i->value;
-      }
-      case Value::Type::FLOAT :
-      {
-        auto f = static_cast<const Float*>(&v);
-        return value < f->value;
-      }
-      case Value::Type::CHAR :
-      {
-        auto c = static_cast<const Char*>(&v);
-        return value < c->value;
-      }
-      case Value::Type::STRING :
-      {
-        return false;
-      }
-      case Value::Type::TUPLE :
-      {
-        auto t = static_cast<const Tuple*>(&v);
-        if (t->value.size() == 1)
-          return *this < *t->value[0];
-        else
-          return false;
-      }
-      case Value::Type::GENERIC :
-      {
-        return false;
-      }
-      case Value::Type::DESTINATION :
-      {
-        auto d = static_cast<const Destination*>(&v);
-        if (d->value->getAddress())
-        {
-            auto c = d->value->getAddress()->cloneValue(d->index);
-            return *this < *c;
-        }
-      }
-      case Value::Type::BEHAVIOR :
-      {
-        return false;
-      }
-      default :
-        return false;
-    }
-}
+{ return smaller<NumericValue>(*this, v); }
 
 bool Float::operator<= (const Value& v) const
-{
-    switch (v.getType())
-    {
-      case Value::Type::IMPULSE :
-      {
-        return true;
-      }
-      case Value::Type::BOOL :
-      {
-        auto b = static_cast<const Bool*>(&v);
-        return value <= b->value;
-      }
-      case Value::Type::INT :
-      {
-        auto i = static_cast<const Int*>(&v);
-        return value <= i->value;
-      }
-      case Value::Type::FLOAT :
-      {
-        auto f = static_cast<const Float*>(&v);
-        return value <= f->value;
-      }
-      case Value::Type::CHAR :
-      {
-        auto c = static_cast<const Char*>(&v);
-        return value <= c->value;
-      }
-      case Value::Type::STRING :
-      {
-        return false;
-      }
-      case Value::Type::TUPLE :
-      {
-        auto t = static_cast<const Tuple*>(&v);
-        if (t->value.size() == 1)
-          return *this <= *t->value[0];
-        else
-          return false;
-      }
-      case Value::Type::GENERIC :
-      {
-        return false;
-      }
-      case Value::Type::DESTINATION :
-      {
-        auto d = static_cast<const Destination*>(&v);
-        if (d->value->getAddress())
-        {
-            auto c = d->value->getAddress()->cloneValue(d->index);
-            return *this <= *c;
-        }
-      }
-      case Value::Type::BEHAVIOR :
-      {
-        return false;
-      }
-      default :
-        return false;
-    }
-}
-
+{ return smaller_equal<NumericValue>(*this, v); }
 # pragma mark -
 # pragma mark Char
 
-Char::Char(char v) : value(v)
-{
-  m_type = Type::CHAR;
-}
+
+
+Char::~Char() = default;
 
 /*! clone */
 Value * Char::clone() const
 {
-  return new Char(value);
+    return new Char(value);
 }
 
 bool Char::operator== (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return true;
-    }
-    case Value::Type::BOOL :
-    {
-      auto b = static_cast<const Bool*>(&v);
-      return value == b->value;
-    }
-    case Value::Type::INT :
-    {
-      auto i = static_cast<const Int*>(&v);
-      return value == i->value;
-    }
-    case Value::Type::FLOAT :
-    {
-      auto f = static_cast<const Float*>(&v);
-      return value == f->value;
-    }
-    case Value::Type::CHAR :
-    {
-      auto c = static_cast<const Char*>(&v);
-      return value == c->value;
-    }
-    case Value::Type::STRING :
-    {
-      return false;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-      if (t->value.size() == 1)
-        return *this == *t->value[0];
-      else
-        return false;
-    }
-    case Value::Type::GENERIC :
-    {
-      return false;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (d->value->getAddress())
-      {
-          auto c = d->value->getAddress()->cloneValue(d->index);
-          return *this == *c;
-      }
-    }
-    case Value::Type::BEHAVIOR :
-    {
-      return false;
-    }
-    default :
-      return false;
-  }
-}
+{ return equal<NumericValue>(*this, v); }
 
 bool Char::operator!= (const Value& v) const
-{
-  return !(*this == v);
-}
+{ return different<NumericValue>(*this, v); }
 
 bool Char::operator> (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return false;
-    }
-    case Value::Type::BOOL :
-    {
-      auto b = static_cast<const Bool*>(&v);
-      return value > b->value;
-    }
-    case Value::Type::INT :
-    {
-      auto i = static_cast<const Int*>(&v);
-      return value > i->value;
-    }
-    case Value::Type::FLOAT :
-    {
-      auto f = static_cast<const Float*>(&v);
-      return value > f->value;
-    }
-    case Value::Type::CHAR :
-    {
-      auto c = static_cast<const Char*>(&v);
-      return value > c->value;
-    }
-    case Value::Type::STRING :
-    {
-      return false;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-      if (t->value.size() == 1)
-        return *this > *t->value[0];
-      else
-        return false;
-    }
-    case Value::Type::GENERIC :
-    {
-      return false;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (d->value->getAddress())
-      {
-          auto c = d->value->getAddress()->cloneValue(d->index);
-          return *this > *c;
-      }
-    }
-    case Value::Type::BEHAVIOR :
-    {
-      return false;
-    }
-    default :
-      return false;
-  }
-}
+{ return greater<NumericValue>(*this, v); }
 
 bool Char::operator>= (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return true;
-    }
-    case Value::Type::BOOL :
-    {
-      auto b = static_cast<const Bool*>(&v);
-      return value >= b->value;
-    }
-    case Value::Type::INT :
-    {
-      auto i = static_cast<const Int*>(&v);
-      return value >= i->value;
-    }
-    case Value::Type::FLOAT :
-    {
-      auto f = static_cast<const Float*>(&v);
-      return value >= f->value;
-    }
-    case Value::Type::CHAR :
-    {
-      auto c = static_cast<const Char*>(&v);
-      return value >= c->value;
-    }
-    case Value::Type::STRING :
-    {
-      return false;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-      if (t->value.size() == 1)
-        return *this >= *t->value[0];
-      else
-        return false;
-    }
-    case Value::Type::GENERIC :
-    {
-      return false;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (d->value->getAddress())
-      {
-          auto c = d->value->getAddress()->cloneValue(d->index);
-          return *this >= *c;
-      }
-    }
-    case Value::Type::BEHAVIOR :
-    {
-      return false;
-    }
-    default :
-      return false;
-  }
-}
+{ return greater_equal<NumericValue>(*this, v); }
 
 bool Char::operator< (const Value& v) const
-{
-    switch (v.getType())
-    {
-      case Value::Type::IMPULSE :
-      {
-        return false;
-      }
-      case Value::Type::BOOL :
-      {
-        auto b = static_cast<const Bool*>(&v);
-        return value < b->value;
-      }
-      case Value::Type::INT :
-      {
-        auto i = static_cast<const Int*>(&v);
-        return value < i->value;
-      }
-      case Value::Type::FLOAT :
-      {
-        auto f = static_cast<const Float*>(&v);
-        return value < f->value;
-      }
-      case Value::Type::CHAR :
-      {
-        auto c = static_cast<const Char*>(&v);
-        return value < c->value;
-      }
-      case Value::Type::STRING :
-      {
-        return false;
-      }
-      case Value::Type::TUPLE :
-      {
-        auto t = static_cast<const Tuple*>(&v);
-        if (t->value.size() == 1)
-          return *this < *t->value[0];
-        else
-          return false;
-      }
-      case Value::Type::GENERIC :
-      {
-        return false;
-      }
-      case Value::Type::DESTINATION :
-      {
-        auto d = static_cast<const Destination*>(&v);
-        if (d->value->getAddress())
-        {
-            auto c = d->value->getAddress()->cloneValue(d->index);
-            return *this < *c;
-        }
-      }
-      case Value::Type::BEHAVIOR :
-      {
-        return false;
-      }
-      default :
-        return false;
-    }
-}
+{ return smaller<NumericValue>(*this, v); }
 
 bool Char::operator<= (const Value& v) const
-{
-    switch (v.getType())
-    {
-      case Value::Type::IMPULSE :
-      {
-        return true;
-      }
-      case Value::Type::BOOL :
-      {
-        auto b = static_cast<const Bool*>(&v);
-        return value <= b->value;
-      }
-      case Value::Type::INT :
-      {
-        auto i = static_cast<const Int*>(&v);
-        return value <= i->value;
-      }
-      case Value::Type::FLOAT :
-      {
-        auto f = static_cast<const Float*>(&v);
-        return value <= f->value;
-      }
-      case Value::Type::CHAR :
-      {
-        auto c = static_cast<const Char*>(&v);
-        return value <= c->value;
-      }
-      case Value::Type::STRING :
-      {
-        return false;
-      }
-      case Value::Type::TUPLE :
-      {
-        auto t = static_cast<const Tuple*>(&v);
-        if (t->value.size() == 1)
-          return *this <= *t->value[0];
-        else
-          return false;
-      }
-      case Value::Type::GENERIC :
-      {
-        return false;
-      }
-      case Value::Type::DESTINATION :
-      {
-        auto d = static_cast<const Destination*>(&v);
-        if (d->value->getAddress())
-        {
-            auto c = d->value->getAddress()->cloneValue(d->index);
-            return *this <= *c;
-        }
-      }
-      case Value::Type::BEHAVIOR :
-      {
-        return false;
-      }
-      default :
-        return false;
-    }
-}
+{ return smaller_equal<NumericValue>(*this, v); }
 
 # pragma mark -
 # pragma mark String
 
-String::String(std::string v) : value(v)
-{
-  m_type = Type::STRING;
-}
+
+
+String::~String() = default;
 
 Value * String::clone() const
-{
-  return new String(value);
-}
+{ return new String(value); }
 
 bool String::operator== (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return true;
-    }
-    case Value::Type::BOOL :
-    {
-      return false;
-    }
-    case Value::Type::INT :
-    {
-      return false;
-    }
-    case Value::Type::FLOAT :
-    {
-      return false;
-    }
-    case Value::Type::CHAR :
-    {
-      return false;
-    }
-    case Value::Type::STRING :
-    {
-      auto s = static_cast<const String*>(&v);
-      return value == s->value;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-      if (t->value.size() == 1)
-        return *this == *t->value[0];
-      else
-        return false;
-    }
-    case Value::Type::GENERIC :
-    {
-      return false;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (d->value->getAddress())
-      {
-          auto c = d->value->getAddress()->cloneValue(d->index);
-          return *this == *c;
-      }
-    }
-    case Value::Type::BEHAVIOR :
-    {
-      return false;
-    }
-    default :
-      return false;
-  }
-}
+{ return equal<StringValue>(*this, v); }
 
 bool String::operator!= (const Value& v) const
-{
-  return !(*this == v);
-}
+{ return different<StringValue>(*this, v); }
 
 bool String::operator> (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return false;
-    }
-    case Value::Type::BOOL :
-    {
-      return false;
-    }
-    case Value::Type::INT :
-    {
-      return false;
-    }
-    case Value::Type::FLOAT :
-    {
-      return false;
-    }
-    case Value::Type::CHAR :
-    {
-      return false;
-    }
-    case Value::Type::STRING :
-    {
-      auto s = static_cast<const String*>(&v);
-      return value > s->value;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-      if (t->value.size() == 1)
-        return *this > *t->value[0];
-      else
-        return false;
-    }
-    case Value::Type::GENERIC :
-    {
-      return false;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (d->value->getAddress())
-      {
-          auto c = d->value->getAddress()->cloneValue(d->index);
-          return *this > *c;
-      }
-    }
-    case Value::Type::BEHAVIOR :
-    {
-      return false;
-    }
-    default :
-      return false;
-  }
-}
+{ return greater<StringValue>(*this, v); }
 
 bool String::operator>= (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return true;
-    }
-    case Value::Type::BOOL :
-    {
-      return false;
-    }
-    case Value::Type::INT :
-    {
-      return false;
-    }
-    case Value::Type::FLOAT :
-    {
-      return false;
-    }
-    case Value::Type::CHAR :
-    {
-      return false;
-    }
-    case Value::Type::STRING :
-    {
-      auto s = static_cast<const String*>(&v);
-      return value >= s->value;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-      if (t->value.size() == 1)
-        return *this >= *t->value[0];
-      else
-        return false;
-    }
-    case Value::Type::GENERIC :
-    {
-      return false;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (d->value->getAddress())
-      {
-          auto c = d->value->getAddress()->cloneValue(d->index);
-          return *this >= *c;
-      }
-    }
-    case Value::Type::BEHAVIOR :
-    {
-      return false;
-    }
-    default :
-      return false;
-  }
-}
+{ return greater_equal<StringValue>(*this, v); }
 
 bool String::operator< (const Value& v) const
-{
-    switch (v.getType())
-    {
-      case Value::Type::IMPULSE :
-      {
-        return false;
-      }
-      case Value::Type::BOOL :
-      {
-        return false;
-      }
-      case Value::Type::INT :
-      {
-        return false;
-      }
-      case Value::Type::FLOAT :
-      {
-        return false;
-      }
-      case Value::Type::CHAR :
-      {
-        return false;
-      }
-      case Value::Type::STRING :
-      {
-        auto s = static_cast<const String*>(&v);
-        return value < s->value;
-      }
-      case Value::Type::TUPLE :
-      {
-        auto t = static_cast<const Tuple*>(&v);
-        if (t->value.size() == 1)
-          return *this < *t->value[0];
-        else
-          return false;
-      }
-      case Value::Type::GENERIC :
-      {
-        return false;
-      }
-      case Value::Type::DESTINATION :
-      {
-        auto d = static_cast<const Destination*>(&v);
-        if (d->value->getAddress())
-        {
-            auto c = d->value->getAddress()->cloneValue(d->index);
-            return *this < *c;
-        }
-      }
-      case Value::Type::BEHAVIOR :
-      {
-        return false;
-      }
-      default :
-        return false;
-    }
-}
+{ return smaller<StringValue>(*this, v); }
 
 bool String::operator<= (const Value& v) const
-{
-    switch (v.getType())
-    {
-      case Value::Type::IMPULSE :
-      {
-        return true;
-      }
-      case Value::Type::BOOL :
-      {
-        return false;
-      }
-      case Value::Type::INT :
-      {
-        return false;
-      }
-      case Value::Type::FLOAT :
-      {
-        return false;
-      }
-      case Value::Type::CHAR :
-      {
-        return false;
-      }
-      case Value::Type::STRING :
-      {
-        auto s = static_cast<const String*>(&v);
-        return value <= s->value;
-      }
-      case Value::Type::TUPLE :
-      {
-        auto t = static_cast<const Tuple*>(&v);
-        if (t->value.size() == 1)
-          return *this <= *t->value[0];
-        else
-          return false;
-      }
-      case Value::Type::GENERIC :
-      {
-        return false;
-      }
-      case Value::Type::DESTINATION :
-      {
-        auto d = static_cast<const Destination*>(&v);
-        if (d->value->getAddress())
-        {
-            auto c = d->value->getAddress()->cloneValue(d->index);
-            return *this <= *c;
-        }
-      }
-      case Value::Type::BEHAVIOR :
-      {
-        return false;
-      }
-      default :
-        return false;
-    }
-}
+{ return smaller_equal<StringValue>(*this, v); }
+
 
 # pragma mark -
 # pragma mark Tuple
-
-Tuple::Tuple()
-{
-    m_type = Type::TUPLE;
-}
 
 Tuple::~Tuple()
 {
@@ -1692,409 +392,87 @@ Tuple::~Tuple()
         delete val;
 }
 
-Tuple::Tuple(const Value* v)
-{
-  m_type = Type::TUPLE;
-
-  value.push_back(v->clone());
-}
-
-Tuple::Tuple(std::initializer_list<const Value*> v)
-{
-  m_type = Type::TUPLE;
-
-  for (const auto & e : v)
-    value.push_back(e->clone());
-}
-
-Tuple::Tuple(const std::vector<const Value*>& v)
-{
-  m_type = Type::TUPLE;
-
-  for (const auto & e : v)
-    value.push_back(e->clone());
-}
 
 Value * Tuple::clone() const
 {
-  std::vector<const Value*> newValue;
-  for (const auto & e : value)
-    newValue.push_back(e->clone());
+    std::vector<const Value*> newValue;
+    for (const auto & e : value)
+        newValue.push_back(e->clone());
 
-  return new Tuple(newValue);
+    return new Tuple(newValue);
 }
 
 bool Tuple::operator== (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return true;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-
-      if (value.size() != t->value.size())
-        return false;
-
-      bool result = true;
-      auto tit = t->value.begin();
-      for (auto it = value.begin(); it != value.end();it++)
-      {
-        result &= (**it) == (**tit);
-        if (!result)
-          break;
-        tit++;
-      }
-
-      return result;
-    }
-    default :
-    {
-      if (value.size() == 1)
-        return *value[0] == v;
-
-      return false;
-    }
-  }
-}
+{ return equal<TupleValue>(*this, v); }
 
 bool Tuple::operator!= (const Value& v) const
-{
-  return !(*this == v);
-}
+{ return different<TupleValue>(*this, v); }
 
 bool Tuple::operator> (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return false;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-
-      if (value.size() != t->value.size())
-        return false;
-
-      bool result = true;
-      auto tit = t->value.begin();
-      for (auto it = value.begin(); it != value.end();it++)
-      {
-        result &= (**it) > (**tit);
-        if (!result)
-          break;
-        tit++;
-      }
-
-      return result;
-    }
-    default :
-    {
-      if (value.size() == 1)
-        return *value[0] > v;
-
-      return false;
-    }
-  }
-}
+{ return greater<TupleValue>(*this, v); }
 
 bool Tuple::operator>= (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return true;
-    }
-    case Value::Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(&v);
-
-      if (value.size() != t->value.size())
-        return false;
-
-      bool result = true;
-      auto tit = t->value.begin();
-      for (auto it = value.begin(); it != value.end();it++)
-      {
-        result &= (**it) >= (**tit);
-        if (!result)
-          break;
-        tit++;
-      }
-
-      return result;
-    }
-    default :
-    {
-      if (value.size() == 1)
-        return *value[0] >= v;
-
-      return false;
-    }
-  }
-}
+{ return greater_equal<TupleValue>(*this, v); }
 
 bool Tuple::operator< (const Value& v) const
-{
-    switch (v.getType())
-    {
-      case Value::Type::IMPULSE :
-      {
-        return false;
-      }
-      case Value::Type::TUPLE :
-      {
-        auto t = static_cast<const Tuple*>(&v);
-
-        if (value.size() != t->value.size())
-          return false;
-
-        bool result = true;
-        auto tit = t->value.begin();
-        for (auto it = value.begin(); it != value.end();it++)
-        {
-          result &= (**it) < (**tit);
-          if (!result)
-            break;
-          tit++;
-        }
-
-        return result;
-      }
-      default :
-      {
-        if (value.size() == 1)
-          return *value[0] < v;
-
-        return false;
-      }
-    }
-}
+{ return smaller<TupleValue>(*this, v); }
 
 bool Tuple::operator<= (const Value& v) const
-{
-    switch (v.getType())
-    {
-      case Value::Type::IMPULSE :
-      {
-        return true;
-      }
-      case Value::Type::TUPLE :
-      {
-        auto t = static_cast<const Tuple*>(&v);
-
-        if (value.size() != t->value.size())
-          return false;
-
-        bool result = true;
-        auto tit = t->value.begin();
-        for (auto it = value.begin(); it != value.end();it++)
-        {
-          result &= (**it) <= (**tit);
-          if (!result)
-            break;
-          tit++;
-        }
-
-        return result;
-      }
-      default :
-      {
-        if (value.size() == 1)
-          return *value[0] <= v;
-
-        return false;
-      }
-    }
-}
-
-# pragma mark -
-# pragma mark Generic
+{ return smaller_equal<TupleValue>(*this, v); }
 
 
 # pragma mark -
 # pragma mark Destination
 
-Destination::Destination(std::shared_ptr<Node> v, std::initializer_list<char> idx) : value(v)
+Destination::Destination(
+        std::shared_ptr<Node> v,
+        std::initializer_list<char> idx) :
+    Value{Type::DESTINATION},
+    value(std::move(v))
 {
-  m_type = Type::DESTINATION;
-
-  for (const auto & i : idx)
-    index.push_back(i);
+    for (const auto & i : idx)
+        index.push_back(i);
 }
 
-Destination::Destination(std::shared_ptr<Node> v, std::vector<char> idx) : value(v)
+Destination::Destination(std::shared_ptr<Node> v, std::vector<char> idx) :
+    Value{Type::DESTINATION},
+    value(v)
 {
-  m_type = Type::DESTINATION;
-
-  for (const auto & i : idx)
-    index.push_back(i);
+    for (const auto & i : idx)
+        index.push_back(i);
 }
+
+Destination::~Destination() = default;
 
 Value * Destination::clone() const
-{
-  return new Destination(value, index);
-}
+{ return new Destination(value, index); }
 
 bool Destination::operator== (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return true;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-
-      // if there are addresses compare values
-      if (value->getAddress() && d->value->getAddress())
-      {
-        auto c1 = value->getAddress()->cloneValue(index);
-        auto c2 = d->value->getAddress()->cloneValue(d->index);
-        return *c1 == *c2;
-      }
-
-      // if no addresses, compare nodes
-      else if (!value->getAddress() && !d->value->getAddress())
-        return value == d->value;
-    }
-    default :
-    {
-      if (value->getAddress())
-      {
-        auto c = value->getAddress()->cloneValue(index);
-        return *c == v;
-      }
-
-      return false;
-    }
-  }
-}
+{ return equal<DestinationValue>(*this, v); }
 
 bool Destination::operator!= (const Value& v) const
-{
-  return !(*this == v);
-}
+{ return different<DestinationValue>(*this, v); }
 
 bool Destination::operator> (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return true;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (value->getAddress() && d->value->getAddress())
-      {
-        auto c1 = value->getAddress()->cloneValue(index);
-        auto c2 = d->value->getAddress()->cloneValue(d->index);
-        return *c1 > *c2;
-      }
-    }
-    default :
-    {
-      if (value->getAddress())
-      {
-        auto c = value->getAddress()->cloneValue(index);
-        return *c > v;
-      }
-
-      return false;
-    }
-  }
-}
+{ return greater<DestinationValue>(*this, v); }
 
 bool Destination::operator>= (const Value& v) const
-{
-  switch (v.getType())
-  {
-    case Value::Type::IMPULSE :
-    {
-      return true;
-    }
-    case Value::Type::DESTINATION :
-    {
-      auto d = static_cast<const Destination*>(&v);
-      if (value->getAddress() && d->value->getAddress())
-      {
-          auto c1 = value->getAddress()->cloneValue(index);
-          auto c2 = d->value->getAddress()->cloneValue(d->index);
-          return *c1 >= *c2;
-      }
-    }
-    default :
-    {
-      if (value->getAddress())
-      {
-          auto c = value->getAddress()->cloneValue(index);
-          return *c >= v;
-      }
-
-      return false;
-    }
-  }
-}
+{ return greater_equal<DestinationValue>(*this, v); }
 
 bool Destination::operator< (const Value& v) const
-{
-  return !(*this >= v);
-}
+{ return smaller<DestinationValue>(*this, v); }
 
 bool Destination::operator<= (const Value& v) const
-{
-  return !(*this > v);
-}
+{ return smaller_equal<DestinationValue>(*this, v); }
 
 # pragma mark -
 # pragma mark Behavior
 
-Behavior::Behavior(std::shared_ptr<CurveAbstract> v) : value(v)
-{
-  m_type = Type::BEHAVIOR;
-}
+
+
+Behavior::~Behavior() = default;
 
 Value * Behavior::clone() const
 {
-  return new Behavior(value);
-}
-
-bool Behavior::operator== (const Value& v) const
-{
-  return false;
-}
-
-bool Behavior::operator!= (const Value& v) const
-{
-  return false;
-}
-
-bool Behavior::operator> (const Value& v) const
-{
-  return false;
-}
-
-bool Behavior::operator>= (const Value& v) const
-{
-  return false;
-}
-
-bool Behavior::operator< (const Value& v) const
-{
-  return false;
-}
-
-bool Behavior::operator<= (const Value& v) const
-{
-  return false;
+    return new Behavior(value);
 }
