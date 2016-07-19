@@ -25,7 +25,7 @@ public:
   virtual bool removeAddress() override {return false;}
 
   // Address Factory
-  virtual shared_ptr<Address> createAddress(AddressValue::Type) override {
+  virtual shared_ptr<Address> createAddress(AddressType) override {
     return addr;
   }
 

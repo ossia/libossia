@@ -154,11 +154,11 @@ private Q_SLOTS:
         auto device = Device::create(local_protocol, "test");
 
         auto localIntNode1 = *(device->emplace(device->children().cend(), "my_int.1"));
-        auto localIntAddress1 = localIntNode1->createAddress(Value::Type::INT);
+        auto localIntAddress1 = localIntNode1->createAddress(Type::INT);
         auto localIntNode2 = *(device->emplace(device->children().cend(), "my_int.2"));
-        auto localIntAddress2 = localIntNode2->createAddress(Value::Type::INT);
+        auto localIntAddress2 = localIntNode2->createAddress(Type::INT);
         auto localIntNode3 = *(device->emplace(device->children().cend(), "my_int.3"));
-        auto localIntAddress3 = localIntNode3->createAddress(Value::Type::INT);
+        auto localIntAddress3 = localIntNode3->createAddress(Type::INT);
 
         auto testDestinationExprA = ExpressionAtom::create(new Destination(localIntNode1),
                                                            ExpressionAtom::Operator::LOWER_THAN,

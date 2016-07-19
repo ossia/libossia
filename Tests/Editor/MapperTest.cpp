@@ -50,10 +50,10 @@ private Q_SLOTS:
         auto local_device = Device::create(local_protocol, "test");
         
         local_device->emplace(local_device->children().begin(), "float");
-        auto float_address = local_device->children().front()->createAddress(Value::Type::FLOAT);
+        auto float_address = local_device->children().front()->createAddress(Type::FLOAT);
         
         local_device->emplace(local_device->children().begin(), "int");
-        auto int_address = local_device->children().front()->createAddress(Value::Type::INT);
+        auto int_address = local_device->children().front()->createAddress(Type::INT);
 
         Float f(0);
 
@@ -77,10 +77,10 @@ private Q_SLOTS:
         auto local_device = Device::create(local_protocol, "test");
 
         local_device->emplace(local_device->children().begin(), "float");
-        m_float_address = local_device->children().front()->createAddress(Value::Type::FLOAT);
+        m_float_address = local_device->children().front()->createAddress(Type::FLOAT);
 
         local_device->emplace(local_device->children().begin(), "int");
-        m_int_address = local_device->children().front()->createAddress(Value::Type::INT);
+        m_int_address = local_device->children().front()->createAddress(Type::INT);
         auto int_address_callback = std::bind(&MapperTest::int_address_callback, this, _1);
         m_int_address->addCallback(int_address_callback);
 

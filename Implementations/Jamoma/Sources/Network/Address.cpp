@@ -12,7 +12,7 @@ mNode(node),
 mObject(aData),
 mObjectValueCallback("callback"),
 mValue(new Impulse()),
-mValueType(Value::Type::IMPULSE),
+mValueType(Type::IMPULSE),
 mAccessMode(AccessMode::BI),
 mBoundingMode(BoundingMode::FREE),
 mRepetitionFilter(false)
@@ -88,7 +88,7 @@ std::unique_ptr<OSSIA::Value> JamomaAddress::cloneValue(std::vector<char> index)
   if (mValue == nullptr)
     throw runtime_error("cloning null value");
 
-  if (index.empty() || mValueType != Value::Type::TUPLE)
+  if (index.empty() || mValueType != Type::TUPLE)
   {
     return std::unique_ptr<OSSIA::Value>{mValue->clone()};
   }
@@ -122,8 +122,8 @@ Address & JamomaAddress::setValue(const Value& value)
   mValue = nullptr;
 
   // set value querying the value from another address
-  if (value.getType() == Value::Type::DESTINATION &&
-      mValueType != Value::Type::DESTINATION)
+  if (value.getType() == Type::DESTINATION &&
+      mValueType != Type::DESTINATION)
   {
     auto& destination = static_cast<const Destination&>(value);
     auto address = destination.value->getAddress();
@@ -153,23 +153,21 @@ Address & JamomaAddress::setValue(const Value& value)
 
         if (mObject.name() != kTTSym_Mirror)
         {
-          if (mValueType == Value::Type::IMPULSE)
+          if (mValueType == Type::IMPULSE)
             mObject.set("type", kTTSym_none);
-          else if (mValueType == Value::Type::BOOL)
+          else if (mValueType == Type::BOOL)
             mObject.set("type", kTTSym_boolean);
-          else if (mValueType == Value::Type::INT)
+          else if (mValueType == Type::INT)
             mObject.set("type", kTTSym_integer);
-          else if (mValueType == Value::Type::FLOAT)
+          else if (mValueType == Type::FLOAT)
             mObject.set("type", kTTSym_decimal);
-          else if (mValueType == Value::Type::CHAR)
+          else if (mValueType == Type::CHAR)
             mObject.set("type", kTTSym_string);
-          else if (mValueType == Value::Type::STRING)
+          else if (mValueType == Type::STRING)
             mObject.set("type", kTTSym_string);
-          else if (mValueType == Value::Type::TUPLE)
+          else if (mValueType == Type::TUPLE)
             mObject.set("type", kTTSym_array);
-          else if (mValueType == Value::Type::GENERIC)
-            mObject.set("type", kTTSym_generic);
-          else if (mValueType == Value::Type::DESTINATION)
+          else if (mValueType == Type::DESTINATION)
             mObject.set("type", kTTSym_string);
         }
 
@@ -181,34 +179,32 @@ Address & JamomaAddress::setValue(const Value& value)
   return *this;
 }
 
-Value::Type JamomaAddress::getValueType() const
+Type JamomaAddress::getValueType() const
 {
   return mValueType;
 }
 
-Address & JamomaAddress::setValueType(Value::Type type)
+Address & JamomaAddress::setValueType(Type type)
 {
   mValueType = type;
 
   if (mObject.name() != kTTSym_Mirror)
   {
-    if (mValueType == Value::Type::IMPULSE)
+    if (mValueType == Type::IMPULSE)
       mObject.set("type", kTTSym_none);
-    else if (mValueType == Value::Type::BOOL)
+    else if (mValueType == Type::BOOL)
       mObject.set("type", kTTSym_boolean);
-    else if (mValueType == Value::Type::INT)
+    else if (mValueType == Type::INT)
       mObject.set("type", kTTSym_integer);
-    else if (mValueType == Value::Type::FLOAT)
+    else if (mValueType == Type::FLOAT)
       mObject.set("type", kTTSym_decimal);
-    else if (mValueType == Value::Type::CHAR)
+    else if (mValueType == Type::CHAR)
       mObject.set("type", kTTSym_string);
-    else if (mValueType == Value::Type::STRING)
+    else if (mValueType == Type::STRING)
       mObject.set("type", kTTSym_string);
-    else if (mValueType == Value::Type::TUPLE)
+    else if (mValueType == Type::TUPLE)
       mObject.set("type", kTTSym_array);
-    else if (mValueType == Value::Type::GENERIC)
-      mObject.set("type", kTTSym_generic);
-    else if (mValueType == Value::Type::DESTINATION)
+    else if (mValueType == Type::DESTINATION)
       mObject.set("type", kTTSym_string);
   }
 
@@ -395,24 +391,42 @@ void JamomaAddress::initValue()
       mValue = nullptr;
   }
 
-  if (mValueType == Value::Type::IMPULSE)
-    mValue = new Impulse();
-  else if (mValueType == Value::Type::BOOL)
-    mValue = new Bool();
-  else if (mValueType == Value::Type::INT)
-    mValue = new Int();
-  else if (mValueType == Value::Type::FLOAT)
-    mValue = new Float();
-  else if (mValueType == Value::Type::CHAR)
-    mValue = new Char();
-  else if (mValueType == Value::Type::STRING)
-    mValue = new String();
-  else if (mValueType == Value::Type::TUPLE)
-    mValue = new Tuple();
-  else if (mValueType == Value::Type::GENERIC)
-    mValue = nullptr;
-  else if (mValueType == Value::Type::DESTINATION)
-    mValue = new Destination(nullptr, {});
+  switch(mValueType)
+  {
+      case Type::IMPULSE:
+          mValue = new Impulse;
+          break;
+      case Type::BOOL:
+          mValue = new Bool;
+          break;
+      case Type::INT:
+          mValue = new Int;
+          break;
+      case Type::FLOAT:
+          mValue = new Float;
+          break;
+      case Type::CHAR:
+          mValue = new Char;
+          break;
+      case Type::STRING:
+          mValue = new String;
+          break;
+      case Type::TUPLE:
+          mValue = new Tuple;
+          break;
+      case Type::VEC2F:
+          mValue = new Vec2f;
+          break;
+      case Type::VEC3F:
+          mValue = new Vec3f;
+          break;
+      case Type::VEC4F:
+          mValue = new Vec4f;
+          break;
+      case Type::DESTINATION:
+          mValue = new Destination;
+          break;
+  }
 }
 
 bool JamomaAddress::pullValue(TTValue& value) const
@@ -472,16 +486,16 @@ void JamomaAddress::observeValue(bool enable)
   }
 }
 
-Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type valueType) const
+Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType) const
 {
   switch (valueType)
   {
-    case Value::Type::IMPULSE :
+    case Type::IMPULSE :
     {
       return new OSSIA::Impulse();
     }
 
-    case Value::Type::BOOL :
+    case Type::BOOL :
     {
       if (v.size() == 1)
         return new OSSIA::Bool(v[0]);
@@ -489,7 +503,7 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
       return new OSSIA::Bool();
     }
 
-    case Value::Type::INT :
+    case Type::INT :
     {
       if (v.size() == 1)
         return new OSSIA::Int(v[0]);
@@ -497,7 +511,7 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
       return new OSSIA::Int();
     }
 
-    case Value::Type::FLOAT :
+    case Type::FLOAT :
     {
       if (v.size() == 1)
         return new OSSIA::Float(v[0]);
@@ -505,7 +519,7 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
       return new OSSIA::Float();
     }
 
-    case Value::Type::CHAR :
+    case Type::CHAR :
     {
       if (v.size() == 1)
       {
@@ -519,7 +533,7 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
       return new OSSIA::Char();
     }
 
-    case Value::Type::STRING :
+    case Type::STRING :
     {
       if (v.size() == 1)
       {
@@ -533,7 +547,7 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
       return new OSSIA::String();
     }
 
-    case Value::Type::DESTINATION :
+    case Type::DESTINATION :
     {
       throw runtime_error("convertion to destination value is not handled");
       /*
@@ -552,37 +566,98 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
        */
     }
 
-    case Value::Type::BEHAVIOR :
+    case Type::BEHAVIOR :
     {
-          break;
+      break;
     }
 
-    case Value::Type::TUPLE :
+    case Type::VEC2F :
     {
-      vector<const Value*> t_value;
+      const constexpr int n = 2;
+      auto vec = new Vec2f;
+
+      if(v.size() != n)
+        return vec;
+
+      std::array<TTValue, n> vals{v[0], v[1]};
+      std::array<TTDataType, n> types{v[0].type(), v[1].type()};
+      if(std::any_of(types.begin(), types.end(),
+                     [] (auto t) { return t != kTypeFloat32 || t != kTypeFloat64; }))
+        return vec;
+
+      for(int i = 0; i < n; i++)
+        vec->value[i] = vals[i];
+
+      return vec;
+    }
+
+    case Type::VEC3F :
+    {
+      const constexpr int n = 3;
+      auto vec = new Vec3f;
+
+      if(v.size() != n)
+        return vec;
+
+      std::array<TTValue, n> vals{v[0], v[1], v[2]};
+      std::array<TTDataType, n> types{v[0].type(), v[1].type(), v[2].type()};
+      if(std::any_of(types.begin(), types.end(),
+                     [] (auto t) { return t != kTypeFloat32 || t != kTypeFloat64; }))
+        return vec;
+
+      for(int i = 0; i < n; i++)
+        vec->value[i] = vals[i];
+
+      return vec;
+    }
+
+    case Type::VEC4F :
+    {
+      const constexpr int n = 4;
+      auto vec = new Vec4f;
+
+      if(v.size() != n)
+        return vec;
+
+      std::array<TTValue, n> vals{v[0], v[1], v[2], v[3]};
+      std::array<TTDataType, n> types{v[0].type(), v[1].type(), v[2].type(), v[3].type()};
+      if(std::any_of(types.begin(), types.end(),
+                     [] (auto t) { return t != kTypeFloat32 || t != kTypeFloat64; }))
+        return vec;
+
+      for(int i = 0; i < n; i++)
+        vec->value[i] = vals[i];
+
+      return vec;
+    }
+
+
+    case Type::TUPLE :
+    {
+      vector<Value*> t_value;
 
       for (const auto & e : v)
       {
-        Value::Type type;
+        Type type;
 
         if (e.type() == kTypeBoolean)
         {
-          type = Value::Type::BOOL;
+          type = Type::BOOL;
         }
         else if (e.type() == kTypeInt8 || e.type() == kTypeUInt8 ||
                  e.type() == kTypeInt16 || e.type() == kTypeUInt16 ||
                  e.type() == kTypeInt32 || e.type() == kTypeUInt32 ||
                  e.type() == kTypeInt64 || e.type() == kTypeUInt64)
         {
-          type = Value::Type::INT;
+          type = Type::INT;
         }
         else if (e.type() == kTypeFloat32 || e.type() == kTypeFloat64)
         {
-          type = Value::Type::FLOAT;
+          type = Type::FLOAT;
         }
         else if (e.type() == kTypeSymbol)
         {
-          type = Value::Type::STRING;
+          type = Type::STRING;
         }
         else
         {
@@ -593,12 +668,7 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Value::Type val
         t_value.push_back(convertTTValueIntoValue(t, type));
       }
 
-      return new OSSIA::Tuple(t_value);
-    }
-
-    case Value::Type::GENERIC :
-    {
-      return nullptr; // todo
+      return new OSSIA::Tuple(std::move(t_value));
     }
   }
 
@@ -609,59 +679,80 @@ void JamomaAddress::convertValueIntoTTValue(const Value& value, TTValue & v) con
 {
   switch (value.getType())
   {
-    case Value::Type::IMPULSE :
+    case Type::IMPULSE :
     {
       break;
     }
 
-    case Value::Type::BOOL :
+    case Type::BOOL :
     {
       auto& b = static_cast<const Bool&>(value);
       v = TTBoolean(b.value);
       break;
     }
 
-    case Value::Type::INT :
+    case Type::INT :
     {
       auto& i = static_cast<const Int&>(value);
       v = TTInt32(i.value);
       break;
     }
 
-    case Value::Type::FLOAT :
+    case Type::FLOAT :
     {
       auto& f = static_cast<const Float&>(value);
       v = TTFloat64(f.value);
       break;
     }
 
-    case Value::Type::CHAR :
+    case Type::CHAR :
     {
       auto& c = static_cast<const Char&>(value);
       v = TTSymbol(c.value);
       break;
     }
 
-    case Value::Type::STRING :
+    case Type::STRING :
     {
       auto& s = static_cast<const String&>(value);
       v = TTSymbol(s.value);
       break;
     }
 
-    case Value::Type::DESTINATION :
+    case Type::DESTINATION :
     {
       auto& d = static_cast<const Destination&>(value);
       v = TTAddress(buildNodePath(d.value).data());
       break;
     }
 
-    case Value::Type::BEHAVIOR :
+    case Type::BEHAVIOR :
     {
-          break;
+      break;
     }
 
-    case Value::Type::TUPLE :
+    case Type::VEC2F :
+    {
+      auto& vec = static_cast<const Vec2f&>(value);
+      v = TTValue{vec.value[0], vec.value[1]};
+      break;
+    }
+
+    case Type::VEC3F :
+    {
+      auto& vec = static_cast<const Vec3f&>(value);
+      v = TTValue{vec.value[0], vec.value[1], vec.value[2]};
+      break;
+    }
+
+    case Type::VEC4F :
+    {
+      auto& vec = static_cast<const Vec4f&>(value);
+      v = TTValue{vec.value[0], vec.value[1], vec.value[2], vec.value[3]};
+      break;
+    }
+
+    case Type::TUPLE :
     {
       auto& t = static_cast<const Tuple&>(value);
 
@@ -674,12 +765,6 @@ void JamomaAddress::convertValueIntoTTValue(const Value& value, TTValue & v) con
           v.append(n[0]);
       }
 
-      break;
-    }
-
-    case Value::Type::GENERIC :
-    {
-      //! \todo GENERIC case
       break;
     }
   }
@@ -797,31 +882,28 @@ std::string getTupleAsString(const OSSIA::Tuple& tuple)
         const OSSIA::Value& val = *tuple.value.at(i);
         switch(val.getType())
         {
-            case OSSIA::Value::Type::INT:
+            case OSSIA::Type::INT:
                 s << "int: " << static_cast<const OSSIA::Int&>(val).value;
                 break;
-            case OSSIA::Value::Type::FLOAT:
+            case OSSIA::Type::FLOAT:
                 s << "float: " << static_cast<const OSSIA::Float&>(val).value;
                 break;
-            case OSSIA::Value::Type::BOOL:
+            case OSSIA::Type::BOOL:
                 s << "bool: " << (static_cast<const OSSIA::Bool&>(val).value ? "true" : "false");
                 break;
-            case OSSIA::Value::Type::STRING:
+            case OSSIA::Type::STRING:
                 s << "string: " << static_cast<const OSSIA::String&>(val).value;
                 break;
-            case OSSIA::Value::Type::CHAR:
+            case OSSIA::Type::CHAR:
                 s << "char: " << static_cast<const OSSIA::Char&>(val).value;
                 break;
-            case OSSIA::Value::Type::IMPULSE:
+            case OSSIA::Type::IMPULSE:
                 s << "impulse";
                 break;
-            case OSSIA::Value::Type::TUPLE:
+            case OSSIA::Type::TUPLE:
                 s << "tuple: " << getTupleAsString(static_cast<const OSSIA::Tuple&>(val));
                 break;
-            case OSSIA::Value::Type::GENERIC:
-                s << "generic";
-                break;
-            case OSSIA::Value::Type::DESTINATION:
+            case OSSIA::Type::DESTINATION:
                 s << "destination";
                 break;
         }
@@ -839,31 +921,28 @@ std::string getValueAsString(const OSSIA::Value& val)
     std::stringstream s;
     switch(val.getType())
     {
-        case OSSIA::Value::Type::INT:
+        case OSSIA::Type::INT:
             s << "int: " << static_cast<const OSSIA::Int&>(val).value;
             break;
-        case OSSIA::Value::Type::FLOAT:
+        case OSSIA::Type::FLOAT:
             s << "float: " << static_cast<const OSSIA::Float&>(val).value;
             break;
-        case OSSIA::Value::Type::BOOL:
+        case OSSIA::Type::BOOL:
             s << "bool: " << (static_cast<const OSSIA::Bool&>(val).value ? "true" : "false");
             break;
-        case OSSIA::Value::Type::STRING:
+        case OSSIA::Type::STRING:
             s << "string: " << static_cast<const OSSIA::String&>(val).value;
             break;
-        case OSSIA::Value::Type::CHAR:
+        case OSSIA::Type::CHAR:
             s << "char: " << static_cast<const OSSIA::Char&>(val).value;
             break;
-        case OSSIA::Value::Type::IMPULSE:
+        case OSSIA::Type::IMPULSE:
             s << "impulse";
             break;
-        case OSSIA::Value::Type::TUPLE:
+        case OSSIA::Type::TUPLE:
             s << "tuple: " << getTupleAsString(static_cast<const OSSIA::Tuple&>(val));
             break;
-        case OSSIA::Value::Type::GENERIC:
-            s << "generic";
-            break;
-        case OSSIA::Value::Type::DESTINATION:
+        case OSSIA::Type::DESTINATION:
             s << "destination";
             break;
     }

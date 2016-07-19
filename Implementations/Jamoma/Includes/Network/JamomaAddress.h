@@ -41,7 +41,7 @@ private:
   mutable Value *     mValue{};
   mutable std::mutex  mValueMutex;
 
-  Value::Type         mValueType;
+  Type         mValueType;
   AccessMode          mAccessMode;
   BoundingMode        mBoundingMode;
   bool                mRepetitionFilter;
@@ -80,9 +80,9 @@ public:
 
   Address & setValue(const Value&) override;
 
-  Value::Type getValueType() const override;
+  Type getValueType() const override;
 
-  Address & setValueType(Value::Type) override;
+  Address & setValueType(Type) override;
 
   AccessMode getAccessMode() const override;
 
@@ -138,7 +138,7 @@ public:
    \param bool true to enable observation */
   void observeValue(bool);
 
-  Value * convertTTValueIntoValue(const TTValue&, Value::Type) const;
+  Value * convertTTValueIntoValue(const TTValue&, Type) const;
 
   void convertValueIntoTTValue(const Value &, TTValue &) const;
 

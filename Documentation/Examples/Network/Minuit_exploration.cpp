@@ -71,61 +71,61 @@ void explore(const shared_ptr<Node> node)
             cout << " : ";
             switch (address->getValueType())
             {
-                case Value::Type::IMPULSE :
+                case Type::IMPULSE :
                 {
                     cout << "Impulse";
                     break;
                 }
-                case Value::Type::BOOL :
+                case Type::BOOL :
                 {
                     cout << "Bool(";
                     printValue(address->getValue());
                     cout << ")";
                     break;
                 }
-                case Value::Type::INT :
+                case Type::INT :
                 {
                     cout << "Int(";
                     printValue(address->getValue());
                     cout << ")";
                     break;
                 }
-                case Value::Type::FLOAT :
+                case Type::FLOAT :
                 {
                     cout << "Float(";
                     printValue(address->getValue());
                     cout << ")";
                     break;
                 }
-                case Value::Type::CHAR :
+                case Type::CHAR :
                 {
                     cout << "Char(";
                     printValue(address->getValue());
                     cout << ")";
                     break;
                 }
-                case Value::Type::STRING :
+                case Type::STRING :
                 {
                     cout << "String(";
                     printValue(address->getValue());
                     cout << ")";
                     break;
                 }
-                case Value::Type::DESTINATION :
+                case Type::DESTINATION :
                 {
                     cout << "Destination(";
                     printValue(address->getValue());
                     cout << ")";
                     break;
                 }
-                case Value::Type::TUPLE :
+                case Type::TUPLE :
                 {
                     cout << "Tuple(";
                     printValue(address->getValue());
                     cout << ")";
                     break;
                 }
-                case Value::Type::GENERIC :
+                case Type::GENERIC :
                 {
                     cout << "Generic(";
                     printValue(address->getValue());
@@ -200,48 +200,48 @@ void printValue(const Value * v)
 {
     switch (v->getType())
     {
-        case Value::Type::IMPULSE :
+        case Type::IMPULSE :
         {
             cout << "-";
             break;
         }
-        case Value::Type::BOOL :
+        case Type::BOOL :
         {
             Bool * b = (Bool*)v;
             cout << b->value;
             break;
         }
-        case Value::Type::INT :
+        case Type::INT :
         {
             Int * i = (Int*)v;
             cout << i->value;
             break;
         }
-        case Value::Type::FLOAT :
+        case Type::FLOAT :
         {
             Float * f = (Float*)v;
             cout << f->value;
             break;
         }
-        case Value::Type::CHAR :
+        case Type::CHAR :
         {
             Char * c = (Char*)v;
             cout << c->value;
             break;
         }
-        case Value::Type::STRING :
+        case Type::STRING :
         {
             String * s = (String*)v;
             cout << s->value;
             break;
         }
-        case Value::Type::DESTINATION :
+        case Type::DESTINATION :
         {
             Destination * d = (Destination*)v;
             cout << d->value;
             break;
         }
-        case Value::Type::TUPLE :
+        case Type::TUPLE :
         {
             Tuple * t = (Tuple*)v;
             bool first = true;
@@ -253,7 +253,7 @@ void printValue(const Value * v)
             }
             break;
         }
-        case Value::Type::GENERIC :
+        case Type::GENERIC :
         {
             // todo
             break;

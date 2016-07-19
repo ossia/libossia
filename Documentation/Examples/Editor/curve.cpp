@@ -56,7 +56,7 @@ int main()
   auto device = Device::create(local_protocol, "test");
   
   auto localTupleNode = *(device->emplace(device->children().cend(), "my_tuple"));
-  auto localTupleAddress = localTupleNode->createAddress(Value::Type::TUPLE);
+  auto localTupleAddress = localTupleNode->createAddress(Type::TUPLE);
   
   Tuple t = {new Float(-1.), new Float(0.), new Float(1.)};
   localTupleAddress->setValue(&t);

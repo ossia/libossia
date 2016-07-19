@@ -57,14 +57,14 @@ int main()
 
     // add a /play address
     auto local_play_node = *(local_device->emplace(local_device->children().cend(), "play"));
-    auto local_play_address = local_play_node->createAddress(Value::Type::BOOL);
+    auto local_play_address = local_play_node->createAddress(Type::BOOL);
 
     // attach /play address to a callback
     local_play_address->addCallback(local_play_callback);
 
     // add a /test address
     auto local_test_node = *(local_device->emplace(local_device->children().cend(), "test"));
-    auto local_test_address = local_test_node->createAddress(Value::Type::TUPLE);
+    auto local_test_address = local_test_node->createAddress(Type::TUPLE);
 
     // attach /test address to their callback
     local_test_address->addCallback(local_test_callback);
@@ -260,7 +260,7 @@ int main()
 
 void local_play_callback(const Value * v)
 {
-    if (v->getType() == Value::Type::BOOL)
+    if (v->getType() == Type::BOOL)
     {
         Bool * b = (Bool*)v;
         if (b->value)
@@ -274,13 +274,13 @@ void local_test_callback(const Value * v)
 {
     cout << "/i-score/test = ";
 
-    if (v->getType() == Value::Type::TUPLE)
+    if (v->getType() == Type::TUPLE)
     {
         Tuple * t = (Tuple*)v;
 
         for (auto e : t->value)
         {
-            if (e->getType() == Value::Type::FLOAT)
+            if (e->getType() == Type::FLOAT)
             {
                 Float * f = (Float*)e;
                 cout << f->value << " ";

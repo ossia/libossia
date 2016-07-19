@@ -42,31 +42,31 @@ int main()
     auto oscTestNode = *(oscDevice->emplace(oscDevice->children().cend(), "test"));
 
     auto oscImpulseNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_impulse"));
-    auto oscImpulseAddress = oscImpulseNode->createAddress(Value::Type::IMPULSE);
+    auto oscImpulseAddress = oscImpulseNode->createAddress(Type::IMPULSE);
     oscImpulseAddress->addCallback(printValueCallback);
 
     auto oscBoolNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_bool"));
-    auto oscBoolAddress = oscBoolNode->createAddress(Value::Type::BOOL);
+    auto oscBoolAddress = oscBoolNode->createAddress(Type::BOOL);
     oscBoolAddress->addCallback(printValueCallback);
 
     auto oscIntNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_int"));
-    auto oscIntAddress = oscIntNode->createAddress(Value::Type::INT);
+    auto oscIntAddress = oscIntNode->createAddress(Type::INT);
     oscIntAddress->addCallback(printValueCallback);
 
     auto oscFloatNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_float"));
-    auto oscFloatAddress = oscFloatNode->createAddress(Value::Type::FLOAT);
+    auto oscFloatAddress = oscFloatNode->createAddress(Type::FLOAT);
     oscFloatAddress->addCallback(printValueCallback);
 
     auto oscStringNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_string"));
-    auto oscStringAddress = oscStringNode->createAddress(Value::Type::STRING);
+    auto oscStringAddress = oscStringNode->createAddress(Type::STRING);
     oscStringAddress->addCallback(printValueCallback);
 
     auto oscDestinationNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_destination"));
-    auto oscDestinationAddress = oscDestinationNode->createAddress(Value::Type::DESTINATION);
+    auto oscDestinationAddress = oscDestinationNode->createAddress(Type::DESTINATION);
     oscDestinationAddress->addCallback(printValueCallback);
 
     auto oscTupleNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_tuple"));
-    auto oscTupleAddress = oscTupleNode->createAddress(Value::Type::TUPLE);
+    auto oscTupleAddress = oscTupleNode->createAddress(Type::TUPLE);
     oscTupleAddress->addCallback(printValueCallback);
 
     // update tree value
@@ -105,48 +105,48 @@ void printValue(const Value * v)
 {
     switch (v->getType())
     {
-        case Value::Type::IMPULSE :
+        case Type::IMPULSE :
         {
             cout << "-";
             break;
         }
-        case Value::Type::BOOL :
+        case Type::BOOL :
         {
             Bool * b = (Bool*)v;
             cout << b->value;
             break;
         }
-        case Value::Type::INT :
+        case Type::INT :
         {
             Int * i = (Int*)v;
             cout << i->value;
             break;
         }
-        case Value::Type::FLOAT :
+        case Type::FLOAT :
         {
             Float * f = (Float*)v;
             cout << f->value;
             break;
         }
-        case Value::Type::CHAR :
+        case Type::CHAR :
         {
             Char * c = (Char*)v;
             cout << c->value;
             break;
         }
-        case Value::Type::STRING :
+        case Type::STRING :
         {
             String * s = (String*)v;
             cout << s->value;
             break;
         }
-        case Value::Type::DESTINATION :
+        case Type::DESTINATION :
         {
             Destination * d = (Destination*)v;
             cout << d->value;
             break;
         }
-        case Value::Type::TUPLE :
+        case Type::TUPLE :
         {
             Tuple * t = (Tuple*)v;
             bool first = true;
@@ -158,7 +158,7 @@ void printValue(const Value * v)
             }
             break;
         }
-        case Value::Type::GENERIC :
+        case Type::GENERIC :
         {
             // todo
             break;

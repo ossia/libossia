@@ -44,31 +44,31 @@ int main()
     auto localTestNode = *(localDevice->emplace(localDevice->children().cend(), "test"));
 
     auto localImpulseNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_impulse"));
-    auto localImpulseAddress = localImpulseNode->createAddress(Value::Type::IMPULSE);
+    auto localImpulseAddress = localImpulseNode->createAddress(Type::IMPULSE);
     localImpulseAddress->addCallback(printValueCallback);
 
     auto localBoolNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_bool"));
-    auto localBoolAddress = localBoolNode->createAddress(Value::Type::BOOL);
+    auto localBoolAddress = localBoolNode->createAddress(Type::BOOL);
     localBoolAddress->addCallback(printValueCallback);
 
     auto localIntNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_int"));
-    auto localIntAddress = localIntNode->createAddress(Value::Type::INT);
+    auto localIntAddress = localIntNode->createAddress(Type::INT);
     localIntAddress->addCallback(printValueCallback);
 
     auto localFloatNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_float"));
-    auto localFloatAddress = localFloatNode->createAddress(Value::Type::FLOAT);
+    auto localFloatAddress = localFloatNode->createAddress(Type::FLOAT);
     localFloatAddress->addCallback(printValueCallback);
 
     auto localStringNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_string"));
-    auto localStringAddress = localStringNode->createAddress(Value::Type::STRING);
+    auto localStringAddress = localStringNode->createAddress(Type::STRING);
     localStringAddress->addCallback(printValueCallback);
 
     auto localDestinationNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_destination"));
-    auto localDestinationAddress = localDestinationNode->createAddress(Value::Type::DESTINATION);
+    auto localDestinationAddress = localDestinationNode->createAddress(Type::DESTINATION);
     localDestinationAddress->addCallback(printValueCallback);
 
     auto localTupleNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_tuple"));
-    auto localTupleAddress = localTupleNode->createAddress(Value::Type::TUPLE);
+    auto localTupleAddress = localTupleNode->createAddress(Type::TUPLE);
     localTupleAddress->addCallback(printValueCallback);
 
     // update tree value
@@ -112,48 +112,48 @@ void printValue(const Value * v)
 {
     switch (v->getType())
     {
-        case Value::Type::IMPULSE :
+        case Type::IMPULSE :
         {
             cout << "-";
             break;
         }
-        case Value::Type::BOOL :
+        case Type::BOOL :
         {
             Bool * b = (Bool*)v;
             cout << b->value;
             break;
         }
-        case Value::Type::INT :
+        case Type::INT :
         {
             Int * i = (Int*)v;
             cout << i->value;
             break;
         }
-        case Value::Type::FLOAT :
+        case Type::FLOAT :
         {
             Float * f = (Float*)v;
             cout << f->value;
             break;
         }
-        case Value::Type::CHAR :
+        case Type::CHAR :
         {
             Char * c = (Char*)v;
             cout << c->value;
             break;
         }
-        case Value::Type::STRING :
+        case Type::STRING :
         {
             String * s = (String*)v;
             cout << s->value;
             break;
         }
-        case Value::Type::DESTINATION :
+        case Type::DESTINATION :
         {
             Destination * d = (Destination*)v;
             cout << d->value;
             break;
         }
-        case Value::Type::TUPLE :
+        case Type::TUPLE :
         {
             Tuple * t = (Tuple*)v;
             bool first = true;
@@ -165,7 +165,7 @@ void printValue(const Value * v)
             }
             break;
         }
-        case Value::Type::GENERIC :
+        case Type::GENERIC :
         {
             // todo
             break;

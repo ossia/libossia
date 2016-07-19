@@ -1,5 +1,6 @@
 #include "Network/JamomaNode.h"
 #include "Network/JamomaDevice.h"
+#include "Editor/Value.h"
 #include <assert.h>
 
 # pragma mark -
@@ -97,7 +98,7 @@ shared_ptr<Address> JamomaNode::getAddress() const
 # pragma mark -
 # pragma mark Address
 
-shared_ptr<Address> JamomaNode::createAddress(Value::Type type)
+shared_ptr<Address> JamomaNode::createAddress(Type type)
 {
   // clear former address
   removeAddress();
@@ -227,7 +228,7 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
 
 Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator pos,
                                               const string& name,
-                                              Value::Type type,
+                                              Type type,
                                               AccessMode access,
                                               const std::shared_ptr<Domain>& domain,
                                               BoundingMode bm,
@@ -457,37 +458,37 @@ void JamomaNode::buildAddress()
         if (type == kTTSym_none)
         {
           mAddress->setValue(Impulse{});
-          mAddress->setValueType(Value::Type::IMPULSE);
+          mAddress->setValueType(Type::IMPULSE);
         }
         else if (type == kTTSym_generic)
         {
           mAddress->setValue(Tuple{});
-          mAddress->setValueType(Value::Type::TUPLE);
+          mAddress->setValueType(Type::TUPLE);
         }
         else if (type == kTTSym_boolean)
         {
           mAddress->setValue(Bool{});
-          mAddress->setValueType(Value::Type::BOOL);
+          mAddress->setValueType(Type::BOOL);
         }
         else if (type == kTTSym_integer)
         {
           mAddress->setValue(Int{});
-          mAddress->setValueType(Value::Type::INT);
+          mAddress->setValueType(Type::INT);
         }
         else if (type == kTTSym_decimal)
         {
           mAddress->setValue(Float{});
-          mAddress->setValueType(Value::Type::FLOAT);
+          mAddress->setValueType(Type::FLOAT);
         }
         else if (type == kTTSym_array)
         {
           mAddress->setValue(Tuple{});
-          mAddress->setValueType(Value::Type::TUPLE);
+          mAddress->setValueType(Type::TUPLE);
         }
         else if (type == kTTSym_string)
         {
           mAddress->setValue(String{});
-          mAddress->setValueType(Value::Type::STRING);
+          mAddress->setValueType(Type::STRING);
         }
 
         TTSymbol service;

@@ -37,16 +37,19 @@ include_directories(${API_HEADERS_FOLDER}/Network)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Includes)
 
 file(GLOB_RECURSE MISC_SRCS
+    "${API_HEADERS_FOLDER}/Misc/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Includes/Misc/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Misc/*.cpp"
 )
 
 file(GLOB_RECURSE EDITOR_SRCS
+    "${API_HEADERS_FOLDER}/Editor/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Includes/Editor/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/*.cpp"
 )
 
 file(GLOB_RECURSE NETWORK_SRCS
+    "${API_HEADERS_FOLDER}/Network/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Includes/Network/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Network/*.cpp"
 )

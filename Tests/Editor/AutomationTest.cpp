@@ -35,7 +35,7 @@ private Q_SLOTS:
         auto local_protocol = Local::create();
         auto local_device = Device::create(local_protocol, "test");
         local_device->emplace(local_device->children().begin(), "child");
-        auto address = local_device->children().front()->createAddress(Value::Type::FLOAT);
+        auto address = local_device->children().front()->createAddress(Type::FLOAT);
 
         Float f(0);
 
@@ -57,7 +57,7 @@ private Q_SLOTS:
         auto local_protocol = Local::create();
         auto local_device = Device::create(local_protocol, "test");
         local_device->emplace(local_device->children().begin(), "child");
-        auto address = local_device->children().front()->createAddress(Value::Type::FLOAT);
+        auto address = local_device->children().front()->createAddress(Type::FLOAT);
         address->addCallback([&] (const Value* v) { address_callback(v); });
 
         auto curve = Curve<double, float>::create();

@@ -21,7 +21,7 @@ add_custom_target(OSSIAHeaders SOURCES ${HEADERS})
 add_library(OSSIAHeadersLib INTERFACE)
 
 target_include_directories(OSSIAHeadersLib INTERFACE "${API_HEADERS_FOLDER}")
-include_directories(Headers)
+include_directories("${API_HEADERS_FOLDER}")
 add_subdirectory(3rdparty/ModernMIDI EXCLUDE_FROM_ALL)
 add_subdirectory(Implementations)
 #if(NOT OSSIA_NO_EXAMPLES)

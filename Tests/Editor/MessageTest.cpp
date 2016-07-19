@@ -19,7 +19,7 @@ private Q_SLOTS:
 
         // Local tree building
         auto localIntNode = *(device->emplace(device->children().cend(), "my_int"));
-        auto localIntAddress = localIntNode->createAddress(Value::Type::INT);
+        auto localIntAddress = localIntNode->createAddress(Type::INT);
 
         auto message = Message::create(localIntAddress, new Int(10));
         QVERIFY(message != nullptr);

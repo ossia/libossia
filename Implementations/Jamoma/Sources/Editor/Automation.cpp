@@ -118,7 +118,7 @@ std::unique_ptr<OSSIA::Value> JamomaAutomation::computeValue(double position, co
 {
   switch (drive.getType())
   {
-    case Value::Type::BEHAVIOR :
+    case Type::BEHAVIOR :
     {
       auto& b = static_cast<const Behavior&>(drive);
 
@@ -149,7 +149,7 @@ std::unique_ptr<OSSIA::Value> JamomaAutomation::computeValue(double position, co
       throw runtime_error("none handled drive curve type");
     }
 
-    case Value::Type::TUPLE :
+    case Type::TUPLE :
     {
       auto& t = static_cast<const Tuple&>(drive);
       vector<const Value*> t_value;

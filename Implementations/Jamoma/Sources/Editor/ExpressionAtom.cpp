@@ -45,7 +45,7 @@ bool JamomaExpressionAtom::evaluate() const
 void JamomaExpressionAtom::update() const
 {
   // pull value of the first operand if it is a Destination
-  if (mFirstValue->getType() == Value::Type::DESTINATION)
+  if (mFirstValue->getType() == OSSIA::Type::DESTINATION)
   {
     Destination* d = (Destination*)mFirstValue;
     if (d->value->getAddress())
@@ -55,7 +55,7 @@ void JamomaExpressionAtom::update() const
   }
 
   // pull value of the second operand if it is a Destination
-  if (mSecondValue->getType() == Value::Type::DESTINATION)
+  if (mSecondValue->getType() == OSSIA::Type::DESTINATION)
   {
     Destination* d = (Destination*)mSecondValue;
     if (d->value->getAddress())
@@ -101,7 +101,7 @@ Expression::iterator JamomaExpressionAtom::addCallback(ResultCallback callback)
   {
     // start first operand observation if it is a Destination
     //! \todo what about Tuple of Destinations ?
-    if (mFirstValue->getType() == Value::Type::DESTINATION)
+    if (mFirstValue->getType() == OSSIA::Type::DESTINATION)
     {
       Destination* d = (Destination*)mFirstValue;
       if (d->value->getAddress())
@@ -112,7 +112,7 @@ Expression::iterator JamomaExpressionAtom::addCallback(ResultCallback callback)
 
     // start second operand observation if it is a Destination
     //! \todo what about Tuple of Destinations ?
-    if (mSecondValue->getType() == Value::Type::DESTINATION)
+    if (mSecondValue->getType() == OSSIA::Type::DESTINATION)
     {
       Destination* d = (Destination*)mSecondValue;
       if (d->value->getAddress())
@@ -133,7 +133,7 @@ void JamomaExpressionAtom::removeCallback(Expression::iterator callback)
   {
     // stop first operand observation if it is a Destination
     //! \todo what about Tuple of Destinations ?
-    if (mFirstValue->getType() == Value::Type::DESTINATION)
+    if (mFirstValue->getType() == OSSIA::Type::DESTINATION)
     {
       Destination* d = (Destination*)mFirstValue;
       if (d->value->getAddress())
@@ -144,7 +144,7 @@ void JamomaExpressionAtom::removeCallback(Expression::iterator callback)
 
     // start second operand observation if it is a Destination
     //! \todo what about Tuple of Destinations ?
-    if (mSecondValue->getType() == Value::Type::DESTINATION)
+    if (mSecondValue->getType() == OSSIA::Type::DESTINATION)
     {
       Destination* d = (Destination*)mSecondValue;
       if (d->value->getAddress())

@@ -138,7 +138,7 @@ std::unique_ptr<OSSIA::Value> JamomaMapper::computeValue(const Value& driver, co
 {
   switch (driver.getType())
   {
-    case Value::Type::BEHAVIOR :
+    case Type::BEHAVIOR :
     {
       auto& b = static_cast<const Behavior&>(drive);
 
@@ -219,11 +219,11 @@ std::unique_ptr<OSSIA::Value> JamomaMapper::computeValue(const Value& driver, co
       break;
     }
 
-    case Value::Type::TUPLE :
+    case Type::TUPLE :
     {
       auto& t_drive = static_cast<const Tuple&>(drive);
 
-      if (driver.getType() == Value::Type::TUPLE)
+      if (driver.getType() == Type::TUPLE)
       {
         auto& t_driver = static_cast<const Tuple&>(driver);
 

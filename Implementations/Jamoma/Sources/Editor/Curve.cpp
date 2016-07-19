@@ -208,31 +208,47 @@ convertToTemplateTypeValue(const Value * value, vector<char>::iterator index) co
 {
   switch (value->getType())
   {
-    case Value::Type::BOOL :
+    case Type::BOOL :
     {
       auto b = static_cast<const Bool*>(value);
       return b->value;
     }
 
-    case Value::Type::INT :
+    case Type::INT :
     {
       auto i = static_cast<const Int*>(value);
       return i->value;
     }
 
-    case Value::Type::FLOAT :
+    case Type::FLOAT :
     {
       auto f = static_cast<const Float*>(value);
       return f->value;
     }
 
-    case Value::Type::CHAR :
+    case Type::CHAR :
     {
       auto c = static_cast<const Char*>(value);
       return c->value;
     }
 
-    case Value::Type::TUPLE :
+    case Type::VEC2F :
+    {
+      auto t = static_cast<const Vec2f*>(value);
+      return t->value[*index];
+    }
+    case Type::VEC3F :
+    {
+      auto t = static_cast<const Vec3f*>(value);
+      return t->value[*index];
+    }
+    case Type::VEC4F :
+    {
+      auto t = static_cast<const Vec4f*>(value);
+      return t->value[*index];
+    }
+
+    case Type::TUPLE :
     {
       auto t = static_cast<const Tuple*>(value);
       return convertToTemplateTypeValue(t->value[*index], index++);
@@ -240,7 +256,7 @@ convertToTemplateTypeValue(const Value * value, vector<char>::iterator index) co
 
     default :
     {
-      throw runtime_error("converting none numerical value");
+      throw runtime_error("Cannot convert to a numeric type");
     }
   }
 }

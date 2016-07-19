@@ -82,7 +82,7 @@ public:
 # pragma mark -
 # pragma mark Address
 
-  shared_ptr<Address> createAddress(Value::Type type) override;
+  shared_ptr<Address> createAddress(Type type) override;
 
   bool removeAddress() override;
 
@@ -93,7 +93,7 @@ public:
 
   Container<Node>::iterator emplace(Container<Node>::const_iterator pos,
                                     const string& name,
-                                    Value::Type type,
+                                    Type type,
                                     AccessMode,
                                     const std::shared_ptr<Domain>&,
                                     BoundingMode,

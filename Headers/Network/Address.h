@@ -21,7 +21,6 @@
 #include <memory>
 #include "Editor/Domain.h"
 #include "Editor/Expression.h"
-#include "Editor/Value.h"
 #include "Network/AddressProperties.h"
 #include <ossia_export.h>
 
@@ -94,18 +93,18 @@ public:
   /*! set the address value
    \note call pushValue if you need to sync the value with the device
    \param const #Value* the value
-   \note it is possible to set the value using a #Value::Type::Destination to query the value from another address
+   \note it is possible to set the value using a #Type::Destination to query the value from another address
    \return #Address the address */
   virtual Address & setValue(const Value&) = 0;
 
   /*! get the address type
-   \return #Value::Type of the address */
-  virtual Value::Type getValueType() const = 0;
+   \return #Type of the address */
+  virtual Type getValueType() const = 0;
 
   /*! set the address type
-   \param #Value::Type of the address
+   \param #Type of the address
    \return #Address the address */
-  virtual Address & setValueType(Value::Type) = 0;
+  virtual Address & setValueType(Type) = 0;
 
   /*! get the address access mode
    \return #AccessMode of the address */

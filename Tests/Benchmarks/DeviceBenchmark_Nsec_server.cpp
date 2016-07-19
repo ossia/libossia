@@ -36,7 +36,7 @@ OSSIA::Node* createNodeFromPath(
             {
                 auto newNodeIt = node->emplace(node->children().begin(), path[k]);
                 node = newNodeIt->get();
-                auto addr = node->createAddress(Value::Type::FLOAT);
+                auto addr = node->createAddress(Type::FLOAT);
                 //dev->getProtocol()->observeAddressValue(addr, true);
                 addr->addCallback([&] (const OSSIA::Value* val) {
                     ++num_received;
@@ -76,13 +76,13 @@ private Q_SLOTS:
         bool b = false;
 
         auto st = localDevice->emplace(localDevice->children().end(), "startTick");
-        auto st_addr = (*st)->createAddress(OSSIA::Value::Type::IMPULSE);
+        auto st_addr = (*st)->createAddress(OSSIA::Type::IMPULSE);
         st_addr->addCallback([&] (const OSSIA::Value* val) {
             start_time = std::chrono::steady_clock::now();
             std::cerr << "START received" << std::endl;
         });
         auto et = localDevice->emplace(localDevice->children().end(), "stopTick");
-        auto et_addr = (*et)->createAddress(OSSIA::Value::Type::IMPULSE);
+        auto et_addr = (*et)->createAddress(OSSIA::Type::IMPULSE);
         et_addr->addCallback([&] (const OSSIA::Value* val) {
             stop_time = std::chrono::steady_clock::now();
             b = true;

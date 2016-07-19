@@ -50,10 +50,10 @@ int main()
     auto local_device = Device::create(local_protocol, "test");
     
     local_device->emplace(local_device->children().begin(), "float");
-    auto float_address = local_device->children().front()->createAddress(Value::Type::FLOAT);
+    auto float_address = local_device->children().front()->createAddress(Type::FLOAT);
     float_address->addCallback([&] (const Value* v) { float_address_callback(v); });
     
-    auto int_address = local_device->children().front()->createAddress(Value::Type::INT);
+    auto int_address = local_device->children().front()->createAddress(Type::INT);
     int_address->addCallback([&] (const Value* v) { int_address_callback(v); });
     
     auto curve = Curve<float, int>::create();

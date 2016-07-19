@@ -4,222 +4,6 @@
 
 using namespace OSSIA;
 
-
-template<typename Kind, typename T>
-bool equal(const T& lhs, const OSSIA::Value& rhs)
-{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 == v2; }); }
-
-template<typename Kind, typename T>
-bool different(const T& lhs, const OSSIA::Value& rhs)
-{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 != v2; }); }
-
-
-template<typename Kind, typename T>
-bool greater(const T& lhs, const OSSIA::Value& rhs)
-{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 > v2; }); }
-
-template<typename Kind, typename T>
-bool greater_equal(const T& lhs, const OSSIA::Value& rhs)
-{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 >= v2; }); }
-
-
-template<typename Kind, typename T>
-bool smaller(const T& lhs, const OSSIA::Value& rhs)
-{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 < v2; }); }
-
-template<typename Kind, typename T>
-bool smaller_equal(const T& lhs, const OSSIA::Value& rhs)
-{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 <= v2; }); }
-
-struct Impulse_T
-{
-        template<typename T>
-        friend bool operator==(const T&, Impulse_T) { return true; }
-        template<typename T>
-        friend bool operator!=(const T&, Impulse_T) { return false; }
-        template<typename T>
-        friend bool operator<=(const T&, Impulse_T) { return true; }
-        template<typename T>
-        friend bool operator>=(const T&, Impulse_T) { return true; }
-        template<typename T>
-        friend bool operator<(const T&, Impulse_T) { return false; }
-        template<typename T>
-        friend bool operator>(const T&, Impulse_T) { return true; }
-};
-
-struct NumericValue
-{
-        template<typename T, typename Fun>
-        static bool apply(const T& lhs, const OSSIA::Value& v, Fun fun)
-        {
-            switch (v.getType())
-            {
-                case Value::Type::IMPULSE :
-                {
-                    return fun(lhs.value, Impulse_T{});
-                }
-                case Value::Type::BOOL :
-                {
-                    return fun(lhs.value, static_cast<const Bool&>(v).value);
-                }
-                case Value::Type::INT :
-                {
-                    return fun(lhs.value, static_cast<const Int&>(v).value);
-                }
-                case Value::Type::FLOAT :
-                {
-                    return fun(lhs.value, static_cast<const Float&>(v).value);
-                }
-                case Value::Type::CHAR :
-                {
-                    return fun(lhs.value, static_cast<const Char&>(v).value);
-                }
-                case Value::Type::TUPLE :
-                {
-                    auto& t = static_cast<const Tuple&>(v);
-                    return (t.value.size() == 1) && (fun(lhs, *t.value[0]));
-                }
-                case Value::Type::DESTINATION :
-                {
-                    auto& d = static_cast<const Destination&>(v);
-                    if (d.value->getAddress())
-                    {
-                        auto c = d.value->getAddress()->cloneValue(d.index);
-                        return fun(lhs, *c);
-                    }
-                    return false;
-                }
-                default :
-                    return false;
-            }
-        }
-};
-
-struct StringValue
-{
-        template<typename Fun>
-        static bool apply(const String& lhs, const OSSIA::Value& v, Fun fun)
-        {
-            switch (v.getType())
-            {
-                case Value::Type::IMPULSE :
-                {
-                    return fun(lhs.value, Impulse_T{});
-                }
-                case Value::Type::STRING :
-                {
-                    return fun(lhs.value, static_cast<const String&>(v).value);
-                }
-                case Value::Type::TUPLE :
-                {
-                    auto& t = static_cast<const Tuple&>(v);
-                    return (t.value.size() == 1) && (fun(lhs, *t.value[0]));
-                }
-                case Value::Type::DESTINATION :
-                {
-                    auto& d = static_cast<const Destination&>(v);
-                    if (d.value->getAddress())
-                    {
-                        auto c = d.value->getAddress()->cloneValue(d.index);
-                        return fun(lhs, *c);
-                    }
-                    return false;
-                }
-                default :
-                    return false;
-            }
-        }
-};
-
-struct TupleValue
-{
-        template<typename Fun>
-        static bool apply(const Tuple& lhs, const OSSIA::Value& v, Fun fun)
-        {
-            switch (v.getType())
-            {
-                case Value::Type::IMPULSE :
-                {
-                    return fun(lhs.value, Impulse_T{});
-                }
-
-                case Value::Type::TUPLE :
-                {
-                    auto& t = static_cast<const Tuple&>(v);
-
-                    if (lhs.value.size() != t.value.size())
-                        return false;
-
-                    bool result = true;
-                    auto tit = t.value.begin();
-                    for (const auto& val : lhs.value)
-                    {
-                        result &= fun(*val, **tit);
-                        if (!result)
-                            break;
-                        tit++;
-                    }
-
-                    return result;
-                }
-
-                default :
-                {
-                    if (lhs.value.size() == 1)
-                        return fun(*lhs.value[0], v);
-
-                    return false;
-                }
-            }
-        }
-};
-
-struct DestinationValue
-{
-        template<typename Fun>
-        static bool apply(const Destination& lhs, const OSSIA::Value& v, Fun fun)
-        {
-            switch (v.getType())
-            {
-                case Value::Type::IMPULSE :
-                {
-                    return fun(lhs.value, Impulse_T{});
-                }
-
-                case Value::Type::DESTINATION :
-                {
-                    auto& d = static_cast<const Destination&>(v);
-
-                    // if there are addresses compare values
-                    if (lhs.value->getAddress() && d.value->getAddress())
-                    {
-                        auto c1 = lhs.value->getAddress()->cloneValue(lhs.index);
-                        auto c2 = d.value->getAddress()->cloneValue(d.index);
-                        return fun(*c1, *c2);
-                    }
-
-                    // if no addresses, compare nodes
-                    else if (!lhs.value->getAddress() && !d.value->getAddress())
-                    {
-                        return fun(lhs.value, d.value);
-                    }
-                    // TODO fallthrough ??
-                }
-
-                default :
-                {
-                    if (lhs.value->getAddress())
-                    {
-                        auto c = lhs.value->getAddress()->cloneValue(lhs.index);
-                        return fun(*c, v);
-                    }
-
-                    return false;
-                }
-            }
-        }
-};
-
 Value::~Value() = default;
 
 # pragma mark -
@@ -247,22 +31,22 @@ Value * Bool::clone() const
 }
 
 bool Bool::operator== (const Value& v) const
-{ return equal<NumericValue>(*this, v); }
+{ return Comparisons::equal<Comparisons::NumericValue>(*this, v); }
 
 bool Bool::operator!= (const Value& v) const
-{ return different<NumericValue>(*this, v); }
+{ return Comparisons::different<Comparisons::NumericValue>(*this, v); }
 
 bool Bool::operator> (const Value& v) const
-{ return greater<NumericValue>(*this, v); }
+{ return Comparisons::greater<Comparisons::NumericValue>(*this, v); }
 
 bool Bool::operator>= (const Value& v) const
-{ return greater_equal<NumericValue>(*this, v); }
+{ return Comparisons::greater_equal<Comparisons::NumericValue>(*this, v); }
 
 bool Bool::operator< (const Value& v) const
-{ return smaller<NumericValue>(*this, v); }
+{ return Comparisons::smaller<Comparisons::NumericValue>(*this, v); }
 
 bool Bool::operator<= (const Value& v) const
-{ return smaller_equal<NumericValue>(*this, v); }
+{ return Comparisons::smaller_equal<Comparisons::NumericValue>(*this, v); }
 
 # pragma mark -
 # pragma mark Int
@@ -277,22 +61,22 @@ Value * Int::clone() const
 }
 
 bool Int::operator== (const Value& v) const
-{ return equal<NumericValue>(*this, v); }
+{ return Comparisons::equal<Comparisons::NumericValue>(*this, v); }
 
 bool Int::operator!= (const Value& v) const
-{ return different<NumericValue>(*this, v); }
+{ return Comparisons::different<Comparisons::NumericValue>(*this, v); }
 
 bool Int::operator> (const Value& v) const
-{ return greater<NumericValue>(*this, v); }
+{ return Comparisons::greater<Comparisons::NumericValue>(*this, v); }
 
 bool Int::operator>= (const Value& v) const
-{ return greater_equal<NumericValue>(*this, v); }
+{ return Comparisons::greater_equal<Comparisons::NumericValue>(*this, v); }
 
 bool Int::operator< (const Value& v) const
-{ return smaller<NumericValue>(*this, v); }
+{ return Comparisons::smaller<Comparisons::NumericValue>(*this, v); }
 
 bool Int::operator<= (const Value& v) const
-{ return smaller_equal<NumericValue>(*this, v); }
+{ return Comparisons::smaller_equal<Comparisons::NumericValue>(*this, v); }
 
 # pragma mark -
 # pragma mark Float
@@ -307,22 +91,22 @@ Value * Float::clone() const
 }
 
 bool Float::operator== (const Value& v) const
-{ return equal<NumericValue>(*this, v); }
+{ return Comparisons::equal<Comparisons::NumericValue>(*this, v); }
 
 bool Float::operator!= (const Value& v) const
-{ return different<NumericValue>(*this, v); }
+{ return Comparisons::different<Comparisons::NumericValue>(*this, v); }
 
 bool Float::operator> (const Value& v) const
-{ return greater<NumericValue>(*this, v); }
+{ return Comparisons::greater<Comparisons::NumericValue>(*this, v); }
 
 bool Float::operator>= (const Value& v) const
-{ return greater_equal<NumericValue>(*this, v); }
+{ return Comparisons::greater_equal<Comparisons::NumericValue>(*this, v); }
 
 bool Float::operator< (const Value& v) const
-{ return smaller<NumericValue>(*this, v); }
+{ return Comparisons::smaller<Comparisons::NumericValue>(*this, v); }
 
 bool Float::operator<= (const Value& v) const
-{ return smaller_equal<NumericValue>(*this, v); }
+{ return Comparisons::smaller_equal<Comparisons::NumericValue>(*this, v); }
 # pragma mark -
 # pragma mark Char
 
@@ -337,22 +121,22 @@ Value * Char::clone() const
 }
 
 bool Char::operator== (const Value& v) const
-{ return equal<NumericValue>(*this, v); }
+{ return Comparisons::equal<Comparisons::NumericValue>(*this, v); }
 
 bool Char::operator!= (const Value& v) const
-{ return different<NumericValue>(*this, v); }
+{ return Comparisons::different<Comparisons::NumericValue>(*this, v); }
 
 bool Char::operator> (const Value& v) const
-{ return greater<NumericValue>(*this, v); }
+{ return Comparisons::greater<Comparisons::NumericValue>(*this, v); }
 
 bool Char::operator>= (const Value& v) const
-{ return greater_equal<NumericValue>(*this, v); }
+{ return Comparisons::greater_equal<Comparisons::NumericValue>(*this, v); }
 
 bool Char::operator< (const Value& v) const
-{ return smaller<NumericValue>(*this, v); }
+{ return Comparisons::smaller<Comparisons::NumericValue>(*this, v); }
 
 bool Char::operator<= (const Value& v) const
-{ return smaller_equal<NumericValue>(*this, v); }
+{ return Comparisons::smaller_equal<Comparisons::NumericValue>(*this, v); }
 
 # pragma mark -
 # pragma mark String
@@ -365,22 +149,22 @@ Value * String::clone() const
 { return new String(value); }
 
 bool String::operator== (const Value& v) const
-{ return equal<StringValue>(*this, v); }
+{ return Comparisons::equal<Comparisons::StringValue>(*this, v); }
 
 bool String::operator!= (const Value& v) const
-{ return different<StringValue>(*this, v); }
+{ return Comparisons::different<Comparisons::StringValue>(*this, v); }
 
 bool String::operator> (const Value& v) const
-{ return greater<StringValue>(*this, v); }
+{ return Comparisons::greater<Comparisons::StringValue>(*this, v); }
 
 bool String::operator>= (const Value& v) const
-{ return greater_equal<StringValue>(*this, v); }
+{ return Comparisons::greater_equal<Comparisons::StringValue>(*this, v); }
 
 bool String::operator< (const Value& v) const
-{ return smaller<StringValue>(*this, v); }
+{ return Comparisons::smaller<Comparisons::StringValue>(*this, v); }
 
 bool String::operator<= (const Value& v) const
-{ return smaller_equal<StringValue>(*this, v); }
+{ return Comparisons::smaller_equal<Comparisons::StringValue>(*this, v); }
 
 
 # pragma mark -
@@ -403,22 +187,22 @@ Value * Tuple::clone() const
 }
 
 bool Tuple::operator== (const Value& v) const
-{ return equal<TupleValue>(*this, v); }
+{ return Comparisons::equal<Comparisons::TupleValue>(*this, v); }
 
 bool Tuple::operator!= (const Value& v) const
-{ return different<TupleValue>(*this, v); }
+{ return Comparisons::different<Comparisons::TupleValue>(*this, v); }
 
 bool Tuple::operator> (const Value& v) const
-{ return greater<TupleValue>(*this, v); }
+{ return Comparisons::greater<Comparisons::TupleValue>(*this, v); }
 
 bool Tuple::operator>= (const Value& v) const
-{ return greater_equal<TupleValue>(*this, v); }
+{ return Comparisons::greater_equal<Comparisons::TupleValue>(*this, v); }
 
 bool Tuple::operator< (const Value& v) const
-{ return smaller<TupleValue>(*this, v); }
+{ return Comparisons::smaller<Comparisons::TupleValue>(*this, v); }
 
 bool Tuple::operator<= (const Value& v) const
-{ return smaller_equal<TupleValue>(*this, v); }
+{ return Comparisons::smaller_equal<Comparisons::TupleValue>(*this, v); }
 
 
 # pragma mark -
@@ -448,22 +232,22 @@ Value * Destination::clone() const
 { return new Destination(value, index); }
 
 bool Destination::operator== (const Value& v) const
-{ return equal<DestinationValue>(*this, v); }
+{ return Comparisons::equal<Comparisons::DestinationValue>(*this, v); }
 
 bool Destination::operator!= (const Value& v) const
-{ return different<DestinationValue>(*this, v); }
+{ return Comparisons::different<Comparisons::DestinationValue>(*this, v); }
 
 bool Destination::operator> (const Value& v) const
-{ return greater<DestinationValue>(*this, v); }
+{ return Comparisons::greater<Comparisons::DestinationValue>(*this, v); }
 
 bool Destination::operator>= (const Value& v) const
-{ return greater_equal<DestinationValue>(*this, v); }
+{ return Comparisons::greater_equal<Comparisons::DestinationValue>(*this, v); }
 
 bool Destination::operator< (const Value& v) const
-{ return smaller<DestinationValue>(*this, v); }
+{ return Comparisons::smaller<Comparisons::DestinationValue>(*this, v); }
 
 bool Destination::operator<= (const Value& v) const
-{ return smaller_equal<DestinationValue>(*this, v); }
+{ return Comparisons::smaller_equal<Comparisons::DestinationValue>(*this, v); }
 
 # pragma mark -
 # pragma mark Behavior

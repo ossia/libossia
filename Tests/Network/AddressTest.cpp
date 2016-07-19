@@ -23,10 +23,10 @@ private Q_SLOTS:
         QVERIFY(address->getNode() == local_device->children().front());
         QVERIFY(address->getNode()->getDevice() == local_device);
         
-        QVERIFY(address->getValueType() == Value::Type::IMPULSE);
+        QVERIFY(address->getValueType() == Type::IMPULSE);
         
-        address->setValueType(Value::Type::INT);
-        QVERIFY(address->getValueType() == Value::Type::INT);
+        address->setValueType(Type::INT);
+        QVERIFY(address->getValueType() == Type::INT);
         
         QVERIFY(address->getAccessMode() == OSSIA::AccessMode::BI);
         

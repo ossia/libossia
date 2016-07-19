@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include "Editor/Value.h"
 #include "Network/Address.h"
 #include "Misc/Container.h"
 #include "Misc/CallbackContainer.h"
@@ -107,9 +106,9 @@ public:
 #endif
 
   /*! create node's address
-   \param #Value::Type the type of the address to create
+   \param #Type the type of the address to create
    \return std::shared_ptr<#Address> the new address */
-  virtual std::shared_ptr<OSSIA::Address> createAddress(Value::Type = Value::Type::IMPULSE) = 0;
+  virtual std::shared_ptr<OSSIA::Address> createAddress(Type = Type::IMPULSE) = 0;
 
   /*! remove node's address
    \return bool true if the address is correctly removed */
@@ -137,7 +136,7 @@ public:
    \return #Container<#Node>::iterator */
   virtual Container<Node>::iterator emplace(Container<Node>::const_iterator,
                                             const std::string&,
-                                            Value::Type,
+                                            Type,
                                             AccessMode = {},
                                             const std::shared_ptr<Domain>& = {},
                                             BoundingMode = {},
@@ -170,48 +169,6 @@ protected:
 # pragma mark -
 # pragma mark Destination
 #endif
-
-/*! \details Destination to an Address value and optionnally to several index of this value */
-struct OSSIA_EXPORT Destination final : public Value
-{
-  std::shared_ptr<Node> value;
-  std::vector<char> index;
-
-  /*! constructor for a node and optionnal index values
-   \param std::shared_ptr<Node>
-   \param char
-   \param char
-   \param ... */
-  Destination(std::shared_ptr<Node> v, std::initializer_list<char> = {});
-
-  /*! constructor for a node and an index vector
-   \param std::shared_ptr<Node>
-   \param std::vector<const #Value> value */
-  Destination(std::shared_ptr<Node> v, std::vector<char>);
-  Destination(const Destination& other) = delete;
-  virtual ~Destination();
-
-  /*! clone */
-  Value * clone() const override;
-
-  /*! equal operator */
-  bool operator== (const Value&) const override;
-
-  /*! different operator */
-  bool operator!= (const Value&) const override;
-
-  /*! greater than operator */
-  bool operator> (const Value&) const override;
-
-  /*! greater than and equal operator */
-  bool operator>= (const Value&) const override;
-
-  /*! less than operator */
-  bool operator< (const Value&) const override;
-
-  /*! less than and equal operator */
-  bool operator<= (const Value&) const override;
-};
 
 
 }

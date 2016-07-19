@@ -29,26 +29,26 @@ private Q_SLOTS:
 
         // Local tree building
         auto localImpulseNode = *(device->emplace(device->children().cend(), "my_impulse"));
-        auto localImpulseAddress = localImpulseNode->createAddress(Value::Type::IMPULSE);
+        auto localImpulseAddress = localImpulseNode->createAddress(Type::IMPULSE);
 
         auto localBoolNode = *(device->emplace(device->children().cend(), "my_bool"));
-        auto localBoolAddress = localBoolNode->createAddress(Value::Type::BOOL);
+        auto localBoolAddress = localBoolNode->createAddress(Type::BOOL);
 
         auto localIntNode = *(device->emplace(device->children().cend(), "my_int"));
-        auto localIntAddress = localIntNode->createAddress(Value::Type::INT);
+        auto localIntAddress = localIntNode->createAddress(Type::INT);
 
         auto localFloatNode = *(device->emplace(device->children().cend(), "my_float"));
-        auto localFloatAddress = localFloatNode->createAddress(Value::Type::FLOAT);
+        auto localFloatAddress = localFloatNode->createAddress(Type::FLOAT);
 
         auto localStringNode = *(device->emplace(device->children().cend(), "my_string"));
-        auto localStringAddress = localStringNode->createAddress(Value::Type::STRING);
+        auto localStringAddress = localStringNode->createAddress(Type::STRING);
 
         auto localTupleNode = *(device->emplace(device->children().cend(), "my_tuple"));
-        auto localTupleAddress = localTupleNode->createAddress(Value::Type::TUPLE);
+        auto localTupleAddress = localTupleNode->createAddress(Type::TUPLE);
 
         //! \todo what about Destination address ? do we observe the address ? how to do that ?
         //! auto localDestinationNode = *(device->emplace(device->children().cend(), "my_destination"));
-        //! auto localDestinationAddress = localDestinationNode->createAddress(Value::Type::DESTINATION);
+        //! auto localDestinationAddress = localDestinationNode->createAddress(Type::DESTINATION);
 
         // evaluate expressions before Destination value updates
         auto testExprA = ExpressionPulse::create(new Destination(localImpulseNode));
@@ -181,7 +181,7 @@ private Q_SLOTS:
         auto device = Device::create(local_protocol, "test");
 
         auto localIntNode = *(device->emplace(device->children().cend(), "my_int.1"));
-        auto localIntAddress = localIntNode->createAddress(Value::Type::INT);
+        auto localIntAddress = localIntNode->createAddress(Type::INT);
 
         auto testExpr = ExpressionPulse::create(new Destination(localIntNode));
 

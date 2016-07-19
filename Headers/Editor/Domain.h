@@ -18,7 +18,6 @@
 
 #include <vector>
 #include <memory>
-#include "Editor/Value.h"
 #include <ossia_export.h>
 
 namespace OSSIA
@@ -41,9 +40,15 @@ public:
    \param #Value* maximal value of the domain
    \param std::vector<#Value*> set of values allowed into the domain
    \return std::shared_ptr<#Domain> */
-  static std::shared_ptr<Domain> create(const Value * = new OSSIA::Impulse(),
-                                        const Value * = new OSSIA::Impulse(),
-                                        std::vector<const Value*> = std::vector<const Value*>());
+  static std::shared_ptr<Domain> create(const Value *,
+                                        const Value *,
+                                        std::vector<const Value*> = {});
+
+  /*!
+   * \brief create Create a domain initialized with a min Impulse, max Impulse
+   * and no range of allowed values.
+   */
+  static std::shared_ptr<Domain> create();
 
   /*! clone */
   virtual std::shared_ptr<Domain> clone() const = 0;

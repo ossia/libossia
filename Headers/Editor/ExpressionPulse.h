@@ -24,7 +24,7 @@
 
 namespace OSSIA
 {
-
+class Destination;
 class OSSIA_EXPORT ExpressionPulse : public Expression
 {
 

@@ -145,7 +145,7 @@ class MIDINodeImpl :
             return mAddress;
         }
 
-        std::shared_ptr<Address> createAddress(Value::Type) final override
+        std::shared_ptr<Address> createAddress(Type) final override
         {
             return mAddress;
         }
@@ -162,7 +162,7 @@ class MIDINodeImpl :
 
         iterator emplace(const_iterator,
                          const string&,
-                         Value::Type,
+                         Type,
                          AccessMode,
                          const std::shared_ptr<Domain>&,
                          BoundingMode,
@@ -196,21 +196,21 @@ struct MIDIAddressInfo
             PC_N // /12/PC/32 Impulse
         };
 
-        OSSIA::Value::Type matchingType()
+        OSSIA::Type matchingType()
         {
             switch(type)
             {
                 case Type::NoteOn:
                 case Type::NoteOff:
                 case Type::CC:
-                    return OSSIA::Value::Type::TUPLE;
+                    return OSSIA::Type::TUPLE;
                 case Type::NoteOn_N:
                 case Type::NoteOff_N:
                 case Type::CC_N:
                 case Type::PC:
-                    return OSSIA::Value::Type::INT;
+                    return OSSIA::Type::INT;
                 case Type::PC_N:
-                    return OSSIA::Value::Type::IMPULSE;
+                    return OSSIA::Type::IMPULSE;
             }
             return {};
         }
@@ -276,7 +276,7 @@ class MIDIAddress final :
         weak_ptr<JamomaMIDI> mProtocol;
         std::shared_ptr<OSSIA::Domain> mDomain;
 
-        OSSIA::Value::Type mType = OSSIA::Value::Type::INT;
+        OSSIA::Type mType = OSSIA::Type::INT;
         std::unique_ptr<OSSIA::Value> mValue;
     public:
         MIDIAddress(MIDIAddressInfo info, std::shared_ptr<OSSIA::Node> parent):
@@ -334,12 +334,12 @@ class MIDIAddress final :
         }
 
 
-        OSSIA::Value::Type getValueType() const override
+        OSSIA::Type getValueType() const override
         {
             return mType;
         }
 
-        Address& setValueType(OSSIA::Value::Type) override
+        Address& setValueType(OSSIA::Type) override
         {
             return *this;
         }

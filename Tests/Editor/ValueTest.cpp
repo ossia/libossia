@@ -14,10 +14,10 @@ private Q_SLOTS:
     void test_impulse()
     {
         Impulse p1;
-        QVERIFY(p1.getType() == Value::Type::IMPULSE);
+        QVERIFY(p1.getType() == Type::IMPULSE);
 
         Impulse* p2 = (Impulse*)p1.clone();
-        QVERIFY(p2->getType() == Value::Type::IMPULSE);
+        QVERIFY(p2->getType() == Type::IMPULSE);
 
         QVERIFY(p1 == *p2);
         QVERIFY(!(p1 != *p2));
@@ -91,10 +91,10 @@ private Q_SLOTS:
     void test_bool()
     {
         Bool b1(true);
-        QVERIFY(b1.getType() == Value::Type::BOOL);
+        QVERIFY(b1.getType() == Type::BOOL);
 
         Bool* b2 = (Bool*)b1.clone();
-        QVERIFY(b2->getType() == Value::Type::BOOL);
+        QVERIFY(b2->getType() == Type::BOOL);
 
         QVERIFY(b1 == *b2);
         QVERIFY(!(b1 != *b2));
@@ -168,10 +168,10 @@ private Q_SLOTS:
     void test_int()
     {
         Int i1(5);
-        QVERIFY(i1.getType() == Value::Type::INT);
+        QVERIFY(i1.getType() == Type::INT);
 
         Int* i2 = (Int*)i1.clone();
-        QVERIFY(i2->getType() == Value::Type::INT);
+        QVERIFY(i2->getType() == Type::INT);
 
         QVERIFY(i1 == *i2);
         QVERIFY(!(i1 != *i2));
@@ -245,10 +245,10 @@ private Q_SLOTS:
     void test_float()
     {
         Float f1(5);
-        QVERIFY(f1.getType() == Value::Type::FLOAT);
+        QVERIFY(f1.getType() == Type::FLOAT);
 
         Float* f2 = (Float*)f1.clone();
-        QVERIFY(f2->getType() == Value::Type::FLOAT);
+        QVERIFY(f2->getType() == Type::FLOAT);
 
         QVERIFY(f1 == *f2);
         QVERIFY(!(f1 != *f2));
@@ -322,10 +322,10 @@ private Q_SLOTS:
     void test_char()
     {
         Char c1(5);
-        QVERIFY(c1.getType() == Value::Type::CHAR);
+        QVERIFY(c1.getType() == Type::CHAR);
 
         Char* c2 = (Char*)c1.clone();
-        QVERIFY(c2->getType() == Value::Type::CHAR);
+        QVERIFY(c2->getType() == Type::CHAR);
 
         QVERIFY(c1 == *c2);
         QVERIFY(!(c1 != *c2));
@@ -399,10 +399,10 @@ private Q_SLOTS:
     void test_string()
     {
         String s1("qsd");
-        QVERIFY(s1.getType() == Value::Type::STRING);
+        QVERIFY(s1.getType() == Type::STRING);
 
         String* s2 = (String*)s1.clone();
-        QVERIFY(s2->getType() == Value::Type::STRING);
+        QVERIFY(s2->getType() == Type::STRING);
 
         QVERIFY(s1 == *s2);
         QVERIFY(!(s1 != *s2));
@@ -476,16 +476,16 @@ private Q_SLOTS:
     void test_tuple()
     {
         Tuple t1 = {new Int(5), new Float(0.2), new String("abc")};
-        QVERIFY(t1.getType() == Value::Type::TUPLE);
-        QVERIFY(t1.value[0]->getType() == Value::Type::INT);
-        QVERIFY(t1.value[1]->getType() == Value::Type::FLOAT);
-        QVERIFY(t1.value[2]->getType() == Value::Type::STRING);
+        QVERIFY(t1.getType() == Type::TUPLE);
+        QVERIFY(t1.value[0]->getType() == Type::INT);
+        QVERIFY(t1.value[1]->getType() == Type::FLOAT);
+        QVERIFY(t1.value[2]->getType() == Type::STRING);
 
         Tuple* t2 = (Tuple*)t1.clone();
-        QVERIFY(t2->getType() == Value::Type::TUPLE);
-        QVERIFY(t2->value[0]->getType() == Value::Type::INT);
-        QVERIFY(t2->value[1]->getType() == Value::Type::FLOAT);
-        QVERIFY(t2->value[2]->getType() == Value::Type::STRING);
+        QVERIFY(t2->getType() == Type::TUPLE);
+        QVERIFY(t2->value[0]->getType() == Type::INT);
+        QVERIFY(t2->value[1]->getType() == Type::FLOAT);
+        QVERIFY(t2->value[2]->getType() == Type::STRING);
 
         QVERIFY(t1 == *t2);
         QVERIFY(!(t1 != *t2));
@@ -571,13 +571,13 @@ private Q_SLOTS:
         auto device = Device::create(local_protocol, "test");
 
         auto localTupleNode = *(device->emplace(device->children().cend(), "my_tuple"));
-        auto localTupleAddress = localTupleNode->createAddress(Value::Type::TUPLE);
+        auto localTupleAddress = localTupleNode->createAddress(Type::TUPLE);
 
         Tuple t = {new Float(-1.), new Float(0.), new Float(1.)};
         localTupleAddress->setValue(&t);
 
         Destination d1(localTupleNode);
-        QVERIFY(d1.getType() == Value::Type::DESTINATION);
+        QVERIFY(d1.getType() == Type::DESTINATION);
         QVERIFY(d1.index.size() == 0);
 
         Destination d2(localTupleNode, {1});

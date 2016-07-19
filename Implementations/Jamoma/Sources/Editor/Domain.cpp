@@ -11,6 +11,10 @@ namespace OSSIA
   {
     return make_shared<JamomaDomain>(min, max, values);
   }
+  shared_ptr<Domain> Domain::create()
+  {
+      return create(new Impulse, new Impulse);
+  }
 }
 
 JamomaDomain::JamomaDomain(const Value * min,

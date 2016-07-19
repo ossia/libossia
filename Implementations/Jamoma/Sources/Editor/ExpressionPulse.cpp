@@ -1,4 +1,5 @@
 #include "Editor/JamomaExpressionPulse.h"
+#include <Editor/Value.h>
 
 # pragma mark -
 # pragma mark Life cycle
