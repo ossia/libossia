@@ -5,3 +5,6 @@
 [submodule "3rdparty/ModernMIDI"]
 	path = 3rdparty/ModernMIDI
 	url = https://github.com/jcelerier/ModernMIDI
+[submodule "3rdparty/variant"]
+	path = 3rdparty/variant
+	url = https://github.com/eggs-cpp/variant

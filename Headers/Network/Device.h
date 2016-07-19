@@ -75,4 +75,3 @@ OSSIA_EXPORT std::shared_ptr<Node> declareMinuitInternDevice(int in_port, int ou
 OSSIA_EXPORT std::shared_ptr<Node> declareOSCInternDevice(int in_port, int out_port);
 
 }
-

@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include "Network/Address.h"
 #include "Misc/Container.h"
 #include "Misc/CallbackContainer.h"
 #include "Network/AddressProperties.h"
@@ -24,9 +23,10 @@
 
 namespace OSSIA
 {
-
+class Node;
 class Address;
 class Device;
+class Domain;
 
 /*! type of of change on a #Node */
 enum class NodeChange

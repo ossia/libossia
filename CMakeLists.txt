@@ -13,20 +13,16 @@ endif()
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(API_HEADERS_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/Headers")
-set(API_IMPL_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/Implementations")
+set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
+set(OSSIA_HEADERS_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/Headers")
+set(OSSIA_IMPL_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/Implementations")
 
-file(GLOB_RECURSE HEADERS Headers/*.h Toolkit/*.h)
-add_custom_target(OSSIAHeaders SOURCES ${HEADERS})
-add_library(OSSIAHeadersLib INTERFACE)
-
-target_include_directories(OSSIAHeadersLib INTERFACE "${API_HEADERS_FOLDER}")
-include_directories("${API_HEADERS_FOLDER}")
 add_subdirectory(3rdparty/ModernMIDI EXCLUDE_FROM_ALL)
 add_subdirectory(Implementations)
-#if(NOT OSSIA_NO_EXAMPLES)
+
+if(NOT OSSIA_NO_EXAMPLES)
     add_subdirectory(Documentation/Examples)
-#endif()
+endif()
 
 if(NOT OSSIA_NO_TESTS)
     add_subdirectory(Tests)

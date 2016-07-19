@@ -14,6 +14,7 @@
 #pragma once
 
 #include "Editor/Curve.h"
+#include <Network/Address.h>
 #define OSSIA_BOOST
 #include <cmath>
 #if defined(OSSIA_BOOST)

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(APITests)
 
-include_directories("${API_IMPL_FOLDER}/Jamoma/Sources")
+include_directories("${OSSIA_IMPL_FOLDER}/Jamoma/Sources")
 
 find_package(Qt5 5.3 REQUIRED COMPONENTS Core Test)
 find_package(Jamoma 0.6)

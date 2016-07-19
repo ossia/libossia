@@ -1,4 +1,5 @@
-#include "Editor/ExpressionPulse.h"
+#include <Editor/ExpressionPulse.h>
+#include <Network/Address.h>
 #include <algorithm>
 
 using namespace OSSIA;

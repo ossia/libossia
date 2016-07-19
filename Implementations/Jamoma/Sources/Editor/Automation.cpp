@@ -1,5 +1,6 @@
 #include "Editor/JamomaAutomation.h"
 #include <Editor/JamomaCurve.h>
+#include <Editor/Behavior.h>
 
 #include <iostream> //! \todo to remove. only here for debug purpose
 #if 0

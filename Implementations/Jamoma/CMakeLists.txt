@@ -29,27 +29,28 @@ function(target_transfer_options TheTarget TheLib)
         )
 endfunction()
 
-include_directories(${API_HEADERS_FOLDER})
-include_directories(${API_HEADERS_FOLDER}/Editor)
-include_directories(${API_HEADERS_FOLDER}/Misc)
-include_directories(${API_HEADERS_FOLDER}/Network)
+include_directories(${OSSIA_HEADERS_FOLDER})
+include_directories(${OSSIA_HEADERS_FOLDER}/Editor)
+include_directories(${OSSIA_HEADERS_FOLDER}/Misc)
+include_directories(${OSSIA_HEADERS_FOLDER}/Network)
+include_directories(${OSSIA_3RDPARTY_FOLDER}/variant/include)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Includes)
 
 file(GLOB_RECURSE MISC_SRCS
-    "${API_HEADERS_FOLDER}/Misc/*.h"
+    "${OSSIA_HEADERS_FOLDER}/Misc/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Includes/Misc/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Misc/*.cpp"
 )
 
 file(GLOB_RECURSE EDITOR_SRCS
-    "${API_HEADERS_FOLDER}/Editor/*.h"
+    "${OSSIA_HEADERS_FOLDER}/Editor/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Includes/Editor/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Editor/*.cpp"
 )
 
 file(GLOB_RECURSE NETWORK_SRCS
-    "${API_HEADERS_FOLDER}/Network/*.h"
+    "${OSSIA_HEADERS_FOLDER}/Network/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Includes/Network/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Sources/Network/*.cpp"
 )
@@ -126,7 +127,7 @@ else()
 endif()
 generate_export_header(APIJamoma BASE_NAME OSSIA)
 target_include_directories(APIJamoma PUBLIC
-    "${API_HEADERS_FOLDER}"
+    "${OSSIA_HEADERS_FOLDER}"
     "${CMAKE_CURRENT_SOURCE_DIR}"
     "${CMAKE_CURRENT_LIST_DIR}"
     "${CMAKE_CURRENT_BINARY_DIR}" )

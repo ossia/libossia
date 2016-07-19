@@ -1,6 +1,8 @@
 #include "Editor/Curve.h"
 #include "Editor/Value.h"
 #include "Network/Node.h"
+#include <Editor/ValueComparisonImpl.h>
+#include <Editor/Behavior.h>
 
 using namespace OSSIA;
 

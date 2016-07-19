@@ -23,30 +23,11 @@
 #include "Value.h"
 #include "Network/Node.h"
 #include "Misc/Container.h"
+#include <Editor/CurveAbstract.h>
 #include <ossia_export.h>
 
 namespace OSSIA
 {
-
-enum class CurveSegmentType { INT, FLOAT, DOUBLE, BOOL };
-using CurveType = std::pair<OSSIA::CurveSegmentType, OSSIA::CurveSegmentType>;
-class OSSIA_EXPORT CurveAbstract
-{
-
-public:
-
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
-  /*! destructor
-   \todo remove = default */
-  virtual ~CurveAbstract() = default;
-
-  /*! get the type of both coordinates */
-  virtual CurveType getType() const = 0;
-};
 
 template <typename Y>
 class CurveSegment;
@@ -148,48 +129,6 @@ public:
    \return std::map<X, std::pair<Y, std::shared_ptr<CurveSegment<Y>>>> map of {abscissa, {value, previous segment} */
   virtual std::map<X, std::pair<Y, std::shared_ptr<CurveSegment<Y>>>> getPointsMap() const = 0;
 
-};
-
-#if 0
-# pragma mark -
-# pragma mark Behavior
-#endif
-
-/*! \details Behavior value */
-struct OSSIA_EXPORT Behavior : public Value
-{
-  std::shared_ptr<CurveAbstract> value;
-
-  /*! constructor */
-  Behavior(std::shared_ptr<CurveAbstract> v) :
-      Value{Type::BEHAVIOR},
-      value(std::move(v))
-  {
-  }
-
-  Behavior(const Behavior& other) = delete;
-  virtual ~Behavior();
-
-  /*! clone */
-  Value * clone() const override;
-
-  /*! equal operator */
-  bool operator== (const Value&) const override { return false; }
-
-  /*! different operator */
-  bool operator!= (const Value&) const override { return false; }
-
-  /*! greater than operator */
-  bool operator> (const Value&) const override { return false; }
-
-  /*! greater than and equal operator */
-  bool operator>= (const Value&) const override { return false; }
-
-  /*! less than operator */
-  bool operator< (const Value&) const override { return false; }
-
-  /*! less than and equal operator */
-  bool operator<= (const Value&) const override { return false; }
 };
 
 }
