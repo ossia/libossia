@@ -333,7 +333,7 @@ Address::iterator JamomaAddress::addCallback(ValueCallback callback)
     getProtocol().observeAddressValue(shared_from_this(), true);
 
     //! \debug
-    cout << "opening listening on " << buildNodePath(mNode.lock()) << endl;
+    //cout << "opening listening on " << buildNodePath(mNode.lock()) << endl;
   }
 
   return it;
@@ -349,7 +349,7 @@ void JamomaAddress::removeCallback(Address::iterator callback)
     getProtocol().observeAddressValue(shared_from_this(), false);
 
     //! \debug
-    cout << "closing listening on " << buildNodePath(mNode.lock()) << endl;
+    //cout << "closing listening on " << buildNodePath(mNode.lock()) << endl;
   }
 }
 
