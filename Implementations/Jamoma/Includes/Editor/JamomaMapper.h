@@ -19,7 +19,7 @@
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeNode.h"
 #include "Editor/TimeValue.h"
-#include "Editor/Value.h"
+#include <Editor/Value/Value.h>
 #include "Network/Address.h"
 
 #include "JamomaTimeProcess.h"

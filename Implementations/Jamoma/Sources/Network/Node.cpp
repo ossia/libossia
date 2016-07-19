@@ -1,6 +1,6 @@
 #include "Network/JamomaNode.h"
 #include "Network/JamomaDevice.h"
-#include "Editor/Value.h"
+#include <Editor/Value/Value.h>
 #include <assert.h>
 
 # pragma mark -

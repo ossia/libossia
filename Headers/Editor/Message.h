@@ -19,7 +19,7 @@
 #include <memory>
 
 #include "StateElement.h"
-#include "Value.h"
+#include <Editor/Value/Value.h>
 #include <ossia_export.h>
 
 namespace OSSIA

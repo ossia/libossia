@@ -19,7 +19,7 @@
 #include <memory>
 
 #include "Editor/Expression.h"
-#include "Editor/Value.h"
+#include <Editor/Value/Value.h>
 
 #include "Network/Address.h"
 #include <ossia_export.h>

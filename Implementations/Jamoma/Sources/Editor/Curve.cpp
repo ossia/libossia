@@ -1,6 +1,6 @@
 #include "Editor/JamomaCurve.h"
 #include "Editor/CurveSegment/JamomaCurveSegmentLinear.h"
-
+#include <Editor/Value/Value.h>
 #include <iostream> //! \todo to remove. only here for debug purpose
 
 # pragma mark -

@@ -1,7 +1,7 @@
 #pragma once
 #include <Editor/CurveAbstract.h>
+#include <Editor/Value/ValueBase.h>
 #include <memory>
-#include <Editor/Value.h>
 
 namespace OSSIA
 {

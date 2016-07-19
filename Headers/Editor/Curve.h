@@ -20,7 +20,6 @@
 #include <utility>
 #include <memory>
 
-#include "Value.h"
 #include "Network/Node.h"
 #include "Misc/Container.h"
 #include <Editor/CurveAbstract.h>
@@ -28,7 +27,7 @@
 
 namespace OSSIA
 {
-
+class Destination;
 template <typename Y>
 class CurveSegment;
 

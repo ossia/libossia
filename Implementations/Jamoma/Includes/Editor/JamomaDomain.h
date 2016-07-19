@@ -14,7 +14,7 @@
 #pragma once
 
 #include "Editor/Domain.h"
-#include "Editor/Value.h"
+#include <Editor/Value/Value.h>
 
 using namespace OSSIA;
 using namespace std;

@@ -1,5 +1,5 @@
 #include "Editor/ExpressionAtom.h"
-#include "Editor/Value.h"
+#include <Editor/Value/Value.h>
 
 using namespace OSSIA;
 using namespace std;

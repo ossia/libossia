@@ -1,6 +1,6 @@
 #include "Editor/JamomaMapper.h"
 #include "Editor/JamomaCurve.h"
-#include "Editor/Behavior.h"
+#include <Editor/Value/Behavior.h>
 
 #include <iostream> //! \todo to remove. only here for debug purpose
 

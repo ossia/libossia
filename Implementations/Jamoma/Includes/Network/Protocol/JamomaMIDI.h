@@ -17,7 +17,7 @@
 
 #include "Network/JamomaProtocol.h"
 #include "Editor/Domain.h"
-#include "Editor/Value.h"
+#include <Editor/Value/Value.h>
 #include "Network/AddressProperties.h"
 #include "Network/Address.h"
 #include <cassert>
