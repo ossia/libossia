@@ -27,7 +27,7 @@ namespace OSSIA
 {
 
 class Address;
-class Value;
+class SafeValue;
 class TimeValue;
 
 class OSSIA_EXPORT Mapper : public virtual TimeProcess
@@ -47,7 +47,7 @@ public:
    \return a new mapper */
   static std::shared_ptr<Mapper> create(std::shared_ptr<Address>,
                                         std::shared_ptr<Address>,
-                                        const Value*);
+                                        const SafeValue&);
 
   /*! clone */
   virtual std::shared_ptr<Mapper> clone() const = 0;
@@ -86,6 +86,6 @@ public:
 
   /*! get the driving value
    \return driving value */
-  virtual const Value * getDriving() const = 0;
+  virtual const SafeValue& getDriving() const = 0;
 };
 }

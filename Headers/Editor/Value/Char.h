@@ -17,7 +17,11 @@ struct OSSIA_EXPORT Char final : public Value
   {
   }
   virtual ~Char();
-  Char(const Char&) = delete;
+  Char(const Char&) = default;
+  Char(Char&&) = default;
+  Char& operator=(const Char&) = default;
+  Char& operator=(Char&&) = default;
+
 
   /*! clone */
   Value * clone() const override;

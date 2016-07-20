@@ -5,39 +5,45 @@
 
 namespace OSSIA
 {
-  shared_ptr<Domain> Domain::create(const Value * min,
-                                    const Value * max,
-                                    vector<const Value*> values)
+  shared_ptr<Domain> Domain::create(const SafeValue& min,
+                                    const SafeValue& max,
+                                    std::vector<SafeValue> values)
   {
     return make_shared<JamomaDomain>(min, max, values);
   }
+
+  shared_ptr<Domain> Domain::create(const SafeValue& min,
+                                    const SafeValue& max)
+  {
+    return create(min, max, {});
+  }
+
   shared_ptr<Domain> Domain::create()
   {
-      return create(new Impulse, new Impulse);
+    return create(Impulse{}, Impulse{});
   }
 }
 
-JamomaDomain::JamomaDomain(const Value * min,
-                           const Value * max,
-                           vector<const Value*> values) :
-mMin(min->clone()),
-mMax(max->clone())
+JamomaDomain::JamomaDomain(const SafeValue& min,
+                           const SafeValue& max,
+                           std::vector<SafeValue> values) :
+  mMin(min),
+  mMax(max),
+  mValues(values)
 {
-  for (const auto& e : values)
-    mValues.push_back(e->clone());
 }
 
-JamomaDomain::JamomaDomain(const JamomaDomain * other) :
-mMin(other->mMin->clone()),
-mMax(other->mMax->clone())
+JamomaDomain::JamomaDomain(const JamomaDomain& other) :
+mMin(other.mMin),
+mMax(other.mMax),
+  mValues(other.mValues)
 {
-  for (const auto& e : other->mValues)
-    mValues.push_back(e->clone());
+
 }
 
 shared_ptr<Domain> JamomaDomain::clone() const
 {
-  return make_shared<JamomaDomain>(this);
+  return make_shared<JamomaDomain>(*this);
 }
 
 JamomaDomain::~JamomaDomain()
@@ -49,39 +55,36 @@ Domain::~Domain()
 # pragma mark -
 # pragma mark Accessors
 
-const Value * JamomaDomain::getMin() const
+const SafeValue& JamomaDomain::getMin() const
 {
   return mMin;
 }
 
-Domain & JamomaDomain::setMin(const Value * min)
+Domain & JamomaDomain::setMin(const SafeValue& min)
 {
-  mMin = min->clone();
+  mMin = min;
   return *this;
 }
 
-const Value * JamomaDomain::getMax() const
+const SafeValue& JamomaDomain::getMax() const
 {
   return mMax;
 }
 
-Domain & JamomaDomain::setMax(const Value * max)
+Domain & JamomaDomain::setMax(const SafeValue& max)
 {
-  mMax = max->clone();
+  mMax = max;
   return *this;
 }
 
-vector<const Value*> JamomaDomain::getValues() const
+const std::vector<SafeValue>& JamomaDomain::getValues() const
 {
   return mValues;
 }
 
-Domain & JamomaDomain::setValues(vector<const Value*> values)
+Domain & JamomaDomain::setValues(const std::vector<SafeValue>& values)
 {
-  mValues.clear();
-
-  for (const auto& e : values)
-    mValues.push_back(e->clone());
+  mValues = values;
 
   return *this;
 }

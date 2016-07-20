@@ -19,7 +19,7 @@
 #include <memory>
 
 #include "Editor/Expression.h"
-#include <Editor/Value/Value.h>
+#include <Editor/Value/SafeValue.h>
 
 #include "Network/Address.h"
 #include <ossia_export.h>
@@ -57,9 +57,18 @@ public:
    \param const #Value*
    \param #Operator
    \return std::shared_ptr<#ExpressionAtom> */
-  static std::shared_ptr<ExpressionAtom> create(const Value*,
-                                                Operator = Operator::EQUAL,
-                                                const Value* = new Impulse());
+  static std::shared_ptr<ExpressionAtom> create(const SafeValue&,
+                                                Operator,
+                                                const SafeValue&);
+  static std::shared_ptr<ExpressionAtom> create(const SafeValue& v,
+                                                Operator op)
+  {
+    return create(v, op, Impulse{});
+  }
+  static std::shared_ptr<ExpressionAtom> create(const SafeValue& v)
+  {
+    return create(v, Operator::EQUAL);
+  }
 
   /*! clone
    \return std::shared_ptr<#ExpressionAtom> */
@@ -92,7 +101,7 @@ public:
 
   /*! get first operand
    \return const #Value* first operand */
-  virtual const Value* getFirstOperand() const = 0;
+  virtual const SafeValue& getFirstOperand() const = 0;
 
   /*! get operator
    \return #Operator operator */
@@ -100,7 +109,7 @@ public:
 
   /*! get second operand
    \return const #Value* second operand */
-  virtual const Value* getSecondOperand() const = 0;
+  virtual const SafeValue& getSecondOperand() const = 0;
 };
 
 }

@@ -18,7 +18,10 @@ struct OSSIA_EXPORT String final : public Value
   {
   }
   virtual ~String();
-  String(const String&) = delete;
+  String(const String&) = default;
+  String(String&&) = default;
+  String& operator=(const String&) = default;
+  String& operator=(String&&) = default;
 
   /*! clone */
   Value * clone() const override;

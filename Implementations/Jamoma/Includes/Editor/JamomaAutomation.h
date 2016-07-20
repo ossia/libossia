@@ -21,7 +21,7 @@
 #include "Editor/TimeValue.h"
 #include <Editor/Value/Value.h>
 #include "Network/Address.h"
-
+#include <Editor/Value/SafeValue.h>
 #include "JamomaTimeProcess.h"
 
 using namespace OSSIA;
@@ -37,10 +37,10 @@ private:
 #endif
 
   shared_ptr<Address>    mDrivenAddress;
-  std::unique_ptr<Value> mDrive;
+  SafeValue mDrive;
 
   shared_ptr<Message>    mMessageToSend;
-  std::unique_ptr<Value> mValueToSend;
+  SafeValue mValueToSend;
 
 public:
 #if 0
@@ -48,10 +48,9 @@ public:
 # pragma mark Life cycle
 #endif
 
-  JamomaAutomation(shared_ptr<Address>,
-                   const Value*);
+  JamomaAutomation(shared_ptr<Address>, const SafeValue&);
 
-  JamomaAutomation(const JamomaAutomation *);
+  JamomaAutomation(const JamomaAutomation&);
 
   shared_ptr<Automation> clone() const override;
 
@@ -80,12 +79,12 @@ public:
 
   const shared_ptr<Address> getDrivenAddress() const override;
 
-  const Value * getDriving() const override;
+  const SafeValue& getDriving() const override;
 
 private:
 #if 0
 # pragma mark -
 # pragma mark Implementation specific
 #endif
-  std::unique_ptr<OSSIA::Value> computeValue(double, const Value&);
+  SafeValue computeValue(double, const SafeValue&);
 };

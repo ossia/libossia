@@ -17,7 +17,10 @@ struct OSSIA_EXPORT Bool final : public Value
   }
 
   virtual ~Bool();
-  Bool(const Bool&) = delete;
+  Bool(const Bool&) = default;
+  Bool(Bool&&) = default;
+  Bool& operator=(const Bool&) = default;
+  Bool& operator=(Bool&&) = default;
 
   /*! clone */
   Value * clone() const override;

@@ -5,73 +5,34 @@
 
 namespace OSSIA
 {
-
+class SafeValue;
 /*! \details Tuple value */
 struct OSSIA_EXPORT Tuple final : public Value
 {
-  std::vector<Value*> value;
+  std::vector<SafeValue> value;
 
   /*! constructor for an empty tuple */
-  Tuple():
-      Value{Type::TUPLE}
-  {
-  }
-  Tuple(const Tuple&) = delete;
+  Tuple();
+  Tuple(const Tuple&) = default;
+  Tuple(Tuple&&) = default;
+  Tuple& operator=(const Tuple&) = default;
+  Tuple& operator=(Tuple&&) = default;
   virtual ~Tuple();
-
-  /*! Mechanism for building a Tuple with a list of
-   * values, to remove the need for spurious memory allocations.
-   * Usage : Tuple t{Tuple::ValueInit, Int{2}, Float{3.145}, String{"foo"}};
-   */
-  struct ValueInit {} ;
-  template<typename... Args>
-  explicit Tuple(ValueInit, Args&&... args):
-      Value{Type::TUPLE}
-  {
-      value.reserve(sizeof...(args));
-      append(std::forward<Args>(args)...);
-  }
-
-  void append() { }
-  template<typename Arg, typename... Args>
-  void append(Arg&& arg, Args&&... args)
-  {
-      value.push_back(arg.clone());
-      append(std::forward<Args>(args)...);
-  }
 
   /*! constructor for one value
    \param const value */
-  explicit Tuple(const Value* v):
-      Value{Type::TUPLE}
-  {
-      value.push_back(v->clone());
-  }
+  explicit Tuple(const SafeValue& v);
 
   /*! constructor for any number of values
   \param const value
   \param const value
   \param ... */
-  Tuple(std::initializer_list<const Value*> v):
-      Value{Type::TUPLE}
-  {
-      for (const auto & e : v)
-          value.push_back(e->clone());
-  }
+  Tuple(std::initializer_list<SafeValue> v);
 
   /*! constructor passing a value vector
    \param std::vector<const #Value> value */
-  Tuple(const std::vector<const Value*>& v):
-      Value{Type::TUPLE}
-  {
-      for (const auto & e : v)
-          value.push_back(e->clone());
-  }
-  Tuple(std::vector<Value*>&& v):
-      Value{Type::TUPLE},
-      value(std::move(v))
-  {
-  }
+  Tuple(const std::vector<SafeValue>& v);
+  Tuple(std::vector<SafeValue>&& v);
 
   /*! clone */
   Value * clone() const override;

@@ -17,7 +17,10 @@ struct OSSIA_EXPORT Int final : public Value
   {
   }
   virtual ~Int();
-  Int(const Int&) = delete;
+  Int(const Int&) = default;
+  Int(Int&&) = default;
+  Int& operator=(const Int&) = default;
+  Int& operator=(Int&&) = default;
 
   /*! clone */
   Value * clone() const override;

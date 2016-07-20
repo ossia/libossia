@@ -8,13 +8,17 @@ namespace OSSIA
 struct OSSIA_EXPORT Impulse final : public Value
 {
   /*! constructor */
-    Impulse():
-        Value{Type::IMPULSE}
-    {
-    }
+  Impulse():
+    Value{Type::IMPULSE}
+  {
+  }
+
+  Impulse(const Impulse&) = default;
+  Impulse(Impulse&&) = default;
+  Impulse& operator=(const Impulse&) = default;
+  Impulse& operator=(Impulse&&) = default;
 
   virtual ~Impulse();
-  Impulse(const Impulse&) = delete;
 
   /*! clone */
   Value * clone() const override;

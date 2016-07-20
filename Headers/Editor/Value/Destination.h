@@ -30,7 +30,11 @@ struct OSSIA_EXPORT Destination final : public Value
    \param std::shared_ptr<Node>
    \param std::vector<const #Value> value */
   Destination(std::shared_ptr<Node> v, std::vector<char>);
-  Destination(const Destination& other) = delete;
+  Destination(const Destination& other) = default;
+  Destination(Destination&& other) = default;
+  Destination& operator=(const Destination&) = default;
+  Destination& operator=(Destination&&) = default;
+
   virtual ~Destination();
 
   /*! clone */

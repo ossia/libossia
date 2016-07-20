@@ -516,27 +516,21 @@ void JamomaNode::buildAddress()
         {
           if (range.size() == 2)
           {
-            Value * min = new OSSIA::Bool(range[0]);
-            Value * max = new OSSIA::Bool(range[1]);
-            mAddress->setDomain(Domain::create(min, max));
+            mAddress->setDomain(Domain::create(OSSIA::Bool{range[0]}, OSSIA::Bool{range[1]}));
           }
         }
         else if (type == kTTSym_integer)
         {
           if (range.size() == 2)
           {
-            Value * min = new OSSIA::Int(range[0]);
-            Value * max = new OSSIA::Int(range[1]);
-            mAddress->setDomain(Domain::create(min, max));
+            mAddress->setDomain(Domain::create(OSSIA::Int{range[0]}, OSSIA::Int{range[1]}));
           }
         }
         else if (type == kTTSym_decimal)
         {
           if (range.size() == 2)
           {
-            Value * min = new OSSIA::Float(range[0]);
-            Value * max = new OSSIA::Float(range[1]);
-            mAddress->setDomain(Domain::create(min, max));
+            mAddress->setDomain(Domain::create(OSSIA::Float{range[0]}, OSSIA::Float{range[1]}));
           }
         }
         else if (type == kTTSym_array)
@@ -545,24 +539,25 @@ void JamomaNode::buildAddress()
           TTValue v;
           object.get("value", v);
 
-          vector<const Value*> tuple_min;
-          vector<const Value*> tuple_max;
+          vector<SafeValue> tuple_min;
+          vector<SafeValue> tuple_max;
           for (unsigned long i = 0; i < v.size(); i++)
-            tuple_min.push_back(new OSSIA::Float(range[0]));
-          tuple_max.push_back(new OSSIA::Float(range[1]));
+            tuple_min.push_back(OSSIA::Float{range[0]});
 
-          mAddress->setDomain(Domain::create(new OSSIA::Tuple(tuple_min), new OSSIA::Tuple(tuple_max)));
+          tuple_max.push_back(OSSIA::Float{range[1]});
+
+          mAddress->setDomain(Domain::create(OSSIA::Tuple{std::move(tuple_min)}, OSSIA::Tuple{std::move(tuple_max)}));
         }
         else if (type == kTTSym_string)
         {
           // string values enumeration
-          vector<const Value*> values;
+          vector<SafeValue> values;
           for (const auto & e : range)
           {
             TTSymbol s = e;
-            values.push_back(new OSSIA::String(s.c_str()));
+            values.push_back(OSSIA::String(s.c_str()));
           }
-          mAddress->setDomain(Domain::create(new OSSIA::Impulse(), new OSSIA::Impulse(), values));
+          mAddress->setDomain(Domain::create(OSSIA::Impulse{}, OSSIA::Impulse{}, values));
         }
         else
         {

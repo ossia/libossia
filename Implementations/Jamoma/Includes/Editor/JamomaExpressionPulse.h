@@ -63,5 +63,5 @@ private:
 # pragma mark -
 # pragma mark Implementation Specific
 
-  void destinationCallback(const Value& value);
+  void destinationCallback(const SafeValue& value);
 };

@@ -41,10 +41,10 @@ private:
 
   shared_ptr<Address>   mDriverAddress;
   shared_ptr<Address>   mDrivenAddress;
-  Value*                mDrive = nullptr;
+  SafeValue             mDrive;
 
   shared_ptr<Message>   mMessageToSend;
-  Value*                mValueToMap = nullptr;
+  SafeValue             mValueToMap;
   mutable std::mutex    mValueToMapMutex;
 
   bool                  mDriverValueObserved;
@@ -57,9 +57,9 @@ public:
 
   JamomaMapper(shared_ptr<Address>,
                shared_ptr<Address>,
-               const Value*);
+               const SafeValue&);
 
-  JamomaMapper(const JamomaMapper *);
+  JamomaMapper(const JamomaMapper &);
 
   shared_ptr<Mapper> clone() const override;
 
@@ -87,14 +87,14 @@ public:
 
   const shared_ptr<Address> getDrivenAddress() const override;
 
-  const Value * getDriving() const override;
+  const SafeValue& getDriving() const override;
 
 private:
 
 # pragma mark -
 # pragma mark Implementation specific
 
-  std::unique_ptr<OSSIA::Value> computeValue(const Value&, const Value&);
+  SafeValue computeValue(const SafeValue&, const SafeValue&);
 
-  void driverValueCallback(const Value& value);
+  void driverValueCallback(const SafeValue& value);
 };

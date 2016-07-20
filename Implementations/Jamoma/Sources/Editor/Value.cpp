@@ -1,5 +1,6 @@
 #include "Editor/Curve.h"
 #include <Editor/Value/Value.h>
+#include <Editor/Value/SafeValue.h>
 #include "Network/Node.h"
 #include <Editor/Value/ValueComparisonImpl.h>
 #include <Editor/Value/Behavior.h>
@@ -172,20 +173,45 @@ bool String::operator<= (const Value& v) const
 # pragma mark -
 # pragma mark Tuple
 
+Tuple::Tuple():
+  Value{Type::TUPLE}
+{
+}
+
+Tuple::Tuple(std::initializer_list<SafeValue> v):
+  Value{Type::TUPLE},
+  value(v)
+{
+}
+
+Tuple::Tuple(const std::vector<SafeValue>& v):
+  Value{Type::TUPLE},
+  value(v)
+{
+}
+
+Tuple::Tuple(std::vector<SafeValue>&& v):
+  Value{Type::TUPLE},
+  value(std::move(v))
+{
+}
+
+Tuple::Tuple(const SafeValue& v):
+  Value{Type::TUPLE}
+{
+  value.push_back(v);
+}
+
+
+
 Tuple::~Tuple()
 {
-    for(auto val : value)
-        delete val;
 }
 
 
 Value * Tuple::clone() const
 {
-    std::vector<const Value*> newValue;
-    for (const auto & e : value)
-        newValue.push_back(e->clone());
-
-    return new Tuple(newValue);
+    return new Tuple(*this);
 }
 
 bool Tuple::operator== (const Value& v) const

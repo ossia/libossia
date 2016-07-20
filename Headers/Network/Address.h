@@ -28,10 +28,10 @@ namespace OSSIA
 {
 
 class Node;
-
+class SafeValue;
 /*! to get the value back
  \param the returned value */
-using ValueCallback = std::function<void(const Value&)>;
+using ValueCallback = std::function<void(const SafeValue&)>;
 
 class OSSIA_EXPORT Address : public CallbackContainer<ValueCallback>
 {
@@ -71,7 +71,7 @@ public:
    \see Protocol::pushAddressValue method
    \param const #Value* the value (push the current value if no argument)
    \return #Address the address */
-  virtual Address & pushValue(const Value&) = 0;
+  virtual Address & pushValue(const SafeValue&) = 0;
 
   /*! set then push the address value to a device using its protocol
    \see Protocol::pushAddressValue method
@@ -88,14 +88,14 @@ public:
    \details thread-safe
    \param std::initializer_list<char> optionnal index list to clone only some elements from a Tuple value
    \return const #Value a cloned value.  */
-  virtual std::unique_ptr<OSSIA::Value> cloneValue(std::vector<char> = {}) const = 0;
+  virtual SafeValue cloneValue(std::vector<char> = {}) const = 0;
 
   /*! set the address value
    \note call pushValue if you need to sync the value with the device
    \param const #Value* the value
    \note it is possible to set the value using a #Type::Destination to query the value from another address
    \return #Address the address */
-  virtual Address & setValue(const Value&) = 0;
+  virtual Address & setValue(const SafeValue&) = 0;
 
   /*! get the address type
    \return #Type of the address */

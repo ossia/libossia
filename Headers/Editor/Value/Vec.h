@@ -24,7 +24,10 @@ class Vec : public Value
         }
 
         virtual ~Vec() = default;
-        Vec(const Vec&) = delete;
+        Vec(const Vec&) = default;
+        Vec(Vec&&) = default;
+        Vec& operator=(const Vec&) = default;
+        Vec& operator=(Vec&&) = default;
 
         /*! clone */
         Value * clone() const override

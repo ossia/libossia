@@ -18,7 +18,11 @@ struct OSSIA_EXPORT Behavior : public Value
   {
   }
 
-  Behavior(const Behavior& other) = delete;
+  Behavior(const Behavior& other) = default;
+  Behavior(Behavior&& other) = default;
+  Behavior& operator=(const Behavior&) = default;
+  Behavior& operator=(Behavior&&) = default;
+
   virtual ~Behavior();
 
   /*! clone */

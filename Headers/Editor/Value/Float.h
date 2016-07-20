@@ -18,7 +18,11 @@ struct OSSIA_EXPORT Float final : public Value
   }
 
   virtual ~Float();
-  Float(const Float&) = delete;
+  Float(const Float&) = default;
+  Float(Float&&) = default;
+  Float& operator=(const Float&) = default;
+  Float& operator=(Float&&) = default;
+
 
   /*! clone */
   Value * clone() const override;

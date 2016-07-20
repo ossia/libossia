@@ -20,7 +20,7 @@ mResult(false)
   if (mDestination->value->getAddress())
   {
     mDestinationCallbackIndex = mDestination->value->getAddress()->addCallback(
-          [&] (const OSSIA::Value& result) { destinationCallback(result); });
+          [&] (const OSSIA::SafeValue& result) { destinationCallback(result); });
   }
 }
 
@@ -109,7 +109,7 @@ const Destination* JamomaExpressionPulse::getDestination() const
 # pragma mark -
 # pragma mark Implementation Specific
 
-void JamomaExpressionPulse::destinationCallback(const Value& value)
+void JamomaExpressionPulse::destinationCallback(const SafeValue& value)
 {
   mResult = true;
   send(true);

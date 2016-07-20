@@ -25,7 +25,7 @@
 
 namespace OSSIA
 {
-
+class SafeValue;
 class Address;
 class Value;
 class TimeValue;
@@ -43,7 +43,7 @@ public:
    \param how to drive the address
    \return a new automation */
   static std::shared_ptr<Automation> create(std::shared_ptr<Address>,
-                                            const Value*);
+                                            const SafeValue&);
 
   /*! clone */
   virtual std::shared_ptr<Automation> clone() const = 0;
@@ -78,6 +78,6 @@ public:
 
   /*! get the driving value
    \return driving value */
-  virtual const Value * getDriving() const = 0;
+  virtual const SafeValue& getDriving() const = 0;
 };
 }

@@ -14,7 +14,7 @@
 #pragma once
 
 #include "Editor/Domain.h"
-#include <Editor/Value/Value.h>
+#include <Editor/Value/SafeValue.h>
 
 using namespace OSSIA;
 using namespace std;
@@ -27,20 +27,20 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  Value * mMin;
-  Value * mMax;
-  vector<const Value*> mValues;
+  SafeValue mMin;
+  SafeValue mMax;
+  vector<SafeValue> mValues;
 
 public:
 
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaDomain(const Value * = new Impulse(),
-               const Value * = new Impulse(),
-               vector<const Value*> = vector<const Value*>());
+  JamomaDomain(const SafeValue&,
+               const SafeValue&,
+               std::vector<SafeValue>);
 
-  JamomaDomain(const JamomaDomain *);
+  JamomaDomain(const JamomaDomain&);
 
   shared_ptr<Domain> clone() const override;
 
@@ -49,17 +49,17 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  const Value * getMin() const override;
+  const SafeValue& getMin() const override;
 
-  Domain & setMin(const Value*) override;
+  Domain & setMin(const SafeValue&) override;
 
-  const Value * getMax() const override;
+  const SafeValue& getMax() const override;
 
-  Domain & setMax(const Value*) override;
+  Domain & setMax(const SafeValue&) override;
 
-  vector<const Value*> getValues() const override;
+  const std::vector<SafeValue>& getValues() const override;
 
-  Domain & setValues(vector<const Value*> values) override;
+  Domain & setValues(const std::vector<SafeValue>& values) override;
 
 };
 

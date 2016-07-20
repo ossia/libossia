@@ -2,16 +2,36 @@
 #include <Editor/Value/Value.h>
 #include "Network/NetworkLogger.h"
 
+#include <map>
 #include <iostream> //! \todo to remove. only here for debug purpose
 
 # pragma mark -
 # pragma mark Life cycle
 
+static auto& symbol_map()
+{
+  static const std::map<OSSIA::Type, TTSymbol> symmap{
+    { Type::IMPULSE, kTTSym_none },
+    { Type::BOOL, kTTSym_boolean },
+    { Type::INT, kTTSym_integer },
+    { Type::FLOAT, kTTSym_decimal },
+    { Type::CHAR, kTTSym_string },
+    { Type::STRING, kTTSym_string },
+    { Type::TUPLE, kTTSym_array },
+    { Type::VEC2F, kTTSym_array },
+    { Type::VEC3F, kTTSym_array },
+    { Type::VEC4F, kTTSym_array },
+    { Type::DESTINATION, kTTSym_string },
+  };
+
+  return symmap;
+}
+
 JamomaAddress::JamomaAddress(weak_ptr<Node> node, TTObject aData) :
 mNode(node),
 mObject(aData),
 mObjectValueCallback("callback"),
-mValue(new Impulse()),
+mValue(Impulse{}),
 mValueType(Type::IMPULSE),
 mAccessMode(AccessMode::BI),
 mBoundingMode(BoundingMode::FREE),
@@ -33,9 +53,6 @@ mRepetitionFilter(false)
 
 JamomaAddress::~JamomaAddress()
 {
-  std::lock_guard<std::mutex> lock(mValueMutex);
-  if (mValue)
-    delete mValue;
 }
 
 Address::~Address()
@@ -55,7 +72,7 @@ void JamomaAddress::pullValue()
   getProtocol().pullAddressValue(*this);
 }
 
-Address & JamomaAddress::pushValue(const Value& value)
+Address & JamomaAddress::pushValue(const SafeValue& value)
 {
   setValue(value);
 
@@ -76,56 +93,52 @@ Address & JamomaAddress::pushValue()
 # pragma mark -
 # pragma mark Accessors
 
-const Value * JamomaAddress::getValue() const
+const SafeValue& JamomaAddress::getValue() const
 {
   return mValue;
 }
 
-std::unique_ptr<OSSIA::Value> JamomaAddress::cloneValue(std::vector<char> index) const
+SafeValue JamomaAddress::cloneValue(std::vector<char> index) const
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
 
-  if (mValue == nullptr)
+  if (!mValue.valid())
     throw runtime_error("cloning null value");
 
   if (index.empty() || mValueType != Type::TUPLE)
   {
-    return std::unique_ptr<OSSIA::Value>{mValue->clone()};
+    return mValue;
   }
   else if (index.size() == 1)
   {
     // clone value from tuple element at index
-    auto tuple = static_cast<const Tuple*>(mValue);
-    return std::unique_ptr<OSSIA::Value>{tuple->value[index[0]]->clone()};
+    const auto& tuple = mValue.get<Tuple>();
+    return tuple.value[index[0]];
   }
   else
   {
     // create a new tuple from tuple's values at index
-    auto tuple = static_cast<const Tuple*>(mValue);
-    vector<const Value*> values;
+    const auto& tuple = mValue.get<Tuple>();
+    vector<SafeValue> values;
 
     for (char i : index)
     {
-      values.push_back(tuple->value[i]->clone());
+      values.push_back(tuple.value[i]);
     }
 
-    return std::make_unique<Tuple>(values);
+    return Tuple(std::move(values));
   }
 }
 
-Address & JamomaAddress::setValue(const Value& value)
+Address & JamomaAddress::setValue(const SafeValue& value)
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
-
-  // clear former value
-  delete mValue;
-  mValue = nullptr;
 
   // set value querying the value from another address
   if (value.getType() == Type::DESTINATION &&
       mValueType != Type::DESTINATION)
   {
-    auto& destination = static_cast<const Destination&>(value);
+    auto& destination = value.get<Destination>();
     auto address = destination.value->getAddress();
 
     if (address)
@@ -133,7 +146,7 @@ Address & JamomaAddress::setValue(const Value& value)
       if (address->getValueType() == mValueType)
       {
         address->pullValue();
-        mValue = address->cloneValue().release();
+        mValue = address->cloneValue();
       }
       else
         throw runtime_error("setting an address value using a destination with a bad type address");
@@ -153,26 +166,16 @@ Address & JamomaAddress::setValue(const Value& value)
 
         if (mObject.name() != kTTSym_Mirror)
         {
-          if (mValueType == Type::IMPULSE)
-            mObject.set("type", kTTSym_none);
-          else if (mValueType == Type::BOOL)
-            mObject.set("type", kTTSym_boolean);
-          else if (mValueType == Type::INT)
-            mObject.set("type", kTTSym_integer);
-          else if (mValueType == Type::FLOAT)
-            mObject.set("type", kTTSym_decimal);
-          else if (mValueType == Type::CHAR)
-            mObject.set("type", kTTSym_string);
-          else if (mValueType == Type::STRING)
-            mObject.set("type", kTTSym_string);
-          else if (mValueType == Type::TUPLE)
-            mObject.set("type", kTTSym_array);
-          else if (mValueType == Type::DESTINATION)
-            mObject.set("type", kTTSym_string);
+          auto& symmap = symbol_map();
+          auto it = symmap.find(mValueType);
+          if(it != symmap.end())
+          {
+            mObject.set("type", *it);
+          }
         }
 
     }
-    mValue = value.clone();
+    mValue = value;
 
   }
 
@@ -190,22 +193,12 @@ Address & JamomaAddress::setValueType(Type type)
 
   if (mObject.name() != kTTSym_Mirror)
   {
-    if (mValueType == Type::IMPULSE)
-      mObject.set("type", kTTSym_none);
-    else if (mValueType == Type::BOOL)
-      mObject.set("type", kTTSym_boolean);
-    else if (mValueType == Type::INT)
-      mObject.set("type", kTTSym_integer);
-    else if (mValueType == Type::FLOAT)
-      mObject.set("type", kTTSym_decimal);
-    else if (mValueType == Type::CHAR)
-      mObject.set("type", kTTSym_string);
-    else if (mValueType == Type::STRING)
-      mObject.set("type", kTTSym_string);
-    else if (mValueType == Type::TUPLE)
-      mObject.set("type", kTTSym_array);
-    else if (mValueType == Type::DESTINATION)
-      mObject.set("type", kTTSym_string);
+    auto& symmap = symbol_map();
+    auto it = symmap.find(mValueType);
+    if(it != symmap.end())
+    {
+      mObject.set("type", *it);
+    }
   }
 
   // initialize the value member
@@ -251,17 +244,17 @@ Address & JamomaAddress::setDomain(shared_ptr<Domain> domain)
   {
       if (mDomain->getValues().empty())
       {
-          convertValueIntoTTValue(*mDomain->getMin(), v);
+          convertValueIntoTTValue(mDomain->getMin(), v);
           range.append(v);
 
-          convertValueIntoTTValue(*mDomain->getMax(), v);
+          convertValueIntoTTValue(mDomain->getMax(), v);
           range.append(v);
       }
       else
       {
           for (const auto & e : mDomain->getValues())
           {
-              convertValueIntoTTValue(*e, v);
+              convertValueIntoTTValue(e, v);
               range.append(v);
           }
       }
@@ -369,9 +362,9 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
         if(auto logger = self->getProtocol().getLogger())
         {
             if(auto& log_callback = logger->getInboundLogCallback())
-                log_callback(self->getTextualAddress() + " <= " + getValueAsString(*self->getValue()));
+                log_callback(self->getTextualAddress() + " <= " + getValueAsString(self->getValue()));
         }
-        self->send(*val);
+        self->send(val);
     }
     catch(...) {
         return kTTErrGeneric;
@@ -385,46 +378,40 @@ TTErr JamomaAddress::TTValueCallback(const TTValue& baton, const TTValue& value)
 
 void JamomaAddress::initValue()
 {
-  if(mValue)
-  {
-      delete mValue;
-      mValue = nullptr;
-  }
-
   switch(mValueType)
   {
       case Type::IMPULSE:
-          mValue = new Impulse;
+          mValue = Impulse{};
           break;
       case Type::BOOL:
-          mValue = new Bool;
+          mValue = Bool{};
           break;
       case Type::INT:
-          mValue = new Int;
+          mValue = Int{};
           break;
       case Type::FLOAT:
-          mValue = new Float;
+          mValue = Float{};
           break;
       case Type::CHAR:
-          mValue = new Char;
+          mValue = Char{};
           break;
       case Type::STRING:
-          mValue = new String;
+          mValue = String{};
           break;
       case Type::TUPLE:
-          mValue = new Tuple;
+          mValue = Tuple{};
           break;
       case Type::VEC2F:
-          mValue = new Vec2f;
+          mValue = Vec2f{};
           break;
       case Type::VEC3F:
-          mValue = new Vec3f;
+          mValue = Vec3f{};
           break;
       case Type::VEC4F:
-          mValue = new Vec4f;
+          mValue = Vec4f{};
           break;
       case Type::DESTINATION:
-          mValue = new Destination;
+          mValue = Destination{};
           break;
   }
 }
@@ -451,15 +438,12 @@ void JamomaAddress::getValue(TTValue& value) const
   std::lock_guard<std::mutex> lock(mValueMutex);
 
   // convert current value
-  convertValueIntoTTValue(*mValue, value);
+  convertValueIntoTTValue(mValue, value);
 }
 
 void JamomaAddress::setValue(const TTValue& value)
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
-
-  // clear former value
-  delete mValue;
 
   // store new value
   mValue = convertTTValueIntoValue(value, mValueType);
@@ -486,37 +470,37 @@ void JamomaAddress::observeValue(bool enable)
   }
 }
 
-Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType) const
+SafeValue JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType) const
 {
   switch (valueType)
   {
     case Type::IMPULSE :
     {
-      return new OSSIA::Impulse();
+      return OSSIA::Impulse{};
     }
 
     case Type::BOOL :
     {
       if (v.size() == 1)
-        return new OSSIA::Bool(v[0]);
+        return OSSIA::Bool{v[0]};
 
-      return new OSSIA::Bool();
+      return OSSIA::Bool{};
     }
 
     case Type::INT :
     {
       if (v.size() == 1)
-        return new OSSIA::Int(v[0]);
+        return OSSIA::Int{v[0]};
 
-      return new OSSIA::Int();
+      return OSSIA::Int{};
     }
 
     case Type::FLOAT :
     {
       if (v.size() == 1)
-        return new OSSIA::Float(v[0]);
+        return OSSIA::Float{v[0]};
 
-      return new OSSIA::Float();
+      return OSSIA::Float{};
     }
 
     case Type::CHAR :
@@ -526,11 +510,11 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType)
         if (v[0].type() == kTypeString)
         {
           char* c_value = TTString(v[0]).data();
-          return new OSSIA::Char(c_value[0]);
+          return OSSIA::Char{c_value[0]};
         }
       }
 
-      return new OSSIA::Char();
+      return OSSIA::Char{};
     }
 
     case Type::STRING :
@@ -540,11 +524,11 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType)
         if (v[0].type() == kTypeSymbol)
         {
           TTSymbol s_value = v[0];
-          return new OSSIA::String(s_value.c_str());
+          return OSSIA::String{s_value.c_str()};
         }
       }
 
-      return new OSSIA::String();
+      return OSSIA::String{};
     }
 
     case Type::DESTINATION :
@@ -574,7 +558,7 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType)
     case Type::VEC2F :
     {
       const constexpr int n = 2;
-      auto vec = new Vec2f;
+      Vec<float, n> vec;
 
       if(v.size() != n)
         return vec;
@@ -586,7 +570,7 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType)
         return vec;
 
       for(int i = 0; i < n; i++)
-        vec->value[i] = vals[i];
+        vec.value[i] = vals[i];
 
       return vec;
     }
@@ -594,7 +578,7 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType)
     case Type::VEC3F :
     {
       const constexpr int n = 3;
-      auto vec = new Vec3f;
+      Vec<float, n> vec;
 
       if(v.size() != n)
         return vec;
@@ -606,7 +590,7 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType)
         return vec;
 
       for(int i = 0; i < n; i++)
-        vec->value[i] = vals[i];
+        vec.value[i] = vals[i];
 
       return vec;
     }
@@ -614,7 +598,7 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType)
     case Type::VEC4F :
     {
       const constexpr int n = 4;
-      auto vec = new Vec4f;
+      Vec<float, n> vec;
 
       if(v.size() != n)
         return vec;
@@ -626,7 +610,7 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType)
         return vec;
 
       for(int i = 0; i < n; i++)
-        vec->value[i] = vals[i];
+        vec.value[i] = vals[i];
 
       return vec;
     }
@@ -634,7 +618,7 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType)
 
     case Type::TUPLE :
     {
-      vector<Value*> t_value;
+      vector<SafeValue> t_value;
 
       for (const auto & e : v)
       {
@@ -668,17 +652,18 @@ Value * JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType)
         t_value.push_back(convertTTValueIntoValue(t, type));
       }
 
-      return new OSSIA::Tuple(std::move(t_value));
+      return OSSIA::Tuple(std::move(t_value));
     }
   }
 
-  return nullptr;
+  return {};
 }
 
-void JamomaAddress::convertValueIntoTTValue(const Value& value, TTValue & v) const
+void JamomaAddress::convertValueIntoTTValue(const SafeValue& value, TTValue & v) const
 {
   switch (value.getType())
   {
+    /*
     case Type::IMPULSE :
     {
       break;
@@ -767,6 +752,7 @@ void JamomaAddress::convertValueIntoTTValue(const Value& value, TTValue & v) con
 
       break;
     }
+    */
   }
 }
 
@@ -916,11 +902,12 @@ std::string getTupleAsString(const OSSIA::Tuple& tuple)
     return s.str();
 }
 
-std::string getValueAsString(const OSSIA::Value& val)
+std::string getValueAsString(const OSSIA::SafeValue& val)
 {
     std::stringstream s;
     switch(val.getType())
     {
+      /*
         case OSSIA::Type::INT:
             s << "int: " << static_cast<const OSSIA::Int&>(val).value;
             break;
@@ -945,6 +932,7 @@ std::string getValueAsString(const OSSIA::Value& val)
         case OSSIA::Type::DESTINATION:
             s << "destination";
             break;
+            */
     }
 
     return s.str();

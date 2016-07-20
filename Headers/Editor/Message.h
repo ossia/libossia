@@ -19,14 +19,13 @@
 #include <memory>
 
 #include "StateElement.h"
-#include <Editor/Value/Value.h>
+#include <Editor/Value/SafeValue.h>
 #include <ossia_export.h>
 
 namespace OSSIA
 {
 
 class Address;
-class Value;
 
 class OSSIA_EXPORT Message : public virtual StateElement
 {
@@ -42,7 +41,7 @@ public:
    \param std::shared_ptr<#Address> where to send the value
    \param const #Value the value
    \return std::shared_ptr<#Message> */
-  static std::shared_ptr<Message> create(std::shared_ptr<Address>, const Value&);
+  static std::shared_ptr<Message> create(std::shared_ptr<Address>, const SafeValue&);
 
   /*! clone */
   virtual std::shared_ptr<Message> clone() const = 0;
@@ -70,7 +69,7 @@ public:
 
   /*! get message's value
    \return #Value the value */
-  virtual const Value * getValue() const = 0;
+  virtual const SafeValue& getValue() const = 0;
 };
 
 }

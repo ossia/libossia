@@ -17,6 +17,7 @@
 #include "Network/Device.h"
 #include "Network/Node.h"
 #include "Network/Protocol.h"
+#include <Editor/Value/SafeValue.h>
 
 #include "TTModular.h"
 
@@ -38,7 +39,7 @@ private:
 
   mutable TTObject    mObject;
   TTObject            mObjectValueCallback;
-  mutable Value *     mValue{};
+  SafeValue     mValue;
   mutable std::mutex  mValueMutex;
 
   Type         mValueType;
@@ -68,17 +69,17 @@ public:
 
   void pullValue() override;
 
-  Address & pushValue(const Value&) override;
+  Address & pushValue(const SafeValue&) override;
   Address & pushValue() override;
 
 # pragma mark -
 # pragma mark Accessors
 
-  const Value * getValue() const;
+  const SafeValue& getValue() const;
 
-  std::unique_ptr<OSSIA::Value> cloneValue(std::vector<char> = {}) const override;
+  SafeValue cloneValue(std::vector<char> = {}) const override;
 
-  Address & setValue(const Value&) override;
+  Address & setValue(const SafeValue&) override;
 
   Type getValueType() const override;
 
@@ -138,9 +139,9 @@ public:
    \param bool true to enable observation */
   void observeValue(bool);
 
-  Value * convertTTValueIntoValue(const TTValue&, Type) const;
+  SafeValue convertTTValueIntoValue(const TTValue&, Type) const;
 
-  void convertValueIntoTTValue(const Value &, TTValue &) const;
+  void convertValueIntoTTValue(const SafeValue &, TTValue &) const;
 
   string buildNodePath(shared_ptr<Node>) const;
 
@@ -176,4 +177,4 @@ std::string getAddressFromNode(const OSSIA::Node&);
  * etc...
  *
  */
-std::string getValueAsString(const OSSIA::Value& val);
+std::string getValueAsString(const OSSIA::SafeValue& val);

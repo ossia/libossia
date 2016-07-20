@@ -64,6 +64,7 @@ struct NumericValue
         template<typename T, typename Fun>
         static bool apply(const T& lhs, const OSSIA::Value& v, Fun fun)
         {
+          /*
             switch (v.getType())
             {
                 case Type::IMPULSE :
@@ -104,6 +105,7 @@ struct NumericValue
                 default :
                     return false;
             }
+            */
         }
 };
 
@@ -112,6 +114,7 @@ struct StringValue
         template<typename Fun>
         static bool apply(const String& lhs, const OSSIA::Value& v, Fun fun)
         {
+          /*
             switch (v.getType())
             {
                 case Type::IMPULSE :
@@ -140,6 +143,7 @@ struct StringValue
                 default :
                     return false;
             }
+            */
         }
 };
 
@@ -148,6 +152,7 @@ struct TupleValue
         template<typename Fun>
         static bool apply(const Tuple& lhs, const OSSIA::Value& v, Fun fun)
         {
+          /*
             switch (v.getType())
             {
                 case Type::IMPULSE :
@@ -183,6 +188,7 @@ struct TupleValue
                     return false;
                 }
             }
+            */
         }
 };
 
@@ -191,6 +197,7 @@ struct DestinationValue
         template<typename Fun>
         static bool apply(const Destination& lhs, const OSSIA::Value& v, Fun fun)
         {
+          /*
             switch (v.getType())
             {
                 case Type::IMPULSE :
@@ -229,6 +236,7 @@ struct DestinationValue
                     return false;
                 }
             }
+            */
         }
 };
 
@@ -237,6 +245,7 @@ struct VecValue
         template<typename Vec_T, typename Fun>
         static bool apply(const Vec_T& lhs, const OSSIA::Value& v, Fun fun)
         {
+          /*
             const auto lhs_type = ValueTrait<Vec_T>::ossia_enum;
             const auto rhs_type = v.getType();
 
@@ -254,6 +263,7 @@ struct VecValue
             {
                 return false;
             }
+            */
         }
 };
 }

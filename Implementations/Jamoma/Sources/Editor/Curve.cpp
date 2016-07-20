@@ -1,6 +1,6 @@
 #include "Editor/JamomaCurve.h"
 #include "Editor/CurveSegment/JamomaCurveSegmentLinear.h"
-#include <Editor/Value/Value.h>
+#include <Editor/Value/SafeValue.h>
 #include <iostream> //! \todo to remove. only here for debug purpose
 
 # pragma mark -
@@ -121,7 +121,7 @@ getInitialPointAbscissa() const
 
     address->pullValue();
     auto val = address->cloneValue();
-    auto res = convertToTemplateTypeValue(val.get(), mInitialPointAbscissaDestination->index.begin());
+    auto res = convertToTemplateTypeValue(val, mInitialPointAbscissaDestination->index.begin());
     return res;
   }
 }
@@ -143,7 +143,7 @@ getInitialPointOrdinate() const
 
     address->pullValue();
     auto val = address->cloneValue();
-    auto res = convertToTemplateTypeValue(val.get(), mInitialPointOrdinateDestination->index.begin());
+    auto res = convertToTemplateTypeValue(val, mInitialPointOrdinateDestination->index.begin());
     return res;
   }
 }
@@ -204,10 +204,11 @@ getPointsMap() const
 
 template <typename X, typename Y>
 Y JamomaCurve<X,Y>::
-convertToTemplateTypeValue(const Value * value, vector<char>::iterator index) const
+convertToTemplateTypeValue(const SafeValue& value, vector<char>::iterator index) const
 {
-  switch (value->getType())
+  switch (value.getType())
   {
+    /*
     case Type::BOOL :
     {
       auto b = static_cast<const Bool*>(value);
@@ -258,6 +259,7 @@ convertToTemplateTypeValue(const Value * value, vector<char>::iterator index) co
     {
       throw runtime_error("Cannot convert to a numeric type");
     }
+    */
   }
 }
 

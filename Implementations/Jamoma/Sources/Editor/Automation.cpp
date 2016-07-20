@@ -11,7 +11,7 @@
 namespace OSSIA
 {
   shared_ptr<Automation> Automation::create(shared_ptr<Address> address,
-                                            const Value* drive)
+                                            const SafeValue& drive)
   {
     return make_shared<JamomaAutomation>(address, drive);
   }
@@ -22,19 +22,19 @@ namespace OSSIA
 }
 
 JamomaAutomation::JamomaAutomation(shared_ptr<Address> address,
-                                   const Value* drive) :
+                                   const SafeValue& drive) :
 JamomaTimeProcess(),
 mDrivenAddress(address),
-mDrive(drive->clone())
+mDrive(drive)
 {}
 
-JamomaAutomation::JamomaAutomation(const JamomaAutomation * other) :
+JamomaAutomation::JamomaAutomation(const JamomaAutomation& other) :
 JamomaTimeProcess()
 {}
 
 shared_ptr<Automation> JamomaAutomation::clone() const
 {
-  return make_shared<JamomaAutomation>(this);
+  return make_shared<JamomaAutomation>(*this);
 }
 
 JamomaAutomation::~JamomaAutomation()
@@ -52,10 +52,10 @@ shared_ptr<StateElement> JamomaAutomation::offset(const TimeValue& offset)
     throw runtime_error("parent time constraint is running");
 
   // compute a new value from the Curves
-  mValueToSend = computeValue(offset / par.getDurationNominal(), *mDrive);
+  mValueToSend = computeValue(offset / par.getDurationNominal(), mDrive);
 
   // edit a Message handling the new Value
-  mMessageToSend = Message::create(mDrivenAddress, *mValueToSend);
+  mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
 
   return mMessageToSend;
 }
@@ -72,10 +72,10 @@ shared_ptr<StateElement> JamomaAutomation::state()
       mLastDate = date;
 
       // compute a new value from the Curves
-      mValueToSend = computeValue(par.getPosition(), *mDrive);
+      mValueToSend = computeValue(par.getPosition(), mDrive);
 
       // edit a Message handling the new Value
-      mMessageToSend = Message::create(mDrivenAddress, *mValueToSend);
+      mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
     }
 
     return mMessageToSend;
@@ -110,15 +110,18 @@ const shared_ptr<Address> JamomaAutomation::getDrivenAddress() const
   return mDrivenAddress;
 }
 
-const Value * JamomaAutomation::getDriving() const
+const SafeValue& JamomaAutomation::getDriving() const
 {
-  return mDrive.get();
+  return mDrive;
 }
 
-std::unique_ptr<OSSIA::Value> JamomaAutomation::computeValue(double position, const Value& drive)
+SafeValue JamomaAutomation::computeValue(
+    double position,
+    const SafeValue& drive)
 {
   switch (drive.getType())
   {
+    /*
     case Type::BEHAVIOR :
     {
       auto& b = static_cast<const Behavior&>(drive);
@@ -167,7 +170,8 @@ std::unique_ptr<OSSIA::Value> JamomaAutomation::computeValue(double position, co
     {
       throw runtime_error("none handled drive value type");
     }
+    */
   }
 
-  return nullptr;
+  return {};
 }

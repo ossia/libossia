@@ -56,7 +56,7 @@ bool JamomaProtocol::pullAddressValue(Address& address) const
         {
             auto& cb = mLogger->getInboundLogCallback();
             if(cb)
-                cb(adrs.getTextualAddress() + " <<= " + getValueAsString(*adrs.getValue()));
+                cb(adrs.getTextualAddress() + " <<= " + getValueAsString(adrs.getValue()));
         }
         return true;
     }
@@ -78,7 +78,7 @@ bool JamomaProtocol::pushAddressValue(const Address& address) const
     {
         auto& cb = mLogger->getOutboundLogCallback();
         if(cb)
-            cb(adrs.getTextualAddress() + " => " + getValueAsString(*adrs.getValue()));
+            cb(adrs.getTextualAddress() + " => " + getValueAsString(adrs.getValue()));
     }
 
     return res;

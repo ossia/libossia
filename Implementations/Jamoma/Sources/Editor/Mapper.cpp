@@ -11,7 +11,7 @@ namespace OSSIA
 {
 shared_ptr<Mapper> Mapper::create(shared_ptr<Address> driverAddress,
                                   shared_ptr<Address> drivenAddress,
-                                  const Value* drive)
+                                  const SafeValue& drive)
 {
   return make_shared<JamomaMapper>(driverAddress, drivenAddress, drive);
 }
@@ -19,21 +19,21 @@ shared_ptr<Mapper> Mapper::create(shared_ptr<Address> driverAddress,
 
 JamomaMapper::JamomaMapper(shared_ptr<Address> driverAddress,
                            shared_ptr<Address> drivenAddress,
-                           const Value* drive) :
+                           const SafeValue& drive) :
   JamomaTimeProcess(),
   mDriverAddress(driverAddress),
   mDrivenAddress(drivenAddress),
-  mDrive(drive->clone()),
+  mDrive(drive),
   mDriverValueObserved(false)
 {}
 
-JamomaMapper::JamomaMapper(const JamomaMapper * other) :
+JamomaMapper::JamomaMapper(const JamomaMapper& other) :
   JamomaTimeProcess()
 {}
 
 shared_ptr<Mapper> JamomaMapper::clone() const
 {
-  return make_shared<JamomaMapper>(this);
+  return make_shared<JamomaMapper>(*this);
 }
 
 JamomaMapper::~JamomaMapper()
@@ -66,17 +66,16 @@ shared_ptr<StateElement> JamomaMapper::state()
   {
     mLastDate = date;
 
-    if (mValueToMap)
+    if (mValueToMap.valid())
     {
       std::lock_guard<std::mutex> lock(mValueToMapMutex);
 
       // edit a Message handling the mapped value
-      auto newval = computeValue(*mValueToMap, *mDrive);
-      mMessageToSend = Message::create(mDrivenAddress, *newval);
+      auto newval = computeValue(mValueToMap, mDrive);
+      mMessageToSend = Message::create(mDrivenAddress, newval);
 
       // forget the former value
-      delete mValueToMap;
-      mValueToMap = nullptr;
+      mValueToMap.reset();
     }
   }
 
@@ -92,12 +91,12 @@ void JamomaMapper::start()
   if (!mDriverValueObserved)
   {
     mDriverValueCallbackIndex = mDriverAddress->addCallback(
-          [this] (const OSSIA::Value& val) {
+          [this] (const OSSIA::SafeValue& val) {
       driverValueCallback(val);
     });
     mDriverValueObserved = true;
     auto def_val = mDriverAddress->cloneValue();
-    driverValueCallback(*def_val);
+    driverValueCallback(def_val);
   }
 }
 
@@ -130,15 +129,16 @@ const shared_ptr<Address> JamomaMapper::getDrivenAddress() const
   return mDrivenAddress;
 }
 
-const Value * JamomaMapper::getDriving() const
+const SafeValue& JamomaMapper::getDriving() const
 {
   return mDrive;
 }
 
-std::unique_ptr<OSSIA::Value> JamomaMapper::computeValue(const Value& driver, const Value& drive)
+SafeValue JamomaMapper::computeValue(const SafeValue& driver, const SafeValue& drive)
 {
   switch (driver.getType())
   {
+    /*
     case Type::BEHAVIOR :
     {
       auto& b = static_cast<const Behavior&>(drive);
@@ -248,22 +248,15 @@ std::unique_ptr<OSSIA::Value> JamomaMapper::computeValue(const Value& driver, co
     {
       throw runtime_error("none handled drive value type");
     }
+    */
   }
 
-  return nullptr;
+  return {};
 }
 
-void JamomaMapper::driverValueCallback(const Value& value)
+void JamomaMapper::driverValueCallback(const SafeValue& value)
 {
   std::lock_guard<std::mutex> lock(mValueToMapMutex);
 
-  // clear the former Value
-  if (mValueToMap)
-  {
-    delete mValueToMap;
-    mValueToMap = nullptr;
-  }
-
-  // clone the new value
-  mValueToMap = value.clone();
+  mValueToMap = value;
 }
