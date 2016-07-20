@@ -207,60 +207,139 @@ public:
     return false;
   }
 
-  template<typename T>
-  bool operator()(const T& v) const
-  {
-    if (lhs.value->getAddress())
-    {
-        auto c = lhs.value->getAddress()->cloneValue(lhs.index);
-        return fun(c, rhs);
-    }
 
-    return false;
+  bool default_case() const
+  {
+      if (lhs.value->getAddress())
+      {
+          auto c = lhs.value->getAddress()->cloneValue(lhs.index);
+          return fun(c, rhs);
+      }
+
+      return false;
   }
+
+  bool operator()(const String& v) const { return default_case(); }
+  bool operator()(Int v) const { return default_case(); }
+  bool operator()(Float v) const { return default_case(); }
+  bool operator()(Bool v) const { return default_case(); }
+  bool operator()(Char v) const { return default_case(); }
+  bool operator()(const Tuple& v) const { return default_case(); }
+  bool operator()(Vec2f v) const { return default_case(); }
+  bool operator()(Vec3f v) const { return default_case(); }
+  bool operator()(Vec4f v) const { return default_case(); }
+  bool operator()(const Behavior&) const { return default_case(); }
 };
 
 template<typename Fun> auto make_destination_visitor(const Destination& lhs, const OSSIA::SafeValue& val, Fun f)
 { return DestinationVisitor<Fun>{lhs, val, f}; }
+
+/*
+struct DefaultVisitor
+{
+        bool operator()(Impulse) const { return false; }
+        bool operator()(const Destination& d) const { return false; }
+
+        bool operator()(const String& v) const { return false; }
+        bool operator()(Int v) const { return false; }
+        bool operator()(Float v) const { return false; }
+        bool operator()(Bool v) const { return false; }
+        bool operator()(Char v) const { return false; }
+        bool operator()(const Tuple& v) const { return false; }
+        bool operator()(Vec2f v) const { return false; }
+        bool operator()(Vec3f v) const { return false; }
+        bool operator()(Vec4f v) const { return false; }
+        bool operator()(const Behavior&) const { return false; }
+};
+*/
 
 struct DestinationValue
 {
   template<typename Fun>
   static bool apply(const Destination& lhs, const OSSIA::SafeValue& val, Fun fun)
   {
-    auto vis = make_destination_visitor(lhs, val, fun);
-
     return val.valid()
-        ? eggs::variants::apply(vis, val.v)
+        ? eggs::variants::apply(make_destination_visitor(lhs, val, fun), val.v)
         : false;
   }
 };
 
-
-template<typename Vec, typename Fun>
-struct VecVisitor
+template<int N, typename Fun>
+struct VecVisitor;
+template<typename Fun>
+struct VecVisitor<2, Fun>
 {
-  const Vec& lhs;
+  const Vec2f& lhs;
   Fun fun;
 public:
   bool operator()(Impulse) const { return fun(lhs.value, Impulse_T{}); }
-  bool operator()(const Vec& d) const { return fun(lhs.value, d.value); }
+  bool operator()(const Vec2f& d) const { return fun(lhs.value, d.value); }
 
-  template<typename T>
-  bool operator()(const T& v) const
-  {
-    return false;
-  }
+  bool operator()(const String& v) const { return false; }
+  bool operator()(Int v) const { return false; }
+  bool operator()(Float v) const { return false; }
+  bool operator()(Bool v) const { return false; }
+  bool operator()(Char v) const { return false; }
+  bool operator()(const Tuple& v) const { return false; }
+  bool operator()(const Destination& d) const { return false; }
+  bool operator()(Vec3f v) const { return false; }
+  bool operator()(Vec4f v) const { return false; }
+  bool operator()(const Behavior&) const { return false; }
 };
 
-template<typename Fun> auto make_destination_visitor(const Destination& lhs, Fun f)
-{ return DestinationVisitor<Fun>{lhs, f}; }
+template<typename Fun>
+struct VecVisitor<3, Fun>
+{
+  const Vec3f& lhs;
+  Fun fun;
+public:
+  bool operator()(Impulse) const { return fun(lhs.value, Impulse_T{}); }
+  bool operator()(const Vec3f& d) const { return fun(lhs.value, d.value); }
+
+  bool operator()(const String& v) const { return false; }
+  bool operator()(Int v) const { return false; }
+  bool operator()(Float v) const { return false; }
+  bool operator()(Bool v) const { return false; }
+  bool operator()(Char v) const { return false; }
+  bool operator()(const Tuple& v) const { return false; }
+  bool operator()(const Destination& d) const { return false; }
+  bool operator()(Vec2f v) const { return false; }
+  bool operator()(Vec4f v) const { return false; }
+  bool operator()(const Behavior&) const { return false; }
+};
+
+template<typename Fun>
+struct VecVisitor<4, Fun>
+{
+  const Vec4f& lhs;
+  Fun fun;
+public:
+  bool operator()(Impulse) const { return fun(lhs.value, Impulse_T{}); }
+  bool operator()(const Vec3f& d) const { return fun(lhs.value, d.value); }
+
+  bool operator()(const String& v) const { return false; }
+  bool operator()(Int v) const { return false; }
+  bool operator()(Float v) const { return false; }
+  bool operator()(Bool v) const { return false; }
+  bool operator()(Char v) const { return false; }
+  bool operator()(const Tuple& v) const { return false; }
+  bool operator()(const Destination& d) const { return false; }
+  bool operator()(Vec2f v) const { return false; }
+  bool operator()(Vec3f v) const { return false; }
+  bool operator()(const Behavior&) const { return false; }
+};
+
+template<typename Vec_T, typename Fun>
+auto make_vec_visitor(const Vec_T& lhs, Fun f)
+{ return VecVisitor<Vec_T::size_value, Fun>{lhs, f}; }
+
+
 struct VecValue
 {
-  template<typename Fun>
-  static bool apply(const Destination& lhs, const OSSIA::SafeValue& val, Fun fun)
+  template<typename Vec_T, typename Fun>
+  static bool apply(const Vec_T& lhs, const OSSIA::SafeValue& val, Fun fun)
   {
-    auto vis = make_destination_visitor(lhs, val, fun);
+    auto vis = make_vec_visitor(lhs, fun);
 
     return val.valid()
         ? eggs::variants::apply(vis, val.v)

@@ -23,7 +23,6 @@
 namespace OSSIA
 {
 
-class Value;
 class SafeValue;
 class OSSIA_EXPORT Domain
 {

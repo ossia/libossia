@@ -27,7 +27,6 @@ namespace OSSIA
 {
 class SafeValue;
 class Address;
-class Value;
 class TimeValue;
 
 class OSSIA_EXPORT Automation : public virtual TimeProcess

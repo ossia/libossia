@@ -9,6 +9,8 @@ template<typename T, int N>
 class Vec
 {
     public:
+        static const constexpr int size_value = N;
+
         std::array<T, N> value;
 
         Vec() = default;

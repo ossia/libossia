@@ -10,7 +10,7 @@
 
 static auto& symbol_map()
 {
-  static const std::map<OSSIA::Type, TTSymbol> symmap{
+  static const std::map<OSSIA::Type, TTSymbol>& symmap{
     { Type::IMPULSE, kTTSym_none },
     { Type::BOOL, kTTSym_boolean },
     { Type::INT, kTTSym_integer },
@@ -120,6 +120,7 @@ SafeValue JamomaAddress::cloneValue(std::vector<char> index) const
     // create a new tuple from tuple's values at index
     const auto& tuple = mValue.get<Tuple>();
     vector<SafeValue> values;
+    values.reserve(index.size());
 
     for (char i : index)
     {
@@ -170,7 +171,7 @@ Address & JamomaAddress::setValue(const SafeValue& value)
         auto it = symmap.find(mValueType);
         if(it != symmap.end())
         {
-          mObject.set("type", *it);
+          mObject.set("type", it->second);
         }
       }
     }
@@ -196,7 +197,7 @@ Address & JamomaAddress::setValueType(Type type)
     auto it = symmap.find(mValueType);
     if(it != symmap.end())
     {
-      mObject.set("type", *it);
+      mObject.set("type", it->second);
     }
   }
 
