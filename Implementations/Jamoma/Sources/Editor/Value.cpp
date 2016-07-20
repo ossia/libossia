@@ -18,102 +18,104 @@ Destination::~Destination() = default;
 Behavior::~Behavior() = default;
 
 bool Bool::operator== (const SafeValue& v) const
-{ return Comparisons::equal<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Bool::operator!= (const SafeValue& v) const
-{ return Comparisons::different<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::not_equal_to<>{}); }
 
 bool Bool::operator> (const SafeValue& v) const
-{ return Comparisons::greater<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::greater<>{}); }
 
 bool Bool::operator>= (const SafeValue& v) const
-{ return Comparisons::greater_equal<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::greater_equal<>{}); }
 
 bool Bool::operator< (const SafeValue& v) const
-{ return Comparisons::smaller<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::less<>{}); }
 
 bool Bool::operator<= (const SafeValue& v) const
-{ return Comparisons::smaller_equal<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::less_equal<>{}); }
 
 
 
 bool Int::operator== (const SafeValue& v) const
-{ return Comparisons::equal<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Int::operator!= (const SafeValue& v) const
-{ return Comparisons::different<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::not_equal_to<>{}); }
 
 bool Int::operator> (const SafeValue& v) const
-{ return Comparisons::greater<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::greater<>{}); }
 
 bool Int::operator>= (const SafeValue& v) const
-{ return Comparisons::greater_equal<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::greater_equal<>{}); }
 
 bool Int::operator< (const SafeValue& v) const
-{ return Comparisons::smaller<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::less<>{}); }
 
 bool Int::operator<= (const SafeValue& v) const
-{ return Comparisons::smaller_equal<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::less_equal<>{}); }
 
 
 
 bool Float::operator== (const SafeValue& v) const
-{ return Comparisons::equal<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Float::operator!= (const SafeValue& v) const
-{ return Comparisons::different<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::not_equal_to<>{}); }
 
 bool Float::operator> (const SafeValue& v) const
-{ return Comparisons::greater<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::greater<>{}); }
 
 bool Float::operator>= (const SafeValue& v) const
-{ return Comparisons::greater_equal<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::greater_equal<>{}); }
 
 bool Float::operator< (const SafeValue& v) const
-{ return Comparisons::smaller<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::less<>{}); }
 
 bool Float::operator<= (const SafeValue& v) const
-{ return Comparisons::smaller_equal<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::less_equal<>{}); }
 
 
 
 bool Char::operator== (const SafeValue& v) const
-{ return Comparisons::equal<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Char::operator!= (const SafeValue& v) const
-{ return Comparisons::different<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::not_equal_to<>{}); }
 
 bool Char::operator> (const SafeValue& v) const
-{ return Comparisons::greater<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::greater<>{}); }
 
 bool Char::operator>= (const SafeValue& v) const
-{ return Comparisons::greater_equal<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::greater_equal<>{}); }
 
 bool Char::operator< (const SafeValue& v) const
-{ return Comparisons::smaller<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::less<>{}); }
 
 bool Char::operator<= (const SafeValue& v) const
-{ return Comparisons::smaller_equal<Comparisons::NumericValue>(*this, v); }
+{ return Comparisons::NumericValue::apply(*this, v, std::less_equal<>{}); }
+
 
 
 
 bool String::operator== (const SafeValue& v) const
-{ return Comparisons::equal<Comparisons::StringValue>(*this, v); }
+{ return Comparisons::StringValue::apply(*this, v, std::equal_to<>{}); }
 
 bool String::operator!= (const SafeValue& v) const
-{ return Comparisons::different<Comparisons::StringValue>(*this, v); }
+{ return Comparisons::StringValue::apply(*this, v, std::not_equal_to<>{}); }
 
 bool String::operator> (const SafeValue& v) const
-{ return Comparisons::greater<Comparisons::StringValue>(*this, v); }
+{ return Comparisons::StringValue::apply(*this, v, std::greater<>{}); }
 
 bool String::operator>= (const SafeValue& v) const
-{ return Comparisons::greater_equal<Comparisons::StringValue>(*this, v); }
+{ return Comparisons::StringValue::apply(*this, v, std::greater_equal<>{}); }
 
 bool String::operator< (const SafeValue& v) const
-{ return Comparisons::smaller<Comparisons::StringValue>(*this, v); }
+{ return Comparisons::StringValue::apply(*this, v, std::less<>{}); }
 
 bool String::operator<= (const SafeValue& v) const
-{ return Comparisons::smaller_equal<Comparisons::StringValue>(*this, v); }
+{ return Comparisons::StringValue::apply(*this, v, std::less_equal<>{}); }
+
 
 
 Tuple::Tuple() = default;
@@ -139,22 +141,23 @@ Tuple::Tuple(const SafeValue& v)
 
 
 bool Tuple::operator== (const SafeValue& v) const
-{ return Comparisons::equal<Comparisons::TupleValue>(*this, v); }
+{ return Comparisons::TupleValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Tuple::operator!= (const SafeValue& v) const
-{ return Comparisons::different<Comparisons::TupleValue>(*this, v); }
+{ return Comparisons::TupleValue::apply(*this, v, std::not_equal_to<>{}); }
 
 bool Tuple::operator> (const SafeValue& v) const
-{ return Comparisons::greater<Comparisons::TupleValue>(*this, v); }
+{ return Comparisons::TupleValue::apply(*this, v, std::greater<>{}); }
 
 bool Tuple::operator>= (const SafeValue& v) const
-{ return Comparisons::greater_equal<Comparisons::TupleValue>(*this, v); }
+{ return Comparisons::TupleValue::apply(*this, v, std::greater_equal<>{}); }
 
 bool Tuple::operator< (const SafeValue& v) const
-{ return Comparisons::smaller<Comparisons::TupleValue>(*this, v); }
+{ return Comparisons::TupleValue::apply(*this, v, std::less<>{}); }
 
 bool Tuple::operator<= (const SafeValue& v) const
-{ return Comparisons::smaller_equal<Comparisons::TupleValue>(*this, v); }
+{ return Comparisons::TupleValue::apply(*this, v, std::less_equal<>{}); }
+
 
 Destination::Destination(
         std::shared_ptr<Node> v,
@@ -174,22 +177,22 @@ Destination::Destination(std::shared_ptr<Node> v, std::vector<char> idx) :
 
 
 bool Destination::operator== (const SafeValue& v) const
-{ return Comparisons::equal<Comparisons::DestinationValue>(*this, v); }
+{ return Comparisons::DestinationValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Destination::operator!= (const SafeValue& v) const
-{ return Comparisons::different<Comparisons::DestinationValue>(*this, v); }
+{ return Comparisons::DestinationValue::apply(*this, v, std::not_equal_to<>{}); }
 
 bool Destination::operator> (const SafeValue& v) const
-{ return Comparisons::greater<Comparisons::DestinationValue>(*this, v); }
+{ return Comparisons::DestinationValue::apply(*this, v, std::greater<>{}); }
 
 bool Destination::operator>= (const SafeValue& v) const
-{ return Comparisons::greater_equal<Comparisons::DestinationValue>(*this, v); }
+{ return Comparisons::DestinationValue::apply(*this, v, std::greater_equal<>{}); }
 
 bool Destination::operator< (const SafeValue& v) const
-{ return Comparisons::smaller<Comparisons::DestinationValue>(*this, v); }
+{ return Comparisons::DestinationValue::apply(*this, v, std::less<>{}); }
 
 bool Destination::operator<= (const SafeValue& v) const
-{ return Comparisons::smaller_equal<Comparisons::DestinationValue>(*this, v); }
+{ return Comparisons::DestinationValue::apply(*this, v, std::less_equal<>{}); }
 
 
 bool SafeValue::operator==(const SafeValue &rhs) const

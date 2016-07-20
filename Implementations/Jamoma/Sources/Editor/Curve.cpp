@@ -108,7 +108,11 @@ template <typename X, typename Y>
 X JamomaCurve<X,Y>::
 getInitialPointAbscissa() const
 {
-  auto address = mInitialPointAbscissaDestination.value->getAddress();
+  auto& node = mInitialPointAbscissaDestination.value;
+  if(!node)
+      return mInitialPointAbscissa;
+
+  auto address = node->getAddress();
 
   if (!address)
     throw runtime_error("getting an address value using from an abscissa destination without address");
@@ -123,7 +127,11 @@ template <typename X, typename Y>
 Y JamomaCurve<X,Y>::
 getInitialPointOrdinate() const
 {
-  auto address = mInitialPointOrdinateDestination.value->getAddress();
+  auto& node = mInitialPointOrdinateDestination.value;
+  if(!node)
+    return mInitialPointOrdinate;
+
+  auto address = node->getAddress();
 
   if (!address)
     throw runtime_error("getting an address value using from an ordinate destination without address");

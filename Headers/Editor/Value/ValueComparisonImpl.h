@@ -8,32 +8,6 @@ namespace OSSIA
 
 namespace Comparisons
 {
-template<typename Kind, typename T>
-bool equal(const T& lhs, const OSSIA::SafeValue& rhs)
-{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 == v2; }); }
-
-template<typename Kind, typename T>
-bool different(const T& lhs, const OSSIA::SafeValue& rhs)
-{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 != v2; }); }
-
-
-template<typename Kind, typename T>
-bool greater(const T& lhs, const OSSIA::SafeValue& rhs)
-{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 > v2; }); }
-
-template<typename Kind, typename T>
-bool greater_equal(const T& lhs, const OSSIA::SafeValue& rhs)
-{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 >= v2; }); }
-
-
-template<typename Kind, typename T>
-bool smaller(const T& lhs, const OSSIA::SafeValue& rhs)
-{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 < v2; }); }
-
-template<typename Kind, typename T>
-bool smaller_equal(const T& lhs, const OSSIA::SafeValue& rhs)
-{ return Kind::apply(lhs, rhs, [] (auto v1, auto v2) { return v1 <= v2; }); }
-
 struct Impulse_T
 {
   template<typename T>
@@ -207,8 +181,8 @@ public:
     return false;
   }
 
-
-  bool default_case() const
+  template<typename T>
+  bool operator()(const T& v) const
   {
       if (lhs.value->getAddress())
       {
@@ -219,39 +193,10 @@ public:
       return false;
   }
 
-  bool operator()(const String& v) const { return default_case(); }
-  bool operator()(Int v) const { return default_case(); }
-  bool operator()(Float v) const { return default_case(); }
-  bool operator()(Bool v) const { return default_case(); }
-  bool operator()(Char v) const { return default_case(); }
-  bool operator()(const Tuple& v) const { return default_case(); }
-  bool operator()(Vec2f v) const { return default_case(); }
-  bool operator()(Vec3f v) const { return default_case(); }
-  bool operator()(Vec4f v) const { return default_case(); }
-  bool operator()(const Behavior&) const { return default_case(); }
 };
 
 template<typename Fun> auto make_destination_visitor(const Destination& lhs, const OSSIA::SafeValue& val, Fun f)
 { return DestinationVisitor<Fun>{lhs, val, f}; }
-
-/*
-struct DefaultVisitor
-{
-        bool operator()(Impulse) const { return false; }
-        bool operator()(const Destination& d) const { return false; }
-
-        bool operator()(const String& v) const { return false; }
-        bool operator()(Int v) const { return false; }
-        bool operator()(Float v) const { return false; }
-        bool operator()(Bool v) const { return false; }
-        bool operator()(Char v) const { return false; }
-        bool operator()(const Tuple& v) const { return false; }
-        bool operator()(Vec2f v) const { return false; }
-        bool operator()(Vec3f v) const { return false; }
-        bool operator()(Vec4f v) const { return false; }
-        bool operator()(const Behavior&) const { return false; }
-};
-*/
 
 struct DestinationValue
 {
@@ -265,68 +210,19 @@ struct DestinationValue
 };
 
 template<int N, typename Fun>
-struct VecVisitor;
-template<typename Fun>
-struct VecVisitor<2, Fun>
+struct VecVisitor
 {
-  const Vec2f& lhs;
+  const Vec<float, N>& lhs;
   Fun fun;
 public:
   bool operator()(Impulse) const { return fun(lhs.value, Impulse_T{}); }
-  bool operator()(const Vec2f& d) const { return fun(lhs.value, d.value); }
+  bool operator()(const Vec<float, N>& d) const { return fun(lhs.value, d.value); }
 
-  bool operator()(const String& v) const { return false; }
-  bool operator()(Int v) const { return false; }
-  bool operator()(Float v) const { return false; }
-  bool operator()(Bool v) const { return false; }
-  bool operator()(Char v) const { return false; }
-  bool operator()(const Tuple& v) const { return false; }
-  bool operator()(const Destination& d) const { return false; }
-  bool operator()(Vec3f v) const { return false; }
-  bool operator()(Vec4f v) const { return false; }
-  bool operator()(const Behavior&) const { return false; }
-};
-
-template<typename Fun>
-struct VecVisitor<3, Fun>
-{
-  const Vec3f& lhs;
-  Fun fun;
-public:
-  bool operator()(Impulse) const { return fun(lhs.value, Impulse_T{}); }
-  bool operator()(const Vec3f& d) const { return fun(lhs.value, d.value); }
-
-  bool operator()(const String& v) const { return false; }
-  bool operator()(Int v) const { return false; }
-  bool operator()(Float v) const { return false; }
-  bool operator()(Bool v) const { return false; }
-  bool operator()(Char v) const { return false; }
-  bool operator()(const Tuple& v) const { return false; }
-  bool operator()(const Destination& d) const { return false; }
-  bool operator()(Vec2f v) const { return false; }
-  bool operator()(Vec4f v) const { return false; }
-  bool operator()(const Behavior&) const { return false; }
-};
-
-template<typename Fun>
-struct VecVisitor<4, Fun>
-{
-  const Vec4f& lhs;
-  Fun fun;
-public:
-  bool operator()(Impulse) const { return fun(lhs.value, Impulse_T{}); }
-  bool operator()(const Vec4f& d) const { return fun(lhs.value, d.value); }
-
-  bool operator()(const String& v) const { return false; }
-  bool operator()(Int v) const { return false; }
-  bool operator()(Float v) const { return false; }
-  bool operator()(Bool v) const { return false; }
-  bool operator()(Char v) const { return false; }
-  bool operator()(const Tuple& v) const { return false; }
-  bool operator()(const Destination& d) const { return false; }
-  bool operator()(Vec2f v) const { return false; }
-  bool operator()(Vec3f v) const { return false; }
-  bool operator()(const Behavior&) const { return false; }
+  template<typename T>
+  bool operator()(const T& v) const
+  {
+      return false;
+  }
 };
 
 template<typename Vec_T, typename Fun>
@@ -339,32 +235,34 @@ struct VecValue
   template<typename Vec_T, typename Fun>
   static bool apply(const Vec_T& lhs, const OSSIA::SafeValue& val, Fun fun)
   {
-    return val.valid()
-        ? eggs::variants::apply(make_vec_visitor(lhs, fun), val.v)
-        : false;
+    if(val.valid())
+    {
+      return eggs::variants::apply(make_vec_visitor(lhs, fun), val.v);
+    }
+    return false;
   }
 };
 }
 
 template<typename T, int N>
 bool Vec<T, N>::operator== (const SafeValue& v) const
-{ return Comparisons::equal<Comparisons::VecValue>(*this, v); }
+{ return Comparisons::VecValue::apply(*this, v, std::equal_to<>{}); }
 template<typename T, int N>
 bool Vec<T, N>::operator!= (const SafeValue& v) const
-{ return Comparisons::different<Comparisons::VecValue>(*this, v); }
+{ return Comparisons::VecValue::apply(*this, v, std::not_equal_to<>{}); }
 
 template<typename T, int N>
 bool Vec<T, N>::operator> (const SafeValue& v) const
-{ return Comparisons::greater<Comparisons::VecValue>(*this, v); }
+{ return Comparisons::VecValue::apply(*this, v, std::greater<>{}); }
 template<typename T, int N>
 bool Vec<T, N>::operator>= (const SafeValue& v) const
-{ return Comparisons::greater_equal<Comparisons::VecValue>(*this, v); }
+{ return Comparisons::VecValue::apply(*this, v, std::greater_equal<>{}); }
 
 template<typename T, int N>
 bool Vec<T, N>::operator< (const SafeValue& v) const
-{ return Comparisons::smaller<Comparisons::VecValue>(*this, v); }
+{ return Comparisons::VecValue::apply(*this, v, std::less<>{});}
 template<typename T, int N>
 bool Vec<T, N>::operator<= (const SafeValue& v) const
-{ return Comparisons::smaller_equal<Comparisons::VecValue>(*this, v); }
+{ return Comparisons::VecValue::apply(*this, v, std::less_equal<>{}); }
 
 }

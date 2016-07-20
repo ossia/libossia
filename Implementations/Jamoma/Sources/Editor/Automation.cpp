@@ -122,12 +122,7 @@ struct computeValue_visitor
   double position;
   const SafeValue& drive;
 
-  template<typename T>
-  SafeValue operator()(const T&) {
-    throw runtime_error("none handled drive value type");
-  }
-
-  SafeValue operator()(const Behavior& b) const
+  SafeValue operator()(const OSSIA::Behavior& b) const
   {
     auto base_curve = b.value.get();
     auto t = base_curve->getType();
@@ -169,6 +164,19 @@ struct computeValue_visitor
     return Tuple{std::move(t_value)};
   }
 
+  SafeValue error() const
+  { throw runtime_error("Unhandled drive value type."); }
+  SafeValue operator()(const Int&) { return error(); }
+  SafeValue operator()(const Float&) { return error(); }
+  SafeValue operator()(const Bool&) { return error(); }
+  SafeValue operator()(const Char&) { return error(); }
+  SafeValue operator()(const String&) { return error(); }
+  SafeValue operator()(const Destination&) { return error(); }
+  SafeValue operator()(const Vec2f&) { return error(); }
+  SafeValue operator()(const Vec3f&) { return error(); }
+  SafeValue operator()(const Vec4f&) { return error(); }
+  SafeValue operator()(const Impulse&) { return error(); }
+
 };
 }
 
@@ -179,6 +187,6 @@ SafeValue JamomaAutomation::computeValue(
   computeValue_visitor vis{position, drive};
 
   if(drive.valid())
-    eggs::variants::apply(vis, drive.v);
+    return eggs::variants::apply(vis, drive.v);
   throw runtime_error("none handled drive value type");
 }
