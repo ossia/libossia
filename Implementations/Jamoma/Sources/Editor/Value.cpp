@@ -192,4 +192,21 @@ bool Destination::operator<= (const SafeValue& v) const
 { return Comparisons::smaller_equal<Comparisons::DestinationValue>(*this, v); }
 
 
+bool SafeValue::operator==(const SafeValue &rhs) const
+{ return v == rhs.v; }
+
+bool SafeValue::operator!=(const SafeValue &rhs) const
+{ return v != rhs.v; }
+
+bool SafeValue::operator>(const SafeValue &rhs) const
+{ return v > rhs.v; }
+
+bool SafeValue::operator>=(const SafeValue &rhs) const
+{ return v >= rhs.v; }
+
+bool SafeValue::operator<(const SafeValue &rhs) const
+{ return v < rhs.v; }
+
+bool SafeValue::operator<=(const SafeValue &rhs) const
+{ return v <= rhs.v; }
 

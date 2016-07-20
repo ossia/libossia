@@ -32,7 +32,7 @@ bool smaller(const T& lhs, const OSSIA::SafeValue& rhs)
 
 template<typename Kind, typename T>
 bool smaller_equal(const T& lhs, const OSSIA::SafeValue& rhs)
-{ return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 <= v2; }); }
+{ return Kind::apply(lhs, rhs, [] (auto v1, auto v2) { return v1 <= v2; }); }
 
 struct Impulse_T
 {
@@ -315,7 +315,7 @@ struct VecVisitor<4, Fun>
   Fun fun;
 public:
   bool operator()(Impulse) const { return fun(lhs.value, Impulse_T{}); }
-  bool operator()(const Vec3f& d) const { return fun(lhs.value, d.value); }
+  bool operator()(const Vec4f& d) const { return fun(lhs.value, d.value); }
 
   bool operator()(const String& v) const { return false; }
   bool operator()(Int v) const { return false; }
@@ -339,10 +339,8 @@ struct VecValue
   template<typename Vec_T, typename Fun>
   static bool apply(const Vec_T& lhs, const OSSIA::SafeValue& val, Fun fun)
   {
-    auto vis = make_vec_visitor(lhs, fun);
-
     return val.valid()
-        ? eggs::variants::apply(vis, val.v)
+        ? eggs::variants::apply(make_vec_visitor(lhs, fun), val.v)
         : false;
   }
 };

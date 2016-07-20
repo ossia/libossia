@@ -59,21 +59,23 @@ public:
 
 
   /*! equal operator */
-  bool operator== (const SafeValue&) const { return false; }
+  bool operator== (const SafeValue& rhs) const;
 
   /*! different operator */
-  bool operator!= (const SafeValue&) const { return false; }
+  bool operator!= (const SafeValue& rhs) const;
 
   /*! greater than operator */
-  bool operator> (const SafeValue&) const { return false; }
+  bool operator> (const SafeValue& rhs) const;
 
   /*! greater than and equal operator */
-  bool operator>= (const SafeValue&) const { return false; }
+  bool operator>= (const SafeValue& rhs) const;
 
   /*! less than operator */
-  bool operator< (const SafeValue&) const { return false; }
+  bool operator< (const SafeValue& rhs) const;
 
   /*! less than and equal operator */
-  bool operator<= (const SafeValue&) const { return false; }
+  bool operator<= (const SafeValue& rhs) const;
 };
+
+
 }
