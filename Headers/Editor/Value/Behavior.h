@@ -7,13 +7,12 @@ namespace OSSIA
 {
 
 /*! \details Behavior value */
-struct OSSIA_EXPORT Behavior : public Value
+struct OSSIA_EXPORT Behavior
 {
   std::shared_ptr<CurveAbstract> value;
 
   /*! constructor */
   Behavior(std::shared_ptr<CurveAbstract> v) :
-      Value{Type::BEHAVIOR},
       value(std::move(v))
   {
   }
@@ -26,27 +25,27 @@ struct OSSIA_EXPORT Behavior : public Value
   virtual ~Behavior();
 
   /*! equal operator */
-  bool operator== (const SafeValue&) const override
+  bool operator== (const SafeValue&) const
   { return false; }
 
   /*! different operator */
-  bool operator!= (const SafeValue&) const override
+  bool operator!= (const SafeValue&) const
   { return false; }
 
   /*! greater than operator */
-  bool operator> (const SafeValue&) const override
+  bool operator> (const SafeValue&) const
   { return false; }
 
   /*! greater than and equal operator */
-  bool operator>= (const SafeValue&) const override
+  bool operator>= (const SafeValue&) const
   { return false; }
 
   /*! less than operator */
-  bool operator< (const SafeValue&) const override
+  bool operator< (const SafeValue&) const
   { return false; }
 
   /*! less than and equal operator */
-  bool operator<= (const SafeValue&) const override
+  bool operator<= (const SafeValue&) const
   { return false; }
 };
 

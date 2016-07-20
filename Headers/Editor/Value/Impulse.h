@@ -5,14 +5,10 @@ namespace OSSIA
 {
 
 /*! \details Impulse value */
-struct OSSIA_EXPORT Impulse final : public Value
+struct OSSIA_EXPORT Impulse
 {
   /*! constructor */
-  Impulse():
-    Value{Type::IMPULSE}
-  {
-  }
-
+  Impulse() = default;
   Impulse(const Impulse&) = default;
   Impulse(Impulse&&) = default;
   Impulse& operator=(const Impulse&) = default;
@@ -21,27 +17,27 @@ struct OSSIA_EXPORT Impulse final : public Value
   virtual ~Impulse();
 
   /*! equal operator */
-  bool operator== (const SafeValue&) const override
+  bool operator== (const SafeValue&) const
   { return true; }
 
   /*! different operator */
-  bool operator!= (const SafeValue&) const override
+  bool operator!= (const SafeValue&) const
   { return false; }
 
   /*! greater than operator */
-  bool operator> (const SafeValue&) const override
+  bool operator> (const SafeValue&) const
   { return false; }
 
   /*! greater than and equal operator */
-  bool operator>= (const SafeValue&) const override
+  bool operator>= (const SafeValue&) const
   { return true; }
 
   /*! less than operator */
-  bool operator< (const SafeValue&) const override
+  bool operator< (const SafeValue&) const
   { return false; }
 
   /*! less than and equal operator */
-  bool operator<= (const SafeValue&) const override
+  bool operator<= (const SafeValue&) const
   { return true; }
 };
 

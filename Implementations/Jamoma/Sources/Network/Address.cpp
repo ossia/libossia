@@ -865,9 +865,10 @@ std::string getTupleAsString(const OSSIA::Tuple& tuple)
     s << "[";
     for(int i = 0; i < n; i++)
     {
-        const OSSIA::Value& val = *tuple.value.at(i);
+        const auto& val = tuple.value[i];
         switch(val.getType())
         {
+          /*
             case OSSIA::Type::INT:
                 s << "int: " << static_cast<const OSSIA::Int&>(val).value;
                 break;
@@ -892,6 +893,7 @@ std::string getTupleAsString(const OSSIA::Tuple& tuple)
             case OSSIA::Type::DESTINATION:
                 s << "destination";
                 break;
+                */
         }
 
         if(i < n - 1)

@@ -1,24 +1,18 @@
 #pragma once
 #include <Editor/Value/ValueBase.h>
-#include <Editor/Value/ValueTraits.h>
 #include <array>
 
 namespace OSSIA
 {
 
 template<typename T, int N>
-class Vec : public Value
+class Vec
 {
     public:
         std::array<T, N> value;
 
-        Vec():
-            Value{ValueTrait<Vec>::ossia_enum}
-        {
-        }
-
-        Vec(std::array<T, N> v) :
-            Value{ValueTrait<Vec>::ossia_enum},
+        Vec() = default;
+        Vec(std::array<T, N> v):
             value(std::move(v))
         {
         }
@@ -31,22 +25,22 @@ class Vec : public Value
 
 
         /*! equal operator */
-        bool operator== (const SafeValue&) const override;
+        bool operator== (const SafeValue&) const;
 
         /*! different operator */
-        bool operator!= (const SafeValue&) const override;
+        bool operator!= (const SafeValue&) const;
 
         /*! greater than operator */
-        bool operator> (const SafeValue&) const override;
+        bool operator> (const SafeValue&) const;
 
         /*! greater than and equal operator */
-        bool operator>= (const SafeValue&) const override;
+        bool operator>= (const SafeValue&) const;
 
         /*! less than operator */
-        bool operator< (const SafeValue&) const override;
+        bool operator< (const SafeValue&) const;
 
         /*! less than and equal operator */
-        bool operator<= (const SafeValue&) const override;
+        bool operator<= (const SafeValue&) const;
 };
 
 using Vec2f = Vec<float, 2>;

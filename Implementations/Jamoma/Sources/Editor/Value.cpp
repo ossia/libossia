@@ -7,7 +7,6 @@
 
 using namespace OSSIA;
 
-Value::~Value() = default;
 Impulse::~Impulse() = default;
 Bool::~Bool() = default;
 Int::~Int() = default;
@@ -117,31 +116,23 @@ bool String::operator<= (const SafeValue& v) const
 { return Comparisons::smaller_equal<Comparisons::StringValue>(*this, v); }
 
 
-Tuple::Tuple():
-  Value{Type::TUPLE}
-{
-}
-
+Tuple::Tuple() = default;
 Tuple::Tuple(std::initializer_list<SafeValue> v):
-  Value{Type::TUPLE},
   value(v)
 {
 }
 
 Tuple::Tuple(const std::vector<SafeValue>& v):
-  Value{Type::TUPLE},
   value(v)
 {
 }
 
 Tuple::Tuple(std::vector<SafeValue>&& v):
-  Value{Type::TUPLE},
   value(std::move(v))
 {
 }
 
-Tuple::Tuple(const SafeValue& v):
-  Value{Type::TUPLE}
+Tuple::Tuple(const SafeValue& v)
 {
   value.push_back(v);
 }
@@ -168,7 +159,6 @@ bool Tuple::operator<= (const SafeValue& v) const
 Destination::Destination(
         std::shared_ptr<Node> v,
         std::initializer_list<char> idx) :
-    Value{Type::DESTINATION},
     value(std::move(v))
 {
     for (const auto & i : idx)
@@ -176,7 +166,6 @@ Destination::Destination(
 }
 
 Destination::Destination(std::shared_ptr<Node> v, std::vector<char> idx) :
-    Value{Type::DESTINATION},
     value(v)
 {
     for (const auto & i : idx)

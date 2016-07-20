@@ -7,17 +7,12 @@ namespace OSSIA
 {
 
 /*! \details Destination to an Address value and optionnally to several index of this value */
-struct OSSIA_EXPORT Destination final : public Value
+struct OSSIA_EXPORT Destination final
 {
   std::shared_ptr<Node> value;
   std::vector<char> index;
 
-  Destination():
-      Value{Type::DESTINATION}
-  {
-
-  }
-
+  Destination() = default;
   /*! constructor for a node and optionnal index values
    \param std::shared_ptr<Node>
    \param char
@@ -38,22 +33,22 @@ struct OSSIA_EXPORT Destination final : public Value
   virtual ~Destination();
 
   /*! equal operator */
-  bool operator== (const SafeValue&) const override;
+  bool operator== (const SafeValue&) const;
 
   /*! different operator */
-  bool operator!= (const SafeValue&) const override;
+  bool operator!= (const SafeValue&) const;
 
   /*! greater than operator */
-  bool operator> (const SafeValue&) const override;
+  bool operator> (const SafeValue&) const;
 
   /*! greater than and equal operator */
-  bool operator>= (const SafeValue&) const override;
+  bool operator>= (const SafeValue&) const;
 
   /*! less than operator */
-  bool operator< (const SafeValue&) const override;
+  bool operator< (const SafeValue&) const;
 
   /*! less than and equal operator */
-  bool operator<= (const SafeValue&) const override;
+  bool operator<= (const SafeValue&) const;
 };
 
 }

@@ -5,14 +5,13 @@ namespace OSSIA
 {
 
 /*! \details Char value */
-struct OSSIA_EXPORT Char final : public Value
+struct OSSIA_EXPORT Char
 {
   char value;
 
   /*! constructor
    \param char value */
   Char(char v = 0x00) :
-      Value{Type::CHAR},
       value(v)
   {
   }
@@ -24,22 +23,22 @@ struct OSSIA_EXPORT Char final : public Value
 
 
   /*! equal operator */
-  bool operator== (const SafeValue&) const override;
+  bool operator== (const SafeValue&) const;
 
   /*! different operator */
-  bool operator!= (const SafeValue&) const override;
+  bool operator!= (const SafeValue&) const;
 
   /*! greater than operator */
-  bool operator> (const SafeValue&) const override;
+  bool operator> (const SafeValue&) const;
 
   /*! greater than and equal operator */
-  bool operator>= (const SafeValue&) const override;
+  bool operator>= (const SafeValue&) const;
 
   /*! less than operator */
-  bool operator< (const SafeValue&) const override;
+  bool operator< (const SafeValue&) const;
 
   /*! less than and equal operator */
-  bool operator<= (const SafeValue&) const override;
+  bool operator<= (const SafeValue&) const;
 };
 
 }

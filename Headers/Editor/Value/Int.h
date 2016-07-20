@@ -1,18 +1,18 @@
 #pragma once
 #include <Editor/Value/ValueBase.h>
+#include <ossia_export.h>
 
 namespace OSSIA
 {
 
 /*! \details Int value */
-struct OSSIA_EXPORT Int final : public Value
+struct OSSIA_EXPORT Int
 {
   int value;
 
   /*! constructor
    \param int value */
-  Int(int v = 0) :
-      Value{Type::INT},
+  Int(int v = 0):
       value(v)
   {
   }
@@ -23,22 +23,22 @@ struct OSSIA_EXPORT Int final : public Value
   Int& operator=(Int&&) = default;
 
   /*! equal operator */
-  bool operator== (const SafeValue&) const override;
+  bool operator== (const SafeValue&) const;
 
   /*! different operator */
-  bool operator!= (const SafeValue&) const override;
+  bool operator!= (const SafeValue&) const;
 
   /*! greater than operator */
-  bool operator> (const SafeValue&) const override;
+  bool operator> (const SafeValue&) const;
 
   /*! greater than and equal operator */
-  bool operator>= (const SafeValue&) const override;
+  bool operator>= (const SafeValue&) const;
 
   /*! less than operator */
-  bool operator< (const SafeValue&) const override;
+  bool operator< (const SafeValue&) const;
 
   /*! less than and equal operator */
-  bool operator<= (const SafeValue&) const override;
+  bool operator<= (const SafeValue&) const;
 };
 
 }

@@ -7,7 +7,7 @@ namespace OSSIA
 {
 class SafeValue;
 /*! \details Tuple value */
-struct OSSIA_EXPORT Tuple final : public Value
+struct OSSIA_EXPORT Tuple
 {
   std::vector<SafeValue> value;
 
@@ -35,22 +35,22 @@ struct OSSIA_EXPORT Tuple final : public Value
   Tuple(std::vector<SafeValue>&& v);
 
   /*! equal operator */
-  bool operator== (const SafeValue&) const override;
+  bool operator== (const SafeValue&) const;
 
   /*! different operator */
-  bool operator!= (const SafeValue&) const override;
+  bool operator!= (const SafeValue&) const;
 
   /*! greater than operator */
-  bool operator> (const SafeValue&) const override;
+  bool operator> (const SafeValue&) const;
 
   /*! greater than and equal operator */
-  bool operator>= (const SafeValue&) const override;
+  bool operator>= (const SafeValue&) const;
 
   /*! less than operator */
-  bool operator< (const SafeValue&) const override;
+  bool operator< (const SafeValue&) const;
 
   /*! less than and equal operator */
-  bool operator<= (const SafeValue&) const override;
+  bool operator<= (const SafeValue&) const;
 };
 
 }

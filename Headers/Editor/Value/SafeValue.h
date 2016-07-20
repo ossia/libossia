@@ -4,7 +4,7 @@
 
 namespace OSSIA
 {
-
+class Value;
 class SafeValue
 {
 public:
@@ -32,7 +32,7 @@ public:
   value_type v ;
 
   OSSIA::Type getType() const
-  { return static_cast<const OSSIA::Value*>(v.target())->getType(); }
+  { return {}; }
 
   const OSSIA::Value& operator*() const
   { return *static_cast<const OSSIA::Value*>(v.target()); }

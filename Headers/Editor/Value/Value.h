@@ -9,5 +9,3 @@
 #include <Editor/Value/String.h>
 #include <Editor/Value/Tuple.h>
 #include <Editor/Value/Vec.h>
-
-#include <Editor/Value/ValueComparisonImpl.h>

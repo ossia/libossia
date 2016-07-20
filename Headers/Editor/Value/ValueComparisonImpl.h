@@ -1,14 +1,5 @@
 #pragma once
-#include <Editor/Value/Int.h>
-#include <Editor/Value/Impulse.h>
-#include <Editor/Value/Float.h>
-#include <Editor/Value/Bool.h>
-#include <Editor/Value/Char.h>
-#include <Editor/Value/Destination.h>
-#include <Editor/Value/Behavior.h>
-#include <Editor/Value/String.h>
-#include <Editor/Value/Tuple.h>
-#include <Editor/Value/Vec.h>
+#include <Editor/Value/SafeValue.h>
 
 #include <Network/Address.h>
 
@@ -62,50 +53,40 @@ struct Impulse_T
 struct NumericValue
 {
         template<typename T, typename Fun>
-        static bool apply(const T& lhs, const OSSIA::SafeValue& v, Fun fun)
+        static bool apply(const T& lhs, const OSSIA::SafeValue& val, Fun fun)
         {
-          /*
-            switch (v.getType())
-            {
-                case Type::IMPULSE :
+          struct visitor {
+            const T& lhs;
+            Fun fun;
+          public:
+              using return_type = bool;
+              return_type operator()(Impulse) const { return fun(lhs.value, Impulse_T{}); }
+              return_type operator()(Int v) const { return fun(lhs.value, v.value); }
+              return_type operator()(Float v) const { return fun(lhs.value, v.value); }
+              return_type operator()(Bool v) const { return fun(lhs.value, v.value); }
+              return_type operator()(Char v) const { return fun(lhs.value, v.value); }
+              return_type operator()(const Tuple& v) const
+              { return (v.value.size() == 1) && (fun(lhs, v.value[0])); }
+              return_type operator()(const Destination& d) const {
+                if (const auto& addr = d.value->getAddress())
                 {
-                    return fun(lhs.value, Impulse_T{});
+                    return fun(lhs, addr->cloneValue(d.index));
                 }
-                case Type::BOOL :
-                {
-                    return fun(lhs.value, static_cast<const Bool&>(v).value);
-                }
-                case Type::INT :
-                {
-                    return fun(lhs.value, static_cast<const Int&>(v).value);
-                }
-                case Type::FLOAT :
-                {
-                    return fun(lhs.value, static_cast<const Float&>(v).value);
-                }
-                case Type::CHAR :
-                {
-                    return fun(lhs.value, static_cast<const Char&>(v).value);
-                }
-                case Type::TUPLE :
-                {
-                    auto& t = static_cast<const Tuple&>(v);
-                    return (t.value.size() == 1) && (fun(lhs, *t.value[0]));
-                }
-                case Type::DESTINATION :
-                {
-                    auto& d = static_cast<const Destination&>(v);
-                    if (d.value->getAddress())
-                    {
-                        auto c = d.value->getAddress()->cloneValue(d.index);
-                        return fun(lhs, *c);
-                    }
-                    return false;
-                }
-                default :
-                    return false;
-            }
-            */
+              }
+
+              return_type operator()(const String& v) const { return false; }
+              return_type operator()(Vec2f v) const { return false; }
+              return_type operator()(Vec3f v) const { return false; }
+              return_type operator()(Vec4f v) const { return false; }
+              return_type operator()(const Behavior&) const { return false; }
+
+          } vis{lhs, fun};
+
+          if(val.valid())
+          {
+            return eggs::variants::apply(vis, val.v);
+          }
+          return false;
         }
 };
 
@@ -144,6 +125,7 @@ struct StringValue
                     return false;
             }
             */
+          return false;
         }
 };
 
@@ -189,6 +171,7 @@ struct TupleValue
                 }
             }
             */
+          return false;
         }
 };
 
@@ -237,6 +220,7 @@ struct DestinationValue
                 }
             }
             */
+          return false;
         }
 };
 
@@ -264,6 +248,7 @@ struct VecValue
                 return false;
             }
             */
+          return false;
         }
 };
 }

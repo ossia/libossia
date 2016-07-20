@@ -5,14 +5,13 @@ namespace OSSIA
 {
 
 /*! \details Float value */
-struct OSSIA_EXPORT Float final : public Value
+struct OSSIA_EXPORT Float
 {
   float value;
 
   /*! constructor
    \param float value */
-  Float(float v = 0.) :
-      Value{Type::FLOAT},
+  Float(float v = 0.):
       value(v)
   {
   }
@@ -24,22 +23,22 @@ struct OSSIA_EXPORT Float final : public Value
   Float& operator=(Float&&) = default;
 
   /*! equal operator */
-  bool operator== (const SafeValue&) const override;
+  bool operator== (const SafeValue&) const;
 
   /*! different operator */
-  bool operator!= (const SafeValue&) const override;
+  bool operator!= (const SafeValue&) const;
 
   /*! greater than operator */
-  bool operator> (const SafeValue&) const override;
+  bool operator> (const SafeValue&) const;
 
   /*! greater than and equal operator */
-  bool operator>= (const SafeValue&) const override;
+  bool operator>= (const SafeValue&) const;
 
   /*! less than operator */
-  bool operator< (const SafeValue&) const override;
+  bool operator< (const SafeValue&) const;
 
   /*! less than and equal operator */
-  bool operator<= (const SafeValue&) const override;
+  bool operator<= (const SafeValue&) const;
 };
 
 }
