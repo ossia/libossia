@@ -81,10 +81,9 @@ public:
 
   const SafeValue& getDriving() const override;
 
-private:
 #if 0
 # pragma mark -
 # pragma mark Implementation specific
 #endif
-  SafeValue computeValue(double, const SafeValue&);
+  static SafeValue computeValue(double, const SafeValue&);
 };

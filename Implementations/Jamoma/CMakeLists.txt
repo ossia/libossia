@@ -89,7 +89,18 @@ if(WIN32)
         target_compile_definitions(APIJamoma PUBLIC OSSIA_BOOST)
         target_include_directories(APIJamoma PUBLIC ${Boost_INCLUDE_DIRS})
     endif()
-else()
+else()    
+    set(OSSIA_COMPILE_FLAGS
+        -Wall
+        -Wextra
+        -Wno-unused-parameter
+        -Wno-unknown-pragmas
+        -Wnon-virtual-dtor
+        -pedantic
+        -Woverloaded-virtual
+        -pipe
+        -Werror=return-type
+        -Werror=trigraphs)
 
     add_library(APIJamoma_Misc_Object   OBJECT ${MISC_SRCS})
     add_library(APIJamoma_Editor_Object OBJECT ${EDITOR_SRCS})
@@ -118,10 +129,16 @@ else()
     target_transfer_options(APIJamoma_Network_Object Jamoma::Modular)
     target_transfer_options(APIJamoma_Network_Object ModernMIDI)
 
+    target_compile_options(APIJamoma_Misc_Object PRIVATE ${OSSIA_COMPILE_FLAGS})
+    target_compile_options(APIJamoma_Network_Object PRIVATE ${OSSIA_COMPILE_FLAGS})
+    target_compile_options(APIJamoma_Editor_Object PRIVATE ${OSSIA_COMPILE_FLAGS})
+
     add_library(APIJamoma
         $<TARGET_OBJECTS:APIJamoma_Misc_Object>
         $<TARGET_OBJECTS:APIJamoma_Network_Object>
         $<TARGET_OBJECTS:APIJamoma_Editor_Object>)
+
+    target_compile_options(APIJamoma PRIVATE ${OSSIA_COMPILE_FLAGS})
 
     target_link_libraries(APIJamoma PRIVATE Jamoma::Foundation Jamoma::Modular ModernMIDI)
 endif()

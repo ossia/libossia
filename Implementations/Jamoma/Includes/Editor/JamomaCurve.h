@@ -108,5 +108,5 @@ public:
 # pragma mark -
 # pragma mark Implementation specific
 #endif
-  Y convertToTemplateTypeValue(const SafeValue&, vector<char>::const_iterator) const;
+  static Y convertToTemplateTypeValue(const SafeValue&, vector<char>::const_iterator);
 };

@@ -31,20 +31,25 @@ public:
 
   value_type v ;
 
+  template<typename T>
+  const T& get() const { return eggs::variants::get<T>(v); }
+
+  template<typename T>
+  T& get() { return eggs::variants::get<T>(v); }
+
+  template<typename T>
+  const T* try_get() const { return v.target<T>(); }
+
+  template<typename T>
+  T* try_get() { return v.target<T>(); }
+
   OSSIA::Type getType() const
-  { return {}; }
+  {
+    auto t = v.which();
+    if(t == v.npos) throw;
 
-  const OSSIA::Value& operator*() const
-  { return *static_cast<const OSSIA::Value*>(v.target()); }
-  OSSIA::Value& operator*()
-  { return *static_cast<OSSIA::Value*>(v.target()); }
-
-  template<typename T>
-  const T& get() const
-  { return eggs::variants::get<T>(v); }
-  template<typename T>
-  T& get()
-  { return eggs::variants::get<T>(v); }
+    return static_cast<OSSIA::Type>(t);
+  }
 
   bool valid() const
   { return v.target(); }

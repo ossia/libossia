@@ -115,63 +115,70 @@ const SafeValue& JamomaAutomation::getDriving() const
   return mDrive;
 }
 
+namespace
+{
+struct computeValue_visitor
+{
+  double position;
+  const SafeValue& drive;
+
+  template<typename T>
+  SafeValue operator()(const T&) {
+    throw runtime_error("none handled drive value type");
+  }
+
+  SafeValue operator()(const Behavior& b) const
+  {
+    auto base_curve = b.value.get();
+    auto t = base_curve->getType();
+    if(t.first == OSSIA::CurveSegmentType::DOUBLE)
+    {
+        switch(t.second)
+        {
+            case OSSIA::CurveSegmentType::FLOAT:
+            {
+                auto curve = static_cast<JamomaCurve<double, float>*>(base_curve);
+                return Float{curve->valueAt(position)};
+            }
+            case OSSIA::CurveSegmentType::INT:
+            {
+                auto curve = static_cast<JamomaCurve<double, int>*>(base_curve);
+                return Int{curve->valueAt(position)};
+            }
+            case OSSIA::CurveSegmentType::BOOL:
+            {
+                auto curve = static_cast<JamomaCurve<double, bool>*>(base_curve);
+                return Bool{curve->valueAt(position)};
+            }
+        }
+    }
+
+    throw runtime_error("none handled drive curve type");
+  }
+
+  SafeValue operator()(const Tuple& t) const
+  {
+    vector<SafeValue> t_value;
+    t_value.reserve(t.value.size());
+
+    for (const auto & e : t.value)
+    {
+      t_value.push_back(JamomaAutomation::computeValue(position, e));
+    }
+
+    return Tuple{std::move(t_value)};
+  }
+
+};
+}
+
 SafeValue JamomaAutomation::computeValue(
     double position,
     const SafeValue& drive)
 {
-  switch (drive.getType())
-  {
-    /*
-    case Type::BEHAVIOR :
-    {
-      auto& b = static_cast<const Behavior&>(drive);
+  computeValue_visitor vis{position, drive};
 
-      auto base_curve = b.value.get();
-      auto t = base_curve->getType();
-      if(t.first == OSSIA::CurveSegmentType::DOUBLE)
-      {
-          switch(t.second)
-          {
-              case OSSIA::CurveSegmentType::FLOAT:
-              {
-                  auto curve = static_cast<JamomaCurve<double, float>*>(base_curve);
-                  return std::make_unique<Float>(curve->valueAt(position));
-              }
-              case OSSIA::CurveSegmentType::INT:
-              {
-                  auto curve = static_cast<JamomaCurve<double, int>*>(base_curve);
-                  return std::make_unique<Int>(curve->valueAt(position));
-              }
-              case OSSIA::CurveSegmentType::BOOL:
-              {
-                  auto curve = static_cast<JamomaCurve<double, bool>*>(base_curve);
-                  return std::make_unique<Bool>(curve->valueAt(position));
-              }
-          }
-      }
-
-      throw runtime_error("none handled drive curve type");
-    }
-
-    case Type::TUPLE :
-    {
-      auto& t = static_cast<const Tuple&>(drive);
-      vector<const Value*> t_value;
-
-      for (const auto & e : t.value)
-      {
-        t_value.push_back(computeValue(position, *e).release());
-      }
-
-      return std::make_unique<Tuple>(t_value);
-    }
-
-    default :
-    {
-      throw runtime_error("none handled drive value type");
-    }
-    */
-  }
-
-  return {};
+  if(drive.valid())
+    eggs::variants::apply(vis, drive.v);
+  throw runtime_error("none handled drive value type");
 }

@@ -135,10 +135,10 @@ Address & JamomaAddress::setValue(const SafeValue& value)
   std::lock_guard<std::mutex> lock(mValueMutex);
 
   // set value querying the value from another address
-  if (value.getType() == Type::DESTINATION &&
-      mValueType != Type::DESTINATION)
+  auto dest = value.try_get<Destination>();
+  if (dest && mValueType != Type::DESTINATION)
   {
-    auto& destination = value.get<Destination>();
+    auto& destination = *dest;
     auto address = destination.value->getAddress();
 
     if (address)
@@ -160,23 +160,22 @@ Address & JamomaAddress::setValue(const SafeValue& value)
   // copy the new value
   else
   {
-    if(mValueType != value.getType())
+    if(mValue.v.which() != value.v.which())
     {
-        mValueType = value.getType();
+      mValueType = value.getType();
 
-        if (mObject.name() != kTTSym_Mirror)
+      if (mObject.name() != kTTSym_Mirror)
+      {
+        auto& symmap = symbol_map();
+        auto it = symmap.find(mValueType);
+        if(it != symmap.end())
         {
-          auto& symmap = symbol_map();
-          auto it = symmap.find(mValueType);
-          if(it != symmap.end())
-          {
-            mObject.set("type", *it);
-          }
+          mObject.set("type", *it);
         }
-
+      }
     }
-    mValue = value;
 
+    mValue = value;
   }
 
   return *this;
@@ -659,104 +658,41 @@ SafeValue JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueTyp
   return {};
 }
 
-void JamomaAddress::convertValueIntoTTValue(const SafeValue& value, TTValue & v) const
+void JamomaAddress::convertValueIntoTTValue(const SafeValue& value, TTValue & ttval)
 {
-  switch (value.getType())
-  {
-    /*
-    case Type::IMPULSE :
-    {
-      break;
-    }
+  struct visitor {
+    TTValue& v;
 
-    case Type::BOOL :
+    void operator()(Impulse) const { }
+    void operator()(Int i) const   { v = TTInt32(i.value); }
+    void operator()(Float f) const { v = TTFloat64(f.value); }
+    void operator()(Bool b) const  { v = TTBoolean(b.value); }
+    void operator()(Char c) const  { v = TTSymbol(c.value); }
+    void operator()(const String& s) const { v = TTSymbol(s.value); }
+    void operator()(Vec2f vec) const { v = TTValue{vec.value[0], vec.value[1]}; }
+    void operator()(Vec3f vec) const { v = TTValue{vec.value[0], vec.value[1], vec.value[2]}; }
+    void operator()(Vec4f vec) const { v = TTValue{vec.value[0], vec.value[1], vec.value[2], vec.value[3]}; }
+    void operator()(const Destination& d) const { v = TTAddress(buildNodePath(d.value).data()); }
+    void operator()(const Behavior&) const { }
+    void operator()(const Tuple& t) const
     {
-      auto& b = static_cast<const Bool&>(value);
-      v = TTBoolean(b.value);
-      break;
-    }
-
-    case Type::INT :
-    {
-      auto& i = static_cast<const Int&>(value);
-      v = TTInt32(i.value);
-      break;
-    }
-
-    case Type::FLOAT :
-    {
-      auto& f = static_cast<const Float&>(value);
-      v = TTFloat64(f.value);
-      break;
-    }
-
-    case Type::CHAR :
-    {
-      auto& c = static_cast<const Char&>(value);
-      v = TTSymbol(c.value);
-      break;
-    }
-
-    case Type::STRING :
-    {
-      auto& s = static_cast<const String&>(value);
-      v = TTSymbol(s.value);
-      break;
-    }
-
-    case Type::DESTINATION :
-    {
-      auto& d = static_cast<const Destination&>(value);
-      v = TTAddress(buildNodePath(d.value).data());
-      break;
-    }
-
-    case Type::BEHAVIOR :
-    {
-      break;
-    }
-
-    case Type::VEC2F :
-    {
-      auto& vec = static_cast<const Vec2f&>(value);
-      v = TTValue{vec.value[0], vec.value[1]};
-      break;
-    }
-
-    case Type::VEC3F :
-    {
-      auto& vec = static_cast<const Vec3f&>(value);
-      v = TTValue{vec.value[0], vec.value[1], vec.value[2]};
-      break;
-    }
-
-    case Type::VEC4F :
-    {
-      auto& vec = static_cast<const Vec4f&>(value);
-      v = TTValue{vec.value[0], vec.value[1], vec.value[2], vec.value[3]};
-      break;
-    }
-
-    case Type::TUPLE :
-    {
-      auto& t = static_cast<const Tuple&>(value);
-
       for (const auto & e : t.value)
       {
         TTValue n;
-        convertValueIntoTTValue(*e, n);
+        convertValueIntoTTValue(e, n);
 
         if (n.size())
           v.append(n[0]);
       }
-
-      break;
     }
-    */
-  }
+
+  } vis{ttval};
+
+  if(value.valid())
+    eggs::variants::apply(vis, value.v);
 }
 
-string JamomaAddress::buildNodePath(shared_ptr<Node> node) const
+string JamomaAddress::buildNodePath(shared_ptr<Node> node)
 {
   string path;
   string name = node->getName();
@@ -856,86 +792,57 @@ std::string getAddressFromNode(const OSSIA::Node& node)
     return str;
 }
 
-std::string getTupleAsString(const OSSIA::Tuple& tuple)
+namespace {
+
+static std::string getTupleAsString(const OSSIA::Tuple& tuple);
+struct ValueStringVisitor {
+  std::stringstream& s;
+
+  void operator()(Impulse) const { s << "impulse"; }
+  void operator()(Int i) const   { s << "int: " << i.value; }
+  void operator()(Float f) const { s << "float: " << f.value; }
+  void operator()(Bool b) const  { s << "bool: " << b.value; }
+  void operator()(Char c) const  { s << "char: " << c.value; }
+  void operator()(const String& str) const { s << "string: " << str.value; }
+  void operator()(Vec2f vec) const { }
+  void operator()(Vec3f vec) const { }
+  void operator()(Vec4f vec) const { }
+  void operator()(const Destination& d) const { s << "destination"; }
+  void operator()(const Behavior&) const { s << "behavior"; }
+  void operator()(const Tuple& t) const { s << "tuple:" << getTupleAsString(t); }
+};
+
+static std::string getTupleAsString(const OSSIA::Tuple& tuple)
 {
-    std::stringstream s;
+  std::stringstream s;
 
-    int n = tuple.value.size();
+  ValueStringVisitor vis{s};
 
-    s << "[";
-    for(int i = 0; i < n; i++)
-    {
-        const auto& val = tuple.value[i];
-        switch(val.getType())
-        {
-          /*
-            case OSSIA::Type::INT:
-                s << "int: " << static_cast<const OSSIA::Int&>(val).value;
-                break;
-            case OSSIA::Type::FLOAT:
-                s << "float: " << static_cast<const OSSIA::Float&>(val).value;
-                break;
-            case OSSIA::Type::BOOL:
-                s << "bool: " << (static_cast<const OSSIA::Bool&>(val).value ? "true" : "false");
-                break;
-            case OSSIA::Type::STRING:
-                s << "string: " << static_cast<const OSSIA::String&>(val).value;
-                break;
-            case OSSIA::Type::CHAR:
-                s << "char: " << static_cast<const OSSIA::Char&>(val).value;
-                break;
-            case OSSIA::Type::IMPULSE:
-                s << "impulse";
-                break;
-            case OSSIA::Type::TUPLE:
-                s << "tuple: " << getTupleAsString(static_cast<const OSSIA::Tuple&>(val));
-                break;
-            case OSSIA::Type::DESTINATION:
-                s << "destination";
-                break;
-                */
-        }
+  int n = tuple.value.size();
 
-        if(i < n - 1)
-            s << ", ";
-    }
-    s << "]";
+  s << "[";
+  for(int i = 0; i < n; i++)
+  {
+    const auto& val = tuple.value[i];
 
-    return s.str();
+    if(val.valid())
+      eggs::variants::apply(vis, val.v);
+    if(i < n - 1)
+      s << ", ";
+  }
+  s << "]";
+
+  return s.str();
 }
+}
+
 
 std::string getValueAsString(const OSSIA::SafeValue& val)
 {
     std::stringstream s;
-    switch(val.getType())
-    {
-      /*
-        case OSSIA::Type::INT:
-            s << "int: " << static_cast<const OSSIA::Int&>(val).value;
-            break;
-        case OSSIA::Type::FLOAT:
-            s << "float: " << static_cast<const OSSIA::Float&>(val).value;
-            break;
-        case OSSIA::Type::BOOL:
-            s << "bool: " << (static_cast<const OSSIA::Bool&>(val).value ? "true" : "false");
-            break;
-        case OSSIA::Type::STRING:
-            s << "string: " << static_cast<const OSSIA::String&>(val).value;
-            break;
-        case OSSIA::Type::CHAR:
-            s << "char: " << static_cast<const OSSIA::Char&>(val).value;
-            break;
-        case OSSIA::Type::IMPULSE:
-            s << "impulse";
-            break;
-        case OSSIA::Type::TUPLE:
-            s << "tuple: " << getTupleAsString(static_cast<const OSSIA::Tuple&>(val));
-            break;
-        case OSSIA::Type::DESTINATION:
-            s << "destination";
-            break;
-            */
-    }
+    ValueStringVisitor vis{s};
+    if(val.valid())
+      eggs::variants::apply(vis, val.v);
 
     return s.str();
 }

@@ -141,9 +141,9 @@ public:
 
   SafeValue convertTTValueIntoValue(const TTValue&, Type) const;
 
-  void convertValueIntoTTValue(const SafeValue &, TTValue &) const;
+  static void convertValueIntoTTValue(const SafeValue &, TTValue &);
 
-  string buildNodePath(shared_ptr<Node>) const;
+  static string buildNodePath(shared_ptr<Node>);
 
 
   Protocol& getProtocol() const;

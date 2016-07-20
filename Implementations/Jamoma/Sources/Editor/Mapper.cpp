@@ -136,13 +136,11 @@ const SafeValue& JamomaMapper::getDriving() const
 
 SafeValue JamomaMapper::computeValue(const SafeValue& driver, const SafeValue& drive)
 {
-  switch (driver.getType())
+  switch (drive.getType())
   {
-    /*
     case Type::BEHAVIOR :
     {
-      auto& b = static_cast<const Behavior&>(drive);
-
+      auto& b = drive.get<Behavior>();
 
       auto base_curve = b.value.get();
       auto t = base_curve->getType();
@@ -150,67 +148,67 @@ SafeValue JamomaMapper::computeValue(const SafeValue& driver, const SafeValue& d
       {
         case OSSIA::CurveSegmentType::FLOAT:
         {
-          auto& val = static_cast<const Float&>(driver);
+          auto& val = driver.get<Float>();
           switch(t.second)
           {
             case OSSIA::CurveSegmentType::FLOAT:
             {
               auto curve = static_cast<JamomaCurve<float, float>*>(base_curve);
-              return std::make_unique<Float>(curve->valueAt(val.value));
+              return Float{curve->valueAt(val.value)};
             }
             case OSSIA::CurveSegmentType::INT:
             {
               auto curve = static_cast<JamomaCurve<float, int>*>(base_curve);
-              return std::make_unique<Int>(curve->valueAt(val.value));
+              return Int{curve->valueAt(val.value)};
             }
             case OSSIA::CurveSegmentType::BOOL:
             {
               auto curve = static_cast<JamomaCurve<float, bool>*>(base_curve);
-              return std::make_unique<Bool>(curve->valueAt(val.value));
+              return Bool{curve->valueAt(val.value)};
             }
           }
         }
         case OSSIA::CurveSegmentType::INT:
         {
-          auto& val = static_cast<const Int&>(driver);
+          auto& val = driver.get<Int>();
           switch(t.second)
           {
             case OSSIA::CurveSegmentType::FLOAT:
             {
               auto curve = static_cast<JamomaCurve<int, float>*>(base_curve);
-              return std::make_unique<Float>(curve->valueAt(val.value));
+              return Float{curve->valueAt(val.value)};
             }
             case OSSIA::CurveSegmentType::INT:
             {
               auto curve = static_cast<JamomaCurve<int, int>*>(base_curve);
-              return std::make_unique<Int>(curve->valueAt(val.value));
+              return Int{curve->valueAt(val.value)};
             }
             case OSSIA::CurveSegmentType::BOOL:
             {
               auto curve = static_cast<JamomaCurve<int, bool>*>(base_curve);
-              return std::make_unique<Bool>(curve->valueAt(val.value));
+              return Bool{curve->valueAt(val.value)};
             }
           }
         }
         case OSSIA::CurveSegmentType::BOOL:
         {
-          auto& val = static_cast<const Bool&>(driver);
+          auto& val = driver.get<Bool>();
           switch(t.second)
           {
             case OSSIA::CurveSegmentType::FLOAT:
             {
               auto curve = static_cast<JamomaCurve<bool, float>*>(base_curve);
-              return std::make_unique<Float>(curve->valueAt(val.value));
+              return Float{curve->valueAt(val.value)};
             }
             case OSSIA::CurveSegmentType::INT:
             {
               auto curve = static_cast<JamomaCurve<bool, int>*>(base_curve);
-              return std::make_unique<Int>(curve->valueAt(val.value));
+              return Int{curve->valueAt(val.value)};
             }
             case OSSIA::CurveSegmentType::BOOL:
             {
               auto curve = static_cast<JamomaCurve<bool, bool>*>(base_curve);
-              return std::make_unique<Bool>(curve->valueAt(val.value));
+              return Bool{curve->valueAt(val.value)};
             }
           }
         }
@@ -222,25 +220,26 @@ SafeValue JamomaMapper::computeValue(const SafeValue& driver, const SafeValue& d
 
     case Type::TUPLE :
     {
-      auto& t_drive = static_cast<const Tuple&>(drive);
+      auto& t_drive = drive.get<Tuple>();
 
       if (driver.getType() == Type::TUPLE)
       {
-        auto& t_driver = static_cast<const Tuple&>(driver);
+        auto& t_driver = driver.get<Tuple>();
 
-        vector<const Value*> t_value;
-        vector<Value*>::const_iterator it_driver = t_driver.value.begin();
+        vector<SafeValue> t_value;
+        t_value.reserve(t_drive.value.size());
+        auto it_driver = t_driver.value.begin();
 
         for (const auto & e_drive : t_drive.value)
         {
           if (it_driver == t_driver.value.end())
             break;
 
-          t_value.push_back(computeValue(**it_driver, *e_drive).release());
+          t_value.push_back(computeValue(*it_driver, e_drive));
           it_driver++;
         }
 
-        return std::make_unique<Tuple>(t_value);
+        return Tuple{std::move(t_value)};
       }
     }
 
@@ -248,10 +247,9 @@ SafeValue JamomaMapper::computeValue(const SafeValue& driver, const SafeValue& d
     {
       throw runtime_error("none handled drive value type");
     }
-    */
   }
 
-  return {};
+  throw runtime_error("none handled drive value type");
 }
 
 void JamomaMapper::driverValueCallback(const SafeValue& value)

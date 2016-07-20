@@ -190,63 +190,33 @@ getPointsMap() const
 
 template <typename X, typename Y>
 Y JamomaCurve<X,Y>::
-convertToTemplateTypeValue(const SafeValue& value, vector<char>::const_iterator index) const
+convertToTemplateTypeValue(
+    const SafeValue& value,
+    vector<char>::const_iterator idx)
 {
-  switch (value.getType())
-  {
-    /*
-    case Type::BOOL :
-    {
-      auto b = static_cast<const Bool*>(value);
-      return b->value;
+  struct visitor {
+    vector<char>::const_iterator index;
+    Y operator()(Int i) const   { return i.value; }
+    Y operator()(Float f) const { return f.value; }
+    Y operator()(Bool b) const  { return b.value; }
+    Y operator()(Char c) const  { return c.value; }
+    Y operator()(Vec2f vec) const { return vec.value[*index]; }
+    Y operator()(Vec3f vec) const { return vec.value[*index]; }
+    Y operator()(Vec4f vec) const { return vec.value[*index]; }
+    Y operator()(const Tuple& t) const {
+      auto& val = t.value[*index];
+      return convertToTemplateTypeValue(val, index + 1);
     }
 
-    case Type::INT :
-    {
-      auto i = static_cast<const Int*>(value);
-      return i->value;
-    }
+    Y operator()(Impulse) const { throw runtime_error("Cannot convert to a numeric type"); }
+    Y operator()(const String& str) const { throw runtime_error("Cannot convert to a numeric type"); }
+    Y operator()(const Destination& d) const { throw runtime_error("Cannot convert to a numeric type");; }
+    Y operator()(const Behavior&) const { throw runtime_error("Cannot convert to a numeric type"); }
+  } vis{idx};
 
-    case Type::FLOAT :
-    {
-      auto f = static_cast<const Float*>(value);
-      return f->value;
-    }
-
-    case Type::CHAR :
-    {
-      auto c = static_cast<const Char*>(value);
-      return c->value;
-    }
-
-    case Type::VEC2F :
-    {
-      auto t = static_cast<const Vec2f*>(value);
-      return t->value[*index];
-    }
-    case Type::VEC3F :
-    {
-      auto t = static_cast<const Vec3f*>(value);
-      return t->value[*index];
-    }
-    case Type::VEC4F :
-    {
-      auto t = static_cast<const Vec4f*>(value);
-      return t->value[*index];
-    }
-
-    case Type::TUPLE :
-    {
-      auto t = static_cast<const Tuple*>(value);
-      return convertToTemplateTypeValue(t->value[*index], index++);
-    }
-
-    default :
-    {
-      throw runtime_error("Cannot convert to a numeric type");
-    }
-    */
-  }
+  if(value.valid())
+    return eggs::variants::apply(vis, value.v);
+  throw runtime_error("Invalid variant");
 }
 
 
