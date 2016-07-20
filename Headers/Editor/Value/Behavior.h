@@ -25,26 +25,29 @@ struct OSSIA_EXPORT Behavior : public Value
 
   virtual ~Behavior();
 
-  /*! clone */
-  Value * clone() const override;
-
   /*! equal operator */
-  bool operator== (const Value&) const override { return false; }
+  bool operator== (const SafeValue&) const override
+  { return false; }
 
   /*! different operator */
-  bool operator!= (const Value&) const override { return false; }
+  bool operator!= (const SafeValue&) const override
+  { return false; }
 
   /*! greater than operator */
-  bool operator> (const Value&) const override { return false; }
+  bool operator> (const SafeValue&) const override
+  { return false; }
 
   /*! greater than and equal operator */
-  bool operator>= (const Value&) const override { return false; }
+  bool operator>= (const SafeValue&) const override
+  { return false; }
 
   /*! less than operator */
-  bool operator< (const Value&) const override { return false; }
+  bool operator< (const SafeValue&) const override
+  { return false; }
 
   /*! less than and equal operator */
-  bool operator<= (const Value&) const override { return false; }
+  bool operator<= (const SafeValue&) const override
+  { return false; }
 };
 
 }

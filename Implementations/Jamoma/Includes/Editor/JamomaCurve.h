@@ -15,6 +15,7 @@
 
 #include "Editor/Curve.h"
 #include <Network/Address.h>
+#include <Editor/Value/Destination.h>
 #define OSSIA_BOOST
 #include <cmath>
 #if defined(OSSIA_BOOST)
@@ -39,10 +40,10 @@ private:
 # pragma mark Implementation specific
 #endif
   X mInitialPointAbscissa;
-  Destination* mInitialPointAbscissaDestination;
+  Destination mInitialPointAbscissaDestination;
 
   Y mInitialPointOrdinate;
-  Destination* mInitialPointOrdinateDestination;
+  Destination mInitialPointOrdinateDestination;
 
   using map_type = curve_map<X, pair<Y, shared_ptr<CurveSegment<Y>>>>;
   map_type mPointsMap;
@@ -93,13 +94,13 @@ public:
 
   void setInitialPointOrdinate(Y) override;
 
-  const Destination* getInitialPointAbscissaDestination() const override;
+  const Destination& getInitialPointAbscissaDestination() const override;
 
-  const Destination* getInitialPointOrdinateDestination() const override;
+  const Destination& getInitialPointOrdinateDestination() const override;
 
-  void setInitialPointAbscissaDestination(const Destination*) override;
+  void setInitialPointAbscissaDestination(const Destination&) override;
 
-  void setInitialPointOrdinateDestination(const Destination*) override;
+  void setInitialPointOrdinateDestination(const Destination&) override;
 
   std::map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> getPointsMap() const override;
 
@@ -107,5 +108,5 @@ public:
 # pragma mark -
 # pragma mark Implementation specific
 #endif
-  Y convertToTemplateTypeValue(const SafeValue&, vector<char>::iterator) const;
+  Y convertToTemplateTypeValue(const SafeValue&, vector<char>::const_iterator) const;
 };

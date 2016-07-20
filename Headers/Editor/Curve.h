@@ -110,19 +110,19 @@ public:
 
   /*! get initial point abscissa destination
    \return const Destination* */
-  virtual const Destination* getInitialPointAbscissaDestination() const = 0;
+  virtual const Destination& getInitialPointAbscissaDestination() const = 0;
 
   /*! get initial point ordinate destination
    \return const Destination* */
-  virtual const Destination* getInitialPointOrdinateDestination() const = 0;
+  virtual const Destination& getInitialPointOrdinateDestination() const = 0;
 
   /*! set initial curve abscissa using a Destination
    \param const Destination* */
-  virtual void setInitialPointAbscissaDestination(const Destination*) = 0;
+  virtual void setInitialPointAbscissaDestination(const Destination&) = 0;
 
   /*! set initial curve ordinate using a Destination
    \param const Destination* */
-  virtual void setInitialPointOrdinateDestination(const Destination*) = 0;
+  virtual void setInitialPointOrdinateDestination(const Destination&) = 0;
 
   /*! get initial curve value
    \return std::map<X, std::pair<Y, std::shared_ptr<CurveSegment<Y>>>> map of {abscissa, {value, previous segment} */

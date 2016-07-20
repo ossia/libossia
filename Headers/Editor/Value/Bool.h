@@ -22,26 +22,23 @@ struct OSSIA_EXPORT Bool final : public Value
   Bool& operator=(const Bool&) = default;
   Bool& operator=(Bool&&) = default;
 
-  /*! clone */
-  Value * clone() const override;
-
   /*! equal operator */
-  bool operator== (const Value&) const override;
+  bool operator== (const SafeValue&) const override;
 
   /*! different operator */
-  bool operator!= (const Value&) const override;
+  bool operator!= (const SafeValue&) const override;
 
   /*! greater than operator */
-  bool operator> (const Value&) const override;
+  bool operator> (const SafeValue&) const override;
 
   /*! greater than and equal operator */
-  bool operator>= (const Value&) const override;
+  bool operator>= (const SafeValue&) const override;
 
   /*! less than operator */
-  bool operator< (const Value&) const override;
+  bool operator< (const SafeValue&) const override;
 
   /*! less than and equal operator */
-  bool operator<= (const Value&) const override;
+  bool operator<= (const SafeValue&) const override;
 };
 
 const Bool False{false};

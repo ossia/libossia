@@ -79,7 +79,9 @@ bool JamomaExpressionAtom::operator== (const Expression& expression) const
   if (expression.getType() == Expression::Type::ATOM)
   {
     const JamomaExpressionAtom e = dynamic_cast<const JamomaExpressionAtom&>(expression);
-    return *mFirstValue == *e.mFirstValue && mOperator == e.mOperator && *mSecondValue == *e.mSecondValue;
+    return SafeValue{mFirstValue} == SafeValue{e.mFirstValue} &&
+           mOperator == e.mOperator &&
+           SafeValue{mSecondValue} == SafeValue{e.mSecondValue};
   }
   else
     return false;
@@ -90,7 +92,9 @@ bool JamomaExpressionAtom::operator!= (const Expression& expression) const
   if (expression.getType() == Expression::Type::ATOM)
   {
     const JamomaExpressionAtom e = dynamic_cast<const JamomaExpressionAtom&>(expression);
-    return *mFirstValue != *e.mFirstValue || mOperator != e.mOperator || *mSecondValue != *e.mSecondValue;
+    return SafeValue{mFirstValue} != SafeValue{e.mFirstValue} ||
+           mOperator != e.mOperator ||
+           SafeValue{mSecondValue} != SafeValue{e.mSecondValue};
   }
   else
     return true;

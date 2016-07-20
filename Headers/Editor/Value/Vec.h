@@ -29,29 +29,24 @@ class Vec : public Value
         Vec& operator=(const Vec&) = default;
         Vec& operator=(Vec&&) = default;
 
-        /*! clone */
-        Value * clone() const override
-        {
-            return new Vec{value};
-        }
 
         /*! equal operator */
-        bool operator== (const Value&) const override;
+        bool operator== (const SafeValue&) const override;
 
         /*! different operator */
-        bool operator!= (const Value&) const override;
+        bool operator!= (const SafeValue&) const override;
 
         /*! greater than operator */
-        bool operator> (const Value&) const override;
+        bool operator> (const SafeValue&) const override;
 
         /*! greater than and equal operator */
-        bool operator>= (const Value&) const override;
+        bool operator>= (const SafeValue&) const override;
 
         /*! less than operator */
-        bool operator< (const Value&) const override;
+        bool operator< (const SafeValue&) const override;
 
         /*! less than and equal operator */
-        bool operator<= (const Value&) const override;
+        bool operator<= (const SafeValue&) const override;
 };
 
 using Vec2f = Vec<float, 2>;

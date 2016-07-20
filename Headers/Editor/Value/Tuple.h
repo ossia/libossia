@@ -34,26 +34,23 @@ struct OSSIA_EXPORT Tuple final : public Value
   Tuple(const std::vector<SafeValue>& v);
   Tuple(std::vector<SafeValue>&& v);
 
-  /*! clone */
-  Value * clone() const override;
-
   /*! equal operator */
-  bool operator== (const Value&) const override;
+  bool operator== (const SafeValue&) const override;
 
   /*! different operator */
-  bool operator!= (const Value&) const override;
+  bool operator!= (const SafeValue&) const override;
 
   /*! greater than operator */
-  bool operator> (const Value&) const override;
+  bool operator> (const SafeValue&) const override;
 
   /*! greater than and equal operator */
-  bool operator>= (const Value&) const override;
+  bool operator>= (const SafeValue&) const override;
 
   /*! less than operator */
-  bool operator< (const Value&) const override;
+  bool operator< (const SafeValue&) const override;
 
   /*! less than and equal operator */
-  bool operator<= (const Value&) const override;
+  bool operator<= (const SafeValue&) const override;
 };
 
 }

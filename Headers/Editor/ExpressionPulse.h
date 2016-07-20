@@ -38,7 +38,7 @@ public:
   /*! factory
    \param #Destination*
    \return std::shared_ptr<#ExpressionPulse> */
-  static std::shared_ptr<ExpressionPulse> create(const Destination*);
+  static std::shared_ptr<ExpressionPulse> create(const Destination&);
 
   /*! clone
    \return std::shared_ptr<#ExpressionPulse> */
@@ -71,7 +71,7 @@ public:
 
   /*! get destination
    \return const #Destination* expression */
-  virtual const Destination* getDestination() const = 0;
+  virtual const Destination& getDestination() const = 0;
 
 };
 }

@@ -20,26 +20,29 @@ struct OSSIA_EXPORT Impulse final : public Value
 
   virtual ~Impulse();
 
-  /*! clone */
-  Value * clone() const override;
-
   /*! equal operator */
-  bool operator== (const Value&) const override { return true; }
+  bool operator== (const SafeValue&) const override
+  { return true; }
 
   /*! different operator */
-  bool operator!= (const Value&) const override { return false; }
+  bool operator!= (const SafeValue&) const override
+  { return false; }
 
   /*! greater than operator */
-  bool operator> (const Value&) const override { return false; }
+  bool operator> (const SafeValue&) const override
+  { return false; }
 
   /*! greater than and equal operator */
-  bool operator>= (const Value&) const override { return true; }
+  bool operator>= (const SafeValue&) const override
+  { return true; }
 
   /*! less than operator */
-  bool operator< (const Value&) const override { return false; }
+  bool operator< (const SafeValue&) const override
+  { return false; }
 
   /*! less than and equal operator */
-  bool operator<= (const Value&) const override { return true; }
+  bool operator<= (const SafeValue&) const override
+  { return true; }
 };
 
 }

@@ -108,44 +108,30 @@ template <typename X, typename Y>
 X JamomaCurve<X,Y>::
 getInitialPointAbscissa() const
 {
-  if (mInitialPointAbscissaDestination == nullptr)
-  {
-    return mInitialPointAbscissa;
-  }
-  else
-  {
-    auto address = mInitialPointAbscissaDestination->value->getAddress();
+  auto address = mInitialPointAbscissaDestination.value->getAddress();
 
-    if (!address)
-      throw runtime_error("getting an address value using from an abscissa destination without address");
+  if (!address)
+    throw runtime_error("getting an address value using from an abscissa destination without address");
 
-    address->pullValue();
-    auto val = address->cloneValue();
-    auto res = convertToTemplateTypeValue(val, mInitialPointAbscissaDestination->index.begin());
-    return res;
-  }
+  address->pullValue();
+  auto val = address->cloneValue();
+  auto res = convertToTemplateTypeValue(val, mInitialPointAbscissaDestination.index.begin());
+  return res;
 }
 
 template <typename X, typename Y>
 Y JamomaCurve<X,Y>::
 getInitialPointOrdinate() const
 {
-  if (mInitialPointOrdinateDestination == nullptr)
-  {
-    return mInitialPointOrdinate;
-  }
-  else
-  {
-    auto address = mInitialPointOrdinateDestination->value->getAddress();
+  auto address = mInitialPointOrdinateDestination.value->getAddress();
 
-    if (!address)
-      throw runtime_error("getting an address value using from an ordinate destination without address");
+  if (!address)
+    throw runtime_error("getting an address value using from an ordinate destination without address");
 
-    address->pullValue();
-    auto val = address->cloneValue();
-    auto res = convertToTemplateTypeValue(val, mInitialPointOrdinateDestination->index.begin());
-    return res;
-  }
+  address->pullValue();
+  auto val = address->cloneValue();
+  auto res = convertToTemplateTypeValue(val, mInitialPointOrdinateDestination.index.begin());
+  return res;
 }
 
 template <typename X, typename Y>
@@ -163,14 +149,14 @@ setInitialPointOrdinate(Y value)
 }
 
 template <typename X, typename Y>
-const Destination* JamomaCurve<X,Y>::
+const Destination& JamomaCurve<X,Y>::
 getInitialPointAbscissaDestination() const
 {
   return mInitialPointAbscissaDestination;
 }
 
 template <typename X, typename Y>
-const Destination* JamomaCurve<X,Y>::
+const Destination& JamomaCurve<X,Y>::
 getInitialPointOrdinateDestination() const
 {
   return mInitialPointOrdinateDestination;
@@ -178,16 +164,16 @@ getInitialPointOrdinateDestination() const
 
 template <typename X, typename Y>
 void JamomaCurve<X,Y>::
-setInitialPointAbscissaDestination(const Destination* destination)
+setInitialPointAbscissaDestination(const Destination& destination)
 {
-  mInitialPointAbscissaDestination = static_cast<Destination*>(destination->clone());
+  mInitialPointAbscissaDestination = destination;
 }
 
 template <typename X, typename Y>
 void JamomaCurve<X,Y>::
-setInitialPointOrdinateDestination(const Destination* destination)
+setInitialPointOrdinateDestination(const Destination& destination)
 {
-  mInitialPointOrdinateDestination = static_cast<Destination*>(destination->clone());
+  mInitialPointOrdinateDestination = destination;
 }
 
 template <typename X, typename Y>
@@ -204,7 +190,7 @@ getPointsMap() const
 
 template <typename X, typename Y>
 Y JamomaCurve<X,Y>::
-convertToTemplateTypeValue(const SafeValue& value, vector<char>::iterator index) const
+convertToTemplateTypeValue(const SafeValue& value, vector<char>::const_iterator index) const
 {
   switch (value.getType())
   {

@@ -20,6 +20,7 @@
 
 namespace OSSIA
 {
+class SafeValue;
 class OSSIA_EXPORT Value
 {
 
@@ -38,9 +39,6 @@ public:
   Value(Type t):
       m_type{t} { }
 
-  /*! clone */
-  virtual Value * clone() const = 0;
-
   /*! destructor */
   virtual ~Value();
 
@@ -50,22 +48,22 @@ public:
 #endif
 
   /*! equal operator */
-  virtual bool operator== (const Value& v) const = 0;
+  virtual bool operator== (const SafeValue& v) const = 0;
 
   /*! different operator */
-  virtual bool operator!= (const Value& v) const = 0;
+  virtual bool operator!= (const SafeValue& v) const = 0;
 
   /*! greater than operator */
-  virtual bool operator> (const Value& v) const = 0;
+  virtual bool operator> (const SafeValue& v) const = 0;
 
   /*! greater than and equal operator */
-  virtual bool operator>= (const Value& v) const = 0;
+  virtual bool operator>= (const SafeValue& v) const = 0;
 
   /*! less than operator */
-  virtual bool operator< (const Value& v) const = 0;
+  virtual bool operator< (const SafeValue& v) const = 0;
 
   /*! less than and equal operator */
-  virtual bool operator<= (const Value& v) const = 0;
+  virtual bool operator<= (const SafeValue& v) const = 0;
 
 #if 0
 # pragma mark -

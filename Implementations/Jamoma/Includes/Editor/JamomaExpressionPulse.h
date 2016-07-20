@@ -1,5 +1,6 @@
 #include <Editor/ExpressionPulse.h>
 #include <Network/Address.h>
+#include <Editor/Value/Destination.h>
 #include <algorithm>
 
 using namespace OSSIA;
@@ -14,7 +15,7 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  Destination*        mDestination;
+  Destination         mDestination;
   mutable bool        mResult;
 
   Address::iterator   mDestinationCallbackIndex;
@@ -24,9 +25,9 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaExpressionPulse(const Destination* destination);
+  JamomaExpressionPulse(const Destination& destination);
 
-  JamomaExpressionPulse(const JamomaExpressionPulse * other);
+  JamomaExpressionPulse(const JamomaExpressionPulse& other);
 
   shared_ptr<ExpressionPulse> clone() const override;
 
@@ -56,7 +57,7 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  const Destination* getDestination() const override;
+  const Destination& getDestination() const override;
 
 private:
 

@@ -1,44 +1,44 @@
 #include "Editor/JamomaExpressionPulse.h"
-#include <Editor/Value/Value.h>
+#include <Editor/Value/SafeValue.h>
 
 # pragma mark -
 # pragma mark Life cycle
 
 namespace OSSIA
 {
-  shared_ptr<ExpressionPulse> ExpressionPulse::create(const Destination* destination)
+  shared_ptr<ExpressionPulse> ExpressionPulse::create(const Destination& destination)
   {
     return make_shared<JamomaExpressionPulse>(destination);
   }
 }
 
-JamomaExpressionPulse::JamomaExpressionPulse(const Destination* destination) :
-mDestination((Destination*)destination->clone()),
+JamomaExpressionPulse::JamomaExpressionPulse(const Destination& destination) :
+mDestination(destination),
 mResult(false)
 {
   // start destination observation
-  if (mDestination->value->getAddress())
+  if (const auto& addr = mDestination.value->getAddress())
   {
-    mDestinationCallbackIndex = mDestination->value->getAddress()->addCallback(
+    mDestinationCallbackIndex = addr->addCallback(
           [&] (const OSSIA::SafeValue& result) { destinationCallback(result); });
   }
 }
 
-JamomaExpressionPulse::JamomaExpressionPulse(const JamomaExpressionPulse * other)
-//! \todo mDestination(other->mDestination->clone())
+JamomaExpressionPulse::JamomaExpressionPulse(const JamomaExpressionPulse& other)
+//! \todo mDestination(other->mDestination.clone())
 {}
 
 shared_ptr<ExpressionPulse> JamomaExpressionPulse::clone() const
 {
-  return make_shared<JamomaExpressionPulse>(this);
+  return make_shared<JamomaExpressionPulse>(*this);
 }
 
 JamomaExpressionPulse::~JamomaExpressionPulse()
 {
   // stop destination observation
-  if (mDestination->value->getAddress())
+  if (const auto& addr = mDestination.value->getAddress())
   {
-    mDestination->value->getAddress()->removeCallback(mDestinationCallbackIndex);
+    addr->removeCallback(mDestinationCallbackIndex);
   }
 }
 
@@ -66,8 +66,8 @@ bool JamomaExpressionPulse::operator== (const Expression& expression) const
 {
   if (expression.getType() == Expression::Type::PULSE)
   {
-    const JamomaExpressionPulse e = dynamic_cast<const JamomaExpressionPulse&>(expression);
-    return *mDestination == *e.mDestination;
+    auto& e = dynamic_cast<const JamomaExpressionPulse&>(expression);
+    return SafeValue{mDestination} == SafeValue{e.mDestination};
   }
   else
     return false;
@@ -77,8 +77,8 @@ bool JamomaExpressionPulse::operator!= (const Expression& expression) const
 {
   if (expression.getType() == Expression::Type::PULSE)
   {
-    const JamomaExpressionPulse e = dynamic_cast<const JamomaExpressionPulse&>(expression);
-    return *mDestination != *e.mDestination;
+    auto& e = dynamic_cast<const JamomaExpressionPulse&>(expression);
+    return SafeValue{mDestination} != SafeValue{e.mDestination};
   }
   else
     return true;
@@ -101,7 +101,7 @@ void JamomaExpressionPulse::removeCallback(Expression::iterator callback)
 # pragma mark -
 # pragma mark Accessors
 
-const Destination* JamomaExpressionPulse::getDestination() const
+const Destination& JamomaExpressionPulse::getDestination() const
 {
   return mDestination;
 }

@@ -18,29 +18,29 @@ namespace OSSIA
 namespace Comparisons
 {
 template<typename Kind, typename T>
-bool equal(const T& lhs, const OSSIA::Value& rhs)
+bool equal(const T& lhs, const OSSIA::SafeValue& rhs)
 { return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 == v2; }); }
 
 template<typename Kind, typename T>
-bool different(const T& lhs, const OSSIA::Value& rhs)
+bool different(const T& lhs, const OSSIA::SafeValue& rhs)
 { return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 != v2; }); }
 
 
 template<typename Kind, typename T>
-bool greater(const T& lhs, const OSSIA::Value& rhs)
+bool greater(const T& lhs, const OSSIA::SafeValue& rhs)
 { return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 > v2; }); }
 
 template<typename Kind, typename T>
-bool greater_equal(const T& lhs, const OSSIA::Value& rhs)
+bool greater_equal(const T& lhs, const OSSIA::SafeValue& rhs)
 { return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 >= v2; }); }
 
 
 template<typename Kind, typename T>
-bool smaller(const T& lhs, const OSSIA::Value& rhs)
+bool smaller(const T& lhs, const OSSIA::SafeValue& rhs)
 { return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 < v2; }); }
 
 template<typename Kind, typename T>
-bool smaller_equal(const T& lhs, const OSSIA::Value& rhs)
+bool smaller_equal(const T& lhs, const OSSIA::SafeValue& rhs)
 { return Kind::apply(lhs, rhs, [] (auto&& v1, auto&& v2) { return v1 <= v2; }); }
 
 struct Impulse_T
@@ -62,7 +62,7 @@ struct Impulse_T
 struct NumericValue
 {
         template<typename T, typename Fun>
-        static bool apply(const T& lhs, const OSSIA::Value& v, Fun fun)
+        static bool apply(const T& lhs, const OSSIA::SafeValue& v, Fun fun)
         {
           /*
             switch (v.getType())
@@ -112,7 +112,7 @@ struct NumericValue
 struct StringValue
 {
         template<typename Fun>
-        static bool apply(const String& lhs, const OSSIA::Value& v, Fun fun)
+        static bool apply(const String& lhs, const OSSIA::SafeValue& v, Fun fun)
         {
           /*
             switch (v.getType())
@@ -150,7 +150,7 @@ struct StringValue
 struct TupleValue
 {
         template<typename Fun>
-        static bool apply(const Tuple& lhs, const OSSIA::Value& v, Fun fun)
+        static bool apply(const Tuple& lhs, const OSSIA::SafeValue& v, Fun fun)
         {
           /*
             switch (v.getType())
@@ -195,7 +195,7 @@ struct TupleValue
 struct DestinationValue
 {
         template<typename Fun>
-        static bool apply(const Destination& lhs, const OSSIA::Value& v, Fun fun)
+        static bool apply(const Destination& lhs, const OSSIA::SafeValue& v, Fun fun)
         {
           /*
             switch (v.getType())
@@ -243,7 +243,7 @@ struct DestinationValue
 struct VecValue
 {
         template<typename Vec_T, typename Fun>
-        static bool apply(const Vec_T& lhs, const OSSIA::Value& v, Fun fun)
+        static bool apply(const Vec_T& lhs, const OSSIA::SafeValue& v, Fun fun)
         {
           /*
             const auto lhs_type = ValueTrait<Vec_T>::ossia_enum;
@@ -269,24 +269,24 @@ struct VecValue
 }
 
 template<typename T, int N>
-bool Vec<T, N>::operator== (const Value& v) const
+bool Vec<T, N>::operator== (const SafeValue& v) const
 { return Comparisons::equal<Comparisons::VecValue>(*this, v); }
 template<typename T, int N>
-bool Vec<T, N>::operator!= (const Value& v) const
+bool Vec<T, N>::operator!= (const SafeValue& v) const
 { return Comparisons::different<Comparisons::VecValue>(*this, v); }
 
 template<typename T, int N>
-bool Vec<T, N>::operator> (const Value& v) const
+bool Vec<T, N>::operator> (const SafeValue& v) const
 { return Comparisons::greater<Comparisons::VecValue>(*this, v); }
 template<typename T, int N>
-bool Vec<T, N>::operator>= (const Value& v) const
+bool Vec<T, N>::operator>= (const SafeValue& v) const
 { return Comparisons::greater_equal<Comparisons::VecValue>(*this, v); }
 
 template<typename T, int N>
-bool Vec<T, N>::operator< (const Value& v) const
+bool Vec<T, N>::operator< (const SafeValue& v) const
 { return Comparisons::smaller<Comparisons::VecValue>(*this, v); }
 template<typename T, int N>
-bool Vec<T, N>::operator<= (const Value& v) const
+bool Vec<T, N>::operator<= (const SafeValue& v) const
 { return Comparisons::smaller_equal<Comparisons::VecValue>(*this, v); }
 
 }
