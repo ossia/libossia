@@ -5,17 +5,17 @@
 #include <cmath>
 namespace OSSIA
 {
-template <typename Y>
-class OSSIA_EXPORT CurveSegmentPower final : public CurveSegment<Y>
-{
-public:
-  Y valueAt(double ratio, Y start, Y end) const override
-  {
-    return start + 0.5 * mAmplitude * std::sin(mPhase + two_pi * ratio * mFreq) * (end - start);
-  }
 
-  double frequency{3.}; // In hertz
-  double phase{0.};
-  double amplitude{1.};
+namespace OSSIA
+{
+template <typename Y>
+struct CurveSegmentSin
+{
+  CurveSegment<Y> operator()(double freq, double phase, double ampl) const
+  {
+      return [=] (double ratio, Y start, Y end) {
+          return start + ampl * std::sin(phase + two_pi * ratio * freq) * (end - start);
+      };
+  }
 };
 }

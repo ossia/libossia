@@ -18,16 +18,17 @@
 
 #include "Editor/CurveSegment.h"
 #include <cmath>
+
 namespace OSSIA
 {
 template <typename Y>
-struct OSSIA_EXPORT CurveSegmentPower final : public CurveSegment<Y>
+struct CurveSegmentPower
 {
-  Y valueAt(double ratio, Y start, Y end) const override
+  CurveSegment<Y> operator()(double power) const
   {
-    return start + std::pow(ratio, power) * (end - start);
+      return [=] (double ratio, Y start, Y end) {
+          return start + std::pow(ratio, power) * (end - start);
+      };
   }
-
-  double power{1.};
 };
 }

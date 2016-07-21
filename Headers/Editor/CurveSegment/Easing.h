@@ -275,6 +275,7 @@ struct perlinInOut {
 } };
 
 }
+/*
 template <typename Y, typename Easing>
 struct OSSIA_EXPORT CurveSegmentEase final : public CurveSegment<Y>
 {
@@ -284,4 +285,5 @@ struct OSSIA_EXPORT CurveSegmentEase final : public CurveSegment<Y>
   }
 
 };
+*/
 }

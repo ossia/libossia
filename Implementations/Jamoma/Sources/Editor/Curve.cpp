@@ -35,7 +35,7 @@ JamomaCurve<X,Y>::
 
 template <typename X, typename Y>
 bool JamomaCurve<X,Y>::
-addPoint(unique_ptr<CurveSegment<Y>> segment, X abscissa, Y value)
+addPoint(CurveSegment<Y> segment, X abscissa, Y value)
 {
   mPointsMap.emplace(abscissa, std::make_pair(value, std::move(segment)));
 
@@ -65,7 +65,7 @@ valueAt(X abscissa) const
     if (abscissa > lastAbscissa &&
         abscissa <= it->first)
     {
-      lastValue = it->second.second->valueAt(
+      lastValue = it->second.second(
             ((double)abscissa - (double)lastAbscissa) / ((double)it->first - (double)lastAbscissa),
             lastValue,
             it->second.first);
@@ -183,15 +183,10 @@ setInitialPointOrdinateDestination(const Destination& destination)
 }
 
 template <typename X, typename Y>
-std::map<X, std::pair<Y, CurveSegment<Y>*>> JamomaCurve<X,Y>::
+std::map<X, std::pair<Y, CurveSegment<Y>>> JamomaCurve<X,Y>::
 getPointsMap() const
 {
-  map<X, pair<Y, CurveSegment<Y>*>> m;
-  for(const auto& pair : mPointsMap)
-  {
-    m.insert(std::make_pair(pair.first, std::make_pair(pair.second.first, pair.second.second.get())));
-  }
-  return m;
+    return {mPointsMap.cbegin(), mPointsMap.cend()};
 }
 
 # pragma mark -

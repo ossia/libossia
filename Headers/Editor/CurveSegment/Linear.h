@@ -21,11 +21,13 @@
 namespace OSSIA
 {
 template <typename Y>
-struct OSSIA_EXPORT CurveSegmentLinear final : public CurveSegment<Y>
+struct CurveSegmentLinear
 {
-  Y valueAt(double ratio, Y start, Y end) const override
+  CurveSegment<Y> operator()() const
   {
-    return start + ratio * (end - start);
+      return [] (double ratio, Y start, Y end) {
+          return start + ratio * (end - start);
+      };
   }
 };
 }
