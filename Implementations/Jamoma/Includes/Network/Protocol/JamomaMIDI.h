@@ -60,7 +60,8 @@ struct Channel
   std::array<std::shared_ptr<MIDIAddress>, 127> mCallbackPC_N = { {} };
 };
 
-class JamomaMIDI final : public MIDI, public JamomaProtocol
+class JamomaMIDI final :
+        public MIDI
 {
 # pragma mark -
 # pragma mark Implementation specific
@@ -83,6 +84,9 @@ public:
 
 # pragma mark -
 # pragma mark Operation
+
+  void setLogger(std::shared_ptr<NetworkLogger>) override { } // TODO
+  std::shared_ptr<NetworkLogger> getLogger() const override { return {}; } // TODO
 
   bool pullAddressValue(Address&) const override;
 

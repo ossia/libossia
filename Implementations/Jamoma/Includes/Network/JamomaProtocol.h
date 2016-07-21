@@ -24,7 +24,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaProtocol : public virtual Protocol
+class OSSIA_EXPORT JamomaProtocol : public virtual Protocol
 {
 
 protected:
