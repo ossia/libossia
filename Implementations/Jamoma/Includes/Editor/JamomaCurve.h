@@ -45,7 +45,7 @@ private:
   Y mInitialPointOrdinate;
   Destination mInitialPointOrdinateDestination;
 
-  using map_type = curve_map<X, pair<Y, shared_ptr<CurveSegment<Y>>>>;
+  using map_type = curve_map<X, pair<Y, unique_ptr<CurveSegment<Y>>>>;
   map_type mPointsMap;
 
 public:
@@ -68,7 +68,7 @@ public:
 # pragma mark Edition
 #endif
 
-  bool addPoint(shared_ptr<CurveSegment<Y>>, X, Y) override;
+  bool addPoint(unique_ptr<CurveSegment<Y>>, X, Y) override;
 
   bool removePoint(X) override;
 
@@ -102,7 +102,7 @@ public:
 
   void setInitialPointOrdinateDestination(const Destination&) override;
 
-  std::map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> getPointsMap() const override;
+  std::map<X, std::pair<Y, CurveSegment<Y>*>> getPointsMap() const override;
 
 #if 0
 # pragma mark -

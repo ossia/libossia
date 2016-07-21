@@ -1,5 +1,5 @@
 #include "Editor/JamomaCurve.h"
-#include "Editor/CurveSegment/JamomaCurveSegmentLinear.h"
+#include "Editor/CurveSegment/CurveSegmentLinear.h"
 #include <Editor/Value/SafeValue.h>
 #include <iostream> //! \todo to remove. only here for debug purpose
 
@@ -35,11 +35,9 @@ JamomaCurve<X,Y>::
 
 template <typename X, typename Y>
 bool JamomaCurve<X,Y>::
-addPoint(shared_ptr<CurveSegment<Y>> segment, X abscissa, Y value)
+addPoint(unique_ptr<CurveSegment<Y>> segment, X abscissa, Y value)
 {
-  pair<Y,shared_ptr<CurveSegment<Y>>> p(value, segment);
-
-  mPointsMap.emplace(abscissa, p);
+  mPointsMap.emplace(abscissa, std::make_pair(value, std::move(segment)));
 
   return true;
 }
@@ -185,11 +183,14 @@ setInitialPointOrdinateDestination(const Destination& destination)
 }
 
 template <typename X, typename Y>
-map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> JamomaCurve<X,Y>::
+std::map<X, std::pair<Y, CurveSegment<Y>*>> JamomaCurve<X,Y>::
 getPointsMap() const
 {
-  map<X, pair<Y, shared_ptr<CurveSegment<Y>>>> m;
-  m.insert(mPointsMap.begin(), mPointsMap.end());
+  map<X, pair<Y, CurveSegment<Y>*>> m;
+  for(const auto& pair : mPointsMap)
+  {
+    m.insert(std::make_pair(pair.first, std::make_pair(pair.second.first, pair.second.second.get())));
+  }
   return m;
 }
 
@@ -242,18 +243,9 @@ namespace OSSIA
     {
     }
 
-    // CurveSegment implementation
-    template<class Y>
-    CurveSegment<Y>::~CurveSegment()
-    {
-    }
 }
 
 // Explicit instantiation
-template class OSSIA_EXPORT OSSIA::CurveSegment<bool>;
-template class OSSIA_EXPORT OSSIA::CurveSegment<int>;
-template class OSSIA_EXPORT OSSIA::CurveSegment<float>;
-
 template class OSSIA_EXPORT OSSIA::Curve<double, bool>;
 template class OSSIA_EXPORT OSSIA::Curve<double, int>;
 template class OSSIA_EXPORT OSSIA::Curve<double, float>;

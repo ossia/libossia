@@ -65,7 +65,7 @@ public:
    \param X target point abscissa
    \param Y target point ordinate
    \return bool */
-  virtual bool addPoint(std::shared_ptr<CurveSegment<Y>>, X, Y) = 0;
+  virtual bool addPoint(std::unique_ptr<CurveSegment<Y>>, X, Y) = 0;
 
   /*! remove a point from the curve
    \param X point abscissa
@@ -125,8 +125,11 @@ public:
   virtual void setInitialPointOrdinateDestination(const Destination&) = 0;
 
   /*! get initial curve value
-   \return std::map<X, std::pair<Y, std::shared_ptr<CurveSegment<Y>>>> map of {abscissa, {value, previous segment} */
-  virtual std::map<X, std::pair<Y, std::shared_ptr<CurveSegment<Y>>>> getPointsMap() const = 0;
+   \return std::map<X, pair<Y, CurveSegment<Y>*>> map of {abscissa, {value, previous segment}
+
+   Note: the curve segments are owned by the curve.
+ */
+  virtual std::map<X, std::pair<Y, CurveSegment<Y>*>> getPointsMap() const = 0;
 
 };
 

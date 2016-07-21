@@ -102,32 +102,36 @@ SafeValue JamomaAddress::cloneValue(std::vector<char> index) const
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
 
-  if (!mValue.valid())
-    throw runtime_error("cloning null value");
+  if (mValue.valid())
+  {
+      if (index.empty() || mValueType != Type::TUPLE)
+      {
+        return mValue;
+      }
+      else if (index.size() == 1)
+      {
+        // clone value from tuple element at index
+        const auto& tuple = mValue.get<Tuple>();
+        return tuple.value[index[0]];
+      }
+      else
+      {
+        // create a new tuple from tuple's values at index
+        const auto& tuple = mValue.get<Tuple>();
+        vector<SafeValue> values;
+        values.reserve(index.size());
 
-  if (index.empty() || mValueType != Type::TUPLE)
-  {
-    return mValue;
-  }
-  else if (index.size() == 1)
-  {
-    // clone value from tuple element at index
-    const auto& tuple = mValue.get<Tuple>();
-    return tuple.value[index[0]];
+        for (char i : index)
+        {
+          values.push_back(tuple.value[i]);
+        }
+
+        return Tuple(std::move(values));
+      }
   }
   else
   {
-    // create a new tuple from tuple's values at index
-    const auto& tuple = mValue.get<Tuple>();
-    vector<SafeValue> values;
-    values.reserve(index.size());
-
-    for (char i : index)
-    {
-      values.push_back(tuple.value[i]);
-    }
-
-    return Tuple(std::move(values));
+      throw runtime_error("cloning null value");
   }
 }
 

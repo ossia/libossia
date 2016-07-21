@@ -24,32 +24,17 @@ namespace OSSIA
 class CurveAbstract;
 
 template <typename Y>
-class CurveSegment
+class OSSIA_EXPORT CurveSegment
 {
 
 public:
-
-#if 0
-# pragma mark -
-# pragma mark Enumerations
-#endif
-
-  /*! type of segment */
-  enum class Type
-  {
-    EMPTY,
-    LINEAR,
-    POWER
-  };
-
 #if 0
 # pragma mark -
 # pragma mark Life cycle
 #endif
 
-  /*! destructor
-   \todo remove = default */
-  virtual ~CurveSegment();
+  /*! destructor */
+  virtual ~CurveSegment() = default;
 
 #if 0
 # pragma mark -
@@ -63,24 +48,5 @@ public:
    \return Y value */
   virtual Y valueAt(double, Y, Y) const = 0;
 
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
-
-  /* get the type of the segment
-   \return #Type */
-  virtual Type getType() const = 0;
-
-  /*! get the curve where the segment is
-   \return std::shared_ptr<CurveAbstract>> */
-  virtual std::shared_ptr<CurveAbstract> getParent() const = 0;
-
 };
 }
-
-#if !defined(APIJamoma_EXPORTS)
-extern template class OSSIA_EXPORT OSSIA::CurveSegment<bool>;
-extern template class OSSIA_EXPORT OSSIA::CurveSegment<int>;
-extern template class OSSIA_EXPORT OSSIA::CurveSegment<float>;
-#endif
