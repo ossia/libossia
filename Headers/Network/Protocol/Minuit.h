@@ -45,9 +45,6 @@ public:
 # pragma mark Accessors
 #endif
 
-  Protocol::Type getType() const override final
-  {return Protocol::Type::MINUIT;}
-
   /*! get IP */
   virtual std::string getIp() = 0;
   virtual Protocol & setIp(std::string) = 0;

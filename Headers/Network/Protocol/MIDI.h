@@ -63,9 +63,6 @@ public:
 # pragma mark Accessors
 #endif
 
-  Protocol::Type getType() const override final
-  {return Protocol::Type::MIDI;}
-
   virtual MidiInfo getInfo() const = 0;
   virtual bool setInfo(MidiInfo) = 0;
 

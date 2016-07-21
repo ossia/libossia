@@ -38,14 +38,6 @@ public:
   /*! destructor */
   virtual ~Local();
 
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
-
-  Protocol::Type getType() const override final
-  {return Protocol::Type::LOCAL;}
-
 };
 
 }

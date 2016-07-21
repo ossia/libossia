@@ -747,7 +747,6 @@ Protocol& getDummyProtocol()
 {
     struct DummyProtocol : public Protocol
     {
-            Type getType() const override { return Type::OSC; }
             bool pullAddressValue(Address&) const override { return true; }
             bool pushAddressValue(const Address&) const override { return true; }
             bool observeAddressValue(std::shared_ptr<Address>, bool) const override { return false; }

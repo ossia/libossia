@@ -45,10 +45,6 @@ public:
 # pragma mark -
 # pragma mark Accessors
 #endif
-
-  Protocol::Type getType() const override final
-  {return Protocol::Type::OSC;}
-
   /*! get IP */
   virtual std::string getIp() const = 0;
   virtual Protocol & setIp(std::string) = 0;

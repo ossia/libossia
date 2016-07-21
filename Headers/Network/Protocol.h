@@ -36,34 +36,11 @@ public:
 
 #if 0
 # pragma mark -
-# pragma mark Enumerations
-#endif
-
-  /*! type of protocol */
-  enum class Type
-  {
-    LOCAL,
-    MIDI,
-    MINUIT,
-    OSC
-  };
-
-#if 0
-# pragma mark -
 # pragma mark Life cycle
 #endif
 
   /*! destructor */
   virtual ~Protocol();
-
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
-
-  /* get the type of the segment
-   \return #Type */
-  virtual Type getType() const = 0;
 
 #if 0
 # pragma mark -
