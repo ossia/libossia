@@ -1,5 +1,5 @@
 #include "Editor/JamomaCurve.h"
-#include "Editor/CurveSegment/CurveSegmentLinear.h"
+#include <Editor/CurveSegment/Linear.h>
 #include <Editor/Value/SafeValue.h>
 #include <iostream> //! \todo to remove. only here for debug purpose
 
