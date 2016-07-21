@@ -41,7 +41,6 @@ void OSSIA::CleanupProtocols()
     }
 }
 
-
 bool JamomaProtocol::pullAddressValue(Address& address) const
 {
     JamomaAddress& adrs = dynamic_cast<JamomaAddress&>(address);
@@ -51,7 +50,6 @@ bool JamomaProtocol::pullAddressValue(Address& address) const
     if (adrs.pullValue(value))
     {
         adrs.setValue(value);
-
         if(mLogger)
         {
             auto& cb = mLogger->getInboundLogCallback();

@@ -1,11 +1,11 @@
 #pragma once
 #include <Editor/CurveAbstract.h>
-#include <Editor/Value/ValueBase.h>
+#include <ossia_export.h>
 #include <memory>
 
 namespace OSSIA
 {
-
+class SafeValue;
 /*! \details Behavior value */
 struct OSSIA_EXPORT Behavior
 {

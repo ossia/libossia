@@ -1,10 +1,10 @@
 #pragma once
-#include <Editor/Value/ValueBase.h>
+#include <ossia_export.h>
 #include <string>
 
 namespace OSSIA
 {
-
+class SafeValue;
 /*! \details String value */
 struct OSSIA_EXPORT String
 {

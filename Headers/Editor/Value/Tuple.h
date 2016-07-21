@@ -1,5 +1,5 @@
 #pragma once
-#include <Editor/Value/ValueBase.h>
+#include <ossia_export.h>
 #include <initializer_list>
 #include <vector>
 

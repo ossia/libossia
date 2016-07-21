@@ -1,8 +1,9 @@
 #pragma once
-#include <Editor/Value/ValueBase.h>
+#include <ossia_export.h>
 
 namespace OSSIA
 {
+class SafeValue;
 
 /*! \details Impulse value */
 struct OSSIA_EXPORT Impulse

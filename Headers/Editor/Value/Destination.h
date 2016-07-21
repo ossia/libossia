@@ -1,11 +1,11 @@
 #pragma once
-#include <Editor/Value/ValueBase.h>
 #include <Network/Node.h>
+#include <ossia_export.h>
 
 #include <initializer_list>
 namespace OSSIA
 {
-
+class SafeValue;
 /*! \details Destination to an Address value and optionnally to several index of this value */
 struct OSSIA_EXPORT Destination final
 {

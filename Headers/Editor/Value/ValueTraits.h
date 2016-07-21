@@ -1,4 +1,5 @@
 #pragma once
+#include <Editor/Value/Value.h>
 
 namespace OSSIA
 {
@@ -21,7 +22,7 @@ template<>
 struct ValueTrait<OSSIA::Int>
 {
         using ossia_type = OSSIA::Int;
-        using value_type = decltype(ossia_type{}.value);
+        using value_type = int;
         static const constexpr auto ossia_enum = Type::INT;
 };
 
@@ -29,7 +30,7 @@ template<>
 struct ValueTrait<OSSIA::Float>
 {
         using ossia_type = OSSIA::Float;
-        using value_type = decltype(ossia_type{}.value);
+        using value_type = float;
         static const constexpr auto ossia_enum = Type::FLOAT;
 };
 
@@ -37,7 +38,7 @@ template<>
 struct ValueTrait<OSSIA::Bool>
 {
         using ossia_type = OSSIA::Bool;
-        using value_type = decltype(ossia_type{}.value);
+        using value_type = bool;
         static const constexpr auto ossia_enum = Type::BOOL;
 };
 
@@ -45,7 +46,7 @@ template<>
 struct ValueTrait<OSSIA::Char>
 {
         using ossia_type = OSSIA::Char;
-        using value_type = decltype(ossia_type{}.value);
+        using value_type = char;
         static const constexpr auto ossia_enum = Type::CHAR;
 };
 
@@ -53,7 +54,7 @@ template<>
 struct ValueTrait<OSSIA::String>
 {
         using ossia_type = OSSIA::String;
-        using value_type = decltype(ossia_type{}.value);
+        using value_type = std::string;
         static const constexpr auto ossia_enum = Type::STRING;
 };
 
@@ -61,7 +62,7 @@ template<>
 struct ValueTrait<OSSIA::Tuple>
 {
         using ossia_type = OSSIA::Tuple;
-        using value_type = decltype(ossia_type{}.value);
+        using value_type = std::vector<SafeValue>;
         static const constexpr auto ossia_enum = Type::TUPLE;
 };
 
@@ -69,7 +70,7 @@ template<>
 struct ValueTrait<OSSIA::Destination>
 {
         using ossia_type = OSSIA::Destination;
-        using value_type = decltype(ossia_type{}.value);
+        using value_type = std::shared_ptr<Node>;
         static const constexpr auto ossia_enum = Type::DESTINATION;
 };
 

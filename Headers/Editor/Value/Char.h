@@ -1,9 +1,9 @@
 #pragma once
-#include <Editor/Value/ValueBase.h>
+#include <ossia_export.h>
 
 namespace OSSIA
 {
-
+class SafeValue;
 /*! \details Char value */
 struct OSSIA_EXPORT Char
 {
