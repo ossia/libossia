@@ -34,10 +34,10 @@ public:
 
   /*! constructor
    \param int value */
-  TimeValue(double = 0.);
+  TimeValue(double d = 0.): m_value{d} { }
 
   /*! destructor */
-  ~TimeValue();
+  ~TimeValue() = default;
 
 #if 0
 # pragma mark -
@@ -45,27 +45,95 @@ public:
 #endif
 
   /*! assignation operator */
-  TimeValue & operator= (double);
-  TimeValue & operator= (const TimeValue&);
+  TimeValue & operator= (double d)
+  {
+    m_value = d;
+    return *this;
+  }
+
+  TimeValue & operator= (const TimeValue& t)
+  {
+      m_value = t.m_value;
+      return *this;
+  }
 
   /*! self addition operator */
-  TimeValue & operator+= (double);
-  TimeValue & operator+= (const TimeValue&);
+  TimeValue & operator+= (double d)
+  {
+    if (isInfinite())
+      m_value = 0.;
+    else
+      m_value += d;
+
+    return *this;
+  }
+
+  TimeValue & operator+= (const TimeValue& t)
+  {
+    if (isInfinite() || t.isInfinite())
+      m_value = 0.;
+    else
+      m_value += t.m_value;
+
+    return *this;
+  }
 
   /*! self substraction operator */
-  TimeValue & operator-= (double);
-  TimeValue & operator-= (const TimeValue&);
+  TimeValue & operator-= (double d)
+  {
+    if (isInfinite())
+      m_value = 0.;
+    else
+      m_value -= d;
+
+    return *this;
+  }
+
+  TimeValue & operator-= (const TimeValue& t)
+  {
+    if (isInfinite() || t.isInfinite())
+      m_value = 0.;
+    else
+      m_value -= t.m_value;
+
+    return *this;
+  }
+
 
   /*! addition operator */
-  TimeValue operator+ (double) const;
-  TimeValue operator+ (const TimeValue&) const;
+  TimeValue operator+ (double d) const
+  {
+    return TimeValue(m_value + d);
+  }
+
+  TimeValue operator+ (const TimeValue& t) const
+  {
+    if (isInfinite() || t.isInfinite())
+    {
+      return TimeValue(INFINITY);
+    }
+
+    return TimeValue(m_value + t.m_value);
+  }
 
   /*! substraction operator */
-  TimeValue operator- (double) const;
-  TimeValue operator- (const TimeValue&) const;
+  TimeValue operator- (double d) const
+  {
+    return TimeValue(m_value - d);
+  }
+
+  TimeValue operator- (const TimeValue& t) const
+  {
+    if (isInfinite() || t.isInfinite())
+    {
+      return TimeValue(INFINITY);
+    }
+
+    return TimeValue(m_value - t.m_value);
+  }
 
   /*! double casting operator */
-  operator double() const;
+  operator double() const { return m_value; }
 
 #if 0
 # pragma mark -
@@ -74,7 +142,11 @@ public:
 
   /*! is the time value infinite ?
    \return bool infinite */
-  bool isInfinite() const;
+  bool isInfinite() const
+  {
+    return isinf(m_value);
+  }
+
 
 protected:
 
