@@ -43,6 +43,8 @@ private:
   Destination mInitialPointAbscissaDestination;
 
   Y mInitialPointOrdinate;
+  mutable Y mInitialPointOrdinateCache;
+  mutable bool mInitialPointOrdinateCacheUsed = false;
   Destination mInitialPointOrdinateDestination;
 
   using map_type = curve_map<X, pair<Y, CurveSegment<Y>>>;

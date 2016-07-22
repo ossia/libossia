@@ -125,9 +125,13 @@ template <typename X, typename Y>
 Y JamomaCurve<X,Y>::
 getInitialPointOrdinate() const
 {
+
   auto& node = mInitialPointOrdinateDestination.value;
   if(!node)
     return mInitialPointOrdinate;
+
+  if(mInitialPointOrdinateCacheUsed)
+    return mInitialPointOrdinateCache;
 
   auto address = node->getAddress();
 
@@ -136,8 +140,9 @@ getInitialPointOrdinate() const
 
   address->pullValue();
   auto val = address->cloneValue();
-  auto res = convertToTemplateTypeValue(val, mInitialPointOrdinateDestination.index.begin());
-  return res;
+  mInitialPointOrdinateCacheUsed = true;
+  mInitialPointOrdinateCache = convertToTemplateTypeValue(val, mInitialPointOrdinateDestination.index.begin());
+  return mInitialPointOrdinateCache;
 }
 
 template <typename X, typename Y>
