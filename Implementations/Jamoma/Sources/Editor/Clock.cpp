@@ -10,9 +10,9 @@ using namespace OSSIA;
 namespace OSSIA
 {
   shared_ptr<Clock> Clock::create(Clock::ExecutionCallback callback,
-                                  const TimeValue& duration,
-                                  const TimeValue& granularity,
-                                  const TimeValue& offset,
+                                  TimeValue duration,
+                                  TimeValue granularity,
+                                  TimeValue offset,
                                   float speed,
                                   Clock::DriveMode driveMode)
   {
@@ -21,9 +21,9 @@ namespace OSSIA
 }
 
 JamomaClock::JamomaClock(Clock::ExecutionCallback callback,
-                         const TimeValue& duration,
-                         const TimeValue& granularity,
-                         const TimeValue& offset,
+                         TimeValue duration,
+                         TimeValue granularity,
+                         TimeValue offset,
                          float speed,
                          Clock::DriveMode driveMode) :
 mDuration(duration),
@@ -223,7 +223,7 @@ const TimeValue & JamomaClock::getDuration() const
   return mDuration;
 }
 
-Clock & JamomaClock::setDuration(const TimeValue& duration)
+Clock & JamomaClock::setDuration(TimeValue duration)
 {
   do_setDuration(duration);
   return *this;
@@ -234,7 +234,7 @@ const TimeValue & JamomaClock::getOffset() const
   return mOffset;
 }
 
-Clock & JamomaClock::setOffset(const TimeValue& offset)
+Clock & JamomaClock::setOffset(TimeValue offset)
 {
   do_setOffset(offset);
   return *this;
@@ -245,7 +245,7 @@ const TimeValue & JamomaClock::getGranularity() const
   return mGranularity;
 }
 
-Clock & JamomaClock::setGranularity(const TimeValue& granularity)
+Clock & JamomaClock::setGranularity(TimeValue granularity)
 {
   mGranularity = granularity;
   return *this;
@@ -344,7 +344,7 @@ void JamomaClock::do_stop()
   }
 }
 
-void JamomaClock::do_setDuration(const TimeValue& duration)
+void JamomaClock::do_setDuration(TimeValue duration)
 {
   mDuration = duration;
   mDate = mOffset;
@@ -355,7 +355,7 @@ void JamomaClock::do_setDuration(const TimeValue& duration)
     mPosition = Zero;
 }
 
-void JamomaClock::do_setOffset(const TimeValue& offset)
+void JamomaClock::do_setOffset(TimeValue offset)
 {
   mOffset = offset;
   mDate = mOffset;

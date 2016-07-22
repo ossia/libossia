@@ -104,7 +104,7 @@ public:
    \todo remove setter and move the setting into constructor (?)
    \param #TimeValue the simultaneity margin
    \return #TimeNode the time node */
-  virtual TimeNode & setSimultaneityMargin(const TimeValue&) = 0;
+  virtual TimeNode & setSimultaneityMargin(TimeValue) = 0;
 
 #if 0
 #pragma mark -

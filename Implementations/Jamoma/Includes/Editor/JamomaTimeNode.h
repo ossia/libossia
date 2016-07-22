@@ -72,7 +72,7 @@ public:
 
   TimeValue getSimultaneityMargin() const override;
 
-  TimeNode & setSimultaneityMargin(const TimeValue&) override;
+  TimeNode & setSimultaneityMargin(TimeValue) override;
 
 # pragma mark -
 # pragma mark TimeEvents

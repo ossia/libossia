@@ -63,9 +63,9 @@ public:
 #endif
 
   JamomaClock(Clock::ExecutionCallback,
-              const TimeValue& = Infinite,
-              const TimeValue& = 1.,
-              const TimeValue& = 0.,
+              TimeValue = Infinite,
+              TimeValue = 1.,
+              TimeValue = 0.,
               float = 1.,
               Clock::DriveMode = Clock::DriveMode::INTERNAL);
 
@@ -96,15 +96,15 @@ public:
 
   const TimeValue & getDuration() const override;
 
-  Clock & setDuration(const TimeValue&) override;
+  Clock & setDuration(TimeValue) override;
 
   const TimeValue & getOffset() const final override;
 
-  Clock & setOffset(const TimeValue&) override;
+  Clock & setOffset(TimeValue) override;
 
   const TimeValue & getGranularity() const final override;
 
-  Clock & setGranularity(const TimeValue&) final override;
+  Clock & setGranularity(TimeValue) final override;
 
   float getSpeed() const final override;
 
@@ -140,10 +140,10 @@ public:
   void do_stop();
 
   /*! to allow TimeConstraint to override setDuration accessor */
-  void do_setDuration(const TimeValue&);
+  void do_setDuration(TimeValue);
 
   /*! to allow TimeConstraint to override setOffset accessor */
-  void do_setOffset(const TimeValue&);
+  void do_setOffset(TimeValue);
 
 private:
 

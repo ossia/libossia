@@ -117,7 +117,7 @@ TimeValue JamomaTimeNode::getSimultaneityMargin() const
   return mSimultaneityMargin;
 }
 
-TimeNode & JamomaTimeNode::setSimultaneityMargin(const TimeValue& simultaneityMargin)
+TimeNode & JamomaTimeNode::setSimultaneityMargin(TimeValue simultaneityMargin)
 {
   mSimultaneityMargin = simultaneityMargin;
   return *this;

@@ -60,7 +60,7 @@ public:
 # pragma mark Execution
 #endif
 
-  shared_ptr<StateElement> offset(const TimeValue&) override;
+  shared_ptr<StateElement> offset(TimeValue) override;
 
   shared_ptr<StateElement> state() override;
 #if 0

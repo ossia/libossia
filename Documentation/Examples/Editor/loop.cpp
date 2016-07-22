@@ -19,11 +19,11 @@
 using namespace OSSIA;
 using namespace std;
 
-void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element);
+void main_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element);
 void main_start_event_callback(TimeEvent::Status newStatus);
 void main_end_event_callback(TimeEvent::Status newStatus);
 
-void loop_pattern_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element);
+void loop_pattern_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element);
 void loop_pattern_start_event_callback(TimeEvent::Status newStatus);
 void loop_pattern_end_event_callback(TimeEvent::Status newStatus);
 
@@ -75,7 +75,7 @@ int main()
         ;
 }
 
-void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
+void main_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element)
 {
     cout << "Main Constraint : " << double(position) << ", " << double(date) << endl;
 }
@@ -90,7 +90,7 @@ void main_end_event_callback(TimeEvent::Status newStatus)
     print_event_status(newStatus, "Main End");
 }
 
-void loop_pattern_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
+void loop_pattern_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element)
 {
     cout << "Loop Constraint : " << double(position) << ", " << double(date) << endl;
 }

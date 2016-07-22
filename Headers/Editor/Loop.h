@@ -43,7 +43,7 @@ public:
    \param #TimeEvent::ExecutionCallback to get start pattern #TimeEvent's status back
    \param #TimeEvent::ExecutionCallback to get end pattern #TimeEvent's status back
    \return a new loop */
-  static std::shared_ptr<Loop> create(const TimeValue&,
+  static std::shared_ptr<Loop> create(TimeValue,
                                       TimeConstraint::ExecutionCallback,
                                       TimeEvent::ExecutionCallback,
                                       TimeEvent::ExecutionCallback);
@@ -64,7 +64,7 @@ public:
    \details don't call offset when the parent #TimeConstraint is running
    \param const #TimeValue offset date
    \return std::shared_ptr<#StateElement> */
-  virtual std::shared_ptr<StateElement> offset(const TimeValue&) override = 0;
+  virtual std::shared_ptr<StateElement> offset(TimeValue) override = 0;
 
   /*! get a #State depending on the parent #TimeConstraint date
   \details the #State is a flatten set of Messages with no Address redundancy

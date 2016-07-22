@@ -38,9 +38,9 @@ using namespace std;
 void local_play_callback(const Value * v);
 void local_test_callback(const Value * v);
 
-void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element);
-void first_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element);
-void second_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element);
+void main_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element);
+void first_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element);
+void second_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element);
 void event_callback(TimeEvent::Status newStatus);
 
 shared_ptr<TimeConstraint> main_constraint;
@@ -291,20 +291,20 @@ void local_test_callback(const Value * v)
     cout << endl;
 }
 
-void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
+void main_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element)
 {
     element->launch();
     cout << "Main Constraint : " << double(position) << ", " << double(date) << endl;
 }
 
-void first_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
+void first_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element)
 {
     cout << "First Constraint : " << double(position) << ", " << double(date) << endl;
 
     // don't launch element here as the element produced by the first TimeConstraint is handled by the main TimeConstraint
 }
 
-void second_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
+void second_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element)
 {
     cout << "Second Constraint : " << double(position) << ", " << double(date) << endl;
 

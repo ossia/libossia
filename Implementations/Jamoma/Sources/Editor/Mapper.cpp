@@ -45,7 +45,7 @@ Mapper::~Mapper()
 # pragma mark -
 # pragma mark Execution
 
-shared_ptr<StateElement> JamomaMapper::offset(const TimeValue& offset)
+shared_ptr<StateElement> JamomaMapper::offset(TimeValue offset)
 {
   if (parent->getRunning())
     throw runtime_error("parent time constraint is running");

@@ -64,7 +64,7 @@ public:
    \details don't call offset when the parent #TimeConstraint is running
    \param const #TimeValue offset date
    \return std::shared_ptr<#StateElement> */
-  virtual std::shared_ptr<StateElement> offset(const TimeValue&) override = 0;
+  virtual std::shared_ptr<StateElement> offset(TimeValue) override = 0;
 
   /*! get a #Message depending on the parent #TimeConstraint date
    \details don't call state when the parent #TimeConstraint is not running

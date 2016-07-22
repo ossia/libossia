@@ -59,7 +59,7 @@ public:
    \param const #TimeValue process clock position
    \param const #TimeValue process clock date
    \param std::shared_ptr<#State> */
-  using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, std::shared_ptr<State>)>;
+  using ExecutionCallback = std::function<void(TimeValue, TimeValue, std::shared_ptr<State>)>;
 
 #if 0
 # pragma mark -
@@ -78,9 +78,9 @@ public:
   static std::shared_ptr<TimeConstraint> create(TimeConstraint::ExecutionCallback,
                                                 std::shared_ptr<TimeEvent>,
                                                 std::shared_ptr<TimeEvent>,
-                                                const TimeValue& = Infinite,
-                                                const TimeValue& = 0.,
-                                                const TimeValue& = Infinite);
+                                                TimeValue = Infinite,
+                                                TimeValue = 0.,
+                                                TimeValue = Infinite);
 
   /*! clone
    \return std::shared_ptr<#TimeConstraint> */
@@ -105,7 +105,7 @@ public:
    \details don't call offset when the #TimeConstraint is running
    \param const #TimeValue offset date
    \return std::shared_ptr<#State> */
-  virtual const std::shared_ptr<State>& offset(const TimeValue&) = 0;
+  virtual const std::shared_ptr<State>& offset(TimeValue) = 0;
 
   /*! get a #State from the constraint depending on its #Clock date
    \details the returned #State is made of as many as sub States for each TimeProcess the #TimeConstraint manages
@@ -129,7 +129,7 @@ public:
   /*! set the #TimeConstraint duration
    \param const #TimeValue& duration
    \return #TimeConstraint the constraint */
-  virtual TimeConstraint & setDurationNominal(const TimeValue&) = 0;
+  virtual TimeConstraint & setDurationNominal(TimeValue) = 0;
 
   /*! get the #TimeConstraint minimal duration
    \return const #TimeValue& minimal duration */
@@ -138,7 +138,7 @@ public:
   /*! set the #TimeConstraint minimal duration
    \param const #TimeValue& minimal duration
    \return #TimeConstraint the constraint */
-  virtual TimeConstraint & setDurationMin(const TimeValue&) = 0;
+  virtual TimeConstraint & setDurationMin(TimeValue) = 0;
 
   /*! get the #TimeConstraint maximal duration
    \return const #TimeValue& maximal duration */
@@ -147,7 +147,7 @@ public:
   /*! set the #TimeConstraint maximal duration
    \param const #TimeValue& maximal duration
    \return #TimeConstraint the constraint */
-  virtual TimeConstraint & setDurationMax(const TimeValue&) = 0;
+  virtual TimeConstraint & setDurationMax(TimeValue) = 0;
 
   /*! get the event from where the #TimeConstraint starts
    \return std::shared_ptr<#TimeEvent> start event */

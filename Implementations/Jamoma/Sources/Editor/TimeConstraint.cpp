@@ -11,9 +11,9 @@ namespace OSSIA
   shared_ptr<TimeConstraint> TimeConstraint::create(TimeConstraint::ExecutionCallback callback,
                                                     shared_ptr<TimeEvent> startEvent,
                                                     shared_ptr<TimeEvent> endEvent,
-                                                    const TimeValue& nominal,
-                                                    const TimeValue& min,
-                                                    const TimeValue& max)
+                                                    TimeValue nominal,
+                                                    TimeValue min,
+                                                    TimeValue max)
   {
     auto timeConstraint = make_shared<JamomaTimeConstraint>(callback, startEvent, endEvent, nominal, min, max);
 
@@ -40,10 +40,10 @@ namespace OSSIA
 JamomaTimeConstraint::JamomaTimeConstraint(TimeConstraint::ExecutionCallback callback,
                                            shared_ptr<TimeEvent> startEvent,
                                            shared_ptr<TimeEvent> endEvent,
-                                           const TimeValue& nominal,
-                                           const TimeValue& min,
-                                           const TimeValue& max) :
-JamomaClock([=] (const TimeValue& t, const TimeValue& t2, unsigned char c) { return ClockCallback(t, t2, c); }),
+                                           TimeValue nominal,
+                                           TimeValue min,
+                                           TimeValue max) :
+JamomaClock([=] (TimeValue t, TimeValue t2, unsigned char c) { return ClockCallback(t, t2, c); }),
 mCallback(callback),
 mStartEvent(startEvent),
 mEndEvent(endEvent),
@@ -116,7 +116,7 @@ void JamomaTimeConstraint::stop()
   }
 }
 
-const std::shared_ptr<State>& JamomaTimeConstraint::offset(const TimeValue& date)
+const std::shared_ptr<State>& JamomaTimeConstraint::offset(TimeValue date)
 {
   if (mRunning)
     throw runtime_error("time constraint is running");
@@ -206,7 +206,7 @@ const TimeValue & JamomaTimeConstraint::getDurationNominal() const
   return mDurationNominal;
 }
 
-TimeConstraint & JamomaTimeConstraint::setDurationNominal(const TimeValue& durationNominal)
+TimeConstraint & JamomaTimeConstraint::setDurationNominal(TimeValue durationNominal)
 {
   mDurationNominal = durationNominal;
 
@@ -224,7 +224,7 @@ const TimeValue & JamomaTimeConstraint::getDurationMin() const
   return mDurationMin;
 }
 
-TimeConstraint & JamomaTimeConstraint::setDurationMin(const TimeValue& durationMin)
+TimeConstraint & JamomaTimeConstraint::setDurationMin(TimeValue durationMin)
 {
   mDurationMin = durationMin;
 
@@ -239,7 +239,7 @@ const TimeValue & JamomaTimeConstraint::getDurationMax() const
   return mDurationMax;
 }
 
-TimeConstraint & JamomaTimeConstraint::setDurationMax(const TimeValue& durationMax)
+TimeConstraint & JamomaTimeConstraint::setDurationMax(TimeValue durationMax)
 {
   mDurationMax = durationMax;
 
@@ -288,7 +288,7 @@ void JamomaTimeConstraint::removeTimeProcess(std::shared_ptr<TimeProcess> timePr
 # pragma mark -
 # pragma mark Implementation specific
 
-void JamomaTimeConstraint::ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks)
+void JamomaTimeConstraint::ClockCallback(TimeValue position, TimeValue date, unsigned char droppedTicks)
 {
   if (mCallback)
     (mCallback)(position, date, state());

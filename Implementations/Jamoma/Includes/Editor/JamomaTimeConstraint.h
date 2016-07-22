@@ -58,9 +58,9 @@ public:
   JamomaTimeConstraint(TimeConstraint::ExecutionCallback,
                        shared_ptr<TimeEvent>,
                        shared_ptr<TimeEvent>,
-                       const TimeValue& = Infinite,
-                       const TimeValue& = 0.,
-                       const TimeValue& = Infinite);
+                       TimeValue = Infinite,
+                       TimeValue = 0.,
+                       TimeValue = Infinite);
 
   JamomaTimeConstraint(const JamomaTimeConstraint *);
 
@@ -75,7 +75,7 @@ public:
 
   void stop() final override;
 
-  const std::shared_ptr<State>& offset(const TimeValue&) override;
+  const std::shared_ptr<State>& offset(TimeValue) override;
 
   const std::shared_ptr<State>& state() override;
 
@@ -90,15 +90,15 @@ public:
 
   const TimeValue & getDurationNominal() const override;
 
-  TimeConstraint & setDurationNominal(const TimeValue&) override;
+  TimeConstraint & setDurationNominal(TimeValue) override;
 
   const TimeValue & getDurationMin() const override;
 
-  TimeConstraint & setDurationMin(const TimeValue&) override;
+  TimeConstraint & setDurationMin(TimeValue) override;
 
   const TimeValue & getDurationMax() const override;
 
-  TimeConstraint & setDurationMax(const TimeValue&) override;
+  TimeConstraint & setDurationMax(TimeValue) override;
 
   const shared_ptr<TimeEvent> & getStartEvent() const override;
 
@@ -114,5 +114,5 @@ public:
 private:
 # pragma mark -
 # pragma mark Implementation specific
-  void ClockCallback(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks);
+  void ClockCallback(TimeValue position, TimeValue date, unsigned char droppedTicks);
 };

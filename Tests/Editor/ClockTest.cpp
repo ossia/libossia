@@ -23,7 +23,7 @@ class ClockTest : public QObject
 
     bool display_frames = false;
 
-    void clock_callback_light(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks)
+    void clock_callback_light(TimeValue position, TimeValue date, unsigned char droppedTicks)
     {
         steady_clock::time_point frame_start_date = steady_clock::now();
 
@@ -38,7 +38,7 @@ class ClockTest : public QObject
             m_last_frame_duration = duration_cast<microseconds>(steady_clock::now() - frame_start_date).count();
     }
 
-    void clock_callback_heavy(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks)
+    void clock_callback_heavy(TimeValue position, TimeValue date, unsigned char droppedTicks)
     {
         steady_clock::time_point frame_start_date = steady_clock::now();
 
@@ -59,9 +59,9 @@ class ClockTest : public QObject
             m_last_frame_duration = duration_cast<microseconds>(steady_clock::now() - frame_start_date).count();
     }
 
-    void make_clock_test(const TimeValue& duration,
-                         const TimeValue& granularity,
-                         const TimeValue& offset,
+    void make_clock_test(TimeValue duration,
+                         TimeValue granularity,
+                         TimeValue offset,
                          float speed,
                          Clock::ExecutionCallback callback,
                          bool display = false)

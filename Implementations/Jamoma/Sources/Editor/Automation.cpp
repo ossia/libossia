@@ -45,7 +45,7 @@ JamomaAutomation::~JamomaAutomation()
 # pragma mark Execution
 #endif
 
-shared_ptr<StateElement> JamomaAutomation::offset(const TimeValue& offset)
+shared_ptr<StateElement> JamomaAutomation::offset(TimeValue offset)
 {
   auto& par = *parent;
   if (par.getRunning())

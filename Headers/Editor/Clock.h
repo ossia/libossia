@@ -39,7 +39,7 @@ public:
    \param clock position
    \param clock date
    \param dropped ticks */
-   using ExecutionCallback = std::function<void(const TimeValue&, const TimeValue&, unsigned char)>;
+   using ExecutionCallback = std::function<void(TimeValue, TimeValue, unsigned char)>;
 
    enum ClockExecutionStatus { RUNNING, STOPPED };
    using ExecutionStatusCallback = std::function<void(ClockExecutionStatus)>;
@@ -70,9 +70,9 @@ public:
    \param drive mode
    \return std::shared_ptr<#Clock> */
   static std::shared_ptr<Clock> create(Clock::ExecutionCallback,
-                                       const TimeValue& = Infinite,
-                                       const TimeValue& = 10.,
-                                       const TimeValue& = 0.,
+                                       TimeValue = Infinite,
+                                       TimeValue = 10.,
+                                       TimeValue = 0.,
                                        float = 1.,
                                        DriveMode = Clock::DriveMode::INTERNAL);
 
@@ -122,7 +122,7 @@ public:
   /*! set the duration of the clock execution
    \param const #TimeValue duration
    \return #Clock the clock */
-  virtual Clock & setDuration(const TimeValue&) = 0;
+  virtual Clock & setDuration(TimeValue) = 0;
 
   /*! get the offset of the clock
    \return const #TimeValue offset */
@@ -131,7 +131,7 @@ public:
   /** set the offset of the clock
    \param const #TimeValue offset
    \return #Clock the clock */
-  virtual Clock & setOffset(const TimeValue&) = 0;
+  virtual Clock & setOffset(TimeValue) = 0;
 
   /*! get the granularity of the clock
    \return const #TimeValue granularity */
@@ -140,7 +140,7 @@ public:
   /*! set the granularity of the clock execution
    \param const #TimeValue granularity
    \return #Clock the clock */
-  virtual Clock & setGranularity(const TimeValue&) = 0;
+  virtual Clock & setGranularity(TimeValue) = 0;
 
   /*! get the speed of the clock
    \return const #TimeValue speed */

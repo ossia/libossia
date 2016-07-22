@@ -52,7 +52,7 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaLoop(const TimeValue&,
+  JamomaLoop(TimeValue,
              TimeConstraint::ExecutionCallback,
              TimeEvent::ExecutionCallback,
              TimeEvent::ExecutionCallback);
@@ -66,7 +66,7 @@ public:
 # pragma mark -
 # pragma mark Execution
 
-  shared_ptr<StateElement> offset(const TimeValue&) override;
+  shared_ptr<StateElement> offset(TimeValue) override;
 
   shared_ptr<StateElement> state() override;
 
@@ -93,8 +93,8 @@ private:
 # pragma mark Implementation specific
 
   void PatternConstraintCallback(
-      const TimeValue&,
-      const TimeValue&,
+      TimeValue,
+      TimeValue,
       const std::shared_ptr<State>&);
 
   void PatternStartEventCallback(TimeEvent::Status);

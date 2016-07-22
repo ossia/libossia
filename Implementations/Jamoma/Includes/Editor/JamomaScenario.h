@@ -65,7 +65,7 @@ public:
 # pragma mark -
 # pragma mark Execution
 
-  shared_ptr<StateElement> offset(const TimeValue&) override;
+  shared_ptr<StateElement> offset(TimeValue) override;
 
   shared_ptr<StateElement> state() override;
 
@@ -104,5 +104,5 @@ public:
 # pragma mark Implementation specific
 
   /* order all HAPPENED TimeEvents into mOffetEventMap */
-  void process_offset(shared_ptr<TimeNode>, const TimeValue&);
+  void process_offset(shared_ptr<TimeNode>, TimeValue);
 };

@@ -57,7 +57,7 @@ static void process_timenode_dates(TimeNode& t, DateMap& map)
     }
 }
 
-shared_ptr<StateElement> JamomaScenario::offset(const TimeValue& offset)
+shared_ptr<StateElement> JamomaScenario::offset(TimeValue offset)
 {
   if (parent->getRunning())
     throw runtime_error("parent time constraint is running");
@@ -384,7 +384,7 @@ const Container<TimeConstraint>& JamomaScenario::timeConstraints() const
 # pragma mark -
 # pragma mark Implementation specific
 
-void JamomaScenario::process_offset(shared_ptr<TimeNode> timenode, const TimeValue& offset)
+void JamomaScenario::process_offset(shared_ptr<TimeNode> timenode, TimeValue offset)
 {
   TimeValue date = timenode->getDate();
 

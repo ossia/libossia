@@ -12,7 +12,7 @@ class AutomationTest : public QObject
 
     std::vector<Value*> m_address_values;
 
-    void constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<StateElement> element)
+    void constraint_callback(TimeValue position, TimeValue date, std::shared_ptr<StateElement> element)
     {
         element->launch();
     }

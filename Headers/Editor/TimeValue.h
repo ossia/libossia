@@ -51,7 +51,7 @@ public:
     return *this;
   }
 
-  TimeValue & operator= (const TimeValue& t)
+  TimeValue & operator= (TimeValue t)
   {
       m_value = t.m_value;
       return *this;
@@ -68,7 +68,7 @@ public:
     return *this;
   }
 
-  TimeValue & operator+= (const TimeValue& t)
+  TimeValue & operator+= (TimeValue t)
   {
     if (isInfinite() || t.isInfinite())
       m_value = 0.;
@@ -89,7 +89,7 @@ public:
     return *this;
   }
 
-  TimeValue & operator-= (const TimeValue& t)
+  TimeValue & operator-= (TimeValue t)
   {
     if (isInfinite() || t.isInfinite())
       m_value = 0.;
@@ -106,7 +106,7 @@ public:
     return TimeValue(m_value + d);
   }
 
-  TimeValue operator+ (const TimeValue& t) const
+  TimeValue operator+ (TimeValue t) const
   {
     if (isInfinite() || t.isInfinite())
     {
@@ -122,7 +122,7 @@ public:
     return TimeValue(m_value - d);
   }
 
-  TimeValue operator- (const TimeValue& t) const
+  TimeValue operator- (TimeValue t) const
   {
     if (isInfinite() || t.isInfinite())
     {

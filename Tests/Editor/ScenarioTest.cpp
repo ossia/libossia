@@ -13,17 +13,17 @@ class ScenarioTest : public QObject
     std::shared_ptr<TimeConstraint> main_constraint;
     std::vector<TimeValue> events_date;
 
-    void main_constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<StateElement> element)
+    void main_constraint_callback(TimeValue position, TimeValue date, std::shared_ptr<StateElement> element)
     {
         std::cout << "Main Constraint : " << double(position) << ", " << double(date) << std::endl;
     }
 
-    void first_constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<StateElement> element)
+    void first_constraint_callback(TimeValue position, TimeValue date, std::shared_ptr<StateElement> element)
     {
         std::cout << "First Constraint : " << double(position) << ", " << double(date) << std::endl;
     }
 
-    void second_constraint_callback(const TimeValue& position, const TimeValue& date, std::shared_ptr<StateElement> element)
+    void second_constraint_callback(TimeValue position, TimeValue date, std::shared_ptr<StateElement> element)
     {
         std::cout << "Second Constraint : " << double(position) << ", " << double(date) << std::endl;
     }
