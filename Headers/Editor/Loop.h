@@ -54,23 +54,6 @@ public:
   /*! destructor */
   virtual ~Loop();
 
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
-
-  /*! get a #State depending on the parent #TimeConstraint offset
-   \details the #State is a flatten set of Messages with no Address redundancy
-   \details don't call offset when the parent #TimeConstraint is running
-   \param const #TimeValue offset date
-   \return std::shared_ptr<#StateElement> */
-  virtual std::shared_ptr<StateElement> offset(TimeValue) override = 0;
-
-  /*! get a #State depending on the parent #TimeConstraint date
-  \details the #State is a flatten set of Messages with no Address redundancy
-   \details don't call state when the parent #TimeConstraint is not running
-  \return std::shared_ptr<#StateElement> */
-  virtual std::shared_ptr<StateElement> state() override = 0;
 
 #if 0
 # pragma mark -

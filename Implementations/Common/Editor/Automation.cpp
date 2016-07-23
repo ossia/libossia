@@ -33,7 +33,7 @@ JamomaAutomation::~JamomaAutomation()
 # pragma mark Execution
 #endif
 
-shared_ptr<StateElement> JamomaAutomation::offset(TimeValue offset)
+StateElement JamomaAutomation::offset(TimeValue offset)
 {
   auto& par = *parent;
   if (par.getRunning())
@@ -43,12 +43,12 @@ shared_ptr<StateElement> JamomaAutomation::offset(TimeValue offset)
   mValueToSend = computeValue(offset / par.getDurationNominal(), mDrive);
 
   // edit a Message handling the new Value
-  mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
+  mMessageToSend = Message{mDrivenAddress, mValueToSend};
 
   return mMessageToSend;
 }
 
-shared_ptr<StateElement> JamomaAutomation::state()
+StateElement JamomaAutomation::state()
 {
   auto& par = *parent;
   if (par.getRunning())
@@ -63,7 +63,7 @@ shared_ptr<StateElement> JamomaAutomation::state()
       mValueToSend = computeValue(par.getPosition(), mDrive);
 
       // edit a Message handling the new Value
-      mMessageToSend = Message::create(mDrivenAddress, mValueToSend);
+      mMessageToSend = Message{mDrivenAddress, mValueToSend};
     }
 
     return mMessageToSend;

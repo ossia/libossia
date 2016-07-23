@@ -29,7 +29,7 @@ JamomaMapper::~JamomaMapper()
 # pragma mark -
 # pragma mark Execution
 
-shared_ptr<StateElement> JamomaMapper::offset(TimeValue offset)
+StateElement JamomaMapper::offset(TimeValue offset)
 {
   if (parent->getRunning())
     throw runtime_error("parent time constraint is running");
@@ -38,7 +38,7 @@ shared_ptr<StateElement> JamomaMapper::offset(TimeValue offset)
   return mMessageToSend;
 }
 
-shared_ptr<StateElement> JamomaMapper::state()
+StateElement JamomaMapper::state()
 {
   auto& par = *parent;
   if (!par.getRunning())
@@ -56,7 +56,7 @@ shared_ptr<StateElement> JamomaMapper::state()
 
       // edit a Message handling the mapped value
       auto newval = computeValue(mValueToMap, mDrive);
-      mMessageToSend = Message::create(mDrivenAddress, newval);
+      mMessageToSend = Message{mDrivenAddress, newval};
 
       // forget the former value
       mValueToMap.reset();

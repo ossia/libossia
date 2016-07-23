@@ -16,54 +16,36 @@
 
 #pragma once
 #include <ossia_export.h>
-
+#include <Editor/State.h>
+#include <Editor/Message.h>
+#include <eggs/variant.hpp>
+#include <functional>
 namespace OSSIA
 {
-
-class OSSIA_EXPORT StateElement
+class OSSIA_EXPORT CustomState
 {
+    public:
+        std::function<void()> func;
+        void launch() const
+        {
+            if(func)
+                func();
+        }
 
-public:
+        friend bool operator==(const CustomState& lhs, const CustomState& rhs)
+        { return false; }
+        friend bool operator!=(const CustomState& lhs, const CustomState& rhs)
+        { return true; }
+};
 
-#if 0
-# pragma mark -
-# pragma mark Enumerations
-#endif
 
-  /*! type of element */
-  enum class Type
-  {
-    MESSAGE,
-    //! \todo ALIAS to refer to another message,
-    //! \todo QUERY to ask the value of an address,
-    STATE,
-    USER
-  };
+using StateElement = eggs::variant<Message, State, CustomState>;
 
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
-  /*! destructor */
-  virtual ~StateElement();
-
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
-
-  /*! what to do at execution time */
-  virtual void launch() const = 0;
-
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
-
-  /*! get the type of the state element
-   \return #Type of the state element */
-  virtual Type getType() const = 0;
+struct StateExecutionVisitor
+{
+        template<typename T>
+        void operator()(const T& m)
+        { m.launch(); }
 };
 
 }

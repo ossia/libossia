@@ -59,7 +59,7 @@ public:
    \param const #TimeValue process clock position
    \param const #TimeValue process clock date
    \param std::shared_ptr<#State> */
-  using ExecutionCallback = std::function<void(TimeValue, TimeValue, std::shared_ptr<State>)>;
+  using ExecutionCallback = std::function<void(TimeValue, TimeValue, const State&)>;
 
 #if 0
 # pragma mark -
@@ -105,13 +105,13 @@ public:
    \details don't call offset when the #TimeConstraint is running
    \param const #TimeValue offset date
    \return std::shared_ptr<#State> */
-  virtual const std::shared_ptr<State>& offset(TimeValue) = 0;
+  virtual State offset(TimeValue) = 0;
 
   /*! get a #State from the constraint depending on its #Clock date
    \details the returned #State is made of as many as sub States for each TimeProcess the #TimeConstraint manages
    \details don't call state when the #TimeConstraint is not running
    \return std::shared_ptr<#State> */
-  virtual const std::shared_ptr<State>& state() = 0;
+  virtual State state() = 0;
 
 #if 0
 # pragma mark -

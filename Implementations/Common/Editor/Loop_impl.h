@@ -46,8 +46,8 @@ private:
   shared_ptr<TimeConstraint>        mPatternConstraint;
   TimeConstraint::ExecutionCallback mPatternConstraintCallback;
 
-  shared_ptr<State>                 mCurrentState;      // an internal State to return on state call
-  shared_ptr<State>                 mOffsetState;       // an internal State built when offset is called
+  State                             mCurrentState;      // an internal State to return on state call
+  State                             mOffsetState;       // an internal State built when offset is called
 
 public:
 
@@ -68,9 +68,9 @@ public:
 # pragma mark -
 # pragma mark Execution
 
-  shared_ptr<StateElement> offset(TimeValue) override;
+  StateElement offset(TimeValue) override;
 
-  shared_ptr<StateElement> state() override;
+  StateElement state() override;
 
 # pragma mark -
 # pragma mark Execution - Implementation specific
@@ -97,7 +97,7 @@ private:
   void PatternConstraintCallback(
       TimeValue,
       TimeValue,
-      const std::shared_ptr<State>&);
+      const State&);
 
   void PatternStartEventCallback(TimeEvent::Status);
 

@@ -9,9 +9,6 @@ JamomaTimeProcess()
 {
   // create the start TimeNode
   mTimeNodes.push_back(TimeNode::create());
-
-  mCurrentState = State::create();
-  mOffsetState = State::create();
 }
 
 JamomaScenario::JamomaScenario(const JamomaScenario * other) :
@@ -45,14 +42,14 @@ static void process_timenode_dates(TimeNode& t, DateMap& map)
     }
 }
 
-shared_ptr<StateElement> JamomaScenario::offset(TimeValue offset)
+StateElement JamomaScenario::offset(TimeValue offset)
 {
   if (parent->getRunning())
     throw runtime_error("parent time constraint is running");
 
   // reset internal offset list and state
   mPastEventList.clear();
-  mOffsetState->stateElements().clear();
+  mOffsetState.children.clear();
 
   // Precompute the default date of every timenode.
   std::unordered_map<TimeNode*, TimeValue> time_map;
@@ -107,7 +104,7 @@ shared_ptr<StateElement> JamomaScenario::offset(TimeValue offset)
   // build offset state from all ordered past events
   for (const auto& p : mPastEventList)
   {
-    flattenAndFilter(*mOffsetState, p.second->getState());
+    flattenAndFilter(mOffsetState, p.second->getState());
   }
 
   // offset all TimeConstraints
@@ -119,14 +116,14 @@ shared_ptr<StateElement> JamomaScenario::offset(TimeValue offset)
 
     if (constraintOffset >= Zero && constraintOffset <= cst.getDurationMax())
     {
-      flattenAndFilter(*mOffsetState, cst.offset(constraintOffset));
+      flattenAndFilter(mOffsetState, cst.offset(constraintOffset));
     }
   }
 
   return mOffsetState;
 }
 
-shared_ptr<StateElement> JamomaScenario::state()
+StateElement JamomaScenario::state()
 {
   auto& par = *parent;
   if (!par.getRunning())
@@ -139,9 +136,9 @@ shared_ptr<StateElement> JamomaScenario::state()
     auto prev_last_date = mLastDate;
     mLastDate = date;
 
-    auto& cur_state = *mCurrentState;
+    auto& cur_state = mCurrentState;
     // reset internal mCurrentState
-    cur_state.stateElements().clear();
+    cur_state.children.clear();
 
     // process the scenario from the first TimeNode to the running constraints
     Container<TimeEvent> statusChangedEvents;

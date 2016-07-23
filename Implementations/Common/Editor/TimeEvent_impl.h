@@ -38,7 +38,7 @@ private:
   TimeEvent::ExecutionCallback      mCallback;
 
   shared_ptr<TimeNode>              mTimeNode;
-  shared_ptr<State>                 mState;
+  State                             mState;
   Status                            mStatus;
 
   shared_ptr<Expression>            mExpression;
@@ -66,16 +66,16 @@ public:
 # pragma mark -
 # pragma mark Edition
 
-  void addState(std::shared_ptr<State>) override;
+  void addState(State&&) override;
 
-  void removeState(const std::shared_ptr<State>&) override;
+  void removeState(const State&) override;
 
 # pragma mark -
 # pragma mark Accessors
 
   const shared_ptr<TimeNode> & getTimeNode() const override;
 
-  const shared_ptr<State> & getState() const override;
+  const State& getState() const override;
 
   const shared_ptr<Expression> & getExpression() const override;
 

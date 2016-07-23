@@ -42,10 +42,10 @@ private:
 
   shared_ptr<Address>   mDriverAddress;
   shared_ptr<Address>   mDrivenAddress;
-  Value             mDrive;
+  Value                 mDrive;
 
-  shared_ptr<Message>   mMessageToSend;
-  Value             mValueToMap;
+  Message               mMessageToSend;
+  Value                 mValueToMap;
   mutable std::mutex    mValueToMapMutex;
 
   bool                  mDriverValueObserved;
@@ -69,9 +69,9 @@ public:
 # pragma mark -
 # pragma mark Execution
 
-  shared_ptr<StateElement> offset(TimeValue) override;
+  StateElement offset(TimeValue) override;
 
-  shared_ptr<StateElement> state() override;
+  StateElement state() override;
 
 # pragma mark -
 # pragma mark Execution - Implementation specific

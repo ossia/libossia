@@ -18,58 +18,31 @@
 
 #include <memory>
 
-#include "Editor/StateElement.h"
 #include "Misc/Container.h"
 #include <ossia_export.h>
-
+#include <eggs/variant.hpp>
 namespace OSSIA
 {
+class Message;
+struct State;
+class CustomState;
+using StateElement = eggs::variant<Message, State, CustomState>;
 
-class OSSIA_EXPORT State : public virtual StateElement
+struct OSSIA_EXPORT State
 {
+        void launch() const;
 
-public:
-
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
-  /*! factory
-   \return std::shared_ptr<#State> */
-  static std::shared_ptr<State> create();
-
-  /*! clone */
-  virtual std::shared_ptr<State> clone() const = 0;
-
-  /*! destructor */
-  virtual ~State();
-
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
-
-  /*! launch each state elements of the state */
-  virtual void launch() const override = 0;
-
-#if 0
-# pragma mark -
-# pragma mark State Elements
-#endif
-
-  /*! get the state elements of the state
-   \return #Container<#StateElements> */
-  Container<StateElement>& stateElements()
-  { return m_stateElements; }
-
-  /*! get the state elements of the state
-   \return #Container<#StateElements> */
-  const Container<StateElement>& stateElements() const
-  { return m_stateElements; }
-
-private:
-  Container<StateElement> m_stateElements;
+        std::vector<StateElement> children;
 };
 
+OSSIA_EXPORT bool operator==(const State& lhs, const State& rhs);
+OSSIA_EXPORT bool operator!=(const State& lhs, const State& rhs);
+
+/*! append each message of the state to the current state in order to eliminate address redundancy
+ \param shared_ptr<State> the State to fill
+ \param shared_ptr<StateElement> the StateElement to store */
+void flattenAndFilter(State& state, const StateElement& element);
+void flattenAndFilter(State& state, StateElement&& element);
+
+OSSIA_EXPORT void launch(const StateElement&);
 }

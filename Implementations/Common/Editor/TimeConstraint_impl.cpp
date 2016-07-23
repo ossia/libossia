@@ -17,8 +17,6 @@ mDurationNominal(nominal),
 mDurationMin(min),
 mDurationMax(max)
 {
-  mCurrentState = State::create();
-  mOffsetState = State::create();
 }
 
 JamomaTimeConstraint::JamomaTimeConstraint(const JamomaTimeConstraint * other) :
@@ -30,8 +28,6 @@ mDurationNominal(other->mDurationNominal),
 mDurationMin(other->mDurationMin),
 mDurationMax(other->mDurationMax)
 {
-    mCurrentState = State::create();
-    mOffsetState = State::create();
 }
 
 shared_ptr<TimeConstraint> JamomaTimeConstraint::clone() const
@@ -75,7 +71,7 @@ void JamomaTimeConstraint::stop()
   }
 }
 
-const std::shared_ptr<State>& JamomaTimeConstraint::offset(TimeValue date)
+State JamomaTimeConstraint::offset(TimeValue date)
 {
   if (mRunning)
     throw runtime_error("time constraint is running");
@@ -84,7 +80,7 @@ const std::shared_ptr<State>& JamomaTimeConstraint::offset(TimeValue date)
 
   // clear internal offset state
   const auto& processes = timeProcesses();
-  auto& stel = mCurrentState->stateElements();
+  auto& stel = mCurrentState.children;
   stel.clear();
   stel.reserve(processes.size());
 
@@ -100,14 +96,14 @@ const std::shared_ptr<State>& JamomaTimeConstraint::offset(TimeValue date)
   return mOffsetState;
 }
 
-const std::shared_ptr<State>& JamomaTimeConstraint::state()
+State JamomaTimeConstraint::state()
 {
   if (!mRunning)
     throw runtime_error("time constraint is not running");
 
   // clear internal current state
   const auto& processes = timeProcesses();
-  auto& stel = mCurrentState->stateElements();
+  auto& stel = mCurrentState.children;
   stel.clear();
   stel.reserve(processes.size());
 

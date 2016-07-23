@@ -1,6 +1,6 @@
 #include "TimeEvent_impl.h"
 #include <Misc/Util.h>
-
+#include <Editor/StateElement.h>
 namespace impl
 {
 
@@ -15,7 +15,6 @@ mTimeNode(aTimeNode),
 mStatus(TimeEvent::Status::NONE),
 mExpression(anExpression)
 {
-  mState = State::create();
 }
 
 JamomaTimeEvent::~JamomaTimeEvent()
@@ -84,19 +83,19 @@ void JamomaTimeEvent::dispose()
 # pragma mark -
 # pragma mark Edition
 
-void JamomaTimeEvent::addState(std::shared_ptr<State> state)
+void JamomaTimeEvent::addState(State&& state)
 {
   // store a state if it is not already stored
-  auto& se = mState->stateElements();
+  auto& se = mState.children;
   if (std::find(se.begin(), se.end(), state) == se.end())
   {
-    se.push_back(std::move(state));
+    se.push_back(StateElement{std::move(state)});
   }
 }
 
-void JamomaTimeEvent::removeState(const std::shared_ptr<State>& state)
+void JamomaTimeEvent::removeState(const State& state)
 {
-  auto& se = mState->stateElements();
+    auto& se = mState.children;
   auto it = std::find(se.begin(), se.end(), state);
   if (it != se.end())
   {
@@ -112,7 +111,7 @@ const shared_ptr<TimeNode> & JamomaTimeEvent::getTimeNode() const
   return mTimeNode;
 }
 
-const shared_ptr<State> & JamomaTimeEvent::getState() const
+const State& JamomaTimeEvent::getState() const
 {
   return mState;
 }

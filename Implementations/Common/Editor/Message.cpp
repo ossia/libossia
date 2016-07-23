@@ -1,12 +1,11 @@
-#include "Editor/Message_impl.h"
+#include <Editor/Message.h>
+#include <Network/Address.h>
 
 namespace OSSIA
 {
-  shared_ptr<Message> Message::create(shared_ptr<Address> a, const Value& v)
+  void Message::launch() const
   {
-    return make_shared<impl::JamomaMessage>(a, v);
+      if(address)
+          address->pushValue(value);
   }
-
-
-  Message::~Message() = default;
 }

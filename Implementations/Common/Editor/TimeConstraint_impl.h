@@ -32,7 +32,10 @@ using namespace std::placeholders;
 
 namespace impl
 {
-class JamomaTimeConstraint final : public TimeConstraint, public JamomaClock, public enable_shared_from_this<JamomaTimeConstraint>
+class JamomaTimeConstraint final :
+        public TimeConstraint,
+        public JamomaClock,
+        public enable_shared_from_this<JamomaTimeConstraint>
 {
 
 private:
@@ -42,8 +45,8 @@ private:
 
   TimeConstraint::ExecutionCallback   mCallback;
 
-  shared_ptr<State>                   mCurrentState;    // an internal State to update at each tick of the clock
-  shared_ptr<State>                   mOffsetState;     // an internal State built when offset is called
+  State                               mCurrentState;    // an internal State to update at each tick of the clock
+  State                               mOffsetState;     // an internal State built when offset is called
 
   shared_ptr<TimeEvent>               mStartEvent;
   shared_ptr<TimeEvent>               mEndEvent;
@@ -77,9 +80,9 @@ public:
 
   void stop() final override;
 
-  const std::shared_ptr<State>& offset(TimeValue) override;
+  State offset(TimeValue) override;
 
-  const std::shared_ptr<State>& state() override;
+  State state() override;
 
   void pause() final override;
 

@@ -57,22 +57,6 @@ public:
 
 #if 0
 # pragma mark -
-# pragma mark Execution
-#endif
-
-  /*! get a #Message depending on the parent #TimeConstraint offset
-   \details don't call offset when the parent #TimeConstraint is running
-   \param const #TimeValue offset date
-   \return std::shared_ptr<#StateElement> */
-  virtual std::shared_ptr<StateElement> offset(TimeValue) override = 0;
-
-  /*! get a #Message depending on the parent #TimeConstraint date
-   \details don't call state when the parent #TimeConstraint is not running
-   \return std::shared_ptr<#StateElement> */
-  virtual std::shared_ptr<StateElement> state() override = 0;
-
-#if 0
-# pragma mark -
 # pragma mark Accessors
 #endif
 

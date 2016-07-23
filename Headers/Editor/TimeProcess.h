@@ -18,11 +18,11 @@
 
 #include <memory>
 #include <string>
+#include <Editor/StateElement.h>
 #include <ossia_export.h>
 
 namespace OSSIA
 {
-class StateElement;
 class TimeConstraint;
 class TimeValue;
 
@@ -48,12 +48,12 @@ public:
    \details don't call offset when the parent #TimeConstraint is running
    \param const #TimeValue offset date
    \return std::shared_ptr<#StateElement> */
-  virtual std::shared_ptr<StateElement> offset(TimeValue) = 0;
+  virtual StateElement offset(TimeValue) = 0;
 
   /*! get a #StateElement from the process depending on its parent #TimeConstraint date
    \details don't call state when the parent #TimeConstraint is not running
    \return std::shared_ptr<#StateElement> */
-  virtual std::shared_ptr<StateElement> state() = 0;
+  virtual StateElement state() = 0;
 
   virtual void start() { }
   virtual void stop() { }

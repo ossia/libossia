@@ -1,12 +1,121 @@
 #include "Editor/State_impl.h"
+#include <Editor/StateElement.h>
+#include <Misc/Util.h>
 
 namespace OSSIA
 {
-  shared_ptr<State> State::create()
+
+
+  bool operator==(const State& lhs, const State& rhs)
   {
-    return make_shared<impl::JamomaState>();
+      return lhs.children == rhs.children;
   }
 
-  State::~State()
-  {}
+  bool operator!=(const State& lhs, const State& rhs)
+  {
+      return lhs.children == rhs.children;
+  }
+
+  struct flatten_visitor
+  {
+          State& state;
+
+          void operator()(const Message& messageToAppend)
+          {
+              // find message with the same address to replace it
+              auto it = find_if(state.children, [&] (const StateElement& e)
+              {
+                  if(auto m = e.target<Message>())
+                      return m->address == messageToAppend.address;
+                  return false;
+              });
+
+              if(it != state.children.end())
+              {
+                  // Merge messages
+                  it->target<Message>()->value = messageToAppend.value;
+              }
+              else
+              {
+                  state.children.push_back(messageToAppend);
+              }
+          }
+
+          void operator()(const State& s)
+          {
+              for (const auto& e : s.children)
+              {
+                  flattenAndFilter(state, e);
+              }
+          }
+
+          void operator()(const CustomState& e)
+          {
+              state.children.push_back(e);
+          }
+  };
+
+  void flattenAndFilter(State& state, const StateElement& element)
+  {
+      eggs::variants::apply(flatten_visitor{state}, element);
+  }
+
+  struct flatten_move_visitor
+  {
+          State& state;
+
+          void operator()(Message&& messageToAppend)
+          {
+              // find message with the same address to replace it
+              auto it = find_if(state.children, [&] (const StateElement& e)
+              {
+                  if(auto m = e.target<Message>())
+                      return m->address == messageToAppend.address;
+                  return false;
+              });
+
+              if(it != state.children.end())
+              {
+                  // Merge messages
+                  it->target<Message>()->value = std::move(messageToAppend.value);
+              }
+              else
+              {
+                  state.children.push_back(std::move(messageToAppend));
+              }
+          }
+
+          void operator()(State&& s)
+          {
+              for (auto&& e : s.children)
+              {
+                  flattenAndFilter(state, std::move(e));
+              }
+          }
+
+          void operator()(CustomState&& e)
+          {
+              state.children.push_back(std::move(e));
+          }
+  };
+
+  void flattenAndFilter(State& state, StateElement&& element)
+  {
+      eggs::variants::apply(flatten_visitor{state}, std::move(element));
+  }
+
+  void launch(const StateElement& s)
+  {
+      eggs::variants::apply(StateExecutionVisitor{}, s);
+  }
+
+  void State::launch() const
+  {
+      StateExecutionVisitor v;
+      for(const auto& state : children)
+      {
+          eggs::variants::apply(v, state);
+      }
+  }
+
 }

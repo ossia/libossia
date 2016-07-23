@@ -41,7 +41,7 @@ private:
   shared_ptr<Address>    mDrivenAddress;
   Value mDrive;
 
-  shared_ptr<Message>    mMessageToSend;
+  Message mMessageToSend;
   Value mValueToSend;
 
 public:
@@ -62,9 +62,9 @@ public:
 # pragma mark Execution
 #endif
 
-  shared_ptr<StateElement> offset(TimeValue) override;
+  StateElement offset(TimeValue) override;
 
-  shared_ptr<StateElement> state() override;
+  StateElement state() override;
 #if 0
 # pragma mark -
 # pragma mark Execution - Implementation specific
