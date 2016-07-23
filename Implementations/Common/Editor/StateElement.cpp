@@ -1,10 +1,6 @@
-#include "Editor/JamomaStateElement.h"
+#include "Editor/StateElement.h"
 
-# pragma mark -
-# pragma mark Life cycle
-
-JamomaStateElement::JamomaStateElement()
-{}
-
-StateElement::~StateElement()
-{}
+namespace OSSIA
+{
+StateElement::~StateElement() = default;
+}

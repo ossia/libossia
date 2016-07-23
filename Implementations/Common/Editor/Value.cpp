@@ -1,6 +1,6 @@
 #include "Editor/Curve.h"
 #include <Editor/Value/Value.h>
-#include <Editor/Value/SafeValue.h>
+#include <Editor/Value/Value.h>
 #include "Network/Node.h"
 #include <Editor/Value/ValueComparisonImpl.h>
 #include <Editor/Value/Behavior.h>

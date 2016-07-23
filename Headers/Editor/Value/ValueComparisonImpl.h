@@ -1,5 +1,5 @@
 #pragma once
-#include <Editor/Value/SafeValue.h>
+#include <Editor/Value/Value.h>
 
 #include <Network/Address.h>
 

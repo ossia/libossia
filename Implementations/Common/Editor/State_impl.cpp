@@ -1,0 +1,39 @@
+#include "State_impl.h"
+
+namespace impl
+{
+
+# pragma mark -
+# pragma mark Life cycle
+
+JamomaState::JamomaState()
+{}
+
+JamomaState::JamomaState(const JamomaState * other)
+{}
+
+shared_ptr<State> JamomaState::clone() const
+{
+  return make_shared<JamomaState>(this);
+}
+
+JamomaState::~JamomaState()
+{}
+
+# pragma mark -
+# pragma mark Execution
+
+void JamomaState::launch() const
+{
+  for (const auto& elt : stateElements())
+    elt->launch();
+}
+
+# pragma mark -
+# pragma mark Accessors
+
+StateElement::Type JamomaState::getType() const
+{
+  return StateElement::Type::STATE;
+}
+}

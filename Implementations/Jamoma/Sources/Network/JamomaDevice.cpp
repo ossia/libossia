@@ -1,6 +1,5 @@
 #include "Network/JamomaDevice.h"
 #include "Network/Protocol/JamomaLocal.h"
-#include "Network/Protocol/JamomaMIDI.h"
 #include "Network/Protocol/JamomaMinuit.h"
 #include "Network/Protocol/JamomaOSC.h"
 

@@ -17,7 +17,7 @@
 #include "Network/Device.h"
 #include "Network/Node.h"
 #include "Network/Protocol.h"
-#include <Editor/Value/SafeValue.h>
+#include <Editor/Value/Value.h>
 
 #include "TTModular.h"
 

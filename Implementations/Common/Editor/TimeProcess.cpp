@@ -1,4 +1,4 @@
-#include "Editor/JamomaTimeProcess.h"
+#include "Editor/TimeProcess_impl.h"
 
 using namespace std;
 

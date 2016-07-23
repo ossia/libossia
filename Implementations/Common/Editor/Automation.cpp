@@ -1,5 +1,5 @@
-#include "Editor/JamomaAutomation.h"
-#include <Editor/JamomaCurve.h>
+#include "Editor/Automation_impl.h"
+#include <Editor/Curve_impl.h>
 #include <Editor/Value/Behavior.h>
 
 #include <iostream> //! \todo to remove. only here for debug purpose
@@ -7,20 +7,8 @@
 # pragma mark -
 # pragma mark Life cycle
 #endif
-
-namespace OSSIA
+namespace impl
 {
-  shared_ptr<Automation> Automation::create(shared_ptr<Address> address,
-                                            const Value& drive)
-  {
-    return make_shared<JamomaAutomation>(address, drive);
-  }
-
-  Automation::~Automation()
-  {
-  }
-}
-
 JamomaAutomation::JamomaAutomation(shared_ptr<Address> address,
                                    const Value& drive) :
 JamomaTimeProcess(),
@@ -197,4 +185,6 @@ Value JamomaAutomation::computeValue(
   if(drive.valid())
     return eggs::variants::apply(vis, drive.v);
   throw runtime_error("none handled drive value type");
+}
+
 }

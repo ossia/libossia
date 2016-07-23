@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 project(BasicOSSIA)
+return()
 include(GenerateExportHeader)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
