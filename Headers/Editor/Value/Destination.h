@@ -5,7 +5,7 @@
 #include <initializer_list>
 namespace OSSIA
 {
-class SafeValue;
+class Value;
 /*! \details Destination to an Address value and optionnally to several index of this value */
 struct OSSIA_EXPORT Destination final
 {
@@ -33,22 +33,22 @@ struct OSSIA_EXPORT Destination final
   virtual ~Destination();
 
   /*! equal operator */
-  bool operator== (const SafeValue&) const;
+  bool operator== (const Value&) const;
 
   /*! different operator */
-  bool operator!= (const SafeValue&) const;
+  bool operator!= (const Value&) const;
 
   /*! greater than operator */
-  bool operator> (const SafeValue&) const;
+  bool operator> (const Value&) const;
 
   /*! greater than and equal operator */
-  bool operator>= (const SafeValue&) const;
+  bool operator>= (const Value&) const;
 
   /*! less than operator */
-  bool operator< (const SafeValue&) const;
+  bool operator< (const Value&) const;
 
   /*! less than and equal operator */
-  bool operator<= (const SafeValue&) const;
+  bool operator<= (const Value&) const;
 };
 
 }

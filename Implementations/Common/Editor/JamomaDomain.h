@@ -27,18 +27,18 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  SafeValue mMin;
-  SafeValue mMax;
-  vector<SafeValue> mValues;
+  Value mMin;
+  Value mMax;
+  vector<Value> mValues;
 
 public:
 
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaDomain(const SafeValue&,
-               const SafeValue&,
-               std::vector<SafeValue>);
+  JamomaDomain(const Value&,
+               const Value&,
+               std::vector<Value>);
 
   JamomaDomain(const JamomaDomain&);
 
@@ -49,17 +49,17 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  const SafeValue& getMin() const override;
+  const Value& getMin() const override;
 
-  Domain & setMin(const SafeValue&) override;
+  Domain & setMin(const Value&) override;
 
-  const SafeValue& getMax() const override;
+  const Value& getMax() const override;
 
-  Domain & setMax(const SafeValue&) override;
+  Domain & setMax(const Value&) override;
 
-  const std::vector<SafeValue>& getValues() const override;
+  const std::vector<Value>& getValues() const override;
 
-  Domain & setValues(const std::vector<SafeValue>& values) override;
+  Domain & setValues(const std::vector<Value>& values) override;
 
 };
 

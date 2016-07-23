@@ -41,7 +41,7 @@ public:
    \param std::shared_ptr<#Address> where to send the value
    \param const #Value the value
    \return std::shared_ptr<#Message> */
-  static std::shared_ptr<Message> create(std::shared_ptr<Address>, const SafeValue&);
+  static std::shared_ptr<Message> create(std::shared_ptr<Address>, const Value&);
 
   /*! clone */
   virtual std::shared_ptr<Message> clone() const = 0;
@@ -69,7 +69,7 @@ public:
 
   /*! get message's value
    \return #Value the value */
-  virtual const SafeValue& getValue() const = 0;
+  virtual const Value& getValue() const = 0;
 };
 
 }

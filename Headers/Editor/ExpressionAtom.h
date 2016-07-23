@@ -57,15 +57,15 @@ public:
    \param const #Value*
    \param #Operator
    \return std::shared_ptr<#ExpressionAtom> */
-  static std::shared_ptr<ExpressionAtom> create(const SafeValue&,
+  static std::shared_ptr<ExpressionAtom> create(const Value&,
                                                 Operator,
-                                                const SafeValue&);
-  static std::shared_ptr<ExpressionAtom> create(const SafeValue& v,
+                                                const Value&);
+  static std::shared_ptr<ExpressionAtom> create(const Value& v,
                                                 Operator op)
   {
     return create(v, op, Impulse{});
   }
-  static std::shared_ptr<ExpressionAtom> create(const SafeValue& v)
+  static std::shared_ptr<ExpressionAtom> create(const Value& v)
   {
     return create(v, Operator::EQUAL);
   }
@@ -101,7 +101,7 @@ public:
 
   /*! get first operand
    \return const #Value* first operand */
-  virtual const SafeValue& getFirstOperand() const = 0;
+  virtual const Value& getFirstOperand() const = 0;
 
   /*! get operator
    \return #Operator operator */
@@ -109,7 +109,7 @@ public:
 
   /*! get second operand
    \return const #Value* second operand */
-  virtual const SafeValue& getSecondOperand() const = 0;
+  virtual const Value& getSecondOperand() const = 0;
 };
 
 }

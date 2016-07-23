@@ -5,11 +5,11 @@
 
 namespace OSSIA
 {
-class SafeValue;
+class Value;
 /*! \details Tuple value */
 struct OSSIA_EXPORT Tuple
 {
-  std::vector<SafeValue> value;
+  std::vector<Value> value;
 
   /*! constructor for an empty tuple */
   Tuple();
@@ -21,36 +21,36 @@ struct OSSIA_EXPORT Tuple
 
   /*! constructor for one value
    \param const value */
-  explicit Tuple(const SafeValue& v);
+  explicit Tuple(const Value& v);
 
   /*! constructor for any number of values
   \param const value
   \param const value
   \param ... */
-  Tuple(std::initializer_list<SafeValue> v);
+  Tuple(std::initializer_list<Value> v);
 
   /*! constructor passing a value vector
    \param std::vector<const #Value> value */
-  Tuple(const std::vector<SafeValue>& v);
-  Tuple(std::vector<SafeValue>&& v);
+  Tuple(const std::vector<Value>& v);
+  Tuple(std::vector<Value>&& v);
 
   /*! equal operator */
-  bool operator== (const SafeValue&) const;
+  bool operator== (const Value&) const;
 
   /*! different operator */
-  bool operator!= (const SafeValue&) const;
+  bool operator!= (const Value&) const;
 
   /*! greater than operator */
-  bool operator> (const SafeValue&) const;
+  bool operator> (const Value&) const;
 
   /*! greater than and equal operator */
-  bool operator>= (const SafeValue&) const;
+  bool operator>= (const Value&) const;
 
   /*! less than operator */
-  bool operator< (const SafeValue&) const;
+  bool operator< (const Value&) const;
 
   /*! less than and equal operator */
-  bool operator<= (const SafeValue&) const;
+  bool operator<= (const Value&) const;
 };
 
 }

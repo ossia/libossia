@@ -535,8 +535,8 @@ void JamomaNode::buildAddress()
           TTValue v;
           object.get("value", v);
 
-          vector<SafeValue> tuple_min;
-          vector<SafeValue> tuple_max;
+          vector<Value> tuple_min;
+          vector<Value> tuple_max;
           for (unsigned long i = 0; i < v.size(); i++)
             tuple_min.push_back(OSSIA::Float{range[0]});
 
@@ -547,7 +547,7 @@ void JamomaNode::buildAddress()
         else if (type == kTTSym_string)
         {
           // string values enumeration
-          vector<SafeValue> values;
+          vector<Value> values;
           for (const auto & e : range)
           {
             TTSymbol s = e;

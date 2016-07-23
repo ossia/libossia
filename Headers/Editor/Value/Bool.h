@@ -3,7 +3,7 @@
 
 namespace OSSIA
 {
-class SafeValue;
+class Value;
 /*! \details Bool value */
 struct OSSIA_EXPORT Bool
 {
@@ -22,22 +22,22 @@ struct OSSIA_EXPORT Bool
   Bool& operator=(Bool&&) = default;
 
   /*! equal operator */
-  bool operator== (const SafeValue&) const;
+  bool operator== (const Value&) const;
 
   /*! different operator */
-  bool operator!= (const SafeValue&) const;
+  bool operator!= (const Value&) const;
 
   /*! greater than operator */
-  bool operator> (const SafeValue&) const;
+  bool operator> (const Value&) const;
 
   /*! greater than and equal operator */
-  bool operator>= (const SafeValue&) const;
+  bool operator>= (const Value&) const;
 
   /*! less than operator */
-  bool operator< (const SafeValue&) const;
+  bool operator< (const Value&) const;
 
   /*! less than and equal operator */
-  bool operator<= (const SafeValue&) const;
+  bool operator<= (const Value&) const;
 };
 
 const Bool False{false};

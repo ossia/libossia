@@ -5,15 +5,15 @@
 
 namespace OSSIA
 {
-  shared_ptr<Domain> Domain::create(const SafeValue& min,
-                                    const SafeValue& max,
-                                    std::vector<SafeValue> values)
+  shared_ptr<Domain> Domain::create(const Value& min,
+                                    const Value& max,
+                                    std::vector<Value> values)
   {
     return make_shared<JamomaDomain>(min, max, values);
   }
 
-  shared_ptr<Domain> Domain::create(const SafeValue& min,
-                                    const SafeValue& max)
+  shared_ptr<Domain> Domain::create(const Value& min,
+                                    const Value& max)
   {
     return create(min, max, {});
   }
@@ -24,9 +24,9 @@ namespace OSSIA
   }
 }
 
-JamomaDomain::JamomaDomain(const SafeValue& min,
-                           const SafeValue& max,
-                           std::vector<SafeValue> values) :
+JamomaDomain::JamomaDomain(const Value& min,
+                           const Value& max,
+                           std::vector<Value> values) :
   mMin(min),
   mMax(max),
   mValues(values)
@@ -55,34 +55,34 @@ Domain::~Domain()
 # pragma mark -
 # pragma mark Accessors
 
-const SafeValue& JamomaDomain::getMin() const
+const Value& JamomaDomain::getMin() const
 {
   return mMin;
 }
 
-Domain & JamomaDomain::setMin(const SafeValue& min)
+Domain & JamomaDomain::setMin(const Value& min)
 {
   mMin = min;
   return *this;
 }
 
-const SafeValue& JamomaDomain::getMax() const
+const Value& JamomaDomain::getMax() const
 {
   return mMax;
 }
 
-Domain & JamomaDomain::setMax(const SafeValue& max)
+Domain & JamomaDomain::setMax(const Value& max)
 {
   mMax = max;
   return *this;
 }
 
-const std::vector<SafeValue>& JamomaDomain::getValues() const
+const std::vector<Value>& JamomaDomain::getValues() const
 {
   return mValues;
 }
 
-Domain & JamomaDomain::setValues(const std::vector<SafeValue>& values)
+Domain & JamomaDomain::setValues(const std::vector<Value>& values)
 {
   mValues = values;
 

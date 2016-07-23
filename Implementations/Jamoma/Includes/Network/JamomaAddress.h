@@ -39,7 +39,7 @@ private:
 
   mutable TTObject    mObject;
   TTObject            mObjectValueCallback;
-  SafeValue     mValue;
+  Value     mValue;
   mutable std::mutex  mValueMutex;
 
   Type         mValueType;
@@ -69,17 +69,17 @@ public:
 
   void pullValue() override;
 
-  Address & pushValue(const SafeValue&) override;
+  Address & pushValue(const Value&) override;
   Address & pushValue() override;
 
 # pragma mark -
 # pragma mark Accessors
 
-  const SafeValue& getValue() const;
+  const Value& getValue() const;
 
-  SafeValue cloneValue(std::vector<char> = {}) const override;
+  Value cloneValue(std::vector<char> = {}) const override;
 
-  Address & setValue(const SafeValue&) override;
+  Address & setValue(const Value&) override;
 
   Type getValueType() const override;
 
@@ -139,9 +139,9 @@ public:
    \param bool true to enable observation */
   void observeValue(bool);
 
-  SafeValue convertTTValueIntoValue(const TTValue&, Type) const;
+  Value convertTTValueIntoValue(const TTValue&, Type) const;
 
-  static void convertValueIntoTTValue(const SafeValue &, TTValue &);
+  static void convertValueIntoTTValue(const Value &, TTValue &);
 
   static string buildNodePath(shared_ptr<Node>);
 
@@ -177,4 +177,4 @@ std::string getAddressFromNode(const OSSIA::Node&);
  * etc...
  *
  */
-std::string getValueAsString(const OSSIA::SafeValue& val);
+std::string getValueAsString(const OSSIA::Value& val);

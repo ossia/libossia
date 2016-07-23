@@ -5,7 +5,7 @@
 
 namespace OSSIA
 {
-class SafeValue;
+class Value;
 /*! \details Behavior value */
 struct OSSIA_EXPORT Behavior
 {
@@ -25,27 +25,27 @@ struct OSSIA_EXPORT Behavior
   virtual ~Behavior();
 
   /*! equal operator */
-  bool operator== (const SafeValue&) const
+  bool operator== (const Value&) const
   { return false; }
 
   /*! different operator */
-  bool operator!= (const SafeValue&) const
+  bool operator!= (const Value&) const
   { return false; }
 
   /*! greater than operator */
-  bool operator> (const SafeValue&) const
+  bool operator> (const Value&) const
   { return false; }
 
   /*! greater than and equal operator */
-  bool operator>= (const SafeValue&) const
+  bool operator>= (const Value&) const
   { return false; }
 
   /*! less than operator */
-  bool operator< (const SafeValue&) const
+  bool operator< (const Value&) const
   { return false; }
 
   /*! less than and equal operator */
-  bool operator<= (const SafeValue&) const
+  bool operator<= (const Value&) const
   { return false; }
 };
 

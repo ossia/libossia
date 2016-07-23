@@ -11,7 +11,7 @@
 namespace OSSIA
 {
   shared_ptr<Automation> Automation::create(shared_ptr<Address> address,
-                                            const SafeValue& drive)
+                                            const Value& drive)
   {
     return make_shared<JamomaAutomation>(address, drive);
   }
@@ -22,7 +22,7 @@ namespace OSSIA
 }
 
 JamomaAutomation::JamomaAutomation(shared_ptr<Address> address,
-                                   const SafeValue& drive) :
+                                   const Value& drive) :
 JamomaTimeProcess(),
 mDrivenAddress(address),
 mDrive(drive)
@@ -118,7 +118,7 @@ const shared_ptr<Address> JamomaAutomation::getDrivenAddress() const
   return mDrivenAddress;
 }
 
-const SafeValue& JamomaAutomation::getDriving() const
+const Value& JamomaAutomation::getDriving() const
 {
   return mDrive;
 }
@@ -128,9 +128,9 @@ namespace
 struct computeValue_visitor
 {
   double position;
-  const SafeValue& drive;
+  const Value& drive;
 
-  SafeValue operator()(const OSSIA::Behavior& b) const
+  Value operator()(const OSSIA::Behavior& b) const
   {
     auto base_curve = b.value.get();
     auto t = base_curve->getType();
@@ -159,9 +159,9 @@ struct computeValue_visitor
     throw runtime_error("none handled drive curve type");
   }
 
-  SafeValue operator()(const Tuple& t) const
+  Value operator()(const Tuple& t) const
   {
-    vector<SafeValue> t_value;
+    vector<Value> t_value;
     t_value.reserve(t.value.size());
 
     for (const auto & e : t.value)
@@ -172,25 +172,25 @@ struct computeValue_visitor
     return Tuple{std::move(t_value)};
   }
 
-  SafeValue error() const
+  Value error() const
   { throw runtime_error("Unhandled drive value type."); }
-  SafeValue operator()(const Int&) { return error(); }
-  SafeValue operator()(const Float&) { return error(); }
-  SafeValue operator()(const Bool&) { return error(); }
-  SafeValue operator()(const Char&) { return error(); }
-  SafeValue operator()(const String&) { return error(); }
-  SafeValue operator()(const Destination&) { return error(); }
-  SafeValue operator()(const Vec2f&) { return error(); }
-  SafeValue operator()(const Vec3f&) { return error(); }
-  SafeValue operator()(const Vec4f&) { return error(); }
-  SafeValue operator()(const Impulse&) { return error(); }
+  Value operator()(const Int&) { return error(); }
+  Value operator()(const Float&) { return error(); }
+  Value operator()(const Bool&) { return error(); }
+  Value operator()(const Char&) { return error(); }
+  Value operator()(const String&) { return error(); }
+  Value operator()(const Destination&) { return error(); }
+  Value operator()(const Vec2f&) { return error(); }
+  Value operator()(const Vec3f&) { return error(); }
+  Value operator()(const Vec4f&) { return error(); }
+  Value operator()(const Impulse&) { return error(); }
 
 };
 }
 
-SafeValue JamomaAutomation::computeValue(
+Value JamomaAutomation::computeValue(
     double position,
-    const SafeValue& drive)
+    const Value& drive)
 {
   computeValue_visitor vis{position, drive};
 

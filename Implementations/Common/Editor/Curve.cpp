@@ -199,7 +199,7 @@ getPointsMap() const
 template <typename X, typename Y>
 Y JamomaCurve<X,Y>::
 convertToTemplateTypeValue(
-    const SafeValue& value,
+    const Value& value,
     vector<char>::const_iterator idx)
 {
   struct visitor {

@@ -18,9 +18,9 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  SafeValue    mFirstValue;
+  Value    mFirstValue;
   Operator  mOperator;
-  SafeValue    mSecondValue;
+  Value    mSecondValue;
 
   Address::iterator mFirstValueCallbackIndex;
   Address::iterator mSecondValueCallbackIndex;
@@ -30,7 +30,7 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaExpressionAtom(const SafeValue& value1, Operator op, const SafeValue& value2);
+  JamomaExpressionAtom(const Value& value1, Operator op, const Value& value2);
 
   JamomaExpressionAtom(const JamomaExpressionAtom& other);
 
@@ -62,21 +62,21 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  const SafeValue& getFirstOperand() const override;
+  const Value& getFirstOperand() const override;
 
   ExpressionAtom::Operator getOperator() const override;
 
-  const SafeValue& getSecondOperand() const override;
+  const Value& getSecondOperand() const override;
 
 private:
 
 # pragma mark -
 # pragma mark Implementation Specific
 
-  bool do_evaluation(const SafeValue& first, const SafeValue& second) const;
+  bool do_evaluation(const Value& first, const Value& second) const;
 
-  void firstValueCallback(const SafeValue& value);
+  void firstValueCallback(const Value& value);
 
-  void secondValueCallback(const SafeValue& value);
+  void secondValueCallback(const Value& value);
 
 };

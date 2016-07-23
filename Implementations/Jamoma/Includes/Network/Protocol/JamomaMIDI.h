@@ -219,7 +219,7 @@ struct MIDIAddressInfo
     return {};
   }
 
-  SafeValue defaultValue(midi_size_t val)
+  Value defaultValue(midi_size_t val)
   {
     switch(type)
     {
@@ -281,7 +281,7 @@ class MIDIAddress final :
   std::shared_ptr<OSSIA::Domain> mDomain;
 
   OSSIA::Type mType = OSSIA::Type::INT;
-  SafeValue mValue;
+  Value mValue;
 public:
   MIDIAddress(MIDIAddressInfo info, std::shared_ptr<OSSIA::Node> parent):
     mInfo{info},
@@ -307,7 +307,7 @@ public:
     mProtocol.lock()->pullAddressValue(*this);
   }
 
-  Address& pushValue(const SafeValue& val) override
+  Address& pushValue(const Value& val) override
   {
     mValue = val;
     mProtocol.lock()->pushAddressValue(*this);
@@ -321,18 +321,18 @@ public:
   }
 
 
-  const SafeValue& getValue() const
+  const Value& getValue() const
   {
     return mValue;
   }
 
-  SafeValue cloneValue(std::vector<char>) const override
+  Value cloneValue(std::vector<char>) const override
   {
     // TODO use the vec parameter
     return mValue;
   }
 
-  Address& setValue(const SafeValue& v) override
+  Address& setValue(const Value& v) override
   {
     mValue = v;
     return *this;
@@ -415,7 +415,7 @@ public:
     }
   }
 
-  void valueCallback(const OSSIA::SafeValue& val)
+  void valueCallback(const OSSIA::Value& val)
   {
     this->setValue(val);
     send(mValue);

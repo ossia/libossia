@@ -37,10 +37,10 @@ private:
 #endif
 
   shared_ptr<Address>    mDrivenAddress;
-  SafeValue mDrive;
+  Value mDrive;
 
   shared_ptr<Message>    mMessageToSend;
-  SafeValue mValueToSend;
+  Value mValueToSend;
 
 public:
 #if 0
@@ -48,7 +48,7 @@ public:
 # pragma mark Life cycle
 #endif
 
-  JamomaAutomation(shared_ptr<Address>, const SafeValue&);
+  JamomaAutomation(shared_ptr<Address>, const Value&);
 
   JamomaAutomation(const JamomaAutomation&);
 
@@ -79,11 +79,11 @@ public:
 
   const shared_ptr<Address> getDrivenAddress() const override;
 
-  const SafeValue& getDriving() const override;
+  const Value& getDriving() const override;
 
 #if 0
 # pragma mark -
 # pragma mark Implementation specific
 #endif
-  static SafeValue computeValue(double, const SafeValue&);
+  static Value computeValue(double, const Value&);
 };

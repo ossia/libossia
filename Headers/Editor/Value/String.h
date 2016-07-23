@@ -4,7 +4,7 @@
 
 namespace OSSIA
 {
-class SafeValue;
+class Value;
 /*! \details String value */
 struct OSSIA_EXPORT String
 {
@@ -23,22 +23,22 @@ struct OSSIA_EXPORT String
   String& operator=(String&&) = default;
 
   /*! equal operator */
-  bool operator== (const SafeValue&) const;
+  bool operator== (const Value&) const;
 
   /*! different operator */
-  bool operator!= (const SafeValue&) const;
+  bool operator!= (const Value&) const;
 
   /*! greater than operator */
-  bool operator> (const SafeValue&) const;
+  bool operator> (const Value&) const;
 
   /*! greater than and equal operator */
-  bool operator>= (const SafeValue&) const;
+  bool operator>= (const Value&) const;
 
   /*! less than operator */
-  bool operator< (const SafeValue&) const;
+  bool operator< (const Value&) const;
 
   /*! less than and equal operator */
-  bool operator<= (const SafeValue&) const;
+  bool operator<= (const Value&) const;
 };
 
 }

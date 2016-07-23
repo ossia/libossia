@@ -6,18 +6,18 @@
 namespace OSSIA
 {
   shared_ptr<ExpressionAtom> ExpressionAtom::create(
-      const SafeValue& value1,
+      const Value& value1,
       Operator op,
-      const SafeValue& value2)
+      const Value& value2)
   {
     return make_shared<JamomaExpressionAtom>(value1, op, value2);
   }
 }
 
 JamomaExpressionAtom::JamomaExpressionAtom(
-    const SafeValue& value1,
+    const Value& value1,
     Operator op,
-    const SafeValue& value2) :
+    const Value& value2) :
 mFirstValue(value1),
 mOperator(op),
 mSecondValue(value2)
@@ -79,9 +79,9 @@ bool JamomaExpressionAtom::operator== (const Expression& expression) const
   if (expression.getType() == Expression::Type::ATOM)
   {
     const JamomaExpressionAtom e = dynamic_cast<const JamomaExpressionAtom&>(expression);
-    return SafeValue{mFirstValue} == SafeValue{e.mFirstValue} &&
+    return Value{mFirstValue} == Value{e.mFirstValue} &&
            mOperator == e.mOperator &&
-           SafeValue{mSecondValue} == SafeValue{e.mSecondValue};
+           Value{mSecondValue} == Value{e.mSecondValue};
   }
   else
     return false;
@@ -92,9 +92,9 @@ bool JamomaExpressionAtom::operator!= (const Expression& expression) const
   if (expression.getType() == Expression::Type::ATOM)
   {
     const JamomaExpressionAtom e = dynamic_cast<const JamomaExpressionAtom&>(expression);
-    return SafeValue{mFirstValue} != SafeValue{e.mFirstValue} ||
+    return Value{mFirstValue} != Value{e.mFirstValue} ||
            mOperator != e.mOperator ||
-           SafeValue{mSecondValue} != SafeValue{e.mSecondValue};
+           Value{mSecondValue} != Value{e.mSecondValue};
   }
   else
     return true;
@@ -117,7 +117,7 @@ Expression::iterator JamomaExpressionAtom::addCallback(ResultCallback callback)
       if (const auto& addr = d.value->getAddress())
       {
         mFirstValueCallbackIndex = addr->addCallback(
-              [&] (const OSSIA::SafeValue& result) { firstValueCallback(result); });
+              [&] (const OSSIA::Value& result) { firstValueCallback(result); });
       }
     }
 
@@ -129,7 +129,7 @@ Expression::iterator JamomaExpressionAtom::addCallback(ResultCallback callback)
       if (const auto& addr = d.value->getAddress())
       {
         mSecondValueCallbackIndex = addr->addCallback(
-              [&] (const OSSIA::SafeValue& result) { secondValueCallback(result); });
+              [&] (const OSSIA::Value& result) { secondValueCallback(result); });
       }
     }
   }
@@ -170,7 +170,7 @@ void JamomaExpressionAtom::removeCallback(Expression::iterator callback)
 # pragma mark -
 # pragma mark Accessors
 
-const SafeValue& JamomaExpressionAtom::getFirstOperand() const
+const Value& JamomaExpressionAtom::getFirstOperand() const
 {
   return mFirstValue;
 }
@@ -180,7 +180,7 @@ ExpressionAtom::Operator JamomaExpressionAtom::getOperator() const
   return mOperator;
 }
 
-const SafeValue& JamomaExpressionAtom::getSecondOperand() const
+const Value& JamomaExpressionAtom::getSecondOperand() const
 {
   return mSecondValue;
 }
@@ -188,7 +188,7 @@ const SafeValue& JamomaExpressionAtom::getSecondOperand() const
 # pragma mark -
 # pragma mark Implementation Specific
 
-bool JamomaExpressionAtom::do_evaluation(const SafeValue& first, const SafeValue& second) const
+bool JamomaExpressionAtom::do_evaluation(const Value& first, const Value& second) const
 {
   switch (mOperator)
   {
@@ -221,13 +221,13 @@ bool JamomaExpressionAtom::do_evaluation(const SafeValue& first, const SafeValue
   }
 }
 
-void JamomaExpressionAtom::firstValueCallback(const SafeValue& value)
+void JamomaExpressionAtom::firstValueCallback(const Value& value)
 {
   if(mSecondValue.valid())
     send(do_evaluation(value, mSecondValue));
 }
 
-void JamomaExpressionAtom::secondValueCallback(const SafeValue& value)
+void JamomaExpressionAtom::secondValueCallback(const Value& value)
 {
   if(mSecondValue.valid())
     send(do_evaluation(mFirstValue, value));

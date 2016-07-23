@@ -41,10 +41,10 @@ private:
 
   shared_ptr<Address>   mDriverAddress;
   shared_ptr<Address>   mDrivenAddress;
-  SafeValue             mDrive;
+  Value             mDrive;
 
   shared_ptr<Message>   mMessageToSend;
-  SafeValue             mValueToMap;
+  Value             mValueToMap;
   mutable std::mutex    mValueToMapMutex;
 
   bool                  mDriverValueObserved;
@@ -57,7 +57,7 @@ public:
 
   JamomaMapper(shared_ptr<Address>,
                shared_ptr<Address>,
-               const SafeValue&);
+               const Value&);
 
   JamomaMapper(const JamomaMapper &);
 
@@ -87,14 +87,14 @@ public:
 
   const shared_ptr<Address> getDrivenAddress() const override;
 
-  const SafeValue& getDriving() const override;
+  const Value& getDriving() const override;
 
 private:
 
 # pragma mark -
 # pragma mark Implementation specific
 
-  SafeValue computeValue(const SafeValue&, const SafeValue&);
+  Value computeValue(const Value&, const Value&);
 
-  void driverValueCallback(const SafeValue& value);
+  void driverValueCallback(const Value& value);
 };

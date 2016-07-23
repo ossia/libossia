@@ -1,10 +1,9 @@
 #pragma once
-#include <Editor/Value/ValueBase.h>
 #include <array>
 
 namespace OSSIA
 {
-
+class Value;
 template<typename T, int N>
 class Vec
 {
@@ -27,22 +26,22 @@ class Vec
 
 
         /*! equal operator */
-        bool operator== (const SafeValue&) const;
+        bool operator== (const Value&) const;
 
         /*! different operator */
-        bool operator!= (const SafeValue&) const;
+        bool operator!= (const Value&) const;
 
         /*! greater than operator */
-        bool operator> (const SafeValue&) const;
+        bool operator> (const Value&) const;
 
         /*! greater than and equal operator */
-        bool operator>= (const SafeValue&) const;
+        bool operator>= (const Value&) const;
 
         /*! less than operator */
-        bool operator< (const SafeValue&) const;
+        bool operator< (const Value&) const;
 
         /*! less than and equal operator */
-        bool operator<= (const SafeValue&) const;
+        bool operator<= (const Value&) const;
 };
 
 using Vec2f = Vec<float, 2>;

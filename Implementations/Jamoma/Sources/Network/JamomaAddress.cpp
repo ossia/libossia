@@ -69,7 +69,7 @@ void JamomaAddress::pullValue()
   getProtocol().pullAddressValue(*this);
 }
 
-Address & JamomaAddress::pushValue(const SafeValue& value)
+Address & JamomaAddress::pushValue(const Value& value)
 {
   setValue(value);
 
@@ -90,12 +90,12 @@ Address & JamomaAddress::pushValue()
 # pragma mark -
 # pragma mark Accessors
 
-const SafeValue& JamomaAddress::getValue() const
+const Value& JamomaAddress::getValue() const
 {
   return mValue;
 }
 
-SafeValue JamomaAddress::cloneValue(std::vector<char> index) const
+Value JamomaAddress::cloneValue(std::vector<char> index) const
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
 
@@ -115,7 +115,7 @@ SafeValue JamomaAddress::cloneValue(std::vector<char> index) const
       {
         // create a new tuple from tuple's values at index
         const auto& tuple = mValue.get<Tuple>();
-        vector<SafeValue> values;
+        vector<Value> values;
         values.reserve(index.size());
 
         for (char i : index)
@@ -132,7 +132,7 @@ SafeValue JamomaAddress::cloneValue(std::vector<char> index) const
   }
 }
 
-Address & JamomaAddress::setValue(const SafeValue& value)
+Address & JamomaAddress::setValue(const Value& value)
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
 
@@ -471,7 +471,7 @@ void JamomaAddress::observeValue(bool enable)
   }
 }
 
-SafeValue JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType) const
+Value JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType) const
 {
   switch (valueType)
   {
@@ -619,7 +619,7 @@ SafeValue JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueTyp
 
     case Type::TUPLE :
     {
-      vector<SafeValue> t_value;
+      vector<Value> t_value;
 
       for (const auto & e : v)
       {
@@ -660,7 +660,7 @@ SafeValue JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueTyp
   return {};
 }
 
-void JamomaAddress::convertValueIntoTTValue(const SafeValue& value, TTValue & ttval)
+void JamomaAddress::convertValueIntoTTValue(const Value& value, TTValue & ttval)
 {
   struct visitor {
     TTValue& v;
@@ -838,7 +838,7 @@ static std::string getTupleAsString(const OSSIA::Tuple& tuple)
 }
 
 
-std::string getValueAsString(const OSSIA::SafeValue& val)
+std::string getValueAsString(const OSSIA::Value& val)
 {
     std::stringstream s;
     ValueStringVisitor vis{s};

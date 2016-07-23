@@ -3,7 +3,7 @@
 
 namespace OSSIA
 {
-class SafeValue;
+class Value;
 
 /*! \details Impulse value */
 struct OSSIA_EXPORT Impulse
@@ -18,27 +18,27 @@ struct OSSIA_EXPORT Impulse
   virtual ~Impulse();
 
   /*! equal operator */
-  bool operator== (const SafeValue&) const
+  bool operator== (const Value&) const
   { return true; }
 
   /*! different operator */
-  bool operator!= (const SafeValue&) const
+  bool operator!= (const Value&) const
   { return false; }
 
   /*! greater than operator */
-  bool operator> (const SafeValue&) const
+  bool operator> (const Value&) const
   { return false; }
 
   /*! greater than and equal operator */
-  bool operator>= (const SafeValue&) const
+  bool operator>= (const Value&) const
   { return true; }
 
   /*! less than operator */
-  bool operator< (const SafeValue&) const
+  bool operator< (const Value&) const
   { return false; }
 
   /*! less than and equal operator */
-  bool operator<= (const SafeValue&) const
+  bool operator<= (const Value&) const
   { return true; }
 };
 

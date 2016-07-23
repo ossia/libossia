@@ -11,7 +11,7 @@ namespace OSSIA
 {
 shared_ptr<Mapper> Mapper::create(shared_ptr<Address> driverAddress,
                                   shared_ptr<Address> drivenAddress,
-                                  const SafeValue& drive)
+                                  const Value& drive)
 {
   return make_shared<JamomaMapper>(driverAddress, drivenAddress, drive);
 }
@@ -19,7 +19,7 @@ shared_ptr<Mapper> Mapper::create(shared_ptr<Address> driverAddress,
 
 JamomaMapper::JamomaMapper(shared_ptr<Address> driverAddress,
                            shared_ptr<Address> drivenAddress,
-                           const SafeValue& drive) :
+                           const Value& drive) :
   JamomaTimeProcess(),
   mDriverAddress(driverAddress),
   mDrivenAddress(drivenAddress),
@@ -91,7 +91,7 @@ void JamomaMapper::start()
   if (!mDriverValueObserved)
   {
     mDriverValueCallbackIndex = mDriverAddress->addCallback(
-          [this] (const OSSIA::SafeValue& val) {
+          [this] (const OSSIA::Value& val) {
       driverValueCallback(val);
     });
     mDriverValueObserved = true;
@@ -129,12 +129,12 @@ const shared_ptr<Address> JamomaMapper::getDrivenAddress() const
   return mDrivenAddress;
 }
 
-const SafeValue& JamomaMapper::getDriving() const
+const Value& JamomaMapper::getDriving() const
 {
   return mDrive;
 }
 
-SafeValue JamomaMapper::computeValue(const SafeValue& driver, const SafeValue& drive)
+Value JamomaMapper::computeValue(const Value& driver, const Value& drive)
 {
   switch (drive.getType())
   {
@@ -226,7 +226,7 @@ SafeValue JamomaMapper::computeValue(const SafeValue& driver, const SafeValue& d
       {
         auto& t_driver = driver.get<Tuple>();
 
-        vector<SafeValue> t_value;
+        vector<Value> t_value;
         t_value.reserve(t_drive.value.size());
         auto it_driver = t_driver.value.begin();
 
@@ -252,7 +252,7 @@ SafeValue JamomaMapper::computeValue(const SafeValue& driver, const SafeValue& d
   throw runtime_error("none handled drive value type");
 }
 
-void JamomaMapper::driverValueCallback(const SafeValue& value)
+void JamomaMapper::driverValueCallback(const Value& value)
 {
   std::lock_guard<std::mutex> lock(mValueToMapMutex);
 

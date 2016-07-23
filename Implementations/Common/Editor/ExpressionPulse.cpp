@@ -20,7 +20,7 @@ mResult(false)
   if (const auto& addr = mDestination.value->getAddress())
   {
     mDestinationCallbackIndex = addr->addCallback(
-          [&] (const OSSIA::SafeValue& result) { destinationCallback(result); });
+          [&] (const OSSIA::Value& result) { destinationCallback(result); });
   }
 }
 
@@ -67,7 +67,7 @@ bool JamomaExpressionPulse::operator== (const Expression& expression) const
   if (expression.getType() == Expression::Type::PULSE)
   {
     auto& e = dynamic_cast<const JamomaExpressionPulse&>(expression);
-    return SafeValue{mDestination} == SafeValue{e.mDestination};
+    return Value{mDestination} == Value{e.mDestination};
   }
   else
     return false;
@@ -78,7 +78,7 @@ bool JamomaExpressionPulse::operator!= (const Expression& expression) const
   if (expression.getType() == Expression::Type::PULSE)
   {
     auto& e = dynamic_cast<const JamomaExpressionPulse&>(expression);
-    return SafeValue{mDestination} != SafeValue{e.mDestination};
+    return Value{mDestination} != Value{e.mDestination};
   }
   else
     return true;
@@ -109,7 +109,7 @@ const Destination& JamomaExpressionPulse::getDestination() const
 # pragma mark -
 # pragma mark Implementation Specific
 
-void JamomaExpressionPulse::destinationCallback(const SafeValue& value)
+void JamomaExpressionPulse::destinationCallback(const Value& value)
 {
   mResult = true;
   send(true);
