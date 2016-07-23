@@ -21,7 +21,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaTimeProcess : public virtual TimeProcess
+class JamomaTimeProcess
 {
 
 protected:
@@ -38,23 +38,28 @@ public:
 # pragma mark Life cycle
 #endif
 
-  JamomaTimeProcess();
+  JamomaTimeProcess() :
+      mLastDate(Infinite)
+  {
+  }
+
 #if 0
 # pragma mark -
 # pragma mark Execution - Implementation specific
 #endif
 
-  virtual void start() = 0;
-  virtual void stop() = 0;
-  virtual void pause() = 0;
-  virtual void resume() = 0;
 #if 0
 # pragma mark -
 # pragma mark Implementation specific
 #endif
-
-  /*! append each message of the state to the current state in order to eliminate address redundancy
-   \param shared_ptr<State> the State to fill
-   \param shared_ptr<StateElement> the StateElement to store */
-  void flattenAndFilter(State& state, const std::shared_ptr<StateElement>& element);
 };
+
+
+
+namespace OSSIA
+{
+/*! append each message of the state to the current state in order to eliminate address redundancy
+ \param shared_ptr<State> the State to fill
+ \param shared_ptr<StateElement> the StateElement to store */
+void flattenAndFilter(State& state, const std::shared_ptr<StateElement>& element);
+}

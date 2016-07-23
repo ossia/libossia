@@ -25,9 +25,6 @@ JamomaMIDI::~JamomaMIDI()
   }
 }
 
-MIDI::~MIDI()
-{}
-
 bool JamomaMIDI::setInfo(MidiInfo m)
 {
   try {

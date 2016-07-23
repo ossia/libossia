@@ -17,6 +17,18 @@ set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
 set(OSSIA_HEADERS_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/Headers")
 set(OSSIA_IMPL_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/Implementations")
 
+set(OSSIA_COMPILE_FLAGS
+    -Wall
+    -Wextra
+    -Wno-unused-parameter
+    -Wno-unknown-pragmas
+    -Wnon-virtual-dtor
+    -pedantic
+    -Woverloaded-virtual
+    -pipe
+    -Werror=return-type
+    -Werror=trigraphs)
+
 add_subdirectory(3rdparty/ModernMIDI EXCLUDE_FROM_ALL)
 add_subdirectory(Implementations)
 

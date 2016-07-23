@@ -27,9 +27,6 @@ std::shared_ptr<NetworkLogger> JamomaProtocol::getLogger() const
     return mLogger;
 }
 
-Protocol::~Protocol()
-{}
-
 void OSSIA::CleanupProtocols()
 {
     TTObject obj = TTObjectBasePtr(TTModularApplicationManager);

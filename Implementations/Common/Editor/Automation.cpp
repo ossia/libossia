@@ -91,7 +91,15 @@ shared_ptr<StateElement> JamomaAutomation::state()
 #endif
 
 void JamomaAutomation::start()
-{}
+{
+    if(auto b = mDrive.try_get<Behavior>())
+    {
+        if(auto& curve = b->value)
+        {
+            curve->reset();
+        }
+    }
+}
 
 void JamomaAutomation::stop()
 {}

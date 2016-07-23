@@ -125,7 +125,6 @@ template <typename X, typename Y>
 Y JamomaCurve<X,Y>::
 getInitialPointOrdinate() const
 {
-
   auto& node = mInitialPointOrdinateDestination.value;
   if(!node)
     return mInitialPointOrdinate;

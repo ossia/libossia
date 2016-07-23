@@ -1,16 +1,11 @@
 #include "Editor/JamomaTimeProcess.h"
 
-using namespace OSSIA;
 using namespace std;
 
+namespace OSSIA
+{
 # pragma mark -
 # pragma mark Life cycle
-
-JamomaTimeProcess::JamomaTimeProcess() :
-mLastDate(Infinite)
-{
-  ;
-}
 
 TimeProcess::~TimeProcess()
 {}
@@ -18,7 +13,7 @@ TimeProcess::~TimeProcess()
 # pragma mark -
 # pragma mark Implementation specific
 
-void JamomaTimeProcess::flattenAndFilter(State& state, const std::shared_ptr<StateElement>& element)
+void flattenAndFilter(State& state, const std::shared_ptr<StateElement>& element)
 {
     auto element_ptr = element.get();
     if (!element_ptr)
@@ -75,4 +70,5 @@ void JamomaTimeProcess::flattenAndFilter(State& state, const std::shared_ptr<Sta
             break;
         }
     }
+}
 }

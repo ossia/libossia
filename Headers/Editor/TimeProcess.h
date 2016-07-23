@@ -55,6 +55,10 @@ public:
    \return std::shared_ptr<#StateElement> */
   virtual std::shared_ptr<StateElement> state() = 0;
 
+  virtual void start() { }
+  virtual void stop() { }
+  virtual void pause() { }
+  virtual void resume() { }
 #if 0
 # pragma mark -
 # pragma mark Accessors

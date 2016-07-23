@@ -16,7 +16,6 @@
 #include "Editor/Curve.h"
 #include <Network/Address.h>
 #include <Editor/Value/Destination.h>
-#define OSSIA_BOOST
 #include <cmath>
 #if defined(OSSIA_BOOST)
 #include <boost/container/flat_map.hpp>
@@ -64,6 +63,13 @@ public:
   shared_ptr<Curve<X,Y>> clone() const override;
 
   ~JamomaCurve();
+
+  // Call me before execution to reset the cache.
+  void reset() override
+  {
+      mInitialPointOrdinateCacheUsed = false;
+  }
+
 
 #if 0
 # pragma mark -

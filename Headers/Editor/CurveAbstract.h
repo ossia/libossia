@@ -17,6 +17,10 @@ public:
 
   /*! get the type of both coordinates */
   virtual CurveType getType() const = 0;
+
+  /*! Clear internal data structures of the curve.
+   * Call before a new execution. */
+  virtual void reset() = 0;
 };
 
 }

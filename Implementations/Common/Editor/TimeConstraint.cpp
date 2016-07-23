@@ -93,9 +93,7 @@ void JamomaTimeConstraint::start()
   // start all jamoma time processes
   for (const auto& timeProcess : timeProcesses())
   {
-    JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
-    if(t)
-      t->start();
+    timeProcess->start();
   }
 
   // launch the clock
@@ -110,9 +108,7 @@ void JamomaTimeConstraint::stop()
   // stop all jamoma time processes
   for (const auto& timeProcess : timeProcesses())
   {
-    JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
-    if(t)
-      t->stop();
+    timeProcess->stop();
   }
 }
 
@@ -171,9 +167,7 @@ void JamomaTimeConstraint::pause()
   // pause all jamoma time processes
   for (const auto& timeProcess : timeProcesses())
   {
-    JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
-    if(t)
-        t->pause();
+    timeProcess->pause();
   }
 }
 
@@ -187,9 +181,7 @@ void JamomaTimeConstraint::resume()
   // resume all jamoma time processes
   for (const auto& timeProcess : timeProcesses())
   {
-    JamomaTimeProcess* t = dynamic_cast<JamomaTimeProcess*>(timeProcess.get());
-    if(t)
-        t->resume();
+    timeProcess->resume();
   }
 }
 
