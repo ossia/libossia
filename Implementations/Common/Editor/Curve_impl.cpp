@@ -83,17 +83,6 @@ valueAt(X abscissa) const
 
 # pragma mark -
 # pragma mark Accessors
-template<typename T>
-constexpr nullptr_t OssiaType{};
-template<>
-constexpr OSSIA::CurveSegmentType OssiaType<int> = OSSIA::CurveSegmentType::INT;
-template<>
-constexpr OSSIA::CurveSegmentType OssiaType<float> = OSSIA::CurveSegmentType::FLOAT;
-template<>
-constexpr OSSIA::CurveSegmentType OssiaType<double> = OSSIA::CurveSegmentType::DOUBLE;
-template<>
-constexpr OSSIA::CurveSegmentType OssiaType<bool> = OSSIA::CurveSegmentType::BOOL;
-
 template<typename X, typename Y>
 OSSIA::CurveType JamomaCurve<X, Y>::getType() const
 {

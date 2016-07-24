@@ -23,13 +23,14 @@
 #include <eggs/variant.hpp>
 namespace OSSIA
 {
-class Message;
-struct State;
+struct Message;
+class State;
 class CustomState;
 using StateElement = eggs::variant<Message, State, CustomState>;
 
-struct OSSIA_EXPORT State
+class OSSIA_EXPORT State
 {
+    public:
         friend bool operator==(const State& lhs, const State& rhs);
         friend bool operator!=(const State& lhs, const State& rhs);
 

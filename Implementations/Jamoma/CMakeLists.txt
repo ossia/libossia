@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(APIJamomaImplementation)
+project(APIJamomaImplementation CXX)
 include(GenerateExportHeader)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -62,6 +62,10 @@ if(WIN32)
 else()
     target_compile_options(APIJamoma PRIVATE ${OSSIA_COMPILE_FLAGS})
 endif()
+
+set_target_properties(APIJamoma PROPERTIES
+	CXX_VISIBILITY_PRESET hidden
+	VISIBILITY_INLINES_HIDDEN 0)
 
 target_link_libraries(APIJamoma PUBLIC
     OSSIA_common

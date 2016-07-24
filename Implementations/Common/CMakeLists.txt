@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(OSSIA_common)
+project(OSSIA_common CXX)
+
+cmake_policy(SET CMP0020 NEW)
+cmake_policy(SET CMP0042 NEW)
+cmake_policy(SET CMP0063 NEW)
+
 include(GenerateExportHeader)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -148,6 +153,10 @@ if(MSVC)
 endif()
 
 target_compile_options(OSSIA_common PRIVATE ${OSSIA_COMPILE_FLAGS})
+
+set_target_properties(OSSIA_common PROPERTIES
+	CXX_VISIBILITY_PRESET hidden
+	VISIBILITY_INLINES_HIDDEN 0)
 
 generate_export_header(OSSIA_common BASE_NAME OSSIA)
 target_include_directories(OSSIA_common PUBLIC

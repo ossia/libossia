@@ -28,7 +28,7 @@
 #include <functional>
 namespace OSSIA
 {
-class Destination;
+struct Destination;
 
 template <typename X, typename Y>
 class Curve : public CurveAbstract

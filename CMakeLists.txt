@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
 project(API)
 
+cmake_policy(SET CMP0020 NEW)
+cmake_policy(SET CMP0042 NEW)
+cmake_policy(SET CMP0063 NEW)
+
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
 
 option(OSSIA_COVERALLS "Generate coveralls data" OFF)

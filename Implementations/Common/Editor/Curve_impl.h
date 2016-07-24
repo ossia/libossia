@@ -120,4 +120,16 @@ public:
 #endif
   static Y convertToTemplateTypeValue(const Value&, vector<char>::const_iterator);
 };
+
+template<typename T>
+const constexpr nullptr_t OssiaType{};
+template<>
+const constexpr OSSIA::CurveSegmentType OssiaType<int> = OSSIA::CurveSegmentType::INT;
+template<>
+const constexpr OSSIA::CurveSegmentType OssiaType<float> = OSSIA::CurveSegmentType::FLOAT;
+template<>
+const constexpr OSSIA::CurveSegmentType OssiaType<double> = OSSIA::CurveSegmentType::DOUBLE;
+template<>
+const constexpr OSSIA::CurveSegmentType OssiaType<bool> = OSSIA::CurveSegmentType::BOOL;
+
 }
