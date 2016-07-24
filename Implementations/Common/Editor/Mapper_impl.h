@@ -44,7 +44,7 @@ private:
   shared_ptr<Address>   mDrivenAddress;
   Value                 mDrive;
 
-  Message               mMessageToSend;
+  Message               mLastMessage;
   Value                 mValueToMap;
   mutable std::mutex    mValueToMapMutex;
 

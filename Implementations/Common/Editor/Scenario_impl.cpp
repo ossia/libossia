@@ -1,7 +1,7 @@
 #include "Scenario_impl.h"
 #include <Misc/Util.h>
 #include <unordered_map>
-
+#include <iostream>
 namespace impl
 {
 JamomaScenario::JamomaScenario() :
@@ -49,7 +49,7 @@ StateElement JamomaScenario::offset(TimeValue offset)
 
   // reset internal offset list and state
   mPastEventList.clear();
-  mOffsetState.clear();
+  OSSIA::State cur_state;
 
   // Precompute the default date of every timenode.
   std::unordered_map<TimeNode*, TimeValue> time_map;
@@ -104,7 +104,7 @@ StateElement JamomaScenario::offset(TimeValue offset)
   // build offset state from all ordered past events
   for (const auto& p : mPastEventList)
   {
-    flattenAndFilter(mOffsetState, p.second->getState());
+    flattenAndFilter(cur_state, p.second->getState());
   }
 
   // offset all TimeConstraints
@@ -116,11 +116,11 @@ StateElement JamomaScenario::offset(TimeValue offset)
 
     if (constraintOffset >= Zero && constraintOffset <= cst.getDurationMax())
     {
-      flattenAndFilter(mOffsetState, cst.offset(constraintOffset));
+      flattenAndFilter(cur_state, cst.offset(constraintOffset));
     }
   }
 
-  return mOffsetState;
+  return cur_state;
 }
 
 StateElement JamomaScenario::state()
@@ -193,7 +193,9 @@ StateElement JamomaScenario::state()
 
       // if the time constraint is still running after the tick
       if (cst.getRunning())
+      {
           flattenAndFilter(cur_state, cst.state());
+      }
     }
 
     // if all the TimeEvents are not NONE : the Scenario is done
@@ -213,9 +215,10 @@ StateElement JamomaScenario::state()
       if (date > par.getDurationMin())
         ;//! \todo mParent->stop(); // if the parent TimeConstraint's Clock is in EXTERNAL drive mode, it creates a deadlock.
     }
+    return cur_state;
   }
 
-  return mCurrentState;
+  return {};
 }
 
 # pragma mark -

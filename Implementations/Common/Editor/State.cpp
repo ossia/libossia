@@ -1,5 +1,8 @@
 #include <Editor/StateElement.h>
+#include <Network/Address.h>
+#include <Network/Node.h>
 #include <Misc/Util.h>
+#include <iostream>
 
 namespace OSSIA
 {
@@ -10,7 +13,7 @@ namespace OSSIA
 
   bool operator!=(const State& lhs, const State& rhs)
   {
-      return lhs.children == rhs.children;
+      return lhs.children != rhs.children;
   }
 
   struct StateFlattenVisitor
@@ -86,8 +89,51 @@ namespace OSSIA
           {
               state.add(std::move(e));
           }
-
   };
+
+
+  struct StatePrintVisitor
+  {
+          std::ostream& out;
+          std::string padding;
+
+          void operator()(const State& s)
+          {
+              out << padding
+                  << "state {\n";
+              padding.push_back(' ');
+              for(auto& sub : s)
+                  eggs::variants::apply(*this, sub);
+              padding.pop_back();
+              out << "}\n";
+          }
+
+          void operator()(const CustomState& e)
+          {
+              out << padding
+                  << "custom\n";
+          }
+
+          void operator()(const Message& m)
+          {
+              out << padding
+                  << "message: "
+                  << OSSIA::getAddressFromNode(*m.address->getNode())
+                  << " => "
+                  << OSSIA::getValueAsString(m.value)
+                  << "\n";
+          }
+  };
+
+  std::ostream& print(std::ostream& out, const StateElement& e)
+  {
+      if(e)
+          eggs::variants::apply(StatePrintVisitor{out}, e);
+      else
+          out << "no state";
+      return out;
+  }
+
 
   void flattenAndFilter(State& state, const StateElement& element)
   {
@@ -106,6 +152,8 @@ namespace OSSIA
       if(s)
           eggs::variants::apply(StateExecutionVisitor{}, s);
   }
+
+  std::size_t State::size() const { return children.size(); }
 
   void State::launch() const
   {

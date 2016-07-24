@@ -71,21 +71,6 @@ void JamomaTimeConstraint::stop()
   }
 }
 
-State JamomaTimeConstraint::make_state()
-{
-    const auto& processes = timeProcesses();
-    OSSIA::State state;
-    state.reserve(processes.size());
-
-    // get the state of each TimeProcess at current clock position and date
-    for (const auto& timeProcess : processes)
-    {
-      state.add(timeProcess->state());
-    }
-
-    return state;
-}
-
 State JamomaTimeConstraint::offset(TimeValue date)
 {
   if (mRunning)
@@ -93,7 +78,17 @@ State JamomaTimeConstraint::offset(TimeValue date)
 
   do_setOffset(date);
 
-  return make_state();
+  const auto& processes = timeProcesses();
+  OSSIA::State state;
+  state.reserve(processes.size());
+
+  // get the state of each TimeProcess at current clock position and date
+  for (const auto& timeProcess : processes)
+  {
+    state.add(timeProcess->offset(date));
+  }
+
+  return state;
 }
 
 State JamomaTimeConstraint::state()
@@ -101,7 +96,17 @@ State JamomaTimeConstraint::state()
   if (!mRunning)
     throw runtime_error("time constraint is not running");
 
-  return make_state();
+  const auto& processes = timeProcesses();
+  OSSIA::State state;
+  state.reserve(processes.size());
+
+  // get the state of each TimeProcess at current clock position and date
+  for (const auto& timeProcess : processes)
+  {
+    state.add(timeProcess->state());
+  }
+
+  return state;
 }
 
 void JamomaTimeConstraint::pause()

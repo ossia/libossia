@@ -1,6 +1,6 @@
 #include "Mapper_impl.h"
 #include "Curve_impl.h"
-
+#include <iostream>
 namespace impl
 {
 
@@ -34,8 +34,7 @@ StateElement JamomaMapper::offset(TimeValue offset)
   if (parent->getRunning())
     throw runtime_error("parent time constraint is running");
 
-  //! \todo return nothing
-  return mMessageToSend;
+  return {}; // TODO why not state ?
 }
 
 StateElement JamomaMapper::state()
@@ -50,20 +49,21 @@ StateElement JamomaMapper::state()
   {
     mLastDate = date;
 
+    std::lock_guard<std::mutex> lock(mValueToMapMutex);
     if (mValueToMap.valid())
     {
-      std::lock_guard<std::mutex> lock(mValueToMapMutex);
-
       // edit a Message handling the mapped value
       auto newval = computeValue(mValueToMap, mDrive);
-      mMessageToSend = Message{mDrivenAddress, newval};
 
       // forget the former value
       mValueToMap.reset();
+
+      return mLastMessage = {mDrivenAddress, std::move(newval)};
+
     }
   }
 
-  return mMessageToSend;
+  return mLastMessage;
 }
 
 # pragma mark -

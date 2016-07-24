@@ -4,6 +4,7 @@
 #include "Network/Node.h"
 #include <Editor/Value/ValueComparisonImpl.h>
 #include <Editor/Value/Behavior.h>
+#include <sstream>
 
 using namespace OSSIA;
 
@@ -213,3 +214,62 @@ bool Value::operator<(const Value &rhs) const
 bool Value::operator<=(const Value &rhs) const
 { return v <= rhs.v; }
 
+
+namespace {
+
+static std::string getTupleAsString(const OSSIA::Tuple& tuple);
+struct ValueStringVisitor {
+  std::stringstream& s;
+
+  void operator()(Impulse) const { s << "impulse"; }
+  void operator()(Int i) const   { s << "int: " << i.value; }
+  void operator()(Float f) const { s << "float: " << f.value; }
+  void operator()(Bool b) const  { s << "bool: " << b.value; }
+  void operator()(Char c) const  { s << "char: " << c.value; }
+  void operator()(const String& str) const { s << "string: " << str.value; }
+  void operator()(Vec2f vec) const { }
+  void operator()(Vec3f vec) const { }
+  void operator()(Vec4f vec) const { }
+  void operator()(const Destination& d) const { s << "destination"; }
+  void operator()(const Behavior&) const { s << "behavior"; }
+  void operator()(const Tuple& t) const { s << "tuple:" << getTupleAsString(t); }
+};
+
+static std::string getTupleAsString(const OSSIA::Tuple& tuple)
+{
+  std::stringstream s;
+
+  ValueStringVisitor vis{s};
+
+  int n = tuple.value.size();
+
+  s << "[";
+  for(int i = 0; i < n; i++)
+  {
+    const auto& val = tuple.value[i];
+
+    if(val.valid())
+      eggs::variants::apply(vis, val.v);
+    if(i < n - 1)
+      s << ", ";
+  }
+  s << "]";
+
+  return s.str();
+}
+
+}
+
+namespace OSSIA
+{
+
+std::string getValueAsString(const OSSIA::Value& val)
+{
+    std::stringstream s;
+    ValueStringVisitor vis{s};
+    if(val.valid())
+      eggs::variants::apply(vis, val.v);
+
+    return s.str();
+}
+}

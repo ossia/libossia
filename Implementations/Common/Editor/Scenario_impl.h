@@ -45,9 +45,6 @@ private:
   Container<TimeConstraint>   mTimeContraints;
   Container<TimeNode>         mTimeNodes;         // list of all TimeNodes of the scenario (the first is the start node, the second is the end node)
 
-  State                       mCurrentState;      // an internal State to return on state call
-  State                       mOffsetState;       // an internal State built when offset is called
-
   std::list<std::pair<TimeValue, shared_ptr<TimeEvent>>> mPastEventList; // a temporary list to order all past events to build the offset state
 
 public:

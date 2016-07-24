@@ -77,4 +77,19 @@ public:
 };
 
 
+
+/*!
+ * \brief getValueAsString Returns a string corresponding to the value
+ * \param val a valid value
+ * \return a string in the format : "type: value".
+ *
+ * ex. "int: 3"
+ *     "string: tutu"
+ *     "tuple: [ int: 2, float: 3 ]"
+ * etc...
+ *
+ */
+OSSIA_EXPORT std::string getValueAsString(const OSSIA::Value& val);
+
+
 }

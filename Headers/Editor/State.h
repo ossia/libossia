@@ -40,6 +40,7 @@ class OSSIA_EXPORT State
         auto end() const { return children.end(); }
         auto cbegin() const { return children.cbegin(); }
         auto cend() const { return children.cend(); }
+        std::size_t size() const;
 
         void launch() const;
 
@@ -75,4 +76,6 @@ void flattenAndFilter(State& state, const StateElement& element);
 void flattenAndFilter(State& state, StateElement&& element);
 
 OSSIA_EXPORT void launch(const StateElement&);
+
+OSSIA_EXPORT std::ostream& print(std::ostream& os, const StateElement& dt);
 }

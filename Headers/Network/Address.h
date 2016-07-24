@@ -144,5 +144,11 @@ public:
    \return #Address the address */
   virtual Address & setRepetitionFilter(bool = true) = 0;
 };
+
+/*!
+ * \brief getAddressFromNode
+ * \return the textual address of a node : aDevice:/an/address
+ */
+OSSIA_EXPORT std::string getAddressFromNode(const OSSIA::Node&);
 }
 

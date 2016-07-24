@@ -40,9 +40,7 @@ private:
 
   shared_ptr<Address>    mDrivenAddress;
   Value mDrive;
-
-  Message mMessageToSend;
-  Value mValueToSend;
+  Message mLastMessage;
 
 public:
 #if 0
