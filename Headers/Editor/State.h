@@ -30,13 +30,42 @@ using StateElement = eggs::variant<Message, State, CustomState>;
 
 struct OSSIA_EXPORT State
 {
+        friend bool operator==(const State& lhs, const State& rhs);
+        friend bool operator!=(const State& lhs, const State& rhs);
+
+        auto begin() { return children.begin(); }
+        auto end() { return children.end(); }
+        auto begin() const { return children.begin(); }
+        auto end() const { return children.end(); }
+        auto cbegin() const { return children.cbegin(); }
+        auto cend() const { return children.cend(); }
+
         void launch() const;
 
+        void add(const StateElement& e);
+        void add(StateElement&& e);
+
+        template<class Optional_T>
+        auto add(Optional_T&& opt)
+             -> decltype(typename Optional_T::value_type(), void())
+        {
+            if(opt)
+                add(*std::forward<Optional_T>(opt));
+        }
+
+        void remove(const StateElement& e);
+
+        void reserve(std::size_t);
+        void clear();
+
+    private:
         std::vector<StateElement> children;
 };
 
-OSSIA_EXPORT bool operator==(const State& lhs, const State& rhs);
-OSSIA_EXPORT bool operator!=(const State& lhs, const State& rhs);
+inline auto begin(State& s) { return s.begin(); }
+inline auto begin(const State& s) { return s.begin(); }
+inline auto end(State& s) { return s.end(); }
+inline auto end(const State& s) { return s.end(); }
 
 /*! append each message of the state to the current state in order to eliminate address redundancy
  \param shared_ptr<State> the State to fill

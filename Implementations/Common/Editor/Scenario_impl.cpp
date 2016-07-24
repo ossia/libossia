@@ -49,7 +49,7 @@ StateElement JamomaScenario::offset(TimeValue offset)
 
   // reset internal offset list and state
   mPastEventList.clear();
-  mOffsetState.children.clear();
+  mOffsetState.clear();
 
   // Precompute the default date of every timenode.
   std::unordered_map<TimeNode*, TimeValue> time_map;
@@ -138,7 +138,7 @@ StateElement JamomaScenario::state()
 
     auto& cur_state = mCurrentState;
     // reset internal mCurrentState
-    cur_state.children.clear();
+    cur_state.clear();
 
     // process the scenario from the first TimeNode to the running constraints
     Container<TimeEvent> statusChangedEvents;

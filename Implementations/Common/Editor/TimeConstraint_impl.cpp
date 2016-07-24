@@ -80,17 +80,13 @@ State JamomaTimeConstraint::offset(TimeValue date)
 
   // clear internal offset state
   const auto& processes = timeProcesses();
-  auto& stel = mCurrentState.children;
-  stel.clear();
-  stel.reserve(processes.size());
+  mCurrentState.clear();
+  mCurrentState.reserve(processes.size());
 
   // get the offset state of each TimeProcess at offset
   for (const auto& timeProcess : processes)
   {
-    if(auto state = timeProcess->offset(date))
-      stel.push_back(std::move(state));
-    else
-      std::cerr << "Warning: empty state for process: " << typeid(*timeProcess).name() << "\n";
+      mCurrentState.add(timeProcess->offset(date));
   }
 
   return mOffsetState;
@@ -103,17 +99,13 @@ State JamomaTimeConstraint::state()
 
   // clear internal current state
   const auto& processes = timeProcesses();
-  auto& stel = mCurrentState.children;
-  stel.clear();
-  stel.reserve(processes.size());
+  mCurrentState.clear();
+  mCurrentState.reserve(processes.size());
 
   // get the state of each TimeProcess at current clock position and date
   for (const auto& timeProcess : processes)
   {
-    if(auto state = timeProcess->state())
-      stel.push_back(std::move(state));
-    else
-      std::cerr << "Warning: empty state for process: " << typeid(*timeProcess).name() << "\n";
+    mCurrentState.add(timeProcess->state());
   }
 
   return mCurrentState;

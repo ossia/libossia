@@ -56,7 +56,7 @@ StateElement JamomaLoop::offset(TimeValue offset)
     throw runtime_error("parent time constraint is running");
 
   // reset internal mOffsetState
-  mOffsetState.children.clear();
+  mOffsetState.clear();
 
   TimeValue patternOffset = std::fmod((double)offset, (double)mPatternConstraint->getDurationNominal());
   flattenAndFilter(mOffsetState, mPatternConstraint->offset(patternOffset));
@@ -81,7 +81,7 @@ StateElement JamomaLoop::state()
     mLastDate = date;
 
     // reset internal State
-    mCurrentState.children.clear();
+    mCurrentState.clear();
 
     // process the loop from the pattern start TimeNode
     Container<TimeEvent> statusChangedEvents;

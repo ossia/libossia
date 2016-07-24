@@ -23,27 +23,27 @@ namespace OSSIA
           void operator()(const Message& messageToAppend)
           {
               // find message with the same address to replace it
-              auto it = find_if(state.children, [&] (const StateElement& e)
+              auto it = find_if(state, [&] (const StateElement& e)
               {
                   if(auto m = e.target<Message>())
                       return m->address == messageToAppend.address;
                   return false;
               });
 
-              if(it != state.children.end())
+              if(it != state.end())
               {
                   // Merge messages
                   it->target<Message>()->value = messageToAppend.value;
               }
               else
               {
-                  state.children.push_back(messageToAppend);
+                  state.add(messageToAppend);
               }
           }
 
           void operator()(const State& s)
           {
-              for (const auto& e : s.children)
+              for (const auto& e : s)
               {
                   flattenAndFilter(state, e);
               }
@@ -51,7 +51,7 @@ namespace OSSIA
 
           void operator()(const CustomState& e)
           {
-              state.children.push_back(e);
+              state.add(e);
           }
   };
 
@@ -67,27 +67,27 @@ namespace OSSIA
           void operator()(Message&& messageToAppend)
           {
               // find message with the same address to replace it
-              auto it = find_if(state.children, [&] (const StateElement& e)
+              auto it = find_if(state, [&] (const StateElement& e)
               {
                   if(auto m = e.target<Message>())
                       return m->address == messageToAppend.address;
                   return false;
               });
 
-              if(it != state.children.end())
+              if(it != state.end())
               {
                   // Merge messages
                   it->target<Message>()->value = std::move(messageToAppend.value);
               }
               else
               {
-                  state.children.push_back(std::move(messageToAppend));
+                  state.add(std::move(messageToAppend));
               }
           }
 
           void operator()(State&& s)
           {
-              for (auto&& e : s.children)
+              for (auto&& e : s)
               {
                   flattenAndFilter(state, std::move(e));
               }
@@ -95,7 +95,7 @@ namespace OSSIA
 
           void operator()(CustomState&& e)
           {
-              state.children.push_back(std::move(e));
+              state.add(std::move(e));
           }
   };
 
@@ -116,6 +116,35 @@ namespace OSSIA
       {
           eggs::variants::apply(v, state);
       }
+  }
+
+  void State::add(const StateElement& e)
+  {
+      if(e)
+          children.push_back(e);
+  }
+
+  void State::add(StateElement&& e)
+  {
+      if(e)
+          children.push_back(std::move(e));
+  }
+
+  void State::remove(const StateElement& e)
+  {
+      children.erase(
+                  std::remove(children.begin(), children.end(), e),
+                  children.end());
+  }
+
+  void State::reserve(std::size_t s)
+  {
+      children.reserve(s);
+  }
+
+  void State::clear()
+  {
+      children.clear();
   }
 
 }

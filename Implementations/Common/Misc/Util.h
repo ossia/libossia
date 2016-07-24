@@ -8,13 +8,13 @@ template<typename Vector>
 using iterator_t = typename std::remove_reference<Vector>::type::iterator;
 
 template<typename Vector, typename Value>
-iterator_t<Vector> find(Vector&& v, const Value& val)
+auto find(Vector&& v, const Value& val)
 {
     return std::find(std::begin(v), std::end(v), val);
 }
 
 template<typename Vector, typename Fun>
-iterator_t<Vector> find_if(Vector&& v, Fun fun)
+auto find_if(Vector&& v, Fun fun)
 {
     return std::find_if(std::begin(v), std::end(v), fun);
 }

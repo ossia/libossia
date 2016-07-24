@@ -85,22 +85,12 @@ void JamomaTimeEvent::dispose()
 
 void JamomaTimeEvent::addState(State&& state)
 {
-  // store a state if it is not already stored
-  auto& se = mState.children;
-  if (std::find(se.begin(), se.end(), state) == se.end())
-  {
-    se.push_back(StateElement{std::move(state)});
-  }
+    mState.add(StateElement{std::move(state)});
 }
 
 void JamomaTimeEvent::removeState(const State& state)
 {
-    auto& se = mState.children;
-  auto it = std::find(se.begin(), se.end(), state);
-  if (it != se.end())
-  {
-      se.erase(it);
-  }
+    mState.remove(state);
 }
 
 # pragma mark -
