@@ -1,4 +1,3 @@
-#include "Editor/State_impl.h"
 #include <Editor/StateElement.h>
 #include <Misc/Util.h>
 

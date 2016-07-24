@@ -93,12 +93,9 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Editor/Loop_impl.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Editor/Mapper_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Editor/Mapper_impl.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Editor/Message_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Editor/Message_impl.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Editor/Scenario_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Editor/Scenario_impl.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Editor/State_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Editor/State_impl.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeConstraint_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeConstraint_impl.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeEvent_impl.cpp"
@@ -122,7 +119,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Editor/Message.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Editor/Scenario.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Editor/State.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Editor/StateElement.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeConstraint.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeEvent.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeNode.cpp"
@@ -155,8 +151,8 @@ endif()
 target_compile_options(OSSIA_common PRIVATE ${OSSIA_COMPILE_FLAGS})
 
 set_target_properties(OSSIA_common PROPERTIES
-	CXX_VISIBILITY_PRESET hidden
-	VISIBILITY_INLINES_HIDDEN 0)
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN 0)
 
 generate_export_header(OSSIA_common BASE_NAME OSSIA)
 target_include_directories(OSSIA_common PUBLIC
