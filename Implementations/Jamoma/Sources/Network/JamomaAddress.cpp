@@ -414,6 +414,8 @@ void JamomaAddress::initValue()
       case Type::DESTINATION:
           mValue = Destination{};
           break;
+      case Type::BEHAVIOR:
+          return;
   }
 }
 

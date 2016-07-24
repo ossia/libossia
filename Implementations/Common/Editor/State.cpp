@@ -4,8 +4,6 @@
 
 namespace OSSIA
 {
-
-
   bool operator==(const State& lhs, const State& rhs)
   {
       return lhs.children == rhs.children;
@@ -16,10 +14,11 @@ namespace OSSIA
       return lhs.children == rhs.children;
   }
 
-  struct flatten_visitor
+  struct StateFlattenVisitor
   {
           State& state;
 
+          // Const reference overloads
           void operator()(const Message& messageToAppend)
           {
               // find message with the same address to replace it
@@ -53,17 +52,8 @@ namespace OSSIA
           {
               state.add(e);
           }
-  };
 
-  void flattenAndFilter(State& state, const StateElement& element)
-  {
-      eggs::variants::apply(flatten_visitor{state}, element);
-  }
-
-  struct flatten_move_visitor
-  {
-          State& state;
-
+          // rvalue reference overloads
           void operator()(Message&& messageToAppend)
           {
               // find message with the same address to replace it
@@ -97,16 +87,25 @@ namespace OSSIA
           {
               state.add(std::move(e));
           }
+
   };
+
+  void flattenAndFilter(State& state, const StateElement& element)
+  {
+      if(element)
+          eggs::variants::apply(StateFlattenVisitor{state}, element);
+  }
 
   void flattenAndFilter(State& state, StateElement&& element)
   {
-      eggs::variants::apply(flatten_visitor{state}, std::move(element));
+      if(element)
+          eggs::variants::apply(StateFlattenVisitor{state}, std::move(element));
   }
 
   void launch(const StateElement& s)
   {
-      eggs::variants::apply(StateExecutionVisitor{}, s);
+      if(s)
+          eggs::variants::apply(StateExecutionVisitor{}, s);
   }
 
   void State::launch() const
@@ -114,7 +113,8 @@ namespace OSSIA
       StateExecutionVisitor v;
       for(const auto& state : children)
       {
-          eggs::variants::apply(v, state);
+          if(state)
+              eggs::variants::apply(v, state);
       }
   }
 

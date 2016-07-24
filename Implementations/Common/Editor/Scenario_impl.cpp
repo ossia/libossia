@@ -136,9 +136,8 @@ StateElement JamomaScenario::state()
     auto prev_last_date = mLastDate;
     mLastDate = date;
 
-    auto& cur_state = mCurrentState;
+    OSSIA::State cur_state;
     // reset internal mCurrentState
-    cur_state.clear();
 
     // process the scenario from the first TimeNode to the running constraints
     Container<TimeEvent> statusChangedEvents;

@@ -71,6 +71,21 @@ void JamomaTimeConstraint::stop()
   }
 }
 
+State JamomaTimeConstraint::make_state()
+{
+    const auto& processes = timeProcesses();
+    OSSIA::State state;
+    state.reserve(processes.size());
+
+    // get the state of each TimeProcess at current clock position and date
+    for (const auto& timeProcess : processes)
+    {
+      state.add(timeProcess->state());
+    }
+
+    return state;
+}
+
 State JamomaTimeConstraint::offset(TimeValue date)
 {
   if (mRunning)
@@ -78,18 +93,7 @@ State JamomaTimeConstraint::offset(TimeValue date)
 
   do_setOffset(date);
 
-  // clear internal offset state
-  const auto& processes = timeProcesses();
-  mCurrentState.clear();
-  mCurrentState.reserve(processes.size());
-
-  // get the offset state of each TimeProcess at offset
-  for (const auto& timeProcess : processes)
-  {
-      mCurrentState.add(timeProcess->offset(date));
-  }
-
-  return mOffsetState;
+  return make_state();
 }
 
 State JamomaTimeConstraint::state()
@@ -97,18 +101,7 @@ State JamomaTimeConstraint::state()
   if (!mRunning)
     throw runtime_error("time constraint is not running");
 
-  // clear internal current state
-  const auto& processes = timeProcesses();
-  mCurrentState.clear();
-  mCurrentState.reserve(processes.size());
-
-  // get the state of each TimeProcess at current clock position and date
-  for (const auto& timeProcess : processes)
-  {
-    mCurrentState.add(timeProcess->state());
-  }
-
-  return mCurrentState;
+  return make_state();
 }
 
 void JamomaTimeConstraint::pause()
@@ -234,7 +227,7 @@ void JamomaTimeConstraint::removeTimeProcess(std::shared_ptr<TimeProcess> timePr
 void JamomaTimeConstraint::ClockCallback(TimeValue position, TimeValue date, unsigned char droppedTicks)
 {
   if (mCallback)
-    (mCallback)(position, date, state());
+      (mCallback)(position, date, state());
 }
 
 }

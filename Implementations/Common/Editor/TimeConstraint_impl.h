@@ -45,9 +45,6 @@ private:
 
   TimeConstraint::ExecutionCallback   mCallback;
 
-  State                               mCurrentState;    // an internal State to update at each tick of the clock
-  State                               mOffsetState;     // an internal State built when offset is called
-
   shared_ptr<TimeEvent>               mStartEvent;
   shared_ptr<TimeEvent>               mEndEvent;
 
@@ -120,5 +117,6 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   void ClockCallback(TimeValue position, TimeValue date, unsigned char droppedTicks);
+  State make_state();
 };
 }

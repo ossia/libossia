@@ -85,14 +85,11 @@ bool JamomaOSC::getLearningStatus() const
 }
 void NamespaceCallback(const TTValue& baton, const TTValue& value)
 {
-    OSSIA::Device* dev = (OSSIA::Device*)((TTPtr)baton[0]);
-    TTSymbol applicationName = baton[1];
     TTUInt8 flag = value[2];
 
     if (flag == kAddressCreated)
     {
         TTSymbol addr = value[0];
-        TTNodePtr node =  TTNodePtr((TTPtr)value[1]);
         std::cerr << "addr" << addr.c_str() << std::endl;
     }
 }
