@@ -148,7 +148,7 @@ if(MSVC)
         )
 endif()
 
-target_compile_options(OSSIA_common PRIVATE ${OSSIA_COMPILE_FLAGS})
+target_compile_options(OSSIA_common PUBLIC ${OSSIA_COMPILE_FLAGS})
 
 set_target_properties(OSSIA_common PROPERTIES
     CXX_VISIBILITY_PRESET hidden
