@@ -5,16 +5,17 @@
 
 namespace impl
 {
-BasicDevice::BasicDevice(std::unique_ptr<OSSIA::v2::Protocol> protocol) :
-    BasicNode({}, {}),
-    mProtocol(std::move(protocol))
+BasicDevice::BasicDevice(
+        std::string name,
+        std::unique_ptr<OSSIA::v2::Protocol> protocol) :
+    BasicNode(std::move(name), *this),
+    mProtocol{std::move(protocol)}
 {
-    mIsDevice = true;
 }
 
 BasicDevice::~BasicDevice()
 {
-    m_children.clear();
+    mChildren.clear();
 }
 
 OSSIA::v2::Protocol& BasicDevice::getProtocol() const
@@ -22,9 +23,4 @@ OSSIA::v2::Protocol& BasicDevice::getProtocol() const
     return *mProtocol;
 }
 
-//! \deprecated use Protocol::updateChildren
-bool BasicDevice::updateNamespace()
-{
-    return mProtocol->updateChildren(*this);
-}
 }

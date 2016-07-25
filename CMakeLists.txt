@@ -34,6 +34,7 @@ set(OSSIA_COMPILE_FLAGS
     -Werror=trigraphs)
 
 add_subdirectory(3rdparty/ModernMIDI EXCLUDE_FROM_ALL)
+add_subdirectory(3rdparty/oscpack EXCLUDE_FROM_ALL)
 add_subdirectory(Implementations)
 
 if(NOT OSSIA_NO_EXAMPLES)

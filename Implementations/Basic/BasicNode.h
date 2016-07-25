@@ -16,54 +16,52 @@ class Protocol;
 namespace impl
 {
 class BasicNode :
-        public virtual OSSIA::v2::Node,
-        public std::enable_shared_from_this<BasicNode>
+        public virtual OSSIA::v2::Node
 {
 
     protected:
-        std::string             mName;
-        std::weak_ptr<OSSIA::v2::Device>        mDevice;
-        std::weak_ptr<BasicNode>    mParent;
-        std::unique_ptr<OSSIA::v2::Address>     mAddress;
-
-        bool                    mIsDevice{false};
-
-        std::map<std::shared_ptr<OSSIA::v2::Node>, Node::iterator> mChildNodeChangeCallbackIndexes;
+        std::string mName;
+        OSSIA::v2::Device& mDevice;
+        BasicNode* mParent{};
+        std::unique_ptr<OSSIA::v2::Address> mAddress;
 
     public:
+        BasicNode() = delete;
+        BasicNode(const BasicNode&) = delete;
+        BasicNode(BasicNode&&) = delete;
+        BasicNode& operator=(const BasicNode&) = delete;
+        BasicNode& operator=(BasicNode&&) = delete;
 
         BasicNode(
-                std::shared_ptr<OSSIA::v2::Device> aDevice = nullptr,
-                shared_ptr<BasicNode> aParent = nullptr);
+                std::string name,
+                OSSIA::v2::Device& aDevice,
+                BasicNode& aParent);
+
+        BasicNode(std::string name,
+                  OSSIA::v2::Device& aDevice);
 
         ~BasicNode();
 
-        std::shared_ptr<OSSIA::v2::Device> getDevice() const override;
-        std::shared_ptr<OSSIA::v2::Node> getParent() const override;
-        std::shared_ptr<OSSIA::v2::Node> getThis() override;
+        OSSIA::v2::Device& getDevice() const final override { return mDevice; }
+        OSSIA::v2::Node* getParent() const final override { return mParent; }
 
-        std::string getName() const override;
+        std::string getName() const override { return mName; }
         OSSIA::v2::Node& setName(std::string) override;
 
         OSSIA::v2::Address* getAddress() const override;
         OSSIA::v2::Address* createAddress(OSSIA::Type type) override;
         bool removeAddress() override;
 
+    private:
+        std::unique_ptr<Node> makeChild(const std::string& name) override
+        {
+            return std::make_unique<BasicNode>(name, mDevice, *this);
+        }
 
-        container_iterator emplace(container_const_iterator pos, std::string name) override;
-        container_iterator emplace(container_const_iterator pos,
-                                   const std::string& name,
-                                   OSSIA::Type type,
-                                   OSSIA::AccessMode,
-                                   const std::shared_ptr<OSSIA::Domain>&,
-                                   OSSIA::BoundingMode,
-                                   bool repetitionFilter) override;
+        void removingChild(Node& node) override
+        {
 
-        container_iterator insert(container_const_iterator, std::shared_ptr<OSSIA::v2::Node>, std::string) override;
-        container_iterator erase(container_const_iterator) override;
-
-        Node::iterator addCallback(OSSIA::v2::NodeChangeCallback) override;
-
-        void removeCallback(Node::iterator) override;
+        }
 };
+
 }

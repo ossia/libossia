@@ -8,22 +8,23 @@
 
 namespace impl {
 
-BasicAddress::BasicAddress(const OSSIA::v2::Node& node) :
-    mNode(node),
+BasicAddress::BasicAddress(
+        const OSSIA::v2::Node& node) :
+    mNode{node},
+    mProtocol{node.getDevice().getProtocol()},
     mValue(Impulse{}),
     mValueType(Type::IMPULSE),
     mAccessMode(AccessMode::BI),
     mBoundingMode(BoundingMode::FREE),
     mRepetitionFilter(false)
 {
-    // To set-up the protocol cache.
-    // Note : the cache works because the nodes cannot change parents.
-    getProtocol();
     mTextualAddress = OSSIA::v2::getAddressFromNode(mNode);
 }
 
 BasicAddress::~BasicAddress()
 {
+    while(!m_callbacks.empty())
+        removeCallback(m_callbacks.begin()); // /!\ O(1) because m_callbacks is a list
 }
 
 const OSSIA::v2::Node& BasicAddress::getNode() const
@@ -33,24 +34,21 @@ const OSSIA::v2::Node& BasicAddress::getNode() const
 
 void BasicAddress::pullValue()
 {
-    // use the device protocol to pull address value
-    getProtocol().pullAddressValue(*this);
+    mProtocol.pullAddressValue(*this);
 }
 
 OSSIA::v2::Address& BasicAddress::pushValue(const OSSIA::Value& value)
 {
     setValue(value);
 
-    // use the device protocol to push address value
-    getProtocol().pushAddressValue(*this);
+    mProtocol.pushAddressValue(*this);
 
     return *this;
 }
 
 OSSIA::v2::Address& BasicAddress::pushValue()
 {
-    // use the device protocol to push address value
-    getProtocol().pushAddressValue(*this);
+    mProtocol.pushAddressValue(*this);
 
     return *this;
 }
@@ -81,15 +79,15 @@ OSSIA::Value BasicAddress::cloneValue(DestinationIndex index) const
         {
             // create a new tuple from tuple's values at index
             const auto& tuple = mValue.get<Tuple>();
-            vector<Value> values;
-            values.reserve(index.size());
+            Tuple values;
+            values.value.reserve(index.size());
 
             for (char i : index)
             {
-                values.push_back(tuple.value[i]);
+                values.value.push_back(tuple.value[i]);
             }
 
-            return Tuple(std::move(values));
+            return values;
         }
     }
     else
@@ -206,7 +204,7 @@ OSSIA::v2::Address::iterator BasicAddress::addCallback(OSSIA::v2::ValueCallback 
 
     if (callbacks().size() == 1)
     {
-        getProtocol().observeAddressValue(*this, true);
+        mProtocol.observeAddressValue(*this, true);
     }
 
     return it;
@@ -214,47 +212,12 @@ OSSIA::v2::Address::iterator BasicAddress::addCallback(OSSIA::v2::ValueCallback 
 
 void BasicAddress::removeCallback(Address::iterator callback)
 {
-    CallbackContainer::removeCallback(callback);
-
-    if (callbacks().size() == 0)
+    if (callbacks().size() == 1)
     {
         // use the device protocol to stop address value observation
-        getProtocol().observeAddressValue(*this, false);
+        mProtocol.observeAddressValue(*this, false);
     }
+
+    CallbackContainer::removeCallback(callback);
 }
-
-
-OSSIA::v2::Protocol& getDummyProtocol()
-{
-    struct DummyProtocol : public OSSIA::v2::Protocol
-    {
-            bool pullAddressValue(OSSIA::v2::Address&) const override { return true; }
-            bool pushAddressValue(const OSSIA::v2::Address&) const override { return true; }
-            bool observeAddressValue(OSSIA::v2::Address&, bool) const override { return false; }
-            bool updateChildren(OSSIA::v2::Node&) const override { return false; }
-    };
-
-    static DummyProtocol proto;
-    return proto;
-}
-
-OSSIA::v2::Protocol& BasicAddress::getProtocol() const
-{
-    if(auto cached_proto = mProtocolCache)
-    {
-        return *cached_proto;
-    }
-    else
-    {
-        auto dev = mNode.getDevice();
-        if(!dev)
-            return getDummyProtocol();
-        auto& proto = dev->getProtocol();
-
-        // Save in the cache
-        mProtocolCache = &proto;
-        return proto;
-    }
-}
-
 }

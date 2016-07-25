@@ -34,7 +34,7 @@ class BasicAddress final : public OSSIA::v2::Address
 {
     private:
         const OSSIA::v2::Node&      mNode;
-        mutable OSSIA::v2::Protocol*  mProtocolCache{};
+        OSSIA::v2::Protocol&  mProtocol;
 
         OSSIA::Value               mValue;
         mutable std::mutex  mValueMutex;
@@ -83,8 +83,7 @@ class BasicAddress final : public OSSIA::v2::Address
         OSSIA::v2::Address::iterator addCallback(OSSIA::v2::ValueCallback) override;
         void removeCallback(OSSIA::v2::Address::iterator) override;
 
-        OSSIA::v2::Protocol& getProtocol() const;
-        const std::string& getTextualAddress() const
+        const std::string& getTextualAddress() const override
         { return mTextualAddress; }
 
     private:

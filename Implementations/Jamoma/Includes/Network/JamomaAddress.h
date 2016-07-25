@@ -49,7 +49,6 @@ private:
 
   shared_ptr<Domain>  mDomain;
 
-  ValueCallback       mCallback;
   mutable weak_ptr<OSSIA::Protocol>  mProtocolCache;
   std::string         mTextualAddress;
 

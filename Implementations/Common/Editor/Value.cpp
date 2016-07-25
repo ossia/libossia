@@ -6,9 +6,8 @@
 #include <Editor/Value/Behavior.h>
 #include <sstream>
 
-using namespace OSSIA;
-
-
+namespace OSSIA
+{
 bool Bool::operator== (const Value& v) const
 { return Comparisons::NumericValue::apply(*this, v, std::equal_to<>{}); }
 
@@ -257,9 +256,6 @@ static std::string getTupleAsString(const OSSIA::Tuple& tuple)
 }
 
 }
-
-namespace OSSIA
-{
 
 std::string getValueAsString(const OSSIA::Value& val)
 {

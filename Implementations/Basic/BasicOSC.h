@@ -16,6 +16,10 @@
 #include <string>
 
 #include "Protocol.hpp"
+#include <OSC/Receiver.hpp>
+#include <OSC/Sender.hpp>
+#include <unordered_map>
+#include <mutex>
 
 namespace impl
 {
@@ -27,6 +31,12 @@ class OSC2 final :
         int            mInPort{};            /// the port that a remote device open to receive OSC messages
         int            mOutPort{};           /// the port where a remote device sends OSC messages to give some feeback (like "echo")
         bool           mLearning{};          /// if the device is currently learning from inbound messages.
+
+        mutable osc::sender    mSender;
+        mutable osc::receiver  mReceiver;
+
+        mutable std::mutex mListeningMutex;
+        mutable std::unordered_map<std::string, OSSIA::v2::Address*> mListening;
 
     public:
         OSC2(std::string, int, int);
@@ -53,5 +63,10 @@ class OSC2 final :
         bool pushAddressValue(const OSSIA::v2::Address& address) const override;
 
         bool observeAddressValue(OSSIA::v2::Address& address, bool enable) const override;
+
+    private:
+        void handleReceivedMessage(
+                const oscpack::ReceivedMessage& m,
+                const oscpack::IpEndpointName& ip);
 };
 }
