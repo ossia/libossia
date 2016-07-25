@@ -131,6 +131,7 @@ OSSIA::v2::Address& BasicAddress::setValue(const Value& value)
         if(mValue.v.which() != value.v.which())
         {
             mValueType = value.getType();
+            // TODO convert domain if applicable
         }
 
         mValue = value;
@@ -149,6 +150,7 @@ OSSIA::v2::Address& BasicAddress::setValueType(Type type)
     mValueType = type;
 
     mValue = initValue(type);
+    // TODO convert domain if applicable
 
     return *this;
 }
@@ -164,12 +166,12 @@ OSSIA::v2::Address& BasicAddress::setAccessMode(AccessMode accessMode)
     return *this;
 }
 
-const std::shared_ptr<OSSIA::Domain> & BasicAddress::getDomain() const
+const OSSIA::v2::Domain& BasicAddress::getDomain() const
 {
     return mDomain;
 }
 
-OSSIA::v2::Address& BasicAddress::setDomain(std::shared_ptr<OSSIA::Domain> domain)
+OSSIA::v2::Address& BasicAddress::setDomain(const OSSIA::v2::Domain& domain)
 {
     mDomain = domain;
     return *this;

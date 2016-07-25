@@ -62,7 +62,7 @@ template<>
 struct ValueTrait<OSSIA::Tuple>
 {
         using ossia_type = OSSIA::Tuple;
-        using value_type = std::vector<SafeValue>;
+        using value_type = std::vector<Value>;
         static const constexpr auto ossia_enum = Type::TUPLE;
 };
 

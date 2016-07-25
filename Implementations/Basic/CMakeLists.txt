@@ -38,6 +38,8 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/BasicProtocol.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/BasicProtocol.h"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Domain.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/OSC/Osc.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/OSC/MessageGenerator.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/OSC/Sender.hpp"

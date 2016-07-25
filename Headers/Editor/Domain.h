@@ -18,6 +18,7 @@
 
 #include <vector>
 #include <memory>
+#include <Network/AddressProperties.h>
 #include <ossia_export.h>
 
 namespace OSSIA
@@ -45,6 +46,7 @@ public:
 
   static std::shared_ptr<Domain> create(const Value&,
                                         const Value&);
+
 
   /*!
    * \brief create Create a domain initialized with a min Impulse, max Impulse
@@ -90,5 +92,8 @@ public:
    \return #Domain the domain */
   virtual Domain & setValues(const std::vector<Value>& values) = 0;
 };
+
+OSSIA_EXPORT OSSIA::Value clamp(const Domain& dom, OSSIA::BoundingMode, const OSSIA::Value& val);
+
 }
 

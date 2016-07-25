@@ -1,5 +1,5 @@
 #pragma once
-#include <Editor/Domain.h>
+#include "Domain.hpp"
 #include <Misc/CallbackContainer.h>
 #include <Misc/DestinationIndex.h>
 #include <Network/AddressProperties.h>
@@ -45,8 +45,8 @@ class OSSIA_EXPORT Address : public CallbackContainer<ValueCallback>
         virtual AccessMode getAccessMode() const = 0;
         virtual Address & setAccessMode(AccessMode) = 0;
 
-        virtual const std::shared_ptr<Domain> & getDomain() const = 0;
-        virtual Address & setDomain(std::shared_ptr<Domain>) = 0;
+        virtual const Domain& getDomain() const = 0;
+        virtual Address & setDomain(const Domain&) = 0;
 
         virtual BoundingMode getBoundingMode() const = 0;
         virtual Address & setBoundingMode(BoundingMode) = 0;

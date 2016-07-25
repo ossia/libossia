@@ -1,7 +1,6 @@
 #pragma once
 #include <Misc/CallbackContainer.h>
 #include <Misc/Container.h>
-#include <Editor/Domain.h>
 #include <Network/AddressProperties.h>
 
 #include <string>

@@ -1,6 +1,5 @@
 #pragma once
 #include "Node.hpp"
-#include <Editor/Domain.h>
 #include <Network/AddressProperties.h>
 #include <Misc/CallbackContainer.h>
 #include "Misc/JamomaContainer.h"

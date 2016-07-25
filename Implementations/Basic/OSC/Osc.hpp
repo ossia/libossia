@@ -3,7 +3,7 @@
 #include <oscpack/osc/OscReceivedElements.h>
 #include <OSC/string_view.hpp>
 #include <Editor/Value/Value.h>
-#include <Editor/Domain.h>
+#include "Domain.hpp"
 
 namespace oscpack
 {
@@ -44,7 +44,7 @@ struct OSCInboundVisitor
             if(it->IsInt32())
                 return OSSIA::Int{it->AsInt32Unchecked()};
             else if(it->IsInt64())
-                return OSSIA::Int{it->AsInt64Unchecked()};
+                return OSSIA::Int{int32_t(it->AsInt64Unchecked())};
             else
                 return i;
         }
@@ -53,7 +53,7 @@ struct OSCInboundVisitor
             if(it->IsFloat())
                 return OSSIA::Float{it->AsFloatUnchecked()};
             else if(it->IsDouble())
-                return OSSIA::Float{it->AsDoubleUnchecked()};
+                return OSSIA::Float{float(it->AsDoubleUnchecked())};
             else
                 return f;
         }
@@ -155,11 +155,14 @@ inline oscpack::OutboundPacketStream& operator<<(
 
 inline oscpack::OutboundPacketStream& operator<<(
         oscpack::OutboundPacketStream& p,
-        const OSSIA::Domain& dom)
+        const OSSIA::v2::Domain& dom)
 {
     using namespace impl;
 
-    p << dom.getMin() << dom.getMax();
+    auto dom_min = OSSIA::v2::min(dom);
+    auto dom_max = OSSIA::v2::max(dom);
+    if(bool(dom_min.v) && bool(dom_max.v))
+        p << dom_min << dom_max;
 
     return p;
 }

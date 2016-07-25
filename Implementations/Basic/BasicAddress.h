@@ -16,7 +16,6 @@
 #include "BasicDevice.h"
 #include <Editor/Value/Value.h>
 #include <Misc/CallbackContainer.h>
-#include <Editor/Domain.h>
 
 #include <thread>
 #include <mutex>
@@ -33,23 +32,24 @@ namespace impl
 class BasicAddress final : public OSSIA::v2::Address
 {
     private:
-        const OSSIA::v2::Node&      mNode;
-        OSSIA::v2::Protocol&  mProtocol;
+        const OSSIA::v2::Node& mNode;
+        OSSIA::v2::Protocol& mProtocol;
 
-        OSSIA::Value               mValue;
-        mutable std::mutex  mValueMutex;
+        mutable std::mutex mValueMutex;
+        OSSIA::Value mValue;
 
-        OSSIA::Type                mValueType{};
-        OSSIA::AccessMode          mAccessMode{};
-        OSSIA::BoundingMode        mBoundingMode{};
-        bool                mRepetitionFilter{};
+        OSSIA::v2::Domain mDomain;
 
-        std::shared_ptr<OSSIA::Domain>  mDomain;
+        OSSIA::v2::ValueCallback mCallback;
+        std::string mTextualAddress;
 
-        OSSIA::v2::ValueCallback       mCallback;
-        std::string         mTextualAddress;
+        OSSIA::Type mValueType{};
+        OSSIA::AccessMode mAccessMode{};
+        OSSIA::BoundingMode mBoundingMode{};
+        bool mRepetitionFilter{};
 
     public:
+        OSSIA::Value PreviousValue;
         BasicAddress(const OSSIA::v2::Node& node);
 
         ~BasicAddress();
@@ -71,8 +71,8 @@ class BasicAddress final : public OSSIA::v2::Address
         OSSIA::AccessMode getAccessMode() const override;
         OSSIA::v2::Address & setAccessMode(OSSIA::AccessMode) override;
 
-        const std::shared_ptr<OSSIA::Domain> & getDomain() const override;
-        OSSIA::v2::Address & setDomain(std::shared_ptr<OSSIA::Domain>) override;
+        const OSSIA::v2::Domain& getDomain() const override;
+        OSSIA::v2::Address & setDomain(const OSSIA::v2::Domain&) override;
 
         OSSIA::BoundingMode getBoundingMode() const override;
         OSSIA::v2::Address & setBoundingMode(OSSIA::BoundingMode) override;
