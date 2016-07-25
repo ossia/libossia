@@ -12,129 +12,75 @@
  */
 
 #pragma once
-
-
+#include "Address.hpp"
 #include "BasicProtocol.h"
-#include "BasicNode.h"
 #include "BasicDevice.h"
 #include <Editor/Value/Value.h>
+#include <Misc/CallbackContainer.h>
+#include <Editor/Domain.h>
 
 #include <thread>
 #include <mutex>
 
-namespace OSSIA
-{
-class Node2;
-class Value;
-/*! to get the value back
- \param the returned value */
-using ValueCallback = std::function<void(const Value&)>;
-
-class OSSIA_EXPORT Address2 : public CallbackContainer<ValueCallback>
-{
-
-public:
-  using iterator = typename CallbackContainer<ValueCallback>::iterator;
-  virtual ~Address2();
-
-  virtual const std::shared_ptr<Node> getNode() const = 0;
-
-  virtual void pullValue() = 0;
-  virtual Address2 & pushValue(const Value&) = 0;
-  virtual Address2 & pushValue() = 0;
-
-  virtual Value cloneValue(std::vector<char> = {}) const = 0;
-  virtual Address2 & setValue(const Value&) = 0;
-
-  virtual Type getValueType() const = 0;
-  virtual Address2 & setValueType(Type) = 0;
-
-  virtual AccessMode getAccessMode() const = 0;
-  virtual Address2 & setAccessMode(AccessMode) = 0;
-
-  virtual const std::shared_ptr<Domain> & getDomain() const = 0;
-  virtual Address2 & setDomain(std::shared_ptr<Domain>) = 0;
-
-  virtual BoundingMode getBoundingMode() const = 0;
-  virtual Address2 & setBoundingMode(BoundingMode) = 0;
-
-  virtual bool getRepetitionFilter() const = 0;
-  virtual Address2 & setRepetitionFilter(bool = true) = 0;
-};
-
-/*!
- * \brief getAddressFromNode
- * \return the textual address of a node : aDevice:/an/address
- */
-OSSIA_EXPORT std::string getAddressFromNode(const OSSIA::Node&);
-}
-
 namespace impl
 {
-class BasicAddress final : public Address2
+class BasicAddress final : public OSSIA::v2::Address2
 {
 private:
-  weak_ptr<Node>      mNode;
-  mutable weak_ptr<OSSIA::Protocol>  mProtocolCache;
+  const OSSIA::v2::Node2&      mNode;
+  mutable OSSIA::v2::Protocol2*  mProtocolCache{};
 
-  Value               mValue;
+  OSSIA::Value               mValue;
   mutable std::mutex  mValueMutex;
 
-  Type                mValueType;
-  AccessMode          mAccessMode;
-  BoundingMode        mBoundingMode;
-  bool                mRepetitionFilter;
+  OSSIA::Type                mValueType{};
+  OSSIA::AccessMode          mAccessMode{};
+  OSSIA::BoundingMode        mBoundingMode{};
+  bool                mRepetitionFilter{};
 
-  shared_ptr<Domain>  mDomain;
+  std::shared_ptr<OSSIA::Domain>  mDomain;
 
-  ValueCallback       mCallback;
+  OSSIA::v2::ValueCallback       mCallback;
   std::string         mTextualAddress;
 
 public:
-  BasicAddress(weak_ptr<Node> node);
+  BasicAddress(const OSSIA::v2::Node2& node);
 
   ~BasicAddress();
 
-  const shared_ptr<Node> getNode() const override;
+  const OSSIA::v2::Node2& getNode() const override;
 
   void pullValue() override;
 
-  OSSIA::Address2 & pushValue(const Value&) override;
-  OSSIA::Address2 & pushValue() override;
+  OSSIA::v2::Address2 & pushValue(const OSSIA::Value&) override;
+  OSSIA::v2::Address2 & pushValue() override;
 
-  const Value& getValue() const;
-  Value cloneValue(std::vector<char> = {}) const override;
-  Address2 & setValue(const Value&) override;
+  const OSSIA::Value& getValue() const;
+  OSSIA::Value cloneValue(DestinationIndex = {}) const override;
+  Address2 & setValue(const OSSIA::Value&) override;
 
-  Type getValueType() const override;
-  OSSIA::Address2 & setValueType(Type) override;
+  OSSIA::Type getValueType() const override;
+  OSSIA::v2::Address2 & setValueType(OSSIA::Type) override;
 
-  AccessMode getAccessMode() const override;
-  OSSIA::Address2 & setAccessMode(AccessMode) override;
+  OSSIA::AccessMode getAccessMode() const override;
+  OSSIA::v2::Address2 & setAccessMode(OSSIA::AccessMode) override;
 
-  const shared_ptr<Domain> & getDomain() const override;
-  OSSIA::Address2 & setDomain(shared_ptr<Domain>) override;
+  const std::shared_ptr<OSSIA::Domain> & getDomain() const override;
+  OSSIA::v2::Address2 & setDomain(std::shared_ptr<OSSIA::Domain>) override;
 
-  BoundingMode getBoundingMode() const override;
-  OSSIA::Address2 & setBoundingMode(BoundingMode) override;
+  OSSIA::BoundingMode getBoundingMode() const override;
+  OSSIA::v2::Address2 & setBoundingMode(OSSIA::BoundingMode) override;
 
   bool getRepetitionFilter() const override;
-  OSSIA::Address2 & setRepetitionFilter(bool) override;
+  OSSIA::v2::Address2 & setRepetitionFilter(bool) override;
 
-  OSSIA::Address2::iterator addCallback(ValueCallback) override;
-  void removeCallback(Address::iterator) override;
+  OSSIA::v2::Address2::iterator addCallback(OSSIA::v2::ValueCallback) override;
+  void removeCallback(OSSIA::v2::Address2::iterator) override;
 
-  static string buildNodePath(std::shared_ptr<Node>);
-
-  Protocol& getProtocol() const;
+  OSSIA::v2::Protocol2& getProtocol() const;
   const std::string& getTextualAddress() const
   { return mTextualAddress; }
 
 private:
 };
-
-
-OSSIA::Value initValue(OSSIA::Type);
-Protocol& getDummyProtocol();
-
 }

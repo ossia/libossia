@@ -15,8 +15,6 @@
 
 #include <string>
 
-#include "Network/Protocol/OSC.h"
-
 #include "BasicProtocol.h"
 
 namespace impl
@@ -30,23 +28,23 @@ private:
   bool      mLearning{};          /// if the device is currently learning from inbound messages.
 
 public:
-  OSC2(string, int, int);
+  OSC2(std::string, int, int);
   ~OSC2();
 
 
-  std::string getIp() const override;
-  OSC2 & setIp(std::string) override;
+  std::string getIp() const;
+  OSC2 & setIp(std::string);
 
-  int getInPort() const override;
-  OSC2 & setInPort(int) override;
+  int getInPort() const;
+  OSC2 & setInPort(int);
 
-  int getOutPort() const override;
-  OSC2 & setOutPort(int) override;
+  int getOutPort() const;
+  OSC2 & setOutPort(int);
 
-  bool getLearningStatus() const override;
-  OSC2 & setLearningStatus(OSSIA::Device&, bool) override;
+  bool getLearningStatus() const;
+  OSC2 & setLearningStatus(OSSIA::v2::Device2&, bool);
 
 
-  bool updateChildren(Node& node) const override;
+  bool updateChildren(OSSIA::v2::Node2& node) const override;
 };
 }

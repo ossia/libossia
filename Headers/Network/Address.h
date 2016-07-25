@@ -22,6 +22,7 @@
 #include "Editor/Domain.h"
 #include "Editor/Expression.h"
 #include "Network/AddressProperties.h"
+#include <Misc/DestinationIndex.h>
 #include <ossia_export.h>
 
 namespace OSSIA
@@ -88,7 +89,7 @@ public:
    \details thread-safe
    \param std::initializer_list<char> optionnal index list to clone only some elements from a Tuple value
    \return const #Value a cloned value.  */
-  virtual Value cloneValue(std::vector<char> = {}) const = 0;
+   virtual Value cloneValue(DestinationIndex = {}) const = 0;
 
   /*! set the address value
    \note call pushValue if you need to sync the value with the device

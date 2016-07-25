@@ -95,7 +95,7 @@ const Value& JamomaAddress::getValue() const
   return mValue;
 }
 
-Value JamomaAddress::cloneValue(std::vector<char> index) const
+Value JamomaAddress::cloneValue(DestinationIndex index) const
 {
   std::lock_guard<std::mutex> lock(mValueMutex);
 

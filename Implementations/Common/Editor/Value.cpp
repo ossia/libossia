@@ -8,15 +8,6 @@
 
 using namespace OSSIA;
 
-Impulse::~Impulse() = default;
-Bool::~Bool() = default;
-Int::~Int() = default;
-Float::~Float() = default;
-Char::~Char() = default;
-String::~String() = default;
-Tuple::~Tuple() = default;
-Destination::~Destination() = default;
-Behavior::~Behavior() = default;
 
 bool Bool::operator== (const Value& v) const
 { return Comparisons::NumericValue::apply(*this, v, std::equal_to<>{}); }
@@ -160,21 +151,28 @@ bool Tuple::operator<= (const Value& v) const
 { return Comparisons::TupleValue::apply(*this, v, std::less_equal<>{}); }
 
 
-Destination::Destination(
-        std::shared_ptr<Node> v,
-        std::initializer_list<char> idx) :
-    value(std::move(v))
-{
-    for (const auto & i : idx)
-        index.push_back(i);
-}
+Destination::Destination() = default;
 
-Destination::Destination(std::shared_ptr<Node> v, std::vector<char> idx) :
+Destination::Destination(const Destination& other) = default;
+Destination::Destination(Destination&& other) = default;
+
+Destination& Destination::operator=(const Destination&) = default;
+Destination& Destination::operator=(Destination&&) = default;
+
+Destination::Destination(std::shared_ptr<Node> v):
     value(v)
 {
-    for (const auto & i : idx)
-        index.push_back(i);
 }
+
+Destination::Destination(
+        std::shared_ptr<Node> v,
+        DestinationIndex idx) :
+    value(std::move(v)),
+    index(std::move(idx))
+{
+}
+
+
 
 
 bool Destination::operator== (const Value& v) const

@@ -13,45 +13,26 @@
 
 #pragma once
 
-#include "BasicProtocol.h"
+#include "Device.hpp"
 #include "BasicNode.h"
-
-namespace OSSIA
-{
-
-class Protocol2;
-
-class OSSIA_EXPORT Device2 : public virtual Node2
-{
-
-public:
-  virtual ~Device();
-
-  virtual Protocol2* getProtocol() const = 0;
-  virtual bool updateNamespace() = 0;
-};
-}
 
 namespace impl
 {
 
 class BasicDevice final :
-    public Device2,
+    public OSSIA::v2::Device2,
     public BasicNode
 {
 
 private:
-  unique_ptr<Protocol2>  mProtocol;
+  std::unique_ptr<OSSIA::v2::Protocol2>  mProtocol;
 
 public:
-  BasicDevice(unique_ptr<Protocol2> protocol);
+  BasicDevice(std::unique_ptr<OSSIA::v2::Protocol2> protocol);
 
   ~BasicDevice();
 
-  std::string getName() const override;
-  OSSIA::Node2 & setName(std::string) override;
-
-  Protocol2* getProtocol() const override;
+  OSSIA::v2::Protocol2& getProtocol() const override;
   bool updateNamespace() override;
 };
 }

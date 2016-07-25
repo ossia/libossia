@@ -77,7 +77,7 @@ public:
 
   const Value& getValue() const;
 
-  Value cloneValue(std::vector<char> = {}) const override;
+  Value cloneValue(DestinationIndex = {}) const override;
 
   Address & setValue(const Value&) override;
 

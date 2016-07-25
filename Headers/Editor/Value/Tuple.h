@@ -17,7 +17,6 @@ struct OSSIA_EXPORT Tuple
   Tuple(Tuple&&) = default;
   Tuple& operator=(const Tuple&) = default;
   Tuple& operator=(Tuple&&) = default;
-  virtual ~Tuple();
 
   /*! constructor for one value
    \param const value */
@@ -34,22 +33,11 @@ struct OSSIA_EXPORT Tuple
   Tuple(const std::vector<Value>& v);
   Tuple(std::vector<Value>&& v);
 
-  /*! equal operator */
   bool operator== (const Value&) const;
-
-  /*! different operator */
   bool operator!= (const Value&) const;
-
-  /*! greater than operator */
-  bool operator> (const Value&) const;
-
-  /*! greater than and equal operator */
+  bool operator>  (const Value&) const;
   bool operator>= (const Value&) const;
-
-  /*! less than operator */
-  bool operator< (const Value&) const;
-
-  /*! less than and equal operator */
+  bool operator<  (const Value&) const;
   bool operator<= (const Value&) const;
 };
 

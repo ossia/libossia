@@ -18,43 +18,44 @@ mOutPort(out_port)
 Minuit2::~Minuit2()
 {}
 
-std::string Minuit2::getIp()
+std::string Minuit2::getIp() const
 {
   return mIp;
 }
 
-Protocol & Minuit2::setIp(std::string ip)
+Minuit2& Minuit2::setIp(std::string ip)
 {
   mIp = ip;
   return *this;
 }
 
-int Minuit2::getInPort()
+int Minuit2::getInPort() const
 {
   return mInPort;
 }
 
-Protocol & Minuit2::setInPort(int in_port)
+Minuit2& Minuit2::setInPort(int in_port)
 {
   mInPort = in_port;
   return *this;
 }
 
-int Minuit2::getOutPort()
+int Minuit2::getOutPort() const
 {
   return mOutPort;
 }
 
-Protocol & Minuit2::setOutPort(int out_port)
+Minuit2& Minuit2::setOutPort(int out_port)
 {
   mOutPort = out_port;
   return *this;
 }
 
-bool Minuit2::updateChildren(Node& node) const
+bool Minuit2::updateChildren(OSSIA::v2::Node2& node) const
 {
   BasicNode& n = dynamic_cast<BasicNode&>(node);
 
-  return n.updateChildren();
+  //return n.updateChildren();
+  return false;
 }
 }

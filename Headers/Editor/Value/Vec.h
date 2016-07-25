@@ -18,29 +18,16 @@ class Vec
         {
         }
 
-        virtual ~Vec() = default;
         Vec(const Vec&) = default;
         Vec(Vec&&) = default;
         Vec& operator=(const Vec&) = default;
         Vec& operator=(Vec&&) = default;
 
-
-        /*! equal operator */
         bool operator== (const Value&) const;
-
-        /*! different operator */
         bool operator!= (const Value&) const;
-
-        /*! greater than operator */
-        bool operator> (const Value&) const;
-
-        /*! greater than and equal operator */
+        bool operator>  (const Value&) const;
         bool operator>= (const Value&) const;
-
-        /*! less than operator */
-        bool operator< (const Value&) const;
-
-        /*! less than and equal operator */
+        bool operator<  (const Value&) const;
         bool operator<= (const Value&) const;
 };
 

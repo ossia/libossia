@@ -7,7 +7,7 @@
 
 namespace impl {
 
-BasicAddress::BasicAddress(weak_ptr<Node> node) :
+BasicAddress::BasicAddress(const OSSIA::v2::Node2& node) :
   mNode(node),
   mValue(Impulse{}),
   mValueType(Type::IMPULSE),
@@ -18,16 +18,16 @@ BasicAddress::BasicAddress(weak_ptr<Node> node) :
   // To set-up the protocol cache.
   // Note : the cache works because the nodes cannot change parents.
   getProtocol();
-  mTextualAddress = getAddressFromNode(*mNode.lock());
+  mTextualAddress = OSSIA::v2::getAddressFromNode2(mNode);
 }
 
 BasicAddress::~BasicAddress()
 {
 }
 
-const shared_ptr<Node> BasicAddress::getNode() const
+const OSSIA::v2::Node2& BasicAddress::getNode() const
 {
-  return mNode.lock();
+  return mNode;
 }
 
 void BasicAddress::pullValue()
@@ -36,7 +36,7 @@ void BasicAddress::pullValue()
   getProtocol().pullAddressValue(*this);
 }
 
-OSSIA::Address2& BasicAddress::pushValue(const Value& value)
+OSSIA::v2::Address2& BasicAddress::pushValue(const OSSIA::Value& value)
 {
   setValue(value);
 
@@ -46,7 +46,7 @@ OSSIA::Address2& BasicAddress::pushValue(const Value& value)
   return *this;
 }
 
-OSSIA::Address2& BasicAddress::pushValue()
+OSSIA::v2::Address2& BasicAddress::pushValue()
 {
   // use the device protocol to push address value
   getProtocol().pushAddressValue(*this);
@@ -59,8 +59,9 @@ const OSSIA::Value& BasicAddress::getValue() const
   return mValue;
 }
 
-OSSIA::Value BasicAddress::cloneValue(std::vector<char> index) const
+OSSIA::Value BasicAddress::cloneValue(DestinationIndex index) const
 {
+  using namespace OSSIA;
   std::lock_guard<std::mutex> lock(mValueMutex);
 
   if (mValue.valid())
@@ -96,14 +97,15 @@ OSSIA::Value BasicAddress::cloneValue(std::vector<char> index) const
   }
 }
 
-OSSIA::Address2& BasicAddress::setValue(const Value& value)
+OSSIA::v2::Address2& BasicAddress::setValue(const Value& value)
 {
+  using namespace OSSIA;
   std::lock_guard<std::mutex> lock(mValueMutex);
 
   // set value querying the value from another address
   auto dest = value.try_get<Destination>();
   if (dest && mValueType != Type::DESTINATION)
-  {
+  {/*
     auto& destination = *dest;
     auto address = destination.value->getAddress();
 
@@ -121,6 +123,7 @@ OSSIA::Address2& BasicAddress::setValue(const Value& value)
     {
       throw runtime_error("setting an address value using a destination without address");
     }
+    */
   }
 
   // copy the new value
@@ -142,7 +145,7 @@ Type BasicAddress::getValueType() const
   return mValueType;
 }
 
-OSSIA::Address2& BasicAddress::setValueType(Type type)
+OSSIA::v2::Address2& BasicAddress::setValueType(Type type)
 {
   mValueType = type;
 
@@ -156,7 +159,7 @@ AccessMode BasicAddress::getAccessMode() const
   return mAccessMode;
 }
 
-OSSIA::Address2& BasicAddress::setAccessMode(AccessMode accessMode)
+OSSIA::v2::Address2& BasicAddress::setAccessMode(AccessMode accessMode)
 {
   mAccessMode = accessMode;
   return *this;
@@ -167,7 +170,7 @@ const std::shared_ptr<OSSIA::Domain> & BasicAddress::getDomain() const
   return mDomain;
 }
 
-OSSIA::Address2& BasicAddress::setDomain(std::shared_ptr<OSSIA::Domain> domain)
+OSSIA::v2::Address2& BasicAddress::setDomain(std::shared_ptr<OSSIA::Domain> domain)
 {
   mDomain = domain;
   return *this;
@@ -178,7 +181,7 @@ BoundingMode BasicAddress::getBoundingMode() const
   return mBoundingMode;
 }
 
-OSSIA::Address2& BasicAddress::setBoundingMode(OSSIA::BoundingMode boundingMode)
+OSSIA::v2::Address2& BasicAddress::setBoundingMode(OSSIA::BoundingMode boundingMode)
 {
   mBoundingMode = boundingMode;
   return *this;
@@ -189,27 +192,20 @@ bool BasicAddress::getRepetitionFilter() const
   return mRepetitionFilter;
 }
 
-OSSIA::Address2& BasicAddress::setRepetitionFilter(bool repetitionFilter)
+OSSIA::v2::Address2& BasicAddress::setRepetitionFilter(bool repetitionFilter)
 {
   mRepetitionFilter = repetitionFilter;
 
   return *this;
 }
 
-# pragma mark -
-# pragma mark Callback
-
-OSSIA::Address2::iterator BasicAddress::addCallback(OSSIA::ValueCallback callback)
+OSSIA::v2::Address2::iterator BasicAddress::addCallback(OSSIA::v2::ValueCallback callback)
 {
   auto it = CallbackContainer::addCallback(std::move(callback));
 
   if (callbacks().size() == 1)
   {
-    // use the device protocol to start address value observation
-    getProtocol().observeAddressValue(shared_from_this(), true);
-
-    //! \debug
-    //cout << "opening listening on " << buildNodePath(mNode.lock()) << endl;
+    getProtocol().observeAddressValue(*this, true);
   }
 
   return it;
@@ -222,100 +218,19 @@ void BasicAddress::removeCallback(Address2::iterator callback)
   if (callbacks().size() == 0)
   {
     // use the device protocol to stop address value observation
-    getProtocol().observeAddressValue(shared_from_this(), false);
-
-    //! \debug
-    //cout << "closing listening on " << buildNodePath(mNode.lock()) << endl;
+    getProtocol().observeAddressValue(*this, false);
   }
 }
 
-OSSIA::Value initValue(OSSIA::Type type)
+
+OSSIA::v2::Protocol2& getDummyProtocol()
 {
-  switch(type)
+  struct DummyProtocol : public OSSIA::v2::Protocol2
   {
-  case Type::IMPULSE:
-    return Impulse{};
-  case Type::BOOL:
-    return Bool{};
-  case Type::INT:
-    return Int{};
-  case Type::FLOAT:
-    return Float{};
-  case Type::CHAR:
-    return Char{};
-  case Type::STRING:
-    return String{};
-  case Type::TUPLE:
-    return Tuple{};
-  case Type::VEC2F:
-    return Vec2f{};
-  case Type::VEC3F:
-    return Vec3f{};
-  case Type::VEC4F:
-    return Vec4f{};
-  case Type::DESTINATION:
-    return Destination{};
-  case Type::BEHAVIOR:
-    return Behavior{{}};
-  }
-
-  throw std::runtime_error("Invalid type");
-}
-
-std::string BasicAddress::buildNodePath(std::shared_ptr<OSSIA::Node> node)
-{
-  std::string path;
-  std::string name = node->getName();
-  std::shared_ptr<OSSIA::Node> parent = node->getParent();
-
-  if (parent != nullptr)
-  {
-    path += buildNodePath(parent);
-    if (path != "/")
-      path += "/";
-    path += name;
-  }
-  else
-  {
-    //! \todo use device name
-    path = name;
-  }
-
-  return path;
-}
-
-OSSIA::Protocol2& BasicAddress::getProtocol() const
-{
-  if(auto cached_proto = mProtocolCache.lock())
-  {
-    return *cached_proto.get();
-  }
-  else
-  {
-    auto node = mNode.lock();
-    if(!node)
-      return getDummyProtocol();
-    auto dev = node->getDevice();
-    if(!dev)
-      return getDummyProtocol();
-    auto proto = dev->getProtocol();
-    if(!proto)
-      return getDummyProtocol();
-
-    // Save in the cache
-    mProtocolCache = proto;
-    return *proto.get();
-  }
-}
-
-OSSIA::Protocol& getDummyProtocol()
-{
-  struct DummyProtocol : public OSSIA::Protocol2
-  {
-    bool pullAddressValue(OSSIA::Address2&) const override { return true; }
-    bool pushAddressValue(const OSSIA::Address2&) const override { return true; }
-    bool observeAddressValue(std::shared_ptr<OSSIA::Address2>, bool) const override { return false; }
-    bool updateChildren(OSSIA::Node2&) const override { return false; }
+    bool pullAddressValue(OSSIA::v2::Address2&) const override { return true; }
+    bool pushAddressValue(const OSSIA::v2::Address2&) const override { return true; }
+    bool observeAddressValue(OSSIA::v2::Address2&, bool) const override { return false; }
+    bool updateChildren(OSSIA::v2::Node2&) const override { return false; }
     void setLogger(std::shared_ptr<OSSIA::NetworkLogger>) override { }
     std::shared_ptr<OSSIA::NetworkLogger> getLogger() const override { return{}; }
   };
@@ -323,4 +238,24 @@ OSSIA::Protocol& getDummyProtocol()
   static DummyProtocol proto;
   return proto;
 }
+
+OSSIA::v2::Protocol2& BasicAddress::getProtocol() const
+{
+  if(auto cached_proto = mProtocolCache)
+  {
+    return *cached_proto;
+  }
+  else
+  {
+    auto dev = mNode.getDevice();
+    if(!dev)
+      return getDummyProtocol();
+    auto& proto = dev->getProtocol();
+
+    // Save in the cache
+    mProtocolCache = &proto;
+    return proto;
+  }
+}
+
 }

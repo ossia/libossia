@@ -27,7 +27,6 @@ public:
   Value& operator=(const Value& other) = default;
   Value& operator=(Value&& other) = default;
 
-
   value_type v ;
 
   template<typename T>
@@ -92,4 +91,37 @@ public:
 OSSIA_EXPORT std::string getValueAsString(const OSSIA::Value& val);
 
 
+
+inline OSSIA::Value initValue(OSSIA::Type type)
+{
+  switch(type)
+  {
+  case Type::IMPULSE:
+    return Impulse{};
+  case Type::BOOL:
+    return Bool{};
+  case Type::INT:
+    return Int{};
+  case Type::FLOAT:
+    return Float{};
+  case Type::CHAR:
+    return Char{};
+  case Type::STRING:
+    return String{};
+  case Type::TUPLE:
+    return Tuple{};
+  case Type::VEC2F:
+    return Vec2f{};
+  case Type::VEC3F:
+    return Vec3f{};
+  case Type::VEC4F:
+    return Vec4f{};
+  case Type::DESTINATION:
+    return Destination{};
+  case Type::BEHAVIOR:
+    return Behavior{{}};
+  }
+
+  throw std::runtime_error("Invalid type");
+}
 }

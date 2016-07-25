@@ -16,17 +16,17 @@ std::shared_ptr<OSSIA::NetworkLogger> BasicProtocol::getLogger() const
     return mLogger;
 }
 
-bool BasicProtocol::pullAddressValue(OSSIA::Address2& address) const
+bool BasicProtocol::pullAddressValue(OSSIA::v2::Address2& address) const
 {
     return false;
 }
 
-bool BasicProtocol::pushAddressValue(const OSSIA::Address2& address) const
+bool BasicProtocol::pushAddressValue(const OSSIA::v2::Address2& address) const
 {
     return false;
 }
 
-bool BasicProtocol::observeAddressValue(OSSIA::Address2& address, bool enable) const
+bool BasicProtocol::observeAddressValue(OSSIA::v2::Address2& address, bool enable) const
 {
     return false;
 }

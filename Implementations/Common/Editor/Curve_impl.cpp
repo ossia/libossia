@@ -187,10 +187,10 @@ template <typename X, typename Y>
 Y JamomaCurve<X,Y>::
 convertToTemplateTypeValue(
     const Value& value,
-    vector<char>::const_iterator idx)
+    DestinationIndex::const_iterator idx)
 {
   struct visitor {
-    vector<char>::const_iterator index;
+    DestinationIndex::const_iterator index;
     Y operator()(Int i) const   { return i.value; }
     Y operator()(Float f) const { return f.value; }
     Y operator()(Bool b) const  { return b.value; }

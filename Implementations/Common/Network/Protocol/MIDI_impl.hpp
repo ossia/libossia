@@ -326,7 +326,7 @@ public:
     return mValue;
   }
 
-  Value cloneValue(std::vector<char>) const override
+  Value cloneValue(DestinationIndex) const override
   {
     // TODO use the vec parameter
     return mValue;

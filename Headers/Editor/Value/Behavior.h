@@ -22,31 +22,12 @@ struct OSSIA_EXPORT Behavior
   Behavior& operator=(const Behavior&) = default;
   Behavior& operator=(Behavior&&) = default;
 
-  virtual ~Behavior();
-
-  /*! equal operator */
-  bool operator== (const Value&) const
-  { return false; }
-
-  /*! different operator */
-  bool operator!= (const Value&) const
-  { return false; }
-
-  /*! greater than operator */
-  bool operator> (const Value&) const
-  { return false; }
-
-  /*! greater than and equal operator */
-  bool operator>= (const Value&) const
-  { return false; }
-
-  /*! less than operator */
-  bool operator< (const Value&) const
-  { return false; }
-
-  /*! less than and equal operator */
-  bool operator<= (const Value&) const
-  { return false; }
+  bool operator== (const Value&) const { return false; }
+  bool operator!= (const Value&) const { return false; }
+  bool operator>  (const Value&) const { return false; }
+  bool operator>= (const Value&) const { return false; }
+  bool operator<  (const Value&) const { return false; }
+  bool operator<= (const Value&) const { return false; }
 };
 
 }

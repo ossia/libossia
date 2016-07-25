@@ -5,11 +5,6 @@
 namespace impl
 {
 
-shared_ptr<OSC> OSC::create(std::string ip, int in_port, int out_port)
-{
-  return make_shared<OSC2>(ip, in_port, out_port);
-}
-
 OSC2::OSC2(std::string ip, int in_port, int out_port) :
 mIp(ip),
 mInPort(in_port),
@@ -26,7 +21,7 @@ std::string OSC2::getIp() const
   return mIp;
 }
 
-Protocol & OSC2::setIp(std::string ip)
+OSC2& OSC2::setIp(std::string ip)
 {
   mIp = ip;
 
@@ -38,7 +33,7 @@ int OSC2::getInPort() const
   return mInPort;
 }
 
-Protocol & OSC2::setInPort(int in_port)
+OSC2& OSC2::setInPort(int in_port)
 {
   mInPort = in_port;
   return *this;
@@ -49,7 +44,7 @@ int OSC2::getOutPort() const
   return mOutPort;
 }
 
-Protocol & OSC2::setOutPort(int out_port)
+OSC2& OSC2::setOutPort(int out_port)
 {
   mOutPort = out_port;
   return *this;
@@ -61,12 +56,12 @@ bool OSC2::getLearningStatus() const
 }
 
 
-Protocol& OSC2::setLearningStatus(OSSIA::Device& ossiaDevice, bool newLearn)
+OSC2& OSC2::setLearningStatus(OSSIA::v2::Device2& ossiaDevice, bool newLearn)
 {
     return *this;
 }
 
-bool OSC2::updateChildren(Node& node) const
+bool OSC2::updateChildren(OSSIA::v2::Node2& node) const
 {
   return false;
 }

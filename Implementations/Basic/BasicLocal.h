@@ -19,7 +19,7 @@
 namespace impl
 {
 class OSSIA_EXPORT Local2 :
-    public virtual OSSIA::Protocol2,
+    public virtual OSSIA::v2::Protocol2,
     public BasicProtocol
 {
 
@@ -30,9 +30,9 @@ public:
   virtual ~Local2();
 
 
-  bool pullAddressValue(OSSIA::Address2&) const override;
-  bool pushAddressValue(const OSSIA::Address2&) const override;
-  bool observeAddressValue(OSSIA::Address2&, bool) const override;
-  bool updateChildren(OSSIA::Node2& node) const override;
+  bool pullAddressValue(OSSIA::v2::Address2&) const override;
+  bool pushAddressValue(const OSSIA::v2::Address2&) const override;
+  bool observeAddressValue(OSSIA::v2::Address2&, bool) const override;
+  bool updateChildren(OSSIA::v2::Node2& node) const override;
 };
 }

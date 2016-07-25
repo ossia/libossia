@@ -14,6 +14,15 @@ include(LinkerWarnings)
 find_package(Boost REQUIRED)
 
 set(SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/Address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Address.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Protocol.cpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/BasicAddress.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/BasicAddress.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/BasicDevice.cpp"

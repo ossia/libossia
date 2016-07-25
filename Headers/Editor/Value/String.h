@@ -16,28 +16,17 @@ struct OSSIA_EXPORT String
       value(std::move(v))
   {
   }
-  virtual ~String();
+
   String(const String&) = default;
   String(String&&) = default;
   String& operator=(const String&) = default;
   String& operator=(String&&) = default;
 
-  /*! equal operator */
   bool operator== (const Value&) const;
-
-  /*! different operator */
   bool operator!= (const Value&) const;
-
-  /*! greater than operator */
-  bool operator> (const Value&) const;
-
-  /*! greater than and equal operator */
+  bool operator>  (const Value&) const;
   bool operator>= (const Value&) const;
-
-  /*! less than operator */
-  bool operator< (const Value&) const;
-
-  /*! less than and equal operator */
+  bool operator<  (const Value&) const;
   bool operator<= (const Value&) const;
 };
 

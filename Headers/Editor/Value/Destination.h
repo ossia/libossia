@@ -1,53 +1,34 @@
 #pragma once
-#include <Network/Node.h>
 #include <ossia_export.h>
-
+#include <vector>
+#include <memory>
 #include <initializer_list>
+#include <Misc/DestinationIndex.h>
+#include <Network/AddressProperties.h>
 namespace OSSIA
 {
 class Value;
+class Node;
 /*! \details Destination to an Address value and optionnally to several index of this value */
 struct OSSIA_EXPORT Destination final
 {
   std::shared_ptr<Node> value;
-  std::vector<char> index;
+  DestinationIndex index;
 
-  Destination() = default;
-  /*! constructor for a node and optionnal index values
-   \param std::shared_ptr<Node>
-   \param char
-   \param char
-   \param ... */
+  Destination();
+  Destination(std::shared_ptr<Node> v);
+  Destination(std::shared_ptr<Node> v, DestinationIndex);
 
-  Destination(std::shared_ptr<Node> v, std::initializer_list<char> = {});
+  Destination(const Destination& other);
+  Destination(Destination&& other);
+  Destination& operator=(const Destination&);
+  Destination& operator=(Destination&&);
 
-  /*! constructor for a node and an index vector
-   \param std::shared_ptr<Node>
-   \param std::vector<const #Value> value */
-  Destination(std::shared_ptr<Node> v, std::vector<char>);
-  Destination(const Destination& other) = default;
-  Destination(Destination&& other) = default;
-  Destination& operator=(const Destination&) = default;
-  Destination& operator=(Destination&&) = default;
-
-  virtual ~Destination();
-
-  /*! equal operator */
   bool operator== (const Value&) const;
-
-  /*! different operator */
   bool operator!= (const Value&) const;
-
-  /*! greater than operator */
-  bool operator> (const Value&) const;
-
-  /*! greater than and equal operator */
+  bool operator>  (const Value&) const;
   bool operator>= (const Value&) const;
-
-  /*! less than operator */
-  bool operator< (const Value&) const;
-
-  /*! less than and equal operator */
+  bool operator<  (const Value&) const;
   bool operator<= (const Value&) const;
 };
 

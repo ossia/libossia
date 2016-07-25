@@ -118,7 +118,7 @@ public:
 # pragma mark -
 # pragma mark Implementation specific
 #endif
-  static Y convertToTemplateTypeValue(const Value&, vector<char>::const_iterator);
+  static Y convertToTemplateTypeValue(const Value&, DestinationIndex::const_iterator);
 };
 
 template<typename T>

@@ -15,8 +15,6 @@
 
 #include <string>
 
-#include "Network/Protocol/Minuit.h"
-
 #include "BasicNode.h"
 #include "BasicProtocol.h"
 
@@ -26,24 +24,24 @@ namespace impl
 class Minuit2 final : public BasicProtocol
 {
 private:
-  string    mIp;
+  std::string    mIp;
   int       mInPort;            /// the port that a remote device open to receive OSC messages
   int       mOutPort;           /// the port where a remote device sends OSC messages to give some feeback (like "echo")
 
 public:
-  Minuit2(string, int, int);
+  Minuit2(std::string, int, int);
 
   ~Minuit2();
 
-  std::string getIp();
+  std::string getIp() const;
   Minuit2 & setIp(std::string);
 
-  int getInPort();
+  int getInPort() const;
   Minuit2 & setInPort(int);
 
-  int getOutPort();
+  int getOutPort() const;
   Minuit2 & setOutPort(int);
 
-  bool updateChildren(Node& node) const override;
+  bool updateChildren(OSSIA::v2::Node2& node) const override;
 };
 }
