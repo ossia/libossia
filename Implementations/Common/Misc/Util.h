@@ -48,7 +48,7 @@ bool none_of(Vector&& v, Fun fun)
 }
 
 template<typename Vector, typename Fun>
-iterator_t<Vector> remove_if(Vector&& v, Fun fun)
+auto remove_if(Vector&& v, Fun fun)
 {
     return std::remove_if(std::begin(v), std::end(v), fun);
 }

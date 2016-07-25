@@ -8,23 +8,26 @@ class NetworkLogger;
 
 namespace v2
 {
-class Address2;
-class Node2;
-class Device2;
-class OSSIA_EXPORT Protocol2
+class Address;
+class Node;
+class Device;
+class OSSIA_EXPORT Protocol
 {
-public:
-  virtual ~Protocol2();
+    public:
+        virtual ~Protocol();
 
-  virtual bool pullAddressValue(Address2&) const = 0;
-  virtual bool pushAddressValue(const Address2&) const = 0;
+        virtual bool pullAddressValue(Address&) const = 0;
+        virtual bool pushAddressValue(const Address&) const = 0;
 
-  virtual bool observeAddressValue(Address2&, bool) const = 0;
+        virtual bool observeAddressValue(Address&, bool) const = 0;
 
-  virtual bool updateChildren(Node2& node) const = 0;
+        virtual bool updateChildren(Node& node) const = 0;
 
-  virtual void setLogger(std::shared_ptr<NetworkLogger>) = 0;
-  virtual std::shared_ptr<NetworkLogger> getLogger() const = 0;
+        void setLogger(const std::shared_ptr<NetworkLogger>& l) { mLogger = l; }
+        const std::shared_ptr<NetworkLogger>& getLogger() const { return mLogger; }
+
+    protected:
+        std::shared_ptr<OSSIA::NetworkLogger> mLogger;
 };
 }
 }

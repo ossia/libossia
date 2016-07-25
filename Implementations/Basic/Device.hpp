@@ -8,22 +8,22 @@ namespace OSSIA
 {
 namespace v2
 {
-class Protocol2;
+class Protocol;
 
-class OSSIA_EXPORT Device2 : public virtual Node2
+class OSSIA_EXPORT Device : public virtual Node
 {
 
-public:
-  Device2() = default;
-  Device2(const Device2&) = delete;
-  Device2(Device2&&) = delete;
-  Device2& operator=(const Device2&) = delete;
-  Device2& operator=(Device2&&) = delete;
+    public:
+        Device() = default;
+        Device(const Device&) = delete;
+        Device(Device&&) = delete;
+        Device& operator=(const Device&) = delete;
+        Device& operator=(Device&&) = delete;
 
-  virtual ~Device2();
+        virtual ~Device();
 
-  virtual OSSIA::v2::Protocol2& getProtocol() const = 0;
-  virtual bool updateNamespace() = 0;
+        virtual OSSIA::v2::Protocol& getProtocol() const = 0;
+        virtual bool updateNamespace() = 0;
 };
 }
 }

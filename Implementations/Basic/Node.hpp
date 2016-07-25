@@ -23,36 +23,36 @@ enum class NodeChange
 
 namespace v2
 {
-class Device2;
-class Address2;
-class Node2;
-using NodeChangeCallback = std::function<void(const Node2&, const std::string&, NodeChange)>;
+class Device;
+class Address;
+class Node;
+using NodeChangeCallback = std::function<void(const Node&, const std::string&, NodeChange)>;
 
-class OSSIA_EXPORT Node2 : public CallbackContainer<NodeChangeCallback>
+class OSSIA_EXPORT Node : public CallbackContainer<NodeChangeCallback>
 {
 
     public:
 
-        Node2() = default;
-        Node2(const Node2&) = delete;
-        Node2(Node2&&) = delete;
-        Node2& operator=(const Node2&) = delete;
-        Node2& operator=(Node2&&) = delete;
+        Node() = default;
+        Node(const Node&) = delete;
+        Node(Node&&) = delete;
+        Node& operator=(const Node&) = delete;
+        Node& operator=(Node&&) = delete;
         using iterator = typename CallbackContainer<NodeChangeCallback>::iterator;
 
-        using container_iterator = Container<Node2>::iterator;
-        using container_const_iterator = Container<Node2>::const_iterator;
-        virtual ~Node2();
+        using container_iterator = Container<Node>::iterator;
+        using container_const_iterator = Container<Node>::const_iterator;
+        virtual ~Node();
 
-        virtual std::shared_ptr<OSSIA::v2::Device2> getDevice() const = 0;
-        virtual std::shared_ptr<OSSIA::v2::Node2> getParent() const = 0;
-        virtual std::shared_ptr<OSSIA::v2::Node2> getThis() = 0;
+        virtual std::shared_ptr<OSSIA::v2::Device> getDevice() const = 0;
+        virtual std::shared_ptr<OSSIA::v2::Node> getParent() const = 0;
+        virtual std::shared_ptr<OSSIA::v2::Node> getThis() = 0;
 
         virtual std::string getName() const = 0;
-        virtual OSSIA::v2::Node2 & setName(std::string) = 0;
-        virtual OSSIA::v2::Address2* getAddress() const = 0;
+        virtual OSSIA::v2::Node & setName(std::string) = 0;
+        virtual OSSIA::v2::Address* getAddress() const = 0;
 
-        virtual OSSIA::v2::Address2* createAddress(Type = Type::IMPULSE) = 0;
+        virtual OSSIA::v2::Address* createAddress(Type = Type::IMPULSE) = 0;
 
         virtual bool removeAddress() = 0;
 
@@ -67,16 +67,16 @@ class OSSIA_EXPORT Node2 : public CallbackContainer<NodeChangeCallback>
                                            bool repetitionFilter = {}) = 0;
 
         virtual container_iterator insert(container_const_iterator,
-                                          std::shared_ptr<Node2>,
+                                          std::shared_ptr<Node>,
                                           std::string) = 0;
 
         virtual container_iterator erase(container_const_iterator) = 0;
 
-        const Container<Node2>& children() const
+        const Container<Node>& children() const
         { return m_children; }
 
     protected:
-        Container<Node2> m_children;
+        Container<Node> m_children;
 };
 
 }

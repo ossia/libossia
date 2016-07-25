@@ -4,6 +4,6 @@ namespace OSSIA
 {
 namespace v2
 {
-Device2::~Device2() = default;
+Device::~Device() = default;
 }
 }

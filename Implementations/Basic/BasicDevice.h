@@ -20,19 +20,19 @@ namespace impl
 {
 
 class BasicDevice final :
-    public OSSIA::v2::Device2,
-    public BasicNode
+        public OSSIA::v2::Device,
+        public BasicNode
 {
 
-private:
-  std::unique_ptr<OSSIA::v2::Protocol2>  mProtocol;
+    private:
+        std::unique_ptr<OSSIA::v2::Protocol>  mProtocol;
 
-public:
-  BasicDevice(std::unique_ptr<OSSIA::v2::Protocol2> protocol);
+    public:
+        BasicDevice(std::unique_ptr<OSSIA::v2::Protocol> protocol);
 
-  ~BasicDevice();
+        ~BasicDevice();
 
-  OSSIA::v2::Protocol2& getProtocol() const override;
-  bool updateNamespace() override;
+        OSSIA::v2::Protocol& getProtocol() const override;
+        bool updateNamespace() override;
 };
 }
