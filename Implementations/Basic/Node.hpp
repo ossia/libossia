@@ -43,6 +43,7 @@ class OSSIA_EXPORT Node
         Node* createChild(const std::string& name);
         bool removeChild(const std::string& name);
         bool removeChild(const Node& name);
+        void clearChildren();
 
         const std::vector<std::unique_ptr<Node>>& children() const
         { return mChildren; }

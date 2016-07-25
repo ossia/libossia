@@ -55,5 +55,12 @@ bool Node::removeChild(const Node& node)
     }
 }
 
+void Node::clearChildren()
+{
+    for(auto& child : mChildren)
+        removingChild(*child);
+    mChildren.clear();
+}
+
 }
 }

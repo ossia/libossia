@@ -53,8 +53,12 @@ target_link_libraries(BasicOSSIA PRIVATE
     OSSIA_common
     oscpack)
 
-target_include_directories(BasicOSSIA PRIVATE
-    "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot")
+target_include_directories(BasicOSSIA
+    PRIVATE
+      "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot"
+    INTERFACE
+      "${CMAKE_CURRENT_SOURCE_DIR}")
+
 if(OSSIA_SANITIZE)
     sanitize_build(BasicOSSIA)
     #debugmode_build(APIJamoma)

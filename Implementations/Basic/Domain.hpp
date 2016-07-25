@@ -324,5 +324,15 @@ inline Value max(const Domain& dom)
     }
     return {};
 }
+
+inline Domain makeDomain(const OSSIA::Value& min, const OSSIA::Value& max)
+{
+    if(min.valid() && max.valid() &&
+       min.v.which() == max.v.which())
+    {
+        return {};
+    }
+    return {};
+}
 }
 }
