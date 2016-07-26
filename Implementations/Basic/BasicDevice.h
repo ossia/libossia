@@ -24,8 +24,6 @@ class BasicDevice final :
         public BasicNode
 {
     private:
-        std::unique_ptr<OSSIA::v2::Protocol>  mProtocol;
-
     public:
         BasicDevice() = delete;
         BasicDevice(const BasicDevice&) = delete;
@@ -33,11 +31,9 @@ class BasicDevice final :
         BasicDevice& operator=(const BasicDevice&) = delete;
         BasicDevice& operator=(BasicDevice&&) = delete;
 
-        BasicDevice(std::string name,
-                    std::unique_ptr<OSSIA::v2::Protocol> protocol);
+        BasicDevice(std::unique_ptr<OSSIA::v2::Protocol> protocol,
+                    std::string name);
 
         ~BasicDevice();
-
-        OSSIA::v2::Protocol& getProtocol() const override;
 };
 }

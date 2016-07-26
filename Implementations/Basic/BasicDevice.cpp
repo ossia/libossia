@@ -6,10 +6,10 @@
 namespace impl
 {
 BasicDevice::BasicDevice(
-        std::string name,
-        std::unique_ptr<OSSIA::v2::Protocol> protocol) :
-    BasicNode(std::move(name), *this),
-    mProtocol{std::move(protocol)}
+        std::unique_ptr<OSSIA::v2::Protocol> protocol,
+        std::string name) :
+    Device(std::move(protocol)),
+    BasicNode(std::move(name), *this)
 {
 }
 
@@ -17,10 +17,4 @@ BasicDevice::~BasicDevice()
 {
     mChildren.clear();
 }
-
-OSSIA::v2::Protocol& BasicDevice::getProtocol() const
-{
-    return *mProtocol;
-}
-
 }

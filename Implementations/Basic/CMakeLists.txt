@@ -49,9 +49,11 @@ set(SRCS
     )
 
 add_library(BasicOSSIA ${SRCS})
-target_link_libraries(BasicOSSIA PRIVATE
-    OSSIA_common
-    oscpack)
+target_link_libraries(BasicOSSIA
+    PRIVATE
+        OSSIA_common
+    PUBLIC
+        oscpack)
 
 target_include_directories(BasicOSSIA
     PRIVATE
