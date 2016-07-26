@@ -19,6 +19,7 @@
 #include "Misc/Container.h"
 #include "Misc/CallbackContainer.h"
 #include "Network/AddressProperties.h"
+#include <functional>
 #include <ossia_export.h>
 
 namespace OSSIA
