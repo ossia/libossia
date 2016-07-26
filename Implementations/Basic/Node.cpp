@@ -11,10 +11,11 @@ Node* Node::createChild(const std::string& name)
 {
     auto res = makeChild(name);
 
+    auto ptr = res.get();
     if(res)
         mChildren.push_back(std::move(res));
 
-    return res.get();
+    return ptr;
 }
 
 bool Node::removeChild(const std::string& name)
