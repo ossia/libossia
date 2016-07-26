@@ -1,13 +1,16 @@
-#include "BasicNode.hpp"
-#include "BasicDevice.hpp"
-#include "Protocol.hpp"
-#include <Editor/Value/Value.h>
-#include "BasicAddress.hpp"
+#include <ossia/network/v2/generic/generic_node.hpp>
+#include <ossia/network/v2/generic/generic_device.hpp>
+#include <ossia/network/v2/base/protocol.hpp>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/network/v2/generic/generic_address.hpp>
 #include <cassert>
 
 namespace impl
 {
-BasicNode::BasicNode(string name, v2::Device& aDevice, BasicNode& aParent):
+BasicNode::BasicNode(
+    std::string name,
+    OSSIA::v2::Device& aDevice,
+    BasicNode& aParent):
     mName{std::move(name)},
     mDevice{aDevice},
     mParent{&aParent}
@@ -15,7 +18,7 @@ BasicNode::BasicNode(string name, v2::Device& aDevice, BasicNode& aParent):
 
 }
 
-BasicNode::BasicNode(string name, v2::Device& aDevice):
+BasicNode::BasicNode(std::string name, OSSIA::v2::Device& aDevice):
     mName{std::move(name)},
     mDevice{aDevice}
 {
@@ -42,13 +45,13 @@ OSSIA::v2::Address* BasicNode::getAddress() const
     return mAddress.get();
 }
 
-OSSIA::v2::Address* BasicNode::createAddress(Type type)
+OSSIA::v2::Address* BasicNode::createAddress(OSSIA::Type type)
 {
     // clear former address
     removeAddress();
 
     // edit new address
-    mAddress = make_unique<impl::BasicAddress>(*this);
+    mAddress = std::make_unique<impl::BasicAddress>(*this);
 
     // set type
     mAddress->setValueType(type);

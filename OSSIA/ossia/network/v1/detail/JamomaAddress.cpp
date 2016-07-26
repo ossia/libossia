@@ -1,6 +1,6 @@
-#include "Network/JamomaAddress.hpp"
-#include <Editor/Value/Value.h>
-#include "Network/NetworkLogger.hpp"
+#include <ossia/network/v1/detail/JamomaAddress.hpp>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/network/common/network_logger.hpp>
 
 #include <map>
 #include <iostream> //! \todo to remove. only here for debug purpose
@@ -58,7 +58,7 @@ JamomaAddress::~JamomaAddress()
 # pragma mark -
 # pragma mark Network
 
-const shared_ptr<Node> JamomaAddress::getNode() const
+const std::shared_ptr<Node> JamomaAddress::getNode() const
 {
   return mNode.lock();
 }
@@ -128,7 +128,7 @@ Value JamomaAddress::cloneValue(DestinationIndex index) const
   }
   else
   {
-      throw runtime_error("cloning null value");
+      throw std::runtime_error("cloning null value");
   }
 }
 
@@ -151,11 +151,11 @@ Address & JamomaAddress::setValue(const Value& value)
         mValue = address->cloneValue();
       }
       else
-        throw runtime_error("setting an address value using a destination with a bad type address");
+        throw std::runtime_error("setting an address value using a destination with a bad type address");
     }
     else
     {
-      throw runtime_error("setting an address value using a destination without address");
+      throw std::runtime_error("setting an address value using a destination without address");
     }
   }
 
@@ -230,12 +230,12 @@ Address & JamomaAddress::setAccessMode(AccessMode accessMode)
   return *this;
 }
 
-const shared_ptr<Domain> & JamomaAddress::getDomain() const
+const std::shared_ptr<Domain> & JamomaAddress::getDomain() const
 {
   return mDomain;
 }
 
-Address & JamomaAddress::setDomain(shared_ptr<Domain> domain)
+Address & JamomaAddress::setDomain(std::shared_ptr<Domain> domain)
 {
   mDomain = domain;
 
@@ -536,7 +536,7 @@ Value JamomaAddress::convertTTValueIntoValue(const TTValue& v, Type valueType) c
 
     case Type::DESTINATION :
     {
-      throw runtime_error("convertion to destination value is not handled");
+      throw std::runtime_error("convertion to destination value is not handled");
       /*
        if (v.size() == 1)
        {
@@ -696,11 +696,11 @@ void JamomaAddress::convertValueIntoTTValue(const Value& value, TTValue & ttval)
     eggs::variants::apply(vis, value.v);
 }
 
-string JamomaAddress::buildNodePath(shared_ptr<Node> node)
+string JamomaAddress::buildNodePath(std::shared_ptr<Node> node)
 {
   string path;
   string name = node->getName();
-  shared_ptr<Node> parent = node->getParent();
+  std::shared_ptr<Node> parent = node->getParent();
 
   if (parent != nullptr)
   {

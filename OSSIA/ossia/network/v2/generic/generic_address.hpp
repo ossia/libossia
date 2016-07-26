@@ -12,10 +12,10 @@
  */
 
 #pragma once
-#include "Address.hpp"
-#include "BasicDevice.hpp"
-#include <Editor/Value/Value.h>
-#include <Misc/CallbackContainer.h>
+#include <ossia/network/v2/base/address.hpp>
+#include <ossia/network/v2/generic/generic_device.hpp>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/detail/callback_container.hpp>
 
 #include <thread>
 #include <mutex>
@@ -62,7 +62,7 @@ class BasicAddress final : public OSSIA::v2::Address
         OSSIA::v2::Address & pushValue() override;
 
         const OSSIA::Value& getValue() const;
-        OSSIA::Value cloneValue(DestinationIndex = {}) const override;
+        OSSIA::Value cloneValue(OSSIA::DestinationIndex = {}) const override;
         Address & setValue(const OSSIA::Value&) override;
 
         OSSIA::Type getValueType() const override;

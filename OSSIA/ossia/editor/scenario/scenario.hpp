@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include "Editor/Clock.hpp"
-#include "Editor/State.hpp"
-#include "Editor/TimeProcess.hpp"
+#include <ossia/editor/scenario/detail/Clock.hpp>
+#include <ossia/editor/state/state.hpp>
+#include <ossia/editor/scenario/time_process.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

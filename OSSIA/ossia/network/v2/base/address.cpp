@@ -1,5 +1,5 @@
-#include "Address.hpp"
-#include "Node.hpp"
+#include <ossia/network/v2/generic/generic_address.hpp>
+#include <ossia/network/v2/generic/generic_node.hpp>
 namespace OSSIA
 {
 namespace v2

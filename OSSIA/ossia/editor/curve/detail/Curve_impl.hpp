@@ -13,26 +13,22 @@
 
 #pragma once
 
-#include "Editor/Curve.hpp"
-#include <Network/Address.h>
-#include <Editor/Value/Destination.h>
+#include <ossia/editor/curve/curve.hpp>
+#include <ossia/editor/value/destination.hpp>
+#include <ossia/network/v1/Address.hpp>
 #include <cmath>
-#if defined(OSSIA_BOOST)
+
 #include <boost/container/flat_map.hpp>
-template<typename... Args>
-using curve_map = boost::container::flat_map<Args...>;
-#else
-#include <map>
-template<typename... Args>
-using curve_map = std::map<Args...>;
-#endif
-using namespace OSSIA;
 
 
 namespace impl
 {
+
+template<typename... Args>
+using curve_map = boost::container::flat_map<Args...>;
+
 template <typename X, typename Y>
-class JamomaCurve final : public Curve<X,Y>
+class JamomaCurve final : public OSSIA::Curve<X,Y>
 {
 
 private:
@@ -41,14 +37,14 @@ private:
 # pragma mark Implementation specific
 #endif
   X mInitialPointAbscissa;
-  Destination mInitialPointAbscissaDestination;
+  OSSIA::Destination mInitialPointAbscissaDestination;
 
   Y mInitialPointOrdinate;
   mutable Y mInitialPointOrdinateCache;
   mutable bool mInitialPointOrdinateCacheUsed = false;
-  Destination mInitialPointOrdinateDestination;
+  OSSIA::Destination mInitialPointOrdinateDestination;
 
-  using map_type = curve_map<X, pair<Y, CurveSegment<Y>>>;
+  using map_type = curve_map<X, std::pair<Y, OSSIA::CurveSegment<Y>>>;
   map_type mPointsMap;
 
 public:
@@ -62,7 +58,7 @@ public:
 
   JamomaCurve(const JamomaCurve *);
 
-  shared_ptr<Curve<X,Y>> clone() const override;
+  std::shared_ptr<OSSIA::Curve<X,Y>> clone() const override;
 
   ~JamomaCurve();
 
@@ -78,7 +74,7 @@ public:
 # pragma mark Edition
 #endif
 
-  bool addPoint(CurveSegment<Y>, X, Y) override;
+  bool addPoint(OSSIA::CurveSegment<Y>, X, Y) override;
 
   bool removePoint(X) override;
 
@@ -104,21 +100,21 @@ public:
 
   void setInitialPointOrdinate(Y) override;
 
-  const Destination& getInitialPointAbscissaDestination() const override;
+  const OSSIA::Destination& getInitialPointAbscissaDestination() const override;
 
-  const Destination& getInitialPointOrdinateDestination() const override;
+  const OSSIA::Destination& getInitialPointOrdinateDestination() const override;
 
-  void setInitialPointAbscissaDestination(const Destination&) override;
+  void setInitialPointAbscissaDestination(const OSSIA::Destination&) override;
 
-  void setInitialPointOrdinateDestination(const Destination&) override;
+  void setInitialPointOrdinateDestination(const OSSIA::Destination&) override;
 
-  std::map<X, std::pair<Y, CurveSegment<Y>>> getPointsMap() const override;
+  std::map<X, std::pair<Y, OSSIA::CurveSegment<Y>>> getPointsMap() const override;
 
 #if 0
 # pragma mark -
 # pragma mark Implementation specific
 #endif
-  static Y convertToTemplateTypeValue(const Value&, DestinationIndex::const_iterator);
+  static Y convertToTemplateTypeValue(const OSSIA::Value&, OSSIA::DestinationIndex::const_iterator);
 };
 
 template<typename T>

@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include "Editor/Domain.hpp"
-#include <Editor/Value/Value.h>
+#include <ossia/network/v1/Domain.hpp>
+#include <ossia/editor/value/value.hpp>
 
 using namespace OSSIA;
 using namespace std;
@@ -44,7 +44,7 @@ public:
 
   JamomaDomain(const JamomaDomain&);
 
-  shared_ptr<Domain> clone() const override;
+  std::shared_ptr<Domain> clone() const override;
 
   ~JamomaDomain();
 

@@ -1,12 +1,12 @@
-#include "Network/JamomaNode.hpp"
-#include "Network/JamomaDevice.hpp"
-#include <Editor/Value/Value.h>
+#include <ossia/network/v1/detail/JamomaNode.hpp>
+#include <ossia/network/v1/detail/JamomaDevice.hpp>
+#include <ossia/editor/value/value.hpp>
 #include <assert.h>
 
 # pragma mark -
 # pragma mark Life cycle
 
-JamomaNode::JamomaNode(TTNodeDirectory * aDirectory, TTNode * aNode, shared_ptr<Device> aDevice, shared_ptr<JamomaNode> aParent) :
+JamomaNode::JamomaNode(TTNodeDirectory * aDirectory, TTNode * aNode, std::shared_ptr<Device> aDevice, std::shared_ptr<JamomaNode> aParent) :
 mDirectory(aDirectory),
 mNode(aNode),
 mObject("NodeInfo"),
@@ -134,7 +134,7 @@ shared_ptr<Address> JamomaNode::createAddress(Type type)
     }
 
     // edit new address
-    mAddress = make_shared<JamomaAddress>(shared_from_this(), mObject);
+    mAddress = std::make_shared<JamomaAddress>(shared_from_this(), mObject);
 
     // set type
     mAddress->setValueType(type);
@@ -182,7 +182,7 @@ bool JamomaNode::removeAddress()
 Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator pos, string name)
 {
   if (name.empty())
-    throw runtime_error("can't create a node with empty name");
+    throw std::runtime_error("can't create a node with empty name");
 
   TTAddress nodeAddress;
   mNode->getAddress(nodeAddress);
@@ -198,7 +198,7 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
   if (!err)
   {
     // store the new node into the Container
-    auto newNode = make_shared<JamomaNode>(mDirectory, node, mDevice.lock(), shared_from_this());
+    auto newNode = std::make_shared<JamomaNode>(mDirectory, node, mDevice.lock(), shared_from_this());
     Container<Node>::iterator it = m_children.insert(pos, newNode);
 
     // notify observers
@@ -231,7 +231,7 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
                                               bool repetitionFilter)
 {
   if (name.empty())
-    throw runtime_error("can't create a node with empty name");
+    throw std::runtime_error("can't create a node with empty name");
 
   TTAddress nodeAddress;
   mNode->getAddress(nodeAddress);
@@ -247,7 +247,7 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
   if (!err)
   {
     // create a new node and its address
-    auto newNode = make_shared<JamomaNode>(mDirectory, node, mDevice.lock(), shared_from_this());
+    auto newNode = std::make_shared<JamomaNode>(mDirectory, node, mDevice.lock(), shared_from_this());
     std::shared_ptr<OSSIA::Address> addr = newNode->createAddress(type);
 
     addr->setBoundingMode(bm);
@@ -281,7 +281,7 @@ Container<Node>::iterator JamomaNode::emplace(Container<Node>::const_iterator po
   return Container<Node>::iterator();
 }
 
-Container<Node>::iterator JamomaNode::insert(Container<Node>::const_iterator pos, shared_ptr<Node> node, std::string name)
+Container<Node>::iterator JamomaNode::insert(Container<Node>::const_iterator pos, std::shared_ptr<Node> node, std::string name)
 {
   assert(!name.empty());
 
@@ -395,7 +395,7 @@ bool JamomaNode::updateChildren()
 
   // is there children below ?
   if (children().size() == 0)
-    throw runtime_error("children empty after the update");
+    throw std::runtime_error("children empty after the update");
 
   return err == kTTErrNone;
 }
@@ -417,7 +417,7 @@ void JamomaNode::buildChildren()
       TTNodePtr child = TTNodePtr(TTPtr(childrenList.current()[0]));
 
       // build child node
-      shared_ptr<JamomaNode> newNode = make_shared<JamomaNode>(mDirectory, child, mDevice.lock(), shared_from_this());
+      std::shared_ptr<JamomaNode> newNode = std::make_shared<JamomaNode>(mDirectory, child, mDevice.lock(), shared_from_this());
 
       // build address if the node already manages a valid Data or Mirror object
       newNode->buildAddress();
@@ -445,7 +445,7 @@ void JamomaNode::buildAddress()
 
       if (objectName == "Data")
       {
-        mAddress = make_shared<JamomaAddress>(shared_from_this(), object);
+        mAddress = std::make_shared<JamomaAddress>(shared_from_this(), object);
 
         // edit value type, access mode, bounding mode and repetition filter attribute
         TTSymbol type;

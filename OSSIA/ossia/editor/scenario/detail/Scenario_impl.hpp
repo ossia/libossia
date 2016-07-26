@@ -13,18 +13,18 @@
 
 #pragma once
 
-#include "Editor/Scenario.hpp"
-#include "Editor/TimeConstraint.hpp"
-#include "Editor/TimeEvent.hpp"
-#include "Editor/TimeNode.hpp"
-#include "Editor/TimeProcess.hpp"
-#include "Editor/TimeValue.hpp"
+#include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/scenario/time_node.hpp>
+#include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/editor/scenario/time_value.hpp>
 
 #include "Clock_impl.hpp"
 #include "Scenario_impl.hpp"
-#include "TimeConstraint_impl.hpp"
+#include <ossia/editor/scenario/detail/TimeConstraint_impl.hpp>
 #include "TimeEvent_impl.hpp"
-#include "TimeProcess_impl.hpp"
+#include <ossia/editor/scenario/detail/TimeProcess_impl.hpp>
 #include "TimeNode_impl.hpp"
 
 #include <list>
@@ -45,7 +45,7 @@ private:
   Container<TimeConstraint>   mTimeContraints;
   Container<TimeNode>         mTimeNodes;         // list of all TimeNodes of the scenario (the first is the start node, the second is the end node)
 
-  std::list<std::pair<TimeValue, shared_ptr<TimeEvent>>> mPastEventList; // a temporary list to order all past events to build the offset state
+  std::list<std::pair<TimeValue, std::shared_ptr<TimeEvent>>> mPastEventList; // a temporary list to order all past events to build the offset state
 
 public:
 
@@ -56,7 +56,7 @@ public:
 
   JamomaScenario(const JamomaScenario *);
 
-  shared_ptr<Scenario> clone() const override;
+  std::shared_ptr<Scenario> clone() const override;
 
   ~JamomaScenario();
 
@@ -78,18 +78,18 @@ public:
 # pragma mark -
 # pragma mark Edition
 
-  void addTimeConstraint(shared_ptr<TimeConstraint>) override;
+  void addTimeConstraint(std::shared_ptr<TimeConstraint>) override;
 
-  void removeTimeConstraint(const shared_ptr<TimeConstraint>&) override;
+  void removeTimeConstraint(const std::shared_ptr<TimeConstraint>&) override;
 
-  void addTimeNode(shared_ptr<TimeNode>) override;
+  void addTimeNode(std::shared_ptr<TimeNode>) override;
 
-  void removeTimeNode(const shared_ptr<TimeNode>&) override;
+  void removeTimeNode(const std::shared_ptr<TimeNode>&) override;
 
 # pragma mark -
 # pragma mark Accessors
 
-  const shared_ptr<TimeNode> & getStartTimeNode() const override;
+  const std::shared_ptr<TimeNode> & getStartTimeNode() const override;
 
 # pragma mark -
 # pragma mark TimeNodes and TimeConstraints
@@ -102,6 +102,6 @@ public:
 # pragma mark Implementation specific
 
   /* order all HAPPENED TimeEvents into mOffetEventMap */
-  void process_offset(shared_ptr<TimeNode>, TimeValue);
+  void process_offset(std::shared_ptr<TimeNode>, TimeValue);
 };
 }

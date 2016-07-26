@@ -11,9 +11,9 @@ mExpression(ExpressionTrue)
 JamomaTimeNode::JamomaTimeNode(const JamomaTimeNode * other)
 {}
 
-shared_ptr<TimeNode> JamomaTimeNode::clone() const
+std::shared_ptr<TimeNode> JamomaTimeNode::clone() const
 {
-  return make_shared<JamomaTimeNode>(this);
+  return std::make_shared<JamomaTimeNode>(this);
 }
 
 JamomaTimeNode::~JamomaTimeNode()
@@ -114,9 +114,9 @@ TimeNode & JamomaTimeNode::setSimultaneityMargin(TimeValue simultaneityMargin)
 
 JamomaTimeNode::iterator JamomaTimeNode::emplace(const_iterator pos,
                                                  TimeEvent::ExecutionCallback callback,
-                                                 shared_ptr<Expression> expression)
+                                                 std::shared_ptr<Expression> expression)
 {
-  return timeEvents().insert(pos, make_shared<JamomaTimeEvent>(callback, shared_from_this(), expression));
+  return timeEvents().insert(pos, std::make_shared<JamomaTimeEvent>(callback, shared_from_this(), expression));
 }
 
 void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
@@ -129,7 +129,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
 
   for (auto& timeEvent : timeEvents())
   {
-    shared_ptr<JamomaTimeEvent> e = dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
+    std::shared_ptr<JamomaTimeEvent> e = std::dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
 
     switch (timeEvent->getStatus())
     {
@@ -186,7 +186,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
       {
         for (auto& timeConstraint : timeEvent->nextTimeConstraints())
         {
-          shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(timeConstraint->getEndEvent()->getTimeNode());
+          std::shared_ptr<JamomaTimeNode> n = std::dynamic_pointer_cast<JamomaTimeNode>(timeConstraint->getEndEvent()->getTimeNode());
           n->process(statusChangedEvents);
         }
 

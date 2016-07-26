@@ -5,20 +5,20 @@
 
 namespace OSSIA
 {
-  shared_ptr<Domain> Domain::create(const Value& min,
+  std::shared_ptr<Domain> Domain::create(const Value& min,
                                     const Value& max,
                                     std::vector<Value> values)
   {
-    return make_shared<impl::JamomaDomain>(min, max, values);
+    return std::make_shared<impl::JamomaDomain>(min, max, values);
   }
 
-  shared_ptr<Domain> Domain::create(const Value& min,
+  std::shared_ptr<Domain> Domain::create(const Value& min,
                                     const Value& max)
   {
     return create(min, max, {});
   }
 
-  shared_ptr<Domain> Domain::create()
+  std::shared_ptr<Domain> Domain::create()
   {
     return create(Impulse{}, Impulse{});
   }

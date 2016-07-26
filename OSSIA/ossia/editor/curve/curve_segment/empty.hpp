@@ -15,14 +15,13 @@
 
 #pragma once
 
-#include "Editor/CurveSegment.hpp"
 
 namespace OSSIA
 {
 template <typename Y>
-class OSSIA_EXPORT CurveSegmentEmpty final : public CurveSegment<Y>
+class CurveSegmentEmpty
 {
-  Y valueAt(double ratio, Y start, Y end) const
+  Y operator()(double ratio, Y start, Y end) const
   {
     return start;
   }

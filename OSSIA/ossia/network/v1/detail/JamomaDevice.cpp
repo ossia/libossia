@@ -1,14 +1,14 @@
-#include "Network/JamomaDevice.hpp"
-#include "Network/Protocol/JamomaLocal.hpp"
-#include "Network/Protocol/JamomaMinuit.hpp"
-#include "Network/Protocol/JamomaOSC.hpp"
+#include <ossia/network/v1/detail/JamomaDevice.hpp>
+#include <ossia/network/v1/Protocol/detail/JamomaLocal.hpp>
+#include <ossia/network/v1/Protocol/detail/JamomaMinuit.hpp>
+#include <ossia/network/v1/Protocol/detail/JamomaOSC.hpp>
 
 # pragma mark -
 # pragma mark Life cycle
 
 namespace OSSIA
 {
-  shared_ptr<Device> Device::create(shared_ptr<Protocol> protocol, string name)
+  std::shared_ptr<Device> Device::create(std::shared_ptr<Protocol> protocol, string name)
   {
     TTSymbol device_name(name);
     TTObject applicationManager;
@@ -27,13 +27,13 @@ namespace OSSIA
     application = applicationManager.send("ApplicationFind", device_name);
     if (application.valid())
     {
-      throw runtime_error("the device already exist");
+      throw std::runtime_error("the device already exist");
       return nullptr;
     }
 
     // which protocol is it ?
     //! \todo this is not a good way to do as if a new protocol appears we have to create a case for it here
-    shared_ptr<JamomaLocal> local_protocol = dynamic_pointer_cast<JamomaLocal>(protocol);
+    std::shared_ptr<JamomaLocal> local_protocol = std::dynamic_pointer_cast<JamomaLocal>(protocol);
     if (local_protocol)
     {
       // create a local application
@@ -45,7 +45,7 @@ namespace OSSIA
       TTValue v;
       application.get("directory", v);
 
-      shared_ptr<JamomaDevice> device = make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+      std::shared_ptr<JamomaDevice> device = std::make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
 
        // as it is not possible to call shared_from_this() into the constructor
       device->setDevice(device);
@@ -53,7 +53,7 @@ namespace OSSIA
       return device;
     }
 
-    shared_ptr<JamomaMinuit> minuit_protocol = dynamic_pointer_cast<JamomaMinuit>(protocol);
+    std::shared_ptr<JamomaMinuit> minuit_protocol = std::dynamic_pointer_cast<JamomaMinuit>(protocol);
     if (minuit_protocol)
     {
       // create a distant application
@@ -78,7 +78,7 @@ namespace OSSIA
       if (!applicationManager.get("applicationLocalName", local_device_name))
         protocolMinuit.send("ApplicationRegister", local_device_name);
       else
-        throw runtime_error("Local device doesn't exist");
+        throw std::runtime_error("Local device doesn't exist");
 
       // register the application to the Minuit protocol and set parameters up
       protocolMinuit.send("Stop");
@@ -98,7 +98,7 @@ namespace OSSIA
       TTValue v;
       application.get("directory", v);
 
-      shared_ptr<JamomaDevice> device = make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+      std::shared_ptr<JamomaDevice> device = std::make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
 
       // as it is not possible to call shared_from_this() into the constructor
       device->setDevice(device);
@@ -106,7 +106,7 @@ namespace OSSIA
       return device;
     }
 
-    shared_ptr<JamomaOSC> osc_protocol = dynamic_pointer_cast<JamomaOSC>(protocol);
+    std::shared_ptr<JamomaOSC> osc_protocol = std::dynamic_pointer_cast<JamomaOSC>(protocol);
     if (osc_protocol)
     {
       // create a distante application
@@ -122,7 +122,7 @@ namespace OSSIA
       if (!applicationManager.get("applicationLocalName", local_device_name))
         protocolOSC.send("ApplicationRegister", local_device_name);
       else
-        throw runtime_error("Local device doesn't exist");
+        throw std::runtime_error("Local device doesn't exist");
 
       // register the application to the OSC protocol and set paramaters up
       protocolOSC.send("Stop");
@@ -138,7 +138,7 @@ namespace OSSIA
       TTValue v;
       application.get("directory", v);
 
-      shared_ptr<JamomaDevice> device = make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
+      std::shared_ptr<JamomaDevice> device = std::make_shared<JamomaDevice>(protocol, applicationManager, application, TTNodeDirectoryPtr(TTPtr(v[0])));
 
       // as it is not possible to call shared_from_this() into the constructor
       device->setDevice(device);
@@ -150,7 +150,7 @@ namespace OSSIA
   }
 }
 
-JamomaDevice::JamomaDevice(shared_ptr<Protocol> protocol, TTObject applicationManager, TTObject application, TTNodeDirectoryPtr aDirectory) :
+JamomaDevice::JamomaDevice(std::shared_ptr<Protocol> protocol, TTObject applicationManager, TTObject application, TTNodeDirectoryPtr aDirectory) :
 JamomaNode(aDirectory, aDirectory->getRoot()),
 mProtocol(protocol),
 mApplicationManager(applicationManager),
@@ -200,7 +200,7 @@ bool JamomaDevice::updateNamespace()
 # pragma mark -
 # pragma mark Implementation specific
 
-void JamomaDevice::setDevice(shared_ptr<Device> device)
+void JamomaDevice::setDevice(std::shared_ptr<Device> device)
 {
   mDevice = device;
 }

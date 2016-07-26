@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include "Misc/Container.hpp"
-#include "Misc/CallbackContainer.hpp"
-#include "Network/AddressProperties.hpp"
+#include <ossia/detail/ptr_container.hpp>
+#include <ossia/detail/callback_container.hpp>
+#include <ossia/network/common/address_properties.hpp>
 #include <functional>
 #include <ossia_export.h>
 
@@ -145,7 +145,7 @@ public:
 
   /*! store an existing node to create an alias
    \param #Container<#Node>::const_iterator where to store the child
-   \param shared_ptr<Node> the #Node to store
+   \param std::shared_ptr<Node> the #Node to store
    \param std::string child name
    \return #Container<#Node>::iterator */
   virtual Container<Node>::iterator insert(Container<Node>::const_iterator,

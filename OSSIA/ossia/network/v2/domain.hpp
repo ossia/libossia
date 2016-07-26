@@ -1,6 +1,6 @@
 #pragma once
-#include <Editor/Value/Value.h>
-#include <Editor/Value/ValueTraits.h>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/editor/value/value_traits.hpp>
 #include <boost/container/flat_set.hpp>
 #include <boost/optional.hpp>
 #include <cmath>

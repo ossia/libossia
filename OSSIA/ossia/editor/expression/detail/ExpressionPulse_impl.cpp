@@ -1,5 +1,5 @@
 #include "ExpressionPulse_impl.hpp"
-#include <Editor/Value/Value.h>
+#include <ossia/editor/value/value.hpp>
 
 namespace impl
 {
@@ -20,9 +20,9 @@ JamomaExpressionPulse::JamomaExpressionPulse(const JamomaExpressionPulse& other)
 //! \todo mDestination(other->mDestination.clone())
 {}
 
-shared_ptr<ExpressionPulse> JamomaExpressionPulse::clone() const
+std::shared_ptr<ExpressionPulse> JamomaExpressionPulse::clone() const
 {
-  return make_shared<JamomaExpressionPulse>(*this);
+  return std::make_shared<JamomaExpressionPulse>(*this);
 }
 
 JamomaExpressionPulse::~JamomaExpressionPulse()

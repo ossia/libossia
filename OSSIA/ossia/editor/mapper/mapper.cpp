@@ -1,6 +1,6 @@
-#include "Editor/Mapper_impl.hpp"
-#include "Editor/Curve_impl.hpp"
-#include <Editor/Value/Behavior.h>
+#include <ossia/editor/mapper/detail/Mapper_impl.hpp>
+#include <ossia/editor/curve/detail/Curve_impl.hpp>
+#include <ossia/editor/value/behavior.hpp>
 
 #include <iostream> //! \todo to remove. only here for debug purpose
 
@@ -9,11 +9,11 @@
 
 namespace OSSIA
 {
-shared_ptr<Mapper> Mapper::create(shared_ptr<Address> driverAddress,
-                                  shared_ptr<Address> drivenAddress,
+std::shared_ptr<Mapper> Mapper::create(std::shared_ptr<Address> driverAddress,
+                                  std::shared_ptr<Address> drivenAddress,
                                   const Value& drive)
 {
-  return make_shared<impl::JamomaMapper>(driverAddress, drivenAddress, drive);
+  return std::make_shared<impl::JamomaMapper>(driverAddress, drivenAddress, drive);
 }
 
 Mapper::~Mapper() = default;

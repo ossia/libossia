@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include "Editor/Loop.hpp"
-#include "Editor/TimeConstraint.hpp"
-#include "Editor/TimeEvent.hpp"
-#include "Editor/TimeValue.hpp"
+#include <ossia/editor/loop/loop.hpp>
+#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/scenario/time_value.hpp>
 
-#include "TimeConstraint_impl.hpp"
-#include "TimeProcess_impl.hpp"
+#include <ossia/editor/scenario/detail/TimeConstraint_impl.hpp>
+#include <ossia/editor/scenario/detail/TimeProcess_impl.hpp>
 
 #include <cmath>
 
@@ -37,13 +37,13 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  shared_ptr<TimeNode>              mPatternStartNode;
+  std::shared_ptr<TimeNode>              mPatternStartNode;
   TimeEvent::ExecutionCallback      mPatternStartEventCallback;
 
-  shared_ptr<TimeNode>              mPatternEndNode;
+  std::shared_ptr<TimeNode>              mPatternEndNode;
   TimeEvent::ExecutionCallback      mPatternEndEventCallback;
 
-  shared_ptr<TimeConstraint>        mPatternConstraint;
+  std::shared_ptr<TimeConstraint>        mPatternConstraint;
   TimeConstraint::ExecutionCallback mPatternConstraintCallback;
 
   State                             mCurrentState;      // an internal State to return on state call
@@ -61,7 +61,7 @@ public:
 
   JamomaLoop(const JamomaLoop *);
 
-  shared_ptr<Loop> clone() const override;
+  std::shared_ptr<Loop> clone() const override;
 
   ~JamomaLoop();
 
@@ -83,11 +83,11 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  const shared_ptr<TimeConstraint> getPatternTimeConstraint() const override;
+  const std::shared_ptr<TimeConstraint> getPatternTimeConstraint() const override;
 
-  const shared_ptr<TimeNode> getPatternStartTimeNode() const override;
+  const std::shared_ptr<TimeNode> getPatternStartTimeNode() const override;
 
-  const shared_ptr<TimeNode> getPatternEndTimeNode() const override;
+  const std::shared_ptr<TimeNode> getPatternEndTimeNode() const override;
 
 private:
 

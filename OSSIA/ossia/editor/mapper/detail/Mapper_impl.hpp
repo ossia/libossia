@@ -13,16 +13,16 @@
 
 #pragma once
 
-#include "Editor/Mapper.hpp"
-#include "Editor/Curve.hpp"
-#include "Editor/Message.hpp"
-#include "Editor/TimeConstraint.hpp"
-#include "Editor/TimeNode.hpp"
-#include "Editor/TimeValue.hpp"
-#include <Editor/Value/Value.h>
-#include "Network/Address.hpp"
+#include <ossia/editor/mapper/mapper.hpp>
+#include <ossia/editor/curve/curve.hpp>
+#include <ossia/editor/state/message.hpp>
+#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_node.hpp>
+#include <ossia/editor/scenario/time_value.hpp>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/network/v1/Address.hpp>
 
-#include "TimeProcess_impl.hpp"
+#include <ossia/editor/scenario/detail/TimeProcess_impl.hpp>
 
 #include <thread>
 #include <mutex>
@@ -40,8 +40,8 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  shared_ptr<Address>   mDriverAddress;
-  shared_ptr<Address>   mDrivenAddress;
+  std::shared_ptr<Address>   mDriverAddress;
+  std::shared_ptr<Address>   mDrivenAddress;
   Value                 mDrive;
 
   Message               mLastMessage;
@@ -56,13 +56,13 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaMapper(shared_ptr<Address>,
-               shared_ptr<Address>,
+  JamomaMapper(std::shared_ptr<Address>,
+               std::shared_ptr<Address>,
                const Value&);
 
   JamomaMapper(const JamomaMapper &);
 
-  shared_ptr<Mapper> clone() const override;
+  std::shared_ptr<Mapper> clone() const override;
 
   ~JamomaMapper();
 
@@ -84,9 +84,9 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  const shared_ptr<Address> getDriverAddress() const override;
+  const std::shared_ptr<Address> getDriverAddress() const override;
 
-  const shared_ptr<Address> getDrivenAddress() const override;
+  const std::shared_ptr<Address> getDrivenAddress() const override;
 
   const Value& getDriving() const override;
 

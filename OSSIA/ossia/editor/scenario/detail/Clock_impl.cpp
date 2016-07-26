@@ -1,4 +1,4 @@
-#include "Editor/Clock_impl.hpp"
+#include <ossia/editor/scenario/detail/Clock_impl.hpp>
 #include <cassert>
 
 namespace impl
@@ -118,7 +118,7 @@ bool JamomaClock::tick()
     if (pauseInUs > 0)
     {
       // pause the thread
-      this_thread::sleep_for(std::chrono::microseconds(pauseInUs));
+      std::this_thread::sleep_for(std::chrono::microseconds(pauseInUs));
 
       // how many time since the last tick ? (minus dropped ticks)
       deltaInUs = duration_cast<microseconds>(steady_clock::now() - mLastTime).count() - droppedTicks * granularityInUs;
@@ -310,7 +310,7 @@ void JamomaClock::do_start()
       mThread.join();
 
     // launch a new thread to run the clock execution
-    mThread = thread(&JamomaClock::threadCallback, this);
+    mThread = std::thread(&JamomaClock::threadCallback, this);
   }
 }
 

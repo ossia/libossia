@@ -7,7 +7,7 @@ using namespace OSSIA;
 
 shared_ptr<Minuit> Minuit::create(std::string ip, int in_port, int out_port)
 {
-  return make_shared<JamomaMinuit>(ip, in_port, out_port);
+  return std::make_shared<JamomaMinuit>(ip, in_port, out_port);
 }
 
 JamomaMinuit::JamomaMinuit(std::string ip, int in_port, int out_port) :

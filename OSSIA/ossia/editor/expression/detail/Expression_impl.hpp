@@ -1,5 +1,5 @@
-#include "Editor/ExpressionAtom.hpp"
-#include <Editor/Value/Value.h>
+#include <ossia/editor/expression/expression_atom.hpp>
+#include <ossia/editor/value/value.hpp>
 
 using namespace OSSIA;
 

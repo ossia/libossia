@@ -1,11 +1,11 @@
-#include "BasicOSC.hpp"
-#include "Address.hpp"
-#include "Domain.hpp"
-#include "BasicAddress.hpp"
-#include <Editor/Value/Value.h>
+#include <ossia/network/v2/osc/osc.hpp>
+#include <ossia/network/v2/base/address.hpp>
+#include <ossia/network/v2/domain.hpp>
+#include <ossia/network/v2/generic/generic_device.hpp>
+#include <ossia/network/v2/generic/generic_address.hpp>
+#include <ossia/editor/value/value.hpp>
 
-#include <BasicDevice.h>
-#include <OSC/Osc.hpp>
+#include <ossia/network/v2/osc/detail/osc.hpp>
 #include <oscpack/osc/OscPrintReceivedElements.h>
 namespace impl
 {

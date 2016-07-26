@@ -1,7 +1,9 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include <OSSIA/Editor/State/StateElement.hpp>
+#include <ossia/editor/state/state_element.hpp>
+#include <ossia/network/v1/Address.hpp>
+#include <ossia/network/v1/Node.hpp>
 
 namespace OSSIA
 {

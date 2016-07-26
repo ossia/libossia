@@ -22,7 +22,7 @@ mMax(other.mMax),
 
 shared_ptr<Domain> JamomaDomain::clone() const
 {
-  return make_shared<JamomaDomain>(*this);
+  return std::make_shared<JamomaDomain>(*this);
 }
 
 JamomaDomain::~JamomaDomain()

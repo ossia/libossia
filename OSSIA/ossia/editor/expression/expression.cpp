@@ -1,13 +1,13 @@
-#include "Editor/Expression_impl.hpp"
+#include <ossia/editor/expression/detail/Expression_impl.hpp>
 
 # pragma mark -
 # pragma mark Life cycle
 
 namespace OSSIA
 {
-  shared_ptr<Expression> Expression::create(bool result)
+  std::shared_ptr<Expression> Expression::create(bool result)
   {
-    return make_shared<impl::JamomaExpression>(result);
+    return std::make_shared<impl::JamomaExpression>(result);
   }
 
   Expression::~Expression() = default;

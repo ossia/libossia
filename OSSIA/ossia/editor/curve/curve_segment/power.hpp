@@ -15,8 +15,6 @@
  */
 
 #pragma once
-
-#include "Editor/CurveSegment.hpp"
 #include <cmath>
 
 namespace OSSIA
@@ -24,7 +22,7 @@ namespace OSSIA
 template <typename Y>
 struct CurveSegmentPower
 {
-  CurveSegment<Y> operator()(double power) const
+  auto operator()(double power) const
   {
       return [=] (double ratio, Y start, Y end) {
           return start + std::pow(ratio, power) * (end - start);

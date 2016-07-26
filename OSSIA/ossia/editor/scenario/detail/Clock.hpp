@@ -19,7 +19,7 @@
 #include <memory>
 #include <functional>
 #include <chrono>
-#include "Editor/TimeValue.hpp"
+#include <ossia/editor/scenario/time_value.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

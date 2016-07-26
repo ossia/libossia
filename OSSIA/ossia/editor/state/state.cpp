@@ -1,10 +1,11 @@
-#include <Editor/StateElement.h>
-#include <Editor/State/detail/StateExecutionVisitor.h>
-#include <Editor/State/detail/StateFlattenVisitor.h>
-#include <Editor/State/detail/StatePrintVisitor.h>
-#include <Network/Address.h>
-#include <Network/Node.h>
-#include <Misc/Util.h>
+#include <ossia/editor/state/state_element.hpp>
+
+#include <ossia/editor/state/detail/state_execution_visitor.hpp>
+#include <ossia/editor/state/detail/state_flatten_visitor.hpp>
+#include <ossia/editor/state/detail/state_print_visitor.hpp>
+#include <ossia/network/v1/Address.hpp>
+#include <ossia/network/v1/Node.hpp>
+#include <ossia/detail/algorithms.hpp>
 #include <iostream>
 
 namespace OSSIA

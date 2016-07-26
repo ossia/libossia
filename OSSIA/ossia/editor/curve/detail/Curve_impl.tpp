@@ -1,5 +1,6 @@
 #include "Curve_impl.hpp"
-#include <Editor/Value/Value.h>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/network/v1/Node.hpp>
 
 # pragma mark -
 # pragma mark Life cycle
@@ -19,10 +20,10 @@ JamomaCurve(const JamomaCurve * other)
 {}
 
 template <typename X, typename Y>
-shared_ptr<Curve<X,Y>> JamomaCurve<X,Y>::
+std::shared_ptr<OSSIA::Curve<X,Y>> JamomaCurve<X,Y>::
 clone() const
 {
-  return make_shared<JamomaCurve>(this);
+  return std::make_shared<JamomaCurve>(this);
 }
 
 template <typename X, typename Y>
@@ -33,7 +34,7 @@ JamomaCurve<X,Y>::~JamomaCurve() = default;
 
 template <typename X, typename Y>
 bool JamomaCurve<X,Y>::
-addPoint(CurveSegment<Y> segment, X abscissa, Y value)
+addPoint(OSSIA::CurveSegment<Y> segment, X abscissa, Y value)
 {
   mPointsMap.emplace(abscissa, std::make_pair(value, std::move(segment)));
 
@@ -85,7 +86,7 @@ valueAt(X abscissa) const
 # pragma mark Accessors
 template<typename X, typename Y>
 OSSIA::CurveType JamomaCurve<X, Y>::getType() const
-{
+{OSSIA::
     return std::make_pair(OssiaType<X>, OssiaType<Y>);
 }
 
@@ -100,7 +101,7 @@ getInitialPointAbscissa() const
   auto address = node->getAddress();
 
   if (!address)
-    throw runtime_error("getting an address value using from an abscissa destination without address");
+    throw std::runtime_error("getting an address value using from an abscissa destination without address");
 
   address->pullValue();
   auto val = address->cloneValue();
@@ -122,7 +123,7 @@ getInitialPointOrdinate() const
   auto address = node->getAddress();
 
   if (!address)
-    throw runtime_error("getting an address value using from an ordinate destination without address");
+    throw std::runtime_error("getting an address value using from an ordinate destination without address");
 
   address->pullValue();
   auto val = address->cloneValue();
@@ -146,14 +147,14 @@ setInitialPointOrdinate(Y value)
 }
 
 template <typename X, typename Y>
-const Destination& JamomaCurve<X,Y>::
+const OSSIA::Destination& JamomaCurve<X,Y>::
 getInitialPointAbscissaDestination() const
 {
   return mInitialPointAbscissaDestination;
 }
 
 template <typename X, typename Y>
-const Destination& JamomaCurve<X,Y>::
+const OSSIA::Destination& JamomaCurve<X,Y>::
 getInitialPointOrdinateDestination() const
 {
   return mInitialPointOrdinateDestination;
@@ -161,20 +162,20 @@ getInitialPointOrdinateDestination() const
 
 template <typename X, typename Y>
 void JamomaCurve<X,Y>::
-setInitialPointAbscissaDestination(const Destination& destination)
+setInitialPointAbscissaDestination(const OSSIA::Destination& destination)
 {
   mInitialPointAbscissaDestination = destination;
 }
 
 template <typename X, typename Y>
 void JamomaCurve<X,Y>::
-setInitialPointOrdinateDestination(const Destination& destination)
+setInitialPointOrdinateDestination(const OSSIA::Destination& destination)
 {
   mInitialPointOrdinateDestination = destination;
 }
 
 template <typename X, typename Y>
-std::map<X, std::pair<Y, CurveSegment<Y>>> JamomaCurve<X,Y>::
+std::map<X, std::pair<Y, OSSIA::CurveSegment<Y>>> JamomaCurve<X,Y>::
 getPointsMap() const
 {
     return {mPointsMap.cbegin(), mPointsMap.cend()};
@@ -186,9 +187,11 @@ getPointsMap() const
 template <typename X, typename Y>
 Y JamomaCurve<X,Y>::
 convertToTemplateTypeValue(
-    const Value& value,
-    DestinationIndex::const_iterator idx)
+    const OSSIA::Value& value,
+    OSSIA::DestinationIndex::const_iterator idx)
 {
+  using namespace OSSIA;
+  using namespace std;
   struct visitor {
     DestinationIndex::const_iterator index;
     Y operator()(Int i) const   { return i.value; }
@@ -203,15 +206,15 @@ convertToTemplateTypeValue(
       return convertToTemplateTypeValue(val, index + 1);
     }
 
-    Y operator()(Impulse) const { throw runtime_error("Cannot convert to a numeric type"); }
-    Y operator()(const String& str) const { throw runtime_error("Cannot convert to a numeric type"); }
-    Y operator()(const Destination& d) const { throw runtime_error("Cannot convert to a numeric type");; }
-    Y operator()(const Behavior&) const { throw runtime_error("Cannot convert to a numeric type"); }
+    Y operator()(Impulse) const { throw std::runtime_error("Cannot convert to a numeric type"); }
+    Y operator()(const String& str) const { throw std::runtime_error("Cannot convert to a numeric type"); }
+    Y operator()(const Destination& d) const { throw std::runtime_error("Cannot convert to a numeric type");; }
+    Y operator()(const Behavior&) const { throw std::runtime_error("Cannot convert to a numeric type"); }
   } vis{idx};
 
   if(value.valid())
     return eggs::variants::apply(vis, value.v);
-  throw runtime_error("Invalid variant");
+  throw std::runtime_error("Invalid variant");
 }
 
 }

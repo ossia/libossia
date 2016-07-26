@@ -74,7 +74,7 @@ public:
   void send(Args&&... args)
   {
     for (auto& callback : m_callbacks)
-        callback(std::forward<Args>(args)...);
+      callback(std::forward<Args>(args)...);
   }
 
 protected:
@@ -86,28 +86,28 @@ template<typename T>
 typename CallbackContainer<T>::iterator
 begin(CallbackContainer<T>& cont)
 {
-    return cont.callbacks().begin();
+  return cont.callbacks().begin();
 }
 
 template<typename T>
 typename CallbackContainer<T>::iterator
 end(CallbackContainer<T>& cont)
 {
-    return cont.callbacks().end();
+  return cont.callbacks().end();
 }
 
 template<typename T>
 typename CallbackContainer<T>::iterator
 cbegin(const CallbackContainer<T>& cont)
 {
-    return cont.callbacks().cbegin();
+  return cont.callbacks().cbegin();
 }
 
 template<typename T>
 typename CallbackContainer<T>::iterator
 cend(const CallbackContainer<T>& cont)
 {
-    return cont.callbacks().cend();
+  return cont.callbacks().cend();
 }
 
 }

@@ -7,7 +7,7 @@ using namespace OSSIA;
 
 shared_ptr<Local> Local::create()
 {
-  return make_shared<JamomaLocal>();
+  return std::make_shared<JamomaLocal>();
 }
 
 JamomaLocal::JamomaLocal()
@@ -47,7 +47,7 @@ bool JamomaLocal::pushAddressValue(const Address& address) const
 
 bool JamomaLocal::observeAddressValue(std::shared_ptr<Address> address, bool enable) const
 {
-  shared_ptr<JamomaAddress> adrs = dynamic_pointer_cast<JamomaAddress>(address);
+  std::shared_ptr<JamomaAddress> adrs = std::dynamic_pointer_cast<JamomaAddress>(address);
 
   adrs->observeValue(enable);
 

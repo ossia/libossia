@@ -17,10 +17,10 @@
 #pragma once
 #include <list>
 
-#include "Editor/Clock.hpp"
-#include "Editor/State.hpp"
-#include "Editor/TimeProcess.hpp"
-#include "Misc/Container.hpp"
+#include <ossia/editor/scenario/detail/Clock.hpp>
+#include <ossia/editor/state/state.hpp>
+#include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/detail/ptr_container.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

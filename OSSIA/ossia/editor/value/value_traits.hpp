@@ -1,5 +1,5 @@
 #pragma once
-#include <Editor/Value/Value.h>
+#include <ossia/editor/value/value.hpp>
 
 namespace OSSIA
 {

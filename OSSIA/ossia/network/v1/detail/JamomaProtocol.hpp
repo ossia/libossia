@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include "Network/Protocol.hpp"
+#include <ossia/network/v1/Protocol.hpp>
 
-#include "Network/JamomaAddress.hpp"
+#include <ossia/network/v1/detail/JamomaAddress.hpp>
 
 #include "TTFoundation.hpp"
 #include "TTModular.hpp"
-#include "Network/NetworkLogger.hpp"
+#include <ossia/network/common/network_logger.hpp>
 
 using namespace OSSIA;
 using namespace std;

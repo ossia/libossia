@@ -1,4 +1,4 @@
-#include "BasicMinuit.hpp"
+#include <ossia/network/v2/minuit/minuit.hpp>
 
 namespace impl
 {

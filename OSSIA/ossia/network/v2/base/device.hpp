@@ -1,5 +1,5 @@
 #pragma once
-#include "Node.hpp"
+#include <ossia/network/v2/base/node.hpp>
 
 #include <ossia_export.h>
 

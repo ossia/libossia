@@ -9,7 +9,7 @@ using namespace OSSIA;
 
 shared_ptr<OSC> OSC::create(std::string ip, int in_port, int out_port)
 {
-  return make_shared<JamomaOSC>(ip, in_port, out_port);
+  return std::make_shared<JamomaOSC>(ip, in_port, out_port);
 }
 
 JamomaOSC::JamomaOSC(std::string ip, int in_port, int out_port) :

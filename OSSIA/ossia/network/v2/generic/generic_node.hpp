@@ -1,8 +1,7 @@
 #pragma once
-#include "Node.hpp"
-#include <Network/AddressProperties.h>
-#include <Misc/CallbackContainer.h>
-#include "Misc/JamomaContainer.hpp"
+#include <ossia/network/v2/base/node.hpp>
+#include <ossia/network/common/address_properties.hpp>
+#include <ossia/detail/callback_container.hpp>
 #include <functional>
 #include <map>
 namespace OSSIA

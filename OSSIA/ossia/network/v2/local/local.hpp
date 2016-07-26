@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Protocol.hpp"
+#include <ossia/network/v2/base/protocol.hpp>
 #include <vector>
-#include <Misc/Util.h>
+#include <ossia/detail/algorithms.hpp>
 namespace impl
 {
 class OSSIA_EXPORT Local2 final :

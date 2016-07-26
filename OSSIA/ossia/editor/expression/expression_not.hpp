@@ -18,7 +18,7 @@
 
 #include <memory>
 
-#include <OSSIA/editor/expression/expression.hpp>
+#include <ossia/editor/expression/expression.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

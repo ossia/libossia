@@ -18,7 +18,7 @@
 
 #include <memory>
 #include <string>
-#include <Editor/StateElement.h>
+#include <ossia/editor/state/state_element.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

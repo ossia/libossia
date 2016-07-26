@@ -13,12 +13,11 @@
 
 #pragma once
 
-#include "Device.hpp"
-#include "BasicNode.hpp"
+#include <ossia/network/v2/base/device.hpp>
+#include <ossia/network/v2/generic/generic_node.hpp>
 
 namespace impl
 {
-
 class BasicDevice final :
         public OSSIA::v2::Device,
         public BasicNode

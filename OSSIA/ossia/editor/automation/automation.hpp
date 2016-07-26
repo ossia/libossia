@@ -15,12 +15,8 @@
  */
 
 #pragma once
-#include <list>
-
-#include "Editor/Clock.hpp"
-#include "Editor/State.hpp"
-#include "Editor/TimeProcess.hpp"
-#include "Misc/Container.hpp"
+#include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/detail/ptr_container.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA
@@ -29,7 +25,8 @@ class Value;
 class Address;
 class TimeValue;
 
-class OSSIA_EXPORT Automation : public virtual TimeProcess
+class OSSIA_EXPORT Automation :
+    public virtual TimeProcess
 {
 
 public:
@@ -41,8 +38,9 @@ public:
    \param the address to drive
    \param how to drive the address
    \return a new automation */
-  static std::shared_ptr<Automation> create(std::shared_ptr<Address>,
-                                            const Value&);
+  static std::shared_ptr<Automation> create(
+      std::shared_ptr<Address>,
+      const Value&);
 
   /*! clone */
   virtual std::shared_ptr<Automation> clone() const = 0;

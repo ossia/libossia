@@ -1,7 +1,7 @@
 #pragma once
-#include <Misc/CallbackContainer.h>
-#include <Misc/Container.h>
-#include <Network/AddressProperties.h>
+#include <ossia/detail/callback_container.hpp>
+#include <ossia/detail/ptr_container.hpp>
+#include <ossia/network/common/address_properties.hpp>
 
 #include <string>
 #include <functional>

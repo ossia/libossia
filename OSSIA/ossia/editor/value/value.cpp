@@ -1,9 +1,7 @@
-#include "Editor/Curve.hpp"
-#include <Editor/Value/Value.h>
-#include <Editor/Value/Value.h>
-#include "Network/Node.hpp"
-#include <Editor/Value/ValueComparisonImpl.h>
-#include <Editor/Value/Behavior.h>
+#include <ossia/editor/curve/curve.hpp>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/editor/value/value_comparison.hpp>
+#include <ossia/network/v1/Node.hpp>
 #include <sstream>
 
 namespace OSSIA

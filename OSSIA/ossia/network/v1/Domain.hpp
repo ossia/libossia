@@ -18,7 +18,7 @@
 
 #include <vector>
 #include <memory>
-#include <Network/AddressProperties.h>
+#include <ossia/network/common/address_properties.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

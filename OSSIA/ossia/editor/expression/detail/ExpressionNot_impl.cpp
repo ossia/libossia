@@ -3,7 +3,7 @@
 namespace impl
 {
 
-JamomaExpressionNot::JamomaExpressionNot(shared_ptr<Expression> expr) :
+JamomaExpressionNot::JamomaExpressionNot(std::shared_ptr<Expression> expr) :
 mExpression(expr)
 {}
 
@@ -11,9 +11,9 @@ JamomaExpressionNot::JamomaExpressionNot(const JamomaExpressionNot * other)
 //! \todo mExpression(other->mExpression->clone())
 {}
 
-shared_ptr<ExpressionNot> JamomaExpressionNot::clone() const
+std::shared_ptr<ExpressionNot> JamomaExpressionNot::clone() const
 {
-  return make_shared<JamomaExpressionNot>(this);
+  return std::make_shared<JamomaExpressionNot>(this);
 }
 
 JamomaExpressionNot::~JamomaExpressionNot()
@@ -87,7 +87,7 @@ void JamomaExpressionNot::removeCallback(Expression::iterator callback)
 # pragma mark -
 # pragma mark Accessors
 
-const shared_ptr<Expression> & JamomaExpressionNot::getExpression() const
+const std::shared_ptr<Expression> & JamomaExpressionNot::getExpression() const
 {
   return mExpression;
 }

@@ -19,7 +19,7 @@
 #include <memory>
 #include <functional>
 
-#include "Misc/CallbackContainer.hpp"
+#include <ossia/detail/callback_container.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

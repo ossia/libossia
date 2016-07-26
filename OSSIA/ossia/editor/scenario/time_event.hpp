@@ -20,7 +20,7 @@
 #include <string>
 #include <functional>
 
-#include "Misc/Container.hpp"
+#include <ossia/detail/ptr_container.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

@@ -15,7 +15,7 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  shared_ptr<Expression>  mExpression;
+  std::shared_ptr<Expression>  mExpression;
 
   Expression::iterator    mResultCallbackIndex;
 
@@ -24,11 +24,11 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaExpressionNot(shared_ptr<Expression> expr);
+  JamomaExpressionNot(std::shared_ptr<Expression> expr);
 
   JamomaExpressionNot(const JamomaExpressionNot * other);
 
-  shared_ptr<ExpressionNot> clone() const override;
+  std::shared_ptr<ExpressionNot> clone() const override;
 
   ~JamomaExpressionNot();
 
@@ -56,7 +56,7 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  const shared_ptr<Expression> & getExpression() const override;
+  const std::shared_ptr<Expression> & getExpression() const override;
 
 private:
 

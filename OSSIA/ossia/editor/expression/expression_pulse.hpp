@@ -18,8 +18,8 @@
 
 #include <memory>
 
-#include <OSSIA/editor/expression/expression.hpp>
-#include "Network/Node.hpp"
+#include <ossia/editor/expression/expression.hpp>
+#include <ossia/network/v1/Node.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

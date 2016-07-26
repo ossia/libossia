@@ -15,9 +15,9 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  shared_ptr<Expression>  mFirstExpression;
+  std::shared_ptr<Expression>  mFirstExpression;
   Operator                mOperator;
-  shared_ptr<Expression>  mSecondExpression;
+  std::shared_ptr<Expression>  mSecondExpression;
 
   Expression::iterator    mFirstResultCallbackIndex;
   Expression::iterator    mSecondResultCallbackIndex;
@@ -27,11 +27,11 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaExpressionComposition(shared_ptr<Expression> expr1, Operator op, shared_ptr<Expression> expr2);
+  JamomaExpressionComposition(std::shared_ptr<Expression> expr1, Operator op, std::shared_ptr<Expression> expr2);
 
   JamomaExpressionComposition(const JamomaExpressionComposition * other);
 
-  shared_ptr<ExpressionComposition> clone() const override;
+  std::shared_ptr<ExpressionComposition> clone() const override;
 
   ~JamomaExpressionComposition();
 
@@ -59,11 +59,11 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  const shared_ptr<Expression> & getFirstOperand() const override;
+  const std::shared_ptr<Expression> & getFirstOperand() const override;
 
   ExpressionComposition::Operator getOperator() const override;
 
-  const shared_ptr<Expression> & getSecondOperand() const override;
+  const std::shared_ptr<Expression> & getSecondOperand() const override;
 
 private:
 

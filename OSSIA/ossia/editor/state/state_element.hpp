@@ -1,7 +1,7 @@
 #pragma once
-#include <Editor/State/State.hpp>
-#include <Editor/State/CustomState.hpp>
-#include <Editor/State/Message.hpp>
+#include <ossia/editor/state/message.hpp>
+#include <ossia/editor/state/custom_state.hpp>
+#include <ossia/editor/state/state.hpp>
 
 #include <eggs/variant.hpp>
 

@@ -17,7 +17,7 @@
 #pragma once
 #include <memory>
 
-#include <Editor/Value/Value.h>
+#include <ossia/editor/value/value.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

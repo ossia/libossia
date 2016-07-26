@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <Editor/TimeValue.h>
+#include <ossia/editor/scenario/time_value.hpp>
 
 namespace impl
 {

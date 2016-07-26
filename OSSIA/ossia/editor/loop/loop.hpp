@@ -16,10 +16,10 @@
 
 #pragma once
 
-#include "Editor/TimeConstraint.hpp"
-#include "Editor/TimeEvent.hpp"
-#include "Editor/TimeProcess.hpp"
-#include "Misc/Container.hpp"
+#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/detail/ptr_container.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

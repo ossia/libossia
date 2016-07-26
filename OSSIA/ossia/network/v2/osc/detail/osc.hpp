@@ -1,10 +1,10 @@
 #pragma once
 #include <oscpack/osc/OscOutboundPacketStream.h>
 #include <oscpack/osc/OscReceivedElements.h>
-#include <OSC/string_view.hpp>
-#include <Editor/Value/Value.h>
-#include "Address.hpp"
-#include "Domain.hpp"
+#include <ossia/network/v2/osc/detail/string_view.hpp>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/network/v2/base/address.hpp>
+#include <ossia/network/v2/domain.hpp>
 
 namespace oscpack
 {

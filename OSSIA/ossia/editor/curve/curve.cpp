@@ -1,5 +1,5 @@
 #include <ossia/editor/curve/detail/Curve_impl.tpp>
-#include <Editor/Value/Value.h>
+#include <ossia/editor/value/value.hpp>
 
 namespace OSSIA
 {
@@ -7,7 +7,7 @@ namespace OSSIA
     template<class X, class Y>
     std::shared_ptr<Curve<X, Y>> Curve<X, Y>::create()
     {
-        return make_shared<impl::JamomaCurve<X, Y>>();
+        return std::make_shared<impl::JamomaCurve<X, Y>>();
     }
     template<class X, class Y>
     Curve<X, Y>::~Curve() = default;

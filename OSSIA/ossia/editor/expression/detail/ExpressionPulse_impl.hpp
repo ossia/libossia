@@ -1,6 +1,6 @@
-#include <Editor/ExpressionPulse.h>
-#include <Network/Address.h>
-#include <Editor/Value/Destination.h>
+#include <ossia/editor/expression/expression_pulse.hpp>
+#include <ossia/editor/value/destination.hpp>
+#include <ossia/network/v1/Address.hpp>
 #include <algorithm>
 
 using namespace OSSIA;
@@ -31,7 +31,7 @@ public:
 
   JamomaExpressionPulse(const JamomaExpressionPulse& other);
 
-  shared_ptr<ExpressionPulse> clone() const override;
+  std::shared_ptr<ExpressionPulse> clone() const override;
 
   ~JamomaExpressionPulse();
 

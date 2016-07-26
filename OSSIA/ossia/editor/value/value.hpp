@@ -1,10 +1,11 @@
 #pragma once
+#include <ossia/editor/value/value_base.hpp>
 #include <eggs/variant.hpp>
-#include <Editor/Value/ValueBase.h>
+#include <ossia_export.h>
 
 namespace OSSIA
 {
-class Value
+class OSSIA_EXPORT Value
 {
 public:
   using value_type = eggs::variant<Impulse, Bool, Int, Float, Char, String, Tuple, Vec2f, Vec3f, Vec4f, Destination, Behavior>;

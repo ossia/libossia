@@ -13,14 +13,12 @@
 
 #pragma once
 
-#include "Network/Address.hpp"
-#include "Network/Device.hpp"
-#include "Network/Node.hpp"
-#include "Network/Protocol.hpp"
+#include <ossia/network/v1/Address.hpp>
+#include <ossia/network/v1/Device.hpp>
+#include <ossia/network/v1/Node.hpp>
+#include <ossia/network/v1/Protocol.hpp>
 
-#include "Network/JamomaAddress.hpp"
-
-#include "Misc/JamomaContainer.hpp"
+#include <ossia/network/v1/detail/JamomaAddress.hpp>
 
 #include "TTModular.hpp"
 
@@ -32,7 +30,7 @@ using namespace std::placeholders;
 
 class JamomaProtocol;
 
-class JamomaNode : public virtual Node, public enable_shared_from_this<JamomaNode>
+class JamomaNode : public virtual Node, public std::enable_shared_from_this<JamomaNode>
 {
 
 protected:
@@ -46,7 +44,7 @@ protected:
 
   weak_ptr<Device>        mDevice;
   weak_ptr<JamomaNode>    mParent;
-  shared_ptr<Address>     mAddress;
+  std::shared_ptr<Address>     mAddress;
 
   bool                    mIsDevice{false};
 
@@ -57,18 +55,18 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaNode(TTNodeDirectory * aDirectory = nullptr, TTNode * aNode = nullptr, shared_ptr<Device> aDevice = nullptr, shared_ptr<JamomaNode> aParent = nullptr);
+  JamomaNode(TTNodeDirectory * aDirectory = nullptr, TTNode * aNode = nullptr, std::shared_ptr<Device> aDevice = nullptr, std::shared_ptr<JamomaNode> aParent = nullptr);
 
   ~JamomaNode();
 
 # pragma mark -
 # pragma mark Network
 
-  shared_ptr<Device> getDevice() const override;
+  std::shared_ptr<Device> getDevice() const override;
 
-  shared_ptr<Node> getParent() const override;
+  std::shared_ptr<Node> getParent() const override;
 
-  shared_ptr<Node> getThis() override;
+  std::shared_ptr<Node> getThis() override;
 
 # pragma mark -
 # pragma mark Accessors
@@ -77,12 +75,12 @@ public:
 
   Node & setName(std::string) override;
 
-  shared_ptr<Address> getAddress() const override;
+  std::shared_ptr<Address> getAddress() const override;
 
 # pragma mark -
 # pragma mark Address
 
-  shared_ptr<Address> createAddress(Type type) override;
+  std::shared_ptr<Address> createAddress(Type type) override;
 
   bool removeAddress() override;
 
@@ -99,7 +97,7 @@ public:
                                     BoundingMode,
                                     bool repetitionFilter) override;
 
-  Container<Node>::iterator insert(Container<Node>::const_iterator, shared_ptr<Node>, std::string) override;
+  Container<Node>::iterator insert(Container<Node>::const_iterator, std::shared_ptr<Node>, std::string) override;
 
   Container<Node>::iterator erase(Container<Node>::const_iterator) override;
 

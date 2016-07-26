@@ -17,9 +17,9 @@
 
 #include <Editor/Domain.h>
 #include <Network/Device.h>
-#include <Editor/Value/Value.h>
-#include "Network/AddressProperties.hpp"
-#include "Network/Address.hpp"
+#include <ossia/editor/value/value.hpp>
+#include <ossia/network/common/address_properties.hpp>
+#include <ossia/network/v1/Address.hpp>
 #include <cassert>
 #include <array>
 #include <ModernMIDI/midi_input.h>
@@ -92,7 +92,7 @@ public:
 
   bool pushAddressValue(const Address&) const override;
 
-  bool observeAddressValue(shared_ptr<Address>, bool) const override;
+  bool observeAddressValue(std::shared_ptr<Address>, bool) const override;
 
   bool updateChildren(Node& node) const override;
 
@@ -104,12 +104,12 @@ public:
 
 class MIDINodeImpl :
     public virtual OSSIA::Node,
-    public enable_shared_from_this<MIDINodeImpl>
+    public std::enable_shared_from_this<MIDINodeImpl>
 {
 protected:
   weak_ptr<Device>      mDevice;
   weak_ptr<OSSIA::Node> mParent;
-  shared_ptr<Address>   mAddress;
+  std::shared_ptr<Address>   mAddress;
 
 public:
   using iterator = OSSIA::Container<OSSIA::Node>::iterator;
@@ -273,7 +273,7 @@ struct MIDIAddressInfo
 
 class MIDIAddress final :
     public OSSIA::Address,
-    public enable_shared_from_this<MIDIAddress>
+    public std::enable_shared_from_this<MIDIAddress>
 {
   MIDIAddressInfo mInfo;
   weak_ptr<OSSIA::Node> mParent;

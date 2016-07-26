@@ -1,8 +1,8 @@
-#include "BasicAddress.hpp"
-#include <Editor/Value/Value.h>
-#include "Network/NetworkLogger.hpp"
+#include <ossia/network/v2/generic/generic_address.hpp>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/network/common/network_logger.hpp>
 
-#include "Protocol.hpp"
+#include <ossia/network/v2/base/protocol.hpp>
 #include <map>
 #include <iostream>
 
@@ -12,10 +12,10 @@ BasicAddress::BasicAddress(
         const OSSIA::v2::Node& node) :
     mNode{node},
     mProtocol{node.getDevice().getProtocol()},
-    mValue(Impulse{}),
-    mValueType(Type::IMPULSE),
-    mAccessMode(AccessMode::BI),
-    mBoundingMode(BoundingMode::FREE),
+    mValue(OSSIA::Impulse{}),
+    mValueType(OSSIA::Type::IMPULSE),
+    mAccessMode(OSSIA::AccessMode::BI),
+    mBoundingMode(OSSIA::BoundingMode::FREE),
     mRepetitionFilter(false)
 {
     mTextualAddress = OSSIA::v2::getAddressFromNode(mNode);
@@ -58,7 +58,7 @@ const OSSIA::Value& BasicAddress::getValue() const
     return mValue;
 }
 
-OSSIA::Value BasicAddress::cloneValue(DestinationIndex index) const
+OSSIA::Value BasicAddress::cloneValue(OSSIA::DestinationIndex index) const
 {
     using namespace OSSIA;
     std::lock_guard<std::mutex> lock(mValueMutex);
@@ -92,11 +92,11 @@ OSSIA::Value BasicAddress::cloneValue(DestinationIndex index) const
     }
     else
     {
-        throw runtime_error("cloning null value");
+        throw std::runtime_error("cloning null value");
     }
 }
 
-OSSIA::v2::Address& BasicAddress::setValue(const Value& value)
+OSSIA::v2::Address& BasicAddress::setValue(const OSSIA::Value& value)
 {
     using namespace OSSIA;
     std::lock_guard<std::mutex> lock(mValueMutex);
@@ -116,11 +116,11 @@ OSSIA::v2::Address& BasicAddress::setValue(const Value& value)
         mValue = address->cloneValue();
       }
       else
-        throw runtime_error("setting an address value using a destination with a bad type address");
+        throw std::runtime_error("setting an address value using a destination with a bad type address");
     }
     else
     {
-      throw runtime_error("setting an address value using a destination without address");
+      throw std::runtime_error("setting an address value using a destination without address");
     }
     */
     }
@@ -140,12 +140,12 @@ OSSIA::v2::Address& BasicAddress::setValue(const Value& value)
     return *this;
 }
 
-Type BasicAddress::getValueType() const
+OSSIA::Type BasicAddress::getValueType() const
 {
     return mValueType;
 }
 
-OSSIA::v2::Address& BasicAddress::setValueType(Type type)
+OSSIA::v2::Address& BasicAddress::setValueType(OSSIA::Type type)
 {
     mValueType = type;
 
@@ -155,12 +155,12 @@ OSSIA::v2::Address& BasicAddress::setValueType(Type type)
     return *this;
 }
 
-AccessMode BasicAddress::getAccessMode() const
+OSSIA::AccessMode BasicAddress::getAccessMode() const
 {
     return mAccessMode;
 }
 
-OSSIA::v2::Address& BasicAddress::setAccessMode(AccessMode accessMode)
+OSSIA::v2::Address& BasicAddress::setAccessMode(OSSIA::AccessMode accessMode)
 {
     mAccessMode = accessMode;
     return *this;
@@ -177,7 +177,7 @@ OSSIA::v2::Address& BasicAddress::setDomain(const OSSIA::v2::Domain& domain)
     return *this;
 }
 
-BoundingMode BasicAddress::getBoundingMode() const
+OSSIA::BoundingMode BasicAddress::getBoundingMode() const
 {
     return mBoundingMode;
 }

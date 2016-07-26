@@ -1,11 +1,11 @@
-#include "TimeConstraint_impl.hpp"
+#include <ossia/editor/scenario/detail/TimeConstraint_impl.hpp>
 #include <iostream>
-#include <Misc/Util.h>
+#include <ossia/detail/algorithms.hpp>
 namespace impl
 {
 JamomaTimeConstraint::JamomaTimeConstraint(TimeConstraint::ExecutionCallback callback,
-                                           shared_ptr<TimeEvent> startEvent,
-                                           shared_ptr<TimeEvent> endEvent,
+                                           std::shared_ptr<TimeEvent> startEvent,
+                                           std::shared_ptr<TimeEvent> endEvent,
                                            TimeValue nominal,
                                            TimeValue min,
                                            TimeValue max) :
@@ -30,9 +30,9 @@ mDurationMax(other->mDurationMax)
 {
 }
 
-shared_ptr<TimeConstraint> JamomaTimeConstraint::clone() const
+std::shared_ptr<TimeConstraint> JamomaTimeConstraint::clone() const
 {
-  return make_shared<JamomaTimeConstraint>(this);
+  return std::make_shared<JamomaTimeConstraint>(this);
 }
 
 JamomaTimeConstraint::~JamomaTimeConstraint()
@@ -44,7 +44,7 @@ JamomaTimeConstraint::~JamomaTimeConstraint()
 void JamomaTimeConstraint::start()
 {
   if (mRunning)
-    throw runtime_error("time constraint is running");
+    throw std::runtime_error("time constraint is running");
 
   // set clock duration using maximal duration
   setDuration(mDurationMax);
@@ -74,7 +74,7 @@ void JamomaTimeConstraint::stop()
 State JamomaTimeConstraint::offset(TimeValue date)
 {
   if (mRunning)
-    throw runtime_error("time constraint is running");
+    throw std::runtime_error("time constraint is running");
 
   do_setOffset(date);
 
@@ -94,7 +94,7 @@ State JamomaTimeConstraint::offset(TimeValue date)
 State JamomaTimeConstraint::state()
 {
   if (!mRunning)
-    throw runtime_error("time constraint is not running");
+    throw std::runtime_error("time constraint is not running");
 
   const auto& processes = timeProcesses();
   OSSIA::State state;
@@ -190,12 +190,12 @@ TimeConstraint & JamomaTimeConstraint::setDurationMax(TimeValue durationMax)
   return *this;
 }
 
-const shared_ptr<TimeEvent> & JamomaTimeConstraint::getStartEvent() const
+const std::shared_ptr<TimeEvent> & JamomaTimeConstraint::getStartEvent() const
 {
   return mStartEvent;
 }
 
-const shared_ptr<TimeEvent> & JamomaTimeConstraint::getEndEvent() const
+const std::shared_ptr<TimeEvent> & JamomaTimeConstraint::getEndEvent() const
 {
   return mEndEvent;
 }
@@ -203,7 +203,7 @@ const shared_ptr<TimeEvent> & JamomaTimeConstraint::getEndEvent() const
 # pragma mark -
 # pragma mark TimeProcesses
 
-void JamomaTimeConstraint::addTimeProcess(shared_ptr<TimeProcess> timeProcess)
+void JamomaTimeConstraint::addTimeProcess(std::shared_ptr<TimeProcess> timeProcess)
 {
   assert(timeProcess.get());
   // store a TimeProcess if it is not already stored

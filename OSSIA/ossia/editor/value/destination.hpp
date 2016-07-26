@@ -3,8 +3,8 @@
 #include <vector>
 #include <memory>
 #include <initializer_list>
-#include <Misc/DestinationIndex.h>
-#include <Network/AddressProperties.h>
+#include <ossia/detail/destination_index.hpp>
+#include <ossia/network/common/address_properties.hpp>
 namespace OSSIA
 {
 class Value;

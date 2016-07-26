@@ -1,4 +1,4 @@
-#include "Protocol.hpp"
+#include <ossia/network/v2/base/protocol.hpp>
 
 namespace OSSIA
 {

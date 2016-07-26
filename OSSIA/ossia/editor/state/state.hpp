@@ -18,7 +18,7 @@
 
 #include <memory>
 
-#include "Misc/Container.hpp"
+#include <ossia/detail/ptr_container.hpp>
 #include <ossia_export.h>
 #include <eggs/variant.hpp>
 namespace OSSIA
@@ -70,8 +70,8 @@ inline auto end(State& s) { return s.end(); }
 inline auto end(const State& s) { return s.end(); }
 
 /*! append each message of the state to the current state in order to eliminate address redundancy
- \param shared_ptr<State> the State to fill
- \param shared_ptr<StateElement> the StateElement to store */
+ \param std::shared_ptr<State> the State to fill
+ \param std::shared_ptr<StateElement> the StateElement to store */
 void flattenAndFilter(State& state, const StateElement& element);
 void flattenAndFilter(State& state, StateElement&& element);
 

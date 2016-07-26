@@ -1,5 +1,5 @@
 #include "Loop_impl.hpp"
-#include <Misc/Util.h>
+#include <ossia/detail/algorithms.hpp>
 
 namespace impl
 {
@@ -39,9 +39,9 @@ mPatternEndNode(other->mPatternEndNode->clone()),
 mPatternConstraint(other->mPatternConstraint->clone())
 {}
 
-shared_ptr<Loop> JamomaLoop::clone() const
+std::shared_ptr<Loop> JamomaLoop::clone() const
 {
-  return make_shared<JamomaLoop>(this);
+  return std::make_shared<JamomaLoop>(this);
 }
 
 JamomaLoop::~JamomaLoop()
@@ -53,7 +53,7 @@ JamomaLoop::~JamomaLoop()
 StateElement JamomaLoop::offset(TimeValue offset)
 {
   if (parent->getRunning())
-    throw runtime_error("parent time constraint is running");
+    throw std::runtime_error("parent time constraint is running");
 
   // reset internal mOffsetState
   mOffsetState.clear();
@@ -71,7 +71,7 @@ StateElement JamomaLoop::offset(TimeValue offset)
 StateElement JamomaLoop::state()
 {
   if (!parent->getRunning())
-    throw runtime_error("parent time constraint is not running");
+    throw std::runtime_error("parent time constraint is not running");
 
   // if date hasn't been processed already
   TimeValue date = parent->getDate();
@@ -85,7 +85,7 @@ StateElement JamomaLoop::state()
 
     // process the loop from the pattern start TimeNode
     Container<TimeEvent> statusChangedEvents;
-    shared_ptr<JamomaTimeNode> n = dynamic_pointer_cast<JamomaTimeNode>(mPatternStartNode);
+    std::shared_ptr<JamomaTimeNode> n = std::dynamic_pointer_cast<JamomaTimeNode>(mPatternStartNode);
     n->process(statusChangedEvents);
 
     // add the state of each newly HAPPENED TimeEvent
@@ -97,7 +97,7 @@ StateElement JamomaLoop::state()
     if (mPatternConstraint->getRunning())
     {
       if (mPatternConstraint->getDriveMode() != Clock::DriveMode::EXTERNAL)
-        throw runtime_error("the pattern constraint clock is supposed to be in EXTERNAL drive mode");
+        throw std::runtime_error("the pattern constraint clock is supposed to be in EXTERNAL drive mode");
 
       if (mPatternConstraint->getRunning())
       {
@@ -150,10 +150,10 @@ void JamomaLoop::stop()
 
   mPatternConstraint->offset(Zero);
 
-  shared_ptr<JamomaTimeEvent> start = dynamic_pointer_cast<JamomaTimeEvent>(mPatternConstraint->getStartEvent());
+  std::shared_ptr<JamomaTimeEvent> start = std::dynamic_pointer_cast<JamomaTimeEvent>(mPatternConstraint->getStartEvent());
   start->setStatus(TimeEvent::Status::PENDING);
 
-  shared_ptr<JamomaTimeEvent> end = dynamic_pointer_cast<JamomaTimeEvent>(mPatternConstraint->getEndEvent());
+  std::shared_ptr<JamomaTimeEvent> end = std::dynamic_pointer_cast<JamomaTimeEvent>(mPatternConstraint->getEndEvent());
   end->setStatus(TimeEvent::Status::NONE);
 }
 
@@ -170,17 +170,17 @@ void JamomaLoop::resume()
 # pragma mark -
 # pragma mark Accessors
 
-const shared_ptr<TimeConstraint> JamomaLoop::getPatternTimeConstraint() const
+const std::shared_ptr<TimeConstraint> JamomaLoop::getPatternTimeConstraint() const
 {
   return mPatternConstraint;
 }
 
-const shared_ptr<TimeNode> JamomaLoop::getPatternStartTimeNode() const
+const std::shared_ptr<TimeNode> JamomaLoop::getPatternStartTimeNode() const
 {
   return mPatternStartNode;
 }
 
-const shared_ptr<TimeNode> JamomaLoop::getPatternEndTimeNode() const
+const std::shared_ptr<TimeNode> JamomaLoop::getPatternEndTimeNode() const
 {
   return mPatternEndNode;
 }

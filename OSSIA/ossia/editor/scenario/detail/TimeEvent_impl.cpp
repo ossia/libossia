@@ -1,6 +1,6 @@
 #include "TimeEvent_impl.hpp"
-#include <Misc/Util.h>
-#include <Editor/StateElement.h>
+#include <ossia/detail/algorithms.hpp>
+#include <ossia/editor/state/state_element.hpp>
 namespace impl
 {
 
@@ -8,8 +8,8 @@ namespace impl
 # pragma mark Life cycle
 
 JamomaTimeEvent::JamomaTimeEvent(TimeEvent::ExecutionCallback callback,
-                                 shared_ptr<TimeNode> aTimeNode,
-                                 shared_ptr<Expression> anExpression) :
+                                 std::shared_ptr<TimeNode> aTimeNode,
+                                 std::shared_ptr<Expression> anExpression) :
 mCallback(callback),
 mTimeNode(aTimeNode),
 mStatus(TimeEvent::Status::NONE),
@@ -31,7 +31,7 @@ void JamomaTimeEvent::setCallback(TimeEvent::ExecutionCallback callback)
 void JamomaTimeEvent::happen()
 {
   if (mStatus != TimeEvent::Status::PENDING)
-    throw runtime_error("only PENDING event can happens");
+    throw std::runtime_error("only PENDING event can happens");
 
   mStatus = TimeEvent::Status::HAPPENED;
 
@@ -54,7 +54,7 @@ void JamomaTimeEvent::happen()
 void JamomaTimeEvent::dispose()
 {
   if (mStatus == TimeEvent::Status::HAPPENED)
-    throw runtime_error("HAPPENED event cannot be disposed");
+    throw std::runtime_error("HAPPENED event cannot be disposed");
 
   mStatus = TimeEvent::Status::DISPOSED;
 
@@ -96,7 +96,7 @@ void JamomaTimeEvent::removeState(const State& state)
 # pragma mark -
 # pragma mark Accessors
 
-const shared_ptr<TimeNode> & JamomaTimeEvent::getTimeNode() const
+const std::shared_ptr<TimeNode> & JamomaTimeEvent::getTimeNode() const
 {
   return mTimeNode;
 }
@@ -106,7 +106,7 @@ const State& JamomaTimeEvent::getState() const
   return mState;
 }
 
-const shared_ptr<Expression> & JamomaTimeEvent::getExpression() const
+const std::shared_ptr<Expression> & JamomaTimeEvent::getExpression() const
 {
   return mExpression;
 }

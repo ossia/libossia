@@ -81,7 +81,7 @@ bool JamomaProtocol::pushAddressValue(const Address& address) const
 
 bool JamomaProtocol::observeAddressValue(std::shared_ptr<Address> address, bool enable) const
 {
-    shared_ptr<JamomaAddress> adrs = dynamic_pointer_cast<JamomaAddress>(address);
+    std::shared_ptr<JamomaAddress> adrs = std::dynamic_pointer_cast<JamomaAddress>(address);
 
     adrs->observeValue(enable);
 

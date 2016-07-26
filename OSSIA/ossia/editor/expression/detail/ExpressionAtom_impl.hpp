@@ -1,7 +1,7 @@
-#include "Editor/ExpressionAtom.hpp"
-#include <Editor/Value/Value.h>
-#include "Network/Address.hpp"
-#include "Network/Node.hpp"
+#include <ossia/editor/expression/expression_atom.hpp>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/network/v1/Address.hpp>
+#include <ossia/network/v1/Node.hpp>
 
 #include <algorithm>
 #include <iostream> //! \todo to remove. only here for debug purpose
@@ -36,7 +36,7 @@ public:
 
   JamomaExpressionAtom(const JamomaExpressionAtom& other);
 
-  shared_ptr<ExpressionAtom> clone() const override;
+  std::shared_ptr<ExpressionAtom> clone() const override;
 
   ~JamomaExpressionAtom();
 

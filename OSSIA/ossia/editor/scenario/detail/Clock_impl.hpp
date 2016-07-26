@@ -20,7 +20,7 @@
 #include <mutex>
 #include <cmath>
 
-#include "Editor/Clock.hpp"
+#include <ossia/editor/scenario/detail/Clock.hpp>
 
 using namespace OSSIA;
 
@@ -49,7 +49,7 @@ protected:
   TimeValue         mPosition{};        /// the progression of the clock between the beginning and the end [0. :: 1.]
   TimeValue         mDate{};            /// how many time the clock is running (without no speed factor consideration)
 
-  thread            mThread;            /// a thread to launch the clock execution
+  std::thread       mThread;            /// a thread to launch the clock execution
 
   steady_clock::time_point mLastTime{}; /// a time reference used to compute time tick
   long long         mElapsedTime{};     /// a time reference used to know how many time are elapsed in microsecond

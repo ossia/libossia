@@ -18,7 +18,7 @@
 
 #include <vector>
 #include <string>
-#include "Network/Protocol.hpp"
+#include <ossia/network/v1/Protocol.hpp>
 
 namespace OSSIA
 {

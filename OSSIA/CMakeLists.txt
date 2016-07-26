@@ -130,6 +130,8 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_traits.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/vec.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/address_properties.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/network_logger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/network.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/OSSIA.hpp"
 
@@ -138,7 +140,6 @@ set(SRCS
 set(NETWORK_V1_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Address.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Address.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/AddressProperties.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/detail/Domain_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/detail/Domain_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/detail/JamomaAddress.cpp"
@@ -153,7 +154,6 @@ set(NETWORK_V1_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Domain.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Domain.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/NetworkLogger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Protocol.cpp"

@@ -19,16 +19,16 @@
 #include <string>
 #include <functional>
 #include <memory>
-#include "Editor/Domain.hpp"
-#include <OSSIA/editor/expression/expression.hpp>
-#include "Network/AddressProperties.hpp"
-#include <Misc/DestinationIndex.h>
+#include <ossia/editor/expression/expression.hpp>
+#include <ossia/network/common/address_properties.hpp>
+#include <ossia/detail/destination_index.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA
 {
 
 class Node;
+class Domain;
 class Value;
 /*! to get the value back
  \param the returned value */

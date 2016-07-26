@@ -1,5 +1,5 @@
 #pragma once
-#include <Editor/CurveAbstract.h>
+#include <ossia/editor/curve/curve_abstract.hpp>
 #include <ossia_export.h>
 #include <memory>
 

@@ -1,5 +1,5 @@
-#include "Device.hpp"
-#include "Protocol.hpp"
+#include <ossia/network/v2/base/device.hpp>
+#include <ossia/network/v2/base/protocol.hpp>
 
 namespace OSSIA
 {

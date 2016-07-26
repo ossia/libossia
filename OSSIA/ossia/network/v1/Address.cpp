@@ -1,5 +1,5 @@
-#include <Network/Address.h>
-#include <Network/Node.h>
+#include <ossia/network/v1/Address.hpp>
+#include <ossia/network/v1/Node.hpp>
 
 namespace OSSIA
 {

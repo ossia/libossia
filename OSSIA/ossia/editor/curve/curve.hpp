@@ -19,11 +19,9 @@
 #include <map>
 #include <utility>
 #include <memory>
-
-#include "Network/Node.hpp"
-#include "Misc/Container.hpp"
-#include <Editor/CurveAbstract.h>
-#include <Editor/CurveSegment.h>
+#include <ossia/detail/ptr_container.hpp>
+#include <ossia/editor/curve/curve_abstract.hpp>
+#include <ossia/editor/curve/curve_segment.hpp>
 #include <ossia_export.h>
 #include <functional>
 namespace OSSIA

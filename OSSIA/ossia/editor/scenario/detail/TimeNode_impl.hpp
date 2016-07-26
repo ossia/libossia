@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "Editor/TimeConstraint.hpp"
-#include "Editor/TimeNode.hpp"
-#include "Editor/TimeValue.hpp"
+#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_node.hpp>
+#include <ossia/editor/scenario/time_value.hpp>
 
 #include "TimeEvent_impl.hpp" // because the TimeNode::emplace method is a JamomaTimeEvent factory
 
@@ -24,7 +24,7 @@ using namespace OSSIA;
 
 namespace impl
 {
-class JamomaTimeNode final : public TimeNode, public enable_shared_from_this<JamomaTimeNode>
+class JamomaTimeNode final : public TimeNode, public std::enable_shared_from_this<JamomaTimeNode>
 {
 
 private:
@@ -34,7 +34,7 @@ private:
 
   TimeNode::ExecutionCallback   mCallback;
 
-  shared_ptr<Expression>        mExpression;
+  std::shared_ptr<Expression>        mExpression;
   bool                          mObserveExpression;
   bool                          mCallbackSet = false;
   Expression::iterator          mResultCallbackIndex;
@@ -52,7 +52,7 @@ public:
 
   JamomaTimeNode(const JamomaTimeNode *);
 
-  shared_ptr<TimeNode> clone() const override;
+  std::shared_ptr<TimeNode> clone() const override;
 
   ~JamomaTimeNode();
 
@@ -81,7 +81,7 @@ public:
 
   iterator emplace(const_iterator,
                    TimeEvent::ExecutionCallback,
-                   shared_ptr<Expression> = ExpressionTrue) override;
+                   std::shared_ptr<Expression> = ExpressionTrue) override;
 
 # pragma mark -
 # pragma mark Implementation specific

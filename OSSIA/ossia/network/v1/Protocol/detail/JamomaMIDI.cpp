@@ -6,7 +6,7 @@ using namespace OSSIA;
 
 shared_ptr<MIDI> MIDI::create()
 {
-  return make_shared<JamomaMIDI>();
+  return std::make_shared<JamomaMIDI>();
 }
 
 JamomaMIDI::JamomaMIDI():
@@ -294,7 +294,7 @@ bool JamomaMIDI::observeAddressValue(std::shared_ptr<Address> address, bool enab
   if(mInfo.type != MidiInfo::Type::RemoteOutput)
     return false;
 
-  auto adrs_ptr = dynamic_pointer_cast<MIDIAddress>(address);
+  auto adrs_ptr = std::dynamic_pointer_cast<MIDIAddress>(address);
   auto& adrinfo = adrs.info();
   Channel& chan = mChannels[adrinfo.channel];
   switch(adrinfo.type)

@@ -1,7 +1,7 @@
 #pragma once
 #include <oscpack/osc/OscOutboundPacketStream.h>
 #include <boost/container/small_vector.hpp>
-#include <OSC/string_view.hpp>
+#include <ossia/network/v2/osc/detail/string_view.hpp>
 
 #include <array>
 #include <vector>

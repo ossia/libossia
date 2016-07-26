@@ -1,4 +1,4 @@
-#include "Editor/TimeEvent_impl.hpp"
+#include <ossia/editor/scenario/time_event.hpp>
 
 #include <assert.h>
 #include <algorithm>

@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include "Network/Address.hpp"
-#include "Network/Device.hpp"
-#include "Network/Node.hpp"
-#include "Network/Protocol.hpp"
-#include <Editor/Value/Value.h>
+#include <ossia/network/v1/Address.hpp>
+#include <ossia/network/v1/Device.hpp>
+#include <ossia/network/v1/Node.hpp>
+#include <ossia/network/v1/Protocol.hpp>
+#include <ossia/editor/value/value.hpp>
 
-#include "TTModular.hpp"
+#include <TTModular.hpp>
 
 #include <thread>
 #include <mutex>
@@ -27,7 +27,7 @@
 using namespace OSSIA;
 using namespace std;
 
-class JamomaAddress final : public Address, public enable_shared_from_this<JamomaAddress>
+class JamomaAddress final : public Address, public std::enable_shared_from_this<JamomaAddress>
 {
 
 private:
@@ -47,7 +47,7 @@ private:
   BoundingMode        mBoundingMode;
   bool                mRepetitionFilter;
 
-  shared_ptr<Domain>  mDomain;
+  std::shared_ptr<Domain>  mDomain;
 
   mutable weak_ptr<OSSIA::Protocol>  mProtocolCache;
   std::string         mTextualAddress;
@@ -64,7 +64,7 @@ public:
 # pragma mark -
 # pragma mark Network
 
-  const shared_ptr<Node> getNode() const override;
+  const std::shared_ptr<Node> getNode() const override;
 
   void pullValue() override;
 
@@ -88,9 +88,9 @@ public:
 
   Address & setAccessMode(AccessMode) override;
 
-  const shared_ptr<Domain> & getDomain() const override;
+  const std::shared_ptr<Domain> & getDomain() const override;
 
-  Address & setDomain(shared_ptr<Domain>) override;
+  Address & setDomain(std::shared_ptr<Domain>) override;
 
   BoundingMode getBoundingMode() const override;
 
@@ -142,7 +142,7 @@ public:
 
   static void convertValueIntoTTValue(const Value &, TTValue &);
 
-  static string buildNodePath(shared_ptr<Node>);
+  static string buildNodePath(std::shared_ptr<Node>);
 
 
   Protocol& getProtocol() const;

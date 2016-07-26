@@ -1,8 +1,7 @@
 #pragma once
 #include <ossia_export.h>
-#include <Editor/CurveSegment/MathUtil.h>
+#include <ossia/detail/math.hpp>
 #include <cmath>
-#include <Editor/CurveSegment.h>
 
 /*
   Easing functions
@@ -275,15 +274,16 @@ struct perlinInOut {
 } };
 
 }
-/*
+
+
 template <typename Y, typename Easing>
-struct OSSIA_EXPORT CurveSegmentEase final : public CurveSegment<Y>
+struct CurveSegmentEase
 {
-  Y valueAt(double ratio, Y start, Y end) const override
+  Y operator()(double ratio, Y start, Y end) const
   {
     return start + Easing{}(ratio) * (end - start);
   }
 
 };
-*/
+
 }

@@ -3,15 +3,14 @@
 
 namespace OSSIA
 {
-  shared_ptr<Automation> Automation::create(shared_ptr<Address> address,
-                                            const Value& drive)
-  {
-    return make_shared<impl::JamomaAutomation>(address, drive);
-  }
+std::shared_ptr<Automation> Automation::create(
+        std::shared_ptr<Address> address,
+        const Value& drive)
+{
+    return std::make_shared<impl::JamomaAutomation>(address, drive);
+}
 
-  Automation::~Automation()
-  {
-  }
+Automation::~Automation() = default;
 }
 
 

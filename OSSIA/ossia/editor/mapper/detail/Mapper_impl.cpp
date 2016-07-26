@@ -1,11 +1,11 @@
 #include "Mapper_impl.hpp"
-#include "Curve_impl.hpp"
+#include <ossia/editor/curve/detail/Curve_impl.hpp>
 #include <iostream>
 namespace impl
 {
 
-JamomaMapper::JamomaMapper(shared_ptr<Address> driverAddress,
-                           shared_ptr<Address> drivenAddress,
+JamomaMapper::JamomaMapper(std::shared_ptr<Address> driverAddress,
+                           std::shared_ptr<Address> drivenAddress,
                            const Value& drive) :
   JamomaTimeProcess(),
   mDriverAddress(driverAddress),
@@ -18,9 +18,9 @@ JamomaMapper::JamomaMapper(const JamomaMapper& other) :
   JamomaTimeProcess()
 {}
 
-shared_ptr<Mapper> JamomaMapper::clone() const
+std::shared_ptr<Mapper> JamomaMapper::clone() const
 {
-  return make_shared<JamomaMapper>(*this);
+  return std::make_shared<JamomaMapper>(*this);
 }
 
 JamomaMapper::~JamomaMapper()
@@ -32,7 +32,7 @@ JamomaMapper::~JamomaMapper()
 StateElement JamomaMapper::offset(TimeValue offset)
 {
   if (parent->getRunning())
-    throw runtime_error("parent time constraint is running");
+    throw std::runtime_error("parent time constraint is running");
 
   return {}; // TODO why not state ?
 }
@@ -41,7 +41,7 @@ StateElement JamomaMapper::state()
 {
   auto& par = *parent;
   if (!par.getRunning())
-    throw runtime_error("parent time constraint is not running");
+    throw std::runtime_error("parent time constraint is not running");
 
   // if date hasn't been processed already
   TimeValue date = par.getDate();
@@ -103,12 +103,12 @@ void JamomaMapper::resume()
 # pragma mark -
 # pragma mark Accessors
 
-const shared_ptr<Address> JamomaMapper::getDriverAddress() const
+const std::shared_ptr<Address> JamomaMapper::getDriverAddress() const
 {
   return mDriverAddress;
 }
 
-const shared_ptr<Address> JamomaMapper::getDrivenAddress() const
+const std::shared_ptr<Address> JamomaMapper::getDrivenAddress() const
 {
   return mDrivenAddress;
 }
@@ -197,7 +197,7 @@ Value JamomaMapper::computeValue(const Value& driver, const Value& drive)
           }
         }
       }
-      throw runtime_error("none handled driver value type");
+      throw std::runtime_error("none handled driver value type");
 
       break;
     }
@@ -210,7 +210,7 @@ Value JamomaMapper::computeValue(const Value& driver, const Value& drive)
       {
         auto& t_driver = driver.get<Tuple>();
 
-        vector<Value> t_value;
+        std::vector<Value> t_value;
         t_value.reserve(t_drive.value.size());
         auto it_driver = t_driver.value.begin();
 
@@ -229,11 +229,11 @@ Value JamomaMapper::computeValue(const Value& driver, const Value& drive)
 
     default :
     {
-      throw runtime_error("none handled drive value type");
+      throw std::runtime_error("none handled drive value type");
     }
   }
 
-  throw runtime_error("none handled drive value type");
+  throw std::runtime_error("none handled drive value type");
 }
 
 void JamomaMapper::driverValueCallback(const Value& value)

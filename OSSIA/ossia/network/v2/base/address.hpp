@@ -1,8 +1,8 @@
 #pragma once
-#include "Domain.hpp"
-#include <Misc/CallbackContainer.h>
-#include <Misc/DestinationIndex.h>
-#include <Network/AddressProperties.h>
+#include <ossia/network/v2/domain.hpp>
+#include <ossia/detail/callback_container.hpp>
+#include <ossia/detail/destination_index.hpp>
+#include <ossia/network/common/address_properties.hpp>
 
 #include <ossia_export.h>
 

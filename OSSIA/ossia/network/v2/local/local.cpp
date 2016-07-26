@@ -1,5 +1,5 @@
-#include "BasicLocal.hpp"
-#include "BasicAddress.hpp"
+#include <ossia/network/v2/local/local.hpp>
+#include <ossia/network/v2/generic/generic_address.hpp>
 namespace impl
 {
 bool Local2::pullAddressValue(OSSIA::v2::Address& address) const

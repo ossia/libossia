@@ -1,6 +1,5 @@
-#include "Editor/TimeNode_impl.hpp"
+#include <ossia/editor/scenario/detail/TimeNode_impl.hpp>
 
-#include <assert.h>
 #include <iostream> //! \todo to remove. only here for debug purpose
 
 # pragma mark -
@@ -8,9 +7,9 @@
 
 namespace OSSIA
 {
-  shared_ptr<TimeNode> TimeNode::create(TimeNode::ExecutionCallback callback)
+  std::shared_ptr<TimeNode> TimeNode::create(TimeNode::ExecutionCallback callback)
   {
-    return make_shared<impl::JamomaTimeNode>(callback);
+    return std::make_shared<impl::JamomaTimeNode>(callback);
   }
 
   TimeNode::~TimeNode() = default;

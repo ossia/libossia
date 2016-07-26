@@ -1,5 +1,5 @@
-#include "Node.hpp"
-#include <Misc/Util.h>
+#include <ossia/network/v2/base/node.hpp>
+#include <ossia/detail/algorithms.hpp>
 
 namespace OSSIA
 {

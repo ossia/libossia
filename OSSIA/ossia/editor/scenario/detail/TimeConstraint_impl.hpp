@@ -13,18 +13,18 @@
 
 #pragma once
 
-#include "Editor/Clock.hpp"
-#include "Editor/State.hpp"
-#include "Editor/TimeConstraint.hpp"
-#include "Editor/TimeEvent.hpp"
-#include "Editor/TimeProcess.hpp"
-#include "Editor/TimeValue.hpp"
+#include <ossia/editor/scenario/detail/Clock.hpp>
+#include <ossia/editor/state/state.hpp>
+#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/editor/scenario/time_value.hpp>
 
 #include "Clock_impl.hpp"
-#include "TimeConstraint_impl.hpp"
+#include <ossia/editor/scenario/detail/TimeConstraint_impl.hpp>
 #include "TimeEvent_impl.hpp"
 #include "TimeNode_impl.hpp"
-#include "TimeProcess_impl.hpp"
+#include <ossia/editor/scenario/detail/TimeProcess_impl.hpp>
 
 using namespace OSSIA;
 
@@ -35,7 +35,7 @@ namespace impl
 class JamomaTimeConstraint final :
         public TimeConstraint,
         public JamomaClock,
-        public enable_shared_from_this<JamomaTimeConstraint>
+        public std::enable_shared_from_this<JamomaTimeConstraint>
 {
 
 private:
@@ -45,8 +45,8 @@ private:
 
   TimeConstraint::ExecutionCallback   mCallback;
 
-  shared_ptr<TimeEvent>               mStartEvent;
-  shared_ptr<TimeEvent>               mEndEvent;
+  std::shared_ptr<TimeEvent>               mStartEvent;
+  std::shared_ptr<TimeEvent>               mEndEvent;
 
   TimeValue                           mDurationNominal{};
   TimeValue                           mDurationMin{};
@@ -58,15 +58,15 @@ public:
 # pragma mark Life cycle
 
   JamomaTimeConstraint(TimeConstraint::ExecutionCallback,
-                       shared_ptr<TimeEvent>,
-                       shared_ptr<TimeEvent>,
+                       std::shared_ptr<TimeEvent>,
+                       std::shared_ptr<TimeEvent>,
                        TimeValue = Infinite,
                        TimeValue = 0.,
                        TimeValue = Infinite);
 
   JamomaTimeConstraint(const JamomaTimeConstraint *);
 
-  shared_ptr<TimeConstraint> clone() const override;
+  std::shared_ptr<TimeConstraint> clone() const override;
 
   ~JamomaTimeConstraint();
 
@@ -102,9 +102,9 @@ public:
 
   TimeConstraint & setDurationMax(TimeValue) override;
 
-  const shared_ptr<TimeEvent> & getStartEvent() const override;
+  const std::shared_ptr<TimeEvent> & getStartEvent() const override;
 
-  const shared_ptr<TimeEvent> & getEndEvent() const override;
+  const std::shared_ptr<TimeEvent> & getEndEvent() const override;
 
 # pragma mark -
 # pragma mark TimeProcesses

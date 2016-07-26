@@ -1,7 +1,5 @@
-#include "BasicDevice.hpp"
-#include "BasicLocal.hpp"
-#include "BasicMinuit.hpp"
-#include "BasicOSC.hpp"
+#include <ossia/network/v2/generic/generic_device.hpp>
+#include <ossia/network/v2/generic/generic_node.hpp>
 
 namespace impl
 {

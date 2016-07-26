@@ -18,9 +18,9 @@ mOperator(other.mOperator),
 mSecondValue(other.mSecondValue)
 {}
 
-shared_ptr<ExpressionAtom> JamomaExpressionAtom::clone() const
+std::shared_ptr<ExpressionAtom> JamomaExpressionAtom::clone() const
 {
-  return make_shared<JamomaExpressionAtom>(*this);
+  return std::make_shared<JamomaExpressionAtom>(*this);
 }
 
 JamomaExpressionAtom::~JamomaExpressionAtom()

@@ -1,13 +1,13 @@
-#include "Editor/ExpressionNot_impl.hpp"
+#include <ossia/editor/expression/detail/ExpressionNot_impl.hpp>
 
 # pragma mark -
 # pragma mark Life cycle
 
 namespace OSSIA
 {
-  shared_ptr<ExpressionNot> ExpressionNot::create(shared_ptr<Expression> expr)
+  std::shared_ptr<ExpressionNot> ExpressionNot::create(std::shared_ptr<Expression> expr)
   {
-    return make_shared<impl::JamomaExpressionNot>(expr);
+    return std::make_shared<impl::JamomaExpressionNot>(expr);
   }
 
   ExpressionNot::~ExpressionNot() = default;

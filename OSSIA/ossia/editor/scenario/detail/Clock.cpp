@@ -1,4 +1,4 @@
-#include "Editor/Clock_impl.hpp"
+#include <ossia/editor/scenario/detail/Clock_impl.hpp>
 
 using namespace OSSIA;
 
@@ -7,14 +7,14 @@ using namespace OSSIA;
 
 namespace OSSIA
 {
-  shared_ptr<Clock> Clock::create(Clock::ExecutionCallback callback,
+  std::shared_ptr<Clock> Clock::create(Clock::ExecutionCallback callback,
                                   TimeValue duration,
                                   TimeValue granularity,
                                   TimeValue offset,
                                   float speed,
                                   Clock::DriveMode driveMode)
   {
-    return make_shared<impl::JamomaClock>(callback, duration, granularity, offset, speed, driveMode);
+    return std::make_shared<impl::JamomaClock>(callback, duration, granularity, offset, speed, driveMode);
   }
 
   Clock::~Clock() = default;

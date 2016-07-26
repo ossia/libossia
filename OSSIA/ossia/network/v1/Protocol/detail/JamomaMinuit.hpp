@@ -17,7 +17,7 @@
 
 #include "Network/Protocol/Minuit.hpp"
 
-#include "Network/JamomaNode.hpp"
+#include <ossia/network/v1/detail/JamomaNode.hpp>
 #include "Network/JamomaProtocol.hpp"
 
 #include "TTModular.hpp"

@@ -1,4 +1,4 @@
-#include <Editor/TimeProcess.h>
+#include <ossia/editor/scenario/time_process.hpp>
 
 namespace OSSIA
 {

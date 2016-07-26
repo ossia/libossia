@@ -41,7 +41,7 @@ public:
 
   bool pushAddressValue(const Address&) const override;
 
-  bool observeAddressValue(shared_ptr<Address>, bool) const override;
+  bool observeAddressValue(std::shared_ptr<Address>, bool) const override;
 
   bool updateChildren(Node& node) const override;
 };

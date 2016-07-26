@@ -19,10 +19,10 @@
 #include <memory>
 #include <string>
 
-#include "Expression.hpp"
-#include "TimeEvent.hpp"
-#include "TimeValue.hpp"
-#include "Misc/Container.hpp"
+#include <ossia/editor/expression/expression.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/scenario/time_value.hpp>
+#include <ossia/detail/ptr_container.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

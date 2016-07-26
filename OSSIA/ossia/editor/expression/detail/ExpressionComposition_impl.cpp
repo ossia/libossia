@@ -3,7 +3,7 @@
 namespace impl
 {
 
-JamomaExpressionComposition::JamomaExpressionComposition(shared_ptr<Expression> expr1, Operator op, shared_ptr<Expression> expr2) :
+JamomaExpressionComposition::JamomaExpressionComposition(std::shared_ptr<Expression> expr1, Operator op, std::shared_ptr<Expression> expr2) :
 mFirstExpression(expr1),
 mOperator(op),
 mSecondExpression(expr2)
@@ -15,9 +15,9 @@ mOperator(other->mOperator)
 //! \todo mSecondExpression(other->mSecondExpression->clone())
 {}
 
-shared_ptr<ExpressionComposition> JamomaExpressionComposition::clone() const
+std::shared_ptr<ExpressionComposition> JamomaExpressionComposition::clone() const
 {
-  return make_shared<JamomaExpressionComposition>(this);
+  return std::make_shared<JamomaExpressionComposition>(this);
 }
 
 JamomaExpressionComposition::~JamomaExpressionComposition()
@@ -97,7 +97,7 @@ void JamomaExpressionComposition::removeCallback(Expression::iterator callback)
 # pragma mark -
 # pragma mark Accessors
 
-const shared_ptr<Expression> & JamomaExpressionComposition::getFirstOperand() const
+const std::shared_ptr<Expression> & JamomaExpressionComposition::getFirstOperand() const
 {
   return mFirstExpression;
 }
@@ -107,7 +107,7 @@ ExpressionComposition::Operator JamomaExpressionComposition::getOperator() const
   return mOperator;
 }
 
-const shared_ptr<Expression> & JamomaExpressionComposition::getSecondOperand() const
+const std::shared_ptr<Expression> & JamomaExpressionComposition::getSecondOperand() const
 {
   return mSecondExpression;
 }

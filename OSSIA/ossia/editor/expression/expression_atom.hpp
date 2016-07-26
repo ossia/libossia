@@ -18,10 +18,10 @@
 
 #include <memory>
 
-#include <OSSIA/editor/expression/expression.hpp>
-#include <Editor/Value/Value.h>
+#include <ossia/editor/expression/expression.hpp>
+#include <ossia/editor/value/value.hpp>
 
-#include "Network/Address.hpp"
+#include <ossia/network/v1/Address.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

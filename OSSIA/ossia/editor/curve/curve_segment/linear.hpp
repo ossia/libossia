@@ -16,18 +16,14 @@
 
 #pragma once
 
-#include "Editor/CurveSegment.hpp"
-
 namespace OSSIA
 {
 template <typename Y>
 struct CurveSegmentLinear
 {
-  CurveSegment<Y> operator()() const
+  Y operator()(double ratio, Y start, Y end) const
   {
-      return [] (double ratio, Y start, Y end) {
-          return start + ratio * (end - start);
-      };
+    return start + ratio * (end - start);
   }
 };
 }

@@ -15,9 +15,9 @@
 
 #include <string>
 
-#include "Protocol.hpp"
-#include <OSC/Receiver.hpp>
-#include <OSC/Sender.hpp>
+#include <ossia/network/v2/base/protocol.hpp>
+#include <ossia/network/v2/osc/detail/sender.hpp>
+#include <ossia/network/v2/osc/detail/receiver.hpp>
 #include <unordered_map>
 #include <mutex>
 

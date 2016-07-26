@@ -15,9 +15,7 @@
  */
 
 #pragma once
-
-#include "math.hpp"
-
+#include <cmath>
 #include <ossia_export.h>
 namespace OSSIA
 {
@@ -144,7 +142,7 @@ public:
    \return bool infinite */
   bool isInfinite() const
   {
-    return isinf(m_value);
+    return std::isinf(m_value);
   }
 
 

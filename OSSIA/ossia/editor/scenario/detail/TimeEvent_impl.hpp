@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include <OSSIA/editor/expression/expression.hpp>
-#include "Editor/TimeConstraint.hpp"
-#include "Editor/TimeEvent.hpp"
-#include "Editor/TimeNode.hpp"
-#include "Editor/State.hpp"
+#include <ossia/editor/expression/expression.hpp>
+#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/scenario/time_node.hpp>
+#include <ossia/editor/state/state.hpp>
 
-#include "TimeConstraint_impl.hpp"
+#include <ossia/editor/scenario/detail/TimeConstraint_impl.hpp>
 #include "TimeNode_impl.hpp"
 #include "Scenario_impl.hpp"
 
@@ -27,7 +27,7 @@ using namespace OSSIA;
 
 namespace impl
 {
-class JamomaTimeEvent final : public TimeEvent, public enable_shared_from_this<JamomaTimeEvent>
+class JamomaTimeEvent final : public TimeEvent, public std::enable_shared_from_this<JamomaTimeEvent>
 {
 
 private:
@@ -37,11 +37,11 @@ private:
 
   TimeEvent::ExecutionCallback      mCallback;
 
-  shared_ptr<TimeNode>              mTimeNode;
+  std::shared_ptr<TimeNode>              mTimeNode;
   State                             mState;
   Status                            mStatus;
 
-  shared_ptr<Expression>            mExpression;
+  std::shared_ptr<Expression>            mExpression;
 
 public:
 
@@ -49,8 +49,8 @@ public:
 # pragma mark Life cycle
 
   JamomaTimeEvent(TimeEvent::ExecutionCallback,
-                  shared_ptr<TimeNode> aTimeNode = nullptr,
-                  shared_ptr<Expression> anExpression = ExpressionTrue);
+                  std::shared_ptr<TimeNode> aTimeNode = nullptr,
+                  std::shared_ptr<Expression> anExpression = ExpressionTrue);
 
   ~JamomaTimeEvent();
 
@@ -73,11 +73,11 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  const shared_ptr<TimeNode> & getTimeNode() const override;
+  const std::shared_ptr<TimeNode> & getTimeNode() const override;
 
   const State& getState() const override;
 
-  const shared_ptr<Expression> & getExpression() const override;
+  const std::shared_ptr<Expression> & getExpression() const override;
 
   TimeEvent & setExpression(std::shared_ptr<Expression>) override;
 

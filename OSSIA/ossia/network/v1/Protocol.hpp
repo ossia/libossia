@@ -18,8 +18,8 @@
 
 #include <memory>
 
-#include "Network/Address.hpp"
-#include "Network/Node.hpp"
+#include <ossia/network/v1/Address.hpp>
+#include <ossia/network/v1/Node.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA
@@ -61,7 +61,7 @@ public:
 
   /*! send a request to enable/disable observation on an address value
    \details some protocols cannot do this operation, some others observe everything
-   \param shared_ptr<#Address> the address to observe
+   \param std::shared_ptr<#Address> the address to observe
    \return bool true if the operation succeeded */
   virtual bool observeAddressValue(std::shared_ptr<Address>, bool) const = 0;
 
