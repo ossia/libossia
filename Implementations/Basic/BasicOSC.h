@@ -28,8 +28,8 @@ class OSC2 final :
 {
     private:
         std::string    mIp;
-        int            mInPort{};            /// the port that a remote device open to receive OSC messages
-        int            mOutPort{};           /// the port where a remote device sends OSC messages to give some feeback (like "echo")
+        uint16_t       mInPort{};            /// the port that a remote device open to receive OSC messages
+        uint16_t       mOutPort{};           /// the port where a remote device sends OSC messages to give some feeback (like "echo")
         bool           mLearning{};          /// if the device is currently learning from inbound messages.
 
         mutable osc::sender    mSender;
@@ -39,18 +39,18 @@ class OSC2 final :
         mutable std::unordered_map<std::string, OSSIA::v2::Address*> mListening;
 
     public:
-        OSC2(std::string, int, int);
+        OSC2(std::string, uint16_t, uint16_t);
         ~OSC2();
 
 
         std::string getIp() const;
         OSC2 & setIp(std::string);
 
-        int getInPort() const;
-        OSC2 & setInPort(int);
+        uint16_t getInPort() const;
+        OSC2 & setInPort(uint16_t);
 
-        int getOutPort() const;
-        OSC2 & setOutPort(int);
+        uint16_t getOutPort() const;
+        OSC2 & setOutPort(uint16_t);
 
         bool getLearningStatus() const;
         OSC2 & setLearningStatus(OSSIA::v2::Device&, bool);

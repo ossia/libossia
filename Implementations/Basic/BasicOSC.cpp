@@ -9,7 +9,7 @@
 namespace impl
 {
 
-OSC2::OSC2(std::string ip, int in_port, int out_port) :
+OSC2::OSC2(std::string ip, uint16_t in_port, uint16_t out_port) :
     mIp{std::move(ip)},
     mInPort{in_port},
     mOutPort{out_port},
@@ -38,23 +38,23 @@ OSC2& OSC2::setIp(std::string ip)
     return *this;
 }
 
-int OSC2::getInPort() const
+uint16_t OSC2::getInPort() const
 {
     return mInPort;
 }
 
-OSC2& OSC2::setInPort(int in_port)
+OSC2& OSC2::setInPort(uint16_t in_port)
 {
     mInPort = in_port;
     return *this;
 }
 
-int OSC2::getOutPort() const
+uint16_t OSC2::getOutPort() const
 {
     return mOutPort;
 }
 
-OSC2& OSC2::setOutPort(int out_port)
+OSC2& OSC2::setOutPort(uint16_t out_port)
 {
     mOutPort = out_port;
     return *this;

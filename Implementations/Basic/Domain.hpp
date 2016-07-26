@@ -66,8 +66,8 @@ struct DomainBase
 
             if(values.empty())
             {
-                bool has_min = min;
-                bool has_max = max;
+                bool has_min = bool(min);
+                bool has_max = bool(max);
                 if(has_min && has_max)
                 {
                     switch(b)
