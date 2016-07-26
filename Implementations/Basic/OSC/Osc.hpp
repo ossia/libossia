@@ -41,46 +41,123 @@ struct OSCInboundVisitor
         OSSIA::Value operator()(OSSIA::Impulse imp) const { return imp; }
         OSSIA::Value operator()(OSSIA::Int i) const
         {
-            if(it->IsInt32())
-                return OSSIA::Int{it->AsInt32Unchecked()};
-            else if(it->IsInt64())
-                return OSSIA::Int{int32_t(it->AsInt64Unchecked())};
-            else
-                return i;
+            switch(it->TypeTag())
+            {
+                case oscpack::INT32_TYPE_TAG:
+                    return OSSIA::Int{it->AsInt32Unchecked()};
+                case oscpack::INT64_TYPE_TAG:
+                    return OSSIA::Int{int32_t(it->AsInt64Unchecked())};
+                case oscpack::FLOAT_TYPE_TAG:
+                    return OSSIA::Int{int32_t(it->AsFloatUnchecked())};
+                case oscpack::DOUBLE_TYPE_TAG:
+                    return OSSIA::Int{int32_t(it->AsDoubleUnchecked())};
+                case oscpack::CHAR_TYPE_TAG:
+                    return OSSIA::Int{int32_t(it->AsCharUnchecked())};
+                case oscpack::TRUE_TYPE_TAG:
+                    return OSSIA::Int{1};
+                case oscpack::FALSE_TYPE_TAG:
+                    return OSSIA::Int{0};
+                default:
+                    return i;
+            }
         }
         OSSIA::Value operator()(OSSIA::Float f) const
         {
-            if(it->IsFloat())
-                return OSSIA::Float{it->AsFloatUnchecked()};
-            else if(it->IsDouble())
-                return OSSIA::Float{float(it->AsDoubleUnchecked())};
-            else
-                return f;
+            switch(it->TypeTag())
+            {
+                case oscpack::INT32_TYPE_TAG:
+                    return OSSIA::Float{float(it->AsInt32Unchecked())};
+                case oscpack::INT64_TYPE_TAG:
+                    return OSSIA::Float{float(it->AsInt64Unchecked())};
+                case oscpack::FLOAT_TYPE_TAG:
+                    return OSSIA::Float{float(it->AsFloatUnchecked())};
+                case oscpack::DOUBLE_TYPE_TAG:
+                    return OSSIA::Float{float(it->AsDoubleUnchecked())};
+                case oscpack::CHAR_TYPE_TAG:
+                    return OSSIA::Float{float(it->AsCharUnchecked())};
+                case oscpack::TRUE_TYPE_TAG:
+                    return OSSIA::Float{1.};
+                case oscpack::FALSE_TYPE_TAG:
+                    return OSSIA::Float{0.};
+                default:
+                    return f;
+            }
         }
 
         OSSIA::Value operator()(OSSIA::Bool b) const
         {
-            if(it->IsBool())
-                return OSSIA::Bool{it->AsBoolUnchecked()};
-            else
-                return b;
+            switch(it->TypeTag())
+            {
+                case oscpack::INT32_TYPE_TAG:
+                    return OSSIA::Bool{bool(it->AsInt32Unchecked())};
+                case oscpack::INT64_TYPE_TAG:
+                    return OSSIA::Bool{bool(it->AsInt64Unchecked())};
+                case oscpack::FLOAT_TYPE_TAG:
+                    return OSSIA::Bool{bool(it->AsFloatUnchecked())};
+                case oscpack::DOUBLE_TYPE_TAG:
+                    return OSSIA::Bool{bool(it->AsDoubleUnchecked())};
+                case oscpack::CHAR_TYPE_TAG:
+                    return OSSIA::Bool{bool(it->AsCharUnchecked())};
+                case oscpack::TRUE_TYPE_TAG:
+                    return OSSIA::Bool{true};
+                case oscpack::FALSE_TYPE_TAG:
+                    return OSSIA::Bool{false};
+                default:
+                    return b;
+            }
         }
         OSSIA::Value operator()(OSSIA::Char c) const
         {
-            if(it->IsChar())
-                return OSSIA::Char{it->AsCharUnchecked()};
-            else if(it->IsString())
-                return OSSIA::Char{it->AsStringUnchecked()[0]};
-            else
-                return c;
+            switch(it->TypeTag())
+            {
+                case oscpack::INT32_TYPE_TAG:
+                    return OSSIA::Char{char(it->AsInt32Unchecked())};
+                case oscpack::INT64_TYPE_TAG:
+                    return OSSIA::Char{char(it->AsInt64Unchecked())};
+                case oscpack::FLOAT_TYPE_TAG:
+                    return OSSIA::Char{char(it->AsFloatUnchecked())};
+                case oscpack::DOUBLE_TYPE_TAG:
+                    return OSSIA::Char{char(it->AsDoubleUnchecked())};
+                case oscpack::CHAR_TYPE_TAG:
+                    return OSSIA::Char{char(it->AsCharUnchecked())};
+                case oscpack::TRUE_TYPE_TAG:
+                    return OSSIA::Char{'T'};
+                case oscpack::FALSE_TYPE_TAG:
+                    return OSSIA::Char{'F'};
+                case oscpack::STRING_TYPE_TAG:
+                    return OSSIA::Char{it->AsStringUnchecked()[0]};
+                case oscpack::SYMBOL_TYPE_TAG:
+                    return OSSIA::Char{it->AsSymbolUnchecked()[0]};
+                default:
+                    return c;
+            }
         }
 
         OSSIA::Value operator()(const OSSIA::String& str) const
         {
-            if(it->IsString())
-                return OSSIA::String{it->AsStringUnchecked()};
-            else
-                return str;
+            switch(it->TypeTag())
+            {
+                case oscpack::INT32_TYPE_TAG:
+                    return OSSIA::String{std::to_string(it->AsInt32Unchecked())};
+                case oscpack::INT64_TYPE_TAG:
+                    return OSSIA::String{std::to_string(it->AsInt64Unchecked())};
+                case oscpack::FLOAT_TYPE_TAG:
+                    return OSSIA::String{std::to_string(it->AsFloatUnchecked())};
+                case oscpack::DOUBLE_TYPE_TAG:
+                    return OSSIA::String{std::to_string(it->AsDoubleUnchecked())};
+                case oscpack::CHAR_TYPE_TAG:
+                    return OSSIA::String{std::to_string(it->AsCharUnchecked())};
+                case oscpack::TRUE_TYPE_TAG:
+                    return OSSIA::String{"true"};
+                case oscpack::FALSE_TYPE_TAG:
+                    return OSSIA::String{"false"};
+                case oscpack::STRING_TYPE_TAG:
+                    return OSSIA::String{it->AsStringUnchecked()};
+                case oscpack::SYMBOL_TYPE_TAG:
+                    return OSSIA::String{it->AsSymbolUnchecked()};
+                default:
+                    return str;
+            }
         }
 
         template<int N>

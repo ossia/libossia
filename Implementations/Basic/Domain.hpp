@@ -4,6 +4,7 @@
 #include <boost/container/flat_set.hpp>
 #include <boost/optional.hpp>
 #include <cmath>
+#include <type_traits>
 
 namespace OSSIA
 {
@@ -56,6 +57,13 @@ struct DomainBase
         boost::optional<value_type> min;
         boost::optional<value_type> max;
         boost::container::flat_set<value_type> values;
+
+        DomainBase(value_type min_v, value_type max_v):
+            min{min_v},
+            max{max_v}
+        {
+
+        }
 
         Value clamp(
                 BoundingMode b,
@@ -178,7 +186,6 @@ struct DomainBase<Destination>
 template<>
 struct DomainBase<String>
 {
-
         boost::container::flat_set<std::string> values;
         Value clamp(
                 BoundingMode b,
@@ -225,8 +232,6 @@ struct DomainBase<Vec<float, N>>
             return val;
         }
 };
-
-
 
 using Domain =
     eggs::variant<DomainBase<Impulse>,
@@ -325,12 +330,37 @@ inline Value max(const Domain& dom)
     return {};
 }
 
+struct DomainCreationVisitor
+{
+        Domain operator()(const Int& min, const Int& max)
+        { return DomainBase<Int>{min.value, max.value}; }
+        Domain operator()(const Float& min, const Float& max)
+        { return DomainBase<Float>{min.value, max.value}; }
+        Domain operator()(const Bool& min, const Bool& max)
+        { return DomainBase<Bool>{min.value, max.value}; }
+        Domain operator()(const Char& min, const Char& max)
+        { return DomainBase<Char>{min.value, max.value}; }
+
+        template<typename T>
+        Domain operator()(const T& min, const T& max)
+        {
+            // Cases where the domain has no min-max
+            return DomainBase<T>();
+        }
+
+        template<typename T, typename U>
+        Domain operator()(const T& min, const U& max)
+        {
+            // Cases where there is no possible domain
+            return Domain{};
+        }
+};
+
 inline Domain makeDomain(const OSSIA::Value& min, const OSSIA::Value& max)
 {
-    if(min.valid() && max.valid() &&
-       min.v.which() == max.v.which())
+    if(min.valid() && max.valid())
     {
-        return {};
+        return eggs::variants::apply(DomainCreationVisitor{}, min.v, max.v);
     }
     return {};
 }

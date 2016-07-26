@@ -6,25 +6,25 @@
 
 #include <BasicDevice.h>
 #include <OSC/Osc.hpp>
+#include <oscpack/osc/OscPrintReceivedElements.h>
 namespace impl
 {
-
 OSC2::OSC2(std::string ip, uint16_t in_port, uint16_t out_port) :
-    mIp{std::move(ip)},
+    mIp{ip},
     mInPort{in_port},
     mOutPort{out_port},
-    mSender{ip, out_port},
-    mReceiver{in_port, [=] (
+    mSender{ip, in_port},
+    mReceiver{out_port, [=] (
               const oscpack::ReceivedMessage& m,
               const oscpack::IpEndpointName& ip) {
     handleReceivedMessage(m, ip);
 }}
 {
+    mReceiver.run();
 }
 
 OSC2::~OSC2()
 {}
-
 
 std::string OSC2::getIp() const
 {
@@ -90,7 +90,7 @@ static OSSIA::Value filterValue(
     {
         auto res = OSSIA::v2::clamp(dom, mode, base_val);
         if(res.valid())
-            return res;
+            return std::move(res);
         else
             return {};
     }
@@ -109,6 +109,19 @@ static OSSIA::Value filterValue(const BasicAddress& addr)
     return filterValue(addr.getDomain(), addr.cloneValue(), addr.getBoundingMode());
 }
 
+static string_view getOSCAddress(const OSSIA::v2::Address& address)
+{
+    auto& addr = address.getTextualAddress();
+    auto begin = addr.find(':') + 1;
+    return string_view(addr.data() + begin, addr.size() - begin);
+}
+
+static std::string getOSCAddressAsString(const OSSIA::v2::Address& address)
+{
+    auto& addr = address.getTextualAddress();
+    return addr.substr(addr.find(':') + 1);
+}
+
 bool OSC2::pushAddressValue(const OSSIA::v2::Address& address) const
 {
     auto& addr = static_cast<const BasicAddress&>(address);
@@ -119,7 +132,8 @@ bool OSC2::pushAddressValue(const OSSIA::v2::Address& address) const
     auto val = filterValue(addr);
     if(val.valid())
     {
-        mSender.send(address.getTextualAddress(), val);
+        mSender.send(getOSCAddress(address), val);
+        return true;
     }
     return false;
 }
@@ -129,9 +143,9 @@ bool OSC2::observeAddressValue(OSSIA::v2::Address& address, bool enable) const
     std::lock_guard<std::mutex> lock(mListeningMutex);
 
     if(enable)
-        mListening.insert(std::make_pair(address.getTextualAddress(), &address));
+        mListening.insert(std::make_pair(getOSCAddressAsString(address), &address));
     else
-        mListening.erase(address.getTextualAddress());
+        mListening.erase(getOSCAddressAsString(address));
 
     return true;
 }
@@ -151,7 +165,7 @@ void OSC2::handleReceivedMessage(
 
         auto res = filterValue(
                     addr.getDomain(),
-                    toValue(m, addr.cloneValue()),
+                    oscpack::toValue(m, addr.cloneValue()),
                     addr.getBoundingMode());
 
         if(res.valid())
