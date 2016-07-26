@@ -19,7 +19,7 @@
 #include <ossia/network/v1/Protocol.hpp>
 #include <ossia/editor/value/value.hpp>
 
-#include <TTModular.hpp>
+#include "TTModular.h"
 
 #include <thread>
 #include <mutex>

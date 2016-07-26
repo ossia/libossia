@@ -1,5 +1,6 @@
 #include <ossia/network/v2/generic/generic_device.hpp>
 #include <ossia/network/v2/generic/generic_node.hpp>
+#include <ossia/network/v2/base/protocol.hpp>
 
 namespace impl
 {

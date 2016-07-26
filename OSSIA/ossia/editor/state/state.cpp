@@ -43,12 +43,6 @@ namespace OSSIA
           eggs::variants::apply(StateFlattenVisitor{state}, std::move(element));
   }
 
-  void launch(const StateElement& s)
-  {
-      if(s)
-          eggs::variants::apply(StateExecutionVisitor{}, s);
-  }
-
   std::size_t State::size() const { return children.size(); }
 
   void State::launch() const

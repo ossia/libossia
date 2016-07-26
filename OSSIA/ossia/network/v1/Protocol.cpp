@@ -1,8 +1,8 @@
-#include <Network/Protocol.h>
-#include <Network/Protocol/Local.h>
-#include <Network/Protocol/MIDI.h>
-#include <Network/Protocol/OSC.h>
-#include <Network/Protocol/Minuit.h>
+#include  <ossia/network/v1/Protocol.hpp>
+#include  <ossia/network/v1/Protocol/Local.hpp>
+#include  <ossia/network/v1/Protocol/MIDI.hpp>
+#include  <ossia/network/v1/Protocol/Minuit.hpp>
+#include  <ossia/network/v1/Protocol/OSC.hpp>
 
 namespace OSSIA
 {

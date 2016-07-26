@@ -86,7 +86,7 @@ valueAt(X abscissa) const
 # pragma mark Accessors
 template<typename X, typename Y>
 OSSIA::CurveType JamomaCurve<X, Y>::getType() const
-{OSSIA::
+{
     return std::make_pair(OssiaType<X>, OssiaType<Y>);
 }
 

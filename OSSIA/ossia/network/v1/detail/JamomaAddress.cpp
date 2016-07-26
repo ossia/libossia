@@ -1,4 +1,5 @@
 #include <ossia/network/v1/detail/JamomaAddress.hpp>
+#include <ossia/network/v1/Domain.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/common/network_logger.hpp>
 

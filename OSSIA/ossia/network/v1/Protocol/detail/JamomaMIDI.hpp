@@ -12,16 +12,15 @@
  */
 
 #pragma once
-
-#include "Network/Protocol/MIDI.hpp"
-
-#include <Editor/Domain.h>
-#include <Network/Device.h>
+#include <ossia/network/v1/Protocol/MIDI.hpp>
+#include <ossia/network/v1/Domain.hpp>
+#include <ossia/network/v1/Device.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/network/v1/Address.hpp>
 #include <cassert>
 #include <array>
+
 #include <ModernMIDI/midi_input.h>
 #include <ModernMIDI/midi_output.h>
 #include <atomic>

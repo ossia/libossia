@@ -1,4 +1,4 @@
-#include "Network/JamomaProtocol.hpp"
+#include <ossia/network/v1/detail/JamomaProtocol.hpp>
 
 using namespace OSSIA;
 

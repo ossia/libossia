@@ -19,8 +19,8 @@
 
 #include <ossia/network/v1/detail/JamomaNode.hpp>
 
-#include "TTFoundation.hpp"
-#include "TTModular.hpp"
+#include "TTFoundation.h"
+#include "TTModular.h"
 
 using namespace OSSIA;
 using namespace std;

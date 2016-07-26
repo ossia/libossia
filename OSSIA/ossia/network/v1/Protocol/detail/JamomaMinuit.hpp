@@ -15,12 +15,12 @@
 
 #include <string>
 
-#include "Network/Protocol/Minuit.hpp"
+#include <ossia/network/v1/Protocol/Minuit.hpp>
 
 #include <ossia/network/v1/detail/JamomaNode.hpp>
-#include "Network/JamomaProtocol.hpp"
+#include <ossia/network/v1/detail/JamomaProtocol.hpp>
 
-#include "TTModular.hpp"
+#include "TTModular.h"
 
 using namespace OSSIA;
 using namespace std;

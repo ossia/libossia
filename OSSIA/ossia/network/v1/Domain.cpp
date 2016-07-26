@@ -1,5 +1,4 @@
-#include "Editor/Domain_impl.hpp"
-
+#include <ossia/network/v1/detail/Domain_impl.hpp>
 # pragma mark -
 # pragma mark Life cycle
 

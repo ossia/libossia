@@ -15,11 +15,11 @@
 
 #include <string>
 
-#include "Network/Protocol/OSC.hpp"
+#include <ossia/network/v1/Protocol/OSC.hpp>
 
-#include "Network/JamomaProtocol.hpp"
+#include <ossia/network/v1/detail/JamomaProtocol.hpp>
 
-#include "TTModular.hpp"
+#include "TTModular.h"
 
 using namespace OSSIA;
 using namespace std;

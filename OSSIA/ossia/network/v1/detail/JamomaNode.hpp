@@ -20,7 +20,7 @@
 
 #include <ossia/network/v1/detail/JamomaAddress.hpp>
 
-#include "TTModular.hpp"
+#include "TTModular.h"
 
 #include <map>
 

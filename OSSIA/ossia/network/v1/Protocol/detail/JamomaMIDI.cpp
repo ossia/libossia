@@ -1,4 +1,4 @@
-#include "MIDI_impl.hpp"
+#include <ossia/network/v1/Protocol/detail/JamomaMIDI.hpp>
 using namespace OSSIA;
 
 # pragma mark -

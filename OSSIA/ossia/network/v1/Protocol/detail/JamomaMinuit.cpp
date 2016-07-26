@@ -1,5 +1,4 @@
-#include "Network/Protocol/JamomaMinuit.hpp"
-
+#include <ossia/network/v1/Protocol/detail/JamomaMinuit.hpp>
 using namespace OSSIA;
 
 # pragma mark -

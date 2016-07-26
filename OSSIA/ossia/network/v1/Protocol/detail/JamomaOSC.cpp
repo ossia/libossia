@@ -1,6 +1,5 @@
-#include "Network/Protocol/JamomaOSC.hpp"
-
-#include <Network/JamomaDevice.h>
+#include <ossia/network/v1/Protocol/detail/JamomaOSC.hpp>
+#include <ossia/network/v1/detail/JamomaDevice.hpp>
 
 using namespace OSSIA;
 

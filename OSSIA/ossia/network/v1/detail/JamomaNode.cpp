@@ -1,6 +1,7 @@
 #include <ossia/network/v1/detail/JamomaNode.hpp>
 #include <ossia/network/v1/detail/JamomaDevice.hpp>
 #include <ossia/editor/value/value.hpp>
+#include <ossia/network/v1/Domain.hpp>
 #include <assert.h>
 
 # pragma mark -

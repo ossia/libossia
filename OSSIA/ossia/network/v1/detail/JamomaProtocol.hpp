@@ -17,8 +17,8 @@
 
 #include <ossia/network/v1/detail/JamomaAddress.hpp>
 
-#include "TTFoundation.hpp"
-#include "TTModular.hpp"
+#include "TTFoundation.h"
+#include "TTModular.h"
 #include <ossia/network/common/network_logger.hpp>
 
 using namespace OSSIA;
