@@ -48,7 +48,8 @@ class OSSIA_EXPORT Minuit2 final : public OSSIA::v2::Protocol
         std::set<std::string, std::less<>> m_namespaceRequests;
     public:
         osc::sender    mSender;
-        OSSIA::minuit::name_table mNameTable;
+        OSSIA::minuit::name_table mLocalNameTable;
+        OSSIA::minuit::name_table mRemoteNameTable;
 
         Minuit2(std::string, uint16_t, uint16_t);
         ~Minuit2();

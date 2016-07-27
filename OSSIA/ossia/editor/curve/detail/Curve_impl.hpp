@@ -118,7 +118,7 @@ public:
 };
 
 template<typename T>
-const constexpr nullptr_t OssiaType{};
+const constexpr std::nullptr_t OssiaType{};
 template<>
 const constexpr OSSIA::CurveSegmentType OssiaType<int> = OSSIA::CurveSegmentType::INT;
 template<>

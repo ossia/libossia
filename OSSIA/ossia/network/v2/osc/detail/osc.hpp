@@ -223,7 +223,7 @@ inline OSSIA::Value filterValue(
     {
         auto res = OSSIA::v2::clamp(dom, mode, base_val);
         if(res.valid())
-            return std::move(res);
+            return res;
         else
             return {};
     }

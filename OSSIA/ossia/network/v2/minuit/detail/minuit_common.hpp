@@ -26,10 +26,13 @@ enum class minuit_action : int {
 };
 
 enum class minuit_type : char
-{ Application = 'A', Container = 'C', Data = 'D', None = 'n' };
+{ Application = 'A', Container = 'C', Data = 'D', None = 'n', ModelInfo = 'M', UiInfo = 'U', PresetManager = 'P' };
 
 enum class minuit_attribute
-{ Value, Type, Service, Priority, RangeBounds, RangeClipMode, Description, RepetitionFilter };
+{ Value, Type, Service,
+  RangeBounds, RangeClipMode, Description, RepetitionFilter,
+  Tags, Active, ValueDefault, Priority, Dataspace, DataspaceUnit,
+  RampFunction, RampDrive, ValueStepSize, RampFunctionParameters };
 
 
 inline boost::string_ref to_minuit_type_text(const OSSIA::Value& val)
@@ -146,9 +149,9 @@ inline boost::string_ref to_minuit_bounding_text(OSSIA::BoundingMode b)
     switch(b)
     {
         case OSSIA::BoundingMode::FREE:
-            return "free";
+            return "none";
         case OSSIA::BoundingMode::CLIP:
-            return "clip";
+            return "both";
         case OSSIA::BoundingMode::WRAP:
             return "wrap";
         case OSSIA::BoundingMode::FOLD:
@@ -161,15 +164,15 @@ inline boost::string_ref to_minuit_bounding_text(OSSIA::BoundingMode b)
 
 inline OSSIA::BoundingMode from_minuit_bounding_text(boost::string_ref str)
 {
-    switch(str[2]) // only unique character
+    switch(str[0])
     {
-        case 'e': // frEe
+        case 'n': // none
             return OSSIA::BoundingMode::FREE;
-        case 'i': // clIp
+        case 'b': // both
             return OSSIA::BoundingMode::CLIP;
-        case 'a': // wrAp
+        case 'w': // wrap
             return OSSIA::BoundingMode::WRAP;
-        case 'l': // foLd
+        case 'f': // fold
             return OSSIA::BoundingMode::FOLD;
         default:
             throw std::runtime_error("Invalid bounding mode");
@@ -179,7 +182,7 @@ inline OSSIA::BoundingMode from_minuit_bounding_text(boost::string_ref str)
 
 inline boost::string_ref to_minuit_attribute_text(minuit_attribute str)
 {
-    switch(str) // only unique character
+    switch(str)
     {
         case minuit_attribute::Value:
             return "value";
@@ -187,16 +190,34 @@ inline boost::string_ref to_minuit_attribute_text(minuit_attribute str)
             return "service";
         case minuit_attribute::Type:
             return "type";
-        case minuit_attribute::Priority:
-            return "priority";
         case minuit_attribute::RangeBounds:
             return "rangeBounds";
         case minuit_attribute::RangeClipMode:
-            return "clipMode";
+            return "rangeClipmode";
         case minuit_attribute::Description:
             return "description";
         case minuit_attribute::RepetitionFilter:
-            return "repetitionFilter";
+            return "repetitionsFilter";
+        case minuit_attribute::Tags:
+            return "tags";
+        case minuit_attribute::Active:
+            return "active";
+        case minuit_attribute::ValueDefault:
+            return "valueDefault";
+        case minuit_attribute::Priority:
+            return "priority";
+        case minuit_attribute::Dataspace:
+            return "dataspace";
+        case minuit_attribute::DataspaceUnit:
+            return "dataspaceUnit";
+        case minuit_attribute::RampFunction:
+            return "rampFunction";
+        case minuit_attribute::RampDrive:
+            return "rampDrive";
+        case minuit_attribute::ValueStepSize:
+            return "valueStepsize";
+        case minuit_attribute::RampFunctionParameters:
+            return "rampFunctionParameters";
         default:
             throw std::runtime_error("unhandled attribute");
     }
@@ -204,36 +225,33 @@ inline boost::string_ref to_minuit_attribute_text(minuit_attribute str)
 
 inline minuit_attribute get_attribute(boost::string_ref str)
 {
-    // requires str.size() > 0
-    switch(str[0])
+    const std::map<std::string, minuit_attribute, std::less<>> map
     {
-        case 'v': // value
-            return minuit_attribute::Value;
-        case 't': // type
-            return minuit_attribute::Type;
-        case 's': // service
-            return minuit_attribute::Service;
-        case 'p': // priority
-            return minuit_attribute::Priority;
-        case 'r':
-        {
-            if(str.size() >= 6)
-            {
-                switch(str[5])
-                {
-                    case 'B': // rangeBounds
-                        return minuit_attribute::RangeBounds;
-                    case 'C': // rangeClipMode
-                        return minuit_attribute::RangeClipMode;
-                    case 'i': // repetitionsFilter
-                        return minuit_attribute::RepetitionFilter;
-                }
-            }
-            // if not returning, throw
-        }
-        default:
-            throw std::runtime_error("unhandled attribute");
-    }
+        { "value", minuit_attribute::Value },
+        { "type", minuit_attribute::Type },
+        { "service", minuit_attribute::Service },
+        { "priority", minuit_attribute::Priority },
+        { "rangeBounds", minuit_attribute::RangeBounds },
+        { "rangeClipmode", minuit_attribute::RangeClipMode },
+        { "description", minuit_attribute::Description },
+        { "repetitionsFilter", minuit_attribute::RepetitionFilter },
+        { "tags", minuit_attribute::Tags },
+        { "active", minuit_attribute::Active },
+        { "valueDefault", minuit_attribute::ValueDefault },
+        { "priority", minuit_attribute::Priority },
+        { "dataspace", minuit_attribute::Dataspace },
+        { "dataspaceUnit", minuit_attribute::DataspaceUnit },
+        { "rampFunction", minuit_attribute::RampFunction },
+        { "rampDrive", minuit_attribute::RampDrive },
+        { "valueStepsize", minuit_attribute::ValueStepSize },
+        { "rampFunctionParameters", minuit_attribute::RampFunctionParameters },
+    };
+
+    auto it = map.find(str);
+    if(it != map.end())
+        return it->second;
+    else
+        throw std::runtime_error("unhandled attribute");
 }
 
 inline minuit_command get_command(char str)
@@ -257,6 +275,9 @@ inline minuit_type get_type(char str)
         case 'C':
         case 'D':
         case 'n':
+        case 'M':
+        case 'U':
+        case 'P':
             return static_cast<minuit_type>(str);
         default :
             throw std::runtime_error("unhandled type");

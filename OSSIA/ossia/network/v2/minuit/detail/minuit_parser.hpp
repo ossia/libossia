@@ -125,7 +125,7 @@ struct minuit_remote_behaviour<
         }
         case minuit_attribute::RepetitionFilter:
         {
-          addr->setRepetitionFilter(static_cast<RepetitionFilter>(mess_it->AsBool()));
+          addr->setRepetitionFilter(static_cast<RepetitionFilter>(mess_it->AsInt32()));
           break;
         }
         case minuit_attribute::Service:
@@ -229,7 +229,7 @@ struct minuit_remote_behaviour<
       oscpack::ReceivedMessageArgumentIterator end_it)
   {
     using namespace oscpack;
-    auto sub_request = proto.mNameTable.get_action(minuit_action::NamespaceRequest);
+    auto sub_request = proto.mLocalNameTable.get_action(minuit_action::NamespaceRequest);
 
     // Get the sub-nodes
     for(auto child : get_nodes(beg_it, end_it))
@@ -261,7 +261,7 @@ struct minuit_remote_behaviour<
     auto& n = impl::find_or_create_node(dev, address);
     n.createAddress(OSSIA::Type::IMPULSE);
 
-    auto sub_request = proto.mNameTable.get_action(minuit_action::GetRequest);
+    auto sub_request = proto.mLocalNameTable.get_action(minuit_action::GetRequest);
 
     // Request all the attributes provided by the node
     for(auto attrib : get_attributes(beg_it, end_it))
@@ -296,7 +296,9 @@ struct minuit_remote_behaviour<
         handle_data(proto, dev, address, beg_it, end_it);
         break;
       }
-      case minuit_type::None:
+        case minuit_type::ModelInfo:
+        case minuit_type::UiInfo:
+        case minuit_type::None:
         // just add the node ?
         break;
     }

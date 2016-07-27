@@ -28,7 +28,8 @@ Minuit2::~Minuit2()
 void Minuit2::setDevice(OSSIA::v2::Device& dev)
 {
   mDevice = dynamic_cast<BasicDevice*>(&dev);
-  mNameTable.set_device_name(dev.getName());
+  mLocalNameTable.set_device_name("i-score");
+  mRemoteNameTable.set_device_name(dev.getName());
 }
 
 const std::string& Minuit2::getIp() const
@@ -84,10 +85,10 @@ bool Minuit2::updateChildren(OSSIA::v2::Node& node)
   mNamespacePromise = std::promise<void>{};
   auto fut = mNamespacePromise.get_future();
 
-  auto act = mNameTable.get_action(OSSIA::minuit::minuit_action::NamespaceRequest);
+  auto act = mLocalNameTable.get_action(OSSIA::minuit::minuit_action::NamespaceRequest);
   refresh(act, "/"); // TODO sub-nodes
 
-  fut.wait();
+  fut.wait_for(std::chrono::seconds(5));
   // Won't return as long as the request hasn't finished.
   return true;
 }
@@ -120,7 +121,7 @@ bool Minuit2::observeAddressValue(OSSIA::v2::Address& address, bool enable)
 {
   std::lock_guard<std::mutex> lock(mListeningMutex);
 
-  auto act = mNameTable.get_action(OSSIA::minuit::minuit_action::ListenRequest);
+  auto act = mLocalNameTable.get_action(OSSIA::minuit::minuit_action::ListenRequest);
 
   if(enable)
   {
@@ -140,7 +141,6 @@ void Minuit2::handleReceivedMessage(
     const oscpack::ReceivedMessage& m,
     const oscpack::IpEndpointName& ip)
 {
-  std::cerr << m << std::endl;
   boost::string_ref address{m.AddressPattern()};
 
   if(address.size() > 0 && address[0] == '/')
