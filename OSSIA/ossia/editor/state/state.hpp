@@ -18,16 +18,11 @@
 
 #include <memory>
 
+#include <ossia/editor/state/state_element_fwd.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia_export.h>
-#include <eggs/variant.hpp>
 namespace OSSIA
 {
-struct Message;
-class State;
-class CustomState;
-using StateElement = eggs::variant<Message, State, CustomState>;
-
 class OSSIA_EXPORT State
 {
     public:
@@ -74,8 +69,4 @@ inline auto end(const State& s) { return s.end(); }
  \param std::shared_ptr<StateElement> the StateElement to store */
 void flattenAndFilter(State& state, const StateElement& element);
 void flattenAndFilter(State& state, StateElement&& element);
-
-OSSIA_EXPORT void launch(const StateElement&);
-
-OSSIA_EXPORT std::ostream& print(std::ostream& os, const StateElement& dt);
 }

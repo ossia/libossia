@@ -111,6 +111,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/behavior.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/bool.hpp"
