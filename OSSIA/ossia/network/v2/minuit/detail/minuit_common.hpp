@@ -85,6 +85,31 @@ inline OSSIA::Value value_from_minuit_type_text(boost::string_ref str)
     }
 }
 
+inline OSSIA::Type type_from_minuit_type_text(boost::string_ref str)
+{
+  // integer, decimal, string, generic, boolean, none, array.
+  // we can differentiate them by the first character
+
+  switch(str[0])
+  {
+    case 'i': // integer
+      return OSSIA::Type::INT;
+    case 'd': // decimal
+      return OSSIA::Type::FLOAT;
+    case 's': // string
+      return OSSIA::Type::STRING;
+    case 'b': // boolean
+      return OSSIA::Type::BOOL;
+    case 'n': // none
+      return OSSIA::Type::IMPULSE;
+    case 'a': // array
+      return OSSIA::Type::TUPLE;
+    case 'g': // generic
+    default:
+      return {};
+  }
+}
+
 
 inline boost::string_ref to_minuit_service_text(OSSIA::AccessMode acc)
 {

@@ -89,7 +89,7 @@ bool Minuit2::updateChildren(OSSIA::v2::Node& node)
 
   fut.wait();
   // Won't return as long as the request hasn't finished.
-  return false;
+  return true;
 }
 
 bool Minuit2::pullAddressValue(OSSIA::v2::Address& address)
