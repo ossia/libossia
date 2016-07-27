@@ -40,4 +40,7 @@ class OSSIA_EXPORT BasicDevice final :
 OSSIA_EXPORT BasicNode* find_node(
         BasicDevice& dev,
         boost::string_ref address);
+OSSIA_EXPORT BasicNode& find_or_create_node(
+    BasicDevice& dev,
+    boost::string_ref address);
 }

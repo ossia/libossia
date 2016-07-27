@@ -14,9 +14,11 @@ OSC2::OSC2(std::string ip, uint16_t in_port, uint16_t out_port) :
     mInPort{in_port},
     mOutPort{out_port},
     mSender{ip, in_port},
-    mReceiver{out_port, [=] (auto&&... var) {
-        this->handleReceivedMessage(std::forward<decltype(var)>(var)...);
-    }}
+    mReceiver{out_port, [=] (
+              const oscpack::ReceivedMessage& m,
+              const oscpack::IpEndpointName& ip) {
+            this->handleReceivedMessage(m, ip);
+          }}
 {
     mReceiver.run();
 }
@@ -58,8 +60,10 @@ uint16_t OSC2::getOutPort() const
 OSC2& OSC2::setOutPort(uint16_t out_port)
 {
     mOutPort = out_port;
-    mReceiver = osc::receiver{out_port, [=] (auto&&... var) {
-        this->handleReceivedMessage(std::forward<decltype(var)>(var)...);
+    mReceiver = osc::receiver{out_port, [=] (
+        const oscpack::ReceivedMessage& m,
+        const oscpack::IpEndpointName& ip) {
+      this->handleReceivedMessage(m, ip);
     }};
     return *this;
 }

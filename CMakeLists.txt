@@ -27,6 +27,7 @@ if(NOT OSSIA_NO_EXAMPLES)
     add_subdirectory(Documentation/Examples)
 endif()
 
+add_subdirectory(Tests/v2)
 if(NOT OSSIA_NO_TESTS)
     add_subdirectory(Tests)
 endif()

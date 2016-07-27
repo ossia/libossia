@@ -15,7 +15,7 @@
 
 #include <future>
 #include <string>
-
+#include <set>
 #include <ossia/network/v2/generic/generic_node.hpp>
 #include <ossia/network/v2/base/protocol.hpp>
 #include <ossia/network/v2/osc/detail/sender.hpp>
@@ -31,7 +31,7 @@
 namespace impl
 {
 class BasicDevice;
-class Minuit2 final : public OSSIA::v2::Protocol
+class OSSIA_EXPORT Minuit2 final : public OSSIA::v2::Protocol
 {
     private:
         std::string    mIp;
@@ -39,18 +39,17 @@ class Minuit2 final : public OSSIA::v2::Protocol
         uint16_t       mOutPort{};           /// the port where a remote device sends OSC messages to (opened in this library)
         bool           mLearning{};          /// if the device is currently learning from inbound messages.
 
-        OSSIA::minuit::name_table mNameTable;
-
-        osc::sender    mSender;
-        osc::receiver  mReceiver;
-
         std::mutex mListeningMutex;
         std::unordered_map<std::string, OSSIA::v2::Address*> mListening;
 
         std::promise<void> mNamespacePromise;
         impl::BasicDevice* mDevice;
 
+        std::set<std::string, std::less<>> m_namespaceRequests;
     public:
+        osc::sender    mSender;
+        OSSIA::minuit::name_table mNameTable;
+
         Minuit2(std::string, uint16_t, uint16_t);
         ~Minuit2();
 
@@ -73,6 +72,30 @@ class Minuit2 final : public OSSIA::v2::Protocol
 
         bool observeAddressValue(OSSIA::v2::Address& address, bool enable) override;
 
+        void refresh(boost::string_ref req, const std::string& addr)
+        {
+          auto it = m_namespaceRequests.find(addr);
+          if(it == m_namespaceRequests.end())
+          {
+            m_namespaceRequests.insert(addr);
+            mSender.send(req, boost::string_ref{addr});
+          }
+        }
+
+        void refreshed(boost::string_ref addr)
+        {
+          auto it = m_namespaceRequests.find(addr);
+          if(it != m_namespaceRequests.end())
+          {
+            m_namespaceRequests.erase(it);
+          }
+
+          if(m_namespaceRequests.empty())
+          {
+            mNamespacePromise.set_value();
+          }
+        }
+
     private:
         void handleReceivedMessage(
                 const oscpack::ReceivedMessage& m,
@@ -83,6 +106,10 @@ class Minuit2 final : public OSSIA::v2::Protocol
         void on_change(string_view address, OSSIA::AccessMode);
         void on_change(string_view address, OSSIA::BoundingMode);
         void on_change(string_view address, OSSIA::RepetitionFilter repfilter);
+
+
+        osc::receiver  mReceiver;
+
 
 };
 }
