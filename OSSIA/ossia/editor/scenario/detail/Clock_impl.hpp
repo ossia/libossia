@@ -20,7 +20,7 @@
 #include <mutex>
 #include <cmath>
 
-#include <ossia/editor/scenario/detail/Clock.hpp>
+#include <ossia/editor/scenario/clock.hpp>
 
 using namespace OSSIA;
 

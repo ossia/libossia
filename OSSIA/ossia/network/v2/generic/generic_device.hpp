@@ -18,7 +18,7 @@
 
 namespace impl
 {
-class BasicDevice final :
+class OSSIA_EXPORT BasicDevice final :
         public OSSIA::v2::Device,
         public BasicNode
 {

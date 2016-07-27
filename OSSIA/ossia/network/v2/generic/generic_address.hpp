@@ -29,7 +29,7 @@ class Protocol;
 }
 namespace impl
 {
-class BasicAddress final : public OSSIA::v2::Address
+class OSSIA_EXPORT BasicAddress final : public OSSIA::v2::Address
 {
     private:
         const OSSIA::v2::Node& mNode;

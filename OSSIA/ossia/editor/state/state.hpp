@@ -67,6 +67,6 @@ inline auto end(const State& s) { return s.end(); }
 /*! append each message of the state to the current state in order to eliminate address redundancy
  \param std::shared_ptr<State> the State to fill
  \param std::shared_ptr<StateElement> the StateElement to store */
-void flattenAndFilter(State& state, const StateElement& element);
-void flattenAndFilter(State& state, StateElement&& element);
+OSSIA_EXPORT void flattenAndFilter(State& state, const StateElement& element);
+OSSIA_EXPORT void flattenAndFilter(State& state, StateElement&& element);
 }

@@ -23,7 +23,7 @@
 
 namespace impl
 {
-class OSC2 final :
+class OSSIA_EXPORT OSC2 final :
         public OSSIA::v2::Protocol
 {
     private:

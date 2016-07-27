@@ -21,7 +21,7 @@
 #include <string>
 #include <functional>
 
-#include <ossia/editor/scenario/detail/Clock.hpp>
+#include <ossia/editor/scenario/clock.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia_export.h>

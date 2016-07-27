@@ -78,8 +78,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/detail/Mapper_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/mapper.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/mapper.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Clock.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Clock.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Clock_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Clock_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Scenario_impl.cpp"
@@ -102,6 +100,8 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_process.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_process.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_value.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/clock.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/clock.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/custom_state.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_execution_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_flatten_visitor.hpp"
@@ -199,10 +199,10 @@ set(NETWORK_V2_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/osc/osc.hpp"
 )
 
-add_library(OSSIA ${SRCS} ${NETWORK_V2_SRCS})
+add_library(OSSIA SHARED ${SRCS} ${NETWORK_V2_SRCS})
 target_sources(OSSIA PUBLIC ${NETWORK_V1_SRCS})
 target_link_libraries(OSSIA PUBLIC Jamoma::Foundation Jamoma::Modular)
-target_link_libraries(OSSIA PUBLIC oscpack)
+target_link_libraries(OSSIA PUBLIC oscpack ModernMIDI)
 
 if(WIN32)
     target_compile_definitions(OSSIA PUBLIC
@@ -247,8 +247,6 @@ target_include_directories(OSSIA
 
 
 target_include_directories(OSSIA PUBLIC ${Boost_INCLUDE_DIRS})
-target_link_libraries(OSSIA PRIVATE ModernMIDI)
-
 
 if(OSSIA_SANITIZE)
     sanitize_build(OSSIA)

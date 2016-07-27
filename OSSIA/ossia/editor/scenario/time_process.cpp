@@ -2,5 +2,8 @@
 
 namespace OSSIA
 {
-TimeProcess::~TimeProcess() = default;
+TimeProcess::~TimeProcess()
+{
+
+}
 }

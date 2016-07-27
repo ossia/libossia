@@ -13,7 +13,7 @@ class Protocol;
 }
 namespace impl
 {
-class BasicNode :
+class OSSIA_EXPORT BasicNode :
         public virtual OSSIA::v2::Node
 {
 
