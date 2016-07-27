@@ -9,7 +9,7 @@
 
 inline oscpack::OutboundPacketStream& operator<<(
     oscpack::OutboundPacketStream& p,
-    const std::vector<impl::string_view>& values)
+    const std::vector<boost::string_ref>& values)
 {
   for(auto val : values)
   {
@@ -47,7 +47,7 @@ class MessageGenerator
 
     template<typename... T>
     const oscpack::OutboundPacketStream& operator()(
-        impl::string_view name,
+        boost::string_ref name,
         const T&... args)
     {
       p.Clear();

@@ -20,7 +20,6 @@ using ValueCallback = std::function<void(const Value&)>;
 
 class OSSIA_EXPORT Address : public CallbackContainer<ValueCallback>
 {
-
     public:
         Address() = default;
         Address(const Address&) = delete;
@@ -51,8 +50,8 @@ class OSSIA_EXPORT Address : public CallbackContainer<ValueCallback>
         virtual BoundingMode getBoundingMode() const = 0;
         virtual Address & setBoundingMode(BoundingMode) = 0;
 
-        virtual bool getRepetitionFilter() const = 0;
-        virtual Address & setRepetitionFilter(bool = true) = 0;
+        virtual RepetitionFilter getRepetitionFilter() const = 0;
+        virtual Address & setRepetitionFilter(RepetitionFilter = RepetitionFilter::ON) = 0;
 
         virtual const std::string& getTextualAddress() const = 0;
 };

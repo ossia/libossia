@@ -28,22 +28,22 @@ class OSSIA_EXPORT OSC2 final :
 {
     private:
         std::string    mIp;
-        uint16_t       mInPort{};            /// the port that a remote device open to receive OSC messages
-        uint16_t       mOutPort{};           /// the port where a remote device sends OSC messages to give some feeback (like "echo")
+        uint16_t       mInPort{};            /// the port that a remote device opens
+        uint16_t       mOutPort{};           /// the port where a remote device sends OSC messages to (opened in this library)
         bool           mLearning{};          /// if the device is currently learning from inbound messages.
 
-        mutable osc::sender    mSender;
-        mutable osc::receiver  mReceiver;
+        osc::sender    mSender;
+        osc::receiver  mReceiver;
 
-        mutable std::mutex mListeningMutex;
-        mutable std::unordered_map<std::string, OSSIA::v2::Address*> mListening;
+        std::mutex mListeningMutex;
+        std::unordered_map<std::string, OSSIA::v2::Address*> mListening;
 
     public:
         OSC2(std::string, uint16_t, uint16_t);
         ~OSC2();
 
 
-        std::string getIp() const;
+        const std::string& getIp() const;
         OSC2 & setIp(std::string);
 
         uint16_t getInPort() const;
@@ -56,13 +56,13 @@ class OSSIA_EXPORT OSC2 final :
         OSC2 & setLearningStatus(OSSIA::v2::Device&, bool);
 
 
-        bool updateChildren(OSSIA::v2::Node& node) const override;
+        bool updateChildren(OSSIA::v2::Node& node) override;
 
-        bool pullAddressValue(OSSIA::v2::Address& address) const override;
+        bool pullAddressValue(OSSIA::v2::Address& address) override;
 
-        bool pushAddressValue(const OSSIA::v2::Address& address) const override;
+        bool pushAddressValue(const OSSIA::v2::Address& address) override;
 
-        bool observeAddressValue(OSSIA::v2::Address& address, bool enable) const override;
+        bool observeAddressValue(OSSIA::v2::Address& address, bool enable) override;
 
     private:
         void handleReceivedMessage(

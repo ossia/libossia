@@ -46,7 +46,7 @@ class OSSIA_EXPORT BasicAddress final : public OSSIA::v2::Address
         OSSIA::Type mValueType{};
         OSSIA::AccessMode mAccessMode{};
         OSSIA::BoundingMode mBoundingMode{};
-        bool mRepetitionFilter{};
+        OSSIA::RepetitionFilter mRepetitionFilter{};
 
     public:
         OSSIA::Value PreviousValue;
@@ -77,8 +77,8 @@ class OSSIA_EXPORT BasicAddress final : public OSSIA::v2::Address
         OSSIA::BoundingMode getBoundingMode() const override;
         OSSIA::v2::Address & setBoundingMode(OSSIA::BoundingMode) override;
 
-        bool getRepetitionFilter() const override;
-        OSSIA::v2::Address & setRepetitionFilter(bool) override;
+        OSSIA::RepetitionFilter getRepetitionFilter() const override;
+        OSSIA::v2::Address & setRepetitionFilter(OSSIA::RepetitionFilter) override;
 
         OSSIA::v2::Address::iterator addCallback(OSSIA::v2::ValueCallback) override;
         void removeCallback(OSSIA::v2::Address::iterator) override;

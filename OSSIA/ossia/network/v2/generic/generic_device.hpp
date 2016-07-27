@@ -15,7 +15,7 @@
 
 #include <ossia/network/v2/base/device.hpp>
 #include <ossia/network/v2/generic/generic_node.hpp>
-
+#include <boost/utility/string_ref.hpp>
 namespace impl
 {
 class OSSIA_EXPORT BasicDevice final :
@@ -35,4 +35,9 @@ class OSSIA_EXPORT BasicDevice final :
 
         ~BasicDevice();
 };
+
+// address : format /a/b/c
+OSSIA_EXPORT BasicNode* find_node(
+        BasicDevice& dev,
+        boost::string_ref address);
 }

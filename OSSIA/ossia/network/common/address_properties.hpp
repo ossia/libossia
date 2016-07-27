@@ -41,4 +41,9 @@ enum class BoundingMode
     WRAP,
     FOLD
 };
+
+enum class RepetitionFilter
+{
+    OFF, ON
+};
 }

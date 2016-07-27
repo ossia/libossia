@@ -29,7 +29,7 @@ template<typename T>
 struct param_traits<
     T,
     std::enable_if_t<
-      std::is_same<T, impl::string_view>::value
+      std::is_same<T, boost::string_ref>::value
     >
   >
 {

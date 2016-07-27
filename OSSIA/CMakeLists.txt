@@ -190,6 +190,8 @@ set(NETWORK_V2_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/local/local.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/minuit/minuit.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/minuit/minuit.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/minuit/detail/minuit_common.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/minuit/detail/minuit_name_table.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/osc/detail/message_generator.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/osc/detail/osc.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/osc/detail/receiver.hpp"

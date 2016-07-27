@@ -13,10 +13,10 @@ class OSSIA_EXPORT Local2 final :
 
         virtual ~Local2();
 
-        bool pullAddressValue(OSSIA::v2::Address&) const override;
-        bool pushAddressValue(const OSSIA::v2::Address&) const override;
-        bool observeAddressValue(OSSIA::v2::Address&, bool) const override;
-        bool updateChildren(OSSIA::v2::Node& node) const override;
+        bool pullAddressValue(OSSIA::v2::Address&) override;
+        bool pushAddressValue(const OSSIA::v2::Address& addr) override;
+        bool observeAddressValue(OSSIA::v2::Address&, bool) override;
+        bool updateChildren(OSSIA::v2::Node& node) override;
 
         void exposeTo(std::unique_ptr<OSSIA::v2::Protocol> p)
         {

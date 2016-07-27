@@ -16,7 +16,7 @@ BasicAddress::BasicAddress(
     mValueType(OSSIA::Type::IMPULSE),
     mAccessMode(OSSIA::AccessMode::BI),
     mBoundingMode(OSSIA::BoundingMode::FREE),
-    mRepetitionFilter(false)
+    mRepetitionFilter(OSSIA::RepetitionFilter::OFF)
 {
     mTextualAddress = OSSIA::v2::getAddressFromNode(mNode);
 }
@@ -188,12 +188,12 @@ OSSIA::v2::Address& BasicAddress::setBoundingMode(OSSIA::BoundingMode boundingMo
     return *this;
 }
 
-bool BasicAddress::getRepetitionFilter() const
+OSSIA::RepetitionFilter BasicAddress::getRepetitionFilter() const
 {
     return mRepetitionFilter;
 }
 
-OSSIA::v2::Address& BasicAddress::setRepetitionFilter(bool repetitionFilter)
+OSSIA::v2::Address& BasicAddress::setRepetitionFilter(OSSIA::RepetitionFilter repetitionFilter)
 {
     mRepetitionFilter = repetitionFilter;
 

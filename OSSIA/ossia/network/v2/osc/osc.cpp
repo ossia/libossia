@@ -14,11 +14,9 @@ OSC2::OSC2(std::string ip, uint16_t in_port, uint16_t out_port) :
     mInPort{in_port},
     mOutPort{out_port},
     mSender{ip, in_port},
-    mReceiver{out_port, [=] (
-              const oscpack::ReceivedMessage& m,
-              const oscpack::IpEndpointName& ip) {
-    handleReceivedMessage(m, ip);
-}}
+    mReceiver{out_port, [=] (auto&&... var) {
+        this->handleReceivedMessage(std::forward<decltype(var)>(var)...);
+    }}
 {
     mReceiver.run();
 }
@@ -26,7 +24,7 @@ OSC2::OSC2(std::string ip, uint16_t in_port, uint16_t out_port) :
 OSC2::~OSC2()
 {}
 
-std::string OSC2::getIp() const
+const std::string& OSC2::getIp() const
 {
     return mIp;
 }
@@ -34,6 +32,7 @@ std::string OSC2::getIp() const
 OSC2& OSC2::setIp(std::string ip)
 {
     mIp = ip;
+    mSender = osc::sender{mIp, mInPort};
 
     return *this;
 }
@@ -46,6 +45,8 @@ uint16_t OSC2::getInPort() const
 OSC2& OSC2::setInPort(uint16_t in_port)
 {
     mInPort = in_port;
+    mSender = osc::sender{mIp, mInPort};
+
     return *this;
 }
 
@@ -57,6 +58,9 @@ uint16_t OSC2::getOutPort() const
 OSC2& OSC2::setOutPort(uint16_t out_port)
 {
     mOutPort = out_port;
+    mReceiver = osc::receiver{out_port, [=] (auto&&... var) {
+        this->handleReceivedMessage(std::forward<decltype(var)>(var)...);
+    }};
     return *this;
 }
 
@@ -71,58 +75,17 @@ OSC2& OSC2::setLearningStatus(OSSIA::v2::Device& ossiaDevice, bool newLearn)
     return *this;
 }
 
-bool OSC2::updateChildren(OSSIA::v2::Node& node) const
+bool OSC2::updateChildren(OSSIA::v2::Node& node)
 {
     return false;
 }
 
-bool OSC2::pullAddressValue(OSSIA::v2::Address& address) const
+bool OSC2::pullAddressValue(OSSIA::v2::Address& address)
 {
     return false;
 }
 
-static OSSIA::Value filterValue(
-        const OSSIA::v2::Domain& dom,
-        const OSSIA::Value& base_val,
-        OSSIA::BoundingMode mode)
-{
-    if(dom)
-    {
-        auto res = OSSIA::v2::clamp(dom, mode, base_val);
-        if(res.valid())
-            return std::move(res);
-        else
-            return {};
-    }
-    else
-    {
-        return base_val;
-    }
-}
-
-static OSSIA::Value filterValue(const BasicAddress& addr)
-{
-    if(addr.getRepetitionFilter() &&
-       addr.getValue() == addr.PreviousValue)
-        return {};
-
-    return filterValue(addr.getDomain(), addr.cloneValue(), addr.getBoundingMode());
-}
-
-static string_view getOSCAddress(const OSSIA::v2::Address& address)
-{
-    auto& addr = address.getTextualAddress();
-    auto begin = addr.find(':') + 1;
-    return string_view(addr.data() + begin, addr.size() - begin);
-}
-
-static std::string getOSCAddressAsString(const OSSIA::v2::Address& address)
-{
-    auto& addr = address.getTextualAddress();
-    return addr.substr(addr.find(':') + 1);
-}
-
-bool OSC2::pushAddressValue(const OSSIA::v2::Address& address) const
+bool OSC2::pushAddressValue(const OSSIA::v2::Address& address)
 {
     auto& addr = static_cast<const BasicAddress&>(address);
 
@@ -138,7 +101,7 @@ bool OSC2::pushAddressValue(const OSSIA::v2::Address& address) const
     return false;
 }
 
-bool OSC2::observeAddressValue(OSSIA::v2::Address& address, bool enable) const
+bool OSC2::observeAddressValue(OSSIA::v2::Address& address, bool enable)
 {
     std::lock_guard<std::mutex> lock(mListeningMutex);
 
@@ -160,21 +123,7 @@ void OSC2::handleReceivedMessage(
     {
         OSSIA::v2::Address& addr = *it->second;
         lock.unlock();
-        if(addr.getAccessMode() == OSSIA::AccessMode::SET)
-            return;
-
-        auto res = filterValue(
-                    addr.getDomain(),
-                    oscpack::toValue(m, addr.cloneValue()),
-                    addr.getBoundingMode());
-
-        if(res.valid())
-        {
-            addr.setValue(std::move(res));
-            try {
-                addr.send(addr.cloneValue());
-            } catch(...) { }
-        }
+        updateValue(addr, m);
     }
 }
 

@@ -2,24 +2,26 @@
 #include <ossia/network/v2/generic/generic_address.hpp>
 namespace impl
 {
-bool Local2::pullAddressValue(OSSIA::v2::Address& address) const
+bool Local2::pullAddressValue(OSSIA::v2::Address& address)
 {
     return false;
 }
 
-bool Local2::pushAddressValue(const OSSIA::v2::Address& address) const
+bool Local2::pushAddressValue(const OSSIA::v2::Address& address)
 {
-    // Update the address and notify
+    bool b = true;
+    for(auto& proto : mExposed)
+        b &= proto->pushAddressValue(address);
 
+    return b;
+}
+
+bool Local2::observeAddressValue(OSSIA::v2::Address& address, bool enable)
+{
     return false;
 }
 
-bool Local2::observeAddressValue(OSSIA::v2::Address& address, bool enable) const
-{
-    return false;
-}
-
-bool Local2::updateChildren(OSSIA::v2::Node& node) const
+bool Local2::updateChildren(OSSIA::v2::Node& node)
 {
     return false;
 }

@@ -42,7 +42,7 @@ class sender
 
 
     template<typename... Args>
-    void send(string_view address, Args&&... args)
+    void send(boost::string_ref address, Args&&... args)
     {
       send_impl(oscpack::MessageGenerator<>{}(
                   address,
