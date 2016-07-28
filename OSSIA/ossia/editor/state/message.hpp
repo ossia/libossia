@@ -19,23 +19,25 @@
 
 #include <ossia/editor/value/value.hpp>
 #include <ossia_export.h>
+#include <utility>
 
 namespace OSSIA
 {
+namespace net {
 class Address;
-
+}
 struct OSSIA_EXPORT Message
 {
-        std::shared_ptr<Address> address;
+        std::reference_wrapper<OSSIA::net::Address> address;
         Value value;
 
         void launch() const;
 
         friend bool operator==(const Message& lhs, const Message& rhs)
-        { return lhs.address == rhs.address && lhs.value == rhs.value; }
+        { return &lhs.address == &rhs.address && &lhs.value == &rhs.value; }
 
         friend bool operator!=(const Message& lhs, const Message& rhs)
-        { return lhs.address != rhs.address || lhs.value != rhs.value; }
+        { return &lhs.address != &rhs.address || &lhs.value != &rhs.value; }
 };
 
 

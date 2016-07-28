@@ -70,7 +70,7 @@ template<>
 struct ValueTrait<OSSIA::Destination>
 {
         using ossia_type = OSSIA::Destination;
-        using value_type = std::shared_ptr<Node>;
+        using value_type = OSSIA::net::Node*;
         static const constexpr auto ossia_enum = Type::DESTINATION;
 };
 

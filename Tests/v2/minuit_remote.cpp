@@ -7,6 +7,6 @@ int main()
         "myDevice"
         );
 
-  root.getProtocol().updateChildren(root);
+  root.getProtocol().update(root);
 
 }

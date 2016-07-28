@@ -2,8 +2,8 @@
 
 #include <ossia/editor/state/detail/state_execution_visitor.hpp>
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
-#include <ossia/network/v1/Address.hpp>
-#include <ossia/network/v1/Node.hpp>
+#include <ossia/network/base/Address.hpp>
+#include <ossia/network/base/Node.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <iostream>
 

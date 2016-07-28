@@ -20,19 +20,17 @@
 #include <ossia/editor/scenario/time_node.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/editor/value/value.hpp>
-#include <ossia/network/v1/Address.hpp>
+#include <ossia/network/base/Address.hpp>
 
 #include <ossia/editor/scenario/detail/TimeProcess_impl.hpp>
 
 #include <thread>
 #include <mutex>
 
-using namespace OSSIA;
-
 using namespace std::placeholders;
 namespace impl
 {
-class JamomaMapper : public Mapper, public JamomaTimeProcess
+class JamomaMapper : public OSSIA::Mapper, public JamomaTimeProcess
 {
 
 private:
@@ -40,25 +38,25 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  std::shared_ptr<Address>   mDriverAddress;
-  std::shared_ptr<Address>   mDrivenAddress;
-  Value                 mDrive;
+  OSSIA::net::Address&   mDriverAddress;
+  OSSIA::net::Address&   mDrivenAddress;
+  OSSIA::Value                 mDrive;
 
-  Message               mLastMessage;
-  Value                 mValueToMap;
+  OSSIA::Message               mLastMessage;
+  OSSIA::Value                 mValueToMap;
   mutable std::mutex    mValueToMapMutex;
 
-  bool                  mDriverValueObserved;
-  Address::iterator     mDriverValueCallbackIndex;
+  bool                  mDriverValueObserved{};
+  OSSIA::net::Address::iterator     mDriverValueCallbackIndex;
 
 public:
 
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaMapper(std::shared_ptr<Address>,
-               std::shared_ptr<Address>,
-               const Value&);
+  JamomaMapper(OSSIA::net::Address&,
+               OSSIA::net::Address&,
+               const OSSIA::Value&);
 
   JamomaMapper(const JamomaMapper &);
 
@@ -69,9 +67,9 @@ public:
 # pragma mark -
 # pragma mark Execution
 
-  StateElement offset(TimeValue) override;
+  OSSIA::StateElement offset(OSSIA::TimeValue) override;
 
-  StateElement state() override;
+  OSSIA::StateElement state() override;
 
 # pragma mark -
 # pragma mark Execution - Implementation specific
@@ -84,19 +82,19 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  const std::shared_ptr<Address> getDriverAddress() const override;
+  const OSSIA::net::Address& getDriverAddress() const override;
 
-  const std::shared_ptr<Address> getDrivenAddress() const override;
+  const OSSIA::net::Address& getDrivenAddress() const override;
 
-  const Value& getDriving() const override;
+  const OSSIA::Value& getDriving() const override;
 
 private:
 
 # pragma mark -
 # pragma mark Implementation specific
 
-  Value computeValue(const Value&, const Value&);
+  OSSIA::Value computeValue(const OSSIA::Value&, const OSSIA::Value&);
 
-  void driverValueCallback(const Value& value);
+  void driverValueCallback(const OSSIA::Value& value);
 };
 }

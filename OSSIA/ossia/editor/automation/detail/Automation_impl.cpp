@@ -10,11 +10,12 @@
 namespace impl
 {
 JamomaAutomation::JamomaAutomation(
-    std::shared_ptr<OSSIA::Address> address,
+    OSSIA::net::Address& address,
     const OSSIA::Value& drive) :
   JamomaTimeProcess(),
   mDrivenAddress(address),
-  mDrive(drive)
+  mDrive(drive),
+  mLastMessage{address, OSSIA::Value{}}
 {}
 
 JamomaAutomation::JamomaAutomation(const JamomaAutomation& other) = default;
@@ -56,9 +57,8 @@ OSSIA::StateElement JamomaAutomation::state()
       mLastDate = date;
 
       // edit a Message handling the new Value
-      return mLastMessage = OSSIA::Message{
-          mDrivenAddress,
-          computeValue(par.getPosition(), mDrive)};
+      mLastMessage.value = computeValue(par.getPosition(), mDrive);
+      return mLastMessage;
     }
 
     return mLastMessage;
@@ -96,7 +96,7 @@ void JamomaAutomation::resume()
 # pragma mark -
 # pragma mark Accessors
 #endif
-const std::shared_ptr<OSSIA::Address> JamomaAutomation::getDrivenAddress() const
+const OSSIA::net::Address& JamomaAutomation::getDrivenAddress() const
 {
   return mDrivenAddress;
 }

@@ -21,7 +21,7 @@
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/editor/value/value.hpp>
 
-#include <ossia/network/v1/Address.hpp>
+#include <ossia/network/base/Address.hpp>
 #include <ossia/editor/scenario/detail/TimeProcess_impl.hpp>
 
 namespace impl
@@ -37,7 +37,7 @@ private:
 # pragma mark Implementation specific
 #endif
 
-  std::shared_ptr<OSSIA::Address> mDrivenAddress;
+  OSSIA::net::Address& mDrivenAddress;
   OSSIA::Value mDrive;
   OSSIA::Message mLastMessage;
 
@@ -47,7 +47,7 @@ public:
 # pragma mark Life cycle
 #endif
 
-  JamomaAutomation(std::shared_ptr<OSSIA::Address>, const OSSIA::Value&);
+  JamomaAutomation(OSSIA::net::Address&, const OSSIA::Value&);
 
   JamomaAutomation(const JamomaAutomation&);
 
@@ -76,7 +76,7 @@ public:
 # pragma mark Accessors
 #endif
 
-  const std::shared_ptr<OSSIA::Address> getDrivenAddress() const override;
+  const OSSIA::net::Address& getDrivenAddress() const override;
 
   const OSSIA::Value& getDriving() const override;
 

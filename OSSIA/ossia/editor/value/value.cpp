@@ -1,7 +1,7 @@
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/editor/value/value_comparison.hpp>
-#include <ossia/network/v1/Node.hpp>
+#include <ossia/network/base/Node.hpp>
 #include <sstream>
 
 namespace OSSIA
@@ -156,15 +156,15 @@ Destination::Destination(Destination&& other) = default;
 Destination& Destination::operator=(const Destination&) = default;
 Destination& Destination::operator=(Destination&&) = default;
 
-Destination::Destination(std::shared_ptr<Node> v):
-    value(v)
+Destination::Destination(OSSIA::net::Node& v):
+    value(&v)
 {
 }
 
 Destination::Destination(
-        std::shared_ptr<Node> v,
+        OSSIA::net::Node& v,
         DestinationIndex idx) :
-    value(std::move(v)),
+    value(&v),
     index(std::move(idx))
 {
 }

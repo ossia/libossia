@@ -22,9 +22,8 @@
 namespace OSSIA
 {
 class Value;
-class Address;
 class TimeValue;
-
+namespace net { class Address; }
 class OSSIA_EXPORT Automation :
     public virtual TimeProcess
 {
@@ -39,7 +38,7 @@ public:
    \param how to drive the address
    \return a new automation */
   static std::shared_ptr<Automation> create(
-      std::shared_ptr<Address>,
+      net::Address&,
       const Value&);
 
   /*! clone */
@@ -55,7 +54,7 @@ public:
 
   /*! get the address to drive
    \return driven address */
-  virtual const std::shared_ptr<Address> getDrivenAddress() const = 0;
+  virtual const net::Address& getDrivenAddress() const = 0;
 
   /*! get the driving value
    \return driving value */

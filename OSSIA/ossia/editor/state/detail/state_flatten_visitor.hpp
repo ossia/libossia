@@ -14,7 +14,7 @@ namespace OSSIA
               auto it = find_if(state, [&] (const StateElement& e)
               {
                   if(auto m = e.target<Message>())
-                      return m->address == messageToAppend.address;
+                      return &m->address == &messageToAppend.address;
                   return false;
               });
 
@@ -49,7 +49,7 @@ namespace OSSIA
               auto it = find_if(state, [&] (const StateElement& e)
               {
                   if(auto m = e.target<Message>())
-                      return m->address == messageToAppend.address;
+                      return &m->address == &messageToAppend.address;
                   return false;
               });
 

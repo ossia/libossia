@@ -1,6 +1,6 @@
 #include <ossia/editor/expression/expression_pulse.hpp>
 #include <ossia/editor/value/destination.hpp>
-#include <ossia/network/v1/Address.hpp>
+#include <ossia/network/base/Address.hpp>
 #include <algorithm>
 
 using namespace OSSIA;
@@ -20,7 +20,7 @@ private:
   Destination         mDestination;
   mutable bool        mResult;
 
-  Address::iterator   mDestinationCallbackIndex;
+  net::Address::iterator   mDestinationCallbackIndex;
 
 public:
 

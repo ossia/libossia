@@ -21,7 +21,7 @@
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/editor/value/value.hpp>
 
-#include <ossia/network/v1/Address.hpp>
+#include <ossia/network/base/Address.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

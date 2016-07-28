@@ -4,21 +4,28 @@
 namespace impl
 {
 
-JamomaMapper::JamomaMapper(std::shared_ptr<Address> driverAddress,
-                           std::shared_ptr<Address> drivenAddress,
-                           const Value& drive) :
+JamomaMapper::JamomaMapper(
+    OSSIA::net::Address& driverAddress,
+    OSSIA::net::Address& drivenAddress,
+    const OSSIA::Value& drive) :
   JamomaTimeProcess(),
-  mDriverAddress(driverAddress),
-  mDrivenAddress(drivenAddress),
-  mDrive(drive),
+  mDriverAddress{driverAddress},
+  mDrivenAddress{drivenAddress},
+  mDrive{drive},
+  mLastMessage{mDrivenAddress, {}},
   mDriverValueObserved(false)
 {}
 
 JamomaMapper::JamomaMapper(const JamomaMapper& other) :
-  JamomaTimeProcess()
+  JamomaTimeProcess(),
+  mDriverAddress{other.mDriverAddress},
+  mDrivenAddress{other.mDrivenAddress},
+  mDrive{other.mDrive},
+  mLastMessage{other.mLastMessage},
+  mDriverValueObserved{other.mDriverValueObserved}
 {}
 
-std::shared_ptr<Mapper> JamomaMapper::clone() const
+std::shared_ptr<OSSIA::Mapper> JamomaMapper::clone() const
 {
   return std::make_shared<JamomaMapper>(*this);
 }
@@ -29,7 +36,7 @@ JamomaMapper::~JamomaMapper()
 # pragma mark -
 # pragma mark Execution
 
-StateElement JamomaMapper::offset(TimeValue offset)
+OSSIA::StateElement JamomaMapper::offset(OSSIA::TimeValue offset)
 {
   if (parent->getRunning())
     throw std::runtime_error("parent time constraint is running");
@@ -37,14 +44,14 @@ StateElement JamomaMapper::offset(TimeValue offset)
   return {}; // TODO why not state ?
 }
 
-StateElement JamomaMapper::state()
+OSSIA::StateElement JamomaMapper::state()
 {
   auto& par = *parent;
   if (!par.getRunning())
     throw std::runtime_error("parent time constraint is not running");
 
   // if date hasn't been processed already
-  TimeValue date = par.getDate();
+  OSSIA::TimeValue date = par.getDate();
   if (date != mLastDate)
   {
     mLastDate = date;
@@ -58,8 +65,8 @@ StateElement JamomaMapper::state()
       // forget the former value
       mValueToMap.reset();
 
-      return mLastMessage = {mDrivenAddress, std::move(newval)};
-
+      mLastMessage.value = std::move(newval);
+      return mLastMessage;
     }
   }
 
@@ -74,12 +81,12 @@ void JamomaMapper::start()
   // start driver address value observation
   if (!mDriverValueObserved)
   {
-    mDriverValueCallbackIndex = mDriverAddress->addCallback(
-          [this] (const OSSIA::Value& val) {
+    mDriverValueCallbackIndex = mDriverAddress.addCallback(
+                                  [this] (const OSSIA::Value& val) {
       driverValueCallback(val);
     });
     mDriverValueObserved = true;
-    auto def_val = mDriverAddress->cloneValue();
+    auto def_val = mDriverAddress.cloneValue();
     driverValueCallback(def_val);
   }
 }
@@ -89,7 +96,7 @@ void JamomaMapper::stop()
   // stop driver address value observation
   if (mDriverValueObserved)
   {
-    mDriverAddress->removeCallback(mDriverValueCallbackIndex);
+    mDriverAddress.removeCallback(mDriverValueCallbackIndex);
     mDriverValueObserved = false;
   }
 }
@@ -103,28 +110,30 @@ void JamomaMapper::resume()
 # pragma mark -
 # pragma mark Accessors
 
-const std::shared_ptr<Address> JamomaMapper::getDriverAddress() const
+const OSSIA::net::Address& JamomaMapper::getDriverAddress() const
 {
   return mDriverAddress;
 }
 
-const std::shared_ptr<Address> JamomaMapper::getDrivenAddress() const
+const OSSIA::net::Address& JamomaMapper::getDrivenAddress() const
 {
   return mDrivenAddress;
 }
 
-const Value& JamomaMapper::getDriving() const
+const OSSIA::Value& JamomaMapper::getDriving() const
 {
   return mDrive;
 }
 
-Value JamomaMapper::computeValue(const Value& driver, const Value& drive)
+OSSIA::Value JamomaMapper::computeValue(
+    const OSSIA::Value& driver,
+    const OSSIA::Value& drive)
 {
   switch (drive.getType())
   {
-    case Type::BEHAVIOR :
+    case OSSIA::Type::BEHAVIOR :
     {
-      auto& b = drive.get<Behavior>();
+      auto& b = drive.get<OSSIA::Behavior>();
 
       auto base_curve = b.value.get();
       auto t = base_curve->getType();
@@ -132,67 +141,67 @@ Value JamomaMapper::computeValue(const Value& driver, const Value& drive)
       {
         case OSSIA::CurveSegmentType::FLOAT:
         {
-          auto& val = driver.get<Float>();
+          auto& val = driver.get<OSSIA::Float>();
           switch(t.second)
           {
             case OSSIA::CurveSegmentType::FLOAT:
             {
               auto curve = static_cast<JamomaCurve<float, float>*>(base_curve);
-              return Float{curve->valueAt(val.value)};
+              return OSSIA::Float{curve->valueAt(val.value)};
             }
             case OSSIA::CurveSegmentType::INT:
             {
               auto curve = static_cast<JamomaCurve<float, int>*>(base_curve);
-              return Int{curve->valueAt(val.value)};
+              return OSSIA::Int{curve->valueAt(val.value)};
             }
             case OSSIA::CurveSegmentType::BOOL:
             {
               auto curve = static_cast<JamomaCurve<float, bool>*>(base_curve);
-              return Bool{curve->valueAt(val.value)};
+              return OSSIA::Bool{curve->valueAt(val.value)};
             }
           }
         }
         case OSSIA::CurveSegmentType::INT:
         {
-          auto& val = driver.get<Int>();
+          auto& val = driver.get<OSSIA::Int>();
           switch(t.second)
           {
             case OSSIA::CurveSegmentType::FLOAT:
             {
               auto curve = static_cast<JamomaCurve<int, float>*>(base_curve);
-              return Float{curve->valueAt(val.value)};
+              return OSSIA::Float{curve->valueAt(val.value)};
             }
             case OSSIA::CurveSegmentType::INT:
             {
               auto curve = static_cast<JamomaCurve<int, int>*>(base_curve);
-              return Int{curve->valueAt(val.value)};
+              return OSSIA::Int{curve->valueAt(val.value)};
             }
             case OSSIA::CurveSegmentType::BOOL:
             {
               auto curve = static_cast<JamomaCurve<int, bool>*>(base_curve);
-              return Bool{curve->valueAt(val.value)};
+              return OSSIA::Bool{curve->valueAt(val.value)};
             }
           }
         }
         case OSSIA::CurveSegmentType::BOOL:
         {
-          auto& val = driver.get<Bool>();
+          auto& val = driver.get<OSSIA::Bool>();
           switch(t.second)
           {
             case OSSIA::CurveSegmentType::FLOAT:
             {
               auto curve = static_cast<JamomaCurve<bool, float>*>(base_curve);
-              return Float{curve->valueAt(val.value)};
+              return OSSIA::Float{curve->valueAt(val.value)};
             }
             case OSSIA::CurveSegmentType::INT:
             {
               auto curve = static_cast<JamomaCurve<bool, int>*>(base_curve);
-              return Int{curve->valueAt(val.value)};
+              return OSSIA::Int{curve->valueAt(val.value)};
             }
             case OSSIA::CurveSegmentType::BOOL:
             {
               auto curve = static_cast<JamomaCurve<bool, bool>*>(base_curve);
-              return Bool{curve->valueAt(val.value)};
+              return OSSIA::Bool{curve->valueAt(val.value)};
             }
           }
         }
@@ -202,15 +211,15 @@ Value JamomaMapper::computeValue(const Value& driver, const Value& drive)
       break;
     }
 
-    case Type::TUPLE :
+    case OSSIA::Type::TUPLE :
     {
-      auto& t_drive = drive.get<Tuple>();
+      auto& t_drive = drive.get<OSSIA::Tuple>();
 
-      if (driver.getType() == Type::TUPLE)
+      if (driver.getType() == OSSIA::Type::TUPLE)
       {
-        auto& t_driver = driver.get<Tuple>();
+        auto& t_driver = driver.get<OSSIA::Tuple>();
 
-        std::vector<Value> t_value;
+        std::vector<OSSIA::Value> t_value;
         t_value.reserve(t_drive.value.size());
         auto it_driver = t_driver.value.begin();
 
@@ -223,7 +232,7 @@ Value JamomaMapper::computeValue(const Value& driver, const Value& drive)
           it_driver++;
         }
 
-        return Tuple{std::move(t_value)};
+        return OSSIA::Tuple{std::move(t_value)};
       }
     }
 
@@ -236,7 +245,7 @@ Value JamomaMapper::computeValue(const Value& driver, const Value& drive)
   throw std::runtime_error("none handled drive value type");
 }
 
-void JamomaMapper::driverValueCallback(const Value& value)
+void JamomaMapper::driverValueCallback(const OSSIA::Value& value)
 {
   std::lock_guard<std::mutex> lock(mValueToMapMutex);
 

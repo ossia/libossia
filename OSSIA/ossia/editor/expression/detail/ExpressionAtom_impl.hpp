@@ -1,7 +1,7 @@
 #include <ossia/editor/expression/expression_atom.hpp>
 #include <ossia/editor/value/value.hpp>
-#include <ossia/network/v1/Address.hpp>
-#include <ossia/network/v1/Node.hpp>
+#include <ossia/network/base/Address.hpp>
+#include <ossia/network/base/Node.hpp>
 
 #include <algorithm>
 #include <iostream> //! \todo to remove. only here for debug purpose
@@ -24,8 +24,8 @@ private:
   Operator  mOperator;
   Value    mSecondValue;
 
-  Address::iterator mFirstValueCallbackIndex;
-  Address::iterator mSecondValueCallbackIndex;
+  net::Address::iterator mFirstValueCallbackIndex;
+  net::Address::iterator mSecondValueCallbackIndex;
 
 public:
 

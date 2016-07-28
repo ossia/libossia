@@ -16,17 +16,10 @@ include(UseGold)
 include(LinkerWarnings)
 find_package(Boost REQUIRED)
 
-
-find_package(Jamoma 0.6)
-if(NOT TARGET Jamoma::Modular)
-    message(FATAL_ERROR "Jamoma not found - indicate path to jamoma/share/cmake/Jamoma in CMAKE_PREFIX_PATH")
-    return()
-endif()
-
 if(APPLE)
     set(CMAKE_INSTALL_NAME_DIR @rpath)
     set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
-    set(CMAKE_INSTALL_RPATH "@loader_path/../Frameworks;@loader_path/../Frameworks/jamoma;@loader_path/../Frameworks/jamoma/extensions;@executable_path;/usr/local/jamoma/lib;")
+	set(CMAKE_INSTALL_RPATH "@loader_path/../Frameworks;@executable_path;")
 endif()
 set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/algorithms.hpp"
@@ -131,90 +124,51 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/address_properties.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/network_logger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/network.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/OSSIA.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/OSSIA.hpp"
 
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_address.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_address.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/channel.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_parser.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_common.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_name_table.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/message_generator.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/receiver.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/sender.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/string_view.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
 )
 
-set(NETWORK_V1_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Address.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Address.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/detail/Domain_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/detail/Domain_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/detail/JamomaAddress.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/detail/JamomaAddress.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/detail/JamomaDevice.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/detail/JamomaDevice.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/detail/JamomaNode.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/detail/JamomaNode.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/detail/JamomaProtocol.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/detail/JamomaProtocol.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Device.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Device.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Domain.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Domain.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Protocol.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Protocol/detail/JamomaLocal.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Protocol/detail/JamomaLocal.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Protocol/detail/JamomaMIDI.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Protocol/detail/JamomaMIDI.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Protocol/detail/JamomaMinuit.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Protocol/detail/JamomaMinuit.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Protocol/detail/JamomaOSC.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Protocol/detail/JamomaOSC.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Protocol.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Protocol/Local.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Protocol/MIDI.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Protocol/Minuit.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v1/Protocol/OSC.hpp"
-    )
-
-set(NETWORK_V2_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/base/address.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/base/address.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/base/device.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/base/device.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/base/node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/base/node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/base/protocol.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/base/protocol.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/domain.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/generic/generic_address.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/generic/generic_address.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/generic/generic_device.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/generic/generic_device.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/generic/generic_node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/generic/generic_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/local/local.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/local/local.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/minuit/minuit.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/minuit/minuit.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/minuit/detail/minuit_parser.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/minuit/detail/minuit_common.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/minuit/detail/minuit_name_table.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/osc/detail/message_generator.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/osc/detail/osc.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/osc/detail/receiver.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/osc/detail/sender.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/osc/detail/string_view.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/osc/osc.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/v2/osc/osc.hpp"
-)
-
-add_library(OSSIA SHARED ${SRCS} ${NETWORK_V2_SRCS})
-target_sources(OSSIA PUBLIC ${NETWORK_V1_SRCS})
-target_link_libraries(OSSIA PUBLIC Jamoma::Foundation Jamoma::Modular)
+add_library(OSSIA SHARED ${SRCS})
 target_link_libraries(OSSIA PUBLIC oscpack ModernMIDI)
 
 if(WIN32)
     target_compile_definitions(OSSIA PUBLIC
         NOMINMAX
-        _CRT_SECURE_NO_WARNINGS)
-
-    if(OSSIA_WITH_JAMOMA)
-        target_compile_definitions(OSSIA PUBLIC TT_PLATFORM_WIN)
-    endif()
+		_CRT_SECURE_NO_WARNINGS)
 endif()
 
 if(MSVC)

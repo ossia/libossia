@@ -1,6 +1,6 @@
 #include "Curve_impl.hpp"
 #include <ossia/editor/value/value.hpp>
-#include <ossia/network/v1/Node.hpp>
+#include <ossia/network/base/Node.hpp>
 
 # pragma mark -
 # pragma mark Life cycle
@@ -8,11 +8,7 @@
 namespace impl
 {
 template <typename X, typename Y>
-JamomaCurve<X,Y>::
-JamomaCurve() :
-mInitialPointAbscissaDestination(nullptr),
-mInitialPointOrdinateDestination(nullptr)
-{}
+JamomaCurve<X,Y>::JamomaCurve() = default;
 
 template <typename X, typename Y>
 JamomaCurve<X,Y>::

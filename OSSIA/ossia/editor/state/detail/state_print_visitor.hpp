@@ -2,8 +2,8 @@
 #include <iostream>
 #include <string>
 #include <ossia/editor/state/state_element.hpp>
-#include <ossia/network/v1/Address.hpp>
-#include <ossia/network/v1/Node.hpp>
+#include <ossia/network/base/Address.hpp>
+#include <ossia/network/base/Node.hpp>
 
 namespace OSSIA
 {
@@ -33,7 +33,7 @@ namespace OSSIA
           {
               out << padding
                   << "message: "
-                  << OSSIA::getAddressFromNode(*m.address->getNode())
+                  << OSSIA::net::getAddressFromNode(m.address.get().getNode())
                   << " => "
                   << OSSIA::getValueAsString(m.value)
                   << "\n";
