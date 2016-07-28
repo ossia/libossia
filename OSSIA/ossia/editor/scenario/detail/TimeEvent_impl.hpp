@@ -50,7 +50,7 @@ public:
 
   JamomaTimeEvent(TimeEvent::ExecutionCallback,
                   std::shared_ptr<TimeNode> aTimeNode = nullptr,
-                  std::shared_ptr<Expression> anExpression = ExpressionTrue);
+                  std::shared_ptr<Expression> anExpression = ExpressionTrue());
 
   ~JamomaTimeEvent();
 

@@ -1,6 +1,6 @@
 #include "Curve_impl.hpp"
 #include <ossia/editor/value/value.hpp>
-#include <ossia/network/base/Node.hpp>
+#include <ossia/network/base/node.hpp>
 
 # pragma mark -
 # pragma mark Life cycle

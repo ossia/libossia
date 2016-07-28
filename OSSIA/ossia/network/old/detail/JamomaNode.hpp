@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include <ossia/network/base/Address.hpp>
-#include <ossia/network/base/Device.hpp>
-#include <ossia/network/base/Node.hpp>
+#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node.hpp>
 #include <ossia/network/v1/Protocol.hpp>
 
 #include <ossia/network/v1/detail/JamomaAddress.hpp>

@@ -14,7 +14,7 @@ class Protocol;
 namespace impl
 {
 class OSSIA_EXPORT BasicNode :
-        public virtual OSSIA::net::Node
+        public OSSIA::net::Node
 {
 
     protected:

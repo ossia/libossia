@@ -81,7 +81,7 @@ public:
 
   iterator emplace(const_iterator,
                    TimeEvent::ExecutionCallback,
-                   std::shared_ptr<Expression> = ExpressionTrue) override;
+                   std::shared_ptr<Expression> = ExpressionTrue()) override;
 
 # pragma mark -
 # pragma mark Implementation specific

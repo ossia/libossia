@@ -11,6 +11,18 @@ namespace OSSIA
   }
 
   Expression::~Expression() = default;
+
+  std::shared_ptr<Expression> ExpressionFalse()
+  {
+      return Expression::create(false);
+  }
+
+  std::shared_ptr<Expression> ExpressionTrue()
+  {
+      return Expression::create(true);
+  }
+
+
 }
 
 

@@ -1,6 +1,6 @@
 #include <ossia/editor/expression/expression_pulse.hpp>
 #include <ossia/editor/value/destination.hpp>
-#include <ossia/network/base/Address.hpp>
+#include <ossia/network/base/address.hpp>
 #include <algorithm>
 
 using namespace OSSIA;

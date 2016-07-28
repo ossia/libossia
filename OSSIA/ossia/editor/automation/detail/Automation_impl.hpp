@@ -21,7 +21,7 @@
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/editor/value/value.hpp>
 
-#include <ossia/network/base/Address.hpp>
+#include <ossia/network/base/address.hpp>
 #include <ossia/editor/scenario/detail/TimeProcess_impl.hpp>
 
 namespace impl

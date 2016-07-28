@@ -15,7 +15,7 @@
 
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/value/destination.hpp>
-#include <ossia/network/base/Address.hpp>
+#include <ossia/network/base/address.hpp>
 #include <cmath>
 
 #include <boost/container/flat_map.hpp>

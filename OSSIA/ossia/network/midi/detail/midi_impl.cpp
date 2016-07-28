@@ -140,10 +140,11 @@ void MIDIAddress::valueCallback(const OSSIA::Value& val)
   send(mValue);
 }
 
-const std::__1::string&MIDIAddress::getTextualAddress() const
+const std::string& MIDIAddress::getTextualAddress() const
 {
   return {};
 }
+
 
 }
 }

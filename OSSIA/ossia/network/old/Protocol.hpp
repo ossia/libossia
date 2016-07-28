@@ -18,8 +18,8 @@
 
 #include <memory>
 
-#include <ossia/network/base/Address.hpp>
-#include <ossia/network/base/Node.hpp>
+#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/node.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

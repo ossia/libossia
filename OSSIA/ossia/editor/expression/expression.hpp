@@ -98,8 +98,8 @@ public:
   {return Expression::Type::BASE;}
 };
 
-static std::shared_ptr<Expression> ExpressionFalse = Expression::create(false);
-static std::shared_ptr<Expression> ExpressionTrue = Expression::create(true);
+OSSIA_EXPORT std::shared_ptr<Expression> ExpressionFalse();
+OSSIA_EXPORT std::shared_ptr<Expression> ExpressionTrue();
 
 }
 

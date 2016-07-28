@@ -2,6 +2,16 @@
 #include <ossia/network/generic/generic_address.hpp>
 namespace impl
 {
+Local2::Local2()
+{
+
+}
+
+Local2::~Local2()
+{
+
+}
+
 bool Local2::pull(OSSIA::net::Address& address)
 {
     return false;

@@ -1,7 +1,7 @@
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/editor/value/value_comparison.hpp>
-#include <ossia/network/base/Node.hpp>
+#include <ossia/network/base/node.hpp>
 #include <sstream>
 
 namespace OSSIA

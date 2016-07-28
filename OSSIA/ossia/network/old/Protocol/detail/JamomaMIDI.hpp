@@ -14,10 +14,10 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/domain.hpp>
-#include <ossia/network/base/Device.hpp>
+#include <ossia/network/base/device.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/common/address_properties.hpp>
-#include <ossia/network/base/Address.hpp>
+#include <ossia/network/base/address.hpp>
 #include <cassert>
 #include <array>
 

@@ -19,7 +19,7 @@ find_package(Boost REQUIRED)
 if(APPLE)
     set(CMAKE_INSTALL_NAME_DIR @rpath)
     set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
-	set(CMAKE_INSTALL_RPATH "@loader_path/../Frameworks;@executable_path;")
+    set(CMAKE_INSTALL_RPATH "@loader_path/../Frameworks;@executable_path;")
 endif()
 set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/algorithms.hpp"
@@ -124,42 +124,50 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/address_properties.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/network_logger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/network.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/OSSIA.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/OSSIA.hpp"
 
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_address.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_address.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/channel.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_parser.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_common.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_name_table.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/message_generator.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/receiver.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/sender.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/string_view.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_address.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/channel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_parser.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_common.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_name_table.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/message_generator.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/receiver.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/sender.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/string_view.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
 )
 
 add_library(OSSIA SHARED ${SRCS})
@@ -168,7 +176,7 @@ target_link_libraries(OSSIA PUBLIC oscpack ModernMIDI)
 if(WIN32)
     target_compile_definitions(OSSIA PUBLIC
         NOMINMAX
-		_CRT_SECURE_NO_WARNINGS)
+        _CRT_SECURE_NO_WARNINGS)
 endif()
 
 if(MSVC)

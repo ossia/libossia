@@ -1,5 +1,5 @@
 #include <ossia/editor/state/message.hpp>
-#include <ossia/network/base/Address.hpp>
+#include <ossia/network/base/address.hpp>
 
 namespace OSSIA
 {

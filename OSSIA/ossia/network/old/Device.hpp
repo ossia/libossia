@@ -18,7 +18,7 @@
 
 #include <string>
 
-#include <ossia/network/base/Node.hpp>
+#include <ossia/network/base/node.hpp>
 #include <ossia_export.h>
 
 namespace OSSIA

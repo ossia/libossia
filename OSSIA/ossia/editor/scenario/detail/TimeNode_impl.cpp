@@ -5,7 +5,7 @@ namespace impl
 
 JamomaTimeNode::JamomaTimeNode(TimeNode::ExecutionCallback callback) :
 mCallback(callback),
-mExpression(ExpressionTrue)
+mExpression(ExpressionTrue())
 {}
 
 JamomaTimeNode::JamomaTimeNode(const JamomaTimeNode * other)
@@ -206,7 +206,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
     return;
 
   // false expression mute TimeNode triggering
-  if (*mExpression == *ExpressionFalse)
+  if (*mExpression == *ExpressionFalse())
     return;
 
   //! \todo force triggering if at leat one TimeEvent has
@@ -215,7 +215,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
   // update the expression one time
   // then observe and evaluate TimeNode's expression before to trig
   // only if no maximal duration have been reached
-  if (*mExpression != *ExpressionTrue &&
+  if (*mExpression != *ExpressionTrue() &&
       !maximalDurationReached)
   {
     if (!isObservingExpression())
@@ -243,7 +243,7 @@ bool JamomaTimeNode::isObservingExpression()
 
 void JamomaTimeNode::observeExpressionResult(bool observe)
 {
-  if (!mExpression || *mExpression == *ExpressionTrue || *mExpression == *ExpressionFalse)
+  if (!mExpression || *mExpression == *ExpressionTrue() || *mExpression == *ExpressionFalse())
     return;
 
   if (observe != mObserveExpression)
