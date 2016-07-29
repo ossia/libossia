@@ -110,12 +110,12 @@ public:
 
   /*! get the expression of the event
   \return std::shared_ptr<#Expression> */
-  virtual const std::shared_ptr<expression_base> & getExpression() const = 0;
+  virtual const std::unique_ptr<expression_base> & getExpression() const = 0;
 
   /*! set the expression of the event
    \param std::shared_ptr<#Expression>
    \return #TimeEvent the event */
-  virtual time_event & setExpression(const std::shared_ptr<expression_base>) = 0;
+  virtual time_event & setExpression(const std::unique_ptr<expression_base>) = 0;
 
   /*! get the status of the event
    \return #Status */

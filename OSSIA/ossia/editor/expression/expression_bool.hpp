@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/editor/expression/expression.hpp>
+#include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -7,7 +7,7 @@ namespace ossia
 namespace expressions
 {
 class OSSIA_EXPORT expression_bool final :
-    public expression_base
+    public callback_container<expression_result_callback>
 {
   bool mResult;
 
@@ -16,13 +16,9 @@ public:
 
   ~expression_bool();
 
-  bool evaluate() const override { return mResult; }
-  void update() const override { }
+  bool evaluate() const { return mResult; }
+  void update() const { }
 
-  bool operator== (const expression_base& exp) const override;
-  bool operator!= (const expression_base& exp) const override;
-  expression_base::Type getType() const override
-  { return expression_base::Type::BOOL; }
 };
 
 const expression_bool expression_true{true};

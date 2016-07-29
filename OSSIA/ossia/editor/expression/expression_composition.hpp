@@ -18,24 +18,17 @@
 
 #include <memory>
 
-#include <ossia/editor/expression/expression.hpp>
+#include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia_export.h>
 
 namespace ossia
 {
 namespace expressions
 {
-class OSSIA_EXPORT expression_composition : public expression_base
+class OSSIA_EXPORT expression_composition final :
+    public callback_container<expression_result_callback>
 {
-
 public:
-
-#if 0
-# pragma mark -
-# pragma mark Enumerations
-#endif
-
-  /*! type of operator */
   enum class Operator
   {
     AND,
@@ -43,53 +36,37 @@ public:
     XOR
   };
 
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
+  expression_composition(
+      std::unique_ptr<expression_base> expr1,
+      Operator op,
+      std::unique_ptr<expression_base> expr2);
 
-  /*! factory
-   \return std::shared_ptr<#ExpressionComposition> */
-  static std::shared_ptr<expression_composition> create(std::shared_ptr<expression_base>,
-                                                       Operator,
-                                                       std::shared_ptr<expression_base>);
-
-  /*! destructor */
   virtual ~expression_composition();
 
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
+  bool evaluate() const;
 
-  /*! evaluate the expression atom
-   \return bool result of the evaluation */
-  virtual bool evaluate() const override = 0;
+  void update() const;
 
-  /*! pull the value of any #Destination operand */
-  virtual void update() const override = 0;
+  expression_base& getFirstOperand() const;
+  Operator getOperator() const;
+  expression_base&  getSecondOperand() const;
 
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
+private:
+  void onFirstCallbackAdded() override;
+  void onRemovingLastCallback() override;
 
-  /*! get the type of the expression
-   \return #Type of the expression */
-  expression_base::Type getType() const override final
-  {return expression_base::Type::COMPOSITION;}
+  bool do_evaluation(bool first, bool second) const;
 
-  /*! get first operand
-   \return const std::shared_ptr<#Expression> first operand */
-  virtual const std::shared_ptr<expression_base> & getFirstOperand() const = 0;
+  void firstResultCallback(bool first_result);
+  void secondResultCallback(bool second_result);
 
-  /*! get operator
-   \return #Operator operator */
-  virtual Operator getOperator() const = 0;
+  std::unique_ptr<expression_base> mFirstExpression;
+  std::unique_ptr<expression_base> mSecondExpression;
 
-  /*! get second operand
-   \return const std::shared_ptr<#Expression> second operand */
-  virtual const std::shared_ptr<expression_base> & getSecondOperand() const = 0;
+  expression_callback_iterator mFirstResultCallbackIndex;
+  expression_callback_iterator mSecondResultCallbackIndex;
+
+  Operator  mOperator;
 };
 }
 }

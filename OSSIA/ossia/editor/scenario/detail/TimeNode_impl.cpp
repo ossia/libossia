@@ -78,12 +78,12 @@ time_value JamomaTimeNode::getDate() const
   return Zero;
 }
 
-const std::shared_ptr<expression_base> & JamomaTimeNode::getExpression() const
+const std::unique_ptr<expression_base> & JamomaTimeNode::getExpression() const
 {
   return mExpression;
 }
 
-time_node & JamomaTimeNode::setExpression(const std::shared_ptr<expression_base> exp)
+time_node & JamomaTimeNode::setExpression(const std::unique_ptr<expression_base> exp)
 {
   assert(exp != nullptr);
   mExpression = exp;
@@ -106,7 +106,7 @@ time_node & JamomaTimeNode::setSimultaneityMargin(time_value simultaneityMargin)
 
 JamomaTimeNode::iterator JamomaTimeNode::emplace(const_iterator pos,
                                                  time_event::ExecutionCallback callback,
-                                                 std::shared_ptr<expression_base> exp)
+                                                 std::unique_ptr<expression_base> exp)
 {
   return timeEvents().insert(pos, std::make_shared<JamomaTimeEvent>(callback, shared_from_this(), exp));
 }

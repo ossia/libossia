@@ -18,7 +18,7 @@
 
 #include <memory>
 
-#include <ossia/editor/expression/expression.hpp>
+#include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia/editor/value/value.hpp>
 
 #include <ossia/network/base/address.hpp>
@@ -28,24 +28,11 @@ namespace ossia
 {
 namespace expressions
 {
-class OSSIA_EXPORT expression_atom : public expression_base
+class OSSIA_EXPORT expression_atom :
+    public callback_container<expression_result_callback>
 {
-  ossia::value mFirstValue;
-  Operator mOperator;
-  ossia::value mSecondValue;
-
-  net::address::callback_index mFirstValueCallbackIndex;
-  net::address::callback_index mSecondValueCallbackIndex;
-
 public:
-
-#if 0
-# pragma mark -
-# pragma mark Enumerations
-#endif
-
-  /*! type of operator */
-  enum class Operator
+  enum class Comparator
   {
     EQUAL,
     DIFFERENT,
@@ -55,216 +42,35 @@ public:
     LOWER_THAN_OR_EQUAL
   };
 
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
   expression_atom(const value& lhs,
-                  Operator op = Operator::EQUAL,
-                  const value& rhs = Impulse{}):
-    mFirstValue(lhs),
-    mOperator(op),
-    mSecondValue(rhs)
-  {
+                  Comparator op = Comparator::EQUAL,
+                  const value& rhs = Impulse{});
 
-  }
-
-  /*! destructor */
   virtual ~expression_atom();
 
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
+  bool evaluate() const;
+  void update() const;
 
-  /*! evaluate the expression atom
-   \return bool result of the evaluation */
-  virtual bool evaluate() const override
-  {
-    return do_evaluation(mFirstValue, mSecondValue);
-  }
+  const value& getFirstOperand() const;
+  Comparator getOperator() const;
+  const value& getSecondOperand() const;
 
-  /*! pull the value of any #Destination operand */
-  virtual void update() const override
-  {
-    // pull value of the first operand if it is a Destination
-    if (mFirstValue.getType() == ossia::Type::DESTINATION)
-    {
-      auto& d = mFirstValue.get<Destination>();
-      if (const auto& addr = d.value->getAddress())
-      {
-        addr->pullValue();
-      }
-    }
+private:
+  void onFirstCallbackAdded();
+  void onRemovingLastCallback();
 
-    // pull value of the second operand if it is a Destination
-    if (mSecondValue.getType() == ossia::Type::DESTINATION)
-    {
-      auto& d = mSecondValue.get<Destination>();
-      if (const auto& addr = d.value->getAddress())
-      {
-        addr->pullValue();
-      }
-    }
-  }
+  bool do_evaluation(const value& first, const value& second) const;
 
-  bool operator!= (const expression_base& exp) const
-  {
-    if (exp.getType() == expression_base::Type::ATOM)
-    {
-      const JamomaExpressionAtom e = dynamic_cast<const JamomaExpressionAtom&>(exp);
-      return value{mFirstValue} != value{e.mFirstValue} ||
-    mOperator != e.mOperator ||
-                 value{mSecondValue} != value{e.mSecondValue};
-    }
-    else
-      return true;
-  }
+  void firstValueCallback(const ossia::value& value);
+  void secondValueCallback(const ossia::value& value);
 
+  ossia::value mFirstValue;
+  Comparator mOperator;
+  ossia::value mSecondValue;
 
-  bool operator== (const expression_base& exp) const
-  {
-    if (exp.getType() == expression_base::Type::ATOM)
-    {
-      const JamomaExpressionAtom e = dynamic_cast<const JamomaExpressionAtom&>(exp);
-      return value{mFirstValue} == value{e.mFirstValue} &&
-              mOperator == e.mOperator &&
-               value{mSecondValue} == value{e.mSecondValue};
-    }
-    else
-      return false;
-  }
+  net::address::callback_index mFirstValueCallbackIndex;
+  net::address::callback_index mSecondValueCallbackIndex;
 
-
-
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
-
-  /*! get the type of the expression
-   \return #Type of the expression */
-  expression_base::Type getType() const override final
-  {return expression_base::Type::ATOM;}
-
-  /*! get first operand
-   \return const #Value* first operand */
-  const value& getFirstOperand() const
-  {
-    return mFirstValue;
-  }
-
-  /*! get operator
-   \return #Operator operator */
-  Operator getOperator() const
-  {
-    return mOperator;
-  }
-
-  /*! get second operand
-   \return const #Value* second operand */
-  virtual const value& getSecondOperand() const
-  {
-    return mSecondValue;
-  }
-
-  void onFirstCallbackAdded()
-  {
-    // start first operand observation if it is a Destination
-    //! \todo what about Tuple of Destinations ?
-    if (mFirstValue.getType() == ossia::Type::DESTINATION)
-    {
-      auto& d = mFirstValue.get<Destination>();
-      if (const auto& addr = d.value->getAddress())
-      {
-        mFirstValueCallbackIndex = addr->addCallback(
-                                     [&] (const ossia::value& result) { firstValueCallback(result); });
-      }
-    }
-
-    // start second operand observation if it is a Destination
-    //! \todo what about Tuple of Destinations ?
-    if (mSecondValue.getType() == ossia::Type::DESTINATION)
-    {
-      auto& d = mSecondValue.get<Destination>();
-      if (const auto& addr = d.value->getAddress())
-      {
-        mSecondValueCallbackIndex = addr->addCallback(
-                                      [&] (const ossia::value& result) { secondValueCallback(result); });
-      }
-    }
-  }
-
-  void onRemovingLastCallback()
-  {
-    // stop first operand observation if it is a Destination
-    //! \todo what about Tuple of Destinations ?
-    if (mFirstValue.getType() == ossia::Type::DESTINATION)
-    {
-      auto& d = mFirstValue.get<Destination>();
-      if (const auto& addr = d.value->getAddress())
-      {
-        addr->removeCallback(mFirstValueCallbackIndex);
-      }
-    }
-
-    // start second operand observation if it is a Destination
-    //! \todo what about Tuple of Destinations ?
-    if (mSecondValue.getType() == ossia::Type::DESTINATION)
-    {
-      auto& d = mSecondValue.get<Destination>();
-      if (const auto& addr = d.value->getAddress())
-      {
-        addr->removeCallback(mSecondValueCallbackIndex);
-      }
-    }
-  }
-
-  bool do_evaluation(const value& first, const value& second) const
-  {
-    switch (mOperator)
-    {
-      case Operator::EQUAL :
-      {
-        return first == second;
-      }
-      case Operator::DIFFERENT :
-      {
-        return first != second;
-      }
-      case Operator::GREATER_THAN :
-      {
-        return first > second;
-      }
-      case Operator::LOWER_THAN :
-      {
-        return first < second;
-      }
-      case Operator::GREATER_THAN_OR_EQUAL :
-      {
-        return first >= second;
-      }
-      case Operator::LOWER_THAN_OR_EQUAL :
-      {
-        return first <= second;
-      }
-      default :
-        return false;
-    }
-  }
-
-  void firstValueCallback(const ossia::value& value)
-  {
-    if(mSecondValue.valid())
-      send(do_evaluation(value, mSecondValue));
-  }
-
-  void secondValueCallback(const ossia::value& value)
-  {
-    if(mSecondValue.valid())
-      send(do_evaluation(mFirstValue, value));
-  }
 };
 
 }

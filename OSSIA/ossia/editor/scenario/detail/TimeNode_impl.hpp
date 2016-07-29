@@ -16,6 +16,7 @@
 #include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/editor/scenario/time_node.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
+#include <ossia/editor/expression/expression.hpp>
 
 #include "TimeEvent_impl.hpp" // because the TimeNode::emplace method is a JamomaTimeEvent factory
 
@@ -32,12 +33,12 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  time_node::execution_callback   mCallback;
+  time_node::execution_callback mCallback;
 
-  std::shared_ptr<expression_base>        mExpression;
+  std::unique_ptr<expression_base> mExpression;
   bool                          mObserveExpression;
   bool                          mCallbackSet = false;
-  expression_base::iterator          mResultCallbackIndex;
+  expressions::expression_callback_iterator mResultCallbackIndex;
 
   time_value                     mSimultaneityMargin;
 
@@ -64,9 +65,9 @@ public:
 
   time_value getDate() const override;
 
-  const std::shared_ptr<expression_base> & getExpression() const override;
+  const std::unique_ptr<expression_base> & getExpression() const override;
 
-  time_node & setExpression(const std::shared_ptr<expression_base>) override;
+  time_node & setExpression(std::unique_ptr<expression_base>) override;
 
   time_value getSimultaneityMargin() const override;
 
@@ -77,7 +78,7 @@ public:
 
   iterator emplace(const_iterator,
                    time_event::ExecutionCallback,
-                   std::shared_ptr<expression_base> = ExpressionTrue()) override;
+                   std::unique_ptr<expression_base> /*= ExpressionTrue()*/) override;
 
 # pragma mark -
 # pragma mark Implementation specific

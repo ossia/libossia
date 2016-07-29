@@ -18,57 +18,34 @@
 
 #include <memory>
 
-#include <ossia/editor/expression/expression.hpp>
+#include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia_export.h>
 
 namespace ossia
 {
 namespace expressions
 {
-class OSSIA_EXPORT expression_not : public expression_base
+class OSSIA_EXPORT expression_not :
+    public callback_container<expression_result_callback>
 {
-
 public:
+  expression_not(std::unique_ptr<expression_base>);
 
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
-  /*! factory
-   \param std::shared_ptr<Expression>
-   \return std::shared_ptr<#ExpressionNot> */
-  static std::shared_ptr<expression_not> create(std::shared_ptr<expression_base>);
-
-  /*! destructor */
   virtual ~expression_not();
 
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
+  bool evaluate() const;
+  void update() const;
 
-  /*! evaluate the expression atom
-   \return bool result of the evaluation */
-  virtual bool evaluate() const override = 0;
+  expression_base& getExpression() const;
 
-  /*! pull the value of any #Destination operand */
-  virtual void update() const override = 0;
+private:
+  void onFirstCallbackAdded() override;
+  void onRemovingLastCallback() override;
 
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
+  void resultCallback(bool result);
 
-  /*! get the type of the expression
-   \return #Type of the expression */
-  expression_base::Type getType() const override final
-  {return expression_base::Type::NOT;}
-
-  /*! get expression
-   \return const std::shared_ptr<#Expression> expression */
-  virtual const std::shared_ptr<expression_base> & getExpression() const = 0;
-
+  std::unique_ptr<expression_base> mExpression;
+  expression_callback_iterator mResultCallbackIndex;
 };
 }
 }

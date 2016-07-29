@@ -18,8 +18,10 @@
 
 #include <memory>
 
-#include <ossia/editor/expression/expression.hpp>
+#include <ossia/editor/expression/expression_fwd.hpp>
+#include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/address.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -28,49 +30,33 @@ class Destination;
 
 namespace expressions
 {
-class OSSIA_EXPORT expression_pulse : public expression_base
+class OSSIA_EXPORT expression_pulse :
+    public callback_container<expression_result_callback>
 {
-
 public:
+  expression_pulse(const Destination& destination);
 
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
-  /*! factory
-   \param #Destination*
-   \return std::shared_ptr<#ExpressionPulse> */
-  static std::shared_ptr<expression_pulse> create(const Destination&);
-
-  /*! destructor */
   virtual ~expression_pulse();
-
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
 
   /*! evaluate if a destination value change have been observed since expression creation or since the last update
    \return true after the destination being updated */
-  virtual bool evaluate() const override = 0;
+  bool evaluate() const;
 
   /*! reset the evaluation to false until the next destination update */
-  virtual void update() const override = 0;
+  void update() const;
 
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
+  const Destination& getDestination() const;
 
-  /*! get the type of the expression
-   \return #Type of the expression */
-  expression_base::Type getType() const override final
-  {return expression_base::Type::PULSE;}
+private:
+  void onFirstCallbackAdded() override;
+  void onRemovingLastCallback() override;
 
-  /*! get destination
-   \return const #Destination* expression */
-  virtual const Destination& getDestination() const = 0;
+  void destinationCallback(const value& value);
+
+  Destination         mDestination;
+  mutable bool        mResult{};
+
+  net::address::callback_index   mDestinationCallbackIndex;
 
 };
 }

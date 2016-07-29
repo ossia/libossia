@@ -83,14 +83,14 @@ public:
 
   /*! get the expression of the #TimeNode
    \return std::shared_ptr<#Expression> */
-  virtual const std::shared_ptr<expression_base> & getExpression() const = 0;
+  virtual const std::unique_ptr<expression_base> & getExpression() const = 0;
 
   /*! set the expression of the #TimeNode
    \details setting the expression to ExpressionTrue will defer the evaluation on #TimeEvent's expression
    \details setting the expression to ExpressionFalse will mute TimeNode execution
    \param std::shared_ptr<#Expression>
    \return #TimeNode the time node */
-  virtual time_node & setExpression(const std::shared_ptr<expression_base> = ExpressionTrue()) = 0;
+  virtual time_node & setExpression(const std::unique_ptr<expression_base>) = 0;
 
   /*! get the simultaneity margin
    \return #TimeValue the simultaneity margin */
@@ -114,7 +114,7 @@ public:
    \return std::shared_ptr<#TimeEvent> */
   virtual iterator emplace(const_iterator,
                            time_event::ExecutionCallback,
-                           std::shared_ptr<expression_base> = ExpressionTrue()) = 0;
+                           std::unique_ptr<expression_base>/* = ExpressionTrue()*/) = 0;
 
   /*! get the #TimeEvents of the #TimeNode
    \return #Container<#TimeEvent> */

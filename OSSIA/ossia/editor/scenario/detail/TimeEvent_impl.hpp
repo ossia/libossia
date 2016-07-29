@@ -41,7 +41,7 @@ private:
   State                             mState;
   Status                            mStatus;
 
-  std::shared_ptr<expression_base>            mExpression;
+  std::unique_ptr<expression_base>            mExpression;
 
 public:
 
@@ -49,8 +49,8 @@ public:
 # pragma mark Life cycle
 
   JamomaTimeEvent(time_event::ExecutionCallback,
-                  std::shared_ptr<time_node> aTimeNode = nullptr,
-                  std::shared_ptr<expression_base> anExpression = ExpressionTrue());
+                  std::shared_ptr<time_node> aTimeNode/* = nullptr*/,
+                  std::unique_ptr<expression_base> anExpression /*= ExpressionTrue()*/);
 
   ~JamomaTimeEvent();
 
@@ -77,9 +77,9 @@ public:
 
   const State& getState() const override;
 
-  const std::shared_ptr<expression_base> & getExpression() const override;
+  const std::unique_ptr<expression_base> & getExpression() const override;
 
-  time_event & setExpression(std::shared_ptr<expression_base>) override;
+  time_event & setExpression(std::unique_ptr<expression_base>) override;
 
   Status getStatus() const override;
 

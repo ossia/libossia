@@ -1,94 +1,28 @@
-/*!
- * \file Expression.h
- *
- * \defgroup Editor
- *
- * \brief
- *
- * \details
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
+#include <ossia/editor/expression/expression_atom.hpp>
+#include <ossia/editor/expression/expression_bool.hpp>
+#include <ossia/editor/expression/expression_composition.hpp>
+#include <ossia/editor/expression/expression_not.hpp>
+#include <ossia/editor/expression/expression_pulse.hpp>
+#include <ossia/editor/expression/expression_fwd.hpp>
 
-#include <memory>
-#include <functional>
-
-#include <ossia/detail/callback_container.hpp>
-#include <ossia_export.h>
 
 namespace ossia
 {
 namespace expressions
 {
-/*! to get the result back
- \param the returned result */
-using expression_result_callback = std::function<void(bool)>;
+OSSIA_EXPORT bool evaluate(expression_base& e);
+OSSIA_EXPORT void update(expression_base& e);
 
-class OSSIA_EXPORT expression_base : public callback_container<expression_result_callback>
-{
-public:
-  using iterator = typename callback_container<expression_result_callback>::iterator;
+OSSIA_EXPORT bool operator==(const expression_base& lhs, const expression_base& rhs);
+OSSIA_EXPORT bool operator!=(const expression_base& lhs, const expression_base& rhs);
 
-#if 0
-# pragma mark -
-# pragma mark Enumerations
-#endif
+OSSIA_EXPORT expression_callback_iterator addCallback(
+    expression_base&,
+    expression_result_callback);
 
-  /*! type of expression */
-  enum class Type
-  {
-    BOOL,
-    ATOM,
-    COMPOSITION,
-    NOT,
-    PULSE
-  };
-
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
-  /*! destructor */
-  virtual ~expression_base();
-
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
-
-  /*! evaluate the expression
-   \return bool result of the evaluation */
-  virtual bool evaluate() const = 0;
-
-  /*! pull the value of any #Destination operand */
-  virtual void update() const = 0;
-
-#if 0
-# pragma mark -
-# pragma mark Operator
-#endif
-
-  /*! equal operator */
-  virtual bool operator== (const expression_base&) const = 0;
-
-  /*! different operator */
-  virtual bool operator!= (const expression_base&) const = 0;
-
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
-
-  /*! get the type of the expression
-   \return #Type of the expression */
-  virtual expression_base::Type getType() const = 0;
-};
+OSSIA_EXPORT void removeCallback(
+    expression_base&,
+    expression_callback_iterator);
 }
 }
