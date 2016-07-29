@@ -1,6 +1,6 @@
 #pragma once
 #include <boost/container/static_vector.hpp>
-namespace OSSIA
+namespace ossia
 {
-using DestinationIndex = boost::container::static_vector<char, 8>;
+using destination_index = boost::container::static_vector<char, 8>;
 }

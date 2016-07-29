@@ -1,9 +1,9 @@
 #pragma once
 #include <array>
 
-namespace OSSIA
+namespace ossia
 {
-class Value;
+class value;
 template<typename T, int N>
 class Vec
 {
@@ -23,12 +23,12 @@ class Vec
         Vec& operator=(const Vec&) = default;
         Vec& operator=(Vec&&) = default;
 
-        bool operator== (const Value&) const;
-        bool operator!= (const Value&) const;
-        bool operator>  (const Value&) const;
-        bool operator>= (const Value&) const;
-        bool operator<  (const Value&) const;
-        bool operator<= (const Value&) const;
+        bool operator== (const ossia::value&) const;
+        bool operator!= (const ossia::value&) const;
+        bool operator>  (const ossia::value&) const;
+        bool operator>= (const ossia::value&) const;
+        bool operator<  (const ossia::value&) const;
+        bool operator<= (const ossia::value&) const;
 };
 
 using Vec2f = Vec<float, 2>;

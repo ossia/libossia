@@ -1,7 +1,7 @@
 #include <ossia/network/midi/midi.hpp>
 #include <ossia/network/midi/midi_address.hpp>
 
-namespace OSSIA
+namespace ossia
 {
 namespace net
 {
@@ -32,31 +32,31 @@ void MIDIAddress::pullValue()
   mProtocol.pull(*this);
 }
 
-Address& MIDIAddress::pushValue(const Value& val)
+address& MIDIAddress::pushValue(const value& val)
 {
   mValue = val;
   mProtocol.push(*this);
   return *this;
 }
 
-Address& MIDIAddress::pushValue()
+address& MIDIAddress::pushValue()
 {
   mProtocol.push(*this);
   return *this;
 }
 
-const OSSIA::Value& MIDIAddress::getValue() const
+const ossia::value& MIDIAddress::getValue() const
 {
   return mValue;
 }
 
-OSSIA::Value MIDIAddress::cloneValue(DestinationIndex) const
+ossia::value MIDIAddress::cloneValue(destination_index) const
 {
   // TODO use the vec parameter
   return mValue;
 }
 
-Address&MIDIAddress::setValue(const Value& v)
+address&MIDIAddress::setValue(const value& v)
 {
   mValue = v;
   send(mValue);
@@ -68,47 +68,47 @@ Type MIDIAddress::getValueType() const
   return mType;
 }
 
-Address&MIDIAddress::setValueType(Type)
+address&MIDIAddress::setValueType(Type)
 {
   return *this;
 }
 
 AccessMode MIDIAddress::getAccessMode() const
 {
-  return OSSIA::AccessMode::BI;
+  return ossia::AccessMode::BI;
 }
 
-Address&MIDIAddress::setAccessMode(AccessMode)
+address&MIDIAddress::setAccessMode(AccessMode)
 {
   return *this;
 }
 
-const OSSIA::net::Domain&MIDIAddress::getDomain() const
+const ossia::net::Domain&MIDIAddress::getDomain() const
 {
   return mDomain;
 }
 
-Address&MIDIAddress::setDomain(const OSSIA::net::Domain&)
+address&MIDIAddress::setDomain(const ossia::net::Domain&)
 {
   return *this;
 }
 
 BoundingMode MIDIAddress::getBoundingMode() const
 {
-  return OSSIA::BoundingMode::CLIP;
+  return ossia::BoundingMode::CLIP;
 }
 
-Address&MIDIAddress::setBoundingMode(BoundingMode)
+address&MIDIAddress::setBoundingMode(BoundingMode)
 {
   return *this;
 }
 
 RepetitionFilter MIDIAddress::getRepetitionFilter() const
 {
-  return OSSIA::RepetitionFilter::OFF;
+  return ossia::RepetitionFilter::OFF;
 }
 
-Address&MIDIAddress::setRepetitionFilter(RepetitionFilter)
+address&MIDIAddress::setRepetitionFilter(RepetitionFilter)
 {
   return *this;
 }
@@ -123,7 +123,7 @@ void MIDIAddress::onRemovingLastCallback()
   mProtocol.observe(*this, false);
 }
 
-void MIDIAddress::valueCallback(const OSSIA::Value& val)
+void MIDIAddress::valueCallback(const ossia::value& val)
 {
   this->setValue(val);
 }

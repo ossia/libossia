@@ -22,13 +22,13 @@
 
 #include <ossia/editor/scenario/clock.hpp>
 
-using namespace OSSIA;
+using namespace ossia;
 
 using namespace std::chrono;
 
 namespace impl
 {
-class JamomaClock : public virtual Clock
+class JamomaClock : public virtual clock
 {
 
 protected:
@@ -37,17 +37,17 @@ protected:
 # pragma mark Implementation specific
 #endif
 
-  TimeValue         mDuration{};        /// the time (in ms) the clock will run at normal speed factor
-  TimeValue         mGranularity{};     /// the minimum time between each tick (in ms)
-  TimeValue         mOffset{};          /// the date (in ms) the clock will run from
+  time_value         mDuration{};        /// the time (in ms) the clock will run at normal speed factor
+  time_value         mGranularity{};     /// the minimum time between each tick (in ms)
+  time_value         mOffset{};          /// the date (in ms) the clock will run from
   double            mSpeed{};           /// the speed factor of the clock
 
-  Clock::DriveMode  mDriveMode{};       /// in EXTERNAL drive mode the tick() method is called from outside
+  clock::DriveMode  mDriveMode{};       /// in EXTERNAL drive mode the tick() method is called from outside
 
   bool              mRunning{};         /// is the clock running right now ?
   bool              mPaused{};          /// is the clock paused right now ?
-  TimeValue         mPosition{};        /// the progression of the clock between the beginning and the end [0. :: 1.]
-  TimeValue         mDate{};            /// how many time the clock is running (without no speed factor consideration)
+  time_value         mPosition{};        /// the progression of the clock between the beginning and the end [0. :: 1.]
+  time_value         mDate{};            /// how many time the clock is running (without no speed factor consideration)
 
   std::thread       mThread;            /// a thread to launch the clock execution
 
@@ -64,12 +64,12 @@ public:
 # pragma mark Life cycle
 #endif
 
-  JamomaClock(Clock::ExecutionCallback,
-              TimeValue = Infinite,
-              TimeValue = 1.,
-              TimeValue = 0.,
+  JamomaClock(clock::ExecutionCallback,
+              time_value = Infinite,
+              time_value = 1.,
+              time_value = 0.,
               float = 1.,
-              Clock::DriveMode = Clock::DriveMode::INTERNAL);
+              clock::DriveMode = clock::DriveMode::INTERNAL);
 
   ~JamomaClock();
 #if 0
@@ -88,37 +88,37 @@ public:
   void resume() override;
 
   bool tick() final override;
-  bool tick(TimeValue usec) final override;
+  bool tick(time_value usec) final override;
 #if 0
 # pragma mark -
 # pragma mark Accessors
 #endif
 
-  const TimeValue & getDuration() const override;
+  const time_value & getDuration() const override;
 
-  Clock & setDuration(TimeValue) override;
+  clock & setDuration(time_value) override;
 
-  const TimeValue & getOffset() const final override;
+  const time_value & getOffset() const final override;
 
-  Clock & setOffset(TimeValue) override;
+  clock & setOffset(time_value) override;
 
-  const TimeValue & getGranularity() const final override;
+  const time_value & getGranularity() const final override;
 
-  Clock & setGranularity(TimeValue) final override;
+  clock & setGranularity(time_value) final override;
 
   float getSpeed() const final override;
 
-  Clock & setSpeed(float) final override;
+  clock & setSpeed(float) final override;
 
-  Clock::DriveMode getDriveMode() const final override;
+  clock::DriveMode getDriveMode() const final override;
 
-  Clock & setDriveMode(Clock::DriveMode) final override;
+  clock & setDriveMode(clock::DriveMode) final override;
 
   bool getRunning() const final override;
 
-  const TimeValue & getPosition() const final override;
+  const time_value & getPosition() const final override;
 
-  const TimeValue & getDate() const final override;
+  const time_value & getDate() const final override;
 
   void setExecutionStatusCallback(ExecutionStatusCallback e) final override
   { mStatusCallback = e; }
@@ -140,10 +140,10 @@ public:
   void do_stop();
 
   /*! to allow TimeConstraint to override setDuration accessor */
-  void do_setDuration(TimeValue);
+  void do_setDuration(time_value);
 
   /*! to allow TimeConstraint to override setOffset accessor */
-  void do_setOffset(TimeValue);
+  void do_setOffset(time_value);
 
 private:
 

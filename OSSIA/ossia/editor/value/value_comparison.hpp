@@ -4,10 +4,10 @@
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/base/node.hpp>
 
-namespace OSSIA
+namespace ossia
 {
 
-namespace Comparisons
+namespace comparisons
 {
 struct Impulse_T
 {
@@ -28,7 +28,7 @@ struct Impulse_T
 struct NumericValue
 {
   template<typename T, typename Fun>
-  static bool apply(const T& lhs, const OSSIA::Value& val, Fun fun)
+  static bool apply(const T& lhs, const ossia::value& val, Fun fun)
   {
     struct visitor {
       const T& lhs;
@@ -66,7 +66,7 @@ struct NumericValue
 struct StringValue
 {
   template<typename Fun>
-  static bool apply(const String& lhs, const OSSIA::Value& val, Fun fun)
+  static bool apply(const String& lhs, const ossia::value& val, Fun fun)
   {
     struct visitor {
       const String& lhs;
@@ -106,7 +106,7 @@ template<typename Fun>
 struct TupleVisitor
 {
   const Tuple& lhs;
-  const OSSIA::Value& rhs;
+  const ossia::value& rhs;
   Fun fun;
 public:
   bool operator()(Impulse) const { return fun(lhs.value, Impulse_T{}); }
@@ -138,13 +138,13 @@ public:
   }
 
 };
-template<typename Fun> auto make_tuple_visitor(const Tuple& lhs, const OSSIA::Value& val, Fun f)
+template<typename Fun> auto make_tuple_visitor(const Tuple& lhs, const ossia::value& val, Fun f)
 { return TupleVisitor<Fun>{lhs, val, f}; }
 
 struct TupleValue
 {
   template<typename Fun>
-  static bool apply(const Tuple& lhs, const OSSIA::Value& val, Fun fun)
+  static bool apply(const Tuple& lhs, const ossia::value& val, Fun fun)
   {
     auto vis = make_tuple_visitor(lhs, val, fun);
 
@@ -159,7 +159,7 @@ template<typename Fun>
 struct DestinationVisitor
 {
   const Destination& lhs;
-  const OSSIA::Value& rhs;
+  const ossia::value& rhs;
   Fun fun;
 public:
   bool operator()(Impulse) const { return fun(lhs.value, Impulse_T{}); }
@@ -196,13 +196,13 @@ public:
 
 };
 
-template<typename Fun> auto make_destination_visitor(const Destination& lhs, const OSSIA::Value& val, Fun f)
+template<typename Fun> auto make_destination_visitor(const Destination& lhs, const ossia::value& val, Fun f)
 { return DestinationVisitor<Fun>{lhs, val, f}; }
 
 struct DestinationValue
 {
   template<typename Fun>
-  static bool apply(const Destination& lhs, const OSSIA::Value& val, Fun fun)
+  static bool apply(const Destination& lhs, const ossia::value& val, Fun fun)
   {
     return val.valid()
         ? eggs::variants::apply(make_destination_visitor(lhs, val, fun), val.v)
@@ -234,7 +234,7 @@ auto make_vec_visitor(const Vec_T& lhs, Fun f)
 struct VecValue
 {
   template<typename Vec_T, typename Fun>
-  static bool apply(const Vec_T& lhs, const OSSIA::Value& val, Fun fun)
+  static bool apply(const Vec_T& lhs, const ossia::value& val, Fun fun)
   {
     if(val.valid())
     {
@@ -246,24 +246,24 @@ struct VecValue
 }
 
 template<typename T, int N>
-bool Vec<T, N>::operator== (const Value& v) const
-{ return Comparisons::VecValue::apply(*this, v, std::equal_to<>{}); }
+bool Vec<T, N>::operator== (const ossia::value& v) const
+{ return comparisons::VecValue::apply(*this, v, std::equal_to<>{}); }
 template<typename T, int N>
-bool Vec<T, N>::operator!= (const Value& v) const
-{ return Comparisons::VecValue::apply(*this, v, std::not_equal_to<>{}); }
+bool Vec<T, N>::operator!= (const ossia::value& v) const
+{ return comparisons::VecValue::apply(*this, v, std::not_equal_to<>{}); }
 
 template<typename T, int N>
-bool Vec<T, N>::operator> (const Value& v) const
-{ return Comparisons::VecValue::apply(*this, v, std::greater<>{}); }
+bool Vec<T, N>::operator> (const ossia::value& v) const
+{ return comparisons::VecValue::apply(*this, v, std::greater<>{}); }
 template<typename T, int N>
-bool Vec<T, N>::operator>= (const Value& v) const
-{ return Comparisons::VecValue::apply(*this, v, std::greater_equal<>{}); }
+bool Vec<T, N>::operator>= (const ossia::value& v) const
+{ return comparisons::VecValue::apply(*this, v, std::greater_equal<>{}); }
 
 template<typename T, int N>
-bool Vec<T, N>::operator< (const Value& v) const
-{ return Comparisons::VecValue::apply(*this, v, std::less<>{});}
+bool Vec<T, N>::operator< (const ossia::value& v) const
+{ return comparisons::VecValue::apply(*this, v, std::less<>{});}
 template<typename T, int N>
-bool Vec<T, N>::operator<= (const Value& v) const
-{ return Comparisons::VecValue::apply(*this, v, std::less_equal<>{}); }
+bool Vec<T, N>::operator<= (const ossia::value& v) const
+{ return comparisons::VecValue::apply(*this, v, std::less_equal<>{}); }
 
 }

@@ -1,7 +1,7 @@
 #include <ossia/editor/state/message.hpp>
 #include <ossia/network/base/address.hpp>
 
-namespace OSSIA
+namespace ossia
 {
   void Message::launch() const
   {

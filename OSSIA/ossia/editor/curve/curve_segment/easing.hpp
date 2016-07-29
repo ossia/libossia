@@ -17,7 +17,7 @@
   Jesse Crossen (http://stackoverflow.com/questions/5161465/how-to-create-custom-easing-function-with-core-animation)
 */
 
-namespace OSSIA
+namespace ossia
 {
 namespace easing {
 
@@ -277,7 +277,7 @@ struct perlinInOut {
 
 
 template <typename Y, typename Easing>
-struct CurveSegmentEase
+struct curve_segment_ease
 {
   Y operator()(double ratio, Y start, Y end) const
   {

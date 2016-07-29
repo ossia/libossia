@@ -26,40 +26,40 @@
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
 
 class State;
-class TimeEvent;
-class TimeProcess;
-class TimeValue;
+class time_event;
+class time_process;
+class time_value;
 
-class OSSIA_EXPORT TimeConstraint : virtual Clock
+class OSSIA_EXPORT time_constraint : virtual clock
 {
 
 public:
-  using Clock::getSpeed;
-  using Clock::setSpeed;
-  using Clock::getDriveMode;
-  using Clock::setDriveMode;
-  using Clock::getGranularity;
-  using Clock::setGranularity;
-  using Clock::getDate;
-  using Clock::getOffset;
-  using Clock::getRunning;
-  using Clock::getPosition;
-  using Clock::tick;
-  using Clock::pause;
-  using Clock::paused;
-  using Clock::resume;
-  using Clock::setExecutionStatusCallback;
-  using Clock::getExecutionStatusCallback;
+  using clock::getSpeed;
+  using clock::setSpeed;
+  using clock::getDriveMode;
+  using clock::setDriveMode;
+  using clock::getGranularity;
+  using clock::setGranularity;
+  using clock::getDate;
+  using clock::getOffset;
+  using clock::getRunning;
+  using clock::getPosition;
+  using clock::tick;
+  using clock::pause;
+  using clock::paused;
+  using clock::resume;
+  using clock::setExecutionStatusCallback;
+  using clock::getExecutionStatusCallback;
 
   /*! to get the constraint execution back
    \param const #TimeValue process clock position
    \param const #TimeValue process clock date
    \param std::shared_ptr<#State> */
-  using ExecutionCallback = std::function<void(TimeValue, TimeValue, const State&)>;
+  using ExecutionCallback = std::function<void(time_value, time_value, const State&)>;
 
 #if 0
 # pragma mark -
@@ -75,15 +75,15 @@ public:
    \param const #TimeValue& minimal duration of the #TimeConstraint
    \param const #TimeValue& maximal duration of the #TimeConstraint
    \return std::shared_ptr<#TimeConstraint> */
-  static std::shared_ptr<TimeConstraint> create(TimeConstraint::ExecutionCallback,
-                                                std::shared_ptr<TimeEvent>,
-                                                std::shared_ptr<TimeEvent>,
-                                                TimeValue = Infinite,
-                                                TimeValue = 0.,
-                                                TimeValue = Infinite);
+  static std::shared_ptr<time_constraint> create(time_constraint::ExecutionCallback,
+                                                std::shared_ptr<time_event>,
+                                                std::shared_ptr<time_event>,
+                                                time_value = Infinite,
+                                                time_value = 0.,
+                                                time_value = Infinite);
 
   /*! desctructor */
-  virtual ~TimeConstraint();
+  virtual ~time_constraint();
 
 #if 0
 # pragma mark -
@@ -101,7 +101,7 @@ public:
    \details don't call offset when the #TimeConstraint is running
    \param const #TimeValue offset date
    \return std::shared_ptr<#State> */
-  virtual State offset(TimeValue) = 0;
+  virtual State offset(time_value) = 0;
 
   /*! get a #State from the constraint depending on its #Clock date
    \details the returned #State is made of as many as sub States for each TimeProcess the #TimeConstraint manages
@@ -120,38 +120,38 @@ public:
 
   /*! get the #TimeConstraint nominal duration
    \return const #TimeValue& nominal duration */
-  virtual const TimeValue & getDurationNominal() const = 0;
+  virtual const time_value & getDurationNominal() const = 0;
 
   /*! set the #TimeConstraint duration
    \param const #TimeValue& duration
    \return #TimeConstraint the constraint */
-  virtual TimeConstraint & setDurationNominal(TimeValue) = 0;
+  virtual time_constraint & setDurationNominal(time_value) = 0;
 
   /*! get the #TimeConstraint minimal duration
    \return const #TimeValue& minimal duration */
-  virtual const TimeValue & getDurationMin() const = 0;
+  virtual const time_value & getDurationMin() const = 0;
 
   /*! set the #TimeConstraint minimal duration
    \param const #TimeValue& minimal duration
    \return #TimeConstraint the constraint */
-  virtual TimeConstraint & setDurationMin(TimeValue) = 0;
+  virtual time_constraint & setDurationMin(time_value) = 0;
 
   /*! get the #TimeConstraint maximal duration
    \return const #TimeValue& maximal duration */
-  virtual const TimeValue & getDurationMax() const = 0;
+  virtual const time_value & getDurationMax() const = 0;
 
   /*! set the #TimeConstraint maximal duration
    \param const #TimeValue& maximal duration
    \return #TimeConstraint the constraint */
-  virtual TimeConstraint & setDurationMax(TimeValue) = 0;
+  virtual time_constraint & setDurationMax(time_value) = 0;
 
   /*! get the event from where the #TimeConstraint starts
    \return std::shared_ptr<#TimeEvent> start event */
-  virtual const std::shared_ptr<TimeEvent> & getStartEvent() const = 0;
+  virtual const std::shared_ptr<time_event> & getStartEvent() const = 0;
 
   /*! get the event from where the #TimeConstraint starts
    \return std::shared_ptr<#TimeEvent> start event */
-  virtual const std::shared_ptr<TimeEvent> & getEndEvent() const = 0;
+  virtual const std::shared_ptr<time_event> & getEndEvent() const = 0;
 
 #if 0
 # pragma mark -
@@ -161,25 +161,25 @@ public:
   /*! add a #TimeProcess
    \details it also stores the #TimeProcess's start and end #States into the #TimeConstraint's start and end #TimeEvents
    \param std::shared_ptr<#TimeProcess> to insert */
-  virtual void addTimeProcess(std::shared_ptr<TimeProcess>) = 0;
+  virtual void addTimeProcess(std::shared_ptr<time_process>) = 0;
 
   /*! remove a #TimeProcess
    \details it also removes the #TimeProcess's start and end #States from the #TimeConstraint's start and end #TimeEvents
    \param std::shared_ptr<#TimeProcess> to insert */
-  virtual void removeTimeProcess(std::shared_ptr<TimeProcess>) = 0;
+  virtual void removeTimeProcess(std::shared_ptr<time_process>) = 0;
 
   /*! get time processes attached to the #TimeConstraint
    \return #Container<#TimeProcess> */
-  Container<TimeProcess>& timeProcesses()
+  ptr_container<time_process>& timeProcesses()
   { return m_timeProcesses; }
 
   /*! get time processes attached to the #TimeConstraint
    \return #Container<#TimeProcess> */
-  const Container<TimeProcess>& timeProcesses() const
+  const ptr_container<time_process>& timeProcesses() const
   { return m_timeProcesses; }
 
 private:
-  Container<TimeProcess> m_timeProcesses;
+  ptr_container<time_process> m_timeProcesses;
 };
 
 }

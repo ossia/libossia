@@ -7,12 +7,12 @@ namespace impl
 # pragma mark -
 # pragma mark Life cycle
 
-JamomaTimeEvent::JamomaTimeEvent(TimeEvent::ExecutionCallback callback,
-                                 std::shared_ptr<TimeNode> aTimeNode,
-                                 std::shared_ptr<Expression> anExpression) :
+JamomaTimeEvent::JamomaTimeEvent(time_event::ExecutionCallback callback,
+                                 std::shared_ptr<time_node> aTimeNode,
+                                 std::shared_ptr<expression_base> anExpression) :
 mCallback(callback),
 mTimeNode(aTimeNode),
-mStatus(TimeEvent::Status::NONE),
+mStatus(time_event::Status::NONE),
 mExpression(anExpression)
 {
 }
@@ -23,17 +23,17 @@ JamomaTimeEvent::~JamomaTimeEvent()
 # pragma mark -
 # pragma mark Execution
 
-void JamomaTimeEvent::setCallback(TimeEvent::ExecutionCallback callback)
+void JamomaTimeEvent::setCallback(time_event::ExecutionCallback callback)
 {
   mCallback = callback;
 }
 
 void JamomaTimeEvent::happen()
 {
-  if (mStatus != TimeEvent::Status::PENDING)
+  if (mStatus != time_event::Status::PENDING)
     throw std::runtime_error("only PENDING event can happens");
 
-  mStatus = TimeEvent::Status::HAPPENED;
+  mStatus = time_event::Status::HAPPENED;
 
   // stop previous TimeConstraints
   for (auto& timeConstraint : previousTimeConstraints())
@@ -53,10 +53,10 @@ void JamomaTimeEvent::happen()
 
 void JamomaTimeEvent::dispose()
 {
-  if (mStatus == TimeEvent::Status::HAPPENED)
+  if (mStatus == time_event::Status::HAPPENED)
     throw std::runtime_error("HAPPENED event cannot be disposed");
 
-  mStatus = TimeEvent::Status::DISPOSED;
+  mStatus = time_event::Status::DISPOSED;
 
   // dispose next TimeConstraints end event if everything is disposed before
   for (auto& nextTimeConstraint : nextTimeConstraints())
@@ -65,7 +65,7 @@ void JamomaTimeEvent::dispose()
 
     for (auto& previousTimeConstraint : nextTimeConstraint->getEndEvent()->previousTimeConstraints())
     {
-      if (previousTimeConstraint->getStartEvent()->getStatus() != TimeEvent::Status::DISPOSED)
+      if (previousTimeConstraint->getStartEvent()->getStatus() != time_event::Status::DISPOSED)
       {
         dispose = false;
         break;
@@ -96,7 +96,7 @@ void JamomaTimeEvent::removeState(const State& state)
 # pragma mark -
 # pragma mark Accessors
 
-const std::shared_ptr<TimeNode> & JamomaTimeEvent::getTimeNode() const
+const std::shared_ptr<time_node> & JamomaTimeEvent::getTimeNode() const
 {
   return mTimeNode;
 }
@@ -106,21 +106,21 @@ const State& JamomaTimeEvent::getState() const
   return mState;
 }
 
-const std::shared_ptr<Expression> & JamomaTimeEvent::getExpression() const
+const std::shared_ptr<expression_base> & JamomaTimeEvent::getExpression() const
 {
   return mExpression;
 }
 
-TimeEvent & JamomaTimeEvent::setExpression(std::shared_ptr<Expression> expression)
+time_event & JamomaTimeEvent::setExpression(std::shared_ptr<expression_base> exp)
 {
-  assert(expression != nullptr);
+  assert(exp != nullptr);
 
-  mExpression = std::move(expression);
+  mExpression = std::move(exp);
 
   return *this;
 }
 
-TimeEvent::Status JamomaTimeEvent::getStatus() const
+time_event::Status JamomaTimeEvent::getStatus() const
 {
   return mStatus;
 }

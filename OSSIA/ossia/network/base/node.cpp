@@ -2,7 +2,7 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/detail/algorithms.hpp>
 
-namespace OSSIA
+namespace ossia
 {
 namespace net
 {

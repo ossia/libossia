@@ -23,15 +23,15 @@
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
 
-class Expression;
+class expression_base;
 class State;
-class TimeConstraint;
-class TimeNode;
+class time_constraint;
+class time_node;
 
-class OSSIA_EXPORT TimeEvent
+class OSSIA_EXPORT time_event
 {
 
 public:
@@ -56,7 +56,7 @@ public:
 #endif
 
   /*! destructor */
-  virtual ~TimeEvent();
+  virtual ~time_event();
 
 #if 0
 # pragma mark -
@@ -70,7 +70,7 @@ public:
   /*! changes the callback in the event
    \param #TimeEvent::ExecutionCallback to get #TimeEvent's status back
    \details this may be unsafe to do during execution */
-  virtual void setCallback(TimeEvent::ExecutionCallback) = 0;
+  virtual void setCallback(time_event::ExecutionCallback) = 0;
 
   /*! make the event happen to propagate the execution to next TimeConstraints
    \details the event have to be in PENDING status to call this method otherwise it will raise a runtime_error
@@ -102,7 +102,7 @@ public:
 
   /*! get the #TimeNode where the event is
    \return std::shared_ptr<#TimeNode> */
-  virtual const std::shared_ptr<TimeNode> & getTimeNode() const = 0;
+  virtual const std::shared_ptr<time_node> & getTimeNode() const = 0;
 
   /*! get the state of the event
   \return std::shared_ptr<#State> */
@@ -110,12 +110,12 @@ public:
 
   /*! get the expression of the event
   \return std::shared_ptr<#Expression> */
-  virtual const std::shared_ptr<Expression> & getExpression() const = 0;
+  virtual const std::shared_ptr<expression_base> & getExpression() const = 0;
 
   /*! set the expression of the event
    \param std::shared_ptr<#Expression>
    \return #TimeEvent the event */
-  virtual TimeEvent & setExpression(const std::shared_ptr<Expression>) = 0;
+  virtual time_event & setExpression(const std::shared_ptr<expression_base>) = 0;
 
   /*! get the status of the event
    \return #Status */
@@ -128,27 +128,27 @@ public:
 
   /*! get previous time contraints attached to the event
    \return #Container<#TimeConstraint> */
-  Container<TimeConstraint>& previousTimeConstraints()
+  ptr_container<time_constraint>& previousTimeConstraints()
   { return m_previousTimeConstraints; }
 
   /*! get previous time contraints attached to the event
    \return #Container<#TimeProcess> */
-  const Container<TimeConstraint>& previousTimeConstraints() const
+  const ptr_container<time_constraint>& previousTimeConstraints() const
   { return m_previousTimeConstraints; }
 
   /*! get next time contraints attached to the event
    \return #Container<#TimeConstraint> */
-  Container<TimeConstraint>& nextTimeConstraints()
+  ptr_container<time_constraint>& nextTimeConstraints()
   { return m_nextTimeConstraints; }
 
   /*! get next time contraints attached to the event
    \return #Container<#TimeProcess> */
-  const Container<TimeConstraint>& nextTimeConstraints() const
+  const ptr_container<time_constraint>& nextTimeConstraints() const
   { return m_nextTimeConstraints; }
 
 private:
-  Container<TimeConstraint> m_previousTimeConstraints;
-  Container<TimeConstraint> m_nextTimeConstraints;
+  ptr_container<time_constraint> m_previousTimeConstraints;
+  ptr_container<time_constraint> m_nextTimeConstraints;
 };
 }
 

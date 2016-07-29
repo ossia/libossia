@@ -3,12 +3,12 @@
 
 namespace impl
 {
-JamomaClock::JamomaClock(Clock::ExecutionCallback callback,
-                         TimeValue duration,
-                         TimeValue granularity,
-                         TimeValue offset,
+JamomaClock::JamomaClock(clock::ExecutionCallback callback,
+                         time_value duration,
+                         time_value granularity,
+                         time_value offset,
                          float speed,
-                         Clock::DriveMode driveMode) :
+                         clock::DriveMode driveMode) :
 mDuration(duration),
 mGranularity(granularity),
 mOffset(offset),
@@ -67,7 +67,7 @@ bool JamomaClock::tick()
   // how many time since the last tick ?
   long long deltaInUs = duration_cast<microseconds>(steady_clock::now() - mLastTime).count();
 
-  if (mDriveMode == Clock::DriveMode::EXTERNAL)
+  if (mDriveMode == clock::DriveMode::EXTERNAL)
   {
     // if too early: avoid this tick
     if (mElapsedTime / granularityInUs == (mElapsedTime + deltaInUs) / granularityInUs)
@@ -142,7 +142,7 @@ bool JamomaClock::tick()
 }
 
 
-bool JamomaClock::tick(TimeValue usec)
+bool JamomaClock::tick(time_value usec)
 {
   if (mPaused || !mRunning)
     return false;
@@ -153,7 +153,7 @@ bool JamomaClock::tick(TimeValue usec)
   // how many time since the last tick ?
   long long deltaInUs = usec;
 
-  assert(mDriveMode == Clock::DriveMode::EXTERNAL);
+  assert(mDriveMode == clock::DriveMode::EXTERNAL);
   // if too early: avoid this tick
   if (mElapsedTime / granularityInUs == (mElapsedTime + deltaInUs) / granularityInUs)
       return false;
@@ -188,34 +188,34 @@ bool JamomaClock::tick(TimeValue usec)
 # pragma mark -
 # pragma mark Accessors
 
-const TimeValue & JamomaClock::getDuration() const
+const time_value & JamomaClock::getDuration() const
 {
   return mDuration;
 }
 
-Clock & JamomaClock::setDuration(TimeValue duration)
+ossia::clock & JamomaClock::setDuration(time_value duration)
 {
   do_setDuration(duration);
   return *this;
 }
 
-const TimeValue & JamomaClock::getOffset() const
+const time_value & JamomaClock::getOffset() const
 {
   return mOffset;
 }
 
-Clock & JamomaClock::setOffset(TimeValue offset)
+ossia::clock & JamomaClock::setOffset(time_value offset)
 {
   do_setOffset(offset);
   return *this;
 }
 
-const TimeValue & JamomaClock::getGranularity() const
+const time_value & JamomaClock::getGranularity() const
 {
   return mGranularity;
 }
 
-Clock & JamomaClock::setGranularity(TimeValue granularity)
+ossia::clock & JamomaClock::setGranularity(time_value granularity)
 {
   mGranularity = granularity;
   return *this;
@@ -226,18 +226,18 @@ float JamomaClock::getSpeed() const
   return mSpeed;
 }
 
-Clock & JamomaClock::setSpeed(float speed)
+ossia::clock & JamomaClock::setSpeed(float speed)
 {
   mSpeed = speed;
   return *this;
 }
 
-Clock::DriveMode JamomaClock::getDriveMode() const
+clock::DriveMode JamomaClock::getDriveMode() const
 {
   return mDriveMode;
 }
 
-Clock & JamomaClock::setDriveMode(Clock::DriveMode driveMode)
+ossia::clock & JamomaClock::setDriveMode(clock::DriveMode driveMode)
 {
   mDriveMode = driveMode;
   return *this;
@@ -248,12 +248,12 @@ bool JamomaClock::getRunning() const
   return mRunning;
 }
 
-const TimeValue & JamomaClock::getPosition() const
+const time_value & JamomaClock::getPosition() const
 {
   return mPosition;
 }
 
-const TimeValue & JamomaClock::getDate() const
+const time_value & JamomaClock::getDate() const
 {
   return mDate;
 }
@@ -293,7 +293,7 @@ void JamomaClock::do_start()
   // notify the owner
   (mCallback)(mPosition, mDate, 0);
 
-  if (mDriveMode == Clock::DriveMode::INTERNAL)
+  if (mDriveMode == clock::DriveMode::INTERNAL)
   {
     if (mThread.joinable())
       mThread.join();
@@ -307,14 +307,14 @@ void JamomaClock::do_stop()
 {
   request_stop();
 
-  if (mDriveMode == Clock::DriveMode::INTERNAL)
+  if (mDriveMode == clock::DriveMode::INTERNAL)
   {
     if (mThread.joinable())
       mThread.join();
   }
 }
 
-void JamomaClock::do_setDuration(TimeValue duration)
+void JamomaClock::do_setDuration(time_value duration)
 {
   mDuration = duration;
   mDate = mOffset;
@@ -325,7 +325,7 @@ void JamomaClock::do_setDuration(TimeValue duration)
     mPosition = Zero;
 }
 
-void JamomaClock::do_setOffset(TimeValue offset)
+void JamomaClock::do_setOffset(time_value offset)
 {
   mOffset = offset;
   mDate = mOffset;

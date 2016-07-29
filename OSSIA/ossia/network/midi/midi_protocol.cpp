@@ -3,7 +3,7 @@
 
 # pragma mark -
 # pragma mark Life Cycle
-namespace OSSIA
+namespace ossia
 {
 namespace net
 {
@@ -51,12 +51,12 @@ bool MIDI::setInfo(MidiInfo m)
             c.mNoteOn_N[c.mNoteOn.first] = c.mNoteOn.second;
             if(auto ptr = c.mCallbackNoteOn)
             {
-              OSSIA::Tuple t{OSSIA::Int{c.mNoteOn.first}, OSSIA::Int{c.mNoteOn.second}};
+              ossia::Tuple t{ossia::Int{c.mNoteOn.first}, ossia::Int{c.mNoteOn.second}};
               ptr->valueCallback(t);
             }
             if(auto ptr = c.mCallbackNoteOn_N[c.mNoteOn.first])
             {
-              OSSIA::Int val{c.mNoteOn_N[c.mNoteOn.first]};
+              ossia::Int val{c.mNoteOn_N[c.mNoteOn.first]};
               ptr->valueCallback(val);
             }
             break;
@@ -66,12 +66,12 @@ bool MIDI::setInfo(MidiInfo m)
             c.mNoteOff_N[c.mNoteOff.first] = c.mNoteOff.second;
             if(auto ptr = c.mCallbackNoteOff)
             {
-              OSSIA::Tuple t{OSSIA::Int{c.mNoteOff.first}, OSSIA::Int{c.mNoteOff.second}};
+              ossia::Tuple t{ossia::Int{c.mNoteOff.first}, ossia::Int{c.mNoteOff.second}};
               ptr->valueCallback(t);
             }
             if(auto ptr = c.mCallbackNoteOff_N[c.mNoteOff.first])
             {
-              OSSIA::Int val{c.mNoteOff_N[c.mNoteOff.first]};
+              ossia::Int val{c.mNoteOff_N[c.mNoteOff.first]};
               ptr->valueCallback(val);
             }
             break;
@@ -81,12 +81,12 @@ bool MIDI::setInfo(MidiInfo m)
             c.mCC_N[c.mCC.first] = c.mCC.second;
             if(auto ptr = c.mCallbackCC)
             {
-              OSSIA::Tuple t{OSSIA::Int{c.mCC.first}, OSSIA::Int{c.mCC.second}};
+              ossia::Tuple t{ossia::Int{c.mCC.first}, ossia::Int{c.mCC.second}};
               ptr->valueCallback(t);
             }
             if(auto ptr = c.mCallbackCC_N[c.mCC.first])
             {
-              OSSIA::Int val{c.mCC_N[c.mCC.first]};
+              ossia::Int val{c.mCC_N[c.mCC.first]};
               ptr->valueCallback(val);
             }
             break;
@@ -94,11 +94,11 @@ bool MIDI::setInfo(MidiInfo m)
             c.mPC = mess.data[1];
             if(auto ptr = c.mCallbackPC)
             {
-              ptr->valueCallback(OSSIA::Int{c.mPC});
+              ptr->valueCallback(ossia::Int{c.mPC});
             }
             if(auto ptr = c.mCallbackPC_N[c.mPC])
             {
-              ptr->valueCallback(OSSIA::Impulse{});
+              ptr->valueCallback(ossia::Impulse{});
             }
             break;
           default:
@@ -127,7 +127,7 @@ MidiInfo MIDI::getInfo() const
 # pragma mark -
 # pragma mark Operation
 
-bool MIDI::pull(Address& address)
+bool MIDI::pull(address& address)
 {
   MIDIAddress& adrs = dynamic_cast<MIDIAddress&>(address);
   if(mInfo.type != MidiInfo::Type::RemoteOutput)
@@ -139,55 +139,55 @@ bool MIDI::pull(Address& address)
   {
     case MIDIAddressInfo::Type::NoteOn_N:
     {
-      OSSIA::Int val{chan.mNoteOn_N[adrinfo.note]};
+      ossia::Int val{chan.mNoteOn_N[adrinfo.note]};
       address.setValue(val);
       return true;
     }
 
     case MIDIAddressInfo::Type::NoteOn:
     {
-      OSSIA::Tuple val{
-        OSSIA::Int{chan.mNoteOn.first},
-        OSSIA::Int{chan.mNoteOn.second}};
+      ossia::Tuple val{
+        ossia::Int{chan.mNoteOn.first},
+        ossia::Int{chan.mNoteOn.second}};
       address.setValue(val);
       return true;
     }
 
     case MIDIAddressInfo::Type::NoteOff_N:
     {
-      OSSIA::Int val{chan.mNoteOff_N[adrinfo.note]};
+      ossia::Int val{chan.mNoteOff_N[adrinfo.note]};
       address.setValue(val);
       return true;
     }
 
     case MIDIAddressInfo::Type::NoteOff:
     {
-      OSSIA::Tuple val{
-        OSSIA::Int{chan.mNoteOff.first},
-        OSSIA::Int{chan.mNoteOff.second}};
+      ossia::Tuple val{
+        ossia::Int{chan.mNoteOff.first},
+        ossia::Int{chan.mNoteOff.second}};
       address.setValue(val);
       return true;
     }
 
     case MIDIAddressInfo::Type::CC_N:
     {
-      OSSIA::Int val{chan.mCC_N[adrinfo.note]};
+      ossia::Int val{chan.mCC_N[adrinfo.note]};
       address.setValue(val);
       return true;
     }
 
     case MIDIAddressInfo::Type::CC:
     {
-      OSSIA::Tuple val{
-        OSSIA::Int{chan.mCC.first},
-        OSSIA::Int{chan.mCC.second}};
+      ossia::Tuple val{
+        ossia::Int{chan.mCC.first},
+        ossia::Int{chan.mCC.second}};
       address.setValue(val);
       return true;
     }
 
     case MIDIAddressInfo::Type::PC:
     {
-      OSSIA::Int val{chan.mPC};
+      ossia::Int val{chan.mPC};
       address.setValue(val);
       return true;
     }
@@ -197,7 +197,7 @@ bool MIDI::pull(Address& address)
 
 }
 
-bool MIDI::push(const Address& address)
+bool MIDI::push(const address& address)
 {
   const MIDIAddress& adrs = dynamic_cast<const MIDIAddress&>(address);
   if(mInfo.type != MidiInfo::Type::RemoteInput)
@@ -285,7 +285,7 @@ bool MIDI::push(const Address& address)
   return true;
 }
 
-bool MIDI::observe(Address& address, bool enable)
+bool MIDI::observe(address& address, bool enable)
 {
   enable = true;
   MIDIAddress& adrs = dynamic_cast<MIDIAddress&>(address);

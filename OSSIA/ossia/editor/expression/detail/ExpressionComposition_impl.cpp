@@ -3,7 +3,7 @@
 namespace impl
 {
 
-JamomaExpressionComposition::JamomaExpressionComposition(std::shared_ptr<Expression> expr1, Operator op, std::shared_ptr<Expression> expr2) :
+JamomaExpressionComposition::JamomaExpressionComposition(std::shared_ptr<expression_base> expr1, Operator op, std::shared_ptr<expression_base> expr2) :
 mFirstExpression(expr1),
 mOperator(op),
 mSecondExpression(expr2)
@@ -28,9 +28,9 @@ void JamomaExpressionComposition::update() const
 # pragma mark -
 # pragma mark Operator
 
-bool JamomaExpressionComposition::operator== (const Expression& expression) const
+bool JamomaExpressionComposition::operator== (const expression_base& expression) const
 {
-  if (expression.getType() == Expression::Type::COMPOSITION)
+  if (expression.getType() == expression_base::Type::COMPOSITION)
   {
     const JamomaExpressionComposition e = dynamic_cast<const JamomaExpressionComposition&>(expression);
     return *mFirstExpression == *e.mFirstExpression && mOperator == e.mOperator && *mSecondExpression == *e.mSecondExpression;
@@ -39,9 +39,9 @@ bool JamomaExpressionComposition::operator== (const Expression& expression) cons
     return false;
 }
 
-bool JamomaExpressionComposition::operator!= (const Expression& expression) const
+bool JamomaExpressionComposition::operator!= (const expression_base& expression) const
 {
-  if (expression.getType() == Expression::Type::COMPOSITION)
+  if (expression.getType() == expression_base::Type::COMPOSITION)
   {
     const JamomaExpressionComposition e = dynamic_cast<const JamomaExpressionComposition&>(expression);
     return *mFirstExpression != *e.mFirstExpression || mOperator != e.mOperator || *mSecondExpression != *e.mSecondExpression;
@@ -74,17 +74,17 @@ void JamomaExpressionComposition::onRemovingLastCallback()
 # pragma mark -
 # pragma mark Accessors
 
-const std::shared_ptr<Expression> & JamomaExpressionComposition::getFirstOperand() const
+const std::shared_ptr<expression_base> & JamomaExpressionComposition::getFirstOperand() const
 {
   return mFirstExpression;
 }
 
-ExpressionComposition::Operator JamomaExpressionComposition::getOperator() const
+expression_composition::Operator JamomaExpressionComposition::getOperator() const
 {
   return mOperator;
 }
 
-const std::shared_ptr<Expression> & JamomaExpressionComposition::getSecondOperand() const
+const std::shared_ptr<expression_base> & JamomaExpressionComposition::getSecondOperand() const
 {
   return mSecondExpression;
 }

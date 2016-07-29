@@ -3,16 +3,16 @@
 #include <ossia_export.h>
 #include <memory>
 
-namespace OSSIA
+namespace ossia
 {
-class Value;
+class value;
 /*! \details Behavior value */
 struct OSSIA_EXPORT Behavior
 {
-  std::shared_ptr<CurveAbstract> value;
+  std::shared_ptr<curve_abstract> value;
 
   /*! constructor */
-  Behavior(std::shared_ptr<CurveAbstract> v) :
+  Behavior(std::shared_ptr<curve_abstract> v) :
       value(std::move(v))
   {
   }
@@ -22,12 +22,12 @@ struct OSSIA_EXPORT Behavior
   Behavior& operator=(const Behavior&) = default;
   Behavior& operator=(Behavior&&) = default;
 
-  bool operator== (const Value&) const { return false; }
-  bool operator!= (const Value&) const { return false; }
-  bool operator>  (const Value&) const { return false; }
-  bool operator>= (const Value&) const { return false; }
-  bool operator<  (const Value&) const { return false; }
-  bool operator<= (const Value&) const { return false; }
+  bool operator== (const ossia::value&) const { return false; }
+  bool operator!= (const ossia::value&) const { return false; }
+  bool operator>  (const ossia::value&) const { return false; }
+  bool operator>= (const ossia::value&) const { return false; }
+  bool operator<  (const ossia::value&) const { return false; }
+  bool operator<= (const ossia::value&) const { return false; }
 };
 
 }

@@ -21,7 +21,7 @@
 #include <ossia/editor/state/state_element_fwd.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia_export.h>
-namespace OSSIA
+namespace ossia
 {
 class OSSIA_EXPORT State
 {

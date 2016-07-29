@@ -23,13 +23,13 @@
 
 #include <cmath>
 
-using namespace OSSIA;
+using namespace ossia;
 
 using namespace std::placeholders;
 
 namespace impl
 {
-class JamomaLoop final : public Loop, public virtual JamomaTimeProcess
+class JamomaLoop final : public loop, public virtual JamomaTimeProcess
 {
 
 private:
@@ -37,14 +37,14 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  std::shared_ptr<TimeNode>              mPatternStartNode;
-  TimeEvent::ExecutionCallback      mPatternStartEventCallback;
+  std::shared_ptr<time_node>              mPatternStartNode;
+  time_event::ExecutionCallback      mPatternStartEventCallback;
 
-  std::shared_ptr<TimeNode>              mPatternEndNode;
-  TimeEvent::ExecutionCallback      mPatternEndEventCallback;
+  std::shared_ptr<time_node>              mPatternEndNode;
+  time_event::ExecutionCallback      mPatternEndEventCallback;
 
-  std::shared_ptr<TimeConstraint>        mPatternConstraint;
-  TimeConstraint::ExecutionCallback mPatternConstraintCallback;
+  std::shared_ptr<time_constraint>        mPatternConstraint;
+  time_constraint::ExecutionCallback mPatternConstraintCallback;
 
   State                             mCurrentState;      // an internal State to return on state call
   State                             mOffsetState;       // an internal State built when offset is called
@@ -54,16 +54,16 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaLoop(TimeValue,
-             TimeConstraint::ExecutionCallback,
-             TimeEvent::ExecutionCallback,
-             TimeEvent::ExecutionCallback);
+  JamomaLoop(time_value,
+             time_constraint::ExecutionCallback,
+             time_event::ExecutionCallback,
+             time_event::ExecutionCallback);
   ~JamomaLoop();
 
 # pragma mark -
 # pragma mark Execution
 
-  StateElement offset(TimeValue) override;
+  StateElement offset(time_value) override;
 
   StateElement state() override;
 
@@ -78,11 +78,11 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  const std::shared_ptr<TimeConstraint> getPatternTimeConstraint() const override;
+  const std::shared_ptr<time_constraint> getPatternTimeConstraint() const override;
 
-  const std::shared_ptr<TimeNode> getPatternStartTimeNode() const override;
+  const std::shared_ptr<time_node> getPatternStartTimeNode() const override;
 
-  const std::shared_ptr<TimeNode> getPatternEndTimeNode() const override;
+  const std::shared_ptr<time_node> getPatternEndTimeNode() const override;
 
 private:
 
@@ -90,12 +90,12 @@ private:
 # pragma mark Implementation specific
 
   void PatternConstraintCallback(
-      TimeValue,
-      TimeValue,
+      time_value,
+      time_value,
       const State&);
 
-  void PatternStartEventCallback(TimeEvent::Status);
+  void PatternStartEventCallback(time_event::Status);
 
-  void PatternEndEventCallback(TimeEvent::Status);
+  void PatternEndEventCallback(time_event::Status);
 };
 }

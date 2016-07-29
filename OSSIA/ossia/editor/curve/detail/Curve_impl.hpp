@@ -28,7 +28,7 @@ template<typename... Args>
 using curve_map = boost::container::flat_map<Args...>;
 
 template <typename X, typename Y>
-class JamomaCurve final : public OSSIA::Curve<X,Y>
+class JamomaCurve final : public ossia::curve<X,Y>
 {
 
 private:
@@ -37,14 +37,14 @@ private:
 # pragma mark Implementation specific
 #endif
   X mInitialPointAbscissa;
-  OSSIA::Destination mInitialPointAbscissaDestination;
+  ossia::Destination mInitialPointAbscissaDestination;
 
   Y mInitialPointOrdinate;
   mutable Y mInitialPointOrdinateCache;
   mutable bool mInitialPointOrdinateCacheUsed = false;
-  OSSIA::Destination mInitialPointOrdinateDestination;
+  ossia::Destination mInitialPointOrdinateDestination;
 
-  using map_type = curve_map<X, std::pair<Y, OSSIA::CurveSegment<Y>>>;
+  using map_type = curve_map<X, std::pair<Y, ossia::curve_segment<Y>>>;
   map_type mPointsMap;
 
 public:
@@ -70,7 +70,7 @@ public:
 # pragma mark Edition
 #endif
 
-  bool addPoint(OSSIA::CurveSegment<Y>, X, Y) override;
+  bool addPoint(ossia::curve_segment<Y>, X, Y) override;
 
   bool removePoint(X) override;
 
@@ -86,7 +86,7 @@ public:
 # pragma mark Accessors
 #endif
 
-  OSSIA::CurveType getType() const override;
+  ossia::curve_type getType() const override;
 
   X getInitialPointAbscissa() const override;
 
@@ -96,32 +96,32 @@ public:
 
   void setInitialPointOrdinate(Y) override;
 
-  const OSSIA::Destination& getInitialPointAbscissaDestination() const override;
+  const ossia::Destination& getInitialPointAbscissaDestination() const override;
 
-  const OSSIA::Destination& getInitialPointOrdinateDestination() const override;
+  const ossia::Destination& getInitialPointOrdinateDestination() const override;
 
-  void setInitialPointAbscissaDestination(const OSSIA::Destination&) override;
+  void setInitialPointAbscissaDestination(const ossia::Destination&) override;
 
-  void setInitialPointOrdinateDestination(const OSSIA::Destination&) override;
+  void setInitialPointOrdinateDestination(const ossia::Destination&) override;
 
-  std::map<X, std::pair<Y, OSSIA::CurveSegment<Y>>> getPointsMap() const override;
+  std::map<X, std::pair<Y, ossia::curve_segment<Y>>> getPointsMap() const override;
 
 #if 0
 # pragma mark -
 # pragma mark Implementation specific
 #endif
-  static Y convertToTemplateTypeValue(const OSSIA::Value&, OSSIA::DestinationIndex::const_iterator);
+  static Y convertToTemplateTypeValue(const ossia::value&, ossia::destination_index::const_iterator);
 };
 
 template<typename T>
 const constexpr std::nullptr_t OssiaType{};
 template<>
-const constexpr OSSIA::CurveSegmentType OssiaType<int> = OSSIA::CurveSegmentType::INT;
+const constexpr ossia::curve_segment_type OssiaType<int> = ossia::curve_segment_type::INT;
 template<>
-const constexpr OSSIA::CurveSegmentType OssiaType<float> = OSSIA::CurveSegmentType::FLOAT;
+const constexpr ossia::curve_segment_type OssiaType<float> = ossia::curve_segment_type::FLOAT;
 template<>
-const constexpr OSSIA::CurveSegmentType OssiaType<double> = OSSIA::CurveSegmentType::DOUBLE;
+const constexpr ossia::curve_segment_type OssiaType<double> = ossia::curve_segment_type::DOUBLE;
 template<>
-const constexpr OSSIA::CurveSegmentType OssiaType<bool> = OSSIA::CurveSegmentType::BOOL;
+const constexpr ossia::curve_segment_type OssiaType<bool> = ossia::curve_segment_type::BOOL;
 
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include <eggs/variant.hpp>
-namespace OSSIA
+namespace ossia
 {
 struct Message;
 class State;

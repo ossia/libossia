@@ -22,19 +22,18 @@
 #include <ossia/detail/callback_container.hpp>
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
-
+namespace expressions
+{
 /*! to get the result back
  \param the returned result */
-using ResultCallback = std::function<void(bool)>;
+using expression_result_callback = std::function<void(bool)>;
 
-class OSSIA_EXPORT Expression : public CallbackContainer<ResultCallback>
+class OSSIA_EXPORT expression_base : public callback_container<expression_result_callback>
 {
-
 public:
-
-  using iterator = typename CallbackContainer<ResultCallback>::iterator;
+  using iterator = typename callback_container<expression_result_callback>::iterator;
 
 #if 0
 # pragma mark -
@@ -44,7 +43,7 @@ public:
   /*! type of expression */
   enum class Type
   {
-    BASE,
+    BOOL,
     ATOM,
     COMPOSITION,
     NOT,
@@ -56,13 +55,8 @@ public:
 # pragma mark Life cycle
 #endif
 
-  /*! factory
-   \param bool result to return
-   \return std::shared_ptr<#Expression> */
-  static std::shared_ptr<Expression> create(bool);
-
   /*! destructor */
-  virtual ~Expression();
+  virtual ~expression_base();
 
 #if 0
 # pragma mark -
@@ -82,10 +76,10 @@ public:
 #endif
 
   /*! equal operator */
-  virtual bool operator== (const Expression&) const = 0;
+  virtual bool operator== (const expression_base&) const = 0;
 
   /*! different operator */
-  virtual bool operator!= (const Expression&) const = 0;
+  virtual bool operator!= (const expression_base&) const = 0;
 
 #if 0
 # pragma mark -
@@ -94,12 +88,7 @@ public:
 
   /*! get the type of the expression
    \return #Type of the expression */
-  virtual Expression::Type getType() const
-  {return Expression::Type::BASE;}
+  virtual expression_base::Type getType() const = 0;
 };
-
-OSSIA_EXPORT std::shared_ptr<Expression> ExpressionFalse();
-OSSIA_EXPORT std::shared_ptr<Expression> ExpressionTrue();
-
 }
-
+}

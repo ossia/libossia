@@ -18,7 +18,7 @@ JamomaCurve<X,Y>::~JamomaCurve() = default;
 
 template <typename X, typename Y>
 bool JamomaCurve<X,Y>::
-addPoint(OSSIA::CurveSegment<Y> segment, X abscissa, Y value)
+addPoint(ossia::curve_segment<Y> segment, X abscissa, Y value)
 {
   mPointsMap.emplace(abscissa, std::make_pair(value, std::move(segment)));
 
@@ -69,7 +69,7 @@ valueAt(X abscissa) const
 # pragma mark -
 # pragma mark Accessors
 template<typename X, typename Y>
-OSSIA::CurveType JamomaCurve<X, Y>::getType() const
+ossia::curve_type JamomaCurve<X, Y>::getType() const
 {
     return std::make_pair(OssiaType<X>, OssiaType<Y>);
 }
@@ -131,14 +131,14 @@ setInitialPointOrdinate(Y value)
 }
 
 template <typename X, typename Y>
-const OSSIA::Destination& JamomaCurve<X,Y>::
+const ossia::Destination& JamomaCurve<X,Y>::
 getInitialPointAbscissaDestination() const
 {
   return mInitialPointAbscissaDestination;
 }
 
 template <typename X, typename Y>
-const OSSIA::Destination& JamomaCurve<X,Y>::
+const ossia::Destination& JamomaCurve<X,Y>::
 getInitialPointOrdinateDestination() const
 {
   return mInitialPointOrdinateDestination;
@@ -146,20 +146,20 @@ getInitialPointOrdinateDestination() const
 
 template <typename X, typename Y>
 void JamomaCurve<X,Y>::
-setInitialPointAbscissaDestination(const OSSIA::Destination& destination)
+setInitialPointAbscissaDestination(const ossia::Destination& destination)
 {
   mInitialPointAbscissaDestination = destination;
 }
 
 template <typename X, typename Y>
 void JamomaCurve<X,Y>::
-setInitialPointOrdinateDestination(const OSSIA::Destination& destination)
+setInitialPointOrdinateDestination(const ossia::Destination& destination)
 {
   mInitialPointOrdinateDestination = destination;
 }
 
 template <typename X, typename Y>
-std::map<X, std::pair<Y, OSSIA::CurveSegment<Y>>> JamomaCurve<X,Y>::
+std::map<X, std::pair<Y, ossia::curve_segment<Y>>> JamomaCurve<X,Y>::
 getPointsMap() const
 {
     return {mPointsMap.cbegin(), mPointsMap.cend()};
@@ -171,13 +171,13 @@ getPointsMap() const
 template <typename X, typename Y>
 Y JamomaCurve<X,Y>::
 convertToTemplateTypeValue(
-    const OSSIA::Value& value,
-    OSSIA::DestinationIndex::const_iterator idx)
+    const ossia::value& value,
+    ossia::destination_index::const_iterator idx)
 {
-  using namespace OSSIA;
+  using namespace ossia;
   using namespace std;
   struct visitor {
-    DestinationIndex::const_iterator index;
+    destination_index::const_iterator index;
     Y operator()(Int i) const   { return i.value; }
     Y operator()(Float f) const { return f.value; }
     Y operator()(Bool b) const  { return b.value; }

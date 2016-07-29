@@ -2,7 +2,7 @@
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/midi/detail/channel.hpp>
 
-namespace OSSIA
+namespace ossia
 {
 namespace net
 {
@@ -21,21 +21,21 @@ struct MIDIAddressInfo
       PC_N // /12/PC/32 Impulse
     };
 
-    OSSIA::Type matchingType()
+    ossia::Type matchingType()
     {
       switch(type)
       {
         case Type::NoteOn:
         case Type::NoteOff:
         case Type::CC:
-          return OSSIA::Type::TUPLE;
+          return ossia::Type::TUPLE;
         case Type::NoteOn_N:
         case Type::NoteOff_N:
         case Type::CC_N:
         case Type::PC:
-          return OSSIA::Type::INT;
+          return ossia::Type::INT;
         case Type::PC_N:
-          return OSSIA::Type::IMPULSE;
+          return ossia::Type::IMPULSE;
       }
       return {};
     }
@@ -65,29 +65,29 @@ struct MIDIAddressInfo
 
     }
 
-    OSSIA::Value defaultValue(midi_size_t val)
+    ossia::value defaultValue(midi_size_t val)
     {
       switch(type)
       {
         case Type::NoteOn:
         case Type::NoteOff:
         case Type::CC:
-          return OSSIA::Tuple{OSSIA::Int{val}, OSSIA::Int{val}};
+          return ossia::Tuple{ossia::Int{val}, ossia::Int{val}};
         case Type::NoteOn_N:
         case Type::NoteOff_N:
         case Type::CC_N:
         case Type::PC:
-          return OSSIA::Int{val};
+          return ossia::Int{val};
         case Type::PC_N:
-          return OSSIA::Impulse{};
+          return ossia::Impulse{};
       }
       return {};
     }
 
-    OSSIA::net::Domain defaultDomain()
+    ossia::net::Domain defaultDomain()
     {
 
-      return OSSIA::net::makeDomain(
+      return ossia::net::makeDomain(
             defaultValue(0),
             defaultValue(127)
             );
@@ -119,55 +119,55 @@ struct MIDIAddressInfo
 };
 
 class MIDIAddress final :
-    public OSSIA::net::Address
+    public ossia::net::address
 {
     MIDIAddressInfo mInfo;
-    OSSIA::net::Node& mParent;
+    ossia::net::Node& mParent;
     MIDI& mProtocol;
-    OSSIA::net::Domain mDomain;
+    ossia::net::Domain mDomain;
 
-    OSSIA::Type mType = OSSIA::Type::INT;
-    Value mValue;
+    ossia::Type mType = ossia::Type::INT;
+    value mValue;
     std::string mAddress;
   public:
-    MIDIAddress(MIDIAddressInfo info, OSSIA::net::Node& parent);
+    MIDIAddress(MIDIAddressInfo info, ossia::net::Node& parent);
 
     const MIDIAddressInfo& info() const;
 
-    const OSSIA::net::Node& getNode() const override;
+    const ossia::net::Node& getNode() const override;
 
     void pullValue() override;
-    Address& pushValue(const Value& val) override;
-    Address& pushValue() override;
-    const Value& getValue() const;
+    address& pushValue(const value& val) override;
+    address& pushValue() override;
+    const value& getValue() const;
 
 
-    Value cloneValue(DestinationIndex) const override;
-    Address& setValue(const Value& v) override;
+    value cloneValue(destination_index) const override;
+    address& setValue(const value& v) override;
 
 
-    OSSIA::Type getValueType() const override;
-    Address& setValueType(OSSIA::Type) override;
+    ossia::Type getValueType() const override;
+    address& setValueType(ossia::Type) override;
 
-    OSSIA::AccessMode getAccessMode() const override;
-    Address& setAccessMode(OSSIA::AccessMode) override;
+    ossia::AccessMode getAccessMode() const override;
+    address& setAccessMode(ossia::AccessMode) override;
 
-    const OSSIA::net::Domain& getDomain() const override;
-    Address& setDomain(const OSSIA::net::Domain&) override;
+    const ossia::net::Domain& getDomain() const override;
+    address& setDomain(const ossia::net::Domain&) override;
 
 
-    OSSIA::BoundingMode getBoundingMode() const override;
-    Address&setBoundingMode(OSSIA::BoundingMode) override;
+    ossia::BoundingMode getBoundingMode() const override;
+    address&setBoundingMode(ossia::BoundingMode) override;
 
-    OSSIA::RepetitionFilter getRepetitionFilter() const override;
-    Address&setRepetitionFilter(OSSIA::RepetitionFilter) override;
+    ossia::RepetitionFilter getRepetitionFilter() const override;
+    address&setRepetitionFilter(ossia::RepetitionFilter) override;
 
     void onFirstCallbackAdded() override;
     void onRemovingLastCallback() override;
 
     const std::string& getTextualAddress() const override;
 
-    void valueCallback(const OSSIA::Value& val);
+    void valueCallback(const ossia::value& val);
 };
 }
 }

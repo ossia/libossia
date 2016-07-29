@@ -1,8 +1,8 @@
 #include <ossia/editor/scenario/time_process.hpp>
 
-namespace OSSIA
+namespace ossia
 {
-TimeProcess::~TimeProcess()
+time_process::~time_process()
 {
 
 }

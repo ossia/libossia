@@ -23,11 +23,11 @@
 #include "TimeNode_impl.hpp"
 #include "Scenario_impl.hpp"
 
-using namespace OSSIA;
+using namespace ossia;
 
 namespace impl
 {
-class JamomaTimeEvent final : public TimeEvent, public std::enable_shared_from_this<JamomaTimeEvent>
+class JamomaTimeEvent final : public time_event, public std::enable_shared_from_this<JamomaTimeEvent>
 {
 
 private:
@@ -35,29 +35,29 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  TimeEvent::ExecutionCallback      mCallback;
+  time_event::ExecutionCallback      mCallback;
 
-  std::shared_ptr<TimeNode>              mTimeNode;
+  std::shared_ptr<time_node>              mTimeNode;
   State                             mState;
   Status                            mStatus;
 
-  std::shared_ptr<Expression>            mExpression;
+  std::shared_ptr<expression_base>            mExpression;
 
 public:
 
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaTimeEvent(TimeEvent::ExecutionCallback,
-                  std::shared_ptr<TimeNode> aTimeNode = nullptr,
-                  std::shared_ptr<Expression> anExpression = ExpressionTrue());
+  JamomaTimeEvent(time_event::ExecutionCallback,
+                  std::shared_ptr<time_node> aTimeNode = nullptr,
+                  std::shared_ptr<expression_base> anExpression = ExpressionTrue());
 
   ~JamomaTimeEvent();
 
 # pragma mark -
 # pragma mark Execution
 
-  void setCallback(TimeEvent::ExecutionCallback) override;
+  void setCallback(time_event::ExecutionCallback) override;
 
   void happen() override;
 
@@ -73,13 +73,13 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  const std::shared_ptr<TimeNode> & getTimeNode() const override;
+  const std::shared_ptr<time_node> & getTimeNode() const override;
 
   const State& getState() const override;
 
-  const std::shared_ptr<Expression> & getExpression() const override;
+  const std::shared_ptr<expression_base> & getExpression() const override;
 
-  TimeEvent & setExpression(std::shared_ptr<Expression>) override;
+  time_event & setExpression(std::shared_ptr<expression_base>) override;
 
   Status getStatus() const override;
 

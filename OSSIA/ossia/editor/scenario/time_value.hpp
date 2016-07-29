@@ -17,10 +17,10 @@
 #pragma once
 #include <cmath>
 #include <ossia_export.h>
-namespace OSSIA
+namespace ossia
 {
 
-class OSSIA_EXPORT TimeValue
+class OSSIA_EXPORT time_value
 {
 
 public:
@@ -32,10 +32,10 @@ public:
 
   /*! constructor
    \param int value */
-  TimeValue(double d = 0.): m_value{d} { }
+  time_value(double d = 0.): m_value{d} { }
 
   /*! destructor */
-  ~TimeValue() = default;
+  ~time_value() = default;
 
 #if 0
 # pragma mark -
@@ -43,20 +43,20 @@ public:
 #endif
 
   /*! assignation operator */
-  TimeValue & operator= (double d)
+  time_value & operator= (double d)
   {
     m_value = d;
     return *this;
   }
 
-  TimeValue & operator= (TimeValue t)
+  time_value & operator= (time_value t)
   {
       m_value = t.m_value;
       return *this;
   }
 
   /*! self addition operator */
-  TimeValue & operator+= (double d)
+  time_value & operator+= (double d)
   {
     if (isInfinite())
       m_value = 0.;
@@ -66,7 +66,7 @@ public:
     return *this;
   }
 
-  TimeValue & operator+= (TimeValue t)
+  time_value & operator+= (time_value t)
   {
     if (isInfinite() || t.isInfinite())
       m_value = 0.;
@@ -77,7 +77,7 @@ public:
   }
 
   /*! self substraction operator */
-  TimeValue & operator-= (double d)
+  time_value & operator-= (double d)
   {
     if (isInfinite())
       m_value = 0.;
@@ -87,7 +87,7 @@ public:
     return *this;
   }
 
-  TimeValue & operator-= (TimeValue t)
+  time_value & operator-= (time_value t)
   {
     if (isInfinite() || t.isInfinite())
       m_value = 0.;
@@ -99,35 +99,35 @@ public:
 
 
   /*! addition operator */
-  TimeValue operator+ (double d) const
+  time_value operator+ (double d) const
   {
-    return TimeValue(m_value + d);
+    return time_value(m_value + d);
   }
 
-  TimeValue operator+ (TimeValue t) const
+  time_value operator+ (time_value t) const
   {
     if (isInfinite() || t.isInfinite())
     {
-      return TimeValue(INFINITY);
+      return time_value(INFINITY);
     }
 
-    return TimeValue(m_value + t.m_value);
+    return time_value(m_value + t.m_value);
   }
 
   /*! substraction operator */
-  TimeValue operator- (double d) const
+  time_value operator- (double d) const
   {
-    return TimeValue(m_value - d);
+    return time_value(m_value - d);
   }
 
-  TimeValue operator- (TimeValue t) const
+  time_value operator- (time_value t) const
   {
     if (isInfinite() || t.isInfinite())
     {
-      return TimeValue(INFINITY);
+      return time_value(INFINITY);
     }
 
-    return TimeValue(m_value - t.m_value);
+    return time_value(m_value - t.m_value);
   }
 
   /*! double casting operator */
@@ -151,8 +151,8 @@ protected:
   double  m_value;
 };
 
-const TimeValue Infinite{INFINITY};
-const TimeValue Zero{0.};
-const TimeValue One{1.};
+const time_value Infinite{INFINITY};
+const time_value Zero{0.};
+const time_value One{1.};
 
 }

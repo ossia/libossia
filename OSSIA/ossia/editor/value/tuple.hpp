@@ -3,13 +3,14 @@
 #include <initializer_list>
 #include <vector>
 
-namespace OSSIA
+namespace ossia
 {
-class Value;
+class value;
 /*! \details Tuple value */
 struct OSSIA_EXPORT Tuple
 {
-  std::vector<Value> value;
+  using value_type = std::vector<ossia::value>;
+  value_type value;
 
   /*! constructor for an empty tuple */
   Tuple();
@@ -20,25 +21,25 @@ struct OSSIA_EXPORT Tuple
 
   /*! constructor for one value
    \param const value */
-  explicit Tuple(const Value& v);
+  explicit Tuple(const ossia::value& v);
 
   /*! constructor for any number of values
   \param const value
   \param const value
   \param ... */
-  Tuple(std::initializer_list<Value> v);
+  Tuple(std::initializer_list<ossia::value> v);
 
   /*! constructor passing a value vector
    \param std::vector<const #Value> value */
-  Tuple(const std::vector<Value>& v);
-  Tuple(std::vector<Value>&& v);
+  Tuple(const value_type& v);
+  Tuple(value_type&& v);
 
-  bool operator== (const Value&) const;
-  bool operator!= (const Value&) const;
-  bool operator>  (const Value&) const;
-  bool operator>= (const Value&) const;
-  bool operator<  (const Value&) const;
-  bool operator<= (const Value&) const;
+  bool operator== (const ossia::value&) const;
+  bool operator!= (const ossia::value&) const;
+  bool operator>  (const ossia::value&) const;
+  bool operator>= (const ossia::value&) const;
+  bool operator<  (const ossia::value&) const;
+  bool operator<= (const ossia::value&) const;
 };
 
 }

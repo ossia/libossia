@@ -5,9 +5,9 @@
 #include <initializer_list>
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/network/common/address_properties.hpp>
-namespace OSSIA
+namespace ossia
 {
-class Value;
+class value;
 namespace net
 {
 class Node;
@@ -17,23 +17,23 @@ class OSSIA_EXPORT Destination final
 {
   public:
     net::Node* value{};
-    DestinationIndex index;
+    destination_index index;
 
     Destination();
     Destination(net::Node& v);
-    Destination(net::Node& v, DestinationIndex);
+    Destination(net::Node& v, destination_index);
 
     Destination(const Destination& other);
     Destination(Destination&& other);
     Destination& operator=(const Destination&);
     Destination& operator=(Destination&&);
 
-    bool operator== (const Value&) const;
-    bool operator!= (const Value&) const;
-    bool operator>  (const Value&) const;
-    bool operator>= (const Value&) const;
-    bool operator<  (const Value&) const;
-    bool operator<= (const Value&) const;
+    bool operator== (const ossia::value&) const;
+    bool operator!= (const ossia::value&) const;
+    bool operator>  (const ossia::value&) const;
+    bool operator>= (const ossia::value&) const;
+    bool operator<  (const ossia::value&) const;
+    bool operator<= (const ossia::value&) const;
 };
 
 }

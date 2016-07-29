@@ -5,7 +5,7 @@
 namespace impl
 {
 BasicDevice::BasicDevice(
-        std::unique_ptr<OSSIA::net::Protocol> protocol,
+        std::unique_ptr<ossia::net::Protocol> protocol,
         std::string name) :
     Device(std::move(protocol)),
     BasicNode(std::move(name), *this)
@@ -29,7 +29,7 @@ BasicNode* find_node_rec(
     if(first_slash_index != std::string::npos)
     {
         auto cur = address.substr(0, first_slash_index);
-        auto it = OSSIA::find_if(node.children(), [&] (const auto& child) {
+        auto it = ossia::find_if(node.children(), [&] (const auto& child) {
             return child->getName() == cur;
         } );
         if(it != node.children().end())
@@ -48,7 +48,7 @@ BasicNode* find_node_rec(
     {
         // One of the child may be the researched node.
 
-        auto it = OSSIA::find_if(node.children(), [&] (const auto& child) {
+        auto it = ossia::find_if(node.children(), [&] (const auto& child) {
             return child->getName() == address;
         } );
 
@@ -73,7 +73,7 @@ BasicNode& find_or_create_node_rec(
     if(first_slash_index != std::string::npos)
     {
         auto cur = address.substr(0, first_slash_index);
-        auto it = OSSIA::find_if(node.children(), [&] (const auto& child) {
+        auto it = ossia::find_if(node.children(), [&] (const auto& child) {
             return child->getName() == cur;
         } );
         if(it != node.children().end())
@@ -98,7 +98,7 @@ BasicNode& find_or_create_node_rec(
     else
     {
         // One of the child may be the researched node.
-        auto it = OSSIA::find_if(node.children(), [&] (const auto& child) {
+        auto it = ossia::find_if(node.children(), [&] (const auto& child) {
             return child->getName() == address;
         } );
 

@@ -13,7 +13,7 @@
 #include <ModernMIDI/midi_output.h>
 #include <atomic>
 
-namespace OSSIA
+namespace ossia
 {
 namespace net
 {
@@ -36,7 +36,7 @@ struct OSSIA_EXPORT MidiInfo
 };
 
 class OSSIA_EXPORT MIDI final :
-    public OSSIA::net::Protocol
+    public ossia::net::Protocol
 {
     mm::MidiInput mInput;
     mm::MidiOutput mOutput;
@@ -52,10 +52,10 @@ class OSSIA_EXPORT MIDI final :
     bool setInfo(MidiInfo);
     MidiInfo getInfo() const;
 
-    bool pull(OSSIA::net::Address&) override;
-    bool push(const OSSIA::net::Address&) override;
-    bool observe(OSSIA::net::Address&, bool) override;
-    bool update(OSSIA::net::Node& node) override;
+    bool pull(ossia::net::address&) override;
+    bool push(const ossia::net::address&) override;
+    bool observe(ossia::net::address&, bool) override;
+    bool update(ossia::net::Node& node) override;
 
     std::vector<MidiInfo> scan();
 };

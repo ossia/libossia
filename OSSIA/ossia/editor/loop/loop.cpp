@@ -6,13 +6,13 @@
 # pragma mark -
 # pragma mark Life cycle
 
-namespace OSSIA
+namespace ossia
 {
-  std::shared_ptr<Loop> Loop::create(
-          TimeValue patternDuration,
-          TimeConstraint::ExecutionCallback patternConstraintCallback,
-          TimeEvent::ExecutionCallback patternStartEventCallback,
-          TimeEvent::ExecutionCallback patternEndEventCallback)
+  std::shared_ptr<loop> loop::create(
+          time_value patternDuration,
+          time_constraint::ExecutionCallback patternConstraintCallback,
+          time_event::ExecutionCallback patternStartEventCallback,
+          time_event::ExecutionCallback patternEndEventCallback)
   {
     return std::make_shared<impl::JamomaLoop>(
                 patternDuration,
@@ -22,5 +22,5 @@ namespace OSSIA
   }
 
 
-  Loop::~Loop() = default;
+  loop::~loop() = default;
 }

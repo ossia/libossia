@@ -1,16 +1,10 @@
 #include <ossia/editor/scenario/detail/TimeNode_impl.hpp>
-
-#include <iostream> //! \todo to remove. only here for debug purpose
-
-# pragma mark -
-# pragma mark Life cycle
-
-namespace OSSIA
+namespace ossia
 {
-  std::shared_ptr<TimeNode> TimeNode::create(TimeNode::ExecutionCallback callback)
+  std::shared_ptr<time_node> time_node::create(time_node::execution_callback callback)
   {
     return std::make_shared<impl::JamomaTimeNode>(callback);
   }
 
-  TimeNode::~TimeNode() = default;
+  time_node::~time_node() = default;
 }

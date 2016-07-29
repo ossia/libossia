@@ -21,10 +21,11 @@
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
-
-class OSSIA_EXPORT ExpressionNot : public Expression
+namespace expressions
+{
+class OSSIA_EXPORT expression_not : public expression_base
 {
 
 public:
@@ -37,10 +38,10 @@ public:
   /*! factory
    \param std::shared_ptr<Expression>
    \return std::shared_ptr<#ExpressionNot> */
-  static std::shared_ptr<ExpressionNot> create(std::shared_ptr<Expression>);
+  static std::shared_ptr<expression_not> create(std::shared_ptr<expression_base>);
 
   /*! destructor */
-  virtual ~ExpressionNot();
+  virtual ~expression_not();
 
 #if 0
 # pragma mark -
@@ -61,12 +62,13 @@ public:
 
   /*! get the type of the expression
    \return #Type of the expression */
-  Expression::Type getType() const override final
-  {return Expression::Type::NOT;}
+  expression_base::Type getType() const override final
+  {return expression_base::Type::NOT;}
 
   /*! get expression
    \return const std::shared_ptr<#Expression> expression */
-  virtual const std::shared_ptr<Expression> & getExpression() const = 0;
+  virtual const std::shared_ptr<expression_base> & getExpression() const = 0;
 
 };
+}
 }

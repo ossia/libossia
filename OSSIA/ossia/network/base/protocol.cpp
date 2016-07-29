@@ -1,6 +1,6 @@
 #include <ossia/network/base/protocol.hpp>
 
-namespace OSSIA
+namespace ossia
 {
 namespace net
 {

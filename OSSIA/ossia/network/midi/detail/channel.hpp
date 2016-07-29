@@ -1,7 +1,7 @@
 #pragma once
 #include <utility>
 #include <cinttypes>
-namespace OSSIA
+namespace ossia
 {
 namespace net
 {

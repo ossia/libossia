@@ -1,15 +1,15 @@
 #include <ossia/editor/mapper/detail/Mapper_impl.hpp>
 
-namespace OSSIA
+namespace ossia
 {
-std::shared_ptr<Mapper> Mapper::create(
-    OSSIA::net::Address& driverAddress,
-    OSSIA::net::Address& drivenAddress,
-    const OSSIA::Value& drive)
+std::shared_ptr<mapper> mapper::create(
+    ossia::net::address& driverAddress,
+    ossia::net::address& drivenAddress,
+    const ossia::value& drive)
 {
   return std::make_shared<impl::JamomaMapper>(driverAddress, drivenAddress, drive);
 }
 
-Mapper::~Mapper() = default;
+mapper::~mapper() = default;
 }
 

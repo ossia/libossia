@@ -9,16 +9,16 @@
 namespace impl {
 
 BasicAddress::BasicAddress(
-        const OSSIA::net::Node& node) :
+        const ossia::net::Node& node) :
     mNode{node},
     mProtocol{node.getDevice().getProtocol()},
-    mValue(OSSIA::Impulse{}),
-    mValueType(OSSIA::Type::IMPULSE),
-    mAccessMode(OSSIA::AccessMode::BI),
-    mBoundingMode(OSSIA::BoundingMode::FREE),
-    mRepetitionFilter(OSSIA::RepetitionFilter::OFF)
+    mValue(ossia::Impulse{}),
+    mValueType(ossia::Type::IMPULSE),
+    mAccessMode(ossia::AccessMode::BI),
+    mBoundingMode(ossia::BoundingMode::FREE),
+    mRepetitionFilter(ossia::RepetitionFilter::OFF)
 {
-    mTextualAddress = OSSIA::net::getAddressFromNode(mNode);
+    mTextualAddress = ossia::net::getAddressFromNode(mNode);
 }
 
 BasicAddress::~BasicAddress()
@@ -26,7 +26,7 @@ BasicAddress::~BasicAddress()
   mCallbacks.clear();
 }
 
-const OSSIA::net::Node& BasicAddress::getNode() const
+const ossia::net::Node& BasicAddress::getNode() const
 {
     return mNode;
 }
@@ -36,7 +36,7 @@ void BasicAddress::pullValue()
     mProtocol.pull(*this);
 }
 
-OSSIA::net::Address& BasicAddress::pushValue(const OSSIA::Value& value)
+ossia::net::address& BasicAddress::pushValue(const ossia::value& value)
 {
     setValue(value);
 
@@ -45,21 +45,21 @@ OSSIA::net::Address& BasicAddress::pushValue(const OSSIA::Value& value)
     return *this;
 }
 
-OSSIA::net::Address& BasicAddress::pushValue()
+ossia::net::address& BasicAddress::pushValue()
 {
     mProtocol.push(*this);
 
     return *this;
 }
 
-const OSSIA::Value& BasicAddress::getValue() const
+const ossia::value& BasicAddress::getValue() const
 {
     return mValue;
 }
 
-OSSIA::Value BasicAddress::cloneValue(OSSIA::DestinationIndex index) const
+ossia::value BasicAddress::cloneValue(ossia::destination_index index) const
 {
-    using namespace OSSIA;
+    using namespace ossia;
     std::lock_guard<std::mutex> lock(mValueMutex);
 
     if (mValue.valid())
@@ -95,9 +95,9 @@ OSSIA::Value BasicAddress::cloneValue(OSSIA::DestinationIndex index) const
     }
 }
 
-OSSIA::net::Address& BasicAddress::setValue(const OSSIA::Value& value)
+ossia::net::address& BasicAddress::setValue(const ossia::value& value)
 {
-    using namespace OSSIA;
+    using namespace ossia;
     std::lock_guard<std::mutex> lock(mValueMutex);
 
     // set value querying the value from another address
@@ -141,12 +141,12 @@ OSSIA::net::Address& BasicAddress::setValue(const OSSIA::Value& value)
     return *this;
 }
 
-OSSIA::Type BasicAddress::getValueType() const
+ossia::Type BasicAddress::getValueType() const
 {
     return mValueType;
 }
 
-OSSIA::net::Address& BasicAddress::setValueType(OSSIA::Type type)
+ossia::net::address& BasicAddress::setValueType(ossia::Type type)
 {
     mValueType = type;
 
@@ -156,45 +156,45 @@ OSSIA::net::Address& BasicAddress::setValueType(OSSIA::Type type)
     return *this;
 }
 
-OSSIA::AccessMode BasicAddress::getAccessMode() const
+ossia::AccessMode BasicAddress::getAccessMode() const
 {
     return mAccessMode;
 }
 
-OSSIA::net::Address& BasicAddress::setAccessMode(OSSIA::AccessMode accessMode)
+ossia::net::address& BasicAddress::setAccessMode(ossia::AccessMode accessMode)
 {
     mAccessMode = accessMode;
     return *this;
 }
 
-const OSSIA::net::Domain& BasicAddress::getDomain() const
+const ossia::net::Domain& BasicAddress::getDomain() const
 {
     return mDomain;
 }
 
-OSSIA::net::Address& BasicAddress::setDomain(const OSSIA::net::Domain& domain)
+ossia::net::address& BasicAddress::setDomain(const ossia::net::Domain& domain)
 {
     mDomain = domain;
     return *this;
 }
 
-OSSIA::BoundingMode BasicAddress::getBoundingMode() const
+ossia::BoundingMode BasicAddress::getBoundingMode() const
 {
     return mBoundingMode;
 }
 
-OSSIA::net::Address& BasicAddress::setBoundingMode(OSSIA::BoundingMode boundingMode)
+ossia::net::address& BasicAddress::setBoundingMode(ossia::BoundingMode boundingMode)
 {
     mBoundingMode = boundingMode;
     return *this;
 }
 
-OSSIA::RepetitionFilter BasicAddress::getRepetitionFilter() const
+ossia::RepetitionFilter BasicAddress::getRepetitionFilter() const
 {
     return mRepetitionFilter;
 }
 
-OSSIA::net::Address& BasicAddress::setRepetitionFilter(OSSIA::RepetitionFilter repetitionFilter)
+ossia::net::address& BasicAddress::setRepetitionFilter(ossia::RepetitionFilter repetitionFilter)
 {
     mRepetitionFilter = repetitionFilter;
 

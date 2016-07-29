@@ -1,21 +1,16 @@
 #include <ossia/editor/scenario/detail/Clock_impl.hpp>
-
-using namespace OSSIA;
-
-# pragma mark -
-# pragma mark Life cycle
-
-namespace OSSIA
+namespace ossia
 {
-  std::shared_ptr<Clock> Clock::create(Clock::ExecutionCallback callback,
-                                  TimeValue duration,
-                                  TimeValue granularity,
-                                  TimeValue offset,
+  std::shared_ptr<clock> clock::create(
+      clock::ExecutionCallback callback,
+                                  time_value duration,
+                                  time_value granularity,
+                                  time_value offset,
                                   float speed,
-                                  Clock::DriveMode driveMode)
+                                  clock::DriveMode driveMode)
   {
     return std::make_shared<impl::JamomaClock>(callback, duration, granularity, offset, speed, driveMode);
   }
 
-  Clock::~Clock() = default;
+  clock::~clock() = default;
 }

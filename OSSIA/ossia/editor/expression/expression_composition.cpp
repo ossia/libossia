@@ -1,20 +1,19 @@
 #include <ossia/editor/expression/detail/ExpressionComposition_impl.hpp>
 
-# pragma mark -
-# pragma mark Life cycle
-
-namespace OSSIA
+namespace ossia
 {
-  std::shared_ptr<ExpressionComposition> ExpressionComposition::create(
-      std::shared_ptr<Expression> first_expr,
+namespace expressions
+{
+  std::shared_ptr<expression_composition> expression_composition::create(
+      std::shared_ptr<expression_base> first_expr,
       Operator op,
-      std::shared_ptr<Expression> second_expr)
+      std::shared_ptr<expression_base> second_expr)
   {
-    return std::make_shared<impl::JamomaExpressionComposition>(first_expr, op, second_expr);
+    return std::make_shared<::impl::JamomaExpressionComposition>(first_expr, op, second_expr);
   }
 
 
-  ExpressionComposition::~ExpressionComposition() = default;
+  expression_composition::~expression_composition() = default;
 
 }
-
+}

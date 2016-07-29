@@ -21,15 +21,15 @@
 #include <ossia_export.h>
 #include <utility>
 
-namespace OSSIA
+namespace ossia
 {
 namespace net {
-class Address;
+class address;
 }
 struct OSSIA_EXPORT Message
 {
-        std::reference_wrapper<OSSIA::net::Address> address;
-        Value value;
+        std::reference_wrapper<ossia::net::address> address;
+        ossia::value value;
 
         void launch() const;
 

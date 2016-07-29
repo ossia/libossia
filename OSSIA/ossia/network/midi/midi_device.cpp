@@ -2,13 +2,13 @@
 #include <ossia/network/midi/detail/midi_impl.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
 
-namespace OSSIA
+namespace ossia
 {
 namespace net
 {
 
 MIDIDevice::MIDIDevice(std::unique_ptr<Protocol> prot):
-  OSSIA::net::Device{std::move(prot)},
+  ossia::net::Device{std::move(prot)},
   MIDINode{*this, *this}
 {
 }

@@ -1,13 +1,13 @@
 #include <ossia/editor/expression/expression_not.hpp>
 #include <algorithm>
 
-using namespace OSSIA;
+using namespace ossia;
 
 using namespace std::placeholders;
 
 namespace impl
 {
-class JamomaExpressionNot final : public ExpressionNot
+class JamomaExpressionNot final : public expression_not
 {
 
 private:
@@ -15,16 +15,16 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  std::shared_ptr<Expression>  mExpression;
+  std::shared_ptr<expression_base>  mExpression;
 
-  Expression::iterator    mResultCallbackIndex;
+  expression_base::iterator    mResultCallbackIndex;
 
 public:
 
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaExpressionNot(std::shared_ptr<Expression> expr);
+  JamomaExpressionNot(std::shared_ptr<expression_base> expr);
 
   ~JamomaExpressionNot();
 
@@ -38,14 +38,14 @@ public:
 # pragma mark -
 # pragma mark Operator
 
-  bool operator== (const Expression& expression) const override;
+  bool operator== (const expression_base& expression_base) const override;
 
-  bool operator!= (const Expression& expression) const override;
+  bool operator!= (const expression_base& expression_base) const override;
 
 # pragma mark -
 # pragma mark Accessors
 
-  const std::shared_ptr<Expression> & getExpression() const override;
+  const std::shared_ptr<expression_base> & getExpression() const override;
 
 private:
   void onFirstCallbackAdded() override;

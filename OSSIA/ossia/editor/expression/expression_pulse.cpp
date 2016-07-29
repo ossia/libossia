@@ -1,15 +1,14 @@
 #include <ossia/editor/expression/detail/ExpressionPulse_impl.hpp>
-#include <ossia/editor/value/value.hpp>
-
-# pragma mark -
-# pragma mark Life cycle
-
-namespace OSSIA
+#include <ossia/editor/value/destination.hpp>
+namespace ossia
 {
-  std::shared_ptr<ExpressionPulse> ExpressionPulse::create(const Destination& destination)
-  {
-    return std::make_shared<impl::JamomaExpressionPulse>(destination);
-  }
+namespace expressions
+{
+std::shared_ptr<expression_pulse> expression_pulse::create(const Destination& destination)
+{
+  return std::make_shared<::impl::JamomaExpressionPulse>(destination);
+}
 
-  ExpressionPulse::~ExpressionPulse() = default;
+expression_pulse::~expression_pulse() = default;
+}
 }

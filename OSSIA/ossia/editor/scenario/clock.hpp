@@ -22,10 +22,10 @@
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
 
-class OSSIA_EXPORT Clock
+class OSSIA_EXPORT clock
 {
 
 public:
@@ -39,7 +39,7 @@ public:
    \param clock position
    \param clock date
    \param dropped ticks */
-   using ExecutionCallback = std::function<void(TimeValue, TimeValue, unsigned char)>;
+   using ExecutionCallback = std::function<void(time_value, time_value, unsigned char)>;
 
    enum ClockExecutionStatus { RUNNING, STOPPED };
    using ExecutionStatusCallback = std::function<void(ClockExecutionStatus)>;
@@ -69,15 +69,15 @@ public:
    \param speed
    \param drive mode
    \return std::shared_ptr<#Clock> */
-  static std::shared_ptr<Clock> create(Clock::ExecutionCallback,
-                                       TimeValue = Infinite,
-                                       TimeValue = 10.,
-                                       TimeValue = 0.,
+  static std::shared_ptr<clock> create(clock::ExecutionCallback,
+                                       time_value = Infinite,
+                                       time_value = 10.,
+                                       time_value = 0.,
                                        float = 1.,
-                                       DriveMode = Clock::DriveMode::INTERNAL);
+                                       DriveMode = clock::DriveMode::INTERNAL);
 
   /*! destructor */
-  virtual ~Clock();
+  virtual ~clock();
 
 #if 0
 # pragma mark -
@@ -108,7 +108,7 @@ public:
    * \param usec Number of microseconds to move the clock
    * \return bool true if the clock ticks
    */
-  virtual bool tick(TimeValue usec) = 0;
+  virtual bool tick(time_value usec) = 0;
 
 #if 0
 # pragma mark -
@@ -117,30 +117,30 @@ public:
 
   /*! get the duration of the clock
    \return const #TimeValue duration */
-  virtual const TimeValue & getDuration() const = 0;
+  virtual const time_value & getDuration() const = 0;
 
   /*! set the duration of the clock execution
    \param const #TimeValue duration
    \return #Clock the clock */
-  virtual Clock & setDuration(TimeValue) = 0;
+  virtual clock & setDuration(time_value) = 0;
 
   /*! get the offset of the clock
    \return const #TimeValue offset */
-  virtual const TimeValue & getOffset() const = 0;
+  virtual const time_value & getOffset() const = 0;
 
   /** set the offset of the clock
    \param const #TimeValue offset
    \return #Clock the clock */
-  virtual Clock & setOffset(TimeValue) = 0;
+  virtual clock & setOffset(time_value) = 0;
 
   /*! get the granularity of the clock
    \return const #TimeValue granularity */
-  virtual const TimeValue & getGranularity() const = 0;
+  virtual const time_value & getGranularity() const = 0;
 
   /*! set the granularity of the clock execution
    \param const #TimeValue granularity
    \return #Clock the clock */
-  virtual Clock & setGranularity(TimeValue) = 0;
+  virtual clock & setGranularity(time_value) = 0;
 
   /*! get the speed of the clock
    \return const #TimeValue speed */
@@ -149,7 +149,7 @@ public:
   /** set the speed factor attribute
    \param float speed factor
    \return #Clock the clock */
-  virtual Clock & setSpeed(float) = 0;
+  virtual clock & setSpeed(float) = 0;
 
   /*! get the clock drive mode
    \return #DriveMode */
@@ -158,7 +158,7 @@ public:
   /** set is the clock drive mode
    \param #DriveMode
    \return #Clock the clock */
-  virtual Clock & setDriveMode(DriveMode) = 0;
+  virtual clock & setDriveMode(DriveMode) = 0;
 
   /*! get the running status of the clock
    \return bool true if is running */
@@ -166,11 +166,11 @@ public:
 
   /*! get the position of the clock
    \return const #TimeValue position */
-  virtual const TimeValue & getPosition() const = 0;
+  virtual const time_value & getPosition() const = 0;
 
   /*! get the date of the clock
    \return const #TimeValue date */
-  virtual const TimeValue & getDate() const = 0;
+  virtual const time_value & getDate() const = 0;
 
   // Execution status will be called when the clock starts and stops.
   virtual void setExecutionStatusCallback(ExecutionStatusCallback) = 0;

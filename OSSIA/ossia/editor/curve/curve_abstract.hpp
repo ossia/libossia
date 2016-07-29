@@ -2,21 +2,21 @@
 #include <utility>
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
 
-enum class CurveSegmentType { INT, FLOAT, DOUBLE, BOOL };
-using CurveType = std::pair<OSSIA::CurveSegmentType, OSSIA::CurveSegmentType>;
+enum class curve_segment_type { INT, FLOAT, DOUBLE, BOOL };
+using curve_type = std::pair<ossia::curve_segment_type, ossia::curve_segment_type>;
 
-class OSSIA_EXPORT CurveAbstract
+class OSSIA_EXPORT curve_abstract
 {
 public:
   /*! destructor
    \todo remove = default */
-  virtual ~CurveAbstract() = default;
+  virtual ~curve_abstract() = default;
 
   /*! get the type of both coordinates */
-  virtual CurveType getType() const = 0;
+  virtual curve_type getType() const = 0;
 
   /*! Clear internal data structures of the curve.
    * Call before a new execution. */

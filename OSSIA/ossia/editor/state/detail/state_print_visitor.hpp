@@ -5,7 +5,7 @@
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/base/node.hpp>
 
-namespace OSSIA
+namespace ossia
 {
   struct StatePrintVisitor
   {
@@ -33,9 +33,9 @@ namespace OSSIA
           {
               out << padding
                   << "message: "
-                  << OSSIA::net::getAddressFromNode(m.address.get().getNode())
+                  << ossia::net::getAddressFromNode(m.address.get().getNode())
                   << " => "
-                  << OSSIA::getValueAsString(m.value)
+                  << ossia::getValueAsString(m.value)
                   << "\n";
           }
   };

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace OSSIA
+namespace ossia
 {    
 struct StateExecutionVisitor
 {

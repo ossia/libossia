@@ -6,7 +6,7 @@
 #include <cmath>
 #include <type_traits>
 
-namespace OSSIA
+namespace ossia
 {
 namespace net
 {
@@ -65,7 +65,7 @@ struct DomainBase
 
         }
 
-        Value clamp(
+        value clamp(
                 BoundingMode b,
                 const T& val) const
         {
@@ -119,7 +119,7 @@ struct DomainBase
                 }
                 else
                 {
-                    return OSSIA::Value{};
+                    return ossia::value{};
                 }
 
                 /* Alternative : return the closest element to value
@@ -153,7 +153,7 @@ struct DomainBase
 template<>
 struct DomainBase<Impulse>
 {
-        Value clamp(
+        value clamp(
                 BoundingMode b,
                 const Impulse& val) const
         {
@@ -164,7 +164,7 @@ struct DomainBase<Impulse>
 template<>
 struct DomainBase<Behavior>
 {
-        Value clamp(
+        value clamp(
                 BoundingMode b,
                 const Behavior& val) const
         {
@@ -175,7 +175,7 @@ struct DomainBase<Behavior>
 template<>
 struct DomainBase<Destination>
 {
-        Value clamp(
+        value clamp(
                 BoundingMode b,
                 const Destination& val) const
         {
@@ -187,7 +187,7 @@ template<>
 struct DomainBase<String>
 {
         boost::container::flat_set<std::string> values;
-        Value clamp(
+        value clamp(
                 BoundingMode b,
                 const String& val) const
         {
@@ -204,7 +204,7 @@ struct DomainBase<String>
                 }
                 else
                 {
-                    return OSSIA::Value{};
+                    return ossia::value{};
                 }
             }
         }
@@ -213,7 +213,7 @@ struct DomainBase<String>
 template<>
 struct DomainBase<Tuple>
 {
-        Value clamp(
+        value clamp(
                 BoundingMode b,
                 const Tuple& val) const
         {
@@ -224,7 +224,7 @@ struct DomainBase<Tuple>
 template<int N>
 struct DomainBase<Vec<float, N>>
 {
-        Value clamp(
+        value clamp(
                 BoundingMode b,
                 const Vec<float, N>& val) const
         {
@@ -252,13 +252,13 @@ struct DomainClampVisitor
         BoundingMode b;
 
         template<typename T, typename U>
-        OSSIA::Value operator()(const T& value, const U& bad_domain)
+        ossia::value operator()(const T& value, const U& bad_domain)
         {
             return value;
         }
 
         template<typename T>
-        OSSIA::Value operator()(const T& value, const DomainBase<T>& domain)
+        ossia::value operator()(const T& value, const DomainBase<T>& domain)
         {
             return domain.clamp(b, value);
         }
@@ -270,7 +270,7 @@ struct DomainMinVisitor
 
         template<typename T>
         auto operator()(const T& value)
-            -> decltype((T().min)(), OSSIA::Value())
+            -> decltype((T().min)(), ossia::value())
         {
             return value.min;
         }
@@ -278,7 +278,7 @@ struct DomainMinVisitor
         template<typename... T>
         auto operator()(const T&...)
         {
-            return OSSIA::Value{};
+            return ossia::value{};
         }
 };
 
@@ -288,7 +288,7 @@ struct DomainMaxVisitor
 
         template<typename T>
         auto operator()(const T& value)
-            -> decltype((T().max)(), OSSIA::Value())
+            -> decltype((T().max)(), ossia::value())
         {
             return value.max;
         }
@@ -296,14 +296,14 @@ struct DomainMaxVisitor
         template<typename... T>
         auto operator()(const T&...)
         {
-            return OSSIA::Value{};
+            return ossia::value{};
         }
 };
 
-inline Value clamp(
+inline value clamp(
         const Domain& dom,
         BoundingMode b,
-        const Value& val)
+        const value& val)
 {
     if(bool(dom) && bool(val.v))
     {
@@ -312,7 +312,7 @@ inline Value clamp(
     return val;
 }
 
-inline Value min(const Domain& dom)
+inline value min(const Domain& dom)
 {
     if(dom)
     {
@@ -321,7 +321,7 @@ inline Value min(const Domain& dom)
     return {};
 }
 
-inline Value max(const Domain& dom)
+inline value max(const Domain& dom)
 {
     if(dom)
     {
@@ -356,7 +356,7 @@ struct DomainCreationVisitor
         }
 };
 
-inline Domain makeDomain(const OSSIA::Value& min, const OSSIA::Value& max)
+inline Domain makeDomain(const ossia::value& min, const ossia::value& max)
 {
     if(min.valid() && max.valid())
     {

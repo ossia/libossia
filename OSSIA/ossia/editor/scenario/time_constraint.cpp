@@ -6,14 +6,14 @@
 # pragma mark -
 # pragma mark Life cycle
 
-namespace OSSIA
+namespace ossia
 {
-  std::shared_ptr<TimeConstraint> TimeConstraint::create(TimeConstraint::ExecutionCallback callback,
-                                                    std::shared_ptr<TimeEvent> startEvent,
-                                                    std::shared_ptr<TimeEvent> endEvent,
-                                                    TimeValue nominal,
-                                                    TimeValue min,
-                                                    TimeValue max)
+  std::shared_ptr<time_constraint> time_constraint::create(time_constraint::ExecutionCallback callback,
+                                                    std::shared_ptr<time_event> startEvent,
+                                                    std::shared_ptr<time_event> endEvent,
+                                                    time_value nominal,
+                                                    time_value min,
+                                                    time_value max)
   {
     auto timeConstraint = std::make_shared<impl::JamomaTimeConstraint>(callback, startEvent, endEvent, nominal, min, max);
 
@@ -36,6 +36,6 @@ namespace OSSIA
     return timeConstraint;
   }
 
-  TimeConstraint::~TimeConstraint()
+  time_constraint::~time_constraint()
   {}
 }

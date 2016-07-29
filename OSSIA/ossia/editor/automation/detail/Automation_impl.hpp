@@ -27,7 +27,7 @@
 namespace impl
 {
 class JamomaAutomation final :
-    public OSSIA::Automation,
+    public ossia::automation,
     public JamomaTimeProcess
 {
 
@@ -37,9 +37,9 @@ private:
 # pragma mark Implementation specific
 #endif
 
-  OSSIA::net::Address& mDrivenAddress;
-  OSSIA::Value mDrive;
-  OSSIA::Message mLastMessage;
+  ossia::net::address& mDrivenAddress;
+  ossia::value mDrive;
+  ossia::Message mLastMessage;
 
 public:
 #if 0
@@ -47,7 +47,7 @@ public:
 # pragma mark Life cycle
 #endif
 
-  JamomaAutomation(OSSIA::net::Address&, const OSSIA::Value&);
+  JamomaAutomation(ossia::net::address&, const ossia::value&);
 
   JamomaAutomation(const JamomaAutomation&);
 
@@ -57,9 +57,9 @@ public:
 # pragma mark Execution
 #endif
 
-  OSSIA::StateElement offset(OSSIA::TimeValue) override;
+  ossia::StateElement offset(ossia::time_value) override;
 
-  OSSIA::StateElement state() override;
+  ossia::StateElement state() override;
 #if 0
 # pragma mark -
 # pragma mark Execution - Implementation specific
@@ -74,14 +74,14 @@ public:
 # pragma mark Accessors
 #endif
 
-  const OSSIA::net::Address& getDrivenAddress() const override;
+  const ossia::net::address& getDrivenAddress() const override;
 
-  const OSSIA::Value& getDriving() const override;
+  const ossia::value& getDriving() const override;
 
 #if 0
 # pragma mark -
 # pragma mark Implementation specific
 #endif
-  static OSSIA::Value computeValue(double, const OSSIA::Value&);
+  static ossia::value computeValue(double, const ossia::value&);
 };
 }

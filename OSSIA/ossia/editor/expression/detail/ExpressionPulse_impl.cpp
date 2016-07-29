@@ -32,23 +32,23 @@ void JamomaExpressionPulse::update() const
 # pragma mark -
 # pragma mark Operator
 
-bool JamomaExpressionPulse::operator== (const Expression& expression) const
+bool JamomaExpressionPulse::operator== (const expression_base& exp) const
 {
-  if (expression.getType() == Expression::Type::PULSE)
+  if (exp.getType() == expression_base::Type::PULSE)
   {
-    auto& e = dynamic_cast<const JamomaExpressionPulse&>(expression);
-    return Value{mDestination} == Value{e.mDestination};
+    auto& e = dynamic_cast<const JamomaExpressionPulse&>(exp);
+    return value{mDestination} == value{e.mDestination};
   }
   else
     return false;
 }
 
-bool JamomaExpressionPulse::operator!= (const Expression& expression) const
+bool JamomaExpressionPulse::operator!= (const expression_base& exp) const
 {
-  if (expression.getType() == Expression::Type::PULSE)
+  if (exp.getType() == expression_base::Type::PULSE)
   {
-    auto& e = dynamic_cast<const JamomaExpressionPulse&>(expression);
-    return Value{mDestination} != Value{e.mDestination};
+    auto& e = dynamic_cast<const JamomaExpressionPulse&>(exp);
+    return value{mDestination} != value{e.mDestination};
   }
   else
     return true;
@@ -62,7 +62,7 @@ void JamomaExpressionPulse::onFirstCallbackAdded()
   if (const auto& addr = mDestination.value->getAddress())
   {
     mDestinationCallbackIndex = addr->addCallback(
-                                  [&] (const OSSIA::Value& result) { destinationCallback(result); });
+                                  [&] (const ossia::value& result) { destinationCallback(result); });
   }
 }
 
@@ -86,7 +86,7 @@ const Destination& JamomaExpressionPulse::getDestination() const
 # pragma mark -
 # pragma mark Implementation Specific
 
-void JamomaExpressionPulse::destinationCallback(const Value& value)
+void JamomaExpressionPulse::destinationCallback(const value& value)
 {
   mResult = true;
   send(true);

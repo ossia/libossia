@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
 
-namespace OSSIA
+namespace ossia
 {
 
 /*! get value at an abscissa
@@ -10,6 +10,6 @@ namespace OSSIA
  \param Y segment end value
  \return Y value */
 template <typename Y>
-using CurveSegment = std::function<Y(double, Y, Y)>;
+using curve_segment = std::function<Y(double, Y, Y)>;
 
 }

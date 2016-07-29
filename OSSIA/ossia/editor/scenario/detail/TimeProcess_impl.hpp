@@ -20,11 +20,11 @@ namespace impl
 class JamomaTimeProcess
 {
 protected:
-  OSSIA::TimeValue mLastDate;  // used to filter multiple state calls at the same time (use date as position can be always 0 in infinite duration case)
+  ossia::time_value mLastDate;  // used to filter multiple state calls at the same time (use date as position can be always 0 in infinite duration case)
 
 public:
   JamomaTimeProcess() :
-      mLastDate(OSSIA::Infinite)
+      mLastDate(ossia::Infinite)
   {
   }
 };

@@ -6,7 +6,7 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/minuit/minuit.hpp>
-namespace OSSIA
+namespace ossia
 {
 namespace minuit
 {
@@ -30,12 +30,12 @@ struct minuit_remote_behaviour<
     minuit_command::Answer,
     minuit_operation::Get>
 {
-    OSSIA::net::Domain get_domain(
-        OSSIA::net::Address& addr,
+    ossia::net::Domain get_domain(
+        ossia::net::address& addr,
         oscpack::ReceivedMessageArgumentIterator beg_it,
         oscpack::ReceivedMessageArgumentIterator end_it)
     {
-      std::vector<OSSIA::Value> val;
+      std::vector<ossia::value> val;
       auto cur = addr.cloneValue();
 
       // We read all the values one by one
@@ -47,7 +47,7 @@ struct minuit_remote_behaviour<
       }
 
       if(val.size() == 2)
-        return OSSIA::net::makeDomain(val[0], val[1]);
+        return ossia::net::makeDomain(val[0], val[1]);
       return {};
     }
 
@@ -108,7 +108,7 @@ struct minuit_remote_behaviour<
           case minuit_attribute::Type:
           {
             addr->setValueType(
-                  OSSIA::minuit::type_from_minuit_type_text(mess_it->AsString()));
+                  ossia::minuit::type_from_minuit_type_text(mess_it->AsString()));
 
             break;
           }
@@ -261,7 +261,7 @@ struct minuit_remote_behaviour<
 
       // Find or create the node
       auto& n = impl::find_or_create_node(dev, address);
-      n.createAddress(OSSIA::Type::IMPULSE);
+      n.createAddress(ossia::Type::IMPULSE);
 
       auto sub_request = proto.mLocalNameTable.get_action(minuit_action::GetRequest);
 

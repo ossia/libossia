@@ -74,26 +74,26 @@ bool OSC2::getLearningStatus() const
 }
 
 
-OSC2& OSC2::setLearningStatus(OSSIA::net::Device& ossiaDevice, bool newLearn)
+OSC2& OSC2::setLearningStatus(ossia::net::Device& ossiaDevice, bool newLearn)
 {
     return *this;
 }
 
-bool OSC2::update(OSSIA::net::Node& node)
+bool OSC2::update(ossia::net::Node& node)
 {
     return false;
 }
 
-bool OSC2::pull(OSSIA::net::Address& address)
+bool OSC2::pull(ossia::net::address& address)
 {
     return false;
 }
 
-bool OSC2::push(const OSSIA::net::Address& address)
+bool OSC2::push(const ossia::net::address& address)
 {
     auto& addr = static_cast<const BasicAddress&>(address);
 
-    if(addr.getAccessMode() == OSSIA::AccessMode::GET)
+    if(addr.getAccessMode() == ossia::AccessMode::GET)
         return false;
 
     auto val = filterValue(addr);
@@ -105,7 +105,7 @@ bool OSC2::push(const OSSIA::net::Address& address)
     return false;
 }
 
-bool OSC2::observe(OSSIA::net::Address& address, bool enable)
+bool OSC2::observe(ossia::net::address& address, bool enable)
 {
     std::lock_guard<std::mutex> lock(mListeningMutex);
 
@@ -125,7 +125,7 @@ void OSC2::handleReceivedMessage(
     auto it = mListening.find(m.AddressPattern());
     if(it != mListening.end())
     {
-        OSSIA::net::Address& addr = *it->second;
+        ossia::net::address& addr = *it->second;
         lock.unlock();
         updateValue(addr, m);
     }

@@ -1,9 +1,9 @@
 #pragma once
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
-class Value;
+class value;
 
 /*! \details Impulse value */
 struct OSSIA_EXPORT Impulse
@@ -15,12 +15,12 @@ struct OSSIA_EXPORT Impulse
   Impulse& operator=(const Impulse&) = default;
   Impulse& operator=(Impulse&&) = default;
 
-  bool operator== (const Value&) const { return true; }
-  bool operator!= (const Value&) const { return false; }
-  bool operator>  (const Value&) const { return false; }
-  bool operator>= (const Value&) const { return true; }
-  bool operator<  (const Value&) const { return false; }
-  bool operator<= (const Value&) const { return true; }
+  bool operator== (const value&) const { return true; }
+  bool operator!= (const value&) const { return false; }
+  bool operator>  (const value&) const { return false; }
+  bool operator>= (const value&) const { return true; }
+  bool operator<  (const value&) const { return false; }
+  bool operator<= (const value&) const { return true; }
 };
 
 }

@@ -3,7 +3,7 @@
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
 namespace net
 {
@@ -12,7 +12,7 @@ class Protocol;
 class OSSIA_EXPORT Device
 {
     public:
-        Device(std::unique_ptr<OSSIA::net::Protocol> proto);
+        Device(std::unique_ptr<ossia::net::Protocol> proto);
 
         Device() = delete;
         Device(const Device&) = delete;
@@ -20,12 +20,12 @@ class OSSIA_EXPORT Device
         Device& operator=(const Device&) = delete;
         Device& operator=(Device&&) = delete;
 
-        OSSIA::net::Protocol& getProtocol() const;
+        ossia::net::Protocol& getProtocol() const;
 
         virtual ~Device();
 
-        virtual const OSSIA::net::Node& getRootNode() const = 0;
-        virtual OSSIA::net::Node& getRootNode() = 0;
+        virtual const ossia::net::Node& getRootNode() const = 0;
+        virtual ossia::net::Node& getRootNode() = 0;
 
         void setName(const std::string& str)
         { getRootNode().setName(str); }
@@ -37,11 +37,11 @@ class OSSIA_EXPORT Device
         Nano::Signal<void(const Node&)> onNodeCreated; // The node being created
         Nano::Signal<void(const Node&)> onNodeRemoving; // The node being removed
         Nano::Signal<void(const Node&, std::string)> onNodeRenamed; // Node has the new name, second argument is the old name
-        Nano::Signal<void(const Address&)> onAddressCreated; // The address being created
-        Nano::Signal<void(const Address&)> onAddressRemoving; // The node whose address was removed
+        Nano::Signal<void(const address&)> onAddressCreated; // The address being created
+        Nano::Signal<void(const address&)> onAddressRemoving; // The node whose address was removed
 
     protected:
-        std::unique_ptr<OSSIA::net::Protocol> mProtocol;
+        std::unique_ptr<ossia::net::Protocol> mProtocol;
 };
 }
 }

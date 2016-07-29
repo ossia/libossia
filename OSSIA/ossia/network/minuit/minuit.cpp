@@ -25,7 +25,7 @@ Minuit2::Minuit2(std::string ip, uint16_t in_port, uint16_t out_port) :
 Minuit2::~Minuit2()
 {}
 
-void Minuit2::setDevice(OSSIA::net::Device& dev)
+void Minuit2::setDevice(ossia::net::Device& dev)
 {
   mDevice = dynamic_cast<BasicDevice*>(&dev);
   mLocalNameTable.set_device_name("i-score");
@@ -74,7 +74,7 @@ Minuit2& Minuit2::setOutPort(uint16_t out_port)
   return *this;
 }
 
-bool Minuit2::update(OSSIA::net::Node& node)
+bool Minuit2::update(ossia::net::Node& node)
 {
   // Reset node
   node.clearChildren();
@@ -84,7 +84,7 @@ bool Minuit2::update(OSSIA::net::Node& node)
   mNamespacePromise = std::promise<void>{};
   auto fut = mNamespacePromise.get_future();
 
-  auto act = mLocalNameTable.get_action(OSSIA::minuit::minuit_action::NamespaceRequest);
+  auto act = mLocalNameTable.get_action(ossia::minuit::minuit_action::NamespaceRequest);
   refresh(act, impl::getOSCAddressAsString(node));
 
   fut.wait_for(std::chrono::seconds(5));
@@ -92,13 +92,13 @@ bool Minuit2::update(OSSIA::net::Node& node)
   return true;
 }
 
-bool Minuit2::pull(OSSIA::net::Address& address)
+bool Minuit2::pull(ossia::net::address& address)
 {
   // Send "get" request
   mGetPromise = std::promise<void>();
   auto fut = mGetPromise.get_future();
 
-  auto act = mLocalNameTable.get_action(OSSIA::minuit::minuit_action::GetRequest);
+  auto act = mLocalNameTable.get_action(ossia::minuit::minuit_action::GetRequest);
   auto addr = impl::getOSCAddressAsString(address);
   this->mSender.send(act, boost::string_ref(addr));
 
@@ -107,11 +107,11 @@ bool Minuit2::pull(OSSIA::net::Address& address)
 }
 
 
-bool Minuit2::push(const OSSIA::net::Address& address)
+bool Minuit2::push(const ossia::net::address& address)
 {
   auto& addr = static_cast<const BasicAddress&>(address);
 
-  if(addr.getAccessMode() == OSSIA::AccessMode::GET)
+  if(addr.getAccessMode() == ossia::AccessMode::GET)
     return false;
 
   auto val = filterValue(addr);
@@ -124,11 +124,11 @@ bool Minuit2::push(const OSSIA::net::Address& address)
   return false;
 }
 
-bool Minuit2::observe(OSSIA::net::Address& address, bool enable)
+bool Minuit2::observe(ossia::net::address& address, bool enable)
 {
   std::lock_guard<std::mutex> lock(mListeningMutex);
 
-  auto act = mLocalNameTable.get_action(OSSIA::minuit::minuit_action::ListenRequest);
+  auto act = mLocalNameTable.get_action(ossia::minuit::minuit_action::ListenRequest);
 
   if(enable)
   {
@@ -157,7 +157,7 @@ void Minuit2::handleReceivedMessage(
     auto it = mListening.find(m.AddressPattern());
     if(it != mListening.end())
     {
-      OSSIA::net::Address& addr = *it->second;
+      ossia::net::address& addr = *it->second;
       lock.unlock();
 
       updateValue(addr, m);
@@ -165,7 +165,7 @@ void Minuit2::handleReceivedMessage(
   }
   else
   {
-    OSSIA::minuit::minuit_message_handler h;
+    ossia::minuit::minuit_message_handler h;
     h.handleMinuitMessage(*this, *mDevice, address, m);
   }
 }

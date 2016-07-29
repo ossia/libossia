@@ -19,12 +19,12 @@
 
 #include "TimeEvent_impl.hpp" // because the TimeNode::emplace method is a JamomaTimeEvent factory
 
-using namespace OSSIA;
+using namespace ossia;
 
 
 namespace impl
 {
-class JamomaTimeNode final : public TimeNode, public std::enable_shared_from_this<JamomaTimeNode>
+class JamomaTimeNode final : public time_node, public std::enable_shared_from_this<JamomaTimeNode>
 {
 
 private:
@@ -32,58 +32,58 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  TimeNode::ExecutionCallback   mCallback;
+  time_node::execution_callback   mCallback;
 
-  std::shared_ptr<Expression>        mExpression;
+  std::shared_ptr<expression_base>        mExpression;
   bool                          mObserveExpression;
   bool                          mCallbackSet = false;
-  Expression::iterator          mResultCallbackIndex;
+  expression_base::iterator          mResultCallbackIndex;
 
-  TimeValue                     mSimultaneityMargin;
+  time_value                     mSimultaneityMargin;
 
-  Container<TimeEvent>          mPendingEvents;
+  ptr_container<time_event>          mPendingEvents;
 
 public:
 
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaTimeNode(TimeNode::ExecutionCallback);
+  JamomaTimeNode(time_node::execution_callback);
 
   ~JamomaTimeNode();
 
 # pragma mark -
 # pragma mark Execution
 
-  void setCallback(TimeNode::ExecutionCallback) override;
+  void setCallback(time_node::execution_callback) override;
 
   bool trigger() override;
 
 # pragma mark -
 # pragma mark Accessors
 
-  TimeValue getDate() const override;
+  time_value getDate() const override;
 
-  const std::shared_ptr<Expression> & getExpression() const override;
+  const std::shared_ptr<expression_base> & getExpression() const override;
 
-  TimeNode & setExpression(const std::shared_ptr<Expression>) override;
+  time_node & setExpression(const std::shared_ptr<expression_base>) override;
 
-  TimeValue getSimultaneityMargin() const override;
+  time_value getSimultaneityMargin() const override;
 
-  TimeNode & setSimultaneityMargin(TimeValue) override;
+  time_node & setSimultaneityMargin(time_value) override;
 
 # pragma mark -
 # pragma mark TimeEvents
 
   iterator emplace(const_iterator,
-                   TimeEvent::ExecutionCallback,
-                   std::shared_ptr<Expression> = ExpressionTrue()) override;
+                   time_event::ExecutionCallback,
+                   std::shared_ptr<expression_base> = ExpressionTrue()) override;
 
 # pragma mark -
 # pragma mark Implementation specific
 
   /* process all TimeEvents to propagate execution */
-  void process(Container<TimeEvent>& statusChangedEvents);
+  void process(ptr_container<time_event>& statusChangedEvents);
 
   /* is the TimeNode observing its Expression ? */
   bool isObservingExpression();

@@ -1,7 +1,7 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/protocol.hpp>
 
-namespace OSSIA
+namespace ossia
 {
 namespace net
 {

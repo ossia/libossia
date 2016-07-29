@@ -26,14 +26,14 @@
 #include "TimeNode_impl.hpp"
 #include <ossia/editor/scenario/detail/TimeProcess_impl.hpp>
 
-using namespace OSSIA;
+using namespace ossia;
 
 using namespace std::placeholders;
 
 namespace impl
 {
 class JamomaTimeConstraint final :
-        public TimeConstraint,
+        public time_constraint,
         public JamomaClock,
         public std::enable_shared_from_this<JamomaTimeConstraint>
 {
@@ -43,26 +43,26 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  TimeConstraint::ExecutionCallback   mCallback;
+  time_constraint::ExecutionCallback   mCallback;
 
-  std::shared_ptr<TimeEvent>               mStartEvent;
-  std::shared_ptr<TimeEvent>               mEndEvent;
+  std::shared_ptr<time_event>               mStartEvent;
+  std::shared_ptr<time_event>               mEndEvent;
 
-  TimeValue                           mDurationNominal{};
-  TimeValue                           mDurationMin{};
-  TimeValue                           mDurationMax{};
+  time_value                           mDurationNominal{};
+  time_value                           mDurationMin{};
+  time_value                           mDurationMax{};
 
 public:
 
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaTimeConstraint(TimeConstraint::ExecutionCallback,
-                       std::shared_ptr<TimeEvent>,
-                       std::shared_ptr<TimeEvent>,
-                       TimeValue = Infinite,
-                       TimeValue = 0.,
-                       TimeValue = Infinite);
+  JamomaTimeConstraint(time_constraint::ExecutionCallback,
+                       std::shared_ptr<time_event>,
+                       std::shared_ptr<time_event>,
+                       time_value = Infinite,
+                       time_value = 0.,
+                       time_value = Infinite);
 
   ~JamomaTimeConstraint();
 
@@ -73,7 +73,7 @@ public:
 
   void stop() final override;
 
-  State offset(TimeValue) override;
+  State offset(time_value) override;
 
   State state() override;
 
@@ -86,33 +86,33 @@ public:
 
   void setCallback(ExecutionCallback) override;
 
-  const TimeValue & getDurationNominal() const override;
+  const time_value & getDurationNominal() const override;
 
-  TimeConstraint & setDurationNominal(TimeValue) override;
+  time_constraint & setDurationNominal(time_value) override;
 
-  const TimeValue & getDurationMin() const override;
+  const time_value & getDurationMin() const override;
 
-  TimeConstraint & setDurationMin(TimeValue) override;
+  time_constraint & setDurationMin(time_value) override;
 
-  const TimeValue & getDurationMax() const override;
+  const time_value & getDurationMax() const override;
 
-  TimeConstraint & setDurationMax(TimeValue) override;
+  time_constraint & setDurationMax(time_value) override;
 
-  const std::shared_ptr<TimeEvent> & getStartEvent() const override;
+  const std::shared_ptr<time_event> & getStartEvent() const override;
 
-  const std::shared_ptr<TimeEvent> & getEndEvent() const override;
+  const std::shared_ptr<time_event> & getEndEvent() const override;
 
 # pragma mark -
 # pragma mark TimeProcesses
 
-  void addTimeProcess(std::shared_ptr<TimeProcess>) override;
+  void addTimeProcess(std::shared_ptr<time_process>) override;
 
-  void removeTimeProcess(std::shared_ptr<TimeProcess>) override;
+  void removeTimeProcess(std::shared_ptr<time_process>) override;
 
 private:
 # pragma mark -
 # pragma mark Implementation specific
-  void ClockCallback(TimeValue position, TimeValue date, unsigned char droppedTicks);
+  void ClockCallback(time_value position, time_value date, unsigned char droppedTicks);
   State make_state();
 };
 }

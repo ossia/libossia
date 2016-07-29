@@ -25,24 +25,24 @@
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
 
-class Expression;
+class expression_base;
 class State;
-class TimeEvent;
-class TimeValue;
+class time_event;
+class time_value;
 
-class OSSIA_EXPORT TimeNode
+class OSSIA_EXPORT time_node
 {
 
 public:
 
-  using iterator = Container<TimeEvent>::iterator;
-  using const_iterator = Container<TimeEvent>::const_iterator;
+  using iterator = ptr_container<time_event>::iterator;
+  using const_iterator = ptr_container<time_event>::const_iterator;
 
   /*! to be notified when it is triggered */
-  using ExecutionCallback = std::function<void()>;
+  using execution_callback = std::function<void()>;
 
 #if 0
 # pragma mark -
@@ -52,9 +52,9 @@ public:
   /*! factory
    \param #TimeNode::ExecutionCallback to be be notified when the #TimeNode is triggered
    \return std::shared_ptr<#TimeNode> */
-  static std::shared_ptr<TimeNode> create(TimeNode::ExecutionCallback = nullptr);
+  static std::shared_ptr<time_node> create(time_node::execution_callback = {});
   /*! destructor */
-  virtual ~TimeNode();
+  virtual ~time_node();
 
 #if 0
 # pragma mark -
@@ -64,7 +64,7 @@ public:
   /*! changes the callback in the #TimeNode
    \param #TimeNode::ExecutionCallback to be be notified when the #TimeNode is triggered
    \details this may be unsafe to do during execution */
-  virtual void setCallback(TimeNode::ExecutionCallback) = 0;
+  virtual void setCallback(time_node::execution_callback) = 0;
 
   /*! evaluate all #TimeEvent's to make them to happen or to dispose them
    \return boolean true if the operation succeeded */
@@ -79,28 +79,28 @@ public:
    \details the date is the sum of its previous #TimeConstraint durations
    \details a #TimeNode with na previous #TimeConstraints have a date equals to 0.
    \return #TimeValue the date */
-  virtual TimeValue getDate() const = 0;
+  virtual time_value getDate() const = 0;
 
   /*! get the expression of the #TimeNode
    \return std::shared_ptr<#Expression> */
-  virtual const std::shared_ptr<Expression> & getExpression() const = 0;
+  virtual const std::shared_ptr<expression_base> & getExpression() const = 0;
 
   /*! set the expression of the #TimeNode
    \details setting the expression to ExpressionTrue will defer the evaluation on #TimeEvent's expression
    \details setting the expression to ExpressionFalse will mute TimeNode execution
    \param std::shared_ptr<#Expression>
    \return #TimeNode the time node */
-  virtual TimeNode & setExpression(const std::shared_ptr<Expression> = ExpressionTrue()) = 0;
+  virtual time_node & setExpression(const std::shared_ptr<expression_base> = ExpressionTrue()) = 0;
 
   /*! get the simultaneity margin
    \return #TimeValue the simultaneity margin */
-  virtual TimeValue getSimultaneityMargin() const = 0;
+  virtual time_value getSimultaneityMargin() const = 0;
 
   /*! set the simultaneity margin
    \todo remove setter and move the setting into constructor (?)
    \param #TimeValue the simultaneity margin
    \return #TimeNode the time node */
-  virtual TimeNode & setSimultaneityMargin(TimeValue) = 0;
+  virtual time_node & setSimultaneityMargin(time_value) = 0;
 
 #if 0
 #pragma mark -
@@ -113,21 +113,21 @@ public:
    \param std::shared<#Expression> an optionnal #Expression to apply to the #TimeEvent
    \return std::shared_ptr<#TimeEvent> */
   virtual iterator emplace(const_iterator,
-                           TimeEvent::ExecutionCallback,
-                           std::shared_ptr<Expression> = ExpressionTrue()) = 0;
+                           time_event::ExecutionCallback,
+                           std::shared_ptr<expression_base> = ExpressionTrue()) = 0;
 
   /*! get the #TimeEvents of the #TimeNode
    \return #Container<#TimeEvent> */
-  Container<TimeEvent>& timeEvents()
+  ptr_container<time_event>& timeEvents()
   { return m_timeEvents; }
 
   /*! get the #TimeEvents of the #TimeNode
    \return #Container<#TimeEvent> */
-  const Container<TimeEvent>& timeEvents() const
+  const ptr_container<time_event>& timeEvents() const
   { return m_timeEvents; }
 
 private:
-  Container<TimeEvent> m_timeEvents;
+  ptr_container<time_event> m_timeEvents;
 };
 
 }

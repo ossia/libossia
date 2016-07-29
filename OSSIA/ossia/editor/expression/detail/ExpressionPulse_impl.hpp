@@ -3,13 +3,13 @@
 #include <ossia/network/base/address.hpp>
 #include <algorithm>
 
-using namespace OSSIA;
+using namespace ossia;
 
 using namespace std::placeholders;
 
 namespace impl
 {
-class JamomaExpressionPulse final : public ExpressionPulse
+class JamomaExpressionPulse final : public expression_pulse
 {
 
 private:
@@ -20,7 +20,7 @@ private:
   Destination         mDestination;
   mutable bool        mResult;
 
-  net::Address::callback_index   mDestinationCallbackIndex;
+  net::address::callback_index   mDestinationCallbackIndex;
 
 public:
 
@@ -41,9 +41,9 @@ public:
 # pragma mark -
 # pragma mark Operator
 
-  bool operator== (const Expression& expression) const override;
+  bool operator== (const expression_base& expression_base) const override;
 
-  bool operator!= (const Expression& expression) const override;
+  bool operator!= (const expression_base& expression_base) const override;
 
 # pragma mark -
 # pragma mark Callback Container
@@ -61,6 +61,6 @@ private:
 # pragma mark -
 # pragma mark Implementation Specific
 
-  void destinationCallback(const Value& value);
+  void destinationCallback(const value& value);
 };
 }

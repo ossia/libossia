@@ -19,13 +19,13 @@
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
-class Value;
-class TimeValue;
-namespace net { class Address; }
-class OSSIA_EXPORT Automation :
-    public virtual TimeProcess
+class value;
+class time_value;
+namespace net { class address; }
+class OSSIA_EXPORT automation :
+    public virtual time_process
 {
 
 public:
@@ -37,12 +37,12 @@ public:
    \param the address to drive
    \param how to drive the address
    \return a new automation */
-  static std::shared_ptr<Automation> create(
-      net::Address&,
-      const Value&);
+  static std::shared_ptr<automation> create(
+      net::address&,
+      const value&);
 
   /*! destructor */
-  virtual ~Automation();
+  virtual ~automation();
 
 #if 0
 # pragma mark -
@@ -51,10 +51,10 @@ public:
 
   /*! get the address to drive
    \return driven address */
-  virtual const net::Address& getDrivenAddress() const = 0;
+  virtual const net::address& getDrivenAddress() const = 0;
 
   /*! get the driving value
    \return driving value */
-  virtual const Value& getDriving() const = 0;
+  virtual const value& getDriving() const = 0;
 };
 }

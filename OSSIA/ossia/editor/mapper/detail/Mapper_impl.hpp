@@ -30,7 +30,7 @@
 using namespace std::placeholders;
 namespace impl
 {
-class JamomaMapper : public OSSIA::Mapper, public JamomaTimeProcess
+class JamomaMapper : public ossia::mapper, public JamomaTimeProcess
 {
 
 private:
@@ -38,34 +38,34 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  OSSIA::net::Address&   mDriverAddress;
-  OSSIA::net::Address&   mDrivenAddress;
-  OSSIA::Value                 mDrive;
+  ossia::net::address&   mDriverAddress;
+  ossia::net::address&   mDrivenAddress;
+  ossia::value                 mDrive;
 
-  OSSIA::Message               mLastMessage;
-  OSSIA::Value                 mValueToMap;
+  ossia::Message               mLastMessage;
+  ossia::value                 mValueToMap;
   mutable std::mutex    mValueToMapMutex;
 
   bool                  mDriverValueObserved{};
-  OSSIA::net::Address::callback_index     mDriverValueCallbackIndex;
+  ossia::net::address::callback_index     mDriverValueCallbackIndex;
 
 public:
 
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaMapper(OSSIA::net::Address&,
-               OSSIA::net::Address&,
-               const OSSIA::Value&);
+  JamomaMapper(ossia::net::address&,
+               ossia::net::address&,
+               const ossia::value&);
 
   ~JamomaMapper();
 
 # pragma mark -
 # pragma mark Execution
 
-  OSSIA::StateElement offset(OSSIA::TimeValue) override;
+  ossia::StateElement offset(ossia::time_value) override;
 
-  OSSIA::StateElement state() override;
+  ossia::StateElement state() override;
 
 # pragma mark -
 # pragma mark Execution - Implementation specific
@@ -78,19 +78,19 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  const OSSIA::net::Address& getDriverAddress() const override;
+  const ossia::net::address& getDriverAddress() const override;
 
-  const OSSIA::net::Address& getDrivenAddress() const override;
+  const ossia::net::address& getDrivenAddress() const override;
 
-  const OSSIA::Value& getDriving() const override;
+  const ossia::value& getDriving() const override;
 
 private:
 
 # pragma mark -
 # pragma mark Implementation specific
 
-  OSSIA::Value computeValue(const OSSIA::Value&, const OSSIA::Value&);
+  ossia::value computeValue(const ossia::value&, const ossia::value&);
 
-  void driverValueCallback(const OSSIA::Value& value);
+  void driverValueCallback(const ossia::value& value);
 };
 }

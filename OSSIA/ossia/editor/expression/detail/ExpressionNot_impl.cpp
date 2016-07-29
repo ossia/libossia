@@ -3,7 +3,7 @@
 namespace impl
 {
 
-JamomaExpressionNot::JamomaExpressionNot(std::shared_ptr<Expression> expr) :
+JamomaExpressionNot::JamomaExpressionNot(std::shared_ptr<expression_base> expr) :
 mExpression(expr)
 {
 }
@@ -29,22 +29,22 @@ void JamomaExpressionNot::update() const
 # pragma mark -
 # pragma mark Operator
 
-bool JamomaExpressionNot::operator== (const Expression& expression) const
+bool JamomaExpressionNot::operator== (const expression_base& exp) const
 {
-  if (expression.getType() == Expression::Type::NOT)
+  if (exp.getType() == expression_base::Type::NOT)
   {
-    const JamomaExpressionNot e = dynamic_cast<const JamomaExpressionNot&>(expression);
+    const JamomaExpressionNot e = dynamic_cast<const JamomaExpressionNot&>(exp);
     return *mExpression == *e.mExpression;
   }
   else
     return false;
 }
 
-bool JamomaExpressionNot::operator!= (const Expression& expression) const
+bool JamomaExpressionNot::operator!= (const expression_base& exp) const
 {
-  if (expression.getType() == Expression::Type::NOT)
+  if (exp.getType() == expression_base::Type::NOT)
   {
-    const JamomaExpressionNot e = dynamic_cast<const JamomaExpressionNot&>(expression);
+    const JamomaExpressionNot e = dynamic_cast<const JamomaExpressionNot&>(exp);
     return *mExpression != *e.mExpression;
   }
   else
@@ -54,7 +54,7 @@ bool JamomaExpressionNot::operator!= (const Expression& expression) const
 # pragma mark -
 # pragma mark Accessors
 
-const std::shared_ptr<Expression> & JamomaExpressionNot::getExpression() const
+const std::shared_ptr<expression_base> & JamomaExpressionNot::getExpression() const
 {
   return mExpression;
 }

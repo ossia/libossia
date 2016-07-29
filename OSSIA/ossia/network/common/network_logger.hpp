@@ -3,7 +3,7 @@
 #include <string>
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
     class OSSIA_EXPORT NetworkLogger
     {

@@ -1,9 +1,9 @@
 #pragma once
 #include <cmath>
-namespace OSSIA
+namespace ossia
 {
 template <typename Y>
-struct CurveSegmentSin
+struct curve_segment_sin
 {
   auto operator()(double freq, double phase, double ampl) const
   {

@@ -31,7 +31,7 @@
 namespace impl
 {
 class BasicDevice;
-class OSSIA_EXPORT Minuit2 final : public OSSIA::net::Protocol
+class OSSIA_EXPORT Minuit2 final : public ossia::net::Protocol
 {
     private:
         std::string    mIp;
@@ -40,7 +40,7 @@ class OSSIA_EXPORT Minuit2 final : public OSSIA::net::Protocol
         bool           mLearning{};          /// if the device is currently learning from inbound messages.
 
         std::mutex mListeningMutex;
-        std::unordered_map<std::string, OSSIA::net::Address*> mListening;
+        std::unordered_map<std::string, ossia::net::address*> mListening;
 
         std::promise<void> mNamespacePromise;
         impl::BasicDevice* mDevice;
@@ -48,14 +48,14 @@ class OSSIA_EXPORT Minuit2 final : public OSSIA::net::Protocol
         std::set<std::string, std::less<>> m_namespaceRequests;
     public:
         osc::sender    mSender;
-        OSSIA::minuit::name_table mLocalNameTable;
-        OSSIA::minuit::name_table mRemoteNameTable;
+        ossia::minuit::name_table mLocalNameTable;
+        ossia::minuit::name_table mRemoteNameTable;
         std::promise<void> mGetPromise;
 
         Minuit2(std::string, uint16_t, uint16_t);
         ~Minuit2();
 
-        void setDevice(OSSIA::net::Device& dev) override;
+        void setDevice(ossia::net::Device& dev) override;
 
         const std::string& getIp() const;
         Minuit2& setIp(std::string);
@@ -66,13 +66,13 @@ class OSSIA_EXPORT Minuit2 final : public OSSIA::net::Protocol
         uint16_t getOutPort() const;
         Minuit2& setOutPort(uint16_t);
 
-        bool update(OSSIA::net::Node& node) override;
+        bool update(ossia::net::Node& node) override;
 
-        bool pull(OSSIA::net::Address& address) override;
+        bool pull(ossia::net::address& address) override;
 
-        bool push(const OSSIA::net::Address& address) override;
+        bool push(const ossia::net::address& address) override;
 
-        bool observe(OSSIA::net::Address& address, bool enable) override;
+        bool observe(ossia::net::address& address, bool enable) override;
 
         void refresh(boost::string_ref req, const std::string& addr)
         {

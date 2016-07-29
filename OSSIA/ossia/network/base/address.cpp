@@ -1,10 +1,10 @@
 #include <ossia/network/generic/generic_address.hpp>
 #include <ossia/network/generic/generic_node.hpp>
-namespace OSSIA
+namespace ossia
 {
 namespace net
 {
-Address::~Address() = default;
+address::~address() = default;
 
 static void getAddressFromNode_rec(
         const Node& node,
@@ -16,7 +16,7 @@ static void getAddressFromNode_rec(
     str.push_back(node.getName());
 }
 
-std::string getAddressFromNode(const OSSIA::net::Node& node)
+std::string getAddressFromNode(const ossia::net::Node& node)
 {
     std::vector<std::string> vec;
     getAddressFromNode_rec(node, vec);

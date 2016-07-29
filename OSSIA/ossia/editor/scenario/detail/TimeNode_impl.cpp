@@ -3,7 +3,7 @@
 namespace impl
 {
 
-JamomaTimeNode::JamomaTimeNode(TimeNode::ExecutionCallback callback) :
+JamomaTimeNode::JamomaTimeNode(time_node::execution_callback callback) :
 mCallback(callback),
 mExpression(ExpressionTrue())
 {}
@@ -14,7 +14,7 @@ JamomaTimeNode::~JamomaTimeNode()
 # pragma mark -
 # pragma mark Execution
 
-void JamomaTimeNode::setCallback(TimeNode::ExecutionCallback callback)
+void JamomaTimeNode::setCallback(time_node::execution_callback callback)
 {
   mCallback = callback;
 }
@@ -59,7 +59,7 @@ bool JamomaTimeNode::trigger()
 # pragma mark -
 # pragma mark Accessors
 
-TimeValue JamomaTimeNode::getDate() const
+time_value JamomaTimeNode::getDate() const
 {
   // compute the date from each first previous time constraint
   // ignoring zero duration time constraint
@@ -78,24 +78,24 @@ TimeValue JamomaTimeNode::getDate() const
   return Zero;
 }
 
-const std::shared_ptr<Expression> & JamomaTimeNode::getExpression() const
+const std::shared_ptr<expression_base> & JamomaTimeNode::getExpression() const
 {
   return mExpression;
 }
 
-TimeNode & JamomaTimeNode::setExpression(const std::shared_ptr<Expression> expression)
+time_node & JamomaTimeNode::setExpression(const std::shared_ptr<expression_base> exp)
 {
-  assert(expression != nullptr);
-  mExpression = expression;
+  assert(exp != nullptr);
+  mExpression = exp;
   return *this;
 }
 
-TimeValue JamomaTimeNode::getSimultaneityMargin() const
+time_value JamomaTimeNode::getSimultaneityMargin() const
 {
   return mSimultaneityMargin;
 }
 
-TimeNode & JamomaTimeNode::setSimultaneityMargin(TimeValue simultaneityMargin)
+time_node & JamomaTimeNode::setSimultaneityMargin(time_value simultaneityMargin)
 {
   mSimultaneityMargin = simultaneityMargin;
   return *this;
@@ -105,13 +105,13 @@ TimeNode & JamomaTimeNode::setSimultaneityMargin(TimeValue simultaneityMargin)
 # pragma mark TimeEvents
 
 JamomaTimeNode::iterator JamomaTimeNode::emplace(const_iterator pos,
-                                                 TimeEvent::ExecutionCallback callback,
-                                                 std::shared_ptr<Expression> expression)
+                                                 time_event::ExecutionCallback callback,
+                                                 std::shared_ptr<expression_base> exp)
 {
-  return timeEvents().insert(pos, std::make_shared<JamomaTimeEvent>(callback, shared_from_this(), expression));
+  return timeEvents().insert(pos, std::make_shared<JamomaTimeEvent>(callback, shared_from_this(), exp));
 }
 
-void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
+void JamomaTimeNode::process(ptr_container<time_event>& statusChangedEvents)
 {
   // prepare to remember which event changed its status to PENDING
   // because it is needed in JamomaTimeNode::trigger
@@ -126,19 +126,19 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
     switch (timeEvent->getStatus())
     {
       // check if NONE TimeEvent is ready to become PENDING
-      case TimeEvent::Status::NONE:
+      case time_event::Status::NONE:
       {
         bool minimalDurationReached = true;
 
         for (auto& timeConstraint : timeEvent->previousTimeConstraints())
         {
           // previous TimeConstraints with a DISPOSED start event are ignored
-          if (timeConstraint->getStartEvent()->getStatus() == TimeEvent::Status::DISPOSED)
+          if (timeConstraint->getStartEvent()->getStatus() == time_event::Status::DISPOSED)
             continue;
 
           // previous TimeConstraint with a none HAPPENED start event
           // can't have reached its minimal duration
-          if (timeConstraint->getStartEvent()->getStatus() != TimeEvent::Status::HAPPENED)
+          if (timeConstraint->getStartEvent()->getStatus() != time_event::Status::HAPPENED)
           {
             minimalDurationReached = false;
             break;
@@ -154,13 +154,13 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
 
         // access to PENDING status once all previous TimeConstraints allow it
         if (minimalDurationReached)
-          e->setStatus(TimeEvent::Status::PENDING);
+          e->setStatus(time_event::Status::PENDING);
         else
           break;
       }
 
       // PENDING TimeEvent is ready for evaluation
-      case TimeEvent::Status::PENDING:
+      case time_event::Status::PENDING:
       {
         mPendingEvents.push_back(timeEvent);
 
@@ -174,7 +174,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
       }
 
       // HAPPENED TimeEvent propagates recursively the execution to the end of each next TimeConstraints
-      case TimeEvent::Status::HAPPENED:
+      case time_event::Status::HAPPENED:
       {
         for (auto& timeConstraint : timeEvent->nextTimeConstraints())
         {
@@ -186,7 +186,7 @@ void JamomaTimeNode::process(Container<TimeEvent>& statusChangedEvents)
       }
 
       // DISPOSED TimeEvent stops the propagation of the execution
-      case TimeEvent::Status::DISPOSED:
+      case time_event::Status::DISPOSED:
       {
         break;
       }

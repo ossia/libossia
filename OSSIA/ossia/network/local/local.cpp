@@ -12,12 +12,12 @@ Local2::~Local2()
 
 }
 
-bool Local2::pull(OSSIA::net::Address& address)
+bool Local2::pull(ossia::net::address& address)
 {
     return false;
 }
 
-bool Local2::push(const OSSIA::net::Address& address)
+bool Local2::push(const ossia::net::address& address)
 {
     bool b = true;
     for(auto& proto : mExposed)
@@ -26,12 +26,12 @@ bool Local2::push(const OSSIA::net::Address& address)
     return b;
 }
 
-bool Local2::observe(OSSIA::net::Address& address, bool enable)
+bool Local2::observe(ossia::net::address& address, bool enable)
 {
     return false;
 }
 
-bool Local2::update(OSSIA::net::Node& node)
+bool Local2::update(ossia::net::Node& node)
 {
     return false;
 }

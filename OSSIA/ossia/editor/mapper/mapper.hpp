@@ -23,15 +23,15 @@
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
 namespace net {
-class Address;
+class address;
 }
-class Value;
-class TimeValue;
+class value;
+class time_value;
 
-class OSSIA_EXPORT Mapper : public virtual TimeProcess
+class OSSIA_EXPORT mapper : public virtual time_process
 {
 
 public:
@@ -46,12 +46,12 @@ public:
    \param the driven address
    \param how to map the driver address value on the driven address value
    \return a new mapper */
-  static std::shared_ptr<Mapper> create(net::Address&,
-                                        net::Address&,
-                                        const Value&);
+  static std::shared_ptr<mapper> create(net::address&,
+                                        net::address&,
+                                        const value&);
 
   /*! destructor */
-  virtual ~Mapper();
+  virtual ~mapper();
 
 #if 0
 # pragma mark -
@@ -60,14 +60,14 @@ public:
 
   /*! get the driver address
    \return observed address */
-  virtual const net::Address& getDriverAddress() const = 0;
+  virtual const net::address& getDriverAddress() const = 0;
 
   /*! get the driven address
    \return driven address */
-  virtual const net::Address& getDrivenAddress() const = 0;
+  virtual const net::address& getDrivenAddress() const = 0;
 
   /*! get the driving value
    \return driving value */
-  virtual const Value& getDriving() const = 0;
+  virtual const value& getDriving() const = 0;
 };
 }

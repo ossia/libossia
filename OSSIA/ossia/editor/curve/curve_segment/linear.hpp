@@ -16,10 +16,10 @@
 
 #pragma once
 
-namespace OSSIA
+namespace ossia
 {
 template <typename Y>
-struct CurveSegmentLinear
+struct curve_segment_linear
 {
   Y operator()(double ratio, Y start, Y end) const
   {

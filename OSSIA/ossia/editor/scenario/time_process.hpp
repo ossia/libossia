@@ -21,12 +21,12 @@
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
-class TimeConstraint;
-class TimeValue;
+class time_constraint;
+class time_value;
 
-class OSSIA_EXPORT TimeProcess
+class OSSIA_EXPORT time_process
 {
 
 public:
@@ -37,7 +37,7 @@ public:
 #endif
 
   /*! destructor */
-  virtual ~TimeProcess();
+  virtual ~time_process();
 
 #if 0
 # pragma mark -
@@ -48,7 +48,7 @@ public:
    \details don't call offset when the parent #TimeConstraint is running
    \param const #TimeValue offset date
    \return std::shared_ptr<#StateElement> */
-  virtual StateElement offset(TimeValue) = 0;
+  virtual StateElement offset(time_value) = 0;
 
   /*! get a #StateElement from the process depending on its parent #TimeConstraint date
    \details don't call state when the parent #TimeConstraint is not running
@@ -64,7 +64,7 @@ public:
 # pragma mark Accessors
 #endif
 
-  std::shared_ptr<TimeConstraint> parent;
+  std::shared_ptr<time_constraint> parent;
 
 };
 }

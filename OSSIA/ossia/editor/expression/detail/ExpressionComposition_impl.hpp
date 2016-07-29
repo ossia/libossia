@@ -1,13 +1,13 @@
 #include <ossia/editor/expression/expression_composition.hpp>
 #include <algorithm>
 
-using namespace OSSIA;
+using namespace ossia;
 
 using namespace std::placeholders;
 
 namespace impl
 {
-class JamomaExpressionComposition final : public ExpressionComposition
+class JamomaExpressionComposition final : public expression_composition
 {
 
 private:
@@ -15,19 +15,19 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  std::shared_ptr<Expression>  mFirstExpression;
+  std::shared_ptr<expression_base>  mFirstExpression;
   Operator                mOperator;
-  std::shared_ptr<Expression>  mSecondExpression;
+  std::shared_ptr<expression_base>  mSecondExpression;
 
-  Expression::iterator    mFirstResultCallbackIndex;
-  Expression::iterator    mSecondResultCallbackIndex;
+  expression_base::iterator    mFirstResultCallbackIndex;
+  expression_base::iterator    mSecondResultCallbackIndex;
 
 public:
 
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaExpressionComposition(std::shared_ptr<Expression> expr1, Operator op, std::shared_ptr<Expression> expr2);
+  JamomaExpressionComposition(std::shared_ptr<expression_base> expr1, Operator op, std::shared_ptr<expression_base> expr2);
 
   ~JamomaExpressionComposition();
 
@@ -41,18 +41,18 @@ public:
 # pragma mark -
 # pragma mark Operator
 
-  bool operator== (const Expression& expression) const override;
+  bool operator== (const expression_base& expression_base) const override;
 
-  bool operator!= (const Expression& expression) const override;
+  bool operator!= (const expression_base& expression_base) const override;
 
 # pragma mark -
 # pragma mark Accessors
 
-  const std::shared_ptr<Expression> & getFirstOperand() const override;
+  const std::shared_ptr<expression_base> & getFirstOperand() const override;
 
-  ExpressionComposition::Operator getOperator() const override;
+  expression_composition::Operator getOperator() const override;
 
-  const std::shared_ptr<Expression> & getSecondOperand() const override;
+  const std::shared_ptr<expression_base> & getSecondOperand() const override;
 
 private:
   void onFirstCallbackAdded() override;

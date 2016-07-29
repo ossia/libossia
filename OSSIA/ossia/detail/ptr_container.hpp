@@ -19,9 +19,9 @@
 #include <vector>
 #include <memory>
 
-namespace OSSIA
+namespace ossia
 {
-template<typename T> using Container =
+template<typename T> using ptr_container =
   std::vector<
     std::shared_ptr<T>,
     std::allocator<std::shared_ptr<T>>>;

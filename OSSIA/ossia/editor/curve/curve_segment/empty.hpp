@@ -16,10 +16,10 @@
 #pragma once
 
 
-namespace OSSIA
+namespace ossia
 {
 template <typename Y>
-class CurveSegmentEmpty
+class curve_segment_empty
 {
   Y operator()(double ratio, Y start, Y end) const
   {

@@ -24,12 +24,12 @@
 #include <ossia/editor/curve/curve_segment.hpp>
 #include <ossia_export.h>
 #include <functional>
-namespace OSSIA
+namespace ossia
 {
 class Destination;
 
 template <typename X, typename Y>
-class Curve : public CurveAbstract
+class curve : public curve_abstract
 {
 
 public:
@@ -44,10 +44,10 @@ public:
 
   /*! factory
    \return std::shared_ptr<#Curve> */
-  static std::shared_ptr<Curve> create();
+  static std::shared_ptr<curve> create();
 
   /*! destructor */
-  virtual ~Curve();
+  virtual ~curve();
 
 #if 0
 # pragma mark -
@@ -59,7 +59,7 @@ public:
    \param X target point abscissa
    \param Y target point ordinate
    \return bool */
-  virtual bool addPoint(CurveSegment<Y>, X, Y) = 0;
+  virtual bool addPoint(curve_segment<Y>, X, Y) = 0;
 
   /*! remove a point from the curve
    \param X point abscissa
@@ -122,26 +122,26 @@ public:
    \return std::map<X, pair<Y, CurveSegment<Y>>> map of {abscissa, {value, previous segment}
 
  */
-  virtual std::map<X, std::pair<Y, CurveSegment<Y>>> getPointsMap() const = 0;
+  virtual std::map<X, std::pair<Y, curve_segment<Y>>> getPointsMap() const = 0;
 
 };
 
 }
 
 #if !defined(APIJamoma_EXPORTS)
-extern template class OSSIA_EXPORT OSSIA::Curve<double, bool>;
-extern template class OSSIA_EXPORT OSSIA::Curve<double, int>;
-extern template class OSSIA_EXPORT OSSIA::Curve<double, float>;
+extern template class OSSIA_EXPORT ossia::curve<double, bool>;
+extern template class OSSIA_EXPORT ossia::curve<double, int>;
+extern template class OSSIA_EXPORT ossia::curve<double, float>;
 
-extern template class OSSIA_EXPORT OSSIA::Curve<bool, bool>;
-extern template class OSSIA_EXPORT OSSIA::Curve<bool, int>;
-extern template class OSSIA_EXPORT OSSIA::Curve<bool, float>;
+extern template class OSSIA_EXPORT ossia::curve<bool, bool>;
+extern template class OSSIA_EXPORT ossia::curve<bool, int>;
+extern template class OSSIA_EXPORT ossia::curve<bool, float>;
 
-extern template class OSSIA_EXPORT OSSIA::Curve<int, bool>;
-extern template class OSSIA_EXPORT OSSIA::Curve<int, int>;
-extern template class OSSIA_EXPORT OSSIA::Curve<int, float>;
+extern template class OSSIA_EXPORT ossia::curve<int, bool>;
+extern template class OSSIA_EXPORT ossia::curve<int, int>;
+extern template class OSSIA_EXPORT ossia::curve<int, float>;
 
-extern template class OSSIA_EXPORT OSSIA::Curve<float, bool>;
-extern template class OSSIA_EXPORT OSSIA::Curve<float, int>;
-extern template class OSSIA_EXPORT OSSIA::Curve<float, float>;
+extern template class OSSIA_EXPORT ossia::curve<float, bool>;
+extern template class OSSIA_EXPORT ossia::curve<float, int>;
+extern template class OSSIA_EXPORT ossia::curve<float, float>;
 #endif

@@ -1,9 +1,9 @@
 #pragma once
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
-class Value;
+class value;
 /*! \details Int value */
 struct OSSIA_EXPORT Int
 {
@@ -21,12 +21,12 @@ struct OSSIA_EXPORT Int
   Int& operator=(const Int&) = default;
   Int& operator=(Int&&) = default;
 
-  bool operator== (const Value&) const;
-  bool operator!= (const Value&) const;
-  bool operator>  (const Value&) const;
-  bool operator>= (const Value&) const;
-  bool operator<  (const Value&) const;
-  bool operator<= (const Value&) const;
+  bool operator== (const ossia::value&) const;
+  bool operator!= (const ossia::value&) const;
+  bool operator>  (const ossia::value&) const;
+  bool operator>= (const ossia::value&) const;
+  bool operator<  (const ossia::value&) const;
+  bool operator<= (const ossia::value&) const;
 };
 
 }

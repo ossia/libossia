@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/detail/algorithms.hpp>
-namespace OSSIA
+namespace ossia
 {
   struct StateFlattenVisitor
   {

@@ -21,10 +21,11 @@
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
-
-class OSSIA_EXPORT ExpressionComposition : public Expression
+namespace expressions
+{
+class OSSIA_EXPORT expression_composition : public expression_base
 {
 
 public:
@@ -49,12 +50,12 @@ public:
 
   /*! factory
    \return std::shared_ptr<#ExpressionComposition> */
-  static std::shared_ptr<ExpressionComposition> create(std::shared_ptr<Expression>,
+  static std::shared_ptr<expression_composition> create(std::shared_ptr<expression_base>,
                                                        Operator,
-                                                       std::shared_ptr<Expression>);
+                                                       std::shared_ptr<expression_base>);
 
   /*! destructor */
-  virtual ~ExpressionComposition();
+  virtual ~expression_composition();
 
 #if 0
 # pragma mark -
@@ -75,12 +76,12 @@ public:
 
   /*! get the type of the expression
    \return #Type of the expression */
-  Expression::Type getType() const override final
-  {return Expression::Type::COMPOSITION;}
+  expression_base::Type getType() const override final
+  {return expression_base::Type::COMPOSITION;}
 
   /*! get first operand
    \return const std::shared_ptr<#Expression> first operand */
-  virtual const std::shared_ptr<Expression> & getFirstOperand() const = 0;
+  virtual const std::shared_ptr<expression_base> & getFirstOperand() const = 0;
 
   /*! get operator
    \return #Operator operator */
@@ -88,6 +89,7 @@ public:
 
   /*! get second operand
    \return const std::shared_ptr<#Expression> second operand */
-  virtual const std::shared_ptr<Expression> & getSecondOperand() const = 0;
+  virtual const std::shared_ptr<expression_base> & getSecondOperand() const = 0;
 };
+}
 }

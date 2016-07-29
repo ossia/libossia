@@ -7,7 +7,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <iostream>
 
-namespace OSSIA
+namespace ossia
 {
 std::size_t State::size() const
 {

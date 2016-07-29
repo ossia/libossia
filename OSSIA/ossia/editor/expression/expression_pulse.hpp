@@ -22,10 +22,13 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
 class Destination;
-class OSSIA_EXPORT ExpressionPulse : public Expression
+
+namespace expressions
+{
+class OSSIA_EXPORT expression_pulse : public expression_base
 {
 
 public:
@@ -38,10 +41,10 @@ public:
   /*! factory
    \param #Destination*
    \return std::shared_ptr<#ExpressionPulse> */
-  static std::shared_ptr<ExpressionPulse> create(const Destination&);
+  static std::shared_ptr<expression_pulse> create(const Destination&);
 
   /*! destructor */
-  virtual ~ExpressionPulse();
+  virtual ~expression_pulse();
 
 #if 0
 # pragma mark -
@@ -62,12 +65,13 @@ public:
 
   /*! get the type of the expression
    \return #Type of the expression */
-  Expression::Type getType() const override final
-  {return Expression::Type::PULSE;}
+  expression_base::Type getType() const override final
+  {return expression_base::Type::PULSE;}
 
   /*! get destination
    \return const #Destination* expression */
   virtual const Destination& getDestination() const = 0;
 
 };
+}
 }

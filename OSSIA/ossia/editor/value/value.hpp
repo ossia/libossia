@@ -3,30 +3,30 @@
 #include <eggs/variant.hpp>
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
-class OSSIA_EXPORT Value
+class OSSIA_EXPORT value
 {
 public:
   using value_type = eggs::variant<Impulse, Bool, Int, Float, Char, String, Tuple, Vec2f, Vec3f, Vec4f, Destination, Behavior>;
-  Value(const Impulse& val): v{val}  { }
-  Value(const Bool& val): v{val}  { }
-  Value(const Int& val): v{val}  { }
-  Value(const Float& val): v{val}  { }
-  Value(const Char& val): v{val}  { }
-  Value(const String& val): v{val}  { }
-  Value(const Tuple& val): v{val}  { }
-  Value(const Vec2f& val): v{val}  { }
-  Value(const Vec3f& val): v{val}  { }
-  Value(const Vec4f& val): v{val}  { }
-  Value(const Destination& val): v{val}  { }
-  Value(const Behavior& val): v{val}  { }
+  value(const Impulse& val): v{val}  { }
+  value(const Bool& val): v{val}  { }
+  value(const Int& val): v{val}  { }
+  value(const Float& val): v{val}  { }
+  value(const Char& val): v{val}  { }
+  value(const String& val): v{val}  { }
+  value(const Tuple& val): v{val}  { }
+  value(const Vec2f& val): v{val}  { }
+  value(const Vec3f& val): v{val}  { }
+  value(const Vec4f& val): v{val}  { }
+  value(const Destination& val): v{val}  { }
+  value(const Behavior& val): v{val}  { }
 
-  Value() = default;
-  Value(const Value& other) = default;
-  Value(Value&& other) = default;
-  Value& operator=(const Value& other) = default;
-  Value& operator=(Value&& other) = default;
+  value() = default;
+  value(const value& other) = default;
+  value(value&& other) = default;
+  value& operator=(const value& other) = default;
+  value& operator=(value&& other) = default;
 
   value_type v ;
 
@@ -42,12 +42,12 @@ public:
   template<typename T>
   T* try_get() { return v.target<T>(); }
 
-  OSSIA::Type getType() const
+  ossia::Type getType() const
   {
     auto t = v.which();
     if(t == v.npos) throw;
 
-    return static_cast<OSSIA::Type>(t);
+    return static_cast<ossia::Type>(t);
   }
 
   bool valid() const
@@ -58,22 +58,22 @@ public:
 
 
   /*! equal operator */
-  bool operator== (const Value& rhs) const;
+  bool operator== (const value& rhs) const;
 
   /*! different operator */
-  bool operator!= (const Value& rhs) const;
+  bool operator!= (const value& rhs) const;
 
   /*! greater than operator */
-  bool operator> (const Value& rhs) const;
+  bool operator> (const value& rhs) const;
 
   /*! greater than and equal operator */
-  bool operator>= (const Value& rhs) const;
+  bool operator>= (const value& rhs) const;
 
   /*! less than operator */
-  bool operator< (const Value& rhs) const;
+  bool operator< (const value& rhs) const;
 
   /*! less than and equal operator */
-  bool operator<= (const Value& rhs) const;
+  bool operator<= (const value& rhs) const;
 };
 
 
@@ -89,11 +89,11 @@ public:
  * etc...
  *
  */
-OSSIA_EXPORT std::string getValueAsString(const OSSIA::Value& val);
+OSSIA_EXPORT std::string getValueAsString(const ossia::value& val);
 
 
 
-inline OSSIA::Value initValue(OSSIA::Type type)
+inline ossia::value initValue(ossia::Type type)
 {
   switch(type)
   {

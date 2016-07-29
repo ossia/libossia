@@ -1,9 +1,9 @@
 #pragma once
 #include <ossia_export.h>
 
-namespace OSSIA
+namespace ossia
 {
-class Value;
+class value;
 /*! \details Float value */
 struct OSSIA_EXPORT Float
 {
@@ -21,12 +21,12 @@ struct OSSIA_EXPORT Float
   Float& operator=(const Float&) = default;
   Float& operator=(Float&&) = default;
 
-  bool operator== (const Value&) const;
-  bool operator!= (const Value&) const;
-  bool operator>  (const Value&) const;
-  bool operator>= (const Value&) const;
-  bool operator<  (const Value&) const;
-  bool operator<= (const Value&) const;
+  bool operator== (const ossia::value&) const;
+  bool operator!= (const ossia::value&) const;
+  bool operator>  (const ossia::value&) const;
+  bool operator>= (const ossia::value&) const;
+  bool operator<  (const ossia::value&) const;
+  bool operator<= (const ossia::value&) const;
 };
 
 }

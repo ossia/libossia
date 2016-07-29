@@ -17,10 +17,10 @@
 
 #include <list>
 
-namespace OSSIA
+namespace ossia
 {
 template <typename T>
-class CallbackContainer
+class callback_container
 {
 
 public:
@@ -31,7 +31,7 @@ public:
 #endif
 
   /*! destructor */
-  virtual ~CallbackContainer() = default;
+  virtual ~callback_container() = default;
 
 #if 0
 # pragma mark -
@@ -39,8 +39,8 @@ public:
 #endif
 
   /*! to store a set of callback functions */
-  using ContainerImpl = typename std::list<T>;
-  using iterator = typename ContainerImpl::const_iterator;
+  using impl = typename std::list<T>;
+  using iterator = typename impl::const_iterator;
 
   /*! add a callback function
    \param #T function object */
@@ -63,12 +63,12 @@ public:
 
   /*! get callback functions
    \return #CallbackList */
-  ContainerImpl& callbacks()
+  impl& callbacks()
   { return mCallbacks; }
 
   /*! get callback functions
    \return #CallbackList */
-  const ContainerImpl& callbacks() const
+  const impl& callbacks() const
   { return mCallbacks; }
 
   /*! trigger all callbacks
@@ -95,34 +95,34 @@ public:
 protected:
   virtual void onFirstCallbackAdded() { }
   virtual void onRemovingLastCallback() { }
-  ContainerImpl mCallbacks;
+  impl mCallbacks;
 
 };
 
 template<typename T>
-typename CallbackContainer<T>::iterator
-begin(CallbackContainer<T>& cont)
+typename callback_container<T>::iterator
+begin(callback_container<T>& cont)
 {
   return cont.callbacks().begin();
 }
 
 template<typename T>
-typename CallbackContainer<T>::iterator
-end(CallbackContainer<T>& cont)
+typename callback_container<T>::iterator
+end(callback_container<T>& cont)
 {
   return cont.callbacks().end();
 }
 
 template<typename T>
-typename CallbackContainer<T>::iterator
-cbegin(const CallbackContainer<T>& cont)
+typename callback_container<T>::iterator
+cbegin(const callback_container<T>& cont)
 {
   return cont.callbacks().cbegin();
 }
 
 template<typename T>
-typename CallbackContainer<T>::iterator
-cend(const CallbackContainer<T>& cont)
+typename callback_container<T>::iterator
+cend(const callback_container<T>& cont)
 {
   return cont.callbacks().cend();
 }

@@ -24,7 +24,7 @@
 namespace impl
 {
 class OSSIA_EXPORT OSC2 final :
-        public OSSIA::net::Protocol
+        public ossia::net::Protocol
 {
     private:
         std::string    mIp;
@@ -36,7 +36,7 @@ class OSSIA_EXPORT OSC2 final :
         osc::receiver  mReceiver;
 
         std::mutex mListeningMutex;
-        std::unordered_map<std::string, OSSIA::net::Address*> mListening;
+        std::unordered_map<std::string, ossia::net::address*> mListening;
 
     public:
         OSC2(std::string, uint16_t, uint16_t);
@@ -53,16 +53,16 @@ class OSSIA_EXPORT OSC2 final :
         OSC2 & setOutPort(uint16_t);
 
         bool getLearningStatus() const;
-        OSC2 & setLearningStatus(OSSIA::net::Device&, bool);
+        OSC2 & setLearningStatus(ossia::net::Device&, bool);
 
 
-        bool update(OSSIA::net::Node& node) override;
+        bool update(ossia::net::Node& node) override;
 
-        bool pull(OSSIA::net::Address& address) override;
+        bool pull(ossia::net::address& address) override;
 
-        bool push(const OSSIA::net::Address& address) override;
+        bool push(const ossia::net::address& address) override;
 
-        bool observe(OSSIA::net::Address& address, bool enable) override;
+        bool observe(ossia::net::address& address, bool enable) override;
 
     private:
         void handleReceivedMessage(

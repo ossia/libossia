@@ -10,12 +10,12 @@
 #include <ossia_export.h>
 #include <nano_signal_slot.hpp>
 
-namespace OSSIA
+namespace ossia
 {
 namespace net
 {
 class Device;
-class Address;
+class address;
 class Node;
 
 class OSSIA_EXPORT Node
@@ -35,8 +35,8 @@ class OSSIA_EXPORT Node
         virtual std::string getName() const = 0;
         virtual Node & setName(std::string) = 0;
 
-        virtual Address* getAddress() const = 0;
-        virtual Address* createAddress(Type = Type::IMPULSE) = 0;
+        virtual address* getAddress() const = 0;
+        virtual address* createAddress(Type = Type::IMPULSE) = 0;
         virtual bool removeAddress() = 0;
 
         // The parent has ownership

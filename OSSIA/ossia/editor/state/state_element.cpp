@@ -2,7 +2,7 @@
 #include <ossia/editor/state/detail/state_execution_visitor.hpp>
 #include <ossia/editor/state/detail/state_print_visitor.hpp>
 
-namespace OSSIA
+namespace ossia
 {
 void launch(const StateElement& e)
 {

@@ -3,7 +3,7 @@
 #include <ossia/editor/value/value.hpp>
 #include <exception>
 
-namespace OSSIA
+namespace ossia
 {
 namespace minuit
 {
@@ -35,22 +35,22 @@ enum class minuit_attribute
   RampFunction, RampDrive, ValueStepSize, RampFunctionParameters };
 
 
-inline boost::string_ref to_minuit_type_text(const OSSIA::Value& val)
+inline boost::string_ref to_minuit_type_text(const ossia::value& val)
 {
     // integer, decimal, string, generic, boolean, none, array.
     struct ValueStringVisitor {
-      boost::string_ref operator()(OSSIA::Impulse) const { return "none"; }
-      boost::string_ref operator()(OSSIA::Int i) const   { return "integer"; }
-      boost::string_ref operator()(OSSIA::Float f) const { return "decimal"; }
-      boost::string_ref operator()(OSSIA::Bool b) const  { return "boolean"; }
-      boost::string_ref operator()(OSSIA::Char c) const  { return "string"; }
-      boost::string_ref operator()(const OSSIA::String& str) const { return "string"; }
-      boost::string_ref operator()(OSSIA::Vec2f vec) const { return "array"; }
-      boost::string_ref operator()(OSSIA::Vec3f vec) const { return "array"; }
-      boost::string_ref operator()(OSSIA::Vec4f vec) const { return "array"; }
-      boost::string_ref operator()(const OSSIA::Destination& d) const { throw std::runtime_error("Invalid type"); }
-      boost::string_ref operator()(const OSSIA::Behavior&) const { throw std::runtime_error("Invalid type"); }
-      boost::string_ref operator()(const OSSIA::Tuple& t) const { return "array"; }
+      boost::string_ref operator()(ossia::Impulse) const { return "none"; }
+      boost::string_ref operator()(ossia::Int i) const   { return "integer"; }
+      boost::string_ref operator()(ossia::Float f) const { return "decimal"; }
+      boost::string_ref operator()(ossia::Bool b) const  { return "boolean"; }
+      boost::string_ref operator()(ossia::Char c) const  { return "string"; }
+      boost::string_ref operator()(const ossia::String& str) const { return "string"; }
+      boost::string_ref operator()(ossia::Vec2f vec) const { return "array"; }
+      boost::string_ref operator()(ossia::Vec3f vec) const { return "array"; }
+      boost::string_ref operator()(ossia::Vec4f vec) const { return "array"; }
+      boost::string_ref operator()(const ossia::Destination& d) const { throw std::runtime_error("Invalid type"); }
+      boost::string_ref operator()(const ossia::Behavior&) const { throw std::runtime_error("Invalid type"); }
+      boost::string_ref operator()(const ossia::Tuple& t) const { return "array"; }
     };
 
     if(val.v)
@@ -63,7 +63,7 @@ inline boost::string_ref to_minuit_type_text(const OSSIA::Value& val)
     }
 }
 
-inline OSSIA::Value value_from_minuit_type_text(boost::string_ref str)
+inline ossia::value value_from_minuit_type_text(boost::string_ref str)
 {
     // integer, decimal, string, generic, boolean, none, array.
     // we can differentiate them by the first character
@@ -71,24 +71,24 @@ inline OSSIA::Value value_from_minuit_type_text(boost::string_ref str)
     switch(str[0])
     {
         case 'i': // integer
-            return OSSIA::Int{};
+            return ossia::Int{};
         case 'd': // decimal
-            return OSSIA::Float{};
+            return ossia::Float{};
         case 's': // string
-            return OSSIA::String{};
+            return ossia::String{};
         case 'b': // boolean
-            return OSSIA::Bool{};
+            return ossia::Bool{};
         case 'n': // none
-            return OSSIA::Impulse{};
+            return ossia::Impulse{};
         case 'a': // array
-            return OSSIA::Tuple{};
+            return ossia::Tuple{};
         case 'g': // generic
         default:
             return {};
     }
 }
 
-inline OSSIA::Type type_from_minuit_type_text(boost::string_ref str)
+inline ossia::Type type_from_minuit_type_text(boost::string_ref str)
 {
   // integer, decimal, string, generic, boolean, none, array.
   // we can differentiate them by the first character
@@ -96,17 +96,17 @@ inline OSSIA::Type type_from_minuit_type_text(boost::string_ref str)
   switch(str[0])
   {
     case 'i': // integer
-      return OSSIA::Type::INT;
+      return ossia::Type::INT;
     case 'd': // decimal
-      return OSSIA::Type::FLOAT;
+      return ossia::Type::FLOAT;
     case 's': // string
-      return OSSIA::Type::STRING;
+      return ossia::Type::STRING;
     case 'b': // boolean
-      return OSSIA::Type::BOOL;
+      return ossia::Type::BOOL;
     case 'n': // none
-      return OSSIA::Type::IMPULSE;
+      return ossia::Type::IMPULSE;
     case 'a': // array
-      return OSSIA::Type::TUPLE;
+      return ossia::Type::TUPLE;
     case 'g': // generic
     default:
       return {};
@@ -114,47 +114,47 @@ inline OSSIA::Type type_from_minuit_type_text(boost::string_ref str)
 }
 
 
-inline boost::string_ref to_minuit_service_text(OSSIA::AccessMode acc)
+inline boost::string_ref to_minuit_service_text(ossia::AccessMode acc)
 {
     switch(acc)
     {
-        case OSSIA::AccessMode::BI:
+        case ossia::AccessMode::BI:
             return "parameter";
-        case OSSIA::AccessMode::GET:
+        case ossia::AccessMode::GET:
             return "return";
-        case OSSIA::AccessMode::SET:
+        case ossia::AccessMode::SET:
             return "message";
         default:
             throw std::runtime_error("Invalid access mode");
     }
 }
 
-inline OSSIA::AccessMode from_minuit_service_text(boost::string_ref str)
+inline ossia::AccessMode from_minuit_service_text(boost::string_ref str)
 {
     switch(str[0])
     {
         case 'p':
-            return OSSIA::AccessMode::BI;
+            return ossia::AccessMode::BI;
         case 'r':
-            return OSSIA::AccessMode::GET;
+            return ossia::AccessMode::GET;
         case 'm':
-            return OSSIA::AccessMode::SET;
+            return ossia::AccessMode::SET;
         default:
             throw std::runtime_error("Invalid access mode");
     }
 }
 
-inline boost::string_ref to_minuit_bounding_text(OSSIA::BoundingMode b)
+inline boost::string_ref to_minuit_bounding_text(ossia::BoundingMode b)
 {
     switch(b)
     {
-        case OSSIA::BoundingMode::FREE:
+        case ossia::BoundingMode::FREE:
             return "none";
-        case OSSIA::BoundingMode::CLIP:
+        case ossia::BoundingMode::CLIP:
             return "both";
-        case OSSIA::BoundingMode::WRAP:
+        case ossia::BoundingMode::WRAP:
             return "wrap";
-        case OSSIA::BoundingMode::FOLD:
+        case ossia::BoundingMode::FOLD:
             return "fold";
         default:
             throw std::runtime_error("Invalid bounding mode");
@@ -162,18 +162,18 @@ inline boost::string_ref to_minuit_bounding_text(OSSIA::BoundingMode b)
 }
 
 
-inline OSSIA::BoundingMode from_minuit_bounding_text(boost::string_ref str)
+inline ossia::BoundingMode from_minuit_bounding_text(boost::string_ref str)
 {
     switch(str[0])
     {
         case 'n': // none
-            return OSSIA::BoundingMode::FREE;
+            return ossia::BoundingMode::FREE;
         case 'b': // both
-            return OSSIA::BoundingMode::CLIP;
+            return ossia::BoundingMode::CLIP;
         case 'w': // wrap
-            return OSSIA::BoundingMode::WRAP;
+            return ossia::BoundingMode::WRAP;
         case 'f': // fold
-            return OSSIA::BoundingMode::FOLD;
+            return ossia::BoundingMode::FOLD;
         default:
             throw std::runtime_error("Invalid bounding mode");
     }

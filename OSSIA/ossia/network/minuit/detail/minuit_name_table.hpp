@@ -3,7 +3,7 @@
 #include <boost/utility/string_ref.hpp>
 #include <array>
 #include <string>
-namespace OSSIA
+namespace ossia
 {
 namespace minuit
 {

@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <type_traits>
 
-namespace OSSIA
+namespace ossia
 {
 template<typename Vector>
 using iterator_t = typename std::remove_reference<Vector>::type::iterator;

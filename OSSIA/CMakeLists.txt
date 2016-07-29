@@ -61,6 +61,8 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_not.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_not.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_bool.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_bool.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_pulse.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_pulse.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/loop/detail/Loop_impl.cpp"

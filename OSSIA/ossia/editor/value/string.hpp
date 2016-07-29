@@ -2,9 +2,9 @@
 #include <ossia_export.h>
 #include <string>
 
-namespace OSSIA
+namespace ossia
 {
-class Value;
+class value;
 /*! \details String value */
 struct OSSIA_EXPORT String
 {
@@ -22,12 +22,12 @@ struct OSSIA_EXPORT String
   String& operator=(const String&) = default;
   String& operator=(String&&) = default;
 
-  bool operator== (const Value&) const;
-  bool operator!= (const Value&) const;
-  bool operator>  (const Value&) const;
-  bool operator>= (const Value&) const;
-  bool operator<  (const Value&) const;
-  bool operator<= (const Value&) const;
+  bool operator== (const ossia::value&) const;
+  bool operator!= (const ossia::value&) const;
+  bool operator>  (const ossia::value&) const;
+  bool operator>= (const ossia::value&) const;
+  bool operator<  (const ossia::value&) const;
+  bool operator<= (const ossia::value&) const;
 };
 
 }

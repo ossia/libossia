@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-namespace OSSIA
+namespace ossia
 {
 namespace net
 {
@@ -21,7 +21,7 @@ class MIDINoteOn_N final : public MIDINode
     MIDINoteOn_N(
         midi_size_t note,
         MIDIDevice& aDevice,
-        OSSIA::net::Node& aParent):
+        ossia::net::Node& aParent):
       MIDINode{aDevice, aParent},
       mName{std::to_string(note)}
     {
@@ -47,7 +47,7 @@ class MIDINoteOff_N final : public MIDINode
     MIDINoteOff_N(
         midi_size_t note,
         MIDIDevice& aDevice,
-        OSSIA::net::Node& aParent):
+        ossia::net::Node& aParent):
       MIDINode{aDevice, aParent},
       mName{std::to_string(note)}
     {
@@ -73,7 +73,7 @@ class MIDI_CC_N final : public MIDINode
     MIDI_CC_N(
         midi_size_t param,
         MIDIDevice& aDevice,
-        OSSIA::net::Node& aParent):
+        ossia::net::Node& aParent):
       MIDINode{aDevice, aParent},
       mName{std::to_string(param)}
     {
@@ -98,7 +98,7 @@ class MIDI_PC_N final : public MIDINode
     MIDI_PC_N(
         midi_size_t param,
         MIDIDevice& aDevice,
-        OSSIA::net::Node& aParent):
+        ossia::net::Node& aParent):
       MIDINode{aDevice, aParent},
       mName{std::to_string(param)}
     {

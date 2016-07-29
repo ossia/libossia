@@ -2,7 +2,7 @@
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_address.hpp>
 
-namespace OSSIA
+namespace ossia
 {
 namespace net
 {
@@ -28,12 +28,12 @@ Node& MIDINode::setName(std::string)
   return *this;
 }
 
-Address* MIDINode::getAddress() const
+address* MIDINode::getAddress() const
 {
   return mAddress.get();
 }
 
-Address* MIDINode::createAddress(Type)
+address* MIDINode::createAddress(Type)
 {
   return mAddress.get();
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace OSSIA
+namespace ossia
 {
 #if 0
 # pragma mark -

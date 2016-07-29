@@ -17,10 +17,10 @@
 #pragma once
 #include <cmath>
 
-namespace OSSIA
+namespace ossia
 {
 template <typename Y>
-struct CurveSegmentPower
+struct curve_segment_power
 {
   auto operator()(double power) const
   {

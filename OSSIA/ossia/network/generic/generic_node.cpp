@@ -9,7 +9,7 @@ namespace impl
 {
 BasicNode::BasicNode(
     std::string name,
-    OSSIA::net::Device& aDevice,
+    ossia::net::Device& aDevice,
     BasicNode& aParent):
     mName{std::move(name)},
     mDevice{aDevice},
@@ -18,7 +18,7 @@ BasicNode::BasicNode(
 
 }
 
-BasicNode::BasicNode(std::string name, OSSIA::net::Device& aDevice):
+BasicNode::BasicNode(std::string name, ossia::net::Device& aDevice):
     mName{std::move(name)},
     mDevice{aDevice}
 {
@@ -30,7 +30,7 @@ BasicNode::~BasicNode()
     mChildren.clear();
 }
 
-OSSIA::net::Node& BasicNode::setName(std::string name)
+ossia::net::Node& BasicNode::setName(std::string name)
 {
     std::swap(mName, name);
 
@@ -40,12 +40,12 @@ OSSIA::net::Node& BasicNode::setName(std::string name)
     return *this;
 }
 
-OSSIA::net::Address* BasicNode::getAddress() const
+ossia::net::address* BasicNode::getAddress() const
 {
     return mAddress.get();
 }
 
-OSSIA::net::Address* BasicNode::createAddress(OSSIA::Type type)
+ossia::net::address* BasicNode::createAddress(ossia::Type type)
 {
     // clear former address
     removeAddress();
