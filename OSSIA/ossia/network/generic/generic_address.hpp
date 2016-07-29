@@ -80,8 +80,8 @@ class OSSIA_EXPORT BasicAddress final : public OSSIA::net::Address
         OSSIA::RepetitionFilter getRepetitionFilter() const override;
         OSSIA::net::Address & setRepetitionFilter(OSSIA::RepetitionFilter) override;
 
-        OSSIA::net::Address::iterator addCallback(OSSIA::net::ValueCallback) override;
-        void removeCallback(OSSIA::net::Address::iterator) override;
+        void onFirstCallbackAdded() override;
+        void onRemovingLastCallback() override;
 
         const std::string& getTextualAddress() const override
         { return mTextualAddress; }

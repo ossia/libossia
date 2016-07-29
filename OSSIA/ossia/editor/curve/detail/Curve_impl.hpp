@@ -56,10 +56,6 @@ public:
 
   JamomaCurve();
 
-  JamomaCurve(const JamomaCurve *);
-
-  std::shared_ptr<OSSIA::Curve<X,Y>> clone() const override;
-
   ~JamomaCurve();
 
   // Call me before execution to reset the cache.

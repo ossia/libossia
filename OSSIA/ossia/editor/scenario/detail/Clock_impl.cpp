@@ -19,17 +19,6 @@ mPaused(false),
 mCallback(callback)
 {}
 
-JamomaClock::JamomaClock(const JamomaClock * other) :
-mDuration(other->mDuration),
-mGranularity(other->mGranularity),
-mOffset(other->mOffset),
-mSpeed(other->mSpeed),
-mDriveMode(other->mDriveMode),
-mRunning(false),
-mPaused(false),
-mCallback(other->mCallback)
-{}
-
 JamomaClock::~JamomaClock()
 {
   stop();

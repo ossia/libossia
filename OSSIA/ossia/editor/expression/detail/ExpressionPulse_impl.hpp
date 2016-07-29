@@ -20,7 +20,7 @@ private:
   Destination         mDestination;
   mutable bool        mResult;
 
-  net::Address::iterator   mDestinationCallbackIndex;
+  net::Address::callback_index   mDestinationCallbackIndex;
 
 public:
 
@@ -28,10 +28,6 @@ public:
 # pragma mark Life cycle
 
   JamomaExpressionPulse(const Destination& destination);
-
-  JamomaExpressionPulse(const JamomaExpressionPulse& other);
-
-  std::shared_ptr<ExpressionPulse> clone() const override;
 
   ~JamomaExpressionPulse();
 
@@ -52,9 +48,8 @@ public:
 # pragma mark -
 # pragma mark Callback Container
 
-  Expression::iterator addCallback(ResultCallback callback) override;
-
-  void removeCallback(Expression::iterator callback) override;
+  void onFirstCallbackAdded() override;
+  void onRemovingLastCallback() override;
 
 # pragma mark -
 # pragma mark Accessors

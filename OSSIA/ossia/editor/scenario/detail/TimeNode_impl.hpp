@@ -50,10 +50,6 @@ public:
 
   JamomaTimeNode(TimeNode::ExecutionCallback);
 
-  JamomaTimeNode(const JamomaTimeNode *);
-
-  std::shared_ptr<TimeNode> clone() const override;
-
   ~JamomaTimeNode();
 
 # pragma mark -

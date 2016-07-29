@@ -5,19 +5,13 @@ namespace impl
 
 JamomaExpressionNot::JamomaExpressionNot(std::shared_ptr<Expression> expr) :
 mExpression(expr)
-{}
-
-JamomaExpressionNot::JamomaExpressionNot(const JamomaExpressionNot * other)
-//! \todo mExpression(other->mExpression->clone())
-{}
-
-std::shared_ptr<ExpressionNot> JamomaExpressionNot::clone() const
 {
-  return std::make_shared<JamomaExpressionNot>(this);
 }
 
 JamomaExpressionNot::~JamomaExpressionNot()
-{}
+{
+  // TODO REMOVE ALL CALLBACKS
+}
 
 # pragma mark -
 # pragma mark Execution
@@ -58,33 +52,6 @@ bool JamomaExpressionNot::operator!= (const Expression& expression) const
 }
 
 # pragma mark -
-# pragma mark Callback Container
-
-Expression::iterator JamomaExpressionNot::addCallback(ResultCallback callback)
-{
-  auto it = CallbackContainer::addCallback(std::move(callback));
-
-  if (callbacks().size() == 1)
-  {
-    // start expression observation
-    mResultCallbackIndex = mExpression->addCallback([&] (bool result) { resultCallback(result); });
-  }
-
-  return it;
-}
-
-void JamomaExpressionNot::removeCallback(Expression::iterator callback)
-{
-  CallbackContainer::removeCallback(callback);
-
-  if (callbacks().size() == 0)
-  {
-    // stop expression observation
-    mExpression->removeCallback(mResultCallbackIndex);
-  }
-}
-
-# pragma mark -
 # pragma mark Accessors
 
 const std::shared_ptr<Expression> & JamomaExpressionNot::getExpression() const
@@ -94,6 +61,16 @@ const std::shared_ptr<Expression> & JamomaExpressionNot::getExpression() const
 
 # pragma mark -
 # pragma mark Implementation Specific
+
+void JamomaExpressionNot::onFirstCallbackAdded()
+{
+  mResultCallbackIndex = mExpression->addCallback([&] (bool result) { resultCallback(result); });
+}
+
+void JamomaExpressionNot::onRemovingLastCallback()
+{
+  mExpression->removeCallback(mResultCallbackIndex);
+}
 
 void JamomaExpressionNot::resultCallback(bool result)
 {

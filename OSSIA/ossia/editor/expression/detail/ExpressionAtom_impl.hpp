@@ -24,8 +24,8 @@ private:
   Operator  mOperator;
   Value    mSecondValue;
 
-  net::Address::iterator mFirstValueCallbackIndex;
-  net::Address::iterator mSecondValueCallbackIndex;
+  net::Address::callback_index mFirstValueCallbackIndex;
+  net::Address::callback_index mSecondValueCallbackIndex;
 
 public:
 
@@ -33,10 +33,6 @@ public:
 # pragma mark Life cycle
 
   JamomaExpressionAtom(const Value& value1, Operator op, const Value& value2);
-
-  JamomaExpressionAtom(const JamomaExpressionAtom& other);
-
-  std::shared_ptr<ExpressionAtom> clone() const override;
 
   ~JamomaExpressionAtom();
 
@@ -55,13 +51,6 @@ public:
   bool operator!= (const Expression& expression) const override;
 
 # pragma mark -
-# pragma mark Callback Container
-
-  Expression::iterator addCallback(ResultCallback callback) override;
-
-  void removeCallback(Expression::iterator callback) override;
-
-# pragma mark -
 # pragma mark Accessors
 
   const Value& getFirstOperand() const override;
@@ -71,6 +60,8 @@ public:
   const Value& getSecondOperand() const override;
 
 private:
+  void onFirstCallbackAdded() override;
+  void onRemovingLastCallback() override;
 
 # pragma mark -
 # pragma mark Implementation Specific

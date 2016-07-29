@@ -11,15 +11,6 @@ JamomaTimeProcess()
   mTimeNodes.push_back(TimeNode::create());
 }
 
-JamomaScenario::JamomaScenario(const JamomaScenario * other) :
-JamomaTimeProcess()
-{}
-
-std::shared_ptr<Scenario> JamomaScenario::clone() const
-{
-  return std::make_shared<JamomaScenario>(this);
-}
-
 JamomaScenario::~JamomaScenario()
 {}
 

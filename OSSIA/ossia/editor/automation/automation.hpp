@@ -41,9 +41,6 @@ public:
       net::Address&,
       const Value&);
 
-  /*! clone */
-  virtual std::shared_ptr<Automation> clone() const = 0;
-
   /*! destructor */
   virtual ~Automation();
 

@@ -54,10 +54,6 @@ public:
 
   JamomaScenario();
 
-  JamomaScenario(const JamomaScenario *);
-
-  std::shared_ptr<Scenario> clone() const override;
-
   ~JamomaScenario();
 
 # pragma mark -

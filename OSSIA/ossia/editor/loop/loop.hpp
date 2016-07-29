@@ -48,9 +48,6 @@ public:
                                       TimeEvent::ExecutionCallback,
                                       TimeEvent::ExecutionCallback);
 
-  /*! clone */
-  virtual std::shared_ptr<Loop> clone() const = 0;
-
   /*! destructor */
   virtual ~Loop();
 

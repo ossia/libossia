@@ -29,10 +29,6 @@ public:
 
   JamomaExpressionComposition(std::shared_ptr<Expression> expr1, Operator op, std::shared_ptr<Expression> expr2);
 
-  JamomaExpressionComposition(const JamomaExpressionComposition * other);
-
-  std::shared_ptr<ExpressionComposition> clone() const override;
-
   ~JamomaExpressionComposition();
 
 # pragma mark -
@@ -50,13 +46,6 @@ public:
   bool operator!= (const Expression& expression) const override;
 
 # pragma mark -
-# pragma mark Callback Container
-
-  Expression::iterator addCallback(ResultCallback callback) override;
-
-  void removeCallback(Expression::iterator callback) override;
-
-# pragma mark -
 # pragma mark Accessors
 
   const std::shared_ptr<Expression> & getFirstOperand() const override;
@@ -66,6 +55,8 @@ public:
   const std::shared_ptr<Expression> & getSecondOperand() const override;
 
 private:
+  void onFirstCallbackAdded() override;
+  void onRemovingLastCallback() override;
 
 # pragma mark -
 # pragma mark Implementation Specific

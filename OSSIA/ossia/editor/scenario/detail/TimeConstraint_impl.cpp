@@ -19,22 +19,6 @@ mDurationMax(max)
 {
 }
 
-JamomaTimeConstraint::JamomaTimeConstraint(const JamomaTimeConstraint * other) :
-JamomaClock(other),
-mCallback(other->mCallback),
-mStartEvent(other->mStartEvent),
-mEndEvent(other->mEndEvent),
-mDurationNominal(other->mDurationNominal),
-mDurationMin(other->mDurationMin),
-mDurationMax(other->mDurationMax)
-{
-}
-
-std::shared_ptr<TimeConstraint> JamomaTimeConstraint::clone() const
-{
-  return std::make_shared<JamomaTimeConstraint>(this);
-}
-
 JamomaTimeConstraint::~JamomaTimeConstraint()
 {}
 

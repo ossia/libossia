@@ -50,9 +50,6 @@ public:
                                         net::Address&,
                                         const Value&);
 
-  /*! clone */
-  virtual std::shared_ptr<Mapper> clone() const = 0;
-
   /*! destructor */
   virtual ~Mapper();
 

@@ -40,10 +40,6 @@ public:
    \return std::shared_ptr<#ExpressionPulse> */
   static std::shared_ptr<ExpressionPulse> create(const Destination&);
 
-  /*! clone
-   \return std::shared_ptr<#ExpressionPulse> */
-  virtual std::shared_ptr<ExpressionPulse> clone() const = 0;
-
   /*! destructor */
   virtual ~ExpressionPulse();
 

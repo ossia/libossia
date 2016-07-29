@@ -8,14 +8,6 @@ mCallback(callback),
 mExpression(ExpressionTrue())
 {}
 
-JamomaTimeNode::JamomaTimeNode(const JamomaTimeNode * other)
-{}
-
-std::shared_ptr<TimeNode> JamomaTimeNode::clone() const
-{
-  return std::make_shared<JamomaTimeNode>(this);
-}
-
 JamomaTimeNode::~JamomaTimeNode()
 {}
 

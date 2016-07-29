@@ -82,10 +82,6 @@ public:
                                                 TimeValue = 0.,
                                                 TimeValue = Infinite);
 
-  /*! clone
-   \return std::shared_ptr<#TimeConstraint> */
-  virtual std::shared_ptr<TimeConstraint> clone() const = 0;
-
   /*! desctructor */
   virtual ~TimeConstraint();
 

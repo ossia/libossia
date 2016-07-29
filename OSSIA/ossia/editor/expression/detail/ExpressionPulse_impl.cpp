@@ -8,30 +8,10 @@ JamomaExpressionPulse::JamomaExpressionPulse(const Destination& destination) :
 mDestination(destination),
 mResult(false)
 {
-  // start destination observation
-  if (const auto& addr = mDestination.value->getAddress())
-  {
-    mDestinationCallbackIndex = addr->addCallback(
-          [&] (const OSSIA::Value& result) { destinationCallback(result); });
-  }
-}
-
-JamomaExpressionPulse::JamomaExpressionPulse(const JamomaExpressionPulse& other)
-//! \todo mDestination(other->mDestination.clone())
-{}
-
-std::shared_ptr<ExpressionPulse> JamomaExpressionPulse::clone() const
-{
-  return std::make_shared<JamomaExpressionPulse>(*this);
 }
 
 JamomaExpressionPulse::~JamomaExpressionPulse()
 {
-  // stop destination observation
-  if (const auto& addr = mDestination.value->getAddress())
-  {
-    addr->removeCallback(mDestinationCallbackIndex);
-  }
 }
 
 
@@ -76,16 +56,23 @@ bool JamomaExpressionPulse::operator!= (const Expression& expression) const
 
 # pragma mark -
 # pragma mark Callback Container
-
-Expression::iterator JamomaExpressionPulse::addCallback(ResultCallback callback)
+void JamomaExpressionPulse::onFirstCallbackAdded()
 {
-  auto it = CallbackContainer::addCallback(std::move(callback));
-  return it;
+  // start destination observation
+  if (const auto& addr = mDestination.value->getAddress())
+  {
+    mDestinationCallbackIndex = addr->addCallback(
+                                  [&] (const OSSIA::Value& result) { destinationCallback(result); });
+  }
 }
 
-void JamomaExpressionPulse::removeCallback(Expression::iterator callback)
+void JamomaExpressionPulse::onRemovingLastCallback()
 {
-  CallbackContainer::removeCallback(callback);
+  // stop destination observation
+  if (const auto& addr = mDestination.value->getAddress())
+  {
+    addr->removeCallback(mDestinationCallbackIndex);
+  }
 }
 
 # pragma mark -

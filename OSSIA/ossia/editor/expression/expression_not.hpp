@@ -39,10 +39,6 @@ public:
    \return std::shared_ptr<#ExpressionNot> */
   static std::shared_ptr<ExpressionNot> create(std::shared_ptr<Expression>);
 
-  /*! clone
-   \return std::shared_ptr<#ExpressionNot> */
-  virtual std::shared_ptr<ExpressionNot> clone() const = 0;
-
   /*! destructor */
   virtual ~ExpressionNot();
 

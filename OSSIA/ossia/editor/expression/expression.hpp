@@ -59,7 +59,7 @@ public:
   /*! factory
    \param bool result to return
    \return std::shared_ptr<#Expression> */
-  static std::shared_ptr<Expression> create(bool = false);
+  static std::shared_ptr<Expression> create(bool);
 
   /*! destructor */
   virtual ~Expression();

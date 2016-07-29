@@ -41,9 +41,6 @@ public:
    \return std::shared_ptr<#Scenario> */
   static std::shared_ptr<Scenario> create();
 
-  /*! clone */
-  virtual std::shared_ptr<Scenario> clone() const = 0;
-
   /*! destructor */
   virtual ~Scenario();
 

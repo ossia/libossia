@@ -44,41 +44,58 @@ public:
 
   /*! add a callback function
    \param #T function object */
-  virtual iterator addCallback(T callback)
+  iterator addCallback(T callback)
   {
-    return m_callbacks.insert(callbacks().cend(), std::move(callback));
+    auto it = mCallbacks.insert(callbacks().begin(), std::move(callback));
+    if(mCallbacks.size() == 1)
+      onFirstCallbackAdded();
+    return it;
   }
 
   /*! remove a result callback function
    \param #it Iterator to remove */
-  virtual void removeCallback(iterator it)
+  void removeCallback(iterator it)
   {
-    if (it == m_callbacks.end())
-      return;
-    m_callbacks.erase(it);
+    if(mCallbacks.size() == 1)
+      onRemovingLastCallback();
+    mCallbacks.erase(it);
   }
 
   /*! get callback functions
    \return #CallbackList */
   ContainerImpl& callbacks()
-  { return m_callbacks; }
+  { return mCallbacks; }
 
   /*! get callback functions
    \return #CallbackList */
   const ContainerImpl& callbacks() const
-  { return m_callbacks; }
+  { return mCallbacks; }
 
   /*! trigger all callbacks
    \param #args arguments to all callbacks */
   template<typename... Args>
   void send(Args&&... args)
   {
-    for (auto& callback : m_callbacks)
+    for (auto& callback : mCallbacks)
       callback(std::forward<Args>(args)...);
   }
 
+  auto begin() { return mCallbacks.begin(); }
+  auto end() { return mCallbacks.end(); }
+  auto begin() const { return mCallbacks.begin(); }
+  auto end() const { return mCallbacks.end(); }
+  auto empty() const { return mCallbacks.empty(); }
+
+  void clear()
+  {
+    onRemovingLastCallback();
+    mCallbacks.clear();
+  }
+
 protected:
-  ContainerImpl m_callbacks;
+  virtual void onFirstCallbackAdded() { }
+  virtual void onRemovingLastCallback() { }
+  ContainerImpl mCallbacks;
 
 };
 

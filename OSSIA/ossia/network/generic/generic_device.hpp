@@ -33,8 +33,8 @@ class OSSIA_EXPORT BasicDevice final :
         BasicDevice(std::unique_ptr<OSSIA::net::Protocol> protocol,
                     std::string name);
 
-        const OSSIA::net::Node& getRootNode() const { return *this; }
-        OSSIA::net::Node& getRootNode() { return *this; }
+        const OSSIA::net::Node& getRootNode() const override { return *this; }
+        OSSIA::net::Node& getRootNode() override { return *this; }
 
         ~BasicDevice();
 };

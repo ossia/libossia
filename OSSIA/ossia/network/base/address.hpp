@@ -5,7 +5,7 @@
 #include <ossia/network/common/address_properties.hpp>
 
 #include <ossia_export.h>
-
+#include <nano_signal_slot.hpp>
 #include <functional>
 #include <memory>
 
@@ -18,7 +18,8 @@ class Node;
 
 using ValueCallback = std::function<void(const Value&)>;
 
-class OSSIA_EXPORT Address : public CallbackContainer<ValueCallback>
+class OSSIA_EXPORT Address :
+    public CallbackContainer<ValueCallback>
 {
     public:
         Address() = default;
@@ -26,7 +27,8 @@ class OSSIA_EXPORT Address : public CallbackContainer<ValueCallback>
         Address(Address&&) = delete;
         Address& operator=(const Address&) = delete;
         Address& operator=(Address&&) = delete;
-        using iterator = typename CallbackContainer<ValueCallback>::iterator;
+
+        using callback_index = CallbackContainer<ValueCallback>::iterator;
         virtual ~Address();
 
         virtual const OSSIA::net::Node& getNode() const = 0;

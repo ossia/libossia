@@ -38,13 +38,5 @@ public:
   bool operator== (const Expression& expression) const override;
 
   bool operator!= (const Expression& expression) const override;
-
-# pragma mark -
-# pragma mark Callback Container
-
-  //! \todo shouldn't they stay unimplemented ?
-  Expression::iterator addCallback(ResultCallback) override;
-
-  void removeCallback(Expression::iterator callback) override;
 };
 }

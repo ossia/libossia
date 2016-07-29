@@ -32,18 +32,6 @@ mPatternConstraintCallback(patternConstraintCallback)
   mPatternConstraint->setDriveMode(Clock::DriveMode::EXTERNAL);
 }
 
-JamomaLoop::JamomaLoop(const JamomaLoop * other) :
-JamomaTimeProcess(),
-mPatternStartNode(other->mPatternStartNode->clone()),
-mPatternEndNode(other->mPatternEndNode->clone()),
-mPatternConstraint(other->mPatternConstraint->clone())
-{}
-
-std::shared_ptr<Loop> JamomaLoop::clone() const
-{
-  return std::make_shared<JamomaLoop>(this);
-}
-
 JamomaLoop::~JamomaLoop()
 {}
 

@@ -58,11 +58,6 @@ public:
              TimeConstraint::ExecutionCallback,
              TimeEvent::ExecutionCallback,
              TimeEvent::ExecutionCallback);
-
-  JamomaLoop(const JamomaLoop *);
-
-  std::shared_ptr<Loop> clone() const override;
-
   ~JamomaLoop();
 
 # pragma mark -

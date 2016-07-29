@@ -11,18 +11,6 @@ template <typename X, typename Y>
 JamomaCurve<X,Y>::JamomaCurve() = default;
 
 template <typename X, typename Y>
-JamomaCurve<X,Y>::
-JamomaCurve(const JamomaCurve * other)
-{}
-
-template <typename X, typename Y>
-std::shared_ptr<OSSIA::Curve<X,Y>> JamomaCurve<X,Y>::
-clone() const
-{
-  return std::make_shared<JamomaCurve>(this);
-}
-
-template <typename X, typename Y>
 JamomaCurve<X,Y>::~JamomaCurve() = default;
 
 # pragma mark -

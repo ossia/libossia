@@ -53,10 +53,6 @@ public:
                                                        Operator,
                                                        std::shared_ptr<Expression>);
 
-  /*! clone
-   \return std::shared_ptr<#ExpressionComposition> */
-  virtual std::shared_ptr<ExpressionComposition> clone() const = 0;
-
   /*! destructor */
   virtual ~ExpressionComposition();
 

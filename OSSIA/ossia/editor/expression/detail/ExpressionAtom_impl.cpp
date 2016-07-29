@@ -7,21 +7,10 @@ JamomaExpressionAtom::JamomaExpressionAtom(
     const Value& value1,
     Operator op,
     const Value& value2) :
-mFirstValue(value1),
-mOperator(op),
-mSecondValue(value2)
+  mFirstValue(value1),
+  mOperator(op),
+  mSecondValue(value2)
 {}
-
-JamomaExpressionAtom::JamomaExpressionAtom(const JamomaExpressionAtom& other) :
-mFirstValue(other.mFirstValue),
-mOperator(other.mOperator),
-mSecondValue(other.mSecondValue)
-{}
-
-std::shared_ptr<ExpressionAtom> JamomaExpressionAtom::clone() const
-{
-  return std::make_shared<JamomaExpressionAtom>(*this);
-}
 
 JamomaExpressionAtom::~JamomaExpressionAtom()
 {}
@@ -66,11 +55,11 @@ bool JamomaExpressionAtom::operator== (const Expression& expression) const
   {
     const JamomaExpressionAtom e = dynamic_cast<const JamomaExpressionAtom&>(expression);
     return Value{mFirstValue} == Value{e.mFirstValue} &&
-           mOperator == e.mOperator &&
-           Value{mSecondValue} == Value{e.mSecondValue};
-  }
-  else
-    return false;
+  mOperator == e.mOperator &&
+      Value{mSecondValue} == Value{e.mSecondValue};
+}
+else
+return false;
 }
 
 bool JamomaExpressionAtom::operator!= (const Expression& expression) const
@@ -79,76 +68,64 @@ bool JamomaExpressionAtom::operator!= (const Expression& expression) const
   {
     const JamomaExpressionAtom e = dynamic_cast<const JamomaExpressionAtom&>(expression);
     return Value{mFirstValue} != Value{e.mFirstValue} ||
-           mOperator != e.mOperator ||
-           Value{mSecondValue} != Value{e.mSecondValue};
-  }
-  else
-    return true;
+  mOperator != e.mOperator ||
+               Value{mSecondValue} != Value{e.mSecondValue};
+}
+else
+return true;
 }
 
 # pragma mark -
 # pragma mark Callback Container
 
-Expression::iterator JamomaExpressionAtom::addCallback(ResultCallback callback)
+void JamomaExpressionAtom::onFirstCallbackAdded()
 {
-  auto it = CallbackContainer::addCallback(std::move(callback));
-
-  if (callbacks().size() == 1)
+  // start first operand observation if it is a Destination
+  //! \todo what about Tuple of Destinations ?
+  if (mFirstValue.getType() == OSSIA::Type::DESTINATION)
   {
-    // start first operand observation if it is a Destination
-    //! \todo what about Tuple of Destinations ?
-    if (mFirstValue.getType() == OSSIA::Type::DESTINATION)
+    auto& d = mFirstValue.get<Destination>();
+    if (const auto& addr = d.value->getAddress())
     {
-      auto& d = mFirstValue.get<Destination>();
-      if (const auto& addr = d.value->getAddress())
-      {
-        mFirstValueCallbackIndex = addr->addCallback(
-              [&] (const OSSIA::Value& result) { firstValueCallback(result); });
-      }
-    }
-
-    // start second operand observation if it is a Destination
-    //! \todo what about Tuple of Destinations ?
-    if (mSecondValue.getType() == OSSIA::Type::DESTINATION)
-    {
-      auto& d = mSecondValue.get<Destination>();
-      if (const auto& addr = d.value->getAddress())
-      {
-        mSecondValueCallbackIndex = addr->addCallback(
-              [&] (const OSSIA::Value& result) { secondValueCallback(result); });
-      }
+      mFirstValueCallbackIndex = addr->addCallback(
+                                   [&] (const OSSIA::Value& result) { firstValueCallback(result); });
     }
   }
 
-  return it;
+  // start second operand observation if it is a Destination
+  //! \todo what about Tuple of Destinations ?
+  if (mSecondValue.getType() == OSSIA::Type::DESTINATION)
+  {
+    auto& d = mSecondValue.get<Destination>();
+    if (const auto& addr = d.value->getAddress())
+    {
+      mSecondValueCallbackIndex = addr->addCallback(
+                                    [&] (const OSSIA::Value& result) { secondValueCallback(result); });
+    }
+  }
 }
 
-void JamomaExpressionAtom::removeCallback(Expression::iterator callback)
+void JamomaExpressionAtom::onRemovingLastCallback()
 {
-  CallbackContainer::removeCallback(callback);
-
-  if (callbacks().size() == 0)
+  // stop first operand observation if it is a Destination
+  //! \todo what about Tuple of Destinations ?
+  if (mFirstValue.getType() == OSSIA::Type::DESTINATION)
   {
-    // stop first operand observation if it is a Destination
-    //! \todo what about Tuple of Destinations ?
-    if (mFirstValue.getType() == OSSIA::Type::DESTINATION)
+    auto& d = mFirstValue.get<Destination>();
+    if (const auto& addr = d.value->getAddress())
     {
-      auto& d = mFirstValue.get<Destination>();
-      if (const auto& addr = d.value->getAddress())
-      {
-        addr->removeCallback(mFirstValueCallbackIndex);
-      }
+      addr->removeCallback(mFirstValueCallbackIndex);
     }
+  }
 
-    // start second operand observation if it is a Destination
-    //! \todo what about Tuple of Destinations ?
-    if (mSecondValue.getType() == OSSIA::Type::DESTINATION)
+  // start second operand observation if it is a Destination
+  //! \todo what about Tuple of Destinations ?
+  if (mSecondValue.getType() == OSSIA::Type::DESTINATION)
+  {
+    auto& d = mSecondValue.get<Destination>();
+    if (const auto& addr = d.value->getAddress())
     {
-      auto& d = mSecondValue.get<Destination>();
-      if (const auto& addr = d.value->getAddress())
-      {
-        addr->removeCallback(mSecondValueCallbackIndex);
-      }
+      addr->removeCallback(mSecondValueCallbackIndex);
     }
   }
 }

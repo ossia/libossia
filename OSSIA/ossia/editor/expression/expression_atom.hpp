@@ -70,10 +70,6 @@ public:
     return create(v, Operator::EQUAL);
   }
 
-  /*! clone
-   \return std::shared_ptr<#ExpressionAtom> */
-  virtual std::shared_ptr<ExpressionAtom> clone() const = 0;
-
   /*! destructor */
   virtual ~ExpressionAtom();
 

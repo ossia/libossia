@@ -51,8 +51,6 @@ public:
 
   JamomaAutomation(const JamomaAutomation&);
 
-  std::shared_ptr<Automation> clone() const override;
-
   ~JamomaAutomation();
 #if 0
 # pragma mark -

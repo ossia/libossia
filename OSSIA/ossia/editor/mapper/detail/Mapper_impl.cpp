@@ -16,20 +16,6 @@ JamomaMapper::JamomaMapper(
   mDriverValueObserved(false)
 {}
 
-JamomaMapper::JamomaMapper(const JamomaMapper& other) :
-  JamomaTimeProcess(),
-  mDriverAddress{other.mDriverAddress},
-  mDrivenAddress{other.mDrivenAddress},
-  mDrive{other.mDrive},
-  mLastMessage{other.mLastMessage},
-  mDriverValueObserved{other.mDriverValueObserved}
-{}
-
-std::shared_ptr<OSSIA::Mapper> JamomaMapper::clone() const
-{
-  return std::make_shared<JamomaMapper>(*this);
-}
-
 JamomaMapper::~JamomaMapper()
 {}
 

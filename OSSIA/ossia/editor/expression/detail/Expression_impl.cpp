@@ -44,16 +44,4 @@ bool JamomaExpression::operator!= (const Expression& expression) const
   else
     return true;
 }
-
-# pragma mark -
-# pragma mark Callback Container
-
-//! \todo shouldn't they stay unimplemented ?
-Expression::iterator JamomaExpression::addCallback(ResultCallback)
-{
-  return callbacks().end();
-}
-
-void JamomaExpression::removeCallback(Expression::iterator callback)
-{}
 }

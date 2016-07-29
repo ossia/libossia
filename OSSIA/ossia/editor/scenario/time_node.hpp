@@ -53,10 +53,6 @@ public:
    \param #TimeNode::ExecutionCallback to be be notified when the #TimeNode is triggered
    \return std::shared_ptr<#TimeNode> */
   static std::shared_ptr<TimeNode> create(TimeNode::ExecutionCallback = nullptr);
-
-  /*! clone */
-  virtual std::shared_ptr<TimeNode> clone() const = 0;
-
   /*! destructor */
   virtual ~TimeNode();
 

@@ -71,8 +71,6 @@ public:
               float = 1.,
               Clock::DriveMode = Clock::DriveMode::INTERNAL);
 
-  JamomaClock(const JamomaClock *);
-
   ~JamomaClock();
 #if 0
 # pragma mark -

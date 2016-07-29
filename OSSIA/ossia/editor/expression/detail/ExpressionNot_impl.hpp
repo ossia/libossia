@@ -26,10 +26,6 @@ public:
 
   JamomaExpressionNot(std::shared_ptr<Expression> expr);
 
-  JamomaExpressionNot(const JamomaExpressionNot * other);
-
-  std::shared_ptr<ExpressionNot> clone() const override;
-
   ~JamomaExpressionNot();
 
 # pragma mark -
@@ -47,18 +43,13 @@ public:
   bool operator!= (const Expression& expression) const override;
 
 # pragma mark -
-# pragma mark Callback Container
-
-  Expression::iterator addCallback(ResultCallback callback) override;
-
-  void removeCallback(Expression::iterator callback) override;
-
-# pragma mark -
 # pragma mark Accessors
 
   const std::shared_ptr<Expression> & getExpression() const override;
 
 private:
+  void onFirstCallbackAdded() override;
+  void onRemovingLastCallback() override;
 
 # pragma mark -
 # pragma mark Implementation Specific

@@ -18,13 +18,7 @@ JamomaAutomation::JamomaAutomation(
   mLastMessage{address, OSSIA::Value{}}
 {}
 
-JamomaAutomation::JamomaAutomation(const JamomaAutomation& other) = default;
 JamomaAutomation::~JamomaAutomation() = default;
-
-std::shared_ptr<OSSIA::Automation> JamomaAutomation::clone() const
-{
-  return std::make_shared<JamomaAutomation>(*this);
-}
 
 
 #if 0

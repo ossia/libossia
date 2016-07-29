@@ -47,7 +47,7 @@ private:
   mutable std::mutex    mValueToMapMutex;
 
   bool                  mDriverValueObserved{};
-  OSSIA::net::Address::iterator     mDriverValueCallbackIndex;
+  OSSIA::net::Address::callback_index     mDriverValueCallbackIndex;
 
 public:
 
@@ -57,10 +57,6 @@ public:
   JamomaMapper(OSSIA::net::Address&,
                OSSIA::net::Address&,
                const OSSIA::Value&);
-
-  JamomaMapper(const JamomaMapper &);
-
-  std::shared_ptr<Mapper> clone() const override;
 
   ~JamomaMapper();
 

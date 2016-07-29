@@ -162,8 +162,8 @@ class MIDIAddress final :
     OSSIA::RepetitionFilter getRepetitionFilter() const override;
     Address&setRepetitionFilter(OSSIA::RepetitionFilter) override;
 
-    Address::iterator addCallback(ValueCallback callback) override;
-    void removeCallback(Address::iterator callback) override;
+    void onFirstCallbackAdded() override;
+    void onRemovingLastCallback() override;
 
     const std::string& getTextualAddress() const override;
 

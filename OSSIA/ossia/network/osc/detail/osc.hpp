@@ -291,9 +291,6 @@ inline void updateValue(OSSIA::net::Address& addr,
     if(res.valid())
     {
         addr.setValue(std::move(res));
-        try {
-            addr.send(addr.cloneValue());
-        } catch(...) { }
     }
 }
 

@@ -23,8 +23,7 @@ BasicAddress::BasicAddress(
 
 BasicAddress::~BasicAddress()
 {
-    while(!m_callbacks.empty())
-        removeCallback(m_callbacks.begin()); // /!\ O(1) because m_callbacks is a list
+  mCallbacks.clear();
 }
 
 const OSSIA::net::Node& BasicAddress::getNode() const
@@ -114,6 +113,8 @@ OSSIA::net::Address& BasicAddress::setValue(const OSSIA::Value& value)
         {
           address->pullValue();
           mValue = address->cloneValue();
+
+          send(mValue);
         }
         else
           throw std::runtime_error("setting an address value using a destination with a bad type address");
@@ -134,6 +135,7 @@ OSSIA::net::Address& BasicAddress::setValue(const OSSIA::Value& value)
         }
 
         mValue = value;
+        send(mValue);
     }
 
     return *this;
@@ -199,26 +201,13 @@ OSSIA::net::Address& BasicAddress::setRepetitionFilter(OSSIA::RepetitionFilter r
     return *this;
 }
 
-OSSIA::net::Address::iterator BasicAddress::addCallback(OSSIA::net::ValueCallback callback)
+void BasicAddress::onFirstCallbackAdded()
 {
-    auto it = CallbackContainer::addCallback(std::move(callback));
-
-    if (callbacks().size() == 1)
-    {
-        mProtocol.observe(*this, true);
-    }
-
-    return it;
+  mProtocol.observe(*this, true);
 }
 
-void BasicAddress::removeCallback(Address::iterator callback)
+void BasicAddress::onRemovingLastCallback()
 {
-    if (callbacks().size() == 1)
-    {
-        // use the device protocol to stop address value observation
-        mProtocol.observe(*this, false);
-    }
-
-    CallbackContainer::removeCallback(callback);
+  mProtocol.observe(*this, false);
 }
 }

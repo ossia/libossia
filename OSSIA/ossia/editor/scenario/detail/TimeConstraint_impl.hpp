@@ -64,10 +64,6 @@ public:
                        TimeValue = 0.,
                        TimeValue = Infinite);
 
-  JamomaTimeConstraint(const JamomaTimeConstraint *);
-
-  std::shared_ptr<TimeConstraint> clone() const override;
-
   ~JamomaTimeConstraint();
 
 # pragma mark -

@@ -9,17 +9,6 @@ mOperator(op),
 mSecondExpression(expr2)
 {}
 
-JamomaExpressionComposition::JamomaExpressionComposition(const JamomaExpressionComposition * other) :
-//! \todo mFirstExpression(other->mFirstExpression->clone()),
-mOperator(other->mOperator)
-//! \todo mSecondExpression(other->mSecondExpression->clone())
-{}
-
-std::shared_ptr<ExpressionComposition> JamomaExpressionComposition::clone() const
-{
-  return std::make_shared<JamomaExpressionComposition>(this);
-}
-
 JamomaExpressionComposition::~JamomaExpressionComposition()
 {}
 # pragma mark -
@@ -64,34 +53,22 @@ bool JamomaExpressionComposition::operator!= (const Expression& expression) cons
 # pragma mark -
 # pragma mark Callback Container
 
-Expression::iterator JamomaExpressionComposition::addCallback(ResultCallback callback)
+void JamomaExpressionComposition::onFirstCallbackAdded()
 {
-  auto it = CallbackContainer::addCallback(std::move(callback));
+  // start first expression observation
+  mFirstResultCallbackIndex = mFirstExpression->addCallback([&] (bool result) { firstResultCallback(result); });
 
-  if (callbacks().size() == 1)
-  {
-    // start first expression observation
-    mFirstResultCallbackIndex = mFirstExpression->addCallback([&] (bool result) { firstResultCallback(result); });
-
-    // start second expression observation
-    mSecondResultCallbackIndex = mSecondExpression->addCallback([&] (bool result) { secondResultCallback(result); });
-  }
-
-  return it;
+  // start second expression observation
+  mSecondResultCallbackIndex = mSecondExpression->addCallback([&] (bool result) { secondResultCallback(result); });
 }
 
-void JamomaExpressionComposition::removeCallback(Expression::iterator callback)
+void JamomaExpressionComposition::onRemovingLastCallback()
 {
-  CallbackContainer::removeCallback(callback);
+  // stop first expression observation
+  mFirstExpression->removeCallback(mFirstResultCallbackIndex);
 
-  if (callbacks().size() == 0)
-  {
-    // stop first expression observation
-    mFirstExpression->removeCallback(mFirstResultCallbackIndex);
-
-    // stop second expression observation
-    mSecondExpression->removeCallback(mSecondResultCallbackIndex);
-  }
+  // stop second expression observation
+  mSecondExpression->removeCallback(mSecondResultCallbackIndex);
 }
 
 # pragma mark -

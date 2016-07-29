@@ -46,9 +46,6 @@ public:
    \return std::shared_ptr<#Curve> */
   static std::shared_ptr<Curve> create();
 
-  /*! clone */
-  virtual std::shared_ptr<Curve> clone() const = 0;
-
   /*! destructor */
   virtual ~Curve();
 
