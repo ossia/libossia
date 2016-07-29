@@ -1,4 +1,5 @@
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/device.hpp>
 #include <ossia/detail/algorithms.hpp>
 
 namespace OSSIA
@@ -13,7 +14,10 @@ Node* Node::createChild(const std::string& name)
 
     auto ptr = res.get();
     if(res)
+    {
         mChildren.push_back(std::move(res));
+        getDevice().onNodeCreated(*ptr);
+    }
 
     return ptr;
 }
@@ -26,6 +30,7 @@ bool Node::removeChild(const std::string& name)
 
     if(it != mChildren.end())
     {
+        getDevice().onNodeRemoving(**it);
         removingChild(**it);
         mChildren.erase(it);
 
@@ -45,6 +50,7 @@ bool Node::removeChild(const Node& node)
 
     if(it != mChildren.end())
     {
+        getDevice().onNodeRemoving(**it);
         removingChild(**it);
         mChildren.erase(it);
 
