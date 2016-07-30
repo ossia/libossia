@@ -330,7 +330,7 @@ bool MIDI::observe(address& address, bool enable)
   return true;
 }
 
-bool MIDI::update(Node& node)
+bool MIDI::update(node& node)
 {
   return false;
 }

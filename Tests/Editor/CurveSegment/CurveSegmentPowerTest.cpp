@@ -15,21 +15,21 @@ private Q_SLOTS:
   {
     {
       auto curveSegment = curve_segment_power<bool>{}(1.);
-      QVERIFY(curveSegment(0., false, true) == false);
-      QVERIFY(curveSegment(0.25, false, true) == true);
-      QVERIFY(curveSegment(0.5, false, true) == true);
-      QVERIFY(curveSegment(0.75, false, true) == true);
-      QVERIFY(curveSegment(1., false, true) == true);
+      QCOMPARE(curveSegment(0., false, true), false);
+      QCOMPARE(curveSegment(0.25, false, true), true);
+      QCOMPARE(curveSegment(0.5, false, true), true);
+      QCOMPARE(curveSegment(0.75, false, true), true);
+      QCOMPARE(curveSegment(1., false, true), true);
     }
 
     {
-      auto curveSegment = curve_segment_power<bool>{}(1.);
+      auto curveSegment = curve_segment_power<bool>{}(2.);
 
-      QVERIFY(curveSegment(0., false, true) == false);
-      QVERIFY(curveSegment(0.25, false, true) == true);
-      QVERIFY(curveSegment(0.5, false, true) == true);
-      QVERIFY(curveSegment(0.75, false, true) == true);
-      QVERIFY(curveSegment(1., false, true) == true);
+      QCOMPARE(curveSegment(0., false, true), false);
+      QCOMPARE(curveSegment(0.25, false, true), true);
+      QCOMPARE(curveSegment(0.5, false, true), true);
+      QCOMPARE(curveSegment(0.75, false, true), true);
+      QCOMPARE(curveSegment(1., false, true), true);
     }
   }
 
@@ -38,21 +38,21 @@ private Q_SLOTS:
   {
     {
       auto curveSegment = curve_segment_power<int>{}(1.);
-      QVERIFY(curveSegment(0., 0, 1) == 0);
-      QVERIFY(curveSegment(0.25, 0, 1) == 0);
-      QVERIFY(curveSegment(0.5, 0, 1) == 0);
-      QVERIFY(curveSegment(0.75, 0, 1) == 0);
-      QVERIFY(curveSegment(1., 0, 1) == 1);
+      QCOMPARE(curveSegment(0., 0, 1), 0);
+      QCOMPARE(curveSegment(0.25, 0, 1), 0);
+      QCOMPARE(curveSegment(0.5, 0, 1), 0);
+      QCOMPARE(curveSegment(0.75, 0, 1), 0);
+      QCOMPARE(curveSegment(1., 0, 1), 1);
     }
 
     {
       auto curveSegment = curve_segment_power<int>{}(2.);
 
-      QVERIFY(curveSegment(0., 0, 1) == 0);
-      QVERIFY(curveSegment(0.25, 0, 1) == 0);
-      QVERIFY(curveSegment(0.5, 0, 1) == 0);
-      QVERIFY(curveSegment(0.75, 0, 1) == 0);
-      QVERIFY(curveSegment(1., 0, 1) == 1);
+      QCOMPARE(curveSegment(0., 0, 1), 0);
+      QCOMPARE(curveSegment(0.25, 0, 1), 0);
+      QCOMPARE(curveSegment(0.5, 0, 1), 0);
+      QCOMPARE(curveSegment(0.75, 0, 1), 0);
+      QCOMPARE(curveSegment(1., 0, 1), 1);
     }
   }
 
@@ -61,20 +61,20 @@ private Q_SLOTS:
   {
     {
       auto curveSegment = curve_segment_power<float>{}(1.);
-      QVERIFY(curveSegment(0., 0., 1.) == 0.);
-      QVERIFY(curveSegment(0.25, 0., 1.) == 0.25);
-      QVERIFY(curveSegment(0.5, 0., 1.) == 0.5);
-      QVERIFY(curveSegment(0.75, 0., 1.) == 0.75);
-      QVERIFY(curveSegment(1., 0., 1.) == 1.);
+      QCOMPARE(curveSegment(0., 0., 1.), 0.);
+      QCOMPARE(curveSegment(0.25, 0., 1.), 0.25);
+      QCOMPARE(curveSegment(0.5, 0., 1.), 0.5);
+      QCOMPARE(curveSegment(0.75, 0., 1.), 0.75);
+      QCOMPARE(curveSegment(1., 0., 1.), 1.);
     }
 
     {
-      auto curveSegment = curve_segment_power<float>{}(1.);
-      QVERIFY(curveSegment(0., 0., 1.) == 0.);
-      QVERIFY(curveSegment(0.25, 0., 1.) == 0.0625);
-      QVERIFY(curveSegment(0.5, 0., 1.) == 0.25);
-      QVERIFY(curveSegment(0.75, 0., 1.) == 0.5625);
-      QVERIFY(curveSegment(1., 0., 1.) == 1.);
+      auto curveSegment = curve_segment_power<float>{}(2.);
+      QCOMPARE(curveSegment(0., 0., 1.), 0.);
+      QCOMPARE(curveSegment(0.25, 0., 1.), 0.0625);
+      QCOMPARE(curveSegment(0.5, 0., 1.), 0.25);
+      QCOMPARE(curveSegment(0.75, 0., 1.), 0.5625);
+      QCOMPARE(curveSegment(1., 0., 1.), 1.);
     }
   }
 };

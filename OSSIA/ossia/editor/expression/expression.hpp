@@ -28,9 +28,8 @@ OSSIA_EXPORT void remove_callback(
     expression_base&,
     expression_callback_iterator);
 
-OSSIA_EXPORT void remove_callback(
-    expression_base&,
-    expression_callback_iterator);
+OSSIA_EXPORT const expression_callback_container::impl & callbacks(
+    expression_base&);
 
 
 const expression_base expression_true{eggs::variants::in_place<expression_bool>, true};

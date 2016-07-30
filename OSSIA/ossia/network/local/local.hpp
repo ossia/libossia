@@ -6,7 +6,7 @@
 namespace impl
 {
 class OSSIA_EXPORT Local2 final :
-        public ossia::net::Protocol
+        public ossia::net::protocol
 {
     public:
         Local2();
@@ -16,14 +16,14 @@ class OSSIA_EXPORT Local2 final :
         bool pull(ossia::net::address&) override;
         bool push(const ossia::net::address& addr) override;
         bool observe(ossia::net::address&, bool) override;
-        bool update(ossia::net::Node& node) override;
+        bool update(ossia::net::node& node) override;
 
-        void exposeTo(std::unique_ptr<ossia::net::Protocol> p)
+        void exposeTo(std::unique_ptr<ossia::net::protocol> p)
         {
             mExposed.push_back(std::move(p));
         }
 
-        void stopExposeTo(const ossia::net::Protocol& p)
+        void stopExposeTo(const ossia::net::protocol& p)
         {
             mExposed.erase(
                         ossia::remove_if(mExposed, [&] (const auto& ptr) { return ptr.get() == &p; }),
@@ -33,6 +33,6 @@ class OSSIA_EXPORT Local2 final :
         const auto& getExposedProtocols() const { return mExposed; }
 
     private:
-        std::vector<std::unique_ptr<ossia::net::Protocol>> mExposed;
+        std::vector<std::unique_ptr<ossia::net::protocol>> mExposed;
 };
 }

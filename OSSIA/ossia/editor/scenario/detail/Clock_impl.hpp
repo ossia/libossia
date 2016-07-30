@@ -30,6 +30,8 @@ namespace impl
 {
 class JamomaClock : public virtual clock
 {
+public:
+  using clock_type = std::chrono::steady_clock;
 
 protected:
 #if 0
@@ -51,7 +53,7 @@ protected:
 
   std::thread       mThread;            /// a thread to launch the clock execution
 
-  steady_clock::time_point mLastTime{}; /// a time reference used to compute time tick
+  clock_type::time_point mLastTime{}; /// a time reference used to compute time tick
   long long         mElapsedTime{};     /// a time reference used to know how many time are elapsed in microsecond
 
 private:

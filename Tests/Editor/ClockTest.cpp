@@ -117,7 +117,7 @@ class ClockTest : public QObject
         QVERIFY(effective_duration <= expected_duration + (granularity * speed * 1000));
 
         // ckeck frame info
-        QVERIFY(effective_nbFrame == expected_nbFrame);
+        QCOMPARE(effective_nbFrame, expected_nbFrame);
         QVERIFY(m_clock_positions[effective_nbFrame-1] >= One);
         QVERIFY(m_clock_dates[0] == floor(offset / (granularity*speed)) * (granularity * speed));
         QVERIFY(m_clock_dates[1] >= (floor(offset / (granularity*speed)) + 1) * (granularity*speed));

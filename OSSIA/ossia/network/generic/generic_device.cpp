@@ -5,9 +5,9 @@
 namespace impl
 {
 BasicDevice::BasicDevice(
-        std::unique_ptr<ossia::net::Protocol> protocol,
+        std::unique_ptr<ossia::net::protocol> protocol,
         std::string name) :
-    Device(std::move(protocol)),
+    device(std::move(protocol)),
     BasicNode(std::move(name), *this)
 {
   mProtocol->setDevice(*this);

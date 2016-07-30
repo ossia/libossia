@@ -255,7 +255,7 @@ inline std::string getOSCAddressAsString(const ossia::net::address& address)
     return addr.substr(addr.find(':') + 1);
 }
 
-inline std::string getOSCAddressAsString(const ossia::net::Node& node)
+inline std::string getOSCAddressAsString(const ossia::net::node& node)
 {
   auto addr = ossia::net::getAddressFromNode(node);
   return addr.substr(addr.find(':') + 1);

@@ -43,7 +43,7 @@ private Q_SLOTS:
 
         QVERIFY(address->getRepetitionFilter() == RepetitionFilter::OFF);
 
-        address->setRepetitionFilter(true);
+        address->setRepetitionFilter(RepetitionFilter::ON);
         QVERIFY(address->getRepetitionFilter() == RepetitionFilter::ON);
 
         //! \todo verify addCallback

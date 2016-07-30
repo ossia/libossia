@@ -4,6 +4,6 @@ namespace ossia
 {
 namespace net
 {
-Protocol::~Protocol() = default;
+protocol::~protocol() = default;
 }
 }

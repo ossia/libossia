@@ -26,7 +26,7 @@ namespace ossia
 namespace expressions
 {
 class OSSIA_EXPORT expression_composition final :
-    public callback_container<expression_result_callback>
+    public expression_callback_container
 {
 public:
   enum class Operator

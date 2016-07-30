@@ -31,7 +31,7 @@ class Destination;
 namespace expressions
 {
 class OSSIA_EXPORT expression_pulse :
-    public callback_container<expression_result_callback>
+    public expression_callback_container
 {
 public:
   expression_pulse(const Destination& destination);

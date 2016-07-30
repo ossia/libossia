@@ -29,7 +29,7 @@ namespace ossia
 namespace expressions
 {
 class OSSIA_EXPORT expression_atom :
-    public callback_container<expression_result_callback>
+    public expression_callback_container
 {
 public:
   enum class Comparator

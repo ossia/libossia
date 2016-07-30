@@ -1,6 +1,7 @@
 #include <ossia/editor/scenario/detail/Clock_impl.hpp>
 #include <cassert>
 
+#include <iostream>
 namespace impl
 {
 JamomaClock::JamomaClock(clock::ExecutionCallback callback,
@@ -53,7 +54,7 @@ void JamomaClock::resume()
   mPaused = false;
 
   // reset the time reference
-  mLastTime = steady_clock::now();
+  mLastTime = clock_type::now();
 }
 
 bool JamomaClock::tick()
@@ -65,7 +66,7 @@ bool JamomaClock::tick()
   int droppedTicks = 0;
 
   // how many time since the last tick ?
-  long long deltaInUs = duration_cast<microseconds>(steady_clock::now() - mLastTime).count();
+  long long deltaInUs = duration_cast<microseconds>(clock_type::now() - mLastTime).count();
 
   if (mDriveMode == clock::DriveMode::EXTERNAL)
   {
@@ -106,11 +107,22 @@ bool JamomaClock::tick()
     // if too early: wait
     if (pauseInUs > 0)
     {
-      // pause the thread
-      std::this_thread::sleep_for(std::chrono::microseconds(pauseInUs));
+      while(pauseInUs > 5000)
+      {
+        // pause the thread logarithmically
+        auto t1 = clock_type::now();
+        std::this_thread::sleep_for(std::chrono::microseconds(pauseInUs / 2));
+        auto t2 = clock_type::now();
+        pauseInUs -= duration_cast<microseconds>(t2 - t1).count();
+      }
 
-      // how many time since the last tick ? (minus dropped ticks)
-      deltaInUs = duration_cast<microseconds>(steady_clock::now() - mLastTime).count() - droppedTicks * granularityInUs;
+      {
+        // busy loop
+        auto t1 = clock_type::now();
+        while(duration_cast<microseconds>(clock_type::now() - t1).count() < (pauseInUs + 10)) ;
+      }
+
+      deltaInUs = duration_cast<microseconds>(clock_type::now() - mLastTime).count() - droppedTicks * granularityInUs;
     }
   }
 
@@ -121,7 +133,7 @@ bool JamomaClock::tick()
   //! \debug cout << "+ " << (deltaInUs / 1000.) * mSpeed << endl;
 
   // note the time now to evaluate how long is the callback processing
-  mLastTime = steady_clock::now();
+  mLastTime = clock_type::now();
 
   // test paused and running status after computing the date because there is a sleep before
   if (!mPaused && mRunning)
@@ -165,7 +177,7 @@ bool JamomaClock::tick(time_value usec)
   //! \debug cout << "+ " << (deltaInUs / 1000.) * mSpeed << endl;
 
   // note the time now to evaluate how long is the callback processing
-  mLastTime = steady_clock::now();
+  mLastTime = clock_type::now();
 
   // test paused and running status after computing the date because there is a sleep before
   if (!mPaused && mRunning)
@@ -287,7 +299,7 @@ void JamomaClock::do_start()
   // set clock at a tick
   mDate = std::floor(mOffset / (mGranularity * mSpeed)) * (mGranularity * mSpeed);
   mPosition = mDate / mDuration;
-  mLastTime = steady_clock::now();
+  mLastTime = clock_type::now();
   mElapsedTime = std::floor(mOffset / mGranularity) * mGranularity * 1000;
 
   // notify the owner

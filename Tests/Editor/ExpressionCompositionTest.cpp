@@ -19,31 +19,25 @@ class ExpressionCompositionTest : public QObject
     m_result_callback_called = true;
   }
 
+  auto make_exprA()
+  { return make_expression_atom(Bool(true), expression_atom::Comparator::EQUAL, Bool(true)); }
+  auto make_exprB()
+  { return make_expression_atom(Bool(false), expression_atom::Comparator::EQUAL, Bool(false)); }
+  auto make_exprC()
+  { return make_expression_atom(Bool(false), expression_atom::Comparator::DIFFERENT, Bool(false)); }
+
 private Q_SLOTS:
 
   /*! test AND operator */
   void test_AND()
   {
-    auto exprA = make_expression_atom(Bool(true),
-                                      expression_atom::Comparator::EQUAL,
-                                      Bool(true));
-
-    auto exprB = make_expression_atom(Bool(false),
-                                      expression_atom::Comparator::EQUAL,
-                                      Bool(false));
-
-    auto exprC = make_expression_atom(Bool(false),
-                                      expression_atom::Comparator::DIFFERENT,
-                                      Bool(false));
-
-    auto composition1 = make_expression_composition(exprA,
-                                                    expression_composition::Operator::AND,
-                                                    exprB);
+    auto composition1 = make_expression_composition(
+          make_exprA(), expression_composition::Operator::AND, make_exprB());
     QVERIFY(evaluate(composition1) == true);
 
-    auto composition2 = make_expression_composition(exprA,
-                                                    expression_composition::Operator::AND,
-                                                    exprC);
+    auto composition2 = make_expression_composition(
+          make_exprA(), expression_composition::Operator::AND, make_exprC());
+
     QVERIFY(evaluate(composition2) == false);
 
     //! \todo test clone()
@@ -52,26 +46,14 @@ private Q_SLOTS:
   /*! test OR operator */
   void test_OR()
   {
-    auto exprA = make_expression_atom(Bool(true),
-                                      expression_atom::Comparator::EQUAL,
-                                      Bool(true));
-
-    auto exprB = make_expression_atom(Bool(false),
-                                      expression_atom::Comparator::EQUAL,
-                                      Bool(false));
-
-    auto exprC = make_expression_atom(Bool(false),
-                                      expression_atom::Comparator::DIFFERENT,
-                                      Bool(false));
-
-    auto composition1 = make_expression_composition(exprA,
+    auto composition1 = make_expression_composition(make_exprA(),
                                                     expression_composition::Operator::OR,
-                                                    exprB);
+                                                    make_exprB());
     QVERIFY(evaluate(composition1) == true);
 
-    auto composition2 = make_expression_composition(exprA,
+    auto composition2 = make_expression_composition(make_exprA(),
                                                     expression_composition::Operator::OR,
-                                                    exprC);
+                                                    make_exprC());
     QVERIFY(evaluate(composition2) == true);
 
     //! \todo test clone()
@@ -80,26 +62,14 @@ private Q_SLOTS:
   /*! test XOR operator */
   void test_XOR()
   {
-    auto exprA = make_expression_atom(Bool(true),
-                                      expression_atom::Comparator::EQUAL,
-                                      Bool(true));
-
-    auto exprB = make_expression_atom(Bool(false),
-                                      expression_atom::Comparator::EQUAL,
-                                      Bool(false));
-
-    auto exprC = make_expression_atom(Bool(false),
-                                      expression_atom::Comparator::DIFFERENT,
-                                      Bool(false));
-
-    auto composition1 = make_expression_composition(exprA,
+    auto composition1 = make_expression_composition(make_exprA(),
                                                     expression_composition::Operator::XOR,
-                                                    exprB);
+                                                    make_exprB());
     QVERIFY(evaluate(composition1) == false);
 
-    auto composition2 = make_expression_composition(exprA,
+    auto composition2 = make_expression_composition(make_exprA(),
                                                     expression_composition::Operator::XOR,
-                                                    exprC);
+                                                    make_exprC());
     QVERIFY(evaluate(composition2) == true);
 
     //! \todo test clone()
@@ -108,25 +78,12 @@ private Q_SLOTS:
   /*! test comparison operator */
   void test_comparison()
   {
-    auto exprA = make_expression_atom(Bool(true),
-                                      expression_atom::Comparator::EQUAL,
-                                      Bool(true));
-
-    auto exprB = make_expression_atom(Bool(false),
-                                      expression_atom::Comparator::EQUAL,
-                                      Bool(false));
-
-    auto exprC = make_expression_atom(Bool(false),
-                                      expression_atom::Comparator::DIFFERENT,
-                                      Bool(false));
-
-    auto composition1 = make_expression_composition(exprA,
+    auto composition1 = make_expression_composition(make_exprA(),
                                                     expression_composition::Operator::XOR,
-                                                    exprB);
-
-    auto composition2 = make_expression_composition(exprA,
+                                                    make_exprB());
+    auto composition2 = make_expression_composition(make_exprA(),
                                                     expression_composition::Operator::XOR,
-                                                    exprC);
+                                                    make_exprC());
 
     QVERIFY(expressions::expression_false != *composition1);
     QVERIFY(expressions::expression_true != *composition1);
@@ -156,14 +113,14 @@ private Q_SLOTS:
                                                      expression_atom::Comparator::LOWER_THAN,
                                                      Destination(*localIntNode3));
 
-    auto testDestinationComposition = make_expression_composition(testDestinationExprA,
+    auto testDestinationComposition = make_expression_composition(std::move(testDestinationExprA),
                                                                   expression_composition::Operator::AND,
-                                                                  testDestinationExprB);
+                                                                  std::move(testDestinationExprB));
 
     expression_result_callback callback = std::bind(&ExpressionCompositionTest::result_callback, this, _1);
-    auto callback_index = add_callback(testDestinationComposition, callback);
+    auto callback_index = add_callback(*testDestinationComposition, callback);
 
-    QVERIFY(testDestinationComposition->callbacks().size() == 1);
+    QVERIFY(callbacks(*testDestinationComposition).size() == 1);
 
     m_result = false;
     m_result_callback_called = false;
@@ -189,9 +146,9 @@ private Q_SLOTS:
 
     QVERIFY(m_result_callback_called == true && m_result == true);
 
-    remove_callback(testDestinationComposition, callback_index);
+    remove_callback(*testDestinationComposition, callback_index);
 
-    QVERIFY(testDestinationComposition->callbacks().size() == 0);
+    QVERIFY(callbacks(*testDestinationComposition).size() == 0);
 
     m_result = false;
     m_result_callback_called = false;

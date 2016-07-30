@@ -26,7 +26,7 @@ namespace ossia
 namespace expressions
 {
 class OSSIA_EXPORT expression_not :
-    public callback_container<expression_result_callback>
+    public expression_callback_container
 {
 public:
   expression_not(expression_ptr);

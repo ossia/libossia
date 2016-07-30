@@ -74,12 +74,12 @@ bool OSC2::getLearningStatus() const
 }
 
 
-OSC2& OSC2::setLearningStatus(ossia::net::Device& ossiaDevice, bool newLearn)
+OSC2& OSC2::setLearningStatus(ossia::net::device& ossiaDevice, bool newLearn)
 {
     return *this;
 }
 
-bool OSC2::update(ossia::net::Node& node)
+bool OSC2::update(ossia::net::node& node)
 {
     return false;
 }

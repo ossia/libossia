@@ -122,7 +122,7 @@ class MIDIAddress final :
     public ossia::net::address
 {
     MIDIAddressInfo mInfo;
-    ossia::net::Node& mParent;
+    ossia::net::node& mParent;
     MIDI& mProtocol;
     ossia::net::Domain mDomain;
 
@@ -130,11 +130,11 @@ class MIDIAddress final :
     value mValue;
     std::string mAddress;
   public:
-    MIDIAddress(MIDIAddressInfo info, ossia::net::Node& parent);
+    MIDIAddress(MIDIAddressInfo info, ossia::net::node& parent);
 
     const MIDIAddressInfo& info() const;
 
-    const ossia::net::Node& getNode() const override;
+    const ossia::net::node& getNode() const override;
 
     void pullValue() override;
     address& pushValue(const value& val) override;

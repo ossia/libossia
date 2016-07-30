@@ -9,32 +9,32 @@ namespace net
 class MIDI;
 class MIDIDevice;
 class OSSIA_EXPORT MIDINode :
-    public ossia::net::Node
+    public ossia::net::node
 {
   protected:
     MIDIDevice& mDevice;
-    Node& mParent;
+    node& mParent;
     std::unique_ptr<address> mAddress;
 
   public:
-    using iterator = ossia::ptr_container<ossia::net::Node>::iterator;
-    using const_iterator = ossia::ptr_container<ossia::net::Node>::const_iterator;
+    using iterator = ossia::ptr_container<ossia::net::node>::iterator;
+    using const_iterator = ossia::ptr_container<ossia::net::node>::const_iterator;
     MIDINode() = default;
     MIDINode(
         MIDIDevice& aDevice,
-        ossia::net::Node& aParent);
+        ossia::net::node& aParent);
 
-    Device& getDevice() const final override;
-    Node* getParent() const final override;
+    device& getDevice() const final override;
+    node* getParent() const final override;
 
-    Node& setName(std::string) override;
+    node& setName(std::string) override;
 
     address* getAddress() const final override;
     address* createAddress(Type) final override;
     bool removeAddress() final override;
 
-    std::unique_ptr<Node> makeChild(const std::string& name) final override;
-    void removingChild(Node& node) final override;
+    std::unique_ptr<node> makeChild(const std::string& name) final override;
+    void removingChild(node& node) final override;
 };
 
 }

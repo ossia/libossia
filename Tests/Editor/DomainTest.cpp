@@ -3,33 +3,39 @@
 #include <iostream>
 
 using namespace ossia;
-
+using namespace ossia::net;
 class DomainTest : public QObject
 {
     Q_OBJECT
 
 private Q_SLOTS:
-    
+
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto domain = Domain::create();
-        QVERIFY(domain != nullptr);
-        QVERIFY(*domain->getMin() == Impulse());
-        QVERIFY(*domain->getMax() == Impulse());
-        QVERIFY(domain->getValues().size() == 0);
+        DomainBase<Int> domain(1, 24);
 
-        domain->setMin(new Int(1));
-        QVERIFY(*domain->getMin() == Int(1));
+        QVERIFY(*domain.min  == 1);
+        QVERIFY(*domain.max  == 24);
 
-        domain->setMax(new Int(24));
-        QVERIFY(*domain->getMax() == Int(24));
+        domain.values = {1, 10, 24};
+        QVERIFY(domain.values.size() == 3);
 
-        std::vector<const value*> values = {new Int(1), new Int(10), new Int(24)};
-        domain->setValues(values);
-        QVERIFY(domain->getValues().size() == 3);
+        auto copy = domain;
+        QCOMPARE(copy, domain);
 
-        //! \todo test clone()
+        Domain d1 = domain, d2 = copy;
+        QCOMPARE(d1, d2);
+
+        d2 = DomainBase<Int>{0, 25};
+        QVERIFY(d1 != d2);
+
+        d2 = DomainBase<Float>{1., 24.};
+        QVERIFY(d1 != d2);
+
+        Domain d3 = makeDomain(Int(1), Int(24));
+        QVERIFY(d3 == DomainBase<Int>(1, 24));
+        QVERIFY(d3 != domain);
     }
 };
 

@@ -14,45 +14,45 @@ namespace ossia
 {
 namespace net
 {
-class Device;
+class device;
 class address;
-class Node;
+class node;
 
-class OSSIA_EXPORT Node
+class OSSIA_EXPORT node
 {
     public:
-        Node() = default;
-        Node(const Node&) = delete;
-        Node(Node&&) = delete;
-        Node& operator=(const Node&) = delete;
-        Node& operator=(Node&&) = delete;
+        node() = default;
+        node(const node&) = delete;
+        node(node&&) = delete;
+        node& operator=(const node&) = delete;
+        node& operator=(node&&) = delete;
 
-        virtual ~Node();
+        virtual ~node();
 
-        virtual Device& getDevice() const = 0;
-        virtual Node* getParent() const = 0;
+        virtual device& getDevice() const = 0;
+        virtual node* getParent() const = 0;
 
         virtual std::string getName() const = 0;
-        virtual Node & setName(std::string) = 0;
+        virtual node & setName(std::string) = 0;
 
         virtual address* getAddress() const = 0;
         virtual address* createAddress(Type = Type::IMPULSE) = 0;
         virtual bool removeAddress() = 0;
 
         // The parent has ownership
-        Node* createChild(const std::string& name);
+        node* createChild(const std::string& name);
         bool removeChild(const std::string& name);
-        bool removeChild(const Node& name);
+        bool removeChild(const node& name);
         void clearChildren();
 
-        const std::vector<std::unique_ptr<Node>>& children() const
+        const std::vector<std::unique_ptr<node>>& children() const
         { return mChildren; }
 
     protected:
-        virtual std::unique_ptr<Node> makeChild(const std::string& name) = 0;
-        virtual void removingChild(Node& node) = 0;
+        virtual std::unique_ptr<node> makeChild(const std::string& name) = 0;
+        virtual void removingChild(node& node) = 0;
 
-        std::vector<std::unique_ptr<Node>> mChildren;
+        std::vector<std::unique_ptr<node>> mChildren;
 };
 
 }

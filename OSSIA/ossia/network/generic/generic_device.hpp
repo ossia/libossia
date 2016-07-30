@@ -19,7 +19,7 @@
 namespace impl
 {
 class OSSIA_EXPORT BasicDevice final :
-        public ossia::net::Device,
+        public ossia::net::device,
         public BasicNode
 {
     private:
@@ -30,11 +30,14 @@ class OSSIA_EXPORT BasicDevice final :
         BasicDevice& operator=(const BasicDevice&) = delete;
         BasicDevice& operator=(BasicDevice&&) = delete;
 
-        BasicDevice(std::unique_ptr<ossia::net::Protocol> protocol,
+        BasicDevice(std::unique_ptr<ossia::net::protocol> protocol,
                     std::string name);
 
-        const ossia::net::Node& getRootNode() const override { return *this; }
-        ossia::net::Node& getRootNode() override { return *this; }
+        const ossia::net::node& getRootNode() const override { return *this; }
+        ossia::net::node& getRootNode() override { return *this; }
+
+        using BasicNode::getName;
+        using BasicNode::setName;
 
         ~BasicDevice();
 };

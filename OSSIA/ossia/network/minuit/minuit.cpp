@@ -8,6 +8,7 @@
 namespace impl
 {
 
+
 Minuit2::Minuit2(std::string ip, uint16_t in_port, uint16_t out_port) :
   mIp{ip},
   mInPort{in_port},
@@ -25,7 +26,7 @@ Minuit2::Minuit2(std::string ip, uint16_t in_port, uint16_t out_port) :
 Minuit2::~Minuit2()
 {}
 
-void Minuit2::setDevice(ossia::net::Device& dev)
+void Minuit2::setDevice(ossia::net::device& dev)
 {
   mDevice = dynamic_cast<BasicDevice*>(&dev);
   mLocalNameTable.set_device_name("i-score");
@@ -74,7 +75,7 @@ Minuit2& Minuit2::setOutPort(uint16_t out_port)
   return *this;
 }
 
-bool Minuit2::update(ossia::net::Node& node)
+bool Minuit2::update(ossia::net::node& node)
 {
   // Reset node
   node.clearChildren();

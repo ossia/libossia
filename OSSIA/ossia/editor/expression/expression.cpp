@@ -35,7 +35,6 @@ struct add_callback_visitor
   }
 };
 
-
 struct remove_callback_visitor
 {
   expression_callback_iterator it;
@@ -43,6 +42,15 @@ struct remove_callback_visitor
   void operator()(T& e)
   {
     e.removeCallback(it);
+  }
+};
+
+struct get_callbacks_visitor
+{
+  template<typename T>
+  const expression_callback_container::impl& operator()(const T& e)
+  {
+    return e.callbacks();
   }
 };
 
@@ -160,6 +168,11 @@ void remove_callback(
     expression_callback_iterator it)
 {
   return eggs::variants::apply(remove_callback_visitor{it}, e);
+}
+
+const expression_callback_container::impl &callbacks(expression_base& e)
+{
+  return eggs::variants::apply(get_callbacks_visitor{}, e);
 }
 
 }

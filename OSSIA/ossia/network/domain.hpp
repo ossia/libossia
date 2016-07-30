@@ -58,6 +58,7 @@ struct DomainBase
         boost::optional<value_type> max;
         boost::container::flat_set<value_type> values;
 
+        DomainBase() = default;
         DomainBase(value_type min_v, value_type max_v):
             min{min_v},
             max{max_v}
@@ -383,13 +384,13 @@ struct DomainEqualVisitor
 };
 
 inline bool operator==(const DomainBase<Int>& lhs, const DomainBase<Int>& rhs)
-{ return lhs.min == rhs.min && lhs.max == rhs.max; }
+{ return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values; }
 inline bool operator==(const DomainBase<Float>& lhs, const DomainBase<Float>& rhs)
-{ return lhs.min == rhs.min && lhs.max == rhs.max; }
+{ return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values; }
 inline bool operator==(const DomainBase<Bool>& lhs, const DomainBase<Bool>& rhs)
-{ return lhs.min == rhs.min && lhs.max == rhs.max; }
+{ return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values; }
 inline bool operator==(const DomainBase<Char>& lhs, const DomainBase<Char>& rhs)
-{ return lhs.min == rhs.min && lhs.max == rhs.max; }
+{ return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values; }
 inline bool operator==(const DomainBase<String>& lhs, const DomainBase<String>& rhs)
 { return lhs.values == rhs.values; }
 

@@ -31,7 +31,7 @@ bool Local2::observe(ossia::net::address& address, bool enable)
     return false;
 }
 
-bool Local2::update(ossia::net::Node& node)
+bool Local2::update(ossia::net::node& node)
 {
     return false;
 }

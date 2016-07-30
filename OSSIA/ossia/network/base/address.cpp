@@ -7,7 +7,7 @@ namespace net
 address::~address() = default;
 
 static void getAddressFromNode_rec(
-        const Node& node,
+        const node& node,
         std::vector<std::string>& str)
 {
     if(auto p = node.getParent())
@@ -16,7 +16,7 @@ static void getAddressFromNode_rec(
     str.push_back(node.getName());
 }
 
-std::string getAddressFromNode(const ossia::net::Node& node)
+std::string getAddressFromNode(const ossia::net::node& node)
 {
     std::vector<std::string> vec;
     getAddressFromNode_rec(node, vec);

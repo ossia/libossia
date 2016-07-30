@@ -24,7 +24,7 @@ namespace ossia
 {
 namespace net
 {
-class Protocol;
+class protocol;
 }
 }
 namespace impl
@@ -32,8 +32,8 @@ namespace impl
 class OSSIA_EXPORT BasicAddress final : public ossia::net::address
 {
     private:
-        const ossia::net::Node& mNode;
-        ossia::net::Protocol& mProtocol;
+        const ossia::net::node& mNode;
+        ossia::net::protocol& mProtocol;
 
         mutable std::mutex mValueMutex;
         ossia::value mValue;
@@ -50,11 +50,11 @@ class OSSIA_EXPORT BasicAddress final : public ossia::net::address
 
     public:
         ossia::value PreviousValue;
-        BasicAddress(const ossia::net::Node& node);
+        BasicAddress(const ossia::net::node& node);
 
         ~BasicAddress();
 
-        const ossia::net::Node& getNode() const override;
+        const ossia::net::node& getNode() const override;
 
         void pullValue() override;
 

@@ -14,7 +14,7 @@ namespace ossia
 class value;
 namespace net
 {
-class Node;
+class node;
 
 using ValueCallback = std::function<void(const value&)>;
 
@@ -31,7 +31,7 @@ class OSSIA_EXPORT address :
         using callback_index = callback_container<ValueCallback>::iterator;
         virtual ~address();
 
-        virtual const ossia::net::Node& getNode() const = 0;
+        virtual const ossia::net::node& getNode() const = 0;
 
         virtual void pullValue() = 0;
         virtual address & pushValue(const value&) = 0;
@@ -62,6 +62,6 @@ class OSSIA_EXPORT address :
  * \brief getAddressFromNode
  * \return the textual address of a node : aDevice:/an/address
  */
-OSSIA_EXPORT std::string getAddressFromNode(const ossia::net::Node&);
+OSSIA_EXPORT std::string getAddressFromNode(const ossia::net::node&);
 }
 }

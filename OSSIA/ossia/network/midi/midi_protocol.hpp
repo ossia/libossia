@@ -36,7 +36,7 @@ struct OSSIA_EXPORT MidiInfo
 };
 
 class OSSIA_EXPORT MIDI final :
-    public ossia::net::Protocol
+    public ossia::net::protocol
 {
     mm::MidiInput mInput;
     mm::MidiOutput mOutput;
@@ -55,7 +55,7 @@ class OSSIA_EXPORT MIDI final :
     bool pull(ossia::net::address&) override;
     bool push(const ossia::net::address&) override;
     bool observe(ossia::net::address&, bool) override;
-    bool update(ossia::net::Node& node) override;
+    bool update(ossia::net::node& node) override;
 
     std::vector<MidiInfo> scan();
 };

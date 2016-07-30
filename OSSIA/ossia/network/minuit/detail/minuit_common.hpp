@@ -1,6 +1,7 @@
 #pragma once
 #include <boost/utility/string_ref.hpp>
 #include <ossia/editor/value/value.hpp>
+#include <unordered_map>
 #include <exception>
 
 namespace ossia
@@ -223,32 +224,32 @@ inline boost::string_ref to_minuit_attribute_text(minuit_attribute str)
     }
 }
 
+const std::unordered_map<std::string, minuit_attribute> attribute_unordered_map
+{
+    { "value", minuit_attribute::Value },
+    { "type", minuit_attribute::Type },
+    { "service", minuit_attribute::Service },
+    { "priority", minuit_attribute::Priority },
+    { "rangeBounds", minuit_attribute::RangeBounds },
+    { "rangeClipmode", minuit_attribute::RangeClipMode },
+    { "description", minuit_attribute::Description },
+    { "repetitionsFilter", minuit_attribute::RepetitionFilter },
+    { "tags", minuit_attribute::Tags },
+    { "active", minuit_attribute::Active },
+    { "valueDefault", minuit_attribute::ValueDefault },
+    { "priority", minuit_attribute::Priority },
+    { "dataspace", minuit_attribute::Dataspace },
+    { "dataspaceUnit", minuit_attribute::DataspaceUnit },
+    { "rampFunction", minuit_attribute::RampFunction },
+    { "rampDrive", minuit_attribute::RampDrive },
+    { "valueStepsize", minuit_attribute::ValueStepSize },
+    { "rampFunctionParameters", minuit_attribute::RampFunctionParameters },
+};
+
 inline minuit_attribute get_attribute(boost::string_ref str)
 {
-    const std::map<std::string, minuit_attribute, std::less<>> map
-    {
-        { "value", minuit_attribute::Value },
-        { "type", minuit_attribute::Type },
-        { "service", minuit_attribute::Service },
-        { "priority", minuit_attribute::Priority },
-        { "rangeBounds", minuit_attribute::RangeBounds },
-        { "rangeClipmode", minuit_attribute::RangeClipMode },
-        { "description", minuit_attribute::Description },
-        { "repetitionsFilter", minuit_attribute::RepetitionFilter },
-        { "tags", minuit_attribute::Tags },
-        { "active", minuit_attribute::Active },
-        { "valueDefault", minuit_attribute::ValueDefault },
-        { "priority", minuit_attribute::Priority },
-        { "dataspace", minuit_attribute::Dataspace },
-        { "dataspaceUnit", minuit_attribute::DataspaceUnit },
-        { "rampFunction", minuit_attribute::RampFunction },
-        { "rampDrive", minuit_attribute::RampDrive },
-        { "valueStepsize", minuit_attribute::ValueStepSize },
-        { "rampFunctionParameters", minuit_attribute::RampFunctionParameters },
-    };
-
-    auto it = map.find(str);
-    if(it != map.end())
+    auto it = attribute_unordered_map.find(str.to_string());
+    if(it != attribute_unordered_map.end())
         return it->second;
     else
         throw std::runtime_error("unhandled attribute");

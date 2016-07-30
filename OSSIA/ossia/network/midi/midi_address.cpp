@@ -6,7 +6,7 @@ namespace ossia
 namespace net
 {
 
-MIDIAddress::MIDIAddress(MIDIAddressInfo info, Node& parent):
+MIDIAddress::MIDIAddress(MIDIAddressInfo info, node& parent):
   mInfo{info},
   mParent{parent},
   mProtocol{dynamic_cast<MIDI&>(parent.getDevice().getProtocol())},
@@ -22,7 +22,7 @@ const MIDIAddressInfo& MIDIAddress::info() const
   return mInfo;
 }
 
-const Node& MIDIAddress::getNode() const
+const node& MIDIAddress::getNode() const
 {
   return mParent;
 }

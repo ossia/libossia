@@ -9,7 +9,7 @@
 namespace impl {
 
 BasicAddress::BasicAddress(
-        const ossia::net::Node& node) :
+        const ossia::net::node& node) :
     mNode{node},
     mProtocol{node.getDevice().getProtocol()},
     mValue(ossia::Impulse{}),
@@ -26,7 +26,7 @@ BasicAddress::~BasicAddress()
   mCallbacks.clear();
 }
 
-const ossia::net::Node& BasicAddress::getNode() const
+const ossia::net::node& BasicAddress::getNode() const
 {
     return mNode;
 }
@@ -98,7 +98,7 @@ ossia::value BasicAddress::cloneValue(ossia::destination_index index) const
 ossia::net::address& BasicAddress::setValue(const ossia::value& value)
 {
     using namespace ossia;
-    std::lock_guard<std::mutex> lock(mValueMutex);
+    std::unique_lock<std::mutex> lock(mValueMutex);
 
     // set value querying the value from another address
     auto dest = value.try_get<Destination>();
@@ -113,8 +113,6 @@ ossia::net::address& BasicAddress::setValue(const ossia::value& value)
         {
           address->pullValue();
           mValue = address->cloneValue();
-
-          send(mValue);
         }
         else
           throw std::runtime_error("setting an address value using a destination with a bad type address");
@@ -124,7 +122,6 @@ ossia::net::address& BasicAddress::setValue(const ossia::value& value)
         throw std::runtime_error("setting an address value using a destination without address");
       }
     }
-
     // copy the new value
     else
     {
@@ -135,9 +132,11 @@ ossia::net::address& BasicAddress::setValue(const ossia::value& value)
         }
 
         mValue = value;
-        send(mValue);
     }
 
+    auto clone = mValue;
+    lock.unlock();
+    send(clone);
     return *this;
 }
 

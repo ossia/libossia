@@ -6,24 +6,24 @@ namespace ossia
 {
 namespace net
 {
-MIDINode::MIDINode(MIDIDevice& aDevice, Node& aParent):
+MIDINode::MIDINode(MIDIDevice& aDevice, node& aParent):
   mDevice{aDevice},
   mParent{aParent}
 {
 
 }
 
-Device& MIDINode::getDevice() const
+device& MIDINode::getDevice() const
 {
   return mDevice;
 }
 
-Node* MIDINode::getParent() const
+node* MIDINode::getParent() const
 {
   return &mParent;
 }
 
-Node& MIDINode::setName(std::string)
+node& MIDINode::setName(std::string)
 {
   return *this;
 }
@@ -43,12 +43,12 @@ bool MIDINode::removeAddress()
   return false;
 }
 
-std::unique_ptr<Node> MIDINode::makeChild(const std::string& name)
+std::unique_ptr<node> MIDINode::makeChild(const std::string& name)
 {
   return nullptr;
 }
 
-void MIDINode::removingChild(Node& node)
+void MIDINode::removingChild(node& node)
 {
 
 }

@@ -24,7 +24,7 @@
 namespace impl
 {
 class OSSIA_EXPORT OSC2 final :
-        public ossia::net::Protocol
+        public ossia::net::protocol
 {
     private:
         std::string    mIp;
@@ -53,10 +53,10 @@ class OSSIA_EXPORT OSC2 final :
         OSC2 & setOutPort(uint16_t);
 
         bool getLearningStatus() const;
-        OSC2 & setLearningStatus(ossia::net::Device&, bool);
+        OSC2 & setLearningStatus(ossia::net::device&, bool);
 
 
-        bool update(ossia::net::Node& node) override;
+        bool update(ossia::net::node& node) override;
 
         bool pull(ossia::net::address& address) override;
 

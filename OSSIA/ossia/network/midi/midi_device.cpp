@@ -7,8 +7,8 @@ namespace ossia
 namespace net
 {
 
-MIDIDevice::MIDIDevice(std::unique_ptr<Protocol> prot):
-  ossia::net::Device{std::move(prot)},
+MIDIDevice::MIDIDevice(std::unique_ptr<protocol> prot):
+  ossia::net::device{std::move(prot)},
   MIDINode{*this, *this}
 {
 }
@@ -16,7 +16,7 @@ MIDIDevice::MIDIDevice(std::unique_ptr<Protocol> prot):
 std::string MIDIDevice::getName() const
 { return mName; }
 
-Node&MIDIDevice::setName(std::string n)
+node&MIDIDevice::setName(std::string n)
 {
   mName = n;
   return *this;

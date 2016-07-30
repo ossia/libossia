@@ -28,7 +28,7 @@ private Q_SLOTS:
                                                  expression_atom::Comparator::DIFFERENT,
                                                  Bool(false));
 
-        auto not_expression = make_expression_not(expression);
+        auto not_expression = make_expression_not(std::move(expression));
         QVERIFY(not_expression != nullptr);
         QVERIFY(evaluate(not_expression) == true);
     }
@@ -48,9 +48,9 @@ private Q_SLOTS:
                                             expression_atom::Comparator::EQUAL,
                                             Bool(true));
 
-        auto not_exprA = make_expression_not(exprA);
-        auto not_exprB = make_expression_not(exprB);
-        auto not_exprC = make_expression_not(exprC);
+        auto not_exprA = make_expression_not(std::move(exprA));
+        auto not_exprB = make_expression_not(std::move(exprB));
+        auto not_exprC = make_expression_not(std::move(exprC));
 
         QVERIFY(expressions::expression_false != *not_exprA);
         QVERIFY(expressions::expression_true != *not_exprA);
@@ -75,12 +75,12 @@ private Q_SLOTS:
                                                           expression_atom::Comparator::DIFFERENT,
                                                           Destination(*localIntNode2));
 
-        auto testDestinationExprNot = make_expression_not(testDestinationExpr);
+        auto testDestinationExprNot = make_expression_not(std::move(testDestinationExpr));
 
         expression_result_callback callback = std::bind(&ExpressionNotTest::result_callback, this, _1);
         auto callback_index = add_callback(*testDestinationExprNot, callback);
 
-        QVERIFY(testDestinationExprNot->callbacks().size() == 1);
+        QVERIFY(callbacks(*testDestinationExprNot).size() == 1);
 
         m_result = false;
         m_result_callback_called = false;
@@ -106,9 +106,9 @@ private Q_SLOTS:
 
         QVERIFY(m_result_callback_called == true && m_result == false);
 
-        remove_callback(testDestinationExprNot, callback_index);
+        remove_callback(*testDestinationExprNot, callback_index);
 
-        QVERIFY(testDestinationExprNot->callbacks().size() == 0);
+        QVERIFY(callbacks(*testDestinationExprNot).size() == 0);
 
         m_result = false;
         m_result_callback_called = false;

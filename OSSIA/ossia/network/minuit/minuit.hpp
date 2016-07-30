@@ -31,7 +31,7 @@
 namespace impl
 {
 class BasicDevice;
-class OSSIA_EXPORT Minuit2 final : public ossia::net::Protocol
+class OSSIA_EXPORT Minuit2 final : public ossia::net::protocol
 {
     private:
         std::string    mIp;
@@ -55,7 +55,7 @@ class OSSIA_EXPORT Minuit2 final : public ossia::net::Protocol
         Minuit2(std::string, uint16_t, uint16_t);
         ~Minuit2();
 
-        void setDevice(ossia::net::Device& dev) override;
+        void setDevice(ossia::net::device& dev) override;
 
         const std::string& getIp() const;
         Minuit2& setIp(std::string);
@@ -66,7 +66,7 @@ class OSSIA_EXPORT Minuit2 final : public ossia::net::Protocol
         uint16_t getOutPort() const;
         Minuit2& setOutPort(uint16_t);
 
-        bool update(ossia::net::Node& node) override;
+        bool update(ossia::net::node& node) override;
 
         bool pull(ossia::net::address& address) override;
 

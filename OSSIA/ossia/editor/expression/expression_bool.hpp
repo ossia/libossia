@@ -7,7 +7,7 @@ namespace ossia
 namespace expressions
 {
 class OSSIA_EXPORT expression_bool final :
-    public callback_container<expression_result_callback>
+    public expression_callback_container
 {
   bool mResult;
 

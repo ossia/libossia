@@ -110,7 +110,7 @@ void JamomaTimeConstraint::resume()
   mPaused = false;
 
   // reset the time reference
-  mLastTime = steady_clock::now();
+  mLastTime = clock_type::now();
 
   // resume all jamoma time processes
   for (const auto& timeProcess : timeProcesses())

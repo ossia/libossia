@@ -7,25 +7,25 @@ namespace ossia
 {
 namespace net
 {
-class Protocol;
+class protocol;
 
-class OSSIA_EXPORT Device
+class OSSIA_EXPORT device
 {
     public:
-        Device(std::unique_ptr<ossia::net::Protocol> proto);
+        device(std::unique_ptr<ossia::net::protocol> proto);
 
-        Device() = delete;
-        Device(const Device&) = delete;
-        Device(Device&&) = delete;
-        Device& operator=(const Device&) = delete;
-        Device& operator=(Device&&) = delete;
+        device() = delete;
+        device(const device&) = delete;
+        device(device&&) = delete;
+        device& operator=(const device&) = delete;
+        device& operator=(device&&) = delete;
 
-        ossia::net::Protocol& getProtocol() const;
+        ossia::net::protocol& getProtocol() const;
 
-        virtual ~Device();
+        virtual ~device();
 
-        virtual const ossia::net::Node& getRootNode() const = 0;
-        virtual ossia::net::Node& getRootNode() = 0;
+        virtual const ossia::net::node& getRootNode() const = 0;
+        virtual ossia::net::node& getRootNode() = 0;
 
         void setName(const std::string& str)
         { getRootNode().setName(str); }
@@ -34,14 +34,14 @@ class OSSIA_EXPORT Device
 
         virtual bool updateNamespace() { return false; }
 
-        Nano::Signal<void(const Node&)> onNodeCreated; // The node being created
-        Nano::Signal<void(const Node&)> onNodeRemoving; // The node being removed
-        Nano::Signal<void(const Node&, std::string)> onNodeRenamed; // Node has the new name, second argument is the old name
+        Nano::Signal<void(const node&)> onNodeCreated; // The node being created
+        Nano::Signal<void(const node&)> onNodeRemoving; // The node being removed
+        Nano::Signal<void(const node&, std::string)> onNodeRenamed; // Node has the new name, second argument is the old name
         Nano::Signal<void(const address&)> onAddressCreated; // The address being created
         Nano::Signal<void(const address&)> onAddressRemoving; // The node whose address was removed
 
     protected:
-        std::unique_ptr<ossia::net::Protocol> mProtocol;
+        std::unique_ptr<ossia::net::protocol> mProtocol;
 };
 }
 }

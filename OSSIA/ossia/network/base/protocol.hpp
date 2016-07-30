@@ -10,22 +10,22 @@ class State;
 namespace net
 {
 class address;
-class Node;
-class Device;
-class OSSIA_EXPORT Protocol
+class node;
+class device;
+class OSSIA_EXPORT protocol
 {
   public:
-    virtual ~Protocol();
+    virtual ~protocol();
 
     virtual bool pull(address&) = 0;
     virtual bool push(const address&) = 0;
-    virtual bool push(const State&) { return false; }
+    virtual bool pushState(const State&) { return false; }
 
     virtual bool observe(address&, bool) = 0;
 
-    virtual bool update(Node& node) = 0;
+    virtual bool update(node& node) = 0;
 
-    virtual void setDevice(ossia::net::Device& dev){ }
+    virtual void setDevice(ossia::net::device& dev){ }
 
     void setLogger(const std::shared_ptr<NetworkLogger>& l) { mLogger = l; }
     const std::shared_ptr<NetworkLogger>& getLogger() const { return mLogger; }

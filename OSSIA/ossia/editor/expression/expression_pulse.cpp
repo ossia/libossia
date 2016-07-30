@@ -9,9 +9,22 @@ expression_pulse::expression_pulse(const Destination& destination) :
   mDestination(destination),
   mResult(false)
 {
+  // start destination observation
+  if (const auto& addr = mDestination.value->getAddress())
+  {
+    mDestinationCallbackIndex = addr->addCallback(
+          [&] (const ossia::value& result) { destinationCallback(result); });
+  }
 }
 
-expression_pulse::~expression_pulse() = default;
+expression_pulse::~expression_pulse()
+{
+  // stop destination observation
+  if (const auto& addr = mDestination.value->getAddress())
+  {
+    addr->removeCallback(mDestinationCallbackIndex);
+  }
+}
 
 bool expression_pulse::evaluate() const
 {
@@ -26,21 +39,10 @@ void expression_pulse::update() const
 
 void expression_pulse::onFirstCallbackAdded()
 {
-  // start destination observation
-  if (const auto& addr = mDestination.value->getAddress())
-  {
-    mDestinationCallbackIndex = addr->addCallback(
-          [&] (const ossia::value& result) { destinationCallback(result); });
-  }
 }
 
 void expression_pulse::onRemovingLastCallback()
 {
-  // stop destination observation
-  if (const auto& addr = mDestination.value->getAddress())
-  {
-    addr->removeCallback(mDestinationCallbackIndex);
-  }
 }
 
 const Destination&expression_pulse::getDestination() const
