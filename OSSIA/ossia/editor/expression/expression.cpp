@@ -9,7 +9,7 @@ namespace
 struct evaluate_visitor
 {
   template<typename T>
-  bool operator()(T& e)
+  bool operator()(const T& e)
   {
     return e.evaluate();
   }
@@ -18,7 +18,7 @@ struct evaluate_visitor
 struct update_visitor
 {
   template<typename T>
-  void operator()(T& e)
+  void operator()(const T& e)
   {
     e.update();
   }
@@ -128,12 +128,12 @@ struct equal_visitor
 
 }
 
-bool evaluate(ossia::expressions::expression_base& e)
+bool evaluate(const ossia::expressions::expression_base& e)
 {
   return eggs::variants::apply(evaluate_visitor{}, e);
 }
 
-void update(ossia::expressions::expression_base& e)
+void update(const ossia::expressions::expression_base& e)
 {
   return eggs::variants::apply(update_visitor{}, e);
 }

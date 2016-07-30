@@ -45,6 +45,11 @@ public:
   expression_atom(const value& lhs,
                   Comparator op = Comparator::EQUAL,
                   const value& rhs = Impulse{});
+  expression_atom(expression_atom&& other) = delete;
+  expression_atom& operator=(expression_atom&& other) = delete;
+
+  expression_atom(const expression_atom& other) = delete;
+  expression_atom& operator=(const expression_atom& other) = delete;
 
   virtual ~expression_atom();
 
@@ -56,8 +61,8 @@ public:
   const value& getSecondOperand() const;
 
 private:
-  void onFirstCallbackAdded();
-  void onRemovingLastCallback();
+  void onFirstCallbackAdded() override;
+  void onRemovingLastCallback() override;
 
   bool do_evaluation(const value& first, const value& second) const;
 

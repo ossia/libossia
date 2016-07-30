@@ -5,6 +5,12 @@ namespace ossia
 {
 namespace expressions
 {
+expression_not::expression_not(expression_ptr p):
+  mExpression{std::move(p)}
+{
+
+}
+
 expression_not::~expression_not()
 {
   // TODO REMOVE ALL CALLBACKS

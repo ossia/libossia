@@ -12,6 +12,5 @@ expression_bool::expression_bool(bool result):
 {
 
 }
-
 }
 }

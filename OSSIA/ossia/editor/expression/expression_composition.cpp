@@ -8,12 +8,12 @@ namespace expressions
 expression_composition::~expression_composition() = default;
 
 expression_composition::expression_composition(
-    std::unique_ptr<expression_base> expr1,
+    expression_ptr expr1,
     expression_composition::Operator op,
-    std::unique_ptr<expression_base> expr2):
+    expression_ptr expr2):
   mFirstExpression(std::move(expr1)),
-  mOperator(op),
-  mSecondExpression(std::move(expr2))
+  mSecondExpression(std::move(expr2)),
+  mOperator(op)
 {
 
 }

@@ -3,7 +3,6 @@
 
 namespace impl
 {
-
 JamomaLoop::JamomaLoop(time_value patternDuration,
                        time_constraint::ExecutionCallback patternConstraintCallback,
                        time_event::ExecutionCallback patternStartEventCallback,
@@ -14,10 +13,16 @@ mPatternEndEventCallback(patternEndEventCallback),
 mPatternConstraintCallback(patternConstraintCallback)
 {
   mPatternStartNode = time_node::create();
-  mPatternStartNode->emplace(mPatternStartNode->timeEvents().begin(), [&] (time_event::Status result) { PatternStartEventCallback(result); });
+  mPatternStartNode->emplace(
+        mPatternStartNode->timeEvents().begin(),
+        [&] (time_event::Status result) { PatternStartEventCallback(result); },
+        expressions::make_expression_true());
 
   mPatternEndNode = time_node::create();
-  mPatternEndNode->emplace(mPatternEndNode->timeEvents().begin(), [&] (time_event::Status result) { PatternEndEventCallback(result); });
+  mPatternEndNode->emplace(
+        mPatternEndNode->timeEvents().begin(),
+        [&] (time_event::Status result) { PatternEndEventCallback(result); },
+        expressions::make_expression_true());
 
   // create a pattern TimeConstraint with all durations equal by default
   mPatternConstraint = time_constraint::create([=] (time_value position, time_value date, const State& state) {

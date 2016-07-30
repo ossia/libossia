@@ -372,7 +372,7 @@ void JamomaScenario::process_offset(std::shared_ptr<time_node> timenode, time_va
 
     // evaluate event status considering its time node date
     if (date < offset)
-      eventStatus = event->getExpression()->evaluate() ? time_event::Status::HAPPENED : time_event::Status::DISPOSED;
+      eventStatus = expressions::evaluate(*event->getExpression()) ? time_event::Status::HAPPENED : time_event::Status::DISPOSED;
     else if (date == offset)
       eventStatus = time_event::Status::PENDING;
     else
@@ -393,7 +393,7 @@ void JamomaScenario::process_offset(std::shared_ptr<time_node> timenode, time_va
       }
       else if (constraintOffset > timeConstraint->getDurationMax())
       {
-        eventStatus = event->getExpression()->evaluate() ? time_event::Status::HAPPENED : time_event::Status::DISPOSED;
+        eventStatus = expressions::evaluate(*event->getExpression()) ? time_event::Status::HAPPENED : time_event::Status::DISPOSED;
       }
     }
 

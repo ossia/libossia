@@ -29,7 +29,12 @@ class OSSIA_EXPORT expression_not :
     public callback_container<expression_result_callback>
 {
 public:
-  expression_not(std::unique_ptr<expression_base>);
+  expression_not(expression_ptr);
+  expression_not(expression_not&& other) = delete;
+  expression_not& operator=(expression_not&& other) = delete;
+
+  expression_not(const expression_not& other) = delete;
+  expression_not& operator=(const expression_not& other) = delete;
 
   virtual ~expression_not();
 
@@ -44,7 +49,7 @@ private:
 
   void resultCallback(bool result);
 
-  std::unique_ptr<expression_base> mExpression;
+  expression_ptr mExpression;
   expression_callback_iterator mResultCallbackIndex;
 };
 }

@@ -21,12 +21,11 @@
 #include <functional>
 
 #include <ossia/detail/ptr_container.hpp>
+#include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia_export.h>
 
 namespace ossia
 {
-
-class expression_base;
 class State;
 class time_constraint;
 class time_node;
@@ -110,12 +109,12 @@ public:
 
   /*! get the expression of the event
   \return std::shared_ptr<#Expression> */
-  virtual const std::unique_ptr<expression_base> & getExpression() const = 0;
+  virtual const expression_ptr & getExpression() const = 0;
 
   /*! set the expression of the event
    \param std::shared_ptr<#Expression>
    \return #TimeEvent the event */
-  virtual time_event & setExpression(const std::unique_ptr<expression_base>) = 0;
+  virtual time_event & setExpression(expression_ptr) = 0;
 
   /*! get the status of the event
    \return #Status */

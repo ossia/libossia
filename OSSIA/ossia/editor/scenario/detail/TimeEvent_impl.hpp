@@ -35,13 +35,13 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  time_event::ExecutionCallback      mCallback;
+  time_event::ExecutionCallback mCallback;
 
-  std::shared_ptr<time_node>              mTimeNode;
-  State                             mState;
-  Status                            mStatus;
+  std::shared_ptr<time_node> mTimeNode;
+  State mState;
+  Status mStatus;
 
-  std::unique_ptr<expression_base>            mExpression;
+  expression_ptr mExpression;
 
 public:
 
@@ -50,7 +50,7 @@ public:
 
   JamomaTimeEvent(time_event::ExecutionCallback,
                   std::shared_ptr<time_node> aTimeNode/* = nullptr*/,
-                  std::unique_ptr<expression_base> anExpression /*= ExpressionTrue()*/);
+                  expression_ptr anExpression /*= ExpressionTrue()*/);
 
   ~JamomaTimeEvent();
 
@@ -77,9 +77,9 @@ public:
 
   const State& getState() const override;
 
-  const std::unique_ptr<expression_base> & getExpression() const override;
+  const expression_ptr & getExpression() const override;
 
-  time_event & setExpression(std::unique_ptr<expression_base>) override;
+  time_event & setExpression(expression_ptr) override;
 
   Status getStatus() const override;
 

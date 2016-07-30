@@ -15,7 +15,6 @@ expression_atom::expression_atom(const value& lhs, expression_atom::Comparator o
 
 }
 
-
 bool expression_atom::evaluate() const
 {
   return do_evaluation(mFirstValue, mSecondValue);

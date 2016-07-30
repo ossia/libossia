@@ -42,4 +42,6 @@ using expression_base = eggs::variant<
 //  virtual bool operator!= (const expression_base&) const = 0;
 //};
 }
+using expression_ptr = std::unique_ptr<expressions::expression_base>;
+using expression = expressions::expression_base;
 }

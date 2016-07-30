@@ -35,6 +35,10 @@ class OSSIA_EXPORT expression_pulse :
 {
 public:
   expression_pulse(const Destination& destination);
+  expression_pulse(expression_pulse&& other) = delete;
+  expression_pulse& operator=(expression_pulse&& other) = delete;
+  expression_pulse(const expression_pulse& other) = delete;
+  expression_pulse& operator=(const expression_pulse& other) = delete;
 
   virtual ~expression_pulse();
 

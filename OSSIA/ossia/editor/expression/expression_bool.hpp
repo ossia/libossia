@@ -13,6 +13,11 @@ class OSSIA_EXPORT expression_bool final :
 
 public:
   expression_bool(bool result);
+  expression_bool(expression_bool&& other) = delete;
+  expression_bool& operator=(expression_bool&& other) = delete;
+
+  expression_bool(const expression_bool& other) = delete;
+  expression_bool& operator=(const expression_bool& other) = delete;
 
   ~expression_bool();
 
@@ -20,9 +25,5 @@ public:
   void update() const { }
 
 };
-
-const expression_bool expression_true{true};
-const expression_bool expression_false{false};
-
 }
 }

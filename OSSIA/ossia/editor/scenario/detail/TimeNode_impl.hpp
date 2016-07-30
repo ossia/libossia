@@ -20,12 +20,11 @@
 
 #include "TimeEvent_impl.hpp" // because the TimeNode::emplace method is a JamomaTimeEvent factory
 
-using namespace ossia;
-
-
 namespace impl
 {
-class JamomaTimeNode final : public time_node, public std::enable_shared_from_this<JamomaTimeNode>
+class JamomaTimeNode final :
+    public ossia::time_node,
+    public std::enable_shared_from_this<JamomaTimeNode>
 {
 
 private:
@@ -35,7 +34,7 @@ private:
 
   time_node::execution_callback mCallback;
 
-  std::unique_ptr<expression_base> mExpression;
+  ossia::expression_ptr mExpression;
   bool                          mObserveExpression;
   bool                          mCallbackSet = false;
   expressions::expression_callback_iterator mResultCallbackIndex;
@@ -65,9 +64,9 @@ public:
 
   time_value getDate() const override;
 
-  const std::unique_ptr<expression_base> & getExpression() const override;
+  const expression_ptr & getExpression() const override;
 
-  time_node & setExpression(std::unique_ptr<expression_base>) override;
+  time_node & setExpression(expression_ptr) override;
 
   time_value getSimultaneityMargin() const override;
 
@@ -78,7 +77,7 @@ public:
 
   iterator emplace(const_iterator,
                    time_event::ExecutionCallback,
-                   std::unique_ptr<expression_base> /*= ExpressionTrue()*/) override;
+                   ossia::expression_ptr /*= ExpressionTrue()*/) override;
 
 # pragma mark -
 # pragma mark Implementation specific

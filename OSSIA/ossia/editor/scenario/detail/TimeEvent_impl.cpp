@@ -9,11 +9,11 @@ namespace impl
 
 JamomaTimeEvent::JamomaTimeEvent(time_event::ExecutionCallback callback,
                                  std::shared_ptr<time_node> aTimeNode,
-                                 std::unique_ptr<expression_base> anExpression) :
+                                 expression_ptr anExpression) :
 mCallback(callback),
 mTimeNode(aTimeNode),
 mStatus(time_event::Status::NONE),
-mExpression(anExpression)
+mExpression(std::move(anExpression))
 {
 }
 
@@ -106,14 +106,14 @@ const State& JamomaTimeEvent::getState() const
   return mState;
 }
 
-const std::unique_ptr<expression_base> & JamomaTimeEvent::getExpression() const
+const expression_ptr & JamomaTimeEvent::getExpression() const
 {
   return mExpression;
 }
 
-time_event & JamomaTimeEvent::setExpression(std::unique_ptr<expression_base> exp)
+time_event & JamomaTimeEvent::setExpression(expression_ptr exp)
 {
-  assert(exp != nullptr);
+  assert(exp);
 
   mExpression = std::move(exp);
 

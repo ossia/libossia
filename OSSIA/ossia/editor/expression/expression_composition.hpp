@@ -37,9 +37,14 @@ public:
   };
 
   expression_composition(
-      std::unique_ptr<expression_base> expr1,
+      expression_ptr expr1,
       Operator op,
-      std::unique_ptr<expression_base> expr2);
+      expression_ptr expr2);
+  expression_composition(expression_composition&& other) = delete;
+  expression_composition& operator=(expression_composition&& other) = delete;
+
+  expression_composition(const expression_composition& other) = delete;
+  expression_composition& operator=(const expression_composition& other) = delete;
 
   virtual ~expression_composition();
 
@@ -60,8 +65,8 @@ private:
   void firstResultCallback(bool first_result);
   void secondResultCallback(bool second_result);
 
-  std::unique_ptr<expression_base> mFirstExpression;
-  std::unique_ptr<expression_base> mSecondExpression;
+  expression_ptr mFirstExpression;
+  expression_ptr mSecondExpression;
 
   expression_callback_iterator mFirstResultCallbackIndex;
   expression_callback_iterator mSecondResultCallbackIndex;

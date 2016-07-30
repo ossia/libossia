@@ -5,7 +5,7 @@ namespace impl
 
 JamomaTimeNode::JamomaTimeNode(time_node::execution_callback callback) :
 mCallback(callback),
-mExpression(ExpressionTrue())
+mExpression(expressions::make_expression_true())
 {}
 
 JamomaTimeNode::~JamomaTimeNode()
@@ -37,9 +37,9 @@ bool JamomaTimeNode::trigger()
     auto& ev = *timeEvent;
     auto& expr = *ev.getExpression();
     // update any Destination value into the expression
-    expr.update();
+    expressions::update(expr);
 
-    if (expr.evaluate())
+    if (expressions::evaluate(expr))
       ev.happen();
     else
       ev.dispose();
@@ -78,15 +78,15 @@ time_value JamomaTimeNode::getDate() const
   return Zero;
 }
 
-const std::unique_ptr<expression_base> & JamomaTimeNode::getExpression() const
+const expression_ptr& JamomaTimeNode::getExpression() const
 {
   return mExpression;
 }
 
-time_node & JamomaTimeNode::setExpression(const std::unique_ptr<expression_base> exp)
+time_node & JamomaTimeNode::setExpression(expression_ptr exp)
 {
-  assert(exp != nullptr);
-  mExpression = exp;
+  assert(exp);
+  mExpression = std::move(exp);
   return *this;
 }
 
@@ -106,9 +106,11 @@ time_node & JamomaTimeNode::setSimultaneityMargin(time_value simultaneityMargin)
 
 JamomaTimeNode::iterator JamomaTimeNode::emplace(const_iterator pos,
                                                  time_event::ExecutionCallback callback,
-                                                 std::unique_ptr<expression_base> exp)
+                                                 ossia::expression_ptr exp)
 {
-  return timeEvents().insert(pos, std::make_shared<JamomaTimeEvent>(callback, shared_from_this(), exp));
+  return timeEvents().insert(
+        pos,
+        std::make_shared<JamomaTimeEvent>(callback, shared_from_this(), std::move(exp)));
 }
 
 void JamomaTimeNode::process(ptr_container<time_event>& statusChangedEvents)
@@ -198,7 +200,7 @@ void JamomaTimeNode::process(ptr_container<time_event>& statusChangedEvents)
     return;
 
   // false expression mute TimeNode triggering
-  if (*mExpression == *ExpressionFalse())
+  if (mExpression == expressions::make_expression_false())
     return;
 
   //! \todo force triggering if at leat one TimeEvent has
@@ -207,15 +209,15 @@ void JamomaTimeNode::process(ptr_container<time_event>& statusChangedEvents)
   // update the expression one time
   // then observe and evaluate TimeNode's expression before to trig
   // only if no maximal duration have been reached
-  if (*mExpression != *ExpressionTrue() &&
+  if (mExpression != expressions::make_expression_true() &&
       !maximalDurationReached)
   {
     if (!isObservingExpression())
-      mExpression->update();
+      expressions::update(*mExpression);
 
     observeExpressionResult(true);
 
-    if (!mExpression->evaluate())
+    if (!expressions::evaluate(*mExpression))
       return;
   }
 
@@ -235,7 +237,7 @@ bool JamomaTimeNode::isObservingExpression()
 
 void JamomaTimeNode::observeExpressionResult(bool observe)
 {
-  if (!mExpression || *mExpression == *ExpressionTrue() || *mExpression == *ExpressionFalse())
+  if (!mExpression || mExpression == expressions::make_expression_true() || mExpression == expressions::make_expression_false())
     return;
 
   if (observe != mObserveExpression)
@@ -248,7 +250,7 @@ void JamomaTimeNode::observeExpressionResult(bool observe)
       // pull value
 
       // start expression observation
-      mResultCallbackIndex = mExpression->addCallback([&] (bool result) { resultCallback(result); });
+      mResultCallbackIndex = expressions::addCallback(*mExpression, [&] (bool result) { resultCallback(result); });
       mCallbackSet = true;
     }
     else
@@ -256,7 +258,7 @@ void JamomaTimeNode::observeExpressionResult(bool observe)
       // stop expression observation
       if(wasObserving && mCallbackSet)
       {
-        mExpression->removeCallback(mResultCallbackIndex);
+        expressions::removeCallback(*mExpression, mResultCallbackIndex);
         mCallbackSet = false;
       }
     }
