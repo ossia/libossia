@@ -20,11 +20,15 @@ OSSIA_EXPORT inline void update(const expression_ptr& e)  { update(*e); }
 OSSIA_EXPORT bool operator==(const expression_base& lhs, const expression_base& rhs);
 OSSIA_EXPORT bool operator!=(const expression_base& lhs, const expression_base& rhs);
 
-OSSIA_EXPORT expression_callback_iterator addCallback(
+OSSIA_EXPORT expression_callback_iterator add_callback(
     expression_base&,
     expression_result_callback);
 
-OSSIA_EXPORT void removeCallback(
+OSSIA_EXPORT void remove_callback(
+    expression_base&,
+    expression_callback_iterator);
+
+OSSIA_EXPORT void remove_callback(
     expression_base&,
     expression_callback_iterator);
 

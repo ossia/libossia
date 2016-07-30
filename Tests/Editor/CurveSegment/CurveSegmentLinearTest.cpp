@@ -13,7 +13,7 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions for bool type */
     void test_bool()
     {
-        auto curve = Curve<double, bool>::create();
+        auto curve = curve<double, bool>::create();
         auto curveSegment = CurveSegmentLinear<bool>::create(curve);
         QVERIFY(curveSegment != nullptr);
 
@@ -32,7 +32,7 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions for int type */
     void test_int()
     {
-        auto curve = Curve<double, int>::create();
+        auto curve = curve<double, int>::create();
         auto curveSegment = CurveSegmentLinear<int>::create(curve);
         QVERIFY(curveSegment != nullptr);
 
@@ -51,7 +51,7 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions for float type */
     void test_float()
     {
-        auto curve = Curve<double, float>::create();
+        auto curve = curve<double, float>::create();
         auto curveSegment = CurveSegmentLinear<float>::create(curve);
         QVERIFY(curveSegment != nullptr);
 

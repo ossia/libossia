@@ -16,6 +16,9 @@ struct OSSIA_EXPORT Int
   {
   }
 
+  template<typename T>
+  Int(T*) = delete;
+
   Int(const Int&) = default;
   Int(Int&&) = default;
   Int& operator=(const Int&) = default;

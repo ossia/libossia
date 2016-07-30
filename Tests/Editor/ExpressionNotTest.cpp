@@ -3,6 +3,7 @@
 #include <iostream>
 
 using namespace ossia;
+using namespace ossia::expressions;
 using namespace std::placeholders;
 
 class ExpressionNotTest : public QObject
@@ -23,34 +24,33 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto expression = ExpressionAtom::create(new Bool(false),
-                                                 ExpressionAtom::Operator::DIFFERENT,
-                                                 new Bool(false));
+        auto expression = make_expression_atom(Bool(false),
+                                                 expression_atom::Comparator::DIFFERENT,
+                                                 Bool(false));
 
-        auto not_expression = ExpressionNot::create(expression);
+        auto not_expression = make_expression_not(expression);
         QVERIFY(not_expression != nullptr);
-        QVERIFY(not_expression->getType() == Expression::Type::NOT);
-        QVERIFY(not_evaluate(expression) == true);
+        QVERIFY(evaluate(not_expression) == true);
     }
 
     /*! test comparison operator */
     void test_comparison()
     {
-        auto exprA = ExpressionAtom::create(new Bool(true),
-                                            ExpressionAtom::Operator::EQUAL,
-                                            new Bool(true));
+        auto exprA = make_expression_atom(Bool(true),
+                                            expression_atom::Comparator::EQUAL,
+                                            Bool(true));
 
-        auto exprB = ExpressionAtom::create(new Bool(false),
-                                            ExpressionAtom::Operator::EQUAL,
-                                            new Bool(false));
+        auto exprB = make_expression_atom(Bool(false),
+                                            expression_atom::Comparator::EQUAL,
+                                            Bool(false));
 
-        auto exprC = ExpressionAtom::create(new Bool(true),
-                                            ExpressionAtom::Operator::EQUAL,
-                                            new Bool(true));
+        auto exprC = make_expression_atom(Bool(true),
+                                            expression_atom::Comparator::EQUAL,
+                                            Bool(true));
 
-        auto not_exprA = ExpressionNot::create(exprA);
-        auto not_exprB = ExpressionNot::create(exprB);
-        auto not_exprC = ExpressionNot::create(exprC);
+        auto not_exprA = make_expression_not(exprA);
+        auto not_exprB = make_expression_not(exprB);
+        auto not_exprC = make_expression_not(exprC);
 
         QVERIFY(expressions::expression_false != *not_exprA);
         QVERIFY(expressions::expression_true != *not_exprA);
@@ -64,22 +64,21 @@ private Q_SLOTS:
     void test_callback()
     {
         // Local device
-        auto local_protocol = Local::create();
-        auto device = Device::create(local_protocol, "test");
+        impl::BasicDevice device{std::make_unique<impl::Local2>(), "test"};
 
-        auto localIntNode1 = *(device->emplace(device->children().cend(), "my_int.1"));
+        auto localIntNode1 = device.createChild("my_int.1");
         auto localIntAddress1 = localIntNode1->createAddress(Type::INT);
-        auto localIntNode2 = *(device->emplace(device->children().cend(), "my_int.2"));
+        auto localIntNode2 = device.createChild("my_int.2");
         auto localIntAddress2 = localIntNode2->createAddress(Type::INT);
 
-        auto testDestinationExpr = ExpressionAtom::create(new Destination(localIntNode1),
-                                                          ExpressionAtom::Operator::DIFFERENT,
-                                                          new Destination(localIntNode2));
+        auto testDestinationExpr = make_expression_atom(Destination(*localIntNode1),
+                                                          expression_atom::Comparator::DIFFERENT,
+                                                          Destination(*localIntNode2));
 
-        auto testDestinationExprNot = ExpressionNot::create(testDestinationExpr);
+        auto testDestinationExprNot = make_expression_not(testDestinationExpr);
 
-        ResultCallback callback = std::bind(&ExpressionNotTest::result_callback, this, _1);
-        auto callback_index = testDestinationExprNot->addCallback(callback);
+        expression_result_callback callback = std::bind(&ExpressionNotTest::result_callback, this, _1);
+        auto callback_index = addCallback(*testDestinationExprNot, callback);
 
         QVERIFY(testDestinationExprNot->callbacks().size() == 1);
 
@@ -87,7 +86,7 @@ private Q_SLOTS:
         m_result_callback_called = false;
 
         Int i1(5);
-        localIntAddress1->pushValue(&i1);
+        localIntAddress1->pushValue(i1);
 
         QVERIFY(m_result_callback_called == true && m_result == false);
 
@@ -95,7 +94,7 @@ private Q_SLOTS:
         m_result_callback_called = false;
 
         Int i2(5);
-        localIntAddress2->pushValue(&i2);
+        localIntAddress2->pushValue(i2);
 
         QVERIFY(m_result_callback_called == true && m_result == true);
 
@@ -103,18 +102,18 @@ private Q_SLOTS:
         m_result_callback_called = false;
 
         Int i3(10);
-        localIntAddress2->pushValue(&i3);
+        localIntAddress2->pushValue(i3);
 
         QVERIFY(m_result_callback_called == true && m_result == false);
 
-        testDestinationExprNot->removeCallback(callback_index);
+        removeCallback(testDestinationExprNot, callback_index);
 
         QVERIFY(testDestinationExprNot->callbacks().size() == 0);
 
         m_result = false;
         m_result_callback_called = false;
 
-        localIntAddress2->pushValue(&i2);
+        localIntAddress2->pushValue(i2);
 
         QVERIFY(m_result_callback_called == false && m_result == false);
     }

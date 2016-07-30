@@ -63,7 +63,7 @@ class ClockTest : public QObject
                          time_value granularity,
                          time_value offset,
                          float speed,
-                         Clock::ExecutionCallback callback,
+                         clock::ExecutionCallback callback,
                          bool display = false)
     {
         display_frames = display;
@@ -74,7 +74,7 @@ class ClockTest : public QObject
             std::cout << std::endl;
 
         // setup clock
-        auto clock = Clock::create(callback, duration, granularity, offset, speed);
+        auto clock = clock::create(callback, duration, granularity, offset, speed);
 
         // clear frame vectors
         m_clock_positions.clear();
@@ -136,12 +136,12 @@ class ClockTest : public QObject
     }
 
 private Q_SLOTS:
-    
+
     /*! test life cycle and accessors functions */
     void test_basic()
     {
         auto callback = std::bind(&ClockTest::clock_callback_light, this, _1, _2, _3);
-        auto clock = Clock::create(callback);
+        auto clock = clock::create(callback);
 
         QVERIFY(clock->getDuration() == Infinite);
         QVERIFY(clock->getGranularity() == 10.);
@@ -164,7 +164,7 @@ private Q_SLOTS:
 
         //! \todo test clone()
     }
-    
+
     /*! test execution functions */
     //! \todo test stop()
     //! \todo test pause()
@@ -242,7 +242,7 @@ private Q_SLOTS:
 
         // setup clock
         auto callback = std::bind(&ClockTest::clock_callback_light, this, _1, _2, _3);
-        auto clock = Clock::create(callback, 100., 10., 0., 1.);
+        auto clock = clock::create(callback, 100., 10., 0., 1.);
 
         // clear frame vectors
         m_clock_positions.clear();

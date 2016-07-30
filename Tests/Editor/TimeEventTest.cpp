@@ -24,7 +24,7 @@ private Q_SLOTS:
     void test_basic()
     {
         auto node = time_node::create();
-        auto event = *(node->emplace(node->timeEvents().begin(), &event_callback, expressions::make_expression_true()));
+        auto event = *(node->emplace(node->timeEvents().begin(), &event_callback));
         QVERIFY(event != nullptr);
 
         QVERIFY(event->getTimeNode() == node);
@@ -48,13 +48,13 @@ private Q_SLOTS:
     void test_edition()
     {
         auto nodeA = time_node::create();
-        auto eventA = *(nodeA->emplace(nodeA->timeEvents().begin(), &event_callback, expressions::make_expression_true()));
+        auto eventA = *(nodeA->emplace(nodeA->timeEvents().begin(), &event_callback));
 
         auto nodeB = time_node::create();
-        auto eventB = *(nodeB->emplace(nodeB->timeEvents().begin(), &event_callback, expressions::make_expression_true()));
+        auto eventB = *(nodeB->emplace(nodeB->timeEvents().begin(), &event_callback));
 
         auto nodeC = time_node::create();
-        auto eventC = *(nodeC->emplace(nodeC->timeEvents().begin(), &event_callback, expressions::make_expression_true()));
+        auto eventC = *(nodeC->emplace(nodeC->timeEvents().begin(), &event_callback));
 
         auto constraint1 = time_constraint::create(&constraint_callback, eventA, eventB, 1000.);
         auto constraint2 = time_constraint::create(&constraint_callback, eventB, eventC, 1000.);

@@ -19,7 +19,7 @@ private Q_SLOTS:
     void test_double_float()
     {
         // <double, float> curve
-        auto curve = Curve<double, float>::create();
+        auto curve = curve<double, float>::create();
         QVERIFY(curve != nullptr);
 
         auto linearSegment = CurveSegmentLinear<float>::create(curve);
@@ -63,7 +63,7 @@ private Q_SLOTS:
 
     void test_float_float()
     {
-        auto curve = Curve<float, float>::create();
+        auto curve = curve<float, float>::create();
         QVERIFY(curve != nullptr);
         
         auto linearSegment = CurveSegmentLinear<float>::create(curve);
@@ -89,7 +89,7 @@ private Q_SLOTS:
 
     void test_float_int()
     {
-        auto curve = Curve<float, int>::create();
+        auto curve = curve<float, int>::create();
         auto linearSegment = CurveSegmentLinear<int>::create(curve);
         curve->setInitialPointAbscissa(-10.);
         curve->setInitialPointOrdinate(-10);
@@ -116,7 +116,7 @@ private Q_SLOTS:
         Tuple t = {new Float(-1.), new Float(0.), new Float(1.)};
         localTupleAddress->setValue(&t);
       
-        auto curve = Curve<double, float>::create();
+        auto curve = curve<double, float>::create();
         auto linearSegment = CurveSegmentLinear<float>::create(curve);
       
         curve->setInitialPointAbscissa(0.);

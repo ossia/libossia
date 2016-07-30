@@ -15,14 +15,12 @@ mPatternConstraintCallback(patternConstraintCallback)
   mPatternStartNode = time_node::create();
   mPatternStartNode->emplace(
         mPatternStartNode->timeEvents().begin(),
-        [&] (time_event::Status result) { PatternStartEventCallback(result); },
-        expressions::make_expression_true());
+        [&] (time_event::Status result) { PatternStartEventCallback(result); });
 
   mPatternEndNode = time_node::create();
   mPatternEndNode->emplace(
         mPatternEndNode->timeEvents().begin(),
-        [&] (time_event::Status result) { PatternEndEventCallback(result); },
-        expressions::make_expression_true());
+        [&] (time_event::Status result) { PatternEndEventCallback(result); });
 
   // create a pattern TimeConstraint with all durations equal by default
   mPatternConstraint = time_constraint::create([=] (time_value position, time_value date, const State& state) {

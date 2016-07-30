@@ -19,7 +19,7 @@
 namespace ossia
 {
 template <typename Y>
-class curve_segment_empty
+struct curve_segment_empty
 {
   Y operator()(double ratio, Y start, Y end) const
   {

@@ -24,10 +24,10 @@ private Q_SLOTS:
     void test_basic()
     {
         auto start_node = time_node::create();
-        auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), &event_callback, expressions::make_expression_true()));
+        auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), &event_callback));
 
         auto end_node = time_node::create();
-        auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback, expressions::make_expression_true()));
+        auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback));
 
         auto constraint = time_constraint::create(&constraint_callback, start_event, end_event, 1000.);
         QVERIFY(constraint != nullptr);
@@ -68,10 +68,10 @@ private Q_SLOTS:
     void test_edition()
     {
         auto start_node = time_node::create();
-        auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), &event_callback, expressions::make_expression_true()));
+        auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), &event_callback));
 
         auto end_node = time_node::create();
-        auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback, expressions::make_expression_true()));
+        auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback));
 
         auto constraint = time_constraint::create(&constraint_callback, start_event, end_event, 1000.);
         auto scenario = scenario::create();

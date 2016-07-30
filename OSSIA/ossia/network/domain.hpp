@@ -364,5 +364,39 @@ inline Domain makeDomain(const ossia::value& min, const ossia::value& max)
     }
     return {};
 }
+
+struct DomainEqualVisitor
+{
+        template<typename T>
+        bool operator()(const T& min, const T& max)
+        {
+            // Cases where the domain has no min-max
+            return DomainBase<T>();
+        }
+
+        template<typename T, typename U>
+        bool operator()(const T& min, const U& max)
+        {
+            // Cases where there is no possible domain
+            return Domain{};
+        }
+};
+
+inline bool operator==(const DomainBase<Int>& lhs, const DomainBase<Int>& rhs)
+{ return lhs.min == rhs.min && lhs.max == rhs.max; }
+inline bool operator==(const DomainBase<Float>& lhs, const DomainBase<Float>& rhs)
+{ return lhs.min == rhs.min && lhs.max == rhs.max; }
+inline bool operator==(const DomainBase<Bool>& lhs, const DomainBase<Bool>& rhs)
+{ return lhs.min == rhs.min && lhs.max == rhs.max; }
+inline bool operator==(const DomainBase<Char>& lhs, const DomainBase<Char>& rhs)
+{ return lhs.min == rhs.min && lhs.max == rhs.max; }
+inline bool operator==(const DomainBase<String>& lhs, const DomainBase<String>& rhs)
+{ return lhs.values == rhs.values; }
+
+template<typename T>
+bool operator==(const DomainBase<T>& lhs, const DomainBase<T>& rhs)
+{
+  return true;
+}
 }
 }

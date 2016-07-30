@@ -3,38 +3,31 @@
 #include <iostream>
 
 using namespace ossia;
+using namespace ossia::expressions;
 
 class ExpressionTest : public QObject
 {
     Q_OBJECT
 
 private Q_SLOTS:
-    
+
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto expression_default = Expression::create();
-        QVERIFY(expression_default != nullptr);
-        QVERIFY(expression_default->getType() == Expression::Type::BASE);
-        QVERIFY(expression_evaluate(default) == false);
+        auto expr_default = make_expression_bool(false);
+        QVERIFY(expr_default != nullptr);
+        QVERIFY(evaluate(expr_default) == false);
 
-        auto expression_false = Expression::create(false);
-        QVERIFY(expression_false != nullptr);
-        QVERIFY(expression_false->getType() == Expression::Type::BASE);
-        QVERIFY(expression_evaluate(false) == false);
+        auto expr_false = make_expression_bool(false);
+        QVERIFY(expr_false != nullptr);
+        QVERIFY(evaluate(expr_false) == false);
 
-        auto expression_true = Expression::create(true);
-        QVERIFY(expression_true != nullptr);
-        QVERIFY(expression_true->getType() == Expression::Type::BASE);
-        QVERIFY(expression_evaluate(true) == true);
+        auto expr_true = make_expression_bool(true);
+        QVERIFY(expr_true != nullptr);
+        QVERIFY(evaluate(expr_true) == true);
 
-        QVERIFY(ExpressionFalse != nullptr);
-        QVERIFY(ExpressionFalse->getType() == Expression::Type::BASE);
-        QVERIFY(evaluate(ExpressionFalse) == false);
-
-        QVERIFY(ExpressionTrue != nullptr);
-        QVERIFY(ExpressionTrue->getType() == Expression::Type::BASE);
-        QVERIFY(evaluate(ExpressionTrue) == true);
+        QVERIFY(evaluate(expression_false) == false);
+        QVERIFY(evaluate(expression_true) == true);
     }
 
     /*! test comparison operator */
@@ -45,8 +38,8 @@ private Q_SLOTS:
         QVERIFY(expressions::expression_true != expressions::expression_false);
         QVERIFY(expressions::expression_true == expressions::expression_true);
 
-        auto expression_false = Expression::create(false);
-        auto expression_true = Expression::create(true);
+        auto expression_false = make_expression_bool(false);
+        auto expression_true = make_expression_bool(true);
 
         QVERIFY(expressions::expression_false == *expression_false);
         QVERIFY(expressions::expression_false != *expression_true);

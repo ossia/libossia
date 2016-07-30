@@ -39,8 +39,6 @@ private Q_SLOTS:
                     Impulse(), expression_atom::Comparator::EQUAL, Bool(true));
         QCOMPARE(testImpulseExprC->target<expression_atom>()->getFirstOperand().getType(), Type::IMPULSE);
         QCOMPARE(testImpulseExprC->target<expression_atom>()->getSecondOperand().getType(), Type::BOOL);
-        QVERIFY(Impulse() == Bool(true));
-        QVERIFY(ossia::value(Impulse()) == ossia::value(Bool(true)));
 
         QVERIFY(evaluate(testImpulseExprC) == true);
 

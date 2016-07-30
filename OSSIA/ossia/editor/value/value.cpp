@@ -194,41 +194,42 @@ bool Destination::operator<= (const ossia::value& v) const
 template<typename Comparator>
 struct value_comparison_visitor
 {
-        template<typename T, typename U>
-        bool operator()(const T& lhs, const U& rhs)
-        {
-            return Comparator{}(lhs, rhs);
-        }
+  const value& rhs;
+  template<typename T>
+  bool operator()(const T& lhs)
+  {
+    return Comparator{}(lhs, rhs);
+  }
 };
 
 bool value::operator==(const value &rhs) const
 {
-    return eggs::variants::apply(value_comparison_visitor<std::equal_to<>>{}, v, rhs.v);
+    return eggs::variants::apply(value_comparison_visitor<std::equal_to<>>{rhs}, v);
 }
 
 bool value::operator!=(const value &rhs) const
 {
-    return eggs::variants::apply(value_comparison_visitor<std::not_equal_to<>>{}, v, rhs.v);
+    return eggs::variants::apply(value_comparison_visitor<std::not_equal_to<>>{rhs}, v);
 }
 
 bool value::operator>(const value &rhs) const
 {
-    return eggs::variants::apply(value_comparison_visitor<std::greater<>>{}, v, rhs.v);
+    return eggs::variants::apply(value_comparison_visitor<std::greater<>>{rhs}, v);
 }
 
 bool value::operator>=(const value &rhs) const
 {
-    return eggs::variants::apply(value_comparison_visitor<std::greater_equal<>>{}, v, rhs.v);
+    return eggs::variants::apply(value_comparison_visitor<std::greater_equal<>>{rhs}, v);
 }
 
 bool value::operator<(const value &rhs) const
 {
-    return eggs::variants::apply(value_comparison_visitor<std::less<>>{}, v, rhs.v);
+    return eggs::variants::apply(value_comparison_visitor<std::less<>>{rhs}, v);
 }
 
 bool value::operator<=(const value &rhs) const
 {
-    return eggs::variants::apply(value_comparison_visitor<std::less_equal<>>{}, v, rhs.v);
+    return eggs::variants::apply(value_comparison_visitor<std::less_equal<>>{rhs}, v);
 }
 
 

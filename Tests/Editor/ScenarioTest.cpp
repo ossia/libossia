@@ -13,17 +13,17 @@ class ScenarioTest : public QObject
     std::shared_ptr<time_constraint> main_constraint;
     std::vector<time_value> events_date;
 
-    void main_constraint_callback(time_value position, time_value date, std::shared_ptr<StateElement> element)
+    void main_constraint_callback(time_value position, time_value date, const State& element)
     {
         std::cout << "Main Constraint : " << double(position) << ", " << double(date) << std::endl;
     }
 
-    void first_constraint_callback(time_value position, time_value date, std::shared_ptr<StateElement> element)
+    void first_constraint_callback(time_value position, time_value date, const State& element)
     {
         std::cout << "First Constraint : " << double(position) << ", " << double(date) << std::endl;
     }
 
-    void second_constraint_callback(time_value position, time_value date, std::shared_ptr<StateElement> element)
+    void second_constraint_callback(time_value position, time_value date, const State& element)
     {
         std::cout << "Second Constraint : " << double(position) << ", " << double(date) << std::endl;
     }
@@ -59,33 +59,35 @@ class ScenarioTest : public QObject
     }
 
 private Q_SLOTS:
-    
+
     /*! test life cycle and accessors functions */
     void test_basic()
     {
         auto scenario = scenario::create();
         QVERIFY(scenario != nullptr);
-        
+
         QVERIFY(scenario->parent == nullptr);
-        
+
         QVERIFY(scenario->getStartTimeNode() != nullptr);
 
         QVERIFY(scenario->timeNodes().size() == 1);
         QVERIFY(scenario->timeConstraints().size() == 0);
 
         QVERIFY(scenario->getStartTimeNode()->getDate() == 0.);
-        
+
         auto mc_callback = std::bind(&ScenarioTest::main_constraint_callback, this, _1, _2, _3);
         auto e_callback = std::bind(&ScenarioTest::event_callback, this, _1);
-        auto start_event = *(scenario->getStartTimeNode()->emplace(scenario->getStartTimeNode()->timeEvents().begin(), e_callback));
+        auto start_event = *(scenario->getStartTimeNode()->emplace(
+                               scenario->getStartTimeNode()->timeEvents().begin(),
+                               e_callback));
 
         auto end_node = time_node::create();
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), e_callback));
         auto constraint = time_constraint::create(mc_callback, start_event, end_event, 1000., 1000., 1000.);
-        
+
         QVERIFY(end_node->getDate() == 1000.);
     }
-    
+
     /*! test edition functions */
     void test_edition()
     {
@@ -117,9 +119,6 @@ private Q_SLOTS:
 
         scenario->removeTimeNode(lonely_node);
         QVERIFY(scenario->timeNodes().size() == 2);
-
-        //! \todo how to verify something here ?
-        auto scenario_copy = scenario->clone();
     }
 
     /*! test execution functions */

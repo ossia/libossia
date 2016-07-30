@@ -200,7 +200,7 @@ void JamomaTimeNode::process(ptr_container<time_event>& statusChangedEvents)
     return;
 
   // false expression mute TimeNode triggering
-  if (mExpression == expressions::make_expression_false())
+  if (*mExpression == expressions::expression_false)
     return;
 
   //! \todo force triggering if at leat one TimeEvent has
@@ -209,7 +209,7 @@ void JamomaTimeNode::process(ptr_container<time_event>& statusChangedEvents)
   // update the expression one time
   // then observe and evaluate TimeNode's expression before to trig
   // only if no maximal duration have been reached
-  if (mExpression != expressions::make_expression_true() &&
+  if (*mExpression != expressions::expression_true &&
       !maximalDurationReached)
   {
     if (!isObservingExpression())
@@ -237,7 +237,7 @@ bool JamomaTimeNode::isObservingExpression()
 
 void JamomaTimeNode::observeExpressionResult(bool observe)
 {
-  if (!mExpression || mExpression == expressions::make_expression_true() || mExpression == expressions::make_expression_false())
+  if (!mExpression || *mExpression == expressions::expression_true || *mExpression == expressions::expression_false)
     return;
 
   if (observe != mObserveExpression)
@@ -250,7 +250,7 @@ void JamomaTimeNode::observeExpressionResult(bool observe)
       // pull value
 
       // start expression observation
-      mResultCallbackIndex = expressions::addCallback(*mExpression, [&] (bool result) { resultCallback(result); });
+      mResultCallbackIndex = expressions::add_callback(*mExpression, [&] (bool result) { resultCallback(result); });
       mCallbackSet = true;
     }
     else
@@ -258,7 +258,7 @@ void JamomaTimeNode::observeExpressionResult(bool observe)
       // stop expression observation
       if(wasObserving && mCallbackSet)
       {
-        expressions::removeCallback(*mExpression, mResultCallbackIndex);
+        expressions::remove_callback(*mExpression, mResultCallbackIndex);
         mCallbackSet = false;
       }
     }

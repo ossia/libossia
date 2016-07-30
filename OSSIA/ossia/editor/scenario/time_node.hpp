@@ -114,7 +114,7 @@ public:
    \return std::shared_ptr<#TimeEvent> */
   virtual iterator emplace(const_iterator,
                             time_event::ExecutionCallback,
-                            expression_ptr/* = ExpressionTrue()*/) = 0;
+                            expression_ptr = expressions::make_expression_true()) = 0;
 
   /*! get the #TimeEvents of the #TimeNode
    \return #Container<#TimeEvent> */

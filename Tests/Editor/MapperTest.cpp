@@ -13,10 +13,10 @@ class MapperTest : public QObject
     Q_OBJECT
 
     std::shared_ptr<Address> m_float_address;
-    std::vector<Value*> m_float_address_values;
+    std::vector<value*> m_float_address_values;
 
     std::shared_ptr<Address> m_int_address;
-    std::vector<Value*> m_int_address_values;
+    std::vector<value*> m_int_address_values;
 
     void constraint_callback(time_value position, time_value date, std::shared_ptr<StateElement> element)
     {
@@ -28,7 +28,7 @@ class MapperTest : public QObject
         std::cout << "Event : " << "new status received" << std::endl;
     }
 
-    void int_address_callback(const Value * v)
+    void int_address_callback(const value * v)
     {
         // store mapping result
         m_int_address_values.push_back(v->clone());
@@ -84,7 +84,7 @@ private Q_SLOTS:
         auto int_address_callback = std::bind(&MapperTest::int_address_callback, this, _1);
         m_int_address->addCallback(int_address_callback);
 
-        auto curve = Curve<float, int>::create();
+        auto curve = curve<float, int>::create();
         auto linearSegment = CurveSegmentLinear<int>::create(curve);
         curve->setInitialPointAbscissa(-10.);
         curve->setInitialPointOrdinate(-10);
@@ -119,7 +119,7 @@ private Q_SLOTS:
         QVERIFY(m_float_address_values.size() == m_int_address_values.size());
 
         // check if each value produced by the mapping is correct
-        std::vector<Value*>::iterator it = m_int_address_values.begin();
+        std::vector<value*>::iterator it = m_int_address_values.begin();
 
         for (auto v : m_float_address_values)
         {

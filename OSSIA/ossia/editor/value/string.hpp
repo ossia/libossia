@@ -12,7 +12,7 @@ struct OSSIA_EXPORT String
 
   /*! constructor
    \param std::string value */
-  String(std::string v = "") :
+  String(std::string v = {}) :
       value(std::move(v))
   {
   }

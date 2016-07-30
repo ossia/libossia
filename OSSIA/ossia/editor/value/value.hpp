@@ -9,11 +9,13 @@ class OSSIA_EXPORT value
 {
 public:
   using value_type = eggs::variant<Impulse, Bool, Int, Float, Char, String, Tuple, Vec2f, Vec3f, Vec4f, Destination, Behavior>;
-  value(const Impulse& val): v{val}  { }
-  value(const Bool& val): v{val}  { }
-  value(const Int& val): v{val}  { }
-  value(const Float& val): v{val}  { }
-  value(const Char& val): v{val}  { }
+  template<typename T>
+  value(T*) = delete;
+  value(Impulse val): v{val}  { }
+  value(Bool val): v{val}  { }
+  value(Int val): v{val}  { }
+  value(Float val): v{val}  { }
+  value(Char val): v{val}  { }
   value(const String& val): v{val}  { }
   value(const Tuple& val): v{val}  { }
   value(const Vec2f& val): v{val}  { }
@@ -21,6 +23,11 @@ public:
   value(const Vec4f& val): v{val}  { }
   value(const Destination& val): v{val}  { }
   value(const Behavior& val): v{val}  { }
+
+  value(String&& val): v{std::move(val)}  { }
+  value(Tuple&& val): v{std::move(val)}  { }
+  value(Destination&& val): v{std::move(val)}  { }
+  value(Behavior&& val): v{std::move(val)}  { }
 
   value() = default;
   value(const value& other) = default;
