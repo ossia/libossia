@@ -10,7 +10,7 @@ bool Bool::operator== (const ossia::value& v) const
 { return comparisons::NumericValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Bool::operator!= (const ossia::value& v) const
-{ return comparisons::NumericValue::apply(*this, v, std::not_equal_to<>{}); }
+{ return !comparisons::NumericValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Bool::operator> (const ossia::value& v) const
 { return comparisons::NumericValue::apply(*this, v, std::greater<>{}); }
@@ -30,7 +30,7 @@ bool Int::operator== (const ossia::value& v) const
 { return comparisons::NumericValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Int::operator!= (const ossia::value& v) const
-{ return comparisons::NumericValue::apply(*this, v, std::not_equal_to<>{}); }
+{ return !comparisons::NumericValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Int::operator> (const ossia::value& v) const
 { return comparisons::NumericValue::apply(*this, v, std::greater<>{}); }
@@ -50,7 +50,7 @@ bool Float::operator== (const ossia::value& v) const
 { return comparisons::NumericValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Float::operator!= (const ossia::value& v) const
-{ return comparisons::NumericValue::apply(*this, v, std::not_equal_to<>{}); }
+{ return !comparisons::NumericValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Float::operator> (const ossia::value& v) const
 { return comparisons::NumericValue::apply(*this, v, std::greater<>{}); }
@@ -70,7 +70,7 @@ bool Char::operator== (const ossia::value& v) const
 { return comparisons::NumericValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Char::operator!= (const ossia::value& v) const
-{ return comparisons::NumericValue::apply(*this, v, std::not_equal_to<>{}); }
+{ return !comparisons::NumericValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Char::operator> (const ossia::value& v) const
 { return comparisons::NumericValue::apply(*this, v, std::greater<>{}); }
@@ -91,7 +91,7 @@ bool String::operator== (const ossia::value& v) const
 { return comparisons::StringValue::apply(*this, v, std::equal_to<>{}); }
 
 bool String::operator!= (const ossia::value& v) const
-{ return comparisons::StringValue::apply(*this, v, std::not_equal_to<>{}); }
+{ return !comparisons::StringValue::apply(*this, v, std::equal_to<>{}); }
 
 bool String::operator> (const ossia::value& v) const
 { return comparisons::StringValue::apply(*this, v, std::greater<>{}); }
@@ -133,7 +133,7 @@ bool Tuple::operator== (const ossia::value& v) const
 { return comparisons::TupleValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Tuple::operator!= (const ossia::value& v) const
-{ return comparisons::TupleValue::apply(*this, v, std::not_equal_to<>{}); }
+{ return !comparisons::TupleValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Tuple::operator> (const ossia::value& v) const
 { return comparisons::TupleValue::apply(*this, v, std::greater<>{}); }
@@ -176,7 +176,7 @@ bool Destination::operator== (const ossia::value& v) const
 { return comparisons::DestinationValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Destination::operator!= (const ossia::value& v) const
-{ return comparisons::DestinationValue::apply(*this, v, std::not_equal_to<>{}); }
+{ return !comparisons::DestinationValue::apply(*this, v, std::equal_to<>{}); }
 
 bool Destination::operator> (const ossia::value& v) const
 { return comparisons::DestinationValue::apply(*this, v, std::greater<>{}); }
@@ -191,23 +191,45 @@ bool Destination::operator<= (const ossia::value& v) const
 { return comparisons::DestinationValue::apply(*this, v, std::less_equal<>{}); }
 
 
+template<typename Comparator>
+struct value_comparison_visitor
+{
+        template<typename T, typename U>
+        bool operator()(const T& lhs, const U& rhs)
+        {
+            return Comparator{}(lhs, rhs);
+        }
+};
+
 bool value::operator==(const value &rhs) const
-{ return v == rhs.v; }
+{
+    return eggs::variants::apply(value_comparison_visitor<std::equal_to<>>{}, v, rhs.v);
+}
 
 bool value::operator!=(const value &rhs) const
-{ return v != rhs.v; }
+{
+    return eggs::variants::apply(value_comparison_visitor<std::not_equal_to<>>{}, v, rhs.v);
+}
 
 bool value::operator>(const value &rhs) const
-{ return v > rhs.v; }
+{
+    return eggs::variants::apply(value_comparison_visitor<std::greater<>>{}, v, rhs.v);
+}
 
 bool value::operator>=(const value &rhs) const
-{ return v >= rhs.v; }
+{
+    return eggs::variants::apply(value_comparison_visitor<std::greater_equal<>>{}, v, rhs.v);
+}
 
 bool value::operator<(const value &rhs) const
-{ return v < rhs.v; }
+{
+    return eggs::variants::apply(value_comparison_visitor<std::less<>>{}, v, rhs.v);
+}
 
 bool value::operator<=(const value &rhs) const
-{ return v <= rhs.v; }
+{
+    return eggs::variants::apply(value_comparison_visitor<std::less_equal<>>{}, v, rhs.v);
+}
 
 
 namespace {

@@ -16,7 +16,7 @@
 #include "Editor/TimeEvent.h"
 #include "Editor/TimeNode.h"
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std;
 
 void main_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element);

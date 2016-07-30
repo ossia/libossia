@@ -1,8 +1,8 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/OSSIA.hpp>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std::placeholders;
 
 class NodeTest : public QObject

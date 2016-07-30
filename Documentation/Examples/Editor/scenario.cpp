@@ -32,7 +32,7 @@
 #include "Network/Node.h"
 #include "Network/Protocol/Local.h"
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std;
 
 void local_play_callback(const Value * v);

@@ -1,15 +1,15 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/OSSIA.hpp>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 
-void constraint_callback(TimeValue position, TimeValue date, std::shared_ptr<StateElement> element)
+void constraint_callback(time_value position, time_value date, const State& element)
 {
     ;
 }
 
-void event_callback(TimeEvent::Status newStatus)
+void event_callback(time_event::Status newStatus)
 {
     ;
 }
@@ -19,17 +19,17 @@ class TimeConstraintTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
-    
+
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto start_node = TimeNode::create();
-        auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), &event_callback));
+        auto start_node = time_node::create();
+        auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), &event_callback, expressions::make_expression_true()));
 
-        auto end_node = TimeNode::create();
-        auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback));
+        auto end_node = time_node::create();
+        auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback, expressions::make_expression_true()));
 
-        auto constraint = TimeConstraint::create(&constraint_callback, start_event, end_event, 1000.);
+        auto constraint = time_constraint::create(&constraint_callback, start_event, end_event, 1000.);
         QVERIFY(constraint != nullptr);
 
         QVERIFY(constraint->getGranularity() == 1.);
@@ -44,7 +44,7 @@ private Q_SLOTS:
         constraint->setDurationNominal(2000.);
         constraint->setDurationMin(1000.);
         constraint->setDurationMax(3000.);
-        std::shared_ptr<State> state = constraint->offset(500.);
+        auto state = constraint->offset(500.);
 
         QVERIFY(constraint->getGranularity() == 50.);
         QVERIFY(constraint->getSpeed() == 2.);
@@ -52,10 +52,10 @@ private Q_SLOTS:
         QVERIFY(constraint->getDurationMin() == 1000.);
         QVERIFY(constraint->getDurationMax() == 3000.);
         QVERIFY(constraint->getOffset() == 500.);
-        QVERIFY(state->stateElements().size() == 0);
+        QVERIFY(state.size() == 0);
 
+        QCOMPARE(double(constraint->getPosition()), 0.25);
         QVERIFY(constraint->getRunning() == false);
-        QVERIFY(constraint->getPosition() == 0.25);
         QVERIFY(constraint->getDate() == 500.);
 
         QVERIFY(constraint->getStartEvent() == start_event);
@@ -63,18 +63,18 @@ private Q_SLOTS:
 
         //! \todo test clone()
     }
-    
+
     /*! test edition functions */
     void test_edition()
     {
-        auto start_node = TimeNode::create();
-        auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), &event_callback));
+        auto start_node = time_node::create();
+        auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), &event_callback, expressions::make_expression_true()));
 
-        auto end_node = TimeNode::create();
-        auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback));
+        auto end_node = time_node::create();
+        auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback, expressions::make_expression_true()));
 
-        auto constraint = TimeConstraint::create(&constraint_callback, start_event, end_event, 1000.);
-        auto scenario = Scenario::create();
+        auto constraint = time_constraint::create(&constraint_callback, start_event, end_event, 1000.);
+        auto scenario = scenario::create();
 
         constraint->addTimeProcess(scenario);
         QVERIFY(constraint->timeProcesses().size() == 1);

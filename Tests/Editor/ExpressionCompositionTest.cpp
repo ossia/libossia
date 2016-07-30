@@ -1,8 +1,8 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/OSSIA.hpp>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std::placeholders;
 
 class ExpressionCompositionTest : public QObject
@@ -139,8 +139,8 @@ private Q_SLOTS:
                                                           ExpressionComposition::Operator::XOR,
                                                           exprC);
 
-        QVERIFY(*ExpressionFalse != *composition1);
-        QVERIFY(*ExpressionTrue != *composition1);
+        QVERIFY(expressions::expression_false != *composition1);
+        QVERIFY(expressions::expression_true != *composition1);
 
         QVERIFY(*composition1 != *composition2);
         QVERIFY(!(*composition1 == *composition2));

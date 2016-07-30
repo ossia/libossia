@@ -1,8 +1,8 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/OSSIA.hpp>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 
 class DeviceTest : public QObject
 {

@@ -64,7 +64,7 @@ public:
 
   time_value getDate() const override;
 
-  const expression_ptr & getExpression() const override;
+  const expression & getExpression() const override;
 
   time_node & setExpression(expression_ptr) override;
 

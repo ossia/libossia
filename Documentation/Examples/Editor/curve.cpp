@@ -18,7 +18,7 @@
 #include "Network/Node.h"
 #include "Network/Protocol/Local.h"
 
-using namespace OSSIA;
+using namespace ossia;
 
 #include <iostream>
 

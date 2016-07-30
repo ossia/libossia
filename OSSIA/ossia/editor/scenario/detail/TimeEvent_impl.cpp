@@ -106,9 +106,9 @@ const State& JamomaTimeEvent::getState() const
   return mState;
 }
 
-const expression_ptr & JamomaTimeEvent::getExpression() const
+const expression & JamomaTimeEvent::getExpression() const
 {
-  return mExpression;
+  return *mExpression;
 }
 
 time_event & JamomaTimeEvent::setExpression(expression_ptr exp)

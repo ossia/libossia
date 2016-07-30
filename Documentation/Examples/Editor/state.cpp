@@ -18,7 +18,7 @@
 #include "Editor/Message.h"
 #include "Editor/State.h"
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std;
 
 void printValue(const Value * v);

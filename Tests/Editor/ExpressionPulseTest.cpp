@@ -1,8 +1,8 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/OSSIA.hpp>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std::placeholders;
 
 class ExpressionPulseTest : public QObject
@@ -53,26 +53,26 @@ private Q_SLOTS:
         // evaluate expressions before Destination value updates
         auto testExprA = ExpressionPulse::create(new Destination(localImpulseNode));
         QVERIFY(testExprA->getType() == Expression::Type::PULSE);
-        QVERIFY(testExprA->evaluate() == false);
+        QVERIFY(evaluate(testExprA) == false);
 
         auto testExprB = ExpressionPulse::create(new Destination(localBoolNode));
-        QVERIFY(testExprB->evaluate() == false);
+        QVERIFY(evaluate(testExprB) == false);
 
         auto testExprC = ExpressionPulse::create(new Destination(localIntNode));
-        QVERIFY(testExprC->evaluate() == false);
+        QVERIFY(evaluate(testExprC) == false);
 
         auto testExprD = ExpressionPulse::create(new Destination(localFloatNode));
-        QVERIFY(testExprD->evaluate() == false);
+        QVERIFY(evaluate(testExprD) == false);
 
         auto testExprE = ExpressionPulse::create(new Destination(localStringNode));
-        QVERIFY(testExprE->evaluate() == false);
+        QVERIFY(evaluate(testExprE) == false);
 
         //! \todo : what about Destination address ? do we observe the address ? how to do that ?
         //auto testExprF = ExpressionPulse::create(new Destination(localDestinationNode));
-        //QVERIFY(testExprF->evaluate() == false);
+        //QVERIFY(evaluate(testExprF) == false);
 
         auto testExprG = ExpressionPulse::create(new Destination(localTupleNode));
-        QVERIFY(testExprG->evaluate() == false);
+        QVERIFY(evaluate(testExprG) == false);
 
         // update node's value
         Impulse p;
@@ -98,35 +98,35 @@ private Q_SLOTS:
         localTupleAddress->pushValue(&t);
 
         // evaluate expressions after Destination value updates
-        QVERIFY(testExprA->evaluate() == true);
-        QVERIFY(testExprB->evaluate() == true);
-        QVERIFY(testExprC->evaluate() == true);
-        QVERIFY(testExprD->evaluate() == true);
-        QVERIFY(testExprE->evaluate() == true);
-        //! \todo QVERIFY(testExprF->evaluate() == true);
-        QVERIFY(testExprG->evaluate() == true);
+        QVERIFY(evaluate(testExprA) == true);
+        QVERIFY(evaluate(testExprB) == true);
+        QVERIFY(evaluate(testExprC) == true);
+        QVERIFY(evaluate(testExprD) == true);
+        QVERIFY(evaluate(testExprE) == true);
+        //! \todo QVERIFY(evaluate(testExprF) == true);
+        QVERIFY(evaluate(testExprG) == true);
 
         // evaluate expressions after expression reset
         testExprA->update();
-        QVERIFY(testExprA->evaluate() == false);
+        QVERIFY(evaluate(testExprA) == false);
 
         testExprB->update();
-        QVERIFY(testExprB->evaluate() == false);
+        QVERIFY(evaluate(testExprB) == false);
 
         testExprC->update();
-        QVERIFY(testExprC->evaluate() == false);
+        QVERIFY(evaluate(testExprC) == false);
 
         testExprD->update();
-        QVERIFY(testExprD->evaluate() == false);
+        QVERIFY(evaluate(testExprD) == false);
 
         testExprE->update();
-        QVERIFY(testExprE->evaluate() == false);
+        QVERIFY(evaluate(testExprE) == false);
 
         //! \todo testExprF->update();
-        //! QVERIFY(testExprF->evaluate() == false);
+        //! QVERIFY(evaluate(testExprF) == false);
 
         testExprG->update();
-        QVERIFY(testExprG->evaluate() == false);
+        QVERIFY(evaluate(testExprG) == false);
 
         // update node's value again
         localImpulseAddress->pushValue(&p);
@@ -138,13 +138,13 @@ private Q_SLOTS:
         localTupleAddress->pushValue(&t);
 
         // evaluate expressions after Destination value updates
-        QVERIFY(testExprA->evaluate() == true);
-        QVERIFY(testExprB->evaluate() == true);
-        QVERIFY(testExprC->evaluate() == true);
-        QVERIFY(testExprD->evaluate() == true);
-        QVERIFY(testExprE->evaluate() == true);
-        //! \todo QVERIFY(testExprF->evaluate() == true);
-        QVERIFY(testExprG->evaluate() == true);
+        QVERIFY(evaluate(testExprA) == true);
+        QVERIFY(evaluate(testExprB) == true);
+        QVERIFY(evaluate(testExprC) == true);
+        QVERIFY(evaluate(testExprD) == true);
+        QVERIFY(evaluate(testExprE) == true);
+        //! \todo QVERIFY(evaluate(testExprF) == true);
+        QVERIFY(evaluate(testExprG) == true);
 
         //! \todo test clone()
     }
@@ -164,8 +164,8 @@ private Q_SLOTS:
         auto testExprB = ExpressionPulse::create(new Destination(localNode2));
         auto testExprC = ExpressionPulse::create(new Destination(localNode1));
 
-        QVERIFY(*ExpressionFalse != *testExprA);
-        QVERIFY(*ExpressionTrue != *testExprA);
+        QVERIFY(expressions::expression_false != *testExprA);
+        QVERIFY(expressions::expression_true != *testExprA);
 
         QVERIFY(*testExprA != *testExprB);
         QVERIFY(*testExprA == *testExprC);

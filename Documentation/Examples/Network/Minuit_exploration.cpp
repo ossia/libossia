@@ -17,7 +17,7 @@
 #include "Network/Protocol/Local.h"
 #include "Network/Protocol/Minuit.h"
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std;
 
 void explore(const shared_ptr<Node> node);

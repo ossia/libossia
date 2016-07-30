@@ -1,58 +1,58 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/OSSIA.hpp>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 
-class TimeValueTest : public QObject
+class time_valueTest : public QObject
 {
     Q_OBJECT
 
 private Q_SLOTS:
-    
+
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        TimeValue zero;
+        time_value zero;
         QVERIFY(zero == 0.);
         QVERIFY(zero == Zero);
         QVERIFY(zero.isInfinite() == false);
 
-        TimeValue one(1.);
+        time_value one(1.);
         QVERIFY(one == 1.);
         QVERIFY(one == One);
         QVERIFY(one.isInfinite() == false);
 
-        TimeValue infinite(INFINITY);
+        time_value infinite(INFINITY);
         QVERIFY(infinite == Infinite);
         QVERIFY(infinite.isInfinite() == true);
     }
-    
+
     /*! test =, +, +=, -, -= operators */
     void test_math()
     {
-        TimeValue zero;
-        TimeValue one(1.);
-        TimeValue infinite(INFINITY);
-        
-        TimeValue copy = one;
+        time_value zero;
+        time_value one(1.);
+        time_value infinite(INFINITY);
+
+        time_value copy = one;
         QVERIFY(copy == 1.);
-        
+
         copy = infinite;
         QVERIFY(copy == INFINITY);
-        
+
         QVERIFY(zero + one == 1.);
         QVERIFY(one + infinite == INFINITY);
-        
+
         QVERIFY(one - one == 0.);
         QVERIFY(infinite - one == INFINITY);
     }
-    
+
     /*! test comparison operators */
     void test_comparison()
     {
-        TimeValue five(5.);
-        TimeValue ten(10.);
+        time_value five(5.);
+        time_value ten(10.);
 
         QVERIFY(five == five);
         QVERIFY(!(five == 10.));
@@ -96,6 +96,6 @@ private Q_SLOTS:
     }
 };
 
-QTEST_APPLESS_MAIN(TimeValueTest)
+QTEST_APPLESS_MAIN(time_valueTest)
 
 #include "TimeValueTest.moc"

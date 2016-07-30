@@ -109,7 +109,7 @@ public:
 
   /*! get the expression of the event
   \return std::shared_ptr<#Expression> */
-  virtual const expression_ptr & getExpression() const = 0;
+  virtual const expression& getExpression() const = 0;
 
   /*! set the expression of the event
    \param std::shared_ptr<#Expression>

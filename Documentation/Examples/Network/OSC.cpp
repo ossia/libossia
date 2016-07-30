@@ -16,7 +16,7 @@
 #include "Network/Device.h"
 #include "Network/Protocol/OSC.h"
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std;
 
 void printValueCallback(const Value * v);

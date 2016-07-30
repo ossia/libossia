@@ -1,9 +1,9 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/OSSIA.hpp>
 #include <functional>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std::placeholders;
 
 class AutomationTest : public QObject
@@ -12,12 +12,12 @@ class AutomationTest : public QObject
 
     std::vector<Value*> m_address_values;
 
-    void constraint_callback(TimeValue position, TimeValue date, std::shared_ptr<StateElement> element)
+    void constraint_callback(time_value position, time_value date, std::shared_ptr<StateElement> element)
     {
         element->launch();
     }
 
-    void event_callback(TimeEvent::Status newStatus)
+    void event_callback(time_event::Status newStatus)
     {
         std::cout << "Event : " << "new status received" << std::endl;
     }
@@ -39,7 +39,7 @@ private Q_SLOTS:
 
         Float f(0);
 
-        auto automation = Automation::create(address, &f);
+        auto automation = automation::create(address, &f);
         QVERIFY(automation != nullptr);
 
         QVERIFY(automation->parent == nullptr);
@@ -68,15 +68,15 @@ private Q_SLOTS:
         curve->addPoint(linearSegment, 0.5, 1.);
         curve->addPoint(linearSegment, 1., 0.);
         Behavior b(curve);
-        auto automation = Automation::create(address, &b);
+        auto automation = automation::create(address, &b);
 
-        auto start_node = TimeNode::create();
-        auto end_node = TimeNode::create();
+        auto start_node = time_node::create();
+        auto end_node = time_node::create();
         auto event_callback = std::bind(&AutomationTest::event_callback, this, _1);
         auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
         auto constraint_callback = std::bind(&AutomationTest::constraint_callback, this, _1, _2, _3);
-        auto constraint = TimeConstraint::create(constraint_callback, start_event, end_event, 100., 100., 100.);
+        auto constraint = time_constraint::create(constraint_callback, start_event, end_event, 100., 100., 100.);
         constraint->addTimeProcess(automation);
 
         m_address_values.clear();

@@ -1,10 +1,10 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/OSSIA.hpp>
 #include <functional>
 #include <thread>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std::chrono;
 using namespace std::placeholders;
 
@@ -12,18 +12,18 @@ class ClockTest : public QObject
 {
     Q_OBJECT
 
-    std::vector<TimeValue> m_clock_positions;
-    std::vector<TimeValue> m_clock_dates;
+    std::vector<time_value> m_clock_positions;
+    std::vector<time_value> m_clock_dates;
     int m_dropped_ticks;
 
     steady_clock::time_point m_clock_start_date;
     steady_clock::time_point m_clock_end_date;
 
-    TimeValue m_last_frame_duration;
+    time_value m_last_frame_duration;
 
     bool display_frames = false;
 
-    void clock_callback_light(TimeValue position, TimeValue date, unsigned char droppedTicks)
+    void clock_callback_light(time_value position, time_value date, unsigned char droppedTicks)
     {
         steady_clock::time_point frame_start_date = steady_clock::now();
 
@@ -38,7 +38,7 @@ class ClockTest : public QObject
             m_last_frame_duration = duration_cast<microseconds>(steady_clock::now() - frame_start_date).count();
     }
 
-    void clock_callback_heavy(TimeValue position, TimeValue date, unsigned char droppedTicks)
+    void clock_callback_heavy(time_value position, time_value date, unsigned char droppedTicks)
     {
         steady_clock::time_point frame_start_date = steady_clock::now();
 
@@ -59,9 +59,9 @@ class ClockTest : public QObject
             m_last_frame_duration = duration_cast<microseconds>(steady_clock::now() - frame_start_date).count();
     }
 
-    void make_clock_test(TimeValue duration,
-                         TimeValue granularity,
-                         TimeValue offset,
+    void make_clock_test(time_value duration,
+                         time_value granularity,
+                         time_value offset,
                          float speed,
                          Clock::ExecutionCallback callback,
                          bool display = false)

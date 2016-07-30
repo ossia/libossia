@@ -77,7 +77,7 @@ public:
 
   const State& getState() const override;
 
-  const expression_ptr & getExpression() const override;
+  const expression& getExpression() const override;
 
   time_event & setExpression(expression_ptr) override;
 

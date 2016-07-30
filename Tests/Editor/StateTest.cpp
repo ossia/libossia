@@ -1,30 +1,37 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/OSSIA.hpp>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 
 class StateTest : public QObject
 {
     Q_OBJECT
 
 private Q_SLOTS:
-    
+
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto state = State::create();
-        QVERIFY(state != nullptr);
+        State state;
 
-        QVERIFY(state->stateElements().size() == 0);
+        QCOMPARE(state.size(), 0ul);
 
-        auto substate = State::create();
-        state->stateElements().push_back(substate);
-        QVERIFY(state->stateElements().size() == 1);
+        State substate;
+        state.add(substate);
+        QCOMPARE(state.size(), 1ul);
 
-        //! \todo test clone()
+
+        State parent;
+        parent.add(std::move(state));
+        QCOMPARE(parent.size(), 1ul);
+        QCOMPARE(state.size(), 0ul);
+
+        State copy{parent};
+        QCOMPARE(copy.size(), 1ul);
+
     }
-    
+
     /*! test execution functions */
     void test_execution()
     {

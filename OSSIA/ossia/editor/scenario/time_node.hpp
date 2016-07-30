@@ -83,7 +83,7 @@ public:
 
   /*! get the expression of the #TimeNode
    \return std::shared_ptr<#Expression> */
-  virtual const expression_ptr& getExpression() const = 0;
+  virtual const expression& getExpression() const = 0;
 
   /*! set the expression of the #TimeNode
    \details setting the expression to ExpressionTrue will defer the evaluation on #TimeEvent's expression

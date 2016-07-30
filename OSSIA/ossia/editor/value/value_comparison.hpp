@@ -22,7 +22,22 @@ struct Impulse_T
   template<typename T>
   friend bool operator<(const T&, Impulse_T) { return false; }
   template<typename T>
-  friend bool operator>(const T&, Impulse_T) { return true; }
+  friend bool operator>(const T&, Impulse_T) { return false; }
+};
+struct String_T
+{
+        template<typename T>
+        friend bool operator==(const T&, String_T) { return false; }
+        template<typename T>
+        friend bool operator!=(const T&, String_T) { return true; }
+        template<typename T>
+        friend bool operator<=(const T&, String_T) { return false; }
+        template<typename T>
+        friend bool operator>=(const T&, String_T) { return false; }
+        template<typename T>
+        friend bool operator<(const T&, String_T) { return false; }
+        template<typename T>
+        friend bool operator>(const T&, String_T) { return false; }
 };
 
 struct NumericValue
@@ -49,7 +64,7 @@ struct NumericValue
         return false;
       }
 
-      bool operator()(const String& v) const { return false; }
+      bool operator()(const String& v) const { return fun(lhs.value, String_T{}); }
       bool operator()(Vec2f v) const { return false; }
       bool operator()(Vec3f v) const { return false; }
       bool operator()(Vec4f v) const { return false; }
@@ -74,10 +89,10 @@ struct StringValue
     public:
       bool operator()(Impulse) const { return fun(lhs.value, Impulse_T{}); }
       bool operator()(const String& v) const { return fun(lhs.value, v.value); }
-      bool operator()(Int v) const { return false; }
-      bool operator()(Float v) const { return false; }
-      bool operator()(Bool v) const { return false; }
-      bool operator()(Char v) const { return false; }
+      bool operator()(Int v) const { return fun(v.value, String_T{}); }
+      bool operator()(Float v) const { return fun(v.value, String_T{}); }
+      bool operator()(Bool v) const { return fun(v.value, String_T{}); }
+      bool operator()(Char v) const { return fun(v.value, String_T{}); }
       bool operator()(const Tuple& v) const
       { return (v.value.size() == 1) && (fun(lhs, v.value[0])); }
 
@@ -89,9 +104,9 @@ struct StringValue
         return false;
       }
 
-      bool operator()(Vec2f v) const { return false; }
-      bool operator()(Vec3f v) const { return false; }
-      bool operator()(Vec4f v) const { return false; }
+      bool operator()(Vec2f v) const { return fun(v.value, String_T{}); }
+      bool operator()(Vec3f v) const { return fun(v.value, String_T{}); }
+      bool operator()(Vec4f v) const { return fun(v.value, String_T{}); }
       bool operator()(const Behavior&) const { return false; }
 
     } vis{lhs, fun};
@@ -250,7 +265,7 @@ bool Vec<T, N>::operator== (const ossia::value& v) const
 { return comparisons::VecValue::apply(*this, v, std::equal_to<>{}); }
 template<typename T, int N>
 bool Vec<T, N>::operator!= (const ossia::value& v) const
-{ return comparisons::VecValue::apply(*this, v, std::not_equal_to<>{}); }
+{ return !comparisons::VecValue::apply(*this, v, std::equal_to<>{}); }
 
 template<typename T, int N>
 bool Vec<T, N>::operator> (const ossia::value& v) const

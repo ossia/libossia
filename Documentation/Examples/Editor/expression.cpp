@@ -16,7 +16,7 @@
 #include "Network/Device.h"
 #include "Network/Protocol/Local.h"
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std;
 
 int main()

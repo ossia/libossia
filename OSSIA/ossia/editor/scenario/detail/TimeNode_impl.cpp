@@ -35,7 +35,7 @@ bool JamomaTimeNode::trigger()
   for (auto& timeEvent : mPendingEvents)
   {
     auto& ev = *timeEvent;
-    auto& expr = *ev.getExpression();
+    auto& expr = ev.getExpression();
     // update any Destination value into the expression
     expressions::update(expr);
 
@@ -78,9 +78,9 @@ time_value JamomaTimeNode::getDate() const
   return Zero;
 }
 
-const expression_ptr& JamomaTimeNode::getExpression() const
+const expression& JamomaTimeNode::getExpression() const
 {
-  return mExpression;
+  return *mExpression;
 }
 
 time_node & JamomaTimeNode::setExpression(expression_ptr exp)

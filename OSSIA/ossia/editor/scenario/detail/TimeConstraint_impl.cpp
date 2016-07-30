@@ -17,6 +17,7 @@ mDurationNominal(nominal),
 mDurationMin(min),
 mDurationMax(max)
 {
+    JamomaClock::setDuration(mDurationNominal);
 }
 
 JamomaTimeConstraint::~JamomaTimeConstraint()
@@ -140,6 +141,8 @@ time_constraint & JamomaTimeConstraint::setDurationNominal(time_value durationNo
 
   if (mDurationNominal > mDurationMax)
     setDurationMax(mDurationNominal);
+
+  JamomaClock::setDuration(mDurationNominal);
 
   return *this;
 }

@@ -14,6 +14,9 @@ namespace expressions
 OSSIA_EXPORT bool evaluate(const expression_base& e);
 OSSIA_EXPORT void update(const expression_base& e);
 
+OSSIA_EXPORT inline bool evaluate(const expression_ptr& e) { return evaluate(*e); }
+OSSIA_EXPORT inline void update(const expression_ptr& e)  { update(*e); }
+
 OSSIA_EXPORT bool operator==(const expression_base& lhs, const expression_base& rhs);
 OSSIA_EXPORT bool operator!=(const expression_base& lhs, const expression_base& rhs);
 
@@ -26,11 +29,13 @@ OSSIA_EXPORT void removeCallback(
     expression_callback_iterator);
 
 
+const expression_base expression_true{eggs::variants::in_place<expression_bool>, true};
+const expression_base expression_false{eggs::variants::in_place<expression_bool>, false};
+
 OSSIA_EXPORT inline expression_ptr make_expression_true() {
   return std::make_unique<expression_base>(eggs::variants::in_place<expression_bool>, true); }
 OSSIA_EXPORT inline expression_ptr make_expression_false() {
   return std::make_unique<expression_base>(eggs::variants::in_place<expression_bool>, false); }
-
 
 template<typename... Args>
 expression_ptr make_expression_atom(Args&&... args)

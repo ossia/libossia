@@ -2,7 +2,7 @@
 #include "../../ForwardDeclaration.h"
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 
 class CurveSegmentLinearTest : public QObject
 {

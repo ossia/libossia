@@ -1,10 +1,10 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/OSSIA.hpp>
 #include <functional>
 #include <thread>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std::chrono;
 using namespace std::placeholders;
 
@@ -18,12 +18,12 @@ class MapperTest : public QObject
     std::shared_ptr<Address> m_int_address;
     std::vector<Value*> m_int_address_values;
 
-    void constraint_callback(TimeValue position, TimeValue date, std::shared_ptr<StateElement> element)
+    void constraint_callback(time_value position, time_value date, std::shared_ptr<StateElement> element)
     {
         element->launch();
     }
 
-    void event_callback(TimeEvent::Status newStatus)
+    void event_callback(time_event::Status newStatus)
     {
         std::cout << "Event : " << "new status received" << std::endl;
     }
@@ -57,7 +57,7 @@ private Q_SLOTS:
 
         Float f(0);
 
-        auto mapper = Mapper::create(float_address, int_address, &f);
+        auto mapper = mapper::create(float_address, int_address, &f);
         QVERIFY(mapper != nullptr);
 
         QVERIFY(mapper->parent == nullptr);
@@ -91,15 +91,15 @@ private Q_SLOTS:
         curve->addPoint(linearSegment, 10., 10);
 
         Behavior b(curve);
-        auto mapper = Mapper::create(m_float_address, m_int_address, &b);
+        auto mapper = mapper::create(m_float_address, m_int_address, &b);
 
-        auto start_node = TimeNode::create();
-        auto end_node = TimeNode::create();
+        auto start_node = time_node::create();
+        auto end_node = time_node::create();
         auto event_callback = std::bind(&MapperTest::event_callback, this, _1);
         auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
         auto constraint_callback = std::bind(&MapperTest::constraint_callback, this, _1, _2, _3);
-        auto constraint = TimeConstraint::create(constraint_callback, start_event, end_event, 400., 400., 400.);
+        auto constraint = time_constraint::create(constraint_callback, start_event, end_event, 400., 400., 400.);
         constraint->addTimeProcess(mapper);
 
         m_float_address_values.clear();

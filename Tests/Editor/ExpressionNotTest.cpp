@@ -1,8 +1,8 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/OSSIA.hpp>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std::placeholders;
 
 class ExpressionNotTest : public QObject
@@ -30,7 +30,7 @@ private Q_SLOTS:
         auto not_expression = ExpressionNot::create(expression);
         QVERIFY(not_expression != nullptr);
         QVERIFY(not_expression->getType() == Expression::Type::NOT);
-        QVERIFY(not_expression->evaluate() == true);
+        QVERIFY(not_evaluate(expression) == true);
     }
 
     /*! test comparison operator */
@@ -52,8 +52,8 @@ private Q_SLOTS:
         auto not_exprB = ExpressionNot::create(exprB);
         auto not_exprC = ExpressionNot::create(exprC);
 
-        QVERIFY(*ExpressionFalse != *not_exprA);
-        QVERIFY(*ExpressionTrue != *not_exprA);
+        QVERIFY(expressions::expression_false != *not_exprA);
+        QVERIFY(expressions::expression_true != *not_exprA);
 
         QVERIFY(*not_exprA != *not_exprB);
         QVERIFY(*not_exprA == *not_exprC);
