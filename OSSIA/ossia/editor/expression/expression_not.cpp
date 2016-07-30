@@ -34,14 +34,14 @@ expression_base& expression_not::getExpression() const
 void expression_not::onFirstCallbackAdded()
 {
   mResultCallbackIndex =
-      expressions::addCallback(
+      expressions::add_callback(
         *mExpression,
         [&] (bool result) { resultCallback(result); });
 }
 
 void expression_not::onRemovingLastCallback()
 {
-  expressions::removeCallback(*mExpression, mResultCallbackIndex);
+  expressions::remove_callback(*mExpression, mResultCallbackIndex);
 }
 
 void expression_not::resultCallback(bool result)

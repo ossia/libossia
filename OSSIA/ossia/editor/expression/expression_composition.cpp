@@ -49,13 +49,13 @@ void expression_composition::onFirstCallbackAdded()
 {
   // start first expression observation
   mFirstResultCallbackIndex =
-      expressions::addCallback(
+      expressions::add_callback(
         *mFirstExpression,
         [&] (bool result) { firstResultCallback(result); });
 
   // start second expression observation
   mSecondResultCallbackIndex =
-      expressions::addCallback(
+      expressions::add_callback(
         *mSecondExpression,
         [&] (bool result) { secondResultCallback(result); });
 }
@@ -64,10 +64,10 @@ void expression_composition::onFirstCallbackAdded()
 void expression_composition::onRemovingLastCallback()
 {
   // stop first expression observation
-  expressions::removeCallback(*mFirstExpression, mFirstResultCallbackIndex);
+  expressions::remove_callback(*mFirstExpression, mFirstResultCallbackIndex);
 
   // stop second expression observation
-  expressions::removeCallback(*mSecondExpression, mSecondResultCallbackIndex);
+  expressions::remove_callback(*mSecondExpression, mSecondResultCallbackIndex);
 }
 
 

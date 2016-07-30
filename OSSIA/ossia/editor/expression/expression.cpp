@@ -148,14 +148,14 @@ bool operator==(const expression_base& lhs, const expression_base& rhs)
   return eggs::variants::apply(equal_visitor{}, lhs, rhs);
 }
 
-expression_callback_iterator addCallback(
+expression_callback_iterator add_callback(
     expression_base& e,
     expression_result_callback cb)
 {
   return eggs::variants::apply(add_callback_visitor{std::move(cb)}, e);
 }
 
-void removeCallback(
+void remove_callback(
     expression_base& e,
     expression_callback_iterator it)
 {

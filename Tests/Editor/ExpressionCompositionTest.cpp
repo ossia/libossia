@@ -161,7 +161,7 @@ private Q_SLOTS:
                                                                   testDestinationExprB);
 
     expression_result_callback callback = std::bind(&ExpressionCompositionTest::result_callback, this, _1);
-    auto callback_index = addCallback(testDestinationComposition, callback);
+    auto callback_index = add_callback(testDestinationComposition, callback);
 
     QVERIFY(testDestinationComposition->callbacks().size() == 1);
 
@@ -189,7 +189,7 @@ private Q_SLOTS:
 
     QVERIFY(m_result_callback_called == true && m_result == true);
 
-    removeCallback(testDestinationComposition, callback_index);
+    remove_callback(testDestinationComposition, callback_index);
 
     QVERIFY(testDestinationComposition->callbacks().size() == 0);
 

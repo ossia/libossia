@@ -78,7 +78,7 @@ private Q_SLOTS:
         auto testDestinationExprNot = make_expression_not(testDestinationExpr);
 
         expression_result_callback callback = std::bind(&ExpressionNotTest::result_callback, this, _1);
-        auto callback_index = addCallback(*testDestinationExprNot, callback);
+        auto callback_index = add_callback(*testDestinationExprNot, callback);
 
         QVERIFY(testDestinationExprNot->callbacks().size() == 1);
 
@@ -106,7 +106,7 @@ private Q_SLOTS:
 
         QVERIFY(m_result_callback_called == true && m_result == false);
 
-        removeCallback(testDestinationExprNot, callback_index);
+        remove_callback(testDestinationExprNot, callback_index);
 
         QVERIFY(testDestinationExprNot->callbacks().size() == 0);
 
