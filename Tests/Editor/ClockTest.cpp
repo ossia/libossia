@@ -50,7 +50,7 @@ class ClockTest : public QObject
             std::cout << m_clock_positions.size() << " : " << (double)date << ", " << m_dropped_ticks << ", " << m_clock_positions.size() + m_dropped_ticks << std::endl;
 
         // an heavy processing ...
-        long r;
+        long r = 0;
         for (int i = 0; i < 1000; i++)
             for (int j = 0; j < 1000; j++)
                 r++;
@@ -271,9 +271,7 @@ private Q_SLOTS:
         QVERIFY(clock->getRunning() == true);
 
         // wait the clock to pass 80 ms
-        while (clock->getDate() < 80.)
-            ;
-
+        while (clock->getDate() < 80.) ;
         // then stop
         clock->stop();
         QVERIFY(clock->getRunning() == false);

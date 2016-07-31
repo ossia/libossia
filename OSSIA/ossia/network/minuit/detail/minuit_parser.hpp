@@ -141,7 +141,7 @@ struct minuit_remote_behaviour<
         }
       }
 
-      proto.mGetPromise.set_value();
+      proto.get_promise.set_value();
     }
 };
 
@@ -231,7 +231,7 @@ struct minuit_remote_behaviour<
         oscpack::ReceivedMessageArgumentIterator end_it)
     {
       using namespace oscpack;
-      auto sub_request = proto.mLocalNameTable.get_action(minuit_action::NamespaceRequest);
+      auto sub_request = proto.name_table.get_action(minuit_action::NamespaceRequest);
 
       // Get the sub-nodes
       for(auto child : get_nodes(beg_it, end_it))
@@ -263,7 +263,7 @@ struct minuit_remote_behaviour<
       auto& n = ossia::net::find_or_create_node(dev, address);
       n.createAddress(ossia::val_type::IMPULSE);
 
-      auto sub_request = proto.mLocalNameTable.get_action(minuit_action::GetRequest);
+      auto sub_request = proto.name_table.get_action(minuit_action::GetRequest);
 
       // Request all the attributes provided by the node
       for(auto attrib : get_attributes(beg_it, end_it))
@@ -272,7 +272,7 @@ struct minuit_remote_behaviour<
         auto str = address.to_string();
         str += ':';
         str.append(attrib.begin(), attrib.end());
-        proto.mSender.send(sub_request, boost::string_ref(str));
+        proto.sender.send(sub_request, boost::string_ref(str));
       }
 
     }

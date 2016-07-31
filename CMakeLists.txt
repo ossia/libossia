@@ -25,11 +25,14 @@ add_subdirectory(3rdparty/ModernMIDI EXCLUDE_FROM_ALL)
 add_subdirectory(3rdparty/oscpack EXCLUDE_FROM_ALL)
 add_subdirectory(OSSIA)
 
-if(NOT OSSIA_NO_EXAMPLES)
+set(OSSIA_TESTS 1)
+set(OSSIA_EXAMPLES 1)
+
+if(OSSIA_EXAMPLES)
     add_subdirectory(Documentation/Examples)
 endif()
-set(OSSIA_NO_TESTS 0)
-add_subdirectory(Tests/v2)
-if(NOT OSSIA_NO_TESTS)
+
+if(OSSIA_TESTS)
     add_subdirectory(Tests)
+    add_subdirectory(Tests/v2)
 endif()

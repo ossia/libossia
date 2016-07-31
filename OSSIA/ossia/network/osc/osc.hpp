@@ -25,13 +25,13 @@ namespace ossia
 {
 namespace net
 {
-class OSSIA_EXPORT OSC2 final :
+class OSSIA_EXPORT osc_protocol final :
         public ossia::net::protocol_base
 {
     private:
         std::string    mIp;
-        uint16_t       mInPort{};            /// the port that a remote device opens
-        uint16_t       mOutPort{};           /// the port where a remote device sends OSC messages to (opened in this library)
+        uint16_t       mRemotePort{};            /// the port that a remote device opens
+        uint16_t       mLocalPort{};           /// the port where a remote device sends OSC messages to (opened in this library)
         bool           mLearning{};          /// if the device is currently learning from inbound messages.
 
         osc::sender    mSender;
@@ -41,21 +41,21 @@ class OSSIA_EXPORT OSC2 final :
         std::unordered_map<std::string, ossia::net::address_base*> mListening;
 
     public:
-        OSC2(std::string, uint16_t, uint16_t);
-        ~OSC2();
+        osc_protocol(std::string ip, uint16_t remote_port, uint16_t local_port);
+        ~osc_protocol();
 
 
         const std::string& getIp() const;
-        OSC2 & setIp(std::string);
+        osc_protocol & setIp(std::string);
 
-        uint16_t getInPort() const;
-        OSC2 & setInPort(uint16_t);
+        uint16_t getRemotePort() const;
+        osc_protocol & setRemotePort(uint16_t);
 
-        uint16_t getOutPort() const;
-        OSC2 & setOutPort(uint16_t);
+        uint16_t getLocalPort() const;
+        osc_protocol & setLocalPort(uint16_t);
 
         bool getLearningStatus() const;
-        OSC2 & setLearningStatus(ossia::net::device_base&, bool);
+        osc_protocol & setLearningStatus(ossia::net::device_base&, bool);
 
 
         bool update(ossia::net::node_base& node_base) override;

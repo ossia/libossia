@@ -1,5 +1,6 @@
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 
 namespace ossia
 {
@@ -36,7 +37,28 @@ bool local_protocol::observe(ossia::net::address_base& address, bool enable)
 
 bool local_protocol::update(ossia::net::node_base& node)
 {
-    return false;
+  return false;
+}
+
+void local_protocol::setDevice(device_base& dev)
+{
+  mDevice = dynamic_cast<ossia::net::generic_device*>(&dev);
+}
+
+void local_protocol::exposeTo(std::unique_ptr<protocol_base> p)
+{
+  if(p)
+  {
+    p->setDevice(*mDevice);
+    mExposed.push_back(std::move(p));
+  }
+}
+
+void local_protocol::stopExposeTo(const protocol_base& p)
+{
+  mExposed.erase(
+        ossia::remove_if(mExposed, [&] (const auto& ptr) { return ptr.get() == &p; }),
+        mExposed.end());
 }
 }
 }

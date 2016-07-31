@@ -35,78 +35,82 @@ namespace net
 class generic_device;
 class OSSIA_EXPORT minuit_protocol final : public ossia::net::protocol_base
 {
-    private:
-        std::string    mIp;
-        uint16_t       mInPort{};            /// the port that a remote device opens
-        uint16_t       mOutPort{};           /// the port where a remote device sends OSC messages to (opened in this library)
-        bool           mLearning{};          /// if the device is currently learning from inbound messages.
+private:
+  std::string    mLocalName;
+  std::string    mIp;
+  uint16_t       mRemotePort{}; /// the port that a remote device opens
+  uint16_t       mLocalPort{}; /// the port where a remote device sends OSC messages to (opened in this library)
 
-        std::mutex mListeningMutex;
-        std::unordered_map<std::string, ossia::net::address_base*> mListening;
+  std::mutex mListeningMutex;
+  std::unordered_map<std::string, ossia::net::address_base*> mListening;
 
-        std::promise<void> mNamespacePromise;
-        ossia::net::generic_device* mDevice;
+  std::promise<void> mNamespacePromise;
+  ossia::net::generic_device* mDevice{};
 
-        std::set<std::string, std::less<>> m_namespaceRequests;
-    public:
-        osc::sender    mSender;
-        ossia::minuit::name_table mLocalNameTable;
-        ossia::minuit::name_table mRemoteNameTable;
-        std::promise<void> mGetPromise;
+  std::set<std::string, std::less<>> mNamespaceRequests;
 
-        minuit_protocol(std::string, uint16_t, uint16_t);
-        ~minuit_protocol();
+public:
+  osc::sender sender;
+  ossia::minuit::name_table name_table;
+  std::promise<void> get_promise;
 
-        void setDevice(ossia::net::device_base& dev) override;
+private:
+  osc::receiver  mReceiver;
 
-        const std::string& getIp() const;
-        minuit_protocol& setIp(std::string);
+public:
+  minuit_protocol(
+      const std::string& local_name,
+      const std::string& remote_ip,
+      uint16_t remote_port, uint16_t local_port);
+  ~minuit_protocol();
 
-        uint16_t getInPort() const;
-        minuit_protocol& setInPort(uint16_t);
+  void setDevice(ossia::net::device_base& dev) override;
 
-        uint16_t getOutPort() const;
-        minuit_protocol& setOutPort(uint16_t);
+  const std::string& getIp() const;
+  minuit_protocol& setIp(std::string);
 
-        bool update(ossia::net::node_base& node_base) override;
+  uint16_t getRemotePort() const;
+  minuit_protocol& setRemotePort(uint16_t);
 
-        bool pull(ossia::net::address_base& address_base) override;
+  uint16_t getLocalPort() const;
+  minuit_protocol& setLocalPort(uint16_t);
 
-        bool push(const ossia::net::address_base& address_base) override;
+  bool update(ossia::net::node_base& node_base) override;
 
-        bool observe(ossia::net::address_base& address_base, bool enable) override;
+  bool pull(ossia::net::address_base& address_base) override;
 
-        void refresh(boost::string_ref req, const std::string& addr)
-        {
-          auto it = m_namespaceRequests.find(addr);
-          if(it == m_namespaceRequests.end())
-          {
-            m_namespaceRequests.insert(addr);
-            mSender.send(req, boost::string_ref{addr});
-          }
-        }
+  bool push(const ossia::net::address_base& address_base) override;
 
-        void refreshed(boost::string_ref addr)
-        {
-          auto it = m_namespaceRequests.find(addr);
-          if(it != m_namespaceRequests.end())
-          {
-            m_namespaceRequests.erase(it);
-          }
+  bool observe(ossia::net::address_base& address_base, bool enable) override;
 
-          if(m_namespaceRequests.empty())
-          {
-            mNamespacePromise.set_value();
-          }
-        }
+  void refresh(boost::string_ref req, const std::string& addr)
+  {
+    auto it = mNamespaceRequests.find(addr);
+    if(it == mNamespaceRequests.end())
+    {
+      mNamespaceRequests.insert(addr);
+      sender.send(req, boost::string_ref{addr});
+    }
+  }
 
-    private:
-        void handleReceivedMessage(
-                const oscpack::ReceivedMessage& m,
-                const oscpack::IpEndpointName& ip);
+  void refreshed(boost::string_ref addr)
+  {
+    auto it = mNamespaceRequests.find(addr);
+    if(it != mNamespaceRequests.end())
+    {
+      mNamespaceRequests.erase(it);
+    }
 
-        osc::receiver  mReceiver;
+    if(mNamespaceRequests.empty())
+    {
+      mNamespacePromise.set_value();
+    }
+  }
 
+private:
+  void handleReceivedMessage(
+      const oscpack::ReceivedMessage& m,
+      const oscpack::IpEndpointName& ip);
 
 };
 }

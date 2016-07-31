@@ -11,177 +11,106 @@
 #include <thread>
 #include <memory>
 
-#include "Network/Address.h"
-#include "Network/Device.h"
-#include "Network/Protocol/Local.h"
-#include "Network/Protocol/Minuit.h"
-#include "Editor/Message.h"
-#include "Editor/State.h"
-
+#include <ossia/OSSIA.hpp>
 using namespace ossia;
+using namespace ossia::net;
 using namespace std;
 
-void printValue(const Value * v);
-void printValueCallback(const Value * v);
+void printValue(const value& v);
+void printValueCallback(const value& v);
 
 int main()
 {
-    // Local device
-    cout << "\nLocal device\n";
-    auto localProtocol = Local::create();
-    auto localDevice = Device::create(localProtocol, "i-score");
+  // Local device
+  ossia::net::generic_device device{
+         std::make_unique<ossia::net::minuit_protocol>("i-score", "127.0.0.1", 9998, 13579),
+        "newDevice"};
 
-    // Minuit device creation
-    cout << "\nMinuit device\n";
-    auto minuitProtocol = Minuit::create("127.0.0.1", 9998, 13579);
-    auto minuitDevice = Device::create(minuitProtocol, "newDevice");
+  // Minuit tree building
+  device.getProtocol().update(device.getRootNode());
 
-    // Minuit tree building
-    minuitDevice->updateNamespace();
+  // create a state
+  state test;
 
-    // create a state
-    auto test = State::create();
+  // find bitdepth and samplerateRatio nodes to fill the state
+  address_base* bitdepthAddress;
+  boost::optional<message> bitdepthMessage;
+  address_base* samplerateAddress;
+  boost::optional<message> samplerateMessage;
 
-    // find bitdepth and samplerateRatio nodes to fill the state
-    shared_ptr<Address> bitdepthAddress;
-    shared_ptr<Message> bitdepthMessage;
-    shared_ptr<Address> samplerateAddress;
-    shared_ptr<Message> samplerateMessage;
-
-    for (const auto& module : minuitDevice->children())
+  for (const auto& module : device.children())
+  {
+    if (module->getName() == "deg")
     {
-        if (module->getName() == "deg")
+      for (const auto& parameter : module->children())
+      {
+        string parameter_name = parameter->getName();
+
+        if (parameter_name == "bitdepth")
         {
-            for (const auto& parameter : module->children())
-            {
-                string parameter_name = parameter->getName();
+          cout << "/deg/bitdepth node found" << endl;
 
-                if (parameter_name == "bitdepth")
-                {
-                    cout << "/deg/bitdepth node found" << endl;
+          bitdepthAddress = parameter->getAddress();
+          bitdepthAddress->pullValue();
+          bitdepthMessage = message{*bitdepthAddress, bitdepthAddress->cloneValue()};
 
-                    bitdepthAddress = parameter->getAddress();
-                    bitdepthMessage = Message::create(bitdepthAddress, bitdepthAddress->pullValue());
+          // change the value
+          bitdepthAddress->pushValue(Int(10));
 
-                    // change the value
-                    Int i(10);
-                    bitdepthAddress->pushValue(&i);
-
-                    // attach to callback to display later value update
-                    bitdepthAddress->addCallback(printValueCallback);
-                }
-                else if (parameter_name == "samplerate_ratio")
-                {
-                    cout << "/deg/samplerate_ratio node found" << endl;
-
-                    samplerateAddress = parameter->getAddress();
-                    samplerateMessage = Message::create(samplerateAddress, samplerateAddress->pullValue());
-
-                    // change the value
-                    Float f(0.5);
-                    samplerateAddress->pushValue(&f);
-
-                    // attach to callback to display later value update
-                    samplerateAddress->addCallback(printValueCallback);
-                }
-            }
+          // attach to callback to display later value update
+          bitdepthAddress->addCallback(printValueCallback);
         }
+        else if (parameter_name == "samplerate_ratio")
+        {
+          cout << "/deg/samplerate_ratio node found" << endl;
+
+          samplerateAddress = parameter->getAddress();
+          samplerateAddress->pullValue();
+          samplerateMessage = message{*samplerateAddress, samplerateAddress->cloneValue()};
+
+          // change the value
+          samplerateAddress->pushValue(Float(0.5));
+
+          // attach to callback to display later value update
+          samplerateAddress->addCallback(printValueCallback);
+        }
+      }
     }
+  }
 
-    cout << "editing and launching state" << endl;
+  if(!samplerateAddress)
+    return;
 
-    // fill the state
-    test->stateElements().push_back(bitdepthMessage);
-    test->stateElements().push_back(samplerateMessage);
+  if(!bitdepthAddress)
+    return;
 
-    // trigger the message
-    test->launch();
+  cout << "editing and launching state" << endl;
 
-    cout << "waiting for /deg/samplerate_ratio > 0.5" << endl;
+  // fill the state
+  test.add(bitdepthMessage);
+  test.add(samplerateMessage);
 
-    // wait while samplerate_ratio > 0.5
-    bool wait = true;
-    while (wait)
-    {
-        this_thread::sleep_for( std::chrono::milliseconds(500));
+  // trigger the message
+  test.launch();
 
-        Float* f = (Float*)samplerateAddress->getValue();
-        wait = f->value > 0.5;
+  cout << "waiting for /deg/samplerate_ratio > 0.5" << endl;
 
-        if (!wait)
-             cout << "done !" << endl;
-    }
+  // wait while samplerate_ratio > 0.5
+  bool wait = true;
+  while (wait)
+  {
+    this_thread::sleep_for( std::chrono::milliseconds(500));
+
+    auto f = samplerateAddress->cloneValue().get<Float>();
+    wait = f.value > 0.5;
+
+    if (!wait)
+      cout << "done !" << endl;
+  }
 }
 
-void printValue(const Value * v)
-{
-    switch (v->getType())
-    {
-        case Type::IMPULSE :
-        {
-            cout << "-";
-            break;
-        }
-        case Type::BOOL :
-        {
-            Bool * b = (Bool*)v;
-            cout << b->value;
-            break;
-        }
-        case Type::INT :
-        {
-            Int * i = (Int*)v;
-            cout << i->value;
-            break;
-        }
-        case Type::FLOAT :
-        {
-            Float * f = (Float*)v;
-            cout << f->value;
-            break;
-        }
-        case Type::CHAR :
-        {
-            Char * c = (Char*)v;
-            cout << c->value;
-            break;
-        }
-        case Type::STRING :
-        {
-            String * s = (String*)v;
-            cout << s->value;
-            break;
-        }
-        case Type::DESTINATION :
-        {
-            Destination * d = (Destination*)v;
-            cout << d->value;
-            break;
-        }
-        case Type::TUPLE :
-        {
-            Tuple * t = (Tuple*)v;
-            bool first = true;
-            for (const auto & e : t->value)
-            {
-                if (!first) cout << " ";
-                printValue(e);
-                first = false;
-            }
-            break;
-        }
-        case Type::GENERIC :
-        {
-            // todo
-            break;
-        }
-        default:
-            break;
-    }
-}
 
-void printValueCallback(const Value * v)
+void printValueCallback(const value& v)
 {
-    printValue(v);
-    cout << endl;
+  cout << "Callback: " << getValueAsString(v) << "\n";
 }

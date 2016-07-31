@@ -8,276 +8,137 @@
  * http://www.cecill.info
  */
 
+#include <ossia/OSSIA.hpp>
+
 #include <iostream>
 #include <memory>
 #include <functional>
-
-#include "Network/Address.h"
-#include "Network/Device.h"
-#include "Network/Protocol/Local.h"
-#include "Network/Protocol/Minuit.h"
-
 using namespace ossia;
+using namespace ossia::net;
 using namespace std;
 
-void explore(const shared_ptr<Node> node);
-void printValue(const Value * v);
-void printDomain(const shared_ptr<Domain> d);
-void printValueCallback(const Value * v);
+void explore(const node_base& node);
+void printDomain(const domain& d);
+void printValueCallback(const value& v);
 
 int main()
 {
-  // declare this program "A" as Local device
-  auto localProtocol = Local::create();
-  auto localDevice = Device::create(localProtocol, "A");
+  // This program is named "A" and mirrors a remote device named "B".
+  ossia::net::generic_device device{
+    std::make_unique<ossia::net::minuit_protocol>("A", "127.0.0.1", 6666, 9999),
+        "B"};
 
-  // declare a distant program "B" as a Minuit device
-  auto minuitProtocol = Minuit::create("127.0.0.1", 6666, 9999);
-  auto minuitDevice = Device::create(minuitProtocol, "B");
+  // explore the tree of B
+  device.getProtocol().update(device.getRootNode());
+
+  // display tree in console
+  explore(device.getRootNode());
+}
+
+void explore(const ossia::net::node_base& node)
+{
+  for (const auto& child : node.children())
   {
-    // explore the tree of B
-    minuitDevice->updateNamespace();
+    // indentation
+    auto parent = child->getParent();
+    while (parent != nullptr)
+    {
+      cout << "\t";
+      parent = parent->getParent();
+    }
 
-    // display tree in console
-    explore(minuitDevice);
+    cout << child->getName();
+
+    address_base* addr = child->getAddress();
+
+    if (addr)
+    {
+      // attach to callback to display value update
+      addr->addCallback(printValueCallback);
+
+      // update the value
+      addr->pullValue();
+
+      // display address info
+      cout << " : ";
+      cout << getValueAsString(addr->cloneValue());
+
+      cout << ", AccessMode(";
+      switch (addr->getAccessMode())
+      {
+        case access_mode::SET :
+        {
+          cout << "set";
+          break;
+        }
+        case access_mode::GET :
+        {
+          cout << "get";
+          break;
+        }
+        case access_mode::BI :
+        {
+          cout << "bi";
+          break;
+        }
+        default:
+          break;
+      }
+
+      cout << "), BoundingMode(";
+      switch (addr->getBoundingMode())
+      {
+        case bounding_mode::FREE :
+        {
+          cout << "free";
+          break;
+        }
+        case bounding_mode::CLIP :
+        {
+          cout << "clip";
+          break;
+        }
+        case bounding_mode::WRAP :
+        {
+          cout << "wrap";
+          break;
+        }
+        case bounding_mode::FOLD :
+        {
+          cout << "fold";
+          break;
+        }
+        default:
+          break;
+      }
+
+      cout << "), Domain(";
+      printDomain(addr->getDomain());
+      cout << ")";
+    }
+
+    cout << "\n";
+
+    explore(*child);
   }
 }
 
-void explore(const shared_ptr<Node> node)
+void printDomain(const domain& d)
 {
-    for (const auto& child : node->children())
-    {
-        // indentation
-        shared_ptr<Node> parent = node->getParent();
-        while (parent != nullptr)
-        {
-            cout << "\t";
-            parent = parent->getParent();
-        }
-        
-        cout << child->getName();
-
-        auto address = child->getAddress();
-
-        if (address)
-        {
-            // attach to callback to display value update
-            address->addCallback(printValueCallback);
-
-            // update the value
-            address->pullValue();
-
-            // display address info
-            cout << " : ";
-            switch (address->getValueType())
-            {
-                case Type::IMPULSE :
-                {
-                    cout << "Impulse";
-                    break;
-                }
-                case Type::BOOL :
-                {
-                    cout << "Bool(";
-                    printValue(address->getValue());
-                    cout << ")";
-                    break;
-                }
-                case Type::INT :
-                {
-                    cout << "Int(";
-                    printValue(address->getValue());
-                    cout << ")";
-                    break;
-                }
-                case Type::FLOAT :
-                {
-                    cout << "Float(";
-                    printValue(address->getValue());
-                    cout << ")";
-                    break;
-                }
-                case Type::CHAR :
-                {
-                    cout << "Char(";
-                    printValue(address->getValue());
-                    cout << ")";
-                    break;
-                }
-                case Type::STRING :
-                {
-                    cout << "String(";
-                    printValue(address->getValue());
-                    cout << ")";
-                    break;
-                }
-                case Type::DESTINATION :
-                {
-                    cout << "Destination(";
-                    printValue(address->getValue());
-                    cout << ")";
-                    break;
-                }
-                case Type::TUPLE :
-                {
-                    cout << "Tuple(";
-                    printValue(address->getValue());
-                    cout << ")";
-                    break;
-                }
-                case Type::GENERIC :
-                {
-                    cout << "Generic(";
-                    printValue(address->getValue());
-                    cout << ")";
-                    break;
-                }
-                default:
-                    break;
-            }
-
-            cout << ", AccessMode(";
-            switch (address->getAccessMode())
-            {
-                case OSSIA::AccessMode::SET :
-                {
-                    cout << "set";
-                    break;
-                }
-                case OSSIA::AccessMode::GET :
-                {
-                    cout << "get";
-                    break;
-                }
-                case OSSIA::AccessMode::BI :
-                {
-                    cout << "bi";
-                    break;
-                }
-                default:
-                    break;
-            }
-
-            cout << "), BoundingMode(";
-            switch (address->getBoundingMode())
-            {
-                case OSSIA::BoundingMode::FREE :
-                {
-                    cout << "free";
-                    break;
-                }
-                case OSSIA::BoundingMode::CLIP :
-                {
-                    cout << "clip";
-                    break;
-                }
-                case OSSIA::BoundingMode::WRAP :
-                {
-                    cout << "wrap";
-                    break;
-                }
-                case OSSIA::BoundingMode::FOLD :
-                {
-                    cout << "fold";
-                    break;
-                }
-                default:
-                    break;
-            }
-
-            cout << "), Domain(";
-            printDomain(address->getDomain());
-            cout << ")";
-        }
-
-        cout << "\n";
-
-        explore(child);
-    }
-}
-
-void printValue(const Value * v)
-{
-    switch (v->getType())
-    {
-        case Type::IMPULSE :
-        {
-            cout << "-";
-            break;
-        }
-        case Type::BOOL :
-        {
-            Bool * b = (Bool*)v;
-            cout << b->value;
-            break;
-        }
-        case Type::INT :
-        {
-            Int * i = (Int*)v;
-            cout << i->value;
-            break;
-        }
-        case Type::FLOAT :
-        {
-            Float * f = (Float*)v;
-            cout << f->value;
-            break;
-        }
-        case Type::CHAR :
-        {
-            Char * c = (Char*)v;
-            cout << c->value;
-            break;
-        }
-        case Type::STRING :
-        {
-            String * s = (String*)v;
-            cout << s->value;
-            break;
-        }
-        case Type::DESTINATION :
-        {
-            Destination * d = (Destination*)v;
-            cout << d->value;
-            break;
-        }
-        case Type::TUPLE :
-        {
-            Tuple * t = (Tuple*)v;
-            bool first = true;
-            for (const auto & e : t->value)
-            {
-                if (!first) cout << " ";
-                printValue(e);
-                first = false;
-            }
-            break;
-        }
-        case Type::GENERIC :
-        {
-            // todo
-            break;
-        }
-        default:
-            break;
-    }
-}
-
-void printDomain(const shared_ptr<Domain> d)
-{
-    printValue(d->getMin());
+  /* TODO
+  printvalue(d->getMin());
+  cout << ", ";
+  printvalue(d->getMax());
+  if (!d->getvalues().empty())
+  {
     cout << ", ";
-    printValue(d->getMax());
-    if (!d->getValues().empty())
-    {
-        cout << ", ";
-        for (const auto & v : d->getValues())
-            printValue(v);
-    }
+    for (const auto & v : d->getvalues())
+      printvalue(v);
+  }
+  */
 }
 
-void printValueCallback(const Value * v)
+void printValueCallback(const value& v)
 {
-    printValue(v);
-    cout << "\n";
+  cout << "Callback: " << getValueAsString(v) << "\n";
 }

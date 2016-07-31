@@ -10,37 +10,17 @@
 #include <iostream>
 #include <memory>
 
-#include "Editor/Automation.h"
-#include "Editor/Clock.h"
-#include "Editor/Curve.h"
-#include "Editor/CurveSegment.h"
-#include "Editor/CurveSegment/CurveSegmentLinear.h"
-#include "Editor/CurveSegment/CurveSegmentPower.h"
-#include "Editor/Expression.h"
-#include "Editor/ExpressionAtom.h"
-#include "Editor/Message.h"
-#include "Editor/Scenario.h"
-#include "Editor/State.h"
-#include "Editor/TimeConstraint.h"
-#include "Editor/TimeEvent.h"
-#include "Editor/TimeNode.h"
-#include "Editor/TimeValue.h"
-#include "Editor/Value.h"
-
-#include "Network/Address.h"
-#include "Network/Device.h"
-#include "Network/Node.h"
-#include "Network/Protocol/Local.h"
+#include <ossia/OSSIA.hpp>
 
 using namespace ossia;
 using namespace std;
 
-void local_play_callback(const Value * v);
-void local_test_callback(const Value * v);
+void local_play_callback(const value& v);
+void local_test_callback(const value& v);
 
-void main_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element);
-void first_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element);
-void second_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element);
+void main_constraint_callback(time_value position, time_value date, const state& element);
+void first_constraint_callback(time_value position, time_value date, const state& element);
+void second_constraint_callback(time_value position, time_value date, const state& element);
 void event_callback(TimeEvent::Status newStatus);
 
 shared_ptr<TimeConstraint> main_constraint;
@@ -88,7 +68,7 @@ int main()
     auto main_scenario = Scenario::create();
 
     // create the main TimeConstraint
-    TimeValue main_duration(5000.);
+    time_value main_duration(5000.);
     main_constraint = TimeConstraint::create(main_constraint_callback, main_start_event, main_end_event, main_duration);
 
     // add the scenario to the main TimeConstraint
@@ -111,7 +91,7 @@ int main()
     auto first_end_event = *(first_end_node->emplace(first_end_node->timeEvents().begin(), &event_callback));
 
     // create a TimeConstraint between the two TimeEvents
-    TimeValue first_duration(1500.);
+    time_value first_duration(1500.);
     auto first_constraint = TimeConstraint::create(first_constraint_callback, first_start_event, first_end_event, first_duration, first_duration, first_duration);
 
     // add the first TimeConstraint to the main Scenario
@@ -124,7 +104,7 @@ int main()
     auto second_end_event = *(second_end_node->emplace(second_end_node->timeEvents().begin(), &event_callback));
 
     // create a TimeConstraint between the two TimeEvents
-    TimeValue second_duration(2000.);
+    time_value second_duration(2000.);
     auto second_constraint = TimeConstraint::create(second_constraint_callback, first_end_event, second_end_event, second_duration, second_duration, second_duration);
 
     // add the second TimeConstraint to the main Scenario
@@ -165,11 +145,11 @@ int main()
     second_curve->addPoint(second_powerSegment, 1., 2.);
 
     // create a Tuple value of 3 Behavior values based on the same curve
-    vector<const Value*> t_first_curves = {new Behavior(first_curve), new Behavior(first_curve), new Behavior(first_curve)};
+    vector<const value&> t_first_curves = {new Behavior(first_curve), new Behavior(first_curve), new Behavior(first_curve)};
     Tuple first_curves(t_first_curves);
 
     // create a Tuple value of 3 Behavior values based on the same curve
-    vector<const Value*> t_second_curves = {new Behavior(second_curve), new Behavior(second_curve), new Behavior(second_curve)};
+    vector<const value&> t_second_curves = {new Behavior(second_curve), new Behavior(second_curve), new Behavior(second_curve)};
     Tuple second_curves(t_second_curves);
 
     // create a first Automation to drive /test address by the linear curve
@@ -211,7 +191,7 @@ int main()
     // change main TimeConstraint speed, granularity and offset
     main_constraint->setSpeed(1.);
     main_constraint->setGranularity(50.);
-    
+
     // set minimal duration of the first constraint to 1000 ms
     first_constraint->setDurationMin(1000.);
 
@@ -224,7 +204,7 @@ int main()
     cout << "***** START *****" << endl;
 
     // play the main TimeConstraint
-    //local_play_address->pushValue(&True);
+    //local_play_address->pushvalue(&True);
     main_constraint->start();
 
     // wait the main TimeConstraint end
@@ -249,7 +229,7 @@ int main()
     // start at 500 ms (and launch the state at this time)
     main_constraint->offset(500.)->launch();
 
-    local_play_address->pushValue(&True);
+    local_play_address->pushvalue(&True);
 
     // wait the main TimeConstraint end
     while (main_constraint->getRunning())
@@ -258,7 +238,7 @@ int main()
     cout << "***** END *****" << endl;
 }
 
-void local_play_callback(const Value * v)
+void local_play_callback(const value& v)
 {
     if (v->getType() == Type::BOOL)
     {
@@ -270,7 +250,7 @@ void local_play_callback(const Value * v)
     }
 }
 
-void local_test_callback(const Value * v)
+void local_test_callback(const value& v)
 {
     cout << "/i-score/test = ";
 
@@ -291,20 +271,20 @@ void local_test_callback(const Value * v)
     cout << endl;
 }
 
-void main_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element)
+void main_constraint_callback(time_value position, time_value date, const state& element)
 {
     element->launch();
     cout << "Main Constraint : " << double(position) << ", " << double(date) << endl;
 }
 
-void first_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element)
+void first_constraint_callback(time_value position, time_value date, const state& element)
 {
     cout << "First Constraint : " << double(position) << ", " << double(date) << endl;
 
     // don't launch element here as the element produced by the first TimeConstraint is handled by the main TimeConstraint
 }
 
-void second_constraint_callback(TimeValue position, TimeValue date, shared_ptr<StateElement> element)
+void second_constraint_callback(time_value position, time_value date, const state& element)
 {
     cout << "Second Constraint : " << double(position) << ", " << double(date) << endl;
 

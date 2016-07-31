@@ -11,12 +11,12 @@ namespace ossia
 {
 namespace net
 {
-OSC2::OSC2(std::string ip, uint16_t in_port, uint16_t out_port) :
+osc_protocol::osc_protocol(std::string ip, uint16_t remote_port, uint16_t local_port) :
     mIp{ip},
-    mInPort{in_port},
-    mOutPort{out_port},
-    mSender{ip, in_port},
-    mReceiver{out_port, [=] (
+    mRemotePort{remote_port},
+    mLocalPort{local_port},
+    mSender{ip, remote_port},
+    mReceiver{local_port, [=] (
               const oscpack::ReceivedMessage& m,
               const oscpack::IpEndpointName& ip) {
             this->handleReceivedMessage(m, ip);
@@ -25,43 +25,43 @@ OSC2::OSC2(std::string ip, uint16_t in_port, uint16_t out_port) :
     mReceiver.run();
 }
 
-OSC2::~OSC2()
+osc_protocol::~osc_protocol()
 {}
 
-const std::string& OSC2::getIp() const
+const std::string& osc_protocol::getIp() const
 {
     return mIp;
 }
 
-OSC2& OSC2::setIp(std::string ip)
+osc_protocol& osc_protocol::setIp(std::string ip)
 {
     mIp = ip;
-    mSender = osc::sender{mIp, mInPort};
+    mSender = osc::sender{mIp, mRemotePort};
 
     return *this;
 }
 
-uint16_t OSC2::getInPort() const
+uint16_t osc_protocol::getRemotePort() const
 {
-    return mInPort;
+    return mRemotePort;
 }
 
-OSC2& OSC2::setInPort(uint16_t in_port)
+osc_protocol& osc_protocol::setRemotePort(uint16_t in_port)
 {
-    mInPort = in_port;
-    mSender = osc::sender{mIp, mInPort};
+    mRemotePort = in_port;
+    mSender = osc::sender{mIp, mRemotePort};
 
     return *this;
 }
 
-uint16_t OSC2::getOutPort() const
+uint16_t osc_protocol::getLocalPort() const
 {
-    return mOutPort;
+    return mLocalPort;
 }
 
-OSC2& OSC2::setOutPort(uint16_t out_port)
+osc_protocol& osc_protocol::setLocalPort(uint16_t out_port)
 {
-    mOutPort = out_port;
+    mLocalPort = out_port;
     mReceiver = osc::receiver{out_port, [=] (
         const oscpack::ReceivedMessage& m,
         const oscpack::IpEndpointName& ip) {
@@ -70,28 +70,28 @@ OSC2& OSC2::setOutPort(uint16_t out_port)
     return *this;
 }
 
-bool OSC2::getLearningStatus() const
+bool osc_protocol::getLearningStatus() const
 {
     return mLearning;
 }
 
 
-OSC2& OSC2::setLearningStatus(ossia::net::device_base& ossiaDevice, bool newLearn)
+osc_protocol& osc_protocol::setLearningStatus(ossia::net::device_base& ossiaDevice, bool newLearn)
 {
     return *this;
 }
 
-bool OSC2::update(ossia::net::node_base& node)
+bool osc_protocol::update(ossia::net::node_base& node)
 {
     return false;
 }
 
-bool OSC2::pull(ossia::net::address_base& address)
+bool osc_protocol::pull(ossia::net::address_base& address)
 {
     return false;
 }
 
-bool OSC2::push(const ossia::net::address_base& address)
+bool osc_protocol::push(const ossia::net::address_base& address)
 {
     auto& addr = static_cast<const generic_address&>(address);
 
@@ -107,7 +107,7 @@ bool OSC2::push(const ossia::net::address_base& address)
     return false;
 }
 
-bool OSC2::observe(ossia::net::address_base& address, bool enable)
+bool osc_protocol::observe(ossia::net::address_base& address, bool enable)
 {
     std::lock_guard<std::mutex> lock(mListeningMutex);
 
@@ -119,7 +119,7 @@ bool OSC2::observe(ossia::net::address_base& address, bool enable)
     return true;
 }
 
-void OSC2::handleReceivedMessage(
+void osc_protocol::handleReceivedMessage(
         const oscpack::ReceivedMessage& m,
         const oscpack::IpEndpointName& ip)
 {

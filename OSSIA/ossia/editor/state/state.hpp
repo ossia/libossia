@@ -44,7 +44,7 @@ class OSSIA_EXPORT state
 
         template<class Optional_T>
         auto add(Optional_T&& opt)
-             -> decltype(std::declval<typename Optional_T::value_type>(), void())
+             -> decltype(std::declval<typename std::remove_reference_t<Optional_T>::value_type>(), void())
         {
             if(opt)
                 add(*std::forward<Optional_T>(opt));

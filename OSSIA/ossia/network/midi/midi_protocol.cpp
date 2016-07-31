@@ -344,7 +344,7 @@ std::vector<midi_info> midi_protocol::scan()
     auto& in = mInput;
     auto dev = in.getInputDevice();
     auto portcount = dev->getPortCount();
-    for(int i = 0; i < portcount; i++)
+    for(auto i = 0u; i < portcount; i++)
     {
       vec.emplace_back(midi_info::Type::RemoteOutput, dev->getPortName(i), i);
     }
@@ -355,7 +355,7 @@ std::vector<midi_info> midi_protocol::scan()
     auto& out = mOutput;
     auto dev = out.getOutputDevice();
     auto portcount = dev->getPortCount();
-    for(int i = 0; i < portcount; i++)
+    for(auto i = 0u; i < portcount; i++)
     {
       vec.emplace_back(midi_info::Type::RemoteInput, dev->getPortName(i), i);
     }

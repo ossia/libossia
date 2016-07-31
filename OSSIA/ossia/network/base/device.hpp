@@ -32,8 +32,6 @@ class OSSIA_EXPORT device_base
         std::string getName() const
         { return getRootNode().getName(); }
 
-        virtual bool updateNamespace() { return false; }
-
         Nano::Signal<void(const node_base&)> onNodeCreated; // The node being created
         Nano::Signal<void(const node_base&)> onNodeRemoving; // The node being removed
         Nano::Signal<void(const node_base&, std::string)> onNodeRenamed; // Node has the new name, second argument is the old name

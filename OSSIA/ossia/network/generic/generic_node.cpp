@@ -87,7 +87,7 @@ bool generic_node::removeAddress()
 std::unique_ptr<ossia::net::node_base> generic_node::makeChild(const std::string& name)
 {
   // Find all the nodes that start with the same name.
-  int len = name.size();
+  auto len = name.size();
   std::vector<int> instance_num;
   instance_num.reserve(mChildren.size());
 

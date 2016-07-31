@@ -8,6 +8,7 @@ namespace ossia
 {
 namespace net
 {
+class generic_device;
 class OSSIA_EXPORT local_protocol final :
         public ossia::net::protocol_base
 {
@@ -21,22 +22,17 @@ class OSSIA_EXPORT local_protocol final :
         bool observe(ossia::net::address_base&, bool) override;
         bool update(ossia::net::node_base& node_base) override;
 
-        void exposeTo(std::unique_ptr<ossia::net::protocol_base> p)
-        {
-            mExposed.push_back(std::move(p));
-        }
+        void setDevice(ossia::net::device_base& dev) override;
 
-        void stopExposeTo(const ossia::net::protocol_base& p)
-        {
-            mExposed.erase(
-                        ossia::remove_if(mExposed, [&] (const auto& ptr) { return ptr.get() == &p; }),
-                        mExposed.end());
-        }
+        void exposeTo(std::unique_ptr<ossia::net::protocol_base> p);
+
+        void stopExposeTo(const ossia::net::protocol_base& p);
 
         const auto& getExposedProtocols() const { return mExposed; }
 
     private:
         std::vector<std::unique_ptr<ossia::net::protocol_base>> mExposed;
+        ossia::net::generic_device* mDevice{};
 };
 }
 }

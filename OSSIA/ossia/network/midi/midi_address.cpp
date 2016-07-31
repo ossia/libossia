@@ -14,7 +14,7 @@ midi_address::midi_address(address_info info, node_base& parent):
   mDomain{mInfo.defaultDomain()},
   mType{mInfo.matchingType()},
   mValue{mInfo.defaultValue(64)},
-  mAddress{mInfo.address()}
+  mAddress{parent.getDevice().getName() + ":/" + mInfo.address()}
 {
 }
 
@@ -131,9 +131,7 @@ void midi_address::valueCallback(const ossia::value& val)
 
 const std::string& midi_address::getTextualAddress() const
 {
-  // TODO !!
-  assert(false);
-  return {};
+  return mAddress;
 }
 
 

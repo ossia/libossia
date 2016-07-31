@@ -16,7 +16,7 @@
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeEvent.h"
 #include "Editor/TimeNode.h"
-#include "Editor/Value.h"
+#include "Editor/value.h"
 
 #include "Network/Address.h"
 #include "Network/Device.h"
@@ -30,7 +30,7 @@ using namespace ossia;
 
 using namespace std;
 
-void constraint_callback(TimeValue position, TimeValue date, std::shared_ptr<StateElement> element)
+void constraint_callback(time_value position, time_value date, std::shared_ptr<StateElement> element)
 {
     element->launch();
 }
@@ -38,10 +38,10 @@ void constraint_callback(TimeValue position, TimeValue date, std::shared_ptr<Sta
 void event_callback(TimeEvent::Status newStatus)
 {}
 
-void float_address_callback(const Value * v)
+void float_address_callback(const value& v)
 {}
 
-void int_address_callback(const Value * v)
+void int_address_callback(const value& v)
 {}
 
 int main()
@@ -51,14 +51,14 @@ int main()
     
     local_device->emplace(local_device->children().begin(), "float");
     auto float_address = local_device->children().front()->createAddress(Type::FLOAT);
-    float_address->addCallback([&] (const Value* v) { float_address_callback(v); });
+    float_address->addCallback([&] (const value& v) { float_address_callback(v); });
     
     auto int_address = local_device->children().front()->createAddress(Type::INT);
-    int_address->addCallback([&] (const Value* v) { int_address_callback(v); });
+    int_address->addCallback([&] (const value& v) { int_address_callback(v); });
     
     auto curve = Curve<float, int>::create();
     auto linearSegment = CurveSegmentLinear<int>::create(curve);
-    curve->setInitialValue(0);
+    curve->setInitialvalue(0);
     curve->addPoint(0.5, 5, linearSegment);
     curve->addPoint(1., 10, linearSegment);
     Behavior b(curve);
@@ -77,13 +77,13 @@ int main()
     while (constraint->getRunning())
     {
         double position = constraint->getPosition();
-        const Float* current_float = static_cast<const Float*>(float_address->getValue());
-        const Int* current_int = static_cast<const Int*>(int_address->getValue());
+        const Float* current_float = static_cast<const Float*>(float_address->getvalue());
+        const Int* current_int = static_cast<const Int*>(int_address->getvalue());
 
         std::cout << "at " << position << " : float = " << current_float->value << ", int = " << current_int->value << std::endl;
         
         std::this_thread::sleep_for( std::chrono::milliseconds(10));
         
-        float_address->pushValue(new Float(current_float->value + 0.1));
+        float_address->pushvalue(new Float(current_float->value + 0.1));
     }
 }

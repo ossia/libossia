@@ -21,7 +21,7 @@ class OSSIA_EXPORT midi_device final :
     std::string getName() const override;
     node_base & setName(std::string n) override;
 
-    bool updateNamespace() override;
+    bool updateNamespace();
 
     const ossia::net::node_base& getRootNode() const override{ return *this; }
     ossia::net::node_base& getRootNode() override { return *this; }

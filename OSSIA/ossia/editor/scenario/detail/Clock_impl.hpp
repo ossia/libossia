@@ -19,6 +19,7 @@
 #include <thread>
 #include <mutex>
 #include <cmath>
+#include <atomic>
 
 #include <ossia/editor/scenario/clock.hpp>
 
@@ -42,12 +43,12 @@ protected:
   time_value         mDuration{};        /// the time (in ms) the clock will run at normal speed factor
   time_value         mGranularity{};     /// the minimum time between each tick (in ms)
   time_value         mOffset{};          /// the date (in ms) the clock will run from
-  double            mSpeed{};           /// the speed factor of the clock
+  double             mSpeed{};           /// the speed factor of the clock
 
-  clock::DriveMode  mDriveMode{};       /// in EXTERNAL drive mode the tick() method is called from outside
+  clock::DriveMode   mDriveMode{};       /// in EXTERNAL drive mode the tick() method is called from outside
 
-  bool              mRunning{};         /// is the clock running right now ?
-  bool              mPaused{};          /// is the clock paused right now ?
+  std::atomic_bool   mRunning{};         /// is the clock running right now ?
+  std::atomic_bool   mPaused{};          /// is the clock paused right now ?
   time_value         mPosition{};        /// the progression of the clock between the beginning and the end [0. :: 1.]
   time_value         mDate{};            /// how many time the clock is running (without no speed factor consideration)
 

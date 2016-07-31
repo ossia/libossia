@@ -3,7 +3,7 @@
 int main()
 {
   ossia::net::generic_device root(
-        std::make_unique<ossia::net::minuit_protocol>("127.0.0.1", 9996, 9997),
+        std::make_unique<ossia::net::minuit_protocol>("i-score", "127.0.0.1", 9996, 9997),
         "myDevice"
         );
 
