@@ -93,7 +93,7 @@ private Q_SLOTS:
 
     // check if all values are differents from the previous value
     Float previous(-1);
-    bool different_from_previous;
+    bool different_from_previous = true;
     for (auto v : m_address_values)
     {
       different_from_previous = (v != previous);

@@ -17,6 +17,8 @@ private Q_SLOTS:
         auto cld = device.createChild("child");
         auto address = cld->createAddress();
         QVERIFY(address != nullptr);
+        if(address == nullptr)
+          return;
 
         QVERIFY(&address->getNode() == device.children().front().get());
         QVERIFY(&address->getNode().getDevice() == &device);

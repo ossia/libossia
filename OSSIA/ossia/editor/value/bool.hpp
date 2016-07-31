@@ -27,8 +27,4 @@ struct OSSIA_EXPORT Bool
   bool operator<  (const ossia::value&) const;
   bool operator<= (const ossia::value&) const;
 };
-
-const Bool False{false};
-const Bool True{true};
-
 }
