@@ -11,7 +11,7 @@
 #include <thread>
 #include <memory>
 
-#include <ossia/OSSIA.hpp>
+#include <ossia/ossia.hpp>
 using namespace ossia;
 using namespace ossia::net;
 using namespace std;

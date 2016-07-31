@@ -1,5 +1,5 @@
 #include <QtTest>
-#include <ossia/OSSIA.hpp>
+#include <ossia/ossia.hpp>
 #include <iostream>
 
 using namespace ossia;

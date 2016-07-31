@@ -33,6 +33,8 @@ public:
 
   ~curve_impl();
 
+  Y valueAt(X) const override;
+
 private:
   // Call me before execution to reset the cache.
   void reset() override
@@ -42,8 +44,6 @@ private:
 
   bool addPoint(ossia::curve_segment<Y>, X, Y) override;
   bool removePoint(X) override;
-
-  Y valueAt(X) const override;
 
   ossia::curve_type getType() const override;
 

@@ -12,7 +12,7 @@
 #include <memory>
 #include <functional>
 
-#include <ossia/OSSIA.hpp>
+#include <ossia/ossia.hpp>
 
 using namespace ossia;
 using namespace ossia::net;

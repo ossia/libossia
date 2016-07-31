@@ -1,1 +1,1 @@
-#include <ossia/OSSIA.hpp>
+#include <ossia/ossia.hpp>

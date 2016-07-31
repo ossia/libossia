@@ -7,7 +7,7 @@
  * This code is licensed under the terms of the "CeCILL-C"
  * http://www.cecill.info
  */
-#include <ossia/OSSIA.hpp>
+#include <ossia/ossia.hpp>
 #include <iostream>
 
 using namespace ossia;

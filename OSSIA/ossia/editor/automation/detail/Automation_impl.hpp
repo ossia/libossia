@@ -29,6 +29,8 @@ public:
 
   ~automation_impl();
 
+  static ossia::value computeValue(double, const ossia::value&);
+
 private:
   ossia::state_element offset(ossia::time_value) override;
   ossia::state_element state() override;
@@ -41,6 +43,5 @@ private:
   const ossia::net::address_base& getDrivenAddress() const override;
   const ossia::value& getDriving() const override;
 
-  static ossia::value computeValue(double, const ossia::value&);
 };
 }

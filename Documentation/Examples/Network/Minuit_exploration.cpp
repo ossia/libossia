@@ -8,7 +8,7 @@
  * http://www.cecill.info
  */
 
-#include <ossia/OSSIA.hpp>
+#include <ossia/ossia.hpp>
 
 #include <iostream>
 #include <memory>

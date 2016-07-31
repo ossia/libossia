@@ -118,7 +118,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/address_properties.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/network_logger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/network.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/OSSIA.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.hpp"

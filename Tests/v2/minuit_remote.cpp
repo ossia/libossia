@@ -1,4 +1,4 @@
-#include <ossia/OSSIA.hpp>
+#include <ossia/ossia.hpp>
 
 int main()
 {
