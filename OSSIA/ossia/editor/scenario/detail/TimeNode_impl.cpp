@@ -8,11 +8,7 @@ mCallback(callback),
 mExpression(expressions::make_expression_true())
 {}
 
-time_node_impl::~time_node_impl()
-{}
-
-# pragma mark -
-# pragma mark Execution
+time_node_impl::~time_node_impl() = default;
 
 void time_node_impl::setCallback(time_node::execution_callback callback)
 {
@@ -56,9 +52,6 @@ bool time_node_impl::trigger()
   return true;
 }
 
-# pragma mark -
-# pragma mark Accessors
-
 time_value time_node_impl::getDate() const
 {
   // compute the date from each first previous time constraint
@@ -100,9 +93,6 @@ time_node & time_node_impl::setSimultaneityMargin(time_value simultaneityMargin)
   mSimultaneityMargin = simultaneityMargin;
   return *this;
 }
-
-# pragma mark -
-# pragma mark TimeEvents
 
 time_node_impl::iterator time_node_impl::emplace(const_iterator pos,
                                                  time_event::ExecutionCallback callback,

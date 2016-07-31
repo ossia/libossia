@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(API)
+project(OSSIA)
 
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0042 NEW)
@@ -9,8 +9,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
 
-option(OSSIA_COVERALLS "Generate coveralls data" OFF)
-option(OSSIA_SANITIZE "Sanitize build" OFF) # TODO Jamoma needs to be compiled with this flag too.
+option(OSSIA_SANITIZE "Sanitize build" OFF)
 
 if (OSSIA_COVERALLS)
     include(Coveralls)

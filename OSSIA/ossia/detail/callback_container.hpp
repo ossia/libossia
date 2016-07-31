@@ -1,18 +1,3 @@
-/*!
- * \file CallbackContainer.h
- *
- * \defgroup Misc
- *
- * \brief
- *
- * \details
- *
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 
 #include <list>
@@ -22,21 +7,8 @@ namespace ossia
 template <typename T>
 class callback_container
 {
-
 public:
-
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
-  /*! destructor */
   virtual ~callback_container() = default;
-
-#if 0
-# pragma mark -
-# pragma mark Callback
-#endif
 
   /*! to store a set of callback functions */
   using impl = typename std::list<T>;

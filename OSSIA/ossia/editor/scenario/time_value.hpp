@@ -1,19 +1,3 @@
-/*!
- * \file TimeValue.h
- *
- * \defgroup Editor
- *
- * \brief
- *
- * \details
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 #include <cmath>
 #include <ossia_export.h>
@@ -25,22 +9,12 @@ class OSSIA_EXPORT time_value
 
 public:
 
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
   /*! constructor
    \param int value */
   time_value(double d = 0.): m_value{d} { }
 
   /*! destructor */
   ~time_value() = default;
-
-#if 0
-# pragma mark -
-# pragma mark Operator
-#endif
 
   /*! assignation operator */
   time_value & operator= (double d)
@@ -132,11 +106,6 @@ public:
 
   /*! double casting operator */
   operator double() const { return m_value; }
-
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
 
   /*! is the time value infinite ?
    \return bool infinite */

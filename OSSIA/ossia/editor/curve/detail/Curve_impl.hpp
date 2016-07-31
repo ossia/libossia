@@ -1,16 +1,3 @@
-/*!
- * \file Curve_impl.h
- *
- * \brief
- *
- * \details
- *
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 
 #include <ossia/editor/curve/curve.hpp>
@@ -19,7 +6,6 @@
 #include <cmath>
 
 #include <boost/container/flat_map.hpp>
-
 
 namespace detail
 {
@@ -30,12 +16,7 @@ using curve_map = boost::container::flat_map<Args...>;
 template <typename X, typename Y>
 class curve_impl final : public ossia::curve<X,Y>
 {
-
 private:
-#if 0
-# pragma mark -
-# pragma mark Implementation specific
-#endif
   X mInitialPointAbscissa;
   ossia::Destination mInitialPointAbscissaDestination;
 
@@ -48,43 +29,21 @@ private:
   map_type mPointsMap;
 
 public:
-
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
   curve_impl();
 
   ~curve_impl();
 
+private:
   // Call me before execution to reset the cache.
   void reset() override
   {
       mInitialPointOrdinateCacheUsed = false;
   }
 
-
-#if 0
-# pragma mark -
-# pragma mark Edition
-#endif
-
   bool addPoint(ossia::curve_segment<Y>, X, Y) override;
-
   bool removePoint(X) override;
 
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
-
   Y valueAt(X) const override;
-
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
 
   ossia::curve_type getType() const override;
 
@@ -106,10 +65,6 @@ public:
 
   std::map<X, std::pair<Y, ossia::curve_segment<Y>>> getPointsMap() const override;
 
-#if 0
-# pragma mark -
-# pragma mark Implementation specific
-#endif
   static Y convertToTemplateTypeValue(const ossia::value&, ossia::destination_index::const_iterator);
 };
 

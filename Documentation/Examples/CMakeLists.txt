@@ -1,6 +1,6 @@
 function(ossia_add_example TESTNAME TESTSRCS)
     add_executable(ossia_${TESTNAME}_example ${TESTSRCS})
-    target_link_libraries(ossia_${TESTNAME}_example OSSIA)
+    target_link_libraries(ossia_${TESTNAME}_example ossia)
 endFunction()
 
 ossia_add_example(editor_curve "${CMAKE_CURRENT_SOURCE_DIR}/Editor/curve.cpp")

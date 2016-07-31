@@ -1,20 +1,3 @@
-/*!
- * \file TimeConstraint.h
- *
- * \defgroup Editor
- *
- * \brief #TimeConstraint is use to describe temporal structure precising which amount of time (the duration) are between two #TimeEvents.
- *
- * \details The duration can be fixed or between a minimal and a maximal duration. \n
- * #TimeConstraint is also a #Clock and a #TimeProcess container.
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 
 #include <memory>
@@ -34,6 +17,14 @@ class time_event;
 class time_process;
 class time_value;
 
+/**
+ * @brief The time_constraint class
+ *
+ * \brief #TimeConstraint is use to describe temporal structure precising which amount of time (the duration) are between two #TimeEvents.
+ *
+ * \details The duration can be fixed or between a minimal and a maximal duration. \n
+ * #TimeConstraint is also a #Clock and a #TimeProcess container.
+ */
 class OSSIA_EXPORT time_constraint : virtual clock
 {
 
@@ -61,11 +52,6 @@ public:
    \param std::shared_ptr<#State> */
   using ExecutionCallback = std::function<void(time_value, time_value, const state&)>;
 
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
   /*! factory
    \details by default a #TimeConstraint have an infinite duration with no minimal duration and an infinite maximal duration.
    \param #TimeConstraint::ExecutionCallback to use to be notified at each step
@@ -85,11 +71,6 @@ public:
   /*! desctructor */
   virtual ~time_constraint();
 
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
-
   /*! start #TimeConstraint's #Clock */
   virtual void start() override = 0;
 
@@ -108,11 +89,6 @@ public:
    \details don't call state when the #TimeConstraint is not running
    \return std::shared_ptr<#State> */
   virtual ossia::state state() = 0;
-
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
 
   /*! sets a new callback for the constraint
     \param #TimeConstraint::ExecutionCallback to use to be notified at each step */
@@ -152,11 +128,6 @@ public:
   /*! get the event from where the #TimeConstraint starts
    \return std::shared_ptr<#TimeEvent> start event */
   virtual const std::shared_ptr<time_event> & getEndEvent() const = 0;
-
-#if 0
-# pragma mark -
-# pragma mark TimeProcesses
-#endif
 
   /*! add a #TimeProcess
    \details it also stores the #TimeProcess's start and end #States into the #TimeConstraint's start and end #TimeEvents

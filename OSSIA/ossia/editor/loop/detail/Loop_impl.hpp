@@ -1,16 +1,3 @@
-/*!
- * \file Loop_impl.h
- *
- * \brief
- *
- * \details
- *
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 
 #include <ossia/editor/loop/loop.hpp>
@@ -31,71 +18,50 @@ namespace detail
 {
 class loop_impl final : public loop, public virtual time_process_impl
 {
+  private:
+    std::shared_ptr<time_node>              mPatternStartNode;
+    time_event::ExecutionCallback      mPatternStartEventCallback;
 
-private:
+    std::shared_ptr<time_node>              mPatternEndNode;
+    time_event::ExecutionCallback      mPatternEndEventCallback;
 
-# pragma mark -
-# pragma mark Implementation specific
+    std::shared_ptr<time_constraint>        mPatternConstraint;
+    time_constraint::ExecutionCallback mPatternConstraintCallback;
 
-  std::shared_ptr<time_node>              mPatternStartNode;
-  time_event::ExecutionCallback      mPatternStartEventCallback;
+    ossia::state                             mCurrentState;      // an internal State to return on state call
+    ossia::state                             mOffsetState;       // an internal State built when offset is called
 
-  std::shared_ptr<time_node>              mPatternEndNode;
-  time_event::ExecutionCallback      mPatternEndEventCallback;
+  public:
+    loop_impl(time_value,
+              time_constraint::ExecutionCallback,
+              time_event::ExecutionCallback,
+              time_event::ExecutionCallback);
+    ~loop_impl();
 
-  std::shared_ptr<time_constraint>        mPatternConstraint;
-  time_constraint::ExecutionCallback mPatternConstraintCallback;
+  private:
+    state_element offset(time_value) override;
 
-  ossia::state                             mCurrentState;      // an internal State to return on state call
-  ossia::state                             mOffsetState;       // an internal State built when offset is called
+    state_element state() override;
 
-public:
+    void start() override;
+    void stop() override;
+    void pause() override;
+    void resume() override;
 
-# pragma mark -
-# pragma mark Life cycle
+    const std::shared_ptr<time_constraint> getPatternTimeConstraint() const override;
 
-  loop_impl(time_value,
-             time_constraint::ExecutionCallback,
-             time_event::ExecutionCallback,
-             time_event::ExecutionCallback);
-  ~loop_impl();
+    const std::shared_ptr<time_node> getPatternStartTimeNode() const override;
 
-# pragma mark -
-# pragma mark Execution
+    const std::shared_ptr<time_node> getPatternEndTimeNode() const override;
 
-  state_element offset(time_value) override;
+  private:
+    void PatternConstraintCallback(
+        time_value,
+        time_value,
+        const ossia::state&);
 
-  state_element state() override;
+    void PatternStartEventCallback(time_event::Status);
 
-# pragma mark -
-# pragma mark Execution - Implementation specific
-
-  void start() override;
-  void stop() override;
-  void pause() override;
-  void resume() override;
-
-# pragma mark -
-# pragma mark Accessors
-
-  const std::shared_ptr<time_constraint> getPatternTimeConstraint() const override;
-
-  const std::shared_ptr<time_node> getPatternStartTimeNode() const override;
-
-  const std::shared_ptr<time_node> getPatternEndTimeNode() const override;
-
-private:
-
-# pragma mark -
-# pragma mark Implementation specific
-
-  void PatternConstraintCallback(
-      time_value,
-      time_value,
-      const ossia::state&);
-
-  void PatternStartEventCallback(time_event::Status);
-
-  void PatternEndEventCallback(time_event::Status);
+    void PatternEndEventCallback(time_event::Status);
 };
 }

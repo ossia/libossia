@@ -2,9 +2,6 @@
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/node.hpp>
 
-# pragma mark -
-# pragma mark Life cycle
-
 namespace detail
 {
 template <typename X, typename Y>
@@ -12,9 +9,6 @@ curve_impl<X,Y>::curve_impl() = default;
 
 template <typename X, typename Y>
 curve_impl<X,Y>::~curve_impl() = default;
-
-# pragma mark -
-# pragma mark Edition
 
 template <typename X, typename Y>
 bool curve_impl<X,Y>::
@@ -31,9 +25,6 @@ removePoint(X abscissa)
 {
   return mPointsMap.erase(abscissa) > 0;
 }
-
-# pragma mark -
-# pragma mark Execution
 
 template <typename X, typename Y>
 Y curve_impl<X,Y>::
@@ -66,8 +57,6 @@ valueAt(X abscissa) const
   return lastValue;
 }
 
-# pragma mark -
-# pragma mark Accessors
 template<typename X, typename Y>
 ossia::curve_type curve_impl<X, Y>::getType() const
 {
@@ -164,9 +153,6 @@ getPointsMap() const
 {
     return {mPointsMap.cbegin(), mPointsMap.cend()};
 }
-
-# pragma mark -
-# pragma mark Implementation specific
 
 template <typename X, typename Y>
 Y curve_impl<X,Y>::

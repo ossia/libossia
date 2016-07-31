@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(OSSIA CXX)
+project(libossia CXX)
 
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0042 NEW)
@@ -167,22 +167,22 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
 )
 
-add_library(OSSIA SHARED ${SRCS})
-target_link_libraries(OSSIA PUBLIC oscpack ModernMIDI)
+add_library(ossia SHARED ${SRCS})
+target_link_libraries(ossia PUBLIC oscpack ModernMIDI)
 
 if(WIN32)
-    target_compile_definitions(OSSIA PUBLIC
+    target_compile_definitions(ossia PUBLIC
         NOMINMAX
         _CRT_SECURE_NO_WARNINGS)
 endif()
 
 if(MSVC)
-    target_compile_options(OSSIA PUBLIC
+    target_compile_options(ossia PUBLIC
         "/wd4068" # pragma mark -
         "/wd4250" # inherits via dominance
         )
 else()
-    target_compile_options(OSSIA PUBLIC
+    target_compile_options(ossia PUBLIC
     -Wall
     -Wextra
     -Wno-unused-parameter
@@ -195,12 +195,12 @@ else()
     -Werror=trigraphs)
 endif()
 
-set_target_properties(OSSIA PROPERTIES
+set_target_properties(ossia PROPERTIES
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN 0)
 
-generate_export_header(OSSIA BASE_NAME OSSIA)
-target_include_directories(OSSIA
+generate_export_header(ossia BASE_NAME OSSIA)
+target_include_directories(ossia
     PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}"
         "${CMAKE_CURRENT_BINARY_DIR}"
@@ -208,11 +208,11 @@ target_include_directories(OSSIA
         "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot")
 
 
-target_include_directories(OSSIA PUBLIC ${Boost_INCLUDE_DIRS})
+target_include_directories(ossia PUBLIC ${Boost_INCLUDE_DIRS})
 
 if(OSSIA_SANITIZE)
-    sanitize_build(OSSIA)
+    sanitize_build(ossia)
 else()
-    use_gold(OSSIA)
+    use_gold(ossia)
 endif()
-add_linker_warnings(OSSIA)
+add_linker_warnings(ossia)

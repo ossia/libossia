@@ -1,19 +1,3 @@
-/*!
- * \file TimeProcess.h
- *
- * \defgroup Editor
- *
- * \brief #TimeProcess is the mother class to describe temporal content ...
- *
- * \details
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 
 #include <memory>
@@ -25,24 +9,17 @@ namespace ossia
 {
 class time_constraint;
 class time_value;
-
+/**
+ * @brief The time_process class
+ *
+ * \brief #TimeProcess is the parent class used to describe temporal content.
+ */
 class OSSIA_EXPORT time_process
 {
 
 public:
-
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
   /*! destructor */
   virtual ~time_process();
-
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
 
   /*! get a #StateElement from the process on its parent #TimeConstraint offset
    \details don't call offset when the parent #TimeConstraint is running
@@ -59,10 +36,6 @@ public:
   virtual void stop() { }
   virtual void pause() { }
   virtual void resume() { }
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
 
   std::shared_ptr<time_constraint> parent;
 

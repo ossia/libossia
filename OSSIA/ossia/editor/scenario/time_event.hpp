@@ -1,19 +1,3 @@
-/*!
- * \file #TimeEvent.h
- *
- * \defgroup Editor
- *
- * \brief #TimeEvent is use to describe temporal structure to launch the start or the end of each attached #TimeConstraint.
- *
- * \details #TimeEvent has a #State and can also be submitted to an #Expression.
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 
 #include <memory>
@@ -30,16 +14,18 @@ class state;
 class time_constraint;
 class time_node;
 
+/**
+ * @brief The time_event class
+ *
+ * \brief #TimeEvent is use to describe temporal structure to launch the start or the end of each attached #TimeConstraint.
+ *
+ * \details #TimeEvent has a #State and can also be submitted to an #Expression.
+ *
+ */
 class OSSIA_EXPORT time_event
 {
 
 public:
-
-#if 0
-# pragma mark -
-# pragma mark Enumerations
-#endif
-
   /*! event status */
   enum class Status
   {
@@ -49,18 +35,9 @@ public:
     DISPOSED
   };
 
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
   /*! destructor */
   virtual ~time_event();
 
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
 
   /*! to get the event status back
    \param #Status new status */
@@ -81,10 +58,6 @@ public:
    \details turning the event' status into DISPOSED will call the callback to notify its owner */
   virtual void dispose() = 0;
 
-#if 0
-# pragma mark -
-# pragma mark Edition
-#endif
 
   /*! add a sub state into the state of the event
    \param std::shared_ptr<#State> to add */
@@ -93,11 +66,6 @@ public:
   /*! remove a sub state from the state of the event
    \param std::shared_ptr<#State> to remove */
   virtual void removeState(const state&) = 0;
-
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
 
   /*! get the #TimeNode where the event is
    \return std::shared_ptr<#TimeNode> */
@@ -120,10 +88,6 @@ public:
    \return #Status */
   virtual Status getStatus() const = 0;
 
-#if 0
-# pragma mark -
-# pragma mark Time Constraints
-#endif
 
   /*! get previous time contraints attached to the event
    \return #Container<#TimeConstraint> */

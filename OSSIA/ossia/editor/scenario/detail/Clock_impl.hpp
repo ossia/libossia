@@ -1,16 +1,3 @@
-/*!
- * \file Clock_impl.h
- *
- * \brief
- *
- * \details
- *
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 
 #include <ctime>
@@ -35,11 +22,6 @@ public:
   using clock_type = std::chrono::steady_clock;
 
 protected:
-#if 0
-# pragma mark -
-# pragma mark Implementation specific
-#endif
-
   time_value         mDuration{};        /// the time (in ms) the clock will run at normal speed factor
   time_value         mGranularity{};     /// the minimum time between each tick (in ms)
   time_value         mOffset{};          /// the date (in ms) the clock will run from
@@ -62,11 +44,6 @@ private:
   ExecutionStatusCallback   mStatusCallback;
 
 public:
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
   clock_impl(clock::ExecutionCallback,
               time_value = Infinite,
               time_value = 1.,
@@ -75,10 +52,6 @@ public:
               clock::DriveMode = clock::DriveMode::INTERNAL);
 
   ~clock_impl();
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
 
   void start() override;
 
@@ -92,10 +65,6 @@ public:
 
   bool tick() final override;
   bool tick(time_value usec) final override;
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
 
   const time_value & getDuration() const override;
 
@@ -127,10 +96,7 @@ public:
   { mStatusCallback = e; }
   ExecutionStatusCallback getExecutionStatusCallback() const final override
   { return mStatusCallback; }
-#if 0
-# pragma mark -
-# pragma mark Implementation specific
-#endif
+
   /*! to avoid dead lock in EXTERNAL drive mode if a TimeProcess wants to end its ParentTimeConstraint's clock */
   void request_stop();
 

@@ -1,19 +1,3 @@
-/*!
- * \file Mapper.h
- *
- * \defgroup Editor
- *
- * \brief
- *
- * \details
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 #include <list>
 
@@ -35,12 +19,6 @@ class OSSIA_EXPORT mapper : public virtual time_process
 {
 
 public:
-
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
   /*! factory
    \param the driver address
    \param the driven address
@@ -52,11 +30,6 @@ public:
 
   /*! destructor */
   virtual ~mapper();
-
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
 
   /*! get the driver address
    \return observed address */

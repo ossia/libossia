@@ -1,19 +1,3 @@
-/*!
- * \file TimeNode.h
- *
- * \defgroup Editor
- *
- * \brief #TimeNode is use to describe temporal structure to synchronize each attached #TimeEvent evaluation.
- *
- * \details #TimeNode is also a #TimeEvent container.
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 
 #include <memory>
@@ -33,6 +17,11 @@ class state;
 class time_event;
 class time_value;
 
+/**
+ * \brief #TimeNode is use to describe temporal structure to synchronize each attached #TimeEvent evaluation.
+ *
+ * \details #TimeNode is also a #TimeEvent container.
+ */
 class OSSIA_EXPORT time_node
 {
 
@@ -44,11 +33,6 @@ public:
   /*! to be notified when it is triggered */
   using execution_callback = std::function<void()>;
 
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
   /*! factory
    \param #TimeNode::ExecutionCallback to be be notified when the #TimeNode is triggered
    \return std::shared_ptr<#TimeNode> */
@@ -56,10 +40,6 @@ public:
   /*! destructor */
   virtual ~time_node();
 
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
 
   /*! changes the callback in the #TimeNode
    \param #TimeNode::ExecutionCallback to be be notified when the #TimeNode is triggered
@@ -70,10 +50,6 @@ public:
    \return boolean true if the operation succeeded */
   virtual bool trigger() = 0;
 
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
 
   /*! get the date
    \details the date is the sum of its previous #TimeConstraint durations
@@ -102,10 +78,6 @@ public:
    \return #TimeNode the time node */
   virtual time_node & setSimultaneityMargin(time_value) = 0;
 
-#if 0
-#pragma mark -
-#pragma mark TimeEvents
-#endif
 
   /*! create and store a #TimeEvent
    \param #Container<#TimeEvent>::const_iterator where to store the #TimeEvent

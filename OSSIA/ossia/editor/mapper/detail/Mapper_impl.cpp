@@ -19,9 +19,6 @@ mapper_impl::mapper_impl(
 mapper_impl::~mapper_impl()
 {}
 
-# pragma mark -
-# pragma mark Execution
-
 ossia::state_element mapper_impl::offset(ossia::time_value offset)
 {
   if (parent->getRunning())
@@ -59,9 +56,6 @@ ossia::state_element mapper_impl::state()
   return mLastMessage;
 }
 
-# pragma mark -
-# pragma mark Execution - Implementation specific
-
 void mapper_impl::start()
 {
   // start driver address value observation
@@ -92,9 +86,6 @@ void mapper_impl::pause()
 
 void mapper_impl::resume()
 {}
-
-# pragma mark -
-# pragma mark Accessors
 
 const ossia::net::address_base& mapper_impl::getDriverAddress() const
 {

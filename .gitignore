@@ -1,5 +1,4 @@
 *.orig
-
 *.o
 *.i386.o-*
 *.x64.o-*
@@ -26,3 +25,5 @@ project.xcworkspace
 
 # Mac OSX Finder stuff
 .DS_Store
+
+Documentation/Doxygen/html

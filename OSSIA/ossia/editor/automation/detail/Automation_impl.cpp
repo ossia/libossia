@@ -3,10 +3,7 @@
 #include <ossia/editor/value/behavior.hpp>
 
 #include <iostream>
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
+
 namespace detail
 {
 automation_impl::automation_impl(
@@ -19,12 +16,6 @@ automation_impl::automation_impl(
 {}
 
 automation_impl::~automation_impl() = default;
-
-
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
 
 ossia::state_element automation_impl::offset(
     ossia::time_value offset)
@@ -62,10 +53,6 @@ ossia::state_element automation_impl::state()
     throw std::runtime_error("parent time constraint is not running");
   }
 }
-#if 0
-# pragma mark -
-# pragma mark Execution - Implementation specific
-#endif
 
 void automation_impl::start()
 {
@@ -86,10 +73,7 @@ void automation_impl::pause()
 
 void automation_impl::resume()
 {}
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
+
 const ossia::net::address_base& automation_impl::getDrivenAddress() const
 {
   return mDrivenAddress;

@@ -14,9 +14,6 @@ time_process_impl()
 scenario_impl::~scenario_impl()
 {}
 
-
-# pragma mark -
-# pragma mark Execution
 using DateMap = std::unordered_map<time_node*, time_value>;
 using EventPtr = std::shared_ptr<ossia::time_event>;
 using ConstraintPtr = std::shared_ptr<ossia::time_constraint>;
@@ -214,9 +211,6 @@ state_element scenario_impl::state()
   return {};
 }
 
-# pragma mark -
-# pragma mark Execution - Implementation specific
-
 void scenario_impl::start()
 {
   // start each TimeConstraint if possible
@@ -295,9 +289,6 @@ void scenario_impl::resume()
   }
 }
 
-# pragma mark -
-# pragma mark Edition
-
 void scenario_impl::addTimeConstraint(std::shared_ptr<time_constraint> timeConstraint)
 {
   auto& cst = *timeConstraint;
@@ -340,16 +331,10 @@ void scenario_impl::removeTimeNode(const std::shared_ptr<time_node>& timeNode)
   remove_one(mTimeNodes, timeNode);
 }
 
-# pragma mark -
-# pragma mark Accessors
-
 const std::shared_ptr<time_node> & scenario_impl::getStartTimeNode() const
 {
   return mTimeNodes[0];
 }
-
-# pragma mark -
-# pragma mark TimeNodes and TimeConstraints
 
 const ptr_container<time_node>& scenario_impl::timeNodes() const
 {
@@ -360,9 +345,6 @@ const ptr_container<time_constraint>& scenario_impl::timeConstraints() const
 {
   return mTimeContraints;
 }
-
-# pragma mark -
-# pragma mark Implementation specific
 
 void scenario_impl::process_offset(std::shared_ptr<time_node> timenode, time_value offset)
 {

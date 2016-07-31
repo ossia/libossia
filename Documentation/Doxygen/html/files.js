@@ -1,80 +1,99 @@
 var files =
 [
-    [ "Address.h", "_address_8h.html", [
-      [ "Address", "class_o_s_s_i_a_1_1_address.html", "class_o_s_s_i_a_1_1_address" ]
-    ] ],
-    [ "Automation.h", "_automation_8h.html", [
-      [ "Automation", "class_o_s_s_i_a_1_1_automation.html", "class_o_s_s_i_a_1_1_automation" ]
-    ] ],
-    [ "Clock.h", "_clock_8h.html", [
-      [ "Clock", "class_o_s_s_i_a_1_1_clock.html", "class_o_s_s_i_a_1_1_clock" ]
-    ] ],
-    [ "Container.h", "_container_8h.html", "_container_8h" ],
-    [ "Curve.h", "_curve_8h.html", [
-      [ "CurveAbstract", "class_o_s_s_i_a_1_1_curve_abstract.html", "class_o_s_s_i_a_1_1_curve_abstract" ],
-      [ "CurveSegment", "class_o_s_s_i_a_1_1_curve_segment.html", "class_o_s_s_i_a_1_1_curve_segment" ],
-      [ "Curve", "class_o_s_s_i_a_1_1_curve.html", "class_o_s_s_i_a_1_1_curve" ],
-      [ "Behavior", "struct_o_s_s_i_a_1_1_behavior.html", "struct_o_s_s_i_a_1_1_behavior" ]
-    ] ],
-    [ "CurveSegment.h", "_curve_segment_8h.html", [
-      [ "Curve", "class_o_s_s_i_a_1_1_curve.html", "class_o_s_s_i_a_1_1_curve" ],
-      [ "CurveSegment", "class_o_s_s_i_a_1_1_curve_segment.html", "class_o_s_s_i_a_1_1_curve_segment" ]
-    ] ],
-    [ "CurveSegmentLinear.h", "_curve_segment_linear_8h.html", [
-      [ "CurveSegmentLinear", "class_o_s_s_i_a_1_1_curve_segment_linear.html", "class_o_s_s_i_a_1_1_curve_segment_linear" ]
-    ] ],
-    [ "CurveSegmentPower.h", "_curve_segment_power_8h.html", [
-      [ "CurveSegmentPower", "class_o_s_s_i_a_1_1_curve_segment_power.html", "class_o_s_s_i_a_1_1_curve_segment_power" ]
-    ] ],
-    [ "Device.h", "_device_8h.html", "_device_8h" ],
-    [ "Domain.h", "_domain_8h.html", [
-      [ "Domain", "class_o_s_s_i_a_1_1_domain.html", "class_o_s_s_i_a_1_1_domain" ]
-    ] ],
-    [ "Expression.h", "_expression_8h.html", [
-      [ "Expression", "class_o_s_s_i_a_1_1_expression.html", "class_o_s_s_i_a_1_1_expression" ]
-    ] ],
-    [ "ExpressionAtom.h", "_expression_atom_8h.html", [
-      [ "ExpressionAtom", "class_o_s_s_i_a_1_1_expression_atom.html", "class_o_s_s_i_a_1_1_expression_atom" ]
-    ] ],
-    [ "ExpressionComposition.h", "_expression_composition_8h.html", [
-      [ "ExpressionComposition", "class_o_s_s_i_a_1_1_expression_composition.html", "class_o_s_s_i_a_1_1_expression_composition" ]
-    ] ],
-    [ "ExpressionNot.h", "_expression_not_8h.html", [
-      [ "ExpressionNot", "class_o_s_s_i_a_1_1_expression_not.html", "class_o_s_s_i_a_1_1_expression_not" ]
-    ] ],
-    [ "Message.h", "_message_8h.html", [
-      [ "Message", "class_o_s_s_i_a_1_1_message.html", "class_o_s_s_i_a_1_1_message" ]
-    ] ],
-    [ "Node.h", "_node_8h.html", [
-      [ "Node", "class_o_s_s_i_a_1_1_node.html", "class_o_s_s_i_a_1_1_node" ],
-      [ "Destination", "struct_o_s_s_i_a_1_1_destination.html", "struct_o_s_s_i_a_1_1_destination" ]
-    ] ],
-    [ "Protocol.h", "_protocol_8h.html", [
-      [ "Protocol", "class_o_s_s_i_a_1_1_protocol.html", "class_o_s_s_i_a_1_1_protocol" ],
-      [ "Local", "struct_o_s_s_i_a_1_1_local.html", null ],
-      [ "Minuit", "struct_o_s_s_i_a_1_1_minuit.html", "struct_o_s_s_i_a_1_1_minuit" ],
-      [ "OSC", "struct_o_s_s_i_a_1_1_o_s_c.html", "struct_o_s_s_i_a_1_1_o_s_c" ],
-      [ "Midi", "struct_o_s_s_i_a_1_1_midi.html", null ]
-    ] ],
-    [ "Scenario.h", "_scenario_8h.html", [
-      [ "Scenario", "class_o_s_s_i_a_1_1_scenario.html", "class_o_s_s_i_a_1_1_scenario" ]
-    ] ],
-    [ "State.h", "_state_8h.html", [
-      [ "State", "class_o_s_s_i_a_1_1_state.html", "class_o_s_s_i_a_1_1_state" ]
-    ] ],
-    [ "StateElement.h", "_state_element_8h.html", [
-      [ "StateElement", "class_o_s_s_i_a_1_1_state_element.html", "class_o_s_s_i_a_1_1_state_element" ]
-    ] ],
-    [ "TimeConstraint.h", "_time_constraint_8h.html", [
-      [ "TimeConstraint", "class_o_s_s_i_a_1_1_time_constraint.html", "class_o_s_s_i_a_1_1_time_constraint" ]
-    ] ],
-    [ "TimeEvent.h", "_time_event_8h_source.html", null ],
-    [ "TimeNode.h", "_time_node_8h.html", [
-      [ "TimeNode", "class_o_s_s_i_a_1_1_time_node.html", "class_o_s_s_i_a_1_1_time_node" ]
-    ] ],
-    [ "TimeProcess.h", "_time_process_8h.html", [
-      [ "TimeProcess", "class_o_s_s_i_a_1_1_time_process.html", "class_o_s_s_i_a_1_1_time_process" ]
-    ] ],
-    [ "TimeValue.h", "_time_value_8h.html", "_time_value_8h" ],
-    [ "Value.h", "_value_8h.html", "_value_8h" ]
+    [ "address.hpp", "address_8hpp_source.html", null ],
+    [ "address_properties.hpp", "address__properties_8hpp_source.html", null ],
+    [ "algorithms.hpp", "algorithms_8hpp_source.html", null ],
+    [ "automation.hpp", "automation_8hpp_source.html", null ],
+    [ "Automation_impl.hpp", "_automation__impl_8hpp_source.html", null ],
+    [ "behavior.hpp", "behavior_8hpp_source.html", null ],
+    [ "bool.hpp", "bool_8hpp_source.html", null ],
+    [ "callback_container.hpp", "callback__container_8hpp_source.html", null ],
+    [ "channel.hpp", "channel_8hpp_source.html", null ],
+    [ "char.hpp", "char_8hpp_source.html", null ],
+    [ "clock.hpp", "clock_8hpp_source.html", null ],
+    [ "Clock_impl.hpp", "_clock__impl_8hpp_source.html", null ],
+    [ "curve.hpp", "curve_8hpp_source.html", null ],
+    [ "curve_abstract.hpp", "curve__abstract_8hpp_source.html", null ],
+    [ "Curve_impl.hpp", "_curve__impl_8hpp_source.html", null ],
+    [ "curve_segment.hpp", "curve__segment_8hpp_source.html", null ],
+    [ "custom_state.hpp", "custom__state_8hpp_source.html", null ],
+    [ "destination.hpp", "destination_8hpp_source.html", null ],
+    [ "destination_index.hpp", "destination__index_8hpp_source.html", null ],
+    [ "device.hpp", "device_8hpp_source.html", null ],
+    [ "domain.hpp", "domain_8hpp_source.html", null ],
+    [ "domain_base.hpp", "domain__base_8hpp_source.html", null ],
+    [ "domain_conversion.hpp", "domain__conversion_8hpp_source.html", null ],
+    [ "domain_visitors.hpp", "domain__visitors_8hpp_source.html", null ],
+    [ "easing.hpp", "easing_8hpp_source.html", null ],
+    [ "editor.hpp", "editor_8hpp_source.html", null ],
+    [ "empty.hpp", "empty_8hpp_source.html", null ],
+    [ "expression.hpp", "expression_8hpp_source.html", null ],
+    [ "expression_atom.hpp", "expression__atom_8hpp_source.html", null ],
+    [ "expression_bool.hpp", "expression__bool_8hpp_source.html", null ],
+    [ "expression_composition.hpp", "expression__composition_8hpp_source.html", null ],
+    [ "expression_fwd.hpp", "expression__fwd_8hpp_source.html", null ],
+    [ "expression_not.hpp", "expression__not_8hpp_source.html", null ],
+    [ "expression_pulse.hpp", "expression__pulse_8hpp_source.html", null ],
+    [ "float.hpp", "float_8hpp_source.html", null ],
+    [ "generic_address.hpp", "generic__address_8hpp_source.html", null ],
+    [ "generic_device.hpp", "generic__device_8hpp_source.html", null ],
+    [ "generic_node.hpp", "generic__node_8hpp_source.html", null ],
+    [ "impulse.hpp", "impulse_8hpp_source.html", null ],
+    [ "int.hpp", "int_8hpp_source.html", null ],
+    [ "linear.hpp", "linear_8hpp_source.html", null ],
+    [ "local.hpp", "local_8hpp_source.html", null ],
+    [ "loop.hpp", "loop_8hpp_source.html", null ],
+    [ "Loop_impl.hpp", "_loop__impl_8hpp_source.html", null ],
+    [ "mapper.hpp", "mapper_8hpp_source.html", null ],
+    [ "Mapper_impl.hpp", "_mapper__impl_8hpp_source.html", null ],
+    [ "math.hpp", "math_8hpp_source.html", null ],
+    [ "message.hpp", "message_8hpp_source.html", null ],
+    [ "message_generator.hpp", "message__generator_8hpp_source.html", null ],
+    [ "midi.hpp", "midi_8hpp_source.html", null ],
+    [ "midi_address.hpp", "midi__address_8hpp_source.html", null ],
+    [ "midi_device.hpp", "midi__device_8hpp_source.html", null ],
+    [ "midi_impl.hpp", "midi__impl_8hpp_source.html", null ],
+    [ "midi_node.hpp", "midi__node_8hpp_source.html", null ],
+    [ "midi_protocol.hpp", "midi__protocol_8hpp_source.html", null ],
+    [ "minuit.hpp", "minuit_8hpp_source.html", null ],
+    [ "minuit_common.hpp", "minuit__common_8hpp_source.html", null ],
+    [ "minuit_name_table.hpp", "minuit__name__table_8hpp_source.html", null ],
+    [ "minuit_parser.hpp", "minuit__parser_8hpp_source.html", null ],
+    [ "network.hpp", "network_8hpp_source.html", null ],
+    [ "network_logger.hpp", "network__logger_8hpp_source.html", null ],
+    [ "node.hpp", "node_8hpp_source.html", null ],
+    [ "detail/osc.hpp", "detail_2osc_8hpp_source.html", null ],
+    [ "osc.hpp", "osc_8hpp_source.html", null ],
+    [ "OSSIA.hpp", "_o_s_s_i_a_8hpp_source.html", null ],
+    [ "power.hpp", "power_8hpp_source.html", null ],
+    [ "protocol.hpp", "protocol_8hpp_source.html", null ],
+    [ "ptr_container.hpp", "ptr__container_8hpp_source.html", null ],
+    [ "receiver.hpp", "receiver_8hpp_source.html", null ],
+    [ "scenario.hpp", "scenario_8hpp_source.html", null ],
+    [ "Scenario_impl.hpp", "_scenario__impl_8hpp_source.html", null ],
+    [ "sender.hpp", "sender_8hpp_source.html", null ],
+    [ "sin.hpp", "sin_8hpp_source.html", null ],
+    [ "state.hpp", "state_8hpp_source.html", null ],
+    [ "state_element.hpp", "state__element_8hpp_source.html", null ],
+    [ "state_element_fwd.hpp", "state__element__fwd_8hpp_source.html", null ],
+    [ "state_execution_visitor.hpp", "state__execution__visitor_8hpp_source.html", null ],
+    [ "state_flatten_visitor.hpp", "state__flatten__visitor_8hpp_source.html", null ],
+    [ "state_print_visitor.hpp", "state__print__visitor_8hpp_source.html", null ],
+    [ "string.hpp", "string_8hpp_source.html", null ],
+    [ "string_view.hpp", "string__view_8hpp_source.html", null ],
+    [ "time_constraint.hpp", "time__constraint_8hpp_source.html", null ],
+    [ "time_event.hpp", "time__event_8hpp_source.html", null ],
+    [ "time_node.hpp", "time__node_8hpp_source.html", null ],
+    [ "time_process.hpp", "time__process_8hpp_source.html", null ],
+    [ "time_value.hpp", "time__value_8hpp_source.html", null ],
+    [ "TimeConstraint_impl.hpp", "_time_constraint__impl_8hpp_source.html", null ],
+    [ "TimeEvent_impl.hpp", "_time_event__impl_8hpp_source.html", null ],
+    [ "TimeNode_impl.hpp", "_time_node__impl_8hpp_source.html", null ],
+    [ "TimeProcess_impl.hpp", "_time_process__impl_8hpp_source.html", null ],
+    [ "tuple.hpp", "tuple_8hpp_source.html", null ],
+    [ "value.hpp", "value_8hpp_source.html", null ],
+    [ "value_base.hpp", "value__base_8hpp_source.html", null ],
+    [ "value_comparison.hpp", "value__comparison_8hpp_source.html", null ],
+    [ "value_traits.hpp", "value__traits_8hpp_source.html", null ],
+    [ "vec.hpp", "vec_8hpp_source.html", null ]
 ];

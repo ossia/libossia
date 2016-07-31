@@ -23,9 +23,6 @@ mDurationMax(max)
 time_constraint_impl::~time_constraint_impl()
 {}
 
-# pragma mark -
-# pragma mark Execution
-
 void time_constraint_impl::start()
 {
   if (mRunning)
@@ -119,9 +116,6 @@ void time_constraint_impl::resume()
   }
 }
 
-# pragma mark -
-# pragma mark Accessors
-
 void time_constraint_impl::setCallback(time_constraint::ExecutionCallback callback)
 {
   mCallback = callback;
@@ -187,9 +181,6 @@ const std::shared_ptr<time_event> & time_constraint_impl::getEndEvent() const
   return mEndEvent;
 }
 
-# pragma mark -
-# pragma mark TimeProcesses
-
 void time_constraint_impl::addTimeProcess(std::shared_ptr<time_process> timeProcess)
 {
   assert(timeProcess.get());
@@ -212,9 +203,6 @@ void time_constraint_impl::removeTimeProcess(std::shared_ptr<time_process> timeP
       timeProcess.reset();
   }
 }
-
-# pragma mark -
-# pragma mark Implementation specific
 
 void time_constraint_impl::ClockCallback(time_value position, time_value date, unsigned char droppedTicks)
 {

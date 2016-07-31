@@ -124,9 +124,6 @@ midi_info midi_protocol::getInfo() const
   return mInfo;
 }
 
-# pragma mark -
-# pragma mark Operation
-
 bool midi_protocol::pull(address_base& address)
 {
   midi_address& adrs = dynamic_cast<midi_address&>(address);

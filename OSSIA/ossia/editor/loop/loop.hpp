@@ -1,19 +1,3 @@
-/*!
- * \file Loop.h
- *
- * \defgroup Editor
- *
- * \brief
- *
- * \details
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 
 #include <ossia/editor/scenario/time_constraint.hpp>
@@ -29,14 +13,7 @@ class time_value;
 
 class OSSIA_EXPORT loop : public virtual time_process
 {
-
 public:
-
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
-
   /*! factory
    \param const #TimeValue& duration of the pattern #TimeConstraint
    \param #TimeConstraint::ExecutionCallback to be notified at each step of the loop
@@ -50,12 +27,6 @@ public:
 
   /*! destructor */
   virtual ~loop();
-
-
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
 
   /*! get the pattern #TimeConstraint
    \return std::shared_ptr<TimeConstraint> */

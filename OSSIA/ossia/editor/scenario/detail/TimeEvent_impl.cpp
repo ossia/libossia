@@ -3,10 +3,6 @@
 #include <ossia/editor/state/state_element.hpp>
 namespace detail
 {
-
-# pragma mark -
-# pragma mark Life cycle
-
 time_event_impl::time_event_impl(time_event::ExecutionCallback callback,
                                  std::shared_ptr<time_node> aTimeNode,
                                  expression_ptr anExpression) :
@@ -17,11 +13,7 @@ mExpression(std::move(anExpression))
 {
 }
 
-time_event_impl::~time_event_impl()
-{}
-
-# pragma mark -
-# pragma mark Execution
+time_event_impl::~time_event_impl() = default;
 
 void time_event_impl::setCallback(time_event::ExecutionCallback callback)
 {
@@ -80,9 +72,6 @@ void time_event_impl::dispose()
       (mCallback)(mStatus);
 }
 
-# pragma mark -
-# pragma mark Edition
-
 void time_event_impl::addState(state&& state)
 {
     mState.add(state_element{std::move(state)});
@@ -92,9 +81,6 @@ void time_event_impl::removeState(const state& state)
 {
     mState.remove(state);
 }
-
-# pragma mark -
-# pragma mark Accessors
 
 const std::shared_ptr<time_node> & time_event_impl::getTimeNode() const
 {
@@ -124,9 +110,6 @@ time_event::Status time_event_impl::getStatus() const
 {
   return mStatus;
 }
-
-# pragma mark -
-# pragma mark Implementation specific
 
 void time_event_impl::setStatus(Status status)
 {

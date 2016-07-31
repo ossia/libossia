@@ -1,16 +1,3 @@
-/*!
- * \file JamomaAddress.h
- *
- * \brief
- *
- * \details
- *
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/generic/generic_device.hpp>

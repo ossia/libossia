@@ -25,10 +25,6 @@ clock_impl::~clock_impl()
   stop();
 }
 
-
-# pragma mark -
-# pragma mark Execution
-
 void clock_impl::start()
 {
   do_start();
@@ -197,9 +193,6 @@ bool clock_impl::tick(time_value usec)
   return true;
 }
 
-# pragma mark -
-# pragma mark Accessors
-
 const time_value & clock_impl::getDuration() const
 {
   return mDuration;
@@ -269,9 +262,6 @@ const time_value & clock_impl::getDate() const
 {
   return mDate;
 }
-
-# pragma mark -
-# pragma mark Internal
 
 void clock_impl::request_stop()
 {

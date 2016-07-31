@@ -1,16 +1,3 @@
-/*!
- * \file TimeConstraint_impl.h
- *
- * \brief
- *
- * \details
- *
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 
 #include <ossia/editor/scenario/clock.hpp>
@@ -40,9 +27,6 @@ class time_constraint_impl final :
 
 private:
 
-# pragma mark -
-# pragma mark Implementation specific
-
   time_constraint::ExecutionCallback   mCallback;
 
   std::shared_ptr<time_event>               mStartEvent;
@@ -54,9 +38,6 @@ private:
 
 public:
 
-# pragma mark -
-# pragma mark Life cycle
-
   time_constraint_impl(time_constraint::ExecutionCallback,
                        std::shared_ptr<time_event>,
                        std::shared_ptr<time_event>,
@@ -65,10 +46,6 @@ public:
                        time_value = Infinite);
 
   ~time_constraint_impl();
-
-# pragma mark -
-# pragma mark Execution
-
   void start() final override;
 
   void stop() final override;
@@ -81,8 +58,6 @@ public:
 
   void resume() final override;
 
-# pragma mark -
-# pragma mark Accessors
 
   void setCallback(ExecutionCallback) override;
 
@@ -102,16 +77,11 @@ public:
 
   const std::shared_ptr<time_event> & getEndEvent() const override;
 
-# pragma mark -
-# pragma mark TimeProcesses
-
   void addTimeProcess(std::shared_ptr<time_process>) override;
 
   void removeTimeProcess(std::shared_ptr<time_process>) override;
 
 private:
-# pragma mark -
-# pragma mark Implementation specific
   void ClockCallback(time_value position, time_value date, unsigned char droppedTicks);
   ossia::state make_state();
 };

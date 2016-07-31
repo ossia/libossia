@@ -1,16 +1,3 @@
-/*!
- * \file TimeEvent_impl.h
- *
- * \brief
- *
- * \details
- *
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 
 #include <ossia/editor/expression/expression.hpp>
@@ -29,12 +16,7 @@ namespace detail
 {
 class time_event_impl final : public time_event, public std::enable_shared_from_this<time_event_impl>
 {
-
 private:
-
-# pragma mark -
-# pragma mark Implementation specific
-
   time_event::ExecutionCallback mCallback;
 
   std::shared_ptr<time_node> mTimeNode;
@@ -44,18 +26,11 @@ private:
   expression_ptr mExpression;
 
 public:
-
-# pragma mark -
-# pragma mark Life cycle
-
   time_event_impl(time_event::ExecutionCallback,
-                  std::shared_ptr<time_node> aTimeNode/* = nullptr*/,
-                  expression_ptr anExpression /*= ExpressionTrue()*/);
+                  std::shared_ptr<time_node> aTimeNode,
+                  expression_ptr anExpression);
 
   ~time_event_impl();
-
-# pragma mark -
-# pragma mark Execution
 
   void setCallback(time_event::ExecutionCallback) override;
 
@@ -63,15 +38,9 @@ public:
 
   void dispose() override;
 
-# pragma mark -
-# pragma mark Edition
-
   void addState(state&&) override;
 
   void removeState(const state&) override;
-
-# pragma mark -
-# pragma mark Accessors
 
   const std::shared_ptr<time_node> & getTimeNode() const override;
 
@@ -82,9 +51,6 @@ public:
   time_event & setExpression(expression_ptr) override;
 
   Status getStatus() const override;
-
-# pragma mark -
-# pragma mark Implementation specific
 
   /* edit status and call ExecutionCallback
    \param #Status new status */

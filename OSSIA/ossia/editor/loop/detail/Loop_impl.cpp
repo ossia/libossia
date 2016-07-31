@@ -38,9 +38,6 @@ mPatternConstraintCallback(patternConstraintCallback)
 loop_impl::~loop_impl()
 {}
 
-# pragma mark -
-# pragma mark Execution
-
 state_element loop_impl::offset(time_value offset)
 {
   if (parent->getRunning())
@@ -129,9 +126,6 @@ state_element loop_impl::state()
   return mCurrentState;
 }
 
-# pragma mark -
-# pragma mark Execution - Implementation specific
-
 void loop_impl::start()
 {}
 
@@ -157,9 +151,6 @@ void loop_impl::resume()
 {
   mPatternConstraint->resume();
 }
-
-# pragma mark -
-# pragma mark Accessors
 
 const std::shared_ptr<time_constraint> loop_impl::getPatternTimeConstraint() const
 {

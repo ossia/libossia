@@ -1,19 +1,3 @@
-/*!
- * \file Clock.h
- *
- * \defgroup Editor
- *
- * \brief
- *
- * \details
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 
 #include <memory>
@@ -24,17 +8,9 @@
 
 namespace ossia
 {
-
 class OSSIA_EXPORT clock
 {
-
 public:
-
-#if 0
-# pragma mark -
-# pragma mark Definitions
-#endif
-
   /*! to get the clock execution back
    \param clock position
    \param clock date
@@ -44,10 +20,6 @@ public:
    enum ClockExecutionStatus { RUNNING, STOPPED };
    using ExecutionStatusCallback = std::function<void(ClockExecutionStatus)>;
 
-#if 0
-# pragma mark -
-# pragma mark Enumerations
-#endif
 
   /*! how the time flows for the clock */
   enum class DriveMode
@@ -56,10 +28,6 @@ public:
     EXTERNAL  // the tick method is called from outside the clock
   };
 
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
 
   /*! factory
    \param #ExecutionCallback
@@ -79,10 +47,6 @@ public:
   /*! destructor */
   virtual ~clock();
 
-#if 0
-# pragma mark -
-# pragma mark Execution
-#endif
 
   /*! start the clock */
   virtual void start() = 0;
@@ -110,10 +74,6 @@ public:
    */
   virtual bool tick(time_value usec) = 0;
 
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
 
   /*! get the duration of the clock
    \return const #TimeValue duration */

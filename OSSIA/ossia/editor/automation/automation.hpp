@@ -1,19 +1,3 @@
-/*!
- * \file Automation.h
- *
- * \defgroup Editor
- *
- * \brief
- *
- * \details
- *
- * \author Clément Bossut
- * \author Théo de la Hogue
- *
- * \copyright This code is licensed under the terms of the "CeCILL-C"
- * http://www.cecill.info
- */
-
 #pragma once
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/detail/ptr_container.hpp>
@@ -27,12 +11,7 @@ namespace net { class address_base; }
 class OSSIA_EXPORT automation :
     public virtual time_process
 {
-
 public:
-#if 0
-# pragma mark -
-# pragma mark Life cycle
-#endif
   /*! factory
    \param the address to drive
    \param how to drive the address
@@ -43,11 +22,6 @@ public:
 
   /*! destructor */
   virtual ~automation();
-
-#if 0
-# pragma mark -
-# pragma mark Accessors
-#endif
 
   /*! get the address to drive
    \return driven address */
