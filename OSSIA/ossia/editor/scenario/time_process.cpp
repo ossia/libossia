@@ -4,6 +4,5 @@ namespace ossia
 {
 time_process::~time_process()
 {
-
 }
 }

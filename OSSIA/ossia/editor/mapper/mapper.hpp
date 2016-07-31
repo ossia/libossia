@@ -1,15 +1,16 @@
 #pragma once
 #include <list>
 
-#include <ossia/editor/scenario/clock.hpp>
-#include <ossia/editor/state/state.hpp>
-#include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/detail/ptr_container.hpp>
+#include <ossia/editor/scenario/clock.hpp>
+#include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/editor/state/state.hpp>
 #include <ossia_export.h>
 
 namespace ossia
 {
-namespace net {
+namespace net
+{
 class address_base;
 }
 class value;
@@ -24,9 +25,8 @@ public:
    \param the driven address
    \param how to map the driver address value on the driven address value
    \return a new mapper */
-  static std::shared_ptr<mapper> create(net::address_base&,
-                                        net::address_base&,
-                                        const value&);
+  static std::shared_ptr<mapper>
+  create(net::address_base&, net::address_base&, const value&);
 
   /*! destructor */
   virtual ~mapper();

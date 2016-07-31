@@ -11,5 +11,4 @@ namespace ossia
  \return Y value */
 template <typename Y>
 using curve_segment = std::function<Y(double, Y, Y)>;
-
 }

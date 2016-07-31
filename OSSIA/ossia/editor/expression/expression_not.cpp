@@ -1,14 +1,12 @@
-#include <ossia/editor/expression/expression_not.hpp>
 #include <ossia/editor/expression/expression.hpp>
+#include <ossia/editor/expression/expression_not.hpp>
 
 namespace ossia
 {
 namespace expressions
 {
-expression_not::expression_not(expression_ptr p):
-  mExpression{std::move(p)}
+expression_not::expression_not(expression_ptr p) : mExpression{std::move(p)}
 {
-
 }
 
 expression_not::~expression_not()
@@ -33,10 +31,8 @@ expression_base& expression_not::getExpression() const
 
 void expression_not::onFirstCallbackAdded()
 {
-  mResultCallbackIndex =
-      expressions::add_callback(
-        *mExpression,
-        [&] (bool result) { resultCallback(result); });
+  mResultCallbackIndex = expressions::add_callback(
+      *mExpression, [&](bool result) { resultCallback(result); });
 }
 
 void expression_not::onRemovingLastCallback()

@@ -6,18 +6,19 @@ namespace detail
 
 mapper_impl::mapper_impl(
     ossia::net::address_base& driverAddress,
-    ossia::net::address_base& drivenAddress,
-    const ossia::value& drive) :
-  time_process_impl(),
-  mDriverAddress{driverAddress},
-  mDrivenAddress{drivenAddress},
-  mDrive{drive},
-  mLastMessage{mDrivenAddress, {}},
-  mDriverValueObserved(false)
-{}
+    ossia::net::address_base& drivenAddress, const ossia::value& drive)
+    : time_process_impl()
+    , mDriverAddress{driverAddress}
+    , mDrivenAddress{drivenAddress}
+    , mDrive{drive}
+    , mLastMessage{mDrivenAddress, {}}
+    , mDriverValueObserved(false)
+{
+}
 
 mapper_impl::~mapper_impl()
-{}
+{
+}
 
 ossia::state_element mapper_impl::offset(ossia::time_value offset)
 {
@@ -62,9 +63,7 @@ void mapper_impl::start()
   if (!mDriverValueObserved)
   {
     mDriverValueCallbackIndex = mDriverAddress.addCallback(
-                                  [this] (const ossia::value& val) {
-      driverValueCallback(val);
-    });
+        [this](const ossia::value& val) { driverValueCallback(val); });
     mDriverValueObserved = true;
     auto def_val = mDriverAddress.cloneValue();
     driverValueCallback(def_val);
@@ -82,10 +81,12 @@ void mapper_impl::stop()
 }
 
 void mapper_impl::pause()
-{}
+{
+}
 
 void mapper_impl::resume()
-{}
+{
+}
 
 const ossia::net::address_base& mapper_impl::getDriverAddress() const
 {
@@ -103,23 +104,22 @@ const ossia::value& mapper_impl::getDriving() const
 }
 
 ossia::value mapper_impl::computeValue(
-    const ossia::value& driver,
-    const ossia::value& drive)
+    const ossia::value& driver, const ossia::value& drive)
 {
   switch (drive.getType())
   {
-    case ossia::val_type::BEHAVIOR :
+    case ossia::val_type::BEHAVIOR:
     {
       auto& b = drive.get<ossia::Behavior>();
 
       auto base_curve = b.value.get();
       auto t = base_curve->getType();
-      switch(t.first)
+      switch (t.first)
       {
         case ossia::curve_segment_type::FLOAT:
         {
           auto& val = driver.get<ossia::Float>();
-          switch(t.second)
+          switch (t.second)
           {
             case ossia::curve_segment_type::FLOAT:
             {
@@ -143,7 +143,7 @@ ossia::value mapper_impl::computeValue(
         case ossia::curve_segment_type::INT:
         {
           auto& val = driver.get<ossia::Int>();
-          switch(t.second)
+          switch (t.second)
           {
             case ossia::curve_segment_type::FLOAT:
             {
@@ -167,7 +167,7 @@ ossia::value mapper_impl::computeValue(
         case ossia::curve_segment_type::BOOL:
         {
           auto& val = driver.get<ossia::Bool>();
-          switch(t.second)
+          switch (t.second)
           {
             case ossia::curve_segment_type::FLOAT:
             {
@@ -196,7 +196,7 @@ ossia::value mapper_impl::computeValue(
       break;
     }
 
-    case ossia::val_type::TUPLE :
+    case ossia::val_type::TUPLE:
     {
       auto& t_drive = drive.get<ossia::Tuple>();
 
@@ -208,7 +208,7 @@ ossia::value mapper_impl::computeValue(
         t_value.reserve(t_drive.value.size());
         auto it_driver = t_driver.value.begin();
 
-        for (const auto & e_drive : t_drive.value)
+        for (const auto& e_drive : t_drive.value)
         {
           if (it_driver == t_driver.value.end())
             break;
@@ -221,7 +221,7 @@ ossia::value mapper_impl::computeValue(
       }
     }
 
-    default :
+    default:
     {
       throw std::runtime_error("none handled drive value type");
     }

@@ -6,8 +6,7 @@ namespace ossia
 {
 namespace expressions
 {
-class OSSIA_EXPORT expression_bool final :
-    public expression_callback_container
+class OSSIA_EXPORT expression_bool final : public expression_callback_container
 {
   bool mResult;
 
@@ -21,9 +20,13 @@ public:
 
   ~expression_bool();
 
-  bool evaluate() const { return mResult; }
-  void update() const { }
-
+  bool evaluate() const
+  {
+    return mResult;
+  }
+  void update() const
+  {
+  }
 };
 }
 }

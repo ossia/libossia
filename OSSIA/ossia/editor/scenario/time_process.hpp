@@ -1,9 +1,9 @@
 #pragma once
 
-#include <memory>
-#include <string>
 #include <ossia/editor/state/state_element.hpp>
+#include <memory>
 #include <ossia_export.h>
+#include <string>
 
 namespace ossia
 {
@@ -27,17 +27,25 @@ public:
    \return std::shared_ptr<#StateElement> */
   virtual state_element offset(time_value) = 0;
 
-  /*! get a #StateElement from the process depending on its parent #TimeConstraint date
+  /*! get a #StateElement from the process depending on its parent
+   #TimeConstraint date
    \details don't call state when the parent #TimeConstraint is not running
    \return std::shared_ptr<#StateElement> */
   virtual state_element state() = 0;
 
-  virtual void start() { }
-  virtual void stop() { }
-  virtual void pause() { }
-  virtual void resume() { }
+  virtual void start()
+  {
+  }
+  virtual void stop()
+  {
+  }
+  virtual void pause()
+  {
+  }
+  virtual void resume()
+  {
+  }
 
   std::shared_ptr<time_constraint> parent;
-
 };
 }

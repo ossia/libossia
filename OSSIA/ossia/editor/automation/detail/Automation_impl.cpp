@@ -7,18 +7,17 @@
 namespace detail
 {
 automation_impl::automation_impl(
-    ossia::net::address_base& address,
-    const ossia::value& drive) :
-  time_process_impl(),
-  mDrivenAddress(address),
-  mDrive(drive),
-  mLastMessage{address, ossia::value{}}
-{}
+    ossia::net::address_base& address, const ossia::value& drive)
+    : time_process_impl()
+    , mDrivenAddress(address)
+    , mDrive(drive)
+    , mLastMessage{address, ossia::value{}}
+{
+}
 
 automation_impl::~automation_impl() = default;
 
-ossia::state_element automation_impl::offset(
-    ossia::time_value offset)
+ossia::state_element automation_impl::offset(ossia::time_value offset)
 {
   auto& par = *parent;
   if (par.getRunning())
@@ -26,8 +25,7 @@ ossia::state_element automation_impl::offset(
 
   // edit a Message handling the new Value
   return ossia::message{
-    mDrivenAddress,
-        computeValue(offset / par.getDurationNominal(), mDrive)};
+      mDrivenAddress, computeValue(offset / par.getDurationNominal(), mDrive)};
 }
 
 ossia::state_element automation_impl::state()
@@ -56,9 +54,9 @@ ossia::state_element automation_impl::state()
 
 void automation_impl::start()
 {
-  if(auto b = mDrive.try_get<ossia::Behavior>())
+  if (auto b = mDrive.try_get<ossia::Behavior>())
   {
-    if(auto& curve = b->value)
+    if (auto& curve = b->value)
     {
       curve->reset();
     }
@@ -66,13 +64,16 @@ void automation_impl::start()
 }
 
 void automation_impl::stop()
-{}
+{
+}
 
 void automation_impl::pause()
-{}
+{
+}
 
 void automation_impl::resume()
-{}
+{
+}
 
 const ossia::net::address_base& automation_impl::getDrivenAddress() const
 {
@@ -95,9 +96,9 @@ struct computeValue_visitor
   {
     auto base_curve = b.value.get();
     auto t = base_curve->getType();
-    if(t.first == ossia::curve_segment_type::DOUBLE)
+    if (t.first == ossia::curve_segment_type::DOUBLE)
     {
-      switch(t.second)
+      switch (t.second)
       {
         case ossia::curve_segment_type::FLOAT:
         {
@@ -127,7 +128,7 @@ struct computeValue_visitor
     std::vector<ossia::value> t_value;
     t_value.reserve(t.value.size());
 
-    for (const auto & e : t.value)
+    for (const auto& e : t.value)
     {
       t_value.push_back(automation_impl::computeValue(position, e));
     }
@@ -136,30 +137,59 @@ struct computeValue_visitor
   }
 
   ossia::value error() const
-  { throw std::runtime_error("Unhandled drive value type."); }
-  ossia::value operator()(const ossia::Int&) { return error(); }
-  ossia::value operator()(const ossia::Float&) { return error(); }
-  ossia::value operator()(const ossia::Bool&) { return error(); }
-  ossia::value operator()(const ossia::Char&) { return error(); }
-  ossia::value operator()(const ossia::String&) { return error(); }
-  ossia::value operator()(const ossia::Destination&) { return error(); }
-  ossia::value operator()(const ossia::Vec2f&) { return error(); }
-  ossia::value operator()(const ossia::Vec3f&) { return error(); }
-  ossia::value operator()(const ossia::Vec4f&) { return error(); }
-  ossia::value operator()(const ossia::Impulse&) { return error(); }
-
+  {
+    throw std::runtime_error("Unhandled drive value type.");
+  }
+  ossia::value operator()(const ossia::Int&)
+  {
+    return error();
+  }
+  ossia::value operator()(const ossia::Float&)
+  {
+    return error();
+  }
+  ossia::value operator()(const ossia::Bool&)
+  {
+    return error();
+  }
+  ossia::value operator()(const ossia::Char&)
+  {
+    return error();
+  }
+  ossia::value operator()(const ossia::String&)
+  {
+    return error();
+  }
+  ossia::value operator()(const ossia::Destination&)
+  {
+    return error();
+  }
+  ossia::value operator()(const ossia::Vec2f&)
+  {
+    return error();
+  }
+  ossia::value operator()(const ossia::Vec3f&)
+  {
+    return error();
+  }
+  ossia::value operator()(const ossia::Vec4f&)
+  {
+    return error();
+  }
+  ossia::value operator()(const ossia::Impulse&)
+  {
+    return error();
+  }
 };
 }
 
-ossia::value automation_impl::computeValue(
-    double position,
-    const ossia::value& drive)
+ossia::value
+automation_impl::computeValue(double position, const ossia::value& drive)
 {
   computeValue_visitor vis{position, drive};
 
-  if(drive.valid())
+  if (drive.valid())
     return eggs::variants::apply(vis, drive.v);
   throw std::runtime_error("none handled drive value type");
 }
-
 }

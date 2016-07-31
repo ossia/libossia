@@ -1,27 +1,29 @@
+#include <ossia/detail/algorithms.hpp>
 #include <ossia/editor/scenario/detail/TimeConstraint_impl.hpp>
 #include <iostream>
-#include <ossia/detail/algorithms.hpp>
 namespace detail
 {
-time_constraint_impl::time_constraint_impl(time_constraint::ExecutionCallback callback,
-                                           std::shared_ptr<time_event> startEvent,
-                                           std::shared_ptr<time_event> endEvent,
-                                           time_value nominal,
-                                           time_value min,
-                                           time_value max) :
-clock_impl([=] (time_value t, time_value t2, unsigned char c) { return ClockCallback(t, t2, c); }),
-mCallback(callback),
-mStartEvent(startEvent),
-mEndEvent(endEvent),
-mDurationNominal(nominal),
-mDurationMin(min),
-mDurationMax(max)
+time_constraint_impl::time_constraint_impl(
+    time_constraint::ExecutionCallback callback,
+    std::shared_ptr<time_event> startEvent,
+    std::shared_ptr<time_event> endEvent, time_value nominal, time_value min,
+    time_value max)
+    : clock_impl([=](time_value t, time_value t2, unsigned char c) {
+      return ClockCallback(t, t2, c);
+    })
+    , mCallback(callback)
+    , mStartEvent(startEvent)
+    , mEndEvent(endEvent)
+    , mDurationNominal(nominal)
+    , mDurationMin(min)
+    , mDurationMax(max)
 {
-    clock_impl::setDuration(mDurationNominal);
+  clock_impl::setDuration(mDurationNominal);
 }
 
 time_constraint_impl::~time_constraint_impl()
-{}
+{
+}
 
 void time_constraint_impl::start()
 {
@@ -116,17 +118,19 @@ void time_constraint_impl::resume()
   }
 }
 
-void time_constraint_impl::setCallback(time_constraint::ExecutionCallback callback)
+void time_constraint_impl::setCallback(
+    time_constraint::ExecutionCallback callback)
 {
   mCallback = callback;
 }
 
-const time_value & time_constraint_impl::getDurationNominal() const
+const time_value& time_constraint_impl::getDurationNominal() const
 {
   return mDurationNominal;
 }
 
-time_constraint & time_constraint_impl::setDurationNominal(time_value durationNominal)
+time_constraint&
+time_constraint_impl::setDurationNominal(time_value durationNominal)
 {
   mDurationNominal = durationNominal;
 
@@ -141,12 +145,12 @@ time_constraint & time_constraint_impl::setDurationNominal(time_value durationNo
   return *this;
 }
 
-const time_value & time_constraint_impl::getDurationMin() const
+const time_value& time_constraint_impl::getDurationMin() const
 {
   return mDurationMin;
 }
 
-time_constraint & time_constraint_impl::setDurationMin(time_value durationMin)
+time_constraint& time_constraint_impl::setDurationMin(time_value durationMin)
 {
   mDurationMin = durationMin;
 
@@ -156,12 +160,12 @@ time_constraint & time_constraint_impl::setDurationMin(time_value durationMin)
   return *this;
 }
 
-const time_value & time_constraint_impl::getDurationMax() const
+const time_value& time_constraint_impl::getDurationMax() const
 {
   return mDurationMax;
 }
 
-time_constraint & time_constraint_impl::setDurationMax(time_value durationMax)
+time_constraint& time_constraint_impl::setDurationMax(time_value durationMax)
 {
   mDurationMax = durationMax;
 
@@ -171,43 +175,44 @@ time_constraint & time_constraint_impl::setDurationMax(time_value durationMax)
   return *this;
 }
 
-const std::shared_ptr<time_event> & time_constraint_impl::getStartEvent() const
+const std::shared_ptr<time_event>& time_constraint_impl::getStartEvent() const
 {
   return mStartEvent;
 }
 
-const std::shared_ptr<time_event> & time_constraint_impl::getEndEvent() const
+const std::shared_ptr<time_event>& time_constraint_impl::getEndEvent() const
 {
   return mEndEvent;
 }
 
-void time_constraint_impl::addTimeProcess(std::shared_ptr<time_process> timeProcess)
+void time_constraint_impl::addTimeProcess(
+    std::shared_ptr<time_process> timeProcess)
 {
   assert(timeProcess.get());
   // store a TimeProcess if it is not already stored
-  if (find(timeProcesses().begin(),
-           timeProcesses().end(),
-           timeProcess) == timeProcesses().end())
+  if (find(timeProcesses().begin(), timeProcesses().end(), timeProcess)
+      == timeProcesses().end())
   {
     timeProcesses().push_back(timeProcess);
     timeProcess->parent = shared_from_this();
   }
 }
 
-void time_constraint_impl::removeTimeProcess(std::shared_ptr<time_process> timeProcess)
+void time_constraint_impl::removeTimeProcess(
+    std::shared_ptr<time_process> timeProcess)
 {
   auto it = find(timeProcesses().begin(), timeProcesses().end(), timeProcess);
   if (it != timeProcesses().end())
   {
-      timeProcesses().erase(it);
-      timeProcess.reset();
+    timeProcesses().erase(it);
+    timeProcess.reset();
   }
 }
 
-void time_constraint_impl::ClockCallback(time_value position, time_value date, unsigned char droppedTicks)
+void time_constraint_impl::ClockCallback(
+    time_value position, time_value date, unsigned char droppedTicks)
 {
   if (mCallback)
-      (mCallback)(position, date, state());
+    (mCallback)(position, date, state());
 }
-
 }

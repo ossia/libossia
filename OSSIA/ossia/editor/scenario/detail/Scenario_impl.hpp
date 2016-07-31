@@ -9,10 +9,10 @@
 
 #include "Clock_impl.hpp"
 #include "Scenario_impl.hpp"
-#include <ossia/editor/scenario/detail/TimeConstraint_impl.hpp>
 #include "TimeEvent_impl.hpp"
-#include <ossia/editor/scenario/detail/TimeProcess_impl.hpp>
 #include "TimeNode_impl.hpp"
+#include <ossia/editor/scenario/detail/TimeConstraint_impl.hpp>
+#include <ossia/editor/scenario/detail/TimeProcess_impl.hpp>
 
 #include <list>
 #include <utility>
@@ -25,10 +25,14 @@ class scenario_impl final : public scenario, public time_process_impl
 {
 
 private:
-  ptr_container<time_constraint>   mTimeContraints;
-  ptr_container<time_node>         mTimeNodes;         // list of all TimeNodes of the scenario (the first is the start node, the second is the end node)
+  ptr_container<time_constraint> mTimeContraints;
+  ptr_container<time_node> mTimeNodes; // list of all TimeNodes of the scenario
+                                       // (the first is the start node, the
+                                       // second is the end node)
 
-  std::list<std::pair<time_value, std::shared_ptr<time_event>>> mPastEventList; // a temporary list to order all past events to build the offset state
+  std::list<std::pair<time_value, std::shared_ptr<time_event>>>
+      mPastEventList; // a temporary list to order all past events to build the
+                      // offset state
 
 public:
   scenario_impl();
@@ -52,7 +56,7 @@ public:
 
   void removeTimeNode(const std::shared_ptr<time_node>&) override;
 
-  const std::shared_ptr<time_node> & getStartTimeNode() const override;
+  const std::shared_ptr<time_node>& getStartTimeNode() const override;
 
   const ptr_container<time_node>& timeNodes() const override;
 

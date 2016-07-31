@@ -11,8 +11,7 @@ struct OSSIA_EXPORT Char
 
   /*! constructor
    \param char value */
-  Char(char v = 0x00) :
-      value(v)
+  Char(char v = 0x00) : value(v)
   {
   }
 
@@ -21,12 +20,11 @@ struct OSSIA_EXPORT Char
   Char& operator=(const Char&) = default;
   Char& operator=(Char&&) = default;
 
-  bool operator== (const ossia::value&) const;
-  bool operator!= (const ossia::value&) const;
-  bool operator>  (const ossia::value&) const;
-  bool operator>= (const ossia::value&) const;
-  bool operator<  (const ossia::value&) const;
-  bool operator<= (const ossia::value&) const;
+  bool operator==(const ossia::value&) const;
+  bool operator!=(const ossia::value&) const;
+  bool operator>(const ossia::value&) const;
+  bool operator>=(const ossia::value&) const;
+  bool operator<(const ossia::value&) const;
+  bool operator<=(const ossia::value&) const;
 };
-
 }

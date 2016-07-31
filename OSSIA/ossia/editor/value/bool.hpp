@@ -10,8 +10,7 @@ struct OSSIA_EXPORT Bool
   bool value;
 
   /*! constructor */
-  Bool(bool v = false) :
-      value(v)
+  Bool(bool v = false) : value(v)
   {
   }
 
@@ -20,11 +19,11 @@ struct OSSIA_EXPORT Bool
   Bool& operator=(const Bool&) = default;
   Bool& operator=(Bool&&) = default;
 
-  bool operator== (const ossia::value&) const;
-  bool operator!= (const ossia::value&) const;
-  bool operator>  (const ossia::value&) const;
-  bool operator>= (const ossia::value&) const;
-  bool operator<  (const ossia::value&) const;
-  bool operator<= (const ossia::value&) const;
+  bool operator==(const ossia::value&) const;
+  bool operator!=(const ossia::value&) const;
+  bool operator>(const ossia::value&) const;
+  bool operator>=(const ossia::value&) const;
+  bool operator<(const ossia::value&) const;
+  bool operator<=(const ossia::value&) const;
 };
 }

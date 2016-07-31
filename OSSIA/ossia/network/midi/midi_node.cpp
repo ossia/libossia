@@ -1,6 +1,6 @@
-#include <ossia/network/midi/midi_node.hpp>
-#include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_address.hpp>
+#include <ossia/network/midi/midi_device.hpp>
+#include <ossia/network/midi/midi_node.hpp>
 
 namespace ossia
 {
@@ -8,11 +8,9 @@ namespace net
 {
 namespace midi
 {
-midi_node::midi_node(midi_device& aDevice, node_base& aParent):
-  mDevice{aDevice},
-  mParent{aParent}
+midi_node::midi_node(midi_device& aDevice, node_base& aParent)
+    : mDevice{aDevice}, mParent{aParent}
 {
-
 }
 
 device_base& midi_node::getDevice() const
@@ -52,7 +50,6 @@ std::unique_ptr<node_base> midi_node::makeChild(const std::string& name)
 
 void midi_node::removingChild(node_base& node)
 {
-
 }
 }
 }

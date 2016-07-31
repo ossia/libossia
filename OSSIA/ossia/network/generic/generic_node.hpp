@@ -1,7 +1,7 @@
 #pragma once
+#include <ossia/detail/callback_container.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/common/address_properties.hpp>
-#include <ossia/detail/callback_container.hpp>
 #include <functional>
 #include <map>
 namespace ossia
@@ -9,8 +9,7 @@ namespace ossia
 namespace net
 {
 class protocol_base;
-class OSSIA_EXPORT generic_node :
-    public ossia::net::node_base
+class OSSIA_EXPORT generic_node : public ossia::net::node_base
 {
 
 protected:
@@ -27,19 +26,26 @@ public:
   generic_node& operator=(generic_node&&) = delete;
 
   generic_node(
-      std::string name,
-      ossia::net::device_base& aDevice,
+      std::string name, ossia::net::device_base& aDevice,
       generic_node& aParent);
 
-  generic_node(std::string name,
-            ossia::net::device_base& aDevice);
+  generic_node(std::string name, ossia::net::device_base& aDevice);
 
   ~generic_node();
 
-  ossia::net::device_base& getDevice() const final override { return mDevice; }
-  ossia::net::node_base* getParent() const final override { return mParent; }
+  ossia::net::device_base& getDevice() const final override
+  {
+    return mDevice;
+  }
+  ossia::net::node_base* getParent() const final override
+  {
+    return mParent;
+  }
 
-  std::string getName() const override { return mName; }
+  std::string getName() const override
+  {
+    return mName;
+  }
   ossia::net::node_base& setName(std::string) override;
 
   ossia::net::address_base* getAddress() const override;
@@ -49,11 +55,9 @@ public:
 private:
   std::unique_ptr<node_base> makeChild(const std::string& name) override;
 
-  void removingChild(node_base& ) override
+  void removingChild(node_base&) override
   {
-
   }
 };
-
 }
 }

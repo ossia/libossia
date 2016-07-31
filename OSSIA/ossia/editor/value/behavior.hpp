@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/editor/curve/curve_abstract.hpp>
-#include <ossia_export.h>
 #include <memory>
+#include <ossia_export.h>
 
 namespace ossia
 {
@@ -12,8 +12,7 @@ struct OSSIA_EXPORT Behavior
   std::shared_ptr<curve_abstract> value;
 
   /*! constructor */
-  Behavior(std::shared_ptr<curve_abstract> v) :
-      value(std::move(v))
+  Behavior(std::shared_ptr<curve_abstract> v) : value(std::move(v))
   {
   }
 
@@ -22,12 +21,29 @@ struct OSSIA_EXPORT Behavior
   Behavior& operator=(const Behavior&) = default;
   Behavior& operator=(Behavior&&) = default;
 
-  bool operator== (const ossia::value&) const { return false; }
-  bool operator!= (const ossia::value&) const { return false; }
-  bool operator>  (const ossia::value&) const { return false; }
-  bool operator>= (const ossia::value&) const { return false; }
-  bool operator<  (const ossia::value&) const { return false; }
-  bool operator<= (const ossia::value&) const { return false; }
+  bool operator==(const ossia::value&) const
+  {
+    return false;
+  }
+  bool operator!=(const ossia::value&) const
+  {
+    return false;
+  }
+  bool operator>(const ossia::value&) const
+  {
+    return false;
+  }
+  bool operator>=(const ossia::value&) const
+  {
+    return false;
+  }
+  bool operator<(const ossia::value&) const
+  {
+    return false;
+  }
+  bool operator<=(const ossia::value&) const
+  {
+    return false;
+  }
 };
-
 }

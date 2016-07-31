@@ -19,7 +19,7 @@ public:
   iterator addCallback(T callback)
   {
     auto it = mCallbacks.insert(callbacks().begin(), std::move(callback));
-    if(mCallbacks.size() == 1)
+    if (mCallbacks.size() == 1)
       onFirstCallbackAdded();
     return it;
   }
@@ -28,7 +28,7 @@ public:
    \param #it Iterator to remove */
   void removeCallback(iterator it)
   {
-    if(mCallbacks.size() == 1)
+    if (mCallbacks.size() == 1)
       onRemovingLastCallback();
     mCallbacks.erase(it);
   }
@@ -36,27 +36,46 @@ public:
   /*! get callback functions
    \return #CallbackList */
   impl& callbacks()
-  { return mCallbacks; }
+  {
+    return mCallbacks;
+  }
 
   /*! get callback functions
    \return #CallbackList */
   const impl& callbacks() const
-  { return mCallbacks; }
+  {
+    return mCallbacks;
+  }
 
   /*! trigger all callbacks
    \param #args arguments to all callbacks */
-  template<typename... Args>
+  template <typename... Args>
   void send(Args&&... args)
   {
     for (auto& callback : mCallbacks)
       callback(std::forward<Args>(args)...);
   }
 
-  auto begin() { return mCallbacks.begin(); }
-  auto end() { return mCallbacks.end(); }
-  auto begin() const { return mCallbacks.begin(); }
-  auto end() const { return mCallbacks.end(); }
-  auto empty() const { return mCallbacks.empty(); }
+  auto begin()
+  {
+    return mCallbacks.begin();
+  }
+  auto end()
+  {
+    return mCallbacks.end();
+  }
+  auto begin() const
+  {
+    return mCallbacks.begin();
+  }
+  auto end() const
+  {
+    return mCallbacks.end();
+  }
+  auto empty() const
+  {
+    return mCallbacks.empty();
+  }
 
   void clear()
   {
@@ -65,38 +84,38 @@ public:
   }
 
 protected:
-  virtual void onFirstCallbackAdded() { }
-  virtual void onRemovingLastCallback() { }
+  virtual void onFirstCallbackAdded()
+  {
+  }
+  virtual void onRemovingLastCallback()
+  {
+  }
   impl mCallbacks;
-
 };
 
-template<typename T>
-typename callback_container<T>::iterator
-begin(callback_container<T>& cont)
+template <typename T>
+typename callback_container<T>::iterator begin(callback_container<T>& cont)
 {
   return cont.callbacks().begin();
 }
 
-template<typename T>
-typename callback_container<T>::iterator
-end(callback_container<T>& cont)
+template <typename T>
+typename callback_container<T>::iterator end(callback_container<T>& cont)
 {
   return cont.callbacks().end();
 }
 
-template<typename T>
+template <typename T>
 typename callback_container<T>::iterator
 cbegin(const callback_container<T>& cont)
 {
   return cont.callbacks().cbegin();
 }
 
-template<typename T>
+template <typename T>
 typename callback_container<T>::iterator
 cend(const callback_container<T>& cont)
 {
   return cont.callbacks().cend();
 }
-
 }

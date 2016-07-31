@@ -11,12 +11,11 @@ struct OSSIA_EXPORT Int
 
   /*! constructor
    \param int value */
-  Int(int v = 0):
-      value(v)
+  Int(int v = 0) : value(v)
   {
   }
 
-  template<typename T>
+  template <typename T>
   Int(T*) = delete;
 
   Int(const Int&) = default;
@@ -24,12 +23,11 @@ struct OSSIA_EXPORT Int
   Int& operator=(const Int&) = default;
   Int& operator=(Int&&) = default;
 
-  bool operator== (const ossia::value&) const;
-  bool operator!= (const ossia::value&) const;
-  bool operator>  (const ossia::value&) const;
-  bool operator>= (const ossia::value&) const;
-  bool operator<  (const ossia::value&) const;
-  bool operator<= (const ossia::value&) const;
+  bool operator==(const ossia::value&) const;
+  bool operator!=(const ossia::value&) const;
+  bool operator>(const ossia::value&) const;
+  bool operator>=(const ossia::value&) const;
+  bool operator<(const ossia::value&) const;
+  bool operator<=(const ossia::value&) const;
 };
-
 }

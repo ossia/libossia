@@ -189,6 +189,9 @@ else()
     -Wno-unknown-pragmas
     -Wnon-virtual-dtor
     -pedantic
+    -Wcast-align
+    -Wunused
+    -Wmisleading-indentation
     -Woverloaded-virtual
     -pipe
     -Werror=return-type
@@ -216,3 +219,30 @@ else()
     use_gold(ossia)
 endif()
 add_linker_warnings(ossia)
+
+# Taken from http://www.labri.fr/perso/fleury/posts/programming/using-clang-tidy-and-clang-format.html
+# Adding clang-format target if executable is found
+find_program(CLANG_FORMAT "clang-format")
+if(CLANG_FORMAT)
+    add_custom_target(
+        clang-format
+        COMMAND ${CLANG_FORMAT}
+        -i
+        ${SRCS}
+        )
+endif()
+
+# Adding clang-tidy target if executable is found
+find_program(CLANG_TIDY "clang-tidy")
+if(CLANG_TIDY)
+    add_custom_target(
+        clang-tidy
+        COMMAND ${CLANG_TIDY}
+        ${SRCS}
+        -config=''
+        --
+        -std=c++14
+        ${INCLUDE_DIRECTORIES}
+        )
+endif()
+

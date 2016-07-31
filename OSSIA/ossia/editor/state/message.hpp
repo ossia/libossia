@@ -7,22 +7,27 @@
 
 namespace ossia
 {
-namespace net {
+namespace net
+{
 class address_base;
 }
 struct OSSIA_EXPORT message
 {
-        std::reference_wrapper<ossia::net::address_base> address;
-        ossia::value value;
+  std::reference_wrapper<ossia::net::address_base> address;
+  ossia::value value;
 
-        void launch() const;
+  void launch() const;
 
-        friend bool operator==(const message& lhs, const message& rhs)
-        { return &lhs.address.get() == &rhs.address.get() && &lhs.value == &rhs.value; }
+  friend bool operator==(const message& lhs, const message& rhs)
+  {
+    return &lhs.address.get() == &rhs.address.get()
+           && &lhs.value == &rhs.value;
+  }
 
-        friend bool operator!=(const message& lhs, const message& rhs)
-        { return &lhs.address.get() != &rhs.address.get() || &lhs.value != &rhs.value; }
+  friend bool operator!=(const message& lhs, const message& rhs)
+  {
+    return &lhs.address.get() != &rhs.address.get()
+           || &lhs.value != &rhs.value;
+  }
 };
-
-
 }

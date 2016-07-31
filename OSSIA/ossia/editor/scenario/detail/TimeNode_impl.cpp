@@ -3,10 +3,10 @@
 namespace detail
 {
 
-time_node_impl::time_node_impl(time_node::execution_callback callback) :
-mCallback(callback),
-mExpression(expressions::make_expression_true())
-{}
+time_node_impl::time_node_impl(time_node::execution_callback callback)
+    : mCallback(callback), mExpression(expressions::make_expression_true())
+{
+}
 
 time_node_impl::~time_node_impl() = default;
 
@@ -20,7 +20,8 @@ bool time_node_impl::trigger()
   // if all TimeEvents are not PENDING
   if (mPendingEvents.size() != timeEvents().size())
   {
-    // stop expression observation because the TimeNode is not ready to be processed
+    // stop expression observation because the TimeNode is not ready to be
+    // processed
     observeExpressionResult(false);
 
     // the triggering failed
@@ -58,12 +59,17 @@ time_value time_node_impl::getDate() const
   // ignoring zero duration time constraint
   if (!timeEvents().empty())
   {
-    for (auto & timeEvent : timeEvents())
+    for (auto& timeEvent : timeEvents())
     {
       if (!timeEvent->previousTimeConstraints().empty())
       {
-        if (timeEvent->previousTimeConstraints()[0]->getDurationNominal() > Zero)
-          return timeEvent->previousTimeConstraints()[0]->getDurationNominal() + timeEvent->previousTimeConstraints()[0]->getStartEvent()->getTimeNode()->getDate();
+        if (timeEvent->previousTimeConstraints()[0]->getDurationNominal()
+            > Zero)
+          return timeEvent->previousTimeConstraints()[0]->getDurationNominal()
+                 + timeEvent->previousTimeConstraints()[0]
+                       ->getStartEvent()
+                       ->getTimeNode()
+                       ->getDate();
       }
     }
   }
@@ -76,7 +82,7 @@ const expression& time_node_impl::getExpression() const
   return *mExpression;
 }
 
-time_node & time_node_impl::setExpression(expression_ptr exp)
+time_node& time_node_impl::setExpression(expression_ptr exp)
 {
   assert(exp);
   mExpression = std::move(exp);
@@ -88,19 +94,19 @@ time_value time_node_impl::getSimultaneityMargin() const
   return mSimultaneityMargin;
 }
 
-time_node & time_node_impl::setSimultaneityMargin(time_value simultaneityMargin)
+time_node& time_node_impl::setSimultaneityMargin(time_value simultaneityMargin)
 {
   mSimultaneityMargin = simultaneityMargin;
   return *this;
 }
 
-time_node_impl::iterator time_node_impl::emplace(const_iterator pos,
-                                                 time_event::ExecutionCallback callback,
-                                                 ossia::expression_ptr exp)
+time_node_impl::iterator time_node_impl::emplace(
+    const_iterator pos, time_event::ExecutionCallback callback,
+    ossia::expression_ptr exp)
 {
   return timeEvents().insert(
-        pos,
-        std::make_shared<time_event_impl>(callback, shared_from_this(), std::move(exp)));
+      pos, std::make_shared<time_event_impl>(
+               callback, shared_from_this(), std::move(exp)));
 }
 
 void time_node_impl::process(ptr_container<time_event>& statusChangedEvents)
@@ -113,7 +119,8 @@ void time_node_impl::process(ptr_container<time_event>& statusChangedEvents)
 
   for (auto& timeEvent : timeEvents())
   {
-    std::shared_ptr<time_event_impl> e = std::dynamic_pointer_cast<time_event_impl>(timeEvent);
+    std::shared_ptr<time_event_impl> e
+        = std::dynamic_pointer_cast<time_event_impl>(timeEvent);
 
     switch (timeEvent->getStatus())
     {
@@ -125,18 +132,21 @@ void time_node_impl::process(ptr_container<time_event>& statusChangedEvents)
         for (auto& timeConstraint : timeEvent->previousTimeConstraints())
         {
           // previous TimeConstraints with a DISPOSED start event are ignored
-          if (timeConstraint->getStartEvent()->getStatus() == time_event::Status::DISPOSED)
+          if (timeConstraint->getStartEvent()->getStatus()
+              == time_event::Status::DISPOSED)
             continue;
 
           // previous TimeConstraint with a none HAPPENED start event
           // can't have reached its minimal duration
-          if (timeConstraint->getStartEvent()->getStatus() != time_event::Status::HAPPENED)
+          if (timeConstraint->getStartEvent()->getStatus()
+              != time_event::Status::HAPPENED)
           {
             minimalDurationReached = false;
             break;
           }
 
-          // previous TimeConstraint which doesn't reached its minimal duration force to quit
+          // previous TimeConstraint which doesn't reached its minimal duration
+          // force to quit
           if (timeConstraint->getDate() < timeConstraint->getDurationMin())
           {
             minimalDurationReached = false;
@@ -165,12 +175,15 @@ void time_node_impl::process(ptr_container<time_event>& statusChangedEvents)
         break;
       }
 
-      // HAPPENED TimeEvent propagates recursively the execution to the end of each next TimeConstraints
+      // HAPPENED TimeEvent propagates recursively the execution to the end of
+      // each next TimeConstraints
       case time_event::Status::HAPPENED:
       {
         for (auto& timeConstraint : timeEvent->nextTimeConstraints())
         {
-          std::shared_ptr<time_node_impl> n = std::dynamic_pointer_cast<time_node_impl>(timeConstraint->getEndEvent()->getTimeNode());
+          std::shared_ptr<time_node_impl> n
+              = std::dynamic_pointer_cast<time_node_impl>(
+                  timeConstraint->getEndEvent()->getTimeNode());
           n->process(statusChangedEvents);
         }
 
@@ -199,8 +212,7 @@ void time_node_impl::process(ptr_container<time_event>& statusChangedEvents)
   // update the expression one time
   // then observe and evaluate TimeNode's expression before to trig
   // only if no maximal duration have been reached
-  if (*mExpression != expressions::expression_true &&
-      !maximalDurationReached)
+  if (*mExpression != expressions::expression_true && !maximalDurationReached)
   {
     if (!isObservingExpression())
       expressions::update(*mExpression);
@@ -227,7 +239,8 @@ bool time_node_impl::isObservingExpression()
 
 void time_node_impl::observeExpressionResult(bool observe)
 {
-  if (!mExpression || *mExpression == expressions::expression_true || *mExpression == expressions::expression_false)
+  if (!mExpression || *mExpression == expressions::expression_true
+      || *mExpression == expressions::expression_false)
     return;
 
   if (observe != mObserveExpression)
@@ -240,13 +253,14 @@ void time_node_impl::observeExpressionResult(bool observe)
       // pull value
 
       // start expression observation
-      mResultCallbackIndex = expressions::add_callback(*mExpression, [&] (bool result) { resultCallback(result); });
+      mResultCallbackIndex = expressions::add_callback(
+          *mExpression, [&](bool result) { resultCallback(result); });
       mCallbackSet = true;
     }
     else
     {
       // stop expression observation
-      if(wasObserving && mCallbackSet)
+      if (wasObserving && mCallbackSet)
       {
         expressions::remove_callback(*mExpression, mResultCallbackIndex);
         mCallbackSet = false;
@@ -258,7 +272,7 @@ void time_node_impl::observeExpressionResult(bool observe)
 void time_node_impl::resultCallback(bool result)
 {
   //! \note the result of the expression is not exploited here.
-  //! \note the observation of the expression allows to observe all Destination value contained into it.
+  //! \note the observation of the expression allows to observe all Destination
+  //! value contained into it.
 }
-
 }

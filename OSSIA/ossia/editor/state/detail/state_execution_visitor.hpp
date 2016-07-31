@@ -4,8 +4,10 @@ namespace ossia
 {
 struct state_execution_visitor
 {
-        template<typename T>
-        void operator()(const T& m)
-        { m.launch(); }
+  template <typename T>
+  void operator()(const T& m)
+  {
+    m.launch();
+  }
 };
 }

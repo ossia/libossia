@@ -1,5 +1,5 @@
-#include <ossia/editor/expression/expression_atom.hpp>
 #include <ossia/editor/expression/expression.hpp>
+#include <ossia/editor/expression/expression_atom.hpp>
 
 namespace ossia
 {
@@ -7,19 +7,16 @@ namespace expressions
 {
 expression_atom::~expression_atom() = default;
 
-expression_atom::expression_atom(const value& lhs, expression_atom::Comparator op, const value& rhs):
-  mFirstValue(lhs),
-  mOperator(op),
-  mSecondValue(rhs)
+expression_atom::expression_atom(
+    const value& lhs, expression_atom::Comparator op, const value& rhs)
+    : mFirstValue(lhs), mOperator(op), mSecondValue(rhs)
 {
-
 }
 
 bool expression_atom::evaluate() const
 {
   return do_evaluation(mFirstValue, mSecondValue);
 }
-
 
 void expression_atom::update() const
 {
@@ -44,8 +41,7 @@ void expression_atom::update() const
   }
 }
 
-
-const value&expression_atom::getFirstOperand() const
+const value& expression_atom::getFirstOperand() const
 {
   return mFirstValue;
 }
@@ -55,11 +51,10 @@ expression_atom::Comparator expression_atom::getOperator() const
   return mOperator;
 }
 
-const value&expression_atom::getSecondOperand() const
+const value& expression_atom::getSecondOperand() const
 {
   return mSecondValue;
 }
-
 
 void expression_atom::onFirstCallbackAdded()
 {
@@ -71,7 +66,7 @@ void expression_atom::onFirstCallbackAdded()
     if (const auto& addr = d.value->getAddress())
     {
       mFirstValueCallbackIndex = addr->addCallback(
-                                   [&] (const ossia::value& result) { firstValueCallback(result); });
+          [&](const ossia::value& result) { firstValueCallback(result); });
     }
   }
 
@@ -83,7 +78,7 @@ void expression_atom::onFirstCallbackAdded()
     if (const auto& addr = d.value->getAddress())
     {
       mSecondValueCallbackIndex = addr->addCallback(
-                                    [&] (const ossia::value& result) { secondValueCallback(result); });
+          [&](const ossia::value& result) { secondValueCallback(result); });
     }
   }
 }
@@ -113,51 +108,50 @@ void expression_atom::onRemovingLastCallback()
   }
 }
 
-
-bool expression_atom::do_evaluation(const value& first, const value& second) const
+bool expression_atom::do_evaluation(
+    const value& first, const value& second) const
 {
   switch (mOperator)
   {
-    case Comparator::EQUAL :
+    case Comparator::EQUAL:
     {
       return first == second;
     }
-    case Comparator::DIFFERENT :
+    case Comparator::DIFFERENT:
     {
       return first != second;
     }
-    case Comparator::GREATER_THAN :
+    case Comparator::GREATER_THAN:
     {
       return first > second;
     }
-    case Comparator::LOWER_THAN :
+    case Comparator::LOWER_THAN:
     {
       return first < second;
     }
-    case Comparator::GREATER_THAN_OR_EQUAL :
+    case Comparator::GREATER_THAN_OR_EQUAL:
     {
       return first >= second;
     }
-    case Comparator::LOWER_THAN_OR_EQUAL :
+    case Comparator::LOWER_THAN_OR_EQUAL:
     {
       return first <= second;
     }
-    default :
+    default:
       return false;
   }
 }
 
 void expression_atom::firstValueCallback(const value& value)
 {
-  if(mSecondValue.valid())
+  if (mSecondValue.valid())
     send(do_evaluation(value, mSecondValue));
 }
 
 void expression_atom::secondValueCallback(const value& value)
 {
-  if(mSecondValue.valid())
+  if (mSecondValue.valid())
     send(do_evaluation(mFirstValue, value));
 }
-
 }
 }

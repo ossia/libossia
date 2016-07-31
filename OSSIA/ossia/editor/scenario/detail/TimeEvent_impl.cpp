@@ -3,13 +3,13 @@
 #include <ossia/editor/state/state_element.hpp>
 namespace detail
 {
-time_event_impl::time_event_impl(time_event::ExecutionCallback callback,
-                                 std::shared_ptr<time_node> aTimeNode,
-                                 expression_ptr anExpression) :
-mCallback(callback),
-mTimeNode(aTimeNode),
-mStatus(time_event::Status::NONE),
-mExpression(std::move(anExpression))
+time_event_impl::time_event_impl(
+    time_event::ExecutionCallback callback,
+    std::shared_ptr<time_node> aTimeNode, expression_ptr anExpression)
+    : mCallback(callback)
+    , mTimeNode(aTimeNode)
+    , mStatus(time_event::Status::NONE)
+    , mExpression(std::move(anExpression))
 {
 }
 
@@ -40,7 +40,7 @@ void time_event_impl::happen()
   }
 
   if (mCallback)
-      (mCallback)(mStatus);
+    (mCallback)(mStatus);
 }
 
 void time_event_impl::dispose()
@@ -55,9 +55,11 @@ void time_event_impl::dispose()
   {
     bool dispose = true;
 
-    for (auto& previousTimeConstraint : nextTimeConstraint->getEndEvent()->previousTimeConstraints())
+    for (auto& previousTimeConstraint :
+         nextTimeConstraint->getEndEvent()->previousTimeConstraints())
     {
-      if (previousTimeConstraint->getStartEvent()->getStatus() != time_event::Status::DISPOSED)
+      if (previousTimeConstraint->getStartEvent()->getStatus()
+          != time_event::Status::DISPOSED)
       {
         dispose = false;
         break;
@@ -69,20 +71,20 @@ void time_event_impl::dispose()
   }
 
   if (mCallback)
-      (mCallback)(mStatus);
+    (mCallback)(mStatus);
 }
 
 void time_event_impl::addState(state&& state)
 {
-    mState.add(state_element{std::move(state)});
+  mState.add(state_element{std::move(state)});
 }
 
 void time_event_impl::removeState(const state& state)
 {
-    mState.remove(state);
+  mState.remove(state);
 }
 
-const std::shared_ptr<time_node> & time_event_impl::getTimeNode() const
+const std::shared_ptr<time_node>& time_event_impl::getTimeNode() const
 {
   return mTimeNode;
 }
@@ -92,12 +94,12 @@ const state& time_event_impl::getState() const
   return mState;
 }
 
-const expression & time_event_impl::getExpression() const
+const expression& time_event_impl::getExpression() const
 {
   return *mExpression;
 }
 
-time_event & time_event_impl::setExpression(expression_ptr exp)
+time_event& time_event_impl::setExpression(expression_ptr exp)
 {
   assert(exp);
 
@@ -115,7 +117,6 @@ void time_event_impl::setStatus(Status status)
 {
   mStatus = status;
   if (mCallback)
-      (mCallback)(mStatus);
+    (mCallback)(mStatus);
 }
-
 }

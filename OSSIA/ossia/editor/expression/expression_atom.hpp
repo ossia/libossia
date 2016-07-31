@@ -12,8 +12,7 @@ namespace ossia
 {
 namespace expressions
 {
-class OSSIA_EXPORT expression_atom :
-    public expression_callback_container
+class OSSIA_EXPORT expression_atom : public expression_callback_container
 {
 public:
   enum class Comparator
@@ -26,9 +25,9 @@ public:
     LOWER_THAN_OR_EQUAL
   };
 
-  expression_atom(const value& lhs,
-                  Comparator op = Comparator::EQUAL,
-                  const value& rhs = Impulse{});
+  expression_atom(
+      const value& lhs, Comparator op = Comparator::EQUAL,
+      const value& rhs = Impulse{});
   expression_atom(expression_atom&& other) = delete;
   expression_atom& operator=(expression_atom&& other) = delete;
 
@@ -59,8 +58,6 @@ private:
 
   net::address_base::callback_index mFirstValueCallbackIndex;
   net::address_base::callback_index mSecondValueCallbackIndex;
-
 };
-
 }
 }

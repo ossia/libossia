@@ -1,12 +1,19 @@
 #pragma once
-#include <utility>
 #include <ossia_export.h>
+#include <utility>
 
 namespace ossia
 {
 
-enum class curve_segment_type { INT, FLOAT, DOUBLE, BOOL };
-using curve_type = std::pair<ossia::curve_segment_type, ossia::curve_segment_type>;
+enum class curve_segment_type
+{
+  INT,
+  FLOAT,
+  DOUBLE,
+  BOOL
+};
+using curve_type
+    = std::pair<ossia::curve_segment_type, ossia::curve_segment_type>;
 
 class OSSIA_EXPORT curve_abstract
 {
@@ -21,5 +28,4 @@ public:
    * Call before a new execution. */
   virtual void reset() = 0;
 };
-
 }

@@ -8,7 +8,7 @@ namespace
 {
 struct evaluate_visitor
 {
-  template<typename T>
+  template <typename T>
   bool operator()(const T& e)
   {
     return e.evaluate();
@@ -17,7 +17,7 @@ struct evaluate_visitor
 
 struct update_visitor
 {
-  template<typename T>
+  template <typename T>
   void operator()(const T& e)
   {
     e.update();
@@ -28,7 +28,7 @@ struct add_callback_visitor
 {
   expression_result_callback cb;
 
-  template<typename T>
+  template <typename T>
   expression_callback_iterator operator()(T& e)
   {
     return e.addCallback(std::move(cb));
@@ -38,7 +38,7 @@ struct add_callback_visitor
 struct remove_callback_visitor
 {
   expression_callback_iterator it;
-  template<typename T>
+  template <typename T>
   void operator()(T& e)
   {
     e.removeCallback(it);
@@ -47,7 +47,7 @@ struct remove_callback_visitor
 
 struct get_callbacks_visitor
 {
-  template<typename T>
+  template <typename T>
   const expression_callback_container::impl& operator()(const T& e)
   {
     return e.callbacks();
@@ -56,7 +56,7 @@ struct get_callbacks_visitor
 
 struct different_visitor
 {
-  template<typename T, typename U>
+  template <typename T, typename U>
   bool operator()(const T& lhs, const U& rhs)
   {
     return true;
@@ -64,10 +64,9 @@ struct different_visitor
 
   bool operator()(const expression_atom& lhs, const expression_atom& rhs)
   {
-    return
-        value(lhs.getFirstOperand()) != value(rhs.getFirstOperand())
-        || lhs.getOperator() != rhs.getOperator()
-        || value(lhs.getSecondOperand()) != value(rhs.getSecondOperand());
+    return value(lhs.getFirstOperand()) != value(rhs.getFirstOperand())
+           || lhs.getOperator() != rhs.getOperator()
+           || value(lhs.getSecondOperand()) != value(rhs.getSecondOperand());
   }
 
   bool operator()(const expression_bool& lhs, const expression_bool& rhs)
@@ -75,28 +74,32 @@ struct different_visitor
     return lhs.evaluate() != rhs.evaluate();
   }
 
-  bool operator()(const expression_composition& lhs, const expression_composition& rhs)
+  bool operator()(
+      const expression_composition& lhs, const expression_composition& rhs)
   {
-    return
-        lhs.getOperator() != rhs.getOperator()
-        || eggs::variants::apply(*this, lhs.getFirstOperand(), rhs.getFirstOperand())
-        || eggs::variants::apply(*this, lhs.getSecondOperand(), rhs.getSecondOperand());
+    return lhs.getOperator() != rhs.getOperator()
+           || eggs::variants::apply(
+                  *this, lhs.getFirstOperand(), rhs.getFirstOperand())
+           || eggs::variants::apply(
+                  *this, lhs.getSecondOperand(), rhs.getSecondOperand());
   }
 
   bool operator()(const expression_not& lhs, const expression_not& rhs)
   {
-    return eggs::variants::apply(*this, lhs.getExpression(), rhs.getExpression());
+    return eggs::variants::apply(
+        *this, lhs.getExpression(), rhs.getExpression());
   }
 
   bool operator()(const expression_pulse& lhs, const expression_pulse& rhs)
   {
-    return ossia::value(lhs.getDestination()) != ossia::value(rhs.getDestination());
+    return ossia::value(lhs.getDestination())
+           != ossia::value(rhs.getDestination());
   }
 };
 
 struct equal_visitor
 {
-  template<typename T, typename U>
+  template <typename T, typename U>
   bool operator()(const T& lhs, const U& rhs)
   {
     return false;
@@ -104,10 +107,9 @@ struct equal_visitor
 
   bool operator()(const expression_atom& lhs, const expression_atom& rhs)
   {
-    return
-        lhs.getOperator() == rhs.getOperator()
-        && value(lhs.getFirstOperand()) == value(rhs.getFirstOperand())
-        && value(lhs.getSecondOperand()) == value(rhs.getSecondOperand());
+    return lhs.getOperator() == rhs.getOperator()
+           && value(lhs.getFirstOperand()) == value(rhs.getFirstOperand())
+           && value(lhs.getSecondOperand()) == value(rhs.getSecondOperand());
   }
 
   bool operator()(const expression_bool& lhs, const expression_bool& rhs)
@@ -115,25 +117,28 @@ struct equal_visitor
     return lhs.evaluate() == rhs.evaluate();
   }
 
-  bool operator()(const expression_composition& lhs, const expression_composition& rhs)
+  bool operator()(
+      const expression_composition& lhs, const expression_composition& rhs)
   {
-    return
-        lhs.getOperator() == rhs.getOperator()
-        && eggs::variants::apply(*this, lhs.getFirstOperand(), rhs.getFirstOperand())
-        && eggs::variants::apply(*this, lhs.getSecondOperand(), rhs.getSecondOperand());
+    return lhs.getOperator() == rhs.getOperator()
+           && eggs::variants::apply(
+                  *this, lhs.getFirstOperand(), rhs.getFirstOperand())
+           && eggs::variants::apply(
+                  *this, lhs.getSecondOperand(), rhs.getSecondOperand());
   }
 
   bool operator()(const expression_not& lhs, const expression_not& rhs)
   {
-    return eggs::variants::apply(*this, lhs.getExpression(), rhs.getExpression());
+    return eggs::variants::apply(
+        *this, lhs.getExpression(), rhs.getExpression());
   }
 
   bool operator()(const expression_pulse& lhs, const expression_pulse& rhs)
   {
-    return ossia::value(lhs.getDestination()) == ossia::value(rhs.getDestination());
+    return ossia::value(lhs.getDestination())
+           == ossia::value(rhs.getDestination());
   }
 };
-
 }
 
 bool evaluate(const ossia::expressions::expression_base& e)
@@ -156,24 +161,20 @@ bool operator==(const expression_base& lhs, const expression_base& rhs)
   return eggs::variants::apply(equal_visitor{}, lhs, rhs);
 }
 
-expression_callback_iterator add_callback(
-    expression_base& e,
-    expression_result_callback cb)
+expression_callback_iterator
+add_callback(expression_base& e, expression_result_callback cb)
 {
   return eggs::variants::apply(add_callback_visitor{std::move(cb)}, e);
 }
 
-void remove_callback(
-    expression_base& e,
-    expression_callback_iterator it)
+void remove_callback(expression_base& e, expression_callback_iterator it)
 {
   return eggs::variants::apply(remove_callback_visitor{it}, e);
 }
 
-const expression_callback_container::impl &callbacks(expression_base& e)
+const expression_callback_container::impl& callbacks(expression_base& e)
 {
   return eggs::variants::apply(get_callbacks_visitor{}, e);
 }
-
 }
 }

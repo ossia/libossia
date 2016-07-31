@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.5)
 project(OSSIA)
 
 cmake_policy(SET CMP0020 NEW)
@@ -6,15 +6,13 @@ cmake_policy(SET CMP0042 NEW)
 cmake_policy(SET CMP0063 NEW)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE 1)
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
 
 option(OSSIA_SANITIZE "Sanitize build" OFF)
+option(OSSIA_TIDY "Use clang-tidy" OFF)
 
-if (OSSIA_COVERALLS)
-    include(Coveralls)
-    coveralls_turn_on_coverage()
-endif()
 
 set(CMAKE_CXX_STANDARD 14)
 

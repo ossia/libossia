@@ -6,15 +6,17 @@
 #include <ossia/editor/scenario/time_node.hpp>
 #include <ossia/editor/state/state.hpp>
 
-#include <ossia/editor/scenario/detail/TimeConstraint_impl.hpp>
-#include "TimeNode_impl.hpp"
 #include "Scenario_impl.hpp"
+#include "TimeNode_impl.hpp"
+#include <ossia/editor/scenario/detail/TimeConstraint_impl.hpp>
 
 using namespace ossia;
 
 namespace detail
 {
-class time_event_impl final : public time_event, public std::enable_shared_from_this<time_event_impl>
+class time_event_impl final
+    : public time_event,
+      public std::enable_shared_from_this<time_event_impl>
 {
 private:
   time_event::ExecutionCallback mCallback;
@@ -26,9 +28,9 @@ private:
   expression_ptr mExpression;
 
 public:
-  time_event_impl(time_event::ExecutionCallback,
-                  std::shared_ptr<time_node> aTimeNode,
-                  expression_ptr anExpression);
+  time_event_impl(
+      time_event::ExecutionCallback, std::shared_ptr<time_node> aTimeNode,
+      expression_ptr anExpression);
 
   ~time_event_impl();
 
@@ -42,13 +44,13 @@ public:
 
   void removeState(const state&) override;
 
-  const std::shared_ptr<time_node> & getTimeNode() const override;
+  const std::shared_ptr<time_node>& getTimeNode() const override;
 
   const state& getState() const override;
 
   const expression& getExpression() const override;
 
-  time_event & setExpression(expression_ptr) override;
+  time_event& setExpression(expression_ptr) override;
 
   Status getStatus() const override;
 

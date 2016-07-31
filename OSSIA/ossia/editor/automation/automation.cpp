@@ -3,14 +3,11 @@
 
 namespace ossia
 {
-std::shared_ptr<automation> automation::create(
-        ossia::net::address_base& address,
-        const value& drive)
+std::shared_ptr<automation>
+automation::create(ossia::net::address_base& address, const value& drive)
 {
-    return std::make_shared<detail::automation_impl>(address, drive);
+  return std::make_shared<detail::automation_impl>(address, drive);
 }
 
 automation::~automation() = default;
 }
-
-

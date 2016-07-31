@@ -8,29 +8,30 @@ class OSSIA_EXPORT time_value
 {
 
 public:
-
   /*! constructor
    \param int value */
-  time_value(double d = 0.): m_value{d} { }
+  time_value(double d = 0.) : m_value{d}
+  {
+  }
 
   /*! destructor */
   ~time_value() = default;
 
   /*! assignation operator */
-  time_value & operator= (double d)
+  time_value& operator=(double d)
   {
     m_value = d;
     return *this;
   }
 
-  time_value & operator= (time_value t)
+  time_value& operator=(time_value t)
   {
-      m_value = t.m_value;
-      return *this;
+    m_value = t.m_value;
+    return *this;
   }
 
   /*! self addition operator */
-  time_value & operator+= (double d)
+  time_value& operator+=(double d)
   {
     if (isInfinite())
       m_value = 0.;
@@ -40,7 +41,7 @@ public:
     return *this;
   }
 
-  time_value & operator+= (time_value t)
+  time_value& operator+=(time_value t)
   {
     if (isInfinite() || t.isInfinite())
       m_value = 0.;
@@ -51,7 +52,7 @@ public:
   }
 
   /*! self substraction operator */
-  time_value & operator-= (double d)
+  time_value& operator-=(double d)
   {
     if (isInfinite())
       m_value = 0.;
@@ -61,7 +62,7 @@ public:
     return *this;
   }
 
-  time_value & operator-= (time_value t)
+  time_value& operator-=(time_value t)
   {
     if (isInfinite() || t.isInfinite())
       m_value = 0.;
@@ -71,14 +72,13 @@ public:
     return *this;
   }
 
-
   /*! addition operator */
-  time_value operator+ (double d) const
+  time_value operator+(double d) const
   {
     return time_value(m_value + d);
   }
 
-  time_value operator+ (time_value t) const
+  time_value operator+(time_value t) const
   {
     if (isInfinite() || t.isInfinite())
     {
@@ -89,12 +89,12 @@ public:
   }
 
   /*! substraction operator */
-  time_value operator- (double d) const
+  time_value operator-(double d) const
   {
     return time_value(m_value - d);
   }
 
-  time_value operator- (time_value t) const
+  time_value operator-(time_value t) const
   {
     if (isInfinite() || t.isInfinite())
     {
@@ -105,7 +105,10 @@ public:
   }
 
   /*! double casting operator */
-  operator double() const { return m_value; }
+  operator double() const
+  {
+    return m_value;
+  }
 
   /*! is the time value infinite ?
    \return bool infinite */
@@ -114,14 +117,11 @@ public:
     return std::isinf(m_value);
   }
 
-
 protected:
-
-  double  m_value;
+  double m_value;
 };
 
 const time_value Infinite{INFINITY};
 const time_value Zero{0.};
 const time_value One{1.};
-
 }

@@ -12,8 +12,7 @@ struct OSSIA_EXPORT String
 
   /*! constructor
    \param std::string value */
-  String(std::string v = {}) :
-      value(std::move(v))
+  String(std::string v = {}) : value(std::move(v))
   {
   }
 
@@ -22,12 +21,11 @@ struct OSSIA_EXPORT String
   String& operator=(const String&) = default;
   String& operator=(String&&) = default;
 
-  bool operator== (const ossia::value&) const;
-  bool operator!= (const ossia::value&) const;
-  bool operator>  (const ossia::value&) const;
-  bool operator>= (const ossia::value&) const;
-  bool operator<  (const ossia::value&) const;
-  bool operator<= (const ossia::value&) const;
+  bool operator==(const ossia::value&) const;
+  bool operator!=(const ossia::value&) const;
+  bool operator>(const ossia::value&) const;
+  bool operator>=(const ossia::value&) const;
+  bool operator<(const ossia::value&) const;
+  bool operator<=(const ossia::value&) const;
 };
-
 }

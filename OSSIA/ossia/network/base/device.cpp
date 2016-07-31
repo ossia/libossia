@@ -7,15 +7,14 @@ namespace net
 {
 device_base::~device_base() = default;
 
-device_base::device_base(std::unique_ptr<protocol_base> proto):
-    mProtocol{std::move(proto)}
+device_base::device_base(std::unique_ptr<protocol_base> proto)
+    : mProtocol{std::move(proto)}
 {
-
 }
 
-protocol_base &device_base::getProtocol() const
-{ return *mProtocol; }
-
-
+protocol_base& device_base::getProtocol() const
+{
+  return *mProtocol;
+}
 }
 }

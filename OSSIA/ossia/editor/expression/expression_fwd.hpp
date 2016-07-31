@@ -12,25 +12,24 @@ namespace expressions
 /*! to get the result back
  \param the returned result */
 using expression_result_callback = std::function<void(bool)>;
-using expression_callback_container = callback_container<expression_result_callback>;
-using expression_callback_iterator = typename expression_callback_container::iterator;
+using expression_callback_container
+    = callback_container<expression_result_callback>;
+using expression_callback_iterator =
+    typename expression_callback_container::iterator;
 class expression_atom;
 class expression_bool;
 class expression_composition;
 class expression_not;
 class expression_pulse;
 
-using expression_base = eggs::variant<
-  expression_atom,
-  expression_bool,
-  expression_composition,
-  expression_not,
-  expression_pulse>;
+using expression_base
+    = eggs::variant<expression_atom, expression_bool, expression_composition,
+                    expression_not, expression_pulse>;
 
-//concept expression_base :
+// concept expression_base :
 //    public callback_container<expression_result_callback>
 //{
-//public:
+// public:
 
 //  /*! evaluate the expression
 //   \return bool result of the evaluation */

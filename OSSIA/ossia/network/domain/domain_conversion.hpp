@@ -5,11 +5,11 @@ namespace ossia
 {
 namespace net
 {
-template<typename U>
+template <typename U>
 struct domain_conversion
 {
 
-  template<typename T>
+  template <typename T>
   domain operator()(const T&)
   {
     return U{};
@@ -18,10 +18,12 @@ struct domain_conversion
   domain operator()(const domain_base<Int>& t)
   {
     U f;
-    if(t.min) f.min = *t.min;
-    if(t.max) f.max = *t.max;
-    if(!t.values.empty())
-      for(auto val : t.values)
+    if (t.min)
+      f.min = *t.min;
+    if (t.max)
+      f.max = *t.max;
+    if (!t.values.empty())
+      for (auto val : t.values)
         f.values.insert(val);
     return f;
   }
@@ -29,10 +31,12 @@ struct domain_conversion
   domain operator()(const domain_base<Float>& t)
   {
     U f;
-    if(t.min) f.min = *t.min;
-    if(t.max) f.max = *t.max;
-    if(!t.values.empty())
-      for(auto val : t.values)
+    if (t.min)
+      f.min = *t.min;
+    if (t.max)
+      f.max = *t.max;
+    if (!t.values.empty())
+      for (auto val : t.values)
         f.values.insert(val);
     return f;
   }
@@ -40,10 +44,12 @@ struct domain_conversion
   domain operator()(const domain_base<Bool>& t)
   {
     U f;
-    if(t.min) f.min = *t.min;
-    if(t.max) f.max = *t.max;
-    if(!t.values.empty())
-      for(auto val : t.values)
+    if (t.min)
+      f.min = *t.min;
+    if (t.max)
+      f.max = *t.max;
+    if (!t.values.empty())
+      for (auto val : t.values)
         f.values.insert(val);
     return f;
   }
@@ -51,26 +57,28 @@ struct domain_conversion
   domain operator()(const domain_base<Char>& t)
   {
     U f;
-    if(t.min) f.min = *t.min;
-    if(t.max) f.max = *t.max;
-    if(!t.values.empty())
-      for(auto val : t.values)
+    if (t.min)
+      f.min = *t.min;
+    if (t.max)
+      f.max = *t.max;
+    if (!t.values.empty())
+      for (auto val : t.values)
         f.values.insert(val);
     return f;
   }
 };
 
-template<>
+template <>
 struct domain_conversion<domain_base<Impulse>>
 {
-  template<typename T>
+  template <typename T>
   domain operator()(const T&)
   {
     return domain_base<Impulse>{};
   }
 };
 
-template<>
+template <>
 struct domain_conversion<domain_base<Destination>>
 {
   domain operator()(const domain_base<Destination>& src)
@@ -78,14 +86,14 @@ struct domain_conversion<domain_base<Destination>>
     return src;
   }
 
-  template<typename T>
+  template <typename T>
   domain operator()(const T&)
   {
     return domain_base<Destination>{};
   }
 };
 
-template<>
+template <>
 struct domain_conversion<domain_base<Behavior>>
 {
   domain operator()(const domain_base<Behavior>& src)
@@ -93,14 +101,14 @@ struct domain_conversion<domain_base<Behavior>>
     return src;
   }
 
-  template<typename T>
+  template <typename T>
   domain operator()(const T&)
   {
     return domain_base<Behavior>{};
   }
 };
 
-template<>
+template <>
 struct domain_conversion<domain_base<Tuple>>
 {
   domain operator()(const domain_base<Tuple>& src)
@@ -108,14 +116,14 @@ struct domain_conversion<domain_base<Tuple>>
     return src;
   }
 
-  template<typename T>
+  template <typename T>
   domain operator()(const T&)
   {
     return domain_base<Tuple>{};
   }
 };
 
-template<int N>
+template <int N>
 struct domain_conversion<domain_base<Vec<float, N>>>
 {
   domain operator()(const domain_base<Vec<float, N>>& src)
@@ -123,14 +131,14 @@ struct domain_conversion<domain_base<Vec<float, N>>>
     return src;
   }
 
-  template<typename T>
+  template <typename T>
   domain operator()(const T&)
   {
     return domain_base<Vec<float, N>>{};
   }
 };
 
-template<>
+template <>
 struct domain_conversion<domain_base<String>>
 {
   domain operator()(const domain_base<String>& src)
@@ -138,7 +146,7 @@ struct domain_conversion<domain_base<String>>
     return src;
   }
 
-  template<typename T>
+  template <typename T>
   domain operator()(const T&)
   {
     return domain_base<String>();
@@ -147,36 +155,47 @@ struct domain_conversion<domain_base<String>>
 
 domain convert_domain(const domain& domain, ossia::val_type newtype)
 {
-  switch(newtype)
+  switch (newtype)
   {
     case val_type::IMPULSE:
-      return eggs::variants::apply(domain_conversion<domain_base<Impulse>>{}, domain);
+      return eggs::variants::apply(
+          domain_conversion<domain_base<Impulse>>{}, domain);
     case val_type::INT:
-      return eggs::variants::apply(domain_conversion<domain_base<Int>>{}, domain);
+      return eggs::variants::apply(
+          domain_conversion<domain_base<Int>>{}, domain);
     case val_type::FLOAT:
-      return eggs::variants::apply(domain_conversion<domain_base<Float>>{}, domain);
+      return eggs::variants::apply(
+          domain_conversion<domain_base<Float>>{}, domain);
     case val_type::BOOL:
-      return eggs::variants::apply(domain_conversion<domain_base<Bool>>{}, domain);
+      return eggs::variants::apply(
+          domain_conversion<domain_base<Bool>>{}, domain);
     case val_type::CHAR:
-      return eggs::variants::apply(domain_conversion<domain_base<Char>>{}, domain);
+      return eggs::variants::apply(
+          domain_conversion<domain_base<Char>>{}, domain);
     case val_type::STRING:
-      return eggs::variants::apply(domain_conversion<domain_base<String>>{}, domain);
+      return eggs::variants::apply(
+          domain_conversion<domain_base<String>>{}, domain);
     case val_type::TUPLE:
-      return eggs::variants::apply(domain_conversion<domain_base<Tuple>>{}, domain);
+      return eggs::variants::apply(
+          domain_conversion<domain_base<Tuple>>{}, domain);
     case val_type::VEC2F:
-      return eggs::variants::apply(domain_conversion<domain_base<Vec2f>>{}, domain);
+      return eggs::variants::apply(
+          domain_conversion<domain_base<Vec2f>>{}, domain);
     case val_type::VEC3F:
-      return eggs::variants::apply(domain_conversion<domain_base<Vec3f>>{}, domain);
+      return eggs::variants::apply(
+          domain_conversion<domain_base<Vec3f>>{}, domain);
     case val_type::VEC4F:
-      return eggs::variants::apply(domain_conversion<domain_base<Vec4f>>{}, domain);
+      return eggs::variants::apply(
+          domain_conversion<domain_base<Vec4f>>{}, domain);
     case val_type::DESTINATION:
-      return eggs::variants::apply(domain_conversion<domain_base<Destination>>{}, domain);
+      return eggs::variants::apply(
+          domain_conversion<domain_base<Destination>>{}, domain);
     case val_type::BEHAVIOR:
-      return eggs::variants::apply(domain_conversion<domain_base<Behavior>>{}, domain);
+      return eggs::variants::apply(
+          domain_conversion<domain_base<Behavior>>{}, domain);
     default:
       return domain{};
   }
-
 }
 }
 }

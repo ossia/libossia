@@ -1,8 +1,8 @@
 #pragma once
 
 #include <ossia/editor/scenario/clock.hpp>
-#include <ossia/editor/state/state.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/editor/state/state.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -15,7 +15,6 @@ class OSSIA_EXPORT scenario : public virtual time_process
 {
 
 public:
-
   /*! factory
    \return std::shared_ptr<#Scenario> */
   static std::shared_ptr<scenario> create();
@@ -23,13 +22,15 @@ public:
   /*! destructor */
   virtual ~scenario();
 
-  /*! add a #TimeConstraint and its #TimeNodes into the scenario if they don't already be added
+  /*! add a #TimeConstraint and its #TimeNodes into the scenario if they don't
+   already be added
    \param std::shared_ptr<#TimeConstraint> to add */
   virtual void addTimeConstraint(std::shared_ptr<time_constraint>) = 0;
 
   /*! remove a #TimeConstraint from the scenario without removing any #TimeNode
    \param std::shared_ptr<#TimeConstraint> to remove */
-  virtual void removeTimeConstraint(const std::shared_ptr<time_constraint>&) = 0;
+  virtual void removeTimeConstraint(const std::shared_ptr<time_constraint>&)
+      = 0;
 
   /*! add a #TimeNode into the scenario if it is not already added
    \param std::shared_ptr<#TimeNode> to add */
@@ -41,7 +42,7 @@ public:
 
   /*! get the node from where the scenario starts
    \return std::shared_ptr<#TimeNode> start node */
-  virtual const std::shared_ptr<time_node> & getStartTimeNode() const = 0;
+  virtual const std::shared_ptr<time_node>& getStartTimeNode() const = 0;
 
   /*! get all TimeNodes of the scenario
    \return #Container<#TimeNode> */
@@ -51,5 +52,4 @@ public:
    \return #Container<#TimeConstraint> */
   virtual const ptr_container<time_constraint>& timeConstraints() const = 0;
 };
-
 }

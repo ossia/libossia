@@ -11,8 +11,7 @@ struct OSSIA_EXPORT Float
 
   /*! constructor
    \param float value */
-  Float(float v = 0.):
-      value(v)
+  Float(float v = 0.) : value(v)
   {
   }
 
@@ -21,12 +20,11 @@ struct OSSIA_EXPORT Float
   Float& operator=(const Float&) = default;
   Float& operator=(Float&&) = default;
 
-  bool operator== (const ossia::value&) const;
-  bool operator!= (const ossia::value&) const;
-  bool operator>  (const ossia::value&) const;
-  bool operator>= (const ossia::value&) const;
-  bool operator<  (const ossia::value&) const;
-  bool operator<= (const ossia::value&) const;
+  bool operator==(const ossia::value&) const;
+  bool operator!=(const ossia::value&) const;
+  bool operator>(const ossia::value&) const;
+  bool operator>=(const ossia::value&) const;
+  bool operator<(const ossia::value&) const;
+  bool operator<=(const ossia::value&) const;
 };
-
 }

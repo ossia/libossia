@@ -2,20 +2,19 @@
 
 #include <ossia/editor/automation/automation.hpp>
 #include <ossia/editor/curve/curve.hpp>
-#include <ossia/editor/state/state_element.hpp>
 #include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/editor/scenario/time_node.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
+#include <ossia/editor/state/state_element.hpp>
 #include <ossia/editor/value/value.hpp>
 
-#include <ossia/network/base/address.hpp>
 #include <ossia/editor/scenario/detail/TimeProcess_impl.hpp>
+#include <ossia/network/base/address.hpp>
 
 namespace detail
 {
-class automation_impl final :
-    public ossia::automation,
-    public time_process_impl
+class automation_impl final : public ossia::automation,
+                              public time_process_impl
 {
 
 private:
@@ -42,6 +41,5 @@ private:
 
   const ossia::net::address_base& getDrivenAddress() const override;
   const ossia::value& getDriving() const override;
-
 };
 }

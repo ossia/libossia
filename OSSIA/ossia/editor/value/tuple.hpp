@@ -1,6 +1,6 @@
 #pragma once
-#include <ossia_export.h>
 #include <initializer_list>
+#include <ossia_export.h>
 #include <vector>
 
 namespace ossia
@@ -34,12 +34,11 @@ struct OSSIA_EXPORT Tuple
   Tuple(const value_type& v);
   Tuple(value_type&& v);
 
-  bool operator== (const ossia::value&) const;
-  bool operator!= (const ossia::value&) const;
-  bool operator>  (const ossia::value&) const;
-  bool operator>= (const ossia::value&) const;
-  bool operator<  (const ossia::value&) const;
-  bool operator<= (const ossia::value&) const;
+  bool operator==(const ossia::value&) const;
+  bool operator!=(const ossia::value&) const;
+  bool operator>(const ossia::value&) const;
+  bool operator>=(const ossia::value&) const;
+  bool operator<(const ossia::value&) const;
+  bool operator<=(const ossia::value&) const;
 };
-
 }

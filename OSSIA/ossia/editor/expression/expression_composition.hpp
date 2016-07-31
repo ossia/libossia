@@ -9,8 +9,8 @@ namespace ossia
 {
 namespace expressions
 {
-class OSSIA_EXPORT expression_composition final :
-    public expression_callback_container
+class OSSIA_EXPORT expression_composition final
+    : public expression_callback_container
 {
 public:
   enum class Operator
@@ -21,14 +21,13 @@ public:
   };
 
   expression_composition(
-      expression_ptr expr1,
-      Operator op,
-      expression_ptr expr2);
+      expression_ptr expr1, Operator op, expression_ptr expr2);
   expression_composition(expression_composition&& other) = delete;
   expression_composition& operator=(expression_composition&& other) = delete;
 
   expression_composition(const expression_composition& other) = delete;
-  expression_composition& operator=(const expression_composition& other) = delete;
+  expression_composition& operator=(const expression_composition& other)
+      = delete;
 
   virtual ~expression_composition();
 
@@ -38,7 +37,7 @@ public:
 
   expression_base& getFirstOperand() const;
   Operator getOperator() const;
-  expression_base&  getSecondOperand() const;
+  expression_base& getSecondOperand() const;
 
 private:
   void onFirstCallbackAdded() override;
@@ -55,7 +54,7 @@ private:
   expression_callback_iterator mFirstResultCallbackIndex;
   expression_callback_iterator mSecondResultCallbackIndex;
 
-  Operator  mOperator;
+  Operator mOperator;
 };
 }
 }

@@ -1,24 +1,24 @@
 #pragma once
-#include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/detail/ptr_container.hpp>
+#include <ossia/editor/scenario/time_process.hpp>
 #include <ossia_export.h>
 
 namespace ossia
 {
 class value;
 class time_value;
-namespace net { class address_base; }
-class OSSIA_EXPORT automation :
-    public virtual time_process
+namespace net
+{
+class address_base;
+}
+class OSSIA_EXPORT automation : public virtual time_process
 {
 public:
   /*! factory
    \param the address to drive
    \param how to drive the address
    \return a new automation */
-  static std::shared_ptr<automation> create(
-      net::address_base&,
-      const value&);
+  static std::shared_ptr<automation> create(net::address_base&, const value&);
 
   /*! destructor */
   virtual ~automation();

@@ -6,41 +6,39 @@ namespace net
 {
 address_base::~address_base() = default;
 
-static void getAddressFromNode_rec(
-        const node_base& n,
-        std::vector<std::string>& str)
+static void
+getAddressFromNode_rec(const node_base& n, std::vector<std::string>& str)
 {
-    if(auto p = n.getParent())
-        getAddressFromNode_rec(*p, str);
+  if (auto p = n.getParent())
+    getAddressFromNode_rec(*p, str);
 
-    str.push_back(n.getName());
+  str.push_back(n.getName());
 }
 
 std::string getAddressFromNode(const ossia::net::node_base& node)
 {
-    std::vector<std::string> vec;
-    getAddressFromNode_rec(node, vec);
+  std::vector<std::string> vec;
+  getAddressFromNode_rec(node, vec);
 
-    // vec cannot be empty.
+  // vec cannot be empty.
 
-    int i = 0;
+  std::size_t i = 0u;
 
-    std::string str;
-    str.reserve(vec.size() * 5);
-    str.append(vec.at(i++));
-    str.append(":/");
+  std::string str;
+  str.reserve(vec.size() * 5);
+  str.append(vec.at(i++));
+  str.append(":/");
 
-    int n = vec.size();
-    for(; i < n - 1; i++)
-    {
-        str.append(vec.at(i));
-        str.append("/");
-    }
-    if((n - 1) > 0)
-        str.append(vec.at(n-1));
+  auto n = vec.size();
+  for (; i < n - 1; i++)
+  {
+    str.append(vec.at(i));
+    str.append("/");
+  }
+  if ((n - 1) > 0)
+    str.append(vec.at(n - 1));
 
-    return str;
+  return str;
 }
-
 }
 }

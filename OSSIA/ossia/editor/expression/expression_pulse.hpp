@@ -4,8 +4,8 @@
 
 #include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia/editor/value/value.hpp>
-#include <ossia/network/base/node.hpp>
 #include <ossia/network/base/address.hpp>
+#include <ossia/network/base/node.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -14,8 +14,7 @@ class Destination;
 
 namespace expressions
 {
-class OSSIA_EXPORT expression_pulse :
-    public expression_callback_container
+class OSSIA_EXPORT expression_pulse : public expression_callback_container
 {
 public:
   expression_pulse(const Destination& destination);
@@ -26,7 +25,9 @@ public:
 
   virtual ~expression_pulse();
 
-  /*! evaluate if a destination value change have been observed since expression creation or since the last update
+  /*! evaluate if a destination value change have been observed since
+   expression
+   creation or since the last update
    \return true after the destination being updated */
   bool evaluate() const;
 
@@ -41,11 +42,10 @@ private:
 
   void destinationCallback(const value& value);
 
-  Destination         mDestination;
-  mutable bool        mResult{};
+  Destination mDestination;
+  mutable bool mResult{};
 
-  net::address_base::callback_index   mDestinationCallbackIndex;
-
+  net::address_base::callback_index mDestinationCallbackIndex;
 };
 }
 }
