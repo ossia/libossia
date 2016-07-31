@@ -23,6 +23,8 @@ minuit_protocol::minuit_protocol(
                 }}
 {
   name_table.set_device_name(mLocalName);
+  if(mReceiver.port() != local_port)
+    std::cerr << "Could not connect: current in port == " << mReceiver.port() << "\n";
   mReceiver.run();
 }
 
@@ -91,9 +93,21 @@ bool minuit_protocol::update(ossia::net::node_base& node)
       = name_table.get_action(ossia::minuit::minuit_action::NamespaceRequest);
   refresh(act, ossia::net::getOSCAddressAsString(node));
 
-  fut.wait_for(std::chrono::seconds(5));
+  auto status = fut.wait_for(std::chrono::seconds(5));
   // Won't return as long as the request hasn't finished.
-  return true;
+  using namespace std::chrono;
+
+  auto t1 = high_resolution_clock::now();
+  while(true)
+  {
+    auto t2 = std::chrono::high_resolution_clock::now();
+    if(duration_cast<milliseconds>(t2 - t1).count() > 1000)
+      break;
+    if(pending_get_requests == 0)
+      break;
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+  }
+  return status == std::future_status::ready;
 }
 
 bool minuit_protocol::pull(ossia::net::address_base& address)

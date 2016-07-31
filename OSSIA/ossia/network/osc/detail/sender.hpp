@@ -81,7 +81,6 @@ private:
   }
   void send_impl(const oscpack::OutboundPacketStream& m)
   {
-    debug(m);
     m_socket.Send(m.Data(), m.Size());
   }
 

@@ -153,46 +153,46 @@ struct domain_conversion<domain_base<String>>
   }
 };
 
-domain convert_domain(const domain& domain, ossia::val_type newtype)
+domain convert_domain(const domain& dom, ossia::val_type newtype)
 {
   switch (newtype)
   {
     case val_type::IMPULSE:
       return eggs::variants::apply(
-          domain_conversion<domain_base<Impulse>>{}, domain);
+          domain_conversion<domain_base<Impulse>>{}, dom);
     case val_type::INT:
       return eggs::variants::apply(
-          domain_conversion<domain_base<Int>>{}, domain);
+          domain_conversion<domain_base<Int>>{}, dom);
     case val_type::FLOAT:
       return eggs::variants::apply(
-          domain_conversion<domain_base<Float>>{}, domain);
+          domain_conversion<domain_base<Float>>{}, dom);
     case val_type::BOOL:
       return eggs::variants::apply(
-          domain_conversion<domain_base<Bool>>{}, domain);
+          domain_conversion<domain_base<Bool>>{}, dom);
     case val_type::CHAR:
       return eggs::variants::apply(
-          domain_conversion<domain_base<Char>>{}, domain);
+          domain_conversion<domain_base<Char>>{}, dom);
     case val_type::STRING:
       return eggs::variants::apply(
-          domain_conversion<domain_base<String>>{}, domain);
+          domain_conversion<domain_base<String>>{}, dom);
     case val_type::TUPLE:
       return eggs::variants::apply(
-          domain_conversion<domain_base<Tuple>>{}, domain);
+          domain_conversion<domain_base<Tuple>>{}, dom);
     case val_type::VEC2F:
       return eggs::variants::apply(
-          domain_conversion<domain_base<Vec2f>>{}, domain);
+          domain_conversion<domain_base<Vec2f>>{}, dom);
     case val_type::VEC3F:
       return eggs::variants::apply(
-          domain_conversion<domain_base<Vec3f>>{}, domain);
+          domain_conversion<domain_base<Vec3f>>{}, dom);
     case val_type::VEC4F:
       return eggs::variants::apply(
-          domain_conversion<domain_base<Vec4f>>{}, domain);
+          domain_conversion<domain_base<Vec4f>>{}, dom);
     case val_type::DESTINATION:
       return eggs::variants::apply(
-          domain_conversion<domain_base<Destination>>{}, domain);
+          domain_conversion<domain_base<Destination>>{}, dom);
     case val_type::BEHAVIOR:
       return eggs::variants::apply(
-          domain_conversion<domain_base<Behavior>>{}, domain);
+          domain_conversion<domain_base<Behavior>>{}, dom);
     default:
       return domain{};
   }

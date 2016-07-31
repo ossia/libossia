@@ -2,6 +2,7 @@
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/generic/generic_address.hpp>
 
+#include <ossia/network/domain/domain_conversion.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <iostream>
 #include <map>
@@ -132,7 +133,8 @@ ossia::net::address_base& generic_address::setValue(const ossia::value& value)
     if (mValue.v.which() != value.v.which())
     {
       mValueType = value.getType();
-      // TODO convert domain if applicable
+      if(mDomain)
+        mDomain = convert_domain(mDomain, mValueType);
     }
 
     mValue = value;
@@ -154,7 +156,8 @@ ossia::net::address_base& generic_address::setValueType(ossia::val_type type)
   mValueType = type;
 
   mValue = initValue(type);
-  // TODO convert domain if applicable
+  if(mDomain)
+    mDomain = convert_domain(mDomain, mValueType);
 
   return *this;
 }

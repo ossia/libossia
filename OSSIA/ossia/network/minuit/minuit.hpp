@@ -40,6 +40,7 @@ public:
   osc::sender sender;
   ossia::minuit::name_table name_table;
   std::promise<void> get_promise;
+  std::atomic_int pending_get_requests{};
 
 private:
   osc::receiver mReceiver;

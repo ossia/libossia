@@ -61,9 +61,9 @@ int main()
   auto localStringAddress = localStringNode->createAddress(val_type::STRING);
   localStringAddress->addCallback(printValueCallback);
 
-  auto localDestinationNode = localTestNode->createChild("my_destination");
-  auto localDestinationAddress = localDestinationNode->createAddress(val_type::DESTINATION);
-  localDestinationAddress->addCallback(printValueCallback);
+  // auto localDestinationNode = localTestNode->createChild("my_destination");
+  // auto localDestinationAddress = localDestinationNode->createAddress(val_type::DESTINATION);
+  // localDestinationAddress->addCallback(printValueCallback);
 
   auto localTupleNode = localTestNode->createChild("my_tuple");
   auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);

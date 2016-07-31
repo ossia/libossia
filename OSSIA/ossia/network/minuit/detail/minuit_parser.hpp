@@ -352,6 +352,7 @@ struct minuit_behavior<minuit_command::Answer, minuit_operation::Get>
       }
     }
 
+    proto.pending_get_requests--;
     try {
     proto.get_promise.set_value();
     } catch(...) { }
@@ -473,12 +474,29 @@ struct minuit_behavior<minuit_command::Answer,
     auto sub_request = proto.name_table.get_action(minuit_action::GetRequest);
 
     // Request all the attributes provided by the node
+    auto attribs = get_attributes(beg_it, end_it);
+    for(auto it = attribs.begin(); it != attribs.end(); )
+    {
+      if(*it == "type")
+      {
+        auto str = address.to_string() + ":type";
+        proto.pending_get_requests++;
+        proto.sender.send(sub_request, boost::string_ref(str));
+
+        it = attribs.erase(it);
+      }
+      else
+      {
+        ++it;
+      }
+    }
     for (auto attrib : get_attributes(beg_it, end_it))
     {
       // name?get address:attribute
       auto str = address.to_string();
       str += ':';
       str.append(attrib.begin(), attrib.end());
+      proto.pending_get_requests++;
       proto.sender.send(sub_request, boost::string_ref(str));
     }
   }
@@ -538,7 +556,6 @@ public:
       ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
       boost::string_ref address, const oscpack::ReceivedMessage& m)
   {
-    std::cerr << "RECV: " << m << "\n";
     // Look for either ':' or '?'
     auto idx = address.find_first_of(":?!");
 
