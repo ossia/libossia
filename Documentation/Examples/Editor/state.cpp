@@ -79,10 +79,10 @@ int main()
   }
 
   if(!samplerateAddress)
-    return;
+    return 0;
 
   if(!bitdepthAddress)
-    return;
+    return 0;
 
   cout << "editing and launching state" << endl;
 
