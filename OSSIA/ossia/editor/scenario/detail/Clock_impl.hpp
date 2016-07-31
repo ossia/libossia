@@ -26,9 +26,9 @@ using namespace ossia;
 
 using namespace std::chrono;
 
-namespace impl
+namespace detail
 {
-class JamomaClock : public virtual clock
+class clock_impl : public virtual clock
 {
 public:
   using clock_type = std::chrono::steady_clock;
@@ -66,14 +66,14 @@ public:
 # pragma mark Life cycle
 #endif
 
-  JamomaClock(clock::ExecutionCallback,
+  clock_impl(clock::ExecutionCallback,
               time_value = Infinite,
               time_value = 1.,
               time_value = 0.,
               float = 1.,
               clock::DriveMode = clock::DriveMode::INTERNAL);
 
-  ~JamomaClock();
+  ~clock_impl();
 #if 0
 # pragma mark -
 # pragma mark Execution

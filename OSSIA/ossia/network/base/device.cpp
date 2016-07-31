@@ -5,15 +5,15 @@ namespace ossia
 {
 namespace net
 {
-device::~device() = default;
+device_base::~device_base() = default;
 
-device::device(std::unique_ptr<protocol> proto):
+device_base::device_base(std::unique_ptr<protocol_base> proto):
     mProtocol{std::move(proto)}
 {
 
 }
 
-protocol &device::getProtocol() const
+protocol_base &device_base::getProtocol() const
 { return *mProtocol; }
 
 

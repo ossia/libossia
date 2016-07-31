@@ -1,13 +1,13 @@
 #include "Loop_impl.hpp"
 #include <ossia/detail/algorithms.hpp>
 
-namespace impl
+namespace detail
 {
-JamomaLoop::JamomaLoop(time_value patternDuration,
+loop_impl::loop_impl(time_value patternDuration,
                        time_constraint::ExecutionCallback patternConstraintCallback,
                        time_event::ExecutionCallback patternStartEventCallback,
                        time_event::ExecutionCallback patternEndEventCallback) :
-JamomaTimeProcess(),
+time_process_impl(),
 mPatternStartEventCallback(patternStartEventCallback),
 mPatternEndEventCallback(patternEndEventCallback),
 mPatternConstraintCallback(patternConstraintCallback)
@@ -23,7 +23,7 @@ mPatternConstraintCallback(patternConstraintCallback)
         [&] (time_event::Status result) { PatternEndEventCallback(result); });
 
   // create a pattern TimeConstraint with all durations equal by default
-  mPatternConstraint = time_constraint::create([=] (time_value position, time_value date, const State& state) {
+  mPatternConstraint = time_constraint::create([=] (time_value position, time_value date, const ossia::state& state) {
       return PatternConstraintCallback(position, date, state); },
                                               mPatternStartNode->timeEvents()[0],
                                               mPatternEndNode->timeEvents()[0],
@@ -35,13 +35,13 @@ mPatternConstraintCallback(patternConstraintCallback)
   mPatternConstraint->setDriveMode(clock::DriveMode::EXTERNAL);
 }
 
-JamomaLoop::~JamomaLoop()
+loop_impl::~loop_impl()
 {}
 
 # pragma mark -
 # pragma mark Execution
 
-StateElement JamomaLoop::offset(time_value offset)
+state_element loop_impl::offset(time_value offset)
 {
   if (parent->getRunning())
     throw std::runtime_error("parent time constraint is running");
@@ -59,7 +59,7 @@ StateElement JamomaLoop::offset(time_value offset)
   return mOffsetState;
 }
 
-StateElement JamomaLoop::state()
+state_element loop_impl::state()
 {
   if (!parent->getRunning())
     throw std::runtime_error("parent time constraint is not running");
@@ -76,7 +76,7 @@ StateElement JamomaLoop::state()
 
     // process the loop from the pattern start TimeNode
     ptr_container<time_event> statusChangedEvents;
-    std::shared_ptr<JamomaTimeNode> n = std::dynamic_pointer_cast<JamomaTimeNode>(mPatternStartNode);
+    std::shared_ptr<time_node_impl> n = std::dynamic_pointer_cast<time_node_impl>(mPatternStartNode);
     n->process(statusChangedEvents);
 
     // add the state of each newly HAPPENED TimeEvent
@@ -132,28 +132,28 @@ StateElement JamomaLoop::state()
 # pragma mark -
 # pragma mark Execution - Implementation specific
 
-void JamomaLoop::start()
+void loop_impl::start()
 {}
 
-void JamomaLoop::stop()
+void loop_impl::stop()
 {
   mPatternConstraint->stop();
 
   mPatternConstraint->offset(Zero);
 
-  std::shared_ptr<JamomaTimeEvent> start = std::dynamic_pointer_cast<JamomaTimeEvent>(mPatternConstraint->getStartEvent());
+  std::shared_ptr<time_event_impl> start = std::dynamic_pointer_cast<time_event_impl>(mPatternConstraint->getStartEvent());
   start->setStatus(time_event::Status::PENDING);
 
-  std::shared_ptr<JamomaTimeEvent> end = std::dynamic_pointer_cast<JamomaTimeEvent>(mPatternConstraint->getEndEvent());
+  std::shared_ptr<time_event_impl> end = std::dynamic_pointer_cast<time_event_impl>(mPatternConstraint->getEndEvent());
   end->setStatus(time_event::Status::NONE);
 }
 
-void JamomaLoop::pause()
+void loop_impl::pause()
 {
   mPatternConstraint->pause();
 }
 
-void JamomaLoop::resume()
+void loop_impl::resume()
 {
   mPatternConstraint->resume();
 }
@@ -161,25 +161,25 @@ void JamomaLoop::resume()
 # pragma mark -
 # pragma mark Accessors
 
-const std::shared_ptr<time_constraint> JamomaLoop::getPatternTimeConstraint() const
+const std::shared_ptr<time_constraint> loop_impl::getPatternTimeConstraint() const
 {
   return mPatternConstraint;
 }
 
-const std::shared_ptr<time_node> JamomaLoop::getPatternStartTimeNode() const
+const std::shared_ptr<time_node> loop_impl::getPatternStartTimeNode() const
 {
   return mPatternStartNode;
 }
 
-const std::shared_ptr<time_node> JamomaLoop::getPatternEndTimeNode() const
+const std::shared_ptr<time_node> loop_impl::getPatternEndTimeNode() const
 {
   return mPatternEndNode;
 }
 
-void JamomaLoop::PatternConstraintCallback(
+void loop_impl::PatternConstraintCallback(
     time_value position,
     time_value date,
-    const State&)
+    const ossia::state&)
 {
   if (mPatternConstraintCallback)
   {
@@ -190,13 +190,13 @@ void JamomaLoop::PatternConstraintCallback(
   }
 }
 
-void JamomaLoop::PatternStartEventCallback(time_event::Status newStatus)
+void loop_impl::PatternStartEventCallback(time_event::Status newStatus)
 {
   if (mPatternStartEventCallback)
     (mPatternStartEventCallback)(newStatus);
 }
 
-void JamomaLoop::PatternEndEventCallback(time_event::Status newStatus)
+void loop_impl::PatternEndEventCallback(time_event::Status newStatus)
 {
   if (mPatternEndEventCallback)
     (mPatternEndEventCallback)(newStatus);

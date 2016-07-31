@@ -3,25 +3,25 @@
 #include <ossia/detail/algorithms.hpp>
 namespace ossia
 {
-  struct StateFlattenVisitor
+  struct state_flatten_visitor
   {
-          State& state;
+          ossia::state& state;
 
           // Const reference overloads
-          void operator()(const Message& messageToAppend)
+          void operator()(const message& messageToAppend)
           {
               // find message with the same address to replace it
-              auto it = find_if(state, [&] (const StateElement& e)
+              auto it = find_if(state, [&] (const state_element& e)
               {
-                  if(auto m = e.target<Message>())
-                      return &m->address == &messageToAppend.address;
+                  if(auto m = e.target<message>())
+                      return &m->address.get() == &messageToAppend.address.get();
                   return false;
               });
 
               if(it != state.end())
               {
                   // Merge messages
-                  it->target<Message>()->value = messageToAppend.value;
+                  it->target<message>()->value = messageToAppend.value;
               }
               else
               {
@@ -29,7 +29,7 @@ namespace ossia
               }
           }
 
-          void operator()(const State& s)
+          void operator()(const ossia::state& s)
           {
               for (const auto& e : s)
               {
@@ -37,26 +37,26 @@ namespace ossia
               }
           }
 
-          void operator()(const CustomState& e)
+          void operator()(const custom_state& e)
           {
               state.add(e);
           }
 
           // rvalue reference overloads
-          void operator()(Message&& messageToAppend)
+          void operator()(message&& messageToAppend)
           {
               // find message with the same address to replace it
-              auto it = find_if(state, [&] (const StateElement& e)
+              auto it = find_if(state, [&] (const state_element& e)
               {
-                  if(auto m = e.target<Message>())
-                      return &m->address == &messageToAppend.address;
+                  if(auto m = e.target<message>())
+                      return &m->address.get() == &messageToAppend.address.get();
                   return false;
               });
 
               if(it != state.end())
               {
                   // Merge messages
-                  it->target<Message>()->value = std::move(messageToAppend.value);
+                  it->target<message>()->value = std::move(messageToAppend.value);
               }
               else
               {
@@ -64,7 +64,7 @@ namespace ossia
               }
           }
 
-          void operator()(State&& s)
+          void operator()(ossia::state&& s)
           {
               for (auto&& e : s)
               {
@@ -72,7 +72,7 @@ namespace ossia
               }
           }
 
-          void operator()(CustomState&& e)
+          void operator()(custom_state&& e)
           {
               state.add(std::move(e));
           }

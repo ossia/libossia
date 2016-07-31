@@ -9,7 +9,7 @@ namespace ossia
                                   float speed,
                                   clock::DriveMode driveMode)
   {
-    return std::make_shared<impl::JamomaClock>(callback, duration, granularity, offset, speed, driveMode);
+    return std::make_shared<detail::clock_impl>(callback, duration, granularity, offset, speed, driveMode);
   }
 
   clock::~clock() = default;

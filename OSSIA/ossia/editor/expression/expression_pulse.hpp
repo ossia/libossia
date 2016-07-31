@@ -60,7 +60,7 @@ private:
   Destination         mDestination;
   mutable bool        mResult{};
 
-  net::address::callback_index   mDestinationCallbackIndex;
+  net::address_base::callback_index   mDestinationCallbackIndex;
 
 };
 }

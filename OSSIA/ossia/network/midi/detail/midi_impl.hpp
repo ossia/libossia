@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/network/domain.hpp>
+#include <ossia/network/domain/domain.hpp>
 #include <ossia/network/midi/detail/channel.hpp>
 #include <ossia/editor/value/value.hpp>
 
@@ -13,16 +13,17 @@ namespace ossia
 {
 namespace net
 {
-
-class MIDINoteOn_N final : public MIDINode
+namespace midi
+{
+class note_on_N_node final : public midi_node
 {
     const std::string mName;
   public:
-    MIDINoteOn_N(
+    note_on_N_node(
         midi_size_t note,
-        MIDIDevice& aDevice,
-        ossia::net::node& aParent):
-      MIDINode{aDevice, aParent},
+        midi_device& aDevice,
+        ossia::net::node_base& aParent):
+      midi_node{aDevice, aParent},
       mName{std::to_string(note)}
     {
     }
@@ -34,21 +35,21 @@ class MIDINoteOn_N final : public MIDINode
 
     void init(midi_size_t channel, midi_size_t note)
     {
-      mAddress = std::make_unique<MIDIAddress>(
-                   MIDIAddressInfo{channel, MIDIAddressInfo::Type::NoteOn_N, note},
+      mAddress = std::make_unique<midi_address>(
+                   address_info{channel, address_info::Type::NoteOn_N, note},
                    *this);
     }
 };
 
-class MIDINoteOff_N final : public MIDINode
+class note_off_N_node final : public midi_node
 {
     const std::string mName;
   public:
-    MIDINoteOff_N(
+    note_off_N_node(
         midi_size_t note,
-        MIDIDevice& aDevice,
-        ossia::net::node& aParent):
-      MIDINode{aDevice, aParent},
+        midi_device& aDevice,
+        ossia::net::node_base& aParent):
+      midi_node{aDevice, aParent},
       mName{std::to_string(note)}
     {
     }
@@ -60,21 +61,21 @@ class MIDINoteOff_N final : public MIDINode
 
     void init(midi_size_t channel, midi_size_t note)
     {
-      mAddress = std::make_unique<MIDIAddress>(
-                   MIDIAddressInfo{channel, MIDIAddressInfo::Type::NoteOff_N, note},
+      mAddress = std::make_unique<midi_address>(
+                   address_info{channel, address_info::Type::NoteOff_N, note},
                    *this);
     }
 };
 
-class MIDI_CC_N final : public MIDINode
+class control_N_node final : public midi_node
 {
     const std::string mName;
   public:
-    MIDI_CC_N(
+    control_N_node(
         midi_size_t param,
-        MIDIDevice& aDevice,
-        ossia::net::node& aParent):
-      MIDINode{aDevice, aParent},
+        midi_device& aDevice,
+        ossia::net::node_base& aParent):
+      midi_node{aDevice, aParent},
       mName{std::to_string(param)}
     {
     }
@@ -86,20 +87,20 @@ class MIDI_CC_N final : public MIDINode
 
     void init(midi_size_t channel, midi_size_t param)
     {
-      mAddress = std::make_unique<MIDIAddress>(
-                   MIDIAddressInfo{channel, MIDIAddressInfo::Type::CC_N, param}, *this);
+      mAddress = std::make_unique<midi_address>(
+                   address_info{channel, address_info::Type::CC_N, param}, *this);
     }
 };
 
-class MIDI_PC_N final : public MIDINode
+class program_N_node final : public midi_node
 {
     const std::string mName;
   public:
-    MIDI_PC_N(
+    program_N_node(
         midi_size_t param,
-        MIDIDevice& aDevice,
-        ossia::net::node& aParent):
-      MIDINode{aDevice, aParent},
+        midi_device& aDevice,
+        ossia::net::node_base& aParent):
+      midi_node{aDevice, aParent},
       mName{std::to_string(param)}
     {
     }
@@ -111,17 +112,17 @@ class MIDI_PC_N final : public MIDINode
 
     void init(midi_size_t channel, midi_size_t param)
     {
-      mAddress = std::make_unique<MIDIAddress>(
-                   MIDIAddressInfo{channel, MIDIAddressInfo::Type::PC_N, param},
+      mAddress = std::make_unique<midi_address>(
+                   address_info{channel, address_info::Type::PC_N, param},
                    *this);
     }
 };
 
-class MIDI_PC final : public MIDINode
+class program_node final : public midi_node
 {
   public:
-    MIDI_PC(MIDIDevice& aDevice):
-      MIDINode(aDevice, aDevice)
+    program_node(midi_device& aDevice):
+      midi_node(aDevice, aDevice)
     {
     }
 
@@ -132,24 +133,24 @@ class MIDI_PC final : public MIDINode
 
     void init(midi_size_t channel)
     {
-      mAddress = std::make_unique<MIDIAddress>(
-                   MIDIAddressInfo{channel, MIDIAddressInfo::Type::PC, 0},
+      mAddress = std::make_unique<midi_address>(
+                   address_info{channel, address_info::Type::PC, 0},
                    *this);
 
       for(int i = 0; i < 127; i++)
       {
-        auto ptr = std::make_unique<MIDI_PC_N>(i, mDevice, *this);
+        auto ptr = std::make_unique<program_N_node>(i, mDevice, *this);
         ptr->init(channel, i);
         mChildren.push_back(std::move(ptr));
       }
     }
 };
 
-class MIDINoteOn final : public MIDINode
+class note_on_node final : public midi_node
 {
   public:
-    MIDINoteOn(MIDIDevice& aDevice):
-      MIDINode(aDevice, aDevice)
+    note_on_node(midi_device& aDevice):
+      midi_node(aDevice, aDevice)
     {
     }
 
@@ -160,24 +161,24 @@ class MIDINoteOn final : public MIDINode
 
     void init(midi_size_t channel)
     {
-      mAddress = std::make_unique<MIDIAddress>(
-                   MIDIAddressInfo{channel, MIDIAddressInfo::Type::NoteOn, 0},
+      mAddress = std::make_unique<midi_address>(
+                   address_info{channel, address_info::Type::NoteOn, 0},
                    *this);
 
       for(int i = 0; i < 127; i++)
       {
-        auto ptr = std::make_unique<MIDINoteOn_N>(i, mDevice, *this);
+        auto ptr = std::make_unique<note_on_N_node>(i, mDevice, *this);
         ptr->init(channel, i);
         mChildren.push_back(std::move(ptr));
       }
     }
 };
 
-class MIDINoteOff final : public MIDINode
+class note_off_node final : public midi_node
 {
   public:
-    MIDINoteOff(MIDIDevice& aDevice):
-      MIDINode(aDevice, aDevice)
+    note_off_node(midi_device& aDevice):
+      midi_node(aDevice, aDevice)
     {
     }
 
@@ -188,24 +189,24 @@ class MIDINoteOff final : public MIDINode
 
     void init(midi_size_t channel)
     {
-      mAddress = std::make_unique<MIDIAddress>(
-                   MIDIAddressInfo{channel, MIDIAddressInfo::Type::NoteOff, 0},
+      mAddress = std::make_unique<midi_address>(
+                   address_info{channel, address_info::Type::NoteOff, 0},
                    *this);
 
       for(int i = 0; i < 127; i++)
       {
-        auto ptr = std::make_unique<MIDINoteOff_N>(i, mDevice, *this);
+        auto ptr = std::make_unique<note_off_N_node>(i, mDevice, *this);
         ptr->init(channel, i);
         mChildren.push_back(std::move(ptr));
       }
     }
 };
 
-class MIDI_CC final : public MIDINode
+class control_node final : public midi_node
 {
   public:
-    MIDI_CC(MIDIDevice& aDevice):
-      MIDINode(aDevice, aDevice)
+    control_node(midi_device& aDevice):
+      midi_node(aDevice, aDevice)
     {
     }
 
@@ -216,26 +217,26 @@ class MIDI_CC final : public MIDINode
 
     void init(midi_size_t channel)
     {
-      mAddress = std::make_unique<MIDIAddress>(
-                   MIDIAddressInfo{channel, MIDIAddressInfo::Type::CC, 0},
+      mAddress = std::make_unique<midi_address>(
+                   address_info{channel, address_info::Type::CC, 0},
                    *this);
 
       for(int i = 0; i < 127; i++)
       {
-        auto ptr = std::make_unique<MIDI_CC_N>(i, mDevice, *this);
+        auto ptr = std::make_unique<control_N_node>(i, mDevice, *this);
         ptr->init(channel, i);
         mChildren.push_back(std::move(ptr));
       }
     }
 };
 
-class MIDIChannel final : public MIDINode
+class channel_node final : public midi_node
 {
     const midi_size_t mChannel;
     const std::string mName;
   public:
-    MIDIChannel(midi_size_t channel, MIDIDevice& aDevice):
-      MIDINode(aDevice, aDevice),
+    channel_node(midi_size_t channel, midi_device& aDevice):
+      midi_node(aDevice, aDevice),
       mChannel{channel},
       mName(std::to_string(channel))
     {
@@ -249,27 +250,28 @@ class MIDIChannel final : public MIDINode
     void init()
     {
       {
-        auto non = std::make_unique<MIDINoteOn>(mDevice);
+        auto non = std::make_unique<note_on_node>(mDevice);
         non->init(mChannel);
         mChildren.push_back(std::move(non));
       }
       {
-        auto noff = std::make_unique<MIDINoteOff>(mDevice);
+        auto noff = std::make_unique<note_off_node>(mDevice);
         noff->init(mChannel);
         mChildren.push_back(std::move(noff));
       }
       {
-        auto cc = std::make_unique<MIDI_CC>(mDevice);
+        auto cc = std::make_unique<control_node>(mDevice);
         cc->init(mChannel);
         mChildren.push_back(std::move(cc));
       }
       {
-        auto pc = std::make_unique<MIDI_PC>(mDevice);
+        auto pc = std::make_unique<program_node>(mDevice);
         pc->init(mChannel);
         mChildren.push_back(std::move(pc));
       }
     }
 };
 
+}
 }
 }

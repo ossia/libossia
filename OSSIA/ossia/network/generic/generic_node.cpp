@@ -5,12 +5,14 @@
 #include <ossia/network/generic/generic_address.hpp>
 #include <cassert>
 
-namespace impl
+namespace ossia
 {
-BasicNode::BasicNode(
+namespace net
+{
+generic_node::generic_node(
     std::string name,
-    ossia::net::device& aDevice,
-    BasicNode& aParent):
+    ossia::net::device_base& aDevice,
+    generic_node& aParent):
     mName{std::move(name)},
     mDevice{aDevice},
     mParent{&aParent}
@@ -18,19 +20,19 @@ BasicNode::BasicNode(
 
 }
 
-BasicNode::BasicNode(std::string name, ossia::net::device& aDevice):
+generic_node::generic_node(std::string name, ossia::net::device_base& aDevice):
     mName{std::move(name)},
     mDevice{aDevice}
 {
 
 }
 
-BasicNode::~BasicNode()
+generic_node::~generic_node()
 {
     mChildren.clear();
 }
 
-ossia::net::node& BasicNode::setName(std::string name)
+ossia::net::node_base& generic_node::setName(std::string name)
 {
     std::swap(mName, name);
 
@@ -40,18 +42,18 @@ ossia::net::node& BasicNode::setName(std::string name)
     return *this;
 }
 
-ossia::net::address* BasicNode::getAddress() const
+ossia::net::address_base* generic_node::getAddress() const
 {
     return mAddress.get();
 }
 
-ossia::net::address* BasicNode::createAddress(ossia::Type type)
+ossia::net::address_base* generic_node::createAddress(ossia::val_type type)
 {
     // clear former address
     removeAddress();
 
     // edit new address
-    mAddress = std::make_unique<impl::BasicAddress>(*this);
+    mAddress = std::make_unique<ossia::net::generic_address>(*this);
 
     // set type
     mAddress->setValueType(type);
@@ -62,7 +64,7 @@ ossia::net::address* BasicNode::createAddress(ossia::Type type)
     return mAddress.get();
 }
 
-bool BasicNode::removeAddress()
+bool generic_node::removeAddress()
 {
     // use the device protocol to stop address value observation
     if (mAddress)
@@ -82,7 +84,7 @@ bool BasicNode::removeAddress()
     return false;
 }
 
-std::unique_ptr<ossia::net::node> BasicNode::makeChild(const std::string& name)
+std::unique_ptr<ossia::net::node_base> generic_node::makeChild(const std::string& name)
 {
   // Find all the nodes that start with the same name.
   int len = name.size();
@@ -119,14 +121,14 @@ std::unique_ptr<ossia::net::node> BasicNode::makeChild(const std::string& name)
 
   if(!is_here)
   {
-    return std::make_unique<BasicNode>(name, mDevice, *this);
+    return std::make_unique<generic_node>(name, mDevice, *this);
   }
   else
   {
     int n = instance_num.size();
     if(n == 0)
     {
-      return std::make_unique<BasicNode>(name + ".1", mDevice, *this);
+      return std::make_unique<generic_node>(name + ".1", mDevice, *this);
     }
     else
     {
@@ -144,12 +146,12 @@ std::unique_ptr<ossia::net::node> BasicNode::makeChild(const std::string& name)
           }
           else
           {
-            return std::make_unique<BasicNode>(name + "." + std::to_string(1+i), mDevice, *this);
+            return std::make_unique<generic_node>(name + "." + std::to_string(1+i), mDevice, *this);
           }
         }
         else
         {
-          return std::make_unique<BasicNode>(name + "." + std::to_string(1+i), mDevice, *this);
+          return std::make_unique<generic_node>(name + "." + std::to_string(1+i), mDevice, *this);
         }
       }
     }
@@ -157,4 +159,5 @@ std::unique_ptr<ossia::net::node> BasicNode::makeChild(const std::string& name)
   }
 }
 
+}
 }

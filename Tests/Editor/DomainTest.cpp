@@ -13,29 +13,29 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        DomainBase<Int> domain(1, 24);
+        domain_base<Int> dom(1, 24);
 
-        QVERIFY(*domain.min  == 1);
-        QVERIFY(*domain.max  == 24);
+        QVERIFY(*dom.min  == 1);
+        QVERIFY(*dom.max  == 24);
 
-        domain.values = {1, 10, 24};
-        QVERIFY(domain.values.size() == 3);
+        dom.values = {1, 10, 24};
+        QVERIFY(dom.values.size() == 3);
 
-        auto copy = domain;
-        QCOMPARE(copy, domain);
+        auto copy = dom;
+        QCOMPARE(copy, dom);
 
-        Domain d1 = domain, d2 = copy;
+        domain d1 = dom, d2 = copy;
         QCOMPARE(d1, d2);
 
-        d2 = DomainBase<Int>{0, 25};
+        d2 = domain_base<Int>{0, 25};
         QVERIFY(d1 != d2);
 
-        d2 = DomainBase<Float>{1., 24.};
+        d2 = domain_base<Float>{1., 24.};
         QVERIFY(d1 != d2);
 
-        Domain d3 = makeDomain(Int(1), Int(24));
-        QVERIFY(d3 == DomainBase<Int>(1, 24));
-        QVERIFY(d3 != domain);
+        domain d3 = makeDomain(Int(1), Int(24));
+        QVERIFY(d3 == domain_base<Int>(1, 24));
+        QVERIFY(d3 != dom);
     }
 };
 

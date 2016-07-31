@@ -49,12 +49,12 @@ public:
   template<typename T>
   T* try_get() { return v.target<T>(); }
 
-  ossia::Type getType() const
+  ossia::val_type getType() const
   {
     auto t = v.which();
     if(t == v.npos) throw;
 
-    return static_cast<ossia::Type>(t);
+    return static_cast<ossia::val_type>(t);
   }
 
   bool valid() const
@@ -100,33 +100,33 @@ OSSIA_EXPORT std::string getValueAsString(const ossia::value& val);
 
 
 
-inline ossia::value initValue(ossia::Type type)
+inline ossia::value initValue(ossia::val_type type)
 {
   switch(type)
   {
-  case Type::IMPULSE:
+  case val_type::IMPULSE:
     return Impulse{};
-  case Type::BOOL:
+  case val_type::BOOL:
     return Bool{};
-  case Type::INT:
+  case val_type::INT:
     return Int{};
-  case Type::FLOAT:
+  case val_type::FLOAT:
     return Float{};
-  case Type::CHAR:
+  case val_type::CHAR:
     return Char{};
-  case Type::STRING:
+  case val_type::STRING:
     return String{};
-  case Type::TUPLE:
+  case val_type::TUPLE:
     return Tuple{};
-  case Type::VEC2F:
+  case val_type::VEC2F:
     return Vec2f{};
-  case Type::VEC3F:
+  case val_type::VEC3F:
     return Vec3f{};
-  case Type::VEC4F:
+  case val_type::VEC4F:
     return Vec4f{};
-  case Type::DESTINATION:
+  case val_type::DESTINATION:
     return Destination{};
-  case Type::BEHAVIOR:
+  case val_type::BEHAVIOR:
     return Behavior{{}};
   }
 

@@ -4,19 +4,19 @@ namespace ossia
 {
 namespace net
 {
-address::~address() = default;
+address_base::~address_base() = default;
 
 static void getAddressFromNode_rec(
-        const node& node,
+        const node_base& n,
         std::vector<std::string>& str)
 {
-    if(auto p = node.getParent())
+    if(auto p = n.getParent())
         getAddressFromNode_rec(*p, str);
 
-    str.push_back(node.getName());
+    str.push_back(n.getName());
 }
 
-std::string getAddressFromNode(const ossia::net::node& node)
+std::string getAddressFromNode(const ossia::net::node_base& node)
 {
     std::vector<std::string> vec;
     getAddressFromNode_rec(node, vec);

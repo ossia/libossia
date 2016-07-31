@@ -2,8 +2,8 @@
 
 int main()
 {
-  impl::BasicDevice root(
-        std::make_unique<impl::Minuit2>("127.0.0.1", 9996, 9997),
+  ossia::net::generic_device root(
+        std::make_unique<ossia::net::minuit_protocol>("127.0.0.1", 9996, 9997),
         "myDevice"
         );
 

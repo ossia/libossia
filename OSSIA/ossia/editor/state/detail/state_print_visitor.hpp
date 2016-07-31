@@ -7,12 +7,12 @@
 
 namespace ossia
 {
-  struct StatePrintVisitor
+  struct state_print_visitor
   {
           std::ostream& out;
           std::string padding;
 
-          void operator()(const State& s)
+          void operator()(const state& s)
           {
               out << padding
                   << "state {\n";
@@ -23,13 +23,13 @@ namespace ossia
               out << "}\n";
           }
 
-          void operator()(const CustomState& e)
+          void operator()(const custom_state& e)
           {
               out << padding
                   << "custom\n";
           }
 
-          void operator()(const Message& m)
+          void operator()(const message& m)
           {
               out << padding
                   << "message: "

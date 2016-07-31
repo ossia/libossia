@@ -12,7 +12,7 @@ class AutomationTest : public QObject
 
   std::vector<value> m_address_values;
 
-  void constraint_callback(time_value position, time_value date, const State& element)
+  void constraint_callback(time_value position, time_value date, const state& element)
   {
     element.launch();
   }
@@ -32,9 +32,9 @@ private Q_SLOTS:
   /*! test life cycle and accessors functions */
   void test_basic()
   {
-    impl::BasicDevice device{std::make_unique<impl::Local2>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
     auto cld = device.createChild("child");
-    auto address = cld->createAddress(Type::FLOAT);
+    auto address = cld->createAddress(val_type::FLOAT);
 
     Float f(0);
 
@@ -53,9 +53,9 @@ private Q_SLOTS:
   //! \todo test state()
   void test_execution()
   {
-    impl::BasicDevice device{std::make_unique<impl::Local2>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
     auto cld = device.createChild("child");
-    auto address = cld->createAddress(Type::FLOAT);
+    auto address = cld->createAddress(val_type::FLOAT);
     address->addCallback([&] (const value&v) { address_callback(v); });
 
     auto c = curve<double, float>::create();

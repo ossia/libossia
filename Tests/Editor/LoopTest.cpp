@@ -10,7 +10,7 @@ class LoopTest : public QObject
 {
     Q_OBJECT
 
-    void constraint_callback(time_value position, time_value date, const State& element)
+    void constraint_callback(time_value position, time_value date, const state& element)
     {
         element.launch();
     }

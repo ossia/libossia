@@ -89,7 +89,7 @@ inline ossia::value value_from_minuit_type_text(boost::string_ref str)
     }
 }
 
-inline ossia::Type type_from_minuit_type_text(boost::string_ref str)
+inline ossia::val_type type_from_minuit_type_text(boost::string_ref str)
 {
   // integer, decimal, string, generic, boolean, none, array.
   // we can differentiate them by the first character
@@ -97,17 +97,17 @@ inline ossia::Type type_from_minuit_type_text(boost::string_ref str)
   switch(str[0])
   {
     case 'i': // integer
-      return ossia::Type::INT;
+      return ossia::val_type::INT;
     case 'd': // decimal
-      return ossia::Type::FLOAT;
+      return ossia::val_type::FLOAT;
     case 's': // string
-      return ossia::Type::STRING;
+      return ossia::val_type::STRING;
     case 'b': // boolean
-      return ossia::Type::BOOL;
+      return ossia::val_type::BOOL;
     case 'n': // none
-      return ossia::Type::IMPULSE;
+      return ossia::val_type::IMPULSE;
     case 'a': // array
-      return ossia::Type::TUPLE;
+      return ossia::val_type::TUPLE;
     case 'g': // generic
     default:
       return {};
@@ -115,47 +115,47 @@ inline ossia::Type type_from_minuit_type_text(boost::string_ref str)
 }
 
 
-inline boost::string_ref to_minuit_service_text(ossia::AccessMode acc)
+inline boost::string_ref to_minuit_service_text(ossia::access_mode acc)
 {
     switch(acc)
     {
-        case ossia::AccessMode::BI:
+        case ossia::access_mode::BI:
             return "parameter";
-        case ossia::AccessMode::GET:
+        case ossia::access_mode::GET:
             return "return";
-        case ossia::AccessMode::SET:
+        case ossia::access_mode::SET:
             return "message";
         default:
             throw std::runtime_error("Invalid access mode");
     }
 }
 
-inline ossia::AccessMode from_minuit_service_text(boost::string_ref str)
+inline ossia::access_mode from_minuit_service_text(boost::string_ref str)
 {
     switch(str[0])
     {
         case 'p':
-            return ossia::AccessMode::BI;
+            return ossia::access_mode::BI;
         case 'r':
-            return ossia::AccessMode::GET;
+            return ossia::access_mode::GET;
         case 'm':
-            return ossia::AccessMode::SET;
+            return ossia::access_mode::SET;
         default:
             throw std::runtime_error("Invalid access mode");
     }
 }
 
-inline boost::string_ref to_minuit_bounding_text(ossia::BoundingMode b)
+inline boost::string_ref to_minuit_bounding_text(ossia::bounding_mode b)
 {
     switch(b)
     {
-        case ossia::BoundingMode::FREE:
+        case ossia::bounding_mode::FREE:
             return "none";
-        case ossia::BoundingMode::CLIP:
+        case ossia::bounding_mode::CLIP:
             return "both";
-        case ossia::BoundingMode::WRAP:
+        case ossia::bounding_mode::WRAP:
             return "wrap";
-        case ossia::BoundingMode::FOLD:
+        case ossia::bounding_mode::FOLD:
             return "fold";
         default:
             throw std::runtime_error("Invalid bounding mode");
@@ -163,18 +163,18 @@ inline boost::string_ref to_minuit_bounding_text(ossia::BoundingMode b)
 }
 
 
-inline ossia::BoundingMode from_minuit_bounding_text(boost::string_ref str)
+inline ossia::bounding_mode from_minuit_bounding_text(boost::string_ref str)
 {
     switch(str[0])
     {
         case 'n': // none
-            return ossia::BoundingMode::FREE;
+            return ossia::bounding_mode::FREE;
         case 'b': // both
-            return ossia::BoundingMode::CLIP;
+            return ossia::bounding_mode::CLIP;
         case 'w': // wrap
-            return ossia::BoundingMode::WRAP;
+            return ossia::bounding_mode::WRAP;
         case 'f': // fold
-            return ossia::BoundingMode::FOLD;
+            return ossia::bounding_mode::FOLD;
         default:
             throw std::runtime_error("Invalid bounding mode");
     }

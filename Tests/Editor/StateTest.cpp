@@ -13,21 +13,21 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        State state;
+        state s;
 
-        QCOMPARE(state.size(), 0ul);
+        QCOMPARE(s.size(), 0ul);
 
-        State substate;
-        state.add(substate);
-        QCOMPARE(state.size(), 1ul);
+        state substate;
+        s.add(substate);
+        QCOMPARE(s.size(), 1ul);
 
 
-        State parent;
-        parent.add(std::move(state));
+        state parent;
+        parent.add(std::move(s));
         QCOMPARE(parent.size(), 1ul);
-        QCOMPARE(state.size(), 0ul);
+        QCOMPARE(s.size(), 0ul);
 
-        State copy{parent};
+        state copy{parent};
         QCOMPARE(copy.size(), 1ul);
 
     }

@@ -20,11 +20,11 @@
 
 #include "TimeEvent_impl.hpp" // because the TimeNode::emplace method is a JamomaTimeEvent factory
 
-namespace impl
+namespace detail
 {
-class JamomaTimeNode final :
+class time_node_impl final :
     public ossia::time_node,
-    public std::enable_shared_from_this<JamomaTimeNode>
+    public std::enable_shared_from_this<time_node_impl>
 {
 
 private:
@@ -48,9 +48,9 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaTimeNode(time_node::execution_callback);
+  time_node_impl(time_node::execution_callback);
 
-  ~JamomaTimeNode();
+  ~time_node_impl();
 
 # pragma mark -
 # pragma mark Execution

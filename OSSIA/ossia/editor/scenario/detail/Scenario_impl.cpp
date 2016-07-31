@@ -2,16 +2,16 @@
 #include <ossia/detail/algorithms.hpp>
 #include <unordered_map>
 #include <iostream>
-namespace impl
+namespace detail
 {
-JamomaScenario::JamomaScenario() :
-JamomaTimeProcess()
+scenario_impl::scenario_impl() :
+time_process_impl()
 {
   // create the start TimeNode
   mTimeNodes.push_back(time_node::create());
 }
 
-JamomaScenario::~JamomaScenario()
+scenario_impl::~scenario_impl()
 {}
 
 
@@ -33,14 +33,14 @@ static void process_timenode_dates(time_node& t, DateMap& map)
     }
 }
 
-StateElement JamomaScenario::offset(time_value offset)
+state_element scenario_impl::offset(time_value offset)
 {
   if (parent->getRunning())
     throw std::runtime_error("parent time constraint is running");
 
   // reset internal offset list and state
   mPastEventList.clear();
-  ossia::State cur_state;
+  ossia::state cur_state;
 
   // Precompute the default date of every timenode.
   std::unordered_map<time_node*, time_value> time_map;
@@ -114,7 +114,7 @@ StateElement JamomaScenario::offset(time_value offset)
   return cur_state;
 }
 
-StateElement JamomaScenario::state()
+state_element scenario_impl::state()
 {
   auto& par = *parent;
   if (!par.getRunning())
@@ -127,12 +127,12 @@ StateElement JamomaScenario::state()
     auto prev_last_date = mLastDate;
     mLastDate = date;
 
-    ossia::State cur_state;
+    ossia::state cur_state;
     // reset internal mCurrentState
 
     // process the scenario from the first TimeNode to the running constraints
     ptr_container<time_event> statusChangedEvents;
-    std::shared_ptr<JamomaTimeNode> n = std::dynamic_pointer_cast<JamomaTimeNode>(mTimeNodes[0]);
+    std::shared_ptr<time_node_impl> n = std::dynamic_pointer_cast<time_node_impl>(mTimeNodes[0]);
     n->process(statusChangedEvents);
 
     // add the state of each newly HAPPENED TimeEvent
@@ -204,7 +204,9 @@ StateElement JamomaScenario::state()
     if (done)
     {
       if (date > par.getDurationMin())
+      {
         ;//! \todo mParent->stop(); // if the parent TimeConstraint's Clock is in EXTERNAL drive mode, it creates a deadlock.
+      }
     }
     return cur_state;
   }
@@ -215,7 +217,7 @@ StateElement JamomaScenario::state()
 # pragma mark -
 # pragma mark Execution - Implementation specific
 
-void JamomaScenario::start()
+void scenario_impl::start()
 {
   // start each TimeConstraint if possible
   for (const auto& timeConstraint : mTimeContraints)
@@ -254,7 +256,7 @@ void JamomaScenario::start()
   }
 }
 
-void JamomaScenario::stop()
+void scenario_impl::stop()
 {
   // stop each running TimeConstraints
   for (const auto& timeConstraint : mTimeContraints)
@@ -267,7 +269,7 @@ void JamomaScenario::stop()
   }
 }
 
-void JamomaScenario::pause()
+void scenario_impl::pause()
 {
   // pause all running TimeConstraints
   for (const auto& timeConstraint : mTimeContraints)
@@ -280,7 +282,7 @@ void JamomaScenario::pause()
   }
 }
 
-void JamomaScenario::resume()
+void scenario_impl::resume()
 {
   // resume all running TimeConstraints
   for (const auto& timeConstraint : mTimeContraints)
@@ -296,7 +298,7 @@ void JamomaScenario::resume()
 # pragma mark -
 # pragma mark Edition
 
-void JamomaScenario::addTimeConstraint(std::shared_ptr<time_constraint> timeConstraint)
+void scenario_impl::addTimeConstraint(std::shared_ptr<time_constraint> timeConstraint)
 {
   auto& cst = *timeConstraint;
 
@@ -316,7 +318,7 @@ void JamomaScenario::addTimeConstraint(std::shared_ptr<time_constraint> timeCons
   cst.setDriveMode(clock::DriveMode::EXTERNAL);
 }
 
-void JamomaScenario::removeTimeConstraint(const std::shared_ptr<time_constraint>& timeConstraint)
+void scenario_impl::removeTimeConstraint(const std::shared_ptr<time_constraint>& timeConstraint)
 {
   remove_one(mTimeContraints, timeConstraint);
 
@@ -324,7 +326,7 @@ void JamomaScenario::removeTimeConstraint(const std::shared_ptr<time_constraint>
   timeConstraint->setDriveMode(clock::DriveMode::INTERNAL);
 }
 
-void JamomaScenario::addTimeNode(std::shared_ptr<time_node> timeNode)
+void scenario_impl::addTimeNode(std::shared_ptr<time_node> timeNode)
 {
   // store a TimeNode if it is not already stored
   if (!contains(mTimeNodes, timeNode))
@@ -333,7 +335,7 @@ void JamomaScenario::addTimeNode(std::shared_ptr<time_node> timeNode)
   }
 }
 
-void JamomaScenario::removeTimeNode(const std::shared_ptr<time_node>& timeNode)
+void scenario_impl::removeTimeNode(const std::shared_ptr<time_node>& timeNode)
 {
   remove_one(mTimeNodes, timeNode);
 }
@@ -341,7 +343,7 @@ void JamomaScenario::removeTimeNode(const std::shared_ptr<time_node>& timeNode)
 # pragma mark -
 # pragma mark Accessors
 
-const std::shared_ptr<time_node> & JamomaScenario::getStartTimeNode() const
+const std::shared_ptr<time_node> & scenario_impl::getStartTimeNode() const
 {
   return mTimeNodes[0];
 }
@@ -349,12 +351,12 @@ const std::shared_ptr<time_node> & JamomaScenario::getStartTimeNode() const
 # pragma mark -
 # pragma mark TimeNodes and TimeConstraints
 
-const ptr_container<time_node>& JamomaScenario::timeNodes() const
+const ptr_container<time_node>& scenario_impl::timeNodes() const
 {
   return mTimeNodes;
 }
 
-const ptr_container<time_constraint>& JamomaScenario::timeConstraints() const
+const ptr_container<time_constraint>& scenario_impl::timeConstraints() const
 {
   return mTimeContraints;
 }
@@ -362,7 +364,7 @@ const ptr_container<time_constraint>& JamomaScenario::timeConstraints() const
 # pragma mark -
 # pragma mark Implementation specific
 
-void JamomaScenario::process_offset(std::shared_ptr<time_node> timenode, time_value offset)
+void scenario_impl::process_offset(std::shared_ptr<time_node> timenode, time_value offset)
 {
   time_value date = timenode->getDate();
 
@@ -398,7 +400,7 @@ void JamomaScenario::process_offset(std::shared_ptr<time_node> timenode, time_va
     }
 
     // setup event status
-    std::shared_ptr<JamomaTimeEvent> e = std::dynamic_pointer_cast<JamomaTimeEvent>(event);
+    std::shared_ptr<time_event_impl> e = std::dynamic_pointer_cast<time_event_impl>(event);
     e->setStatus(eventStatus);
 
     // add HAPPENED event to offset event list

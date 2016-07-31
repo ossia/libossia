@@ -1,13 +1,13 @@
 #include "TimeEvent_impl.hpp"
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/editor/state/state_element.hpp>
-namespace impl
+namespace detail
 {
 
 # pragma mark -
 # pragma mark Life cycle
 
-JamomaTimeEvent::JamomaTimeEvent(time_event::ExecutionCallback callback,
+time_event_impl::time_event_impl(time_event::ExecutionCallback callback,
                                  std::shared_ptr<time_node> aTimeNode,
                                  expression_ptr anExpression) :
 mCallback(callback),
@@ -17,18 +17,18 @@ mExpression(std::move(anExpression))
 {
 }
 
-JamomaTimeEvent::~JamomaTimeEvent()
+time_event_impl::~time_event_impl()
 {}
 
 # pragma mark -
 # pragma mark Execution
 
-void JamomaTimeEvent::setCallback(time_event::ExecutionCallback callback)
+void time_event_impl::setCallback(time_event::ExecutionCallback callback)
 {
   mCallback = callback;
 }
 
-void JamomaTimeEvent::happen()
+void time_event_impl::happen()
 {
   if (mStatus != time_event::Status::PENDING)
     throw std::runtime_error("only PENDING event can happens");
@@ -51,7 +51,7 @@ void JamomaTimeEvent::happen()
       (mCallback)(mStatus);
 }
 
-void JamomaTimeEvent::dispose()
+void time_event_impl::dispose()
 {
   if (mStatus == time_event::Status::HAPPENED)
     throw std::runtime_error("HAPPENED event cannot be disposed");
@@ -83,12 +83,12 @@ void JamomaTimeEvent::dispose()
 # pragma mark -
 # pragma mark Edition
 
-void JamomaTimeEvent::addState(State&& state)
+void time_event_impl::addState(state&& state)
 {
-    mState.add(StateElement{std::move(state)});
+    mState.add(state_element{std::move(state)});
 }
 
-void JamomaTimeEvent::removeState(const State& state)
+void time_event_impl::removeState(const state& state)
 {
     mState.remove(state);
 }
@@ -96,22 +96,22 @@ void JamomaTimeEvent::removeState(const State& state)
 # pragma mark -
 # pragma mark Accessors
 
-const std::shared_ptr<time_node> & JamomaTimeEvent::getTimeNode() const
+const std::shared_ptr<time_node> & time_event_impl::getTimeNode() const
 {
   return mTimeNode;
 }
 
-const State& JamomaTimeEvent::getState() const
+const state& time_event_impl::getState() const
 {
   return mState;
 }
 
-const expression & JamomaTimeEvent::getExpression() const
+const expression & time_event_impl::getExpression() const
 {
   return *mExpression;
 }
 
-time_event & JamomaTimeEvent::setExpression(expression_ptr exp)
+time_event & time_event_impl::setExpression(expression_ptr exp)
 {
   assert(exp);
 
@@ -120,7 +120,7 @@ time_event & JamomaTimeEvent::setExpression(expression_ptr exp)
   return *this;
 }
 
-time_event::Status JamomaTimeEvent::getStatus() const
+time_event::Status time_event_impl::getStatus() const
 {
   return mStatus;
 }
@@ -128,7 +128,7 @@ time_event::Status JamomaTimeEvent::getStatus() const
 # pragma mark -
 # pragma mark Implementation specific
 
-void JamomaTimeEvent::setStatus(Status status)
+void time_event_impl::setStatus(Status status)
 {
   mStatus = status;
   if (mCallback)

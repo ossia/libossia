@@ -7,6 +7,6 @@
 
 namespace ossia
 {
-OSSIA_EXPORT void launch(const StateElement& e);
-OSSIA_EXPORT std::ostream& print(std::ostream& os, const StateElement& dt);
+OSSIA_EXPORT void launch(const state_element& e);
+OSSIA_EXPORT std::ostream& print(std::ostream& os, const state_element& dt);
 }

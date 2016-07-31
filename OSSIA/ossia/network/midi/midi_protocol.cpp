@@ -1,18 +1,18 @@
 #include <ossia/network/midi/midi.hpp>
 #include <ossia/network/midi/detail/midi_impl.hpp>
 
-# pragma mark -
-# pragma mark Life Cycle
 namespace ossia
 {
 namespace net
 {
-MIDI::MIDI():
+namespace midi
+{
+midi_protocol::midi_protocol():
   mInput{"ossia-in"},
   mOutput{"ossia-out"}
 {}
 
-MIDI::~MIDI()
+midi_protocol::~midi_protocol()
 {
   try {
     mInput.closePort();
@@ -23,26 +23,26 @@ MIDI::~MIDI()
   }
 }
 
-bool MIDI::setInfo(MidiInfo m)
+bool midi_protocol::setInfo(midi_info m)
 {
   try {
     // Close current ports
-    if(mInfo.type == MidiInfo::Type::RemoteOutput)
+    if(mInfo.type == midi_info::Type::RemoteOutput)
     {
       mInput.closePort();
     }
-    else if(mInfo.type == MidiInfo::Type::RemoteInput)
+    else if(mInfo.type == midi_info::Type::RemoteInput)
     {
       mOutput.closePort();
     }
 
     mInfo = m;
 
-    if(mInfo.type == MidiInfo::Type::RemoteOutput)
+    if(mInfo.type == midi_info::Type::RemoteOutput)
     {
       mInput.openPort(mInfo.port);
       mInput.messageCallback = [=] (mm::MidiMessage mess) {
-        Channel& c = mChannels[mess.getChannel()];
+        midi_channel& c = mChannels[mess.getChannel()];
         switch(mess.getMessageType())
         {
           case mm::MessageType::NOTE_ON:
@@ -106,7 +106,7 @@ bool MIDI::setInfo(MidiInfo m)
         }
       };
     }
-    else if(mInfo.type == MidiInfo::Type::RemoteInput)
+    else if(mInfo.type == midi_info::Type::RemoteInput)
     {
       mOutput.openPort(mInfo.port);
     }
@@ -119,7 +119,7 @@ bool MIDI::setInfo(MidiInfo m)
   }
 }
 
-MidiInfo MIDI::getInfo() const
+midi_info midi_protocol::getInfo() const
 {
   return mInfo;
 }
@@ -127,24 +127,24 @@ MidiInfo MIDI::getInfo() const
 # pragma mark -
 # pragma mark Operation
 
-bool MIDI::pull(address& address)
+bool midi_protocol::pull(address_base& address)
 {
-  MIDIAddress& adrs = dynamic_cast<MIDIAddress&>(address);
-  if(mInfo.type != MidiInfo::Type::RemoteOutput)
+  midi_address& adrs = dynamic_cast<midi_address&>(address);
+  if(mInfo.type != midi_info::Type::RemoteOutput)
     return false;
 
   auto& adrinfo = adrs.info();
-  const Channel& chan = mChannels[adrinfo.channel];
+  const midi_channel& chan = mChannels[adrinfo.channel];
   switch(adrinfo.type)
   {
-    case MIDIAddressInfo::Type::NoteOn_N:
+    case address_info::Type::NoteOn_N:
     {
       ossia::Int val{chan.mNoteOn_N[adrinfo.note]};
       address.setValue(val);
       return true;
     }
 
-    case MIDIAddressInfo::Type::NoteOn:
+    case address_info::Type::NoteOn:
     {
       ossia::Tuple val{
         ossia::Int{chan.mNoteOn.first},
@@ -153,14 +153,14 @@ bool MIDI::pull(address& address)
       return true;
     }
 
-    case MIDIAddressInfo::Type::NoteOff_N:
+    case address_info::Type::NoteOff_N:
     {
       ossia::Int val{chan.mNoteOff_N[adrinfo.note]};
       address.setValue(val);
       return true;
     }
 
-    case MIDIAddressInfo::Type::NoteOff:
+    case address_info::Type::NoteOff:
     {
       ossia::Tuple val{
         ossia::Int{chan.mNoteOff.first},
@@ -169,14 +169,14 @@ bool MIDI::pull(address& address)
       return true;
     }
 
-    case MIDIAddressInfo::Type::CC_N:
+    case address_info::Type::CC_N:
     {
       ossia::Int val{chan.mCC_N[adrinfo.note]};
       address.setValue(val);
       return true;
     }
 
-    case MIDIAddressInfo::Type::CC:
+    case address_info::Type::CC:
     {
       ossia::Tuple val{
         ossia::Int{chan.mCC.first},
@@ -185,7 +185,7 @@ bool MIDI::pull(address& address)
       return true;
     }
 
-    case MIDIAddressInfo::Type::PC:
+    case address_info::Type::PC:
     {
       ossia::Int val{chan.mPC};
       address.setValue(val);
@@ -197,16 +197,16 @@ bool MIDI::pull(address& address)
 
 }
 
-bool MIDI::push(const address& address)
+bool midi_protocol::push(const address_base& address)
 {
-  const MIDIAddress& adrs = dynamic_cast<const MIDIAddress&>(address);
-  if(mInfo.type != MidiInfo::Type::RemoteInput)
+  const midi_address& adrs = dynamic_cast<const midi_address&>(address);
+  if(mInfo.type != midi_info::Type::RemoteInput)
     return false;
 
   auto& adrinfo = adrs.info();
   switch(adrinfo.type)
   {
-    case MIDIAddressInfo::Type::NoteOn_N:
+    case address_info::Type::NoteOn_N:
     {
       mOutput.send(mm::MakeNoteOn(
                      adrinfo.channel,
@@ -215,7 +215,7 @@ bool MIDI::push(const address& address)
       return true;
     }
 
-    case MIDIAddressInfo::Type::NoteOn:
+    case address_info::Type::NoteOn:
     {
       auto& val = adrs.getValue().get<Tuple>().value;
       mOutput.send(mm::MakeNoteOn(
@@ -225,7 +225,7 @@ bool MIDI::push(const address& address)
       return true;
     }
 
-    case MIDIAddressInfo::Type::NoteOff_N:
+    case address_info::Type::NoteOff_N:
     {
       mOutput.send(mm::MakeNoteOff(
                      adrinfo.channel,
@@ -234,7 +234,7 @@ bool MIDI::push(const address& address)
       return true;
     }
 
-    case MIDIAddressInfo::Type::NoteOff:
+    case address_info::Type::NoteOff:
     {
       auto& val = adrs.getValue().get<Tuple>().value;
       mOutput.send(mm::MakeNoteOff(
@@ -244,7 +244,7 @@ bool MIDI::push(const address& address)
       return true;
     }
 
-    case MIDIAddressInfo::Type::CC_N:
+    case address_info::Type::CC_N:
     {
       mOutput.send(mm::MakeControlChange(
                      adrinfo.channel,
@@ -253,7 +253,7 @@ bool MIDI::push(const address& address)
       return true;
     }
 
-    case MIDIAddressInfo::Type::CC:
+    case address_info::Type::CC:
     {
       auto& val = adrs.getValue().get<Tuple>().value;
       mOutput.send(mm::MakeControlChange(
@@ -263,7 +263,7 @@ bool MIDI::push(const address& address)
       return true;
     }
 
-    case MIDIAddressInfo::Type::PC:
+    case address_info::Type::PC:
     {
       mOutput.send(mm::MakeProgramChange(
                      adrinfo.channel,
@@ -271,7 +271,7 @@ bool MIDI::push(const address& address)
       return true;
     }
 
-    case MIDIAddressInfo::Type::PC_N:
+    case address_info::Type::PC_N:
     {
       mOutput.send(mm::MakeProgramChange(
                      adrinfo.channel,
@@ -285,37 +285,37 @@ bool MIDI::push(const address& address)
   return true;
 }
 
-bool MIDI::observe(address& address, bool enable)
+bool midi_protocol::observe(address_base& address, bool enable)
 {
   enable = true;
-  MIDIAddress& adrs = dynamic_cast<MIDIAddress&>(address);
-  if(mInfo.type != MidiInfo::Type::RemoteOutput)
+  midi_address& adrs = dynamic_cast<midi_address&>(address);
+  if(mInfo.type != midi_info::Type::RemoteOutput)
     return false;
 
   auto adrs_ptr = &adrs;
   auto& adrinfo = adrs.info();
-  Channel& chan = mChannels[adrinfo.channel];
+  midi_channel& chan = mChannels[adrinfo.channel];
   switch(adrinfo.type)
   {
-    case MIDIAddressInfo::Type::NoteOn_N:
+    case address_info::Type::NoteOn_N:
     {
       chan.mCallbackNoteOn_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
       return true;
     }
 
-    case MIDIAddressInfo::Type::NoteOff_N:
+    case address_info::Type::NoteOff_N:
     {
       chan.mCallbackNoteOff_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
       return true;
     }
 
-    case MIDIAddressInfo::Type::CC_N:
+    case address_info::Type::CC_N:
     {
       chan.mCallbackCC_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
       return true;
     }
 
-    case MIDIAddressInfo::Type::PC_N:
+    case address_info::Type::PC_N:
     {
       chan.mCallbackPC_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
       return true;
@@ -330,14 +330,14 @@ bool MIDI::observe(address& address, bool enable)
   return true;
 }
 
-bool MIDI::update(node& node)
+bool midi_protocol::update(node_base& node)
 {
   return false;
 }
 
-std::vector<MidiInfo> MIDI::scan()
+std::vector<midi_info> midi_protocol::scan()
 {
-  std::vector<MidiInfo> vec;
+  std::vector<midi_info> vec;
 
   {
     // Input devices are those on which we do output
@@ -346,7 +346,7 @@ std::vector<MidiInfo> MIDI::scan()
     auto portcount = dev->getPortCount();
     for(int i = 0; i < portcount; i++)
     {
-      vec.emplace_back(MidiInfo::Type::RemoteOutput, dev->getPortName(i), i);
+      vec.emplace_back(midi_info::Type::RemoteOutput, dev->getPortName(i), i);
     }
   }
 
@@ -357,12 +357,13 @@ std::vector<MidiInfo> MIDI::scan()
     auto portcount = dev->getPortCount();
     for(int i = 0; i < portcount; i++)
     {
-      vec.emplace_back(MidiInfo::Type::RemoteInput, dev->getPortName(i), i);
+      vec.emplace_back(midi_info::Type::RemoteInput, dev->getPortName(i), i);
     }
   }
 
   return vec;
 }
 
+}
 }
 }

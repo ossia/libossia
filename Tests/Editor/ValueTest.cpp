@@ -458,14 +458,14 @@ private Q_SLOTS:
   void test_tuple()
   {
     Tuple t1{Int(5), Float(0.2), String("abc")};
-    QVERIFY(t1.value[0].getType() == Type::INT);
-    QVERIFY(t1.value[1].getType() == Type::FLOAT);
-    QVERIFY(t1.value[2].getType() == Type::STRING);
+    QVERIFY(t1.value[0].getType() == val_type::INT);
+    QVERIFY(t1.value[1].getType() == val_type::FLOAT);
+    QVERIFY(t1.value[2].getType() == val_type::STRING);
 
     Tuple t2 = t1;
-    QVERIFY(t2.value[0].getType() == Type::INT);
-    QVERIFY(t2.value[1].getType() == Type::FLOAT);
-    QVERIFY(t2.value[2].getType() == Type::STRING);
+    QVERIFY(t2.value[0].getType() == val_type::INT);
+    QVERIFY(t2.value[1].getType() == val_type::FLOAT);
+    QVERIFY(t2.value[2].getType() == val_type::STRING);
 
     QVERIFY(t1 == t2);
     QVERIFY(!(t1 != t2));
@@ -547,10 +547,10 @@ private Q_SLOTS:
     //! \todo test clone()
 
     // Local device
-    impl::BasicDevice device{std::make_unique<impl::Local2>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
 
     auto localTupleNode = device.createChild("my_tuple");
-    auto localTupleAddress = localTupleNode->createAddress(Type::TUPLE);
+    auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
 
     Tuple t{Float(-1.), Float(0.), Float(1.)};
     localTupleAddress->setValue(t);

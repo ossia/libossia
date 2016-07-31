@@ -20,7 +20,7 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
-#include <ossia/network/domain.hpp>
+#include <ossia/network/domain/domain.hpp>
 
 #include <ossia/network/minuit/detail/minuit_name_table.hpp>
 
@@ -28,10 +28,12 @@
 #include <unordered_map>
 #include <mutex>
 
-namespace impl
+namespace ossia
 {
-class BasicDevice;
-class OSSIA_EXPORT Minuit2 final : public ossia::net::protocol
+namespace net
+{
+class generic_device;
+class OSSIA_EXPORT minuit_protocol final : public ossia::net::protocol_base
 {
     private:
         std::string    mIp;
@@ -40,10 +42,10 @@ class OSSIA_EXPORT Minuit2 final : public ossia::net::protocol
         bool           mLearning{};          /// if the device is currently learning from inbound messages.
 
         std::mutex mListeningMutex;
-        std::unordered_map<std::string, ossia::net::address*> mListening;
+        std::unordered_map<std::string, ossia::net::address_base*> mListening;
 
         std::promise<void> mNamespacePromise;
-        impl::BasicDevice* mDevice;
+        ossia::net::generic_device* mDevice;
 
         std::set<std::string, std::less<>> m_namespaceRequests;
     public:
@@ -52,27 +54,27 @@ class OSSIA_EXPORT Minuit2 final : public ossia::net::protocol
         ossia::minuit::name_table mRemoteNameTable;
         std::promise<void> mGetPromise;
 
-        Minuit2(std::string, uint16_t, uint16_t);
-        ~Minuit2();
+        minuit_protocol(std::string, uint16_t, uint16_t);
+        ~minuit_protocol();
 
-        void setDevice(ossia::net::device& dev) override;
+        void setDevice(ossia::net::device_base& dev) override;
 
         const std::string& getIp() const;
-        Minuit2& setIp(std::string);
+        minuit_protocol& setIp(std::string);
 
         uint16_t getInPort() const;
-        Minuit2& setInPort(uint16_t);
+        minuit_protocol& setInPort(uint16_t);
 
         uint16_t getOutPort() const;
-        Minuit2& setOutPort(uint16_t);
+        minuit_protocol& setOutPort(uint16_t);
 
-        bool update(ossia::net::node& node) override;
+        bool update(ossia::net::node_base& node_base) override;
 
-        bool pull(ossia::net::address& address) override;
+        bool pull(ossia::net::address_base& address_base) override;
 
-        bool push(const ossia::net::address& address) override;
+        bool push(const ossia::net::address_base& address_base) override;
 
-        bool observe(ossia::net::address& address, bool enable) override;
+        bool observe(ossia::net::address_base& address_base, bool enable) override;
 
         void refresh(boost::string_ref req, const std::string& addr)
         {
@@ -107,4 +109,5 @@ class OSSIA_EXPORT Minuit2 final : public ossia::net::protocol
 
 
 };
+}
 }

@@ -24,61 +24,57 @@ namespace ossia
 {
 namespace net
 {
-class protocol;
-}
-}
-namespace impl
-{
-class OSSIA_EXPORT BasicAddress final : public ossia::net::address
+class protocol_base;
+class OSSIA_EXPORT generic_address final : public ossia::net::address_base
 {
     private:
-        const ossia::net::node& mNode;
-        ossia::net::protocol& mProtocol;
+        const ossia::net::node_base& mNode;
+        ossia::net::protocol_base& mProtocol;
 
         mutable std::mutex mValueMutex;
         ossia::value mValue;
 
-        ossia::net::Domain mDomain;
+        ossia::net::domain mDomain;
 
-        ossia::net::ValueCallback mCallback;
+        ossia::net::value_callback mCallback;
         std::string mTextualAddress;
 
-        ossia::Type mValueType{};
-        ossia::AccessMode mAccessMode{};
-        ossia::BoundingMode mBoundingMode{};
-        ossia::RepetitionFilter mRepetitionFilter{};
+        ossia::val_type mValueType{};
+        ossia::access_mode mAccessMode{};
+        ossia::bounding_mode mBoundingMode{};
+        ossia::repetition_filter mRepetitionFilter{};
 
     public:
         ossia::value PreviousValue;
-        BasicAddress(const ossia::net::node& node);
+        generic_address(const ossia::net::node_base& node_base);
 
-        ~BasicAddress();
+        ~generic_address();
 
-        const ossia::net::node& getNode() const override;
+        const ossia::net::node_base& getNode() const override;
 
         void pullValue() override;
 
-        ossia::net::address & pushValue(const ossia::value&) override;
-        ossia::net::address & pushValue() override;
+        ossia::net::address_base & pushValue(const ossia::value&) override;
+        ossia::net::address_base & pushValue() override;
 
         const ossia::value& getValue() const;
         ossia::value cloneValue(ossia::destination_index = {}) const override;
-        address & setValue(const ossia::value&) override;
+        address_base & setValue(const ossia::value&) override;
 
-        ossia::Type getValueType() const override;
-        ossia::net::address & setValueType(ossia::Type) override;
+        ossia::val_type getValueType() const override;
+        ossia::net::address_base & setValueType(ossia::val_type) override;
 
-        ossia::AccessMode getAccessMode() const override;
-        ossia::net::address & setAccessMode(ossia::AccessMode) override;
+        ossia::access_mode getAccessMode() const override;
+        ossia::net::address_base & setAccessMode(ossia::access_mode) override;
 
-        const ossia::net::Domain& getDomain() const override;
-        ossia::net::address & setDomain(const ossia::net::Domain&) override;
+        const ossia::net::domain& getDomain() const override;
+        ossia::net::address_base & setDomain(const ossia::net::domain&) override;
 
-        ossia::BoundingMode getBoundingMode() const override;
-        ossia::net::address & setBoundingMode(ossia::BoundingMode) override;
+        ossia::bounding_mode getBoundingMode() const override;
+        ossia::net::address_base & setBoundingMode(ossia::bounding_mode) override;
 
-        ossia::RepetitionFilter getRepetitionFilter() const override;
-        ossia::net::address & setRepetitionFilter(ossia::RepetitionFilter) override;
+        ossia::repetition_filter getRepetitionFilter() const override;
+        ossia::net::address_base & setRepetitionFilter(ossia::repetition_filter) override;
 
         void onFirstCallbackAdded() override;
         void onRemovingLastCallback() override;
@@ -88,4 +84,5 @@ class OSSIA_EXPORT BasicAddress final : public ossia::net::address
 
     private:
 };
+}
 }

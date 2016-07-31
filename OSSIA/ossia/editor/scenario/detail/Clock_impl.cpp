@@ -2,9 +2,9 @@
 #include <cassert>
 
 #include <iostream>
-namespace impl
+namespace detail
 {
-JamomaClock::JamomaClock(clock::ExecutionCallback callback,
+clock_impl::clock_impl(clock::ExecutionCallback callback,
                          time_value duration,
                          time_value granularity,
                          time_value offset,
@@ -20,7 +20,7 @@ mPaused(false),
 mCallback(callback)
 {}
 
-JamomaClock::~JamomaClock()
+clock_impl::~clock_impl()
 {
   stop();
 }
@@ -29,27 +29,27 @@ JamomaClock::~JamomaClock()
 # pragma mark -
 # pragma mark Execution
 
-void JamomaClock::start()
+void clock_impl::start()
 {
   do_start();
 }
 
-void JamomaClock::stop()
+void clock_impl::stop()
 {
   do_stop();
 }
 
-void JamomaClock::pause()
+void clock_impl::pause()
 {
   mPaused = true;
 }
 
-bool JamomaClock::paused() const
+bool clock_impl::paused() const
 {
     return mPaused;
 }
 
-void JamomaClock::resume()
+void clock_impl::resume()
 {
   mPaused = false;
 
@@ -57,7 +57,7 @@ void JamomaClock::resume()
   mLastTime = clock_type::now();
 }
 
-bool JamomaClock::tick()
+bool clock_impl::tick()
 {
   if (mPaused || !mRunning)
     return false;
@@ -154,7 +154,7 @@ bool JamomaClock::tick()
 }
 
 
-bool JamomaClock::tick(time_value usec)
+bool clock_impl::tick(time_value usec)
 {
   if (mPaused || !mRunning)
     return false;
@@ -200,72 +200,72 @@ bool JamomaClock::tick(time_value usec)
 # pragma mark -
 # pragma mark Accessors
 
-const time_value & JamomaClock::getDuration() const
+const time_value & clock_impl::getDuration() const
 {
   return mDuration;
 }
 
-ossia::clock & JamomaClock::setDuration(time_value duration)
+ossia::clock & clock_impl::setDuration(time_value duration)
 {
   do_setDuration(duration);
   return *this;
 }
 
-const time_value & JamomaClock::getOffset() const
+const time_value & clock_impl::getOffset() const
 {
   return mOffset;
 }
 
-ossia::clock & JamomaClock::setOffset(time_value offset)
+ossia::clock & clock_impl::setOffset(time_value offset)
 {
   do_setOffset(offset);
   return *this;
 }
 
-const time_value & JamomaClock::getGranularity() const
+const time_value & clock_impl::getGranularity() const
 {
   return mGranularity;
 }
 
-ossia::clock & JamomaClock::setGranularity(time_value granularity)
+ossia::clock & clock_impl::setGranularity(time_value granularity)
 {
   mGranularity = granularity;
   return *this;
 }
 
-float JamomaClock::getSpeed() const
+float clock_impl::getSpeed() const
 {
   return mSpeed;
 }
 
-ossia::clock & JamomaClock::setSpeed(float speed)
+ossia::clock & clock_impl::setSpeed(float speed)
 {
   mSpeed = speed;
   return *this;
 }
 
-clock::DriveMode JamomaClock::getDriveMode() const
+clock::DriveMode clock_impl::getDriveMode() const
 {
   return mDriveMode;
 }
 
-ossia::clock & JamomaClock::setDriveMode(clock::DriveMode driveMode)
+ossia::clock & clock_impl::setDriveMode(clock::DriveMode driveMode)
 {
   mDriveMode = driveMode;
   return *this;
 }
 
-bool JamomaClock::getRunning() const
+bool clock_impl::getRunning() const
 {
   return mRunning;
 }
 
-const time_value & JamomaClock::getPosition() const
+const time_value & clock_impl::getPosition() const
 {
   return mPosition;
 }
 
-const time_value & JamomaClock::getDate() const
+const time_value & clock_impl::getDate() const
 {
   return mDate;
 }
@@ -273,7 +273,7 @@ const time_value & JamomaClock::getDate() const
 # pragma mark -
 # pragma mark Internal
 
-void JamomaClock::request_stop()
+void clock_impl::request_stop()
 {
     if(mRunning)
     {
@@ -284,7 +284,7 @@ void JamomaClock::request_stop()
     }
 }
 
-void JamomaClock::do_start()
+void clock_impl::do_start()
 {
   if (mDuration <= mOffset)
     return stop();
@@ -311,11 +311,11 @@ void JamomaClock::do_start()
       mThread.join();
 
     // launch a new thread to run the clock execution
-    mThread = std::thread(&JamomaClock::threadCallback, this);
+    mThread = std::thread(&clock_impl::threadCallback, this);
   }
 }
 
-void JamomaClock::do_stop()
+void clock_impl::do_stop()
 {
   request_stop();
 
@@ -326,7 +326,7 @@ void JamomaClock::do_stop()
   }
 }
 
-void JamomaClock::do_setDuration(time_value duration)
+void clock_impl::do_setDuration(time_value duration)
 {
   mDuration = duration;
   mDate = mOffset;
@@ -337,7 +337,7 @@ void JamomaClock::do_setDuration(time_value duration)
     mPosition = Zero;
 }
 
-void JamomaClock::do_setOffset(time_value offset)
+void clock_impl::do_setOffset(time_value offset)
 {
   mOffset = offset;
   mDate = mOffset;
@@ -348,7 +348,7 @@ void JamomaClock::do_setOffset(time_value offset)
     mPosition = Zero;
 }
 
-void JamomaClock::threadCallback()
+void clock_impl::threadCallback()
 {
   // launch the tick if the duration is valid and while it have to run
   if (mDuration > Zero)

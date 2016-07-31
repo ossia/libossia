@@ -4,7 +4,7 @@
 
 namespace ossia
 {
-class OSSIA_EXPORT CustomState
+class OSSIA_EXPORT custom_state
 {
     public:
         std::function<void()> func;
@@ -14,9 +14,9 @@ class OSSIA_EXPORT CustomState
                 func();
         }
 
-        friend bool operator==(const CustomState& lhs, const CustomState& rhs)
+        friend bool operator==(const custom_state& lhs, const custom_state& rhs)
         { return false; }
-        friend bool operator!=(const CustomState& lhs, const CustomState& rhs)
+        friend bool operator!=(const custom_state& lhs, const custom_state& rhs)
         { return true; }
 };
 }

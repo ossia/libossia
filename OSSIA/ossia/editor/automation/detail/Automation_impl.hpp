@@ -24,11 +24,11 @@
 #include <ossia/network/base/address.hpp>
 #include <ossia/editor/scenario/detail/TimeProcess_impl.hpp>
 
-namespace impl
+namespace detail
 {
-class JamomaAutomation final :
+class automation_impl final :
     public ossia::automation,
-    public JamomaTimeProcess
+    public time_process_impl
 {
 
 private:
@@ -37,9 +37,9 @@ private:
 # pragma mark Implementation specific
 #endif
 
-  ossia::net::address& mDrivenAddress;
+  ossia::net::address_base& mDrivenAddress;
   ossia::value mDrive;
-  ossia::Message mLastMessage;
+  ossia::message mLastMessage;
 
 public:
 #if 0
@@ -47,19 +47,19 @@ public:
 # pragma mark Life cycle
 #endif
 
-  JamomaAutomation(ossia::net::address&, const ossia::value&);
+  automation_impl(ossia::net::address_base&, const ossia::value&);
 
-  JamomaAutomation(const JamomaAutomation&);
+  automation_impl(const automation_impl&);
 
-  ~JamomaAutomation();
+  ~automation_impl();
 #if 0
 # pragma mark -
 # pragma mark Execution
 #endif
 
-  ossia::StateElement offset(ossia::time_value) override;
+  ossia::state_element offset(ossia::time_value) override;
 
-  ossia::StateElement state() override;
+  ossia::state_element state() override;
 #if 0
 # pragma mark -
 # pragma mark Execution - Implementation specific
@@ -74,7 +74,7 @@ public:
 # pragma mark Accessors
 #endif
 
-  const ossia::net::address& getDrivenAddress() const override;
+  const ossia::net::address_base& getDrivenAddress() const override;
 
   const ossia::value& getDriving() const override;
 

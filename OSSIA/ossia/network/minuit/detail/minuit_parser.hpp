@@ -16,8 +16,8 @@ template<minuit_command Req, minuit_operation Op>
 struct minuit_remote_behaviour
 {
     auto operator()(
-        impl::Minuit2& proto,
-        impl::BasicDevice& dev,
+        ossia::net::minuit_protocol& proto,
+        ossia::net::generic_device& dev,
         const oscpack::ReceivedMessage& mess)
     {
       // By default do nothing
@@ -30,8 +30,8 @@ struct minuit_remote_behaviour<
     minuit_command::Answer,
     minuit_operation::Get>
 {
-    ossia::net::Domain get_domain(
-        ossia::net::address& addr,
+    ossia::net::domain get_domain(
+        ossia::net::address_base& addr,
         oscpack::ReceivedMessageArgumentIterator beg_it,
         oscpack::ReceivedMessageArgumentIterator end_it)
     {
@@ -43,7 +43,7 @@ struct minuit_remote_behaviour<
       {
         auto cur_it = beg_it;
         ++beg_it;
-        val.push_back(impl::toValue(cur, cur_it, beg_it, 1));
+        val.push_back(ossia::net::toValue(cur, cur_it, beg_it, 1));
       }
 
       if(val.size() == 2)
@@ -52,8 +52,8 @@ struct minuit_remote_behaviour<
     }
 
     void operator()(
-        impl::Minuit2& proto,
-        impl::BasicDevice& dev,
+        ossia::net::minuit_protocol& proto,
+        ossia::net::generic_device& dev,
         const oscpack::ReceivedMessage& mess)
     {
       auto mess_it = mess.ArgumentsBegin();
@@ -63,12 +63,12 @@ struct minuit_remote_behaviour<
       if(idx == std::string::npos)
       {
         // The OSC message is a standard OSC one, carrying a value.
-        auto node = impl::find_node(dev, full_address);
+        auto node = ossia::net::find_node(dev, full_address);
         if(node)
         {
           if(auto addr = node->getAddress())
           {
-            impl::updateValue(*addr, ++mess_it,
+            ossia::net::updateValue(*addr, ++mess_it,
                               mess.ArgumentsEnd(),
                               mess.ArgumentCount() - 1);
           }
@@ -89,7 +89,7 @@ struct minuit_remote_behaviour<
         ++mess_it;
         // mess_it is now at the first argument after the address:attribute
 
-        auto node = impl::find_node(dev, address);
+        auto node = ossia::net::find_node(dev, address);
         if(!node)
           return;
         auto addr = node->getAddress();
@@ -100,7 +100,7 @@ struct minuit_remote_behaviour<
         {
           case minuit_attribute::Value:
           {
-            impl::updateValue(*addr, mess_it,
+            ossia::net::updateValue(*addr, mess_it,
                               mess.ArgumentsEnd(),
                               mess.ArgumentCount() - 1);
             break;
@@ -127,7 +127,7 @@ struct minuit_remote_behaviour<
           case minuit_attribute::RepetitionFilter:
           {
             addr->setRepetitionFilter(
-                  static_cast<RepetitionFilter>(mess_it->AsInt32()));
+                  static_cast<repetition_filter>(mess_it->AsInt32()));
             break;
           }
           case minuit_attribute::Service:
@@ -152,8 +152,8 @@ struct minuit_remote_behaviour<
     minuit_operation::Listen>
 {
     auto operator()(
-        impl::Minuit2& proto,
-        impl::BasicDevice& dev,
+        ossia::net::minuit_protocol& proto,
+        ossia::net::generic_device& dev,
         const oscpack::ReceivedMessage& mess)
     {
 
@@ -224,8 +224,8 @@ struct minuit_remote_behaviour<
     }
 
     static auto handle_container(
-        impl::Minuit2& proto,
-        impl::BasicDevice& dev,
+        ossia::net::minuit_protocol& proto,
+        ossia::net::generic_device& dev,
         boost::string_ref address,
         oscpack::ReceivedMessageArgumentIterator beg_it,
         oscpack::ReceivedMessageArgumentIterator end_it)
@@ -243,7 +243,7 @@ struct minuit_remote_behaviour<
         child_address.append(child.begin(), child.end());
 
         // Create the actual node
-        impl::find_or_create_node(dev, address);
+        ossia::net::find_or_create_node(dev, address);
 
         // request children
         proto.refresh(sub_request, child_address);
@@ -251,8 +251,8 @@ struct minuit_remote_behaviour<
     }
 
     static auto handle_data(
-        impl::Minuit2& proto,
-        impl::BasicDevice& dev,
+        ossia::net::minuit_protocol& proto,
+        ossia::net::generic_device& dev,
         boost::string_ref address,
         oscpack::ReceivedMessageArgumentIterator beg_it,
         oscpack::ReceivedMessageArgumentIterator end_it)
@@ -260,8 +260,8 @@ struct minuit_remote_behaviour<
       using namespace oscpack;
 
       // Find or create the node
-      auto& n = impl::find_or_create_node(dev, address);
-      n.createAddress(ossia::Type::IMPULSE);
+      auto& n = ossia::net::find_or_create_node(dev, address);
+      n.createAddress(ossia::val_type::IMPULSE);
 
       auto sub_request = proto.mLocalNameTable.get_action(minuit_action::GetRequest);
 
@@ -278,8 +278,8 @@ struct minuit_remote_behaviour<
     }
 
     static auto handle_minuit(
-        impl::Minuit2& proto,
-        impl::BasicDevice& dev,
+        ossia::net::minuit_protocol& proto,
+        ossia::net::generic_device& dev,
         boost::string_ref address,
         minuit_type type,
         oscpack::ReceivedMessageArgumentIterator beg_it,
@@ -308,8 +308,8 @@ struct minuit_remote_behaviour<
     }
 
     auto operator()(
-        impl::Minuit2& proto,
-        impl::BasicDevice& dev,
+        ossia::net::minuit_protocol& proto,
+        ossia::net::generic_device& dev,
         const oscpack::ReceivedMessage& mess)
     {
       auto it = mess.ArgumentsBegin();
@@ -322,72 +322,6 @@ struct minuit_remote_behaviour<
     }
 };
 
-/*
-struct get_promise
-{
-        get_promise(const std::string& addr):
-            address{addr} { }
-        std::string address;
-        std::promise<coppa::minuit::Parameter> promise;
-};
-
-
-template<
-        template<
-          minuit_command,
-          minuit_operation>
-        class Handler>
-struct minuit_callback_behaviour_wrapper<Handler, minuit_command::Answer, minuit_operation::Get>
-{
-    auto operator()(impl::BasicDevice& dev, const oscpack::ReceivedMessage& mess)
-    {
-        auto res_it = Handler<minuit_command::Answer, minuit_operation::Get>{}(dev, map, mess);
-
-        if(res_it != map.end())
-        {
-            // TODO for all if instead ?
-            auto prom_it = std::find_if(
-                        dev.m_getPromises.begin(),
-                        dev.m_getPromises.end(),
-                        [=] (const auto& prom) {
-               return prom.address == res_it->destination;
-            });
-
-            if(prom_it != dev.m_getPromises.end())
-            {
-              prom_it->promise.set_value(*res_it);
-              dev.m_getPromises.erase(prom_it);
-            }
-        }
-        // TODO here : - boost.lockfree queue for namespaces : we add the requested paths to a queue
-        // when they are received we remove them
-        // when the queue is empty, the namespace querying is finished (else we retry three times or something)
-
-        // For "get" we set our promise as soon as we're done ? where shall we store them ?
-
-        //dev.m_getPromises
-    }
-};
-
-template<
-  minuit_command c,
-  minuit_operation op>
-using minuit_callback_behaviour_wrapper_t = minuit_callback_behaviour_wrapper<minuit_remote_behaviour, c, op>;
-template<
-        template<
-          minuit_command,
-          minuit_operation>
-        class Handler>
-struct minuit_callback_behaviour_wrapper<Handler, minuit_command::Answer, minuit_operation::Listen>
-{
-    auto operator()(impl::BasicDevice& dev, const oscpack::ReceivedMessage& mess)
-    {
-      Handler<minuit_command::Answer, minuit_operation::Listen>{}(dev, map, mess);
-    }
-};
-*/
-
-
 // Namespace request :
 // app?namespace addr
 
@@ -398,8 +332,8 @@ class minuit_message_handler
 {
   public:
     static void handleMinuitMessage(
-        impl::Minuit2& proto,
-        impl::BasicDevice& dev,
+        ossia::net::minuit_protocol& proto,
+        ossia::net::generic_device& dev,
         boost::string_ref address,
         const oscpack::ReceivedMessage& m)
     {

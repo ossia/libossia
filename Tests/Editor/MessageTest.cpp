@@ -14,13 +14,13 @@ private Q_SLOTS:
     void test_basic()
     {
         // Local device
-        impl::BasicDevice device{std::make_unique<impl::Local2>(), "test"};
+        ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
 
         // Local tree building
         auto localIntNode = device.createChild("my_int");
-        auto localIntAddress = localIntNode->createAddress(Type::INT);
+        auto localIntAddress = localIntNode->createAddress(val_type::INT);
 
-        Message message{*localIntAddress, Int(10)};
+        message message{*localIntAddress, Int(10)};
 
         //! \todo test clone()
     }

@@ -1,23 +1,26 @@
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/generic/generic_address.hpp>
-namespace impl
-{
-Local2::Local2()
-{
 
-}
-
-Local2::~Local2()
+namespace ossia
+{
+namespace net
+{
+local_protocol::local_protocol()
 {
 
 }
 
-bool Local2::pull(ossia::net::address& address)
+local_protocol::~local_protocol()
+{
+
+}
+
+bool local_protocol::pull(ossia::net::address_base& address)
 {
     return false;
 }
 
-bool Local2::push(const ossia::net::address& address)
+bool local_protocol::push(const ossia::net::address_base& address)
 {
     bool b = true;
     for(auto& proto : mExposed)
@@ -26,13 +29,14 @@ bool Local2::push(const ossia::net::address& address)
     return b;
 }
 
-bool Local2::observe(ossia::net::address& address, bool enable)
+bool local_protocol::observe(ossia::net::address_base& address, bool enable)
 {
     return false;
 }
 
-bool Local2::update(ossia::net::node& node)
+bool local_protocol::update(ossia::net::node_base& node)
 {
     return false;
+}
 }
 }

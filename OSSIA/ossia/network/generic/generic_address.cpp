@@ -6,37 +6,39 @@
 #include <map>
 #include <iostream>
 
-namespace impl {
-
-BasicAddress::BasicAddress(
-        const ossia::net::node& node) :
+namespace ossia
+{
+namespace net
+{
+generic_address::generic_address(
+        const ossia::net::node_base& node) :
     mNode{node},
     mProtocol{node.getDevice().getProtocol()},
     mValue(ossia::Impulse{}),
-    mValueType(ossia::Type::IMPULSE),
-    mAccessMode(ossia::AccessMode::BI),
-    mBoundingMode(ossia::BoundingMode::FREE),
-    mRepetitionFilter(ossia::RepetitionFilter::OFF)
+    mValueType(ossia::val_type::IMPULSE),
+    mAccessMode(ossia::access_mode::BI),
+    mBoundingMode(ossia::bounding_mode::FREE),
+    mRepetitionFilter(ossia::repetition_filter::OFF)
 {
     mTextualAddress = ossia::net::getAddressFromNode(mNode);
 }
 
-BasicAddress::~BasicAddress()
+generic_address::~generic_address()
 {
   mCallbacks.clear();
 }
 
-const ossia::net::node& BasicAddress::getNode() const
+const ossia::net::node_base& generic_address::getNode() const
 {
     return mNode;
 }
 
-void BasicAddress::pullValue()
+void generic_address::pullValue()
 {
     mProtocol.pull(*this);
 }
 
-ossia::net::address& BasicAddress::pushValue(const ossia::value& value)
+ossia::net::address_base& generic_address::pushValue(const ossia::value& value)
 {
     setValue(value);
 
@@ -45,26 +47,26 @@ ossia::net::address& BasicAddress::pushValue(const ossia::value& value)
     return *this;
 }
 
-ossia::net::address& BasicAddress::pushValue()
+ossia::net::address_base& generic_address::pushValue()
 {
     mProtocol.push(*this);
 
     return *this;
 }
 
-const ossia::value& BasicAddress::getValue() const
+const ossia::value& generic_address::getValue() const
 {
     return mValue;
 }
 
-ossia::value BasicAddress::cloneValue(ossia::destination_index index) const
+ossia::value generic_address::cloneValue(ossia::destination_index index) const
 {
     using namespace ossia;
     std::lock_guard<std::mutex> lock(mValueMutex);
 
     if (mValue.valid())
     {
-        if (index.empty() || mValueType != Type::TUPLE)
+        if (index.empty() || mValueType != val_type::TUPLE)
         {
             return mValue;
         }
@@ -95,14 +97,14 @@ ossia::value BasicAddress::cloneValue(ossia::destination_index index) const
     }
 }
 
-ossia::net::address& BasicAddress::setValue(const ossia::value& value)
+ossia::net::address_base& generic_address::setValue(const ossia::value& value)
 {
     using namespace ossia;
     std::unique_lock<std::mutex> lock(mValueMutex);
 
     // set value querying the value from another address
     auto dest = value.try_get<Destination>();
-    if (dest && mValueType != Type::DESTINATION)
+    if (dest && mValueType != val_type::DESTINATION)
     {
       const Destination& destination = *dest;
       auto address = destination.value->getAddress();
@@ -140,12 +142,13 @@ ossia::net::address& BasicAddress::setValue(const ossia::value& value)
     return *this;
 }
 
-ossia::Type BasicAddress::getValueType() const
+ossia::val_type generic_address::getValueType() const
 {
     return mValueType;
 }
 
-ossia::net::address& BasicAddress::setValueType(ossia::Type type)
+
+ossia::net::address_base& generic_address::setValueType(ossia::val_type type)
 {
     mValueType = type;
 
@@ -155,58 +158,59 @@ ossia::net::address& BasicAddress::setValueType(ossia::Type type)
     return *this;
 }
 
-ossia::AccessMode BasicAddress::getAccessMode() const
+ossia::access_mode generic_address::getAccessMode() const
 {
     return mAccessMode;
 }
 
-ossia::net::address& BasicAddress::setAccessMode(ossia::AccessMode accessMode)
+ossia::net::address_base& generic_address::setAccessMode(ossia::access_mode accessMode)
 {
     mAccessMode = accessMode;
     return *this;
 }
 
-const ossia::net::Domain& BasicAddress::getDomain() const
+const ossia::net::domain& generic_address::getDomain() const
 {
     return mDomain;
 }
 
-ossia::net::address& BasicAddress::setDomain(const ossia::net::Domain& domain)
+ossia::net::address_base& generic_address::setDomain(const ossia::net::domain& domain)
 {
     mDomain = domain;
     return *this;
 }
 
-ossia::BoundingMode BasicAddress::getBoundingMode() const
+ossia::bounding_mode generic_address::getBoundingMode() const
 {
     return mBoundingMode;
 }
 
-ossia::net::address& BasicAddress::setBoundingMode(ossia::BoundingMode boundingMode)
+ossia::net::address_base& generic_address::setBoundingMode(ossia::bounding_mode boundingMode)
 {
     mBoundingMode = boundingMode;
     return *this;
 }
 
-ossia::RepetitionFilter BasicAddress::getRepetitionFilter() const
+ossia::repetition_filter generic_address::getRepetitionFilter() const
 {
     return mRepetitionFilter;
 }
 
-ossia::net::address& BasicAddress::setRepetitionFilter(ossia::RepetitionFilter repetitionFilter)
+ossia::net::address_base& generic_address::setRepetitionFilter(ossia::repetition_filter repetitionFilter)
 {
     mRepetitionFilter = repetitionFilter;
 
     return *this;
 }
 
-void BasicAddress::onFirstCallbackAdded()
+void generic_address::onFirstCallbackAdded()
 {
   mProtocol.observe(*this, true);
 }
 
-void BasicAddress::onRemovingLastCallback()
+void generic_address::onRemovingLastCallback()
 {
   mProtocol.observe(*this, false);
+}
 }
 }

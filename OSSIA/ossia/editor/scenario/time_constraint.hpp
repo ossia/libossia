@@ -29,7 +29,7 @@
 namespace ossia
 {
 
-class State;
+class state;
 class time_event;
 class time_process;
 class time_value;
@@ -59,7 +59,7 @@ public:
    \param const #TimeValue process clock position
    \param const #TimeValue process clock date
    \param std::shared_ptr<#State> */
-  using ExecutionCallback = std::function<void(time_value, time_value, const State&)>;
+  using ExecutionCallback = std::function<void(time_value, time_value, const state&)>;
 
 #if 0
 # pragma mark -
@@ -101,13 +101,13 @@ public:
    \details don't call offset when the #TimeConstraint is running
    \param const #TimeValue offset date
    \return std::shared_ptr<#State> */
-  virtual State offset(time_value) = 0;
+  virtual ossia::state offset(time_value) = 0;
 
   /*! get a #State from the constraint depending on its #Clock date
    \details the returned #State is made of as many as sub States for each TimeProcess the #TimeConstraint manages
    \details don't call state when the #TimeConstraint is not running
    \return std::shared_ptr<#State> */
-  virtual State state() = 0;
+  virtual ossia::state state() = 0;
 
 #if 0
 # pragma mark -

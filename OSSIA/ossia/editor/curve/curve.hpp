@@ -128,7 +128,7 @@ public:
 
 }
 
-#if !defined(APIJamoma_EXPORTS)
+#if !defined(OSSIA_EXPORTS)
 extern template class OSSIA_EXPORT ossia::curve<double, bool>;
 extern template class OSSIA_EXPORT ossia::curve<double, int>;
 extern template class OSSIA_EXPORT ossia::curve<double, float>;

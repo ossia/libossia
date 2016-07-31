@@ -30,12 +30,12 @@ using namespace ossia;
 
 using namespace std::placeholders;
 
-namespace impl
+namespace detail
 {
-class JamomaTimeConstraint final :
+class time_constraint_impl final :
         public time_constraint,
-        public JamomaClock,
-        public std::enable_shared_from_this<JamomaTimeConstraint>
+        public clock_impl,
+        public std::enable_shared_from_this<time_constraint_impl>
 {
 
 private:
@@ -57,14 +57,14 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaTimeConstraint(time_constraint::ExecutionCallback,
+  time_constraint_impl(time_constraint::ExecutionCallback,
                        std::shared_ptr<time_event>,
                        std::shared_ptr<time_event>,
                        time_value = Infinite,
                        time_value = 0.,
                        time_value = Infinite);
 
-  ~JamomaTimeConstraint();
+  ~time_constraint_impl();
 
 # pragma mark -
 # pragma mark Execution
@@ -73,9 +73,9 @@ public:
 
   void stop() final override;
 
-  State offset(time_value) override;
+  ossia::state offset(time_value) override;
 
-  State state() override;
+  ossia::state state() override;
 
   void pause() final override;
 
@@ -113,6 +113,6 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
   void ClockCallback(time_value position, time_value date, unsigned char droppedTicks);
-  State make_state();
+  ossia::state make_state();
 };
 }

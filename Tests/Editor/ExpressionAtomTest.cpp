@@ -37,8 +37,8 @@ private Q_SLOTS:
 
         auto testImpulseExprC = make_expression_atom(
                     Impulse(), expression_atom::Comparator::EQUAL, Bool(true));
-        QCOMPARE(testImpulseExprC->target<expression_atom>()->getFirstOperand().getType(), Type::IMPULSE);
-        QCOMPARE(testImpulseExprC->target<expression_atom>()->getSecondOperand().getType(), Type::BOOL);
+        QCOMPARE(testImpulseExprC->target<expression_atom>()->getFirstOperand().getType(), val_type::IMPULSE);
+        QCOMPARE(testImpulseExprC->target<expression_atom>()->getSecondOperand().getType(), val_type::BOOL);
 
         QVERIFY(evaluate(testImpulseExprC) == true);
 

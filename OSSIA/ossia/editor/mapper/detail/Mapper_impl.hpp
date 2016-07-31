@@ -28,9 +28,9 @@
 #include <mutex>
 
 using namespace std::placeholders;
-namespace impl
+namespace detail
 {
-class JamomaMapper : public ossia::mapper, public JamomaTimeProcess
+class mapper_impl : public ossia::mapper, public time_process_impl
 {
 
 private:
@@ -38,34 +38,34 @@ private:
 # pragma mark -
 # pragma mark Implementation specific
 
-  ossia::net::address&   mDriverAddress;
-  ossia::net::address&   mDrivenAddress;
+  ossia::net::address_base&   mDriverAddress;
+  ossia::net::address_base&   mDrivenAddress;
   ossia::value                 mDrive;
 
-  ossia::Message               mLastMessage;
+  ossia::message               mLastMessage;
   ossia::value                 mValueToMap;
   mutable std::mutex    mValueToMapMutex;
 
   bool                  mDriverValueObserved{};
-  ossia::net::address::callback_index     mDriverValueCallbackIndex;
+  ossia::net::address_base::callback_index     mDriverValueCallbackIndex;
 
 public:
 
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaMapper(ossia::net::address&,
-               ossia::net::address&,
+  mapper_impl(ossia::net::address_base&,
+               ossia::net::address_base&,
                const ossia::value&);
 
-  ~JamomaMapper();
+  ~mapper_impl();
 
 # pragma mark -
 # pragma mark Execution
 
-  ossia::StateElement offset(ossia::time_value) override;
+  ossia::state_element offset(ossia::time_value) override;
 
-  ossia::StateElement state() override;
+  ossia::state_element state() override;
 
 # pragma mark -
 # pragma mark Execution - Implementation specific
@@ -78,9 +78,9 @@ public:
 # pragma mark -
 # pragma mark Accessors
 
-  const ossia::net::address& getDriverAddress() const override;
+  const ossia::net::address_base& getDriverAddress() const override;
 
-  const ossia::net::address& getDrivenAddress() const override;
+  const ossia::net::address_base& getDrivenAddress() const override;
 
   const ossia::value& getDriving() const override;
 

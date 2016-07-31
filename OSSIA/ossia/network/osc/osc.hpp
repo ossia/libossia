@@ -21,10 +21,12 @@
 #include <unordered_map>
 #include <mutex>
 
-namespace impl
+namespace ossia
+{
+namespace net
 {
 class OSSIA_EXPORT OSC2 final :
-        public ossia::net::protocol
+        public ossia::net::protocol_base
 {
     private:
         std::string    mIp;
@@ -36,7 +38,7 @@ class OSSIA_EXPORT OSC2 final :
         osc::receiver  mReceiver;
 
         std::mutex mListeningMutex;
-        std::unordered_map<std::string, ossia::net::address*> mListening;
+        std::unordered_map<std::string, ossia::net::address_base*> mListening;
 
     public:
         OSC2(std::string, uint16_t, uint16_t);
@@ -53,20 +55,21 @@ class OSSIA_EXPORT OSC2 final :
         OSC2 & setOutPort(uint16_t);
 
         bool getLearningStatus() const;
-        OSC2 & setLearningStatus(ossia::net::device&, bool);
+        OSC2 & setLearningStatus(ossia::net::device_base&, bool);
 
 
-        bool update(ossia::net::node& node) override;
+        bool update(ossia::net::node_base& node_base) override;
 
-        bool pull(ossia::net::address& address) override;
+        bool pull(ossia::net::address_base& address_base) override;
 
-        bool push(const ossia::net::address& address) override;
+        bool push(const ossia::net::address_base& address_base) override;
 
-        bool observe(ossia::net::address& address, bool enable) override;
+        bool observe(ossia::net::address_base& address_base, bool enable) override;
 
     private:
         void handleReceivedMessage(
                 const oscpack::ReceivedMessage& m,
                 const oscpack::IpEndpointName& ip);
 };
+}
 }

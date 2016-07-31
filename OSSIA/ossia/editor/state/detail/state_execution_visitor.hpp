@@ -1,8 +1,8 @@
 #pragma once
 
 namespace ossia
-{    
-struct StateExecutionVisitor
+{
+struct state_execution_visitor
 {
         template<typename T>
         void operator()(const T& m)

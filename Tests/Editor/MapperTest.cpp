@@ -13,13 +13,13 @@ class MapperTest : public QObject
 {
   Q_OBJECT
 
-  address* m_float_address{};
+  address_base* m_float_address{};
   std::vector<value> m_float_address_values;
 
-  address* m_int_address{};
+  address_base* m_int_address{};
   std::vector<value> m_int_address_values;
 
-  void constraint_callback(time_value position, time_value date, const State& st)
+  void constraint_callback(time_value position, time_value date, const state& st)
   {
     st.launch();
   }
@@ -47,13 +47,13 @@ private Q_SLOTS:
   /*! test life cycle and accessors functions */
   void test_basic()
   {
-    impl::BasicDevice device{std::make_unique<impl::Local2>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
 
     auto float_n = device.createChild("float");
-    auto float_address = float_n->createAddress(Type::FLOAT);
+    auto float_address = float_n->createAddress(val_type::FLOAT);
 
     auto int_n = device.createChild("int");
-    auto int_address = int_n->createAddress(Type::INT);
+    auto int_address = int_n->createAddress(val_type::INT);
 
     Float f(0);
 
@@ -73,13 +73,13 @@ private Q_SLOTS:
   //! \todo test state()
   void test_execution()
   {
-    impl::BasicDevice device{std::make_unique<impl::Local2>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
 
     auto float_n = device.createChild("float");
-    m_float_address = float_n->createAddress(Type::FLOAT);
+    m_float_address = float_n->createAddress(val_type::FLOAT);
 
     auto int_n = device.createChild("int");
-    m_int_address = int_n->createAddress(Type::INT);
+    m_int_address = int_n->createAddress(val_type::INT);
     auto int_address_callback = std::bind(&MapperTest::int_address_callback, this, _1);
     m_int_address->addCallback(int_address_callback);
 

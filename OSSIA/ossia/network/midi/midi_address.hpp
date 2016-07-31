@@ -6,8 +6,10 @@ namespace ossia
 {
 namespace net
 {
-class MIDI;
-struct MIDIAddressInfo
+namespace midi
+{
+class midi_protocol;
+struct address_info
 {
     enum class Type : midi_size_t
     {
@@ -21,21 +23,21 @@ struct MIDIAddressInfo
       PC_N // /12/PC/32 Impulse
     };
 
-    ossia::Type matchingType()
+    ossia::val_type matchingType()
     {
       switch(type)
       {
         case Type::NoteOn:
         case Type::NoteOff:
         case Type::CC:
-          return ossia::Type::TUPLE;
+          return ossia::val_type::TUPLE;
         case Type::NoteOn_N:
         case Type::NoteOff_N:
         case Type::CC_N:
         case Type::PC:
-          return ossia::Type::INT;
+          return ossia::val_type::INT;
         case Type::PC_N:
-          return ossia::Type::IMPULSE;
+          return ossia::val_type::IMPULSE;
       }
       return {};
     }
@@ -84,7 +86,7 @@ struct MIDIAddressInfo
       return {};
     }
 
-    ossia::net::Domain defaultDomain()
+    ossia::net::domain defaultDomain()
     {
 
       return ossia::net::makeDomain(
@@ -93,20 +95,20 @@ struct MIDIAddressInfo
             );
     }
 
-    MIDIAddressInfo(Type t):
+    address_info(Type t):
       type{t}
     {
 
     }
 
-    MIDIAddressInfo(Type t, midi_size_t n):
+    address_info(Type t, midi_size_t n):
       type{t},
       note{n}
     {
 
     }
 
-    MIDIAddressInfo(midi_size_t chan, Type t, midi_size_t n):
+    address_info(midi_size_t chan, Type t, midi_size_t n):
       channel{chan},
       type{t},
       note{n}
@@ -118,49 +120,49 @@ struct MIDIAddressInfo
     midi_size_t note{};
 };
 
-class MIDIAddress final :
-    public ossia::net::address
+class midi_address final :
+    public ossia::net::address_base
 {
-    MIDIAddressInfo mInfo;
-    ossia::net::node& mParent;
-    MIDI& mProtocol;
-    ossia::net::Domain mDomain;
+    address_info mInfo;
+    ossia::net::node_base& mParent;
+    midi_protocol& mProtocol;
+    ossia::net::domain mDomain;
 
-    ossia::Type mType = ossia::Type::INT;
+    ossia::val_type mType = ossia::val_type::INT;
     value mValue;
     std::string mAddress;
   public:
-    MIDIAddress(MIDIAddressInfo info, ossia::net::node& parent);
+    midi_address(address_info info, ossia::net::node_base& parent);
 
-    const MIDIAddressInfo& info() const;
+    const address_info& info() const;
 
-    const ossia::net::node& getNode() const override;
+    const ossia::net::node_base& getNode() const override;
 
     void pullValue() override;
-    address& pushValue(const value& val) override;
-    address& pushValue() override;
+    address_base& pushValue(const value& val) override;
+    address_base& pushValue() override;
     const value& getValue() const;
 
 
     value cloneValue(destination_index) const override;
-    address& setValue(const value& v) override;
+    address_base& setValue(const value& v) override;
 
 
-    ossia::Type getValueType() const override;
-    address& setValueType(ossia::Type) override;
+    ossia::val_type getValueType() const override;
+    address_base& setValueType(ossia::val_type) override;
 
-    ossia::AccessMode getAccessMode() const override;
-    address& setAccessMode(ossia::AccessMode) override;
+    ossia::access_mode getAccessMode() const override;
+    address_base& setAccessMode(ossia::access_mode) override;
 
-    const ossia::net::Domain& getDomain() const override;
-    address& setDomain(const ossia::net::Domain&) override;
+    const ossia::net::domain& getDomain() const override;
+    address_base& setDomain(const ossia::net::domain&) override;
 
 
-    ossia::BoundingMode getBoundingMode() const override;
-    address&setBoundingMode(ossia::BoundingMode) override;
+    ossia::bounding_mode getBoundingMode() const override;
+    address_base&setBoundingMode(ossia::bounding_mode) override;
 
-    ossia::RepetitionFilter getRepetitionFilter() const override;
-    address&setRepetitionFilter(ossia::RepetitionFilter) override;
+    ossia::repetition_filter getRepetitionFilter() const override;
+    address_base&setRepetitionFilter(ossia::repetition_filter) override;
 
     void onFirstCallbackAdded() override;
     void onRemovingLastCallback() override;
@@ -169,5 +171,6 @@ class MIDIAddress final :
 
     void valueCallback(const ossia::value& val);
 };
+}
 }
 }

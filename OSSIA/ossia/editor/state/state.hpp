@@ -23,11 +23,11 @@
 #include <ossia_export.h>
 namespace ossia
 {
-class OSSIA_EXPORT State
+class OSSIA_EXPORT state
 {
     public:
-        friend bool operator==(const State& lhs, const State& rhs);
-        friend bool operator!=(const State& lhs, const State& rhs);
+        friend bool operator==(const state& lhs, const state& rhs);
+        friend bool operator!=(const state& lhs, const state& rhs);
 
         auto begin() { return children.begin(); }
         auto end() { return children.end(); }
@@ -39,8 +39,8 @@ class OSSIA_EXPORT State
 
         void launch() const;
 
-        void add(const StateElement& e);
-        void add(StateElement&& e);
+        void add(const state_element& e);
+        void add(state_element&& e);
 
         template<class Optional_T>
         auto add(Optional_T&& opt)
@@ -50,23 +50,23 @@ class OSSIA_EXPORT State
                 add(*std::forward<Optional_T>(opt));
         }
 
-        void remove(const StateElement& e);
+        void remove(const state_element& e);
 
         void reserve(std::size_t);
         void clear();
 
     private:
-        std::vector<StateElement> children;
+        std::vector<state_element> children;
 };
 
-inline auto begin(State& s) { return s.begin(); }
-inline auto begin(const State& s) { return s.begin(); }
-inline auto end(State& s) { return s.end(); }
-inline auto end(const State& s) { return s.end(); }
+inline auto begin(state& s) { return s.begin(); }
+inline auto begin(const state& s) { return s.begin(); }
+inline auto end(state& s) { return s.end(); }
+inline auto end(const state& s) { return s.end(); }
 
 /*! append each message of the state to the current state in order to eliminate address redundancy
  \param std::shared_ptr<State> the State to fill
  \param std::shared_ptr<StateElement> the StateElement to store */
-OSSIA_EXPORT void flattenAndFilter(State& state, const StateElement& element);
-OSSIA_EXPORT void flattenAndFilter(State& state, StateElement&& element);
+OSSIA_EXPORT void flattenAndFilter(state&, const state_element& element);
+OSSIA_EXPORT void flattenAndFilter(state&, state_element&& element);
 }

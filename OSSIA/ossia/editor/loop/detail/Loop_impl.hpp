@@ -27,9 +27,9 @@ using namespace ossia;
 
 using namespace std::placeholders;
 
-namespace impl
+namespace detail
 {
-class JamomaLoop final : public loop, public virtual JamomaTimeProcess
+class loop_impl final : public loop, public virtual time_process_impl
 {
 
 private:
@@ -46,26 +46,26 @@ private:
   std::shared_ptr<time_constraint>        mPatternConstraint;
   time_constraint::ExecutionCallback mPatternConstraintCallback;
 
-  State                             mCurrentState;      // an internal State to return on state call
-  State                             mOffsetState;       // an internal State built when offset is called
+  ossia::state                             mCurrentState;      // an internal State to return on state call
+  ossia::state                             mOffsetState;       // an internal State built when offset is called
 
 public:
 
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaLoop(time_value,
+  loop_impl(time_value,
              time_constraint::ExecutionCallback,
              time_event::ExecutionCallback,
              time_event::ExecutionCallback);
-  ~JamomaLoop();
+  ~loop_impl();
 
 # pragma mark -
 # pragma mark Execution
 
-  StateElement offset(time_value) override;
+  state_element offset(time_value) override;
 
-  StateElement state() override;
+  state_element state() override;
 
 # pragma mark -
 # pragma mark Execution - Implementation specific
@@ -92,7 +92,7 @@ private:
   void PatternConstraintCallback(
       time_value,
       time_value,
-      const State&);
+      const ossia::state&);
 
   void PatternStartEventCallback(time_event::Status);
 

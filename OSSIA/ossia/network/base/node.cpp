@@ -6,9 +6,9 @@ namespace ossia
 {
 namespace net
 {
-node::~node() = default;
+node_base::~node_base() = default;
 
-node* node::createChild(const std::string& name)
+node_base* node_base::createChild(const std::string& name)
 {
     auto res = makeChild(name);
 
@@ -22,7 +22,7 @@ node* node::createChild(const std::string& name)
     return ptr;
 }
 
-bool node::removeChild(const std::string& name)
+bool node_base::removeChild(const std::string& name)
 {
     auto it = find_if(mChildren, [&] (const auto& c) {
         return c->getName() == name;
@@ -42,10 +42,10 @@ bool node::removeChild(const std::string& name)
     }
 }
 
-bool node::removeChild(const node& node)
+bool node_base::removeChild(const node_base& n)
 {
     auto it = find_if(mChildren, [&] (const auto& c) {
-        return c.get() == &node;
+        return c.get() == &n;
     });
 
     if(it != mChildren.end())
@@ -62,7 +62,7 @@ bool node::removeChild(const node& node)
     }
 }
 
-void node::clearChildren()
+void node_base::clearChildren()
 {
     for(auto& child : mChildren)
         removingChild(*child);

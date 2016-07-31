@@ -3,7 +3,7 @@
 #include <type_traits>
 #include <functional>
 #include <oscpack/osc/SmallString.h>
-namespace impl
+namespace detail
 {
 using string_view = boost::string_ref;
 //using string_view = std::string;

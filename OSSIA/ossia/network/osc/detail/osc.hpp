@@ -5,7 +5,7 @@
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/generic/generic_address.hpp>
-#include <ossia/network/domain.hpp>
+#include <ossia/network/domain/domain.hpp>
 
 namespace oscpack
 {
@@ -14,7 +14,9 @@ inline oscpack::OutboundPacketStream& operator<<(
         const ossia::value& val);
 }
 
-namespace impl
+namespace ossia
+{
+namespace net
 {
 struct OSCOutboundVisitor
 {
@@ -215,9 +217,9 @@ struct OSCInboundVisitor
 
 
 inline ossia::value filterValue(
-        const ossia::net::Domain& dom,
+        const ossia::net::domain& dom,
         const ossia::value& base_val,
-        ossia::BoundingMode mode)
+        ossia::bounding_mode mode)
 {
     if(dom)
     {
@@ -233,29 +235,29 @@ inline ossia::value filterValue(
     }
 }
 
-inline ossia::value filterValue(const impl::BasicAddress& addr)
+inline ossia::value filterValue(const ossia::net::generic_address& addr)
 {
-    if(addr.getRepetitionFilter() == ossia::RepetitionFilter::ON &&
+    if(addr.getRepetitionFilter() == ossia::repetition_filter::ON &&
        addr.getValue() == addr.PreviousValue)
         return {};
 
     return filterValue(addr.getDomain(), addr.cloneValue(), addr.getBoundingMode());
 }
 
-inline boost::string_ref getOSCAddress(const ossia::net::address& address)
+inline boost::string_ref getOSCAddress(const ossia::net::address_base& address)
 {
     auto& addr = address.getTextualAddress();
     auto begin = addr.find(':') + 1;
     return boost::string_ref(addr.data() + begin, addr.size() - begin);
 }
 
-inline std::string getOSCAddressAsString(const ossia::net::address& address)
+inline std::string getOSCAddressAsString(const ossia::net::address_base& address)
 {
     auto& addr = address.getTextualAddress();
     return addr.substr(addr.find(':') + 1);
 }
 
-inline std::string getOSCAddressAsString(const ossia::net::node& node)
+inline std::string getOSCAddressAsString(const ossia::net::node_base& node)
 {
   auto addr = ossia::net::getAddressFromNode(node);
   return addr.substr(addr.find(':') + 1);
@@ -275,17 +277,17 @@ inline ossia::value toValue(
     return {};
 }
 
-inline void updateValue(ossia::net::address& addr,
+inline void updateValue(ossia::net::address_base& addr,
                  oscpack::ReceivedMessageArgumentIterator beg_it,
                  oscpack::ReceivedMessageArgumentIterator end_it,
                  int N)
 {
-    if(addr.getAccessMode() == ossia::AccessMode::SET)
+    if(addr.getAccessMode() == ossia::access_mode::SET)
         return;
 
     auto res = filterValue(
                 addr.getDomain(),
-                impl::toValue(addr.cloneValue(), beg_it, end_it, N),
+                ossia::net::toValue(addr.cloneValue(), beg_it, end_it, N),
                 addr.getBoundingMode());
 
     if(res.valid())
@@ -294,7 +296,7 @@ inline void updateValue(ossia::net::address& addr,
     }
 }
 
-inline void updateValue(ossia::net::address& addr,
+inline void updateValue(ossia::net::address_base& addr,
                  const oscpack::ReceivedMessage& mess)
 {
     return updateValue(
@@ -302,6 +304,7 @@ inline void updateValue(ossia::net::address& addr,
                 mess.ArgumentsBegin(),
                 mess.ArgumentsEnd(),
                 mess.ArgumentCount());
+}
 }
 }
 
@@ -315,7 +318,7 @@ inline oscpack::OutboundPacketStream& operator<<(
     using namespace eggs::variants;
     if(val.valid())
     {
-        eggs::variants::apply(impl::OSCOutboundVisitor{p}, val.v);
+        eggs::variants::apply(ossia::net::OSCOutboundVisitor{p}, val.v);
     }
 
     return p;
@@ -325,10 +328,8 @@ inline oscpack::OutboundPacketStream& operator<<(
 
 inline oscpack::OutboundPacketStream& operator<<(
         oscpack::OutboundPacketStream& p,
-        const ossia::net::Domain& dom)
+        const ossia::net::domain& dom)
 {
-    using namespace impl;
-
     auto dom_min = ossia::net::min(dom);
     auto dom_max = ossia::net::max(dom);
     if(bool(dom_min.v) && bool(dom_max.v))

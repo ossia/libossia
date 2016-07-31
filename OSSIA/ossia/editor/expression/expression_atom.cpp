@@ -24,7 +24,7 @@ bool expression_atom::evaluate() const
 void expression_atom::update() const
 {
   // pull value of the first operand if it is a Destination
-  if (mFirstValue.getType() == ossia::Type::DESTINATION)
+  if (mFirstValue.getType() == ossia::val_type::DESTINATION)
   {
     auto& d = mFirstValue.get<Destination>();
     if (const auto& addr = d.value->getAddress())
@@ -34,7 +34,7 @@ void expression_atom::update() const
   }
 
   // pull value of the second operand if it is a Destination
-  if (mSecondValue.getType() == ossia::Type::DESTINATION)
+  if (mSecondValue.getType() == ossia::val_type::DESTINATION)
   {
     auto& d = mSecondValue.get<Destination>();
     if (const auto& addr = d.value->getAddress())
@@ -65,7 +65,7 @@ void expression_atom::onFirstCallbackAdded()
 {
   // start first operand observation if it is a Destination
   //! \todo what about Tuple of Destinations ?
-  if (mFirstValue.getType() == ossia::Type::DESTINATION)
+  if (mFirstValue.getType() == ossia::val_type::DESTINATION)
   {
     auto& d = mFirstValue.get<Destination>();
     if (const auto& addr = d.value->getAddress())
@@ -77,7 +77,7 @@ void expression_atom::onFirstCallbackAdded()
 
   // start second operand observation if it is a Destination
   //! \todo what about Tuple of Destinations ?
-  if (mSecondValue.getType() == ossia::Type::DESTINATION)
+  if (mSecondValue.getType() == ossia::val_type::DESTINATION)
   {
     auto& d = mSecondValue.get<Destination>();
     if (const auto& addr = d.value->getAddress())
@@ -92,7 +92,7 @@ void expression_atom::onRemovingLastCallback()
 {
   // stop first operand observation if it is a Destination
   //! \todo what about Tuple of Destinations ?
-  if (mFirstValue.getType() == ossia::Type::DESTINATION)
+  if (mFirstValue.getType() == ossia::val_type::DESTINATION)
   {
     auto& d = mFirstValue.get<Destination>();
     if (const auto& addr = d.value->getAddress())
@@ -103,7 +103,7 @@ void expression_atom::onRemovingLastCallback()
 
   // start second operand observation if it is a Destination
   //! \todo what about Tuple of Destinations ?
-  if (mSecondValue.getType() == ossia::Type::DESTINATION)
+  if (mSecondValue.getType() == ossia::val_type::DESTINATION)
   {
     auto& d = mSecondValue.get<Destination>();
     if (const auto& addr = d.value->getAddress())

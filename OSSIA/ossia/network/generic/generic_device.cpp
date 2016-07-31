@@ -2,26 +2,28 @@
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/detail/algorithms.hpp>
-namespace impl
+namespace ossia
 {
-BasicDevice::BasicDevice(
-        std::unique_ptr<ossia::net::protocol> protocol,
+namespace net
+{
+generic_device::generic_device(
+        std::unique_ptr<ossia::net::protocol_base> protocol,
         std::string name) :
-    device(std::move(protocol)),
-    BasicNode(std::move(name), *this)
+    device_base(std::move(protocol)),
+    generic_node(std::move(name), *this)
 {
   mProtocol->setDevice(*this);
 }
 
-BasicDevice::~BasicDevice()
+generic_device::~generic_device()
 {
     mChildren.clear();
 }
 
 namespace
 {
-BasicNode* find_node_rec(
-        BasicNode& node,
+generic_node* find_node_rec(
+        generic_node& node,
         boost::string_ref address) // Format a/b/c -> b/c -> c
 {
     auto first_slash_index = address.find_first_of('/');
@@ -36,7 +38,7 @@ BasicNode* find_node_rec(
         {
             // There are still nodes since we found a slash
             return find_node_rec(
-                        dynamic_cast<impl::BasicNode&>(**it),
+                        dynamic_cast<ossia::net::generic_node&>(**it),
                         address.substr(first_slash_index + 1));
         }
         else
@@ -54,7 +56,7 @@ BasicNode* find_node_rec(
 
         if(it != node.children().end())
         {
-            return dynamic_cast<impl::BasicNode*>(it->get());
+            return dynamic_cast<ossia::net::generic_node*>(it->get());
         }
         else
         {
@@ -64,8 +66,8 @@ BasicNode* find_node_rec(
 }
 
 
-BasicNode& find_or_create_node_rec(
-        BasicNode& node,
+generic_node& find_or_create_node_rec(
+        generic_node& node,
         boost::string_ref address) // Format a/b/c -> b/c -> c
 {
     auto first_slash_index = address.find_first_of('/');
@@ -80,13 +82,13 @@ BasicNode& find_or_create_node_rec(
         {
             // There are still nodes since we found a slash
             return find_or_create_node_rec(
-                        dynamic_cast<impl::BasicNode&>(**it),
+                        dynamic_cast<ossia::net::generic_node&>(**it),
                         address.substr(first_slash_index + 1));
         }
         else
         {
             // Create a node
-            auto& child = dynamic_cast<impl::BasicNode&>(
+            auto& child = dynamic_cast<ossia::net::generic_node&>(
                   *node.createChild(cur.to_string()));
 
             // Recurse on it
@@ -104,12 +106,12 @@ BasicNode& find_or_create_node_rec(
 
         if(it != node.children().end())
         {
-            return dynamic_cast<impl::BasicNode&>(*it->get());
+            return dynamic_cast<ossia::net::generic_node&>(*it->get());
         }
         else
         {
             // Create and return the node
-            return dynamic_cast<impl::BasicNode&>(*node.createChild(address.to_string()));
+            return dynamic_cast<ossia::net::generic_node&>(*node.createChild(address.to_string()));
         }
     }
 }
@@ -124,8 +126,8 @@ boost::string_ref sanitize_address(boost::string_ref address)
 }
 }
 
-BasicNode* find_node(
-        BasicDevice &dev,
+generic_node* find_node(
+        generic_device &dev,
         boost::string_ref address)
 {
     address = sanitize_address(address);
@@ -136,8 +138,8 @@ BasicNode* find_node(
     return find_node_rec(dev, address);
 }
 
-BasicNode& find_or_create_node(
-    BasicDevice& dev,
+generic_node& find_or_create_node(
+    generic_device& dev,
     boost::string_ref address)
 {
   address = sanitize_address(address);
@@ -148,4 +150,5 @@ BasicNode& find_or_create_node(
   return find_or_create_node_rec(dev, address);
 }
 
+}
 }

@@ -1,25 +1,25 @@
 #include "TimeNode_impl.hpp"
 
-namespace impl
+namespace detail
 {
 
-JamomaTimeNode::JamomaTimeNode(time_node::execution_callback callback) :
+time_node_impl::time_node_impl(time_node::execution_callback callback) :
 mCallback(callback),
 mExpression(expressions::make_expression_true())
 {}
 
-JamomaTimeNode::~JamomaTimeNode()
+time_node_impl::~time_node_impl()
 {}
 
 # pragma mark -
 # pragma mark Execution
 
-void JamomaTimeNode::setCallback(time_node::execution_callback callback)
+void time_node_impl::setCallback(time_node::execution_callback callback)
 {
   mCallback = callback;
 }
 
-bool JamomaTimeNode::trigger()
+bool time_node_impl::trigger()
 {
   // if all TimeEvents are not PENDING
   if (mPendingEvents.size() != timeEvents().size())
@@ -59,7 +59,7 @@ bool JamomaTimeNode::trigger()
 # pragma mark -
 # pragma mark Accessors
 
-time_value JamomaTimeNode::getDate() const
+time_value time_node_impl::getDate() const
 {
   // compute the date from each first previous time constraint
   // ignoring zero duration time constraint
@@ -78,24 +78,24 @@ time_value JamomaTimeNode::getDate() const
   return Zero;
 }
 
-const expression& JamomaTimeNode::getExpression() const
+const expression& time_node_impl::getExpression() const
 {
   return *mExpression;
 }
 
-time_node & JamomaTimeNode::setExpression(expression_ptr exp)
+time_node & time_node_impl::setExpression(expression_ptr exp)
 {
   assert(exp);
   mExpression = std::move(exp);
   return *this;
 }
 
-time_value JamomaTimeNode::getSimultaneityMargin() const
+time_value time_node_impl::getSimultaneityMargin() const
 {
   return mSimultaneityMargin;
 }
 
-time_node & JamomaTimeNode::setSimultaneityMargin(time_value simultaneityMargin)
+time_node & time_node_impl::setSimultaneityMargin(time_value simultaneityMargin)
 {
   mSimultaneityMargin = simultaneityMargin;
   return *this;
@@ -104,16 +104,16 @@ time_node & JamomaTimeNode::setSimultaneityMargin(time_value simultaneityMargin)
 # pragma mark -
 # pragma mark TimeEvents
 
-JamomaTimeNode::iterator JamomaTimeNode::emplace(const_iterator pos,
+time_node_impl::iterator time_node_impl::emplace(const_iterator pos,
                                                  time_event::ExecutionCallback callback,
                                                  ossia::expression_ptr exp)
 {
   return timeEvents().insert(
         pos,
-        std::make_shared<JamomaTimeEvent>(callback, shared_from_this(), std::move(exp)));
+        std::make_shared<time_event_impl>(callback, shared_from_this(), std::move(exp)));
 }
 
-void JamomaTimeNode::process(ptr_container<time_event>& statusChangedEvents)
+void time_node_impl::process(ptr_container<time_event>& statusChangedEvents)
 {
   // prepare to remember which event changed its status to PENDING
   // because it is needed in JamomaTimeNode::trigger
@@ -123,7 +123,7 @@ void JamomaTimeNode::process(ptr_container<time_event>& statusChangedEvents)
 
   for (auto& timeEvent : timeEvents())
   {
-    std::shared_ptr<JamomaTimeEvent> e = std::dynamic_pointer_cast<JamomaTimeEvent>(timeEvent);
+    std::shared_ptr<time_event_impl> e = std::dynamic_pointer_cast<time_event_impl>(timeEvent);
 
     switch (timeEvent->getStatus())
     {
@@ -180,7 +180,7 @@ void JamomaTimeNode::process(ptr_container<time_event>& statusChangedEvents)
       {
         for (auto& timeConstraint : timeEvent->nextTimeConstraints())
         {
-          std::shared_ptr<JamomaTimeNode> n = std::dynamic_pointer_cast<JamomaTimeNode>(timeConstraint->getEndEvent()->getTimeNode());
+          std::shared_ptr<time_node_impl> n = std::dynamic_pointer_cast<time_node_impl>(timeConstraint->getEndEvent()->getTimeNode());
           n->process(statusChangedEvents);
         }
 
@@ -230,12 +230,12 @@ void JamomaTimeNode::process(ptr_container<time_event>& statusChangedEvents)
   }
 }
 
-bool JamomaTimeNode::isObservingExpression()
+bool time_node_impl::isObservingExpression()
 {
   return mObserveExpression;
 }
 
-void JamomaTimeNode::observeExpressionResult(bool observe)
+void time_node_impl::observeExpressionResult(bool observe)
 {
   if (!mExpression || *mExpression == expressions::expression_true || *mExpression == expressions::expression_false)
     return;
@@ -265,7 +265,7 @@ void JamomaTimeNode::observeExpressionResult(bool observe)
   }
 }
 
-void JamomaTimeNode::resultCallback(bool result)
+void time_node_impl::resultCallback(bool result)
 {
   //! \note the result of the expression is not exploited here.
   //! \note the observation of the expression allows to observe all Destination value contained into it.

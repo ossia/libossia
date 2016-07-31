@@ -32,9 +32,9 @@
 
 using namespace ossia;
 
-namespace impl
+namespace detail
 {
-class JamomaScenario final : public scenario, public JamomaTimeProcess
+class scenario_impl final : public scenario, public time_process_impl
 {
 
 private:
@@ -52,16 +52,16 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaScenario();
+  scenario_impl();
 
-  ~JamomaScenario();
+  ~scenario_impl();
 
 # pragma mark -
 # pragma mark Execution
 
-  StateElement offset(time_value) override;
+  state_element offset(time_value) override;
 
-  StateElement state() override;
+  state_element state() override;
 
 # pragma mark -
 # pragma mark Execution - Implementation specific

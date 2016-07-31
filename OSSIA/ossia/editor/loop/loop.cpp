@@ -1,10 +1,4 @@
 #include <ossia/editor/loop/detail/Loop_impl.hpp>
-#include <ossia/detail/algorithms.hpp>
-
-#include <iostream> //! \todo to remove. only here for debug purpose
-
-# pragma mark -
-# pragma mark Life cycle
 
 namespace ossia
 {
@@ -14,13 +8,12 @@ namespace ossia
           time_event::ExecutionCallback patternStartEventCallback,
           time_event::ExecutionCallback patternEndEventCallback)
   {
-    return std::make_shared<impl::JamomaLoop>(
+    return std::make_shared<detail::loop_impl>(
                 patternDuration,
                 std::move(patternConstraintCallback),
                 std::move(patternStartEventCallback),
                 std::move(patternEndEventCallback));
   }
-
 
   loop::~loop() = default;
 }

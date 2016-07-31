@@ -7,8 +7,6 @@
 #include <functional>
 #include <iostream>
 
-namespace impl
-{
 namespace osc
 {
 template<typename MessageHandler>
@@ -138,5 +136,4 @@ class receiver
 
     std::thread m_runThread;
 };
-}
 }

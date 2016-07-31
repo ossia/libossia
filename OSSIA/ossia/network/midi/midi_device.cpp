@@ -6,30 +6,31 @@ namespace ossia
 {
 namespace net
 {
-
-MIDIDevice::MIDIDevice(std::unique_ptr<protocol> prot):
-  ossia::net::device{std::move(prot)},
-  MIDINode{*this, *this}
+namespace midi
+{
+midi_device::midi_device(std::unique_ptr<protocol_base> prot):
+  ossia::net::device_base{std::move(prot)},
+  midi_node{*this, *this}
 {
 }
 
-std::string MIDIDevice::getName() const
+std::string midi_device::getName() const
 { return mName; }
 
-node&MIDIDevice::setName(std::string n)
+node_base&midi_device::setName(std::string n)
 {
   mName = n;
   return *this;
 }
 
-bool MIDIDevice::updateNamespace()
+bool midi_device::updateNamespace()
 {
   clearChildren();
 
   try {
     for(int i = 1; i <= 16; i++)
     {
-      auto ptr = std::make_unique<MIDIChannel>(i, *this);
+      auto ptr = std::make_unique<channel_node>(i, *this);
       ptr->init();
       mChildren.push_back(std::move(ptr));
     }
@@ -42,5 +43,6 @@ bool MIDIDevice::updateNamespace()
   return true;
 }
 
+}
 }
 }

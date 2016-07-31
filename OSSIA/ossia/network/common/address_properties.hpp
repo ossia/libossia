@@ -2,14 +2,8 @@
 
 namespace ossia
 {
-#if 0
-# pragma mark -
-# pragma mark Enumerations
-#endif
-
-
 /*! type of value */
-enum class Type
+enum class val_type
 {
     IMPULSE,
     BOOL,
@@ -26,7 +20,7 @@ enum class Type
 };
 
 /*! operation allowed on address */
-enum class AccessMode
+enum class access_mode
 {
     GET,
     SET,
@@ -34,7 +28,7 @@ enum class AccessMode
 };
 
 /*! address behaviors at crossing domain boundaries time */
-enum class BoundingMode
+enum class bounding_mode
 {
     FREE,
     CLIP,
@@ -42,7 +36,7 @@ enum class BoundingMode
     FOLD
 };
 
-enum class RepetitionFilter
+enum class repetition_filter
 {
     OFF, ON
 };

@@ -21,14 +21,14 @@
 #include <boost/container/flat_map.hpp>
 
 
-namespace impl
+namespace detail
 {
 
 template<typename... Args>
 using curve_map = boost::container::flat_map<Args...>;
 
 template <typename X, typename Y>
-class JamomaCurve final : public ossia::curve<X,Y>
+class curve_impl final : public ossia::curve<X,Y>
 {
 
 private:
@@ -54,9 +54,9 @@ public:
 # pragma mark Life cycle
 #endif
 
-  JamomaCurve();
+  curve_impl();
 
-  ~JamomaCurve();
+  ~curve_impl();
 
   // Call me before execution to reset the cache.
   void reset() override

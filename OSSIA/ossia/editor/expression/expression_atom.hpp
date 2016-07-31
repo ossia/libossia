@@ -73,8 +73,8 @@ private:
   Comparator mOperator;
   ossia::value mSecondValue;
 
-  net::address::callback_index mFirstValueCallbackIndex;
-  net::address::callback_index mSecondValueCallbackIndex;
+  net::address_base::callback_index mFirstValueCallbackIndex;
+  net::address_base::callback_index mSecondValueCallbackIndex;
 
 };
 

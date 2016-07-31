@@ -14,45 +14,45 @@ namespace ossia
 {
 namespace net
 {
-class device;
-class address;
-class node;
+class device_base;
+class address_base;
+class node_base;
 
-class OSSIA_EXPORT node
+class OSSIA_EXPORT node_base
 {
     public:
-        node() = default;
-        node(const node&) = delete;
-        node(node&&) = delete;
-        node& operator=(const node&) = delete;
-        node& operator=(node&&) = delete;
+        node_base() = default;
+        node_base(const node_base&) = delete;
+        node_base(node_base&&) = delete;
+        node_base& operator=(const node_base&) = delete;
+        node_base& operator=(node_base&&) = delete;
 
-        virtual ~node();
+        virtual ~node_base();
 
-        virtual device& getDevice() const = 0;
-        virtual node* getParent() const = 0;
+        virtual device_base& getDevice() const = 0;
+        virtual node_base* getParent() const = 0;
 
         virtual std::string getName() const = 0;
-        virtual node & setName(std::string) = 0;
+        virtual node_base & setName(std::string) = 0;
 
-        virtual address* getAddress() const = 0;
-        virtual address* createAddress(Type = Type::IMPULSE) = 0;
+        virtual address_base* getAddress() const = 0;
+        virtual address_base* createAddress(val_type = val_type::IMPULSE) = 0;
         virtual bool removeAddress() = 0;
 
         // The parent has ownership
-        node* createChild(const std::string& name);
+        node_base* createChild(const std::string& name);
         bool removeChild(const std::string& name);
-        bool removeChild(const node& name);
+        bool removeChild(const node_base& name);
         void clearChildren();
 
-        const std::vector<std::unique_ptr<node>>& children() const
+        const std::vector<std::unique_ptr<node_base>>& children() const
         { return mChildren; }
 
     protected:
-        virtual std::unique_ptr<node> makeChild(const std::string& name) = 0;
-        virtual void removingChild(node& node) = 0;
+        virtual std::unique_ptr<node_base> makeChild(const std::string& name) = 0;
+        virtual void removingChild(node_base& node_base) = 0;
 
-        std::vector<std::unique_ptr<node>> mChildren;
+        std::vector<std::unique_ptr<node_base>> mChildren;
 };
 
 }

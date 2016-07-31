@@ -6,51 +6,54 @@ namespace ossia
 {
 namespace net
 {
-MIDINode::MIDINode(MIDIDevice& aDevice, node& aParent):
+namespace midi
+{
+midi_node::midi_node(midi_device& aDevice, node_base& aParent):
   mDevice{aDevice},
   mParent{aParent}
 {
 
 }
 
-device& MIDINode::getDevice() const
+device_base& midi_node::getDevice() const
 {
   return mDevice;
 }
 
-node* MIDINode::getParent() const
+node_base* midi_node::getParent() const
 {
   return &mParent;
 }
 
-node& MIDINode::setName(std::string)
+node_base& midi_node::setName(std::string)
 {
   return *this;
 }
 
-address* MIDINode::getAddress() const
+address_base* midi_node::getAddress() const
 {
   return mAddress.get();
 }
 
-address* MIDINode::createAddress(Type)
+address_base* midi_node::createAddress(val_type)
 {
   return mAddress.get();
 }
 
-bool MIDINode::removeAddress()
+bool midi_node::removeAddress()
 {
   return false;
 }
 
-std::unique_ptr<node> MIDINode::makeChild(const std::string& name)
+std::unique_ptr<node_base> midi_node::makeChild(const std::string& name)
 {
   return nullptr;
 }
 
-void MIDINode::removingChild(node& node)
+void midi_node::removingChild(node_base& node)
 {
 
+}
 }
 }
 }

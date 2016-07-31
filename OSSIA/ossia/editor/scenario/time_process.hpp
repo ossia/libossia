@@ -48,12 +48,12 @@ public:
    \details don't call offset when the parent #TimeConstraint is running
    \param const #TimeValue offset date
    \return std::shared_ptr<#StateElement> */
-  virtual StateElement offset(time_value) = 0;
+  virtual state_element offset(time_value) = 0;
 
   /*! get a #StateElement from the process depending on its parent #TimeConstraint date
    \details don't call state when the parent #TimeConstraint is not running
    \return std::shared_ptr<#StateElement> */
-  virtual StateElement state() = 0;
+  virtual state_element state() = 0;
 
   virtual void start() { }
   virtual void stop() { }

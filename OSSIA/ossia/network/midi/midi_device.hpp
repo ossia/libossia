@@ -7,22 +7,25 @@ namespace ossia
 {
 namespace net
 {
-class OSSIA_EXPORT MIDIDevice final :
-    public ossia::net::device,
-    public MIDINode
+namespace midi
+{
+class OSSIA_EXPORT midi_device final :
+    public ossia::net::device_base,
+    public midi_node
 {
     std::string mName;
 
   public:
-    MIDIDevice(std::unique_ptr<ossia::net::protocol> prot);
+    midi_device(std::unique_ptr<ossia::net::protocol_base> prot);
 
     std::string getName() const override;
-    node & setName(std::string n) override;
+    node_base & setName(std::string n) override;
 
     bool updateNamespace() override;
 
-    const ossia::net::node& getRootNode() const override{ return *this; }
-    ossia::net::node& getRootNode() override { return *this; }
+    const ossia::net::node_base& getRootNode() const override{ return *this; }
+    ossia::net::node_base& getRootNode() override { return *this; }
 };
+}
 }
 }

@@ -25,9 +25,9 @@
 
 using namespace ossia;
 
-namespace impl
+namespace detail
 {
-class JamomaTimeEvent final : public time_event, public std::enable_shared_from_this<JamomaTimeEvent>
+class time_event_impl final : public time_event, public std::enable_shared_from_this<time_event_impl>
 {
 
 private:
@@ -38,7 +38,7 @@ private:
   time_event::ExecutionCallback mCallback;
 
   std::shared_ptr<time_node> mTimeNode;
-  State mState;
+  state mState;
   Status mStatus;
 
   expression_ptr mExpression;
@@ -48,11 +48,11 @@ public:
 # pragma mark -
 # pragma mark Life cycle
 
-  JamomaTimeEvent(time_event::ExecutionCallback,
+  time_event_impl(time_event::ExecutionCallback,
                   std::shared_ptr<time_node> aTimeNode/* = nullptr*/,
                   expression_ptr anExpression /*= ExpressionTrue()*/);
 
-  ~JamomaTimeEvent();
+  ~time_event_impl();
 
 # pragma mark -
 # pragma mark Execution
@@ -66,16 +66,16 @@ public:
 # pragma mark -
 # pragma mark Edition
 
-  void addState(State&&) override;
+  void addState(state&&) override;
 
-  void removeState(const State&) override;
+  void removeState(const state&) override;
 
 # pragma mark -
 # pragma mark Accessors
 
   const std::shared_ptr<time_node> & getTimeNode() const override;
 
-  const State& getState() const override;
+  const state& getState() const override;
 
   const expression& getExpression() const override;
 

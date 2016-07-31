@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/network/domain.hpp>
+#include <ossia/network/domain/domain.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/editor/value/value.hpp>
@@ -17,12 +17,14 @@ namespace ossia
 {
 namespace net
 {
-struct OSSIA_EXPORT MidiInfo
+namespace midi
+{
+struct OSSIA_EXPORT midi_info
 {
     enum class Type { RemoteInput, RemoteOutput };
 
-    MidiInfo() = default;
-    MidiInfo(Type t, std::string d, int p):
+    midi_info() = default;
+    midi_info(Type t, std::string d, int p):
       type{t},
       device{std::move(d)},
       port{p}
@@ -35,30 +37,31 @@ struct OSSIA_EXPORT MidiInfo
     int port{};
 };
 
-class OSSIA_EXPORT MIDI final :
-    public ossia::net::protocol
+class OSSIA_EXPORT midi_protocol final :
+    public ossia::net::protocol_base
 {
     mm::MidiInput mInput;
     mm::MidiOutput mOutput;
 
-    std::array<Channel, 16> mChannels;
+    std::array<midi_channel, 16> mChannels;
 
-    MidiInfo mInfo;
+    midi_info mInfo;
 
   public:
-    MIDI();
-    ~MIDI();
+    midi_protocol();
+    ~midi_protocol();
 
-    bool setInfo(MidiInfo);
-    MidiInfo getInfo() const;
+    bool setInfo(midi_info);
+    midi_info getInfo() const;
 
-    bool pull(ossia::net::address&) override;
-    bool push(const ossia::net::address&) override;
-    bool observe(ossia::net::address&, bool) override;
-    bool update(ossia::net::node& node) override;
+    bool pull(ossia::net::address_base&) override;
+    bool push(const ossia::net::address_base&) override;
+    bool observe(ossia::net::address_base&, bool) override;
+    bool update(ossia::net::node_base& node_base) override;
 
-    std::vector<MidiInfo> scan();
+    std::vector<midi_info> scan();
 };
 
+}
 }
 }

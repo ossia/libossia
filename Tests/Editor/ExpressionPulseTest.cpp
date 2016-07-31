@@ -25,26 +25,26 @@ private Q_SLOTS:
   void test_basic()
   {
     // Local device
-    impl::BasicDevice device{std::make_unique<impl::Local2>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
 
     // Local tree building
     auto localImpulseNode = device.createChild("my_impulse");
-    auto localImpulseAddress = localImpulseNode->createAddress(Type::IMPULSE);
+    auto localImpulseAddress = localImpulseNode->createAddress(val_type::IMPULSE);
 
     auto localBoolNode = device.createChild("my_bool");
-    auto localBoolAddress = localBoolNode->createAddress(Type::BOOL);
+    auto localBoolAddress = localBoolNode->createAddress(val_type::BOOL);
 
     auto localIntNode = device.createChild("my_int");
-    auto localIntAddress = localIntNode->createAddress(Type::INT);
+    auto localIntAddress = localIntNode->createAddress(val_type::INT);
 
     auto localFloatNode = device.createChild("my_float");
-    auto localFloatAddress = localFloatNode->createAddress(Type::FLOAT);
+    auto localFloatAddress = localFloatNode->createAddress(val_type::FLOAT);
 
     auto localStringNode = device.createChild("my_string");
-    auto localStringAddress = localStringNode->createAddress(Type::STRING);
+    auto localStringAddress = localStringNode->createAddress(val_type::STRING);
 
     auto localTupleNode = device.createChild("my_tuple");
-    auto localTupleAddress = localTupleNode->createAddress(Type::TUPLE);
+    auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
 
     //! \todo what about Destination address ? do we observe the address ? how to do that ?
     //! auto localDestinationNode = device.createChild("my_destination"));
@@ -152,7 +152,7 @@ private Q_SLOTS:
   void test_comparison()
   {
     // Local device
-    impl::BasicDevice device{std::make_unique<impl::Local2>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
 
     // Local tree building
     auto localNode1 = device.createChild("my_node.1");
@@ -174,7 +174,7 @@ private Q_SLOTS:
   void test_callback()
   {/* TODO
     // Local device
-    impl::BasicDevice device{std::make_unique<impl::Local2>(), "test"};
+    impl::BasicDevice device{std::make_unique<ossia::net::Local2>(), "test"};
 
     auto localIntNode = device.createChild("my_int.1");
     auto localIntAddress = localIntNode->createAddress(Type::INT);

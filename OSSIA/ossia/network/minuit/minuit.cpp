@@ -5,11 +5,11 @@
 #include <oscpack/osc/OscPrintReceivedElements.h>
 #include <ossia/network/minuit/detail/minuit_parser.hpp>
 
-namespace impl
+namespace ossia
 {
-
-
-Minuit2::Minuit2(std::string ip, uint16_t in_port, uint16_t out_port) :
+namespace net
+{
+minuit_protocol::minuit_protocol(std::string ip, uint16_t in_port, uint16_t out_port) :
   mIp{ip},
   mInPort{in_port},
   mOutPort{out_port},
@@ -23,22 +23,22 @@ Minuit2::Minuit2(std::string ip, uint16_t in_port, uint16_t out_port) :
   mReceiver.run();
 }
 
-Minuit2::~Minuit2()
+minuit_protocol::~minuit_protocol()
 {}
 
-void Minuit2::setDevice(ossia::net::device& dev)
+void minuit_protocol::setDevice(ossia::net::device_base& dev)
 {
-  mDevice = dynamic_cast<BasicDevice*>(&dev);
+  mDevice = dynamic_cast<generic_device*>(&dev);
   mLocalNameTable.set_device_name("i-score");
   mRemoteNameTable.set_device_name(dev.getName());
 }
 
-const std::string& Minuit2::getIp() const
+const std::string& minuit_protocol::getIp() const
 {
   return mIp;
 }
 
-Minuit2& Minuit2::setIp(std::string ip)
+minuit_protocol& minuit_protocol::setIp(std::string ip)
 {
   mIp = ip;
   mSender = osc::sender{mIp, mInPort};
@@ -46,12 +46,12 @@ Minuit2& Minuit2::setIp(std::string ip)
   return *this;
 }
 
-uint16_t Minuit2::getInPort() const
+uint16_t minuit_protocol::getInPort() const
 {
   return mInPort;
 }
 
-Minuit2& Minuit2::setInPort(uint16_t in_port)
+minuit_protocol& minuit_protocol::setInPort(uint16_t in_port)
 {
   mInPort = in_port;
   mSender = osc::sender{mIp, mInPort};
@@ -59,12 +59,12 @@ Minuit2& Minuit2::setInPort(uint16_t in_port)
   return *this;
 }
 
-uint16_t Minuit2::getOutPort() const
+uint16_t minuit_protocol::getOutPort() const
 {
   return mOutPort;
 }
 
-Minuit2& Minuit2::setOutPort(uint16_t out_port)
+minuit_protocol& minuit_protocol::setOutPort(uint16_t out_port)
 {
   mOutPort = out_port;
   mReceiver = osc::receiver{out_port, [=] (
@@ -75,7 +75,7 @@ Minuit2& Minuit2::setOutPort(uint16_t out_port)
   return *this;
 }
 
-bool Minuit2::update(ossia::net::node& node)
+bool minuit_protocol::update(ossia::net::node_base& node)
 {
   // Reset node
   node.clearChildren();
@@ -86,21 +86,21 @@ bool Minuit2::update(ossia::net::node& node)
   auto fut = mNamespacePromise.get_future();
 
   auto act = mLocalNameTable.get_action(ossia::minuit::minuit_action::NamespaceRequest);
-  refresh(act, impl::getOSCAddressAsString(node));
+  refresh(act, ossia::net::getOSCAddressAsString(node));
 
   fut.wait_for(std::chrono::seconds(5));
   // Won't return as long as the request hasn't finished.
   return true;
 }
 
-bool Minuit2::pull(ossia::net::address& address)
+bool minuit_protocol::pull(ossia::net::address_base& address)
 {
   // Send "get" request
   mGetPromise = std::promise<void>();
   auto fut = mGetPromise.get_future();
 
   auto act = mLocalNameTable.get_action(ossia::minuit::minuit_action::GetRequest);
-  auto addr = impl::getOSCAddressAsString(address);
+  auto addr = ossia::net::getOSCAddressAsString(address);
   this->mSender.send(act, boost::string_ref(addr));
 
   fut.wait_for(std::chrono::seconds(5));
@@ -108,11 +108,11 @@ bool Minuit2::pull(ossia::net::address& address)
 }
 
 
-bool Minuit2::push(const ossia::net::address& address)
+bool minuit_protocol::push(const ossia::net::address_base& address)
 {
-  auto& addr = static_cast<const BasicAddress&>(address);
+  auto& addr = static_cast<const generic_address&>(address);
 
-  if(addr.getAccessMode() == ossia::AccessMode::GET)
+  if(addr.getAccessMode() == ossia::access_mode::GET)
     return false;
 
   auto val = filterValue(addr);
@@ -125,7 +125,7 @@ bool Minuit2::push(const ossia::net::address& address)
   return false;
 }
 
-bool Minuit2::observe(ossia::net::address& address, bool enable)
+bool minuit_protocol::observe(ossia::net::address_base& address, bool enable)
 {
   std::lock_guard<std::mutex> lock(mListeningMutex);
 
@@ -145,7 +145,7 @@ bool Minuit2::observe(ossia::net::address& address, bool enable)
   return true;
 }
 
-void Minuit2::handleReceivedMessage(
+void minuit_protocol::handleReceivedMessage(
     const oscpack::ReceivedMessage& m,
     const oscpack::IpEndpointName& ip)
 {
@@ -158,7 +158,7 @@ void Minuit2::handleReceivedMessage(
     auto it = mListening.find(m.AddressPattern());
     if(it != mListening.end())
     {
-      ossia::net::address& addr = *it->second;
+      ossia::net::address_base& addr = *it->second;
       lock.unlock();
 
       updateValue(addr, m);
@@ -169,5 +169,6 @@ void Minuit2::handleReceivedMessage(
     ossia::minuit::minuit_message_handler h;
     h.handleMinuitMessage(*this, *mDevice, address, m);
   }
+}
 }
 }

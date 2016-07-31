@@ -10,18 +10,18 @@ namespace ossia
 class value;
 namespace net
 {
-class node;
+class node_base;
 }
 /*! \details Destination to an Address value and optionnally to several index of this value */
 class OSSIA_EXPORT Destination final
 {
   public:
-    net::node* value{};
+    net::node_base* value{};
     destination_index index;
 
     Destination();
-    Destination(net::node& v);
-    Destination(net::node& v, destination_index);
+    Destination(net::node_base& v);
+    Destination(net::node_base& v, destination_index);
 
     Destination(const Destination& other);
     Destination(Destination&& other);

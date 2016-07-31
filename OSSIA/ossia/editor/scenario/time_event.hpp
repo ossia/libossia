@@ -26,7 +26,7 @@
 
 namespace ossia
 {
-class State;
+class state;
 class time_constraint;
 class time_node;
 
@@ -88,11 +88,11 @@ public:
 
   /*! add a sub state into the state of the event
    \param std::shared_ptr<#State> to add */
-  virtual void addState(State&&) = 0;
+  virtual void addState(state&&) = 0;
 
   /*! remove a sub state from the state of the event
    \param std::shared_ptr<#State> to remove */
-  virtual void removeState(const State&) = 0;
+  virtual void removeState(const state&) = 0;
 
 #if 0
 # pragma mark -
@@ -105,7 +105,7 @@ public:
 
   /*! get the state of the event
   \return std::shared_ptr<#State> */
-  virtual const State & getState() const = 0;
+  virtual const state & getState() const = 0;
 
   /*! get the expression of the event
   \return std::shared_ptr<#Expression> */

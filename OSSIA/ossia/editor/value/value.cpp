@@ -156,13 +156,13 @@ Destination::Destination(Destination&& other) = default;
 Destination& Destination::operator=(const Destination&) = default;
 Destination& Destination::operator=(Destination&&) = default;
 
-Destination::Destination(ossia::net::node& v):
+Destination::Destination(ossia::net::node_base& v):
     value(&v)
 {
 }
 
 Destination::Destination(
-        ossia::net::node& v,
+        ossia::net::node_base& v,
         destination_index idx) :
     value(&v),
     index(std::move(idx))

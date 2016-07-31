@@ -11,9 +11,8 @@ using curve_type = std::pair<ossia::curve_segment_type, ossia::curve_segment_typ
 class OSSIA_EXPORT curve_abstract
 {
 public:
-  /*! destructor
-   \todo remove = default */
-  virtual ~curve_abstract() = default;
+  /*! destructor */
+  virtual ~curve_abstract();
 
   /*! get the type of both coordinates */
   virtual curve_type getType() const = 0;

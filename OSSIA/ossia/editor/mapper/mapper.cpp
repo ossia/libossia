@@ -3,11 +3,11 @@
 namespace ossia
 {
 std::shared_ptr<mapper> mapper::create(
-    ossia::net::address& driverAddress,
-    ossia::net::address& drivenAddress,
+    ossia::net::address_base& driverAddress,
+    ossia::net::address_base& drivenAddress,
     const ossia::value& drive)
 {
-  return std::make_shared<impl::JamomaMapper>(driverAddress, drivenAddress, drive);
+  return std::make_shared<detail::mapper_impl>(driverAddress, drivenAddress, drive);
 }
 
 mapper::~mapper() = default;

@@ -5,28 +5,28 @@
 
 namespace ossia
 {
-    class OSSIA_EXPORT NetworkLogger
+    class OSSIA_EXPORT network_logger
     {
         public:
-            using LogCallback = std::function<void(std::string)>;
+            using log_callback = std::function<void(std::string)>;
             /**
              * @brief setInboundLogCallback Set log function for messages coming from outside.
              */
-            void setInboundLogCallback(LogCallback cb)
+            void setInboundLogCallback(log_callback cb)
             { mInboundCallback = std::move(cb); }
-            const LogCallback& getInboundLogCallback() const
+            const log_callback& getInboundLogCallback() const
             { return mInboundCallback; }
 
             /**
              * @brief setOutboundLogCallback Set log function for messages going outside.
              */
-            void setOutboundLogCallback(LogCallback cb)
+            void setOutboundLogCallback(log_callback cb)
             { mOutboundCallback = std::move(cb); }
-            const LogCallback& getOutboundLogCallback() const
+            const log_callback& getOutboundLogCallback() const
             { return mOutboundCallback; }
 
         private:
-            LogCallback mInboundCallback;
-            LogCallback mOutboundCallback;
+            log_callback mInboundCallback;
+            log_callback mOutboundCallback;
     };
 }

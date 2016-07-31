@@ -26,7 +26,7 @@
 namespace ossia
 {
 namespace net {
-class address;
+class address_base;
 }
 class value;
 class time_value;
@@ -46,8 +46,8 @@ public:
    \param the driven address
    \param how to map the driver address value on the driven address value
    \return a new mapper */
-  static std::shared_ptr<mapper> create(net::address&,
-                                        net::address&,
+  static std::shared_ptr<mapper> create(net::address_base&,
+                                        net::address_base&,
                                         const value&);
 
   /*! destructor */
@@ -60,11 +60,11 @@ public:
 
   /*! get the driver address
    \return observed address */
-  virtual const net::address& getDriverAddress() const = 0;
+  virtual const net::address_base& getDriverAddress() const = 0;
 
   /*! get the driven address
    \return driven address */
-  virtual const net::address& getDrivenAddress() const = 0;
+  virtual const net::address_base& getDrivenAddress() const = 0;
 
   /*! get the driving value
    \return driving value */

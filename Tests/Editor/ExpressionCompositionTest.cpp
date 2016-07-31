@@ -96,14 +96,14 @@ private Q_SLOTS:
   void test_callback()
   {
     // Local device
-    impl::BasicDevice device{std::make_unique<impl::Local2>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
 
     auto localIntNode1 = device.createChild("my_int.1");
-    auto localIntAddress1 = localIntNode1->createAddress(Type::INT);
+    auto localIntAddress1 = localIntNode1->createAddress(val_type::INT);
     auto localIntNode2 = device.createChild("my_int.2");
-    auto localIntAddress2 = localIntNode2->createAddress(Type::INT);
+    auto localIntAddress2 = localIntNode2->createAddress(val_type::INT);
     auto localIntNode3 = device.createChild("my_int.3");
-    auto localIntAddress3 = localIntNode3->createAddress(Type::INT);
+    auto localIntAddress3 = localIntNode3->createAddress(val_type::INT);
 
     auto testDestinationExprA = make_expression_atom(Destination(*localIntNode1),
                                                      expression_atom::Comparator::LOWER_THAN,

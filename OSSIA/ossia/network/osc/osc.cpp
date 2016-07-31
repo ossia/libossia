@@ -1,13 +1,15 @@
 #include <ossia/network/osc/osc.hpp>
 #include <ossia/network/base/address.hpp>
-#include <ossia/network/domain.hpp>
+#include <ossia/network/domain/domain.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_address.hpp>
 #include <ossia/editor/value/value.hpp>
-
 #include <ossia/network/osc/detail/osc.hpp>
 #include <oscpack/osc/OscPrintReceivedElements.h>
-namespace impl
+
+namespace ossia
+{
+namespace net
 {
 OSC2::OSC2(std::string ip, uint16_t in_port, uint16_t out_port) :
     mIp{ip},
@@ -74,26 +76,26 @@ bool OSC2::getLearningStatus() const
 }
 
 
-OSC2& OSC2::setLearningStatus(ossia::net::device& ossiaDevice, bool newLearn)
+OSC2& OSC2::setLearningStatus(ossia::net::device_base& ossiaDevice, bool newLearn)
 {
     return *this;
 }
 
-bool OSC2::update(ossia::net::node& node)
+bool OSC2::update(ossia::net::node_base& node)
 {
     return false;
 }
 
-bool OSC2::pull(ossia::net::address& address)
+bool OSC2::pull(ossia::net::address_base& address)
 {
     return false;
 }
 
-bool OSC2::push(const ossia::net::address& address)
+bool OSC2::push(const ossia::net::address_base& address)
 {
-    auto& addr = static_cast<const BasicAddress&>(address);
+    auto& addr = static_cast<const generic_address&>(address);
 
-    if(addr.getAccessMode() == ossia::AccessMode::GET)
+    if(addr.getAccessMode() == ossia::access_mode::GET)
         return false;
 
     auto val = filterValue(addr);
@@ -105,7 +107,7 @@ bool OSC2::push(const ossia::net::address& address)
     return false;
 }
 
-bool OSC2::observe(ossia::net::address& address, bool enable)
+bool OSC2::observe(ossia::net::address_base& address, bool enable)
 {
     std::lock_guard<std::mutex> lock(mListeningMutex);
 
@@ -125,10 +127,11 @@ void OSC2::handleReceivedMessage(
     auto it = mListening.find(m.AddressPattern());
     if(it != mListening.end())
     {
-        ossia::net::address& addr = *it->second;
+        ossia::net::address_base& addr = *it->second;
         lock.unlock();
         updateValue(addr, m);
     }
 }
 
+}
 }

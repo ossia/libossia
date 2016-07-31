@@ -5,19 +5,19 @@
 # pragma mark -
 # pragma mark Life cycle
 
-namespace impl
+namespace detail
 {
 template <typename X, typename Y>
-JamomaCurve<X,Y>::JamomaCurve() = default;
+curve_impl<X,Y>::curve_impl() = default;
 
 template <typename X, typename Y>
-JamomaCurve<X,Y>::~JamomaCurve() = default;
+curve_impl<X,Y>::~curve_impl() = default;
 
 # pragma mark -
 # pragma mark Edition
 
 template <typename X, typename Y>
-bool JamomaCurve<X,Y>::
+bool curve_impl<X,Y>::
 addPoint(ossia::curve_segment<Y> segment, X abscissa, Y value)
 {
   mPointsMap.emplace(abscissa, std::make_pair(value, std::move(segment)));
@@ -26,7 +26,7 @@ addPoint(ossia::curve_segment<Y> segment, X abscissa, Y value)
 }
 
 template <typename X, typename Y>
-bool JamomaCurve<X,Y>::
+bool curve_impl<X,Y>::
 removePoint(X abscissa)
 {
   return mPointsMap.erase(abscissa) > 0;
@@ -36,7 +36,7 @@ removePoint(X abscissa)
 # pragma mark Execution
 
 template <typename X, typename Y>
-Y JamomaCurve<X,Y>::
+Y curve_impl<X,Y>::
 valueAt(X abscissa) const
 {
   X lastAbscissa = getInitialPointAbscissa();
@@ -69,13 +69,13 @@ valueAt(X abscissa) const
 # pragma mark -
 # pragma mark Accessors
 template<typename X, typename Y>
-ossia::curve_type JamomaCurve<X, Y>::getType() const
+ossia::curve_type curve_impl<X, Y>::getType() const
 {
     return std::make_pair(OssiaType<X>, OssiaType<Y>);
 }
 
 template <typename X, typename Y>
-X JamomaCurve<X,Y>::
+X curve_impl<X,Y>::
 getInitialPointAbscissa() const
 {
   auto& node = mInitialPointAbscissaDestination.value;
@@ -94,7 +94,7 @@ getInitialPointAbscissa() const
 }
 
 template <typename X, typename Y>
-Y JamomaCurve<X,Y>::
+Y curve_impl<X,Y>::
 getInitialPointOrdinate() const
 {
   auto& node = mInitialPointOrdinateDestination.value;
@@ -117,49 +117,49 @@ getInitialPointOrdinate() const
 }
 
 template <typename X, typename Y>
-void JamomaCurve<X,Y>::
+void curve_impl<X,Y>::
 setInitialPointAbscissa(X value)
 {
   mInitialPointAbscissa = value;
 }
 
 template <typename X, typename Y>
-void JamomaCurve<X,Y>::
+void curve_impl<X,Y>::
 setInitialPointOrdinate(Y value)
 {
   mInitialPointOrdinate = value;
 }
 
 template <typename X, typename Y>
-const ossia::Destination& JamomaCurve<X,Y>::
+const ossia::Destination& curve_impl<X,Y>::
 getInitialPointAbscissaDestination() const
 {
   return mInitialPointAbscissaDestination;
 }
 
 template <typename X, typename Y>
-const ossia::Destination& JamomaCurve<X,Y>::
+const ossia::Destination& curve_impl<X,Y>::
 getInitialPointOrdinateDestination() const
 {
   return mInitialPointOrdinateDestination;
 }
 
 template <typename X, typename Y>
-void JamomaCurve<X,Y>::
+void curve_impl<X,Y>::
 setInitialPointAbscissaDestination(const ossia::Destination& destination)
 {
   mInitialPointAbscissaDestination = destination;
 }
 
 template <typename X, typename Y>
-void JamomaCurve<X,Y>::
+void curve_impl<X,Y>::
 setInitialPointOrdinateDestination(const ossia::Destination& destination)
 {
   mInitialPointOrdinateDestination = destination;
 }
 
 template <typename X, typename Y>
-std::map<X, std::pair<Y, ossia::curve_segment<Y>>> JamomaCurve<X,Y>::
+std::map<X, std::pair<Y, ossia::curve_segment<Y>>> curve_impl<X,Y>::
 getPointsMap() const
 {
     return {mPointsMap.cbegin(), mPointsMap.cend()};
@@ -169,7 +169,7 @@ getPointsMap() const
 # pragma mark Implementation specific
 
 template <typename X, typename Y>
-Y JamomaCurve<X,Y>::
+Y curve_impl<X,Y>::
 convertToTemplateTypeValue(
     const ossia::value& value,
     ossia::destination_index::const_iterator idx)

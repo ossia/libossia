@@ -24,20 +24,20 @@
 namespace ossia
 {
 namespace net {
-class address;
+class address_base;
 }
-struct OSSIA_EXPORT Message
+struct OSSIA_EXPORT message
 {
-        std::reference_wrapper<ossia::net::address> address;
+        std::reference_wrapper<ossia::net::address_base> address;
         ossia::value value;
 
         void launch() const;
 
-        friend bool operator==(const Message& lhs, const Message& rhs)
-        { return &lhs.address == &rhs.address && &lhs.value == &rhs.value; }
+        friend bool operator==(const message& lhs, const message& rhs)
+        { return &lhs.address.get() == &rhs.address.get() && &lhs.value == &rhs.value; }
 
-        friend bool operator!=(const Message& lhs, const Message& rhs)
-        { return &lhs.address != &rhs.address || &lhs.value != &rhs.value; }
+        friend bool operator!=(const message& lhs, const message& rhs)
+        { return &lhs.address.get() != &rhs.address.get() || &lhs.value != &rhs.value; }
 };
 
 

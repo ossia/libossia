@@ -29,7 +29,7 @@ namespace ossia
 {
 
 class expression_base;
-class State;
+class state;
 class time_event;
 class time_value;
 

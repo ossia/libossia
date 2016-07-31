@@ -3,7 +3,7 @@
 
 namespace ossia
 {
-  void Message::launch() const
+  void message::launch() const
   {
       address.get().pushValue(value);
   }

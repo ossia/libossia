@@ -3,14 +3,19 @@
 
 namespace ossia
 {
-    // Curve implementation
-    template<class X, class Y>
-    std::shared_ptr<curve<X, Y>> curve<X, Y>::create()
-    {
-        return std::make_shared<impl::JamomaCurve<X, Y>>();
-    }
-    template<class X, class Y>
-    curve<X, Y>::~curve() = default;
+curve_abstract::~curve_abstract()
+{
+
+}
+
+// Curve implementation
+template<class X, class Y>
+std::shared_ptr<curve<X, Y>> curve<X, Y>::create()
+{
+  return std::make_shared<detail::curve_impl<X, Y>>();
+}
+template<class X, class Y>
+curve<X, Y>::~curve() = default;
 
 }
 
@@ -30,5 +35,3 @@ template class OSSIA_EXPORT ossia::curve<int, float>;
 template class OSSIA_EXPORT ossia::curve<float, bool>;
 template class OSSIA_EXPORT ossia::curve<float, int>;
 template class OSSIA_EXPORT ossia::curve<float, float>;
-
-

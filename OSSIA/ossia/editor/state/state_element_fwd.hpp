@@ -2,8 +2,8 @@
 #include <eggs/variant.hpp>
 namespace ossia
 {
-struct Message;
-class State;
-class CustomState;
-using StateElement = eggs::variant<Message, State, CustomState>;
+struct message;
+class state;
+class custom_state;
+using state_element = eggs::variant<message, state, custom_state>;
 }

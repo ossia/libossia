@@ -4,16 +4,16 @@
 
 namespace ossia
 {
-void launch(const StateElement& e)
+void launch(const state_element& e)
 {
     if(e)
-        eggs::variants::apply(StateExecutionVisitor{}, e);
+        eggs::variants::apply(state_execution_visitor{}, e);
 }
 
-std::ostream& print(std::ostream& out, const StateElement& e)
+std::ostream& print(std::ostream& out, const state_element& e)
 {
     if(e)
-        eggs::variants::apply(StatePrintVisitor{out}, e);
+        eggs::variants::apply(state_print_visitor{out, {}}, e);
     else
         out << "no state";
     return out;

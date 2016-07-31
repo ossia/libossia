@@ -1,14 +1,16 @@
 #pragma once
 #include <utility>
+#include <array>
 #include <cinttypes>
 namespace ossia
 {
 namespace net
 {
-
+namespace midi
+{
 using midi_size_t = uint8_t;
-class MIDIAddress;
-struct Channel
+class midi_address;
+struct midi_channel
 {
     // [ note, vel ]
     std::pair<midi_size_t, midi_size_t> mNoteOn;
@@ -27,15 +29,16 @@ struct Channel
     // No need to store PC since they are only impulses
 
     // Callbacks
-    MIDIAddress* mCallbackNoteOn{};
-    MIDIAddress* mCallbackNoteOff{};
-    MIDIAddress* mCallbackCC{};
-    MIDIAddress* mCallbackPC{};
-    std::array<MIDIAddress*, 127> mCallbackNoteOn_N = { {} };
-    std::array<MIDIAddress*, 127> mCallbackNoteOff_N = { {} };
-    std::array<MIDIAddress*, 127> mCallbackCC_N = { {} };
-    std::array<MIDIAddress*, 127> mCallbackPC_N = { {} };
+    midi_address* mCallbackNoteOn{};
+    midi_address* mCallbackNoteOff{};
+    midi_address* mCallbackCC{};
+    midi_address* mCallbackPC{};
+    std::array<midi_address*, 127> mCallbackNoteOn_N = { {} };
+    std::array<midi_address*, 127> mCallbackNoteOff_N = { {} };
+    std::array<midi_address*, 127> mCallbackCC_N = { {} };
+    std::array<midi_address*, 127> mCallbackPC_N = { {} };
 };
 
+}
 }
 }

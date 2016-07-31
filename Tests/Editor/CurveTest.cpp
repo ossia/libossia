@@ -107,10 +107,10 @@ private Q_SLOTS:
 
   void test_destination()
   {
-    impl::BasicDevice device{std::make_unique<impl::Local2>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
 
     auto localTupleNode = device.createChild("my_tuple");
-    auto localTupleAddress = localTupleNode->createAddress(Type::TUPLE);
+    auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
 
     Tuple t{Float(-1.), Float(0.), Float(1.)};
     localTupleAddress->setValue(t);

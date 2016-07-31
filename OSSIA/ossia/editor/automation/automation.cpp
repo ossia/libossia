@@ -4,10 +4,10 @@
 namespace ossia
 {
 std::shared_ptr<automation> automation::create(
-        ossia::net::address& address,
+        ossia::net::address_base& address,
         const value& drive)
 {
-    return std::make_shared<impl::JamomaAutomation>(address, drive);
+    return std::make_shared<detail::automation_impl>(address, drive);
 }
 
 automation::~automation() = default;

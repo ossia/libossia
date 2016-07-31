@@ -9,14 +9,14 @@
 
 namespace ossia
 {
-std::size_t State::size() const
+std::size_t state::size() const
 {
     return children.size();
 }
 
-void State::launch() const
+void state::launch() const
 {
-    StateExecutionVisitor v;
+    state_execution_visitor v;
     for(const auto& state : children)
     {
         if(state)
@@ -24,55 +24,55 @@ void State::launch() const
     }
 }
 
-void State::add(const StateElement& e)
+void state::add(const state_element& e)
 {
     if(e)
         children.push_back(e);
 }
 
-void State::add(StateElement&& e)
+void state::add(state_element&& e)
 {
     if(e)
         children.push_back(std::move(e));
 }
 
-void State::remove(const StateElement& e)
+void state::remove(const state_element& e)
 {
     children.erase(
                 std::remove(children.begin(), children.end(), e),
                 children.end());
 }
 
-void State::reserve(std::size_t s)
+void state::reserve(std::size_t s)
 {
     children.reserve(s);
 }
 
-void State::clear()
+void state::clear()
 {
     children.clear();
 }
 
-bool operator==(const State& lhs, const State& rhs)
+bool operator==(const state& lhs, const state& rhs)
 {
     return lhs.children == rhs.children;
 }
 
-bool operator!=(const State& lhs, const State& rhs)
+bool operator!=(const state& lhs, const state& rhs)
 {
     return lhs.children != rhs.children;
 }
 
 
-void flattenAndFilter(State& state, const StateElement& element)
+void flattenAndFilter(state& state, const state_element& element)
 {
     if(element)
-        eggs::variants::apply(StateFlattenVisitor{state}, element);
+        eggs::variants::apply(state_flatten_visitor{state}, element);
 }
 
-void flattenAndFilter(State& state, StateElement&& element)
+void flattenAndFilter(state& state, state_element&& element)
 {
     if(element)
-        eggs::variants::apply(StateFlattenVisitor{state}, std::move(element));
+        eggs::variants::apply(state_flatten_visitor{state}, std::move(element));
 }
 }

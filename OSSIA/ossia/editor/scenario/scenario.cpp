@@ -3,7 +3,7 @@ namespace ossia
 {
 std::shared_ptr<scenario> scenario::create()
 {
-  return std::make_shared<impl::JamomaScenario>();
+  return std::make_shared<detail::scenario_impl>();
 }
 
 scenario::~scenario() = default;

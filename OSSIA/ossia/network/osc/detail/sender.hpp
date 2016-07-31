@@ -6,8 +6,6 @@
 #include <string>
 #include <iostream>
 #include <memory>
-namespace impl
-{
 namespace osc
 {
 /**
@@ -90,5 +88,4 @@ class sender
     int m_port;
 };
 
-}
 }

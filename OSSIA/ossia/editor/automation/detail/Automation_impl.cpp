@@ -7,18 +7,18 @@
 # pragma mark -
 # pragma mark Life cycle
 #endif
-namespace impl
+namespace detail
 {
-JamomaAutomation::JamomaAutomation(
-    ossia::net::address& address,
+automation_impl::automation_impl(
+    ossia::net::address_base& address,
     const ossia::value& drive) :
-  JamomaTimeProcess(),
+  time_process_impl(),
   mDrivenAddress(address),
   mDrive(drive),
   mLastMessage{address, ossia::value{}}
 {}
 
-JamomaAutomation::~JamomaAutomation() = default;
+automation_impl::~automation_impl() = default;
 
 
 #if 0
@@ -26,7 +26,7 @@ JamomaAutomation::~JamomaAutomation() = default;
 # pragma mark Execution
 #endif
 
-ossia::StateElement JamomaAutomation::offset(
+ossia::state_element automation_impl::offset(
     ossia::time_value offset)
 {
   auto& par = *parent;
@@ -34,12 +34,12 @@ ossia::StateElement JamomaAutomation::offset(
     throw std::runtime_error("parent time constraint is running");
 
   // edit a Message handling the new Value
-  return ossia::Message{
+  return ossia::message{
     mDrivenAddress,
         computeValue(offset / par.getDurationNominal(), mDrive)};
 }
 
-ossia::StateElement JamomaAutomation::state()
+ossia::state_element automation_impl::state()
 {
   auto& par = *parent;
   if (par.getRunning())
@@ -67,7 +67,7 @@ ossia::StateElement JamomaAutomation::state()
 # pragma mark Execution - Implementation specific
 #endif
 
-void JamomaAutomation::start()
+void automation_impl::start()
 {
   if(auto b = mDrive.try_get<ossia::Behavior>())
   {
@@ -78,24 +78,24 @@ void JamomaAutomation::start()
   }
 }
 
-void JamomaAutomation::stop()
+void automation_impl::stop()
 {}
 
-void JamomaAutomation::pause()
+void automation_impl::pause()
 {}
 
-void JamomaAutomation::resume()
+void automation_impl::resume()
 {}
 #if 0
 # pragma mark -
 # pragma mark Accessors
 #endif
-const ossia::net::address& JamomaAutomation::getDrivenAddress() const
+const ossia::net::address_base& automation_impl::getDrivenAddress() const
 {
   return mDrivenAddress;
 }
 
-const ossia::value& JamomaAutomation::getDriving() const
+const ossia::value& automation_impl::getDriving() const
 {
   return mDrive;
 }
@@ -117,19 +117,21 @@ struct computeValue_visitor
       {
         case ossia::curve_segment_type::FLOAT:
         {
-          auto curve = static_cast<JamomaCurve<double, float>*>(base_curve);
+          auto curve = static_cast<curve_impl<double, float>*>(base_curve);
           return ossia::Float{curve->valueAt(position)};
         }
         case ossia::curve_segment_type::INT:
         {
-          auto curve = static_cast<JamomaCurve<double, int>*>(base_curve);
+          auto curve = static_cast<curve_impl<double, int>*>(base_curve);
           return ossia::Int{curve->valueAt(position)};
         }
         case ossia::curve_segment_type::BOOL:
         {
-          auto curve = static_cast<JamomaCurve<double, bool>*>(base_curve);
+          auto curve = static_cast<curve_impl<double, bool>*>(base_curve);
           return ossia::Bool{curve->valueAt(position)};
         }
+        case ossia::curve_segment_type::DOUBLE:
+          break;
       }
     }
 
@@ -143,7 +145,7 @@ struct computeValue_visitor
 
     for (const auto & e : t.value)
     {
-      t_value.push_back(JamomaAutomation::computeValue(position, e));
+      t_value.push_back(automation_impl::computeValue(position, e));
     }
 
     return ossia::Tuple{std::move(t_value)};
@@ -165,7 +167,7 @@ struct computeValue_visitor
 };
 }
 
-ossia::value JamomaAutomation::computeValue(
+ossia::value automation_impl::computeValue(
     double position,
     const ossia::value& drive)
 {
