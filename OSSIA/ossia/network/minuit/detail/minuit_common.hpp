@@ -132,6 +132,32 @@ inline boost::string_ref to_minuit_type_text(const ossia::value& val)
   }
 }
 
+inline boost::string_ref to_minuit_type_text(ossia::val_type val)
+{
+  // integer, decimal, string, generic, boolean, none, array.
+  switch(val)
+  {
+    case val_type::IMPULSE:
+      return "none";
+    case val_type::INT:
+      return "integer";
+    case val_type::FLOAT:
+      return "decimal";
+    case val_type::BOOL:
+      return "boolean";
+    case val_type::CHAR:
+    case val_type::STRING:
+      return "string";
+    case val_type::VEC2F:
+    case val_type::VEC3F:
+    case val_type::VEC4F:
+    case val_type::TUPLE:
+      return "array";
+    default:
+      throw std::runtime_error("Invalid type");
+  }
+}
+
 inline ossia::value value_from_minuit_type_text(boost::string_ref str)
 {
   // integer, decimal, string, generic, boolean, none, array.

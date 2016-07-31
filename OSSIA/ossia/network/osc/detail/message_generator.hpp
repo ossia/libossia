@@ -6,7 +6,8 @@
 #include <array>
 #include <iostream>
 #include <vector>
-
+namespace oscpack
+{
 inline oscpack::OutboundPacketStream& operator<<(
     oscpack::OutboundPacketStream& p,
     const std::vector<boost::string_ref>& values)
@@ -19,8 +20,18 @@ inline oscpack::OutboundPacketStream& operator<<(
   return p;
 }
 
-namespace oscpack
+inline oscpack::OutboundPacketStream& operator<<(
+    oscpack::OutboundPacketStream& p,
+    const std::vector<std::string>& values)
 {
+  for (const auto& val : values)
+  {
+    p << boost::string_ref(val);
+  }
+
+  return p;
+}
+
 template <int BufferSize = 1024>
 class MessageGenerator
 {

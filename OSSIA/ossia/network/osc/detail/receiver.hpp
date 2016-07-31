@@ -91,14 +91,15 @@ public:
   void stop()
   {
     if (m_socket)
+    {
       m_socket->AsynchronousBreak();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+      while(!m_runThread.joinable())
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
-    if (m_runThread.joinable())
-      m_runThread.detach(); // TODO why not join()?
-
-    m_socket.reset();
+      m_runThread.join();
+      m_socket.reset();
+    }
   }
 
   unsigned int port() const
@@ -132,8 +133,8 @@ public:
 
 private:
   unsigned int m_port = 0;
-  std::unique_ptr<oscpack::UdpListeningReceiveSocket> m_socket;
   std::unique_ptr<oscpack::OscPacketListener> m_impl;
+  std::unique_ptr<oscpack::UdpListeningReceiveSocket> m_socket;
 
   std::thread m_runThread;
 };

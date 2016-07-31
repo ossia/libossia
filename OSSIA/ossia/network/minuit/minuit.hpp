@@ -1,18 +1,17 @@
 #pragma once
-
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
-#include <future>
-#include <set>
-#include <string>
 
 #include <ossia/network/minuit/detail/minuit_name_table.hpp>
 
 #include <ossia/editor/value/value.hpp>
 #include <mutex>
+#include <future>
+#include <set>
+#include <string>
 #include <unordered_map>
 
 namespace ossia

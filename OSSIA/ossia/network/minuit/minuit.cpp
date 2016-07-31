@@ -28,6 +28,7 @@ minuit_protocol::minuit_protocol(
 
 minuit_protocol::~minuit_protocol()
 {
+  mReceiver.stop();
 }
 
 void minuit_protocol::setDevice(ossia::net::device_base& dev)
