@@ -169,7 +169,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
 )
 
-add_library(ossia SHARED ${SRCS})
+add_library(ossia ${SRCS})
 target_link_libraries(ossia PUBLIC oscpack ModernMIDI)
 
 if(WIN32)
@@ -221,6 +221,14 @@ else()
     use_gold(ossia)
 endif()
 add_linker_warnings(ossia)
+
+if(OSSIA_COVERAGE)
+    setup_target_for_coverage(
+        ossia_test_coverage
+        "$ENV{CMAKE_BIN}"
+        coverage_out
+        "--build;.;--target;ExperimentalTest")
+endif()
 
 # Taken from http://www.labri.fr/perso/fleury/posts/programming/using-clang-tidy-and-clang-format.html
 # Adding clang-format target if executable is found

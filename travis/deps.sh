@@ -4,32 +4,28 @@ git submodule init
 
 case "$TRAVIS_OS_NAME" in
   linux)
+    sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551
     sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-    sudo add-apt-repository --yes ppa:beineri/opt-qt55
-    sudo add-apt-repository --yes ppa:boost-latest/ppa
-
+    sudo add-apt-repository --yes ppa:beineri/opt-qt57-trusty
     sudo apt-get update -qq
-    sudo apt-get install -qq qt55-meta-full libboost1.55-dev libportmidi-dev
+    sudo apt-get install -qq g++-6 ninja-build gcovr lcov qt57-meta-minimal
 
-    wget https://www.dropbox.com/s/3xot58gakn6w898/cmake_3.2.3-3.2.3_amd64.deb?dl=1 -O cmake_3.2.3-3.2.3_amd64.deb
-    sudo dpkg --force-overwrite -i cmake_3.2.3-3.2.3_amd64.deb
+    sudo wget https://sourceforge.net/projects/boost/files/boost/1.61.0/boost_1_61_0.tar.bz2 -O /opt/boost.tar.bz2
+    (cd /opt; sudo tar xaf boost.tar.bz2; sudo mv boost_* boost ; sudo chmod -R a+rwx boost)
 
-    wget https://www.dropbox.com/s/zvfaiylxh6ecp0w/gcc_5.2.0-1_amd64.deb?dl=1 -O gcc.deb
-    sudo dpkg --force-overwrite -i  gcc.deb
-
-    wget https://www.dropbox.com/s/w0vngwurefrayg3/JamomaCore-0.6-dev-12.04-amd64-release.deb?dl=1 -O jamoma.deb
-    sudo dpkg -i jamoma.deb
-
+    wget https://cmake.org/files/v3.6/cmake-3.6.0-rc1-Linux-x86_64.tar.gz -O cmake-linux.tgz
+    tar xaf cmake-linux.tgz
+    mv cmake-*-x86_64 cmake
   ;;
   osx)
     # work around a homebrew bug
     set +e
-    brew update; brew update 
-    brew install wget
-    wget https://www.dropbox.com/s/n3dsifakgzjbsnh/Jamoma-Darwin20150828.zip?dl=0 -O JamomaDarwin20150828.zip
-    unzip JamomaDarwin20150828.zip
-    mv JamomaDarwin20150828 Jamoma
-    brew install cmake qt5 boost
+
+    brew install wget gnu-tar
+    wget https://github.com/OSSIA/iscore-sdk/releases/download/2.0-OSX/homebrew-cache.tar.gz -O homebrew-cache.tar.gz
+    gtar xhzf homebrew-cache.tar.gz --directory /usr/local/Cellar
+    brew link --force boost cmake ninja qt5 wget
+
     set -e
   ;;
 esac
