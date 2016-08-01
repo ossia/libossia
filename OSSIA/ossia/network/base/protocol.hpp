@@ -25,6 +25,8 @@ public:
   }
 
   virtual bool observe(address_base&, bool) = 0;
+  virtual bool observe_quietly(address_base&, bool)
+  { return false; }
 
   virtual bool update(node_base& node_base) = 0;
 

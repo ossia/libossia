@@ -29,7 +29,7 @@ int main()
         "B"};
 
   // explore the tree of B
-  device.getProtocol().update(device.getRootNode());
+  device.getProtocol().update(device);
 
   // display tree in console
   explore(device.getRootNode());
@@ -43,11 +43,11 @@ void explore(const ossia::net::node_base& node)
     auto parent = child->getParent();
     while (parent != nullptr)
     {
-      cout << "\t";
+      cerr << "\t";
       parent = parent->getParent();
     }
 
-    cout << child->getName();
+    cerr << child->getName();
 
     address_base* addr = child->getAddress();
 
@@ -60,64 +60,64 @@ void explore(const ossia::net::node_base& node)
       addr->pullValue();
 
       // display address info
-      cout << " : ";
-      cout << getValueAsString(addr->cloneValue());
+      cerr << " : ";
+      cerr << getValueAsString(addr->cloneValue());
 
-      cout << ", AccessMode(";
+      cerr << ", AccessMode(";
       switch (addr->getAccessMode())
       {
         case access_mode::SET :
         {
-          cout << "set";
+          cerr << "set";
           break;
         }
         case access_mode::GET :
         {
-          cout << "get";
+          cerr << "get";
           break;
         }
         case access_mode::BI :
         {
-          cout << "bi";
+          cerr << "bi";
           break;
         }
         default:
           break;
       }
 
-      cout << "), BoundingMode(";
+      cerr << "), BoundingMode(";
       switch (addr->getBoundingMode())
       {
         case bounding_mode::FREE :
         {
-          cout << "free";
+          cerr << "free";
           break;
         }
         case bounding_mode::CLIP :
         {
-          cout << "clip";
+          cerr << "clip";
           break;
         }
         case bounding_mode::WRAP :
         {
-          cout << "wrap";
+          cerr << "wrap";
           break;
         }
         case bounding_mode::FOLD :
         {
-          cout << "fold";
+          cerr << "fold";
           break;
         }
         default:
           break;
       }
 
-      cout << "), Domain(";
+      cerr << "), Domain(";
       printDomain(addr->getDomain());
-      cout << ")";
+      cerr << ")";
     }
 
-    cout << "\n";
+    cerr << "\n";
 
     explore(*child);
   }
@@ -127,11 +127,11 @@ void printDomain(const domain& d)
 {
   /* TODO
   printvalue(d->getMin());
-  cout << ", ";
+  cerr << ", ";
   printvalue(d->getMax());
   if (!d->getvalues().empty())
   {
-    cout << ", ";
+    cerr << ", ";
     for (const auto & v : d->getvalues())
       printvalue(v);
   }
@@ -140,5 +140,5 @@ void printDomain(const domain& d)
 
 void printValueCallback(const value& v)
 {
-  cout << "Callback: " << getValueAsString(v) << "\n";
+  cerr << "Callback: " << getValueAsString(v) << "\n";
 }

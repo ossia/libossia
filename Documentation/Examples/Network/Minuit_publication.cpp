@@ -91,6 +91,6 @@ int main()
 
 void printValueCallback(const value& v)
 {
-  cout << "Callback: " << getValueAsString(v) << "\n";
+  cerr << "Callback: " << getValueAsString(v) << "\n";
 }
 

@@ -63,24 +63,13 @@ public:
 private:
   void debug(const oscpack::OutboundPacketStream& out)
   {
-    auto dat = out.Data();
-    auto n = out.Size();
-
-    for (auto i = 0U; i < n; i++)
-    {
-      if (dat[i] > 33 && dat[i] < 126)
-      {
-        std::cerr << dat[i];
-      }
-      else
-      {
-        std::cerr << ' ';
-      }
-    }
-    std::cerr << "\n";
+    std::string s(out.Data(), out.Data() + out.Size());
+    std::replace(s.begin(), s.end(), '\0', ' ');
+    std::cerr << s << "\n";
   }
   void send_impl(const oscpack::OutboundPacketStream& m)
   {
+    // debug(m);
     m_socket.Send(m.Data(), m.Size());
   }
 

@@ -69,6 +69,7 @@ public:
   bool push(const ossia::net::address_base& address_base) override;
 
   bool observe(ossia::net::address_base& address_base, bool enable) override;
+  bool observe_quietly(ossia::net::address_base& address_base, bool enable) override;
 
   void refresh(boost::string_ref req, const std::string& addr)
   {

@@ -94,9 +94,10 @@ bool minuit_protocol::update(ossia::net::node_base& node)
   refresh(act, ossia::net::getOSCAddressAsString(node));
 
   auto status = fut.wait_for(std::chrono::seconds(5));
-  // Won't return as long as the request hasn't finished.
+  // Won't return as long as the tree exploration request haven't finished.
   using namespace std::chrono;
 
+  // Then we wait for the "get" requests
   auto t1 = high_resolution_clock::now();
   while(true)
   {
@@ -161,6 +162,20 @@ bool minuit_protocol::observe(ossia::net::address_base& address, bool enable)
     this->sender.send(act, getOSCAddress(address), "disable");
     mListening.erase(getOSCAddressAsString(address));
   }
+
+  return true;
+}
+
+bool minuit_protocol::observe_quietly(
+    ossia::net::address_base& address, bool enable)
+{
+  std::lock_guard<std::mutex> lock(mListeningMutex);
+
+  if(enable)
+    mListening.insert(
+          std::make_pair(getOSCAddressAsString(address), &address));
+  else
+    mListening.erase(getOSCAddressAsString(address));
 
   return true;
 }

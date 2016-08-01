@@ -2,6 +2,7 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
+
 namespace ossia
 {
 namespace net
