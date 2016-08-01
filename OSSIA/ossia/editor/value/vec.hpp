@@ -4,6 +4,16 @@
 namespace ossia
 {
 class value;
+
+/**
+ * @class Vec vec.hpp ossia/editor/value/value.hpp
+ *
+ * A class optimized for holding a fixed number of values.
+ * For instance, we know for sure that a 3D position has three components.
+ * Hence we can use Vec instead of Tuple in order to avoid a dynamic allocation.
+ *
+ * \see Tuple
+ */
 template <typename T, int N>
 class Vec
 {

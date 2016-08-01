@@ -5,37 +5,45 @@ namespace ossia
 /*! type of value */
 enum class val_type
 {
-  IMPULSE,
-  BOOL,
-  INT,
-  FLOAT,
-  CHAR,
-  STRING,
-  TUPLE,
-  VEC2F,
-  VEC3F,
-  VEC4F,
-  DESTINATION, //! \note see Destination structure declaration in Node.h
-  BEHAVIOR,    //! \note see Behavior structure declaration in Curve.h
+  IMPULSE, //! \see Impulse
+  BOOL, //! \see Bool
+  INT, //! \see Int
+  FLOAT, //! \see Float
+  CHAR, //! \see Char
+  STRING, //! \see String
+  TUPLE, //! \see Tuple
+  VEC2F, //! \see Vec2f
+  VEC3F, //! \see Vec3f
+  VEC4F, //! \see Vec4f
+  DESTINATION, //! \see Destination
+  BEHAVIOR,    //! \see Behavior
 };
 
-/*! operation allowed on address */
+
+/**
+ * @brief Address behaviors at crossing domain boundaries time
+ */
 enum class access_mode
 {
-  GET,
-  SET,
-  BI
+  GET, //! The value can be retrieved
+  SET, //! The value can be changed
+  BI //! The value can be retrieved and changed
 };
 
-/*! address behaviors at crossing domain boundaries time */
+/**
+ * @brief Address behaviors at crossing domain boundaries.
+ */
 enum class bounding_mode
 {
-  FREE,
-  CLIP,
-  WRAP,
-  FOLD
+  FREE, //! The bounds are ignored
+  CLIP, //! \see ossia::clamp
+  WRAP, //! \see ossia::wrap
+  FOLD //! \see ossia::fold
 };
 
+/**
+ * @brief If enabled, sending twice the same value will only send it once by network
+ */
 enum class repetition_filter
 {
   OFF,

@@ -7,6 +7,8 @@
 
 #include <boost/container/flat_map.hpp>
 
+namespace ossia
+{
 namespace detail
 {
 
@@ -86,4 +88,5 @@ const constexpr ossia::curve_segment_type
 template <>
 const constexpr ossia::curve_segment_type
     OssiaType<bool> = ossia::curve_segment_type::BOOL;
+}
 }

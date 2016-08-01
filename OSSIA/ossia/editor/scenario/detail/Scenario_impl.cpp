@@ -2,6 +2,9 @@
 #include <ossia/detail/algorithms.hpp>
 #include <iostream>
 #include <unordered_map>
+
+namespace ossia
+{
 namespace detail
 {
 scenario_impl::scenario_impl() : time_process_impl()
@@ -93,7 +96,7 @@ state_element scenario_impl::offset(time_value offset)
   // build offset state from all ordered past events
   for (const auto& p : mPastEventList)
   {
-    flattenAndFilter(cur_state, p.second->getState());
+    flatten_and_filter(cur_state, p.second->getState());
   }
 
   // offset all TimeConstraints
@@ -106,7 +109,7 @@ state_element scenario_impl::offset(time_value offset)
 
     if (constraintOffset >= Zero && constraintOffset <= cst.getDurationMax())
     {
-      flattenAndFilter(cur_state, cst.offset(constraintOffset));
+      flatten_and_filter(cur_state, cst.offset(constraintOffset));
     }
   }
 
@@ -140,7 +143,7 @@ state_element scenario_impl::state()
     {
       auto& ev = *timeEvent;
       if (ev.getStatus() == time_event::Status::HAPPENED)
-        flattenAndFilter(cur_state, ev.getState());
+        flatten_and_filter(cur_state, ev.getState());
     }
     // make the time of each running TimeConstraint flows and add their state
     // note : this means TimeConstraint's state can overwrite TimeEvent's state
@@ -188,7 +191,7 @@ state_element scenario_impl::state()
       // if the time constraint is still running after the tick
       if (cst.getRunning())
       {
-        flattenAndFilter(cur_state, cst.state());
+        flatten_and_filter(cur_state, cst.state());
       }
     }
 
@@ -421,5 +424,6 @@ void scenario_impl::process_offset(
       process_offset(timeConstraint->getEndEvent()->getTimeNode(), offset);
     }
   }
+}
 }
 }

@@ -12,9 +12,12 @@ namespace net
 {
 class node_base;
 }
-/*! \details Destination to an Address value and optionnally to several index
- * of
- * this value */
+/**
+ * @class Destination destination.hpp ossia/editor/value/value.hpp
+ *
+ * \see \ref node_base
+ * \see \ref destination_index
+ */
 class OSSIA_EXPORT Destination final
 {
 public:

@@ -9,5 +9,9 @@ struct state_execution_visitor
   {
     m.launch();
   }
+
+  void operator()()
+  {
+  }
 };
 }

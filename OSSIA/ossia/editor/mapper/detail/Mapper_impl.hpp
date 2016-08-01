@@ -15,6 +15,9 @@
 #include <thread>
 
 using namespace std::placeholders;
+
+namespace ossia
+{
 namespace detail
 {
 class mapper_impl : public ossia::mapper, public time_process_impl
@@ -59,4 +62,5 @@ private:
 
   void driverValueCallback(const ossia::value& value);
 };
+}
 }

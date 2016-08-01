@@ -3,7 +3,11 @@
 #include <cmath>
 #include <ossia_export.h>
 
-/*
+/**
+  \file easing.hpp
+  this file contains the implementation of various easing functions, to
+  use in \ref automation or \ref mapper.
+
   Easing functions
   by Kristoffer Gronlund, 2014
   Public domain

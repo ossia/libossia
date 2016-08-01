@@ -14,6 +14,8 @@ using namespace ossia;
 
 using namespace std::chrono;
 
+namespace ossia
+{
 namespace detail
 {
 class clock_impl : public virtual clock
@@ -128,4 +130,5 @@ private:
   /*! called back by the internal thread */
   void threadCallback();
 };
+}
 }

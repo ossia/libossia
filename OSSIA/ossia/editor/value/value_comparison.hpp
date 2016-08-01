@@ -141,9 +141,14 @@ struct NumericValue
         return false;
       }
 
+      bool operator()() const
+      {
+        return false;
+      }
+
     } vis{lhs, fun};
 
-    return val.valid() ? eggs::variants::apply(vis, val.v) : false;
+    return val.apply(vis);
   }
 };
 
@@ -213,9 +218,14 @@ struct StringValue
         return false;
       }
 
+      bool operator()() const
+      {
+        return false;
+      }
+
     } vis{lhs, fun};
 
-    return val.valid() ? eggs::variants::apply(vis, val.v) : false;
+    return val.apply(vis);
   }
 };
 
@@ -257,6 +267,11 @@ public:
 
     return false;
   }
+
+  bool operator()() const
+  {
+    return false;
+  }
 };
 template <typename Fun>
 auto make_tuple_visitor(const Tuple& lhs, const ossia::value& val, Fun f)
@@ -271,7 +286,7 @@ struct TupleValue
   {
     auto vis = make_tuple_visitor(lhs, val, fun);
 
-    return val.valid() ? eggs::variants::apply(vis, val.v) : false;
+    return val.apply(vis);
   }
 };
 
@@ -317,6 +332,11 @@ public:
 
     return false;
   }
+
+  bool operator()() const
+  {
+    return false;
+  }
 };
 
 template <typename Fun>
@@ -331,9 +351,7 @@ struct DestinationValue
   template <typename Fun>
   static bool apply(const Destination& lhs, const ossia::value& val, Fun fun)
   {
-    return val.valid() ? eggs::variants::apply(
-                             make_destination_visitor(lhs, val, fun), val.v)
-                       : false;
+    return val.apply(make_destination_visitor(lhs, val, fun));
   }
 };
 
@@ -358,6 +376,11 @@ public:
   {
     return false;
   }
+
+  bool operator()() const
+  {
+    return false;
+  }
 };
 
 template <typename Vec_T, typename Fun>
@@ -371,11 +394,7 @@ struct VecValue
   template <typename Vec_T, typename Fun>
   static bool apply(const Vec_T& lhs, const ossia::value& val, Fun fun)
   {
-    if (val.valid())
-    {
-      return eggs::variants::apply(make_vec_visitor(lhs, fun), val.v);
-    }
-    return false;
+    return val.apply(make_vec_visitor(lhs, fun));
   }
 };
 }

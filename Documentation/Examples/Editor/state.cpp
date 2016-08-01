@@ -58,7 +58,7 @@ int main()
           bitdepthAddress->pushValue(Int(10));
 
           // attach to callback to display later value update
-          bitdepthAddress->addCallback(printValueCallback);
+          bitdepthAddress->add_callback(printValueCallback);
         }
         else if (parameter_name == "samplerate_ratio")
         {
@@ -72,7 +72,7 @@ int main()
           samplerateAddress->pushValue(Float(0.5));
 
           // attach to callback to display later value update
-          samplerateAddress->addCallback(printValueCallback);
+          samplerateAddress->add_callback(printValueCallback);
         }
       }
     }
@@ -112,5 +112,5 @@ int main()
 
 void printValueCallback(const value& v)
 {
-  cout << "Callback: " << getValueAsString(v) << "\n";
+  cout << "Callback: " << to_pretty_string(v) << "\n";
 }

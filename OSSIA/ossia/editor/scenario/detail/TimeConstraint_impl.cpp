@@ -1,6 +1,9 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/editor/scenario/detail/TimeConstraint_impl.hpp>
 #include <iostream>
+
+namespace ossia
+{
 namespace detail
 {
 time_constraint_impl::time_constraint_impl(
@@ -214,5 +217,6 @@ void time_constraint_impl::ClockCallback(
 {
   if (mCallback)
     (mCallback)(position, date, state());
+}
 }
 }

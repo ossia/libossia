@@ -43,31 +43,31 @@ int main()
 
   auto oscImpulseNode = oscTestNode->createChild("my_impulse");
   auto oscImpulseAddress = oscImpulseNode->createAddress(val_type::IMPULSE);
-  oscImpulseAddress->addCallback(printValueCallback);
+  oscImpulseAddress->add_callback(printValueCallback);
 
   auto oscBoolNode = oscTestNode->createChild("my_bool");
   auto oscBoolAddress = oscBoolNode->createAddress(val_type::BOOL);
-  oscBoolAddress->addCallback(printValueCallback);
+  oscBoolAddress->add_callback(printValueCallback);
 
   auto oscIntNode = oscTestNode->createChild("my_int");
   auto oscIntAddress = oscIntNode->createAddress(val_type::INT);
-  oscIntAddress->addCallback(printValueCallback);
+  oscIntAddress->add_callback(printValueCallback);
 
   auto oscFloatNode = oscTestNode->createChild("my_float");
   auto oscFloatAddress = oscFloatNode->createAddress(val_type::FLOAT);
-  oscFloatAddress->addCallback(printValueCallback);
+  oscFloatAddress->add_callback(printValueCallback);
 
   auto oscStringNode = oscTestNode->createChild("my_string");
   auto oscStringAddress = oscStringNode->createAddress(val_type::STRING);
-  oscStringAddress->addCallback(printValueCallback);
+  oscStringAddress->add_callback(printValueCallback);
 
   auto oscDestinationNode = oscTestNode->createChild("my_destination");
   auto oscDestinationAddress = oscDestinationNode->createAddress(val_type::DESTINATION);
-  oscDestinationAddress->addCallback(printValueCallback);
+  oscDestinationAddress->add_callback(printValueCallback);
 
   auto oscTupleNode = oscTestNode->createChild("my_tuple");
   auto oscTupleAddress = oscTupleNode->createAddress(val_type::TUPLE);
-  oscTupleAddress->addCallback(printValueCallback);
+  oscTupleAddress->add_callback(printValueCallback);
 
   // update tree value
   oscImpulseAddress->setValue(Impulse{});
@@ -90,5 +90,5 @@ int main()
 
 void printValueCallback(const value& v)
 {
-  cout << "Callback: " << getValueAsString(v) << "\n";
+  cout << "Callback: " << to_pretty_string(v) << "\n";
 }

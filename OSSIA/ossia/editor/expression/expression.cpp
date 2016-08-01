@@ -31,7 +31,7 @@ struct add_callback_visitor
   template <typename T>
   expression_callback_iterator operator()(T& e)
   {
-    return e.addCallback(std::move(cb));
+    return e.add_callback(std::move(cb));
   }
 };
 
@@ -41,16 +41,16 @@ struct remove_callback_visitor
   template <typename T>
   void operator()(T& e)
   {
-    e.removeCallback(it);
+    e.remove_callback(it);
   }
 };
 
-struct get_callbacks_visitor
+struct get_callback_count_visitor
 {
   template <typename T>
-  const expression_callback_container::impl& operator()(const T& e)
+  std::size_t operator()(const T& e)
   {
-    return e.callbacks();
+    return e.callback_count();
   }
 };
 
@@ -172,9 +172,9 @@ void remove_callback(expression_base& e, expression_callback_iterator it)
   return eggs::variants::apply(remove_callback_visitor{it}, e);
 }
 
-const expression_callback_container::impl& callbacks(expression_base& e)
+std::size_t callback_count(expression_base& e)
 {
-  return eggs::variants::apply(get_callbacks_visitor{}, e);
+  return eggs::variants::apply(get_callback_count_visitor{}, e);
 }
 }
 }

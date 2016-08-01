@@ -68,6 +68,10 @@ struct OSCOutboundVisitor
       p << val;
     }
   }
+
+  void operator()() const
+  {
+  }
 };
 
 struct OSCInboundVisitor
@@ -252,6 +256,11 @@ struct OSCInboundVisitor
     }
     return std::move(t);
   }
+
+  ossia::value operator()() const
+  {
+    return {};
+  }
 };
 
 inline ossia::value filterValue(
@@ -298,7 +307,7 @@ getOSCAddressAsString(const ossia::net::address_base& address)
 
 inline std::string getOSCAddressAsString(const ossia::net::node_base& node)
 {
-  auto addr = ossia::net::getAddressFromNode(node);
+  auto addr = ossia::net::address_string_from_node(node);
   return addr.substr(addr.find(':') + 1);
 }
 
@@ -307,12 +316,7 @@ inline ossia::value toValue(
     oscpack::ReceivedMessageArgumentIterator beg_it,
     oscpack::ReceivedMessageArgumentIterator end_it, int N)
 {
-  if (current.valid())
-  {
-    OSCInboundVisitor vis{beg_it, beg_it, end_it, N};
-    return eggs::variants::apply(vis, current.v);
-  }
-  return {};
+  return current.apply(OSCInboundVisitor{beg_it, beg_it, end_it, N});
 }
 
 inline void updateValue(
@@ -348,12 +352,7 @@ namespace oscpack
 inline oscpack::OutboundPacketStream&
 operator<<(oscpack::OutboundPacketStream& p, const ossia::value& val)
 {
-  using namespace eggs::variants;
-  if (val.valid())
-  {
-    eggs::variants::apply(ossia::net::OSCOutboundVisitor{p}, val.v);
-  }
-
+  val.apply(ossia::net::OSCOutboundVisitor{p});
   return p;
 }
 

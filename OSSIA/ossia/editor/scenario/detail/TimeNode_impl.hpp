@@ -3,10 +3,12 @@
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/editor/scenario/time_node.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
+using namespace ossia;
 
-#include "TimeEvent_impl.hpp" // because the TimeNode::emplace method is a JamomaTimeEvent factory
-
+namespace ossia
+{
 namespace detail
 {
 class time_node_impl final
@@ -31,6 +33,10 @@ public:
 
   ~time_node_impl();
 
+  /* process all TimeEvents to propagate execution */
+  void process(ptr_container<time_event>& statusChangedEvents);
+
+private:
   void setCallback(time_node::execution_callback) override;
 
   bool trigger() override;
@@ -47,8 +53,6 @@ public:
       const_iterator, time_event::ExecutionCallback,
       ossia::expression_ptr /*= ExpressionTrue()*/) override;
 
-  /* process all TimeEvents to propagate execution */
-  void process(ptr_container<time_event>& statusChangedEvents);
 
   /* is the TimeNode observing its Expression ? */
   bool isObservingExpression();
@@ -56,7 +60,7 @@ public:
   /* enable observation of the Expression */
   void observeExpressionResult(bool);
 
-private:
   void resultCallback(bool result);
 };
+}
 }

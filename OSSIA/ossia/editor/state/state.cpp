@@ -16,11 +16,9 @@ std::size_t state::size() const
 
 void state::launch() const
 {
-  state_execution_visitor v;
   for (const auto& state : children)
   {
-    if (state)
-      eggs::variants::apply(v, state);
+    ossia::apply(state_execution_visitor{}, state);
   }
 }
 
@@ -62,15 +60,13 @@ bool operator!=(const state& lhs, const state& rhs)
   return lhs.children != rhs.children;
 }
 
-void flattenAndFilter(state& state, const state_element& element)
+void flatten_and_filter(state& state, const state_element& element)
 {
-  if (element)
-    eggs::variants::apply(state_flatten_visitor{state}, element);
+  ossia::apply(state_flatten_visitor{state}, element);
 }
 
-void flattenAndFilter(state& state, state_element&& element)
+void flatten_and_filter(state& state, state_element&& element)
 {
-  if (element)
-    eggs::variants::apply(state_flatten_visitor{state}, std::move(element));
+  ossia::apply(state_flatten_visitor{state}, std::move(element));
 }
 }

@@ -4,7 +4,10 @@
 namespace ossia
 {
 class value;
-/*! \details Bool value */
+
+/**
+ * @class Bool bool.hpp ossia/editor/value/value.hpp
+ */
 struct OSSIA_EXPORT Bool
 {
   bool value;

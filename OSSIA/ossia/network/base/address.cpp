@@ -15,7 +15,7 @@ getAddressFromNode_rec(const node_base& n, std::vector<std::string>& str)
   str.push_back(n.getName());
 }
 
-std::string getAddressFromNode(const ossia::net::node_base& node)
+std::string address_string_from_node(const ossia::net::node_base& node)
 {
   std::vector<std::string> vec;
   getAddressFromNode_rec(node, vec);

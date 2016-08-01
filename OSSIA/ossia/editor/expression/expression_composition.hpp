@@ -15,9 +15,9 @@ class OSSIA_EXPORT expression_composition final
 public:
   enum class Operator
   {
-    AND,
-    OR,
-    XOR
+    AND, //! &&
+    OR, //! ||
+    XOR //! ^
   };
 
   expression_composition(

@@ -56,7 +56,7 @@ private Q_SLOTS:
     ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
     auto cld = device.createChild("child");
     auto address = cld->createAddress(val_type::FLOAT);
-    address->addCallback([&] (const value&v) { address_callback(v); });
+    address->add_callback([&] (const value&v) { address_callback(v); });
 
     auto c = curve<double, float>::create();
     curve_segment_linear<float> linearSegment;

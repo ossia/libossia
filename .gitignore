@@ -26,4 +26,4 @@ project.xcworkspace
 # Mac OSX Finder stuff
 .DS_Store
 
-Documentation/Doxygen/html
+Documentation/Doxygen/*ml*

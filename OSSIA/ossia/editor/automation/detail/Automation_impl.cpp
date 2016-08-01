@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+namespace ossia
+{
 namespace detail
 {
 automation_impl::automation_impl(
@@ -180,16 +182,17 @@ struct computeValue_visitor
   {
     return error();
   }
+  ossia::value operator()()
+  {
+    return error();
+  }
 };
 }
 
 ossia::value
 automation_impl::computeValue(double position, const ossia::value& drive)
 {
-  computeValue_visitor vis{position, drive};
-
-  if (drive.valid())
-    return eggs::variants::apply(vis, drive.v);
-  throw std::runtime_error("none handled drive value type");
+  return drive.apply(computeValue_visitor{position, drive});
+}
 }
 }

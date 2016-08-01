@@ -11,7 +11,7 @@ namespace ossia
 class time_constraint;
 class time_node;
 
-class OSSIA_EXPORT scenario : public virtual time_process
+class OSSIA_EXPORT scenario : public time_process
 {
 
 public:

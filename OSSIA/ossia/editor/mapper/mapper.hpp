@@ -16,7 +16,7 @@ class address_base;
 class value;
 class time_value;
 
-class OSSIA_EXPORT mapper : public virtual time_process
+class OSSIA_EXPORT mapper : public time_process
 {
 
 public:

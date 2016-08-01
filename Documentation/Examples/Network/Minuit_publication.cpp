@@ -43,23 +43,23 @@ int main()
 
   auto localImpulseNode = localTestNode->createChild("my_impulse");
   auto localImpulseAddress = localImpulseNode->createAddress(val_type::IMPULSE);
-  localImpulseAddress->addCallback(printValueCallback);
+  localImpulseAddress->add_callback(printValueCallback);
 
   auto localBoolNode = localTestNode->createChild("my_bool");
   auto localBoolAddress = localBoolNode->createAddress(val_type::BOOL);
-  localBoolAddress->addCallback(printValueCallback);
+  localBoolAddress->add_callback(printValueCallback);
 
   auto localIntNode = localTestNode->createChild("my_int");
   auto localIntAddress = localIntNode->createAddress(val_type::INT);
-  localIntAddress->addCallback(printValueCallback);
+  localIntAddress->add_callback(printValueCallback);
 
   auto localFloatNode = localTestNode->createChild("my_float");
   auto localFloatAddress = localFloatNode->createAddress(val_type::FLOAT);
-  localFloatAddress->addCallback(printValueCallback);
+  localFloatAddress->add_callback(printValueCallback);
 
   auto localStringNode = localTestNode->createChild("my_string");
   auto localStringAddress = localStringNode->createAddress(val_type::STRING);
-  localStringAddress->addCallback(printValueCallback);
+  localStringAddress->add_callback(printValueCallback);
 
   // auto localDestinationNode = localTestNode->createChild("my_destination");
   // auto localDestinationAddress = localDestinationNode->createAddress(val_type::DESTINATION);
@@ -67,7 +67,7 @@ int main()
 
   auto localTupleNode = localTestNode->createChild("my_tuple");
   auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
-  localTupleAddress->addCallback(printValueCallback);
+  localTupleAddress->add_callback(printValueCallback);
 
   // update tree value
   localImpulseAddress->pushValue(Impulse{});
@@ -91,6 +91,6 @@ int main()
 
 void printValueCallback(const value& v)
 {
-  cerr << "Callback: " << getValueAsString(v) << "\n";
+  cerr << "Callback: " << to_pretty_string(v) << "\n";
 }
 

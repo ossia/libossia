@@ -2,6 +2,8 @@
 
 #include <ossia/editor/scenario/time_value.hpp>
 
+namespace ossia
+{
 namespace detail
 {
 class time_process_impl
@@ -16,4 +18,5 @@ public:
   {
   }
 };
+}
 }

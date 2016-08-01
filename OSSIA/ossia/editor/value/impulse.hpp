@@ -5,10 +5,22 @@ namespace ossia
 {
 class value;
 
-/*! \details Impulse value */
+/**
+ * @class Impulse impulse.hpp ossia/editor/value/value.hpp
+ *
+ * Any value can be converted to an impulse.
+ * An impulse generally just means that we want to send a message to the address,
+ * and a value is not needed.
+ *
+ * For instance :
+ * \code
+ * /audio/player/stop
+ * \endcode
+ *
+ * \see expression_pulse
+ */
 struct OSSIA_EXPORT Impulse
 {
-  /*! constructor */
   Impulse() = default;
   Impulse(const Impulse&) = default;
   Impulse(Impulse&&) = default;

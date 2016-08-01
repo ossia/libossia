@@ -4,44 +4,74 @@
 
 namespace ossia
 {
+
 template <typename T>
+/**
+ * @brief The callback_container class
+ *
+ * Contains callbacks.
+ * Classes that have network callbacks may want to derive from this and implement
+ * onFirstCallbackAdded, onRemovingLastCallback.
+ *
+ * This allows to cleanly stop listening when there are no callbacks.
+ *
+ */
 class callback_container
 {
 public:
   virtual ~callback_container() = default;
 
-  /*! to store a set of callback functions */
+
+  /**
+   * @brief impl How the callbackas are stored.
+   * A list is used since iterators to other callbacks
+   * must not be invalidated upon removal.
+   */
   using impl = typename std::list<T>;
   using iterator = typename impl::const_iterator;
 
-  /*! add a callback function
-   \param #T function object */
-  iterator addCallback(T callback)
+  /**
+   * @brief add_callback Add a new callback.
+   * @param callback must be a std::function or similar.
+   * @return iterator to save in order to be able to remove the callback.
+   */
+  iterator add_callback(T callback)
   {
-    auto it = mCallbacks.insert(callbacks().begin(), std::move(callback));
+    auto it = mCallbacks.insert(mCallbacks.begin(), std::move(callback));
     if (mCallbacks.size() == 1)
       onFirstCallbackAdded();
     return it;
   }
 
-  /*! remove a result callback function
-   \param #it Iterator to remove */
-  void removeCallback(iterator it)
+  /**
+   * @brief remove_callback Removes a callback identified by an iterator.
+   * @param it Iterator to remove.
+   */
+  void remove_callback(iterator it)
   {
     if (mCallbacks.size() == 1)
       onRemovingLastCallback();
     mCallbacks.erase(it);
   }
 
-  /*! get callback functions
-   \return #CallbackList */
-  const impl& callbacks() const
-  {
-    return mCallbacks;
-  }
+  /**
+   * @brief callback_count
+   * @return Number of active callbacks.
+   */
+  std::size_t callback_count() const
+  { return mCallbacks.size(); }
 
-  /*! trigger all callbacks
-   \param #args arguments to all callbacks */
+  /**
+   * @brief callbacks_empty
+   * @return Number of active callbacks.
+   */
+  std::size_t callbacks_empty() const
+  { return mCallbacks.size(); }
+
+  /**
+   * @brief send Trigger all callbacks
+   * @param args Arguments to send to the callbacks.
+   */
   template <typename... Args>
   void send(Args&&... args)
   {
@@ -49,27 +79,9 @@ public:
       callback(std::forward<Args>(args)...);
   }
 
-  auto begin()
-  {
-    return mCallbacks.begin();
-  }
-  auto end()
-  {
-    return mCallbacks.end();
-  }
-  auto begin() const
-  {
-    return mCallbacks.begin();
-  }
-  auto end() const
-  {
-    return mCallbacks.end();
-  }
-  auto empty() const
-  {
-    return mCallbacks.empty();
-  }
-
+  /**
+   * @brief clear Clears callbacks.
+   */
   void clear()
   {
     onRemovingLastCallback();
@@ -88,29 +100,4 @@ private:
   impl mCallbacks;
 };
 
-template <typename T>
-typename callback_container<T>::iterator begin(callback_container<T>& cont)
-{
-  return cont.callbacks().begin();
-}
-
-template <typename T>
-typename callback_container<T>::iterator end(callback_container<T>& cont)
-{
-  return cont.callbacks().end();
-}
-
-template <typename T>
-typename callback_container<T>::iterator
-cbegin(const callback_container<T>& cont)
-{
-  return cont.callbacks().cbegin();
-}
-
-template <typename T>
-typename callback_container<T>::iterator
-cend(const callback_container<T>& cont)
-{
-  return cont.callbacks().cend();
-}
 }

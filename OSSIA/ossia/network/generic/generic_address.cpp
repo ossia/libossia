@@ -20,7 +20,7 @@ generic_address::generic_address(const ossia::net::node_base& node)
     , mBoundingMode(ossia::bounding_mode::FREE)
     , mRepetitionFilter(ossia::repetition_filter::OFF)
 {
-  mTextualAddress = ossia::net::getAddressFromNode(mNode);
+  mTextualAddress = ossia::net::address_string_from_node(mNode);
 }
 
 generic_address::~generic_address()
@@ -155,7 +155,7 @@ ossia::net::address_base& generic_address::setValueType(ossia::val_type type)
 {
   mValueType = type;
 
-  mValue = initValue(type);
+  mValue = init_value(type);
   if(mDomain)
     mDomain = convert_domain(mDomain, mValueType);
 

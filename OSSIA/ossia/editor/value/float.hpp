@@ -4,13 +4,14 @@
 namespace ossia
 {
 class value;
-/*! \details Float value */
+
+/**
+ * @class Float float.hpp ossia/editor/value/value.hpp
+ */
 struct OSSIA_EXPORT Float
 {
   float value;
 
-  /*! constructor
-   \param float value */
   Float(float v = 0.) : value(v)
   {
   }

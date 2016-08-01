@@ -17,20 +17,12 @@ inline value clamp(const domain& dom, bounding_mode b, const value& val)
 
 inline value min(const domain& dom)
 {
-  if (dom)
-  {
-    return eggs::variants::apply(domain_min_visitor{}, dom);
-  }
-  return {};
+  return ossia::apply(domain_min_visitor{}, dom);
 }
 
 inline value max(const domain& dom)
 {
-  if (dom)
-  {
-    return eggs::variants::apply(domain_max_visitor{}, dom);
-  }
-  return {};
+  return ossia::apply(domain_max_visitor{}, dom);
 }
 
 inline domain makeDomain(const ossia::value& min, const ossia::value& max)

@@ -14,9 +14,11 @@ using namespace ossia;
 
 using namespace std::placeholders;
 
+namespace ossia
+{
 namespace detail
 {
-class loop_impl final : public loop, public virtual time_process_impl
+class loop_impl final : public loop, public time_process_impl
 {
 private:
   std::shared_ptr<time_node> mPatternStartNode;
@@ -61,4 +63,5 @@ private:
 
   void PatternEndEventCallback(time_event::Status);
 };
+}
 }

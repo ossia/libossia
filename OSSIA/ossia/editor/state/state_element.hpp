@@ -7,6 +7,13 @@
 
 namespace ossia
 {
+/**
+ * @brief launch Launch a \ref state_element
+ */
 OSSIA_EXPORT void launch(const state_element& e);
+
+/**
+ * @brief print Print a \ref state_element
+ */
 OSSIA_EXPORT std::ostream& print(std::ostream& os, const state_element& dt);
 }

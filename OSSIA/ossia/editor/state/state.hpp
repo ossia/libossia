@@ -7,6 +7,16 @@
 #include <ossia_export.h>
 namespace ossia
 {
+/**
+ * @brief The state class
+ *
+ * A state is a container of state_element.
+ * Only non-null children will be added to the state.
+ *
+ * Launching the state launches all children.
+ *
+ * \see \ref state_element
+ */
 class OSSIA_EXPORT state
 {
 public:
@@ -83,6 +93,6 @@ inline auto end(const state& s)
  address redundancy
  \param std::shared_ptr<State> the State to fill
  \param std::shared_ptr<StateElement> the StateElement to store */
-OSSIA_EXPORT void flattenAndFilter(state&, const state_element& element);
-OSSIA_EXPORT void flattenAndFilter(state&, state_element&& element);
+OSSIA_EXPORT void flatten_and_filter(state&, const state_element& element);
+OSSIA_EXPORT void flatten_and_filter(state&, state_element&& element);
 }

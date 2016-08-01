@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/editor/state/state_element.hpp>
+#include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/base/node.hpp>
 #include <iostream>
@@ -30,8 +31,13 @@ struct state_print_visitor
   void operator()(const message& m)
   {
     out << padding << "message: "
-        << ossia::net::getAddressFromNode(m.address.get().getNode()) << " => "
-        << ossia::getValueAsString(m.value) << "\n";
+        << ossia::net::address_string_from_node(m.address.get().getNode()) << " => "
+        << ossia::to_pretty_string(m.value) << "\n";
+  }
+
+  void operator()()
+  {
+    out << "no state\n";
   }
 };
 }

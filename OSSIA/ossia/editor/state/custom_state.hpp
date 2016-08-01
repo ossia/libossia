@@ -4,6 +4,14 @@
 
 namespace ossia
 {
+/**
+ * @brief The custom_state class
+ *
+ * A custom state allows to register a custom action
+ * that will be executed when a state is launched.
+ *
+ * \see \ref state_element
+ */
 class OSSIA_EXPORT custom_state
 {
 public:

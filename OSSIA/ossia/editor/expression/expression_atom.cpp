@@ -65,7 +65,7 @@ void expression_atom::onFirstCallbackAdded()
     auto& d = mFirstValue.get<Destination>();
     if (const auto& addr = d.value->getAddress())
     {
-      mFirstValueCallbackIndex = addr->addCallback(
+      mFirstValueCallbackIndex = addr->add_callback(
           [&](const ossia::value& result) { firstValueCallback(result); });
     }
   }
@@ -77,7 +77,7 @@ void expression_atom::onFirstCallbackAdded()
     auto& d = mSecondValue.get<Destination>();
     if (const auto& addr = d.value->getAddress())
     {
-      mSecondValueCallbackIndex = addr->addCallback(
+      mSecondValueCallbackIndex = addr->add_callback(
           [&](const ossia::value& result) { secondValueCallback(result); });
     }
   }
@@ -92,7 +92,7 @@ void expression_atom::onRemovingLastCallback()
     auto& d = mFirstValue.get<Destination>();
     if (const auto& addr = d.value->getAddress())
     {
-      addr->removeCallback(mFirstValueCallbackIndex);
+      addr->remove_callback(mFirstValueCallbackIndex);
     }
   }
 
@@ -103,7 +103,7 @@ void expression_atom::onRemovingLastCallback()
     auto& d = mSecondValue.get<Destination>();
     if (const auto& addr = d.value->getAddress())
     {
-      addr->removeCallback(mSecondValueCallbackIndex);
+      addr->remove_callback(mSecondValueCallbackIndex);
     }
   }
 }

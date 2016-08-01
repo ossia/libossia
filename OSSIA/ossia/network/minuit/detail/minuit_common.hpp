@@ -120,16 +120,13 @@ inline boost::string_ref to_minuit_type_text(const ossia::value& val)
     {
       return "array";
     }
+    boost::string_ref operator()() const
+    {
+      throw std::runtime_error("Invalid value");
+    }
   };
 
-  if (val.v)
-  {
-    return eggs::variants::apply(ValueStringVisitor{}, val.v);
-  }
-  else
-  {
-    throw std::runtime_error("Invalid value");
-  }
+  return val.apply(ValueStringVisitor{});
 }
 
 inline boost::string_ref to_minuit_type_text(ossia::val_type val)

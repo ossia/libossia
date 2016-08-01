@@ -1,6 +1,9 @@
 #include "TimeEvent_impl.hpp"
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/editor/state/state_element.hpp>
+
+namespace ossia
+{
 namespace detail
 {
 time_event_impl::time_event_impl(
@@ -118,5 +121,6 @@ void time_event_impl::setStatus(Status status)
   mStatus = status;
   if (mCallback)
     (mCallback)(mStatus);
+}
 }
 }

@@ -4,13 +4,14 @@
 namespace ossia
 {
 class value;
-/*! \details Int value */
+
+/**
+ * @class Int int.hpp ossia/editor/value/value.hpp
+ */
 struct OSSIA_EXPORT Int
 {
   int value;
 
-  /*! constructor
-   \param int value */
   Int(int v = 0) : value(v)
   {
   }

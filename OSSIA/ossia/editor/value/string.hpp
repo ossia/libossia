@@ -5,13 +5,14 @@
 namespace ossia
 {
 class value;
-/*! \details String value */
+
+/**
+ * @class String string.hpp ossia/editor/value/value.hpp
+ */
 struct OSSIA_EXPORT String
 {
   std::string value;
 
-  /*! constructor
-   \param std::string value */
   String(std::string v = {}) : value(std::move(v))
   {
   }

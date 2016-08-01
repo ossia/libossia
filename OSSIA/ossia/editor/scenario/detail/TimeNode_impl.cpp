@@ -1,5 +1,8 @@
 #include "TimeNode_impl.hpp"
+#include "TimeEvent_impl.hpp"
 
+namespace ossia
+{
 namespace detail
 {
 
@@ -274,5 +277,6 @@ void time_node_impl::resultCallback(bool result)
   //! \note the result of the expression is not exploited here.
   //! \note the observation of the expression allows to observe all Destination
   //! value contained into it.
+}
 }
 }

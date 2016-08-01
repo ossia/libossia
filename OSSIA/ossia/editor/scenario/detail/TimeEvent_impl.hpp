@@ -12,6 +12,8 @@
 
 using namespace ossia;
 
+namespace ossia
+{
 namespace detail
 {
 class time_event_impl final
@@ -34,6 +36,11 @@ public:
 
   ~time_event_impl();
 
+  /* edit status and call ExecutionCallback
+   \param #Status new status */
+  void setStatus(Status);
+
+private:
   void setCallback(time_event::ExecutionCallback) override;
 
   void happen() override;
@@ -54,8 +61,6 @@ public:
 
   Status getStatus() const override;
 
-  /* edit status and call ExecutionCallback
-   \param #Status new status */
-  void setStatus(Status);
 };
+}
 }

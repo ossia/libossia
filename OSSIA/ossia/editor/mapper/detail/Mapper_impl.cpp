@@ -1,9 +1,11 @@
 #include "Mapper_impl.hpp"
 #include <ossia/editor/curve/detail/Curve_impl.hpp>
 #include <iostream>
+
+namespace ossia
+{
 namespace detail
 {
-
 mapper_impl::mapper_impl(
     ossia::net::address_base& driverAddress,
     ossia::net::address_base& drivenAddress, const ossia::value& drive)
@@ -62,7 +64,7 @@ void mapper_impl::start()
   // start driver address value observation
   if (!mDriverValueObserved)
   {
-    mDriverValueCallbackIndex = mDriverAddress.addCallback(
+    mDriverValueCallbackIndex = mDriverAddress.add_callback(
         [this](const ossia::value& val) { driverValueCallback(val); });
     mDriverValueObserved = true;
     auto def_val = mDriverAddress.cloneValue();
@@ -75,7 +77,7 @@ void mapper_impl::stop()
   // stop driver address value observation
   if (mDriverValueObserved)
   {
-    mDriverAddress.removeCallback(mDriverValueCallbackIndex);
+    mDriverAddress.remove_callback(mDriverValueCallbackIndex);
     mDriverValueObserved = false;
   }
 }
@@ -235,5 +237,6 @@ void mapper_impl::driverValueCallback(const ossia::value& value)
   std::lock_guard<std::mutex> lock(mValueToMapMutex);
 
   mValueToMap = value;
+}
 }
 }

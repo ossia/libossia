@@ -2,6 +2,9 @@
 #include <cassert>
 
 #include <iostream>
+
+namespace ossia
+{
 namespace detail
 {
 clock_impl::clock_impl(
@@ -352,5 +355,6 @@ void clock_impl::threadCallback()
   if (mDuration > Zero)
     while (mRunning)
       tick();
+}
 }
 }

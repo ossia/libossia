@@ -6,7 +6,13 @@
 namespace ossia
 {
 class value;
-/*! \details Behavior value */
+
+/**
+ * @class Behavior behavior.hpp ossia/editor/value/value.hpp
+ *
+ * \see \ref curve_abstract
+ * \see \ref curve
+ */
 struct OSSIA_EXPORT Behavior
 {
   std::shared_ptr<curve_abstract> value;

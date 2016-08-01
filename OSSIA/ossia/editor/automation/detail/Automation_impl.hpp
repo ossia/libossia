@@ -10,7 +10,8 @@
 
 #include <ossia/editor/scenario/detail/TimeProcess_impl.hpp>
 #include <ossia/network/base/address.hpp>
-
+namespace ossia
+{
 namespace detail
 {
 class automation_impl final : public ossia::automation,
@@ -42,4 +43,5 @@ private:
   const ossia::net::address_base& getDrivenAddress() const override;
   const ossia::value& getDriving() const override;
 };
+}
 }

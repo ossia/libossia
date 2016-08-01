@@ -1,6 +1,8 @@
 #include "Loop_impl.hpp"
 #include <ossia/detail/algorithms.hpp>
 
+namespace ossia
+{
 namespace detail
 {
 loop_impl::loop_impl(
@@ -49,12 +51,12 @@ state_element loop_impl::offset(time_value offset)
 
   time_value patternOffset = std::fmod(
       (double)offset, (double)mPatternConstraint->getDurationNominal());
-  flattenAndFilter(mOffsetState, mPatternConstraint->offset(patternOffset));
+  flatten_and_filter(mOffsetState, mPatternConstraint->offset(patternOffset));
 
   // compile mOffsetState with all HAPPENED event's states
   if (mPatternConstraint->getStartEvent()->getStatus()
       == time_event::Status::HAPPENED)
-    flattenAndFilter(
+    flatten_and_filter(
         mOffsetState, mPatternConstraint->getStartEvent()->getState());
 
   return mOffsetState;
@@ -84,7 +86,7 @@ state_element loop_impl::state()
     // add the state of each newly HAPPENED TimeEvent
     for (const auto& timeEvent : statusChangedEvents)
       if (timeEvent->getStatus() == time_event::Status::HAPPENED)
-        flattenAndFilter(mCurrentState, timeEvent->getState());
+        flatten_and_filter(mCurrentState, timeEvent->getState());
 
     // make time flow for the pattern constraint
     if (mPatternConstraint->getRunning())
@@ -122,7 +124,7 @@ state_element loop_impl::state()
 
       // if the pattern constraint is still running after the tick
       if (mPatternConstraint->getRunning())
-        flattenAndFilter(mCurrentState, mPatternConstraint->state());
+        flatten_and_filter(mCurrentState, mPatternConstraint->state());
     }
 
     // if the pattern end event happened : stop and reset the loop
@@ -189,7 +191,7 @@ void loop_impl::PatternConstraintCallback(
   if (mPatternConstraintCallback)
   {
     // add the state of the pattern TimeConstraint
-    flattenAndFilter(mCurrentState, mPatternConstraint->state());
+    flatten_and_filter(mCurrentState, mPatternConstraint->state());
 
     (mPatternConstraintCallback)(position, date, mCurrentState);
   }
@@ -205,5 +207,6 @@ void loop_impl::PatternEndEventCallback(time_event::Status newStatus)
 {
   if (mPatternEndEventCallback)
     (mPatternEndEventCallback)(newStatus);
+}
 }
 }

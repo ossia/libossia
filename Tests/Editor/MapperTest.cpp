@@ -81,7 +81,7 @@ private Q_SLOTS:
     auto int_n = device.createChild("int");
     m_int_address = int_n->createAddress(val_type::INT);
     auto int_address_callback = std::bind(&MapperTest::int_address_callback, this, _1);
-    m_int_address->addCallback(int_address_callback);
+    m_int_address->add_callback(int_address_callback);
 
     auto c = curve<float, int>::create();
     curve_segment_linear<int> linearSegment;

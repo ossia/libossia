@@ -32,7 +32,7 @@ struct state_flatten_visitor
   {
     for (const auto& e : s)
     {
-      flattenAndFilter(state, e);
+      flatten_and_filter(state, e);
     }
   }
 
@@ -66,13 +66,17 @@ struct state_flatten_visitor
   {
     for (auto&& e : s)
     {
-      flattenAndFilter(state, std::move(e));
+      flatten_and_filter(state, std::move(e));
     }
   }
 
   void operator()(custom_state&& e)
   {
     state.add(std::move(e));
+  }
+
+  void operator()()
+  {
   }
 };
 }

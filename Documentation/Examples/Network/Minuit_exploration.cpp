@@ -54,14 +54,14 @@ void explore(const ossia::net::node_base& node)
     if (addr)
     {
       // attach to callback to display value update
-      addr->addCallback(printValueCallback);
+      addr->add_callback(printValueCallback);
 
       // update the value
       addr->pullValue();
 
       // display address info
       cerr << " : ";
-      cerr << getValueAsString(addr->cloneValue());
+      cerr << to_pretty_string(addr->cloneValue());
 
       cerr << ", AccessMode(";
       switch (addr->getAccessMode())
@@ -140,5 +140,5 @@ void printDomain(const domain& d)
 
 void printValueCallback(const value& v)
 {
-  cerr << "Callback: " << getValueAsString(v) << "\n";
+  cerr << "Callback: " << to_pretty_string(v) << "\n";
 }

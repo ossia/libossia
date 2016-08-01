@@ -17,12 +17,12 @@ class OSSIA_EXPORT expression_atom : public expression_callback_container
 public:
   enum class Comparator
   {
-    EQUAL,
-    DIFFERENT,
-    GREATER_THAN,
-    LOWER_THAN,
-    GREATER_THAN_OR_EQUAL,
-    LOWER_THAN_OR_EQUAL
+    EQUAL,  //! ==
+    DIFFERENT, //! !=
+    GREATER_THAN, //! >
+    LOWER_THAN, //! <
+    GREATER_THAN_OR_EQUAL, //! >=
+    LOWER_THAN_OR_EQUAL //! <=
   };
 
   expression_atom(

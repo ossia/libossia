@@ -351,6 +351,9 @@ struct ValueStringVisitor
   {
     s << "tuple:" << getTupleAsString(t);
   }
+  void operator()() const
+  {
+  }
 };
 
 static std::string getTupleAsString(const ossia::Tuple& tuple)
@@ -377,13 +380,10 @@ static std::string getTupleAsString(const ossia::Tuple& tuple)
 }
 }
 
-std::string getValueAsString(const ossia::value& val)
+std::string to_pretty_string(const ossia::value& val)
 {
   std::stringstream s;
-  ValueStringVisitor vis{s};
-  if (val.valid())
-    eggs::variants::apply(vis, val.v);
-
+  val.apply(ValueStringVisitor{s});
   return s.str();
 }
 }

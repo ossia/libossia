@@ -3,6 +3,10 @@
 #include <type_traits>
 #include <iterator>
 
+/**
+ * This header contains various range-style functions that mimic std::algorithm functions.
+ * This won't be necessary anymore when ranges are introduced in C++20 (hopefully).
+ */
 namespace ossia
 {
 template <typename Vector>

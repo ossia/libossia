@@ -53,7 +53,7 @@ static void observe_rec(protocol_base& proto, ossia::net::node_base& n)
   {
     if(auto addr = cld->getAddress())
     {
-      if(!addr->callbacks().empty())
+      if(!addr->callbacks_empty())
       {
         proto.observe_quietly(*addr, true);
       }

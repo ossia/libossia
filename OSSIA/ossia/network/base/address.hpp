@@ -61,6 +61,6 @@ public:
  * \brief getAddressFromNode
  * \return the textual address of a node : aDevice:/an/address
  */
-OSSIA_EXPORT std::string getAddressFromNode(const ossia::net::node_base&);
+OSSIA_EXPORT std::string address_string_from_node(const ossia::net::node_base&);
 }
 }

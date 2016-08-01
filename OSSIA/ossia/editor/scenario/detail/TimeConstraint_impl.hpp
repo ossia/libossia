@@ -17,6 +17,8 @@ using namespace ossia;
 
 using namespace std::placeholders;
 
+namespace ossia
+{
 namespace detail
 {
 class time_constraint_impl final
@@ -42,6 +44,7 @@ public:
       time_value = Infinite);
 
   ~time_constraint_impl();
+private:
   void start() final override;
 
   void stop() final override;
@@ -76,9 +79,9 @@ public:
 
   void removeTimeProcess(std::shared_ptr<time_process>) override;
 
-private:
   void ClockCallback(
       time_value position, time_value date, unsigned char droppedTicks);
   ossia::state make_state();
 };
+}
 }

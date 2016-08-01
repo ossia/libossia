@@ -2,6 +2,8 @@
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/node.hpp>
 
+namespace ossia
+{
 namespace detail
 {
 template <typename X, typename Y>
@@ -213,10 +215,13 @@ Y curve_impl<X, Y>::convertToTemplateTypeValue(
     {
       throw std::runtime_error("Cannot convert to a numeric type");
     }
+    Y operator()() const
+    {
+      throw std::runtime_error("Invalid variant");
+    }
   } vis{idx};
 
-  if (value.valid())
-    return eggs::variants::apply(vis, value.v);
-  throw std::runtime_error("Invalid variant");
+  return value.apply(vis);
+}
 }
 }

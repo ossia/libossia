@@ -13,6 +13,12 @@ namespace ossia
 class Destination;
 
 template <typename X, typename Y>
+/**
+ * @brief The curve class
+ *
+ * A curve is a succession of \ref curve_segment.
+ * It is used in a \ref Behavior to drive \ref automation or \ref mapper.
+ */
 class curve : public curve_abstract
 {
 public:
@@ -80,10 +86,10 @@ public:
  \param const Destination* */
   virtual void setInitialPointOrdinateDestination(const Destination&) = 0;
 
-  /*! get initial curve value
- \return std::map<X, pair<Y, CurveSegment<Y>>> map of {abscissa, {value,
- previous segment}
-*/
+  /*! get points of the curve
+  \return std::map<X, pair<Y, CurveSegment<Y>>> map of {abscissa, {value,
+          previous segment}
+  */
   virtual std::map<X, std::pair<Y, curve_segment<Y>>> getPointsMap() const = 0;
 };
 }

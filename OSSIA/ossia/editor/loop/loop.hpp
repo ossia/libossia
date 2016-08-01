@@ -11,7 +11,7 @@ namespace ossia
 
 class time_value;
 
-class OSSIA_EXPORT loop : public virtual time_process
+class OSSIA_EXPORT loop : public time_process
 {
 public:
   /*! factory

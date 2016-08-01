@@ -4,7 +4,10 @@
 namespace ossia
 {
 class value;
-/*! \details Char value */
+
+/**
+ * @class Char char.hpp ossia/editor/value/value.hpp
+ */
 struct OSSIA_EXPORT Char
 {
   char value;

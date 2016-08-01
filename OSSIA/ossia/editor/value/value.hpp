@@ -5,62 +5,166 @@
 
 namespace ossia
 {
+
+/**
+ * \brief ossia::apply : helper function to apply a visitor to a variant
+ * without throwing in the empty variant case.
+ *
+ * By default, a eggs::variant throws bad_variant.
+ * In this case, the operator()() without arguments will be called.
+ * This allows a simpler handling of the default case.
+ */
+template <typename Visitor, typename Variant>
+auto apply(Visitor&& v, Variant&& var) -> decltype(auto)
+{
+  // Thanks K-Ballo (eggs-cpp/variant#21)
+  if (var)
+    return eggs::variants::apply(
+        std::forward<Visitor>(v),
+        std::forward<Variant>(var));
+  else
+    return std::forward<Visitor>(v)();
+}
+
+
+/**
+ * @brief The value class
+ *
+ * Core type of the ossia API.
+ * A value is a variant of multiple fundamental types.
+ *
+ * A value can be in an "unset" state; it has to be checked for this.
+ * e.g. :
+ * \code
+ * void f(ossia::value& v) {
+ *   if(v.valid())
+ *   {
+ *     auto maybe_int = v.try_get<Int>();
+ *     if(maybe_int)
+ *       std::cout << maybe_int->value;
+ *     else // we know for some reason that it is a float
+ *       std::cout << v.get<Float>().value;
+ *   }
+ * }
+ * \endcode
+ *
+ * A generic operation can be applied safely to a value with a visitor.
+ * See for instance \ref to_pretty_string.
+ */
 class OSSIA_EXPORT value
 {
 public:
   using value_type
       = eggs::variant<Impulse, Bool, Int, Float, Char, String, Tuple, Vec2f,
                       Vec3f, Vec4f, Destination, Behavior>;
+
+  value_type v;
+
+  // Construction
   template <typename T>
   value(T*) = delete;
-  value(Impulse val) : v{val}
+  value(Impulse val) : v{val} { }
+  value(Bool val) : v{val} { }
+  value(Int val) : v{val} { }
+  value(Float val) : v{val} { }
+  value(Char val) : v{val} { }
+  value(const String& val) : v{val} { }
+  value(const Tuple& val) : v{val} { }
+  value(const Vec2f& val) : v{val} { }
+  value(const Vec3f& val) : v{val} { }
+  value(const Vec4f& val) : v{val} { }
+  value(const Destination& val) : v{val} { }
+  value(const Behavior& val) : v{val} { }
+
+  // Movable overloads
+  value(String&& val) : v{std::move(val)} { }
+  value(Tuple&& val) : v{std::move(val)} { }
+  value(Destination&& val) : v{std::move(val)} { }
+  value(Behavior&& val) : v{std::move(val)} { }
+
+
+  // Assignment
+  value& operator=(Impulse val)
   {
+    v = val;
+    return *this;
   }
-  value(Bool val) : v{val}
+  value& operator=(Bool val)
   {
+    v = val;
+    return *this;
   }
-  value(Int val) : v{val}
+  value& operator=(Int val)
   {
+    v = val;
+    return *this;
   }
-  value(Float val) : v{val}
+  value& operator=(Float val)
   {
+    v = val;
+    return *this;
   }
-  value(Char val) : v{val}
+  value& operator=(Char val)
   {
+    v = val;
+    return *this;
   }
-  value(const String& val) : v{val}
+  value& operator=(const String& val)
   {
+    v = val;
+    return *this;
   }
-  value(const Tuple& val) : v{val}
+  value& operator=(const Tuple& val)
   {
+    v = val;
+    return *this;
   }
-  value(const Vec2f& val) : v{val}
+  value& operator=(const Vec2f& val)
   {
+    v = val;
+    return *this;
   }
-  value(const Vec3f& val) : v{val}
+  value& operator=(const Vec3f& val)
   {
+    v = val;
+    return *this;
   }
-  value(const Vec4f& val) : v{val}
+  value& operator=(const Vec4f& val)
   {
+    v = val;
+    return *this;
   }
-  value(const Destination& val) : v{val}
+  value& operator=(const Destination& val)
   {
+    v = val;
+    return *this;
   }
-  value(const Behavior& val) : v{val}
+  value& operator=(const Behavior& val)
   {
+    v = val;
+    return *this;
   }
 
-  value(String&& val) : v{std::move(val)}
+  // Movable overloads
+  value& operator=(String&& val)
   {
+    v = std::move(val);
+    return *this;
   }
-  value(Tuple&& val) : v{std::move(val)}
+  value& operator=(Tuple&& val)
   {
+    v = std::move(val);
+    return *this;
   }
-  value(Destination&& val) : v{std::move(val)}
+  value& operator=(Destination&& val)
   {
+    v = std::move(val);
+    return *this;
   }
-  value(Behavior&& val) : v{std::move(val)}
+  value& operator=(Behavior&& val)
   {
+    v = std::move(val);
+    return *this;
   }
 
   value() = default;
@@ -69,8 +173,8 @@ public:
   value& operator=(const value& other) = default;
   value& operator=(value&& other) = default;
 
-  value_type v;
 
+  // Operations
   template <typename T>
   const T& get() const
   {
@@ -114,22 +218,23 @@ public:
     v = value_type{};
   }
 
-  /*! equal operator */
+  template <typename Visitor>
+  auto apply(Visitor&& vis) -> decltype(auto)
+  {
+    return ossia::apply(vis, v);
+  }
+
+  template <typename Visitor>
+  auto apply(Visitor&& vis) const -> decltype(auto)
+  {
+    return ossia::apply(vis, v);
+  }
+
   bool operator==(const value& rhs) const;
-
-  /*! different operator */
   bool operator!=(const value& rhs) const;
-
-  /*! greater than operator */
   bool operator>(const value& rhs) const;
-
-  /*! greater than and equal operator */
   bool operator>=(const value& rhs) const;
-
-  /*! less than operator */
   bool operator<(const value& rhs) const;
-
-  /*! less than and equal operator */
   bool operator<=(const value& rhs) const;
 };
 
@@ -144,9 +249,9 @@ public:
  * etc...
  *
  */
-OSSIA_EXPORT std::string getValueAsString(const ossia::value& val);
+OSSIA_EXPORT std::string to_pretty_string(const ossia::value& val);
 
-inline ossia::value initValue(ossia::val_type type)
+inline ossia::value init_value(ossia::val_type type)
 {
   switch (type)
   {

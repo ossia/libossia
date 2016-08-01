@@ -19,6 +19,8 @@
 
 using namespace ossia;
 
+namespace ossia
+{
 namespace detail
 {
 class scenario_impl final : public scenario, public time_process_impl
@@ -39,6 +41,7 @@ public:
 
   ~scenario_impl();
 
+private:
   state_element offset(time_value) override;
 
   state_element state() override;
@@ -65,4 +68,5 @@ public:
   /* order all HAPPENED TimeEvents into mOffetEventMap */
   void process_offset(std::shared_ptr<time_node>, time_value);
 };
+}
 }
