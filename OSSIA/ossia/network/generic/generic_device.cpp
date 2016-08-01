@@ -16,8 +16,8 @@ generic_device::generic_device(
 
 generic_device::~generic_device()
 {
-  mProtocol.reset();
   mChildren.clear();
+  mProtocol.reset();
 }
 
 namespace

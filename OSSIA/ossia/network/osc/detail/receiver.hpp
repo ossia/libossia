@@ -7,8 +7,63 @@
 #include <oscpack/osc/OscPacketListener.h>
 #include <thread>
 
+namespace oscpack
+{
+
+namespace detail
+{
+
+
+template<typename Impl_T>
+struct ClearListener : public oscpack::TimerListener
+{
+    ClearListener(UdpSocket<Impl_T>& s):
+      socket{s}
+    { }
+    UdpSocket<Impl_T>& socket;
+
+    void TimerExpired() override
+    { socket.AsynchronousBreak(); }
+};
+
+template<typename Impl_T>
+class ReceiveSocket : public UdpSocket<Impl_T>{
+    SocketReceiveMultiplexer<Impl_T> mux_;
+    PacketListener *listener_;
+  public:
+    ReceiveSocket( const IpEndpointName& localEndpoint, PacketListener *listener )
+      : listener_( listener )
+    {
+      this->Bind( localEndpoint );
+      mux_.AttachSocketListener( &this->impl_, listener_ );
+    }
+
+    ~ReceiveSocket()
+    { mux_.DetachSocketListener( &this->impl_, listener_ ); }
+
+    // see SocketReceiveMultiplexer above for the behaviour of these methods...
+    void Run() { mux_.Run(); }
+    void Break()
+    {
+      ClearListener<Impl_T> l{*this};
+      mux_.AttachPeriodicTimerListener(0, &l);
+      mux_.Break();
+    }
+    void AsynchronousBreak()
+    {
+      ClearListener<Impl_T> l{*this};
+      mux_.AttachPeriodicTimerListener(0, &l);
+      mux_.AsynchronousBreak();
+    }
+};
+}
+using ReceiveSocket = detail::UdpListeningReceiveSocket<detail::Implementation>;
+
+}
 namespace osc
 {
+
+
 template <typename MessageHandler>
 /**
  * @brief The listener class
@@ -84,8 +139,9 @@ public:
 
   void run()
   {
-    m_runThread = std::thread(
-        &oscpack::UdpListeningReceiveSocket::Run, m_socket.get());
+    m_runThread = std::thread([this] () {
+      m_socket->Run();
+    });
   }
 
   void stop()
@@ -95,9 +151,11 @@ public:
       m_socket->AsynchronousBreak();
 
       while(!m_runThread.joinable())
+      {
+        m_socket->AsynchronousBreak();
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
-
-      m_runThread.join();
+      }
+      m_runThread.detach();
       m_socket.reset();
     }
   }
@@ -116,7 +174,7 @@ public:
     {
       try
       {
-        m_socket = std::make_unique<oscpack::UdpListeningReceiveSocket>(
+        m_socket = std::make_unique<oscpack::ReceiveSocket>(
             oscpack::IpEndpointName(
                 oscpack::IpEndpointName::ANY_ADDRESS, m_port),
             m_impl.get());
@@ -134,7 +192,7 @@ public:
 private:
   unsigned int m_port = 0;
   std::unique_ptr<oscpack::OscPacketListener> m_impl;
-  std::unique_ptr<oscpack::UdpListeningReceiveSocket> m_socket;
+  std::unique_ptr<oscpack::ReceiveSocket> m_socket;
 
   std::thread m_runThread;
 };

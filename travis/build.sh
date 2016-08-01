@@ -44,6 +44,7 @@ case "$TRAVIS_OS_NAME" in
         cd ../Documentation/Doxygen
         doxygen
       ;;
+    esac
   ;;
 
   osx)
