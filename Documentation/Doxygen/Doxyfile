@@ -45,14 +45,14 @@ PROJECT_BRIEF          = "Open Scenario System for Interactive Application"
 # exceed 55 pixels and the maximum width should not exceed 200 pixels. 
 # Doxygen will copy the logo to the output directory.
 
-PROJECT_LOGO           = /Users/WALL-E/Dropbox/OSSIA/Documents/Présentations/OSSIA.jpg
+# PROJECT_LOGO           = /Users/WALL-E/Dropbox/OSSIA/Documents/Présentations/OSSIA.jpg
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
 # If a relative path is entered, it will be relative to the location 
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = "/Users/WALL-E/Documents/i-score0.3/API OSSIA/Documentation/Doxygen"
+OUTPUT_DIRECTORY       =
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create 
 # 4096 sub-directories (in 2 levels) under the output directory of each output 
@@ -661,7 +661,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = "/Users/WALL-E/Documents/i-score0.3/API OSSIA/Headers"
+INPUT                  = "../../OSSIA"
 
 # This tag can be used to specify the character encoding of the source files 
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is 
@@ -683,6 +683,7 @@ FILE_PATTERNS          = *.c \
                          *.cc \
                          *.cxx \
                          *.cpp \
+                         *.tpp \
                          *.c++ \
                          *.d \
                          *.java \
@@ -1512,7 +1513,7 @@ MAN_LINKS              = NO
 # generate an XML file that captures the structure of 
 # the code including all documentation.
 
-GENERATE_XML           = NO
+GENERATE_XML           = YES
 
 # The XML_OUTPUT tag is used to specify where the XML pages will be put. 
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be 

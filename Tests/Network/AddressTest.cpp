@@ -1,61 +1,61 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/ossia.hpp>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 
 class AddressTest : public QObject
 {
     Q_OBJECT
-    
+
 private Q_SLOTS:
-    
+
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto local_protocol = Local::create();
-        auto local_device = Device::create(local_protocol, "test");
-        
-        local_device->emplace(local_device->children().begin(), "child");
-        auto address = local_device->children().front()->createAddress();
+        ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
+        auto cld = device.createChild("child");
+        auto address = cld->createAddress();
         QVERIFY(address != nullptr);
-        
-        QVERIFY(address->getNode() == local_device->children().front());
-        QVERIFY(address->getNode()->getDevice() == local_device);
-        
-        QVERIFY(address->getValueType() == Type::IMPULSE);
-        
-        address->setValueType(Type::INT);
-        QVERIFY(address->getValueType() == Type::INT);
-        
-        QVERIFY(address->getAccessMode() == OSSIA::AccessMode::BI);
-        
-        address->setAccessMode(OSSIA::AccessMode::SET);
-        QVERIFY(address->getAccessMode() == OSSIA::AccessMode::SET);
-        
-        QVERIFY(address->getDomain() == nullptr);
-        auto domain = Domain::create();
-        address->setDomain(domain);
-        QVERIFY(address->getDomain() == domain);
-        
-        QVERIFY(address->getBoundingMode() == OSSIA::BoundingMode::FREE);
-        
-        address->setBoundingMode(OSSIA::BoundingMode::CLIP);
-        QVERIFY(address->getBoundingMode() == OSSIA::BoundingMode::CLIP);
-        
-        QVERIFY(address->getRepetitionFilter() == false);
-        
-        address->setRepetitionFilter(true);
-        QVERIFY(address->getRepetitionFilter() == true);
-        
+        if(address == nullptr)
+          return;
+
+        QVERIFY(&address->getNode() == device.children().front().get());
+        QVERIFY(&address->getNode().getDevice() == &device);
+
+        QVERIFY(address->getValueType() == val_type::IMPULSE);
+
+        address->setValueType(val_type::INT);
+        QVERIFY(address->getValueType() == val_type::INT);
+
+        QVERIFY(address->getAccessMode() == ossia::access_mode::BI);
+
+        address->setAccessMode(ossia::access_mode::SET);
+        QVERIFY(address->getAccessMode() == ossia::access_mode::SET);
+
+        QVERIFY(!address->getDomain());
+
+        address->setDomain(net::makeDomain(Int(0), Int(100)));
+        QVERIFY(address->getDomain() == net::makeDomain(Int(0), Int(100)));
+
+        QVERIFY(address->getBoundingMode() == ossia::bounding_mode::FREE);
+
+        address->setBoundingMode(ossia::bounding_mode::CLIP);
+        QVERIFY(address->getBoundingMode() == ossia::bounding_mode::CLIP);
+
+        QVERIFY(address->getRepetitionFilter() == repetition_filter::OFF);
+
+        address->setRepetitionFilter(repetition_filter::ON);
+        QVERIFY(address->getRepetitionFilter() == repetition_filter::ON);
+
         //! \todo verify addCallback
-        
+
         //! \todo verify removeCallback
-        
+
         //! \todo verify getValue
 
         //! \todo verify cloneValue
-        
+
         //! \todo verify setValue
 
         //! \todo verify pushValue

@@ -1,8 +1,8 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/ossia.hpp>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 
 class DeviceTest : public QObject
 {
@@ -13,17 +13,12 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto local_protocol = Local::create();
-        auto local_device = Device::create(local_protocol, "test_local");
-        QVERIFY(local_device != nullptr);
-
-        auto osc_protocol = OSC::create("127.0.0.1", 9996, 9997);
-        auto osc_device = Device::create(osc_protocol, "test_osc");
-        QVERIFY(osc_device != nullptr);
-
-        auto minuit_protocol = Minuit::create("127.0.0.1", 13579, 13580);
-        auto minuit_device = Device::create(minuit_protocol, "test_minuit");
-        QVERIFY(minuit_device != nullptr);
+        ossia::net::generic_device local_device{
+          std::make_unique<ossia::net::local_protocol>(), "test"};
+        ossia::net::generic_device osc_device{
+          std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997), "test_osc"};
+        ossia::net::generic_device minuit_device{
+          std::make_unique<ossia::net::minuit_protocol>("i-score", "127.0.0.1", 13579, 13580), "test_minuit"};
     }
 };
 

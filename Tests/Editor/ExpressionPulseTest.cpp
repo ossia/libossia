@@ -1,224 +1,220 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/ossia.hpp>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
+using namespace ossia::expressions;
 using namespace std::placeholders;
 
 class ExpressionPulseTest : public QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 
-    bool m_result;
-    bool m_result_callback_called;
+  bool m_result;
+  bool m_result_callback_called;
 
-    void result_callback(bool result)
-    {
-        m_result = result;
-        m_result_callback_called = true;
-    }
+  void result_callback(bool result)
+  {
+    m_result = result;
+    m_result_callback_called = true;
+  }
 
 private Q_SLOTS:
 
-    /*! evaluate expressions with destination values */
-    void test_basic()
-    {
-        // Local device
-        auto local_protocol = Local::create();
-        auto device = Device::create(local_protocol, "test");
+  /*! evaluate expressions with destination values */
+  void test_basic()
+  {
+    // Local device
+    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
 
-        // Local tree building
-        auto localImpulseNode = *(device->emplace(device->children().cend(), "my_impulse"));
-        auto localImpulseAddress = localImpulseNode->createAddress(Type::IMPULSE);
+    // Local tree building
+    auto localImpulseNode = device.createChild("my_impulse");
+    auto localImpulseAddress = localImpulseNode->createAddress(val_type::IMPULSE);
 
-        auto localBoolNode = *(device->emplace(device->children().cend(), "my_bool"));
-        auto localBoolAddress = localBoolNode->createAddress(Type::BOOL);
+    auto localBoolNode = device.createChild("my_bool");
+    auto localBoolAddress = localBoolNode->createAddress(val_type::BOOL);
 
-        auto localIntNode = *(device->emplace(device->children().cend(), "my_int"));
-        auto localIntAddress = localIntNode->createAddress(Type::INT);
+    auto localIntNode = device.createChild("my_int");
+    auto localIntAddress = localIntNode->createAddress(val_type::INT);
 
-        auto localFloatNode = *(device->emplace(device->children().cend(), "my_float"));
-        auto localFloatAddress = localFloatNode->createAddress(Type::FLOAT);
+    auto localFloatNode = device.createChild("my_float");
+    auto localFloatAddress = localFloatNode->createAddress(val_type::FLOAT);
 
-        auto localStringNode = *(device->emplace(device->children().cend(), "my_string"));
-        auto localStringAddress = localStringNode->createAddress(Type::STRING);
+    auto localStringNode = device.createChild("my_string");
+    auto localStringAddress = localStringNode->createAddress(val_type::STRING);
 
-        auto localTupleNode = *(device->emplace(device->children().cend(), "my_tuple"));
-        auto localTupleAddress = localTupleNode->createAddress(Type::TUPLE);
+    auto localTupleNode = device.createChild("my_tuple");
+    auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
 
-        //! \todo what about Destination address ? do we observe the address ? how to do that ?
-        //! auto localDestinationNode = *(device->emplace(device->children().cend(), "my_destination"));
-        //! auto localDestinationAddress = localDestinationNode->createAddress(Type::DESTINATION);
+    //! \todo what about Destination address ? do we observe the address ? how to do that ?
+    //! auto localDestinationNode = device.createChild("my_destination"));
+    //! auto localDestinationAddress = localDestinationNode->createAddress(Type::DESTINATION);
 
-        // evaluate expressions before Destination value updates
-        auto testExprA = ExpressionPulse::create(new Destination(localImpulseNode));
-        QVERIFY(testExprA->getType() == Expression::Type::PULSE);
-        QVERIFY(testExprA->evaluate() == false);
+    // evaluate expressions before Destination value updates
+    auto testExprA = make_expression_pulse(Destination(*localImpulseNode));
+    QVERIFY(evaluate(testExprA) == false);
 
-        auto testExprB = ExpressionPulse::create(new Destination(localBoolNode));
-        QVERIFY(testExprB->evaluate() == false);
+    auto testExprB = make_expression_pulse(Destination(*localBoolNode));
+    QVERIFY(evaluate(testExprB) == false);
 
-        auto testExprC = ExpressionPulse::create(new Destination(localIntNode));
-        QVERIFY(testExprC->evaluate() == false);
+    auto testExprC = make_expression_pulse(Destination(*localIntNode));
+    QVERIFY(evaluate(testExprC) == false);
 
-        auto testExprD = ExpressionPulse::create(new Destination(localFloatNode));
-        QVERIFY(testExprD->evaluate() == false);
+    auto testExprD = make_expression_pulse(Destination(*localFloatNode));
+    QVERIFY(evaluate(testExprD) == false);
 
-        auto testExprE = ExpressionPulse::create(new Destination(localStringNode));
-        QVERIFY(testExprE->evaluate() == false);
+    auto testExprE = make_expression_pulse(Destination(*localStringNode));
+    QVERIFY(evaluate(testExprE) == false);
 
-        //! \todo : what about Destination address ? do we observe the address ? how to do that ?
-        //auto testExprF = ExpressionPulse::create(new Destination(localDestinationNode));
-        //QVERIFY(testExprF->evaluate() == false);
+    //! \todo : what about Destination address ? do we observe the address ? how to do that ?
+    //auto testExprF = make_expression_pulse(Destination(localDestinationNode));
+    //QVERIFY(evaluate(testExprF) == false);
 
-        auto testExprG = ExpressionPulse::create(new Destination(localTupleNode));
-        QVERIFY(testExprG->evaluate() == false);
+    auto testExprG = make_expression_pulse(Destination(*localTupleNode));
+    QVERIFY(evaluate(testExprG) == false);
 
-        // update node's value
-        Impulse p;
-        localImpulseAddress->pushValue(&p);
+    // update node's value
+    Impulse p;
+    localImpulseAddress->pushValue(p);
 
-        Bool b(false);
-        localBoolAddress->pushValue(&b);
+    Bool b(false);
+    localBoolAddress->pushValue(b);
 
-        Int i(5);
-        localIntAddress->pushValue(&i);
+    Int i(5);
+    localIntAddress->pushValue(i);
 
-        Float f(0.5);
-        localFloatAddress->pushValue(&f);
+    Float f(0.5);
+    localFloatAddress->pushValue(f);
 
-        String s("abc");
-        localStringAddress->pushValue(&s);
+    String s("abc");
+    localStringAddress->pushValue(s);
 
-        //! \todo
-        //Destination d(localFloatNode);
-        //localDestinationAddress->pushValue(&d);
+    //! \todo
+    //Destination d(localFloatNode);
+    //localDestinationAddress->pushValue(d);
 
-        Tuple t = {new Float(0.1), new Float(0.2), new Float(0.3)};
-        localTupleAddress->pushValue(&t);
+    Tuple t{Float(0.1), Float(0.2), Float(0.3)};
+    localTupleAddress->pushValue(t);
 
-        // evaluate expressions after Destination value updates
-        QVERIFY(testExprA->evaluate() == true);
-        QVERIFY(testExprB->evaluate() == true);
-        QVERIFY(testExprC->evaluate() == true);
-        QVERIFY(testExprD->evaluate() == true);
-        QVERIFY(testExprE->evaluate() == true);
-        //! \todo QVERIFY(testExprF->evaluate() == true);
-        QVERIFY(testExprG->evaluate() == true);
+    // evaluate expressions after Destination value updates
+    QVERIFY(evaluate(testExprA) == true);
+    QVERIFY(evaluate(testExprB) == true);
+    QVERIFY(evaluate(testExprC) == true);
+    QVERIFY(evaluate(testExprD) == true);
+    QVERIFY(evaluate(testExprE) == true);
+    //! \todo QVERIFY(evaluate(testExprF) == true);
+    QVERIFY(evaluate(testExprG) == true);
 
-        // evaluate expressions after expression reset
-        testExprA->update();
-        QVERIFY(testExprA->evaluate() == false);
+    // evaluate expressions after expression reset
+    update(testExprA);
+    QVERIFY(evaluate(testExprA) == false);
 
-        testExprB->update();
-        QVERIFY(testExprB->evaluate() == false);
+    update(testExprB);
+    QVERIFY(evaluate(testExprB) == false);
 
-        testExprC->update();
-        QVERIFY(testExprC->evaluate() == false);
+    update(testExprC);
+    QVERIFY(evaluate(testExprC) == false);
 
-        testExprD->update();
-        QVERIFY(testExprD->evaluate() == false);
+    update(testExprD);
+    QVERIFY(evaluate(testExprD) == false);
 
-        testExprE->update();
-        QVERIFY(testExprE->evaluate() == false);
+    update(testExprE);
+    QVERIFY(evaluate(testExprE) == false);
 
-        //! \todo testExprF->update();
-        //! QVERIFY(testExprF->evaluate() == false);
+    //! \todo update(testExprF);
+    //! QVERIFY(evaluate(testExprF) == false);
 
-        testExprG->update();
-        QVERIFY(testExprG->evaluate() == false);
+    update(testExprG);
+    QVERIFY(evaluate(testExprG) == false);
 
-        // update node's value again
-        localImpulseAddress->pushValue(&p);
-        localBoolAddress->pushValue(&b);
-        localIntAddress->pushValue(&i);
-        localFloatAddress->pushValue(&f);
-        localStringAddress->pushValue(&s);
-        //! \todo localDestinationAddress->pushValue(&d);
-        localTupleAddress->pushValue(&t);
+    // update node's value again
+    localImpulseAddress->pushValue(p);
+    localBoolAddress->pushValue(b);
+    localIntAddress->pushValue(i);
+    localFloatAddress->pushValue(f);
+    localStringAddress->pushValue(s);
+    //! \todo localDestinationAddress->pushValue(d);
+    localTupleAddress->pushValue(t);
 
-        // evaluate expressions after Destination value updates
-        QVERIFY(testExprA->evaluate() == true);
-        QVERIFY(testExprB->evaluate() == true);
-        QVERIFY(testExprC->evaluate() == true);
-        QVERIFY(testExprD->evaluate() == true);
-        QVERIFY(testExprE->evaluate() == true);
-        //! \todo QVERIFY(testExprF->evaluate() == true);
-        QVERIFY(testExprG->evaluate() == true);
+    // evaluate expressions after Destination value updates
+    QVERIFY(evaluate(testExprA) == true);
+    QVERIFY(evaluate(testExprB) == true);
+    QVERIFY(evaluate(testExprC) == true);
+    QVERIFY(evaluate(testExprD) == true);
+    QVERIFY(evaluate(testExprE) == true);
+    //! \todo QVERIFY(evaluate(testExprF) == true);
+    QVERIFY(evaluate(testExprG) == true);
 
-        //! \todo test clone()
-    }
+    //! \todo test clone()
+  }
 
-    /*! test comparison operator */
-    void test_comparison()
-    {
-        // Local device
-        auto local_protocol = Local::create();
-        auto device = Device::create(local_protocol, "test");
+  /*! test comparison operator */
+  void test_comparison()
+  {
+    // Local device
+    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
 
-        // Local tree building
-        auto localNode1 = *(device->emplace(device->children().cend(), "my_node.1"));
-        auto localNode2 = *(device->emplace(device->children().cend(), "my_node.2"));
+    // Local tree building
+    auto localNode1 = device.createChild("my_node.1");
+    auto localNode2 = device.createChild("my_node.2");
 
-        auto testExprA = ExpressionPulse::create(new Destination(localNode1));
-        auto testExprB = ExpressionPulse::create(new Destination(localNode2));
-        auto testExprC = ExpressionPulse::create(new Destination(localNode1));
+    auto testExprA = make_expression_pulse(Destination(*localNode1));
+    auto testExprB = make_expression_pulse(Destination(*localNode2));
+    auto testExprC = make_expression_pulse(Destination(*localNode1));
 
-        QVERIFY(*ExpressionFalse != *testExprA);
-        QVERIFY(*ExpressionTrue != *testExprA);
+    QVERIFY(expressions::expression_false != *testExprA);
+    QVERIFY(expressions::expression_true != *testExprA);
 
-        QVERIFY(*testExprA != *testExprB);
-        QVERIFY(*testExprA == *testExprC);
-        QVERIFY(*testExprB != *testExprC);
-    }
+    QVERIFY(*testExprA != *testExprB);
+    QVERIFY(*testExprA == *testExprC);
+    QVERIFY(*testExprB != *testExprC);
+  }
 
-    /*! test callback managment */
-    void test_callback()
-    {
-        /*
-        // Local device
-        auto local_protocol = Local::create();
-        auto device = Device::create(local_protocol, "test");
+  /*! test callback managment */
+  void test_callback()
+  {/* TODO
+    // Local device
+    impl::BasicDevice device{std::make_unique<ossia::net::Local2>(), "test"};
 
-        auto localIntNode = *(device->emplace(device->children().cend(), "my_int.1"));
-        auto localIntAddress = localIntNode->createAddress(Type::INT);
+    auto localIntNode = device.createChild("my_int.1");
+    auto localIntAddress = localIntNode->createAddress(Type::INT);
 
-        auto testExpr = ExpressionPulse::create(new Destination(localIntNode));
+    auto testExpr = make_expression_pulse(Destination(*localIntNode));
 
-        auto callback = [&] (bool b) { result_callback(b); };
-        auto callback_index = testExpr->addCallback(callback);
+    auto callback = [&] (bool b) { result_callback(b); };
+    auto callback_index = testExpr->addCallback(callback);
 
-        QVERIFY(testExpr->callbacks().size() == 1);
+    QVERIFY(testExpr->callbacks().size() == 1);
 
-        m_result = false;
-        m_result_callback_called = false;
+    m_result = false;
+    m_result_callback_called = false;
 
-        Int i1(5);
-        localIntAddress1->pushValue(&i1);
+    Int i1(5);
+    localIntAddress1->pushValue(i1);
 
-        QVERIFY(m_result_callback_called == true && m_result == false);
+    QVERIFY(m_result_callback_called == true && m_result == false);
 
-        m_result = false;
-        m_result_callback_called = false;
+    m_result = false;
+    m_result_callback_called = false;
 
-        Int i2(5);
-        localIntAddress2->pushValue(&i2);
+    Int i2(5);
+    localIntAddress2->pushValue(i2);
 
-        QVERIFY(m_result_callback_called == true && m_result == true);
+    QVERIFY(m_result_callback_called == true && m_result == true);
 
-        testExpr->removeCallback(callback_index);
+    testExpr->removeCallback(callback_index);
 
-        QVERIFY(testExpr->callbacks().size() == 0);
+    QVERIFY(testExpr->callbacks().size() == 0);
 
-        m_result = false;
-        m_result_callback_called = false;
+    m_result = false;
+    m_result_callback_called = false;
 
-        Int i3(10);
-        localIntAddress2->pushValue(&i3);
+    Int i3(10);
+    localIntAddress2->pushValue(i3);
 
-        QVERIFY(m_result_callback_called == false && m_result == false);
-        */
-    }
+    QVERIFY(m_result_callback_called == false && m_result == false);
+    */
+  }
 };
 
 QTEST_APPLESS_MAIN(ExpressionPulseTest)

@@ -1,19 +1,19 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/ossia.hpp>
 #include <iostream>
 #include "Random.hpp"
 #include <thread>
 #include <atomic>
 #include <boost/range/algorithm/find_if.hpp>
 Random r;
-using namespace OSSIA;
+using namespace ossia;
 
 std::atomic<int> num_received{0};
 OSSIA::Node* createNodeFromPath(
         const std::vector<std::string> &path,
         OSSIA::Device *dev)
 {
-    using namespace OSSIA;
+    using namespace ossia;
     // Find the relevant node to add in the device
     OSSIA::Node* node = dev;
     for(int i = 0; i < path.size(); i++)

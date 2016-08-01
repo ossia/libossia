@@ -1,218 +1,163 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/ossia.hpp>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
+using namespace ossia::expressions;
 using namespace std::placeholders;
 
 class ExpressionCompositionTest : public QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 
-    bool m_result;
-    bool m_result_callback_called;
+  bool m_result;
+  bool m_result_callback_called;
 
-    void result_callback(bool result)
-    {
-        m_result = result;
-        m_result_callback_called = true;
-    }
+  void result_callback(bool result)
+  {
+    m_result = result;
+    m_result_callback_called = true;
+  }
+
+  auto make_exprA()
+  { return make_expression_atom(Bool(true), expression_atom::Comparator::EQUAL, Bool(true)); }
+  auto make_exprB()
+  { return make_expression_atom(Bool(false), expression_atom::Comparator::EQUAL, Bool(false)); }
+  auto make_exprC()
+  { return make_expression_atom(Bool(false), expression_atom::Comparator::DIFFERENT, Bool(false)); }
 
 private Q_SLOTS:
 
-    /*! test AND operator */
-    void test_AND()
-    {
-        auto exprA = ExpressionAtom::create(new Bool(true),
-                                            ExpressionAtom::Operator::EQUAL,
-                                            new Bool(true));
+  /*! test AND operator */
+  void test_AND()
+  {
+    auto composition1 = make_expression_composition(
+          make_exprA(), expression_composition::Operator::AND, make_exprB());
+    QVERIFY(evaluate(composition1) == true);
 
-        auto exprB = ExpressionAtom::create(new Bool(false),
-                                            ExpressionAtom::Operator::EQUAL,
-                                            new Bool(false));
+    auto composition2 = make_expression_composition(
+          make_exprA(), expression_composition::Operator::AND, make_exprC());
 
-        auto exprC = ExpressionAtom::create(new Bool(false),
-                                            ExpressionAtom::Operator::DIFFERENT,
-                                            new Bool(false));
+    QVERIFY(evaluate(composition2) == false);
 
-        auto composition1 = ExpressionComposition::create(exprA,
-                                                          ExpressionComposition::Operator::AND,
-                                                          exprB);
-        QVERIFY(composition1 != nullptr);
-        QVERIFY(composition1->getType() == Expression::Type::COMPOSITION);
-        QVERIFY(composition1->evaluate() == true);
+    //! \todo test clone()
+  }
 
-        auto composition2 = ExpressionComposition::create(exprA,
-                                                          ExpressionComposition::Operator::AND,
-                                                          exprC);
-        QVERIFY(composition2 != nullptr);
-        QVERIFY(composition2->getType() == Expression::Type::COMPOSITION);
-        QVERIFY(composition2->evaluate() == false);
+  /*! test OR operator */
+  void test_OR()
+  {
+    auto composition1 = make_expression_composition(make_exprA(),
+                                                    expression_composition::Operator::OR,
+                                                    make_exprB());
+    QVERIFY(evaluate(composition1) == true);
 
-        //! \todo test clone()
-    }
+    auto composition2 = make_expression_composition(make_exprA(),
+                                                    expression_composition::Operator::OR,
+                                                    make_exprC());
+    QVERIFY(evaluate(composition2) == true);
 
-    /*! test OR operator */
-    void test_OR()
-    {
-        auto exprA = ExpressionAtom::create(new Bool(true),
-                                            ExpressionAtom::Operator::EQUAL,
-                                            new Bool(true));
+    //! \todo test clone()
+  }
 
-        auto exprB = ExpressionAtom::create(new Bool(false),
-                                            ExpressionAtom::Operator::EQUAL,
-                                            new Bool(false));
+  /*! test XOR operator */
+  void test_XOR()
+  {
+    auto composition1 = make_expression_composition(make_exprA(),
+                                                    expression_composition::Operator::XOR,
+                                                    make_exprB());
+    QVERIFY(evaluate(composition1) == false);
 
-        auto exprC = ExpressionAtom::create(new Bool(false),
-                                            ExpressionAtom::Operator::DIFFERENT,
-                                            new Bool(false));
+    auto composition2 = make_expression_composition(make_exprA(),
+                                                    expression_composition::Operator::XOR,
+                                                    make_exprC());
+    QVERIFY(evaluate(composition2) == true);
 
-        auto composition1 = ExpressionComposition::create(exprA,
-                                                          ExpressionComposition::Operator::OR,
-                                                          exprB);
-        QVERIFY(composition1 != nullptr);
-        QVERIFY(composition1->getType() == Expression::Type::COMPOSITION);
-        QVERIFY(composition1->evaluate() == true);
+    //! \todo test clone()
+  }
 
-        auto composition2 = ExpressionComposition::create(exprA,
-                                                          ExpressionComposition::Operator::OR,
-                                                          exprC);
-        QVERIFY(composition2 != nullptr);
-        QVERIFY(composition2->getType() == Expression::Type::COMPOSITION);
-        QVERIFY(composition2->evaluate() == true);
+  /*! test comparison operator */
+  void test_comparison()
+  {
+    auto composition1 = make_expression_composition(make_exprA(),
+                                                    expression_composition::Operator::XOR,
+                                                    make_exprB());
+    auto composition2 = make_expression_composition(make_exprA(),
+                                                    expression_composition::Operator::XOR,
+                                                    make_exprC());
 
-        //! \todo test clone()
-    }
+    QVERIFY(expressions::expression_false != *composition1);
+    QVERIFY(expressions::expression_true != *composition1);
 
-    /*! test XOR operator */
-    void test_XOR()
-    {
-        auto exprA = ExpressionAtom::create(new Bool(true),
-                                            ExpressionAtom::Operator::EQUAL,
-                                            new Bool(true));
+    QVERIFY(*composition1 != *composition2);
+    QVERIFY(!(*composition1 == *composition2));
+  }
 
-        auto exprB = ExpressionAtom::create(new Bool(false),
-                                            ExpressionAtom::Operator::EQUAL,
-                                            new Bool(false));
+  /*! test callback managment */
+  void test_callback()
+  {
+    // Local device
+    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
 
-        auto exprC = ExpressionAtom::create(new Bool(false),
-                                            ExpressionAtom::Operator::DIFFERENT,
-                                            new Bool(false));
+    auto localIntNode1 = device.createChild("my_int.1");
+    auto localIntAddress1 = localIntNode1->createAddress(val_type::INT);
+    auto localIntNode2 = device.createChild("my_int.2");
+    auto localIntAddress2 = localIntNode2->createAddress(val_type::INT);
+    auto localIntNode3 = device.createChild("my_int.3");
+    auto localIntAddress3 = localIntNode3->createAddress(val_type::INT);
 
-        auto composition1 = ExpressionComposition::create(exprA,
-                                                          ExpressionComposition::Operator::XOR,
-                                                          exprB);
-        QVERIFY(composition1 != nullptr);
-        QVERIFY(composition1->getType() == Expression::Type::COMPOSITION);
-        QVERIFY(composition1->evaluate() == false);
+    auto testDestinationExprA = make_expression_atom(Destination(*localIntNode1),
+                                                     expression_atom::Comparator::LOWER_THAN,
+                                                     Destination(*localIntNode2));
 
-        auto composition2 = ExpressionComposition::create(exprA,
-                                                          ExpressionComposition::Operator::XOR,
-                                                          exprC);
-        QVERIFY(composition2 != nullptr);
-        QVERIFY(composition2->getType() == Expression::Type::COMPOSITION);
-        QVERIFY(composition2->evaluate() == true);
+    auto testDestinationExprB = make_expression_atom(Destination(*localIntNode2),
+                                                     expression_atom::Comparator::LOWER_THAN,
+                                                     Destination(*localIntNode3));
 
-        //! \todo test clone()
-    }
+    auto testDestinationComposition = make_expression_composition(std::move(testDestinationExprA),
+                                                                  expression_composition::Operator::AND,
+                                                                  std::move(testDestinationExprB));
 
-    /*! test comparison operator */
-    void test_comparison()
-    {
-        auto exprA = ExpressionAtom::create(new Bool(true),
-                                            ExpressionAtom::Operator::EQUAL,
-                                            new Bool(true));
+    expression_result_callback callback = std::bind(&ExpressionCompositionTest::result_callback, this, _1);
+    auto callback_index = add_callback(*testDestinationComposition, callback);
 
-        auto exprB = ExpressionAtom::create(new Bool(false),
-                                            ExpressionAtom::Operator::EQUAL,
-                                            new Bool(false));
+    QVERIFY(callback_count(*testDestinationComposition) == 1);
 
-        auto exprC = ExpressionAtom::create(new Bool(false),
-                                            ExpressionAtom::Operator::DIFFERENT,
-                                            new Bool(false));
+    m_result = false;
+    m_result_callback_called = false;
 
-        auto composition1 = ExpressionComposition::create(exprA,
-                                                          ExpressionComposition::Operator::XOR,
-                                                          exprB);
+    Int i1(5);
+    localIntAddress1->pushValue(i1);
 
-        auto composition2 = ExpressionComposition::create(exprA,
-                                                          ExpressionComposition::Operator::XOR,
-                                                          exprC);
+    QVERIFY(m_result_callback_called == true && m_result == false);
 
-        QVERIFY(*ExpressionFalse != *composition1);
-        QVERIFY(*ExpressionTrue != *composition1);
+    m_result = false;
+    m_result_callback_called = false;
 
-        QVERIFY(*composition1 != *composition2);
-        QVERIFY(!(*composition1 == *composition2));
-    }
+    Int i2(6);
+    localIntAddress2->pushValue(i2);
 
-    /*! test callback managment */
-    void test_callback()
-    {
-        // Local device
-        auto local_protocol = Local::create();
-        auto device = Device::create(local_protocol, "test");
+    QVERIFY(m_result_callback_called == true && m_result == false);
 
-        auto localIntNode1 = *(device->emplace(device->children().cend(), "my_int.1"));
-        auto localIntAddress1 = localIntNode1->createAddress(Type::INT);
-        auto localIntNode2 = *(device->emplace(device->children().cend(), "my_int.2"));
-        auto localIntAddress2 = localIntNode2->createAddress(Type::INT);
-        auto localIntNode3 = *(device->emplace(device->children().cend(), "my_int.3"));
-        auto localIntAddress3 = localIntNode3->createAddress(Type::INT);
+    m_result = false;
+    m_result_callback_called = false;
 
-        auto testDestinationExprA = ExpressionAtom::create(new Destination(localIntNode1),
-                                                           ExpressionAtom::Operator::LOWER_THAN,
-                                                           new Destination(localIntNode2));
+    Int i3(7);
+    localIntAddress3->pushValue(i3);
 
-        auto testDestinationExprB = ExpressionAtom::create(new Destination(localIntNode2),
-                                                           ExpressionAtom::Operator::LOWER_THAN,
-                                                           new Destination(localIntNode3));
+    QVERIFY(m_result_callback_called == true && m_result == true);
 
-        auto testDestinationComposition = ExpressionComposition::create(testDestinationExprA,
-                                                                        ExpressionComposition::Operator::AND,
-                                                                        testDestinationExprB);
+    remove_callback(*testDestinationComposition, callback_index);
 
-        ResultCallback callback = std::bind(&ExpressionCompositionTest::result_callback, this, _1);
-        auto callback_index = testDestinationComposition->addCallback(callback);
+    QVERIFY(callback_count(*testDestinationComposition) == 0);
 
-        QVERIFY(testDestinationComposition->callbacks().size() == 1);
+    m_result = false;
+    m_result_callback_called = false;
 
-        m_result = false;
-        m_result_callback_called = false;
+    Int i4(10);
+    localIntAddress2->pushValue(i4);
 
-        Int i1(5);
-        localIntAddress1->pushValue(&i1);
-
-        QVERIFY(m_result_callback_called == true && m_result == false);
-
-        m_result = false;
-        m_result_callback_called = false;
-
-        Int i2(6);
-        localIntAddress2->pushValue(&i2);
-
-        QVERIFY(m_result_callback_called == true && m_result == false);
-
-        m_result = false;
-        m_result_callback_called = false;
-
-        Int i3(7);
-        localIntAddress3->pushValue(&i3);
-
-        QVERIFY(m_result_callback_called == true && m_result == true);
-
-        testDestinationComposition->removeCallback(callback_index);
-
-        QVERIFY(testDestinationComposition->callbacks().size() == 0);
-
-        m_result = false;
-        m_result_callback_called = false;
-
-        Int i4(10);
-        localIntAddress2->pushValue(&i4);
-
-        QVERIFY(m_result_callback_called == false && m_result == false);
-    }
+    QVERIFY(m_result_callback_called == false && m_result == false);
+  }
 };
 
 QTEST_APPLESS_MAIN(ExpressionCompositionTest)

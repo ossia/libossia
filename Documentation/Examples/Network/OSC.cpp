@@ -12,23 +12,23 @@
 #include <memory>
 #include <functional>
 
-#include "Network/Address.h"
-#include "Network/Device.h"
-#include "Network/Protocol/OSC.h"
+#include <ossia/ossia.hpp>
 
-using namespace OSSIA;
+using namespace ossia;
+using namespace ossia::net;
 using namespace std;
 
-void printValueCallback(const Value * v);
-void printValue(const Value * v);
+void printValueCallback(const value& v);
+void printValue(const value& v);
 
 int main()
 {
-    // declare this program "P" as an OSC device
-    auto oscProtocol = OSC::create("127.0.0.1", 9996, 9997);
-    auto oscDevice = Device::create(oscProtocol, "P");
+  // declare this program "P" as an OSC device
+  ossia::net::generic_device device{
+    std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997),
+        "P"};
 
-    /* publish each feature of program "P" as address into a tree
+  /* publish each feature of program "P" as address into a tree
      /test
      /test/my_bang
      /test/my_bool
@@ -39,131 +39,56 @@ int main()
      /test/my_tuple
      */
 
-    auto oscTestNode = *(oscDevice->emplace(oscDevice->children().cend(), "test"));
+  auto oscTestNode = device.createChild("test");
 
-    auto oscImpulseNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_impulse"));
-    auto oscImpulseAddress = oscImpulseNode->createAddress(Type::IMPULSE);
-    oscImpulseAddress->addCallback(printValueCallback);
+  auto oscImpulseNode = oscTestNode->createChild("my_impulse");
+  auto oscImpulseAddress = oscImpulseNode->createAddress(val_type::IMPULSE);
+  oscImpulseAddress->add_callback(printValueCallback);
 
-    auto oscBoolNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_bool"));
-    auto oscBoolAddress = oscBoolNode->createAddress(Type::BOOL);
-    oscBoolAddress->addCallback(printValueCallback);
+  auto oscBoolNode = oscTestNode->createChild("my_bool");
+  auto oscBoolAddress = oscBoolNode->createAddress(val_type::BOOL);
+  oscBoolAddress->add_callback(printValueCallback);
 
-    auto oscIntNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_int"));
-    auto oscIntAddress = oscIntNode->createAddress(Type::INT);
-    oscIntAddress->addCallback(printValueCallback);
+  auto oscIntNode = oscTestNode->createChild("my_int");
+  auto oscIntAddress = oscIntNode->createAddress(val_type::INT);
+  oscIntAddress->add_callback(printValueCallback);
 
-    auto oscFloatNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_float"));
-    auto oscFloatAddress = oscFloatNode->createAddress(Type::FLOAT);
-    oscFloatAddress->addCallback(printValueCallback);
+  auto oscFloatNode = oscTestNode->createChild("my_float");
+  auto oscFloatAddress = oscFloatNode->createAddress(val_type::FLOAT);
+  oscFloatAddress->add_callback(printValueCallback);
 
-    auto oscStringNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_string"));
-    auto oscStringAddress = oscStringNode->createAddress(Type::STRING);
-    oscStringAddress->addCallback(printValueCallback);
+  auto oscStringNode = oscTestNode->createChild("my_string");
+  auto oscStringAddress = oscStringNode->createAddress(val_type::STRING);
+  oscStringAddress->add_callback(printValueCallback);
 
-    auto oscDestinationNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_destination"));
-    auto oscDestinationAddress = oscDestinationNode->createAddress(Type::DESTINATION);
-    oscDestinationAddress->addCallback(printValueCallback);
+  auto oscDestinationNode = oscTestNode->createChild("my_destination");
+  auto oscDestinationAddress = oscDestinationNode->createAddress(val_type::DESTINATION);
+  oscDestinationAddress->add_callback(printValueCallback);
 
-    auto oscTupleNode = *(oscTestNode->emplace(oscTestNode->children().cend(), "my_tuple"));
-    auto oscTupleAddress = oscTupleNode->createAddress(Type::TUPLE);
-    oscTupleAddress->addCallback(printValueCallback);
+  auto oscTupleNode = oscTestNode->createChild("my_tuple");
+  auto oscTupleAddress = oscTupleNode->createAddress(val_type::TUPLE);
+  oscTupleAddress->add_callback(printValueCallback);
 
-    // update tree value
-    Impulse n;
-    oscImpulseAddress->setValue(&n);
+  // update tree value
+  oscImpulseAddress->setValue(Impulse{});
 
-    Bool b(true);
-    oscBoolAddress->setValue(&b);
+  oscBoolAddress->setValue(Bool{true});
 
-    Int i(5);
-    oscIntAddress->setValue(&i);
+  oscIntAddress->setValue(Int{5});
 
-    Float f(0.5);
-    oscFloatAddress->setValue(&f);
+  oscFloatAddress->setValue(Float{0.5});
 
-    String s("hello world !");
-    oscStringAddress->setValue(&s);
+  oscStringAddress->setValue(String{"Hello world!"});
 
-    Destination d(oscFloatNode);
-    oscDestinationAddress->setValue(&d);
+  oscDestinationAddress->setValue(Destination{*oscFloatNode});
 
-    Tuple t = {new Float(0.1), new Float(0.2), new Float(0.3)};
-    oscTupleAddress->setValue(&t);
+  oscTupleAddress->setValue(Tuple{Float(0.1), Float(0.2), Float(0.3)});
 
-    while (true)
-        ;
+  while (true)
+    ;
 }
 
-void printValueCallback(const Value * v)
+void printValueCallback(const value& v)
 {
-    printValue(v);
-    cout << "\n";
-}
-
-void printValue(const Value * v)
-{
-    switch (v->getType())
-    {
-        case Type::IMPULSE :
-        {
-            cout << "-";
-            break;
-        }
-        case Type::BOOL :
-        {
-            Bool * b = (Bool*)v;
-            cout << b->value;
-            break;
-        }
-        case Type::INT :
-        {
-            Int * i = (Int*)v;
-            cout << i->value;
-            break;
-        }
-        case Type::FLOAT :
-        {
-            Float * f = (Float*)v;
-            cout << f->value;
-            break;
-        }
-        case Type::CHAR :
-        {
-            Char * c = (Char*)v;
-            cout << c->value;
-            break;
-        }
-        case Type::STRING :
-        {
-            String * s = (String*)v;
-            cout << s->value;
-            break;
-        }
-        case Type::DESTINATION :
-        {
-            Destination * d = (Destination*)v;
-            cout << d->value;
-            break;
-        }
-        case Type::TUPLE :
-        {
-            Tuple * t = (Tuple*)v;
-            bool first = true;
-            for (const auto & e : t->value)
-            {
-                if (!first) cout << " ";
-                printValue(e);
-                first = false;
-            }
-            break;
-        }
-        case Type::GENERIC :
-        {
-            // todo
-            break;
-        }
-        default:
-            break;
-    }
+  cout << "Callback: " << to_pretty_string(v) << "\n";
 }

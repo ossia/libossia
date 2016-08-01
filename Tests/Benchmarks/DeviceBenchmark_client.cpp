@@ -1,11 +1,11 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/ossia.hpp>
 #include <iostream>
 #include "Random.hpp"
 #include<thread>
 #include <boost/range/algorithm/find_if.hpp>
 Random r;
-using namespace OSSIA;
+using namespace ossia;
 
 std::shared_ptr<OSSIA::Node> goToRandomNode(
         const std::shared_ptr<OSSIA::Node>& root)

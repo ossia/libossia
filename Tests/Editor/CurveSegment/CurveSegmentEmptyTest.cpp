@@ -2,7 +2,7 @@
 #include "../../ForwardDeclaration.h"
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 
 class CurveSegmentEmptyTest : public QObject
 {
@@ -13,58 +13,36 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions for bool type */
     void test_bool()
     {
-        auto curve = Curve<double, bool>::create();
-        auto curveSegment = CurveSegmentEmpty<bool>::create(curve);
-        QVERIFY(curveSegment != nullptr);
+        curve_segment_empty<bool> curveSegment;
 
-        QVERIFY(curveSegment->getType() == CurveSegment<bool>::Type::EMPTY);
-        QVERIFY(curveSegment->getParent() == curve);
-
-        QVERIFY(curveSegment->valueAt(0., false, true) == false);
-        QVERIFY(curveSegment->valueAt(0.25, false, true) == false);
-        QVERIFY(curveSegment->valueAt(0.5, false, true) == false);
-        QVERIFY(curveSegment->valueAt(0.75, false, true) == false);
-        QVERIFY(curveSegment->valueAt(1., false, true) == false);
-
-        //! \todo test clone()
+        QVERIFY(curveSegment(0., false, true) == false);
+        QVERIFY(curveSegment(0.25, false, true) == false);
+        QVERIFY(curveSegment(0.5, false, true) == false);
+        QVERIFY(curveSegment(0.75, false, true) == false);
+        QVERIFY(curveSegment(1., false, true) == false);
     }
 
     /*! test life cycle and accessors functions for int type */
     void test_int()
     {
-        auto curve = Curve<double, int>::create();
-        auto curveSegment = CurveSegmentEmpty<int>::create(curve);
-        QVERIFY(curveSegment != nullptr);
+        curve_segment_empty<int> curveSegment;
 
-        QVERIFY(curveSegment->getType() == CurveSegment<int>::Type::EMPTY);
-        QVERIFY(curveSegment->getParent() == curve);
-
-        QVERIFY(curveSegment->valueAt(0., 0, 1) == 0);
-        QVERIFY(curveSegment->valueAt(0.25, 0, 1) == 0);
-        QVERIFY(curveSegment->valueAt(0.5, 0, 1) == 0);
-        QVERIFY(curveSegment->valueAt(0.75, 0, 1) == 0);
-        QVERIFY(curveSegment->valueAt(1., 0, 1) == 0);
-
-        //! \todo test clone()
+        QVERIFY(curveSegment(0., 0, 1) == 0);
+        QVERIFY(curveSegment(0.25, 0, 1) == 0);
+        QVERIFY(curveSegment(0.5, 0, 1) == 0);
+        QVERIFY(curveSegment(0.75, 0, 1) == 0);
+        QVERIFY(curveSegment(1., 0, 1) == 0);
     }
-    
+
     /*! test life cycle and accessors functions for float type */
     void test_float()
     {
-        auto curve = Curve<double, float>::create();
-        auto curveSegment = CurveSegmentEmpty<float>::create(curve);
-        QVERIFY(curveSegment != nullptr);
-
-        QVERIFY(curveSegment->getType() == CurveSegment<float>::Type::EMPTY);
-        QVERIFY(curveSegment->getParent() == curve);
-
-        QVERIFY(curveSegment->valueAt(0., 0., 1.) == 0.);
-        QVERIFY(curveSegment->valueAt(0.25, 0., 1.) == 0.);
-        QVERIFY(curveSegment->valueAt(0.5, 0., 1.) == 0.);
-        QVERIFY(curveSegment->valueAt(0.75, 0., 1.) == 0.);
-        QVERIFY(curveSegment->valueAt(1., 0., 1.) == 0.);
-
-        //! \todo test clone()
+        curve_segment_empty<float> curveSegment;
+        QVERIFY(curveSegment(0., 0., 1.) == 0.);
+        QVERIFY(curveSegment(0.25, 0., 1.) == 0.);
+        QVERIFY(curveSegment(0.5, 0., 1.) == 0.);
+        QVERIFY(curveSegment(0.75, 0., 1.) == 0.);
+        QVERIFY(curveSegment(1., 0., 1.) == 0.);
     }
 };
 

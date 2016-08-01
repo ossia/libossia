@@ -16,14 +16,14 @@
 #include "Editor/TimeEvent.h"
 #include "Editor/TimeNode.h"
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std;
 
-void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element);
+void main_constraint_callback(time_value position, time_value date, shared_ptr<StateElement> element);
 void main_start_event_callback(TimeEvent::Status newStatus);
 void main_end_event_callback(TimeEvent::Status newStatus);
 
-void loop_pattern_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element);
+void loop_pattern_constraint_callback(time_value position, time_value date, shared_ptr<StateElement> element);
 void loop_pattern_start_event_callback(TimeEvent::Status newStatus);
 void loop_pattern_end_event_callback(TimeEvent::Status newStatus);
 
@@ -42,7 +42,7 @@ int main()
     auto main_start_event = *(start_node->emplace(start_node->timeEvents().begin(), &main_start_event_callback));
     auto main_end_event = *(end_node->emplace(end_node->timeEvents().begin(), &main_end_event_callback));
 
-    TimeValue main_duration(2000.);
+    time_value main_duration(2000.);
     auto main_constraint = TimeConstraint::create(main_constraint_callback, main_start_event, main_end_event, main_duration);
     
     main_constraint->setGranularity(10.);
@@ -75,7 +75,7 @@ int main()
         ;
 }
 
-void main_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
+void main_constraint_callback(time_value position, time_value date, shared_ptr<StateElement> element)
 {
     cout << "Main Constraint : " << double(position) << ", " << double(date) << endl;
 }
@@ -90,7 +90,7 @@ void main_end_event_callback(TimeEvent::Status newStatus)
     print_event_status(newStatus, "Main End");
 }
 
-void loop_pattern_constraint_callback(const TimeValue& position, const TimeValue& date, shared_ptr<StateElement> element)
+void loop_pattern_constraint_callback(time_value position, time_value date, shared_ptr<StateElement> element)
 {
     cout << "Loop Constraint : " << double(position) << ", " << double(date) << endl;
 }

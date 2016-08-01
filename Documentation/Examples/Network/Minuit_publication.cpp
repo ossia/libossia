@@ -12,24 +12,22 @@
 #include <memory>
 #include <functional>
 
-#include "Network/Address.h"
-#include "Network/Device.h"
-#include "Network/Protocol/Local.h"
-#include "Network/Protocol/Minuit.h"
+#include <ossia/ossia.hpp>
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std;
 
-void printValueCallback(const Value * v);
-void printValue(const Value * v);
+void printValueCallback(const value& v);
+void printValue(const value& v);
 
 int main()
 {
-    // declare this program "B" as Local device
-    auto localProtocol = Local::create();
-    auto localDevice = Device::create(localProtocol, "B");
+  auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
+  ossia::net::local_protocol& local_proto = *local_proto_ptr;
+  // declare this program "B" as Local device
+  ossia::net::generic_device device{std::move(local_proto_ptr), "B"};
 
-    /* publish each feature of program "B" as address into a tree
+  /* publish each feature of program "B" as address into a tree
      /test
      /test/my_bang
      /test/my_bool
@@ -41,136 +39,58 @@ int main()
      */
 
 
-    auto localTestNode = *(localDevice->emplace(localDevice->children().cend(), "test"));
+  auto localTestNode = device.createChild("test");
 
-    auto localImpulseNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_impulse"));
-    auto localImpulseAddress = localImpulseNode->createAddress(Type::IMPULSE);
-    localImpulseAddress->addCallback(printValueCallback);
+  auto localImpulseNode = localTestNode->createChild("my_impulse");
+  auto localImpulseAddress = localImpulseNode->createAddress(val_type::IMPULSE);
+  localImpulseAddress->add_callback(printValueCallback);
 
-    auto localBoolNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_bool"));
-    auto localBoolAddress = localBoolNode->createAddress(Type::BOOL);
-    localBoolAddress->addCallback(printValueCallback);
+  auto localBoolNode = localTestNode->createChild("my_bool");
+  auto localBoolAddress = localBoolNode->createAddress(val_type::BOOL);
+  localBoolAddress->add_callback(printValueCallback);
 
-    auto localIntNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_int"));
-    auto localIntAddress = localIntNode->createAddress(Type::INT);
-    localIntAddress->addCallback(printValueCallback);
+  auto localIntNode = localTestNode->createChild("my_int");
+  auto localIntAddress = localIntNode->createAddress(val_type::INT);
+  localIntAddress->add_callback(printValueCallback);
 
-    auto localFloatNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_float"));
-    auto localFloatAddress = localFloatNode->createAddress(Type::FLOAT);
-    localFloatAddress->addCallback(printValueCallback);
+  auto localFloatNode = localTestNode->createChild("my_float");
+  auto localFloatAddress = localFloatNode->createAddress(val_type::FLOAT);
+  localFloatAddress->add_callback(printValueCallback);
 
-    auto localStringNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_string"));
-    auto localStringAddress = localStringNode->createAddress(Type::STRING);
-    localStringAddress->addCallback(printValueCallback);
+  auto localStringNode = localTestNode->createChild("my_string");
+  auto localStringAddress = localStringNode->createAddress(val_type::STRING);
+  localStringAddress->add_callback(printValueCallback);
 
-    auto localDestinationNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_destination"));
-    auto localDestinationAddress = localDestinationNode->createAddress(Type::DESTINATION);
-    localDestinationAddress->addCallback(printValueCallback);
+  // auto localDestinationNode = localTestNode->createChild("my_destination");
+  // auto localDestinationAddress = localDestinationNode->createAddress(val_type::DESTINATION);
+  // localDestinationAddress->addCallback(printValueCallback);
 
-    auto localTupleNode = *(localTestNode->emplace(localTestNode->children().cend(), "my_tuple"));
-    auto localTupleAddress = localTupleNode->createAddress(Type::TUPLE);
-    localTupleAddress->addCallback(printValueCallback);
+  auto localTupleNode = localTestNode->createChild("my_tuple");
+  auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
+  localTupleAddress->add_callback(printValueCallback);
 
-    // update tree value
-    Impulse n;
-    localImpulseAddress->pushValue(&n);
+  // update tree value
+  localImpulseAddress->pushValue(Impulse{});
+  localBoolAddress->pushValue(Bool{true});
+  localIntAddress->pushValue(Int{123});
+  localFloatAddress->pushValue(Float{0.5});
+  localStringAddress->pushValue(String{"hello world !"});
 
-    Bool b(true);
-    localBoolAddress->pushValue(&b);
+  // FIXME
+  // Destination d(localFloatNode);
+  // localDestinationAddress->pushValue(&d);
 
-    Int i(5);
-    localIntAddress->pushValue(&i);
+  localTupleAddress->pushValue(Tuple{Float(0.1), Float(0.2), Float(0.3)});
 
-    Float f(0.5);
-    localFloatAddress->pushValue(&f);
+  // declare a distant program as a Minuit device
+  local_proto.exposeTo(std::make_unique<net::minuit_protocol>("B", "127.0.0.1", 9999, 6666));
 
-    String s("hello world !");
-    localStringAddress->pushValue(&s);
-
-    // FIXME
-    // Destination d(localFloatNode);
-    // localDestinationAddress->pushValue(&d);
-
-    Tuple t = {new Float(0.1), new Float(0.2), new Float(0.3)};
-    localTupleAddress->pushValue(&t);
-
-    // declare a distant program "A" as a Minuit device
-    auto minuitProtocol = Minuit::create("127.0.0.1", 9999, 6666);
-    auto minuitDevice = Device::create(minuitProtocol, "A");
-
-    while (true)
-        ;
+  while (true)
+    ;
 }
 
-void printValueCallback(const Value * v)
+void printValueCallback(const value& v)
 {
-    printValue(v);
-    cout << "\n";
+  cerr << "Callback: " << to_pretty_string(v) << "\n";
 }
 
-void printValue(const Value * v)
-{
-    switch (v->getType())
-    {
-        case Type::IMPULSE :
-        {
-            cout << "-";
-            break;
-        }
-        case Type::BOOL :
-        {
-            Bool * b = (Bool*)v;
-            cout << b->value;
-            break;
-        }
-        case Type::INT :
-        {
-            Int * i = (Int*)v;
-            cout << i->value;
-            break;
-        }
-        case Type::FLOAT :
-        {
-            Float * f = (Float*)v;
-            cout << f->value;
-            break;
-        }
-        case Type::CHAR :
-        {
-            Char * c = (Char*)v;
-            cout << c->value;
-            break;
-        }
-        case Type::STRING :
-        {
-            String * s = (String*)v;
-            cout << s->value;
-            break;
-        }
-        case Type::DESTINATION :
-        {
-            Destination * d = (Destination*)v;
-            cout << d->value;
-            break;
-        }
-        case Type::TUPLE :
-        {
-            Tuple * t = (Tuple*)v;
-            bool first = true;
-            for (const auto & e : t->value)
-            {
-                if (!first) cout << " ";
-                printValue(e);
-                first = false;
-            }
-            break;
-        }
-        case Type::GENERIC :
-        {
-            // todo
-            break;
-        }
-        default:
-            break;
-    }
-}

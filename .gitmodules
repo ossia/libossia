@@ -8,3 +8,9 @@
 [submodule "3rdparty/variant"]
 	path = 3rdparty/variant
 	url = https://github.com/eggs-cpp/variant
+[submodule "3rdparty/oscpack"]
+	path = 3rdparty/oscpack
+	url = https://github.com/jcelerier/oscpack
+[submodule "3rdparty/nano-signal-slot"]
+	path = 3rdparty/nano-signal-slot
+	url = https://github.com/jcelerier/nano-signal-slot

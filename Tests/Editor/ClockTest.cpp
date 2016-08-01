@@ -1,10 +1,10 @@
 #include <QtTest>
-#include "../ForwardDeclaration.h"
+#include <ossia/ossia.hpp>
 #include <functional>
 #include <thread>
 #include <iostream>
 
-using namespace OSSIA;
+using namespace ossia;
 using namespace std::chrono;
 using namespace std::placeholders;
 
@@ -12,18 +12,18 @@ class ClockTest : public QObject
 {
     Q_OBJECT
 
-    std::vector<TimeValue> m_clock_positions;
-    std::vector<TimeValue> m_clock_dates;
+    std::vector<time_value> m_clock_positions;
+    std::vector<time_value> m_clock_dates;
     int m_dropped_ticks;
 
     steady_clock::time_point m_clock_start_date;
     steady_clock::time_point m_clock_end_date;
 
-    TimeValue m_last_frame_duration;
+    time_value m_last_frame_duration;
 
     bool display_frames = false;
 
-    void clock_callback_light(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks)
+    void clock_callback_light(time_value position, time_value date, unsigned char droppedTicks)
     {
         steady_clock::time_point frame_start_date = steady_clock::now();
 
@@ -38,7 +38,7 @@ class ClockTest : public QObject
             m_last_frame_duration = duration_cast<microseconds>(steady_clock::now() - frame_start_date).count();
     }
 
-    void clock_callback_heavy(const TimeValue& position, const TimeValue& date, unsigned char droppedTicks)
+    void clock_callback_heavy(time_value position, time_value date, unsigned char droppedTicks)
     {
         steady_clock::time_point frame_start_date = steady_clock::now();
 
@@ -50,7 +50,7 @@ class ClockTest : public QObject
             std::cout << m_clock_positions.size() << " : " << (double)date << ", " << m_dropped_ticks << ", " << m_clock_positions.size() + m_dropped_ticks << std::endl;
 
         // an heavy processing ...
-        long r;
+        long r = 0;
         for (int i = 0; i < 1000; i++)
             for (int j = 0; j < 1000; j++)
                 r++;
@@ -59,11 +59,11 @@ class ClockTest : public QObject
             m_last_frame_duration = duration_cast<microseconds>(steady_clock::now() - frame_start_date).count();
     }
 
-    void make_clock_test(const TimeValue& duration,
-                         const TimeValue& granularity,
-                         const TimeValue& offset,
+    void make_clock_test(time_value duration,
+                         time_value granularity,
+                         time_value offset,
                          float speed,
-                         Clock::ExecutionCallback callback,
+                         clock::ExecutionCallback callback,
                          bool display = false)
     {
         display_frames = display;
@@ -74,7 +74,7 @@ class ClockTest : public QObject
             std::cout << std::endl;
 
         // setup clock
-        auto clock = Clock::create(callback, duration, granularity, offset, speed);
+        auto clock = clock::create(callback, duration, granularity, offset, speed);
 
         // clear frame vectors
         m_clock_positions.clear();
@@ -117,7 +117,7 @@ class ClockTest : public QObject
         QVERIFY(effective_duration <= expected_duration + (granularity * speed * 1000));
 
         // ckeck frame info
-        QVERIFY(effective_nbFrame == expected_nbFrame);
+        QCOMPARE(effective_nbFrame, expected_nbFrame);
         QVERIFY(m_clock_positions[effective_nbFrame-1] >= One);
         QVERIFY(m_clock_dates[0] == floor(offset / (granularity*speed)) * (granularity * speed));
         QVERIFY(m_clock_dates[1] >= (floor(offset / (granularity*speed)) + 1) * (granularity*speed));
@@ -136,12 +136,12 @@ class ClockTest : public QObject
     }
 
 private Q_SLOTS:
-    
+
     /*! test life cycle and accessors functions */
     void test_basic()
     {
         auto callback = std::bind(&ClockTest::clock_callback_light, this, _1, _2, _3);
-        auto clock = Clock::create(callback);
+        auto clock = clock::create(callback);
 
         QVERIFY(clock->getDuration() == Infinite);
         QVERIFY(clock->getGranularity() == 10.);
@@ -164,7 +164,7 @@ private Q_SLOTS:
 
         //! \todo test clone()
     }
-    
+
     /*! test execution functions */
     //! \todo test stop()
     //! \todo test pause()
@@ -242,7 +242,7 @@ private Q_SLOTS:
 
         // setup clock
         auto callback = std::bind(&ClockTest::clock_callback_light, this, _1, _2, _3);
-        auto clock = Clock::create(callback, 100., 10., 0., 1.);
+        auto clock = clock::create(callback, 100., 10., 0., 1.);
 
         // clear frame vectors
         m_clock_positions.clear();
@@ -271,9 +271,7 @@ private Q_SLOTS:
         QVERIFY(clock->getRunning() == true);
 
         // wait the clock to pass 80 ms
-        while (clock->getDate() < 80.)
-            ;
-
+        while (clock->getDate() < 80.) ;
         // then stop
         clock->stop();
         QVERIFY(clock->getRunning() == false);
