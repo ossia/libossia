@@ -25,7 +25,7 @@ generic_address::generic_address(const ossia::net::node_base& node)
 
 generic_address::~generic_address()
 {
-  mCallbacks.clear();
+  callback_container<value_callback>::clear();
 }
 
 const ossia::net::node_base& generic_address::getNode() const

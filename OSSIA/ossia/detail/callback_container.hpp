@@ -35,13 +35,6 @@ public:
 
   /*! get callback functions
    \return #CallbackList */
-  impl& callbacks()
-  {
-    return mCallbacks;
-  }
-
-  /*! get callback functions
-   \return #CallbackList */
   const impl& callbacks() const
   {
     return mCallbacks;
@@ -90,6 +83,8 @@ protected:
   virtual void onRemovingLastCallback()
   {
   }
+
+private:
   impl mCallbacks;
 };
 

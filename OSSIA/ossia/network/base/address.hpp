@@ -52,9 +52,7 @@ public:
   virtual address_base& setBoundingMode(bounding_mode) = 0;
 
   virtual repetition_filter getRepetitionFilter() const = 0;
-  virtual address_base&
-      setRepetitionFilter(repetition_filter = repetition_filter::ON)
-      = 0;
+  virtual address_base& setRepetitionFilter(repetition_filter = repetition_filter::ON) = 0;
 
   virtual const std::string& getTextualAddress() const = 0;
 };
