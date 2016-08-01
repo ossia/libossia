@@ -8,6 +8,15 @@ env:
   - BUILD_TYPE=Debug
   - BUILD_TYPE=Release
 
+branches:
+  except:
+    - gh-pages
+
+env:
+  global:
+    - GH_REPO_NAME: API
+    - GH_REPO_REF: github.com/OSSIA/API.git
+
 osx_image: xcode7.2
 dist: trusty
 sudo: required

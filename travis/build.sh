@@ -24,12 +24,12 @@ case "$TRAVIS_OS_NAME" in
     export LD_LIBRARY_PATH="/usr/lib64:$LD_LIBRARY_PATH"
     case "$BUILD_TYPE" in
       Debug)
-        $CMAKE_BIN -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$OSSIA_STATIC -DOSSIA_SANITIZE=1 -DOSSIA_TESTING=1 -DOSSIA_EXAMPLES=1 ..
+        $CMAKE_BIN -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$OSSIA_STATIC -DOSSIA_SANITIZE=1 -DOSSIA_TESTING=1 -DOSSIA_EXAMPLES=1 -DOSSIA_CI=1 ..
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target ExperimentalTest
       ;;
       Release)
-        $CMAKE_BIN -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$OSSIA_STATIC -DOSSIA_SANITIZE=1 -DOSSIA_TESTING=1 -DOSSIA_EXAMPLES=1 ..
+        $CMAKE_BIN -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$OSSIA_STATIC -DOSSIA_SANITIZE=1 -DOSSIA_TESTING=1 -DOSSIA_EXAMPLES=1 -DOSSIA_CI=1 ..
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target ExperimentalTest
       ;;
@@ -41,7 +41,34 @@ case "$TRAVIS_OS_NAME" in
         coveralls-lcov coverage.info
       ;;
       Docs)
+        sudo apt-get install -qq doxygen doxygen-doc doxygen-latex doxygen-gui graphviz
         cd ../Documentation/Doxygen
+
+        doxygen 2>&1 | tee doxygen.log
+        (
+            # inspired from generateDocumentationAndDeploy.sh, Jeroen de Bruijn
+            git clone -b gh-pages https://git@$GH_REPO_REF
+            cd $GH_REPO_NAME
+
+            # Set the push default to simple i.e. push only the current branch.
+            git config --global push.default simple
+            # Pretend to be an user called Travis CI.
+            git config user.name "Travis CI"
+            git config user.email "travis@travis-ci.org"
+
+            rm -rf *
+
+            echo "" > .nojekyll
+            mv ../html .
+
+            if [ -d "html" ] && [ -f "html/index.html" ]; then
+                git add --all
+                git commit -m "Deploy code docs to GitHub Pages Travis build: ${TRAVIS_BUILD_NUMBER}" -m "Commit: ${TRAVIS_COMMIT}"
+                git push --force "https://${GH_REPO_TOKEN}@${GH_REPO_REF}" > /dev/null 2>&1
+            fi
+
+        )
+
         doxygen
       ;;
     esac
