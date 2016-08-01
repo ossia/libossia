@@ -67,7 +67,7 @@ public:
   virtual value cloneValue(destination_index = {}) const = 0;
   virtual address_base& setValue(const value&) = 0;
 
-  value fetchValue() const
+  value fetchValue()
   {
     pullValue();
     return cloneValue();
