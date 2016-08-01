@@ -1,5 +1,6 @@
 #include "Mapper_impl.hpp"
 #include <ossia/editor/curve/detail/Curve_impl.hpp>
+#include <ossia/editor/exceptions.hpp>
 #include <iostream>
 
 namespace ossia
@@ -25,7 +26,8 @@ mapper_impl::~mapper_impl()
 ossia::state_element mapper_impl::offset(ossia::time_value offset)
 {
   if (parent->getRunning())
-    throw std::runtime_error("parent time constraint is running");
+    throw execution_error("mapper_impl::offset: "
+                           "parent time constraint is running");
 
   return {}; // TODO why not state ?
 }
@@ -34,7 +36,8 @@ ossia::state_element mapper_impl::state()
 {
   auto& par = *parent;
   if (!par.getRunning())
-    throw std::runtime_error("parent time constraint is not running");
+    throw execution_error("mapper_impl::state: "
+                          "parent time constraint is not running");
 
   // if date hasn't been processed already
   ossia::time_value date = par.getDate();
@@ -193,7 +196,8 @@ ossia::value mapper_impl::computeValue(
         case ossia::curve_segment_type::DOUBLE:
           break;
       }
-      throw std::runtime_error("none handled driver value type");
+      throw invalid_value_type_error("mapper_impl::computeValue: "
+                                     "base_curve->getType() is incorrect");
 
       break;
     }
@@ -202,17 +206,15 @@ ossia::value mapper_impl::computeValue(
     {
       auto& t_drive = drive.get<ossia::Tuple>();
 
-      if (driver.getType() == ossia::val_type::TUPLE)
+      if (auto t_driver = driver.try_get<ossia::Tuple>())
       {
-        auto& t_driver = driver.get<ossia::Tuple>();
-
         std::vector<ossia::value> t_value;
         t_value.reserve(t_drive.value.size());
-        auto it_driver = t_driver.value.begin();
+        auto it_driver = t_driver->value.begin();
 
         for (const auto& e_drive : t_drive.value)
         {
-          if (it_driver == t_driver.value.end())
+          if (it_driver == t_driver->value.end())
             break;
 
           t_value.push_back(computeValue(*it_driver, e_drive));
@@ -224,12 +226,11 @@ ossia::value mapper_impl::computeValue(
     }
 
     default:
-    {
-      throw std::runtime_error("none handled drive value type");
-    }
+      break;
   }
 
-  throw std::runtime_error("none handled drive value type");
+  throw invalid_value_type_error("mapper_impl::computeValue: "
+                                 "drive.getType() is neither BEHAVIOR nor TUPLE");
 }
 
 void mapper_impl::driverValueCallback(const ossia::value& value)

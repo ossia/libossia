@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/editor/value/value.hpp>
+#include <ossia/network/exceptions.hpp>
 #include <boost/utility/string_ref.hpp>
 #include <exception>
 #include <unordered_map>
@@ -108,21 +109,24 @@ inline boost::string_ref to_minuit_type_text(const ossia::value& val)
     {
       return "array";
     }
-    boost::string_ref operator()(const ossia::Destination& d) const
-    {
-      throw std::runtime_error("Invalid type");
-    }
-    boost::string_ref operator()(const ossia::Behavior&) const
-    {
-      throw std::runtime_error("Invalid type");
-    }
     boost::string_ref operator()(const ossia::Tuple& t) const
     {
       return "array";
     }
+    boost::string_ref operator()(const ossia::Destination& d) const
+    {
+      throw invalid_value_type_error("to_minuit_type_text: "
+                                     "Trying to send Destination value");
+    }
+    boost::string_ref operator()(const ossia::Behavior&) const
+    {
+      throw invalid_value_type_error("to_minuit_type_text: "
+                                     "Trying to send Behavior value");
+    }
     boost::string_ref operator()() const
     {
-      throw std::runtime_error("Invalid value");
+      throw invalid_value_type_error("to_minuit_type_text: "
+                                     "Trying to send null value");
     }
   };
 
@@ -151,7 +155,7 @@ inline boost::string_ref to_minuit_type_text(ossia::val_type val)
     case val_type::TUPLE:
       return "array";
     default:
-      throw std::runtime_error("Invalid type");
+      throw invalid_value_type_error("to_minuit_type_text: Invalid type");
   }
 }
 
@@ -216,7 +220,7 @@ inline boost::string_ref to_minuit_service_text(ossia::access_mode acc)
     case ossia::access_mode::SET:
       return "message";
     default:
-      throw std::runtime_error("Invalid access mode");
+      throw parse_error("to_minuit_service_text: Invalid access mode");
   }
 }
 
@@ -231,7 +235,7 @@ inline ossia::access_mode from_minuit_service_text(boost::string_ref str)
     case 'm':
       return ossia::access_mode::SET;
     default:
-      throw std::runtime_error("Invalid access mode");
+      throw parse_error("from_minuit_service_text: Invalid access mode");
   }
 }
 
@@ -248,7 +252,7 @@ inline boost::string_ref to_minuit_bounding_text(ossia::bounding_mode b)
     case ossia::bounding_mode::FOLD:
       return "fold";
     default:
-      throw std::runtime_error("Invalid bounding mode");
+      throw parse_error("to_minuit_bounding_text: Invalid bounding mode");
   }
 }
 
@@ -265,7 +269,7 @@ inline ossia::bounding_mode from_minuit_bounding_text(boost::string_ref str)
     case 'f': // fold
       return ossia::bounding_mode::FOLD;
     default:
-      throw std::runtime_error("Invalid bounding mode");
+      throw parse_error("from_minuit_bounding_text: Invalid bounding mode");
   }
 }
 
@@ -308,7 +312,7 @@ inline boost::string_ref to_minuit_attribute_text(minuit_attribute str)
     case minuit_attribute::RampFunctionParameters:
       return "rampFunctionParameters";
     default:
-      throw std::runtime_error("unhandled attribute");
+      throw parse_error("to_minuit_attribute_text: unhandled attribute");
   }
 }
 
@@ -340,7 +344,7 @@ inline minuit_attribute get_attribute(boost::string_ref str)
   if (it != attribute_unordered_map.end())
     return it->second;
   else
-    throw std::runtime_error("unhandled attribute");
+    throw parse_error("get_attribute: unhandled attribute");
 }
 
 inline minuit_command get_command(char str)
@@ -352,7 +356,7 @@ inline minuit_command get_command(char str)
     case '!':
       return static_cast<minuit_command>(str);
     default:
-      throw std::runtime_error("unhandled command");
+      throw parse_error("get_command: unhandled command");
   }
 }
 
@@ -369,7 +373,7 @@ inline minuit_type get_type(char str)
     case 'P':
       return static_cast<minuit_type>(str);
     default:
-      throw std::runtime_error("unhandled type");
+      throw parse_error("get_type: unhandled type");
   }
 }
 
@@ -382,7 +386,7 @@ inline minuit_operation get_operation(char str)
     case 'g':
       return static_cast<minuit_operation>(str);
     default:
-      throw std::runtime_error("unhandled operation");
+      throw parse_error("get_operation: unhandled operation");
   }
 }
 

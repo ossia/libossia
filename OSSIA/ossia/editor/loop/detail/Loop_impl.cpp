@@ -1,5 +1,6 @@
 #include "Loop_impl.hpp"
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/editor/exceptions.hpp>
 
 namespace ossia
 {
@@ -44,7 +45,8 @@ loop_impl::~loop_impl()
 state_element loop_impl::offset(time_value offset)
 {
   if (parent->getRunning())
-    throw std::runtime_error("parent time constraint is running");
+    throw execution_error("loop_impl::offset: "
+                           "parent time constraint is running");
 
   // reset internal mOffsetState
   mOffsetState.clear();
@@ -65,7 +67,8 @@ state_element loop_impl::offset(time_value offset)
 state_element loop_impl::state()
 {
   if (!parent->getRunning())
-    throw std::runtime_error("parent time constraint is not running");
+    throw execution_error("loop_impl::state: "
+                          "parent time constraint is not running");
 
   // if date hasn't been processed already
   time_value date = parent->getDate();
@@ -92,7 +95,7 @@ state_element loop_impl::state()
     if (mPatternConstraint->getRunning())
     {
       if (mPatternConstraint->getDriveMode() != clock::DriveMode::EXTERNAL)
-        throw std::runtime_error(
+        throw execution_error("loop_impl::state: "
             "the pattern constraint clock is supposed to "
             "be in EXTERNAL drive mode");
 

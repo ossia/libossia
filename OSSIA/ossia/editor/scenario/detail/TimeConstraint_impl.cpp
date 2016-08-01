@@ -31,7 +31,8 @@ time_constraint_impl::~time_constraint_impl()
 void time_constraint_impl::start()
 {
   if (mRunning)
-    throw std::runtime_error("time constraint is running");
+    throw execution_error("time_constraint_impl::start: "
+                          "time constraint is already running");
 
   // set clock duration using maximal duration
   setDuration(mDurationMax);
@@ -61,7 +62,8 @@ void time_constraint_impl::stop()
 ossia::state time_constraint_impl::offset(time_value date)
 {
   if (mRunning)
-    throw std::runtime_error("time constraint is running");
+    throw execution_error("time_constraint_impl::offset: "
+                          "time constraint is running");
 
   do_setOffset(date);
 
@@ -81,7 +83,8 @@ ossia::state time_constraint_impl::offset(time_value date)
 ossia::state time_constraint_impl::state()
 {
   if (!mRunning)
-    throw std::runtime_error("time constraint is not running");
+    throw execution_error("time_constraint_impl::state: "
+                          "time constraint is not running");
 
   const auto& processes = timeProcesses();
   ossia::state state;

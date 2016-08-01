@@ -42,6 +42,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/sin.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/detail/Curve_impl.tpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/detail/Curve_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/exceptions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/editor.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_atom.cpp"
@@ -117,6 +118,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/vec.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/address_properties.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/network_logger.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/exceptions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/network.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.hpp"
 

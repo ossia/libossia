@@ -76,7 +76,6 @@ public:
   virtual time_value getSimultaneityMargin() const = 0;
 
   /*! set the simultaneity margin
-   \todo remove setter and move the setting into constructor (?)
    \param #TimeValue the simultaneity margin
    \return #TimeNode the time node */
   virtual time_node& setSimultaneityMargin(time_value) = 0;

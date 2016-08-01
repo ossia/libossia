@@ -1,6 +1,7 @@
 #include "Curve_impl.hpp"
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/editor/exceptions.hpp>
 
 namespace ossia
 {
@@ -72,7 +73,8 @@ X curve_impl<X, Y>::getInitialPointAbscissa() const
   auto address = node->getAddress();
 
   if (!address)
-    throw std::runtime_error(
+    throw execution_error(
+        "curve_impl::getInitialPointOrdinate: "
         "getting an address value using from an abscissa "
         "destination without address");
 
@@ -96,7 +98,8 @@ Y curve_impl<X, Y>::getInitialPointOrdinate() const
   auto address = node->getAddress();
 
   if (!address)
-    throw std::runtime_error(
+    throw execution_error(
+        "curve_impl::getInitialPointOrdinate: "
         "getting an address value using from an ordinate "
         "destination without address");
 
@@ -200,24 +203,29 @@ Y curve_impl<X, Y>::convertToTemplateTypeValue(
 
     Y operator()(Impulse) const
     {
-      throw std::runtime_error("Cannot convert to a numeric type");
+      throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
+                                     "Cannot convert Impulse to a numeric type");
     }
     Y operator()(const String& str) const
     {
-      throw std::runtime_error("Cannot convert to a numeric type");
+      throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
+                                     "Cannot convert String to a numeric type");
     }
     Y operator()(const Destination& d) const
     {
-      throw std::runtime_error("Cannot convert to a numeric type");
+      throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
+                                     "Cannot convert Destination to a numeric type");
       ;
     }
     Y operator()(const Behavior&) const
     {
-      throw std::runtime_error("Cannot convert to a numeric type");
+      throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
+                                     "Cannot convert Behavior to a numeric type");
     }
     Y operator()() const
     {
-      throw std::runtime_error("Invalid variant");
+      throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
+                                     "No type provided");
     }
   } vis{idx};
 

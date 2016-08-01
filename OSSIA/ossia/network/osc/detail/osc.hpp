@@ -283,12 +283,13 @@ inline ossia::value filterValue(
 
 inline ossia::value filterValue(const ossia::net::generic_address& addr)
 {
+  auto val = addr.cloneValue();
   if (addr.getRepetitionFilter() == ossia::repetition_filter::ON
-      && addr.getValue() == addr.PreviousValue)
+      && val == addr.PreviousValue)
     return {};
 
   return filterValue(
-      addr.getDomain(), addr.cloneValue(), addr.getBoundingMode());
+      addr.getDomain(), std::move(val), addr.getBoundingMode());
 }
 
 inline boost::string_ref getOSCAddress(const ossia::net::address_base& address)

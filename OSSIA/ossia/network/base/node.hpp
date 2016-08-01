@@ -18,6 +18,28 @@ class device_base;
 class address_base;
 class node_base;
 
+/**
+ * @brief The node_base class
+ *
+ * Base class for nodes.
+ * A \ref node_base is part of the hierarchy of a \ref device_base.
+ *
+ * The \ref node_base has ownership of its children.
+ *
+ * If a node is meant to send and receive data, an \ref address_base
+ * should be created with node_base::createAddress.
+ *
+ * Some device trees may provide immutable node hierarchies :
+ * child nodes cannot be added nor removed.
+ * This is the case for the \ref midi_device.
+ * Other device trees allow the user to create nodes as he sees fit :
+ * \ref generic_node is used for this common case.
+ *
+ * \see generic_node
+ *
+ * \see device_base
+ * \see address_base
+ */
 class OSSIA_EXPORT node_base
 {
 public:

@@ -2,6 +2,7 @@
 #include <ossia/editor/value/value_base.hpp>
 #include <eggs/variant.hpp>
 #include <ossia_export.h>
+#include <ossia/editor/exceptions.hpp>
 
 namespace ossia
 {
@@ -281,6 +282,6 @@ inline ossia::value init_value(ossia::val_type type)
       return Behavior{{}};
   }
 
-  throw std::runtime_error("Invalid type");
+  throw invalid_value_type_error("to_pretty_string: Invalid type");
 }
 }

@@ -1,5 +1,6 @@
 #include "TimeEvent_impl.hpp"
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/editor/exceptions.hpp>
 #include <ossia/editor/state/state_element.hpp>
 
 namespace ossia
@@ -26,7 +27,8 @@ void time_event_impl::setCallback(time_event::ExecutionCallback callback)
 void time_event_impl::happen()
 {
   if (mStatus != time_event::Status::PENDING)
-    throw std::runtime_error("only PENDING event can happens");
+    throw execution_error("time_event_impl::happen: "
+                          "only PENDING event can happens");
 
   mStatus = time_event::Status::HAPPENED;
 
@@ -49,7 +51,8 @@ void time_event_impl::happen()
 void time_event_impl::dispose()
 {
   if (mStatus == time_event::Status::HAPPENED)
-    throw std::runtime_error("HAPPENED event cannot be disposed");
+    throw execution_error("time_event_impl::dispose: "
+                          "HAPPENED event cannot be disposed");
 
   mStatus = time_event::Status::DISPOSED;
 

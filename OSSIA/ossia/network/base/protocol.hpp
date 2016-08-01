@@ -12,6 +12,17 @@ namespace net
 class address_base;
 class node_base;
 class device_base;
+
+/**
+ * @brief The protocol_base class
+ *
+ * A protocol is used to implement remote communication.
+ *
+ * \see local_protocol
+ * \see osc_protocol
+ * \see minuit_protocol
+ * \see midi_protocol
+ */
 class OSSIA_EXPORT protocol_base
 {
 public:

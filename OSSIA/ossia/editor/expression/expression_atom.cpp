@@ -21,20 +21,18 @@ bool expression_atom::evaluate() const
 void expression_atom::update() const
 {
   // pull value of the first operand if it is a Destination
-  if (mFirstValue.getType() == ossia::val_type::DESTINATION)
+  if (auto d = mFirstValue.try_get<Destination>())
   {
-    auto& d = mFirstValue.get<Destination>();
-    if (const auto& addr = d.value->getAddress())
+    if (const auto& addr = d->value->getAddress())
     {
       addr->pullValue();
     }
   }
 
   // pull value of the second operand if it is a Destination
-  if (mSecondValue.getType() == ossia::val_type::DESTINATION)
+  if (auto d = mSecondValue.try_get<Destination>())
   {
-    auto& d = mSecondValue.get<Destination>();
-    if (const auto& addr = d.value->getAddress())
+    if (const auto& addr = d->value->getAddress())
     {
       addr->pullValue();
     }
@@ -60,10 +58,9 @@ void expression_atom::onFirstCallbackAdded()
 {
   // start first operand observation if it is a Destination
   //! \todo what about Tuple of Destinations ?
-  if (mFirstValue.getType() == ossia::val_type::DESTINATION)
+  if (auto d = mFirstValue.try_get<Destination>())
   {
-    auto& d = mFirstValue.get<Destination>();
-    if (const auto& addr = d.value->getAddress())
+    if (const auto& addr = d->value->getAddress())
     {
       mFirstValueCallbackIndex = addr->add_callback(
           [&](const ossia::value& result) { firstValueCallback(result); });
@@ -72,10 +69,9 @@ void expression_atom::onFirstCallbackAdded()
 
   // start second operand observation if it is a Destination
   //! \todo what about Tuple of Destinations ?
-  if (mSecondValue.getType() == ossia::val_type::DESTINATION)
+  if (auto d = mSecondValue.try_get<Destination>())
   {
-    auto& d = mSecondValue.get<Destination>();
-    if (const auto& addr = d.value->getAddress())
+    if (const auto& addr = d->value->getAddress())
     {
       mSecondValueCallbackIndex = addr->add_callback(
           [&](const ossia::value& result) { secondValueCallback(result); });
@@ -87,10 +83,9 @@ void expression_atom::onRemovingLastCallback()
 {
   // stop first operand observation if it is a Destination
   //! \todo what about Tuple of Destinations ?
-  if (mFirstValue.getType() == ossia::val_type::DESTINATION)
+  if (auto d = mFirstValue.try_get<Destination>())
   {
-    auto& d = mFirstValue.get<Destination>();
-    if (const auto& addr = d.value->getAddress())
+    if (const auto& addr = d->value->getAddress())
     {
       addr->remove_callback(mFirstValueCallbackIndex);
     }
@@ -98,10 +93,9 @@ void expression_atom::onRemovingLastCallback()
 
   // start second operand observation if it is a Destination
   //! \todo what about Tuple of Destinations ?
-  if (mSecondValue.getType() == ossia::val_type::DESTINATION)
+  if (auto d = mSecondValue.try_get<Destination>())
   {
-    auto& d = mSecondValue.get<Destination>();
-    if (const auto& addr = d.value->getAddress())
+    if (const auto& addr = d->value->getAddress())
     {
       addr->remove_callback(mSecondValueCallbackIndex);
     }

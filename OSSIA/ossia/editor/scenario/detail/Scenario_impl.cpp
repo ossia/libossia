@@ -1,4 +1,5 @@
 #include "Scenario_impl.hpp"
+#include <ossia/editor/exceptions.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <iostream>
 #include <unordered_map>
@@ -36,7 +37,8 @@ static void process_timenode_dates(time_node& t, DateMap& map)
 state_element scenario_impl::offset(time_value offset)
 {
   if (parent->getRunning())
-    throw std::runtime_error("parent time constraint is running");
+    throw execution_error("scenario_impl::offset: "
+                          "parent time constraint is running");
 
   // reset internal offset list and state
   mPastEventList.clear();
@@ -120,7 +122,8 @@ state_element scenario_impl::state()
 {
   auto& par = *parent;
   if (!par.getRunning())
-    throw std::runtime_error("parent time constraint is not running");
+    throw execution_error("scenario_impl::state: "
+                          "parent time constraint is not running");
 
   // if date hasn't been processed already
   time_value date = par.getDate();
@@ -151,7 +154,7 @@ state_element scenario_impl::state()
     {
       auto& cst = *timeConstraint;
       if (cst.getDriveMode() != clock::DriveMode::EXTERNAL)
-        throw std::runtime_error(
+        throw execution_error("scenario_impl::state: "
             "the pattern constraint clock is supposed to "
             "be in EXTERNAL drive mode");
 
@@ -260,7 +263,7 @@ void scenario_impl::start()
     }
     // error
     else
-      throw std::runtime_error(
+      throw execution_error("scenario_impl::start: "
           "TimeEvent's status configuration of the "
           "TimeConstraint is not handled");
   }

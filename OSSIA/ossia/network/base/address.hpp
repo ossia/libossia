@@ -18,6 +18,15 @@ class node_base;
 
 using value_callback = std::function<void(const value&)>;
 
+/**
+ * @brief The address_base class
+ *
+ * An address holds attributes and values.
+ * One can suscribe to modification of the value.
+ *
+ * \see generic_address
+ *
+ */
 class OSSIA_EXPORT address_base : public callback_container<value_callback>
 {
 public:
@@ -32,12 +41,37 @@ public:
 
   virtual const ossia::net::node_base& getNode() const = 0;
 
+  /**
+   * @brief pullValue
+   *
+   * Retrieve the current value over the network.
+   * Not all protocols may provide this capability.
+   *
+   * This may be a blocking call.
+   */
   virtual void pullValue() = 0;
+  /**
+   * @brief pushValue
+   *
+   * Sets the value locally, and sends it to the network.
+   */
   virtual address_base& pushValue(const value&) = 0;
+
+  /**
+   * @brief pushValue
+   *
+   * Sends the local value to the network
+   */
   virtual address_base& pushValue() = 0;
 
   virtual value cloneValue(destination_index = {}) const = 0;
   virtual address_base& setValue(const value&) = 0;
+
+  value fetchValue() const
+  {
+    pullValue();
+    return cloneValue();
+  }
 
   virtual val_type getValueType() const = 0;
   virtual address_base& setValueType(val_type) = 0;
@@ -54,6 +88,10 @@ public:
   virtual repetition_filter getRepetitionFilter() const = 0;
   virtual address_base& setRepetitionFilter(repetition_filter = repetition_filter::ON) = 0;
 
+  /**
+   * @brief getTextualAddress
+   * @return The address in the format device:/node/sub_node
+   */
   virtual const std::string& getTextualAddress() const = 0;
 };
 

@@ -4,6 +4,7 @@
 
 #include <ossia/network/domain/domain_conversion.hpp>
 #include <ossia/network/base/protocol.hpp>
+#include <ossia/network/exceptions.hpp>
 #include <iostream>
 #include <map>
 
@@ -93,17 +94,18 @@ ossia::value generic_address::cloneValue(ossia::destination_index index) const
   }
   else
   {
-    throw std::runtime_error("cloning null value");
+    throw invalid_value_type_error("generic_address::cloneValue: "
+                                   "cloning null value");
   }
 }
 
-ossia::net::address_base& generic_address::setValue(const ossia::value& value)
+ossia::net::address_base& generic_address::setValue(const ossia::value& val)
 {
   using namespace ossia;
   std::unique_lock<std::mutex> lock(mValueMutex);
 
   // set value querying the value from another address
-  auto dest = value.try_get<Destination>();
+  auto dest = val.try_get<Destination>();
   if (dest && mValueType != val_type::DESTINATION)
   {
     const Destination& destination = *dest;
@@ -117,27 +119,29 @@ ossia::net::address_base& generic_address::setValue(const ossia::value& value)
         mValue = address->cloneValue();
       }
       else
-        throw std::runtime_error(
+        throw invalid_node_error(
+            "generic_address::setValue: "
             "setting an address value using a destination "
             "with a bad type address");
     }
     else
     {
-      throw std::runtime_error(
-          "setting an address value using a destination without address");
+      throw invalid_node_error(
+            "generic_address::setValue: "
+            "setting an address value using a destination without address");
     }
   }
   // copy the new value
   else
   {
-    if (mValue.v.which() != value.v.which())
+    if (mValue.v.which() != val.v.which())
     {
-      mValueType = value.getType();
+      mValueType = val.getType();
       if(mDomain)
         mDomain = convert_domain(mDomain, mValueType);
     }
 
-    mValue = value;
+    mValue = val;
   }
 
   auto clone = mValue;

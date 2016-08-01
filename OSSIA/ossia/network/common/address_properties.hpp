@@ -2,7 +2,9 @@
 
 namespace ossia
 {
-/*! type of value */
+/**
+ * @brief Enum to represent the types that a value can take.
+ */
 enum class val_type
 {
   IMPULSE, //! \see Impulse

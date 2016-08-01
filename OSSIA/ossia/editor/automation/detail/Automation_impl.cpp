@@ -1,7 +1,7 @@
 #include "Automation_impl.hpp"
 #include <ossia/editor/curve/detail/Curve_impl.hpp>
 #include <ossia/editor/value/behavior.hpp>
-
+#include <ossia/editor/exceptions.hpp>
 #include <iostream>
 
 namespace ossia
@@ -23,7 +23,8 @@ ossia::state_element automation_impl::offset(ossia::time_value offset)
 {
   auto& par = *parent;
   if (par.getRunning())
-    throw std::runtime_error("parent time constraint is running");
+    throw execution_error("automation_impl::offset: "
+                          "parent time constraint is running");
 
   // edit a Message handling the new Value
   return ossia::message{
@@ -50,7 +51,8 @@ ossia::state_element automation_impl::state()
   }
   else
   {
-    throw std::runtime_error("parent time constraint is not running");
+    throw execution_error("automation_impl::state: "
+                          "parent time constraint is not running");
   }
 }
 
@@ -122,7 +124,7 @@ struct computeValue_visitor
       }
     }
 
-    throw std::runtime_error("none handled drive curve type");
+    throw invalid_value_type_error("computeValue_visitor: drive curve type is not DOUBLE");
   }
 
   ossia::value operator()(const ossia::Tuple& t) const
@@ -140,7 +142,7 @@ struct computeValue_visitor
 
   ossia::value error() const
   {
-    throw std::runtime_error("Unhandled drive value type.");
+    throw invalid_value_type_error("computeValue_visitor: Unhandled drive value type.");
   }
   ossia::value operator()(const ossia::Int&)
   {

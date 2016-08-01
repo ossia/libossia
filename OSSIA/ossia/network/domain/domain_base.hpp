@@ -177,6 +177,23 @@ struct domain_base<Vec<float, N>>
   }
 };
 
+/**
+ * \typedef domain A domain of values
+ *
+ * The practical domain may be different according to the value type.
+ * For instance, \ref domain_base<Impulse> has no min nor max.
+ *
+ * Domains for Int, Bool, Float, Char have a min, a max and a set of values.
+ * Domain for String has a set of values.
+ * Other domains are not implemented yet.
+ *
+ * A domain_base should implement the following method :
+ * \code
+ * ossia::value clamp(bounding_mode, const T&) const
+ * \endcode
+ *
+ * It is used to restrict a value to the domain if available.
+ */
 using domain
     = eggs::variant<domain_base<Impulse>, domain_base<Bool>, domain_base<Int>,
                     domain_base<Float>, domain_base<Char>, domain_base<String>,
