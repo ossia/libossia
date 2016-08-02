@@ -169,7 +169,7 @@ private Q_SLOTS:
             ;
 
         // check TimeEvents date
-        QCOMPARE(events_date.size(), 3ul);
+        QCOMPARE((int)events_date.size(), 3);
         QVERIFY(events_date[0] == Zero);
         QVERIFY(events_date[1] >= first_end_node->getDate());
         // todo QVERIFY(events_date[1] < (first_end_node->getDate() + main_constraint->getGranularity()));

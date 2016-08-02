@@ -15,20 +15,20 @@ private Q_SLOTS:
     {
         state s;
 
-        QCOMPARE(s.size(), 0ul);
+        QCOMPARE((int32_t)s.size(), 0);
 
         state substate;
         s.add(substate);
-        QCOMPARE(s.size(), 1ul);
+        QCOMPARE((int32_t)s.size(), 1);
 
 
         state parent;
         parent.add(std::move(s));
-        QCOMPARE(parent.size(), 1ul);
-        QCOMPARE(s.size(), 0ul);
+        QCOMPARE((int32_t)parent.size(), 1);
+        QCOMPARE((int32_t)s.size(), 0);
 
         state copy{parent};
-        QCOMPARE(copy.size(), 1ul);
+        QCOMPARE((int32_t)copy.size(), 1);
 
     }
 

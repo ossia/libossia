@@ -33,7 +33,7 @@ namespace easing
 template <typename T>
 struct ease
 {
-  constexpr T operator()(T a, T b, T t)
+  constexpr T operator()(T a, T b, T t) const
   {
     return a + (b - a) * t;
   }
@@ -42,7 +42,7 @@ struct ease
 template <typename T>
 struct linear
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return t;
   }
@@ -51,7 +51,7 @@ struct linear
 template <typename T>
 struct quadraticIn
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return t * t;
   }
@@ -60,7 +60,7 @@ struct quadraticIn
 template <typename T>
 struct quadraticOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return -(t * (t - 2.));
   }
@@ -69,7 +69,7 @@ struct quadraticOut
 template <typename T>
 struct quadraticInOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return (t < 0.5) ? 2. * t * t : (-2. * t * t) + (4. * t) - 1.;
   }
@@ -78,7 +78,7 @@ struct quadraticInOut
 template <typename T>
 struct cubicIn
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return t * t * t;
   }
@@ -87,7 +87,7 @@ struct cubicIn
 template <typename T>
 struct cubicOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     const T f = t - 1.;
     return f * f * f + 1.;
@@ -97,7 +97,7 @@ struct cubicOut
 template <typename T>
 struct cubicInOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     if (t < T(0.5))
     {
@@ -114,7 +114,7 @@ struct cubicInOut
 template <typename T>
 struct quarticIn
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return t * t * t * t;
   }
@@ -123,7 +123,7 @@ struct quarticIn
 template <typename T>
 struct quarticOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     const T f = t - 1.;
     return f * f * f * (1. - t) + 1.;
@@ -133,7 +133,7 @@ struct quarticOut
 template <typename T>
 struct quarticInOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     if (t < 0.5)
     {
@@ -150,7 +150,7 @@ struct quarticInOut
 template <typename T>
 struct quinticIn
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return t * t * t * t * t;
   }
@@ -159,7 +159,7 @@ struct quinticIn
 template <typename T>
 struct quinticOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     T f = (t - 1.);
     return f * f * f * f * f + 1.;
@@ -169,7 +169,7 @@ struct quinticOut
 template <typename T>
 struct quinticInOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     if (t < 0.5)
     {
@@ -186,7 +186,7 @@ struct quinticInOut
 template <typename T>
 struct sineIn
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return sin((t - 1.) * half_pi) + 1.;
   }
@@ -195,7 +195,7 @@ struct sineIn
 template <typename T>
 struct sineOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return sin(t * half_pi);
   }
@@ -204,7 +204,7 @@ struct sineOut
 template <typename T>
 struct sineInOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return 0.5 * (1. - std::cos(t * pi));
   }
@@ -213,7 +213,7 @@ struct sineInOut
 template <typename T>
 struct circularIn
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return 1. - std::sqrt(1. - (t * t));
   }
@@ -222,7 +222,7 @@ struct circularIn
 template <typename T>
 struct circularOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return std::sqrt((2. - t) * t);
   }
@@ -231,7 +231,7 @@ struct circularOut
 template <typename T>
 struct circularInOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     if (t < 0.5)
     {
@@ -247,7 +247,7 @@ struct circularInOut
 template <typename T>
 struct exponentialIn
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return (t <= 0) ? t : std::pow(2., 10. * (t - 1.));
   }
@@ -256,7 +256,7 @@ struct exponentialIn
 template <typename T>
 struct exponentialOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return (t >= 1.) ? t : 1. - std::pow(2., -10. * t);
   }
@@ -265,7 +265,7 @@ struct exponentialOut
 template <typename T>
 struct exponentialInOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     if (t <= 0. || t >= 1.)
       return t;
@@ -284,7 +284,7 @@ struct exponentialInOut
 template <typename T>
 struct elasticIn
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return sin(13. * half_pi * t) * std::pow(2., 10. * (t - 1.));
   }
@@ -293,7 +293,7 @@ struct elasticIn
 template <typename T>
 struct elasticOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return sin(-13. * half_pi * (t + 1.)) * std::pow(2., -10. * t) + 1.;
   }
@@ -302,7 +302,7 @@ struct elasticOut
 template <typename T>
 struct elasticInOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     if (t < 0.5)
     {
@@ -321,7 +321,7 @@ struct elasticInOut
 template <typename T>
 struct backIn
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return t * t * t - t * std::sin(t * pi);
   }
@@ -330,7 +330,7 @@ struct backIn
 template <typename T>
 struct backOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     const T f = 1. - t;
     return 1. - (f * f * f - f * std::sin(f * pi));
@@ -340,7 +340,7 @@ struct backOut
 template <typename T>
 struct backInOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     if (t < 0.5)
     {
@@ -358,7 +358,7 @@ struct backInOut
 template <typename T>
 struct bounceOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     if (t < 4. / 11.)
     {
@@ -382,7 +382,7 @@ struct bounceOut
 template <typename T>
 struct bounceIn
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     return 1. - bounceOut<T>{}(1. - t);
   }
@@ -391,11 +391,11 @@ struct bounceIn
 template <typename T>
 struct bounceInOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     if (t < 0.5)
     {
-      return 0.5 * bounceIn<T>{}(t * 2.);
+      return 0.5 * bounceIn<T>{}(t * 2.); 
     }
     else
     {
@@ -407,7 +407,7 @@ struct bounceInOut
 template <typename T>
 struct perlinInOut
 {
-  constexpr T operator()(T t)
+  constexpr T operator()(T t) const
   {
     T t3 = t * t * t;
     T t4 = t3 * t;
