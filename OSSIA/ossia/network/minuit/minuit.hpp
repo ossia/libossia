@@ -49,6 +49,12 @@ public:
   minuit_protocol(
       const std::string& local_name, const std::string& remote_ip,
       uint16_t remote_port, uint16_t local_port);
+
+  minuit_protocol(const minuit_protocol&) = delete;
+  minuit_protocol(minuit_protocol&&) = delete;
+  minuit_protocol& operator=(const minuit_protocol&) = delete;
+  minuit_protocol& operator=(minuit_protocol&&) = delete;
+
   ~minuit_protocol();
 
   void setDevice(ossia::net::device_base& dev) override;

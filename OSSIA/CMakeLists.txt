@@ -199,6 +199,10 @@ if(MSVC)
     target_compile_options(ossia PUBLIC
         "/wd4068" # pragma mark -
         "/wd4250" # inherits via dominance
+        "/wd4251" # DLL stuff
+        "/wd4275" # DLL stuff
+        "/wd4244" # return : conversion from foo to bar, possible loss of data
+        "/wd4800" # conversion from int to bool, performance warning
         )
 else()
     target_compile_options(ossia PUBLIC

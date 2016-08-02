@@ -13,6 +13,10 @@ class OSSIA_EXPORT local_protocol final : public ossia::net::protocol_base
 {
 public:
   local_protocol();
+  local_protocol(const local_protocol&) = delete;
+  local_protocol(local_protocol&&) = delete;
+  local_protocol& operator=(const local_protocol&) = delete;
+  local_protocol& operator=(local_protocol&&) = delete;
 
   virtual ~local_protocol();
 

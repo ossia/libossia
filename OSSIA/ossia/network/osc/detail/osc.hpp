@@ -76,6 +76,12 @@ struct OSCOutboundVisitor
 
 struct OSCInboundVisitor
 {
+  OSCInboundVisitor(
+    oscpack::ReceivedMessageArgumentIterator cur, 
+    oscpack::ReceivedMessageArgumentIterator beg, 
+    oscpack::ReceivedMessageArgumentIterator end, 
+    int n = 1): cur_it{cur}, beg_it{beg}, end_it{end}, numArguments{n} {}
+
   oscpack::ReceivedMessageArgumentIterator cur_it;
   oscpack::ReceivedMessageArgumentIterator beg_it;
   oscpack::ReceivedMessageArgumentIterator end_it;

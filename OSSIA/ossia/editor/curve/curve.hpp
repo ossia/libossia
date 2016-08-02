@@ -94,7 +94,7 @@ public:
 };
 }
 
-#if !defined(OSSIA_EXPORTS)
+#if !defined(ossia_EXPORTS)
 extern template class OSSIA_EXPORT ossia::curve<double, bool>;
 extern template class OSSIA_EXPORT ossia::curve<double, int>;
 extern template class OSSIA_EXPORT ossia::curve<double, float>;

@@ -30,6 +30,12 @@ private:
 
 public:
   osc_protocol(std::string ip, uint16_t remote_port, uint16_t local_port);
+
+  osc_protocol(const osc_protocol&) = delete;
+  osc_protocol(osc_protocol&&) = delete;
+  osc_protocol& operator=(const osc_protocol&) = delete;
+  osc_protocol& operator=(osc_protocol&&) = delete;
+
   ~osc_protocol();
 
   const std::string& getIp() const;
