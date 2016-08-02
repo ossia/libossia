@@ -171,6 +171,7 @@ inline ossia::value value_from_minuit_type_text(boost::string_ref str)
     case 'd': // decimal
       return ossia::Float{};
     case 's': // string
+    case 'g': // generic
       return ossia::String{};
     case 'b': // boolean
       return ossia::Bool{};
@@ -178,7 +179,6 @@ inline ossia::value value_from_minuit_type_text(boost::string_ref str)
       return ossia::Impulse{};
     case 'a': // array
       return ossia::Tuple{};
-    case 'g': // generic
     default:
       return {};
   }
@@ -196,6 +196,7 @@ inline ossia::val_type type_from_minuit_type_text(boost::string_ref str)
     case 'd': // decimal
       return ossia::val_type::FLOAT;
     case 's': // string
+    case 'g': // generic
       return ossia::val_type::STRING;
     case 'b': // boolean
       return ossia::val_type::BOOL;
@@ -203,7 +204,6 @@ inline ossia::val_type type_from_minuit_type_text(boost::string_ref str)
       return ossia::val_type::IMPULSE;
     case 'a': // array
       return ossia::val_type::TUPLE;
-    case 'g': // generic
     default:
       return {};
   }
