@@ -28,6 +28,14 @@ struct minuit_behavior<minuit_command::Error, Op>
       const oscpack::ReceivedMessage& mess)
   {
     // Do nothing
+    if(proto.pending_get_requests > 0)
+    {
+      proto.pending_get_requests--;
+      try {
+      proto.get_promise.set_value();
+      }
+      catch ( ... )  { }
+    }
   }
 };
 
@@ -239,33 +247,31 @@ struct minuit_behavior<
 };
 
 
+inline ossia::net::domain get_domain(
+    ossia::net::address_base& addr,
+    oscpack::ReceivedMessageArgumentIterator beg_it,
+    oscpack::ReceivedMessageArgumentIterator end_it)
+{
+  std::vector<ossia::value> val;
+  auto cur = addr.cloneValue();
 
+  // We read all the values one by one
+  while (beg_it != end_it)
+  {
+    auto cur_it = beg_it;
+    ++beg_it;
+    val.push_back(ossia::net::toValue(cur, cur_it, beg_it, 1));
+  }
 
+  if (val.size() == 2)
+    return ossia::net::makeDomain(val[0], val[1]);
+  return {};
+}
 
 // Get
 template <>
 struct minuit_behavior<minuit_command::Answer, minuit_operation::Get>
 {
-  ossia::net::domain get_domain(
-      ossia::net::address_base& addr,
-      oscpack::ReceivedMessageArgumentIterator beg_it,
-      oscpack::ReceivedMessageArgumentIterator end_it)
-  {
-    std::vector<ossia::value> val;
-    auto cur = addr.cloneValue();
-
-    // We read all the values one by one
-    while (beg_it != end_it)
-    {
-      auto cur_it = beg_it;
-      ++beg_it;
-      val.push_back(ossia::net::toValue(cur, cur_it, beg_it, 1));
-    }
-
-    if (val.size() == 2)
-      return ossia::net::makeDomain(val[0], val[1]);
-    return {};
-  }
 
   void operator()(
       ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
@@ -327,7 +333,7 @@ struct minuit_behavior<minuit_command::Answer, minuit_operation::Get>
         case minuit_attribute::RangeBounds:
         {
           addr->setDomain(
-                this->get_domain(*addr, mess_it, mess.ArgumentsEnd()));
+                get_domain(*addr, mess_it, mess.ArgumentsEnd()));
           break;
         }
         case minuit_attribute::RangeClipMode:
@@ -368,6 +374,87 @@ struct minuit_behavior<minuit_command::Answer,
       ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
       const oscpack::ReceivedMessage& mess)
   {
+    // TODO refactor with get answer
+    auto mess_it = mess.ArgumentsBegin();
+    boost::string_ref full_address{mess_it->AsString()};
+    auto idx = full_address.find_first_of(":");
+
+    if (idx == std::string::npos)
+    {
+      // The OSC message is a standard OSC one, carrying a value.
+      auto node = ossia::net::find_node(dev, full_address);
+      if (node)
+      {
+        if (auto addr = node->getAddress())
+        {
+          ossia::net::updateValue(
+                *addr, ++mess_it, mess.ArgumentsEnd(), mess.ArgumentCount() - 1);
+        }
+      }
+    }
+    else
+    {
+      // The OSC message is a Minuit one.
+      // address contains the "sanitized" OSC-like address.
+      boost::string_ref address{full_address.data(), idx};
+
+      // Note : bug if address == "foo:"
+      auto attr = get_attribute(
+            boost::string_ref(
+              address.data() + idx + 1, full_address.size() - idx - 1));
+
+      ++mess_it;
+      // mess_it is now at the first argument after the address:attribute
+
+      auto node = ossia::net::find_node(dev, address);
+      if (!node)
+        return;
+      auto addr = node->getAddress();
+      if (!addr)
+        return;
+
+      switch (attr)
+      {
+        case minuit_attribute::Value:
+        {
+          ossia::net::updateValue(
+                *addr, mess_it, mess.ArgumentsEnd(), mess.ArgumentCount() - 1);
+          break;
+        }
+        case minuit_attribute::Type:
+        {
+          addr->setValueType(
+                ossia::minuit::type_from_minuit_type_text(mess_it->AsString()));
+
+          break;
+        }
+        case minuit_attribute::RangeBounds:
+        {
+          addr->setDomain(
+                get_domain(*addr, mess_it, mess.ArgumentsEnd()));
+          break;
+        }
+        case minuit_attribute::RangeClipMode:
+        {
+          addr->setBoundingMode(
+                from_minuit_bounding_text(mess_it->AsString()));
+          break;
+        }
+        case minuit_attribute::RepetitionFilter:
+        {
+          addr->setRepetitionFilter(
+                static_cast<repetition_filter>(mess_it->AsInt32()));
+          break;
+        }
+        case minuit_attribute::Service:
+        {
+          addr->setAccessMode(from_minuit_service_text(mess_it->AsString()));
+          break;
+        }
+        default:
+          break;
+      }
+    }
   }
 };
 

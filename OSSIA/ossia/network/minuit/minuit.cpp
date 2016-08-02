@@ -110,6 +110,20 @@ bool minuit_protocol::update(ossia::net::node_base& node)
   }
   return status == std::future_status::ready;
 }
+struct scope_timer
+{
+    std::chrono::high_resolution_clock::time_point t1, t2;
+    scope_timer()
+    {
+      t1 = std::chrono::high_resolution_clock::now();
+    }
+    ~scope_timer()
+    {
+      using namespace std::chrono;
+      t2 = high_resolution_clock::now();
+      std::cerr <<  duration_cast<milliseconds>(t2 - t1).count() << "\n";
+    }
+};
 
 bool minuit_protocol::pull(ossia::net::address_base& address)
 {
@@ -118,12 +132,14 @@ bool minuit_protocol::pull(ossia::net::address_base& address)
   // and not some other random get answer
   get_promise = std::promise<void>();
   auto fut = get_promise.get_future();
+  pending_get_requests++;
 
   auto act = name_table.get_action(ossia::minuit::minuit_action::GetRequest);
   auto addr = ossia::net::getOSCAddressAsString(address);
   this->sender.send(act, boost::string_ref(addr));
 
   fut.wait_for(std::chrono::seconds(5));
+
   return fut.valid();
 }
 
