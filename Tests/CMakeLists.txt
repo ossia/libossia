@@ -15,13 +15,13 @@ function(ossia_add_test TESTNAME TESTSRCS)
 endFunction()
 
 ossia_add_test(AutomationTest              "${CMAKE_CURRENT_SOURCE_DIR}/Editor/AutomationTest.cpp")
-ossia_add_test(ClockTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ClockTest.cpp")
 
 if(NOT OSSIA_CI)
     # this test is too reliant on specific hardward capabilities to run on travis
-    ossia_add_test(CurveTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/CurveTest.cpp")
+    ossia_add_test(ClockTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ClockTest.cpp")
 endif()
 
+ossia_add_test(CurveTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/CurveTest.cpp")
 ossia_add_test(CurveSegmentEmptyTest       "${CMAKE_CURRENT_SOURCE_DIR}/Editor/CurveSegment/CurveSegmentEmptyTest.cpp")
 ossia_add_test(CurveSegmentLinearTest      "${CMAKE_CURRENT_SOURCE_DIR}/Editor/CurveSegment/CurveSegmentLinearTest.cpp")
 ossia_add_test(CurveSegmentPowerTest       "${CMAKE_CURRENT_SOURCE_DIR}/Editor/CurveSegment/CurveSegmentPowerTest.cpp")
