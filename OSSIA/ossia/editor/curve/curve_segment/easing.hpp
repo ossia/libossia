@@ -53,7 +53,7 @@ struct quadraticIn
 {
   constexpr T operator()(T t) const
   {
-    return t * t;
+    return std::pow(t, 2);
   }
 };
 
@@ -80,7 +80,7 @@ struct cubicIn
 {
   constexpr T operator()(T t) const
   {
-    return t * t * t;
+    return std::pow(t, 3);
   }
 };
 
@@ -89,8 +89,7 @@ struct cubicOut
 {
   constexpr T operator()(T t) const
   {
-    const T f = t - 1.;
-    return f * f * f + 1.;
+    return std::pow(t - 1., 3) + 1.;
   }
 };
 
@@ -99,15 +98,9 @@ struct cubicInOut
 {
   constexpr T operator()(T t) const
   {
-    if (t < T(0.5))
-    {
-      return 4. * t * t * t;
-    }
-    else
-    {
-      const T f = (2. * t) - 2.;
-      return 0.5 * f * f * f + 1.;
-    }
+    return (t < T(0.5)) 
+        ?  4. * std::pow(t, 3)
+        : 0.5 * std::pow((2. * t) - 2, 3) + 1.;
   }
 };
 
@@ -116,7 +109,7 @@ struct quarticIn
 {
   constexpr T operator()(T t) const
   {
-    return t * t * t * t;
+    return std::pow(t, 4);
   }
 };
 
@@ -125,8 +118,7 @@ struct quarticOut
 {
   constexpr T operator()(T t) const
   {
-    const T f = t - 1.;
-    return f * f * f * (1. - t) + 1.;
+    return std::pow(t - 1., 3) * (1. - t) + 1.;
   }
 };
 
@@ -135,15 +127,9 @@ struct quarticInOut
 {
   constexpr T operator()(T t) const
   {
-    if (t < 0.5)
-    {
-      return 8. * t * t * t * t;
-    }
-    else
-    {
-      T f = (t - 1.);
-      return -8. * f * f * f * f + 1.;
-    }
+    return (t < 0.5) 
+      ?  8. * std::pow(t, 4)
+      : -8. * std::pow(t - 1., 4) + 1.;
   }
 };
 
@@ -152,7 +138,7 @@ struct quinticIn
 {
   constexpr T operator()(T t) const
   {
-    return t * t * t * t * t;
+    return std::pow(t, 5);
   }
 };
 
@@ -161,8 +147,7 @@ struct quinticOut
 {
   constexpr T operator()(T t) const
   {
-    T f = (t - 1.);
-    return f * f * f * f * f + 1.;
+    return std::pow(t - 1., 5) + 1.;
   }
 };
 
@@ -171,15 +156,9 @@ struct quinticInOut
 {
   constexpr T operator()(T t) const
   {
-    if (t < 0.5)
-    {
-      return 16. * t * t * t * t * t;
-    }
-    else
-    {
-      T f = ((2. * t) - 2.);
-      return 0.5 * f * f * f * f * f + 1.;
-    }
+    return (t < 0.5) 
+        ? 16. * std::pow(t, 5)
+        : 0.5 * std::pow((2. * t) - 2., 5) + 1.;
   }
 };
 
@@ -188,7 +167,7 @@ struct sineIn
 {
   constexpr T operator()(T t) const
   {
-    return sin((t - 1.) * half_pi) + 1.;
+    return std::sin((t - 1.) * half_pi) + 1.;
   }
 };
 
@@ -197,7 +176,7 @@ struct sineOut
 {
   constexpr T operator()(T t) const
   {
-    return sin(t * half_pi);
+    return std::sin(t * half_pi);
   }
 };
 
@@ -233,14 +212,9 @@ struct circularInOut
 {
   constexpr T operator()(T t) const
   {
-    if (t < 0.5)
-    {
-      return 0.5 * (1 - std::sqrt(1 - 4. * (t * t)));
-    }
-    else
-    {
-      return 0.5 * (std::sqrt(-((2. * t) - 3.) * ((2. * t) - 1.)) + 1.);
-    }
+    return (t < 0.5)
+       ? 0.5 * (1 - std::sqrt(1 - 4. * (t * t)))
+       : 0.5 * (std::sqrt(-((2. * t) - 3.) * ((2. * t) - 1.)) + 1.);
   }
 };
 
@@ -267,17 +241,11 @@ struct exponentialInOut
 {
   constexpr T operator()(T t) const
   {
-    if (t <= 0. || t >= 1.)
-      return t;
-
-    if (t < 0.5)
-    {
-      return 0.5 * std::pow(2., (20. * t) - 10.);
-    }
-    else
-    {
-      return -0.5 * std::pow(2., (-20. * t) + 10.) + 1.;
-    }
+    return (t <= 0. || t >= 1.) 
+        ? t
+        : (t < 0.5)
+           ?  0.5 * std::pow(2., ( 20. * t) - 10.)
+           : -0.5 * std::pow(2., (-20. * t) + 10.) + 1.;
   }
 };
 
@@ -286,7 +254,7 @@ struct elasticIn
 {
   constexpr T operator()(T t) const
   {
-    return sin(13. * half_pi * t) * std::pow(2., 10. * (t - 1.));
+    return std::sin(13. * half_pi * t) * std::pow(2., 10. * (t - 1.));
   }
 };
 
@@ -304,17 +272,12 @@ struct elasticInOut
 {
   constexpr T operator()(T t) const
   {
-    if (t < 0.5)
-    {
-      return 0.5 * std::sin(13. * half_pi * (2. * t))
-             * std::pow(2., 10. * ((2. * t) - 1.));
-    }
-    else
-    {
-      return 0.5 * (std::sin(-13. * half_pi * ((2. * t - 1) + 1))
-                        * std::pow(2., -10. * (2. * t - 1.))
-                    + 2.);
-    }
+    return (t < 0.5)
+        ? 0.5 * std::sin(13. * half_pi * (2. * t))
+              * std::pow(2., 10. * ((2. * t) - 1.))
+        : 0.5 * (std::sin(-13. * half_pi * ((2. * t - 1) + 1))
+                 * std::pow(2., -10. * (2. * t - 1.))
+                 + 2.);
   }
 };
 
@@ -323,7 +286,7 @@ struct backIn
 {
   constexpr T operator()(T t) const
   {
-    return t * t * t - t * std::sin(t * pi);
+    return std::pow(t, 3) - t * std::sin(t * pi);
   }
 };
 
@@ -332,8 +295,7 @@ struct backOut
 {
   constexpr T operator()(T t) const
   {
-    const T f = 1. - t;
-    return 1. - (f * f * f - f * std::sin(f * pi));
+    return 1. - (std::pow(1. - t, 3) - (1. - t) * std::sin((1. - t) * pi));
   }
 };
 
@@ -342,16 +304,9 @@ struct backInOut
 {
   constexpr T operator()(T t) const
   {
-    if (t < 0.5)
-    {
-      const T f = 2. * t;
-      return 0.5 * (f * f * f - f * std::sin(f * pi));
-    }
-    else
-    {
-      const T f = (1. - (2. * t - 1.));
-      return 0.5 * (1. - (f * f * f - f * std::sin(f * pi))) + 0.5;
-    }
+    return (t < 0.5) 
+        ? 0.5 * (std::pow(2. * t, 3) - (2. * t) * std::sin((2. * t) * pi))
+        : 0.5 * (1. - (std::pow(1. - (2. * t - 1.), 3) - (1. - (2. * t - 1.)) * std::sin((1. - (2. * t - 1.)) * pi))) + 0.5;
   }
 };
 
@@ -360,22 +315,13 @@ struct bounceOut
 {
   constexpr T operator()(T t) const
   {
-    if (t < 4. / 11.)
-    {
-      return (121. * t * t) / 16.;
-    }
-    else if (t < 8. / 11.)
-    {
-      return (363. / 40. * t * t) - (99 / 10. * t) + 17 / 5.;
-    }
-    else if (t < 9. / 10.)
-    {
-      return (4356. / 361. * t * t) - (35442. / 1805. * t) + 16061. / 1805.;
-    }
-    else
-    {
-      return (54. / 5. * t * t) - (513. / 25. * t) + 268. / 25.;
-    }
+    return t < 4. / 11. 
+        ? (121. * t * t) / 16.
+        : (t < 8. / 11.) 
+          ? (363. / 40. * t * t) - (99 / 10. * t) + 17 / 5.
+          : (t < 9. / 10.)
+            ? (4356. / 361. * t * t) - (35442. / 1805. * t) + 16061. / 1805.
+            : (54. / 5. * t * t) - (513. / 25. * t) + 268. / 25.;
   }
 };
 
@@ -393,14 +339,9 @@ struct bounceInOut
 {
   constexpr T operator()(T t) const
   {
-    if (t < 0.5)
-    {
-      return 0.5 * bounceIn<T>{}(t * 2.); 
-    }
-    else
-    {
-      return 0.5 * bounceOut<T>{}(t * 2. - 1.) + 0.5;
-    }
+    return t < 0.5 
+        ? 0.5 * bounceIn<T>{}(t * 2.)
+        : 0.5 * bounceOut<T>{}(t * 2. - 1.) + 0.5;
   }
 };
 
@@ -409,10 +350,7 @@ struct perlinInOut
 {
   constexpr T operator()(T t) const
   {
-    T t3 = t * t * t;
-    T t4 = t3 * t;
-    T t5 = t4 * t;
-    return 6. * t5 - 15. * t4 + 10. * t3;
+    return 6. * std::pow(t, 5) - 15. * std::pow(t, 4) + 10. * std::pow(t, 3);
   }
 };
 }
