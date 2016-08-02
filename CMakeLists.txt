@@ -34,6 +34,11 @@ endif()
 
 
 # Dependencies
+find_package(Boost REQUIRED)
+add_library(boost INTERFACE IMPORTED)
+set_property(TARGET boost PROPERTY
+    INTERFACE_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})
+
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
 
 add_subdirectory(3rdparty/ModernMIDI EXCLUDE_FROM_ALL)

@@ -21,18 +21,15 @@ if(APPLE)
     set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
     set(CMAKE_INSTALL_RPATH "@loader_path/../Frameworks;@executable_path;")
 endif()
-set(SRCS
+set(API_HEADERS
+    ## Editor ##
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/algorithms.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/callback_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/destination_index.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/math.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/ptr_container.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/automation.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/automation.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/detail/Automation_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/detail/Automation_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_abstract.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/easing.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/empty.hpp"
@@ -40,64 +37,33 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/linear.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/power.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/sin.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/detail/Curve_impl.tpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/detail/Curve_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/exceptions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/editor.hpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_atom.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_atom.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_composition.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_composition.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_fwd.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_not.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_not.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_bool.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_bool.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_pulse.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_pulse.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/loop/detail/Loop_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/loop/detail/Loop_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/loop/loop.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/loop/loop.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/detail/Mapper_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/detail/Mapper_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/mapper.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/mapper.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Clock_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Clock_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Scenario_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Scenario_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeConstraint_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeConstraint_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeEvent_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeEvent_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeNode_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeNode_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeProcess_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/scenario.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_atom.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_composition.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_fwd.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_not.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_bool.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_pulse.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/scenario.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_constraint.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_constraint.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_event.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_event.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_process.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_process.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_value.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/clock.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/clock.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/custom_state.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_execution_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_flatten_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_print_visitor.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/message.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/message.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state.hpp"
@@ -112,7 +78,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/tuple.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_base.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_comparison.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_traits.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/vec.hpp"
@@ -122,56 +87,108 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/network.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.hpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/editor.hpp"
+
+    ## Network ##
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_conversion.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/domain_visitors.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_address.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_address.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.cpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/channel.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/channel.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_common.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_name_table.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/message_generator.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/receiver.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/sender.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/string_view.hpp"
+    )
+
+set(SRCS
+    ${API_HEADERS}
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/automation.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/detail/Automation_impl.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/detail/Automation_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/detail/Curve_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/detail/Curve_impl.tpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_atom.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_composition.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_not.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_bool.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_pulse.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/loop/detail/Loop_impl.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/loop/detail/Loop_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/loop/loop.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/detail/Mapper_impl.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/detail/Mapper_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/mapper.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Clock_impl.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Clock_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Scenario_impl.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Scenario_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeConstraint_impl.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeConstraint_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeEvent_impl.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeEvent_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeNode_impl.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeNode_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeProcess_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/scenario.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_constraint.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_event.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_process.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/clock.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/message.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_address.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
 )
 
 add_library(ossia ${SRCS})
-target_link_libraries(ossia PUBLIC oscpack ModernMIDI)
+target_link_libraries(ossia PRIVATE oscpack ModernMIDI boost)
 
+# Compile options
 if(WIN32)
     target_compile_definitions(ossia PUBLIC
         NOMINMAX
@@ -200,27 +217,62 @@ else()
     -Werror=trigraphs)
 endif()
 
-set_target_properties(ossia PROPERTIES
-    CXX_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN 0)
-
-generate_export_header(ossia BASE_NAME OSSIA)
-target_include_directories(ossia
-    PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}"
-        "${CMAKE_CURRENT_BINARY_DIR}"
-        "${OSSIA_3RDPARTY_FOLDER}/variant/include"
-        "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot")
-
-
-target_include_directories(ossia PUBLIC ${Boost_INCLUDE_DIRS})
-
 if(OSSIA_SANITIZE)
     sanitize_build(ossia)
 else()
     use_gold(ossia)
 endif()
 add_linker_warnings(ossia)
+
+
+set_target_properties(ossia PROPERTIES
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN 0
+    VERSION 1.0
+    SOVERSION 1)
+
+generate_export_header(ossia BASE_NAME OSSIA)
+
+# Install
+install(TARGETS ossia
+    EXPORT ossia-targets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib/static
+    RUNTIME DESTINATION bin)
+
+# Install headers
+foreach(file ${API_HEADERS})
+    get_filename_component( dir ${file} DIRECTORY)
+    string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" dir_clean "${dir}")
+    install(FILES "${file}" DESTINATION "include/${dir_clean}" )
+endforeach()
+
+# Install export header
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ossia_export.h
+        DESTINATION include/)
+
+# Install used libraries headers
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/variant/include/
+        DESTINATION include/variant)
+
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include/
+        DESTINATION include/nano-signal-slot)
+
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/oscpack/oscpack
+        DESTINATION include)
+
+install(EXPORT ossia-targets
+        DESTINATION share/cmake
+        NAMESPACE ossia)
+
+target_include_directories(ossia
+    PUBLIC
+        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/variant/include>
+        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include>
+
+        $<INSTALL_INTERFACE:include/variant>
+        $<INSTALL_INTERFACE:include/nano-signal-slot>
+        $<INSTALL_INTERFACE:include/oscpack>)
 
 if(OSSIA_COVERAGE)
     setup_target_for_coverage(
