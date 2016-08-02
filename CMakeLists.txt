@@ -8,6 +8,7 @@ option(OSSIA_STATIC "Make a static build" OFF)
 option(OSSIA_COVERAGE "Run code coverage" OFF)
 option(OSSIA_EXAMPLES "Build examples" OFF)
 option(OSSIA_TESTING "Build tests" OFF)
+option(OSSIA_CI "Continuous integration run" OFF)
 
 # Configuration
 cmake_policy(SET CMP0020 NEW)

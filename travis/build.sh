@@ -26,16 +26,18 @@ case "$TRAVIS_OS_NAME" in
       Debug)
         $CMAKE_BIN -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$OSSIA_STATIC -DOSSIA_SANITIZE=1 -DOSSIA_TESTING=1 -DOSSIA_EXAMPLES=1 -DOSSIA_CI=1 ..
         $CMAKE_BIN --build . -- -j2
+        export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libasan.so.0
         $CMAKE_BIN --build . --target ExperimentalTest
       ;;
       Release)
         $CMAKE_BIN -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$OSSIA_STATIC -DOSSIA_SANITIZE=1 -DOSSIA_TESTING=1 -DOSSIA_EXAMPLES=1 -DOSSIA_CI=1 ..
         $CMAKE_BIN --build . -- -j2
+        export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libasan.so.0
         $CMAKE_BIN --build . --target ExperimentalTest
       ;;
       Coverage)
         gem install coveralls-lcov
-        $CMAKE_BIN -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=Debug -DOSSIA_TESTING=1 -DOSSIA_COVERAGE=1 ..
+        $CMAKE_BIN -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=Debug -DOSSIA_TESTING=1 -DOSSIA_COVERAGE=1 -DOSSIA_CI=1 ..
         $CMAKE_BIN --build . --target ossia_coverage
         mv coverage.info.cleaned coverage.info
         coveralls-lcov coverage.info
@@ -87,6 +89,7 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_EXAMPLES=1 \
                -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
+               -DOSSIA_CI=1 \
                ..
 
     $CMAKE_BIN --build . -- -j2
