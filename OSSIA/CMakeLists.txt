@@ -272,7 +272,7 @@ target_include_directories(ossia
 
         $<INSTALL_INTERFACE:include/variant>
         $<INSTALL_INTERFACE:include/nano-signal-slot>
-        $<INSTALL_INTERFACE:include/oscpack>)
+        $<INSTALL_INTERFACE:include>)
 
 if(OSSIA_COVERAGE)
     setup_target_for_coverage(
