@@ -1,0 +1,570 @@
+{
+    "Leonard_De_Vinci": {
+        "appName": "Chronologie",
+        "appVersion": "0.1",
+        "creatorName": "fr.blueyeti",
+        "security": {
+            "log": {
+                "type": "boolean",
+                "valueDefault": "true",
+                "priority": "0",
+                "description": "Enable log file generation",
+                "readonly": "0"
+            }
+        },
+        "network": {
+            "server_ip": {
+                "type": "string",
+                "valueDefault": "localhost",
+                "priority": "0",
+                "description": "IP address of the socket XML server"
+            },
+            "server_port": {
+                "type": "integer",
+                "valueDefault": "9999",
+                "rangeBounds": "9000 10000",
+                "valueStepSize": "1",
+                "priority": "0",
+                "description": "Listening port of the socket XML server",
+                "readonly": "0"
+            },
+            "is_master": {
+                "type": "boolean",
+                "valueDefault": "false",
+                "priority": "0",
+                "description": "Set application as server",
+                "readonly": "0"
+            }
+        },
+        "languages": {
+            "main": {
+                "type": "string",
+                "valueDefault": "FR",
+                "priority": "0",
+                "description": "Main language"
+            },
+            "second": {
+                "type": "string",
+                "valueDefault": "EN",
+                "priority": "0",
+                "description": "Second language"
+            },
+            "third": {
+                "type": "string",
+                "valueDefault": "IT",
+                "priority": "0",
+                "description": "Third language"
+            },
+            "enable_lsf": {
+                "type": "boolean",
+                "valueDefault": "false",
+                "priority": "0",
+                "description": "Enable french sign language"
+            }
+        },
+        "screen": {
+            "w": {
+                "type": "integer",
+                "valueDefault": "1920",
+                "rangeBounds": "800 1920",
+                "valueStepSize": "1",
+                "priority": "0",
+                "description": "Screen width resolution",
+                "readonly": "0"
+            },
+            "h": {
+                "type": "integer",
+                "valueDefault": "1080",
+                "rangeBounds": "600 1080",
+                "valueStepSize": "1",
+                "priority": "0",
+                "description": "Screen height resolution",
+                "readonly": "0"
+            },
+            "fullscreen": {
+                "type": "boolean",
+                "valueDefault": "true",
+                "priority": "0",
+                "description": "Enable fullscreen",
+                "readonly": "0"
+            },
+            "hideCursor": {
+                "type": "boolean",
+                "valueDefault": "true",
+                "priority": "0",
+                "description": "Hide the cursor",
+                "readonly": "0"
+            }
+        },
+        "input": {
+            "mouse_wheel_delta_intro": {
+                "type": "float",
+                "valueDefault": "1",
+                "rangeBounds": "1 20",
+                "valueStepSize": "1",
+                "priority": "0",
+                "description": "Mouse rotation speed value for language selection interface",
+                "readonly": "0"
+            },
+            "mouse_wheel_delta_timeline": {
+                "type": "float",
+                "valueDefault": "1",
+                "rangeBounds": "1 20",
+                "valueStepSize": "1",
+                "priority": "0",
+                "description": "Mouse rotation speed value for timeline interface",
+                "readonly": "0"
+            },
+            "sensor_speed_intro": {
+                "type": "float",
+                "valueDefault": "1",
+                "rangeBounds": "1 20",
+                "valueStepSize": "1",
+                "priority": "0",
+                "description": "Sensor rotation speed value for language selection interface",
+                "readonly": "0"
+            },
+            "sensor_speed_timeline": {
+                "type": "float",
+                "valueDefault": "1",
+                "rangeBounds": "1 20",
+                "valueStepSize": "1",
+                "priority": "0",
+                "description": "Sensor rotation speed value for timeline interface",
+                "readonly": "0"
+            },
+            "sensor_lookup_table": {
+                "type": "array",
+                "valueDefault": "1",
+                "priority": "0",
+                "readonly": "0"
+            },
+            "variable_speed": {
+                "type": "boolean",
+                "valueDefault": "true",
+                "priority": "0",
+                "description": "Enable variable rotation speed",
+                "readonly": "0"
+            }
+        },
+        "sound": {
+            "effects": {
+                "display_welcome_screen": {
+                    "filepath": {
+                        "type": "filepath",
+                        "valueDefault": "medias/sons/demarrer01.mp3",
+                        "priority": "0",
+                        "description": "Path of the sound file",
+                        "readonly": "0"
+                    },
+                    "volume": {
+                        "type": "integer",
+                        "valueDefault": "50",
+                        "rangeBounds": "0 100",
+                        "valueStepSize": "1",
+                        "priority": "0",
+                        "description": "Volume",
+                        "readonly": "0"
+                    }
+                },
+                "quit_welcome_screen": {
+                    "filepath": {
+                        "type": "filepath",
+                        "valueDefault": "medias/sons/reprise-rupture-time-out01.mp3",
+                        "priority": "0",
+                        "description": "Path of the sound file",
+                        "readonly": "0"
+                    },
+                    "volume": {
+                        "type": "integer",
+                        "valueDefault": "50",
+                        "rangeBounds": "0 100",
+                        "valueStepSize": "1",
+                        "priority": "0",
+                        "description": "Volume",
+                        "readonly": "0"
+                    }
+                },
+                "sensor_rotation": {
+                    "dynamicInstances": "true",
+                    "filepath": {
+                        "type": "filepath",
+                        "valueDefault": "medias/sons/Chrono_rotation01.mp3",
+                        "priority": "0",
+                        "description": "Path of the sound file",
+                        "readonly": "0"
+                    },
+                    "volume": {
+                        "type": "integer",
+                        "valueDefault": "50",
+                        "rangeBounds": "0 100",
+                        "valueStepSize": "1",
+                        "priority": "0",
+                        "description": "Volume",
+                        "readonly": "0"
+                    }
+                },
+                "open_popup": {
+                    "filepath": {
+                        "type": "filepath",
+                        "valueDefault": "medias/sons/Chrono_fenetre_affichage.mp3",
+                        "priority": "0",
+                        "description": "Path of the sound file",
+                        "readonly": "0"
+                    },
+                    "volume": {
+                        "type": "integer",
+                        "valueDefault": "50",
+                        "rangeBounds": "0 100",
+                        "valueStepSize": "1",
+                        "priority": "0",
+                        "description": "Volume",
+                        "readonly": "0"
+                    }
+                },
+                "close_popup": {
+                    "filepath": {
+                        "type": "filepath",
+                        "valueDefault": "medias/sons/retour02.mp3",
+                        "priority": "0",
+                        "description": "Path of the sound file",
+                        "readonly": "0"
+                    },
+                    "volume": {
+                        "type": "integer",
+                        "valueDefault": "50",
+                        "rangeBounds": "0 100",
+                        "valueStepSize": "1",
+                        "priority": "0",
+                        "description": "Volume",
+                        "readonly": "0"
+                    }
+                },
+                "validation": {
+                    "filepath": {
+                        "type": "filepath",
+                        "valueDefault": "medias/sons/valider01.mp3",
+                        "priority": "0",
+                        "description": "Path of the sound file",
+                        "readonly": "0"
+                    },
+                    "volume": {
+                        "type": "integer",
+                        "valueDefault": "50",
+                        "rangeBounds": "0 100",
+                        "valueStepSize": "1",
+                        "priority": "0",
+                        "description": "Volume",
+                        "readonly": "0"
+                    }
+                },
+                "button_start_timer": {
+                    "filepath": {
+                        "type": "filepath",
+                        "valueDefault": "medias/sons/valider02.mp3",
+                        "priority": "0",
+                        "description": "Path of the sound file",
+                        "readonly": "0"
+                    },
+                    "volume": {
+                        "type": "integer",
+                        "valueDefault": "50",
+                        "rangeBounds": "0 100",
+                        "valueStepSize": "1",
+                        "priority": "0",
+                        "description": "Volume",
+                        "readonly": "0"
+                    }
+                },
+                "button_timer": {
+                    "filepath": {
+                        "type": "filepath",
+                        "valueDefault": "medias/sons/Chrono_timer01.mp3",
+                        "priority": "0",
+                        "description": "Path of the sound file",
+                        "readonly": "0"
+                    },
+                    "volume": {
+                        "type": "integer",
+                        "valueDefault": "50",
+                        "rangeBounds": "0 100",
+                        "valueStepSize": "1",
+                        "priority": "0",
+                        "description": "Volume",
+                        "readonly": "0"
+                    }
+                },
+                "time_out": {
+                    "filepath": {
+                        "type": "filepath",
+                        "valueDefault": "medias/sons/alerte-time-out03.mp3",
+                        "priority": "0",
+                        "description": "Path of the sound file",
+                        "readonly": "0"
+                    },
+                    "volume": {
+                        "type": "integer",
+                        "valueDefault": "50",
+                        "rangeBounds": "0 100",
+                        "valueStepSize": "1",
+                        "priority": "0",
+                        "description": "Volume",
+                        "readonly": "0"
+                    }
+                },
+                "window_display": {
+                    "filepath": {
+                        "type": "filepath",
+                        "valueDefault": "medias/sons/Chrono_timer01.mp3",
+                        "priority": "0",
+                        "description": "Path of the sound file",
+                        "readonly": "0"
+                    },
+                    "volume": {
+                        "type": "integer",
+                        "valueDefault": "50",
+                        "rangeBounds": "0 100",
+                        "valueStepSize": "1",
+                        "priority": "0",
+                        "description": "Volume",
+                        "readonly": "0"
+                    }
+                }
+            },
+            "comments": {
+                "volume": {
+                    "type": "integer",
+                    "valueDefault": "50",
+                    "rangeBounds": "0 100",
+                    "valueStepSize": "1",
+                    "priority": "0",
+                    "description": "Volume",
+                    "readonly": "0"
+                }
+            },
+            "voices": {
+                "volume": {
+                    "type": "integer",
+                    "valueDefault": "100",
+                    "rangeBounds": "0 100",
+                    "valueStepSize": "1",
+                    "priority": "0",
+                    "description": "Volume",
+                    "readonly": "0"
+                }
+            }
+        },
+        "time": {
+            "language_validation": {
+                "type": "float",
+                "valueDefault": "2",
+                "rangeBounds": "1 10",
+                "valueStepSize": "0.1",
+                "priority": "0",
+                "description": "Language choice validation time (seconds)",
+                "readonly": "0"
+            },
+            "language_alternance": {
+                "type": "float",
+                "valueDefault": "3",
+                "rangeBounds": "1 10",
+                "valueStepSize": "0.1",
+                "priority": "0",
+                "description": "Language alternance time (seconds)",
+                "readonly": "0"
+            },
+            "inactivity": {
+                "type": "float",
+                "valueDefault": "10",
+                "rangeBounds": "1 500",
+                "valueStepSize": "0.1",
+                "priority": "0",
+                "description": "Inactivity time T1 (seconds)",
+                "readonly": "0"
+            },
+            "eventSelection": {
+                "type": "float",
+                "valueDefault": "1",
+                "rangeBounds": "1 5",
+                "valueStepSize": "0.1",
+                "priority": "0",
+                "description": "Event selection time T1 (seconds)",
+                "readonly": "0"
+            },
+            "gapTreshold": {
+                "type": "float",
+                "valueDefault": "5",
+                "rangeBounds": "1 10",
+                "valueStepSize": "0.1",
+                "priority": "0",
+                "description": "Gap threshold time T1 (seconds)",
+                "readonly": "0"
+            },
+            "welcome_back": {
+                "type": "float",
+                "valueDefault": "10",
+                "rangeBounds": "1 500",
+                "valueStepSize": "0.1",
+                "priority": "0",
+                "description": "Before welcome screen back time T2 (seconds)",
+                "readonly": "0"
+            },
+            "date_validation": {
+                "type": "float",
+                "valueDefault": "2",
+                "rangeBounds": "1 10",
+                "valueStepSize": "0.1",
+                "priority": "0",
+                "description": "Date choice validation time (seconds)",
+                "readonly": "0"
+            }
+        },
+        "welcome_screen": {
+            "instruction": {
+                "type": "string",
+                "valueDefault": "welcome",
+                "priority": "0",
+                "description": "Instruction text",
+                "readonly": "0"
+            },
+            "lsf_movie": {
+                "type": "filepath",
+                "valueDefault": "LSF-Accroche.flv",
+                "priority": "0",
+                "description": "LSF instruction movie",
+                "readonly": "0"
+            }
+        },
+        "language_screen": {
+            "instruction": {
+                "type": "string",
+                "valueDefault": "welcome",
+                "priority": "0",
+                "description": "Instruction text",
+                "readonly": "0"
+            },
+            "lsf_movie": {
+                "type": "filepath",
+                "valueDefault": "LSF-Accroche.flv",
+                "priority": "0",
+                "description": "LSF instruction movie",
+                "readonly": "0"
+            }
+        },
+        "timeline": {
+            "instruction": {
+                "type": "string",
+                "priority": "0",
+                "description": "Instruction text",
+                "readonly": "0"
+            },
+            "magnet_size": {
+                "type": "integer",
+                "valueDefault": "30",
+                "rangeBounds": "10 100",
+                "valueStepSize": "1",
+                "priority": "0",
+                "description": "Magnet size (pixels) around the center",
+                "readonly": "0"
+            },
+            "start_position": {
+                "type": "integer",
+                "valueDefault": "50",
+                "rangeBounds": "0 500",
+                "valueStepSize": "1",
+                "priority": "0",
+                "description": "Starting scroll value factor",
+                "readonly": "0"
+            },
+            "event": {
+                "dynamicInstances": "true",
+                "instanceBounds": "1 200",
+                "description": "Timeline item",
+                "date": {
+                    "type": "string",
+                    "priority": "0",
+                    "description": "Date",
+                    "readonly": "0"
+                },
+                "title": {
+                    "type": "string",
+                    "priority": "0",
+                    "description": "Title text",
+                    "readonly": "0"
+                },
+                "background": {
+                    "type": "filepath",
+                    "valueDefault": "background.jpg",
+                    "priority": "0",
+                    "description": "Path to the background picture file",
+                    "readonly": "0"
+                },
+                "audio": {
+                    "type": "filepath",
+                    "valueDefault": "audio.wav",
+                    "priority": "0",
+                    "description": "Path to the comment audio file",
+                    "readonly": "0"
+                },
+                "lsf_movie": {
+                    "type": "filepath",
+                    "valueDefault": "lsf_movie.flv",
+                    "priority": "0",
+                    "description": "Path to the comment LSF movie file",
+                    "readonly": "0"
+                },
+                "type": {
+                    "type": "integer",
+                    "valueDefault": "1",
+                    "rangeBounds": "1 3",
+                    "valueStepSize": "1",
+                    "priority": "0",
+                    "description": "Type of the event",
+                    "readonly": "0"
+                },
+                "popup": {
+                    "title": {
+                        "type": "string",
+                        "priority": "0",
+                        "description": "Popup title text",
+                        "readonly": "0"
+                    },
+                    "subtitle": {
+                        "type": "string",
+                        "priority": "0",
+                        "description": "Popup subtitle text",
+                        "readonly": "0"
+                    },
+                    "copyright": {
+                        "type": "string",
+                        "priority": "0",
+                        "description": "Popup copyright text",
+                        "readonly": "0"
+                    },
+                    "text": {
+                        "type": "string",
+                        "priority": "0",
+                        "description": "Item text",
+                        "readonly": "0"
+                    },
+                    "picture": {
+                        "type": "filepath",
+                        "valueDefault": "picture.jpg",
+                        "priority": "0",
+                        "description": "Path to the date picture file",
+                        "readonly": "0"
+                    }
+                }
+            }
+        },
+        "consigne": {
+            "audio": {
+                "type": "filepath",
+                "valueDefault": "consigne.mp3",
+                "priority": "0",
+                "description": "Chemin vers le fichier audio de consigne",
+                "readonly": "0"
+            }
+        }
+    }
+}

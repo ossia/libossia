@@ -26,7 +26,12 @@ endif()
 
 include(ossia_sources.cmake)
 
-add_library(ossia ${SRCS})
+if(APPLE AND OSSIA_FRAMEWORK)
+add_library(ossia MODULE ${SRCS} ${C_API_SRCS})
+set_target_properties(ossia PROPERTIES BUNDLE TRUE)
+else()
+add_library(ossia ${SRCS} ${C_API_SRCS})
+endif()
 target_link_libraries(ossia 
     PRIVATE ModernMIDI
     PUBLIC boost)
@@ -92,9 +97,11 @@ set_target_properties(ossia PROPERTIES
 endif()
 generate_export_header(ossia BASE_NAME OSSIA)
 
+target_compile_definitions(ossia PRIVATE RAPIDJSON_HAS_STDSTRING=1)
 target_include_directories(ossia
     PUBLIC
         $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/variant/include>
+        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/RapidJSON/include>
         $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include>
         $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI>
         $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI/third_party>
@@ -102,6 +109,7 @@ target_include_directories(ossia
 
         $<INSTALL_INTERFACE:include/variant>
         $<INSTALL_INTERFACE:include/nano-signal-slot>
+        $<INSTALL_INTERFACE:include/RapidJSON>
         $<INSTALL_INTERFACE:include>
         
     INTERFACE

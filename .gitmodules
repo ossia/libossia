@@ -14,3 +14,6 @@
 [submodule "3rdparty/nano-signal-slot"]
 	path = 3rdparty/nano-signal-slot
 	url = https://github.com/jcelerier/nano-signal-slot
+[submodule "3rdparty/rapidjson"]
+	path = 3rdparty/rapidjson
+	url = https://github.com/miloyip/rapidjson

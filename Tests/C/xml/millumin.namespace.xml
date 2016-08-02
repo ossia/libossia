@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<jamoma version="0.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jamoma.org/ file:jamoma.xsd">
+<!--"Namespace de Millumin
+Est pilotable via I-score :
+- La séquence : 
+	- Lancer/Stopper la colonne X (numéro de colonne)
+	- Lancer la colonne X (numéro de colonne)
+	- Stopper la colonne X (numéro de colonne)
+	- Lancer/Stopper la colonne nommée "X" (nom de la colonne)
+
+- 10 layer :
+	- Opacité (O-100)
+	- Position X (-3000 3000)
+	- Position Y (-1000 1000)
+	- Rotation (-360 360)
+	- Echelle (0 400)
+
+- Controle du media :
+	- Temps du media : (0 1)
+	- Temps du media en second (0 10000)
+	- Vitesse : (-200 200)
+	- 
+"-->
+<application author="Renaud Roubiano - Benjamin Nesme" version="v1.1" name="millumin" type="proxy">
+<!--"a layer model"-->
+
+<node address="millumin" object="Container" service="model" priority="0">
+
+  <!--"Paramètres du layer"-->
+	<node address="action">
+		<node address="launchOrStopColumn" object="Data" service="parameter" type="integer" rangeBounds="0 100" priority="1" valueDefault="0"/>
+		<node address="launchColumn" object="Data" service="parameter" type="integer" rangeBounds="0 100" priority="2" valueDefault="0"/>
+		<node address="stopColumn" object="Data" service="parameter" type="integer" rangeBounds="0 100" priority="3" valueDefault="0"/>
+		<node address="launchOrStopColumnWithName" object="Data" service="parameter" type="string" priority="4" valueDefault="0"/>
+	</node>
+
+	<node address="layer">
+		<node address="opacity">
+			<node address="instance" object="Data" instance="10" service="parameter" type="decimal" repetitionsFilter="1" rangeBounds="0 100" priority="5" valueDefault="100" rangeClipmode="both"/>
+		</node>
+		<node address="x">
+			<node address="instance" object="Data" instance="10" service="parameter" type="decimal" repetitionsFilter="1" rangeBounds="-3000 3000" priority="6" valueDefault="0"/>
+		</node>
+		<node address="y">
+			<node address="instance" object="Data" instance="10" service="parameter" type="decimal" repetitionsFilter="1" rangeBounds="-1000 1000" priority="7" valueDefault="0"/>
+		</node>
+		<node address="rotation">
+			<node address="instance" object="Data" instance="10" service="parameter" type="decimal" repetitionsFilter="1" rangeBounds="-3600 3600" priority="8" valueDefault="0"/>
+		</node>
+		<node address="scale">
+			<node address="instance" object="Data" instance="10" service="parameter" type="decimal" repetitionsFilter="1" rangeBounds="0 400" priority="9" valueDefault="0"/>
+		</node>
+		
+	  	<!--"Paramètres du media"-->
+		<node address="media">
+			<node address="time">
+				<node address="instance" object="Data" instance="10" service="parameter" type="decimal" repetitionsFilter="1" rangeBounds="0 1" priority="10" valueDefault="0"/>
+			</node>
+			<node address="timeInSeconds">
+				<node address="instance" object="Data" instance="10" service="parameter" type="decimal" repetitionsFilter="1" rangeBounds="0 10000" priority="11" valueDefault="0"/>
+			</node>
+			<node address="speed">
+				<node address="instance" object="Data" instance="10" service="parameter" type="decimal" repetitionsFilter="1" rangeBounds="-200 200" priority="12" valueDefault="0"/>
+			</node>
+		</node>
+	</node>
+</node>
+
+</application>>
+</jamoma>

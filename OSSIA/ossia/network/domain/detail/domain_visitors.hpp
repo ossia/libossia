@@ -24,8 +24,6 @@ struct domain_clamp_visitor
 
 struct domain_min_visitor
 {
-  bounding_mode b;
-
   template <typename T>
   auto operator()(const T& value) -> decltype((T().min)(), ossia::value())
   {
@@ -39,10 +37,38 @@ struct domain_min_visitor
   }
 };
 
+struct domain_set_min_visitor
+{
+  const ossia::value& val;
+  template <typename T>
+  auto operator()(const domain_base<T>& domain) -> decltype((T().min)(), void())
+  {
+    //value.min = value;
+  }
+
+  template <typename... T>
+  void operator()(const T&...)
+  {
+  }
+};
+
+struct domain_set_max_visitor
+{
+  const ossia::value& val;
+  template <typename T>
+  auto operator()(const domain_base<T>& domain) -> decltype((T().min)(), void())
+  {
+    //value.min = value;
+  }
+
+  template <typename... T>
+  void operator()(const T&...)
+  {
+  }
+};
+
 struct domain_max_visitor
 {
-  bounding_mode b;
-
   template <typename T>
   auto operator()(const T& value) -> decltype((T().max)(), ossia::value())
   {

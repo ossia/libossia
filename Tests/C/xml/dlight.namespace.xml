@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<jamoma version="0.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jamoma.org/ file:jamoma.xsd">
+
+<!--"Namespace de DLight V1.1
+Est pilotable via I-score :
+- 512 circuits (1 univers DMX)
+- La séquence : 
+	- GO : Envoyer le message
+	- FadeX : ces deux paramètres permettent de créer des courbes sur un transfert. (interpolation de 0 à 255) :
+	  fadeX1 : valeur du fade X1
+	  fadeX2 : valeur du fade X2 
+	- X1 : pas de séquence chargé en X1 (déclenche la séquence)
+	- X2 : pas de séquence chargé en X2 (en préparation)
+- 20 submasters (classer par numéro de sub)
+	- level (0-255)
+	- flash (0-255) (peut aussi déclencher des submasters temporisés si le mode time est activé dans le sub)
+	Note : si besoin de plus de submaster, un simple copier/coller...
+- le grand master (O-255)
+
+"-->
+ <application author="Renaud Rubiano et Benjamin Nesme" version="v1.1" name="dlight" type="proxy">
+	
+	<node address="circ" object="Container" service="model" priority="0">
+		<node address="instance" object="Data" instance="512" service="parameter" type="decimal" rangeBounds="0 255" priority="1" valueDefault="0" rangeClipmode="both" repetitionsFilter="1"/>
+	</node>
+
+	<node address="grandmaster" priority="1" tag="intensity intensité" object="Data" service="parameter" type="integer" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+
+	<node address="seq">
+		<node address="go" priority="1" tag="action séquence" object="Data" service="parameter" type="decimal" rangeBounds="0 1000" rangeClipmode="both" repetitionsFilter="0"/>
+		<node address="fadeX1" priority="1" tag="action séquence" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+		<node address="fadeX2" priority="1" tag="action séquence" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+		<node address="X1" priority="1" tag="action séquence" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+		<node address="X2" priority="1" tag="action séquence" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+	</node>
+
+
+	<node address="sub">
+		<node address="1">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="2">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="3">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="4">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="5">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="6">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="7">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="8">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="9">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="10">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="11">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="12">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="13">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="14">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="15">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="16">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="17">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="18">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="19">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+		<node address="20">
+			<node address="level" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="0"/>
+			<node address="flash" priority="1" tag="submaster" object="Data" service="parameter" type="decimal" rangeBounds="0 255" rangeClipmode="both" repetitionsFilter="1"/>
+		</node>
+	</node>
+ </application>>
+</jamoma>

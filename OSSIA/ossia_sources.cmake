@@ -161,3 +161,31 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
 )
+
+set(C_API_HEADERS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia-c.h"
+
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/log/ossia_log.h"
+
+  #"${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/preset.h"
+  #"${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/result.h"
+    )
+
+set(C_API_SRCS
+    "${C_API_HEADERS}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_utils.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_protocol.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_node.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_device.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_address.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_value.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_domain.cpp"
+
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/log/ossia_log.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/log/tinyformat.h"
+  
+  #"${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/preset.hpp"
+  #"${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/preset.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/exception.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/exception.cpp"
+    )

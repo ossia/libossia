@@ -1,0 +1,630 @@
+{
+    "label": "Leonard De Vinci",
+    "content": [
+        {
+            "node": {
+                "frame": "true",
+                "label" : "Chronologie",
+                "content": [
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/security/log",
+                            "label": "Enable log file generation",
+                            "valueDefault": "true",
+                            "description": "Enable log file generation"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/network/server_ip",
+                            "label": "network/server_ip",
+                            "valueDefault": "localhost",
+                            "description": "IP address of the socket XML server"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/network/server_port",
+                            "label": "network/server_port",
+                            "valueDefault": "9999",
+                            "rangeBounds": "9000 10000",
+                            "valueStepSize": "1",
+                            "description": "Listening port of the socket XML server"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/network/is_master",
+                            "label": "network/is_master",
+                            "valueDefault": "false",
+                            "description": "Set application as server"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/languages/main",
+                            "label": "languages/main",
+                            "valueDefault": "FR",
+                            "description": "Main language"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/languages/second",
+                            "label": "languages/second",
+                            "valueDefault": "EN",
+                            "description": "Second language"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/languages/third",
+                            "label": "languages/third",
+                            "valueDefault": "IT",
+                            "description": "Third language"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/languages/enable_lsf",
+                            "label": "languages/enable_lsf",
+                            "valueDefault": "false",
+                            "description": "Enable french sign language"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/screen/w",
+                            "label": "screen/w",
+                            "valueDefault": "1920",
+                            "rangeBounds": "800 1920",
+                            "valueStepSize": "1",
+                            "description": "Screen width resolution"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/screen/h",
+                            "label": "screen/h",
+                            "valueDefault": "1080",
+                            "rangeBounds": "600 1080",
+                            "valueStepSize": "1",
+                            "description": "Screen height resolution"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/screen/fullscreen",
+                            "label": "screen/fullscreen",
+                            "valueDefault": "true",
+                            "description": "Enable fullscreen"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/screen/hideCursor",
+                            "label": "screen/hideCursor",
+                            "valueDefault": "true",
+                            "description": "Hide the cursor"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/input/mouse_wheel_delta_intro",
+                            "label": "input/mouse_wheel_delta_intro",
+                            "valueDefault": "1",
+                            "rangeBounds": "1 20",
+                            "valueStepSize": "1",
+                            "description": "Mouse rotation speed value for language selection interface"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/input/mouse_wheel_delta_timeline",
+                            "label": "input/mouse_wheel_delta_timeline",
+                            "valueDefault": "1",
+                            "rangeBounds": "1 20",
+                            "valueStepSize": "1",
+                            "description": "Mouse rotation speed value for timeline interface"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/input/sensor_speed_intro",
+                            "label": "input/sensor_speed_intro",
+                            "valueDefault": "1",
+                            "rangeBounds": "1 20",
+                            "valueStepSize": "1",
+                            "description": "Sensor rotation speed value for language selection interface"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/input/sensor_speed_timeline",
+                            "label": "input/sensor_speed_timeline",
+                            "valueDefault": "1",
+                            "rangeBounds": "1 20",
+                            "valueStepSize": "1",
+                            "description": "Sensor rotation speed value for timeline interface"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/input/sensor_lookup_table",
+                            "label": "input/sensor_lookup_table"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/input/variable_speed",
+                            "label": "input/variable_speed",
+                            "valueDefault": "true",
+                            "description": "Enable variable rotation speed"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/display_welcome_screen/filepath",
+                            "label": "display_welcome_screen/filepath",
+                            "valueDefault": "medias/sons/demarrer01.mp3",
+                            "description": "Path of the sound file"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/display_welcome_screen/volume",
+                            "label": "display_welcome_screen/volume",
+                            "valueDefault": "50",
+                            "rangeBounds": "0 100",
+                            "description": "Volume"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/quit_welcome_screen/filepath",
+                            "label": "quit_welcome_screen/filepath",
+                            "valueDefault": "medias/sons/reprise-rupture-time-out01.mp3",
+                            "description": "Path of the sound file"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/quit_welcome_screen/volume",
+                            "label": "quit_welcome_screen/volume",
+                            "valueDefault": "50",
+                            "rangeBounds": "0 100",
+                            "description": "Volume"
+                        }
+                    },
+                    {
+                        "node": {
+                            "address": "Leonard_De_Vinci/sound/effects/sensor_rotation",
+                            "label": "sensor_rotation",
+                            "dynamicInstances": "true",
+                            "instanceBounds": "2 100",
+                            "content": [
+                                {
+                                    "input": {
+                                        "relativeAddress": "filepath",
+                                        "label": "sensor_rotation/filepath",
+                                        "valueDefault": "medias/sons/Chrono_rotation01.mp3",
+                                        "description": "Path of the sound file"
+                                    }
+                                },
+                                {
+                                    "input": {
+                                        "relativeAddress": "volume",
+                                        "label": "sensor_rotation/volume",
+                                        "valueDefault": "50",
+                                        "rangeBounds": "0 100",
+                                        "description": "Volume",
+                                        "dynamicInstances": true,
+                                        "instanceBounds": "2 100"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/open_popup/filepath",
+                            "label": "open_popup/filepath",
+                            "valueDefault": "medias/sons/Chrono_fenetre_affichage.mp3",
+                            "description": "Path of the sound file"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/open_popup/volume",
+                            "label": "open_popup/volume",
+                            "valueDefault": "50",
+                            "rangeBounds": "0 100",
+                            "description": "Volume"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/close_popup/filepath",
+                            "label": "close_popup/filepath",
+                            "valueDefault": "medias/sons/retour02.mp3",
+                            "description": "Path of the sound file"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/close_popup/volume",
+                            "label": "close_popup/volume",
+                            "valueDefault": "50",
+                            "rangeBounds": "0 100",
+                            "description": "Volume"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/validation/filepath",
+                            "label": "validation/filepath",
+                            "valueDefault": "medias/sons/valider01.mp3",
+                            "description": "Path of the sound file"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/validation/volume",
+                            "label": "validation/volume",
+                            "valueDefault": "50",
+                            "rangeBounds": "0 100",
+                            "description": "Volume"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/button_start_timer/filepath",
+                            "label": "button_start_timer/filepath",
+                            "valueDefault": "medias/sons/valider02.mp3",
+                            "description": "Path of the sound file"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/button_start_timer/volume",
+                            "label": "button_start_timer/volume",
+                            "valueDefault": "50",
+                            "rangeBounds": "0 100",
+                            "description": "Volume"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/button_timer/filepath",
+                            "label": "button_timer/filepath",
+                            "valueDefault": "medias/sons/Chrono_timer01.mp3",
+                            "description": "Path of the sound file"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/button_timer/volume",
+                            "label": "button_timer/volume",
+                            "valueDefault": "50",
+                            "rangeBounds": "0 100",
+                            "description": "Volume"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/time_out/filepath",
+                            "label": "time_out/filepath",
+                            "valueDefault": "medias/sons/alerte-time-out03.mp3",
+                            "description": "Path of the sound file"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/time_out/volume",
+                            "label": "time_out/volume",
+                            "valueDefault": "50",
+                            "rangeBounds": "0 100",
+                            "description": "Volume"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/window_display/filepath",
+                            "label": "window_display/filepath",
+                            "valueDefault": "medias/sons/Chrono_timer01.mp3",
+                            "description": "Path of the sound file"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/effects/window_display/volume",
+                            "label": "window_display/volume",
+                            "valueDefault": "50",
+                            "rangeBounds": "0 100",
+                            "description": "Volume"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/comments/volume",
+                            "label": "comments/volume",
+                            "valueDefault": "50",
+                            "rangeBounds": "0 100",
+                            "description": "Volume"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/sound/voices/volume",
+                            "label": "voices/volume",
+                            "valueDefault": "100",
+                            "rangeBounds": "0 100",
+                            "description": "Volume"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/time/language_validation",
+                            "label": "time/language_validation",
+                            "valueDefault": "2",
+                            "rangeBounds": "1 10",
+                            "valueStepSize": "0.1",
+                            "description": "Language choice validation time (seconds)"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/time/language_alternance",
+                            "label": "time/language_alternance",
+                            "valueDefault": "3",
+                            "rangeBounds": "1 10",
+                            "valueStepSize": "0.1",
+                            "description": "Language alternance time (seconds)"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/time/inactivity",
+                            "label": "time/inactivity",
+                            "valueDefault": "10",
+                            "rangeBounds": "1 500",
+                            "valueStepSize": "0.1",
+                            "description": "Inactivity time T1 (seconds)"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/time/eventSelection",
+                            "label": "time/eventSelection",
+                            "valueDefault": "1",
+                            "rangeBounds": "1 5",
+                            "valueStepSize": "0.1",
+                            "description": "Event selection time T1 (seconds)"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/time/gapTreshold",
+                            "label": "time/gapTreshold",
+                            "valueDefault": "5",
+                            "rangeBounds": "1 10",
+                            "valueStepSize": "0.1",
+                            "description": "Gap threshold time T1 (seconds)"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/time/welcome_back",
+                            "label": "time/welcome_back",
+                            "valueDefault": "10",
+                            "rangeBounds": "1 500",
+                            "valueStepSize": "0.1",
+                            "description": "Before welcome screen back time T2 (seconds)"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/time/date_validation",
+                            "label": "time/date_validation",
+                            "valueDefault": "2",
+                            "rangeBounds": "1 10",
+                            "valueStepSize": "0.1",
+                            "description": "Date choice validation time (seconds)"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/welcome_screen/instruction",
+                            "label": "welcome_screen/instruction",
+                            "valueDefault": "welcome",
+                            "description": "Instruction text"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/welcome_screen/lsf_movie",
+                            "label": "welcome_screen/lsf_movie",
+                            "valueDefault": "LSF-Accroche.flv",
+                            "description": "LSF instruction movie"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/language_screen/instruction",
+                            "label": "language_screen/instruction",
+                            "valueDefault": "welcome",
+                            "description": "Instruction text"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/language_screen/lsf_movie",
+                            "label": "language_screen/lsf_movie",
+                            "valueDefault": "LSF-Accroche.flv",
+                            "description": "LSF instruction movie"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/timeline/instruction",
+                            "label": "timeline/instruction",
+                            "description": "Instruction text"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/timeline/magnet_size",
+                            "label": "timeline/magnet_size",
+                            "valueDefault": "30",
+                            "rangeBounds": "10 100",
+                            "valueStepSize": "1",
+                            "description": "Magnet size (pixels) around the center"
+                        }
+                    },
+                    {
+                        "input": {
+                            "address": "Leonard_De_Vinci/timeline/start_position",
+                            "label": "timeline/start_position",
+                            "valueDefault": "50",
+                            "rangeBounds": "0 500",
+                            "valueStepSize": "1",
+                            "description": "Starting scroll value factor"
+                        }
+                    },
+                    {
+                        "node": {
+                            "address": "Leonard_De_Vinci/timeline/event",
+                            "label": "Timeline item",
+                            "dynamicInstances": "true",
+                            "instanceBounds": "1 200",
+                            "content": [
+                                {
+                                    "input": {
+                                        "relativeAddress": "date",
+                                        "label": "date",
+                                        "description": "Date"
+                                    }
+                                },
+                                {
+                                    "input": {
+                                        "relativeAddress": "title",
+                                        "label": "title",
+                                        "description": "Title text",
+                                        "locales": "FR EN IT"
+                                    }
+                                },
+                                {
+                                    "input": {
+                                        "relativeAddress": "background",
+                                        "label": "background",
+                                        "valueDefault": "background.jpg",
+                                        "description": "Path to the background picture file"
+                                    }
+                                },
+                                {
+                                    "input": {
+                                        "relativeAddress": "audio",
+                                        "label": "audio",
+                                        "valueDefault": "audio.wav",
+                                        "description": "Path to the comment audio file",
+                                        "locales": "FR EN IT"
+                                    }
+                                },
+                                {
+                                    "input": {
+                                        "relativeAddress": "lsf_movie",
+                                        "label": "lsf_movie",
+                                        "valueDefault": "lsf_movie.flv",
+                                        "description": "Path to the comment LSF movie file"
+                                    }
+                                },
+                                {
+                                    "input": {
+                                        "type": "list",
+                                        "relativeAddress": "type",
+                                        "label": "type",
+                                        "valueDefault": "1",
+                                        "rangeBounds": "1 3",
+                                        "description": "Type of the event",
+                                        "options": [
+                                            {
+                                                "value": "1",
+                                                "text": "Léonard de Vinci sa vie son oeuvre"
+                                            },
+                                            {
+                                                "value": "2",
+                                                "text": "Histoire culturelle arts, sciences et techniques"
+                                            },
+                                            {
+                                                "value": "3",
+                                                "text": "Histoire politique et sociale"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "input": {
+                                        "relativeAddress": "popup/title",
+                                        "label": "legend",
+                                        "description": "Popup title text",
+                                        "locales": "FR EN IT"
+                                    }
+                                },
+                                {
+                                    "input": {
+                                        "relativeAddress": "popup/subtitle",
+                                        "label": "subtitle",
+                                        "description": "Popup subtitle text",
+                                        "locales": "FR EN IT"
+                                    }
+                                },
+                                {
+                                    "input": {
+                                        "relativeAddress": "popup/copyright",
+                                        "label": "credits",
+                                        "description": "Popup credits text",
+                                        "locales": "FR EN IT"
+                                    }
+                                },
+                                {
+                                    "input": {
+                                        "type": "html",
+                                        "relativeAddress": "popup/text",
+                                        "label": "text",
+                                        "description": "Item text",
+                                        "locales": "FR EN IT"
+                                    }
+                                },
+                                {
+                                    "input": {
+                                        "relativeAddress": "popup/picture",
+                                        "label": "picture",
+                                        "valueDefault": "picture.jpg",
+                                        "description": "Path to the date picture file"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "node": {
+                            "address": "Leonard_De_Vinci/consigne",
+                            "label": "Consignes",
+                            "dynamicInstances": "true",
+                            "instanceBounds": "1 5",
+                            "content": [
+                                {
+                                    "input": {
+                                        "relativeAddress": "audio",
+                                        "label": "consigne/audio",
+                                        "locales": "FR EN IT"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

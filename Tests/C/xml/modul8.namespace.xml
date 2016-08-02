@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<jamoma version="0.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jamoma.org/ file:jamoma.xsd">
+    <application author="Renaud Rubiano" version="2" name="modul8" type="proxy">
+        <ui object="Container" service="model" priority="0">
+            <focus object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="1 10" priority="0" valueDefault="1"/>
+        </ui>
+        <master object="Container" service="model" priority="0">
+            <still object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="1" valueDefault="0"/>
+            <flash object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="2" valueDefault="0"/>
+            <invColor object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="3" valueDefault="0"/>
+            <soundOutLevel object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="4" valueDefault="0"/>
+            <traceLevel object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="5" valueDefault="0"/>
+            <soundLevelCapture object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="6" valueDefault="0.708"/>
+            <invColorB object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="7" valueDefault="0"/>
+            <invColorG object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="8" valueDefault="0"/>
+            <invColorR object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="9" valueDefault="0"/>
+            <addColorB object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="10" valueDefault="0"/>
+            <addColorG object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="11" valueDefault="0"/>
+            <addColorR object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="12" valueDefault="0"/>
+            <backgroundColorB object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="13" valueDefault="0"/>
+            <backgroundColorG object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="14" valueDefault="0"/>
+            <backgroundColorR object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="15" valueDefault="0"/>
+            <alpha object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="16" valueDefault="1"/>
+            <scale object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="17" valueDefault="0.5"/>
+            <speed object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="18" valueDefault="0.5"/>
+            <TimeRecPosition object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="19" valueDefault="0"/>
+            <layerSetGroupB object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 7" priority="20" valueDefault="0"/>
+            <layerSetGroupA object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 7" priority="21" valueDefault="0"/>
+            <crossfader>
+                <scaleGroupAOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="22" valueDefault="0"/>
+                <alphaGroupAOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="23" valueDefault="0"/>
+                <scaleGroupBOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="24" valueDefault="0"/>
+                <alphaGroupBOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="25" valueDefault="0"/>
+                <slider object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="26" valueDefault="0"/>
+            </crossfader>
+        </master>
+        <node address="layer" object="Container" instance="10" service="model" priority="0">
+            <mediaSet object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 8" priority="1" valueDefault="0"/>
+            <media object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 999" priority="2" valueDefault="999"/>
+            <auto object="Container" priority="0">
+                <colorCurve object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="3" valueDefault="3"/>
+                <colorOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="4" valueDefault="0"/>
+                <colorASpeed object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="5" valueDefault="0"/>
+                <colorBSpeed object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="6" valueDefault="0"/>
+                <colorGSpeed object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="7" valueDefault="0"/>
+                <colorRSpeed object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="8" valueDefault="0"/>
+                <colorAdditiveOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="9" valueDefault="1"/>
+                <colorModulateOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="10" valueDefault="0"/>
+                <rotateOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="11" valueDefault="0"/>
+                <rotateStrob object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="12" valueDefault="0"/>
+                <rotateYDirection object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="13" valueDefault="0"/>
+                <rotateZDirection object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="14" valueDefault="0"/>
+                <rotateXDirection object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="15" valueDefault="0"/>
+                <rotateYSpeed object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="16" valueDefault="0"/>
+                <rotateZSpeed object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="17" valueDefault="0"/>
+                <rotateXSpeed object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="18" valueDefault="0"/>
+                <moveCurve object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 9" priority="19" valueDefault="3"/>
+                <moveOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="20" valueDefault="0"/>
+                <moveXY object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 2" priority="21" valueDefault="0"/>
+                <moveStrob object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="22" valueDefault="0"/>
+                <moveSpeed object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="23" valueDefault="0"/>
+                <moveSize object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="25" valueDefault="0">
+                    <factor object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="1 8" priority="24" valueDefault="1"/>
+                </moveSize>
+                <scaleCurve object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 9" priority="26" valueDefault="0"/>
+                <scaleOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="27" valueDefault="0"/>
+                <scaleXY_ object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 4" priority="28" valueDefault="0"/>
+                <scaleStrob object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="29" valueDefault="0"/>
+                <scaleSize object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="30" valueDefault="0"/>
+                <scaleSpeed object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="31" valueDefault="0"/>
+            </auto>
+            <transformer object="Container" priority="0">
+                <on object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="32" valueDefault="0"/>
+                <type object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 2" priority="33" valueDefault="0"/>
+                <particle object="Container" priority="0">
+                    <applyLocalAngleOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="34" valueDefault="1"/>
+                    <scaleFadeOut object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="35" valueDefault="0"/>
+                    <scaleFadeIn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="36" valueDefault="0"/>
+                    <alphaFadeOut object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="37" valueDefault="1"/>
+                    <alphaFadeIn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="38" valueDefault="1"/>
+                    <localScale object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="39" valueDefault="0.500000"/>
+                    <gravity object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="40" valueDefault="0"/>
+                    <radiusSource object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="41" valueDefault="0.200000"/>
+                    <cutOffAngleY object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="42" valueDefault="0.200000"/>
+                    <cutOffAngleX object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="43" valueDefault="0.200000"/>
+                    <speed object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="44" valueDefault="0.500000"/>
+                    <life object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="45" valueDefault="0.200000"/>
+                    <particlesPerSec object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="46" valueDefault="0.200000"/>
+                </particle>
+                <patch object="Container" priority="0">
+                    <thickness object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 20" priority="47" valueDefault="1"/>
+                    <subdivY object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="1 200" priority="48" valueDefault="50"/>
+                    <subdivX object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="1 200" priority="49" valueDefault="50"/>
+                    <soundInputVdelayOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="50" valueDefault="0"/>
+                    <dmapingAlphaOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="51" valueDefault="0"/>
+                    <colorOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="52" valueDefault="1"/>
+                    <soundInputValue object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="53" valueDefault="0"/>
+                    <noiseLevel object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="54" valueDefault="0"/>
+                    <dmappingLevel object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="55" valueDefault="0"/>
+                    <fillMode object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 2" priority="56" valueDefault="0"/>
+                    <shapeType object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 3" priority="57" valueDefault="0"/>
+                </patch>
+                <matrix object="Container" priority="0">
+                    <flipXuYe object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 3" priority="58" valueDefault="0"/>
+                    <flipXeYe object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 3" priority="59" valueDefault="0"/>
+                    <flipXuYu object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 3" priority="60" valueDefault="0"/>
+                    <flipXeYu object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 3" priority="61" valueDefault="0"/>
+                    <extrusionLevel object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="62" valueDefault="0"/>
+                    <deepSpace object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="63" valueDefault="0"/>
+                    <planarSpace object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="64" valueDefault="0"/>
+                    <zValue object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 10" priority="65" valueDefault="1"/>
+                    <yValue object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 10" priority="66" valueDefault="2"/>
+                    <xValue object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 10" priority="67" valueDefault="2"/>
+                    <resize object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="68" valueDefault="1"/>
+                </matrix>
+            </transformer>
+            <transition object="Container" priority="0">
+                <durationDelta object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="69" valueDefault="0"/>
+                <type object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="70" valueDefault="0"/>
+                <duration object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="71" valueDefault="0.500000"/>
+            </transition>
+            <soundOutLinkToAlphaAndCrossfader object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="72" valueDefault="1"/>
+            <soundOutBalance object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="73" valueDefault="0.500000"/>
+            <soundOutLevel object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="74" valueDefault="1"/>
+            <movie object="Container" priority="0">
+                <positionOut object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="75" valueDefault="1"/>
+                <positionIn object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="76" valueDefault="0"/>
+                <shuttle1 object="Data" service="parameter" type="decimal" rangeClipmode="both" rangeBounds="0 1" priority="77" valueDefault="0"/>
+                <shuttle2 object="Data" service="parameter" type="decimal" rangeClipmode="both" rangeBounds="0 1" priority="78" valueDefault="0"/>
+                <playDirection object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="79" valueDefault="0"/>
+                <loopMode object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 2" priority="80" valueDefault="0"/>
+                <speedFactor object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="81" valueDefault="0.250000"/>
+            </movie>
+            <color object="Container" priority="0">
+                <additiveB object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="82" valueDefault="0"/>
+                <additiveG object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="83" valueDefault="0"/>
+                <additiveR object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="84" valueDefault="0"/>
+                <modulateB object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="85" valueDefault="1"/>
+                <modulateG object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="86" valueDefault="1"/>
+                <modulateR object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="87" valueDefault="1"/>
+            </color>
+            <scale object="Container" priority="0">
+                <z object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="88" valueDefault="0"/>
+                <y object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="89" valueDefault="0"/>
+                <x object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="90" valueDefault="0"/>
+                <uniform object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="91" valueDefault="0.500000"/>
+                <factorXYZ object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="1 99" priority="92" valueDefault="1"/>
+                <factorUniform object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 2" priority="93" valueDefault="2"/>
+                <normalizeOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="94" valueDefault="0"/>
+            </scale>
+            <fieldOfView object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="95" valueDefault="0.500000"/>
+            <rotation object="Container" priority="0">
+                <z object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="96" valueDefault="0"/>
+                <y object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="97" valueDefault="0"/>
+                <x object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="98" valueDefault="0"/>
+            </rotation>
+            <pixelFX object="Container" priority="0">
+                <noiseOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="99" valueDefault="0"/>
+                <noiseAlpha object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="100" valueDefault="0"/>
+                <noiseRGBOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="101" valueDefault="1"/>
+                <noiseColored object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="102" valueDefault="0"/>
+                <noiseLevel object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="103" valueDefault="0.500000"/>
+                <lightnessOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="104" valueDefault="0"/>
+                <lightnessType object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="105" valueDefault="0"/>
+                <lightnessLevel object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="106" valueDefault="0.500000"/>
+                <blurOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="107" valueDefault="0"/>
+                <blurType object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="108" valueDefault="0"/>
+                <blurLevel object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="109" valueDefault="0.500000"/>
+                <saturationOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="110" valueDefault="0"/>
+                <saturationInverse object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="111" valueDefault="0"/>
+                <saturationBoost object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="112" valueDefault="0"/>
+                <saturationLevel object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="113" valueDefault="0.500000"/>
+                <contrastOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="114" valueDefault="0"/>
+                <contrastInverse object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="115" valueDefault="0"/>
+                <contrastBoost object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="116" valueDefault="0"/>
+                <contrastLevel object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="117" valueDefault="0.500000"/>
+                <lumaOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="118" valueDefault="0"/>
+                <lumaType object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="119" valueDefault="1"/>
+                <lumaPreserveAlpha object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="120" valueDefault="1"/>
+            </pixelFX>
+            <blendMode object="Data" service="parameter" type="integer" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 5" priority="121" valueDefault="0"/>
+            <record_stopPlayRec object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="122" valueDefault="0"/>
+            <position object="Container" priority="0">
+                <y object="Data" service="parameter" type="decimal" repetitionsFilter="1" priority="123" valueDefault="0"/>
+                <x object="Data" service="parameter" type="decimal" repetitionsFilter="1" priority="124" valueDefault="0"/>
+            </position>
+            <hidden object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="125" valueDefault="0"/>
+            <alpha object="Data" service="parameter" type="decimal" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="126" valueDefault="1"/>
+            <record object="Container" priority="0">
+                <eraseOn object="Data" service="parameter" type="boolean" repetitionsFilter="1" rangeClipmode="both" rangeBounds="0 1" priority="127" valueDefault="0"/>
+            </record>
+        </node>
+    </application>
+</jamoma>

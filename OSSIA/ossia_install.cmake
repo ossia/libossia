@@ -30,6 +30,10 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include/
         DESTINATION include/nano-signal-slot
         COMPONENT Devel)
 
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/RapidJSON/include/
+        DESTINATION include/RapidJSON
+        COMPONENT Devel)
+
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/oscpack/oscpack
         DESTINATION include
         COMPONENT Devel)

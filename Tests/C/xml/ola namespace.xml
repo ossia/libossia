@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<jamoma version="0.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jamoma.org/ file:jamoma.xsd">
+ <application author="Renaud Rubiano" version="v1" name="ola" type="proxy">
+  <dmx object="Container" service="model" priority="0">
+	<universe_0>
+		<node address="instance" object="Data" instance="512" service="parameter" type="integer" rangeBounds="0 255" valueDefault="0"/>
+	</universe_0>
+	</dmx>
+ </application>>
+</jamoma>

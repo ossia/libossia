@@ -1,0 +1,138 @@
+{
+    "Leonard_De_Vinci": {
+        "security": {
+            "log": "true"
+        },
+        "network": {
+            "server_ip": "localhost",
+            "server_port": "9999",
+            "is_master": "false"
+        },
+        "languages": {
+            "main": "FR",
+            "second": "EN",
+            "third": "IT",
+            "enable_lsf": "false"
+        },
+        "screen": {
+            "w": "1920",
+            "h": "1080",
+            "fullscreen": "true",
+            "hideCursor": "true"
+        },
+        "input": {
+            "mouse_wheel_delta_intro": "1",
+            "mouse_wheel_delta_timeline": "1",
+            "sensor_speed_intro": "1",
+            "sensor_speed_timeline": "1",
+            "sensor_lookup_table": "1",
+            "variable_speed": "true"
+        },
+        "sound": {
+            "effects": {
+                "display_welcome_screen": {
+                    "filepath": "medias\/sons\/demarrer01.mp3",
+                    "volume": "50"
+                },
+                "quit_welcome_screen": {
+                    "filepath": "medias\/sons\/reprise-rupture-time-out01.mp3",
+                    "volume": "50"
+                },
+                "sensor_rotation": [
+                    {
+                        "filepath": "medias\/sons\/Chrono_rotation01.mp3",
+                        "volume": [
+                            "50",
+                            "50"
+                        ]
+                    },
+                    {
+                        "filepath": "medias\/sons\/Chrono_rotation01.mp3",
+                        "volume": [
+                            "50",
+                            "50"
+                        ]
+                    }
+                ],
+                "open_popup": {
+                    "filepath": "medias\/sons\/Chrono_fenetre_affichage.mp3",
+                    "volume": "50"
+                },
+                "close_popup": {
+                    "filepath": "medias\/sons\/retour02.mp3",
+                    "volume": "50"
+                },
+                "validation": {
+                    "filepath": "medias\/sons\/valider01.mp3",
+                    "volume": "50"
+                },
+                "button_start_timer": {
+                    "filepath": "medias\/sons\/valider02.mp3",
+                    "volume": "50"
+                },
+                "button_timer": {
+                    "filepath": "medias\/sons\/Chrono_timer01.mp3",
+                    "volume": "50"
+                },
+                "time_out": {
+                    "filepath": "medias\/sons\/alerte-time-out03.mp3",
+                    "volume": "50"
+                },
+                "window_display": {
+                    "filepath": "medias\/sons\/Chrono_timer01.mp3",
+                    "volume": "50"
+                }
+            },
+            "comments": {
+                "volume": "50"
+            },
+            "voices": {
+                "volume": "100"
+            }
+        },
+        "time": {
+            "language_validation": "2",
+            "language_alternance": "3",
+            "inactivity": "10",
+            "eventSelection": "1",
+            "gapTreshold": "5",
+            "welcome_back": "10",
+            "date_validation": "2"
+        },
+        "welcome_screen": {
+            "instruction": "welcome",
+            "lsf_movie": "LSF-Accroche.flv"
+        },
+        "language_screen": {
+            "instruction": "welcome",
+            "lsf_movie": "LSF-Accroche.flv"
+        },
+        "timeline": {
+            "instruction": "undefined",
+            "magnet_size": "30",
+            "start_position": "50",
+            "event": [
+                {
+                    "date": "undefined",
+                    "title": "undefined",
+                    "background": "background.jpg",
+                    "audio": "audio.wav",
+                    "lsf_movie": "lsf_movie.flv",
+                    "type": "1",
+                    "popup": {
+                        "title": "undefined",
+                        "subtitle": "undefined",
+                        "copyright": "undefined",
+                        "text": "undefined",
+                        "picture": "picture.jpg"
+                    }
+                }
+            ]
+        },
+        "consigne": [
+            {
+                "audio": "consigne.mp3"
+            }
+        ]
+    }
+}

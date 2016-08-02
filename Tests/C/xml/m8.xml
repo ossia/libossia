@@ -1,0 +1,1046 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<jamoma version="0.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jamoma.org/ file:jamoma.xsd">
+	<application author="Renaud Rubiano" version="v1" name="m8" type="proxy">
+		<!--"a layer model"-->
+		<layer.1 object="Container" service="model" priority="10">
+			<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+			<media object="Data" service="parameter" type="decimal" rangeBounds="0 132" repetitionsFilter="1" valueDefault="999" />
+			<blend object="Container" priority="0">
+				<mode object="Data" service="parameter" type="decimal" rangeBounds="0 5" repetitionsFilter="1" valueDefault="0" />
+			</blend>	
+			<scale object="Container" priority="0">
+				<uniform object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.5" />
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			</scale>
+			<rotate object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<strob object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<x object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</x>
+					<y object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</y>
+					<z object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</z>
+				</auto>
+			</rotate>
+			<pos object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+			</pos>
+			<color object="Container" priority="0">
+				<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<additive object="Container" priority="0">
+					<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				</additive>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<mode object="Data" service="parameter" type="integer" rangeBounds="0 9" repetitionsFilter="1" valueDefault="0"/>
+					<modulate object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<additive object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<speed object="Container" priority="0">
+						<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</speed>	
+				</auto>
+			</color>
+			<direction object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			<rate object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.25"/>
+			<hide object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<scratch object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<entrypoint object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<loop object="Container" priority="0">
+				<in object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<out object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<mode object="Data" service="parameter" type="decimal"  rangeBounds="0 2" repetitionsFilter="1" valueDefault="0.000"/>
+			</loop>
+			<sat object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</sat>		
+			<contrast object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</contrast>		
+			<bright object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</bright>	
+			<blur object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</blur>	
+			<luma object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 4" repetitionsFilter="1" valueDefault="0"/>
+			</luma>	
+			<noise object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<color object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<rgb object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</noise>	
+		</layer.1>
+		<layer.2 object="Container" service="model" priority="20">
+			<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+			<media object="Data" service="parameter" type="decimal" rangeBounds="0 132" repetitionsFilter="1" valueDefault="999" />
+			<blend object="Container" priority="0">
+				<mode object="Data" service="parameter" type="decimal" rangeBounds="0 5" repetitionsFilter="1" valueDefault="0" />
+			</blend>	
+			<scale object="Container" priority="0">
+				<uniform object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.5" />
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			</scale>
+			<rotate object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<strob object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<x object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</x>
+					<y object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</y>
+					<z object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</z>
+				</auto>
+			</rotate>
+			<pos object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+			</pos>
+			<color object="Container" priority="0">
+				<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<additive object="Container" priority="0">
+					<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				</additive>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<mode object="Data" service="parameter" type="integer" rangeBounds="0 9" repetitionsFilter="1" valueDefault="0"/>
+					<modulate object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<additive object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<speed object="Container" priority="0">
+						<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</speed>	
+				</auto>
+			</color>
+			<direction object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			<rate object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.25"/>
+			<hide object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<scratch object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<entrypoint object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<loop object="Container" priority="0">
+				<in object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<out object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<mode object="Data" service="parameter" type="decimal"  rangeBounds="0 2" repetitionsFilter="1" valueDefault="0.000"/>
+			</loop>
+			<sat object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</sat>		
+			<contrast object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</contrast>		
+			<bright object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</bright>	
+			<blur object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</blur>	
+			<luma object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 4" repetitionsFilter="1" valueDefault="0"/>
+			</luma>	
+			<noise object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<color object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<rgb object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</noise>	
+		</layer.2>
+		<layer.3 object="Container" service="model" priority="30">
+			<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+			<media object="Data" service="parameter" type="decimal" rangeBounds="0 132" repetitionsFilter="1" valueDefault="999" />
+			<blend object="Container" priority="0">
+				<mode object="Data" service="parameter" type="decimal" rangeBounds="0 5" repetitionsFilter="1" valueDefault="0" />
+			</blend>	
+			<scale object="Container" priority="0">
+				<uniform object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.5" />
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			</scale>
+			<rotate object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<strob object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<x object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</x>
+					<y object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</y>
+					<z object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</z>
+				</auto>
+			</rotate>
+			<pos object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+			</pos>
+			<color object="Container" priority="0">
+				<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<additive object="Container" priority="0">
+					<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				</additive>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<mode object="Data" service="parameter" type="integer" rangeBounds="0 9" repetitionsFilter="1" valueDefault="0"/>
+					<modulate object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<additive object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<speed object="Container" priority="0">
+						<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</speed>	
+				</auto>
+			</color>
+			<direction object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			<rate object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.25"/>
+			<hide object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<scratch object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<entrypoint object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<loop object="Container" priority="0">
+				<in object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<out object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<mode object="Data" service="parameter" type="decimal"  rangeBounds="0 2" repetitionsFilter="1" valueDefault="0.000"/>
+			</loop>
+			<sat object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</sat>		
+			<contrast object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</contrast>		
+			<bright object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</bright>	
+			<blur object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</blur>	
+			<luma object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 4" repetitionsFilter="1" valueDefault="0"/>
+			</luma>	
+			<noise object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<color object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<rgb object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</noise>	
+		</layer.3>
+		<layer.4 object="Container" service="model" priority="40">
+			<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+			<media object="Data" service="parameter" type="decimal" rangeBounds="0 999" repetitionsFilter="1" valueDefault="999" />
+			<blend object="Container" priority="0">
+				<mode object="Data" service="parameter" type="decimal" rangeBounds="0 5" repetitionsFilter="1" valueDefault="0" />
+			</blend>	
+			<scale object="Container" priority="0">
+				<uniform object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.5" />
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			</scale>
+			<rotate object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<strob object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<x object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</x>
+					<y object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</y>
+					<z object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</z>
+				</auto>
+			</rotate>
+			<pos object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+			</pos>
+			<color object="Container" priority="0">
+				<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<additive object="Container" priority="0">
+					<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				</additive>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<mode object="Data" service="parameter" type="integer" rangeBounds="0 9" repetitionsFilter="1" valueDefault="0"/>
+					<modulate object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<additive object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<speed object="Container" priority="0">
+						<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</speed>	
+				</auto>
+			</color>
+			<direction object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			<rate object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.25"/>
+			<hide object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<scratch object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<entrypoint object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<loop object="Container" priority="0">
+				<in object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<out object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<mode object="Data" service="parameter" type="decimal"  rangeBounds="0 2" repetitionsFilter="1" valueDefault="0.000"/>
+			</loop>
+			<sat object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</sat>		
+			<contrast object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</contrast>		
+			<bright object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</bright>	
+			<blur object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</blur>	
+			<luma object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 4" repetitionsFilter="1" valueDefault="0"/>
+			</luma>	
+			<noise object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<color object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<rgb object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</noise>	
+		</layer.4>
+		<layer.5 object="Container" service="model" priority="50">
+			<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+			<media object="Data" service="parameter" type="integer" rangeBounds="0 132" repetitionsFilter="1" valueDefault="999" />
+			<blend object="Container" priority="0">
+				<mode object="Data" service="parameter" type="decimal" rangeBounds="0 5" repetitionsFilter="1" valueDefault="0" />
+			</blend>	
+			<scale object="Container" priority="0">
+				<uniform object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.5" />
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			</scale>
+			<rotate object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<strob object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<x object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</x>
+					<y object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</y>
+					<z object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</z>
+				</auto>
+			</rotate>
+			<pos object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+			</pos>
+			<color object="Container" priority="0">
+				<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<additive object="Container" priority="0">
+					<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				</additive>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<mode object="Data" service="parameter" type="integer" rangeBounds="0 9" repetitionsFilter="1" valueDefault="0"/>
+					<modulate object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<additive object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<speed object="Container" priority="0">
+						<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</speed>	
+				</auto>
+			</color>
+			<direction object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			<rate object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.25"/>
+			<hide object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<scratch object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<entrypoint object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<loop object="Container" priority="0">
+				<in object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<out object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<mode object="Data" service="parameter" type="decimal"  rangeBounds="0 2" repetitionsFilter="1" valueDefault="0.000"/>
+			</loop>
+			<sat object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</sat>		
+			<contrast object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</contrast>		
+			<bright object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</bright>	
+			<blur object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</blur>	
+			<luma object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 4" repetitionsFilter="1" valueDefault="0"/>
+			</luma>	
+			<noise object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<color object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<rgb object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</noise>	
+		</layer.5>
+		<layer.6 object="Container" service="model" priority="60">
+			<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+			<media object="Data" service="parameter" type="decimal" rangeBounds="0 132" repetitionsFilter="1" valueDefault="999" />
+			<blend object="Container" priority="0">
+				<mode object="Data" service="parameter" type="decimal" rangeBounds="0 5" repetitionsFilter="1" valueDefault="0" />
+			</blend>	
+			<scale object="Container" priority="0">
+				<uniform object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.5" />
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			</scale>
+			<rotate object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<strob object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<x object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</x>
+					<y object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</y>
+					<z object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</z>
+				</auto>
+			</rotate>
+			<pos object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+			</pos>
+			<color object="Container" priority="0">
+				<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<additive object="Container" priority="0">
+					<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				</additive>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<mode object="Data" service="parameter" type="integer" rangeBounds="0 9" repetitionsFilter="1" valueDefault="0"/>
+					<modulate object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<additive object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<speed object="Container" priority="0">
+						<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</speed>	
+				</auto>
+			</color>
+			<direction object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			<rate object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.25"/>
+			<hide object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<scratch object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<entrypoint object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<loop object="Container" priority="0">
+				<in object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<out object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<mode object="Data" service="parameter" type="decimal"  rangeBounds="0 2" repetitionsFilter="1" valueDefault="0.000"/>
+			</loop>
+			<sat object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</sat>		
+			<contrast object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</contrast>		
+			<bright object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</bright>	
+			<blur object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</blur>	
+			<luma object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 4" repetitionsFilter="1" valueDefault="0"/>
+			</luma>	
+			<noise object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<color object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<rgb object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</noise>	
+		</layer.6>
+		<layer.7 object="Container" service="model" priority="70">
+			<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+			<media object="Data" service="parameter" type="decimal" rangeBounds="0 132" repetitionsFilter="1" valueDefault="999" />
+			<blend object="Container" priority="0">
+				<mode object="Data" service="parameter" type="decimal" rangeBounds="0 5" repetitionsFilter="1" valueDefault="0" />
+			</blend>	
+			<scale object="Container" priority="0">
+				<uniform object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.5" />
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			</scale>
+			<rotate object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<strob object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<x object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</x>
+					<y object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</y>
+					<z object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</z>
+				</auto>
+			</rotate>
+			<pos object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+			</pos>
+			<color object="Container" priority="0">
+				<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<additive object="Container" priority="0">
+					<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				</additive>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<mode object="Data" service="parameter" type="integer" rangeBounds="0 9" repetitionsFilter="1" valueDefault="0"/>
+					<modulate object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<additive object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<speed object="Container" priority="0">
+						<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</speed>	
+				</auto>
+			</color>
+			<direction object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			<rate object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.25"/>
+			<hide object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<scratch object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<entrypoint object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<loop object="Container" priority="0">
+				<in object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<out object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<mode object="Data" service="parameter" type="decimal"  rangeBounds="0 2" repetitionsFilter="1" valueDefault="0.000"/>
+			</loop>
+			<sat object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</sat>		
+			<contrast object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</contrast>		
+			<bright object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</bright>	
+			<blur object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</blur>	
+			<luma object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 4" repetitionsFilter="1" valueDefault="0"/>
+			</luma>	
+			<noise object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<color object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<rgb object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</noise>	
+		</layer.7>
+		<layer.8 object="Container" service="model" priority="80">
+			<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+			<media object="Data" service="parameter" type="decimal" rangeBounds="0 132" repetitionsFilter="1" valueDefault="999" />
+			<blend object="Container" priority="0">
+				<mode object="Data" service="parameter" type="decimal" rangeBounds="0 5" repetitionsFilter="1" valueDefault="0" />
+			</blend>	
+			<scale object="Container" priority="0">
+				<uniform object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.5" />
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			</scale>
+			<rotate object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<strob object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<x object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</x>
+					<y object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</y>
+					<z object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</z>
+				</auto>
+			</rotate>
+			<pos object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+			</pos>
+			<color object="Container" priority="0">
+				<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<additive object="Container" priority="0">
+					<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				</additive>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<mode object="Data" service="parameter" type="integer" rangeBounds="0 9" repetitionsFilter="1" valueDefault="0"/>
+					<modulate object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<additive object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<speed object="Container" priority="0">
+						<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</speed>	
+				</auto>
+			</color>
+			<direction object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			<rate object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.25"/>
+			<hide object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<scratch object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<entrypoint object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<loop object="Container" priority="0">
+				<in object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<out object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<mode object="Data" service="parameter" type="decimal"  rangeBounds="0 2" repetitionsFilter="1" valueDefault="0.000"/>
+			</loop>
+			<sat object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</sat>		
+			<contrast object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</contrast>		
+			<bright object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</bright>	
+			<blur object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</blur>	
+			<luma object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 4" repetitionsFilter="1" valueDefault="0"/>
+			</luma>	
+			<noise object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<color object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<rgb object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</noise>	
+		</layer.8>
+		<layer.9 object="Container" service="model" priority="90">
+			<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+			<media object="Data" service="parameter" type="decimal" rangeBounds="0 132" repetitionsFilter="1" valueDefault="999" />
+			<blend object="Container" priority="0">
+				<mode object="Data" service="parameter" type="decimal" rangeBounds="0 5" repetitionsFilter="1" valueDefault="0" />
+			</blend>	
+			<scale object="Container" priority="0">
+				<uniform object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.5" />
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			</scale>
+			<rotate object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<strob object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<x object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</x>
+					<y object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</y>
+					<z object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</z>
+				</auto>
+			</rotate>
+			<pos object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+			</pos>
+			<color object="Container" priority="0">
+				<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<additive object="Container" priority="0">
+					<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				</additive>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<mode object="Data" service="parameter" type="integer" rangeBounds="0 9" repetitionsFilter="1" valueDefault="0"/>
+					<modulate object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<additive object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<speed object="Container" priority="0">
+						<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</speed>	
+				</auto>
+			</color>
+			<direction object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			<rate object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.25"/>
+			<hide object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<scratch object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<entrypoint object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<loop object="Container" priority="0">
+				<in object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<out object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<mode object="Data" service="parameter" type="decimal"  rangeBounds="0 2" repetitionsFilter="1" valueDefault="0.000"/>
+			</loop>
+			<sat object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</sat>		
+			<contrast object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</contrast>		
+			<bright object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</bright>	
+			<blur object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</blur>	
+			<luma object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 4" repetitionsFilter="1" valueDefault="0"/>
+			</luma>	
+			<noise object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<color object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<rgb object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</noise>	
+		</layer.9>
+		<layer.10 object="Container" service="model" priority="100">
+			<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+			<media object="Data" service="parameter" type="decimal" rangeBounds="0 132" repetitionsFilter="1" valueDefault="999" />
+			<blend object="Container" priority="0">
+				<mode object="Data" service="parameter" type="decimal" rangeBounds="0 5" repetitionsFilter="1" valueDefault="0" />
+			</blend>	
+			<scale object="Container" priority="0">
+				<uniform object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.5" />
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			</scale>
+			<rotate object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<z object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<strob object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<x object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</x>
+					<y object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</y>
+					<z object="Container" priority="0">
+						<speed object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<direction object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</z>
+				</auto>
+			</rotate>
+			<pos object="Container" priority="0">
+				<x object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+				<y object="Data" service="parameter" type="decimal" repetitionsFilter="1" valueDefault="0.000"/>
+			</pos>
+			<color object="Container" priority="0">
+				<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<additive object="Container" priority="0">
+					<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+					<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				</additive>
+				<auto object="Container" priority="0">
+					<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<mode object="Data" service="parameter" type="integer" rangeBounds="0 9" repetitionsFilter="1" valueDefault="0"/>
+					<modulate object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<additive object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					<speed object="Container" priority="0">
+						<red object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<green object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<blue object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+						<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+					</speed>	
+				</auto>
+			</color>
+			<direction object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			<rate object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.25"/>
+			<hide object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<scratch object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<entrypoint object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+			<loop object="Container" priority="0">
+				<in object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0.000"/>
+				<out object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="1.000"/>
+				<mode object="Data" service="parameter" type="decimal"  rangeBounds="0 2" repetitionsFilter="1" valueDefault="0.000"/>
+			</loop>
+			<sat object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</sat>		
+			<contrast object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<boost object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<invert object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</contrast>		
+			<bright object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</bright>	
+			<blur object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</blur>	
+			<luma object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<type object="Data" service="parameter" type="boolean"  rangeBounds="0 4" repetitionsFilter="1" valueDefault="0"/>
+			</luma>	
+			<noise object="Container" priority="0">
+				<enable object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<alpha object="Data" service="parameter" type="boolean" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<color object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<rgb object="Data" service="parameter" type="boolean"  rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+				<level object="Data" service="parameter" type="decimal" rangeBounds="0 1" repetitionsFilter="1" valueDefault="0"/>
+			</noise>	
+		</layer.10>
+			</application>
+</jamoma>

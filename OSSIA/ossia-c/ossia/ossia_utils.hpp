@@ -1,0 +1,103 @@
+#include <ossia-c/ossia-c.h>
+#include <ossia/ossia.hpp>
+
+#include <algorithm>
+#include <cstring>
+#include <cstdio>
+#include <ossia-c/log/tinyformat.h>
+#include <ossia-c/log/ossia_log.h>
+
+template<typename Str, typename... Args>
+void DEBUG_LOG_FMT(Str fmt, Args... args)
+{
+    auto str = tfm::format(fmt, args...);
+    ossia_log_error(str.c_str());
+}
+struct ossia_protocol
+{
+        std::unique_ptr<ossia::net::protocol_base> protocol;
+};
+
+struct ossia_device
+{
+        std::unique_ptr<ossia::net::device_base> device;
+};
+
+struct ossia_domain
+{
+        ossia::net::domain domain;
+};
+
+struct ossia_value_callback_index
+{
+        ossia::net::address_base::iterator it;
+};
+
+struct ossia_node
+{
+    ossia::net::node_base* node{};
+};
+
+struct ossia_address
+{
+    ossia::net::address_base* address{};
+};
+
+inline auto convert(ossia_type t)
+{
+    return static_cast<ossia::val_type>(t);
+}
+
+inline auto convert(ossia_access_mode t)
+{
+    return static_cast<ossia::access_mode>(t);
+}
+
+inline auto convert(ossia_bounding_mode t)
+{
+    return static_cast<ossia::bounding_mode>(t);
+}
+
+inline auto convert(ossia::val_type t)
+{
+    return static_cast<ossia_type>(t);
+}
+
+inline auto convert(ossia::access_mode t)
+{
+    return static_cast<ossia_access_mode>(t);
+}
+
+inline auto convert(ossia::bounding_mode t)
+{
+    return static_cast<ossia_bounding_mode>(t);
+}
+
+inline auto convert(ossia::value* v)
+{
+    return static_cast<ossia_value_t>(v);
+}
+
+inline auto convert(ossia_value_t v)
+{
+    return static_cast<ossia::value*>(v);
+}
+
+
+template<typename Fun>
+auto safe_function(const char name[], Fun f)
+try
+{
+    return f();
+}
+catch(const std::exception& e)
+{
+    DEBUG_LOG_FMT("%s: %s", name, e.what());
+    return decltype(f())();
+}
+catch(...)
+{
+    DEBUG_LOG_FMT("%s: Exception caught", name);
+    return decltype(f())();
+}
+
