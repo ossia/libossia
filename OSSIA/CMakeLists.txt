@@ -62,11 +62,14 @@ else()
     -pedantic
     -Wcast-align
     -Wunused
-    -Wmisleading-indentation
     -Woverloaded-virtual
     -pipe
     -Werror=return-type
     -Werror=trigraphs)
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+        target_compile_options(ossia PUBLIC -Wmisleading-indentation)
+    endif()
 endif()
 
 if(OSSIA_SANITIZE)
@@ -77,12 +80,16 @@ endif()
 add_linker_warnings(ossia)
 
 
+if(BUILD_SHARED_LIBS)
 set_target_properties(ossia PROPERTIES
     CXX_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN 0
+    VISIBILITY_INLINES_HIDDEN 1
     VERSION ${ossia_VERSION}
     SOVERSION 1)
-
+else()
+set_target_properties(ossia PROPERTIES
+    VERSION ${ossia_VERSION})
+endif()
 generate_export_header(ossia BASE_NAME OSSIA)
 
 target_include_directories(ossia
