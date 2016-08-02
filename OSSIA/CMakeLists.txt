@@ -272,7 +272,14 @@ target_include_directories(ossia
 
         $<INSTALL_INTERFACE:include/variant>
         $<INSTALL_INTERFACE:include/nano-signal-slot>
-        $<INSTALL_INTERFACE:include>)
+        $<INSTALL_INTERFACE:include>
+
+    INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI>
+        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/oscpack>
+        )
 
 if(OSSIA_COVERAGE)
     setup_target_for_coverage(
