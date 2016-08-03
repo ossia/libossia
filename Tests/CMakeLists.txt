@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(APITests)
+project(ossia_tests)
 
 include_directories("${OSSIA_IMPL_FOLDER}/Jamoma/Sources")
 

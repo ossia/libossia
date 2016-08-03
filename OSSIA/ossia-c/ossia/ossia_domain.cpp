@@ -23,8 +23,7 @@ void ossia_domain_set_min(
         if(!value)
             return;
 
-        ossia::net::set_min(domain->domain)
-        domain->domain->setMin(convert(value));
+        ossia::net::set_min(domain->domain, value->value);
     });
 }
 
@@ -35,7 +34,7 @@ ossia_value_t ossia_domain_get_max(
         if(!domain)
             return nullptr;
 
-        return convert(domain->domain->getMax());
+        return convert(ossia::net::max(domain->domain));
     });
 }
 
@@ -49,7 +48,7 @@ void ossia_domain_set_max(
         if(!value)
             return;
 
-        domain->domain->setMax(convert(value));
+        ossia::net::set_max(domain->domain, value->value);
     });
 }
 

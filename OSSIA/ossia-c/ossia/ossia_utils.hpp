@@ -33,15 +33,11 @@ struct ossia_value_callback_index
         ossia::net::address_base::iterator it;
 };
 
-struct ossia_node
+struct ossia_value
 {
-    ossia::net::node_base* node{};
+    ossia::value value;
 };
 
-struct ossia_address
-{
-    ossia::net::address_base* address{};
-};
 
 inline auto convert(ossia_type t)
 {
@@ -73,14 +69,39 @@ inline auto convert(ossia::bounding_mode t)
     return static_cast<ossia_bounding_mode>(t);
 }
 
-inline auto convert(ossia::value* v)
+inline auto convert_address(ossia_address_t v)
 {
-    return static_cast<ossia_value_t>(v);
+    return static_cast<ossia::net::address_base*>(v);
+}
+
+inline auto convert(ossia::net::address_base* v)
+{
+    return static_cast<void*>(v);
+}
+
+inline auto convert_node(ossia_node_t v)
+{
+    return static_cast<ossia::net::node_base*>(v);
+}
+
+inline auto convert(ossia::net::node_base* v)
+{
+  return static_cast<void*>(v);
+}
+
+inline auto convert(ossia::value&& v)
+{
+    return new ossia_value{std::move(v)};
+}
+
+inline auto convert(const ossia::value& v)
+{
+  return new ossia_value{v};
 }
 
 inline auto convert(ossia_value_t v)
 {
-    return static_cast<ossia::value*>(v);
+    return v->value;
 }
 
 

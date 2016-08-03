@@ -11,7 +11,7 @@ void ossia_string_free(char* str)
 ossia_protocol_t ossia_protocol_local_create()
 {
     return safe_function(__func__, [=] {
-        return new ossia_protocol{ossia::Local::create()};
+        return new ossia_protocol{std::make_unique<ossia::net::local_protocol>()};
     });
 }
 
@@ -21,17 +21,18 @@ ossia_protocol_t ossia_protocol_osc_create(
         int out_port)
 {
     return safe_function(__func__, [=] {
-        return new ossia_protocol{ossia::OSC::create(ip, in_port, out_port)};
+        return new ossia_protocol{std::make_unique<ossia::net::osc_protocol>(ip, in_port, out_port)};
     });
 }
 
 ossia_protocol_t ossia_protocol_minuit_create(
+        const char* local_name,
         const char* ip,
         int in_port,
         int out_port)
 {
     return safe_function(__func__, [=] {
-        return new ossia_protocol{ossia::Minuit::create(ip, in_port, out_port)};
+        return new ossia_protocol{std::make_unique<ossia::net::minuit_protocol>(local_name, ip, in_port, out_port)};
     });
 }
 }

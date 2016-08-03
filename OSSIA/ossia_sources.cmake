@@ -183,9 +183,9 @@ set(C_API_SRCS
 
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/log/ossia_log.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/log/tinyformat.h"
-  
-  #"${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/preset.hpp"
-  #"${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/preset.cpp"
+
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/preset.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/preset.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/exception.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/exception.cpp"
     )

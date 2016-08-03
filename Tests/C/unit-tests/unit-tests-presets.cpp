@@ -4,11 +4,9 @@
 #include <iostream>
 #include <string>
 #include <rapidjson/document.h>
-
-#include <preset/preset.h>
-#include <preset/preset.hpp>
-
-#include "Editor/Value.h"
+#include <ossia-c/preset/preset.h>
+#include <ossia-c/preset/preset.hpp>
+#include <ossia/ossia.hpp>
 
 TEST_CASE ("JSON array") {
     SECTION ("Basic array parsing") {
@@ -26,16 +24,16 @@ TEST_CASE ("JSON array") {
         REQUIRE(p.find("/a.1.0") != p.end());
         REQUIRE(p.find("/a.1.1") != p.end());
         REQUIRE(p.find("/a.1.2") != p.end());
-        OSSIA::Int* i1 = (OSSIA::Int*) p.find("/a.0.0")->second;
-        OSSIA::Int* i2 = (OSSIA::Int*) p.find("/a.0.1")->second;
-        OSSIA::Int* i3 = (OSSIA::Int*) p.find("/a.1.0")->second;
-        OSSIA::Int* i4 = (OSSIA::Int*) p.find("/a.1.1")->second;
-        OSSIA::Int* i5 = (OSSIA::Int*) p.find("/a.1.2")->second;
-        REQUIRE(i1->value == 3);
-        REQUIRE(i2->value == -6);
-        REQUIRE(i3->value == 9);
-        REQUIRE(i4->value == 2);
-        REQUIRE(i5->value == 11);
+        auto i1 = p.find("/a.0.0")->second.get<ossia::Int>();
+        auto i2 = p.find("/a.0.1")->second.get<ossia::Int>();
+        auto i3 = p.find("/a.1.0")->second.get<ossia::Int>();
+        auto i4 = p.find("/a.1.1")->second.get<ossia::Int>();
+        auto i5 = p.find("/a.1.2")->second.get<ossia::Int>();
+        REQUIRE(i1.value == 3);
+        REQUIRE(i2.value == -6);
+        REQUIRE(i3.value == 9);
+        REQUIRE(i4.value == 2);
+        REQUIRE(i5.value == 11);
     }
 
     SECTION ("Empty array") {
@@ -52,14 +50,14 @@ TEST_CASE ("Parsing nested objects") {
     REQUIRE(p.find("/a/c/e") != p.end());
     REQUIRE(p.find("/b/f1") != p.end());
     REQUIRE(p.find("/b/f2/f3") != p.end());
-    OSSIA::Int* acd = (OSSIA::Int*) p.find("/a/c/d")->second;
-    OSSIA::Int* ace = (OSSIA::Int*) p.find("/a/c/e")->second;
-    OSSIA::Bool* bf1 = (OSSIA::Bool*) p.find("/b/f1")->second;
-    OSSIA::Bool* bf2f3 = (OSSIA::Bool*) p.find("/b/f2/f3")->second;
-    REQUIRE(acd->value == 13);
-    REQUIRE(ace->value == 5);
-    REQUIRE(bf1->value == true);
-    REQUIRE(bf2f3->value == false);
+    auto acd = p.find("/a/c/d")->second.get<ossia::Int>();
+    auto ace = p.find("/a/c/e")->second.get<ossia::Int>();
+    auto bf1 = p.find("/b/f1")->second.get<ossia::Bool>();
+    auto bf2f3 = p.find("/b/f2/f3")->second.get<ossia::Bool>();
+    REQUIRE(acd.value == 13);
+    REQUIRE(ace.value == 5);
+    REQUIRE(bf1.value == true);
+    REQUIRE(bf2f3.value == false);
 }
 
 TEST_CASE ("Empty object") {
@@ -83,11 +81,11 @@ TEST_CASE ("Parsing types") {
     REQUIRE(p.find("/c") != p.end());
     REQUIRE(p.find("/d") != p.end());
     REQUIRE(p.find("/e") != p.end());
-    REQUIRE(p.find("/a")->second->getType() == OSSIA::Value::Type::INT);
-    REQUIRE(p.find("/b")->second->getType() == OSSIA::Value::Type::FLOAT);
-    REQUIRE(p.find("/c")->second->getType() == OSSIA::Value::Type::BOOL);
-    REQUIRE(p.find("/d")->second->getType() == OSSIA::Value::Type::STRING);
-    REQUIRE(p.find("/e")->second->getType() == OSSIA::Value::Type::BOOL);
+    REQUIRE(p.find("/a")->second.getType() == ossia::val_type::INT);
+    REQUIRE(p.find("/b")->second.getType() == ossia::val_type::FLOAT);
+    REQUIRE(p.find("/c")->second.getType() == ossia::val_type::BOOL);
+    REQUIRE(p.find("/d")->second.getType() == ossia::val_type::STRING);
+    REQUIRE(p.find("/e")->second.getType() == ossia::val_type::BOOL);
 }
 
 TEST_CASE ("Building JSON array") {
@@ -95,17 +93,17 @@ TEST_CASE ("Building JSON array") {
     SECTION("Basic array") {
         ossia::presets::Preset p;
 
-        OSSIA::Int i1 (5);
-        OSSIA::Int i2 (4);
-        OSSIA::Int i3 (3);
-        OSSIA::Int i4 (2);
-        OSSIA::Int i5 (1);
+        ossia::Int i1 (5);
+        ossia::Int i2 (4);
+        ossia::Int i3 (3);
+        ossia::Int i4 (2);
+        ossia::Int i5 (1);
 
-        p.insert(ossia::presets::PresetPair("/a.0", &i1));
-        p.insert(ossia::presets::PresetPair("/a.1", &i2));
-        p.insert(ossia::presets::PresetPair("/a.2", &i3));
-        p.insert(ossia::presets::PresetPair("/a.3", &i4));
-        p.insert(ossia::presets::PresetPair("/a.4", &i5));
+        p.insert(std::make_pair("/a.0", i1));
+        p.insert(std::make_pair("/a.1", i2));
+        p.insert(std::make_pair("/a.2", i3));
+        p.insert(std::make_pair("/a.3", i4));
+        p.insert(std::make_pair("/a.4", i5));
 
         std::string json = ossia::presets::write_json(p);
 
@@ -127,19 +125,19 @@ TEST_CASE ("Building JSON array") {
     SECTION ("Nested array") {
         ossia::presets::Preset p;
 
-        OSSIA::Int i1 (1);
-        OSSIA::Int i2 (2);
-        OSSIA::Int i3 (3);
-        OSSIA::Int i4 (4);
-        OSSIA::Int i5 (5);
-        OSSIA::Int i6 (6);
+        ossia::Int i1 (1);
+        ossia::Int i2 (2);
+        ossia::Int i3 (3);
+        ossia::Int i4 (4);
+        ossia::Int i5 (5);
+        ossia::Int i6 (6);
 
-        p.insert(ossia::presets::PresetPair ("/a.0.0.0", &i1));
-        p.insert(ossia::presets::PresetPair ("/a.0.1.0", &i2));
-        p.insert(ossia::presets::PresetPair ("/a.0.1.1", &i3));
-        p.insert(ossia::presets::PresetPair ("/a.0.1.2", &i4));
-        p.insert(ossia::presets::PresetPair ("/a.1.0", &i5));
-        p.insert(ossia::presets::PresetPair ("/a.1.1", &i6));
+        p.insert(std::make_pair ("/a.0.0.0", i1));
+        p.insert(std::make_pair ("/a.0.1.0", i2));
+        p.insert(std::make_pair ("/a.0.1.1", i3));
+        p.insert(std::make_pair ("/a.0.1.2", i4));
+        p.insert(std::make_pair ("/a.1.0", i5));
+        p.insert(std::make_pair ("/a.1.1", i6));
 
         // a = [[[1], [2, 3, 4]], [5, 6]]
 
@@ -174,15 +172,15 @@ TEST_CASE ("Building JSON array") {
 TEST_CASE ("Building object"){
     ossia::presets::Preset p;
 
-    OSSIA::Int i1 (1);
-    OSSIA::Int i2 (2);
-    OSSIA::Int i3 (3);
-    OSSIA::Int i4 (4);
+    ossia::Int i1 (1);
+    ossia::Int i2 (2);
+    ossia::Int i3 (3);
+    ossia::Int i4 (4);
 
-    p.insert(ossia::presets::PresetPair ("/a", &i1));
-    p.insert(ossia::presets::PresetPair ("/b/c", &i2));
-    p.insert(ossia::presets::PresetPair ("/b/d", &i3));
-    p.insert(ossia::presets::PresetPair ("/b/e/f", &i4));
+    p.insert(std::make_pair ("/a", i1));
+    p.insert(std::make_pair ("/b/c", i2));
+    p.insert(std::make_pair ("/b/d", i3));
+    p.insert(std::make_pair ("/b/e/f", i4));
 
     std::string json = ossia::presets::write_json(p);
 
@@ -213,15 +211,15 @@ TEST_CASE ("Building object"){
 TEST_CASE ("Nested arrays and objects") {
     ossia::presets::Preset p;
 
-    OSSIA::Int i1 (1);
-    OSSIA::Int i2 (2);
-    OSSIA::Int i3 (3);
-    OSSIA::Int i4 (4);
+    ossia::Int i1 (1);
+    ossia::Int i2 (2);
+    ossia::Int i3 (3);
+    ossia::Int i4 (4);
 
-    p.insert(ossia::presets::PresetPair ("/a.0/b/c.0", &i1));
-    p.insert(ossia::presets::PresetPair ("/a.0/b/c.1", &i2));
-    p.insert(ossia::presets::PresetPair ("/a.1/b.0/c", &i3));
-    p.insert(ossia::presets::PresetPair ("/a.1/b.0/d", &i4));
+    p.insert(std::make_pair ("/a.0/b/c.0", i1));
+    p.insert(std::make_pair ("/a.0/b/c.1", i2));
+    p.insert(std::make_pair ("/a.1/b.0/c", i3));
+    p.insert(std::make_pair ("/a.1/b.0/d", i4));
 
     std::string json = ossia::presets::write_json(p);
 
@@ -259,19 +257,19 @@ TEST_CASE ("Nested arrays and objects") {
 TEST_CASE ("Types conversion") {
     ossia::presets::Preset p;
 
-    OSSIA::Bool btrue (true);
-    OSSIA::Bool bfalse (false);
-    OSSIA::Char c ('2');
-    OSSIA::Int i (15551);
-    OSSIA::Float f (3.566);
-    OSSIA::String s ("bonjour");
+    ossia::Bool btrue (true);
+    ossia::Bool bfalse (false);
+    ossia::Char c ('2');
+    ossia::Int i (15551);
+    ossia::Float f (3.566);
+    ossia::String s ("bonjour");
 
-    p.insert(ossia::presets::PresetPair ("/true", &btrue));
-    p.insert(ossia::presets::PresetPair ("/false", &bfalse));
-    p.insert(ossia::presets::PresetPair ("/char", &c));
-    p.insert(ossia::presets::PresetPair ("/int", &i));
-    p.insert(ossia::presets::PresetPair ("/float", &f));
-    p.insert(ossia::presets::PresetPair ("/string", &s));
+    p.insert(std::make_pair ("/true", btrue));
+    p.insert(std::make_pair ("/false", bfalse));
+    p.insert(std::make_pair ("/char", c));
+    p.insert(std::make_pair ("/int", i));
+    p.insert(std::make_pair ("/float", f));
+    p.insert(std::make_pair ("/string", s));
 
     std::string json = ossia::presets::write_json(p);
 

@@ -13,18 +13,9 @@ void ossia_node_remove_child(
         if(!child)
             return;
 
-        auto& cld = node->node->children();
-        std::string node_name = child->node->getName();
-        auto it = std::find_if(cld.begin(), cld.end(),
-                               [&] (const auto& node) {
-            return node->getName() == node_name;
-        });
-
-        if(it != cld.end())
-        {
-            node->node->erase(it);
-        }
-        delete child;
+        auto n = convert_node(node);
+        auto c = convert_node(child);
+        n->removeChild(c->getName());
     });
 }
 
@@ -34,9 +25,9 @@ const char* ossia_node_get_name(ossia_node_t node)
         if(!node)
             return nullptr;
 
-        if(!node->node)
-            return nullptr;
-        return strdup(node->node->getName().c_str());
+        auto n = convert_node(node);
+
+        return strdup(n->getName().c_str());
     });
 }
 
@@ -48,17 +39,8 @@ ossia_node_t ossia_node_add_child(
         if(!node)
             return nullptr;
 
-        auto it = node->node->emplace(node->node->children().end(), name);
-        auto child_node = *it;
-
-        return new ossia_node{child_node};
-    });
-}
-
-void ossia_node_free(ossia_node_t node)
-{
-    return safe_function(__func__, [=] {
-        delete node;
+        auto n = convert_node(node);
+        return convert(n->createChild(name));
     });
 }
 
@@ -68,7 +50,8 @@ int ossia_node_child_size(ossia_node_t node)
         if(!node)
             return std::size_t(0);
 
-        return node->node->children().size();
+        auto n = convert_node(node);
+        return n->children().size();
     });
 }
 
@@ -78,10 +61,11 @@ ossia_node_t ossia_node_get_child(ossia_node_t node, int child_n)
         if(!node)
             return {};
 
-        if(node->node->children().size() < child_n)
+        auto n = convert_node(node);
+        if(n->children().size() < (std::size_t)child_n)
             return nullptr;
 
-        return new ossia_node{node->node->children()[child_n]};
+        return convert(n->children()[child_n].get());
     });
 }
 
@@ -93,20 +77,20 @@ ossia_address_t ossia_node_create_address(
         if(!node)
             return nullptr;
 
-        return new ossia_address{node->node->createAddress(convert(type))};
+        auto n = convert_node(node);
+        return convert(n->createAddress(convert(type)));
     });
 }
 
 void ossia_node_remove_address(
-        ossia_node_t node,
-        ossia_address_t address)
+        ossia_node_t node)
 {
     return safe_function(__func__, [=] {
         if(!node)
             return;
 
-        node->node->removeAddress();
-        delete address;
+        auto n = convert_node(node);
+        n->removeAddress();
     });
 }
 

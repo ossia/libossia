@@ -2,17 +2,12 @@
 #include "catch.hpp"
 
 #include <iostream>
-#include <preset/result.cs>
-#include <preset/preset.h>
-#include <ossia/ossia_utils.hpp>
+#include <ossia-c/preset/result.h>
+#include <ossia-c/preset/preset.h>
+#include <ossia-c/ossia-c.h>
+#include <ossia-c/ossia/ossia_utils.hpp>
 
-#include "Network/Protocol.h"
-#include "Network/Protocol/Local.h"
-#include "Network/Node.h"
-#include "Network/Device.h"
-#include "Editor/Value.h"
-
-
+#include <ossia/ossia.hpp>
 
 TEST_CASE ("C API: Read JSON") {
     const char* json = R"_(
@@ -57,13 +52,12 @@ TEST_CASE ("C API: Apply preset") {
 
     code = ossia_presets_read_json(json, &p);
 
-    auto lp = OSSIA::Local::create();
-    auto dev = OSSIA::Device::create(lp, "dev");
+    ossia_device dev_c{
+      std::make_unique<ossia::net::generic_device>(
+            std::make_unique<ossia::net::local_protocol>(),
+            "test")};
 
-    ossia_device_t o = new ossia_device ();
-    o->device = dev;
-
-    code = ossia_devices_apply_preset(o, p, false);
+    code = ossia_devices_apply_preset(&dev_c, p, false);
     REQUIRE(code == OSSIA_PRESETS_OK);
 
     code = ossia_presets_free(p);

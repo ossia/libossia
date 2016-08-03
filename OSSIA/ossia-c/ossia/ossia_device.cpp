@@ -29,11 +29,14 @@ ossia_device_t ossia_device_create(
         else
         {
             // Create a device and add it to the cache.
-            auto dev = new ossia_device{ossia::Device::create(protocol->protocol, str_name)};
+            auto dev = new ossia_device{
+                       std::make_unique<ossia::net::generic_device>(
+                         std::move(protocol->protocol),
+                         str_name)};
 
-            //TODO Free protocol
             devs.insert(std::make_pair(str_name, dev));
 
+            delete protocol;
             return dev;
         }
 
@@ -75,7 +78,7 @@ bool ossia_device_update_namespace(ossia_device_t device)
     return safe_function(__func__, [=] {
         if(device)
         {
-            return device->device->updateNamespace();
+            return device->device->getProtocol().update(device->device->getRootNode());
         }
         else
         {
@@ -85,67 +88,14 @@ bool ossia_device_update_namespace(ossia_device_t device)
 }
 
 
-ossia_node_t ossia_device_add_child(
-        ossia_device_t device,
-        const char* name)
-{
-    return safe_function(__func__, [=] () -> ossia_node_t {
-        if(!device)
-            return nullptr;
-
-        auto it = device->device->emplace(device->device->children().end(), name);
-        auto child_node = *it;
-
-        return new ossia_node{child_node};
-    });
-}
-
-void ossia_device_remove_child(
-        ossia_device_t device,
-        ossia_node_t child)
-{
-    return safe_function(__func__, [=] {
-        if(!device)
-            return;
-        if(!child)
-            return;
-
-        auto& cld = device->device->children();
-        std::string node_name = child->node->getName();
-        auto it = std::find_if(cld.begin(), cld.end(),
-                               [&] (const auto& node) {
-            return node->getName() == node_name;
-        });
-
-        if(it != cld.end())
-        {
-            device->device->erase(it);
-        }
-        delete child;
-    });
-}
-
-int ossia_device_child_size(
+ossia_node_t ossia_device_get_root_node(
         ossia_device_t device)
-{
-    if(!device)
-        return {};
-
-    return device->device->children().size();
-}
-
-ossia_node_t ossia_device_get_child(
-        ossia_device_t device,
-        int child_n)
 {
     return safe_function(__func__, [=] () -> ossia_node_t {
         if(!device)
             return {};
 
-        if(device->device->children().size() < child_n)
-            return nullptr;
-
-        return new ossia_node{device->device->children()[child_n]};
+        return convert(&device->device->getRootNode());
     });
 }
 }

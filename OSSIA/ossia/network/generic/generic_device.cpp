@@ -22,19 +22,20 @@ generic_device::~generic_device()
 
 namespace
 {
-generic_node* find_node_rec(
-    generic_node& node,
+node_base* find_node_rec(
+    node_base& node,
     boost::string_ref address) // Format a/b/c -> b/c -> c
 {
   auto first_slash_index = address.find_first_of('/');
 
+  auto& children = node.children();
   if (first_slash_index != std::string::npos)
   {
     auto cur = address.substr(0, first_slash_index);
-    auto it = ossia::find_if(node.children(), [&](const auto& child) {
+    auto it = ossia::find_if(children, [&](const auto& child) {
       return child->getName() == cur;
     });
-    if (it != node.children().end())
+    if (it != children.end())
     {
       // There are still nodes since we found a slash
       return find_node_rec(
@@ -50,11 +51,11 @@ generic_node* find_node_rec(
   {
     // One of the child may be the researched node.
 
-    auto it = ossia::find_if(node.children(), [&](const auto& child) {
+    auto it = ossia::find_if(children, [&](const auto& child) {
       return child->getName() == address;
     });
 
-    if (it != node.children().end())
+    if (it != children.end())
     {
       return dynamic_cast<ossia::net::generic_node*>(it->get());
     }
@@ -125,7 +126,7 @@ boost::string_ref sanitize_address(boost::string_ref address)
 }
 }
 
-generic_node* find_node(generic_device& dev, boost::string_ref address)
+node_base* find_node(node_base& dev, boost::string_ref address)
 {
   address = sanitize_address(address);
   if (address.empty())

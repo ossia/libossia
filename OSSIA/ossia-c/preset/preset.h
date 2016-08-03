@@ -1,7 +1,8 @@
 #ifndef _ossia_API_NAMESPACE_
 #define _ossia_API_NAMESPACE_
 
-#include "result.cs"
+#include <ossia-c/preset/result.h>
+#include <ossia-c/ossia-c.h>
 
 #if defined(__cplusplus)
 extern "C"
@@ -9,13 +10,7 @@ extern "C"
 #endif
 
 struct ossia_preset;
-struct ossia_device;
-struct ossia_node;
-struct ossia_address;
-typedef ossia_device* ossia_device_t;
 typedef ossia_preset* ossia_preset_t;
-typedef ossia_node* ossia_node_t;
-typedef ossia_address* ossia_address_t;
 typedef enum ossia_preset_result_enum ossia_preset_result;
 
 /// Preset handling ///
@@ -25,6 +20,7 @@ typedef enum ossia_preset_result_enum ossia_preset_result;
  * @param A preset receiving the new preset instance
  * @return A result code
  */
+OSSIA_EXPORT
 ossia_preset_result ossia_presets_read_json (
         const char*,
         ossia_preset_t*);
@@ -35,6 +31,7 @@ ossia_preset_result ossia_presets_read_json (
  * @param a preset receiving the new preset instance
  * @return A result code
  */
+OSSIA_EXPORT
 ossia_preset_result ossia_presets_read_xml(
         const char*,
         ossia_preset_t*);
@@ -50,6 +47,7 @@ ossia_preset_result ossia_presets_read_xml(
  *  ossia_presets_read_json
  */
 
+OSSIA_EXPORT
 ossia_preset_result ossia_presets_free(
         ossia_preset_t);
 
@@ -61,6 +59,7 @@ ossia_preset_result ossia_presets_free(
  * @return A result code
  */
 
+OSSIA_EXPORT
 ossia_preset_result ossia_presets_write_json(
         const ossia_preset_t,
         const char**);
@@ -71,6 +70,7 @@ ossia_preset_result ossia_presets_write_json(
  * @return A result code
  */
 
+OSSIA_EXPORT
 ossia_preset_result ossia_presets_write_xml(
         const ossia_preset_t,
         const char**);
@@ -81,6 +81,7 @@ ossia_preset_result ossia_presets_write_xml(
  * @return A result code
  */
 
+OSSIA_EXPORT
 ossia_preset_result ossia_presets_size(
         const ossia_preset_t,
         int*);
@@ -92,6 +93,7 @@ ossia_preset_result ossia_presets_size(
  * @return A result code
  */
 
+OSSIA_EXPORT
 ossia_preset_result ossia_presets_to_string(
         const ossia_preset_t,
         const char **);
@@ -107,6 +109,7 @@ ossia_preset_result ossia_presets_to_string(
  * The device will be cleared and replaced
  * with this data.
  */
+OSSIA_EXPORT
 ossia_preset_result ossia_devices_read_json(
         ossia_device_t*,
         const char*);
@@ -120,6 +123,7 @@ ossia_preset_result ossia_devices_read_json(
  * The device will be cleared and replaced
  * with this data.
  */
+OSSIA_EXPORT
 ossia_preset_result ossia_devices_read_xml(
         ossia_device_t*,
         const char*);
@@ -131,6 +135,7 @@ ossia_preset_result ossia_devices_read_xml(
  * @return A result code
  */
 
+OSSIA_EXPORT
 ossia_preset_result ossia_devices_write_json(
         const ossia_device_t,
         const char**);
@@ -141,6 +146,7 @@ ossia_preset_result ossia_devices_write_json(
  * @param a buffer receiving an xml-formatted text string corresponding to this data
  * @return A result code
  */
+OSSIA_EXPORT
 ossia_preset_result ossia_devices_write_xml(
         const ossia_device_t,
         const char**);
@@ -154,6 +160,7 @@ ossia_preset_result ossia_devices_write_xml(
  *
  * Applies the values of a preset into a device
  */
+OSSIA_EXPORT
 ossia_preset_result ossia_devices_apply_preset(
         ossia_device_t,
         ossia_preset_t,
@@ -165,6 +172,7 @@ ossia_preset_result ossia_devices_apply_preset(
  * @param a preset receiving a preset corresponding to the current values in the device
  * @return A result code
  */
+OSSIA_EXPORT
 ossia_preset_result ossia_devices_make_preset(
         ossia_device_t,
         ossia_preset_t*);
@@ -176,6 +184,7 @@ ossia_preset_result ossia_devices_make_preset(
  * @return A result code
  */
 
+OSSIA_EXPORT
 ossia_preset_result ossia_devices_to_string(
         ossia_device_t,
         const char**);
@@ -190,6 +199,7 @@ ossia_preset_result ossia_devices_to_string(
  * @return A result code
  */
 
+OSSIA_EXPORT
 ossia_preset_result ossia_devices_get_node(
         ossia_device_t,
         const char *,
@@ -203,6 +213,7 @@ ossia_preset_result ossia_devices_get_node(
  * @return A result code
  */
 
+OSSIA_EXPORT
 ossia_preset_result ossia_devices_get_child(
         ossia_node_t,
         const char*,
@@ -216,12 +227,9 @@ ossia_preset_result ossia_devices_get_child(
  * Frees the string passed as parameter
  */
 
+OSSIA_EXPORT
 ossia_preset_result ossia_free_string(
         const char*);
-
-ossia_preset_result ossia_devices_get_node_address(
-        ossia_node_t,
-        ossia_address_t*);
 
 #if defined(__cplusplus)
 }
