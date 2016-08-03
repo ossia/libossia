@@ -19,7 +19,7 @@ private Q_SLOTS:
   void test_double_float()
   {
     // <double, float> curve
-    auto c = curve<double, float>::create();
+    auto c = std::make_shared<curve<double, float>>();
     QVERIFY(c != nullptr);
 
     curve_segment_linear<float> linearSegment;
@@ -63,7 +63,7 @@ private Q_SLOTS:
 
   void test_float_float()
   {
-    auto c = curve<float, float>::create();
+    auto c = std::make_shared<curve<float, float>>();
     QVERIFY(c != nullptr);
 
     curve_segment_linear<float> linearSegment;
@@ -89,7 +89,7 @@ private Q_SLOTS:
 
   void test_float_int()
   {
-    auto c = curve<float, int>::create();
+    auto c = std::make_shared<curve<float, int>>();
     curve_segment_linear<int> linearSegment;
     c->setInitialPointAbscissa(-10.);
     c->setInitialPointOrdinate(-10);
@@ -115,7 +115,7 @@ private Q_SLOTS:
     Tuple t{Float(-1.), Float(0.), Float(1.)};
     localTupleAddress->setValue(t);
 
-    auto c = curve<double, float>::create();
+    auto c = std::make_shared<curve<double, float>>();
     curve_segment_linear<float> linearSegment;
 
     c->setInitialPointAbscissa(0.);

@@ -83,7 +83,7 @@ private Q_SLOTS:
     auto int_address_callback = std::bind(&MapperTest::int_address_callback, this, _1);
     m_int_address->add_callback(int_address_callback);
 
-    auto c = curve<float, int>::create();
+    auto c = std::make_shared<curve<float, int>>();
     curve_segment_linear<int> linearSegment;
     c->setInitialPointAbscissa(-10.);
     c->setInitialPointOrdinate(-10);

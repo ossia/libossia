@@ -1,5 +1,5 @@
 #include "Mapper_impl.hpp"
-#include <ossia/editor/curve/detail/Curve_impl.hpp>
+#include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/exceptions.hpp>
 #include <iostream>
 
@@ -131,18 +131,18 @@ ossia::value mapper_impl::computeValue(
           {
             case ossia::curve_segment_type::FLOAT:
             {
-              auto curve = static_cast<curve_impl<float, float>*>(base_curve);
-              return ossia::Float{curve->valueAt(val.value)};
+              auto c = static_cast<curve<float, float>*>(base_curve);
+              return ossia::Float{c->valueAt(val.value)};
             }
             case ossia::curve_segment_type::INT:
             {
-              auto curve = static_cast<curve_impl<float, int>*>(base_curve);
-              return ossia::Int{curve->valueAt(val.value)};
+              auto c = static_cast<curve<float, int>*>(base_curve);
+              return ossia::Int{c->valueAt(val.value)};
             }
             case ossia::curve_segment_type::BOOL:
             {
-              auto curve = static_cast<curve_impl<float, bool>*>(base_curve);
-              return ossia::Bool{curve->valueAt(val.value)};
+              auto c = static_cast<curve<float, bool>*>(base_curve);
+              return ossia::Bool{c->valueAt(val.value)};
             }
             case ossia::curve_segment_type::DOUBLE:
               break;
@@ -155,18 +155,18 @@ ossia::value mapper_impl::computeValue(
           {
             case ossia::curve_segment_type::FLOAT:
             {
-              auto curve = static_cast<curve_impl<int, float>*>(base_curve);
-              return ossia::Float{curve->valueAt(val.value)};
+              auto c = static_cast<curve<int, float>*>(base_curve);
+              return ossia::Float{c->valueAt(val.value)};
             }
             case ossia::curve_segment_type::INT:
             {
-              auto curve = static_cast<curve_impl<int, int>*>(base_curve);
-              return ossia::Int{curve->valueAt(val.value)};
+              auto c = static_cast<curve<int, int>*>(base_curve);
+              return ossia::Int{c->valueAt(val.value)};
             }
             case ossia::curve_segment_type::BOOL:
             {
-              auto curve = static_cast<curve_impl<int, bool>*>(base_curve);
-              return ossia::Bool{curve->valueAt(val.value)};
+              auto c = static_cast<curve<int, bool>*>(base_curve);
+              return ossia::Bool{c->valueAt(val.value)};
             }
             case ossia::curve_segment_type::DOUBLE:
               break;
@@ -179,18 +179,18 @@ ossia::value mapper_impl::computeValue(
           {
             case ossia::curve_segment_type::FLOAT:
             {
-              auto curve = static_cast<curve_impl<bool, float>*>(base_curve);
-              return ossia::Float{curve->valueAt(val.value)};
+              auto c = static_cast<curve<bool, float>*>(base_curve);
+              return ossia::Float{c->valueAt(val.value)};
             }
             case ossia::curve_segment_type::INT:
             {
-              auto curve = static_cast<curve_impl<bool, int>*>(base_curve);
-              return ossia::Int{curve->valueAt(val.value)};
+              auto c = static_cast<curve<bool, int>*>(base_curve);
+              return ossia::Int{c->valueAt(val.value)};
             }
             case ossia::curve_segment_type::BOOL:
             {
-              auto curve = static_cast<curve_impl<bool, bool>*>(base_curve);
-              return ossia::Bool{curve->valueAt(val.value)};
+              auto c = static_cast<curve<bool, bool>*>(base_curve);
+              return ossia::Bool{c->valueAt(val.value)};
             }
             case ossia::curve_segment_type::DOUBLE:
               break;

@@ -1,5 +1,5 @@
 #include "Automation_impl.hpp"
-#include <ossia/editor/curve/detail/Curve_impl.hpp>
+#include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/value/behavior.hpp>
 #include <ossia/editor/exceptions.hpp>
 #include <iostream>
@@ -109,18 +109,18 @@ struct computeValue_visitor
       {
         case ossia::curve_segment_type::FLOAT:
         {
-          auto curve = static_cast<curve_impl<double, float>*>(base_curve);
-          return ossia::Float{curve->valueAt(position)};
+          auto c = static_cast<curve<double, float>*>(base_curve);
+          return ossia::Float{c->valueAt(position)};
         }
         case ossia::curve_segment_type::INT:
         {
-          auto curve = static_cast<curve_impl<double, int>*>(base_curve);
-          return ossia::Int{curve->valueAt(position)};
+          auto c = static_cast<curve<double, int>*>(base_curve);
+          return ossia::Int{c->valueAt(position)};
         }
         case ossia::curve_segment_type::BOOL:
         {
-          auto curve = static_cast<curve_impl<double, bool>*>(base_curve);
-          return ossia::Bool{curve->valueAt(position)};
+          auto c = static_cast<curve<double, bool>*>(base_curve);
+          return ossia::Bool{c->valueAt(position)};
         }
         case ossia::curve_segment_type::DOUBLE:
           break;

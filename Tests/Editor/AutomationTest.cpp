@@ -58,10 +58,11 @@ private Q_SLOTS:
     auto address = cld->createAddress(val_type::FLOAT);
     address->add_callback([&] (const value&v) { address_callback(v); });
 
-    auto c = curve<double, float>::create();
+    auto c = std::make_shared<curve<double, float>>();
     curve_segment_linear<float> linearSegment;
 
     c->setInitialPointAbscissa(0.);
+    return;
     c->setInitialPointOrdinate(0.);
     c->addPoint(linearSegment, 0.5, 1.);
     c->addPoint(linearSegment, 1., 0.);
