@@ -36,8 +36,11 @@ ossia::state_element mapper_impl::state()
 {
   auto& par = *parent;
   if (!par.getRunning())
+  {
     throw execution_error("mapper_impl::state: "
                           "parent time constraint is not running");
+    return {};
+  }
 
   // if date hasn't been processed already
   ossia::time_value date = par.getDate();
@@ -231,6 +234,7 @@ ossia::value mapper_impl::computeValue(
 
   throw invalid_value_type_error("mapper_impl::computeValue: "
                                  "drive.getType() is neither BEHAVIOR nor TUPLE");
+  return {};
 }
 
 void mapper_impl::driverValueCallback(const ossia::value& value)

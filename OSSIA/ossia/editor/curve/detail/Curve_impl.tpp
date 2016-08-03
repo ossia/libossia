@@ -73,10 +73,13 @@ X curve_impl<X, Y>::getInitialPointAbscissa() const
   auto address = node->getAddress();
 
   if (!address)
+  {
     throw execution_error(
         "curve_impl::getInitialPointOrdinate: "
         "getting an address value using from an abscissa "
         "destination without address");
+    return {};
+  }
 
   address->pullValue();
   auto val = address->cloneValue();
@@ -98,11 +101,13 @@ Y curve_impl<X, Y>::getInitialPointOrdinate() const
   auto address = node->getAddress();
 
   if (!address)
+  {
     throw execution_error(
         "curve_impl::getInitialPointOrdinate: "
         "getting an address value using from an ordinate "
         "destination without address");
-
+    return {};
+  }
   address->pullValue();
   auto val = address->cloneValue();
   mInitialPointOrdinateCacheUsed = true;
@@ -205,27 +210,32 @@ Y curve_impl<X, Y>::convertToTemplateTypeValue(
     {
       throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
                                      "Cannot convert Impulse to a numeric type");
+      return {};
     }
     Y operator()(const String& str) const
     {
       throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
                                      "Cannot convert String to a numeric type");
+      return {};
     }
     Y operator()(const Destination& d) const
     {
       throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
                                      "Cannot convert Destination to a numeric type");
+      return {};
       ;
     }
     Y operator()(const Behavior&) const
     {
       throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
                                      "Cannot convert Behavior to a numeric type");
+      return {};
     }
     Y operator()() const
     {
       throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
                                      "No type provided");
+      return {};
     }
   } vis{idx};
 

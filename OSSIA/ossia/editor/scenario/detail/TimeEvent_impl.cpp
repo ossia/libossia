@@ -27,8 +27,11 @@ void time_event_impl::setCallback(time_event::ExecutionCallback callback)
 void time_event_impl::happen()
 {
   if (mStatus != time_event::Status::PENDING)
+  {
     throw execution_error("time_event_impl::happen: "
                           "only PENDING event can happens");
+    return;
+  }
 
   mStatus = time_event::Status::HAPPENED;
 
@@ -51,8 +54,11 @@ void time_event_impl::happen()
 void time_event_impl::dispose()
 {
   if (mStatus == time_event::Status::HAPPENED)
+  {
     throw execution_error("time_event_impl::dispose: "
                           "HAPPENED event cannot be disposed");
+    return;
+  }
 
   mStatus = time_event::Status::DISPOSED;
 

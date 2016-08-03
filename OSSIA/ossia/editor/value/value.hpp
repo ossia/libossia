@@ -204,7 +204,11 @@ public:
   {
     auto t = v.which();
     if (t == v.npos)
-      throw;
+    {
+      throw ossia::invalid_value_type_error{"value::getType: "
+                                            "called with type == npos"};
+      return {};
+    }
 
     return static_cast<ossia::val_type>(t);
   }
@@ -283,5 +287,6 @@ inline ossia::value init_value(ossia::val_type type)
   }
 
   throw invalid_value_type_error("to_pretty_string: Invalid type");
+  return {};
 }
 }

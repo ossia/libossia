@@ -96,6 +96,7 @@ ossia::value generic_address::cloneValue(ossia::destination_index index) const
   {
     throw invalid_value_type_error("generic_address::cloneValue: "
                                    "cloning null value");
+    return {};
   }
 }
 
@@ -119,16 +120,20 @@ ossia::net::address_base& generic_address::setValue(const ossia::value& val)
         mValue = address->cloneValue();
       }
       else
+      {
         throw invalid_node_error(
             "generic_address::setValue: "
             "setting an address value using a destination "
             "with a bad type address");
+        return *this;
+      }
     }
     else
     {
       throw invalid_node_error(
             "generic_address::setValue: "
             "setting an address value using a destination without address");
+      return *this;
     }
   }
   // copy the new value

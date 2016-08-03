@@ -19,6 +19,9 @@ cmake_policy(SET CMP0063 NEW)
 set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(CMAKE_CXX_STANDARD 14)
+if(CMAKE_SYSTEM_NAME MATCHES Emscripten)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
 
@@ -42,7 +45,9 @@ set_property(TARGET boost PROPERTY
 
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
 
-add_subdirectory(3rdparty/ModernMIDI EXCLUDE_FROM_ALL)
+if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
+    add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/ModernMIDI" EXCLUDE_FROM_ALL)
+endif()
 add_subdirectory(3rdparty/oscpack EXCLUDE_FROM_ALL)
 
 # Main library

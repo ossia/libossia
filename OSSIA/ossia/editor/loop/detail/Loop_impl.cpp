@@ -45,9 +45,11 @@ loop_impl::~loop_impl()
 state_element loop_impl::offset(time_value offset)
 {
   if (parent->getRunning())
+  {
     throw execution_error("loop_impl::offset: "
                            "parent time constraint is running");
-
+    return {};
+  }
   // reset internal mOffsetState
   mOffsetState.clear();
 
@@ -67,8 +69,11 @@ state_element loop_impl::offset(time_value offset)
 state_element loop_impl::state()
 {
   if (!parent->getRunning())
+  {
     throw execution_error("loop_impl::state: "
                           "parent time constraint is not running");
+    return {};
+  }
 
   // if date hasn't been processed already
   time_value date = parent->getDate();
@@ -95,9 +100,12 @@ state_element loop_impl::state()
     if (mPatternConstraint->getRunning())
     {
       if (mPatternConstraint->getDriveMode() != clock::DriveMode::EXTERNAL)
+      {
         throw execution_error("loop_impl::state: "
             "the pattern constraint clock is supposed to "
             "be in EXTERNAL drive mode");
+        return {};
+      }
 
       if (mPatternConstraint->getRunning())
       {

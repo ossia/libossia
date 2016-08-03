@@ -83,14 +83,8 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/channel.hpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_common.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_name_table.hpp"
@@ -152,12 +146,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
 )
@@ -189,3 +177,21 @@ set(C_API_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/exception.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/exception.cpp"
     )
+
+set(MIDI_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/channel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.hpp"
+    )
+
+set(MIDI_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.cpp")

@@ -23,9 +23,11 @@ ossia::state_element automation_impl::offset(ossia::time_value offset)
 {
   auto& par = *parent;
   if (par.getRunning())
+  {
     throw execution_error("automation_impl::offset: "
                           "parent time constraint is running");
-
+    return {};
+  }
   // edit a Message handling the new Value
   return ossia::message{
       mDrivenAddress, computeValue(offset / par.getDurationNominal(), mDrive)};
@@ -53,6 +55,7 @@ ossia::state_element automation_impl::state()
   {
     throw execution_error("automation_impl::state: "
                           "parent time constraint is not running");
+    return {};
   }
 }
 
@@ -125,6 +128,7 @@ struct computeValue_visitor
     }
 
     throw invalid_value_type_error("computeValue_visitor: drive curve type is not DOUBLE");
+    return {};
   }
 
   ossia::value operator()(const ossia::Tuple& t) const
@@ -143,6 +147,7 @@ struct computeValue_visitor
   ossia::value error() const
   {
     throw invalid_value_type_error("computeValue_visitor: Unhandled drive value type.");
+    return {};
   }
   ossia::value operator()(const ossia::Int&)
   {

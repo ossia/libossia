@@ -117,16 +117,19 @@ inline boost::string_ref to_minuit_type_text(const ossia::value& val)
     {
       throw invalid_value_type_error("to_minuit_type_text: "
                                      "Trying to send Destination value");
+      return {};
     }
     boost::string_ref operator()(const ossia::Behavior&) const
     {
       throw invalid_value_type_error("to_minuit_type_text: "
                                      "Trying to send Behavior value");
+      return {};
     }
     boost::string_ref operator()() const
     {
       throw invalid_value_type_error("to_minuit_type_text: "
                                      "Trying to send null value");
+      return {};
     }
   };
 
@@ -157,6 +160,7 @@ inline boost::string_ref to_minuit_type_text(ossia::val_type val)
     default:
       throw invalid_value_type_error("to_minuit_type_text: Invalid type");
   }
+  return {};
 }
 
 inline ossia::value value_from_minuit_type_text(boost::string_ref str)
@@ -222,6 +226,7 @@ inline boost::string_ref to_minuit_service_text(ossia::access_mode acc)
     default:
       throw parse_error("to_minuit_service_text: Invalid access mode");
   }
+  return {};
 }
 
 inline ossia::access_mode from_minuit_service_text(boost::string_ref str)
@@ -237,6 +242,7 @@ inline ossia::access_mode from_minuit_service_text(boost::string_ref str)
     default:
       throw parse_error("from_minuit_service_text: Invalid access mode");
   }
+  return {};
 }
 
 inline boost::string_ref to_minuit_bounding_text(ossia::bounding_mode b)
@@ -254,6 +260,7 @@ inline boost::string_ref to_minuit_bounding_text(ossia::bounding_mode b)
     default:
       throw parse_error("to_minuit_bounding_text: Invalid bounding mode");
   }
+  return {};
 }
 
 inline ossia::bounding_mode from_minuit_bounding_text(boost::string_ref str)
@@ -271,6 +278,7 @@ inline ossia::bounding_mode from_minuit_bounding_text(boost::string_ref str)
     default:
       throw parse_error("from_minuit_bounding_text: Invalid bounding mode");
   }
+  return {};
 }
 
 inline boost::string_ref to_minuit_attribute_text(minuit_attribute str)
@@ -314,6 +322,7 @@ inline boost::string_ref to_minuit_attribute_text(minuit_attribute str)
     default:
       throw parse_error("to_minuit_attribute_text: unhandled attribute");
   }
+  return {};
 }
 
 const std::unordered_map<std::string, minuit_attribute>
@@ -345,6 +354,7 @@ inline minuit_attribute get_attribute(boost::string_ref str)
     return it->second;
   else
     throw parse_error("get_attribute: unhandled attribute");
+  return {};
 }
 
 inline minuit_command get_command(char str)
@@ -358,6 +368,7 @@ inline minuit_command get_command(char str)
     default:
       throw parse_error("get_command: unhandled command");
   }
+  return {};
 }
 
 inline minuit_type get_type(char str)
@@ -375,6 +386,7 @@ inline minuit_type get_type(char str)
     default:
       throw parse_error("get_type: unhandled type");
   }
+  return {};
 }
 
 inline minuit_operation get_operation(char str)
@@ -388,6 +400,7 @@ inline minuit_operation get_operation(char str)
     default:
       throw parse_error("get_operation: unhandled operation");
   }
+  return {};
 }
 
 inline minuit_operation get_operation(boost::string_ref str)

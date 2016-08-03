@@ -37,8 +37,11 @@ static void process_timenode_dates(time_node& t, DateMap& map)
 state_element scenario_impl::offset(time_value offset)
 {
   if (parent->getRunning())
+  {
     throw execution_error("scenario_impl::offset: "
                           "parent time constraint is running");
+    return {};
+  }
 
   // reset internal offset list and state
   mPastEventList.clear();
@@ -122,8 +125,11 @@ state_element scenario_impl::state()
 {
   auto& par = *parent;
   if (!par.getRunning())
+  {
     throw execution_error("scenario_impl::state: "
                           "parent time constraint is not running");
+    return {};
+  }
 
   // if date hasn't been processed already
   time_value date = par.getDate();
@@ -154,9 +160,12 @@ state_element scenario_impl::state()
     {
       auto& cst = *timeConstraint;
       if (cst.getDriveMode() != clock::DriveMode::EXTERNAL)
+      {
         throw execution_error("scenario_impl::state: "
             "the pattern constraint clock is supposed to "
             "be in EXTERNAL drive mode");
+        return {};
+      }
 
       if (cst.getRunning())
       {
@@ -263,9 +272,11 @@ void scenario_impl::start()
     }
     // error
     else
+    {
       throw execution_error("scenario_impl::start: "
           "TimeEvent's status configuration of the "
           "TimeConstraint is not handled");
+    }
   }
 }
 

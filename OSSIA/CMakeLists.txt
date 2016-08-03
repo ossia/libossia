@@ -26,15 +26,26 @@ endif()
 
 include(ossia_sources.cmake)
 
+if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
+    set(API_HEADERS ${API_HEADERS} ${MIDI_HEADERS})
+    set(API_HEADERS ${API_HEADERS} ${MIDI_HEADERS})
+    set(SRCS ${SRCS} ${MIDI_SRCS})
+endif()
+
 if(APPLE AND OSSIA_FRAMEWORK)
 add_library(ossia MODULE ${SRCS} ${C_API_SRCS})
 set_target_properties(ossia PROPERTIES BUNDLE TRUE)
 else()
 add_library(ossia ${SRCS} ${C_API_SRCS})
 endif()
+if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
 target_link_libraries(ossia
     PRIVATE ModernMIDI
     PUBLIC boost)
+else()
+    target_link_libraries(ossia
+    PUBLIC boost)
+endif()
 
 source_group(Editor REGULAR_EXPRESSION "ossia/editor.*")
 source_group(Network REGULAR_EXPRESSION "ossia/network.*")
