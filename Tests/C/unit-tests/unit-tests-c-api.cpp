@@ -30,6 +30,8 @@ TEST_CASE ("C API: Read JSON") {
     int size;
     REQUIRE(ossia_presets_size(p, &size) == OSSIA_PRESETS_OK);
     REQUIRE(size == 11);
+
+    ossia_presets_free(p);
 }
 
 TEST_CASE ("C API: Apply preset") {

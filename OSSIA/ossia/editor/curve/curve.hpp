@@ -93,21 +93,3 @@ public:
   virtual std::map<X, std::pair<Y, curve_segment<Y>>> getPointsMap() const = 0;
 };
 }
-
-#if !defined(ossia_EXPORTS)
-extern template class OSSIA_EXPORT ossia::curve<double, bool>;
-extern template class OSSIA_EXPORT ossia::curve<double, int>;
-extern template class OSSIA_EXPORT ossia::curve<double, float>;
-
-extern template class OSSIA_EXPORT ossia::curve<bool, bool>;
-extern template class OSSIA_EXPORT ossia::curve<bool, int>;
-extern template class OSSIA_EXPORT ossia::curve<bool, float>;
-
-extern template class OSSIA_EXPORT ossia::curve<int, bool>;
-extern template class OSSIA_EXPORT ossia::curve<int, int>;
-extern template class OSSIA_EXPORT ossia::curve<int, float>;
-
-extern template class OSSIA_EXPORT ossia::curve<float, bool>;
-extern template class OSSIA_EXPORT ossia::curve<float, int>;
-extern template class OSSIA_EXPORT ossia::curve<float, float>;
-#endif

@@ -461,10 +461,10 @@ void insert_array(
     }
 
     if (!arraykeys.empty()) {
-        int index = std::atoi(arraykeys[0].c_str());
+        std::size_t index = std::atoi(arraykeys[0].c_str());
         if (index >= array.Size()) {
-            int missing = index - array.Size() + 1;
-            for (int i = 0; i < missing; ++i) {
+            auto missing = index - array.Size() + 1;
+            for (std::size_t i = 0; i < missing; ++i) {
                 rapidjson::Value dummy;
                 array.PushBack(dummy, doc.GetAllocator());
             }
@@ -670,7 +670,6 @@ void apply_preset_node(
     const ossia::value& val,
     ossia::devices::keep_arch_type keeparch)
 {
-
     if (keys.size() == 0) {
         if (root.children().size() > 0) {
             std::string details = "Node " + root.getName() + " is not terminal";

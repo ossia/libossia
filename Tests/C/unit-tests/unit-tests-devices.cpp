@@ -28,7 +28,7 @@ TEST_CASE ("Device exceptions") {
     SECTION("Invalid address: keep_arch_type") {
         ossia::presets::Preset preset;
         ossia::Bool b;
-        preset.insert(ossia::presets::PresetPair ("/root/child_that_does_not_exist", b));
+        preset.insert(std::make_pair ("/root/child_that_does_not_exist", b));
 
         REQUIRE_THROWS(ossia::devices::apply_preset(localDevice, preset, ossia::devices::keep_arch_on));
         REQUIRE_NOTHROW(ossia::devices::apply_preset(localDevice, preset, ossia::devices::keep_arch_off));
@@ -38,17 +38,17 @@ TEST_CASE ("Device exceptions") {
 
 TEST_CASE ("Building device from preset") {
     ossia::net::generic_device localDevice{
-    std::make_unique<ossia::net::local_protocol>(), "test"};
+    std::make_unique<ossia::net::local_protocol>(), "device"};
 
     ossia::presets::Preset p;
     ossia::Int i1 (1);
     ossia::Int i2 (2);
     ossia::Int i3 (3);
     ossia::Int i4 (4);
-    p.insert(ossia::presets::PresetPair ("/a.0/b/c.0", i1));
-    p.insert(ossia::presets::PresetPair ("/a.0/b/c.1", i2));
-    p.insert(ossia::presets::PresetPair ("/a.1/b.0/c", i3));
-    p.insert(ossia::presets::PresetPair ("/a.1/b.0/d", i4));
+    p.insert(std::make_pair ("/a.0/b/c.0", i1));
+    p.insert(std::make_pair ("/a.0/b/c.1", i2));
+    p.insert(std::make_pair ("/a.1/b.0/c", i3));
+    p.insert(std::make_pair ("/a.1/b.0/d", i4));
 
     REQUIRE_NOTHROW(ossia::devices::apply_preset(localDevice, p, ossia::devices::keep_arch_off));
 
