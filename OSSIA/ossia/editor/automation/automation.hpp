@@ -27,20 +27,31 @@ class address_base;
  *
  * \see \ref Behavior \ref curve \ref curve_segment
  */
-class OSSIA_EXPORT automation : public time_process
+class OSSIA_EXPORT automation final :
+    public ossia::time_process
 {
-public:
-  /** factory
-   * \param the address to drive
-   * \param how to drive the address
-   * \return a new automation
-  */
-  static std::shared_ptr<automation> create(net::address_base&, const value&);
+  public:
+    automation(ossia::net::address_base&, const ossia::value&);
+    automation(const automation&);
 
-  virtual ~automation();
+    ~automation();
 
-  virtual const net::address_base& getDrivenAddress() const = 0;
+    const ossia::net::address_base& getDrivenAddress() const;
+    const ossia::value& getDriving() const;
 
-  virtual const value& getDriving() const = 0;
+  private:
+    ossia::state_element offset(ossia::time_value) override;
+    ossia::state_element state() override;
+
+    void start() override;
+    void stop() override;
+    void pause() override;
+    void resume() override;
+
+    static ossia::value computeValue(double, const ossia::value&);
+
+    ossia::net::address_base& mDrivenAddress;
+    ossia::value mDrive;
+    ossia::message mLastMessage;
 };
 }

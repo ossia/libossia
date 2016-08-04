@@ -1,11 +1,12 @@
 #pragma once
-#include <list>
-
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/clock.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/editor/state/state.hpp>
+#include <ossia/network/base/address.hpp>
 #include <ossia_export.h>
+
+#include <mutex>
 
 namespace ossia
 {
@@ -16,31 +17,52 @@ class address_base;
 class value;
 class time_value;
 
-class OSSIA_EXPORT mapper : public time_process
+/**
+ * @brief The mapper class
+ *
+ * Allows to map a value to another following a transfer function.
+ * The driver address is where the input value is taken from;
+ * The driven address is where the output value is sent to.
+ */
+class OSSIA_EXPORT mapper final :
+    public ossia::time_process
 {
+private:
+  ossia::net::address_base& mDriverAddress;
+  ossia::net::address_base& mDrivenAddress;
+  ossia::value mDrive;
+
+  ossia::message mLastMessage;
+  ossia::value mValueToMap;
+  mutable std::mutex mValueToMapMutex;
+
+  bool mDriverValueObserved{};
+  ossia::net::address_base::callback_index mDriverValueCallbackIndex;
 
 public:
-  /*! factory
-   \param the driver address
-   \param the driven address
-   \param how to map the driver address value on the driven address value
-   \return a new mapper */
-  static std::shared_ptr<mapper>
-  create(net::address_base&, net::address_base&, const value&);
+  mapper(
+      ossia::net::address_base&, ossia::net::address_base&,
+      const ossia::value&);
 
-  /*! destructor */
-  virtual ~mapper();
+  ~mapper();
 
-  /*! get the driver address
-   \return observed address */
-  virtual const net::address_base& getDriverAddress() const = 0;
+  const ossia::net::address_base& getDriverAddress() const;
+  const ossia::net::address_base& getDrivenAddress() const;
 
-  /*! get the driven address
-   \return driven address */
-  virtual const net::address_base& getDrivenAddress() const = 0;
+  const ossia::value& getDriving() const;
 
-  /*! get the driving value
-   \return driving value */
-  virtual const value& getDriving() const = 0;
+private:
+  ossia::state_element offset(ossia::time_value) override;
+
+  ossia::state_element state() override;
+
+  void start() override;
+  void stop() override;
+  void pause() override;
+  void resume() override;
+
+  ossia::value computeValue(const ossia::value&, const ossia::value&);
+
+  void driverValueCallback(const ossia::value& value);
 };
 }

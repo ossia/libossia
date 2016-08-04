@@ -63,22 +63,22 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto scenario = scenario::create();
-        QVERIFY(scenario != nullptr);
+      auto scenar = std::make_shared<scenario>();
+        QVERIFY(scenar != nullptr);
 
-        QVERIFY(scenario->parent == nullptr);
+        QVERIFY(scenar->parent == nullptr);
 
-        QVERIFY(scenario->getStartTimeNode() != nullptr);
+        QVERIFY(scenar->getStartTimeNode() != nullptr);
 
-        QVERIFY(scenario->timeNodes().size() == 1);
-        QVERIFY(scenario->timeConstraints().size() == 0);
+        QVERIFY(scenar->timeNodes().size() == 1);
+        QVERIFY(scenar->timeConstraints().size() == 0);
 
-        QVERIFY(scenario->getStartTimeNode()->getDate() == 0.);
+        QVERIFY(scenar->getStartTimeNode()->getDate() == 0.);
 
         auto mc_callback = std::bind(&ScenarioTest::main_constraint_callback, this, _1, _2, _3);
         auto e_callback = std::bind(&ScenarioTest::event_callback, this, _1);
-        auto start_event = *(scenario->getStartTimeNode()->emplace(
-                               scenario->getStartTimeNode()->timeEvents().begin(),
+        auto start_event = *(scenar->getStartTimeNode()->emplace(
+                               scenar->getStartTimeNode()->timeEvents().begin(),
                                e_callback));
 
         auto end_node = std::make_shared<time_node>();
@@ -94,9 +94,9 @@ private Q_SLOTS:
         auto mc_callback = std::bind(&ScenarioTest::main_constraint_callback, this, _1, _2, _3);
         auto e_callback = std::bind(&ScenarioTest::event_callback, this, _1);
 
-        auto scenario = scenario::create();
+        auto scenar = std::make_shared<scenario>();
 
-        auto start_node = scenario->getStartTimeNode();
+        auto start_node = scenar->getStartTimeNode();
         auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), e_callback));
 
         auto end_node = std::make_shared<time_node>();
@@ -104,21 +104,21 @@ private Q_SLOTS:
 
         auto constraint = time_constraint::create(mc_callback, *start_event, *end_event, 1000., 1000., 1000.);
 
-        scenario->addTimeConstraint(constraint);
-        QVERIFY(scenario->timeConstraints().size() == 1);
-        QVERIFY(scenario->timeNodes().size() == 2);
+        scenar->addTimeConstraint(constraint);
+        QVERIFY(scenar->timeConstraints().size() == 1);
+        QVERIFY(scenar->timeNodes().size() == 2);
 
-        scenario->removeTimeConstraint(constraint);
-        QVERIFY(scenario->timeConstraints().size() == 0);
-        QVERIFY(scenario->timeNodes().size() == 2);
+        scenar->removeTimeConstraint(constraint);
+        QVERIFY(scenar->timeConstraints().size() == 0);
+        QVERIFY(scenar->timeNodes().size() == 2);
 
         auto lonely_node = std::make_shared<time_node>();
 
-        scenario->addTimeNode(lonely_node);
-        QVERIFY(scenario->timeNodes().size() == 3);
+        scenar->addTimeNode(lonely_node);
+        QVERIFY(scenar->timeNodes().size() == 3);
 
-        scenario->removeTimeNode(lonely_node);
-        QVERIFY(scenario->timeNodes().size() == 2);
+        scenar->removeTimeNode(lonely_node);
+        QVERIFY(scenar->timeNodes().size() == 2);
     }
 
     /*! test execution functions */
@@ -136,7 +136,7 @@ private Q_SLOTS:
         auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), e_callback));
         main_constraint = time_constraint::create(mc_callback, *main_start_event, *main_end_event, 5000., 5000, 5000.);
 
-        auto main_scenario = scenario::create();
+        auto main_scenario = std::make_shared<scenario>();
 
         main_constraint->addTimeProcess(main_scenario);
 

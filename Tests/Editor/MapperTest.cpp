@@ -57,7 +57,7 @@ private Q_SLOTS:
 
     Float f(0);
 
-    auto mapping = mapper::create(*float_address, *int_address, f);
+    auto mapping = std::make_shared<mapper>(*float_address, *int_address, f);
     QVERIFY(mapping != nullptr);
 
     QVERIFY(mapping->parent == nullptr);
@@ -90,7 +90,7 @@ private Q_SLOTS:
     c->addPoint(linearSegment, 10., 10);
 
     Behavior b(c);
-    auto mapper = mapper::create(*m_float_address, *m_int_address, b);
+    auto mapping = std::make_shared<mapper>(*m_float_address, *m_int_address, b);
 
     auto start_node = std::make_shared<time_node>();
     auto end_node = std::make_shared<time_node>();
@@ -99,7 +99,7 @@ private Q_SLOTS:
     auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
     auto constraint_callback = std::bind(&MapperTest::constraint_callback, this, _1, _2, _3);
     auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 400., 400., 400.);
-    constraint->addTimeProcess(mapper);
+    constraint->addTimeProcess(mapping);
 
     m_float_address_values.clear();
     m_int_address_values.clear();

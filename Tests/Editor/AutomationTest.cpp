@@ -38,13 +38,13 @@ private Q_SLOTS:
 
     Float f(0);
 
-    auto automation = automation::create(*address, f);
-    QVERIFY(automation != nullptr);
+    auto autom = std::make_shared<automation>(*address, f);
+    QVERIFY(autom != nullptr);
 
-    QVERIFY(automation->parent == nullptr);
+    QVERIFY(autom->parent == nullptr);
 
-    QVERIFY(&automation->getDrivenAddress() == address);
-    QVERIFY(automation->getDriving() == f);
+    QVERIFY(&autom->getDrivenAddress() == address);
+    QVERIFY(autom->getDriving() == f);
 
     //! \todo test clone()
   }
@@ -67,7 +67,7 @@ private Q_SLOTS:
     c->addPoint(linearSegment, 0.5, 1.);
     c->addPoint(linearSegment, 1., 0.);
     Behavior b(c);
-    auto automation = automation::create(*address, b);
+    auto autom = std::make_shared<automation>(*address, b);
 
     auto start_node = std::make_shared<time_node>();
     auto end_node = std::make_shared<time_node>();
@@ -76,7 +76,7 @@ private Q_SLOTS:
     auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
     auto constraint_callback = std::bind(&AutomationTest::constraint_callback, this, _1, _2, _3);
     auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100., 100., 100.);
-    constraint->addTimeProcess(automation);
+    constraint->addTimeProcess(autom);
 
     m_address_values.clear();
 

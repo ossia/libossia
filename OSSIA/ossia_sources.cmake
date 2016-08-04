@@ -14,7 +14,6 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/linear.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/power.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/sin.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/detail/Curve_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/exceptions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/editor.hpp"
 
@@ -98,11 +97,7 @@ set(API_HEADERS
 set(SRCS
     ${API_HEADERS}
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/automation.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/detail/Automation_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/detail/Automation_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/detail/Curve_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/detail/Curve_impl.tpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_atom.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_composition.cpp"
@@ -110,23 +105,8 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_not.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_bool.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_pulse.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/loop/detail/Loop_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/loop/detail/Loop_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/loop/loop.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/detail/Mapper_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/detail/Mapper_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/mapper.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Clock_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Clock_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Scenario_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/Scenario_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeConstraint_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeConstraint_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeEvent_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeEvent_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeNode_impl.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeNode_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/TimeProcess_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/scenario.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_constraint.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_event.cpp"
@@ -189,9 +169,7 @@ set(MIDI_HEADERS
     )
 
 set(MIDI_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.cpp")
