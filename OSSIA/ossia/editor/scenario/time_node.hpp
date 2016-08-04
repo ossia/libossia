@@ -23,7 +23,7 @@ class time_value;
  *
  * \details #TimeNode is also a #TimeEvent container.
  */
-class OSSIA_EXPORT time_node :
+class OSSIA_EXPORT time_node final :
     public std::enable_shared_from_this<time_node>
 {
   public:
@@ -34,13 +34,15 @@ class OSSIA_EXPORT time_node :
     time_node::execution_callback mCallback;
 
     ossia::expression_ptr mExpression;
-    bool mObserveExpression;
-    bool mCallbackSet = false;
     expressions::expression_callback_iterator mResultCallbackIndex;
+
+    ptr_container<time_event> mPendingEvents;
 
     time_value mSimultaneityMargin;
 
-    ptr_container<time_event> mPendingEvents;
+
+    bool mObserveExpression;
+    bool mCallbackSet = false;
 
   public:
     using iterator = ptr_container<time_event>::iterator;

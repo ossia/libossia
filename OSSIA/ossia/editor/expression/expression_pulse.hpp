@@ -43,9 +43,9 @@ private:
   void destinationCallback(const value& value);
 
   Destination mDestination;
-  mutable bool mResult{};
 
   net::address_base::callback_index mDestinationCallbackIndex;
+  mutable bool mResult{};
 };
 }
 }

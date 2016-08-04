@@ -41,6 +41,7 @@ ossia_add_test(TimeEventTest               "${CMAKE_CURRENT_SOURCE_DIR}/Editor/T
 ossia_add_test(TimeNodeTest                "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeNodeTest.cpp")
 ossia_add_test(TimeValueTest               "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeValueTest.cpp")
 ossia_add_test(ValueTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ValueTest.cpp")
+ossia_add_test(PaholeTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/PaholeTest.cpp")
 
 ossia_add_test(AddressTest                 "${CMAKE_CURRENT_SOURCE_DIR}/Network/AddressTest.cpp")
 ossia_add_test(DeviceTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/DeviceTest.cpp")

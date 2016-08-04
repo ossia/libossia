@@ -640,7 +640,7 @@ std::string preset_to_device_key(const std::string& presetkey) {
     std::vector<std::string> indexes;
     boost::split(indexes, presetkey, [](char c){return c == '.';}, boost::token_compress_on);
 
-    for (int i = 1; i < indexes.size(); ++i) {
+    for (std::size_t i = 1; i < indexes.size(); ++i) {
       int current_index = std::atoi((indexes[i]).c_str());
       std::stringstream ss;
       ss << (current_index + 1);
@@ -654,7 +654,7 @@ std::string device_to_preset_key(const std::string& devicekey) {
     std::vector<std::string> indexes;
     boost::split(indexes, devicekey, [](char c){return c == '.';}, boost::token_compress_on);
 
-    for (int i = 1; i < indexes.size(); ++i) {
+    for (std::size_t i = 1; i < indexes.size(); ++i) {
       int current_index = std::atoi((indexes[i]).c_str());
       std::stringstream ss;
       ss << (current_index - 1);

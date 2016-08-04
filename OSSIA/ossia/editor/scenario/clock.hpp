@@ -164,12 +164,6 @@ public:
     time_value mOffset{};      /// the date (in ms) the clock will run from
     double mSpeed{};           /// the speed factor of the clock
 
-    clock::DriveMode
-        mDriveMode{}; /// in EXTERNAL drive mode the tick() method is
-                      /// called from outside
-
-    std::atomic_bool mRunning{}; /// is the clock running right now ?
-    std::atomic_bool mPaused{};  /// is the clock paused right now ?
     time_value
         mPosition{};    /// the progression of the clock between the beginning
                         /// and the end [0. :: 1.]
@@ -182,6 +176,13 @@ public:
         mLastTime{};          /// a time reference used to compute time tick
     long long mElapsedTime{}; /// a time reference used to know how many time are
                               /// elapsed in microsecond
+                              ///
+    clock::DriveMode
+        mDriveMode{}; /// in EXTERNAL drive mode the tick() method is
+                      /// called from outside
+
+    std::atomic_bool mRunning{}; /// is the clock running right now ?
+    std::atomic_bool mPaused{};  /// is the clock paused right now ?
 
   private:
     /*! called back by the internal thread */

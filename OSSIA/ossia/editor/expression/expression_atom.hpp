@@ -53,11 +53,12 @@ private:
   void secondValueCallback(const ossia::value& value);
 
   ossia::value mFirstValue;
-  Comparator mOperator;
   ossia::value mSecondValue;
 
   net::address_base::callback_index mFirstValueCallbackIndex;
   net::address_base::callback_index mSecondValueCallbackIndex;
+
+  Comparator mOperator;
 };
 }
 }

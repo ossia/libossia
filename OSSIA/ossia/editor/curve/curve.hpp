@@ -48,13 +48,13 @@ class curve : public curve_abstract
     ossia::Destination mInitialPointAbscissaDestination;
 
     Y mInitialPointOrdinate;
-    mutable Y mInitialPointOrdinateCache;
-    mutable bool mInitialPointOrdinateCacheUsed = false;
     ossia::Destination mInitialPointOrdinateDestination;
 
     using map_type = curve_map<X, std::pair<Y, ossia::curve_segment<Y>>>;
     map_type mPointsMap;
 
+    mutable Y mInitialPointOrdinateCache;
+    mutable bool mInitialPointOrdinateCacheUsed = false;
 public:
   using abscissa_type = X;
   using ordinate_type = Y;

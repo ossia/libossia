@@ -12,7 +12,8 @@ class time_event;
 class time_constraint;
 class time_node;
 
-class OSSIA_EXPORT scenario : public time_process
+class OSSIA_EXPORT scenario final :
+    public time_process
 {
   public:
     scenario();

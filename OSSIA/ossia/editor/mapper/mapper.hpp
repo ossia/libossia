@@ -27,18 +27,6 @@ class time_value;
 class OSSIA_EXPORT mapper final :
     public ossia::time_process
 {
-private:
-  ossia::net::address_base& mDriverAddress;
-  ossia::net::address_base& mDrivenAddress;
-  ossia::value mDrive;
-
-  ossia::message mLastMessage;
-  ossia::value mValueToMap;
-  mutable std::mutex mValueToMapMutex;
-
-  bool mDriverValueObserved{};
-  ossia::net::address_base::callback_index mDriverValueCallbackIndex;
-
 public:
   mapper(
       ossia::net::address_base&, ossia::net::address_base&,
@@ -64,5 +52,16 @@ private:
   ossia::value computeValue(const ossia::value&, const ossia::value&);
 
   void driverValueCallback(const ossia::value& value);
+
+    ossia::net::address_base& mDriverAddress;
+    ossia::net::address_base& mDrivenAddress;
+    ossia::value mDrive;
+
+    ossia::message mLastMessage;
+    ossia::value mValueToMap;
+    mutable std::mutex mValueToMapMutex;
+
+    ossia::net::address_base::callback_index mDriverValueCallbackIndex;
+    bool mDriverValueObserved{};
 };
 }

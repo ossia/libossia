@@ -163,14 +163,13 @@ public:
     return mTimeProcesses;
   }
 
-protected:
-  std::vector<std::unique_ptr<time_process>> mTimeProcesses;
-  std::unique_ptr<clock> mClock;
-
+private:
   void ClockCallback(
       time_value position, time_value date, unsigned char droppedTicks);
   ossia::state make_state();
 
+  std::vector<std::unique_ptr<time_process>> mTimeProcesses;
+  std::unique_ptr<clock> mClock;
     time_constraint::ExecutionCallback mCallback;
 
     time_event& mStartEvent;
