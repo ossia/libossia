@@ -18,7 +18,7 @@ time_constraint_impl::time_constraint_impl(
     , mDurationMin(min)
     , mDurationMax(max)
 {
-  mClock = std::make_unique<clock_impl>([=](time_value t, time_value t2, unsigned char c) {
+  mClock = std::make_unique<clock>([=](time_value t, time_value t2, unsigned char c) {
     return ClockCallback(t, t2, c);
   });
   mClock->setDuration(mDurationNominal);

@@ -74,7 +74,7 @@ class ClockTest : public QObject
             std::cout << std::endl;
 
         // setup clock
-        auto clock = clock::create(callback, duration, granularity, offset, speed);
+        ossia::clock c(callback, duration, granularity, offset, speed);
 
         // clear frame vectors
         m_clock_positions.clear();
@@ -82,13 +82,13 @@ class ClockTest : public QObject
         m_dropped_ticks = 0;
 
         // launch the clock and check running status : it have to be true after the launch
-        QVERIFY(clock->getRunning() == false);
+        QVERIFY(c.getRunning() == false);
         m_clock_start_date = steady_clock::now();
-        clock->start();
-        QVERIFY(clock->getRunning() == true);
+        c.start();
+        QVERIFY(c.getRunning() == true);
 
         // wait the clock end
-        while (clock->getRunning())
+        while (c.getRunning())
             ;
 
         // how long the clock ran ?
@@ -124,10 +124,10 @@ class ClockTest : public QObject
         QVERIFY(m_clock_dates[effective_nbFrame-1] >= duration);
 
         // check time info after execution : they have to be the same
-        QVERIFY(clock->getDuration() == duration);
-        QVERIFY(clock->getGranularity() == granularity);
-        QVERIFY(clock->getOffset() == offset);
-        QVERIFY(clock->getSpeed() == speed);
+        QVERIFY(c.getDuration() == duration);
+        QVERIFY(c.getGranularity() == granularity);
+        QVERIFY(c.getOffset() == offset);
+        QVERIFY(c.getSpeed() == speed);
 
         if (display_frames)
             std::cout << std::endl;
@@ -141,26 +141,26 @@ private Q_SLOTS:
     void test_basic()
     {
         auto callback = std::bind(&ClockTest::clock_callback_light, this, _1, _2, _3);
-        auto clock = clock::create(callback);
+        ossia::clock c(callback);
 
-        QVERIFY(clock->getDuration() == Infinite);
-        QVERIFY(clock->getGranularity() == 10.);
-        QVERIFY(clock->getOffset() == 0.);
-        QVERIFY(clock->getSpeed() == 1.);
+        QVERIFY(c.getDuration() == Infinite);
+        QVERIFY(c.getGranularity() == 10.);
+        QVERIFY(c.getOffset() == 0.);
+        QVERIFY(c.getSpeed() == 1.);
 
-        clock->setDuration(1000.);
-        clock->setGranularity(50.);
-        clock->setOffset(500.);
-        clock->setSpeed(2.);
+        c.setDuration(1000.);
+        c.setGranularity(50.);
+        c.setOffset(500.);
+        c.setSpeed(2.);
 
-        QVERIFY(clock->getDuration() == 1000.);
-        QVERIFY(clock->getGranularity() == 50.);
-        QVERIFY(clock->getOffset() == 500.);
-        QVERIFY(clock->getSpeed() == 2.);
+        QVERIFY(c.getDuration() == 1000.);
+        QVERIFY(c.getGranularity() == 50.);
+        QVERIFY(c.getOffset() == 500.);
+        QVERIFY(c.getSpeed() == 2.);
 
-        QVERIFY(clock->getRunning() == false);
-        QVERIFY(clock->getPosition() == 0.5);
-        QVERIFY(clock->getDate() == 500.);
+        QVERIFY(c.getRunning() == false);
+        QVERIFY(c.getPosition() == 0.5);
+        QVERIFY(c.getDate() == 500.);
 
         //! \todo test clone()
     }
@@ -242,7 +242,7 @@ private Q_SLOTS:
 
         // setup clock
         auto callback = std::bind(&ClockTest::clock_callback_light, this, _1, _2, _3);
-        auto clock = clock::create(callback, 100., 10., 0., 1.);
+        ossia::clock c(callback, 100., 10., 0., 1.);
 
         // clear frame vectors
         m_clock_positions.clear();
@@ -250,15 +250,15 @@ private Q_SLOTS:
         m_dropped_ticks = 0;
 
         // launch the clock
-        clock->start();
+        c.start();
 
         // wait the clock to pass 50 ms
-        while (clock->getDate() < 50.)
+        while (c.getDate() < 50.)
             ;
 
         // then pause: the clock should be still running
-        clock->pause();
-        QVERIFY(clock->getRunning() == true);
+        c.pause();
+        QVERIFY(c.getRunning() == true);
 
         // wait a little bit before to resume ...
         if (display_frames)
@@ -267,14 +267,14 @@ private Q_SLOTS:
         std::this_thread::sleep_for( std::chrono::milliseconds(20));
 
         // then resume
-        clock->resume();
-        QVERIFY(clock->getRunning() == true);
+        c.resume();
+        QVERIFY(c.getRunning() == true);
 
         // wait the clock to pass 80 ms
-        while (clock->getDate() < 80.) ;
+        while (c.getDate() < 80.) ;
         // then stop
-        clock->stop();
-        QVERIFY(clock->getRunning() == false);
+        c.stop();
+        QVERIFY(c.getRunning() == false);
 
         // check number of frames
         QVERIFY(m_clock_positions.size() == 9);
@@ -285,10 +285,10 @@ private Q_SLOTS:
         m_dropped_ticks = 0;
 
         // launch the clock
-        clock->start();
+        c.start();
 
         // wait the clock to end
-        while (clock->getRunning())
+        while (c.getRunning())
             ;
 
         // check number of frames
