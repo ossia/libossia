@@ -113,7 +113,7 @@ public:
 
   /*! is the time value infinite ?
    \return bool infinite */
-  constexpr bool isInfinite() const noexcept
+  bool isInfinite() const noexcept
   {
     return std::isinf(m_value);
   }
