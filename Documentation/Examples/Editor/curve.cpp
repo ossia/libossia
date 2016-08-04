@@ -15,7 +15,7 @@ using namespace std;
 
 int main()
 {
-  auto c = curve<double, float>::create();
+  auto c = std::make_shared<curve<double, float>>();
   curve_segment_linear<float> firstCurveSegment;
   curve_segment_linear<float> secondCurveSegment;
 

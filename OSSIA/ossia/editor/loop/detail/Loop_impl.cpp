@@ -1,6 +1,7 @@
 #include "Loop_impl.hpp"
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/editor/exceptions.hpp>
+#include <ossia/editor/scenario/time_node.hpp>
 
 namespace ossia
 {
@@ -16,12 +17,12 @@ loop_impl::loop_impl(
     , mPatternEndEventCallback(patternEndEventCallback)
     , mPatternConstraintCallback(patternConstraintCallback)
 {
-  mPatternStartNode = time_node::create();
+  mPatternStartNode = std::make_shared<time_node>();
   mPatternStartNode->emplace(
       mPatternStartNode->timeEvents().begin(),
       [&](time_event::Status result) { PatternStartEventCallback(result); });
 
-  mPatternEndNode = time_node::create();
+  mPatternEndNode = std::make_shared<time_node>();
   mPatternEndNode->emplace(
       mPatternEndNode->timeEvents().begin(),
       [&](time_event::Status result) { PatternEndEventCallback(result); });
@@ -87,9 +88,7 @@ state_element loop_impl::state()
 
     // process the loop from the pattern start TimeNode
     ptr_container<time_event> statusChangedEvents;
-    std::shared_ptr<time_node_impl> n
-        = std::dynamic_pointer_cast<time_node_impl>(mPatternStartNode);
-    n->process(statusChangedEvents);
+    mPatternStartNode->process(statusChangedEvents);
 
     // add the state of each newly HAPPENED TimeEvent
     for (const auto& timeEvent : statusChangedEvents)
@@ -159,15 +158,8 @@ void loop_impl::stop()
 
   mPatternConstraint->offset(Zero);
 
-  std::shared_ptr<time_event_impl> start
-      = std::dynamic_pointer_cast<time_event_impl>(
-          mPatternConstraint->getStartEvent());
-  start->setStatus(time_event::Status::PENDING);
-
-  std::shared_ptr<time_event_impl> end
-      = std::dynamic_pointer_cast<time_event_impl>(
-          mPatternConstraint->getEndEvent());
-  end->setStatus(time_event::Status::NONE);
+  mPatternConstraint->getStartEvent()->setStatus(time_event::Status::PENDING);
+  mPatternConstraint->getEndEvent()->setStatus(time_event::Status::NONE);
 }
 
 void loop_impl::pause()

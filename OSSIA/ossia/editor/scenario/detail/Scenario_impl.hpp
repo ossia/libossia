@@ -66,7 +66,7 @@ private:
   const ptr_container<time_constraint>& timeConstraints() const override;
 
   /* order all HAPPENED TimeEvents into mOffetEventMap */
-  void process_offset(std::shared_ptr<time_node>, time_value);
+  void process_offset(time_node&, time_value);
 };
 }
 }

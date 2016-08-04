@@ -6,6 +6,7 @@
 
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/expression/expression_fwd.hpp>
+#include <ossia/editor/state/state_element.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -13,7 +14,6 @@ namespace ossia
 class state;
 class time_constraint;
 class time_node;
-
 /**
  * @brief The time_event class
  *
@@ -26,28 +26,43 @@ class time_node;
  */
 class OSSIA_EXPORT time_event
 {
+  public:
+    /*! event status */
+    enum class Status
+    {
+      NONE,
+      PENDING,
+      HAPPENED,
+      DISPOSED
+    };
+
+    /*! to get the event status back
+     \param #Status new status */
+    using ExecutionCallback = std::function<void(Status)>;
+
+  private:
+    time_event::ExecutionCallback mCallback;
+
+    time_node& mTimeNode;
+    state mState;
+    Status mStatus;
+
+    expression_ptr mExpression;
 
 public:
-  /*! event status */
-  enum class Status
-  {
-    NONE,
-    PENDING,
-    HAPPENED,
-    DISPOSED
-  };
+    time_event(
+        time_event::ExecutionCallback,
+        time_node& aTimeNode,
+        expression_ptr anExpression);
 
   /*! destructor */
-  virtual ~time_event();
+  ~time_event();
 
-  /*! to get the event status back
-   \param #Status new status */
-  using ExecutionCallback = std::function<void(Status)>;
 
   /*! changes the callback in the event
    \param #TimeEvent::ExecutionCallback to get #TimeEvent's status back
    \details this may be unsafe to do during execution */
-  virtual void setCallback(time_event::ExecutionCallback) = 0;
+  void setCallback(time_event::ExecutionCallback) ;
 
   /*! make the event happen to propagate the execution to next TimeConstraints
    \details the event have to be in PENDING status to call this method
@@ -55,7 +70,7 @@ public:
    it will raise a runtime_error
    \details turning the event' status into HAPPENED will call the callback to
    notify its owner */
-  virtual void happen() = 0;
+  void happen() ;
 
   /*! dispose the event to not propagate the execution to next TimeConstraints
    \details the event have to be in PENDING status to call this method
@@ -63,36 +78,36 @@ public:
    it will raise a runtime_error
    \details turning the event' status into DISPOSED will call the callback to
    notify its owner */
-  virtual void dispose() = 0;
+  void dispose() ;
 
   /*! add a sub state into the state of the event
    \param std::shared_ptr<#State> to add */
-  virtual void addState(state&&) = 0;
+  void addState(state&&) ;
 
   /*! remove a sub state from the state of the event
    \param std::shared_ptr<#State> to remove */
-  virtual void removeState(const state&) = 0;
+  void removeState(const state&) ;
 
   /*! get the #TimeNode where the event is
    \return std::shared_ptr<#TimeNode> */
-  virtual const std::shared_ptr<time_node>& getTimeNode() const = 0;
+  time_node& getTimeNode() const ;
 
   /*! get the state of the event
   \return std::shared_ptr<#State> */
-  virtual const state& getState() const = 0;
+  const state& getState() const ;
 
   /*! get the expression of the event
   \return std::shared_ptr<#Expression> */
-  virtual const expression& getExpression() const = 0;
+  const expression& getExpression() const ;
 
   /*! set the expression of the event
    \param std::shared_ptr<#Expression>
    \return #TimeEvent the event */
-  virtual time_event& setExpression(expression_ptr) = 0;
+  time_event& setExpression(expression_ptr) ;
 
   /*! get the status of the event
    \return #Status */
-  virtual Status getStatus() const = 0;
+  Status getStatus() const ;
 
   /*! get previous time contraints attached to the event
    \return #Container<#TimeConstraint> */
@@ -122,6 +137,7 @@ public:
     return m_nextTimeConstraints;
   }
 
+  void setStatus(Status status);
 private:
   ptr_container<time_constraint> m_previousTimeConstraints;
   ptr_container<time_constraint> m_nextTimeConstraints;

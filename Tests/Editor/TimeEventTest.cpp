@@ -23,11 +23,11 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto node = time_node::create();
+        auto node = std::make_shared<time_node>();
         auto event = *(node->emplace(node->timeEvents().begin(), &event_callback));
         QVERIFY(event != nullptr);
 
-        QVERIFY(event->getTimeNode() == node);
+        QVERIFY(&event->getTimeNode() == node.get());
         QVERIFY(event->getExpression() == expressions::expression_true);
         QVERIFY(event->getStatus() == time_event::Status::NONE);
 
@@ -47,13 +47,13 @@ private Q_SLOTS:
     /*! test edition functions */
     void test_edition()
     {
-        auto nodeA = time_node::create();
+        auto nodeA = std::make_shared<time_node>();
         auto eventA = *(nodeA->emplace(nodeA->timeEvents().begin(), &event_callback));
 
-        auto nodeB = time_node::create();
+        auto nodeB = std::make_shared<time_node>();
         auto eventB = *(nodeB->emplace(nodeB->timeEvents().begin(), &event_callback));
 
-        auto nodeC = time_node::create();
+        auto nodeC = std::make_shared<time_node>();
         auto eventC = *(nodeC->emplace(nodeC->timeEvents().begin(), &event_callback));
 
         auto constraint1 = time_constraint::create(&constraint_callback, eventA, eventB, 1000.);

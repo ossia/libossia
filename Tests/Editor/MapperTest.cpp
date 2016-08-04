@@ -92,8 +92,8 @@ private Q_SLOTS:
     Behavior b(c);
     auto mapper = mapper::create(*m_float_address, *m_int_address, b);
 
-    auto start_node = time_node::create();
-    auto end_node = time_node::create();
+    auto start_node = std::make_shared<time_node>();
+    auto end_node = std::make_shared<time_node>();
     auto event_callback = std::bind(&MapperTest::event_callback, this, _1);
     auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
     auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));

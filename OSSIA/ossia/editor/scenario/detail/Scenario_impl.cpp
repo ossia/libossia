@@ -11,7 +11,7 @@ namespace detail
 scenario_impl::scenario_impl() : time_process_impl()
 {
   // create the start TimeNode
-  mTimeNodes.push_back(time_node::create());
+  mTimeNodes.push_back(std::make_shared<time_node>());
 }
 
 scenario_impl::~scenario_impl()
@@ -29,7 +29,7 @@ static void process_timenode_dates(time_node& t, DateMap& map)
   {
     for (ConstraintPtr& cst : ev->nextTimeConstraints())
     {
-      process_timenode_dates(*cst->getEndEvent()->getTimeNode(), map);
+      process_timenode_dates(cst->getEndEvent()->getTimeNode(), map);
     }
   }
 }
@@ -79,7 +79,7 @@ state_element scenario_impl::offset(time_value offset)
         {
           auto& cst = *cst_ptr;
           auto& start_tn = cst.getStartEvent()->getTimeNode();
-          auto start_date = time_map.at(start_tn.get());
+          auto start_date = time_map.at(&start_tn);
           if (start_date < offset)
           {
             auto dur = cst.getDurationNominal();
@@ -93,7 +93,7 @@ state_element scenario_impl::offset(time_value offset)
   }
 
   // propagate offset from the first TimeNode
-  process_offset(mTimeNodes[0], offset);
+  process_offset(*mTimeNodes[0], offset);
 
   // sort mPastEventList by date
   mPastEventList.sort();
@@ -110,7 +110,7 @@ state_element scenario_impl::offset(time_value offset)
     auto& cst = *timeConstraint;
     // offset TimeConstraint's Clock
     time_value constraintOffset
-        = offset - cst.getStartEvent()->getTimeNode()->getDate();
+        = offset - cst.getStartEvent()->getTimeNode().getDate();
 
     if (constraintOffset >= Zero && constraintOffset <= cst.getDurationMax())
     {
@@ -143,9 +143,8 @@ state_element scenario_impl::state()
 
     // process the scenario from the first TimeNode to the running constraints
     ptr_container<time_event> statusChangedEvents;
-    std::shared_ptr<time_node_impl> n
-        = std::dynamic_pointer_cast<time_node_impl>(mTimeNodes[0]);
-    n->process(statusChangedEvents);
+    auto& n = *mTimeNodes[0];
+    n.process(statusChangedEvents);
 
     // add the state of each newly HAPPENED TimeEvent
     for (const auto& timeEvent : statusChangedEvents)
@@ -331,10 +330,10 @@ void scenario_impl::addTimeConstraint(
   }
 
   // store TimeConstraint's start node if it is not already stored
-  addTimeNode(cst.getStartEvent()->getTimeNode());
+  addTimeNode(cst.getStartEvent()->getTimeNode().shared_from_this());
 
   // store TimeConstraint's end node if it is not already stored
-  addTimeNode(cst.getEndEvent()->getTimeNode());
+  addTimeNode(cst.getEndEvent()->getTimeNode().shared_from_this());
 
   // set TimeConstraint's clock in external mode
   cst.setDriveMode(clock::DriveMode::EXTERNAL);
@@ -379,11 +378,11 @@ const ptr_container<time_constraint>& scenario_impl::timeConstraints() const
 }
 
 void scenario_impl::process_offset(
-    std::shared_ptr<time_node> timenode, time_value offset)
+    time_node& timenode, time_value offset)
 {
-  time_value date = timenode->getDate();
+  time_value date = timenode.getDate();
 
-  for (const auto& event : timenode->timeEvents())
+  for (const auto& event : timenode.timeEvents())
   {
     time_event::Status eventStatus;
 
@@ -401,7 +400,7 @@ void scenario_impl::process_offset(
     for (const auto& timeConstraint : event->previousTimeConstraints())
     {
       time_value constraintOffset
-          = offset - timeConstraint->getStartEvent()->getTimeNode()->getDate();
+          = offset - timeConstraint->getStartEvent()->getTimeNode().getDate();
 
       if (constraintOffset < Zero)
       {
@@ -424,9 +423,7 @@ void scenario_impl::process_offset(
     }
 
     // setup event status
-    std::shared_ptr<time_event_impl> e
-        = std::dynamic_pointer_cast<time_event_impl>(event);
-    e->setStatus(eventStatus);
+    event->setStatus(eventStatus);
 
     // add HAPPENED event to offset event list
     if (eventStatus == time_event::Status::HAPPENED)

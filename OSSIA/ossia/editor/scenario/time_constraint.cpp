@@ -1,4 +1,5 @@
 #include <ossia/editor/scenario/detail/TimeConstraint_impl.hpp>
+#include <algorithm>
 namespace ossia
 {
 std::shared_ptr<time_constraint> time_constraint::create(

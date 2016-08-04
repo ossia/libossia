@@ -23,89 +23,114 @@ class time_value;
  *
  * \details #TimeNode is also a #TimeEvent container.
  */
-class OSSIA_EXPORT time_node
+class OSSIA_EXPORT time_node :
+    public std::enable_shared_from_this<time_node>
 {
+  public:
+    /*! to be notified when it is triggered */
+    using execution_callback = std::function<void()>;
 
-public:
-  using iterator = ptr_container<time_event>::iterator;
-  using const_iterator = ptr_container<time_event>::const_iterator;
+  private:
+    time_node::execution_callback mCallback;
 
-  /*! to be notified when it is triggered */
-  using execution_callback = std::function<void()>;
+    ossia::expression_ptr mExpression;
+    bool mObserveExpression;
+    bool mCallbackSet = false;
+    expressions::expression_callback_iterator mResultCallbackIndex;
 
-  /*! factory
-   \param #TimeNode::ExecutionCallback to be be notified when the #TimeNode is
-   triggered
-   \return std::shared_ptr<#TimeNode> */
-  static std::shared_ptr<time_node> create(time_node::execution_callback = {});
-  /*! destructor */
-  virtual ~time_node();
+    time_value mSimultaneityMargin;
 
-  /*! changes the callback in the #TimeNode
+    ptr_container<time_event> mPendingEvents;
+
+  public:
+    using iterator = ptr_container<time_event>::iterator;
+    using const_iterator = ptr_container<time_event>::const_iterator;
+
+    /*
+    \param #TimeNode::ExecutionCallback to be be notified when the #TimeNode is
+    triggered
+    \return std::shared_ptr<#TimeNode> */
+    time_node(time_node::execution_callback callback = {});
+
+    /*! destructor */
+    ~time_node();
+
+    /*! changes the callback in the #TimeNode
    \param #TimeNode::ExecutionCallback to be be notified when the #TimeNode is
    triggered
    \details this may be unsafe to do during execution */
-  virtual void setCallback(time_node::execution_callback) = 0;
+    void setCallback(time_node::execution_callback);
 
-  /*! evaluate all #TimeEvent's to make them to happen or to dispose them
+    /*! evaluate all #TimeEvent's to make them to happen or to dispose them
    \return boolean true if the operation succeeded */
-  virtual bool trigger() = 0;
+    bool trigger();
 
-  /*! get the date
+    /*! get the date
    \details the date is the sum of its previous #TimeConstraint durations
    \details a #TimeNode with na previous #TimeConstraints have a date equals to
    0.
    \return #TimeValue the date */
-  virtual time_value getDate() const = 0;
+    time_value getDate() const;
 
-  /*! get the expression of the #TimeNode
+    /*! get the expression of the #TimeNode
    \return std::shared_ptr<#Expression> */
-  virtual const expression& getExpression() const = 0;
+    const expression& getExpression() const;
 
-  /*! set the expression of the #TimeNode
+    /*! set the expression of the #TimeNode
    \details setting the expression to ExpressionTrue will defer the evaluation
    on #TimeEvent's expression
    \details setting the expression to ExpressionFalse will mute TimeNode
    execution
    \param std::shared_ptr<#Expression>
    \return #TimeNode the time node */
-  virtual time_node& setExpression(expression_ptr) = 0;
+    time_node& setExpression(expression_ptr);
 
-  /*! get the simultaneity margin
+    /*! get the simultaneity margin
    \return #TimeValue the simultaneity margin */
-  virtual time_value getSimultaneityMargin() const = 0;
+    time_value getSimultaneityMargin() const;
 
-  /*! set the simultaneity margin
+    /*! set the simultaneity margin
    \param #TimeValue the simultaneity margin
    \return #TimeNode the time node */
-  virtual time_node& setSimultaneityMargin(time_value) = 0;
+    time_node& setSimultaneityMargin(time_value);
 
-  /*! create and store a #TimeEvent
+    /*! create and store a #TimeEvent
    \param #Container<#TimeEvent>::const_iterator where to store the #TimeEvent
    \param #TimeEvent::ExecutionCallback to get #TimeEvent's status back
    \param std::shared<#Expression> an optionnal #Expression to apply to the
    #TimeEvent
    \return std::shared_ptr<#TimeEvent> */
-  virtual iterator emplace(
-      const_iterator, time_event::ExecutionCallback,
-      expression_ptr = expressions::make_expression_true())
-      = 0;
+    iterator emplace(
+        const_iterator, time_event::ExecutionCallback,
+        expression_ptr = expressions::make_expression_true());
 
-  /*! get the #TimeEvents of the #TimeNode
+    /*! get the #TimeEvents of the #TimeNode
    \return #Container<#TimeEvent> */
-  ptr_container<time_event>& timeEvents()
-  {
-    return m_timeEvents;
-  }
+    ptr_container<time_event>& timeEvents()
+    {
+      return m_timeEvents;
+    }
 
-  /*! get the #TimeEvents of the #TimeNode
+    /*! get the #TimeEvents of the #TimeNode
    \return #Container<#TimeEvent> */
-  const ptr_container<time_event>& timeEvents() const
-  {
-    return m_timeEvents;
-  }
+    const ptr_container<time_event>& timeEvents() const
+    {
+      return m_timeEvents;
+    }
 
-private:
-  ptr_container<time_event> m_timeEvents;
+    // Interface to be used for set-up by other time processes
+    /* process all TimeEvents to propagate execution */
+    void process(ptr_container<time_event>& statusChangedEvents);
+
+    /* is the TimeNode observing its Expression ? */
+    bool isObservingExpression();
+
+    /* enable observation of the Expression */
+    void observeExpressionResult(bool);
+
+    void resultCallback(bool result);
+
+  private:
+    ptr_container<time_event> m_timeEvents;
 };
 }

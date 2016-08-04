@@ -18,7 +18,7 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto node = time_node::create();
+        auto node = std::make_shared<time_node>();
         QVERIFY(node != nullptr);
 
         time_value date = node->getDate();
@@ -47,7 +47,7 @@ private Q_SLOTS:
     /*! test edition functions */
     void test_edition()
     {
-        auto node = time_node::create();
+        auto node = std::make_shared<time_node>();
         QVERIFY(node != nullptr);
 
         auto event = *(node->emplace(
