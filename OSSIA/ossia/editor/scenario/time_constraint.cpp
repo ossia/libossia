@@ -1,4 +1,6 @@
-#include <ossia/editor/scenario/detail/TimeConstraint_impl.hpp>
+#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/scenario/time_process.hpp>
 #include <algorithm>
 namespace ossia
 {
@@ -8,29 +10,234 @@ std::shared_ptr<time_constraint> time_constraint::create(
     std::shared_ptr<time_event> endEvent, time_value nominal, time_value min,
     time_value max)
 {
-  auto timeConstraint = std::make_shared<detail::time_constraint_impl>(
+  auto timeConstraint = std::make_shared<time_constraint>(
       callback, startEvent, endEvent, nominal, min, max);
 
-  // store the TimeConstraint into the start event as a next constraint
-  if (std::find(
-          startEvent->nextTimeConstraints().begin(),
-          startEvent->nextTimeConstraints().end(), timeConstraint)
-      == startEvent->nextTimeConstraints().end())
-  {
-    startEvent->nextTimeConstraints().push_back(timeConstraint);
-  }
-
-  // store the TimeConstraint into the end event as a previous constraint
-  if (std::find(
-          endEvent->previousTimeConstraints().begin(),
-          endEvent->previousTimeConstraints().end(), timeConstraint)
-      == endEvent->previousTimeConstraints().end())
-  {
-    endEvent->previousTimeConstraints().push_back(timeConstraint);
-  }
+  startEvent->nextTimeConstraints().push_back(timeConstraint);
+  endEvent->previousTimeConstraints().push_back(timeConstraint);
 
   return timeConstraint;
 }
 
+
+time_constraint::time_constraint(
+    time_constraint::ExecutionCallback callback,
+    std::shared_ptr<time_event> startEvent,
+    std::shared_ptr<time_event> endEvent, time_value nominal, time_value min,
+    time_value max)
+    : mCallback(callback)
+    , mStartEvent(startEvent)
+    , mEndEvent(endEvent)
+    , mDurationNominal(nominal)
+    , mDurationMin(min)
+    , mDurationMax(max)
+{
+  mClock = std::make_unique<clock>([=](time_value t, time_value t2, unsigned char c) {
+    return ClockCallback(t, t2, c);
+  });
+  mClock->setDuration(mDurationNominal);
+}
+
 time_constraint::~time_constraint() = default;
+
+void time_constraint::start()
+{
+  if (mClock->getRunning())
+  {
+    throw execution_error("time_constraint::start: "
+                          "time constraint is already running");
+    return;
+  }
+
+  // set clock duration using maximal duration
+  mClock->setDuration(mDurationMax);
+
+  // start all jamoma time processes
+  for (const auto& timeProcess : timeProcesses())
+  {
+    timeProcess->start();
+  }
+
+  // launch the clock
+  mClock->do_start();
+}
+
+void time_constraint::stop()
+{
+  // stop the clock
+  mClock->do_stop();
+
+  // stop all jamoma time processes
+  for (const auto& timeProcess : timeProcesses())
+  {
+    timeProcess->stop();
+  }
+}
+
+ossia::state time_constraint::offset(time_value date)
+{
+  if (mClock->getRunning())
+  {
+    throw execution_error("time_constraint::offset: "
+                          "time constraint is running");
+    return {};
+  }
+
+  mClock->do_setOffset(date);
+
+  const auto& processes = timeProcesses();
+  ossia::state state;
+  state.reserve(processes.size());
+
+  // get the state of each TimeProcess at current clock position and date
+  for (const auto& timeProcess : processes)
+  {
+    state.add(timeProcess->offset(date));
+  }
+
+  return state;
+}
+
+ossia::state time_constraint::state()
+{
+  if (!mClock->getRunning())
+  {
+    throw execution_error("time_constraint::state: "
+                          "time constraint is not running");
+    return {};
+  }
+
+  const auto& processes = timeProcesses();
+  ossia::state state;
+  state.reserve(processes.size());
+
+  // get the state of each TimeProcess at current clock position and date
+  for (const auto& timeProcess : processes)
+  {
+    state.add(timeProcess->state());
+  }
+
+  return state;
+}
+
+void time_constraint::pause()
+{
+  mClock->pause();
+
+  // pause all jamoma time processes
+  for (const auto& timeProcess : timeProcesses())
+  {
+    timeProcess->pause();
+  }
+}
+
+void time_constraint::resume()
+{
+  mClock->resume();
+
+  // resume all jamoma time processes
+  for (const auto& timeProcess : timeProcesses())
+  {
+    timeProcess->resume();
+  }
+}
+
+void time_constraint::setCallback(
+    time_constraint::ExecutionCallback callback)
+{
+  mCallback = callback;
+}
+
+const time_value& time_constraint::getDurationNominal() const
+{
+  return mDurationNominal;
+}
+
+time_constraint&
+time_constraint::setDurationNominal(time_value durationNominal)
+{
+  mDurationNominal = durationNominal;
+
+  if (mDurationNominal < mDurationMin)
+    setDurationMin(mDurationNominal);
+
+  if (mDurationNominal > mDurationMax)
+    setDurationMax(mDurationNominal);
+
+  mClock->setDuration(mDurationNominal);
+
+  return *this;
+}
+
+const time_value& time_constraint::getDurationMin() const
+{
+  return mDurationMin;
+}
+
+time_constraint& time_constraint::setDurationMin(time_value durationMin)
+{
+  mDurationMin = durationMin;
+
+  if (mDurationMin > mDurationNominal)
+    setDurationNominal(mDurationMin);
+
+  return *this;
+}
+
+const time_value& time_constraint::getDurationMax() const
+{
+  return mDurationMax;
+}
+
+time_constraint& time_constraint::setDurationMax(time_value durationMax)
+{
+  mDurationMax = durationMax;
+
+  if (durationMax < mDurationNominal)
+    setDurationNominal(mDurationMax);
+
+  return *this;
+}
+
+const std::shared_ptr<time_event>& time_constraint::getStartEvent() const
+{
+  return mStartEvent;
+}
+
+const std::shared_ptr<time_event>& time_constraint::getEndEvent() const
+{
+  return mEndEvent;
+}
+
+void time_constraint::addTimeProcess(
+    std::shared_ptr<time_process> timeProcess)
+{
+  assert(timeProcess.get());
+  // store a TimeProcess if it is not already stored
+  if (find(timeProcesses().begin(), timeProcesses().end(), timeProcess)
+      == timeProcesses().end())
+  {
+    timeProcesses().push_back(timeProcess);
+    timeProcess->parent = shared_from_this();
+  }
+}
+
+void time_constraint::removeTimeProcess(
+    std::shared_ptr<time_process> timeProcess)
+{
+  auto it = find(timeProcesses().begin(), timeProcesses().end(), timeProcess);
+  if (it != timeProcesses().end())
+  {
+    timeProcesses().erase(it);
+    timeProcess.reset();
+  }
+}
+
+void time_constraint::ClockCallback(
+    time_value position, time_value date, unsigned char droppedTicks)
+{
+  if (mCallback)
+    (mCallback)(position, date, state());
+}
+
 }
