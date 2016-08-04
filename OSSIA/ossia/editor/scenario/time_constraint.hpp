@@ -27,8 +27,7 @@ class time_value;
  * duration. \n
  * #TimeConstraint is also a #Clock and a #TimeProcess container.
  */
-class OSSIA_EXPORT time_constraint :
-    public std::enable_shared_from_this<time_constraint>
+class OSSIA_EXPORT time_constraint
 {
 
 public:
