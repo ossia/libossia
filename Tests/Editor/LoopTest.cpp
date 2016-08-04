@@ -54,9 +54,8 @@ private Q_SLOTS:
 
         auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100., 100., 100.);
 
-        auto l = std::make_shared<loop>(25., constraint_callback, event_callback, event_callback);
-
-        constraint->addTimeProcess(l);
+        constraint->addTimeProcess(
+              std::make_unique<loop>(25., constraint_callback, event_callback, event_callback));
 
         constraint->start();
 

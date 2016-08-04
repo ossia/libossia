@@ -1,6 +1,7 @@
 #include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/detail/algorithms.hpp>
 #include <algorithm>
 #include <iostream>
 namespace ossia
@@ -212,26 +213,24 @@ time_event& time_constraint::getEndEvent() const
 }
 
 void time_constraint::addTimeProcess(
-    std::shared_ptr<time_process> timeProcess)
+    std::unique_ptr<time_process> timeProcess)
 {
-  assert(timeProcess.get());
+  assert(timeProcess);
   // store a TimeProcess if it is not already stored
-  if (find(timeProcesses().begin(), timeProcesses().end(), timeProcess)
-      == timeProcesses().end())
+  if (find(mTimeProcesses, timeProcess) == mTimeProcesses.end())
   {
-    timeProcesses().push_back(timeProcess);
     timeProcess->parent = this;
+    mTimeProcesses.push_back(std::move(timeProcess));
   }
 }
 
 void time_constraint::removeTimeProcess(
-    std::shared_ptr<time_process> timeProcess)
+    time_process* timeProcess)
 {
-  auto it = find(timeProcesses().begin(), timeProcesses().end(), timeProcess);
-  if (it != timeProcesses().end())
+  auto it = find_if(mTimeProcesses, [=] (const auto& other) { return other.get() == timeProcess; });
+  if (it != mTimeProcesses.end())
   {
-    timeProcesses().erase(it);
-    timeProcess.reset();
+    mTimeProcesses.erase(it);
   }
 }
 

@@ -149,30 +149,23 @@ public:
    \details it also stores the #TimeProcess's start and end #States into the
    #TimeConstraint's start and end #TimeEvents
    \param std::shared_ptr<#TimeProcess> to insert */
-  void addTimeProcess(std::shared_ptr<time_process>);
+  void addTimeProcess(std::unique_ptr<time_process>);
 
   /*! remove a #TimeProcess
    \details it also removes the #TimeProcess's start and end #States from the
    #TimeConstraint's start and end #TimeEvents
    \param std::shared_ptr<#TimeProcess> to insert */
-  void removeTimeProcess(std::shared_ptr<time_process>);
+  void removeTimeProcess(time_process*);
 
   /*! get time processes attached to the #TimeConstraint
    \return #Container<#TimeProcess> */
-  ptr_container<time_process>& timeProcesses()
-  {
-    return mTimeProcesses;
-  }
-
-  /*! get time processes attached to the #TimeConstraint
-   \return #Container<#TimeProcess> */
-  const ptr_container<time_process>& timeProcesses() const
+  const std::vector<std::unique_ptr<time_process>>& timeProcesses() const
   {
     return mTimeProcesses;
   }
 
 protected:
-  ptr_container<time_process> mTimeProcesses;
+  std::vector<std::unique_ptr<time_process>> mTimeProcesses;
   std::unique_ptr<clock> mClock;
 
   void ClockCallback(

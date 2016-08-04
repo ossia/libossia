@@ -74,12 +74,13 @@ private Q_SLOTS:
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback));
 
         auto constraint = time_constraint::create(&constraint_callback, *start_event, *end_event, 1000.);
-        auto scenar = std::make_shared<scenario>();
+        auto scenar = std::make_unique<scenario>();
 
-        constraint->addTimeProcess(scenar);
+        auto scenar_ptr = scenar.get();
+        constraint->addTimeProcess(std::move(scenar));
         QVERIFY(constraint->timeProcesses().size() == 1);
 
-        constraint->removeTimeProcess(scenar);
+        constraint->removeTimeProcess(scenar_ptr);
         QVERIFY(constraint->timeProcesses().size() == 0);
     }
 

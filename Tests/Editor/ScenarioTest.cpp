@@ -136,9 +136,7 @@ private Q_SLOTS:
         auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), e_callback));
         main_constraint = time_constraint::create(mc_callback, *main_start_event, *main_end_event, 5000., 5000, 5000.);
 
-        auto main_scenario = std::make_shared<scenario>();
-
-        main_constraint->addTimeProcess(main_scenario);
+        auto main_scenario = std::make_unique<scenario>();
 
         auto scenario_start_node = main_scenario->getStartTimeNode();
 
@@ -154,6 +152,8 @@ private Q_SLOTS:
         auto second_constraint = time_constraint::create(sc_callback, *first_end_event, *second_end_event, 2000., 2000., 2000.);
 
         main_scenario->addTimeConstraint(second_constraint);
+
+        main_constraint->addTimeProcess(std::move(main_scenario));
 
         main_constraint->setSpeed(1.);
         main_constraint->setGranularity(50.);
