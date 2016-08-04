@@ -8,7 +8,7 @@ namespace ossia
 {
 namespace detail
 {
-scenario_impl::scenario_impl() : time_process_impl()
+scenario_impl::scenario_impl()
 {
   // create the start TimeNode
   mTimeNodes.push_back(std::make_shared<time_node>());
@@ -29,7 +29,7 @@ static void process_timenode_dates(time_node& t, DateMap& map)
   {
     for (ConstraintPtr& cst : ev->nextTimeConstraints())
     {
-      process_timenode_dates(cst->getEndEvent()->getTimeNode(), map);
+      process_timenode_dates(cst->getEndEvent().getTimeNode(), map);
     }
   }
 }
@@ -78,7 +78,7 @@ state_element scenario_impl::offset(time_value offset)
         for (ConstraintPtr& cst_ptr : ev_ptr->previousTimeConstraints())
         {
           auto& cst = *cst_ptr;
-          auto& start_tn = cst.getStartEvent()->getTimeNode();
+          auto& start_tn = cst.getStartEvent().getTimeNode();
           auto start_date = time_map.at(&start_tn);
           if (start_date < offset)
           {
@@ -110,7 +110,7 @@ state_element scenario_impl::offset(time_value offset)
     auto& cst = *timeConstraint;
     // offset TimeConstraint's Clock
     time_value constraintOffset
-        = offset - cst.getStartEvent()->getTimeNode().getDate();
+        = offset - cst.getStartEvent().getTimeNode().getDate();
 
     if (constraintOffset >= Zero && constraintOffset <= cst.getDurationMax())
     {
@@ -173,7 +173,7 @@ state_element scenario_impl::state()
         bool not_starting = none_of(
             statusChangedEvents, [&](const std::shared_ptr<time_event>& ev) {
               return ev->getStatus() == time_event::Status::HAPPENED
-                     && ev == startEvent;
+                     && ev.get() == &startEvent;
             });
 
         if (not_starting)
@@ -193,7 +193,7 @@ state_element scenario_impl::state()
           if(prev_last_date == Infinite)
               cst.tick();
           else
-              cst.tick(((date - cst.getStartEvent()->getTimeNode()->getDate())*
+              cst.tick(((date - cst.getStartEvent().getTimeNode()->getDate())*
           1000.));
           */
         }
@@ -235,8 +235,8 @@ void scenario_impl::start()
   for (const auto& timeConstraint : mTimeContraints)
   {
     auto& cst = *timeConstraint;
-    time_event::Status startStatus = cst.getStartEvent()->getStatus();
-    time_event::Status endStatus = cst.getEndEvent()->getStatus();
+    time_event::Status startStatus = cst.getStartEvent().getStatus();
+    time_event::Status endStatus = cst.getEndEvent().getStatus();
 
     // the constraint is in the past
     if (startStatus == time_event::Status::HAPPENED
@@ -330,10 +330,10 @@ void scenario_impl::addTimeConstraint(
   }
 
   // store TimeConstraint's start node if it is not already stored
-  addTimeNode(cst.getStartEvent()->getTimeNode().shared_from_this());
+  addTimeNode(cst.getStartEvent().getTimeNode().shared_from_this());
 
   // store TimeConstraint's end node if it is not already stored
-  addTimeNode(cst.getEndEvent()->getTimeNode().shared_from_this());
+  addTimeNode(cst.getEndEvent().getTimeNode().shared_from_this());
 
   // set TimeConstraint's clock in external mode
   cst.setDriveMode(clock::DriveMode::EXTERNAL);
@@ -400,7 +400,7 @@ void scenario_impl::process_offset(
     for (const auto& timeConstraint : event->previousTimeConstraints())
     {
       time_value constraintOffset
-          = offset - timeConstraint->getStartEvent()->getTimeNode().getDate();
+          = offset - timeConstraint->getStartEvent().getTimeNode().getDate();
 
       if (constraintOffset < Zero)
       {
@@ -432,7 +432,7 @@ void scenario_impl::process_offset(
     // propagate offset processing to setup all TimeEvents
     for (const auto& timeConstraint : event->nextTimeConstraints())
     {
-      process_offset(timeConstraint->getEndEvent()->getTimeNode(), offset);
+      process_offset(timeConstraint->getEndEvent().getTimeNode(), offset);
     }
   }
 }

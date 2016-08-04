@@ -98,7 +98,7 @@ private Q_SLOTS:
     auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
     auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
     auto constraint_callback = std::bind(&MapperTest::constraint_callback, this, _1, _2, _3);
-    auto constraint = time_constraint::create(constraint_callback, start_event, end_event, 400., 400., 400.);
+    auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 400., 400., 400.);
     constraint->addTimeProcess(mapper);
 
     m_float_address_values.clear();

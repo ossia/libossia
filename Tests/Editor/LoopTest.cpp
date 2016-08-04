@@ -28,15 +28,13 @@ private Q_SLOTS:
         auto constraint_callback = std::bind(&LoopTest::constraint_callback, this, _1, _2, _3);
         auto event_callback = std::bind(&LoopTest::event_callback, this, _1);
 
-        auto loop = loop::create(25., constraint_callback, event_callback, event_callback);
-        QVERIFY(loop != nullptr);
-        return;
+        loop l(25., constraint_callback, event_callback, event_callback);
 
-        QVERIFY(loop->parent == nullptr);
+        QVERIFY(l.parent == nullptr);
 
-        QVERIFY(loop->getPatternTimeConstraint() != nullptr);
-        QVERIFY(loop->getPatternStartTimeNode() != nullptr);
-        QVERIFY(loop->getPatternEndTimeNode() != nullptr);
+        QVERIFY(l.getPatternTimeConstraint() != nullptr);
+        QVERIFY(l.getPatternStartTimeNode() != nullptr);
+        QVERIFY(l.getPatternEndTimeNode() != nullptr);
 
         //! \todo test clone()
     }
@@ -45,7 +43,6 @@ private Q_SLOTS:
     //! \todo test state()
     void test_execution()
     {
-      return;
         auto constraint_callback = std::bind(&LoopTest::constraint_callback, this, _1, _2, _3);
         auto event_callback = std::bind(&LoopTest::event_callback, this, _1);
 
@@ -55,11 +52,12 @@ private Q_SLOTS:
         auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
 
-        auto constraint = time_constraint::create(constraint_callback, start_event, end_event, 100., 100., 100.);
+        auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100., 100., 100.);
 
-        auto loop = loop::create(25., constraint_callback, event_callback, event_callback);
+        auto l = std::make_shared<loop>(25., constraint_callback, event_callback, event_callback);
 
-        constraint->addTimeProcess(loop);
+        constraint->addTimeProcess(l);
+
         constraint->start();
 
         while (constraint->getRunning())

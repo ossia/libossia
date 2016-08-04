@@ -56,9 +56,9 @@ private Q_SLOTS:
         auto nodeC = std::make_shared<time_node>();
         auto eventC = *(nodeC->emplace(nodeC->timeEvents().begin(), &event_callback));
 
-        auto constraint1 = time_constraint::create(&constraint_callback, eventA, eventB, 1000.);
-        auto constraint2 = time_constraint::create(&constraint_callback, eventB, eventC, 1000.);
-        auto constraint3 = time_constraint::create(&constraint_callback, eventA, eventC, 2000.);
+        auto constraint1 = time_constraint::create(&constraint_callback, *eventA, *eventB, 1000.);
+        auto constraint2 = time_constraint::create(&constraint_callback, *eventB, *eventC, 1000.);
+        auto constraint3 = time_constraint::create(&constraint_callback, *eventA, *eventC, 2000.);
 
         QVERIFY(eventA->previousTimeConstraints().size() == 0);
         QVERIFY(eventA->nextTimeConstraints().size() == 2);

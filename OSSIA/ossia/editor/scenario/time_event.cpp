@@ -65,10 +65,9 @@ void time_event::dispose()
   {
     bool dispose = true;
 
-    for (auto& previousTimeConstraint :
-         nextTimeConstraint->getEndEvent()->previousTimeConstraints())
+    for (auto& previousTimeConstraint : nextTimeConstraint->getEndEvent().previousTimeConstraints())
     {
-      if (previousTimeConstraint->getStartEvent()->getStatus()
+      if (previousTimeConstraint->getStartEvent().getStatus()
           != time_event::Status::DISPOSED)
       {
         dispose = false;
@@ -77,7 +76,7 @@ void time_event::dispose()
     }
 
     if (dispose)
-      nextTimeConstraint->getEndEvent()->dispose();
+      nextTimeConstraint->getEndEvent().dispose();
   }
 
   if (mCallback)

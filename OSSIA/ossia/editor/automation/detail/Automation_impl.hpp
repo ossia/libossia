@@ -14,8 +14,7 @@ namespace ossia
 {
 namespace detail
 {
-class automation_impl final : public ossia::automation,
-                              public time_process_impl
+class automation_impl final : public ossia::automation
 {
 
 private:

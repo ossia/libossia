@@ -10,8 +10,7 @@ namespace detail
 mapper_impl::mapper_impl(
     ossia::net::address_base& driverAddress,
     ossia::net::address_base& drivenAddress, const ossia::value& drive)
-    : time_process_impl()
-    , mDriverAddress{driverAddress}
+    : mDriverAddress{driverAddress}
     , mDrivenAddress{drivenAddress}
     , mDrive{drive}
     , mLastMessage{mDrivenAddress, {}}

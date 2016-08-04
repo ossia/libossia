@@ -65,13 +65,13 @@ public:
    \param const #TimeValue& maximal duration of the #TimeConstraint
    \return std::shared_ptr<#TimeConstraint> */
    static std::shared_ptr<time_constraint> create(
-      time_constraint::ExecutionCallback, std::shared_ptr<time_event>,
-      std::shared_ptr<time_event>, time_value = Infinite, time_value = 0.,
+      time_constraint::ExecutionCallback, time_event&,
+      time_event&, time_value = Infinite, time_value = 0.,
       time_value = Infinite);
 
    time_constraint(
-       time_constraint::ExecutionCallback, std::shared_ptr<time_event>,
-       std::shared_ptr<time_event>, time_value = Infinite, time_value = 0.,
+       time_constraint::ExecutionCallback, time_event&,
+       time_event&, time_value = Infinite, time_value = 0.,
        time_value = Infinite);
 
   /*! desctructor */
@@ -139,11 +139,11 @@ public:
 
   /*! get the event from where the #TimeConstraint starts
    \return std::shared_ptr<#TimeEvent> start event */
-  const std::shared_ptr<time_event>& getStartEvent() const;
+  time_event& getStartEvent() const;
 
   /*! get the event from where the #TimeConstraint starts
    \return std::shared_ptr<#TimeEvent> start event */
-  const std::shared_ptr<time_event>& getEndEvent() const;
+  time_event& getEndEvent() const;
 
   /*! add a #TimeProcess
    \details it also stores the #TimeProcess's start and end #States into the
@@ -181,8 +181,8 @@ protected:
 
     time_constraint::ExecutionCallback mCallback;
 
-    std::shared_ptr<time_event> mStartEvent;
-    std::shared_ptr<time_event> mEndEvent;
+    time_event& mStartEvent;
+    time_event& mEndEvent;
 
     time_value mDurationNominal{};
     time_value mDurationMin{};

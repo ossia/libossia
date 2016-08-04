@@ -20,7 +20,7 @@ namespace ossia
 {
 namespace detail
 {
-class mapper_impl : public ossia::mapper, public time_process_impl
+class mapper_impl : public ossia::mapper
 {
 
 private:

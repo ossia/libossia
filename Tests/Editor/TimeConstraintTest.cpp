@@ -29,7 +29,7 @@ private Q_SLOTS:
         auto end_node = std::make_shared<time_node>();
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback));
 
-        auto constraint = time_constraint::create(&constraint_callback, start_event, end_event, 1000.);
+        auto constraint = time_constraint::create(&constraint_callback, *start_event, *end_event, 1000.);
         QVERIFY(constraint != nullptr);
 
         QVERIFY(constraint->getGranularity() == 1.);
@@ -58,8 +58,8 @@ private Q_SLOTS:
         QVERIFY(constraint->getRunning() == false);
         QVERIFY(constraint->getDate() == 500.);
 
-        QVERIFY(constraint->getStartEvent() == start_event);
-        QVERIFY(constraint->getEndEvent() == end_event);
+        QVERIFY(&constraint->getStartEvent() == start_event.get());
+        QVERIFY(&constraint->getEndEvent() == end_event.get());
 
         //! \todo test clone()
     }
@@ -73,7 +73,7 @@ private Q_SLOTS:
         auto end_node = std::make_shared<time_node>();
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback));
 
-        auto constraint = time_constraint::create(&constraint_callback, start_event, end_event, 1000.);
+        auto constraint = time_constraint::create(&constraint_callback, *start_event, *end_event, 1000.);
         auto scenario = scenario::create();
 
         constraint->addTimeProcess(scenario);

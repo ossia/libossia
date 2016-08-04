@@ -68,7 +68,7 @@ time_value time_node::getDate() const
           return timeEvent->previousTimeConstraints()[0]->getDurationNominal()
                  + timeEvent->previousTimeConstraints()[0]
                        ->getStartEvent()
-                       ->getTimeNode()
+                       .getTimeNode()
                        .getDate();
       }
     }
@@ -129,13 +129,13 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
         for (auto& timeConstraint : timeEvent->previousTimeConstraints())
         {
           // previous TimeConstraints with a DISPOSED start event are ignored
-          if (timeConstraint->getStartEvent()->getStatus()
+          if (timeConstraint->getStartEvent().getStatus()
               == time_event::Status::DISPOSED)
             continue;
 
           // previous TimeConstraint with a none HAPPENED start event
           // can't have reached its minimal duration
-          if (timeConstraint->getStartEvent()->getStatus()
+          if (timeConstraint->getStartEvent().getStatus()
               != time_event::Status::HAPPENED)
           {
             minimalDurationReached = false;
@@ -180,7 +180,7 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
         {
           timeConstraint
               ->getEndEvent()
-              ->getTimeNode()
+              .getTimeNode()
               .process(statusChangedEvents);
         }
 

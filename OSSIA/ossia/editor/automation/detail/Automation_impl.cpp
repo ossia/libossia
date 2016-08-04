@@ -10,8 +10,7 @@ namespace detail
 {
 automation_impl::automation_impl(
     ossia::net::address_base& address, const ossia::value& drive)
-    : time_process_impl()
-    , mDrivenAddress(address)
+    : mDrivenAddress(address)
     , mDrive(drive)
     , mLastMessage{address, ossia::value{}}
 {

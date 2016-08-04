@@ -24,24 +24,52 @@ public:
    \param #TimeEvent::ExecutionCallback to get end pattern #TimeEvent's status
    back
    \return a new loop */
-  static std::shared_ptr<loop> create(
-      time_value, time_constraint::ExecutionCallback,
-      time_event::ExecutionCallback, time_event::ExecutionCallback);
+    loop(
+        time_value, time_constraint::ExecutionCallback,
+        time_event::ExecutionCallback, time_event::ExecutionCallback);
 
   /*! destructor */
-  virtual ~loop();
+  ~loop();
+
+  void start() override;
+  void stop() override;
+  void pause() override;
+  void resume() override;
+
+  state_element offset(time_value) override;
+  state_element state() override;
 
   /*! get the pattern #TimeConstraint
    \return std::shared_ptr<TimeConstraint> */
-  virtual const std::shared_ptr<time_constraint>
-  getPatternTimeConstraint() const = 0;
+  const std::shared_ptr<time_constraint>
+  getPatternTimeConstraint() const;
 
   /*! get the pattern start #TimeNode
    \return std::shared_ptr<TimeNode> */
-  virtual const std::shared_ptr<time_node> getPatternStartTimeNode() const = 0;
+  const std::shared_ptr<time_node> getPatternStartTimeNode() const;
 
   /*! get the pattern end #TimeNode
    \return std::shared_ptr<TimeNode> */
-  virtual const std::shared_ptr<time_node> getPatternEndTimeNode() const = 0;
+  const std::shared_ptr<time_node> getPatternEndTimeNode() const;
+
+  private:
+  void PatternConstraintCallback(time_value, time_value, const ossia::state&);
+
+  void PatternStartEventCallback(time_event::Status);
+
+  void PatternEndEventCallback(time_event::Status);
+
+  std::shared_ptr<time_node> mPatternStartNode;
+  time_event::ExecutionCallback mPatternStartEventCallback;
+
+  std::shared_ptr<time_node> mPatternEndNode;
+  time_event::ExecutionCallback mPatternEndEventCallback;
+
+  std::shared_ptr<time_constraint> mPatternConstraint;
+  time_constraint::ExecutionCallback mPatternConstraintCallback;
+
+  ossia::state mCurrentState; // an internal State to return on state call
+  ossia::state mOffsetState;  // an internal State built when offset is called
+
 };
 }

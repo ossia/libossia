@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <memory>
 #include <ossia_export.h>
@@ -46,6 +47,12 @@ public:
   {
   }
 
-  std::shared_ptr<time_constraint> parent;
+  time_constraint* parent{};
+
+  protected:
+    ossia::time_value mLastDate{ossia::Infinite};
+    // used to filter multiple state calls at the
+    // same time (use date as position can be always
+    // 0 in infinite duration case)
 };
 }

@@ -23,7 +23,7 @@ namespace ossia
 {
 namespace detail
 {
-class scenario_impl final : public scenario, public time_process_impl
+class scenario_impl final : public scenario
 {
 
 private:

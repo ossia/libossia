@@ -2,19 +2,20 @@
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
 #include <algorithm>
+#include <iostream>
 namespace ossia
 {
 std::shared_ptr<time_constraint> time_constraint::create(
     time_constraint::ExecutionCallback callback,
-    std::shared_ptr<time_event> startEvent,
-    std::shared_ptr<time_event> endEvent, time_value nominal, time_value min,
+    time_event& startEvent,
+    time_event& endEvent, time_value nominal, time_value min,
     time_value max)
 {
   auto timeConstraint = std::make_shared<time_constraint>(
       callback, startEvent, endEvent, nominal, min, max);
 
-  startEvent->nextTimeConstraints().push_back(timeConstraint);
-  endEvent->previousTimeConstraints().push_back(timeConstraint);
+  startEvent.nextTimeConstraints().push_back(timeConstraint);
+  endEvent.previousTimeConstraints().push_back(timeConstraint);
 
   return timeConstraint;
 }
@@ -22,8 +23,8 @@ std::shared_ptr<time_constraint> time_constraint::create(
 
 time_constraint::time_constraint(
     time_constraint::ExecutionCallback callback,
-    std::shared_ptr<time_event> startEvent,
-    std::shared_ptr<time_event> endEvent, time_value nominal, time_value min,
+    time_event& startEvent,
+    time_event& endEvent, time_value nominal, time_value min,
     time_value max)
     : mCallback(callback)
     , mStartEvent(startEvent)
@@ -34,11 +35,12 @@ time_constraint::time_constraint(
 {
   mClock = std::make_unique<clock>([=](time_value t, time_value t2, unsigned char c) {
     return ClockCallback(t, t2, c);
-  });
-  mClock->setDuration(mDurationNominal);
+  }, mDurationNominal, 1.);
 }
 
-time_constraint::~time_constraint() = default;
+time_constraint::~time_constraint()
+{
+}
 
 void time_constraint::start()
 {
@@ -199,12 +201,12 @@ time_constraint& time_constraint::setDurationMax(time_value durationMax)
   return *this;
 }
 
-const std::shared_ptr<time_event>& time_constraint::getStartEvent() const
+time_event& time_constraint::getStartEvent() const
 {
   return mStartEvent;
 }
 
-const std::shared_ptr<time_event>& time_constraint::getEndEvent() const
+time_event& time_constraint::getEndEvent() const
 {
   return mEndEvent;
 }
@@ -218,7 +220,7 @@ void time_constraint::addTimeProcess(
       == timeProcesses().end())
   {
     timeProcesses().push_back(timeProcess);
-    timeProcess->parent = shared_from_this();
+    timeProcess->parent = this;
   }
 }
 
