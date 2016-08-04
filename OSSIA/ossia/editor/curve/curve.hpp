@@ -42,7 +42,7 @@ template <typename X, typename Y>
  * A curve is a succession of \ref curve_segment.
  * It is used in a \ref Behavior to drive \ref automation or \ref mapper.
  */
-class curve : public curve_abstract
+class curve final : public curve_abstract
 {
     X mInitialPointAbscissa;
     ossia::Destination mInitialPointAbscissaDestination;
@@ -128,7 +128,7 @@ public:
     return lastValue;
   }
 
-  ossia::curve_type getType() const
+  ossia::curve_type getType() const override
   {
     return std::make_pair(OssiaType<X>, OssiaType<Y>);
   }

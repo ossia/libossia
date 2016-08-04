@@ -42,20 +42,20 @@ public:
     return mParent;
   }
 
-  std::string getName() const override
+  std::string getName() const final override
   {
     return mName;
   }
-  ossia::net::node_base& setName(std::string) override;
+  ossia::net::node_base& setName(std::string) final override;
 
-  ossia::net::address_base* getAddress() const override;
-  ossia::net::address_base* createAddress(ossia::val_type type) override;
-  bool removeAddress() override;
+  ossia::net::address_base* getAddress() const final override;
+  ossia::net::address_base* createAddress(ossia::val_type type) final override;
+  bool removeAddress() final override;
 
 private:
-  std::unique_ptr<node_base> makeChild(const std::string& name) override;
+  std::unique_ptr<node_base> makeChild(const std::string& name) final override;
 
-  void removingChild(node_base&) override
+  void removingChild(node_base&) final override
   {
   }
 };

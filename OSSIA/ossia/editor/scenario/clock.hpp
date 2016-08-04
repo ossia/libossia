@@ -174,7 +174,7 @@ public:
 
     clock_type::time_point
         mLastTime{};          /// a time reference used to compute time tick
-    long long mElapsedTime{}; /// a time reference used to know how many time are
+    int64_t mElapsedTime{}; /// a time reference used to know how many time are
                               /// elapsed in microsecond
                               ///
     clock::DriveMode

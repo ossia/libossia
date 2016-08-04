@@ -10,7 +10,8 @@ class OSSIA_EXPORT time_value
 public:
   /*! constructor
    \param int value */
-  time_value(double d = 0.) : m_value{d}
+  constexpr time_value(double d = 0.) noexcept :
+    m_value{d}
   {
   }
 
@@ -18,20 +19,20 @@ public:
   ~time_value() = default;
 
   /*! assignation operator */
-  time_value& operator=(double d)
+  time_value& operator=(double d) noexcept
   {
     m_value = d;
     return *this;
   }
 
-  time_value& operator=(time_value t)
+  time_value& operator=(time_value t) noexcept
   {
     m_value = t.m_value;
     return *this;
   }
 
   /*! self addition operator */
-  time_value& operator+=(double d)
+  time_value& operator+=(double d) noexcept
   {
     if (isInfinite())
       m_value = 0.;
@@ -41,7 +42,7 @@ public:
     return *this;
   }
 
-  time_value& operator+=(time_value t)
+  time_value& operator+=(time_value t) noexcept
   {
     if (isInfinite() || t.isInfinite())
       m_value = 0.;
@@ -52,7 +53,7 @@ public:
   }
 
   /*! self substraction operator */
-  time_value& operator-=(double d)
+  time_value& operator-=(double d) noexcept
   {
     if (isInfinite())
       m_value = 0.;
@@ -62,7 +63,7 @@ public:
     return *this;
   }
 
-  time_value& operator-=(time_value t)
+  time_value& operator-=(time_value t) noexcept
   {
     if (isInfinite() || t.isInfinite())
       m_value = 0.;
@@ -73,12 +74,12 @@ public:
   }
 
   /*! addition operator */
-  time_value operator+(double d) const
+  constexpr time_value operator+(double d) const noexcept
   {
     return time_value(m_value + d);
   }
 
-  time_value operator+(time_value t) const
+  time_value operator+(time_value t) const noexcept
   {
     if (isInfinite() || t.isInfinite())
     {
@@ -89,12 +90,12 @@ public:
   }
 
   /*! substraction operator */
-  time_value operator-(double d) const
+  constexpr time_value operator-(double d) const noexcept
   {
     return time_value(m_value - d);
   }
 
-  time_value operator-(time_value t) const
+  time_value operator-(time_value t) const noexcept
   {
     if (isInfinite() || t.isInfinite())
     {
@@ -105,14 +106,14 @@ public:
   }
 
   /*! double casting operator */
-  operator double() const
+  constexpr operator double() const noexcept
   {
     return m_value;
   }
 
   /*! is the time value infinite ?
    \return bool infinite */
-  bool isInfinite() const
+  constexpr bool isInfinite() const noexcept
   {
     return std::isinf(m_value);
   }
@@ -121,7 +122,7 @@ protected:
   double m_value;
 };
 
-const time_value Infinite{INFINITY};
-const time_value Zero{0.};
-const time_value One{1.};
+const constexpr time_value Infinite{INFINITY};
+const constexpr time_value Zero{0.};
+const constexpr time_value One{1.};
 }
