@@ -83,12 +83,12 @@ void time_event::dispose()
     (mCallback)(mStatus);
 }
 
-void time_event::addState(state&& state)
+void time_event::addState(state_element&& state)
 {
-  mState.add(state_element{std::move(state)});
+  mState.add(std::move(state));
 }
 
-void time_event::removeState(const state& state)
+void time_event::removeState(const state_element& state)
 {
   mState.remove(state);
 }

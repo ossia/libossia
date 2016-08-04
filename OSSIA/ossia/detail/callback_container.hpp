@@ -21,7 +21,6 @@ class callback_container
 public:
   virtual ~callback_container() = default;
 
-
   /**
    * @brief impl How the callbackas are stored.
    * A list is used since iterators to other callbacks

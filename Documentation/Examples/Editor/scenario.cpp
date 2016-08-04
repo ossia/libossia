@@ -21,9 +21,9 @@ void local_test_callback(const value& v);
 void main_constraint_callback(time_value position, time_value date, const state& element);
 void first_constraint_callback(time_value position, time_value date, const state& element);
 void second_constraint_callback(time_value position, time_value date, const state& element);
-void event_callback(TimeEvent::Status newStatus);
+void event_callback(time_event::Status newStatus);
 
-shared_ptr<TimeConstraint> main_constraint;
+shared_ptr<time_constraint> main_constraint;
 
 int main()
 {
@@ -32,155 +32,168 @@ int main()
      */
 
     // create a Local device "i-score"
-    auto local_protocol = Local::create();
-    auto local_device = Device::create(local_protocol, "i-score");
+    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "i-score"};
 
     // add a /play address
-    auto local_play_node = *(local_device->emplace(local_device->children().cend(), "play"));
-    auto local_play_address = local_play_node->createAddress(Type::BOOL);
+    auto local_play_node = device.createChild("play");
+    auto local_play_address = local_play_node->createAddress(val_type::BOOL);
 
     // attach /play address to a callback
-    local_play_address->addCallback(local_play_callback);
+    local_play_address->add_callback(local_play_callback);
 
     // add a /test address
-    auto local_test_node = *(local_device->emplace(local_device->children().cend(), "test"));
-    auto local_test_address = local_test_node->createAddress(Type::TUPLE);
+    auto local_test_node = device.createChild("test");
+    auto local_test_address = local_test_node->createAddress(val_type::TUPLE);
 
     // attach /test address to their callback
-    local_test_address->addCallback(local_test_callback);
+    local_test_address->add_callback(local_test_callback);
 
     // filter repetitions
-    local_test_address->setRepetitionFilter(true);
+    local_test_address->setRepetitionFilter(repetition_filter::ON);
 
     /*
-     Main Scenario setup
+     Main scenario setup
      */
 
     // create the start and the end TimeNodes
-    auto main_start_node = TimeNode::create();
-    auto main_end_node = TimeNode::create();
+    auto main_start_node = std::make_shared<time_node>();
+    auto main_end_node = std::make_shared<time_node>();
 
-    // create TimeEvents inside TimeNodes and make them interactive to the /play address
+    // create time_events inside TimeNodes and make them interactive to the /play address
     auto main_start_event = *(main_start_node->emplace(main_start_node->timeEvents().begin(), &event_callback));
     auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), &event_callback));
 
-    // create the main Scenario
-    auto main_scenario = Scenario::create();
+    // create the main scenario
+    auto main_scenario_ptr = std::make_unique<scenario>();
+    scenario* main_scenario = main_scenario_ptr.get();
 
-    // create the main TimeConstraint
+    // create the main time_constraint
     time_value main_duration(5000.);
-    main_constraint = TimeConstraint::create(main_constraint_callback, main_start_event, main_end_event, main_duration);
+    main_constraint = std::make_shared<time_constraint>(
+                             main_constraint_callback,
+                             *main_start_event,
+                             *main_end_event,
+                             main_duration,
+                             main_duration,
+                             main_duration);
 
-    // add the scenario to the main TimeConstraint
-    main_constraint->addTimeProcess(main_scenario);
+    // add the scenario to the main time_constraint
+    main_constraint->addTimeProcess(std::move(main_scenario_ptr));
 
     /*
-     Main Scenario edition : creation of a two TimeConstraints
+     Main scenario edition : creation of a two time_constraints
      */
 
-    // get the start node of the main Scenario
+    // get the start node of the main scenario
     auto scenario_start_node = main_scenario->getStartTimeNode();
 
     // create a TimeNode
-    auto first_end_node = TimeNode::create();
+    auto first_end_node = std::make_shared<time_node>();
 
-    // create a TimeEvent inside the scenario start node without Expression
+    // create a time_event inside the scenario start node without Expression
     auto first_start_event = *(scenario_start_node->emplace(scenario_start_node->timeEvents().begin(), &event_callback));
 
-    // create a TimeEvent inside the end node without Expression
+    // create a time_event inside the end node without Expression
     auto first_end_event = *(first_end_node->emplace(first_end_node->timeEvents().begin(), &event_callback));
 
-    // create a TimeConstraint between the two TimeEvents
+    // create a time_constraint between the two time_events
     time_value first_duration(1500.);
-    auto first_constraint = TimeConstraint::create(first_constraint_callback, first_start_event, first_end_event, first_duration, first_duration, first_duration);
+    std::shared_ptr<time_constraint> first_constraint = std::make_shared<time_constraint>(
+                              first_constraint_callback,
+                              *first_start_event,
+                              *first_end_event,
+                              first_duration,
+                              first_duration,
+                              first_duration);
 
-    // add the first TimeConstraint to the main Scenario
+    // add the first time_constraint to the main scenario
     main_scenario->addTimeConstraint(first_constraint);
 
     // create a TimeNode
-    auto second_end_node = TimeNode::create();
+    auto second_end_node = std::make_shared<time_node>();
 
-    // create a TimeEvent inside the end node without Expression
+    // create a time_event inside the end node without Expression
     auto second_end_event = *(second_end_node->emplace(second_end_node->timeEvents().begin(), &event_callback));
 
-    // create a TimeConstraint between the two TimeEvents
+    // create a time_constraint between the two time_events
     time_value second_duration(2000.);
-    auto second_constraint = TimeConstraint::create(second_constraint_callback, first_end_event, second_end_event, second_duration, second_duration, second_duration);
+    auto second_constraint = std::make_shared<time_constraint>(
+                               second_constraint_callback,
+                               *first_end_event,
+                               *second_end_event,
+                               second_duration,
+                               second_duration,
+                               second_duration);
 
-    // add the second TimeConstraint to the main Scenario
+    // add the second time_constraint to the main scenario
     main_scenario->addTimeConstraint(second_constraint);
 
     /*
-     Main Scenario edition : make an event interactive
+     Main scenario edition : make an event interactive
      */
 
     // create an expression : /i-score/test >= {0.7, 0.7, 0.7}
-    Destination local_test(local_test_node);
-    Tuple threshold1 = {new Float(0.7), new Float(0.7), new Float(0.7)};
-    auto next_expression1 = ExpressionAtom::create(&local_test,
-                                                  ExpressionAtom::Operator::GREATER_THAN_OR_EQUAL,
-                                                  &threshold1);
+    auto make_expr = [&] () {
+      return expressions::make_expression_atom(
+        Destination(*local_test_node),
+        expressions::expression_atom::Comparator::GREATER_THAN_OR_EQUAL,
+        Tuple{Float(0.7), Float(0.7), Float(0.7)});
+    };
 
     // set first end event expression to make it interactive
-    first_end_event->setExpression(next_expression1);
+    first_end_event->setExpression(make_expr());
 
     /*
-     Main Scenario edition : creation of two Automations
+     Main scenario edition : creation of two Automations
      */
 
     // create a linear curve to drive all element of the Tuple value from 0. to 1.
-    auto first_curve = Curve<double, float>::create();
-    auto first_linearSegment = CurveSegmentLinear<float>::create(first_curve);
+    auto first_curve = std::make_shared<curve<double, float>>();
+    curve_segment_linear<float> first_linearSegment;
 
     first_curve->setInitialPointAbscissa(0.);
     first_curve->setInitialPointOrdinate(0.);
     first_curve->addPoint(first_linearSegment, 1., 1.);
 
     // create a power curve to drive all element of the Tuple value from 0. to 2.
-    auto second_curve = Curve<double, float>::create();
-    auto second_powerSegment = CurveSegmentPower<float>::create(first_curve);
-    second_powerSegment->setPower(0.5);
+    auto second_curve = std::make_shared<curve<double, float>>();
+    auto second_powerSegment = curve_segment_power<float>{}(0.5);
 
     second_curve->setInitialPointOrdinate(1.);
     second_curve->addPoint(second_powerSegment, 1., 2.);
 
     // create a Tuple value of 3 Behavior values based on the same curve
-    vector<const value&> t_first_curves = {new Behavior(first_curve), new Behavior(first_curve), new Behavior(first_curve)};
-    Tuple first_curves(t_first_curves);
+    Tuple first_curves{Behavior(first_curve), Behavior(first_curve), Behavior(first_curve)};
 
     // create a Tuple value of 3 Behavior values based on the same curve
-    vector<const value&> t_second_curves = {new Behavior(second_curve), new Behavior(second_curve), new Behavior(second_curve)};
-    Tuple second_curves(t_second_curves);
+    Tuple second_curves{Behavior(second_curve), Behavior(second_curve), Behavior(second_curve)};
 
     // create a first Automation to drive /test address by the linear curve
-    auto first_automation = Automation::create(local_test_address, &first_curves);
+    auto first_automation = std::make_unique<automation>(*local_test_address, first_curves);
 
     // create a second Automation to drive /test address by the power curve
-    auto second_automation = Automation::create(local_test_address, &second_curves);
+    auto second_automation = std::make_unique<automation>(*local_test_address, second_curves);
 
-    // add the first Automation to the first TimeConstraint
-    first_constraint->addTimeProcess(first_automation);
+    // add the first Automation to the first time_constraint
+    first_constraint->addTimeProcess(std::move(first_automation));
 
-    // add the second Automation to the second TimeConstraint
-    second_constraint->addTimeProcess(second_automation);
+    // add the second Automation to the second time_constraint
+    second_constraint->addTimeProcess(std::move(second_automation));
 
-    // add "/test 0. 0. 0." message to first TimeConstraint's start State
-    Tuple zero = {new Float(0.), new Float(0.), new Float(0.)};
-    auto first_start_message = Message::create(local_test_address, &zero);
-    first_constraint->getStartEvent()->getState()->stateElements().push_back(first_start_message);
+    // add "/test 0. 0. 0." message to first time_constraint's start State
+    message first_start_message{*local_test_address, Tuple{Float(0.), Float(0.), Float(0.)}};
+    first_constraint->getStartEvent().addState(first_start_message);
 
-    // add "/test 1. 1. 1." message to first TimeConstraint's end State
-    Tuple one = {new Float(1.), new Float(1.), new Float(1.)};
-    auto first_end_message = Message::create(local_test_address, &one);
-    first_constraint->getEndEvent()->getState()->stateElements().push_back(first_end_message);
+    // add "/test 1. 1. 1." message to first time_constraint's end State
+    message first_end_message{*local_test_address, Tuple{Float(1.), Float(1.), Float(1.)}};
+    first_constraint->getEndEvent().addState(first_end_message);
 
-    // add "/test 2. 2. 2." message to second TimeConstraint's end State
-    Tuple two = {new Float(2.), new Float(2.), new Float(2.)};
-    auto second_end_message = Message::create(local_test_address, &two);
-    second_constraint->getStartEvent()->getState()->stateElements().push_back(second_end_message);
+    // add "/test 2. 2. 2." message to second time_constraint's end State
+    message second_end_message{*local_test_address, Tuple{Float(2.), Float(2.), Float(2.)}};
+    second_constraint->getStartEvent().addState(second_end_message);
 
     /*
-     Main Scenario operation : miscellaneous
+     Main scenario operation : miscellaneous
      */
 
     // display TimeNode's date
@@ -188,26 +201,26 @@ int main()
     cout << "first_end_node date = " << first_end_node->getDate() << endl;
     cout << "second_end_node date = " << second_end_node->getDate() << endl;
 
-    // change main TimeConstraint speed, granularity and offset
+    // change main time_constraint speed, granularity and offset
     main_constraint->setSpeed(1.);
     main_constraint->setGranularity(50.);
 
     // set minimal duration of the first constraint to 1000 ms
     first_constraint->setDurationMin(1000.);
 
-    // change first and second TimeConstraint speed and granularity
+    // change first and second time_constraint speed and granularity
     first_constraint->setSpeed(1.);
-    first_constraint->setGranularity(150.);
+    first_constraint->setGranularity(50.);
     second_constraint->setSpeed(1.);
-    second_constraint->setGranularity(150.);
+    second_constraint->setGranularity(50.);
 
     cout << "***** START *****" << endl;
 
-    // play the main TimeConstraint
+    // play the main time_constraint
     //local_play_address->pushvalue(&True);
     main_constraint->start();
 
-    // wait the main TimeConstraint end
+    // wait the main time_constraint end
     while (main_constraint->getRunning())
         ;
 
@@ -218,8 +231,8 @@ int main()
 
     // set first end time node expression to make it interactive
     // (instead of first end event)
-    first_end_node->setExpression(next_expression1);
-    first_end_event->setExpression(ExpressionTrue);
+    first_end_node->setExpression(make_expr());
+    first_end_event->setExpression(expressions::make_expression_true());
 
     cout << "***** START *****" << endl;
 
@@ -227,11 +240,11 @@ int main()
     main_constraint->setSpeed(2.);
 
     // start at 500 ms (and launch the state at this time)
-    main_constraint->offset(500.)->launch();
+    main_constraint->offset(500.).launch();
 
-    local_play_address->pushvalue(&True);
+    local_play_address->pushValue(Bool(true));
 
-    // wait the main TimeConstraint end
+    // wait the main time_constraint end
     while (main_constraint->getRunning())
         ;
 
@@ -240,10 +253,10 @@ int main()
 
 void local_play_callback(const value& v)
 {
-    if (v->getType() == Type::BOOL)
+    if (v.getType() == val_type::BOOL)
     {
-        Bool * b = (Bool*)v;
-        if (b->value)
+        auto b = v.get<Bool>();
+        if (b.value)
             main_constraint->start();
         else
             main_constraint->stop();
@@ -254,16 +267,16 @@ void local_test_callback(const value& v)
 {
     cout << "/i-score/test = ";
 
-    if (v->getType() == Type::TUPLE)
+    if (v.getType() == val_type::TUPLE)
     {
-        Tuple * t = (Tuple*)v;
+      auto t = v.get<Tuple>();
 
-        for (auto e : t->value)
+        for (auto e : t.value)
         {
-            if (e->getType() == Type::FLOAT)
+            if (e.getType() == val_type::FLOAT)
             {
-                Float * f = (Float*)e;
-                cout << f->value << " ";
+                auto f = e.get<Float>();
+                cout << f.value << " ";
             }
         }
     }
@@ -273,7 +286,7 @@ void local_test_callback(const value& v)
 
 void main_constraint_callback(time_value position, time_value date, const state& element)
 {
-    element->launch();
+    element.launch();
     cout << "Main Constraint : " << double(position) << ", " << double(date) << endl;
 }
 
@@ -281,36 +294,36 @@ void first_constraint_callback(time_value position, time_value date, const state
 {
     cout << "First Constraint : " << double(position) << ", " << double(date) << endl;
 
-    // don't launch element here as the element produced by the first TimeConstraint is handled by the main TimeConstraint
+    // don't launch element here as the element produced by the first time_constraint is handled by the main time_constraint
 }
 
 void second_constraint_callback(time_value position, time_value date, const state& element)
 {
     cout << "Second Constraint : " << double(position) << ", " << double(date) << endl;
 
-    // don't launch element here as the element produced by the second TimeConstraint is handled by the main TimeConstraint
+    // don't launch element here as the element produced by the second time_constraint is handled by the main time_constraint
 }
 
-void event_callback(TimeEvent::Status newStatus)
+void event_callback(time_event::Status newStatus)
 {
     switch (newStatus)
     {
-        case TimeEvent::Status::NONE:
+        case time_event::Status::NONE:
         {
             cout << "Event NONE" << endl;
             break;
         }
-        case TimeEvent::Status::PENDING:
+        case time_event::Status::PENDING:
         {
             cout << "Event PENDING" << endl;
             break;
         }
-        case TimeEvent::Status::HAPPENED:
+        case time_event::Status::HAPPENED:
         {
             cout << "Event HAPPENED" << endl;
             break;
         }
-        case TimeEvent::Status::DISPOSED:
+        case time_event::Status::DISPOSED:
         {
             cout << "Event DISPOSED" << endl;
             break;

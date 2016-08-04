@@ -36,7 +36,7 @@ time_constraint::time_constraint(
 {
   mClock = std::make_unique<clock>([=](time_value t, time_value t2, unsigned char c) {
     return ClockCallback(t, t2, c);
-  }, mDurationNominal, 1.);
+  });
 }
 
 time_constraint::~time_constraint()

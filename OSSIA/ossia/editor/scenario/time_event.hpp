@@ -82,11 +82,11 @@ public:
 
   /*! add a sub state into the state of the event
    \param std::shared_ptr<#State> to add */
-  void addState(state&&) ;
+  void addState(state_element&&) ;
 
   /*! remove a sub state from the state of the event
    \param std::shared_ptr<#State> to remove */
-  void removeState(const state&) ;
+  void removeState(const state_element&) ;
 
   /*! get the #TimeNode where the event is
    \return std::shared_ptr<#TimeNode> */
