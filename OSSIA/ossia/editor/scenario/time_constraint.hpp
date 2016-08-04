@@ -27,27 +27,25 @@ class time_value;
  * duration. \n
  * #TimeConstraint is also a #Clock and a #TimeProcess container.
  */
-class OSSIA_EXPORT time_constraint : virtual clock
+class OSSIA_EXPORT time_constraint
 {
 
 public:
-  using clock::getSpeed;
-  using clock::setSpeed;
-  using clock::getDriveMode;
-  using clock::setDriveMode;
-  using clock::getGranularity;
-  using clock::setGranularity;
-  using clock::getDate;
-  using clock::getOffset;
-  using clock::getRunning;
-  using clock::getPosition;
-  using clock::tick;
-  using clock::pause;
-  using clock::paused;
-  using clock::resume;
-  using clock::setExecutionStatusCallback;
-  using clock::getExecutionStatusCallback;
+  auto getRunning() const { return mClock->getRunning(); }
+  auto getDate() const { return mClock->getDate(); }
+  auto getPosition() const { return mClock->getPosition(); }
+  auto getDriveMode() const { return mClock->getDriveMode(); }
+  auto getGranularity() const { return mClock->getGranularity(); }
+  auto getOffset() const { return mClock->getOffset(); }
+  auto getSpeed() const { return mClock->getSpeed(); }
+  void setOffset(time_value g) const { mClock->setOffset(g); }
+  void setDriveMode(clock::DriveMode m) const { mClock->setDriveMode(m); }
+  void setGranularity(time_value g) const { mClock->setGranularity(g); }
+  void setSpeed(double g) const { mClock->setSpeed(g); }
+  bool tick() { return mClock->tick(); }
+  bool tick(time_value usec) { return mClock->tick(usec); }
 
+  clock& getClock() { return *mClock; }
   /*! to get the constraint execution back
    \param const #TimeValue process clock position
    \param const #TimeValue process clock date
@@ -74,10 +72,16 @@ public:
   virtual ~time_constraint();
 
   /*! start #TimeConstraint's #Clock */
-  virtual void start() override = 0;
+  virtual void start() = 0;
 
   /*! stop #TimeConstraint's #Clock */
-  virtual void stop() override = 0;
+  virtual void stop() = 0;
+
+  /*! start #TimeConstraint's #Clock */
+  virtual void pause() = 0;
+
+  /*! stop #TimeConstraint's #Clock */
+  virtual void resume() = 0;
 
   /*! set #TimeConstraint's #Clock offset and process a state at offset date
    \details the returned #State is made of as many as sub States for each
@@ -151,17 +155,18 @@ public:
    \return #Container<#TimeProcess> */
   ptr_container<time_process>& timeProcesses()
   {
-    return m_timeProcesses;
+    return mTimeProcesses;
   }
 
   /*! get time processes attached to the #TimeConstraint
    \return #Container<#TimeProcess> */
   const ptr_container<time_process>& timeProcesses() const
   {
-    return m_timeProcesses;
+    return mTimeProcesses;
   }
 
-private:
-  ptr_container<time_process> m_timeProcesses;
+protected:
+  ptr_container<time_process> mTimeProcesses;
+  std::unique_ptr<clock> mClock;
 };
 }

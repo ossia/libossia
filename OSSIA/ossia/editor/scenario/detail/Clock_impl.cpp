@@ -203,7 +203,7 @@ bool clock_impl::tick(time_value usec)
   return true;
 }
 
-const time_value& clock_impl::getDuration() const
+time_value clock_impl::getDuration() const
 {
   return mDuration;
 }
@@ -214,7 +214,7 @@ ossia::clock& clock_impl::setDuration(time_value duration)
   return *this;
 }
 
-const time_value& clock_impl::getOffset() const
+time_value clock_impl::getOffset() const
 {
   return mOffset;
 }
@@ -225,7 +225,7 @@ ossia::clock& clock_impl::setOffset(time_value offset)
   return *this;
 }
 
-const time_value& clock_impl::getGranularity() const
+time_value clock_impl::getGranularity() const
 {
   return mGranularity;
 }
@@ -263,12 +263,12 @@ bool clock_impl::getRunning() const
   return mRunning;
 }
 
-const time_value& clock_impl::getPosition() const
+time_value clock_impl::getPosition() const
 {
   return mPosition;
 }
 
-const time_value& clock_impl::getDate() const
+time_value clock_impl::getDate() const
 {
   return mDate;
 }
@@ -310,6 +310,18 @@ void clock_impl::do_start()
   {
     if (mThread.joinable())
       mThread.join();
+
+    /*! to allow TimeConstraint to override start method */
+    void do_start();
+
+    /*! to allow TimeConstraint to override stop method */
+    void do_stop();
+
+    /*! to allow TimeConstraint to override setDuration accessor */
+    void do_setDuration(time_value);
+
+    /*! to allow TimeConstraint to override setOffset accessor */
+    void do_setOffset(time_value);
 
     // launch a new thread to run the clock execution
     mThread = std::thread(&clock_impl::threadCallback, this);

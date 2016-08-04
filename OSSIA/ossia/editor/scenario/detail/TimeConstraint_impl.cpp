@@ -11,17 +11,17 @@ time_constraint_impl::time_constraint_impl(
     std::shared_ptr<time_event> startEvent,
     std::shared_ptr<time_event> endEvent, time_value nominal, time_value min,
     time_value max)
-    : clock_impl([=](time_value t, time_value t2, unsigned char c) {
-      return ClockCallback(t, t2, c);
-    })
-    , mCallback(callback)
+    : mCallback(callback)
     , mStartEvent(startEvent)
     , mEndEvent(endEvent)
     , mDurationNominal(nominal)
     , mDurationMin(min)
     , mDurationMax(max)
 {
-  clock_impl::setDuration(mDurationNominal);
+  mClock = std::make_unique<clock_impl>([=](time_value t, time_value t2, unsigned char c) {
+    return ClockCallback(t, t2, c);
+  });
+  mClock->setDuration(mDurationNominal);
 }
 
 time_constraint_impl::~time_constraint_impl()
@@ -30,7 +30,7 @@ time_constraint_impl::~time_constraint_impl()
 
 void time_constraint_impl::start()
 {
-  if (mRunning)
+  if (mClock->getRunning())
   {
     throw execution_error("time_constraint_impl::start: "
                           "time constraint is already running");
@@ -38,7 +38,7 @@ void time_constraint_impl::start()
   }
 
   // set clock duration using maximal duration
-  setDuration(mDurationMax);
+  mClock->setDuration(mDurationMax);
 
   // start all jamoma time processes
   for (const auto& timeProcess : timeProcesses())
@@ -47,13 +47,13 @@ void time_constraint_impl::start()
   }
 
   // launch the clock
-  do_start();
+  mClock->do_start();
 }
 
 void time_constraint_impl::stop()
 {
   // stop the clock
-  do_stop();
+  mClock->do_stop();
 
   // stop all jamoma time processes
   for (const auto& timeProcess : timeProcesses())
@@ -64,14 +64,14 @@ void time_constraint_impl::stop()
 
 ossia::state time_constraint_impl::offset(time_value date)
 {
-  if (mRunning)
+  if (mClock->getRunning())
   {
     throw execution_error("time_constraint_impl::offset: "
                           "time constraint is running");
     return {};
   }
 
-  do_setOffset(date);
+  mClock->do_setOffset(date);
 
   const auto& processes = timeProcesses();
   ossia::state state;
@@ -88,7 +88,7 @@ ossia::state time_constraint_impl::offset(time_value date)
 
 ossia::state time_constraint_impl::state()
 {
-  if (!mRunning)
+  if (!mClock->getRunning())
   {
     throw execution_error("time_constraint_impl::state: "
                           "time constraint is not running");
@@ -110,7 +110,7 @@ ossia::state time_constraint_impl::state()
 
 void time_constraint_impl::pause()
 {
-  mPaused = true;
+  mClock->pause();
 
   // pause all jamoma time processes
   for (const auto& timeProcess : timeProcesses())
@@ -121,10 +121,7 @@ void time_constraint_impl::pause()
 
 void time_constraint_impl::resume()
 {
-  mPaused = false;
-
-  // reset the time reference
-  mLastTime = clock_type::now();
+  mClock->resume();
 
   // resume all jamoma time processes
   for (const auto& timeProcess : timeProcesses())
@@ -155,7 +152,7 @@ time_constraint_impl::setDurationNominal(time_value durationNominal)
   if (mDurationNominal > mDurationMax)
     setDurationMax(mDurationNominal);
 
-  clock_impl::setDuration(mDurationNominal);
+  mClock->setDuration(mDurationNominal);
 
   return *this;
 }

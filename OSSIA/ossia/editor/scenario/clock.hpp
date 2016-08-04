@@ -77,7 +77,7 @@ public:
 
   /*! get the duration of the clock
    \return const #TimeValue duration */
-  virtual const time_value& getDuration() const = 0;
+  virtual time_value getDuration() const = 0;
 
   /*! set the duration of the clock execution
    \param const #TimeValue duration
@@ -86,7 +86,7 @@ public:
 
   /*! get the offset of the clock
    \return const #TimeValue offset */
-  virtual const time_value& getOffset() const = 0;
+  virtual time_value getOffset() const = 0;
 
   /** set the offset of the clock
    \param const #TimeValue offset
@@ -95,7 +95,7 @@ public:
 
   /*! get the granularity of the clock
    \return const #TimeValue granularity */
-  virtual const time_value& getGranularity() const = 0;
+  virtual time_value getGranularity() const = 0;
 
   /*! set the granularity of the clock execution
    \param const #TimeValue granularity
@@ -126,14 +126,28 @@ public:
 
   /*! get the position of the clock
    \return const #TimeValue position */
-  virtual const time_value& getPosition() const = 0;
+  virtual time_value getPosition() const = 0;
 
   /*! get the date of the clock
    \return const #TimeValue date */
-  virtual const time_value& getDate() const = 0;
+  virtual time_value getDate() const = 0;
 
   // Execution status will be called when the clock starts and stops.
   virtual void setExecutionStatusCallback(ExecutionStatusCallback) = 0;
   virtual ExecutionStatusCallback getExecutionStatusCallback() const = 0;
+
+
+  /*! to allow TimeConstraint to override start method */
+  virtual void do_start() = 0;
+
+  /*! to allow TimeConstraint to override stop method */
+  virtual void do_stop() = 0;
+
+  /*! to allow TimeConstraint to override setDuration accessor */
+  virtual void do_setDuration(time_value) = 0;
+
+  /*! to allow TimeConstraint to override setOffset accessor */
+  virtual void do_setOffset(time_value) = 0;
+
 };
 }

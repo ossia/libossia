@@ -23,7 +23,6 @@ namespace detail
 {
 class time_constraint_impl final
     : public time_constraint,
-      public clock_impl,
       public std::enable_shared_from_this<time_constraint_impl>
 {
 

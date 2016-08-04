@@ -74,15 +74,15 @@ public:
   bool tick() final override;
   bool tick(time_value usec) final override;
 
-  const time_value& getDuration() const override;
+  time_value getDuration() const override;
 
   clock& setDuration(time_value) override;
 
-  const time_value& getOffset() const final override;
+  time_value getOffset() const final override;
 
   clock& setOffset(time_value) override;
 
-  const time_value& getGranularity() const final override;
+  time_value getGranularity() const final override;
 
   clock& setGranularity(time_value) final override;
 
@@ -96,9 +96,9 @@ public:
 
   bool getRunning() const final override;
 
-  const time_value& getPosition() const final override;
+  time_value getPosition() const final override;
 
-  const time_value& getDate() const final override;
+  time_value getDate() const final override;
 
   void setExecutionStatusCallback(ExecutionStatusCallback e) final override
   {
@@ -115,16 +115,16 @@ public:
 
 protected:
   /*! to allow TimeConstraint to override start method */
-  void do_start();
+  void do_start() override;
 
   /*! to allow TimeConstraint to override stop method */
-  void do_stop();
+  void do_stop() override;
 
   /*! to allow TimeConstraint to override setDuration accessor */
-  void do_setDuration(time_value);
+  void do_setDuration(time_value) override;
 
   /*! to allow TimeConstraint to override setOffset accessor */
-  void do_setOffset(time_value);
+  void do_setOffset(time_value) override;
 
 private:
   /*! called back by the internal thread */
