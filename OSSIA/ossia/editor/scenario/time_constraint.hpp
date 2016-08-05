@@ -38,12 +38,15 @@ public:
   auto getGranularity() const { return mClock->getGranularity(); }
   auto getOffset() const { return mClock->getOffset(); }
   auto getSpeed() const { return mClock->getSpeed(); }
+  auto getExecutionStatusCallback() const { return mClock->getExecutionStatusCallback(); }
+  auto paused() const { return mClock->paused(); }
   void setOffset(time_value g) const { mClock->setOffset(g); }
   void setDriveMode(clock::DriveMode m) const { mClock->setDriveMode(m); }
   void setGranularity(time_value g) const { mClock->setGranularity(g); }
   void setSpeed(double g) const { mClock->setSpeed(g); }
   bool tick() { return mClock->tick(); }
   bool tick(time_value usec) { return mClock->tick(usec); }
+  void setExecutionStatusCallback(clock::ExecutionStatusCallback c) { mClock->setExecutionStatusCallback(c); }
 
   clock& getClock() { return *mClock; }
   /*! to get the constraint execution back

@@ -327,6 +327,16 @@ void clock::do_start()
   }
 }
 
+void clock::setExecutionStatusCallback(ExecutionStatusCallback e)
+{
+    mStatusCallback = e;
+}
+
+clock::ExecutionStatusCallback clock::getExecutionStatusCallback() const
+{
+    return mStatusCallback;
+}
+
 void clock::do_stop()
 {
   request_stop();
