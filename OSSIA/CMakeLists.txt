@@ -110,23 +110,25 @@ generate_export_header(ossia BASE_NAME OSSIA)
 
 target_compile_definitions(ossia PRIVATE RAPIDJSON_HAS_STDSTRING=1)
 target_include_directories(ossia
-    PUBLIC
-        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/variant/include>
-        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
-        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include>
-        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI>
-        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI/third_party>
-        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/oscpack>
-
-        $<INSTALL_INTERFACE:include/variant>
-        $<INSTALL_INTERFACE:include/nano-signal-slot>
-        $<INSTALL_INTERFACE:include/rapidjson>
-        $<INSTALL_INTERFACE:include>
-
     INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
+
+target_include_directories(ossia SYSTEM
+  PUBLIC
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/variant/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI/third_party>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/oscpack>
+
+      $<INSTALL_INTERFACE:include/variant>
+      $<INSTALL_INTERFACE:include/nano-signal-slot>
+      $<INSTALL_INTERFACE:include/rapidjson>
+      $<INSTALL_INTERFACE:include>
+  )
 
 if(NOT OSSIA_NO_INSTALL)
     include(ossia_install.cmake)
