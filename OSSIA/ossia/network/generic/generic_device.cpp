@@ -12,6 +12,7 @@ generic_device::generic_device(
     : device_base(std::move(protocol)), generic_node(std::move(name), *this)
 {
   mProtocol->setDevice(*this);
+  mCapabilities.change_tree = true;
 }
 
 generic_device::~generic_device()

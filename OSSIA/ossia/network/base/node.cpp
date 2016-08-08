@@ -10,13 +10,17 @@ node_base::~node_base() = default;
 
 node_base* node_base::createChild(const std::string& name)
 {
+  auto& dev = getDevice();
+  if(!dev.getCapabilities().change_tree)
+    return nullptr;
+
   auto res = makeChild(name);
 
   auto ptr = res.get();
   if (res)
   {
     mChildren.push_back(std::move(res));
-    getDevice().onNodeCreated(*ptr);
+    dev.onNodeCreated(*ptr);
   }
 
   return ptr;
@@ -24,12 +28,16 @@ node_base* node_base::createChild(const std::string& name)
 
 bool node_base::removeChild(const std::string& name)
 {
+  auto& dev = getDevice();
+  if(!dev.getCapabilities().change_tree)
+    return false;
+
   auto it = find_if(
       mChildren, [&](const auto& c) { return c->getName() == name; });
 
   if (it != mChildren.end())
   {
-    getDevice().onNodeRemoving(**it);
+    dev.onNodeRemoving(**it);
     removingChild(**it);
     mChildren.erase(it);
 
@@ -43,11 +51,14 @@ bool node_base::removeChild(const std::string& name)
 
 bool node_base::removeChild(const node_base& n)
 {
+  auto& dev = getDevice();
+  if(!dev.getCapabilities().change_tree)
+    return false;
   auto it = find_if(mChildren, [&](const auto& c) { return c.get() == &n; });
 
   if (it != mChildren.end())
   {
-    getDevice().onNodeRemoving(**it);
+    dev.onNodeRemoving(**it);
     removingChild(**it);
     mChildren.erase(it);
 
@@ -61,6 +72,10 @@ bool node_base::removeChild(const node_base& n)
 
 void node_base::clearChildren()
 {
+  auto& dev = getDevice();
+  if(!dev.getCapabilities().change_tree)
+    return;
+
   for (auto& child : mChildren)
     removingChild(*child);
   mChildren.clear();

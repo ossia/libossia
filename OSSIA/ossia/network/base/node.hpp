@@ -73,7 +73,10 @@ public:
   }
 
 protected:
+  /** Should return nullptr if no child is to be added */
   virtual std::unique_ptr<node_base> makeChild(const std::string& name) = 0;
+
+  /** Shold return false if the child must not be removed */
   virtual void removingChild(node_base& node_base) = 0;
 
   std::vector<std::unique_ptr<node_base>> mChildren;

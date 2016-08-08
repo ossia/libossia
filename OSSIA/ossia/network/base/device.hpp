@@ -38,6 +38,15 @@ class protocol_base;
  * \see node_base
  * \see protocol_base
  */
+
+struct device_capabilities
+{
+        /**
+         * @brief change_tree : nodes can be added and removed externally.
+         */
+        bool change_tree = false;
+};
+
 class OSSIA_EXPORT device_base
 {
 public:
@@ -55,6 +64,9 @@ public:
 
   virtual const ossia::net::node_base& getRootNode() const = 0;
   virtual ossia::net::node_base& getRootNode() = 0;
+
+  device_capabilities getCapabilities() const
+  { return mCapabilities; }
 
   void setName(const std::string& str)
   {
@@ -77,6 +89,7 @@ public:
 
 protected:
   std::unique_ptr<ossia::net::protocol_base> mProtocol;
+  device_capabilities mCapabilities;
 };
 }
 }
