@@ -42,7 +42,6 @@ ossia::state_element automation::state()
 
       // edit a Message handling the new Value
       mLastMessage.value = computeValue(par.getPosition(), mDrive);
-      return mLastMessage;
     }
 
     return mLastMessage;
