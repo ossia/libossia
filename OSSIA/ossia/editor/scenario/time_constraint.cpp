@@ -110,17 +110,7 @@ ossia::state time_constraint::state()
     return {};
   }
 
-  const auto& processes = timeProcesses();
-  ossia::state state;
-  state.reserve(processes.size());
-
-  // get the state of each TimeProcess at current clock position and date
-  for (const auto& timeProcess : processes)
-  {
-    state.add(timeProcess->state());
-  }
-
-  return state;
+  return state_impl();
 }
 
 void time_constraint::pause()
@@ -236,11 +226,26 @@ void time_constraint::removeTimeProcess(
   }
 }
 
+ossia::state time_constraint::state_impl()
+{
+  const auto& processes = timeProcesses();
+  ossia::state state;
+  state.reserve(processes.size());
+
+  // get the state of each TimeProcess at current clock position and date
+  for (const auto& timeProcess : processes)
+  {
+    state.add(timeProcess->state());
+  }
+
+  return state;
+}
+
 void time_constraint::ClockCallback(
     time_value position, time_value date, unsigned char droppedTicks)
 {
   if (mCallback)
-    (mCallback)(position, date, state());
+    (mCallback)(position, date, state_impl());
 }
 
 }

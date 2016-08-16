@@ -183,6 +183,7 @@ public:
 
     std::atomic_bool mRunning{}; /// is the clock running right now ?
     std::atomic_bool mPaused{};  /// is the clock paused right now ?
+    std::atomic_bool mShouldStop{};  /// is the clock paused right now ?
 
   private:
     /*! called back by the internal thread */

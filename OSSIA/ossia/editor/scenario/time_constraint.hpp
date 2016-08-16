@@ -167,6 +167,7 @@ public:
   }
 
 private:
+  ossia::state state_impl();
   void ClockCallback(
       time_value position, time_value date, unsigned char droppedTicks);
   ossia::state make_state();

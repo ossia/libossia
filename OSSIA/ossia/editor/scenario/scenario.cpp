@@ -7,6 +7,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <iostream>
 #include <unordered_map>
+#include <cassert>
 
 namespace ossia
 {
@@ -82,13 +83,17 @@ state_element scenario::offset(time_value offset)
         {
           auto& cst = *cst_ptr;
           auto& start_tn = cst.getStartEvent().getTimeNode();
-          auto start_date = time_map.at(&start_tn);
-          if (start_date < offset)
+          auto start_date_it = time_map.find(&start_tn);
+          if(start_date_it != time_map.end())
           {
-            auto dur = cst.getDurationNominal();
-            auto dur_min = cst.getDurationMin();
-            if (dur_min < dur)
-              cst.setDurationMin(offset - start_date);
+            auto start_date = start_date_it->second;
+            if (start_date < offset)
+            {
+              auto dur = cst.getDurationNominal();
+              auto dur_min = cst.getDurationMin();
+              if (dur_min < dur)
+                cst.setDurationMin(offset - start_date);
+            }
           }
         }
       }

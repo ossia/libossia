@@ -277,7 +277,11 @@ void clock::request_stop()
 {
   if (mRunning)
   {
-    mRunning = false;
+    if(mDriveMode == DriveMode::EXTERNAL)
+      mRunning = false;
+    else
+      mShouldStop = true;
+
     mPaused = false;
     if (mStatusCallback)
       mStatusCallback(ClockExecutionStatus::STOPPED);
@@ -363,7 +367,10 @@ void clock::threadCallback()
 {
   // launch the tick if the duration is valid and while it have to run
   if (mDuration > Zero)
-    while (mRunning)
+    while (mRunning && !mShouldStop)
       tick();
+
+  if(mShouldStop)
+    mRunning = false;
 }
 }
