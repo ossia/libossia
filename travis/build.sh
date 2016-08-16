@@ -44,7 +44,7 @@ case "$TRAVIS_OS_NAME" in
         coveralls-lcov coverage.info
       ;;
       Docs)
-        sudo apt-get install -qq doxygen doxygen-doc doxygen-latex doxygen-gui graphviz
+        sudo apt-get install -qq doxygen doxygen-doc doxygen-gui graphviz
         cd ../Documentation/Doxygen
 
         doxygen 2>&1 | tee doxygen.log

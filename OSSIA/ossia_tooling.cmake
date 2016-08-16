@@ -4,7 +4,7 @@ if(OSSIA_COVERAGE)
     setup_target_for_coverage(
         ossia_coverage
         "$ENV{CMAKE_BIN}"
-        coverage_out
+        coverage
         "--build;.;--target;ExperimentalTest")
 endif()
 
