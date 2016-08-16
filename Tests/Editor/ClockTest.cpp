@@ -277,7 +277,7 @@ private Q_SLOTS:
         QVERIFY(c.getRunning() == false);
 
         // check number of frames
-        QVERIFY(m_clock_positions.size() == 9);
+        QCOMPARE((int)m_clock_positions.size(), 9);
 
         // clear frame vectors
         m_clock_positions.clear();

@@ -148,14 +148,17 @@ public:
   {
     if (m_socket)
     {
-      m_socket->AsynchronousBreak();
+      {
+        oscpack::UdpTransmitSocket send_socket(oscpack::IpEndpointName("127.0.0.1", port()));
+        send_socket.Send("__stop_", 8);
+      }
 
       while(!m_runThread.joinable())
       {
         m_socket->AsynchronousBreak();
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
       }
-      m_runThread.detach();
+      m_runThread.join();
       m_socket.reset();
     }
   }

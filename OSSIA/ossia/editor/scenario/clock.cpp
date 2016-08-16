@@ -56,10 +56,12 @@ void clock::resume()
 bool clock::tick()
 {
   using namespace std::chrono;
-  if (mPaused || !mRunning)
+  bool paused = mPaused;
+  bool running = mRunning;
+  if (paused || !running)
     return false;
 
-  int64_t granularityInUs(std::llround(mGranularity * 1000));
+  int64_t granularityInUs(std::llround(mGranularity * 1000.));
   int64_t droppedTicks = 0;
 
   // how many time since the last tick ?
@@ -100,9 +102,9 @@ bool clock::tick()
       }
     }
 
+
     // how many time to pause to reach the next tick ?
     int64_t pauseInUs = granularityInUs - mElapsedTime % granularityInUs;
-
     // if too early: wait
     if (pauseInUs > 0)
     {
@@ -130,17 +132,16 @@ bool clock::tick()
   }
 
   // how many time elapsed from the start ?
+
   mDate += (deltaInUs / 1000.) * mSpeed;
   mElapsedTime += deltaInUs;
-
-  //! \debug cout << "+ " << (deltaInUs / 1000.) * mSpeed << endl;
 
   // note the time now to evaluate how long is the callback processing
   mLastTime = clock_type::now();
 
   // test paused and running status after computing the date because there is a
   // sleep before
-  if (!mPaused && mRunning)
+  if (!paused && running)
   {
     mPosition = mDate / mDuration;
 
@@ -309,18 +310,6 @@ void clock::do_start()
   {
     if (mThread.joinable())
       mThread.join();
-
-    /*! to allow TimeConstraint to override start method */
-    void do_start();
-
-    /*! to allow TimeConstraint to override stop method */
-    void do_stop();
-
-    /*! to allow TimeConstraint to override setDuration accessor */
-    void do_setDuration(time_value);
-
-    /*! to allow TimeConstraint to override setOffset accessor */
-    void do_setOffset(time_value);
 
     // launch a new thread to run the clock execution
     mThread = std::thread(&clock::threadCallback, this);
