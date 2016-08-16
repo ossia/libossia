@@ -105,7 +105,7 @@ public:
       mAddress = std::make_unique<midi_address>(
           address_info{channel, address_info::Type::PC, 0}, *this);
 
-      for (int i = 0; i < 127; i++)
+      for (int i = 0; i < 128; i++)
       {
         auto ptr = std::make_unique<program_N_node>(channel, i, mDevice, *this);
         mChildren.push_back(std::move(ptr));
@@ -127,7 +127,7 @@ public:
       mAddress = std::make_unique<midi_address>(
           address_info{channel, address_info::Type::NoteOn, 0}, *this);
 
-      for (int i = 0; i < 127; i++)
+      for (int i = 0; i < 128; i++)
       {
         auto ptr = std::make_unique<note_on_N_node>(channel, i, mDevice, *this);
         mChildren.push_back(std::move(ptr));
@@ -149,7 +149,7 @@ public:
       mAddress = std::make_unique<midi_address>(
           address_info{channel, address_info::Type::NoteOff, 0}, *this);
 
-      for (int i = 0; i < 127; i++)
+      for (int i = 0; i < 128; i++)
       {
         auto ptr = std::make_unique<note_off_N_node>(channel, i, mDevice, *this);
         mChildren.push_back(std::move(ptr));
@@ -171,7 +171,7 @@ public:
       mAddress = std::make_unique<midi_address>(
           address_info{channel, address_info::Type::CC, 0}, *this);
 
-      for (int i = 0; i < 127; i++)
+      for (int i = 0; i < 128; i++)
       {
         auto ptr = std::make_unique<control_N_node>(channel, i, mDevice, *this);
         mChildren.push_back(std::move(ptr));
@@ -216,7 +216,7 @@ public:
   std::array<ossia::message, 2> note_on(midi_size_t note, midi_size_t vel)
   {
       return {
-          ossia::message{*mChildren[0]->getAddress(), Tuple{Int{note}, Int{vel}}},
+          ossia::message{*mChildren[0]->getAddress(), Tuple{{Int{note}, Int{vel}}}},
           ossia::message{*mChildren[0]->children()[note]->getAddress(), Int{vel}}
       };
   }
@@ -224,7 +224,7 @@ public:
   std::array<ossia::message, 2> note_off(midi_size_t note, midi_size_t vel)
   {
       return {
-          ossia::message{*mChildren[1]->getAddress(), Tuple{Int{note}, Int{vel}}},
+          ossia::message{*mChildren[1]->getAddress(), Tuple{{Int{note}, Int{vel}}}},
           ossia::message{*mChildren[1]->children()[note]->getAddress(), Int{vel}}
       };
   }

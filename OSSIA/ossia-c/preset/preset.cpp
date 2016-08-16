@@ -355,7 +355,7 @@ ossia::value json_to_ossia_value(const rapidjson::Value& value){
         break;
     }
 
-    return std::move(val);
+    return val;
 }
 
 bool is_nested(const rapidjson::Value& v) {

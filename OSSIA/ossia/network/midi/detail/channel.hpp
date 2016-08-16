@@ -23,9 +23,9 @@ struct midi_channel
   midi_size_t mPC;
 
   // velocity or value
-  std::array<midi_size_t, 127> mNoteOn_N = {{64}};
-  std::array<midi_size_t, 127> mNoteOff_N = {{64}};
-  std::array<midi_size_t, 127> mCC_N = {{64}};
+  std::array<midi_size_t, 128> mNoteOn_N = {{64}};
+  std::array<midi_size_t, 128> mNoteOff_N = {{64}};
+  std::array<midi_size_t, 128> mCC_N = {{64}};
   // No need to store PC since they are only impulses
 
   // Callbacks
@@ -33,10 +33,10 @@ struct midi_channel
   midi_address* mCallbackNoteOff{};
   midi_address* mCallbackCC{};
   midi_address* mCallbackPC{};
-  std::array<midi_address*, 127> mCallbackNoteOn_N = {{}};
-  std::array<midi_address*, 127> mCallbackNoteOff_N = {{}};
-  std::array<midi_address*, 127> mCallbackCC_N = {{}};
-  std::array<midi_address*, 127> mCallbackPC_N = {{}};
+  std::array<midi_address*, 128> mCallbackNoteOn_N = {{}};
+  std::array<midi_address*, 128> mCallbackNoteOff_N = {{}};
+  std::array<midi_address*, 128> mCallbackCC_N = {{}};
+  std::array<midi_address*, 128> mCallbackPC_N = {{}};
 };
 }
 }
