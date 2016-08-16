@@ -5,6 +5,7 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/osc.hpp>
+#include <ossia/network/exceptions.hpp>
 #include <oscpack/osc/OscPrintReceivedElements.h>
 
 namespace ossia
@@ -22,6 +23,11 @@ osc_protocol::osc_protocol(
                   this->handleReceivedMessage(m, ip);
                 }}
 {
+  if(mReceiver.port() != local_port)
+  {
+    throw ossia::connection_error{"osc_protocol::osc_protocol: "
+                                  "Could not connect to port: " + std::to_string(local_port)};
+  }
   mReceiver.run();
 }
 
@@ -102,6 +108,8 @@ bool osc_protocol::push(const ossia::net::address_base& address)
   if (val.valid())
   {
     mSender.send(getOSCAddress(address), val);
+    if(mLogger.outbound_logger)
+        mLogger.outbound_logger->info("Out: {0} {1}", address.getTextualAddress(), val);
     return true;
   }
   return false;
@@ -129,7 +137,10 @@ void osc_protocol::handleReceivedMessage(
   {
     ossia::net::address_base& addr = *it->second;
     lock.unlock();
-    updateValue(addr, m);
+    bool res = updateValue(addr, m);
+
+    if(res && mLogger.inbound_logger)
+        mLogger.inbound_logger->info("In: {0} {1}", addr.getTextualAddress(), addr.cloneValue());
   }
 }
 }

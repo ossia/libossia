@@ -1,5 +1,7 @@
 #pragma once
+#include <ossia/network/common/network_logger.hpp>
 #include <memory>
+
 #include <ossia_export.h>
 
 namespace ossia
@@ -45,17 +47,13 @@ public:
   {
   }
 
-  void setLogger(const std::shared_ptr<network_logger>& l)
-  {
-    mLogger = l;
-  }
-  const std::shared_ptr<network_logger>& getLogger() const
-  {
-    return mLogger;
-  }
+  void setLogger(const network_logger& l)
+  { mLogger = l; }
+  const network_logger& getLogger() const
+  { return mLogger; }
 
 protected:
-  std::shared_ptr<ossia::network_logger> mLogger;
+  ossia::network_logger mLogger;
 };
 }
 }

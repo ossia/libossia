@@ -4,6 +4,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/callback_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/destination_index.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/math.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/logger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/ptr_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/automation.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_abstract.hpp"

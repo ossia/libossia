@@ -1,11 +1,14 @@
 #pragma once
 #include <ossia/editor/value/value_base.hpp>
-#include <eggs/variant.hpp>
-#include <ossia_export.h>
 #include <ossia/editor/exceptions.hpp>
 
+#include <ossia/detail/logger.hpp>
+#include <eggs/variant.hpp>
+
+#include <ossia_export.h>
 namespace ossia
 {
+class value;
 
 /**
  * \brief ossia::apply : helper function to apply a visitor to a variant
@@ -27,6 +30,19 @@ auto apply(Visitor&& v, Variant&& var) -> decltype(auto)
     return std::forward<Visitor>(v)();
 }
 
+
+/*!
+ * \brief getValueAsString Returns a string corresponding to the value
+ * \param val a valid value
+ * \return a string in the format : "type: value".
+ *
+ * ex. "int: 3"
+ *     "string: tutu"
+ *     "tuple: [ int: 2, float: 3 ]"
+ * etc...
+ *
+ */
+OSSIA_EXPORT std::string to_pretty_string(const ossia::value& val);
 
 /**
  * @brief The value class
@@ -241,20 +257,14 @@ public:
   bool operator>=(const value& rhs) const;
   bool operator<(const value& rhs) const;
   bool operator<=(const value& rhs) const;
-};
 
-/*!
- * \brief getValueAsString Returns a string corresponding to the value
- * \param val a valid value
- * \return a string in the format : "type: value".
- *
- * ex. "int: 3"
- *     "string: tutu"
- *     "tuple: [ int: 2, float: 3 ]"
- * etc...
- *
- */
-OSSIA_EXPORT std::string to_pretty_string(const ossia::value& val);
+  template<typename ostream_t>
+  friend ostream_t& operator<<(ostream_t& os, const ossia::value& c)
+  {
+      // TODO OPTIMIZEME
+      return os << to_pretty_string(c);
+  }
+};
 
 inline ossia::value init_value(ossia::val_type type)
 {

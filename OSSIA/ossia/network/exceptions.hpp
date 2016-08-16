@@ -13,13 +13,27 @@ namespace ossia
 struct OSSIA_EXPORT parse_error :
     public std::runtime_error
 {
-  parse_error(const char* e):
-    std::runtime_error(e)
+  parse_error(std::string e):
+    std::runtime_error(std::move(e))
   {
 
   }
 };
 
+/**
+ * @brief The connection_error class
+ *
+ * Means that a connection could not be established.
+ */
+struct OSSIA_EXPORT connection_error:
+    public std::runtime_error
+{
+  connection_error(std::string e):
+    std::runtime_error(std::move(e))
+  {
+
+  }
+};
 
 /**
  * @brief The invalid_node_error class
@@ -32,8 +46,8 @@ struct OSSIA_EXPORT parse_error :
 struct OSSIA_EXPORT invalid_node_error :
     public std::logic_error
 {
-  invalid_node_error(const char* e):
-    std::logic_error(e)
+  invalid_node_error(std::string e):
+    std::logic_error(std::move(e))
   {
 
   }

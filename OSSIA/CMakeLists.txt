@@ -123,10 +123,12 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI/third_party>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/oscpack>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>
 
       $<INSTALL_INTERFACE:include/variant>
       $<INSTALL_INTERFACE:include/nano-signal-slot>
       $<INSTALL_INTERFACE:include/rapidjson>
+      $<INSTALL_INTERFACE:include/spdlog>
       $<INSTALL_INTERFACE:include>
   )
 

@@ -17,3 +17,6 @@
 [submodule "3rdparty/rapidjson"]
 	path = 3rdparty/rapidjson
 	url = https://github.com/miloyip/rapidjson
+[submodule "3rdparty/spdlog"]
+	path = 3rdparty/spdlog
+	url = https://github.com/gabime/spdlog

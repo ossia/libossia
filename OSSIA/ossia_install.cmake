@@ -11,8 +11,8 @@ foreach(file ${API_HEADERS})
     get_filename_component( dir ${file} DIRECTORY)
     string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" dir_clean "${dir}")
     install(
-      FILES "${file}" 
-      DESTINATION "include/${dir_clean}" 
+      FILES "${file}"
+      DESTINATION "include/${dir_clean}"
       COMPONENT Devel)
 endforeach()
 
@@ -38,6 +38,10 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/oscpack/oscpack
         DESTINATION include
         COMPONENT Devel)
 
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/spdlog/include/
+        DESTINATION include/spdlog
+        COMPONENT Devel)
+
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
@@ -60,4 +64,4 @@ set(ConfigPackageLocation lib/cmake/ossia)
 install(EXPORT ossia-targets
         DESTINATION "${ConfigPackageLocation}"
         NAMESPACE ossia::)
-        
+

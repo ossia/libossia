@@ -22,9 +22,13 @@ minuit_protocol::minuit_protocol(
                   this->handleReceivedMessage(m, ip);
                 }}
 {
-  name_table.set_device_name(mLocalName);
   if(mReceiver.port() != local_port)
-    std::cerr << "Could not connect: current in port == " << mReceiver.port() << "\n";
+  {
+    throw ossia::connection_error{"minuit_protocol::minuit_protocol: "
+                                  "Could not connect to port: " + std::to_string(local_port)};
+  }
+
+  name_table.set_device_name(mLocalName);
   mReceiver.run();
 }
 
@@ -154,6 +158,10 @@ bool minuit_protocol::push(const ossia::net::address_base& address)
   if (val.valid())
   {
     sender.send(getOSCAddress(address), val);
+
+    if(mLogger.outbound_logger)
+        mLogger.outbound_logger->info("Out: {0} {1}", address.getTextualAddress(), val);
+
     return true;
   }
 
@@ -211,7 +219,9 @@ void minuit_protocol::handleReceivedMessage(
       ossia::net::address_base& addr = *it->second;
       lock.unlock();
 
-      updateValue(addr, m);
+      bool res = updateValue(addr, m);
+      if(res && mLogger.inbound_logger)
+          mLogger.inbound_logger->info("In: {0} {1}", addr.getTextualAddress(), addr.cloneValue());
     }
   }
   else

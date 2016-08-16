@@ -391,13 +391,13 @@ inline ossia::value toValue(
   return current.apply(OSCInboundVisitor{beg_it, beg_it, end_it, N});
 }
 
-inline void updateValue(
+inline bool updateValue(
     ossia::net::address_base& addr,
     oscpack::ReceivedMessageArgumentIterator beg_it,
     oscpack::ReceivedMessageArgumentIterator end_it, int N)
 {
   if (addr.getAccessMode() == ossia::access_mode::SET)
-    return;
+    return false;
 
   auto res = filterValue(
                addr.getDomain(),
@@ -407,10 +407,12 @@ inline void updateValue(
   if (res.valid())
   {
     addr.setValue(std::move(res));
+    return true;
   }
+  return false;
 }
 
-inline void updateValue(
+inline bool updateValue(
     ossia::net::address_base& addr, const oscpack::ReceivedMessage& mess)
 {
   return updateValue(
