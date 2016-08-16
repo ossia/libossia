@@ -21,6 +21,18 @@ T clamp(T d, T min, T max)
   return t > max ? max : t;
 }
 
+template <class T>
+T clamp_min(T d, T min)
+{
+  return d < min ? min : d;
+}
+
+template <class T>
+T clamp_max(T d, T max)
+{
+  return d > max ? max : d;
+}
+
 // Wrap & Fold code taken from Jamoma TTLimits.h.
 // Credits : Nils Peters, Nov. 2008
 template <class T>

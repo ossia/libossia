@@ -301,10 +301,10 @@ bool value::operator<=(const value& rhs) const
 namespace
 {
 
-static std::string getTupleAsString(const ossia::Tuple& tuple);
+static void getTupleAsString(const ossia::Tuple& tuple, fmt::MemoryWriter&);
 struct ValueStringVisitor
 {
-  std::stringstream& s;
+  fmt::MemoryWriter& s;
 
   void operator()(Impulse) const
   {
@@ -332,12 +332,15 @@ struct ValueStringVisitor
   }
   void operator()(Vec2f vec) const
   {
+    s << "vec2f";
   }
   void operator()(Vec3f vec) const
   {
+    s << "vec3f";
   }
   void operator()(Vec4f vec) const
   {
+    s << "vec4f";
   }
   void operator()(const Destination& d) const
   {
@@ -349,17 +352,17 @@ struct ValueStringVisitor
   }
   void operator()(const Tuple& t) const
   {
-    s << "tuple:" << getTupleAsString(t);
+    s << "tuple:";
+    getTupleAsString(t, s);
   }
   void operator()() const
   {
+    s << "invalid";
   }
 };
 
-static std::string getTupleAsString(const ossia::Tuple& tuple)
+static void getTupleAsString(const ossia::Tuple& tuple, fmt::MemoryWriter& s)
 {
-  std::stringstream s;
-
   ValueStringVisitor vis{s};
 
   int n = tuple.value.size();
@@ -375,14 +378,12 @@ static std::string getTupleAsString(const ossia::Tuple& tuple)
       s << ", ";
   }
   s << "]";
-
-  return s.str();
 }
 }
 
 std::string to_pretty_string(const ossia::value& val)
 {
-  std::stringstream s;
+  fmt::MemoryWriter s;
   val.apply(ValueStringVisitor{s});
   return s.str();
 }
