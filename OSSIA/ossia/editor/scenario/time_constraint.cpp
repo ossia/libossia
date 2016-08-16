@@ -215,7 +215,9 @@ time_event& time_constraint::getEndEvent() const
 void time_constraint::addTimeProcess(
     std::unique_ptr<time_process> timeProcess)
 {
-  assert(timeProcess);
+  if(!timeProcess)
+    return;
+
   // store a TimeProcess if it is not already stored
   if (find(mTimeProcesses, timeProcess) == mTimeProcesses.end())
   {

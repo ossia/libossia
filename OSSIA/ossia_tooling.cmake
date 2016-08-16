@@ -2,7 +2,7 @@
 # Coverage
 if(OSSIA_COVERAGE)
     setup_target_for_coverage(
-        ossia_test_coverage
+        ossia_coverage
         "$ENV{CMAKE_BIN}"
         coverage_out
         "--build;.;--target;ExperimentalTest")
