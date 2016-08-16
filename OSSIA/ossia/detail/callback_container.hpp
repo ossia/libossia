@@ -81,9 +81,10 @@ public:
   /**
    * @brief clear Clears callbacks.
    */
-  void clear()
+  void callbacks_clear()
   {
-    onRemovingLastCallback();
+    if(!mCallbacks.empty())
+      onRemovingLastCallback();
     mCallbacks.clear();
   }
 

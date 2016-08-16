@@ -11,7 +11,8 @@ expression_not::expression_not(expression_ptr p) : mExpression{std::move(p)}
 
 expression_not::~expression_not()
 {
-  // TODO REMOVE ALL CALLBACKS
+  if(!expression_callback_container::callbacks_empty())
+    expression_callback_container::callbacks_clear();
 }
 
 bool expression_not::evaluate() const

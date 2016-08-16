@@ -5,12 +5,16 @@ namespace ossia
 {
 namespace expressions
 {
-expression_atom::~expression_atom() = default;
-
 expression_atom::expression_atom(
     const value& lhs, expression_atom::Comparator op, const value& rhs)
     : mFirstValue(lhs), mSecondValue(rhs), mOperator(op)
 {
+}
+
+expression_atom::~expression_atom()
+{
+  if(!expression_callback_container::callbacks_empty())
+    expression_callback_container::callbacks_clear();
 }
 
 bool expression_atom::evaluate() const

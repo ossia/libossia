@@ -5,7 +5,6 @@ namespace ossia
 {
 namespace expressions
 {
-expression_composition::~expression_composition() = default;
 
 expression_composition::expression_composition(
     expression_ptr expr1, expression_composition::Operator op,
@@ -14,6 +13,12 @@ expression_composition::expression_composition(
     , mSecondExpression(std::move(expr2))
     , mOperator(op)
 {
+}
+
+expression_composition::~expression_composition()
+{
+  if(!expression_callback_container::callbacks_empty())
+    expression_callback_container::callbacks_clear();
 }
 
 bool expression_composition::evaluate() const
