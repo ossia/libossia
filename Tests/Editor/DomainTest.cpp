@@ -33,7 +33,7 @@ private Q_SLOTS:
         d2 = domain_base<Float>{1., 24.};
         QVERIFY(d1 != d2);
 
-        domain d3 = makeDomain(Int(1), Int(24));
+        domain d3 = make_domain(Int(1), Int(24));
         QVERIFY(d3 == domain_base<Int>(1, 24));
         QVERIFY(d3 != dom);
     }
