@@ -40,7 +40,9 @@ enum class bounding_mode
   FREE, //! The bounds are ignored
   CLIP, //! \see ossia::clamp
   WRAP, //! \see ossia::wrap
-  FOLD //! \see ossia::fold
+  FOLD, //! \see ossia::fold
+  LOW, //! \see ossia::clamp_min
+  HIGH, //! \see ossia::clamp_max
 };
 
 /**

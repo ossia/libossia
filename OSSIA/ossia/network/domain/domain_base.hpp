@@ -48,23 +48,35 @@ struct OSSIA_EXPORT domain_base
             return T(ossia::wrap(val.value, *min, *max));
           case bounding_mode::FOLD:
             return T(ossia::fold(val.value, *min, *max));
+          case bounding_mode::LOW:
+            return T(ossia::clamp_min(val.value, *min));
+          case bounding_mode::HIGH:
+            return T(ossia::clamp_max(val.value, *max));
           default:
             return val;
         }
       }
       else if (has_min)
       {
-        if (b == bounding_mode::CLIP)
-          return T(val.value < *min ? *min : val.value);
-        else
-          return val;
+        switch(b)
+        {
+          case bounding_mode::CLIP:
+          case bounding_mode::LOW:
+            return T(ossia::clamp_min(val.value, *min));
+          default:
+            return val;
+        }
       }
       else if (has_max)
       {
-        if (b == bounding_mode::CLIP)
-          return T(val.value > *max ? *max : val.value);
-        else
-          return val;
+        switch(b)
+        {
+          case bounding_mode::CLIP:
+          case bounding_mode::HIGH:
+            return T(ossia::clamp_max(val.value, *max));
+          default:
+            return val;
+        }
       }
       else
       {
@@ -202,6 +214,18 @@ struct OSSIA_EXPORT domain_base<Tuple>
             res.value.push_back(ossia::fold(v, *min, *max));
           }
           break;
+        case bounding_mode::LOW:
+          for(auto& v : val.value)
+          {
+            res.value.push_back(ossia::clamp_min(v, *min));
+          }
+          break;
+        case bounding_mode::HIGH:
+          for(auto& v : val.value)
+          {
+            res.value.push_back(ossia::clamp_max(v, *max));
+          }
+          break;
         default:
           return val;
       }
@@ -210,34 +234,38 @@ struct OSSIA_EXPORT domain_base<Tuple>
     }
     else if (has_min)
     {
-      if (b == bounding_mode::CLIP)
+      switch(b)
       {
-        ossia::Tuple res;
-        for(auto& v : val.value)
+        case bounding_mode::CLIP:
+        case bounding_mode::LOW:
         {
-          res.value.push_back(ossia::clamp_min(v, *min));
+          ossia::Tuple res;
+          for(auto& v : val.value)
+          {
+            res.value.push_back(ossia::clamp_min(v, *min));
+          }
+          return res;
         }
-        return res;
-      }
-      else
-      {
-        return val;
+        default:
+          return val;
       }
     }
     else if (has_max)
     {
-      if (b == bounding_mode::CLIP)
+      switch(b)
       {
-        ossia::Tuple res;
-        for(auto& v : val.value)
+        case bounding_mode::CLIP:
+        case bounding_mode::HIGH:
         {
-          res.value.push_back(ossia::clamp_max(v, *max));
+          ossia::Tuple res;
+          for(auto& v : val.value)
+          {
+            res.value.push_back(ossia::clamp_max(v, *max));
+          }
+          return res;
         }
-        return res;
-      }
-      else
-      {
-        return val;
+        default:
+          return val;
       }
     }
     else

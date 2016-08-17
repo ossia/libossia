@@ -175,13 +175,13 @@ inline ossia::value value_from_minuit_type_text(boost::string_ref str)
     case 'd': // decimal
       return ossia::Float{};
     case 's': // string
-    case 'g': // generic
       return ossia::String{};
     case 'b': // boolean
       return ossia::Bool{};
     case 'n': // none
       return ossia::Impulse{};
     case 'a': // array
+    case 'g': // generic
       return ossia::Tuple{};
     default:
       return {};
@@ -200,13 +200,13 @@ inline ossia::val_type type_from_minuit_type_text(boost::string_ref str)
     case 'd': // decimal
       return ossia::val_type::FLOAT;
     case 's': // string
-    case 'g': // generic
       return ossia::val_type::STRING;
     case 'b': // boolean
       return ossia::val_type::BOOL;
     case 'n': // none
       return ossia::val_type::IMPULSE;
     case 'a': // array
+    case 'g': // generic
       return ossia::val_type::TUPLE;
     default:
       return {};
@@ -257,6 +257,10 @@ inline boost::string_ref to_minuit_bounding_text(ossia::bounding_mode b)
       return "wrap";
     case ossia::bounding_mode::FOLD:
       return "fold";
+    case ossia::bounding_mode::LOW:
+      return "low";;
+    case ossia::bounding_mode::HIGH:
+      return "high";
     default:
       throw parse_error("to_minuit_bounding_text: Invalid bounding mode");
   }
@@ -275,6 +279,10 @@ inline ossia::bounding_mode from_minuit_bounding_text(boost::string_ref str)
       return ossia::bounding_mode::WRAP;
     case 'f': // fold
       return ossia::bounding_mode::FOLD;
+    case 'l': // low
+      return ossia::bounding_mode::LOW;
+    case 'h': // high
+      return ossia::bounding_mode::HIGH;
     default:
       throw parse_error("from_minuit_bounding_text: Invalid bounding mode");
   }
