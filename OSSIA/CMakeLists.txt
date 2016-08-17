@@ -108,7 +108,6 @@ set_target_properties(ossia PROPERTIES
 endif()
 generate_export_header(ossia BASE_NAME OSSIA)
 
-target_compile_definitions(ossia PRIVATE RAPIDJSON_HAS_STDSTRING=1)
 target_include_directories(ossia
     INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
@@ -125,10 +124,7 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/oscpack>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>
 
-      $<INSTALL_INTERFACE:include/variant>
       $<INSTALL_INTERFACE:include/nano-signal-slot>
-      $<INSTALL_INTERFACE:include/rapidjson>
-      $<INSTALL_INTERFACE:include/spdlog>
       $<INSTALL_INTERFACE:include>
   )
 
