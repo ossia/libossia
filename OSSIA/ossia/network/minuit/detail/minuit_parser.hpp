@@ -558,6 +558,9 @@ struct minuit_behavior<minuit_command::Answer,
     auto& n = ossia::net::find_or_create_node(dev, address);
     n.createAddress(ossia::val_type::IMPULSE);
 
+    // A data can also have child nodes :
+    handle_container(proto, dev, address, beg_it, end_it);
+
     auto sub_request = proto.name_table.get_action(minuit_action::GetRequest);
 
     // Request all the attributes provided by the node
