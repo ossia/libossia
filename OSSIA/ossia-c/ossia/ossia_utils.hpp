@@ -15,7 +15,7 @@ void DEBUG_LOG_FMT(Str fmt, Args... args)
 }
 struct ossia_protocol
 {
-        std::unique_ptr<ossia::net::protocol_base> protocol;
+        ossia::net::protocol_base* protocol{};
 };
 
 struct ossia_device
@@ -109,6 +109,7 @@ template<typename Fun>
 auto safe_function(const char name[], Fun f)
 try
 {
+    // DEBUG_LOG_FMT("Entering %s", name);
     return f();
 }
 catch(const std::exception& e)

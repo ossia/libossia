@@ -67,7 +67,8 @@ OSSIA_EXPORT
 ossia_protocol_t ossia_protocol_local_create();
 
 OSSIA_EXPORT
-ossia_protocol_t ossia_protocol_local_expose_to(
+void ossia_protocol_local_expose_to(
+    ossia_protocol_t local,
     ossia_protocol_t other);
 
 OSSIA_EXPORT
@@ -82,6 +83,10 @@ ossia_protocol_t ossia_protocol_minuit_create(
         const char* ip,
         int in_port,
         int out_port);
+
+OSSIA_EXPORT
+void ossia_protocol_free(
+    ossia_protocol_t);
 
 //// Device ////
 /**

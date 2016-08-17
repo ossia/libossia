@@ -31,12 +31,11 @@ ossia_device_t ossia_device_create(
             // Create a device and add it to the cache.
             auto dev = new ossia_device{
                        std::make_unique<ossia::net::generic_device>(
-                         std::move(protocol->protocol),
+                         std::unique_ptr<ossia::net::protocol_base>(protocol->protocol),
                          str_name)};
 
             devs.insert(std::make_pair(str_name, dev));
 
-            delete protocol;
             return dev;
         }
 
