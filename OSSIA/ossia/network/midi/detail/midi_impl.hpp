@@ -216,15 +216,15 @@ public:
   std::array<ossia::message, 2> note_on(midi_size_t note, midi_size_t vel)
   {
       return {
-          ossia::message{*mChildren[0]->getAddress(), Tuple{{Int{note}, Int{vel}}}},
-          ossia::message{*mChildren[0]->children()[note]->getAddress(), Int{vel}}
+          ossia::message{ *mChildren[0]->getAddress(), Tuple{Int{note}, Int{vel}} },
+          ossia::message{ *mChildren[0]->children()[note]->getAddress(), Int{vel} }
       };
   }
 
   std::array<ossia::message, 2> note_off(midi_size_t note, midi_size_t vel)
   {
       return {
-          ossia::message{*mChildren[1]->getAddress(), Tuple{{Int{note}, Int{vel}}}},
+          ossia::message{*mChildren[1]->getAddress(), Tuple{Int{note}, Int{vel}}},
           ossia::message{*mChildren[1]->children()[note]->getAddress(), Int{vel}}
       };
   }

@@ -119,6 +119,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value.cpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.cpp"

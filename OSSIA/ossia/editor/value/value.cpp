@@ -2,6 +2,7 @@
 #include <ossia/editor/value/value.hpp>
 #include <ossia/editor/value/value_comparison.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/detail/logger.hpp>
 #include <sstream>
 
 namespace ossia

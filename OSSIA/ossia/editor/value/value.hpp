@@ -2,7 +2,6 @@
 #include <ossia/editor/value/value_base.hpp>
 #include <ossia/editor/exceptions.hpp>
 
-#include <ossia/detail/logger.hpp>
 #include <eggs/variant.hpp>
 
 #include <ossia_export.h>
