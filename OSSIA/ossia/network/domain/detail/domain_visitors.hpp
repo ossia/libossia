@@ -24,11 +24,16 @@ struct domain_clamp_visitor
 
 struct domain_min_visitor
 {
-  template <typename T>
-  auto operator()(const T& value) -> decltype((T().min)(), ossia::value())
-  {
-    return value.min;
-  }
+  auto operator()(const domain_base<Int>& value)
+  { return value.min ? value::make<Int>(*value.min) : ossia::value{}; }
+  auto operator()(const domain_base<Float>& value)
+  { return value.min ? value::make<Float>(*value.min) : ossia::value{}; }
+  auto operator()(const domain_base<Bool>& value)
+  { return value.min ? value::make<Bool>(*value.min) : ossia::value{}; }
+  auto operator()(const domain_base<Char>& value)
+  { return value.min ? value::make<Char>(*value.min) : ossia::value{}; }
+  auto operator()(const domain_base<Tuple>& value)
+  { return value.min ? *value.min : ossia::value{}; }
 
   template <typename... T>
   auto operator()(const T&...)
@@ -37,14 +42,68 @@ struct domain_min_visitor
   }
 };
 
+struct domain_max_visitor
+{
+  auto operator()(const domain_base<Int>& value)
+  { return value.max ? value::make<Int>(*value.max) : ossia::value{}; }
+  auto operator()(const domain_base<Float>& value)
+  { return value.max ? value::make<Float>(*value.max) : ossia::value{}; }
+  auto operator()(const domain_base<Bool>& value)
+  { return value.max ? value::make<Bool>(*value.max) : ossia::value{}; }
+  auto operator()(const domain_base<Char>& value)
+  { return value.max ? value::make<Char>(*value.max) : ossia::value{}; }
+  auto operator()(const domain_base<Tuple>& value)
+  { return value.max ? *value.max : ossia::value{}; }
+
+  template <typename... T>
+  auto operator()(const T&...)
+  {
+    return ossia::value{};
+  }
+};
+
+template<typename Domain>
+struct domain_set_min_visitor_impl
+{
+  Domain& domain;
+  template<typename T>
+  void operator()(const T&) { }
+  void operator()() { }
+
+  void operator()(Int v) { domain.min = v.value; }
+  void operator()(Float v) { domain.min = v.value; }
+  void operator()(Char v) { domain.min = v.value; }
+  void operator()(Bool v) { domain.min = v.value; }
+};
+
+template<typename Domain>
+struct domain_set_max_visitor_impl
+{
+  Domain& domain;
+  template<typename T>
+  void operator()(const T&) { }
+  void operator()() { }
+
+  void operator()(Int v) { domain.max = v.value; }
+  void operator()(Float v) { domain.max = v.value; }
+  void operator()(Char v) { domain.max = v.value; }
+  void operator()(Bool v) { domain.max = v.value; }
+};
+
 struct domain_set_min_visitor
 {
   const ossia::value& val;
-  template <typename T>
-  auto operator()(const domain_base<T>& domain) -> decltype((T().min)(), void())
-  {
-    //value.min = value;
-  }
+
+  void operator()(domain_base<Int>& value)
+  { val.apply(domain_set_min_visitor_impl<domain_base<Int>>{value}); }
+  void operator()(domain_base<Float>& value)
+  { val.apply(domain_set_min_visitor_impl<domain_base<Float>>{value}); }
+  void operator()(domain_base<Bool>& value)
+  { val.apply(domain_set_min_visitor_impl<domain_base<Bool>>{value}); }
+  void operator()(domain_base<Char>& value)
+  { val.apply(domain_set_min_visitor_impl<domain_base<Char>>{value}); }
+  void operator()(domain_base<Tuple>& value)
+  { value.min = val; }
 
   template <typename... T>
   void operator()(const T&...)
@@ -55,30 +114,21 @@ struct domain_set_min_visitor
 struct domain_set_max_visitor
 {
   const ossia::value& val;
-  template <typename T>
-  auto operator()(const domain_base<T>& domain) -> decltype((T().min)(), void())
-  {
-    //value.min = value;
-  }
+
+  void operator()(domain_base<Int>& value)
+  { val.apply(domain_set_max_visitor_impl<domain_base<Int>>{value}); }
+  void operator()(domain_base<Float>& value)
+  { val.apply(domain_set_max_visitor_impl<domain_base<Float>>{value}); }
+  void operator()(domain_base<Bool>& value)
+  { val.apply(domain_set_max_visitor_impl<domain_base<Bool>>{value}); }
+  void operator()(domain_base<Char>& value)
+  { val.apply(domain_set_max_visitor_impl<domain_base<Char>>{value}); }
+  void operator()(domain_base<Tuple>& value)
+  { value.max = val; }
 
   template <typename... T>
   void operator()(const T&...)
   {
-  }
-};
-
-struct domain_max_visitor
-{
-  template <typename T>
-  auto operator()(const T& value) -> decltype((T().max)(), ossia::value())
-  {
-    return value.max;
-  }
-
-  template <typename... T>
-  auto operator()(const T&...)
-  {
-    return ossia::value{};
   }
 };
 

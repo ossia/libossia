@@ -93,6 +93,22 @@ public:
    * @return The address in the format device:/node/sub_node
    */
   virtual const std::string& getTextualAddress() const = 0;
+
+  // Extended attributes
+  virtual std::vector<std::string> getTags() const { return {}; }
+  virtual address_base& setTags(const std::vector<std::string>& v) { return *this; }
+
+  virtual std::string getDescription() const { return {}; }
+  virtual address_base& setDescription(const std::string& v) { return *this; }
+
+  virtual ossia::value getDefaultValue() const { return {}; }
+  virtual address_base& setDefaultValue(const ossia::value& v) { return *this; }
+
+  virtual ossia::dataspace getDataspace() const { return {}; }
+  virtual address_base& setDataspace(const ossia::dataspace& v) { return *this; }
+
+  virtual ossia::dataspace_unit getUnit() const { return {}; }
+  virtual address_base& setUnit(const ossia::dataspace_unit& v) { return *this; }
 };
 
 /*!

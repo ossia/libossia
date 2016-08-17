@@ -7,6 +7,11 @@
 #include <ossia_export.h>
 namespace ossia
 {
+namespace detail
+{
+template<typename T>
+struct dummy { using type = T; };
+}
 class value;
 
 /**
@@ -91,6 +96,17 @@ public:
   value(const Vec4f& val) : v{val} { }
   value(const Destination& val) : v{val} { }
   value(const Behavior& val) : v{val} { }
+
+  template<typename T, typename... Args>
+  value(detail::dummy<T> t, Args&&... args):
+    v{eggs::variants::in_place<typename detail::dummy<T>::type>, std::forward<Args>(args)...}
+  {
+
+  }
+
+  template<typename T, typename... Args>
+  static ossia::value make(Args&&... args)
+  { return ossia::value{detail::dummy<T>{}, std::forward<Args>(args)...}; }
 
   // Movable overloads
   value(String&& val) : v{std::move(val)} { }

@@ -90,7 +90,7 @@ struct address_info
   ossia::net::domain defaultDomain()
   {
 
-    return ossia::net::makeDomain(defaultValue(0), defaultValue(127));
+    return ossia::net::make_domain(defaultValue(0), defaultValue(127));
   }
 
   address_info(Type t) : type{t}

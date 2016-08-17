@@ -7,6 +7,7 @@
 #include <ossia/network/osc/detail/osc.hpp>
 #include <oscpack/osc/OscReceivedElements.h>
 #include <oscpack/osc/OscPrintReceivedElements.h>
+#include <boost/container/small_vector.hpp>
 namespace ossia
 {
 namespace minuit
@@ -252,7 +253,7 @@ inline ossia::net::domain get_domain(
     oscpack::ReceivedMessageArgumentIterator beg_it,
     oscpack::ReceivedMessageArgumentIterator end_it)
 {
-  std::vector<ossia::value> val;
+  boost::container::small_vector<ossia::value, 2> val;
   auto cur = addr.cloneValue();
 
   // We read all the values one by one
@@ -264,7 +265,17 @@ inline ossia::net::domain get_domain(
   }
 
   if (val.size() == 2)
-    return ossia::net::makeDomain(val[0], val[1]);
+  {
+    if(cur.getType() != val_type::TUPLE)
+      return ossia::net::make_domain(val[0], val[1]);
+    else
+    {
+      if(val[0].valid() && val[1].valid())
+        return ossia::net::domain_base<Tuple>{val[0], val[1]};
+      else
+        return {};
+    }
+  }
   return {};
 }
 

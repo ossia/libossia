@@ -1,6 +1,7 @@
 #include <ossia/editor/mapper/mapper.hpp>
 #include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/editor/curve/curve.hpp>
+#include <iostream>
 
 namespace ossia
 {
@@ -55,6 +56,7 @@ ossia::state_element mapper::state()
       mValueToMap.reset();
 
       mLastMessage.value = std::move(newval);
+
       return mLastMessage;
     }
   }

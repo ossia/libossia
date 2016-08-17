@@ -53,4 +53,14 @@ enum class repetition_filter
   OFF,
   ON
 };
+
+struct dataspace
+{
+
+};
+
+struct dataspace_unit
+{
+
+};
 }

@@ -35,7 +35,7 @@ inline void set_max(domain& dom, const ossia::value& val)
   return ossia::apply(domain_set_max_visitor{val}, dom);
 }
 
-inline domain makeDomain(const ossia::value& min, const ossia::value& max)
+inline domain make_domain(const ossia::value& min, const ossia::value& max)
 {
   if (min.valid() && max.valid())
   {
