@@ -142,20 +142,9 @@ public:
  \return X value */
   X getInitialPointAbscissa() const
   {
-    auto& node = mInitialPointAbscissaDestination.value;
-    if (!node)
-      return mInitialPointAbscissa;
-
-    auto address = node->getAddress();
-
+    auto& address = mInitialPointAbscissaDestination.value;
     if (!address)
-    {
-      throw execution_error(
-          "curve_impl::getInitialPointOrdinate: "
-          "getting an address value using from an abscissa "
-          "destination without address");
-      return {};
-    }
+      return mInitialPointAbscissa;
 
     address->pullValue();
     auto val = address->cloneValue();
@@ -171,23 +160,13 @@ public:
  \return Y value */
   Y getInitialPointOrdinate() const
   {
-    auto& node = mInitialPointOrdinateDestination.value;
-    if (!node)
+    auto& address = mInitialPointOrdinateDestination.value;
+    if (!address)
       return mInitialPointOrdinate;
 
     if (mInitialPointOrdinateCacheUsed)
       return mInitialPointOrdinateCache;
 
-    auto address = node->getAddress();
-
-    if (!address)
-    {
-      throw execution_error(
-          "curve_impl::getInitialPointOrdinate: "
-          "getting an address value using from an ordinate "
-          "destination without address");
-      return {};
-    }
     address->pullValue();
     auto val = address->cloneValue();
     mInitialPointOrdinateCacheUsed = true;

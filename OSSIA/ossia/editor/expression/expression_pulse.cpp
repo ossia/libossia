@@ -9,7 +9,7 @@ expression_pulse::expression_pulse(const Destination& destination)
     : mDestination(destination), mResult(false)
 {
   // start destination observation
-  if (const auto& addr = mDestination.value->getAddress())
+  if (auto addr = mDestination.value)
   {
     mDestinationCallbackIndex = addr->add_callback(
         [&](const ossia::value& result) { destinationCallback(result); });
@@ -19,7 +19,7 @@ expression_pulse::expression_pulse(const Destination& destination)
 expression_pulse::~expression_pulse()
 {
   // stop destination observation
-  if (const auto& addr = mDestination.value->getAddress())
+  if (auto addr = mDestination.value)
   {
     addr->remove_callback(mDestinationCallbackIndex);
   }

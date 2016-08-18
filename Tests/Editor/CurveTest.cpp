@@ -120,7 +120,7 @@ private Q_SLOTS:
 
     c->setInitialPointAbscissa(0.);
 
-    Destination d(*localTupleNode, {1});
+    Destination d(*localTupleAddress, {1});
     c->setInitialPointOrdinateDestination(d);
 
     QVERIFY(c->getInitialPointOrdinateDestination() == d);

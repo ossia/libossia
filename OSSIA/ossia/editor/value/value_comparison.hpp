@@ -113,7 +113,7 @@ struct NumericValue
       }
       bool operator()(const Destination& d) const
       {
-        if (const auto& addr = d.value->getAddress())
+        if (auto addr = d.value)
         {
           return fun(lhs, addr->cloneValue(d.index));
         }
@@ -194,7 +194,7 @@ struct StringValue
 
       bool operator()(const Destination& d) const
       {
-        if (const auto& addr = d.value->getAddress())
+        if (auto addr = d.value)
         {
           return fun(lhs, addr->cloneValue(d.index));
         }
@@ -305,15 +305,15 @@ public:
   bool operator()(const Destination& d) const
   {
     // if there are addresses compare values
-    if (lhs.value->getAddress() && d.value->getAddress())
+    if (lhs.value && d.value)
     {
-      auto c1 = lhs.value->getAddress()->cloneValue(lhs.index);
-      auto c2 = d.value->getAddress()->cloneValue(d.index);
+      auto c1 = lhs.value->cloneValue(lhs.index);
+      auto c2 = d.value->cloneValue(d.index);
       return fun(c1, c2);
     }
 
     // if no addresses, compare nodes
-    else if (!lhs.value->getAddress() && !d.value->getAddress())
+    else if (!lhs.value && !d.value)
     {
       return fun(lhs.value, d.value);
     }
@@ -324,9 +324,9 @@ public:
   template <typename T>
   bool operator()(const T& v) const
   {
-    if (lhs.value->getAddress())
+    if (lhs.value)
     {
-      auto c = lhs.value->getAddress()->cloneValue(lhs.index);
+      auto c = lhs.value->cloneValue(lhs.index);
       return fun(c, rhs);
     }
 

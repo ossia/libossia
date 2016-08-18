@@ -77,7 +77,7 @@ template <>
 struct value_trait<ossia::Destination>
 {
   using ossia_type = ossia::Destination;
-  using value_type = ossia::net::node_base*;
+  using value_type = ossia::net::address_base*;
   static const constexpr auto ossia_enum = val_type::DESTINATION;
   static const constexpr bool is_numeric = false;
 };

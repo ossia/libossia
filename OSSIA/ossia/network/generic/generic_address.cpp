@@ -110,7 +110,7 @@ ossia::net::address_base& generic_address::setValue(const ossia::value& val)
   if (dest && mValueType != val_type::DESTINATION)
   {
     const Destination& destination = *dest;
-    auto address = destination.value->getAddress();
+    auto address = destination.value;
 
     if (address)
     {

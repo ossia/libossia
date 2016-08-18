@@ -71,9 +71,9 @@ private Q_SLOTS:
         auto localIntNode2 = device.createChild("my_int.2");
         auto localIntAddress2 = localIntNode2->createAddress(val_type::INT);
 
-        auto testDestinationExpr = make_expression_atom(Destination(*localIntNode1),
+        auto testDestinationExpr = make_expression_atom(Destination(*localIntAddress1),
                                                           expression_atom::Comparator::DIFFERENT,
-                                                          Destination(*localIntNode2));
+                                                          Destination(*localIntAddress2));
 
         auto testDestinationExprNot = make_expression_not(std::move(testDestinationExpr));
 

@@ -555,10 +555,10 @@ private Q_SLOTS:
     Tuple t{Float(-1.), Float(0.), Float(1.)};
     localTupleAddress->setValue(t);
 
-    Destination d1(*localTupleNode);
+    Destination d1(*localTupleAddress);
     QVERIFY(d1.index.size() == 0);
 
-    Destination d2(*localTupleNode, {1});
+    Destination d2(*localTupleAddress, {1});
     QVERIFY(d2.index.size() == 1);
     QVERIFY(d2.index[0] == 1);
   }
