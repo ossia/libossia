@@ -21,6 +21,7 @@ class address_base;
 class OSSIA_EXPORT Destination final
 {
 public:
+  // TOOD use a reference_wrapper here.
   net::address_base* value{};
   destination_index index;
 

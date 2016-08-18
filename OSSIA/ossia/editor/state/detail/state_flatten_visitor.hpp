@@ -13,7 +13,7 @@ struct state_flatten_visitor
     // find message with the same address to replace it
     auto it = find_if(state, [&](const state_element& e) {
       if (auto m = e.target<message>())
-        return &m->address.get() == &messageToAppend.address.get();
+        return &m->destination == &messageToAppend.destination;
       return false;
     });
 
@@ -47,7 +47,7 @@ struct state_flatten_visitor
     // find message with the same address to replace it
     auto it = find_if(state, [&](const state_element& e) {
       if (auto m = e.target<message>())
-        return &m->address.get() == &messageToAppend.address.get();
+        return &m->destination == &messageToAppend.destination;
       return false;
     });
 

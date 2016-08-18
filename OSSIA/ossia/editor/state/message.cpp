@@ -5,6 +5,7 @@ namespace ossia
 {
 void message::launch() const
 {
-  address.get().pushValue(value);
+  if(destination.value)
+    destination.value->pushValue(value);
 }
 }

@@ -30,9 +30,16 @@ struct state_print_visitor
 
   void operator()(const message& m)
   {
-    out << padding << "message: "
-        << ossia::net::address_string_from_node(m.address.get().getNode()) << " => "
-        << ossia::to_pretty_string(m.value) << "\n";
+    if(m.destination.value)
+    {
+      out << padding << "message: "
+          << m.destination.value->getTextualAddress() << " => "
+          << ossia::to_pretty_string(m.value) << "\n";
+    }
+    else
+    {
+      out << padding << "invalid message";
+    }
   }
 
   void operator()()
