@@ -32,6 +32,7 @@ class OSSIA_EXPORT automation final :
 {
   public:
     automation(ossia::net::address_base&, const ossia::value&);
+    automation(ossia::net::address_base&, ossia::value&&);
     automation(const automation&);
 
     ~automation();

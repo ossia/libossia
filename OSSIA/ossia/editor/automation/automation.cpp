@@ -13,6 +13,14 @@ automation::automation(
 {
 }
 
+automation::automation(
+    ossia::net::address_base& address, ossia::value&& drive)
+    : mDrivenAddress(address)
+    , mDrive(std::move(drive))
+    , mLastMessage{address, ossia::value{}}
+{
+}
+
 automation::~automation() = default;
 
 ossia::state_element automation::offset(ossia::time_value offset)
@@ -120,8 +128,15 @@ automation::computeValue(double position, const ossia::value& drive)
           }
           case ossia::curve_segment_type::DOUBLE:
             break;
+          case ossia::curve_segment_type::ANY:
+          {
+            auto c = static_cast<constant_curve*>(base_curve);
+            // TODO we need a specific handling for destination.
+            return c->value();
+          }
         }
       }
+
 
       throw invalid_value_type_error("computeValue_visitor: drive curve type is not DOUBLE");
       return {};

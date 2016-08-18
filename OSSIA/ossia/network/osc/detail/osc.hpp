@@ -334,13 +334,14 @@ struct OSCInboundVisitor
     }
 };
 
+template<typename Value_T>
 inline ossia::value filterValue(
-    const ossia::net::domain& dom, const ossia::value& base_val,
+    const ossia::net::domain& dom, Value_T&& base_val,
     ossia::bounding_mode mode)
 {
   if (dom)
   {
-    auto res = ossia::net::clamp(dom, mode, base_val);
+    auto res = ossia::net::clamp(dom, mode, std::forward<Value_T>(base_val));
     if (res.valid())
       return res;
     else
@@ -348,7 +349,7 @@ inline ossia::value filterValue(
   }
   else
   {
-    return base_val;
+    return std::forward<Value_T>(base_val);
   }
 }
 

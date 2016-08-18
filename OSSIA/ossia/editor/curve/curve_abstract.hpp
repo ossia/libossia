@@ -15,7 +15,8 @@ enum class curve_segment_type
   INT,
   FLOAT,
   DOUBLE,
-  BOOL
+  BOOL,
+  ANY
 };
 /**
  * \typedef curve_type A pair that contains the types of a curve segment

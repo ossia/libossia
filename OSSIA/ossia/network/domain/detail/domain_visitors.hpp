@@ -10,15 +10,15 @@ struct domain_clamp_visitor
   bounding_mode b;
 
   template <typename T, typename U>
-  ossia::value operator()(const T& value, const U& bad_domain)
+  ossia::value operator()(T&& value, const U& bad_domain)
   {
-    return value;
+    return std::forward<T>(value);
   }
 
   template <typename T>
-  ossia::value operator()(const T& value, const domain_base<T>& domain)
+  ossia::value operator()(T&& value, const domain_base<T>& domain)
   {
-    return domain.clamp(b, value);
+    return domain.clamp(b, std::forward<T>(value));
   }
 };
 

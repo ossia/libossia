@@ -6,11 +6,13 @@ namespace ossia
 {
 namespace net
 {
-inline value clamp(const domain& dom, bounding_mode b, const value& val)
+
+template<typename Value_T>
+value clamp(const domain& dom, bounding_mode b, Value_T&& val)
 {
   if (bool(dom) && bool(val.v))
   {
-    return eggs::variants::apply(domain_clamp_visitor{b}, val.v, dom);
+    return eggs::variants::apply(domain_clamp_visitor{b}, std::forward<Value_T>(val).v, dom);
   }
   return val;
 }
