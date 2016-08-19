@@ -593,12 +593,26 @@ struct minuit_behavior<minuit_command::Answer,
     }
     for (auto attrib : get_attributes(beg_it, end_it))
     {
-      // name?get address:attribute
-      auto str = address.to_string();
-      str += ':';
-      str.append(attrib.begin(), attrib.end());
-      proto.pending_get_requests++;
-      proto.sender.send(sub_request, boost::string_ref(str));
+      auto attr = get_attribute(attrib);
+      switch(attr)
+      {
+        case minuit_attribute::Value:
+        case minuit_attribute::Type:
+        case minuit_attribute::RangeBounds:
+        case minuit_attribute::RangeClipMode:
+        case minuit_attribute::RepetitionFilter:
+        case minuit_attribute::Service:
+        {
+          // name?get address:attribute
+          auto str = address.to_string();
+          str += ':';
+          str.append(attrib.begin(), attrib.end());
+          proto.pending_get_requests++;
+          proto.sender.send(sub_request, boost::string_ref(str));
+        }
+      default:
+        break;
+      }
     }
   }
 

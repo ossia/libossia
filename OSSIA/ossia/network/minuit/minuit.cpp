@@ -106,13 +106,15 @@ bool minuit_protocol::update(ossia::net::node_base& node)
   while(true)
   {
     auto t2 = std::chrono::high_resolution_clock::now();
-    if(duration_cast<milliseconds>(t2 - t1).count() > 1000)
+    if(duration_cast<milliseconds>(t2 - t1).count() > 5000) {
       break;
-    if(pending_get_requests == 0)
+    }
+    if(pending_get_requests == 0) {
       break;
+    }
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
   }
-  return status == std::future_status::ready;
+  return status == std::future_status::ready || node.children().size() != 0;
 }
 struct scope_timer
 {
@@ -209,6 +211,7 @@ void minuit_protocol::handleReceivedMessage(
 {
   boost::string_ref address{m.AddressPattern()};
 
+  //std::cerr << "inbound" << m << std::endl;
   if (address.size() > 0 && address[0] == '/')
   {
     // Handle the OSC-like case where we receive a plain value.
