@@ -392,9 +392,9 @@ inline minuit_type get_type(char str)
     case 'P':
       return static_cast<minuit_type>(str);
     default:
-      throw parse_error("get_type: unhandled type");
+      return minuit_type::None;
   }
-  return {};
+  return minuit_type::None;
 }
 
 inline minuit_operation get_operation(char str)

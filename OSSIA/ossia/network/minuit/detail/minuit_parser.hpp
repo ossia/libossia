@@ -625,7 +625,7 @@ struct minuit_behavior<minuit_command::Answer,
       case minuit_type::UiInfo:
       case minuit_type::PresetManager:
       case minuit_type::None:
-        // just add the node ?
+        handle_container(proto, dev, address, beg_it, end_it);
         break;
     }
   }
