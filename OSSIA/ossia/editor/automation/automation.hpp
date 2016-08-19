@@ -31,13 +31,13 @@ class OSSIA_EXPORT automation final :
     public ossia::time_process
 {
   public:
-    automation(ossia::net::address_base&, const ossia::value&);
-    automation(ossia::net::address_base&, ossia::value&&);
+    automation(Destination, const ossia::value&);
+    automation(Destination, ossia::value&&);
     automation(const automation&);
 
     ~automation();
 
-    const ossia::net::address_base& getDrivenAddress() const;
+    Destination getDrivenAddress() const;
     const ossia::value& getDriving() const;
 
   private:
@@ -51,7 +51,7 @@ class OSSIA_EXPORT automation final :
 
     static ossia::value computeValue(double, const ossia::value&);
 
-    ossia::net::address_base& mDrivenAddress;
+    Destination mDrivenAddress;
     ossia::value mDrive;
     ossia::message mLastMessage;
 };
