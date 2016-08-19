@@ -110,29 +110,17 @@ ossia::net::address_base& generic_address::setValue(const ossia::value& val)
   if (dest && mValueType != val_type::DESTINATION)
   {
     const Destination& destination = *dest;
-    auto address = destination.value;
 
-    if (address)
+    if (destination.value.get().getValueType() == mValueType)
     {
-      if (address->getValueType() == mValueType)
-      {
-        address->pullValue();
-        mValue = address->cloneValue();
-      }
-      else
-      {
-        throw invalid_node_error(
-            "generic_address::setValue: "
-            "setting an address value using a destination "
-            "with a bad type address");
-        return *this;
-      }
+      mValue = destination.value.get().fetchValue();
     }
     else
     {
       throw invalid_node_error(
             "generic_address::setValue: "
-            "setting an address value using a destination without address");
+            "setting an address value using a destination "
+            "with a bad type address");
       return *this;
     }
   }

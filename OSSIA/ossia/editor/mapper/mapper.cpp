@@ -144,6 +144,7 @@ ossia::value mapper::computeValue(
               return ossia::Bool{c->valueAt(val.value)};
             }
             case ossia::curve_segment_type::DOUBLE:
+            case ossia::curve_segment_type::ANY:
               break;
           }
         }
@@ -168,6 +169,7 @@ ossia::value mapper::computeValue(
               return ossia::Bool{c->valueAt(val.value)};
             }
             case ossia::curve_segment_type::DOUBLE:
+            case ossia::curve_segment_type::ANY:
               break;
           }
         }
@@ -192,10 +194,12 @@ ossia::value mapper::computeValue(
               return ossia::Bool{c->valueAt(val.value)};
             }
             case ossia::curve_segment_type::DOUBLE:
+            case ossia::curve_segment_type::ANY:
               break;
           }
         }
         case ossia::curve_segment_type::DOUBLE:
+        case ossia::curve_segment_type::ANY:
           break;
       }
       throw invalid_value_type_error("mapper_impl::computeValue: "

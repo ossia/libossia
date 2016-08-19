@@ -205,24 +205,18 @@ bool Tuple::operator<=(const ossia::value& v) const
   return comparisons::TupleValue::apply(*this, v, std::less_equal<>{});
 }
 
-Destination::Destination() = default;
-
 Destination::Destination(const Destination& other) = default;
 Destination::Destination(Destination&& other) = default;
 
 Destination& Destination::operator=(const Destination&) = default;
 Destination& Destination::operator=(Destination&&) = default;
 
-Destination::Destination(ossia::net::address_base& v) : value(&v)
-{
-}
-
-Destination::Destination(ossia::net::address_base* v) : value(v)
+Destination::Destination(ossia::net::address_base& v) : value(v)
 {
 }
 
 Destination::Destination(ossia::net::address_base& v, destination_index idx)
-    : value(&v), index(std::move(idx))
+    : value(v), index(std::move(idx))
 {
 }
 
@@ -256,6 +250,18 @@ bool Destination::operator<=(const ossia::value& v) const
 {
   return comparisons::DestinationValue::apply(*this, v, std::less_equal<>{});
 }
+
+bool operator==(const Destination& lhs, const Destination& rhs)
+{
+  return &lhs.value.get() == &rhs.value.get() && lhs.index == rhs.index;
+}
+
+bool operator!=(const Destination& lhs, const Destination& rhs)
+{
+  return &lhs.value.get() != &rhs.value.get() || lhs.index != rhs.index;
+}
+
+
 
 template <typename Comparator>
 struct value_comparison_visitor

@@ -305,13 +305,13 @@ inline ossia::value init_value(ossia::val_type type)
       return Vec3f{};
     case val_type::VEC4F:
       return Vec4f{};
-    case val_type::DESTINATION:
-      return Destination{};
     case val_type::BEHAVIOR:
       return Behavior{{}};
+    case val_type::DESTINATION:
+      throw invalid_value_type_error("init_value: do not create Destination like this");
   }
 
-  throw invalid_value_type_error("to_pretty_string: Invalid type");
+  throw invalid_value_type_error("init_value: Invalid type");
   return {};
 }
 }

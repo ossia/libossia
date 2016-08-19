@@ -111,6 +111,80 @@ public:
   virtual address_base& setUnit(const ossia::dataspace_unit& v) { return *this; }
 };
 
+class address_reference
+{
+public:
+  address_reference(ossia::net::address_base& address): mAddress{&address} { }
+  address_reference(const address_reference&) = default;
+  address_reference(address_reference&&) = default;
+  address_reference& operator=(const address_reference&) = default;
+  address_reference& operator=(address_reference&&) = default;
+  address_reference& operator=(ossia::net::address_base& address)
+  { mAddress = &address; return *this; }
+
+  ossia::net::address_base& address() const
+  { return *mAddress; }
+  const ossia::net::node_base& getNode() const
+  { return mAddress->getNode(); }
+  void pullValue()
+  { return mAddress->pullValue(); }
+  address_base& pushValue(const value& v)
+  { return mAddress->pushValue(v); }
+  value cloneValue(destination_index d = {})
+  { return mAddress->cloneValue(d); }
+  address_base& setValue(const value& v)
+  { return mAddress->setValue(v); }
+  value fetchValue()
+  { return mAddress->fetchValue(); }
+
+  val_type getValueType() const
+  { return mAddress->getValueType(); }
+  address_base& setValueType(val_type v)
+  { return mAddress->setValueType(v); }
+
+  access_mode getAccessMode() const
+  { return mAddress->getAccessMode(); }
+  address_base& setAccessMode(access_mode a)
+  { return mAddress->setAccessMode(a); }
+
+  const domain& getDomain() const
+  { return mAddress->getDomain(); }
+  address_base& setDomain(const domain& d)
+  { return mAddress->setDomain(d); }
+
+  bounding_mode getBoundingMode() const
+  { return mAddress->getBoundingMode(); }
+  address_base& setBoundingMode(bounding_mode b)
+  { return mAddress->setBoundingMode(b); }
+
+  repetition_filter getRepetitionFilter() const
+  { return mAddress->getRepetitionFilter(); }
+  address_base& setRepetitionFilter(repetition_filter f = repetition_filter::ON)
+  { return mAddress->setRepetitionFilter(f); }
+
+  const std::string& getTextualAddress() const
+  { return mAddress->getTextualAddress(); }
+
+  // Extended attributes
+  std::vector<std::string> getTags() const { return mAddress->getTags(); }
+  address_base& setTags(const std::vector<std::string>& v) { return mAddress->setTags(v); }
+
+  std::string getDescription() const { return mAddress->getDescription(); }
+  address_base& setDescription(const std::string& v) { return mAddress->setDescription(v); }
+
+  ossia::value getDefaultValue() const { return mAddress->getDefaultValue(); }
+  address_base& setDefaultValue(const ossia::value& v) { return mAddress->setDefaultValue(v); }
+
+  ossia::dataspace getDataspace() const { return mAddress->getDataspace(); }
+  address_base& setDataspace(const ossia::dataspace& v) { return mAddress->setDataspace(v); }
+
+  ossia::dataspace_unit getUnit() const { return mAddress->getUnit(); }
+  address_base& setUnit(const ossia::dataspace_unit& v) { return mAddress->setUnit(v); }
+
+private:
+  ossia::net::address_base* mAddress{};
+};
+
 /*!
  * \brief getAddressFromNode
  * \return the textual address of a node : aDevice:/an/address

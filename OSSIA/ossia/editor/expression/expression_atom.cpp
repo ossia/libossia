@@ -27,19 +27,13 @@ void expression_atom::update() const
   // pull value of the first operand if it is a Destination
   if (auto d = mFirstValue.try_get<Destination>())
   {
-    if (auto addr = d->value)
-    {
-      addr->pullValue();
-    }
+    d->value.get().pullValue();
   }
 
   // pull value of the second operand if it is a Destination
   if (auto d = mSecondValue.try_get<Destination>())
   {
-    if (auto addr = d->value)
-    {
-      addr->pullValue();
-    }
+    d->value.get().pullValue();
   }
 }
 
@@ -64,22 +58,18 @@ void expression_atom::onFirstCallbackAdded()
   //! \todo what about Tuple of Destinations ?
   if (auto d = mFirstValue.try_get<Destination>())
   {
-    if (auto addr = d->value)
-    {
-      mFirstValueCallbackIndex = addr->add_callback(
-          [&](const ossia::value& result) { firstValueCallback(result); });
-    }
+    mFirstValueCallbackIndex = d->value.get().add_callback(
+        [&](const ossia::value& result) { firstValueCallback(result); });
+
   }
 
   // start second operand observation if it is a Destination
   //! \todo what about Tuple of Destinations ?
   if (auto d = mSecondValue.try_get<Destination>())
   {
-    if (auto addr = d->value)
-    {
-      mSecondValueCallbackIndex = addr->add_callback(
-          [&](const ossia::value& result) { secondValueCallback(result); });
-    }
+    mSecondValueCallbackIndex = d->value.get().add_callback(
+        [&](const ossia::value& result) { secondValueCallback(result); });
+
   }
 }
 
@@ -89,20 +79,14 @@ void expression_atom::onRemovingLastCallback()
   //! \todo what about Tuple of Destinations ?
   if (auto d = mFirstValue.try_get<Destination>())
   {
-    if (auto addr = d->value)
-    {
-      addr->remove_callback(mFirstValueCallbackIndex);
-    }
+    d->value.get().remove_callback(mFirstValueCallbackIndex);
   }
 
   // start second operand observation if it is a Destination
   //! \todo what about Tuple of Destinations ?
   if (auto d = mSecondValue.try_get<Destination>())
   {
-    if (auto addr = d->value)
-    {
-      addr->remove_callback(mSecondValueCallbackIndex);
-    }
+    d->value.get().remove_callback(mSecondValueCallbackIndex);
   }
 }
 

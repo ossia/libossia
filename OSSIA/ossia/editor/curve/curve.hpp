@@ -48,10 +48,10 @@ template <typename X, typename Y>
 class curve final : public curve_abstract
 {
     X mInitialPointAbscissa;
-    ossia::Destination mInitialPointAbscissaDestination;
+    boost::optional<ossia::Destination> mInitialPointAbscissaDestination;
 
     Y mInitialPointOrdinate;
-    ossia::Destination mInitialPointOrdinateDestination;
+    boost::optional<ossia::Destination> mInitialPointOrdinateDestination;
 
     using map_type = curve_map<X, std::pair<Y, ossia::curve_segment<Y>>>;
     map_type mPointsMap;
@@ -142,15 +142,17 @@ public:
  \return X value */
   X getInitialPointAbscissa() const
   {
-    auto& address = mInitialPointAbscissaDestination.value;
-    if (!address)
+    if(!mInitialPointAbscissaDestination)
       return mInitialPointAbscissa;
-
-    address->pullValue();
-    auto val = address->cloneValue();
-    auto res = convertToTemplateTypeValue(
-        val, mInitialPointAbscissaDestination.index.begin());
-    return res;
+    else
+    {
+      auto& address = mInitialPointAbscissaDestination->value.get();
+      address.pullValue();
+      auto val = address.cloneValue();
+      auto res = convertToTemplateTypeValue(
+          val, mInitialPointAbscissaDestination->index.begin());
+      return res;
+    }
   }
 
 
@@ -160,19 +162,19 @@ public:
  \return Y value */
   Y getInitialPointOrdinate() const
   {
-    auto& address = mInitialPointOrdinateDestination.value;
-    if (!address)
+    if(!mInitialPointOrdinateDestination)
       return mInitialPointOrdinate;
+    else
+    {
+      if (mInitialPointOrdinateCacheUsed)
+        return mInitialPointOrdinateCache;
 
-    if (mInitialPointOrdinateCacheUsed)
+      auto& dest = *mInitialPointOrdinateDestination;
+      mInitialPointOrdinateCacheUsed = true;
+      mInitialPointOrdinateCache = convertToTemplateTypeValue(
+          dest.value.get().fetchValue(), dest.index.begin());
       return mInitialPointOrdinateCache;
-
-    address->pullValue();
-    auto val = address->cloneValue();
-    mInitialPointOrdinateCacheUsed = true;
-    mInitialPointOrdinateCache = convertToTemplateTypeValue(
-        val, mInitialPointOrdinateDestination.index.begin());
-    return mInitialPointOrdinateCache;
+    }
   }
 
   /*! set initial point abscissa
@@ -193,7 +195,7 @@ public:
 
   /*! get initial point abscissa destination
  \return const Destination* */
-  const Destination& getInitialPointAbscissaDestination() const
+  boost::optional<Destination> getInitialPointAbscissaDestination() const
   {
     return mInitialPointAbscissaDestination;
   }
@@ -201,7 +203,7 @@ public:
 
   /*! get initial point ordinate destination
  \return const Destination* */
-  const Destination& getInitialPointOrdinateDestination() const
+  boost::optional<Destination> getInitialPointOrdinateDestination() const
   {
     return mInitialPointOrdinateDestination;
   }

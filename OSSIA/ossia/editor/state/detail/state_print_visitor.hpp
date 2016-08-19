@@ -30,16 +30,16 @@ struct state_print_visitor
 
   void operator()(const message& m)
   {
-    if(m.destination.value)
-    {
-      out << padding << "message: "
-          << m.destination.value->getTextualAddress() << " => "
-          << ossia::to_pretty_string(m.value) << "\n";
-    }
-    else
-    {
-      out << padding << "invalid message";
-    }
+    out << padding << "message: "
+        << m.destination.value.get().getTextualAddress() << " => "
+        << ossia::to_pretty_string(m.value) << "\n";
+  }
+
+  void operator()(const piecewise_message& m)
+  {
+    out << padding << "message: "
+        << m.address.get().getTextualAddress() << " => "
+        << ossia::to_pretty_string(m.value) << "\n";
   }
 
   void operator()()

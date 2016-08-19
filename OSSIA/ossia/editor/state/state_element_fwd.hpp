@@ -3,6 +3,7 @@
 namespace ossia
 {
 struct message;
+struct piecewise_message;
 class state;
 class custom_state;
 
@@ -17,5 +18,5 @@ class custom_state;
  * \see \ref custom_state
  * \see state_element.hpp
  */
-using state_element = eggs::variant<message, state, custom_state>;
+using state_element = eggs::variant<message, state, custom_state, piecewise_message>;
 }

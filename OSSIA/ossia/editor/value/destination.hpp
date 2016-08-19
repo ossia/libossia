@@ -5,6 +5,8 @@
 #include <memory>
 #include <ossia_export.h>
 #include <vector>
+#include <functional>
+#include <utility>
 namespace ossia
 {
 class value;
@@ -21,12 +23,9 @@ class address_base;
 class OSSIA_EXPORT Destination final
 {
 public:
-  // TOOD use a reference_wrapper here.
-  net::address_base* value{};
+  std::reference_wrapper<net::address_base> value;
   destination_index index;
 
-  Destination();
-  Destination(net::address_base* v);
   Destination(net::address_base& v);
   Destination(net::address_base& v, destination_index);
 
@@ -42,4 +41,7 @@ public:
   bool operator<(const ossia::value&) const;
   bool operator<=(const ossia::value&) const;
 };
+
+OSSIA_EXPORT bool operator==(const Destination&, const Destination&);
+OSSIA_EXPORT bool operator!=(const Destination&, const Destination&);
 }

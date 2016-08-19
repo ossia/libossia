@@ -38,4 +38,24 @@ struct OSSIA_EXPORT message
            || &lhs.value != &rhs.value;
   }
 };
+
+struct OSSIA_EXPORT piecewise_message
+{
+  std::reference_wrapper<ossia::net::address_base> address;
+  Tuple value;
+
+  void launch() const;
+
+  friend bool operator==(const piecewise_message& lhs, const piecewise_message& rhs)
+  {
+    return &lhs.address == &rhs.address
+           && &lhs.value == &rhs.value;
+  }
+
+  friend bool operator!=(const piecewise_message& lhs, const piecewise_message& rhs)
+  {
+    return &lhs.address != &rhs.address
+           || &lhs.value != &rhs.value;
+  }
+};
 }

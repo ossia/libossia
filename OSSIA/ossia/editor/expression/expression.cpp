@@ -92,8 +92,7 @@ struct different_visitor
 
   bool operator()(const expression_pulse& lhs, const expression_pulse& rhs)
   {
-    return ossia::value(lhs.getDestination())
-           != ossia::value(rhs.getDestination());
+    return lhs.getDestination() != rhs.getDestination();
   }
 };
 

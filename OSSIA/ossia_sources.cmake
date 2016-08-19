@@ -57,6 +57,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_comparison.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_traits.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_algorithms.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/vec.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/address_properties.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/network_logger.hpp"
