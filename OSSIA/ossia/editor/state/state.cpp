@@ -11,12 +11,12 @@ namespace ossia
 {
 std::size_t state::size() const
 {
-  return children.size();
+  return mChildren.size();
 }
 
 void state::launch() const
 {
-  for (const auto& state : children)
+  for (const auto& state : mChildren)
   {
     ossia::apply(state_execution_visitor{}, state);
   }
@@ -25,39 +25,39 @@ void state::launch() const
 void state::add(const state_element& e)
 {
   if (e)
-    children.push_back(e);
+    mChildren.push_back(e);
 }
 
 void state::add(state_element&& e)
 {
   if (e)
-    children.push_back(std::move(e));
+    mChildren.push_back(std::move(e));
 }
 
 void state::remove(const state_element& e)
 {
-  children.erase(
-      std::remove(children.begin(), children.end(), e), children.end());
+  mChildren.erase(
+      std::remove(mChildren.begin(), mChildren.end(), e), mChildren.end());
 }
 
 void state::reserve(std::size_t s)
 {
-  children.reserve(s);
+  mChildren.reserve(s);
 }
 
 void state::clear()
 {
-  children.clear();
+  mChildren.clear();
 }
 
 bool operator==(const state& lhs, const state& rhs)
 {
-  return lhs.children == rhs.children;
+  return lhs.mChildren == rhs.mChildren;
 }
 
 bool operator!=(const state& lhs, const state& rhs)
 {
-  return lhs.children != rhs.children;
+  return lhs.mChildren != rhs.mChildren;
 }
 
 void flatten_and_filter(state& state, const state_element& element)

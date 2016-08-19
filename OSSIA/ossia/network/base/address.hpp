@@ -111,6 +111,11 @@ public:
   virtual address_base& setUnit(const ossia::dataspace_unit& v) { return *this; }
 };
 
+inline bool operator==(const address_base& lhs, const address_base& rhs)
+{ return &lhs == &rhs; }
+inline bool operator!=(const address_base& lhs, const address_base& rhs)
+{ return &lhs != &rhs; }
+
 class address_reference
 {
 public:

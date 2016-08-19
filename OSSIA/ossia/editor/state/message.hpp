@@ -28,14 +28,14 @@ struct OSSIA_EXPORT message
 
   friend bool operator==(const message& lhs, const message& rhs)
   {
-    return &lhs.destination == &rhs.destination
-           && &lhs.value == &rhs.value;
+    return lhs.destination == rhs.destination
+           && lhs.value == rhs.value;
   }
 
   friend bool operator!=(const message& lhs, const message& rhs)
   {
-    return &lhs.destination != &rhs.destination
-           || &lhs.value != &rhs.value;
+    return lhs.destination != rhs.destination
+           || lhs.value != rhs.value;
   }
 };
 
@@ -48,14 +48,14 @@ struct OSSIA_EXPORT piecewise_message
 
   friend bool operator==(const piecewise_message& lhs, const piecewise_message& rhs)
   {
-    return &lhs.address == &rhs.address
-           && &lhs.value == &rhs.value;
+    return &lhs.address.get() == &rhs.address.get()
+           && lhs.value == rhs.value;
   }
 
   friend bool operator!=(const piecewise_message& lhs, const piecewise_message& rhs)
   {
-    return &lhs.address != &rhs.address
-           || &lhs.value != &rhs.value;
+    return &lhs.address.get() != &rhs.address.get()
+           || lhs.value != rhs.value;
   }
 };
 }

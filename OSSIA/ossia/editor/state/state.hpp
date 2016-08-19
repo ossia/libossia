@@ -20,33 +20,39 @@ namespace ossia
 class OSSIA_EXPORT state
 {
 public:
-  friend bool operator==(const state& lhs, const state& rhs);
-  friend bool operator!=(const state& lhs, const state& rhs);
+  OSSIA_EXPORT friend bool operator==(const state& lhs, const state& rhs);
+  OSSIA_EXPORT friend bool operator!=(const state& lhs, const state& rhs);
 
   auto begin()
   {
-    return children.begin();
+    return mChildren.begin();
   }
   auto end()
   {
-    return children.end();
+    return mChildren.end();
   }
   auto begin() const
   {
-    return children.begin();
+    return mChildren.begin();
   }
   auto end() const
   {
-    return children.end();
+    return mChildren.end();
   }
   auto cbegin() const
   {
-    return children.cbegin();
+    return mChildren.cbegin();
   }
   auto cend() const
   {
-    return children.cend();
+    return mChildren.cend();
   }
+
+  auto& children() const
+  {
+    return mChildren;
+  }
+
   std::size_t size() const;
 
   void launch() const;
@@ -69,7 +75,7 @@ public:
   void clear();
 
 private:
-  std::vector<state_element> children;
+  std::vector<state_element> mChildren;
 };
 
 inline auto begin(state& s)
