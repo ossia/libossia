@@ -6,7 +6,7 @@ namespace ossia
 {
 
 automation::automation(
-    ossia::net::address_base& address, const ossia::value& drive)
+    Destination address, const ossia::value& drive)
     : mDrivenAddress(address)
     , mDrive(drive)
     , mLastMessage{address, ossia::value{}}
@@ -14,7 +14,7 @@ automation::automation(
 }
 
 automation::automation(
-    ossia::net::address_base& address, ossia::value&& drive)
+    Destination address, ossia::value&& drive)
     : mDrivenAddress(address)
     , mDrive(std::move(drive))
     , mLastMessage{address, ossia::value{}}
@@ -85,7 +85,7 @@ void automation::resume()
 {
 }
 
-const ossia::net::address_base& automation::getDrivenAddress() const
+Destination automation::getDrivenAddress() const
 {
   return mDrivenAddress;
 }
