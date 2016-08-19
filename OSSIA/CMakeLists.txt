@@ -29,9 +29,13 @@ include(ossia_sources.cmake)
 if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
     set(API_HEADERS ${API_HEADERS} ${MIDI_HEADERS})
     set(API_HEADERS ${API_HEADERS} ${MIDI_HEADERS})
-    set(SRCS ${SRCS} ${MIDI_SRCS})
+    set(SRCS ${SRCS} ${MIDI_SRCS} ${API_HEADERS})
 endif()
 
+find_package(Qt5 COMPONENTS Core Qml)
+if(${Qt5_FOUND})
+  set(SRCS ${SRCS} ${HTTP_HEADERS} ${HTTP_SRCS})
+endif()
 if(APPLE AND OSSIA_FRAMEWORK)
 add_library(ossia MODULE ${SRCS} ${C_API_SRCS})
 set_target_properties(ossia PROPERTIES BUNDLE TRUE)
@@ -45,6 +49,11 @@ target_link_libraries(ossia
 else()
     target_link_libraries(ossia
     PUBLIC boost)
+endif()
+
+
+if(${Qt5_FOUND})
+  target_link_libraries(ossia PUBLIC Qt5::Qml)
 endif()
 
 source_group(Editor REGULAR_EXPRESSION "ossia/editor.*")

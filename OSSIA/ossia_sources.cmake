@@ -176,3 +176,15 @@ set(MIDI_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.cpp")
+
+  set(HTTP_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_address.hpp")
+
+  set(HTTP_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_address.cpp")

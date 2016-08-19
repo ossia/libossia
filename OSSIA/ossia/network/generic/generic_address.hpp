@@ -12,7 +12,7 @@ namespace ossia
 namespace net
 {
 class protocol_base;
-class OSSIA_EXPORT generic_address final : public ossia::net::address_base
+class OSSIA_EXPORT generic_address : public ossia::net::address_base
 {
 private:
   const ossia::net::node_base& mNode;
