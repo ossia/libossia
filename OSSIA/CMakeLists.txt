@@ -56,6 +56,7 @@ if(WIN32)
         NOMINMAX
         _CRT_SECURE_NO_WARNINGS
         WIN32_LEAN_AND_MEAN)
+    target_compile_options(ossia PUBLIC "/bigobj")
     target_link_libraries(ossia PRIVATE Ws2_32 winmm)
 endif()
 

@@ -1,5 +1,4 @@
 #include "ossia_utils.hpp"
-#include <iostream>
 extern "C"
 {
 // MOVEME
@@ -11,7 +10,7 @@ void ossia_string_free(char* str)
 ossia_protocol_t ossia_protocol_local_create()
 {
     return safe_function(__func__, [=] {
-        return new ossia_protocol{new ossia::net::local_protocol};
+        return new ossia_protocol(new ossia::net::local_protocol);
     });
 }
 
