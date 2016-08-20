@@ -144,7 +144,7 @@ bool minuit_protocol::pull(ossia::net::address_base& address)
   auto addr = ossia::net::getOSCAddressAsString(address);
   this->sender.send(act, boost::string_ref(addr));
 
-  fut.wait_for(std::chrono::seconds(5));
+  fut.wait_for(std::chrono::milliseconds(25));
 
   return fut.valid();
 }
