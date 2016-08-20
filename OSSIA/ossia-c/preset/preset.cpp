@@ -409,7 +409,7 @@ ossia::presets::Preset ossia::presets::read_xml(const std::string &str) {
 
 rapidjson::Value ossia_to_json_value(const ossia::value& val, rapidjson::Document::AllocatorType& docallocator) {
     rapidjson::Value jsonvalue;
-    enum ossia::val_type tvalue = val.getType();
+    ossia::val_type tvalue = val.getType();
 
     switch (tvalue) {
     case ossia::val_type::BOOL: {

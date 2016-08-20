@@ -1,5 +1,17 @@
 #ifndef OSSIA_H
 #define OSSIA_H
+
+#if defined(_MSC_VER)
+#if !defined(WIN32_LEAN_AND_MEAN)
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#undef BOOL
+#undef INT
+#undef FLOAT
+#undef CHAR
+#endif
+
 #include <ossia_export.h>
 #if defined(__cplusplus)
 extern "C"
@@ -25,19 +37,18 @@ typedef ossia_value_callback_index* ossia_value_callback_index_t;
 
 enum ossia_type
 {
-  IMPULSE,
-  BOOL,
-  INT,
-  FLOAT,
-  CHAR,
-  STRING,
-  TUPLE,
-  VEC2F,
-  VEC3F,
-  VEC4F,
-  GENERIC,
-  DESTINATION,
-  BEHAVIOR
+  IMPULSE_T,
+  BOOL_T,
+  INT_T,
+  FLOAT_T,
+  CHAR_T,
+  STRING_T,
+  TUPLE_T,
+  VEC2F_T,
+  VEC3F_T,
+  VEC4F_T,
+  DESTINATION_T,
+  BEHAVIOR_T
 };
 
 enum ossia_access_mode
