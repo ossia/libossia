@@ -60,6 +60,4 @@ endif()
 
 if(OSSIA_TESTING)
     add_subdirectory(Tests)
-    add_subdirectory(Tests/v2)
-    add_subdirectory(Tests/C)
 endif()

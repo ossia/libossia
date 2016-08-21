@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
 project(ossia_tests)
 
+enable_testing()
 include_directories("${OSSIA_IMPL_FOLDER}/Jamoma/Sources")
 
-find_package(Qt5 5.3 REQUIRED COMPONENTS Core Test)
+find_package(Qt5 5.7 REQUIRED COMPONENTS Core Test)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -54,4 +55,16 @@ ossia_add_test(DeviceBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmar
                                             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/Random.hpp")
 # ossia_add_test(AutomationBenchmark         "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/AutomationBenchmark.cpp
 endif()
+
+
+function(ossia_add_test_c TESTNAME TESTSRCS)
+    add_executable(ossia_${TESTNAME}_test ${TESTSRCS})
+    target_link_libraries(ossia_${TESTNAME}_test ossia)
+    add_test(NAME ossia_target_${TESTNAME}_test COMMAND ossia_${TESTNAME}_test)
+endFunction()
+
+ossia_add_test_c(devices_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-devices.cpp")
+ossia_add_test_c(api_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-c-api.cpp")
+ossia_add_test_c(presets_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-presets.cpp")
+
 include(CTest)

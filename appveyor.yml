@@ -1,19 +1,37 @@
 environment:
   QTDIR: C:\Qt\5.7\msvc2015
   BOOST_ROOT: c:\Libraries\boost_1_60_0
+  PATH: %QTDIR%\bin;%PATH%
   
 configuration: Release
 
 image: Visual Studio 2015
-platform: x86
 
-build_script:
+platform:
+  - Win32
+  - x64
+
+configuration:
+  - Debug
+  - Release
+  
+before_build:
   - git submodule update --init --recursive
   - mkdir build
   - cd build
   - set PATH=%QTDIR%\bin;%PATH%
-  - cmake -DOSSIA_TESTING=1 -DBOOST_ROOT="%BOOST_ROOT%" -DCMAKE_PREFIX_PATH="%QTDIR%/lib/cmake/Qt5" ..
-  - cmake --build . -- /p:Configuration=Debug /m
-  - cmake --build . -- /p:Configuration=Release /m
-  - cmake --build . --target ExperimentalTest
+  - cmd: if "%platform%"=="Win32" set CMAKE_GENERATOR_NAME=Visual Studio 14 2015
+  - cmd: if "%platform%"=="x64"   set CMAKE_GENERATOR_NAME=Visual Studio 14 2015 Win64
+  - cmake -G "%CMAKE_GENERATOR_NAME%" -DOSSIA_TESTING=1 -DBOOST_ROOT="%BOOST_ROOT%" -DCMAKE_PREFIX_PATH="%QTDIR%/lib/cmake/Qt5" ..
+ 
+ 
+build:
+  project: C:\projects\API\build\OSSIA.sln
+  parallel: true       
+
+after_build:
+  - copy OSSIA\%configuration%\ossia.dll Tests\%configuration%\ 
+
+test_script:
+  - cmake --build . --target RUN_TESTS --config %configuration%
 
