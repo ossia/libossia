@@ -253,12 +253,22 @@ bool Destination::operator<=(const ossia::value& v) const
 
 bool operator==(const Destination& lhs, const Destination& rhs)
 {
-  return &lhs.value.get() == &rhs.value.get() && lhs.index == rhs.index;
+  return lhs.value == rhs.value && lhs.index == rhs.index;
 }
 
 bool operator!=(const Destination& lhs, const Destination& rhs)
 {
-  return &lhs.value.get() != &rhs.value.get() || lhs.index != rhs.index;
+  return lhs.value != rhs.value || lhs.index != rhs.index;
+}
+
+bool operator==(const Destination& lhs, const ossia::net::address_base& rhs)
+{
+  return lhs.value == rhs && lhs.index.empty();
+}
+
+bool operator!=(const Destination& lhs, const ossia::net::address_base& rhs)
+{
+  return lhs.value != rhs || !lhs.index.empty();
 }
 
 

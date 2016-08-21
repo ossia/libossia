@@ -43,7 +43,7 @@ private Q_SLOTS:
 
     QVERIFY(autom->parent == nullptr);
 
-    QVERIFY(&autom->getDrivenAddress() == address);
+    QVERIFY(autom->getDrivenAddress() == *address);
     QVERIFY(autom->getDriving() == f);
 
     //! \todo test clone()

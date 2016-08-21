@@ -44,4 +44,6 @@ public:
 
 OSSIA_EXPORT bool operator==(const Destination&, const Destination&);
 OSSIA_EXPORT bool operator!=(const Destination&, const Destination&);
+OSSIA_EXPORT bool operator==(const Destination&, const ossia::net::address_base&);
+OSSIA_EXPORT bool operator!=(const Destination&, const ossia::net::address_base&);
 }
