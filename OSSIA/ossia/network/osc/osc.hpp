@@ -21,12 +21,11 @@ private:
                           /// to (opened in this library)
   bool mLearning{};       /// if the device is currently learning from inbound
                           /// messages.
+  std::mutex mListeningMutex;
+  std::unordered_map<std::string, ossia::net::address_base*> mListening;
 
   osc::sender mSender;
   osc::receiver mReceiver;
-
-  std::mutex mListeningMutex;
-  std::unordered_map<std::string, ossia::net::address_base*> mListening;
 
 public:
   osc_protocol(std::string ip, uint16_t remote_port, uint16_t local_port);

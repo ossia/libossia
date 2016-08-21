@@ -1,4 +1,4 @@
-find_package(Qt5 5.7 REQUIRED COMPONENTS Core Test)
+find_package(Qt5 5.6 REQUIRED COMPONENTS Core Test)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)

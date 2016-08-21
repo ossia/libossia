@@ -32,7 +32,7 @@ if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
     set(SRCS ${SRCS} ${MIDI_SRCS} ${API_HEADERS})
 endif()
 
-find_package(Qt5 5.7 QUIET COMPONENTS Core Qml)
+find_package(Qt5 5.6 QUIET COMPONENTS Core Qml)
 if(${Qt5_FOUND})
   set(SRCS ${SRCS} ${HTTP_HEADERS} ${HTTP_SRCS})
   set(CMAKE_AUTOMOC 1)
