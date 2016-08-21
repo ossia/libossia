@@ -161,10 +161,10 @@ int main()
     String s2("bcd");
     localStringAddress2->setValue(s2);
 
-    Destination d1(*localFloatNode1);
+    Destination d1(*localFloatAddress1);
     localDestinationAddress1->setValue(d1);
 
-    Destination d2(*localFloatNode2);
+    Destination d2(*localFloatAddress2);
     localDestinationAddress2->setValue(d2);
 
     Tuple t1(value1);
@@ -174,39 +174,39 @@ int main()
     localTupleAddress2->setValue(t2);
 
     // evaluate expression with Destination
-    auto testDestinationExprA = make_expression_atom(Destination(*localBoolNode1),
+    auto testDestinationExprA = make_expression_atom(*localBoolAddress1,
                                                        expression_atom::Comparator::EQUAL,
-                                                       Destination(*localBoolNode2));
+                                                       *localBoolAddress2);
 
     cout << boolalpha << "testDestinationExprA is " << evaluate(testDestinationExprA) << endl;
 
-    auto testDestinationExprB = make_expression_atom(Destination(*localIntNode1),
+    auto testDestinationExprB = make_expression_atom(*localIntAddress1,
                                                        expression_atom::Comparator::DIFFERENT,
-                                                       Destination(*localIntNode2));
+                                                       *localIntAddress2);
 
     cout << boolalpha << "testDestinationExprB is " << evaluate(testDestinationExprB) << endl;
 
-    auto testDestinationExprC = make_expression_atom(Destination(*localFloatNode1),
+    auto testDestinationExprC = make_expression_atom(*localFloatAddress1,
                                                        expression_atom::Comparator::GREATER_THAN,
-                                                       Destination(*localFloatNode2));
+                                                       *localFloatAddress2);
 
     cout << boolalpha << "testDestinationExprC is " << evaluate(testDestinationExprC) << endl;
 
-    auto testDestinationExprD = make_expression_atom(Destination(*localStringNode1),
+    auto testDestinationExprD = make_expression_atom(*localStringAddress1,
                                                        expression_atom::Comparator::LOWER_THAN,
-                                                       Destination(*localStringNode2));
+                                                       *localStringAddress2);
 
     cout << boolalpha << "testDestinationExprD is " << evaluate(testDestinationExprD) << endl;
 
-    auto testDestinationExprE = make_expression_atom(Destination(*localDestinationNode1),
+    auto testDestinationExprE = make_expression_atom(*localDestinationAddress1,
                                                        expression_atom::Comparator::GREATER_THAN_OR_EQUAL,
-                                                       Destination(*localDestinationNode2));
+                                                       *localDestinationAddress2);
 
     cout << boolalpha << "testDestinationExprE is " << evaluate(testDestinationExprE) << endl;
 
-    auto testDestinationExprF = make_expression_atom(Destination(*localTupleNode1),
+    auto testDestinationExprF = make_expression_atom(*localTupleAddress1,
                                                        expression_atom::Comparator::LOWER_THAN_OR_EQUAL,
-                                                       Destination(*localTupleNode2));
+                                                       *localTupleAddress2);
 
     cout << boolalpha << "testDestinationExprF is " << evaluate(testDestinationExprF) << endl;
 }

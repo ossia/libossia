@@ -80,7 +80,7 @@ int main()
 
   oscStringAddress->setValue(String{"Hello world!"});
 
-  oscDestinationAddress->setValue(Destination{*oscFloatNode});
+  oscDestinationAddress->setValue(Destination{*oscFloatAddress});
 
   oscTupleAddress->setValue(Tuple{Float(0.1), Float(0.2), Float(0.3)});
 

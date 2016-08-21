@@ -135,7 +135,7 @@ int main()
     // create an expression : /i-score/test >= {0.7, 0.7, 0.7}
     auto make_expr = [&] () {
       return expressions::make_expression_atom(
-        Destination(*local_test_node),
+        Destination(*local_test_address),
         expressions::expression_atom::Comparator::GREATER_THAN_OR_EQUAL,
         Tuple{Float(0.7), Float(0.7), Float(0.7)});
     };

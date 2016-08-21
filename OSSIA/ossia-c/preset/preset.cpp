@@ -82,7 +82,7 @@ ossia_preset_result ossia_presets_write_json(const ossia_preset_t preset, const 
         try {
             std::string str = ossia::presets::write_json(preset->impl);
             char * mbuffer = new char[str.size() + 1];
-            std::sprintf(mbuffer,str.c_str());
+            std::sprintf(mbuffer, "%s", str.c_str());
             mbuffer[str.size()] = 0;
             *buffer = (const char*)mbuffer;
             return OSSIA_PRESETS_OK;
@@ -99,7 +99,7 @@ ossia_preset_result ossia_presets_write_xml(const ossia_preset_t preset, const c
         try {
             std::string str = ossia::presets::write_xml(preset->impl);
             char * mbuffer = new char[str.size() + 1];
-            std::sprintf(mbuffer, str.c_str());
+            std::sprintf(mbuffer, "%s", str.c_str());
             mbuffer[str.size()] = 0;
             *buffer = (const char*)mbuffer;
             return OSSIA_PRESETS_OK;
@@ -129,7 +129,7 @@ ossia_preset_result ossia_presets_to_string(const ossia_preset_t preset, const c
         try {
             std::string str = ossia::presets::to_string(preset->impl);
             char * mbuffer = new char[str.size() + 1];
-            std::sprintf(mbuffer, str.c_str());
+            std::sprintf(mbuffer, "%s", str.c_str());
             mbuffer[str.size()] = 0;
             *buffer = (const char*)mbuffer;
             return OSSIA_PRESETS_OK;
@@ -178,7 +178,7 @@ ossia_preset_result ossia_devices_write_json(const ossia_device_t odev, const ch
         try {
             std::string str = ossia::devices::write_json(*(odev->device));
             char * mbuffer = new char[str.size() + 1];
-            std::sprintf(mbuffer, str.c_str());
+            std::sprintf(mbuffer, "%s", str.c_str());
             mbuffer[str.size()] = 0;
             *buffer = (const char*)mbuffer;
             return OSSIA_PRESETS_OK;
@@ -195,7 +195,7 @@ ossia_preset_result ossia_devices_write_xml(const ossia_device_t odev, const cha
         try {
             std::string str = ossia::devices::write_xml(*(odev->device));
             char * mbuffer = new char[str.size() + 1];
-            std::sprintf(mbuffer, str.c_str());
+            std::sprintf(mbuffer, "%s", str.c_str());
             mbuffer[str.size()] = 0;
             *buffer = (const char*)mbuffer;
             return OSSIA_PRESETS_OK;
@@ -255,7 +255,7 @@ ossia_preset_result ossia_devices_to_string(ossia_device_t odev, const char ** b
         try {
             std::string str = ossia::devices::to_string(*(odev->device));
             char * mbuffer = new char[str.size() + 1];
-            std::sprintf(mbuffer, str.c_str());
+            std::sprintf(mbuffer, "%s", str.c_str());
             mbuffer[str.size()] = 0;
             *buffer = (const char*)mbuffer;
             return OSSIA_PRESETS_OK;
