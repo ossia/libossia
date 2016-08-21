@@ -36,6 +36,7 @@ after_build:
   - copy OSSIA\%configuration%\ossia.dll Tests\%configuration%\ 
 
 test_script:
-  - cd build
+  - cd C:\projects\API\build\
+  - dir
   - cmake --build . --target RUN_TESTS --config %configuration%
 
