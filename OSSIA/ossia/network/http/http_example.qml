@@ -2,29 +2,36 @@ import QtQuick 2.0
 
 QtObject
 {
-    function OpenListening(address) {
+    function openListening(address) {
 
     }
 
-    function CloseListening(address) {
+    function closeListening(address) {
 
     }
 
-    function CreateTree() {
-        return {
-            name: "tata",
-            children: [
-                {
-                    name: "tutu",
-                    request: "https://jsonplaceholder.typicode.com/todos",
-                    answer: function (json) { }
+    function createTree() {
+        return [ {
+                    name: "tata",
+                    children: [
+                        {
+                            name: "tutu",
+                            request: "https://jsonplaceholder.typicode.com/todos",
+                            answer: function (json) {
+                                console.log(json)
+                                return [ { address: "/toto", value: 2.3 } ]
+                            }
+                        },
+                        {
+                            name: "titi",
+                            request: "https://jsonplaceholder.typicode.com/todos/$val"
+                        }
+                    ]
                 },
                 {
-                    name: "titi",
-                    request: "https://jsonplaceholder.typicode.com/todos/$val",
-                    answer: function (json) { }
+                    name: "toto",
+                    type: "float"
                 }
-            ]
-        };
+                ];
     }
 }

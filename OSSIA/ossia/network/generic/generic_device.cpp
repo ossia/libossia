@@ -40,7 +40,7 @@ node_base* find_node_rec(
     {
       // There are still nodes since we found a slash
       return find_node_rec(
-          dynamic_cast<ossia::net::generic_node&>(**it),
+          **it,
           address.substr(first_slash_index + 1));
     }
     else
@@ -58,7 +58,7 @@ node_base* find_node_rec(
 
     if (it != children.end())
     {
-      return dynamic_cast<ossia::net::generic_node*>(it->get());
+      return it->get();
     }
     else
     {

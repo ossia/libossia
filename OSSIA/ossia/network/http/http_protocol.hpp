@@ -8,6 +8,7 @@
 #include <ossia/network/generic/generic_address.hpp>
 #include <QtQml>
 #include <QNetworkAccessManager>
+#include <deque>
 
 namespace ossia
 {
@@ -22,6 +23,7 @@ struct http_address_data
   QString name;
   QString request;
   QJSValue answerer;
+  boost::optional<ossia::val_type> t;
 };
 
 class OSSIA_EXPORT http_protocol final :
@@ -34,8 +36,12 @@ private:
   QQmlComponent* mComponent{};
 
   QNetworkAccessManager* mAccessManager{};
+
+  QByteArray mCode;
+  http_device* mDevice{};
+  QList<std::pair<QNetworkReply*, const http_address*>> mReplies;
 public:
-  http_protocol(std::string code);
+  http_protocol(QByteArray code);
 
   http_protocol(const http_protocol&) = delete;
   http_protocol(http_protocol&&) = delete;
@@ -51,6 +57,12 @@ public:
   bool push(const ossia::net::address_base& address_base) override;
 
   bool observe(ossia::net::address_base& address_base, bool enable) override;
+
+  void setDevice(ossia::net::device_base& dev) override;
+private:
+  void create_device(QJSValue);
+  void create_node_rec(QJSValue js, http_node& parent);
+  void apply_reply(QJSValue);
 };
 
 class OSSIA_EXPORT http_node :
@@ -61,6 +73,7 @@ class OSSIA_EXPORT http_node :
   ossia::net::http_node* mParent{};
   std::unique_ptr<ossia::net::http_address> mAddress;
 
+  friend class http_protocol;
 public:
   http_node(http_address_data dat, ossia::net::http_device& aDevice,
       http_node& aParent);
@@ -90,9 +103,6 @@ class OSSIA_EXPORT http_device final :
     public ossia::net::device_base,
     public http_node
 {
-private:
-  std::string mDeviceName;
-
 public:
   http_device() = delete;
   http_device(const http_device&) = delete;
@@ -113,7 +123,7 @@ public:
     return *this;
   }
 
-  std::string getName() const override { return mDeviceName; }
+  using http_node::getName;
   using http_node::setName;
 
   ~http_device();
