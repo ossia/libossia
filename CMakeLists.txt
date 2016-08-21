@@ -59,5 +59,6 @@ if(OSSIA_EXAMPLES)
 endif()
 
 if(OSSIA_TESTING)
+    enable_testing()
     add_subdirectory(Tests)
 endif()

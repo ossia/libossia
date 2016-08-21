@@ -1,9 +1,3 @@
-cmake_minimum_required(VERSION 3.0)
-project(ossia_tests)
-
-enable_testing()
-include_directories("${OSSIA_IMPL_FOLDER}/Jamoma/Sources")
-
 find_package(Qt5 5.7 REQUIRED COMPONENTS Core Test)
 
 set(CMAKE_AUTOMOC ON)
