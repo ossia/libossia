@@ -2,7 +2,6 @@
 #include <ossia/ossia.hpp>
 #include <ossia/network/http/http_protocol.hpp>
 #include <iostream>
-#include <QtConcurrent/QtConcurrent>
 
 using namespace ossia;
 
@@ -34,7 +33,7 @@ private Q_SLOTS:
       int argc{}; char** argv{};
       QCoreApplication app(argc, argv);
 
-      QFile f("/home/jcelerier/travail/i-score/API/OSSIA/ossia/network/http/http_example.qml");
+      QFile f("testdata/http/http_example.qml");
       f.open(QFile::ReadOnly);
 
       ossia::net::http_device http_device{

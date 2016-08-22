@@ -61,4 +61,12 @@ ossia_add_test_c(devices_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-
 ossia_add_test_c(api_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-c-api.cpp")
 ossia_add_test_c(presets_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-presets.cpp")
 
+# A command to copy the test data.
+if(MSVC)
+    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/testdata" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/Debug/")
+    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/testdata" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/Release/")
+else()
+    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/testdata" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/")
+endif()
+
 include(CTest)
