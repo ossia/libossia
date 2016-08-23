@@ -37,18 +37,24 @@ if(${Qt5_FOUND})
   set(SRCS ${SRCS} ${HTTP_HEADERS} ${HTTP_SRCS})
   set(CMAKE_AUTOMOC 1)
 endif()
+
 if(APPLE AND OSSIA_FRAMEWORK)
-add_library(ossia MODULE ${SRCS} ${C_API_SRCS})
-set_target_properties(ossia PROPERTIES BUNDLE TRUE)
+  add_library(ossia MODULE ${SRCS} ${C_API_SRCS})
+  set_target_properties(ossia PROPERTIES BUNDLE TRUE)
 else()
-add_library(ossia ${SRCS} ${C_API_SRCS})
+  if(OSSIA_STATIC)
+    add_library(ossia STATIC ${SRCS} ${C_API_SRCS})
+  else()
+    add_library(ossia SHARED ${SRCS} ${C_API_SRCS})
+  endif()
 endif()
+
 if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
-target_link_libraries(ossia
+  target_link_libraries(ossia
     PRIVATE ModernMIDI
     PUBLIC boost)
 else()
-    target_link_libraries(ossia
+  target_link_libraries(ossia
     PUBLIC boost)
 endif()
 
