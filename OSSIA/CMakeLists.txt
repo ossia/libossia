@@ -18,6 +18,15 @@ include(UseGold)
 include(LinkerWarnings)
 find_package(Boost REQUIRED)
 
+set(OSSIA_PROTOCOL_MIDI TRUE)
+set(OSSIA_PROTOCOL_HTTP TRUE)
+
+if(IOS OR CMAKE_SYSTEM_NAME MATCHES Emscripten)
+  set(OSSIA_PROTOCOL_MIDI FALSE)
+  set(OSSIA_PROTOCOL_HTTP FALSE)
+endif()
+
+
 if(APPLE)
     set(CMAKE_INSTALL_NAME_DIR @rpath)
     set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
@@ -26,16 +35,20 @@ endif()
 
 include(ossia_sources.cmake)
 
-if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
+if(OSSIA_PROTOCOL_MIDI)
     set(API_HEADERS ${API_HEADERS} ${MIDI_HEADERS})
     set(API_HEADERS ${API_HEADERS} ${MIDI_HEADERS})
     set(SRCS ${SRCS} ${MIDI_SRCS} ${API_HEADERS})
 endif()
 
-find_package(Qt5 5.6 QUIET COMPONENTS Core Qml)
-if(${Qt5_FOUND})
-  set(SRCS ${SRCS} ${HTTP_HEADERS} ${HTTP_SRCS})
-  set(CMAKE_AUTOMOC 1)
+if(OSSIA_PROTOCOL_HTTP)
+  find_package(Qt5 5.6 QUIET COMPONENTS Core Qml)
+  if(${Qt5_FOUND})
+    set(SRCS ${SRCS} ${HTTP_HEADERS} ${HTTP_SRCS})
+    set(CMAKE_AUTOMOC 1)
+  else()
+    set(OSSIA_PROTOCOL_HTTP FALSE)
+  endif()
 endif()
 
 if(APPLE AND OSSIA_FRAMEWORK)
@@ -49,17 +62,13 @@ else()
   endif()
 endif()
 
-if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
-  target_link_libraries(ossia
-    PRIVATE ModernMIDI
-    PUBLIC boost)
-else()
-  target_link_libraries(ossia
-    PUBLIC boost)
+target_link_libraries(ossia PUBLIC boost)
+
+if(OSSIA_PROTOCOL_MIDI)
+  target_link_libraries(ossia PRIVATE ModernMIDI)
 endif()
 
-
-if(${Qt5_FOUND})
+if(OSSIA_PROTOCOL_HTTP)
   target_link_libraries(ossia PUBLIC Qt5::Qml)
 endif()
 
@@ -114,15 +123,16 @@ add_linker_warnings(ossia)
 
 
 if(BUILD_SHARED_LIBS)
-set_target_properties(ossia PROPERTIES
-    CXX_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN 1
-    VERSION ${ossia_VERSION}
-    SOVERSION 1)
+  set_target_properties(ossia PROPERTIES
+      CXX_VISIBILITY_PRESET hidden
+      VISIBILITY_INLINES_HIDDEN 1
+      VERSION ${ossia_VERSION}
+      SOVERSION 1)
 else()
-set_target_properties(ossia PROPERTIES
-    VERSION ${ossia_VERSION})
+  set_target_properties(ossia PROPERTIES
+      VERSION ${ossia_VERSION})
 endif()
+
 generate_export_header(ossia BASE_NAME OSSIA)
 
 target_include_directories(ossia
