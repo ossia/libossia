@@ -122,7 +122,7 @@ endif()
 add_linker_warnings(ossia)
 
 
-if(BUILD_SHARED_LIBS)
+if(BUILD_SHARED_LIBS AND NOT OSSIA_STATIC)
   set_target_properties(ossia PROPERTIES
       CXX_VISIBILITY_PRESET hidden
       VISIBILITY_INLINES_HIDDEN 1
