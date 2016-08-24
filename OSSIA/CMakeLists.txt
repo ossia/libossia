@@ -18,6 +18,8 @@ include(UseGold)
 include(LinkerWarnings)
 find_package(Boost REQUIRED)
 
+set(OSSIA_PROTOCOLS OSC Minuit)
+
 set(OSSIA_PROTOCOL_MIDI TRUE)
 set(OSSIA_PROTOCOL_HTTP TRUE)
 
@@ -66,12 +68,15 @@ target_link_libraries(ossia PUBLIC boost)
 
 if(OSSIA_PROTOCOL_MIDI)
   target_link_libraries(ossia PRIVATE ModernMIDI)
+  set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} MIDI)
 endif()
 
 if(OSSIA_PROTOCOL_HTTP)
   target_link_libraries(ossia PUBLIC Qt5::Qml)
+  set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} HTTP)
 endif()
 
+set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")
 source_group(Editor REGULAR_EXPRESSION "ossia/editor.*")
 source_group(Network REGULAR_EXPRESSION "ossia/network.*")
 

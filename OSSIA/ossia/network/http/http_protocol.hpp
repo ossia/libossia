@@ -59,6 +59,11 @@ public:
   bool observe(ossia::net::address_base& address_base, bool enable) override;
 
   void setDevice(ossia::net::device_base& dev) override;
+
+signals:
+  void sig_push(const http_address*);
+private slots:
+  void slot_push(const http_address*);
 private:
   void create_device(QJSValue);
   void create_node_rec(QJSValue js, http_node& parent);
@@ -138,6 +143,11 @@ private:
 public:
   http_address(http_address_data data, const ossia::net::node_base& node_base);
 
+  http_address() = delete;
+  http_address(const http_address& other) = delete;
+  http_address(http_address&& other) = delete;
+  http_address& operator=(const http_address& other) = delete;
+  http_address& operator=(http_address&& other) = delete;
   ~http_address();
 
   const http_address_data& data() const
@@ -147,3 +157,5 @@ private:
 };
 }
 }
+
+Q_DECLARE_METATYPE(ossia::net::http_address*)

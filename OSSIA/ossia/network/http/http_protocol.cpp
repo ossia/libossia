@@ -9,7 +9,7 @@ http_node::http_node(http_address_data data, http_device& aDevice, http_node& aP
   mDevice{aDevice},
   mParent{&aParent}
 {
-  if(!data.request.isEmpty())
+  if(!data.request.isEmpty() || data.t)
     mAddress = std::make_unique<http_address>(data, *this);
 }
 
@@ -17,7 +17,7 @@ http_node::http_node(http_address_data data, http_device& aDevice):
   mName{data.name},
   mDevice{aDevice}
 {
-  if(!data.request.isEmpty())
+  if(!data.request.isEmpty() || data.t)
     mAddress = std::make_unique<http_address>(data, *this);
 }
 
@@ -61,6 +61,7 @@ http_address::http_address(http_address_data data, const node_base& node_base):
   {
     mValueType = *mData.t;
     mValue = init_value(mValueType);
+    this->setAccessMode(ossia::access_mode::BI);
   }
 }
 
@@ -112,6 +113,8 @@ http_protocol::http_protocol(QByteArray code):
   }
   );
 
+  connect(this, &http_protocol::sig_push, this, &http_protocol::slot_push, Qt::QueuedConnection);
+
 }
 
 http_protocol::~http_protocol()
@@ -121,13 +124,13 @@ http_protocol::~http_protocol()
 
 bool http_protocol::update(ossia::net::node_base& node_base)
 {
-  return false;
+  return true;
 
 }
 
 bool http_protocol::pull(ossia::net::address_base& address_base)
 {
-  return false;
+  return true;
 
 }
 
@@ -137,25 +140,11 @@ bool http_protocol::push(const ossia::net::address_base& address_base)
 
   if(!addr.data().request.isEmpty())
   {
-    auto rep = mAccessManager->get(QNetworkRequest(addr.data().request));
-
-    auto pair = std::make_pair(rep, &addr);
-    mReplies.push_back(pair);
-    connect(rep, &QNetworkReply::readyRead,
-            this, [=] () {
-      QNetworkReply& rep = *pair.first;
-      const http_address& addr = *pair.second;
-      auto ans = addr.data().answerer;
-      if(ans.isCallable())
-      {
-        apply_reply(ans.call({QString(rep.readAll())}));
-      }
-      mReplies.removeAll(pair);
-    }, Qt::QueuedConnection);
-
+      emit sig_push(&addr);
+      return true;
   }
-  return false;
 
+  return false;
 }
 
 bool http_protocol::observe(address_base& address_base, bool enable)
@@ -171,6 +160,31 @@ void http_protocol::setDevice(device_base& dev)
     mDevice = htdev;
     mComponent->setData(mCode, QUrl{});
   }
+}
+
+void http_protocol::slot_push(const http_address* addr_p)
+{
+    auto& addr = *addr_p;
+    auto rep = mAccessManager->get(QNetworkRequest(addr.data().request));
+
+    auto pair = std::make_pair(rep, &addr);
+
+    mReplies.push_back(pair);
+
+    connect(rep, &QNetworkReply::readyRead,
+            this, [=] ()
+    {
+      QNetworkReply& rep = *pair.first;
+      const http_address& addr = *pair.second;
+
+      auto ans = addr.data().answerer;
+      if(ans.isCallable())
+      {
+        apply_reply(ans.call({QString(rep.readAll())}));
+      }
+
+      mReplies.removeAll(pair);
+    }, Qt::QueuedConnection);
 }
 
 const QHash<QString, ossia::val_type> js_type_map
@@ -335,16 +349,16 @@ void http_protocol::apply_reply(QJSValue arr)
     auto val = it.value();
     auto addr = val.property("address");
     if(!addr.isString())
-      return;
+      continue;
 
     auto addr_txt = addr.toString().toStdString();
     auto n = find_node(*mDevice, addr_txt);
     if(!n)
-      return;
+      continue;
 
     auto v = val.property("value");
     if(v.isNull())
-      return;
+      continue;
 
     if(auto addr = n->getAddress())
     {
