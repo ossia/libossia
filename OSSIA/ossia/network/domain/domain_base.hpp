@@ -162,6 +162,8 @@ struct OSSIA_EXPORT domain_base<Destination>
 template <>
 struct OSSIA_EXPORT domain_base<String>
 {
+  domain_base() = default;
+
   boost::container::flat_set<std::string> values;
   value clamp(bounding_mode b, const String& val) const
   {

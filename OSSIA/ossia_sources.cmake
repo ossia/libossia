@@ -61,6 +61,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/vec.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/address_properties.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/network_logger.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/js_utilities.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/exceptions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/network.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.hpp"
@@ -98,6 +99,7 @@ set(API_HEADERS
 
 set(SRCS
     ${API_HEADERS}
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/automation.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.cpp"
 
@@ -177,14 +179,30 @@ set(MIDI_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.cpp")
 
-  set(HTTP_HEADERS
+set(HTTP_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_address.hpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_address_data.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http.hpp")
 
-  set(HTTP_SRCS
+set(HTTP_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_protocol.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_address.cpp")
+
+set(SERIAL_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_address_data.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial.hpp")
+
+set(SERIAL_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_address.cpp")

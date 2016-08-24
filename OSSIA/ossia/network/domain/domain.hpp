@@ -77,5 +77,38 @@ bool operator==(const domain_base<T>& lhs, const domain_base<T>& rhs)
 {
   return true;
 }
+
+inline domain init_domain(ossia::val_type type)
+{
+  switch (type)
+  {
+    case val_type::IMPULSE:
+      return domain_base<Impulse>{};
+    case val_type::INT:
+      return domain_base<Int>{};
+    case val_type::FLOAT:
+      return domain_base<Float>{};
+    case val_type::BOOL:
+      return domain_base<Bool>{};
+    case val_type::CHAR:
+      return domain_base<Char>{};
+    case val_type::STRING:
+      return domain_base<String>();
+    case val_type::TUPLE:
+      return domain_base<Tuple>{};
+    case val_type::VEC2F:
+      return domain_base<Vec2f>{};
+    case val_type::VEC3F:
+      return domain_base<Vec3f>{};
+    case val_type::VEC4F:
+      return domain_base<Vec4f>{};
+    case val_type::DESTINATION:
+      return domain_base<Destination>{};
+    case val_type::BEHAVIOR:
+      return domain_base<Behavior>{};
+    default:
+      return domain{};
+  }
+}
 }
 }

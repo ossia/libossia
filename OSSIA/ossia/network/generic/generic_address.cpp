@@ -15,11 +15,25 @@ namespace net
 generic_address::generic_address(const ossia::net::node_base& node)
     : mNode{node}
     , mProtocol{node.getDevice().getProtocol()}
-    , mValue(ossia::Impulse{})
     , mValueType(ossia::val_type::IMPULSE)
+    , mValue(ossia::Impulse{})
     , mAccessMode(ossia::access_mode::BI)
     , mBoundingMode(ossia::bounding_mode::FREE)
     , mRepetitionFilter(ossia::repetition_filter::OFF)
+{
+  mTextualAddress = ossia::net::address_string_from_node(mNode);
+}
+
+generic_address::generic_address(
+    const generic_address_data& data,
+    const ossia::net::node_base& node)
+    : mNode{node}
+    , mProtocol{node.getDevice().getProtocol()}
+    , mValueType(data.type.get_value_or(ossia::val_type::IMPULSE))
+    , mValue(init_value(mValueType))
+    , mAccessMode(data.access.get_value_or(ossia::access_mode::BI))
+    , mBoundingMode(data.bounding.get_value_or(ossia::bounding_mode::FREE))
+    , mRepetitionFilter(data.repetition_filter.get_value_or(ossia::repetition_filter::OFF))
 {
   mTextualAddress = ossia::net::address_string_from_node(mNode);
 }

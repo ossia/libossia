@@ -11,12 +11,34 @@ namespace ossia
 {
 namespace net
 {
+
+struct generic_address_data
+{
+  generic_address_data() = default;
+  generic_address_data(const generic_address_data&) = default;
+  generic_address_data(generic_address_data&&) = default;
+  generic_address_data& operator=(const generic_address_data&) = default;
+  generic_address_data& operator=(generic_address_data&&) = default;
+
+  std::string node_name;
+  boost::optional<ossia::val_type> type;
+  boost::optional<ossia::net::domain> domain;
+  boost::optional<ossia::access_mode> access;
+  boost::optional<ossia::bounding_mode> bounding;
+  boost::optional<ossia::repetition_filter> repetition_filter;
+};
+
 class protocol_base;
 class OSSIA_EXPORT generic_address : public ossia::net::address_base
 {
 protected:
   const ossia::net::node_base& mNode;
   ossia::net::protocol_base& mProtocol;
+
+  ossia::val_type mValueType{};
+  ossia::access_mode mAccessMode{};
+  ossia::bounding_mode mBoundingMode{};
+  ossia::repetition_filter mRepetitionFilter{};
 
   mutable std::mutex mValueMutex;
   ossia::value mValue;
@@ -26,14 +48,13 @@ protected:
   ossia::net::value_callback mCallback;
   std::string mTextualAddress;
 
-  ossia::val_type mValueType{};
-  ossia::access_mode mAccessMode{};
-  ossia::bounding_mode mBoundingMode{};
-  ossia::repetition_filter mRepetitionFilter{};
-
 public:
   ossia::value PreviousValue;
-  generic_address(const ossia::net::node_base& node_base);
+  generic_address(
+      const ossia::net::node_base& node_base);
+  generic_address(
+      const generic_address_data&,
+      const ossia::net::node_base& node_base);
 
   ~generic_address();
 

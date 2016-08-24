@@ -1,6 +1,6 @@
 #include <QtTest>
 #include <ossia/ossia.hpp>
-#include <ossia/network/http/http_protocol.hpp>
+#include <ossia/network/http/http.hpp>
 #include <iostream>
 
 using namespace ossia;
@@ -32,6 +32,8 @@ private Q_SLOTS:
     {
       int argc{}; char** argv{};
       QCoreApplication app(argc, argv);
+
+      ossia::context context;
 
       QFile f("testdata/http/http_example.qml");
       f.open(QFile::ReadOnly);

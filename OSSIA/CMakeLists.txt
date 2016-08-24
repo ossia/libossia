@@ -20,12 +20,14 @@ find_package(Boost REQUIRED)
 
 set(OSSIA_PROTOCOLS OSC Minuit)
 
-set(OSSIA_PROTOCOL_MIDI TRUE)
-set(OSSIA_PROTOCOL_HTTP TRUE)
+option(OSSIA_PROTOCOL_MIDI "Enable MIDI protocol" ON)
+option(OSSIA_PROTOCOL_HTTP "Enable HTTP protocol" ON)
+option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF)
 
 if(IOS OR CMAKE_SYSTEM_NAME MATCHES Emscripten)
   set(OSSIA_PROTOCOL_MIDI FALSE)
   set(OSSIA_PROTOCOL_HTTP FALSE)
+  set(OSSIA_PROTOCOL_SERIAL FALSE)
 endif()
 
 
@@ -45,11 +47,21 @@ endif()
 
 if(OSSIA_PROTOCOL_HTTP)
   find_package(Qt5 5.6 QUIET COMPONENTS Core Qml)
-  if(${Qt5_FOUND})
+  if(${Qt5Qml_FOUND})
     set(SRCS ${SRCS} ${HTTP_HEADERS} ${HTTP_SRCS})
     set(CMAKE_AUTOMOC 1)
   else()
     set(OSSIA_PROTOCOL_HTTP FALSE)
+  endif()
+endif()
+
+if(OSSIA_PROTOCOL_SERIAL)
+  find_package(Qt5 5.6 QUIET COMPONENTS Core SerialPort)
+  if(${Qt5SerialPort_FOUND})
+    set(SRCS ${SRCS} ${SERIAL_HEADERS} ${SERIAL_SRCS})
+    set(CMAKE_AUTOMOC 1)
+  else()
+    set(OSSIA_PROTOCOL_SERIAL FALSE)
   endif()
 endif()
 
@@ -74,6 +86,11 @@ endif()
 if(OSSIA_PROTOCOL_HTTP)
   target_link_libraries(ossia PUBLIC Qt5::Qml)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} HTTP)
+endif()
+
+if(OSSIA_PROTOCOL_SERIAL)
+  target_link_libraries(ossia PUBLIC Qt5::SerialPort)
+  set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Serial)
 endif()
 
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")

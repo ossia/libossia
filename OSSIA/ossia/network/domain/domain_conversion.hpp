@@ -153,7 +153,7 @@ struct domain_conversion<domain_base<String>>
   }
 };
 
-domain convert_domain(const domain& dom, ossia::val_type newtype)
+inline domain convert_domain(const domain& dom, ossia::val_type newtype)
 {
   switch (newtype)
   {
@@ -197,5 +197,6 @@ domain convert_domain(const domain& dom, ossia::val_type newtype)
       return domain{};
   }
 }
+
 }
 }
