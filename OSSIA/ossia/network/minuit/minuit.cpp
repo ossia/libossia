@@ -95,7 +95,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
 
   auto act
       = name_table.get_action(ossia::minuit::minuit_action::NamespaceRequest);
-  refresh(act, ossia::net::getOSCAddressAsString(node));
+  refresh(act, ossia::net::get_osc_address_as_string(node));
 
   auto status = fut.wait_for(std::chrono::seconds(5));
   // Won't return as long as the tree exploration request haven't finished.
@@ -141,7 +141,7 @@ bool minuit_protocol::pull(ossia::net::address_base& address)
   pending_get_requests++;
 
   auto act = name_table.get_action(ossia::minuit::minuit_action::GetRequest);
-  auto addr = ossia::net::getOSCAddressAsString(address);
+  auto addr = ossia::net::get_osc_address_as_string(address);
   this->sender.send(act, boost::string_ref(addr));
 
   fut.wait_for(std::chrono::milliseconds(25));
@@ -156,10 +156,10 @@ bool minuit_protocol::push(const ossia::net::address_base& address)
   if (addr.getAccessMode() == ossia::access_mode::GET)
     return false;
 
-  auto val = filterValue(addr);
+  auto val = filter_value(addr);
   if (val.valid())
   {
-    sender.send(getOSCAddress(address), val);
+    sender.send(get_osc_address(address), val);
 
     if(mLogger.outbound_logger)
         mLogger.outbound_logger->info("Out: {0} {1}", address.getTextualAddress(), val);
@@ -179,14 +179,14 @@ bool minuit_protocol::observe(ossia::net::address_base& address, bool enable)
 
   if (enable)
   {
-    this->sender.send(act, getOSCAddress(address), "enable");
+    this->sender.send(act, get_osc_address(address), "enable");
     mListening.insert(
-        std::make_pair(getOSCAddressAsString(address), &address));
+        std::make_pair(get_osc_address_as_string(address), &address));
   }
   else
   {
-    this->sender.send(act, getOSCAddress(address), "disable");
-    mListening.erase(getOSCAddressAsString(address));
+    this->sender.send(act, get_osc_address(address), "disable");
+    mListening.erase(get_osc_address_as_string(address));
   }
 
   return true;
@@ -199,9 +199,9 @@ bool minuit_protocol::observe_quietly(
 
   if(enable)
     mListening.insert(
-          std::make_pair(getOSCAddressAsString(address), &address));
+          std::make_pair(get_osc_address_as_string(address), &address));
   else
-    mListening.erase(getOSCAddressAsString(address));
+    mListening.erase(get_osc_address_as_string(address));
 
   return true;
 }
@@ -222,7 +222,7 @@ void minuit_protocol::handleReceivedMessage(
       ossia::net::address_base& addr = *it->second;
       lock.unlock();
 
-      bool res = updateValue(addr, m);
+      bool res = update_value(addr, m);
       if(res && mLogger.inbound_logger)
           mLogger.inbound_logger->info("In: {0} {1}", addr.getTextualAddress(), addr.cloneValue());
     }

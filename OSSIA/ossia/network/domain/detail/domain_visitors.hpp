@@ -62,6 +62,23 @@ struct domain_max_visitor
   }
 };
 
+
+template<typename T>
+struct domain_min_max_visitor
+{
+  template<typename U>
+  domain_min_max<T> operator()(const domain_base<U>& value)
+  { return domain_min_max<T>{value}; }
+};
+
+template<typename T>
+struct domain_convert_min_max_visitor
+{
+  template<typename U>
+  domain_min_max<T> operator()(const domain_base<U>& value)
+  { return domain_min_max<T>{value}; }
+};
+
 template<typename Domain>
 struct domain_set_min_visitor_impl
 {

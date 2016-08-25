@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/domain/domain.hpp>
+#include <ossia/network/domain/detail/domain_visitors.hpp>
 
 namespace ossia
 {

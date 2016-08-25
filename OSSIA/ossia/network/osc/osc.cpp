@@ -104,10 +104,10 @@ bool osc_protocol::push(const ossia::net::address_base& address)
   if (addr.getAccessMode() == ossia::access_mode::GET)
     return false;
 
-  auto val = filterValue(addr);
+  auto val = filter_value(addr);
   if (val.valid())
   {
-    mSender.send(getOSCAddress(address), val);
+    mSender.send(get_osc_address(address), val);
     if(mLogger.outbound_logger)
         mLogger.outbound_logger->info("Out: {0} {1}", address.getTextualAddress(), val);
     return true;
@@ -121,9 +121,9 @@ bool osc_protocol::observe(ossia::net::address_base& address, bool enable)
 
   if (enable)
     mListening.insert(
-        std::make_pair(getOSCAddressAsString(address), &address));
+        std::make_pair(get_osc_address_as_string(address), &address));
   else
-    mListening.erase(getOSCAddressAsString(address));
+    mListening.erase(get_osc_address_as_string(address));
 
   return true;
 }
@@ -137,7 +137,7 @@ void osc_protocol::handleReceivedMessage(
   {
     ossia::net::address_base& addr = *it->second;
     lock.unlock();
-    bool res = updateValue(addr, m);
+    bool res = update_value(addr, m);
 
     if(res && mLogger.inbound_logger)
         mLogger.inbound_logger->info("In: {0} {1}", addr.getTextualAddress(), addr.cloneValue());

@@ -261,7 +261,7 @@ inline ossia::net::domain get_domain(
   {
     auto cur_it = beg_it;
     ++beg_it;
-    val.push_back(ossia::net::toValue(cur, cur_it, beg_it, 1));
+    val.push_back(ossia::net::to_value(cur, cur_it, beg_it, 1));
   }
 
   if (val.size() == 2)
@@ -300,7 +300,7 @@ struct minuit_behavior<minuit_command::Answer, minuit_operation::Get>
       {
         if (auto addr = node->getAddress())
         {
-          ossia::net::updateValue(
+          ossia::net::update_value(
                 *addr, ++mess_it, mess.ArgumentsEnd(), mess.ArgumentCount() - 1);
         }
       }
@@ -330,7 +330,7 @@ struct minuit_behavior<minuit_command::Answer, minuit_operation::Get>
       {
         case minuit_attribute::Value:
         {
-          ossia::net::updateValue(
+          ossia::net::update_value(
                 *addr, mess_it, mess.ArgumentsEnd(), mess.ArgumentCount() - 1);
           break;
         }
@@ -398,7 +398,7 @@ struct minuit_behavior<minuit_command::Answer,
       {
         if (auto addr = node->getAddress())
         {
-          ossia::net::updateValue(
+          ossia::net::update_value(
                 *addr, ++mess_it, mess.ArgumentsEnd(), mess.ArgumentCount() - 1);
         }
       }
@@ -428,7 +428,7 @@ struct minuit_behavior<minuit_command::Answer,
       {
         case minuit_attribute::Value:
         {
-          ossia::net::updateValue(
+          ossia::net::update_value(
                 *addr, mess_it, mess.ArgumentsEnd(), mess.ArgumentCount() - 1);
           break;
         }

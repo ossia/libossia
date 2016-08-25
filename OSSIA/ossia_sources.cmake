@@ -55,6 +55,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/tuple.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_base.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_comparison.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_conversion.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_traits.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_algorithms.hpp"
