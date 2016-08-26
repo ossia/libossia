@@ -1,9 +1,11 @@
 #pragma once
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/editor/value/value.hpp>
+#include <ossia/network/domain/domain.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
+#include <boost/optional.hpp>
 #include <mutex>
 #include <thread>
 

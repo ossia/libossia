@@ -128,4 +128,10 @@ void time_event::setStatus(Status status)
   if (mCallback)
     (mCallback)(mStatus);
 }
+
+void time_event::cleanup()
+{
+  m_previousTimeConstraints.clear();
+  m_nextTimeConstraints.clear();
+}
 }

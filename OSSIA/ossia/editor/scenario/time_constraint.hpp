@@ -174,13 +174,13 @@ private:
 
   std::vector<std::unique_ptr<time_process>> mTimeProcesses;
   std::unique_ptr<clock> mClock;
-    time_constraint::ExecutionCallback mCallback;
+  time_constraint::ExecutionCallback mCallback;
 
-    time_event& mStartEvent;
-    time_event& mEndEvent;
+  time_event& mStartEvent;
+  time_event& mEndEvent;
 
-    time_value mDurationNominal{};
-    time_value mDurationMin{};
-    time_value mDurationMax{};
+  time_value mDurationNominal{};
+  time_value mDurationMin{};
+  time_value mDurationMax{};
 };
 }

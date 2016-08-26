@@ -38,6 +38,8 @@ loop::loop(
 
 loop::~loop()
 {
+  mPatternStartNode->cleanup();
+  mPatternEndNode->cleanup();
 }
 
 state_element loop::offset(time_value offset)

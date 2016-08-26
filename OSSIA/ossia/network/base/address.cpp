@@ -40,5 +40,32 @@ std::string address_string_from_node(const ossia::net::node_base& node)
 
   return str;
 }
+
+value address_base::fetchValue()
+{
+  pullValue();
+  return cloneValue();
+}
+
+std::vector<std::string> address_base::getTags() const { return {}; }
+
+address_base& address_base::setTags(const std::vector<std::string>& v) { return *this; }
+
+std::string address_base::getDescription() const { return {}; }
+
+address_base& address_base::setDescription(const std::string& v) { return *this; }
+
+value address_base::getDefaultValue() const { return {}; }
+
+address_base& address_base::setDefaultValue(const value& v) { return *this; }
+
+dataspace address_base::getDataspace() const { return {}; }
+
+address_base& address_base::setDataspace(const dataspace& v) { return *this; }
+
+dataspace_unit address_base::getUnit() const { return {}; }
+
+address_base& address_base::setUnit(const dataspace_unit& v) { return *this; }
+
 }
 }

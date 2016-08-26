@@ -20,6 +20,10 @@ scenario::scenario()
 
 scenario::~scenario()
 {
+  for(auto& timenode : mTimeNodes)
+  {
+    timenode->cleanup();
+  }
 }
 
 using DateMap = std::unordered_map<time_node*, time_value>;

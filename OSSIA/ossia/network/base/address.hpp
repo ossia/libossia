@@ -2,9 +2,10 @@
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/network/common/address_properties.hpp>
-#include <ossia/network/domain/domain.hpp>
+#include <ossia/network/domain/domain_fwd.hpp>
 
 #include <functional>
+#include <vector>
 #include <memory>
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
@@ -67,11 +68,7 @@ public:
   virtual value cloneValue(destination_index = {}) const = 0;
   virtual address_base& setValue(const value&) = 0;
 
-  value fetchValue()
-  {
-    pullValue();
-    return cloneValue();
-  }
+  value fetchValue();
 
   virtual val_type getValueType() const = 0;
   virtual address_base& setValueType(val_type) = 0;
@@ -95,27 +92,27 @@ public:
   virtual const std::string& getTextualAddress() const = 0;
 
   // Extended attributes
-  virtual std::vector<std::string> getTags() const { return {}; }
-  virtual address_base& setTags(const std::vector<std::string>& v) { return *this; }
+  virtual std::vector<std::string> getTags() const;
+  virtual address_base& setTags(const std::vector<std::string>& v);
 
-  virtual std::string getDescription() const { return {}; }
-  virtual address_base& setDescription(const std::string& v) { return *this; }
+  virtual std::string getDescription() const;
+  virtual address_base& setDescription(const std::string& v);
 
-  virtual ossia::value getDefaultValue() const { return {}; }
-  virtual address_base& setDefaultValue(const ossia::value& v) { return *this; }
+  virtual ossia::value getDefaultValue() const;
+  virtual address_base& setDefaultValue(const ossia::value& v);
 
-  virtual ossia::dataspace getDataspace() const { return {}; }
-  virtual address_base& setDataspace(const ossia::dataspace& v) { return *this; }
+  virtual ossia::dataspace getDataspace() const;
+  virtual address_base& setDataspace(const ossia::dataspace& v);
 
-  virtual ossia::dataspace_unit getUnit() const { return {}; }
-  virtual address_base& setUnit(const ossia::dataspace_unit& v) { return *this; }
+  virtual ossia::dataspace_unit getUnit() const;
+  virtual address_base& setUnit(const ossia::dataspace_unit& v);
 };
 
 inline bool operator==(const address_base& lhs, const address_base& rhs)
 { return &lhs == &rhs; }
 inline bool operator!=(const address_base& lhs, const address_base& rhs)
 { return &lhs != &rhs; }
-
+/*
 class address_reference
 {
 public:
@@ -189,7 +186,7 @@ public:
 private:
   ossia::net::address_base* mAddress{};
 };
-
+*/
 /*!
  * \brief getAddressFromNode
  * \return the textual address of a node : aDevice:/an/address

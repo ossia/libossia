@@ -110,14 +110,14 @@ class OSSIA_EXPORT time_node final :
    \return #Container<#TimeEvent> */
     ptr_container<time_event>& timeEvents()
     {
-      return m_timeEvents;
+      return mTimeEvents;
     }
 
     /*! get the #TimeEvents of the #TimeNode
    \return #Container<#TimeEvent> */
     const ptr_container<time_event>& timeEvents() const
     {
-      return m_timeEvents;
+      return mTimeEvents;
     }
 
     // Interface to be used for set-up by other time processes
@@ -132,7 +132,9 @@ class OSSIA_EXPORT time_node final :
 
     void resultCallback(bool result);
 
+    /* To be called before deletion, to break the shared_ptr cycle */
+    void cleanup();
   private:
-    ptr_container<time_event> m_timeEvents;
+    ptr_container<time_event> mTimeEvents;
 };
 }

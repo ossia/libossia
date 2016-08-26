@@ -138,6 +138,9 @@ public:
   }
 
   void setStatus(Status status);
+
+  /* To be called before deletion, to break the shared_ptr cycle */
+  void cleanup();
 private:
   ptr_container<time_constraint> m_previousTimeConstraints;
   ptr_container<time_constraint> m_nextTimeConstraints;

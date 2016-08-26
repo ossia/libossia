@@ -273,4 +273,13 @@ void time_node::resultCallback(bool result)
   //! value contained into it.
 }
 
+void time_node::cleanup()
+{
+  for(auto& timeevent : mTimeEvents)
+    timeevent->cleanup();
+
+  mPendingEvents.clear();
+  mTimeEvents.clear();
+}
+
 }

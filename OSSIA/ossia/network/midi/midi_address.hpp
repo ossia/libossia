@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/base/address.hpp>
+#include <ossia/network/domain/domain.hpp>
 #include <ossia/network/midi/detail/channel.hpp>
 
 namespace ossia

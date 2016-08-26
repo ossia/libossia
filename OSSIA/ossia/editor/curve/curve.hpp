@@ -6,7 +6,9 @@
 #include <ossia/editor/value/destination.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/editor/value/value.hpp>
 #include <boost/container/flat_map.hpp>
+#include <boost/optional.hpp>
 #include <functional>
 #include <map>
 #include <memory>

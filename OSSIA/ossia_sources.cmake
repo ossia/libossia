@@ -71,6 +71,7 @@ set(API_HEADERS
 
     ## Network ##
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_conversion.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/domain_visitors.hpp"
