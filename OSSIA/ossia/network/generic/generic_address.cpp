@@ -21,7 +21,6 @@ generic_address::generic_address(const ossia::net::node_base& node)
     , mRepetitionFilter(ossia::repetition_filter::OFF)
     , mValue(ossia::Impulse{})
 {
-  mTextualAddress = ossia::net::address_string_from_node(mNode);
 }
 
 generic_address::generic_address(
@@ -35,7 +34,6 @@ generic_address::generic_address(
     , mRepetitionFilter(data.repetition_filter.get_value_or(ossia::repetition_filter::OFF))
     , mValue(init_value(mValueType))
 {
-  mTextualAddress = ossia::net::address_string_from_node(mNode);
 }
 
 generic_address::~generic_address()

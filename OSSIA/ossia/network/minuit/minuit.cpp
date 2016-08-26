@@ -162,7 +162,7 @@ bool minuit_protocol::push(const ossia::net::address_base& address)
     sender.send(get_osc_address(address), val);
 
     if(mLogger.outbound_logger)
-        mLogger.outbound_logger->info("Out: {0} {1}", address.getTextualAddress(), val);
+        mLogger.outbound_logger->info("Out: {0} {1}", ossia::net::address_string_from_node(address), val);
 
     return true;
   }
@@ -224,7 +224,7 @@ void minuit_protocol::handleReceivedMessage(
 
       bool res = update_value(addr, m);
       if(res && mLogger.inbound_logger)
-          mLogger.inbound_logger->info("In: {0} {1}", addr.getTextualAddress(), addr.cloneValue());
+          mLogger.inbound_logger->info("In: {0} {1}", ossia::net::address_string_from_node(addr), addr.cloneValue());
     }
   }
   else

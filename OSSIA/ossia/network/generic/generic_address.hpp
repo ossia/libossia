@@ -48,7 +48,6 @@ protected:
   ossia::net::domain mDomain;
 
   ossia::net::value_callback mCallback;
-  std::string mTextualAddress;
 
 public:
   ossia::value PreviousValue;
@@ -89,11 +88,6 @@ public:
 
   void onFirstCallbackAdded() override;
   void onRemovingLastCallback() override;
-
-  const std::string& getTextualAddress() const override
-  {
-    return mTextualAddress;
-  }
 
 private:
 };

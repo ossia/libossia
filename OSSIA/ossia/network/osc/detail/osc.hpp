@@ -366,7 +366,7 @@ inline ossia::value filter_value(const ossia::net::generic_address& addr)
 
 inline boost::string_ref get_osc_address(const ossia::net::address_base& address)
 {
-  auto& addr = address.getTextualAddress();
+  auto addr = ossia::net::address_string_from_node(address);
   auto begin = addr.find(':') + 1;
   return boost::string_ref(addr.data() + begin, addr.size() - begin);
 }
@@ -374,7 +374,7 @@ inline boost::string_ref get_osc_address(const ossia::net::address_base& address
 inline std::string
 get_osc_address_as_string(const ossia::net::address_base& address)
 {
-  auto& addr = address.getTextualAddress();
+  auto addr = ossia::net::address_string_from_node(address);
   return addr.substr(addr.find(':') + 1);
 }
 

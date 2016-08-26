@@ -85,12 +85,6 @@ public:
   virtual repetition_filter getRepetitionFilter() const = 0;
   virtual address_base& setRepetitionFilter(repetition_filter = repetition_filter::ON) = 0;
 
-  /**
-   * @brief getTextualAddress
-   * @return The address in the format device:/node/sub_node
-   */
-  virtual const std::string& getTextualAddress() const = 0;
-
   // Extended attributes
   virtual std::vector<std::string> getTags() const;
   virtual address_base& setTags(const std::vector<std::string>& v);
@@ -192,5 +186,6 @@ private:
  * \return the textual address of a node : aDevice:/an/address
  */
 OSSIA_EXPORT std::string address_string_from_node(const ossia::net::node_base&);
+OSSIA_EXPORT std::string address_string_from_node(const ossia::net::address_base&);
 }
 }

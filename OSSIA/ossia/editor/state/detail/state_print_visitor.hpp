@@ -31,14 +31,14 @@ struct state_print_visitor
   void operator()(const message& m)
   {
     out << padding << "message: "
-        << m.destination.value.get().getTextualAddress() << " => "
+        << ossia::net::address_string_from_node(m.destination.value.get()) << " => "
         << ossia::to_pretty_string(m.value) << "\n";
   }
 
   void operator()(const piecewise_message& m)
   {
     out << padding << "message: "
-        << m.address.get().getTextualAddress() << " => "
+        << ossia::net::address_string_from_node(m.address.get()) << " => "
         << ossia::to_pretty_string(m.value) << "\n";
   }
 

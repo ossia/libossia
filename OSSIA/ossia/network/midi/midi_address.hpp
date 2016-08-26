@@ -120,7 +120,6 @@ class midi_address final : public ossia::net::address_base
 
   ossia::val_type mType = ossia::val_type::INT;
   value mValue;
-  std::string mAddress;
 
 public:
   midi_address(address_info info, ossia::net::node_base& parent);
@@ -154,8 +153,6 @@ public:
 
   void onFirstCallbackAdded() override;
   void onRemovingLastCallback() override;
-
-  const std::string& getTextualAddress() const override;
 
   void valueCallback(const ossia::value& val);
 };

@@ -41,6 +41,11 @@ std::string address_string_from_node(const ossia::net::node_base& node)
   return str;
 }
 
+std::string address_string_from_node(const ossia::net::address_base& addr)
+{
+    return address_string_from_node(addr.getNode());
+}
+
 value address_base::fetchValue()
 {
   pullValue();
