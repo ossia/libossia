@@ -44,7 +44,7 @@ ossia::net::node_base* serial_node::getParent() const
   return mParent;
 }
 
-ossia::net::node_base& serial_node::setName(std::__cxx11::string)
+ossia::net::node_base& serial_node::setName(std::string)
 {
   return *this;
 }

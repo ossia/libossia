@@ -208,7 +208,7 @@ bool minuit_protocol::observe_quietly(
   return true;
 }
 
-void minuit_protocol::refresh(boost::string_ref req, const std::__cxx11::string& addr)
+void minuit_protocol::refresh(boost::string_ref req, const std::string& addr)
 {
     auto it = mNamespaceRequests.find(addr);
     if (it == mNamespaceRequests.end())
