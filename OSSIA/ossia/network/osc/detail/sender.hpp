@@ -2,7 +2,7 @@
 #include <ossia/network/osc/detail/message_generator.hpp>
 #include <oscpack/ip/UdpSocket.h>
 #include <oscpack/osc/OscOutboundPacketStream.h>
-
+#include <ossia/network/base/address.hpp>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -28,6 +28,17 @@ public:
       , m_ip(ip)
       , m_port(port)
   {
+  }
+  template <typename... Args>
+  void send(const ossia::net::address_base& address, Args&&... args)
+  {
+      auto addr = ossia::net::address_string_from_node(address);
+      auto begin = addr.find(':') + 1;
+
+      send_impl(
+          oscpack::MessageGenerator<>{}(
+                      boost::string_ref(addr.data() + begin, addr.size() - begin),
+                      std::forward<Args>(args)...));
   }
 
   template <typename... Args>
@@ -55,6 +66,7 @@ public:
   {
     return m_ip;
   }
+
   int port() const
   {
     return m_port;

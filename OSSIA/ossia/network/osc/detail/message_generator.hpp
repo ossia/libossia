@@ -2,6 +2,7 @@
 #include <ossia/network/osc/detail/string_view.hpp>
 #include <boost/container/small_vector.hpp>
 #include <oscpack/osc/OscOutboundPacketStream.h>
+#include <ossia/network/base/address.hpp>
 
 #include <array>
 #include <iostream>
@@ -16,6 +17,17 @@ inline oscpack::OutboundPacketStream& operator<<(
   {
     p << val;
   }
+
+  return p;
+}
+
+inline oscpack::OutboundPacketStream& operator<<(
+    oscpack::OutboundPacketStream& p,
+    const ossia::net::address_base& address)
+{
+  auto addr = ossia::net::address_string_from_node(address);
+  auto begin = addr.find(':') + 1;
+  p << boost::string_ref(addr.data() + begin, addr.size() - begin);
 
   return p;
 }

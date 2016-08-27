@@ -4,6 +4,8 @@
 #include <ossia/network/minuit/detail/minuit_parser.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <oscpack/osc/OscPrintReceivedElements.h>
+#include <ossia/network/osc/detail/receiver.hpp>
+#include <ossia/network/osc/detail/sender.hpp>
 
 namespace ossia
 {
@@ -16,25 +18,25 @@ minuit_protocol::minuit_protocol(
     , mIp{remote_ip}
     , mRemotePort{remote_port}
     , mLocalPort{local_port}
-    , sender{remote_ip, remote_port}
-    , mReceiver{local_port, [=](const oscpack::ReceivedMessage& m,
+    , mSender{std::make_unique<osc::sender>(remote_ip, remote_port)}
+    , mReceiver{std::make_unique<osc::receiver>(local_port, [=](const oscpack::ReceivedMessage& m,
                                 const oscpack::IpEndpointName& ip) {
                   this->handleReceivedMessage(m, ip);
-                }}
+                })}
 {
-  if(mReceiver.port() != local_port)
+  if(mReceiver->port() != local_port)
   {
     throw ossia::connection_error{"minuit_protocol::minuit_protocol: "
                                   "Could not connect to port: " + std::to_string(local_port)};
   }
 
   name_table.set_device_name(mLocalName);
-  mReceiver.run();
+  mReceiver->run();
 }
 
 minuit_protocol::~minuit_protocol()
 {
-  mReceiver.stop();
+  mReceiver->stop();
 }
 
 void minuit_protocol::setDevice(ossia::net::device_base& dev)
@@ -50,7 +52,7 @@ const std::string& minuit_protocol::getIp() const
 minuit_protocol& minuit_protocol::setIp(std::string ip)
 {
   mIp = ip;
-  sender = osc::sender{mIp, mRemotePort};
+  mSender = std::make_unique<osc::sender>(mIp, mRemotePort);
 
   return *this;
 }
@@ -63,7 +65,7 @@ uint16_t minuit_protocol::getRemotePort() const
 minuit_protocol& minuit_protocol::setRemotePort(uint16_t in_port)
 {
   mRemotePort = in_port;
-  sender = osc::sender{mIp, mRemotePort};
+  mSender = std::make_unique<osc::sender>(mIp, mRemotePort);
 
   return *this;
 }
@@ -76,10 +78,10 @@ uint16_t minuit_protocol::getLocalPort() const
 minuit_protocol& minuit_protocol::setLocalPort(uint16_t out_port)
 {
   mLocalPort = out_port;
-  mReceiver = osc::receiver{out_port, [=](const oscpack::ReceivedMessage& m,
+  mReceiver = std::make_unique<osc::receiver>(out_port, [=](const oscpack::ReceivedMessage& m,
                                           const oscpack::IpEndpointName& ip) {
                               this->handleReceivedMessage(m, ip);
-                            }};
+                            });
   return *this;
 }
 
@@ -142,7 +144,7 @@ bool minuit_protocol::pull(ossia::net::address_base& address)
 
   auto act = name_table.get_action(ossia::minuit::minuit_action::GetRequest);
   auto addr = ossia::net::get_osc_address_as_string(address);
-  this->sender.send(act, boost::string_ref(addr));
+  this->mSender->send(act, boost::string_ref(addr));
 
   fut.wait_for(std::chrono::milliseconds(25));
 
@@ -159,7 +161,7 @@ bool minuit_protocol::push(const ossia::net::address_base& address)
   auto val = filter_value(addr);
   if (val.valid())
   {
-    sender.send(get_osc_address(address), val);
+    mSender->send(address, val);
 
     if(mLogger.outbound_logger)
         mLogger.outbound_logger->info("Out: {0} {1}", ossia::net::address_string_from_node(address), val);
@@ -179,13 +181,13 @@ bool minuit_protocol::observe(ossia::net::address_base& address, bool enable)
 
   if (enable)
   {
-    this->sender.send(act, get_osc_address(address), "enable");
+    this->mSender->send(act, address, "enable");
     mListening.insert(
         std::make_pair(get_osc_address_as_string(address), &address));
   }
   else
   {
-    this->sender.send(act, get_osc_address(address), "disable");
+    this->mSender->send(act, address, "disable");
     mListening.erase(get_osc_address_as_string(address));
   }
 
@@ -206,15 +208,44 @@ bool minuit_protocol::observe_quietly(
   return true;
 }
 
-void minuit_protocol::handleReceivedMessage(
-    const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
+void minuit_protocol::refresh(boost::string_ref req, const std::__cxx11::string& addr)
 {
-  boost::string_ref address{m.AddressPattern()};
+    auto it = mNamespaceRequests.find(addr);
+    if (it == mNamespaceRequests.end())
+    {
+        mNamespaceRequests.insert(addr);
+        mSender->send(req, boost::string_ref{addr});
+    }
+}
 
-  //std::cerr << "inbound" << m << std::endl;
-  if (address.size() > 0 && address[0] == '/')
-  {
-    // Handle the OSC-like case where we receive a plain value.
+void minuit_protocol::refreshed(boost::string_ref addr)
+{
+    auto it = mNamespaceRequests.find(addr);
+    if (it != mNamespaceRequests.end())
+    {
+        mNamespaceRequests.erase(it);
+    }
+
+    if (mNamespaceRequests.empty())
+    {
+        mNamespacePromise.set_value();
+    }
+}
+
+osc::sender& minuit_protocol::sender() const
+{
+    return *mSender;
+}
+
+void minuit_protocol::handleReceivedMessage(
+        const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
+{
+    boost::string_ref address{m.AddressPattern()};
+
+    //std::cerr << "inbound" << m << std::endl;
+    if (address.size() > 0 && address[0] == '/')
+    {
+        // Handle the OSC-like case where we receive a plain value.
     std::unique_lock<std::mutex> lock(mListeningMutex);
     auto it = mListening.find(m.AddressPattern());
     if (it != mListening.end())

@@ -7,6 +7,7 @@
 #include <ossia/network/osc/detail/osc.hpp>
 #include <oscpack/osc/OscReceivedElements.h>
 #include <oscpack/osc/OscPrintReceivedElements.h>
+#include <ossia/network/osc/detail/sender.hpp>
 #include <boost/container/small_vector.hpp>
 namespace ossia
 {
@@ -64,7 +65,7 @@ struct minuit_behavior<
       if (!addr)
         return;
 
-      proto.sender.send(proto.name_table.get_action(minuit_action::GetReply),
+      proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                         full_address, addr->cloneValue());
     }
     else
@@ -87,31 +88,31 @@ struct minuit_behavior<
       switch(attr)
       {
         case minuit_attribute::Value:
-          proto.sender.send(proto.name_table.get_action(minuit_action::GetReply),
+          proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                           full_address, addr->cloneValue());
           break;
         case minuit_attribute::Type:
-          proto.sender.send(proto.name_table.get_action(minuit_action::GetReply),
+          proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                           full_address,
                           to_minuit_type_text(addr->getValueType())
                           );
           break;
         case minuit_attribute::RangeBounds:
-          proto.sender.send(proto.name_table.get_action(minuit_action::GetReply),
+          proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                           full_address, addr->getDomain());
           break;
         case minuit_attribute::RangeClipMode:
-          proto.sender.send(proto.name_table.get_action(minuit_action::GetReply),
+          proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                           full_address,
                           to_minuit_bounding_text(addr->getBoundingMode())
                           );
           break;
         case minuit_attribute::RepetitionFilter:
-          proto.sender.send(proto.name_table.get_action(minuit_action::GetReply),
+          proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                           full_address, (int32_t)addr->getRepetitionFilter());
           break;
         case minuit_attribute::Service:
-          proto.sender.send(proto.name_table.get_action(minuit_action::GetReply),
+          proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                           full_address, to_minuit_service_text(addr->getAccessMode()));
           break;
         case minuit_attribute::Priority:
@@ -149,7 +150,7 @@ struct minuit_behavior<
       ossia::net::minuit_protocol& proto,
       Children&& c)
   {
-    proto.sender.send(proto.name_table.get_action(minuit_action::NamespaceReply),
+    proto.sender().send(proto.name_table.get_action(minuit_action::NamespaceReply),
                     "/",
                     "Application",
                     "nodes={",
@@ -166,7 +167,7 @@ struct minuit_behavior<
       boost::string_ref address,
       Children&& c)
   {
-    proto.sender.send(proto.name_table.get_action(minuit_action::NamespaceReply),
+    proto.sender().send(proto.name_table.get_action(minuit_action::NamespaceReply),
                     address,
                     "Container",
                     "nodes={",
@@ -181,7 +182,7 @@ struct minuit_behavior<
       ossia::net::minuit_protocol& proto,
       boost::string_ref address)
   {
-    proto.sender.send(proto.name_table.get_action(minuit_action::NamespaceReply),
+    proto.sender().send(proto.name_table.get_action(minuit_action::NamespaceReply),
                     address,
                     "Data",
                     "attributes={",
@@ -582,7 +583,7 @@ struct minuit_behavior<minuit_command::Answer,
       {
         auto str = address.to_string() + ":type";
         proto.pending_get_requests++;
-        proto.sender.send(sub_request, boost::string_ref(str));
+        proto.sender().send(sub_request, boost::string_ref(str));
 
         it = attribs.erase(it);
       }
@@ -608,7 +609,7 @@ struct minuit_behavior<minuit_command::Answer,
           str += ':';
           str.append(attrib.begin(), attrib.end());
           proto.pending_get_requests++;
-          proto.sender.send(sub_request, boost::string_ref(str));
+          proto.sender().send(sub_request, boost::string_ref(str));
         }
       default:
         break;

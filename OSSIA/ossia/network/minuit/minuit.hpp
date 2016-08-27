@@ -1,9 +1,6 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/domain/domain.hpp>
-#include <ossia/network/generic/generic_node.hpp>
-#include <ossia/network/osc/detail/receiver.hpp>
-#include <ossia/network/osc/detail/sender.hpp>
 
 #include <ossia/network/minuit/detail/minuit_name_table.hpp>
 
@@ -13,6 +10,17 @@
 #include <set>
 #include <string>
 #include <unordered_map>
+
+namespace oscpack
+{
+class ReceivedMessage;
+class IpEndpointName;
+}
+namespace osc
+{
+class sender;
+class receiver;
+}
 
 namespace ossia
 {
@@ -36,14 +44,8 @@ private:
 
   std::set<std::string, std::less<>> mNamespaceRequests;
 
-public:
-  osc::sender sender;
-  ossia::minuit::name_table name_table;
-  std::promise<void> get_promise;
-  std::atomic_int pending_get_requests{};
-
-private:
-  osc::receiver mReceiver;
+  std::unique_ptr<osc::sender> mSender;
+  std::unique_ptr<osc::receiver> mReceiver;
 
 public:
   minuit_protocol(
@@ -77,29 +79,14 @@ public:
   bool observe(ossia::net::address_base& address_base, bool enable) override;
   bool observe_quietly(ossia::net::address_base& address_base, bool enable) override;
 
-  void refresh(boost::string_ref req, const std::string& addr)
-  {
-    auto it = mNamespaceRequests.find(addr);
-    if (it == mNamespaceRequests.end())
-    {
-      mNamespaceRequests.insert(addr);
-      sender.send(req, boost::string_ref{addr});
-    }
-  }
+  void refresh(boost::string_ref req, const std::string& addr);
 
-  void refreshed(boost::string_ref addr)
-  {
-    auto it = mNamespaceRequests.find(addr);
-    if (it != mNamespaceRequests.end())
-    {
-      mNamespaceRequests.erase(it);
-    }
+  void refreshed(boost::string_ref addr);
 
-    if (mNamespaceRequests.empty())
-    {
-      mNamespacePromise.set_value();
-    }
-  }
+  osc::sender& sender() const;
+  ossia::minuit::name_table name_table;
+  std::promise<void> get_promise;
+  std::atomic_int pending_get_requests{};
 
 private:
   void handleReceivedMessage(
