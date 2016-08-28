@@ -8,14 +8,14 @@ using Vec2f = Vec<float, 2>;
 using Vec3f = Vec<float, 3>;
 using Vec4f = Vec<float, 4>;
 
-class Impulse;
-class Bool;
-class Int;
-class Float;
-class Char;
-class String;
-class Tuple;
-class Behavior;
+struct Impulse;
+struct Bool;
+struct Int;
+struct Float;
+struct Char;
+struct String;
+struct Tuple;
+struct Behavior;
 class Destination;
 
 namespace net
