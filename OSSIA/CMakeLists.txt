@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(libossia CXX)
 
+### Project options ###
 set(ossia_VERSION 1.0.0)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0042 NEW)
@@ -18,6 +19,7 @@ include(UseGold)
 include(LinkerWarnings)
 find_package(Boost REQUIRED)
 
+### Protocol setup ###
 set(OSSIA_PROTOCOLS OSC Minuit)
 
 option(OSSIA_PROTOCOL_MIDI "Enable MIDI protocol" ON)
@@ -29,7 +31,6 @@ if(IOS OR CMAKE_SYSTEM_NAME MATCHES Emscripten)
   set(OSSIA_PROTOCOL_HTTP FALSE)
   set(OSSIA_PROTOCOL_SERIAL FALSE)
 endif()
-
 
 if(APPLE)
     set(CMAKE_INSTALL_NAME_DIR @rpath)
@@ -65,11 +66,12 @@ if(OSSIA_PROTOCOL_SERIAL)
   endif()
 endif()
 
+### Library ###
 if(APPLE AND OSSIA_FRAMEWORK)
   add_library(ossia MODULE ${SRCS} ${C_API_SRCS})
   set_target_properties(ossia PROPERTIES BUNDLE TRUE)
 else()
-  if(OSSIA_STATIC)
+  if(OSSIA_STATIC OR NOT BUILD_SHARED_LIBS)
     add_library(ossia STATIC ${SRCS} ${C_API_SRCS})
   else()
     add_library(ossia SHARED ${SRCS} ${C_API_SRCS})
@@ -182,3 +184,12 @@ if(NOT OSSIA_NO_INSTALL)
 endif()
 include(ossia_tooling.cmake)
 
+
+### Some status info ###
+message(STATUS "OSSIA - Sanitize: ${OSSIA_SANITIZE}")
+message(STATUS "OSSIA - Tidy: ${OSSIA_TIDY}")
+message(STATUS "OSSIA - Examples: ${OSSIA_EXAMPLES}")
+message(STATUS "OSSIA - Tests: ${OSSIA_TESTING}")
+message(STATUS "OSSIA - Static: ${OSSIA_STATIC}")
+message(STATUS "OSSIA - Framework: ${OSSIA_FRAMEWORK}")
+message(STATUS "OSSIA - Protocols: ${OSSIA_PROTOCOLS}")
