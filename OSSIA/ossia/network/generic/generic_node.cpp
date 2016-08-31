@@ -29,7 +29,6 @@ generic_node::~generic_node()
 ossia::net::node_base& generic_node::setName(std::string name)
 {
   mName = sanitize_name(std::move(name));
-  std::cerr << "In setName: " <<  mName << std::endl;
 
   // notify observers
   mDevice.onNodeRenamed(*this, mName);
