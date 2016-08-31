@@ -81,5 +81,7 @@ protected:
 
   std::vector<std::unique_ptr<node_base>> mChildren;
 };
+
+std::string sanitize_name(const std::string& name);
 }
 }

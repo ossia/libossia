@@ -42,7 +42,7 @@ struct http_address_data :
   http_address_data& operator=(http_address_data&&) = default;
 
   http_address_data(const std::string& name):
-    generic_address_data{name, {}, {}, {}, {}, {}}
+    generic_address_data{name, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}}
   {
 
   }

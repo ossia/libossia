@@ -95,12 +95,14 @@ public:
   virtual ossia::value getDefaultValue() const;
   virtual address_base& setDefaultValue(const ossia::value& v);
 
-  virtual ossia::dataspace getDataspace() const;
-  virtual address_base& setDataspace(const ossia::dataspace& v);
+  virtual ossia::dataspace_t getDataspace() const;
+  virtual address_base& setDataspace(const ossia::dataspace_t& v);
 
-  virtual ossia::dataspace_unit getUnit() const;
-  virtual address_base& setUnit(const ossia::dataspace_unit& v);
+  virtual ossia::dataspace_unit_t getUnit() const;
+  virtual address_base& setUnit(const ossia::dataspace_unit_t& v);
 };
+
+
 
 inline bool operator==(const address_base& lhs, const address_base& rhs)
 { return &lhs == &rhs; }

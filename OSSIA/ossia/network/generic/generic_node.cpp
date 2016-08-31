@@ -4,7 +4,8 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <cassert>
-
+#include <boost/algorithm/string/replace.hpp>
+#include <iostream>
 namespace ossia
 {
 namespace net
@@ -27,10 +28,11 @@ generic_node::~generic_node()
 
 ossia::net::node_base& generic_node::setName(std::string name)
 {
-  std::swap(mName, name);
+  mName = sanitize_name(std::move(name));
+  std::cerr << "In setName: " <<  mName << std::endl;
 
   // notify observers
-  mDevice.onNodeRenamed(*this, name);
+  mDevice.onNodeRenamed(*this, mName);
 
   return *this;
 }

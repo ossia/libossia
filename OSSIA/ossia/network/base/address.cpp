@@ -64,13 +64,13 @@ value address_base::getDefaultValue() const { return {}; }
 
 address_base& address_base::setDefaultValue(const value& v) { return *this; }
 
-dataspace address_base::getDataspace() const { return {}; }
+dataspace_t address_base::getDataspace() const { return {}; }
 
-address_base& address_base::setDataspace(const dataspace& v) { return *this; }
+address_base& address_base::setDataspace(const dataspace_t& v) { return *this; }
 
-dataspace_unit address_base::getUnit() const { return {}; }
+dataspace_unit_t address_base::getUnit() const { return {}; }
 
-address_base& address_base::setUnit(const dataspace_unit& v) { return *this; }
+address_base& address_base::setUnit(const dataspace_unit_t& v) { return *this; }
 
 }
 }

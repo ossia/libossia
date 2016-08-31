@@ -1,5 +1,6 @@
 #pragma once
-
+#include <vector>
+#include <string>
 namespace ossia
 {
 /**
@@ -54,12 +55,13 @@ enum class repetition_filter
   ON
 };
 
-struct dataspace
+using tags_t = std::vector<std::string>;
+struct dataspace_t
 {
 
 };
 
-struct dataspace_unit
+struct dataspace_unit_t
 {
 
 };
