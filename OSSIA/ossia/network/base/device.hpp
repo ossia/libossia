@@ -85,6 +85,8 @@ public:
   Nano::Signal<void(const address_base&)>
       onAddressCreated; // The address being created
   Nano::Signal<void(const address_base&)>
+      onAddressModified; // The address being modified
+  Nano::Signal<void(const address_base&)>
       onAddressRemoving; // The node whose address was removed
 
 protected:

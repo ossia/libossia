@@ -1,6 +1,7 @@
 #include <ossia/editor/automation/automation.hpp>
 #include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/editor/curve/curve.hpp>
+#include <iostream>
 
 namespace ossia
 {
@@ -49,7 +50,7 @@ ossia::state_element automation::state()
       mLastDate = date;
 
       // edit a Message handling the new Value
-      mLastMessage.value = computeValue(par.getPosition(), mDrive);
+      mLastMessage.value = computeValue(par.getDate() / par.getDurationNominal(), mDrive);
     }
 
     return mLastMessage;

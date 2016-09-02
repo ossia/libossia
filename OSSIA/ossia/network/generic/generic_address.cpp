@@ -170,6 +170,7 @@ ossia::net::generic_address& generic_address::setValueType(ossia::val_type type)
   if(mDomain)
     mDomain = convert_domain(mDomain, mValueType);
 
+  mNode.getDevice().onAddressModified(*this);
   return *this;
 }
 
@@ -181,7 +182,11 @@ ossia::access_mode generic_address::getAccessMode() const
 ossia::net::generic_address&
 generic_address::setAccessMode(ossia::access_mode accessMode)
 {
-  mAccessMode = accessMode;
+  if(mAccessMode != accessMode)
+  {
+    mAccessMode = accessMode;
+    mNode.getDevice().onAddressModified(*this);
+  }
   return *this;
 }
 
@@ -193,7 +198,11 @@ const ossia::net::domain& generic_address::getDomain() const
 ossia::net::generic_address&
 generic_address::setDomain(const ossia::net::domain& domain)
 {
-  mDomain = domain;
+  if(mDomain != domain)
+  {
+    mDomain = domain;
+    mNode.getDevice().onAddressModified(*this);
+  }
   return *this;
 }
 
@@ -205,7 +214,11 @@ ossia::bounding_mode generic_address::getBoundingMode() const
 ossia::net::generic_address&
 generic_address::setBoundingMode(ossia::bounding_mode boundingMode)
 {
-  mBoundingMode = boundingMode;
+  if(mBoundingMode != boundingMode)
+  {
+    mBoundingMode = boundingMode;
+    mNode.getDevice().onAddressModified(*this);
+  }
   return *this;
 }
 
@@ -217,8 +230,11 @@ ossia::repetition_filter generic_address::getRepetitionFilter() const
 ossia::net::generic_address&
 generic_address::setRepetitionFilter(ossia::repetition_filter repetitionFilter)
 {
-  mRepetitionFilter = repetitionFilter;
-
+  if(mRepetitionFilter != repetitionFilter)
+  {
+    mRepetitionFilter = repetitionFilter;
+    mNode.getDevice().onAddressModified(*this);
+  }
   return *this;
 }
 
@@ -240,6 +256,7 @@ std::vector<std::string> generic_address::getTags() const
 generic_address& generic_address::setTags(const std::vector<std::string>& v)
 {
     mTags = v;
+    mNode.getDevice().onAddressModified(*this);
     return *this;
 }
 
@@ -251,6 +268,7 @@ std::string generic_address::getDescription() const
 generic_address& generic_address::setDescription(const std::string& v)
 {
     mDescription = v;
+    mNode.getDevice().onAddressModified(*this);
     return *this;
 }
 
@@ -262,6 +280,7 @@ value generic_address::getDefaultValue() const
 generic_address& generic_address::setDefaultValue(const value& v)
 {
     mDefault = v;
+    mNode.getDevice().onAddressModified(*this);
     return *this;
 }
 
@@ -273,6 +292,7 @@ dataspace_t generic_address::getDataspace() const
 generic_address& generic_address::setDataspace(const dataspace_t& v)
 {
     mSpace = v;
+    mNode.getDevice().onAddressModified(*this);
     return *this;
 }
 
@@ -284,6 +304,7 @@ dataspace_unit_t generic_address::getUnit() const
 generic_address& generic_address::setUnit(const dataspace_unit_t& v)
 {
     mUnit = v;
+    mNode.getDevice().onAddressModified(*this);
     return *this;
 }
 }
