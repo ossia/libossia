@@ -71,5 +71,7 @@ class OSSIA_EXPORT scenario final :
     std::list<std::pair<time_value, std::shared_ptr<time_event>>>
         mPastEventList; // a temporary list to order all past events to build the
                         // offset state
+
+    ossia::state mLastState;
 };
 }

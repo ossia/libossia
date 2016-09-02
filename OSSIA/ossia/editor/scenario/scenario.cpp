@@ -217,6 +217,7 @@ state_element scenario::state()
         flatten_and_filter(cur_state, cst.state());
       }
     }
+    mLastState = cur_state;
 
     // if all the TimeEvents are not NONE : the Scenario is done
     bool done = !any_of(mTimeNodes, [](const std::shared_ptr<time_node>& tn) {
@@ -235,10 +236,10 @@ state_element scenario::state()
           //! in EXTERNAL drive mode, it creates a deadlock.
       }
     }
-    return cur_state;
+    return mLastState;
   }
 
-  return {};
+  return mLastState;
 }
 
 void scenario::start()
