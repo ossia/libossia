@@ -103,7 +103,12 @@ void http_protocol::setDevice(device_base& dev)
 void http_protocol::slot_push(const http_address* addr_p)
 {
   auto& addr = *addr_p;
-  auto rep = mAccessManager->get(QNetworkRequest(addr.data().request));
+  auto dat = addr.data().request;
+  auto rep = mAccessManager->get(
+        QNetworkRequest(
+          dat.replace(
+            "$val",
+            value_to_js_string(addr.cloneValue()))));
 
   auto pair = std::make_pair(rep, &addr);
 

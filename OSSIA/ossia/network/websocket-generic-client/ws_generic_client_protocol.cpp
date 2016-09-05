@@ -9,17 +9,16 @@
 #include <QQmlEngine>
 #include <QQmlComponent>
 #include <QQmlContext>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
+#include <QWebSocket>
 #include <QJSValueIterator>
 namespace ossia
 {
 namespace net
 {
-ws_generic_client_protocol::ws_generic_client_protocol(QByteArray code):
+ws_generic_client_protocol::ws_generic_client_protocol(const QString& addr, QByteArray code):
   mEngine{new QQmlEngine},
   mComponent{new QQmlComponent{mEngine}},
-  mWebsocket{new QWebSocket},
+  mWebsocket{new QWebSocket{"ossia-api"}},
   mCode{code}
 {
   connect(mComponent, &QQmlComponent::statusChanged,
@@ -39,6 +38,21 @@ ws_generic_client_protocol::ws_generic_client_protocol(QByteArray code):
         QMetaObject::invokeMethod(item, "createTree", Q_RETURN_ARG(QVariant, ret));
         create_device<ws_generic_client_device, ws_generic_client_node, ws_generic_client_protocol>(*mDevice, ret.value<QJSValue>());
 
+        mWebsocket->open(addr);
+        connect(mWebsocket, &QWebSocket::binaryMessageReceived,
+                this, [=] (const QByteArray& arr) {
+          qDebug() << "array" << arr;
+          QVariant ret;
+          QMetaObject::invokeMethod(item, "onMessage", Q_RETURN_ARG(QVariant, ret), Q_ARG(QVariant, QString(arr)));
+          apply_reply(ret.value<QJSValue>());
+        });
+        connect(mWebsocket, &QWebSocket::textMessageReceived,
+                this, [=] (const QString& mess) {
+          qDebug() << "text" << mess;
+          QVariant ret;
+          QMetaObject::invokeMethod(item, "onMessage", Q_RETURN_ARG(QVariant, ret), Q_ARG(QVariant, mess));
+          apply_reply(ret.value<QJSValue>());
+        });
         return;
       }
       case QQmlComponent::Status::Loading:
@@ -57,7 +71,9 @@ ws_generic_client_protocol::ws_generic_client_protocol(QByteArray code):
 
 ws_generic_client_protocol::~ws_generic_client_protocol()
 {
-
+    // TODO also delete it in others.
+    delete mEngine;
+    delete mWebsocket;
 }
 
 bool ws_generic_client_protocol::update(ossia::net::node_base& node_base)
@@ -76,7 +92,7 @@ bool ws_generic_client_protocol::push(const ossia::net::address_base& address_ba
 {
   auto& addr = static_cast<const ws_generic_client_address&>(address_base);
 
-  if(!addr.data().request.isEmpty())
+  if(!addr.data().request.isNull())
   {
     emit sig_push(&addr);
     return true;
@@ -85,7 +101,7 @@ bool ws_generic_client_protocol::push(const ossia::net::address_base& address_ba
   return false;
 }
 
-bool ws_generic_client_protocol::observe(address_base& address_base, bool enable)
+bool ws_generic_client_protocol::observe(ossia::net::address_base& address_base, bool enable)
 {
   return false;
 
@@ -103,26 +119,21 @@ void ws_generic_client_protocol::setDevice(device_base& dev)
 void ws_generic_client_protocol::slot_push(const ws_generic_client_address* addr_p)
 {
   auto& addr = *addr_p;
-  auto rep = mWebsocket->get(QNetworkRequest(addr.data().request));
-
-  auto pair = std::make_pair(rep, &addr);
-
-  mReplies.push_back(pair);
-
-  connect(rep, &QNetworkReply::readyRead,
-          this, [=] ()
+  auto dat = addr.data().request;
+  if(dat.isCallable())
   {
-    QNetworkReply& rep = *pair.first;
-    const ws_generic_client_address& addr = *pair.second;
-
-    auto ans = addr.data().answer;
-    if(ans.isCallable())
-    {
-      apply_reply(ans.call({QString(rep.readAll())}));
-    }
-
-    mReplies.removeAll(pair);
-  }, Qt::QueuedConnection);
+      auto res = dat.call({value_to_js_value(addr.cloneValue(), *mEngine)});
+      mWebsocket->sendBinaryMessage(res.toVariant().toByteArray());
+  }
+  else
+  {
+      if(dat.isString())
+      {
+        qDebug() << "senidng" << dat.toString().replace("$val", value_to_js_string(addr.cloneValue()));
+        mWebsocket->sendTextMessage(
+              dat.toString().replace("$val", value_to_js_string(addr.cloneValue())));
+      }
+  }
 }
 
 void ws_generic_client_protocol::apply_reply(QJSValue arr)
@@ -150,6 +161,7 @@ void ws_generic_client_protocol::apply_reply(QJSValue arr)
 
     if(auto addr = n->getAddress())
     {
+      qDebug() << "Applied value" << QString::fromStdString(to_pretty_string(value_from_jsvalue(addr->cloneValue(), v)));
       addr->pushValue(value_from_jsvalue(addr->cloneValue(), v));
     }
   }

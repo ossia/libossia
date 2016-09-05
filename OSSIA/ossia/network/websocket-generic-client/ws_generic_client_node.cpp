@@ -15,7 +15,7 @@ ws_generic_client_node::ws_generic_client_node(
   mDevice{aDevice},
   mParent{&aParent}
 {
-  if(!data.request.isEmpty() || data.type)
+  if(!data.request.isNull() || data.type)
     mAddress = std::make_unique<ws_generic_client_address>(data, *this);
 }
 
@@ -25,7 +25,7 @@ ws_generic_client_node::ws_generic_client_node(
   mName{data.node_name},
   mDevice{aDevice}
 {
-  if(!data.request.isEmpty() || data.type)
+  if(!data.request.isNull() || data.type)
     mAddress = std::make_unique<ws_generic_client_address>(data, *this);
 }
 

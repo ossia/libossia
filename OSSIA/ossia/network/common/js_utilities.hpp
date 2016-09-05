@@ -4,6 +4,7 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/generic/generic_address.hpp>
+#include <QStringBuilder>
 #include <QHash>
 #include <QString>
 #include <QJSValue>
@@ -112,8 +113,8 @@ public:
     return v; // TODO
   }
 
-  template<typename T>
-  ossia::value operator()(T&& t) { return ossia::value(std::forward<T>(t)); }
+  ossia::value operator()(const Destination& t) { return t; }
+  ossia::value operator()(const Behavior& t) { return t; }
   ossia::value operator()() const { return {}; }
 
 };
@@ -254,12 +255,12 @@ inline generic_address_data make_address_data(const QJSValue& js)
 
 
 
-inline QJSValue value_to_jsvalue(const ossia::value& cur, QJSEngine& engine);
+inline QJSValue value_to_js_value(const ossia::value& cur, QJSEngine& engine);
 
 struct js_value_outbound_visitor
 {
   QJSEngine& engine;
-public:
+
   QJSValue to_enum(qml_context::val_type t) const
   {
     return engine.toScriptValue(QVariant::fromValue(t));
@@ -309,19 +310,27 @@ public:
     return v;
   }
 
-  template<typename Array_T>
-  QJSValue make_tuple(Array_T& arr) const
+  QJSValue make_tuple(const std::vector<ossia::value>& arr) const
   {
     auto array = engine.newArray(arr.size());
     int i = 0;
 
     for(const auto& child : arr)
     {
-      array.setProperty(i++, value_to_jsvalue(child, engine));
+      array.setProperty(i++, value_to_js_value(child, engine));
     }
 
     return array;
   }
+
+  QJSValue operator()(const Tuple& val) const
+  {
+    QJSValue v;
+    v.setProperty("type", to_enum(qml_context::val_type::Tuple));
+    v.setProperty("value", make_tuple(val.value));
+    return v;
+  }
+
   template<std::size_t N>
   QJSValue make_array(const std::array<float, N>& arr) const
   {
@@ -334,14 +343,6 @@ public:
     }
 
     return array;
-  }
-
-  QJSValue operator()(const Tuple& val) const
-  {
-    QJSValue v;
-    v.setProperty("type", to_enum(qml_context::val_type::Tuple));
-    v.setProperty("value", make_tuple(val.value));
-    return v;
   }
 
   QJSValue operator()(Vec2f val) const
@@ -366,15 +367,104 @@ public:
     return v;
   }
 
-  template<typename T>
-  QJSValue operator()(T&& t) { return {}; }
+  QJSValue operator()(const Destination& t) { return {}; }
+  QJSValue operator()(const Behavior& t) { return {}; }
   QJSValue operator()() const { return {}; }
 
 };
 
-inline QJSValue value_to_jsvalue(const ossia::value& cur, QJSEngine& engine)
+inline QJSValue value_to_js_value(const ossia::value& cur, QJSEngine& engine)
 {
   return cur.apply(js_value_outbound_visitor{engine});
+}
+
+
+inline QString value_to_js_string(const ossia::value& cur);
+struct js_string_outbound_visitor
+{
+  QString operator()(Impulse) const
+  {
+    return QStringLiteral("\"\"");
+  }
+
+  QString operator()(Int val) const
+  {
+    return QString::number(val.value);
+  }
+
+  QString operator()(Float val) const
+  {
+    return QString::number(val.value);
+  }
+  QString operator()(Bool val) const
+  {
+    return val.value ? QStringLiteral("true") : QStringLiteral("false");
+  }
+  QString operator()(Char val) const
+  {
+    return "\"" % QString{val.value} % "\"";
+  }
+
+  QString operator()(const String& val) const
+  {
+    return "\"" % QString::fromStdString(val.value) % "\"";
+  }
+
+  QString operator()(const Tuple& val) const
+  {
+    QString s = "[";
+
+    std::size_t n = val.value.size();
+    if(n != 0)
+    {
+      s += value_to_js_string(val.value[0]);
+      for(std::size_t i = 1; i < n; i++)
+      {
+        s += ", " % value_to_js_string(val.value[i]);
+      }
+    }
+
+    s += "]";
+    return s;
+  }
+
+  template<std::size_t N>
+  QString make_array(const std::array<float, N>& arr) const
+  {
+    static_assert(N > 0, "N <= 0");
+    QString s = "[";
+
+    s += QString::number(arr[0]);
+    for(std::size_t i = 1; i < N; i++)
+    {
+      s += ", " % QString::number(arr[i]);
+    }
+    s += "]";
+    return s;
+  }
+
+  QString operator()(Vec2f val) const
+  {
+    return make_array(val.value);
+  }
+  QString operator()(Vec3f val) const
+  {
+    return make_array(val.value);
+  }
+  QString operator()(Vec4f val) const
+  {
+    return make_array(val.value);
+  }
+
+  QString operator()(const Destination& t) { return (*this)(Impulse{}); }
+  QString operator()(const Behavior& t) { return (*this)(Impulse{}); }
+  QString operator()() const { return (*this)(Impulse{}); }
+
+};
+
+inline QString value_to_js_string(const ossia::value& cur)
+{
+  return cur.apply(js_string_outbound_visitor{});
 }
 
 }

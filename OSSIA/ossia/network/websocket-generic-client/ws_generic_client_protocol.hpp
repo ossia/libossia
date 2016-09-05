@@ -27,7 +27,7 @@ class OSSIA_EXPORT ws_generic_client_protocol final :
   Q_OBJECT
 
 public:
-  ws_generic_client_protocol(QByteArray code);
+  ws_generic_client_protocol(const QString& addr, QByteArray code);
 
   ws_generic_client_protocol(const ws_generic_client_protocol&) = delete;
   ws_generic_client_protocol(ws_generic_client_protocol&&) = delete;
