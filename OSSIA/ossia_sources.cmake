@@ -208,3 +208,18 @@ set(SERIAL_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_protocol.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_address.cpp")
+
+
+set(WS_CLIENT_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_address_data.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client.hpp")
+
+set(WS_CLIENT_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_address.cpp")

@@ -8,6 +8,7 @@
 #include <QString>
 #include <QJSValue>
 #include <QJSValueIterator>
+#include <QJSEngine>
 #include <QMetaEnum>
 #include <boost/optional.hpp>
 
@@ -59,7 +60,7 @@ void create_node_rec(QJSValue js, Device_T& device, Node_T& parent)
 }
 
 
-struct js_value_visitor
+struct js_value_inbound_visitor
 {
   const QJSValue& val;
 public:
@@ -119,8 +120,9 @@ public:
 
 inline ossia::value value_from_jsvalue(ossia::value cur, const QJSValue& v)
 {
-  return cur.apply(js_value_visitor{v});
+  return cur.apply(js_value_inbound_visitor{v});
 }
+
 
 struct qml_context
 {
@@ -248,6 +250,131 @@ inline generic_address_data make_address_data(const QJSValue& js)
   }
 
   return dat;
+}
+
+
+
+inline QJSValue value_to_jsvalue(const ossia::value& cur, QJSEngine& engine);
+
+struct js_value_outbound_visitor
+{
+  QJSEngine& engine;
+public:
+  QJSValue to_enum(qml_context::val_type t) const
+  {
+    return engine.toScriptValue(QVariant::fromValue(t));
+  }
+
+  QJSValue operator()(Impulse) const
+  {
+    QJSValue v;
+    v.setProperty("type", to_enum(qml_context::val_type::Impulse));
+    return v;
+  }
+
+  QJSValue operator()(Int val) const
+  {
+    QJSValue v;
+    v.setProperty("type", to_enum(qml_context::val_type::Int));
+    v.setProperty("value", val.value);
+    return v;
+  }
+  QJSValue operator()(Float val) const
+  {
+    QJSValue v;
+    v.setProperty("type", to_enum(qml_context::val_type::Float));
+    v.setProperty("value", val.value);
+    return v;
+  }
+  QJSValue operator()(Bool val) const
+  {
+    QJSValue v;
+    v.setProperty("type", to_enum(qml_context::val_type::Bool));
+    v.setProperty("value", val.value);
+    return v;
+  }
+  QJSValue operator()(Char val) const
+  {
+    QJSValue v;
+    v.setProperty("type", to_enum(qml_context::val_type::Char));
+    v.setProperty("value", val.value);
+    return v;
+  }
+
+  QJSValue operator()(const String& val) const
+  {
+    QJSValue v;
+    v.setProperty("type", to_enum(qml_context::val_type::String));
+    v.setProperty("value", QString::fromStdString(val.value));
+    return v;
+  }
+
+  template<typename Array_T>
+  QJSValue make_tuple(Array_T& arr) const
+  {
+    auto array = engine.newArray(arr.size());
+    int i = 0;
+
+    for(const auto& child : arr)
+    {
+      array.setProperty(i++, value_to_jsvalue(child, engine));
+    }
+
+    return array;
+  }
+  template<std::size_t N>
+  QJSValue make_array(const std::array<float, N>& arr) const
+  {
+    auto array = engine.newArray(arr.size());
+    int i = 0;
+
+    for(auto child : arr)
+    {
+      array.setProperty(i++, child);
+    }
+
+    return array;
+  }
+
+  QJSValue operator()(const Tuple& val) const
+  {
+    QJSValue v;
+    v.setProperty("type", to_enum(qml_context::val_type::Tuple));
+    v.setProperty("value", make_tuple(val.value));
+    return v;
+  }
+
+  QJSValue operator()(Vec2f val) const
+  {
+    QJSValue v;
+    v.setProperty("type", to_enum(qml_context::val_type::Vec2f));
+    v.setProperty("value", make_array(val.value));
+    return v;
+  }
+  QJSValue operator()(Vec3f val) const
+  {
+    QJSValue v;
+    v.setProperty("type", to_enum(qml_context::val_type::Vec3f));
+    v.setProperty("value", make_array(val.value));
+    return v;
+  }
+  QJSValue operator()(Vec4f val) const
+  {
+    QJSValue v;
+    v.setProperty("type", to_enum(qml_context::val_type::Vec4f));
+    v.setProperty("value", make_array(val.value));
+    return v;
+  }
+
+  template<typename T>
+  QJSValue operator()(T&& t) { return {}; }
+  QJSValue operator()() const { return {}; }
+
+};
+
+inline QJSValue value_to_jsvalue(const ossia::value& cur, QJSEngine& engine)
+{
+  return cur.apply(js_value_outbound_visitor{engine});
 }
 
 }
