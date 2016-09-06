@@ -1,6 +1,7 @@
 #include <QtTest>
 #include <ossia/ossia.hpp>
 #include <ossia/network/http/http.hpp>
+
 #include <ossia/network/websocket-generic-client/ws_generic_client.hpp>
 #include <iostream>
 
