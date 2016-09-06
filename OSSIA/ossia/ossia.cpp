@@ -1,7 +1,7 @@
 #include "ossia.hpp"
 
 #if defined(QT_QML_LIB)
-#include <QtQml>
+#include <qqml.h>
 #include <ossia/network/common/js_utilities.hpp>
 #endif
 
