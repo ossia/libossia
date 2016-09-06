@@ -62,39 +62,6 @@ private Q_SLOTS:
 
       app.exec();
     }
-
-    void test_websockets()
-    {
-        int argc{}; char** argv{};
-        QCoreApplication app(argc, argv);
-
-        ossia::context context;
-        QFile f("testdata/websocket/ws_example.qml");
-        f.open(QFile::ReadOnly);
-
-        ossia::net::ws_generic_client_device ws_device{
-          std::make_unique<ossia::net::ws_generic_client_protocol>(
-                "ws://echo.websocket.org",
-                f.readAll()),
-              "test" };
-
-        // We have to wait a bit for the event loop to run.
-        QTimer t;
-        connect(&t, &QTimer::timeout, [&] () {
-          auto node = ossia::net::find_node(ws_device, "/tata/tutu");
-          if(node)
-          {
-            node->getAddress()->pushValue(ossia::Float{32.325});
-          }
-        });
-        t.setInterval(1000);
-        t.setSingleShot(true);
-        t.start();
-
-        QTimer::singleShot(3000, [&] () { app.exit(); });
-
-        app.exec();
-    }
 };
 
 
