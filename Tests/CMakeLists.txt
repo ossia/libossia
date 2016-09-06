@@ -3,6 +3,8 @@ find_package(Qt5 5.6 REQUIRED COMPONENTS Core Test)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+get_target_property(OSSIA_PROTOCOLS ossia OSSIA_PROTOCOLS)
+
 function(ossia_add_test TESTNAME TESTSRCS)
     add_executable(ossia_${TESTNAME} ${TESTSRCS})
     target_link_libraries(ossia_${TESTNAME} Qt5::Core Qt5::Test ossia)
@@ -41,7 +43,7 @@ ossia_add_test(AddressTest                 "${CMAKE_CURRENT_SOURCE_DIR}/Network/
 ossia_add_test(DeviceTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/DeviceTest.cpp")
 ossia_add_test(NodeTest                    "${CMAKE_CURRENT_SOURCE_DIR}/Network/NodeTest.cpp")
 
-if(OSSIA_PROTOCOLS MATCHES ".*WebSocket.*")
+if("${OSSIA_PROTOCOLS}" MATCHES "WebSockets")
   ossia_add_test(WebSocketTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/WebSocketTest.cpp")
 endif()
 

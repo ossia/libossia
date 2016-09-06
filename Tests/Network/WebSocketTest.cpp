@@ -4,7 +4,7 @@
 #include <iostream>
 
 using namespace ossia;
-class DeviceTest : public QObject
+class WebSocketTest : public QObject
 {
     Q_OBJECT
 
