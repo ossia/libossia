@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia_export.h>
+#include <cinttypes>
 
 namespace ossia
 {
@@ -12,9 +13,14 @@ struct OSSIA_EXPORT Float
 {
   float value;
 
-  Float(float v = 0.) : value(v)
-  {
-  }
+  Float(): value{} { }
+
+  Float(float v) : value(v) { }
+  Float(double v) : value(float(v)) { }
+  Float(int32_t v) : value(float(v)) { }
+  Float(int64_t v) : value(float(v)) { }
+  Float(uint32_t v) : value(float(v)) { }
+  Float(uint64_t v) : value(float(v)) { }
 
   Float(const Float&) = default;
   Float(Float&&) = default;

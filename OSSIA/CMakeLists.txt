@@ -26,7 +26,7 @@ option(OSSIA_PROTOCOL_MIDI "Enable MIDI protocol" ON)
 option(OSSIA_PROTOCOL_HTTP "Enable HTTP protocol" ON)
 option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF)
 option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF)
-set(OSSIA_PROTOCOL_WEBSOCKETS ON)
+
 if(IOS OR CMAKE_SYSTEM_NAME MATCHES Emscripten)
   set(OSSIA_PROTOCOL_MIDI FALSE)
   set(OSSIA_PROTOCOL_HTTP FALSE)
