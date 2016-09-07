@@ -27,3 +27,4 @@ project.xcworkspace
 .DS_Store
 
 Documentation/Doxygen/*ml*
+Documentation/Doxygen/API
