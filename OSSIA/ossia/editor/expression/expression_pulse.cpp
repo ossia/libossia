@@ -27,7 +27,7 @@ bool expression_pulse::evaluate() const
 void expression_pulse::update() const
 {
   // the result will be false until the next
-  // #JamomaExpressionPulse::destinationCallback call
+  // #expression_pulse::destinationCallback call
   mResult = false;
 }
 

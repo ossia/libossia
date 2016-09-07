@@ -143,7 +143,7 @@ state_element loop::state()
   }
 
   //! \see mCurrentState is filled below in
-  //! JamomaLoop::PatternConstraintCallback
+  //! loop::PatternConstraintCallback
   return mCurrentState;
 }
 

@@ -112,7 +112,7 @@ time_node::iterator time_node::emplace(
 void time_node::process(ptr_container<time_event>& statusChangedEvents)
 {
   // prepare to remember which event changed its status to PENDING
-  // because it is needed in JamomaTimeNode::trigger
+  // because it is needed in time_node::trigger
   mPendingEvents.clear();
 
   bool maximalDurationReached = false;
