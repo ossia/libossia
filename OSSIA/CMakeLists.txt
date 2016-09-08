@@ -118,6 +118,8 @@ source_group(Editor REGULAR_EXPRESSION "ossia/editor.*")
 source_group(Network REGULAR_EXPRESSION "ossia/network.*")
 
 # Compile options
+target_compile_definitions(ossia PRIVATE RAPIDJSON_HAS_STDSTRING=1)
+
 if(WIN32)
     target_compile_definitions(ossia PUBLIC
         NOMINMAX
