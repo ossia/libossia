@@ -58,12 +58,14 @@ private:
 
   QQmlEngine *mEngine{};
   QQmlComponent* mComponent{};
+  QObject* mItem{};
 
   QWebSocket* mWebsocket{};
 
   QByteArray mCode;
   ws_generic_client_device* mDevice{};
   QList<std::pair<QNetworkReply*, const ws_generic_client_address*>> mReplies;
+
 };
 
 }

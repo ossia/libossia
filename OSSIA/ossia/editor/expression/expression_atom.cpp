@@ -9,6 +9,8 @@ expression_atom::expression_atom(
     const value& lhs, expression_atom::Comparator op, const value& rhs)
     : mFirstValue(lhs), mSecondValue(rhs), mOperator(op)
 {
+  if(!mFirstValue.valid() || !mSecondValue.valid())
+    throw std::runtime_error("expression_atom created with invalid values");
 }
 
 expression_atom::~expression_atom()
@@ -126,13 +128,13 @@ bool expression_atom::do_evaluation(
 
 void expression_atom::firstValueCallback(const value& value)
 {
-  if (mSecondValue.valid())
+  if (value.valid())
     send(do_evaluation(value, mSecondValue));
 }
 
 void expression_atom::secondValueCallback(const value& value)
 {
-  if (mSecondValue.valid())
+  if (value.valid())
     send(do_evaluation(mFirstValue, value));
 }
 }

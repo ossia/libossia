@@ -31,11 +31,11 @@ ws_generic_client_protocol::ws_generic_client_protocol(const QString& addr, QByt
     {
       case QQmlComponent::Status::Ready:
       {
-        auto item = mComponent->create();
-        item->setParent(mEngine->rootContext());
+        mItem = mComponent->create();
+        mItem->setParent(mEngine->rootContext());
 
         QVariant ret;
-        QMetaObject::invokeMethod(item, "createTree", Q_RETURN_ARG(QVariant, ret));
+        QMetaObject::invokeMethod(mItem, "createTree", Q_RETURN_ARG(QVariant, ret));
         create_device<ws_generic_client_device, ws_generic_client_node, ws_generic_client_protocol>(*mDevice, ret.value<QJSValue>());
 
         mWebsocket->open(addr);
@@ -43,14 +43,14 @@ ws_generic_client_protocol::ws_generic_client_protocol(const QString& addr, QByt
                 this, [=] (const QByteArray& arr) {
           qDebug() << "array" << arr;
           QVariant ret;
-          QMetaObject::invokeMethod(item, "onMessage", Q_RETURN_ARG(QVariant, ret), Q_ARG(QVariant, QString(arr)));
+          QMetaObject::invokeMethod(mItem, "onMessage", Q_RETURN_ARG(QVariant, ret), Q_ARG(QVariant, QString(arr)));
           apply_reply(ret.value<QJSValue>());
         });
         connect(mWebsocket, &QWebSocket::textMessageReceived,
                 this, [=] (const QString& mess) {
           qDebug() << "text" << mess;
           QVariant ret;
-          QMetaObject::invokeMethod(item, "onMessage", Q_RETURN_ARG(QVariant, ret), Q_ARG(QVariant, mess));
+          QMetaObject::invokeMethod(mItem, "onMessage", Q_RETURN_ARG(QVariant, ret), Q_ARG(QVariant, mess));
           apply_reply(ret.value<QJSValue>());
         });
         return;
@@ -76,16 +76,15 @@ ws_generic_client_protocol::~ws_generic_client_protocol()
     delete mWebsocket;
 }
 
-bool ws_generic_client_protocol::update(ossia::net::node_base& node_base)
+bool ws_generic_client_protocol::update(
+    ossia::net::node_base& node_base)
 {
   return true;
-
 }
 
 bool ws_generic_client_protocol::pull(ossia::net::address_base& address_base)
 {
   return true;
-
 }
 
 bool ws_generic_client_protocol::push(const ossia::net::address_base& address_base)
@@ -101,10 +100,22 @@ bool ws_generic_client_protocol::push(const ossia::net::address_base& address_ba
   return false;
 }
 
-bool ws_generic_client_protocol::observe(ossia::net::address_base& address_base, bool enable)
+bool ws_generic_client_protocol::observe(ossia::net::address_base& addr, bool enable)
 {
-  return false;
-
+  auto a = QString::fromStdString(address_string_from_node(addr));
+  if(enable)
+  {
+    QMetaObject::invokeMethod(mItem,
+                              "openListening",
+                              Q_ARG(QVariant, a));
+  }
+  else
+  {
+    QMetaObject::invokeMethod(mItem,
+                              "closeListening",
+                              Q_ARG(QVariant, a));
+  }
+  return true;
 }
 
 void ws_generic_client_protocol::setDevice(device_base& dev)

@@ -1,9 +1,32 @@
 #pragma once
 
 #include <list>
-
+#include <stdexcept>
+#include <ossia_export.h>
 namespace ossia
 {
+
+/**
+ * @brief The invalid_callback_error class
+ *
+ * Means that an invalid callback was passed
+ */
+struct OSSIA_EXPORT invalid_callback_error :
+    public std::logic_error
+{
+  invalid_callback_error(const char* e):
+    std::logic_error(e)
+  {
+
+  }
+
+  invalid_callback_error():
+    std::logic_error("Bad callback")
+  {
+
+  }
+};
+
 
 template <typename T>
 /**
@@ -36,10 +59,18 @@ public:
    */
   iterator add_callback(T callback)
   {
-    auto it = mCallbacks.insert(mCallbacks.begin(), std::move(callback));
-    if (mCallbacks.size() == 1)
-      onFirstCallbackAdded();
-    return it;
+    T cb = callback;
+    if(cb)
+    {
+      auto it = mCallbacks.insert(mCallbacks.begin(), std::move(cb));
+      if (mCallbacks.size() == 1)
+        onFirstCallbackAdded();
+      return it;
+    }
+    else
+    {
+      throw invalid_callback_error{};
+    }
   }
 
   /**
@@ -62,10 +93,10 @@ public:
 
   /**
    * @brief callbacks_empty
-   * @return Number of active callbacks.
+   * @return True if there are no callbacks
    */
-  std::size_t callbacks_empty() const
-  { return mCallbacks.size(); }
+  bool callbacks_empty() const
+  { return mCallbacks.empty(); }
 
   /**
    * @brief send Trigger all callbacks
@@ -75,7 +106,10 @@ public:
   void send(Args&&... args)
   {
     for (auto& callback : mCallbacks)
-      callback(std::forward<Args>(args)...);
+    {
+      if(callback)
+        callback(std::forward<Args>(args)...);
+    }
   }
 
   /**

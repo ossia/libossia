@@ -245,6 +245,7 @@ inline generic_address_data make_address_data(const QJSValue& js)
     set_min(domain, value_from_jsvalue(base_v, js.property("min")));
     set_max(domain, value_from_jsvalue(base_v, js.property("max")));
 
+    dat.domain = domain;
     dat.access = get_enum<ossia::access_mode>(js.property("access"));
     dat.bounding = get_enum<ossia::bounding_mode>(js.property("bounding"));
     dat.repetition_filter = get_enum<ossia::repetition_filter>(js.property("repetition_filter"));

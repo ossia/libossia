@@ -13,6 +13,8 @@ expression_composition::expression_composition(
     , mSecondExpression(std::move(expr2))
     , mOperator(op)
 {
+  if(!mFirstExpression || !mSecondExpression)
+    throw std::runtime_error("An argument to expression_composition is null");
 }
 
 expression_composition::~expression_composition()
@@ -23,9 +25,9 @@ expression_composition::~expression_composition()
 
 bool expression_composition::evaluate() const
 {
-  return do_evaluation(
-      expressions::evaluate(*mFirstExpression),
-      expressions::evaluate(*mSecondExpression));
+    return do_evaluation(
+          expressions::evaluate(*mFirstExpression),
+          expressions::evaluate(*mSecondExpression));
 }
 
 void expression_composition::update() const
