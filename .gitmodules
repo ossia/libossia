@@ -20,3 +20,6 @@
 [submodule "3rdparty/spdlog"]
 	path = 3rdparty/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "3rdparty/brigand"]
+	path = 3rdparty/brigand
+	url = https://github.com/edouarda/brigand
