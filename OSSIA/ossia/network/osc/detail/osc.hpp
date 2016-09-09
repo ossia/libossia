@@ -390,9 +390,6 @@ inline bool update_value(
     oscpack::ReceivedMessageArgumentIterator beg_it,
     oscpack::ReceivedMessageArgumentIterator end_it, int N)
 {
-  if (addr.getAccessMode() == ossia::access_mode::SET)
-    return false;
-
   auto res = filter_value(
                addr.getDomain(),
                ossia::net::to_value(addr.cloneValue(), beg_it, end_it, N),
