@@ -16,7 +16,7 @@ namespace net
 {
 namespace midi
 {
-class note_on_N_node final : public midi_node
+class OSSIA_EXPORT note_on_N_node final : public midi_node
 {
   const std::string mName;
 
@@ -36,7 +36,7 @@ public:
   }
 };
 
-class note_off_N_node final : public midi_node
+class OSSIA_EXPORT note_off_N_node final : public midi_node
 {
   const std::string mName;
 
@@ -56,7 +56,7 @@ public:
   }
 };
 
-class control_N_node final : public midi_node
+class OSSIA_EXPORT control_N_node final : public midi_node
 {
   const std::string mName;
 
@@ -76,7 +76,7 @@ public:
   }
 };
 
-class program_N_node final : public midi_node
+class OSSIA_EXPORT program_N_node final : public midi_node
 {
   const std::string mName;
 
@@ -96,7 +96,7 @@ public:
   }
 };
 
-class program_node final : public midi_node
+class OSSIA_EXPORT program_node final : public midi_node
 {
 public:
   program_node(midi_size_t channel, midi_device& aDevice) :
@@ -118,7 +118,7 @@ public:
   }
 };
 
-class note_on_node final : public midi_node
+class OSSIA_EXPORT note_on_node final : public midi_node
 {
 public:
   note_on_node(midi_size_t channel, midi_device& aDevice) :
@@ -140,7 +140,7 @@ public:
   }
 };
 
-class note_off_node final : public midi_node
+class OSSIA_EXPORT note_off_node final : public midi_node
 {
 public:
   note_off_node(midi_size_t channel, midi_device& aDevice) :
@@ -162,7 +162,7 @@ public:
   }
 };
 
-class control_node final : public midi_node
+class OSSIA_EXPORT control_node final : public midi_node
 {
 public:
   control_node(midi_size_t channel, midi_device& aDevice) :
@@ -184,7 +184,7 @@ public:
   }
 };
 
-class channel_node final : public midi_node
+class OSSIA_EXPORT channel_node final : public midi_node
 {
   const midi_size_t mChannel;
   const std::string mName;

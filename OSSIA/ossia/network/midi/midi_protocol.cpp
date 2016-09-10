@@ -198,6 +198,7 @@ bool midi_protocol::pull(address_base& address)
 
 bool midi_protocol::push(const address_base& address)
 {
+  try {
   const midi_address& adrs = dynamic_cast<const midi_address&>(address);
   if (mInfo.type != midi_info::Type::RemoteInput)
     return false;
@@ -280,6 +281,9 @@ bool midi_protocol::push(const address_base& address)
   }
 
   return true;
+  } catch (...) {
+    return false; // TODO log error.
+  }
 }
 
 bool midi_protocol::observe(address_base& address, bool enable)
