@@ -242,7 +242,6 @@ void minuit_protocol::handleReceivedMessage(
 {
     boost::string_ref address{m.AddressPattern()};
 
-    //std::cerr << "inbound" << m << std::endl;
     if (address.size() > 0 && address[0] == '/')
     {
         // Handle the OSC-like case where we receive a plain value.

@@ -334,6 +334,20 @@ struct osc_inbound_visitor
     }
 };
 
+struct osc_inbound_impulse_visitor
+{
+  template<typename T>
+  ossia::value operator()(T&& t) const
+  {
+    return t;
+  }
+
+  ossia::value operator()() const
+  {
+    return {};
+  }
+};
+
 template<typename Value_T>
 inline ossia::value filter_value(
     const ossia::net::domain& dom, Value_T&& base_val,
@@ -382,7 +396,10 @@ inline ossia::value to_value(
     oscpack::ReceivedMessageArgumentIterator beg_it,
     oscpack::ReceivedMessageArgumentIterator end_it, int N)
 {
-  return current.apply(osc_inbound_visitor{beg_it, beg_it, end_it, N});
+  if(beg_it != end_it)
+    return current.apply(osc_inbound_visitor{beg_it, beg_it, end_it, N});
+  else
+    return current.apply(osc_inbound_impulse_visitor{});
 }
 
 inline bool update_value(
