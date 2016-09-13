@@ -106,7 +106,7 @@ public:
   }
 
   template<typename T, typename... Args>
-  static constexpr ossia::value make(Args&&... args)
+  static ossia::value make(Args&&... args)
   { return ossia::value{detail::dummy<T>{}, std::forward<Args>(args)...}; }
 
   // Movable overloads
