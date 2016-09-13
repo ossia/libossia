@@ -21,33 +21,33 @@ class value;
  */
 struct OSSIA_EXPORT Impulse
 {
-  Impulse() = default;
-  Impulse(const Impulse&) = default;
-  Impulse(Impulse&&) = default;
-  Impulse& operator=(const Impulse&) = default;
-  Impulse& operator=(Impulse&&) = default;
+  constexpr Impulse() = default;
+  constexpr Impulse(const Impulse&) = default;
+  constexpr Impulse(Impulse&&) = default;
+  constexpr Impulse& operator=(const Impulse&) = default;
+  constexpr Impulse& operator=(Impulse&&) = default;
 
-  bool operator==(const value&) const
+  constexpr bool operator==(const value&) const
   {
     return true;
   }
-  bool operator!=(const value&) const
+  constexpr bool operator!=(const value&) const
   {
     return false;
   }
-  bool operator>(const value&) const
+  constexpr bool operator>(const value&) const
   {
     return false;
   }
-  bool operator>=(const value&) const
+  constexpr bool operator>=(const value&) const
   {
     return true;
   }
-  bool operator<(const value&) const
+  constexpr bool operator<(const value&) const
   {
     return false;
   }
-  bool operator<=(const value&) const
+  constexpr bool operator<=(const value&) const
   {
     return true;
   }

@@ -12,17 +12,17 @@ struct OSSIA_EXPORT Int
 {
   int value;
 
-  Int(int v = 0) : value(v)
+  constexpr Int(int v = 0) : value(v)
   {
   }
 
   template <typename T>
-  Int(T*) = delete;
+  constexpr Int(T*) = delete;
 
-  Int(const Int&) = default;
-  Int(Int&&) = default;
-  Int& operator=(const Int&) = default;
-  Int& operator=(Int&&) = default;
+  constexpr Int(const Int&) = default;
+  constexpr Int(Int&&) = default;
+  constexpr Int& operator=(const Int&) = default;
+  constexpr Int& operator=(Int&&) = default;
 
   bool operator==(const ossia::value&) const;
   bool operator!=(const ossia::value&) const;

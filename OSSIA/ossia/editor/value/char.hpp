@@ -14,14 +14,14 @@ struct OSSIA_EXPORT Char
 
   /*! constructor
    \param char value */
-  Char(char v = 0x00) : value(v)
+  constexpr Char(char v = 0x00) : value(v)
   {
   }
 
-  Char(const Char&) = default;
-  Char(Char&&) = default;
-  Char& operator=(const Char&) = default;
-  Char& operator=(Char&&) = default;
+  constexpr Char(const Char&) = default;
+  constexpr Char(Char&&) = default;
+  constexpr Char& operator=(const Char&) = default;
+  constexpr Char& operator=(Char&&) = default;
 
   bool operator==(const ossia::value&) const;
   bool operator!=(const ossia::value&) const;

@@ -22,15 +22,15 @@ public:
 
   std::array<T, N> value;
 
-  Vec() = default;
-  Vec(std::array<T, N> v) : value(std::move(v))
+  constexpr Vec() = default;
+  constexpr Vec(std::array<T, N> v) : value(std::move(v))
   {
   }
 
-  Vec(const Vec&) = default;
-  Vec(Vec&&) = default;
-  Vec& operator=(const Vec&) = default;
-  Vec& operator=(Vec&&) = default;
+  constexpr Vec(const Vec&) = default;
+  constexpr Vec(Vec&&) = default;
+  constexpr Vec& operator=(const Vec&) = default;
+  constexpr Vec& operator=(Vec&&) = default;
 
   bool operator==(const ossia::value&) const;
   bool operator!=(const ossia::value&) const;

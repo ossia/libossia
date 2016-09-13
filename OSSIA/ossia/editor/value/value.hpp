@@ -83,37 +83,37 @@ public:
 
   // Construction
   template <typename T>
-  value(T*) = delete;
-  value(ossia::Impulse val) : v{val} { }
-  value(ossia::Bool val) : v{val} { }
-  value(ossia::Int val) : v{val} { }
-  value(ossia::Float val) : v{val} { }
-  value(ossia::Char val) : v{val} { }
-  value(const ossia::String& val) : v{val} { }
-  value(const ossia::Tuple& val) : v{val} { }
-  value(const ossia::Vec2f& val) : v{val} { }
-  value(const ossia::Vec3f& val) : v{val} { }
-  value(const ossia::Vec4f& val) : v{val} { }
-  value(const ossia::Destination& val) : v{val} { }
-  value(ossia::net::address_base& val) : v{eggs::variants::in_place<ossia::Destination>, val} { }
-  value(const ossia::Behavior& val) : v{val} { }
+  constexpr value(T*) = delete;
+  constexpr value(ossia::Impulse val) : v{val} { }
+  constexpr value(ossia::Bool val) : v{val} { }
+  constexpr value(ossia::Int val) : v{val} { }
+  constexpr value(ossia::Float val) : v{val} { }
+  constexpr value(ossia::Char val) : v{val} { }
+  constexpr value(const ossia::String& val) : v{val} { }
+  constexpr value(const ossia::Tuple& val) : v{val} { }
+  constexpr value(const ossia::Vec2f& val) : v{val} { }
+  constexpr value(const ossia::Vec3f& val) : v{val} { }
+  constexpr value(const ossia::Vec4f& val) : v{val} { }
+  constexpr value(const ossia::Destination& val) : v{val} { }
+  constexpr value(ossia::net::address_base& val) : v{eggs::variants::in_place<ossia::Destination>, val} { }
+  constexpr value(const ossia::Behavior& val) : v{val} { }
 
   template<typename T, typename... Args>
-  value(detail::dummy<T> t, Args&&... args):
+  constexpr value(detail::dummy<T> t, Args&&... args):
     v{eggs::variants::in_place<typename detail::dummy<T>::type>, std::forward<Args>(args)...}
   {
 
   }
 
   template<typename T, typename... Args>
-  static ossia::value make(Args&&... args)
+  static constexpr ossia::value make(Args&&... args)
   { return ossia::value{detail::dummy<T>{}, std::forward<Args>(args)...}; }
 
   // Movable overloads
-  value(ossia::String&& val) : v{std::move(val)} { }
-  value(ossia::Tuple&& val) : v{std::move(val)} { }
-  value(ossia::Destination&& val) : v{std::move(val)} { }
-  value(ossia::Behavior&& val) : v{std::move(val)} { }
+  constexpr value(ossia::String&& val) : v{std::move(val)} { }
+  constexpr value(ossia::Tuple&& val) : v{std::move(val)} { }
+  constexpr value(ossia::Destination&& val) : v{std::move(val)} { }
+  constexpr value(ossia::Behavior&& val) : v{std::move(val)} { }
 
 
   // Assignment

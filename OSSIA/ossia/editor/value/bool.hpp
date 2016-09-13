@@ -13,14 +13,14 @@ struct OSSIA_EXPORT Bool
   bool value;
 
   /*! constructor */
-  Bool(bool v = false) : value(v)
+  constexpr Bool(bool v = false) : value(v)
   {
   }
 
-  Bool(const Bool&) = default;
-  Bool(Bool&&) = default;
-  Bool& operator=(const Bool&) = default;
-  Bool& operator=(Bool&&) = default;
+  constexpr Bool(const Bool&) = default;
+  constexpr Bool(Bool&&) = default;
+  constexpr Bool& operator=(const Bool&) = default;
+  constexpr Bool& operator=(Bool&&) = default;
 
   bool operator==(const ossia::value&) const;
   bool operator!=(const ossia::value&) const;
