@@ -49,12 +49,12 @@ struct euler_u :
     const auto cosPitchCosRoll = cosPitch * cosRoll;
     const auto sinPitchSinRoll = sinPitch * sinRoll;
 
-    return {{{
-     float(cosYaw * sinPitch * cosRoll  - sinYaw * cosPitch * sinRoll), //X
-     float(cosYaw * cosPitch * sinRoll  + sinYaw * sinPitch * cosRoll), //Y
-     float(sinYaw * cosPitchCosRoll     + cosYaw * sinPitchSinRoll), //Z
-     float(cosYaw * cosPitchCosRoll     - sinYaw * sinPitchSinRoll) //W
-     }}};
+    return std::array<double, 4>{
+     cosYaw * sinPitch * cosRoll  - sinYaw * cosPitch * sinRoll, //X
+     cosYaw * cosPitch * sinRoll  + sinYaw * sinPitch * cosRoll, //Y
+     sinYaw * cosPitchCosRoll     + cosYaw * sinPitchSinRoll, //Z
+     cosYaw * cosPitchCosRoll     - sinYaw * sinPitchSinRoll //W
+     };
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
@@ -64,11 +64,11 @@ struct euler_u :
     const auto z = self.val.value[2];
     const auto w = self.val.value[3];
 
-    return {{{
-          float(rad_to_deg * std::atan2(-2. * (z*w - x*y), w*w - x*x + y*y - z*z)),
-          float(rad_to_deg * std::asin(2. * (w*x + y*z))),
-          float(rad_to_deg * std::atan2(2. * (w*y + x*z), w*w - x*x - y*y + z*z))
-        }}};
+    return std::array<double, 4>{
+          rad_to_deg * std::atan2(-2. * (z*w - x*y), w*w - x*x + y*y - z*z),
+          rad_to_deg * std::asin(2. * (w*x + y*z)),
+          rad_to_deg * std::atan2(2. * (w*y + x*z), w*w - x*x - y*y + z*z)
+        };
   }
 };
 
@@ -95,12 +95,12 @@ struct axis_u :
     y = y * n;
     z = z * n; */
 
-    return {{{
-     float(x * n * sinAngle), //X
-     float(y * n * sinAngle), //Y
-     float(z * n * sinAngle), //Z
-     float(std::cos(angle)) //W
-    }}};
+    return std::array<double, 4>{
+     x * n * sinAngle, //X
+     y * n * sinAngle, //Y
+     z * n * sinAngle, //Z
+     std::cos(angle) //W
+    };
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
@@ -117,12 +117,12 @@ struct axis_u :
             ? 1.0
             : 1.0 / sin_a;
 
-    return {{{
-     float(x * sin_a2),
-     float(y * sin_a2),
-     float(z * sin_a2),
-     float(rad_to_deg * 2.0 * std::atan2(sin_a, w))
-    }}};
+    return std::array<double, 4>{
+     x * sin_a2,
+     y * sin_a2,
+     z * sin_a2,
+     rad_to_deg * 2.0 * std::atan2(sin_a, w)
+    };
   }
 };
 

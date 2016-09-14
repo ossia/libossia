@@ -23,8 +23,15 @@ public:
   std::array<T, N> value;
 
   constexpr Vec() = default;
-  constexpr Vec(std::array<T, N> v) : value(std::move(v))
+  constexpr Vec(std::array<float, N> v) : value(std::move(v))
   {
+  }
+  constexpr Vec(std::array<double, N> v)
+  {
+    for(int i = 0; i < N; i++)
+    {
+      value[i] = v[i];
+    }
   }
 
   constexpr Vec(const Vec&) = default;

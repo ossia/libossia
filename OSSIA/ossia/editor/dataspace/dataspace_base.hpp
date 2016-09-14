@@ -1,5 +1,7 @@
 #pragma once
 #include <ossia/editor/value/value.hpp>
+#include <ossia/editor/value/value_traits.hpp>
+
 #include <ossia/detail/math.hpp>
 #include <ratio>
 namespace ossia
@@ -15,7 +17,14 @@ struct strong_value
   using value_type = typename Unit::value_type;
   value_type val;
 
+  template<typename U,
+           typename = std::enable_if_t<
+             std::is_constructible<value_type, U>::value>>
+  constexpr strong_value(U other): val{other} { }
+
   constexpr strong_value(value_type f): val{f} { }
+
+  constexpr strong_value(typename value_trait<value_type>::value_type f): val{f} { }
   template<typename U,
            typename = std::enable_if_t<
               std::is_same<

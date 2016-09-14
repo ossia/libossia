@@ -4,6 +4,7 @@
 #include <ossia/editor/dataspace/orientation.hpp>
 #include <ossia/editor/dataspace/position.hpp>
 #include <ossia/editor/dataspace/speed.hpp>
+#include <ossia/editor/dataspace/color.hpp>
 
 namespace ossia
 {
