@@ -1,6 +1,12 @@
 #pragma once
 #include <cmath>
+#include <boost/math/constants/constants.hpp>
 
+#if defined(_MSC_VER)
+#define OSSIA_DECL_RELAXED_CONSTEXPR
+#else
+#define OSSIA_DECL_RELAXED_CONSTEXPR constexpr
+#endif
 /**
  * \file math.hpp
  *
@@ -9,26 +15,28 @@
 
 namespace ossia
 {
-const constexpr double pi = 3.1415926535897932384626;
-const constexpr double two_pi = 2. * pi;
-const constexpr double half_pi = pi / 2.;
+const constexpr auto pi = boost::math::constants::pi<double>();
+const constexpr auto two_pi = boost::math::constants::two_pi<double>();
+const constexpr auto half_pi = boost::math::constants::half_pi<double>();
+const constexpr auto rad_to_deg = boost::math::constants::radian<double>();
+const constexpr auto deg_to_rad = boost::math::constants::degree<double>();
 
 // http://stackoverflow.com/a/16659263/1495627
 template <class T>
-T clamp(T d, T min, T max)
+OSSIA_DECL_RELAXED_CONSTEXPR T clamp(T d, T min, T max)
 {
   const T t = d < min ? min : d;
   return t > max ? max : t;
 }
 
 template <class T>
-T clamp_min(T d, T min)
+constexpr T clamp_min(T d, T min)
 {
   return d < min ? min : d;
 }
 
 template <class T>
-T clamp_max(T d, T max)
+constexpr T clamp_max(T d, T max)
 {
   return d > max ? max : d;
 }
@@ -36,7 +44,7 @@ T clamp_max(T d, T max)
 // Wrap & Fold code taken from Jamoma TTLimits.h.
 // Credits : Nils Peters, Nov. 2008
 template <class T>
-T wrap(T val, const T low, const T high)
+OSSIA_DECL_RELAXED_CONSTEXPR T wrap(T val, const T low, const T high)
 {
   if ((val >= low) && (val < high))
     return val;
@@ -47,7 +55,7 @@ T wrap(T val, const T low, const T high)
 }
 
 template <class T>
-T fold(T val, const T low, const T high)
+OSSIA_DECL_RELAXED_CONSTEXPR T fold(T val, const T low, const T high)
 {
   if ((val >= low) && (val <= high))
     return val;
