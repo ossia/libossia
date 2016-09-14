@@ -33,12 +33,12 @@ struct cartesian_2d_u :
   using value_type = Vec2f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return {{{self.val.value[0], self.val.value[1], 0.f}}};
+    return std::array<double, 3>{self.val.value[0], self.val.value[1], 0.f};
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return {{self.val.value[0], self.val.value[1]}};
+    return std::array<double, 2>{self.val.value[0], self.val.value[1]};
   }
 };
 
@@ -55,11 +55,11 @@ struct spherical_u :
 
     const auto temp = std::cos(e) * d;
 
-    return {{{
-      float(std::sin(a) * temp),
-      float(std::cos(a) * temp),
-      float(std::sin(e) * d)
-    }}};
+    return std::array<double, 3>{
+      std::sin(a) * temp,
+      std::cos(a) * temp,
+      std::sin(e) * d
+    };
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
@@ -70,11 +70,11 @@ struct spherical_u :
 
     const auto temp = x * x + y * y;
 
-    return {{{
-          float(std::atan2(x, y) * rad_to_deg),
-          float(std::atan2(z, std::pow(temp, 0.5)) * rad_to_deg),
-          float(std::pow(temp + (z * z), 0.5))
-        }}};
+    return std::array<double, 3>{
+          std::atan2(x, y) * rad_to_deg,
+          std::atan2(z, std::pow(temp, 0.5)) * rad_to_deg,
+          std::pow(temp + (z * z), 0.5)
+        };
   }
 };
 
@@ -88,11 +88,11 @@ struct polar_u :
     const auto a = self.val.value[0] * deg_to_rad;
     const auto d = self.val.value[2];
 
-    return {{{
-          float(std::sin(a) * d),
-          float(std::cos(a) * d),
+    return std::array<double, 3>{
+          std::sin(a) * d,
+          std::cos(a) * d,
           0.
-        }}};
+        };
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
@@ -100,10 +100,10 @@ struct polar_u :
     const auto x = self.val.value[0];
     const auto y = self.val.value[1];
 
-    return {{{
-          float(std::atan2(x, y) * rad_to_deg),
-          float(std::pow(x * x + y * y, 0.5))
-        }}};
+    return std::array<double, 2>{
+          std::atan2(x, y) * rad_to_deg,
+          std::pow(x * x + y * y, 0.5)
+        };
   }
 };
 
@@ -113,12 +113,12 @@ struct opengl_u :
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return {{{self.val.value[0], -self.val.value[2], self.val.value[1]}}};
+    return std::array<double, 3>{self.val.value[0], -self.val.value[2], self.val.value[1]};
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return {{{self.val.value[0], self.val.value[2], -self.val.value[1]}}};
+    return std::array<double, 3>{self.val.value[0], self.val.value[2], -self.val.value[1]};
   }
 };
 
@@ -132,11 +132,11 @@ struct cylindrical_u :
     const auto a = self.val.value[1] * deg_to_rad;
     const auto z = self.val.value[2];
 
-    return {{{
-      float(std::sin(a) * d),
-      float(std::cos(a) * d),
+    return std::array<double, 3>{
+      std::sin(a) * d,
+      std::cos(a) * d,
       z
-    }}};
+    };
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
@@ -145,11 +145,11 @@ struct cylindrical_u :
     const auto y = self.val.value[1];
     const auto z = self.val.value[2];
 
-    return {{{
-          float(std::pow(x * x + y * y, 0.5)),
-          float(std::atan2(x, y) * rad_to_deg),
+    return std::array<double, 3>{
+          std::pow(x * x + y * y, 0.5),
+          std::atan2(x, y) * rad_to_deg,
           z
-        }}};
+        };
   }
 };
 
