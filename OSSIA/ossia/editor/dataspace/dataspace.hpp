@@ -9,7 +9,7 @@
 namespace ossia
 {
 
-using unit = eggs::variant<distance_u, position_u, speed_u, orientation_u>;
+using unit = eggs::variant<distance_u, position_u, speed_u, orientation_u, angle_u, color_u>;
 
 
 // TODO with some functional map on types this could be easier to write
