@@ -3,7 +3,7 @@
 
 namespace ossia
 {
-class radian_u;
+struct radian_u;
 template<typename Impl>
 struct angle_unit
 {
