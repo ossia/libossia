@@ -7,6 +7,10 @@ set(ossia_VERSION 1.0.0)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0042 NEW)
 cmake_policy(SET CMP0063 NEW)
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag(-Wmisleading-indentation SUPPORTS_MISLEADING_INDENT_FLAG)
+
+include(cotire)
 
 include(GenerateExportHeader)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -153,7 +157,7 @@ else()
     -Werror=return-type
     -Werror=trigraphs)
 
-    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND ${SUPPORTS_MISLEADING_INDENT_FLAG})
         target_compile_options(ossia PUBLIC -Wmisleading-indentation)
     endif()
 endif()
@@ -185,15 +189,20 @@ target_include_directories(ossia
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
-target_include_directories(ossia SYSTEM
+# Note : should be SYSTEM PUBLIC but due to sakra/cotire:105 we cannot.
+target_include_directories(ossia
   PUBLIC
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/variant/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>
+)
+
+target_include_directories(ossia SYSTEM
+  PUBLIC
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI/third_party>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/oscpack>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>
 
       $<INSTALL_INTERFACE:include/nano-signal-slot>
       $<INSTALL_INTERFACE:include>
@@ -213,5 +222,6 @@ message(STATUS "OSSIA - Tests: ${OSSIA_TESTING}")
 message(STATUS "OSSIA - Static: ${OSSIA_STATIC}")
 message(STATUS "OSSIA - Framework: ${OSSIA_FRAMEWORK}")
 message(STATUS "OSSIA - Protocols: ${OSSIA_PROTOCOLS}")
-include(cotire)
+
+set_property(TARGET ossia PROPERTY COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/ossia/prefix.hpp")
 cotire(ossia)

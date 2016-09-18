@@ -1,5 +1,6 @@
 set(API_HEADERS
     ## Editor ##
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/prefix.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/algorithms.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/callback_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/destination_index.hpp"

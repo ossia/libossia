@@ -10,7 +10,7 @@ option(OSSIA_EXAMPLES "Build examples" OFF)
 option(OSSIA_TESTING "Build tests" OFF)
 option(OSSIA_CI "Continuous integration run" OFF)
 option(OSSIA_FRAMEWORK "Build an OS X framework" OFF)
-set(OSSIA_TESTING ON)
+
 # Configuration
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0042 NEW)
@@ -19,6 +19,10 @@ cmake_policy(SET CMP0063 NEW)
 set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(CMAKE_CXX_STANDARD 14)
+
+# So that make install after make all_unity does not rebuild everything :
+set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY True)
+
 if(CMAKE_SYSTEM_NAME MATCHES Emscripten)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 endif()
@@ -45,7 +49,6 @@ set_property(TARGET boost PROPERTY
     INTERFACE_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})
 
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
-
 if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
     add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/ModernMIDI" EXCLUDE_FROM_ALL)
 endif()
