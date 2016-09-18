@@ -157,7 +157,7 @@ else()
     -Werror=return-type
     -Werror=trigraphs)
 
-    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND ${SUPPORTS_MISLEADING_INDENT_FLAG})
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND "${SUPPORTS_MISLEADING_INDENT_FLAG}")
         target_compile_options(ossia PUBLIC -Wmisleading-indentation)
     endif()
 endif()
