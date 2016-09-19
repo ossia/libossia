@@ -1,13 +1,17 @@
 #include <ossia/network/midi/detail/midi_impl.hpp>
 #include <ossia/network/midi/midi.hpp>
 
+#include <ModernMIDI/midi_input.h>
+#include <ModernMIDI/midi_output.h>
 namespace ossia
 {
 namespace net
 {
 namespace midi
 {
-midi_protocol::midi_protocol() : mInput{"ossia-in"}, mOutput{"ossia-out"}
+midi_protocol::midi_protocol() :
+    mInput{std::make_unique<mm::MidiInput>("ossia-in")},
+    mOutput{std::make_unique<mm::MidiOutput>("ossia-out")}
 {
 }
 
@@ -15,8 +19,8 @@ midi_protocol::~midi_protocol()
 {
   try
   {
-    mInput.closePort();
-    mOutput.closePort();
+    mInput->closePort();
+    mOutput->closePort();
   }
   catch (...)
   {
@@ -31,19 +35,19 @@ bool midi_protocol::setInfo(midi_info m)
     // Close current ports
     if (mInfo.type == midi_info::Type::RemoteOutput)
     {
-      mInput.closePort();
+      mInput->closePort();
     }
     else if (mInfo.type == midi_info::Type::RemoteInput)
     {
-      mOutput.closePort();
+      mOutput->closePort();
     }
 
     mInfo = m;
 
     if (mInfo.type == midi_info::Type::RemoteOutput)
     {
-      mInput.openPort(mInfo.port);
-      mInput.messageCallback = [=](mm::MidiMessage mess) {
+      mInput->openPort(mInfo.port);
+      mInput->messageCallback = [=](mm::MidiMessage mess) {
         midi_channel& c = mChannels[mess.getChannel()];
         switch (mess.getMessageType())
         {
@@ -113,7 +117,7 @@ bool midi_protocol::setInfo(midi_info m)
     }
     else if (mInfo.type == midi_info::Type::RemoteInput)
     {
-      mOutput.openPort(mInfo.port);
+      mOutput->openPort(mInfo.port);
     }
 
     return true;
@@ -208,7 +212,7 @@ bool midi_protocol::push(const address_base& address)
   {
     case address_info::Type::NoteOn_N:
     {
-      mOutput.send(
+      mOutput->send(
           mm::MakeNoteOn(
               adrinfo.channel, adrinfo.note,
               adrs.getValue().get<Int>().value));
@@ -218,7 +222,7 @@ bool midi_protocol::push(const address_base& address)
     case address_info::Type::NoteOn:
     {
       auto& val = adrs.getValue().get<Tuple>().value;
-      mOutput.send(
+      mOutput->send(
           mm::MakeNoteOn(
               adrinfo.channel, val[0].get<Int>().value,
               val[1].get<Int>().value));
@@ -227,7 +231,7 @@ bool midi_protocol::push(const address_base& address)
 
     case address_info::Type::NoteOff_N:
     {
-      mOutput.send(
+      mOutput->send(
           mm::MakeNoteOff(
               adrinfo.channel, adrinfo.note,
               adrs.getValue().get<Int>().value));
@@ -237,7 +241,7 @@ bool midi_protocol::push(const address_base& address)
     case address_info::Type::NoteOff:
     {
       auto& val = adrs.getValue().get<Tuple>().value;
-      mOutput.send(
+      mOutput->send(
           mm::MakeNoteOff(
               adrinfo.channel, val[0].get<Int>().value,
               val[1].get<Int>().value));
@@ -246,7 +250,7 @@ bool midi_protocol::push(const address_base& address)
 
     case address_info::Type::CC_N:
     {
-      mOutput.send(
+      mOutput->send(
           mm::MakeControlChange(
               adrinfo.channel, adrinfo.note,
               adrs.getValue().get<Int>().value));
@@ -256,7 +260,7 @@ bool midi_protocol::push(const address_base& address)
     case address_info::Type::CC:
     {
       auto& val = adrs.getValue().get<Tuple>().value;
-      mOutput.send(
+      mOutput->send(
           mm::MakeControlChange(
               adrinfo.channel, val[0].get<Int>().value,
               val[1].get<Int>().value));
@@ -265,7 +269,7 @@ bool midi_protocol::push(const address_base& address)
 
     case address_info::Type::PC:
     {
-      mOutput.send(
+      mOutput->send(
           mm::MakeProgramChange(
               adrinfo.channel, adrs.getValue().get<Int>().value));
       return true;
@@ -273,7 +277,7 @@ bool midi_protocol::push(const address_base& address)
 
     case address_info::Type::PC_N:
     {
-      mOutput.send(mm::MakeProgramChange(adrinfo.channel, adrinfo.note));
+      mOutput->send(mm::MakeProgramChange(adrinfo.channel, adrinfo.note));
       return true;
     }
     default:
@@ -341,7 +345,7 @@ std::vector<midi_info> midi_protocol::scan()
 
   {
     // Input devices are those on which we do output
-    auto& in = mInput;
+    auto& in = *mInput;
     auto dev = in.getInputDevice();
     auto portcount = dev->getPortCount();
     for (auto i = 0u; i < portcount; i++)
@@ -352,7 +356,7 @@ std::vector<midi_info> midi_protocol::scan()
 
   {
     // Output devices are those that will send data to us
-    auto& out = mOutput;
+    auto& out = *mOutput;
     auto dev = out.getOutputDevice();
     auto portcount = dev->getPortCount();
     for (auto i = 0u; i < portcount; i++)

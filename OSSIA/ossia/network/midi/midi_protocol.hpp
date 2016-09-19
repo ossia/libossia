@@ -9,10 +9,13 @@
 #include <array>
 #include <cassert>
 
-#include <ModernMIDI/midi_input.h>
-#include <ModernMIDI/midi_output.h>
 #include <atomic>
 
+namespace mm
+{
+class MidiInput;
+class MidiOutput;
+}
 namespace ossia
 {
 namespace net
@@ -40,8 +43,8 @@ struct OSSIA_EXPORT midi_info
 
 class OSSIA_EXPORT midi_protocol final : public ossia::net::protocol_base
 {
-  mm::MidiInput mInput;
-  mm::MidiOutput mOutput;
+  std::unique_ptr<mm::MidiInput> mInput;
+  std::unique_ptr<mm::MidiOutput> mOutput;
 
   std::array<midi_channel, 16> mChannels;
 
