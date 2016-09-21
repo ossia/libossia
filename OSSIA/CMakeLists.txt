@@ -117,6 +117,14 @@ if(OSSIA_PROTOCOL_SERIAL)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Serial)
 endif()
 
+if(OSSIA_JAVA)
+    target_sources(ossia PRIVATE ${JAVA_HEADERS} ${JAVA_SRCS})
+    target_include_directories(ossia PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java"
+        "${OSSIA_3RDPARTY_FOLDER}/jni_hpp/include"
+        "${OSSIA_3RDPARTY_FOLDER}/jni_hpp/test"
+        )
+endif()
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")
 source_group(Editor REGULAR_EXPRESSION "ossia/editor.*")
 source_group(Network REGULAR_EXPRESSION "ossia/network.*")

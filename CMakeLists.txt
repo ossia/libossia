@@ -10,6 +10,7 @@ option(OSSIA_EXAMPLES "Build examples" OFF)
 option(OSSIA_TESTING "Build tests" OFF)
 option(OSSIA_CI "Continuous integration run" OFF)
 option(OSSIA_FRAMEWORK "Build an OS X framework" OFF)
+option(OSSIA_JAVA "Build JNI bindings" OFF)
 
 # Configuration
 cmake_policy(SET CMP0020 NEW)

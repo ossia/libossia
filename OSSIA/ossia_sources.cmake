@@ -234,3 +234,11 @@ set(WS_CLIENT_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_protocol.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_address.cpp")
+
+set(JAVA_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java/ossia-java.hpp"
+    )
+
+set(JAVA_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java/ossia-java.cpp"
+    )
