@@ -42,5 +42,11 @@ bool operator==(const domain_base<T>& lhs, const domain_base<T>& rhs)
   return true;
 }
 
+template <typename T>
+bool operator!=(const domain_base<T>& lhs, const domain_base<T>& rhs)
+{
+  return !(lhs == rhs);
+}
+
 }
 }
