@@ -25,4 +25,4 @@
 	url = https://github.com/edouarda/brigand
 [submodule "3rdparty/jni_hpp"]
 	path = 3rdparty/jni_hpp
-	url = https://github.com/mapbox/jni.hpp
+	url = https://github.com/jcelerier/jni.hpp
