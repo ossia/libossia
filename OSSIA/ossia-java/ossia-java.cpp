@@ -1,5 +1,8 @@
 #include "ossia-java.hpp"
-#include <ossia/ossia.hpp>
+#include <ossia/editor/value/value.hpp>
+
+#define METHOD(MethodPtr, name) jni::MakeNativePeerMethod<decltype(MethodPtr), (MethodPtr)>(name)
+
 namespace ossia
 {
 namespace java
@@ -11,7 +14,7 @@ auto safe_function(std::string name, jni::JNIEnv& env, Fun f)
 {
   try
   {
-    f();
+    return f();
   }
   catch(const std::exception& e)
   {
@@ -34,9 +37,13 @@ auto safe_function(std::string name, jni::JNIEnv& env, Fun f)
 class Value
 {
 public:
+
   static constexpr auto Name() { return "Value"; }
   Value(JNIEnv&) { }
   ~Value() { }
+
+  using ValueArray = jni::Array<jni::Object<Value>>;
+  using FloatArray = jni::Array<jni::jfloat>;
 
   ossia::value val;
 
@@ -48,15 +55,15 @@ public:
   { safe_function(__func__, e, [&] { val = Char{a}; }); }
   void SetBool(jni::JNIEnv& e, jni::jboolean a)
   { safe_function(__func__, e, [&] { val = Bool{a}; }); }
-  void SetString(jni::JNIEnv& e, const jni::jstring& a)
+  void SetString(jni::JNIEnv& e, jni::String a)
   { safe_function(__func__, e, [&] { ; }); }
-  void SetTuple(jni::JNIEnv& e, const jni::jobjectArray& a)
+  void SetTuple(jni::JNIEnv& e, ValueArray a)
   { safe_function(__func__, e, [&] { ; }); }
-  void SetVec2f(jni::JNIEnv& e, const jfloatArray&)
+  void SetVec2f(jni::JNIEnv& e, FloatArray)
   { safe_function(__func__, e, [&] { ; }); }
-  void SetVec3f(jni::JNIEnv& e, const jfloatArray&)
+  void SetVec3f(jni::JNIEnv& e, FloatArray)
   { safe_function(__func__, e, [&] { ; }); }
-  void SetVec4f(jni::JNIEnv& e, const jfloatArray&)
+  void SetVec4f(jni::JNIEnv& e, FloatArray)
   { safe_function(__func__, e, [&] { ; }); }
 
   jni::jint GetInt(jni::JNIEnv& e)
@@ -67,11 +74,22 @@ public:
   { return safe_function(__func__, e, [&] { return val.get<Char>().value; }); }
   jni::jboolean GetBool(jni::JNIEnv& e)
   { return safe_function(__func__, e, [&] { return val.get<Bool>().value; }); }
-  jni::String GetString(jni::JNIEnv& e) { return jni::MakeAnything(jni::ThingToMake<jni::String>{}, e, "lol"); }
-  //jni::Array<jni::Object> GetTuple(jni::JNIEnv& e) { return {}; }
-  //jni::Array<jni::jfloat> GetVec2f(jni::JNIEnv& e) { return {}; }
-  //jni::Array<jni::jfloat> GetVec3f(jni::JNIEnv& e) { return {}; }
-  //jni::Array<jni::jfloat> GetVec4f(jni::JNIEnv& e) { return {}; }
+  jni::String GetString(jni::JNIEnv& e)
+  {
+    return safe_function(__func__, e, [&] {
+      return jni::MakeAnything(jni::ThingToMake<jni::String>{}, e, "lol");
+    });
+  }
+  /*
+  jarray<jobject> GetTuple(jni::JNIEnv& e) {
+    return safe_function(__func__, e, [&] {
+      return jni::NewObjectArray(e, 1234, jni::FindClass(e, "ossia/Value"));
+    });
+  }
+
+  FloatArray GetVec2f(jni::JNIEnv& e) { return {}; }
+  FloatArray GetVec3f(jni::JNIEnv& e) { return {}; }
+  FloatArray GetVec4f(jni::JNIEnv& e) { return {}; }*/
   jni::jlong GetType(jni::JNIEnv& e) { return {}; }
 };
 
@@ -87,11 +105,9 @@ struct Calculator
 
 extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*)
 {
-  /*
   using namespace ossia::java;
   jni::JNIEnv& env = jni::GetEnv(*vm);
 
-#define METHOD(MethodPtr, name) jni::MakeNativePeerMethod<decltype(MethodPtr), (MethodPtr)>(name)
 
   jni::RegisterNativePeer<Value>(
         env,
@@ -100,9 +116,25 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*)
         std::make_unique<Value, JNIEnv&>,
         "initialize",
         "finalize",
-        METHOD(&Calculator::Add, "add"),
-        METHOD(&Calculator::Subtract, "subtract")
+        METHOD(&Value::SetInt, "setInt"),
+        METHOD(&Value::SetFloat, "setFloat"),
+        METHOD(&Value::SetBool, "setBool"),
+        METHOD(&Value::SetChar, "setChar"),
+        METHOD(&Value::SetString, "setString"),
+        METHOD(&Value::SetTuple, "setTuple"),
+        /*
+        METHOD(&Value::SetVec2f, "setVec2f"),
+        METHOD(&Value::SetVec3f, "setVec3f"),
+        METHOD(&Value::SetVec4f, "setVec4f"),
+        */
+
+        METHOD(&Value::GetInt, "getInt"),
+        METHOD(&Value::GetFloat, "getFloat"),
+        METHOD(&Value::GetBool, "getBool"),
+        METHOD(&Value::GetChar, "getChar"),
+        METHOD(&Value::GetString, "getString"),
+
+        METHOD(&Value::GetType, "getType")
         );
-*/
   return jni::Unwrap(jni::jni_version_1_2);
 }
