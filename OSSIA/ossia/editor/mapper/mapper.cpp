@@ -23,7 +23,7 @@ mapper::~mapper()
 
 ossia::state_element mapper::offset(ossia::time_value offset)
 {
-  if (parent->getRunning())
+  if (parent()->getRunning())
     throw execution_error("mapper_impl::offset: "
                            "parent time constraint is running");
 
@@ -32,7 +32,7 @@ ossia::state_element mapper::offset(ossia::time_value offset)
 
 ossia::state_element mapper::state()
 {
-  auto& par = *parent;
+  auto& par = *parent();
   if (!par.getRunning())
   {
     throw execution_error("mapper_impl::state: "

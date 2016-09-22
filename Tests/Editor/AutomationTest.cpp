@@ -41,7 +41,7 @@ private Q_SLOTS:
     auto autom = std::make_shared<automation>(*address, f);
     QVERIFY(autom != nullptr);
 
-    QVERIFY(autom->parent == nullptr);
+    QVERIFY(autom->parent() == nullptr);
 
     QVERIFY(autom->getDrivenAddress() == *address);
     QVERIFY(autom->getDriving() == f);

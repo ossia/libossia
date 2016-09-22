@@ -34,11 +34,12 @@
  * The expression results are passed by cascading callbacks
  * to allow notification when an expression is listened to.
  *
- * \see expression_bool
- * \see expression_atom
- * \see expression_pulse
- * \see expression_composition
- * \see expression_not
+ * \see
+ * \ref expression_bool
+ * \ref expression_atom
+ * \ref expression_pulse
+ * \ref expression_composition
+ * \ref expression_not
  */
 
 namespace ossia

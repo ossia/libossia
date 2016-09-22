@@ -60,7 +60,7 @@ private Q_SLOTS:
     auto mapping = std::make_shared<mapper>(*float_address, *int_address, f);
     QVERIFY(mapping != nullptr);
 
-    QVERIFY(mapping->parent == nullptr);
+    QVERIFY(mapping->parent() == nullptr);
 
     QVERIFY(&mapping->getDriverAddress() == float_address);
     QVERIFY(&mapping->getDrivenAddress() == int_address);

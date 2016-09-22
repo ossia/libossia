@@ -131,7 +131,7 @@ protected:
    * For instance, when the last callback is removed,
    * stop listening somewhere...
    *
-   * \see onRemovingLastCallback
+   * \see \ref onRemovingLastCallback
   */
   virtual void onFirstCallbackAdded()
   {
@@ -140,7 +140,7 @@ protected:
   /**
    * @brief onRemovingLastCallback
    *
-   * \see onFirstCallbackAdded
+   * \see \ref onFirstCallbackAdded
    */
   virtual void onRemovingLastCallback()
   {
