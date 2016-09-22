@@ -4,6 +4,12 @@
 namespace ossia
 {
 
+/**
+ * @brief The time_value class
+ *
+ * Represents an amount of time.
+ * The unit is context-dependent.
+ */
 class OSSIA_EXPORT time_value
 {
 

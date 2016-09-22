@@ -14,6 +14,10 @@ class Destination;
 
 namespace expressions
 {
+/**
+ * @brief expression_pulse : becomes true when a message happens
+ * @see expression.hpp
+ */
 class OSSIA_EXPORT expression_pulse final :
     public expression_callback_container
 {

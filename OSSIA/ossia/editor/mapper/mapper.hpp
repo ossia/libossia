@@ -53,15 +53,15 @@ private:
 
   void driverValueCallback(const ossia::value& value);
 
-    ossia::net::address_base& mDriverAddress;
-    ossia::net::address_base& mDrivenAddress;
-    ossia::value mDrive;
+  ossia::net::address_base& mDriverAddress;
+  ossia::net::address_base& mDrivenAddress;
+  ossia::value mDrive;
 
-    ossia::message mLastMessage;
-    ossia::value mValueToMap;
-    mutable std::mutex mValueToMapMutex;
+  ossia::message mLastMessage;
+  ossia::value mValueToMap;
+  mutable std::mutex mValueToMapMutex;
 
-    ossia::net::address_base::callback_index mDriverValueCallbackIndex;
-    bool mDriverValueObserved{};
+  ossia::net::address_base::callback_index mDriverValueCallbackIndex;
+  bool mDriverValueObserved{};
 };
 }

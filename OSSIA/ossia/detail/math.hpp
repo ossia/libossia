@@ -21,25 +21,33 @@ const constexpr auto half_pi = boost::math::constants::half_pi<double>();
 const constexpr auto rad_to_deg = boost::math::constants::radian<double>();
 const constexpr auto deg_to_rad = boost::math::constants::degree<double>();
 
-// http://stackoverflow.com/a/16659263/1495627
+/**
+ * @brief clamp_min Returns the value bounded by a min
+ */
 template <class T>
-OSSIA_DECL_RELAXED_CONSTEXPR T clamp(T d, T min, T max)
-{
-  const T t = d < min ? min : d;
-  return t > max ? max : t;
-}
-
-template <class T>
-constexpr T clamp_min(T d, T min)
+constexpr T clamp_min(T d, const T min)
 {
   return d < min ? min : d;
 }
 
+/**
+ * @brief clamp_max Returns the value bounded by a max
+ */
 template <class T>
-constexpr T clamp_max(T d, T max)
+constexpr T clamp_max(T d, const T max)
 {
   return d > max ? max : d;
 }
+
+/**
+ * @brief clamp Returns the value bounded by a min and a max
+ */
+template <class T>
+constexpr T clamp(T d, const T min, const T max)
+{
+  return clamp_min(clamp_max(d, max), min);
+}
+
 
 // Wrap & Fold code taken from Jamoma TTLimits.h.
 // Credits : Nils Peters, Nov. 2008

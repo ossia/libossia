@@ -10,7 +10,14 @@ namespace ossia
 {
 
 class time_value;
-
+/**
+ * @brief The loop class
+ *
+ * A time process that allows looping around a time_constraint.
+ * First the start time_node is checked.
+ * Then the main constraint executes.
+ * Then the end time_node is checked.
+ */
 class OSSIA_EXPORT loop final :
     public time_process
 {

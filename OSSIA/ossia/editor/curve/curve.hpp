@@ -47,19 +47,9 @@ template <typename X, typename Y>
  * A curve is a succession of \ref curve_segment.
  * It is used in a \ref Behavior to drive \ref automation or \ref mapper.
  */
-class curve final : public curve_abstract
+class curve final :
+    public curve_abstract
 {
-    X mInitialPointAbscissa;
-    boost::optional<ossia::Destination> mInitialPointAbscissaDestination;
-
-    Y mInitialPointOrdinate;
-    boost::optional<ossia::Destination> mInitialPointOrdinateDestination;
-
-    using map_type = curve_map<X, std::pair<Y, ossia::curve_segment<Y>>>;
-    map_type mPointsMap;
-
-    mutable Y mInitialPointOrdinateCache;
-    mutable bool mInitialPointOrdinateCacheUsed = false;
 public:
   using abscissa_type = X;
   using ordinate_type = Y;
@@ -314,11 +304,32 @@ public:
 
     return value.apply(vis);
   }
+
+private:
+  X mInitialPointAbscissa;
+  boost::optional<ossia::Destination> mInitialPointAbscissaDestination;
+
+  Y mInitialPointOrdinate;
+  boost::optional<ossia::Destination> mInitialPointOrdinateDestination;
+
+  using map_type = curve_map<X, std::pair<Y, ossia::curve_segment<Y>>>;
+  map_type mPointsMap;
+
+  mutable Y mInitialPointOrdinateCache;
+  mutable bool mInitialPointOrdinateCacheUsed = false;
+
 };
 
 /**
  * @brief The constant_curve class
  * A curve that always return a same single value.
+ *
+ * It is useful if for instance one wants to automate on the
+ * first value of the following tuple :
+ *
+ * [ 1, "a string", [ "another", 'c' ] ]
+ *
+ * while keeping the reste of the tuple intact.
  */
 class constant_curve final : public curve_abstract
 {

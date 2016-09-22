@@ -6,7 +6,12 @@ namespace ossia
 {
 namespace expressions
 {
-class OSSIA_EXPORT expression_bool final : public expression_callback_container
+/**
+ * @brief expression_bool : a constant boolean value.
+ * @see expression.hpp
+ */
+class OSSIA_EXPORT expression_bool final :
+    public expression_callback_container
 {
   bool mResult;
 

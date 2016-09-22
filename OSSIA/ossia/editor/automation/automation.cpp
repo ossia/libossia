@@ -26,7 +26,7 @@ automation::~automation() = default;
 
 ossia::state_element automation::offset(ossia::time_value offset)
 {
-  auto& par = *parent;
+  auto& par = *parent();
   if (par.getRunning())
   {
     throw execution_error("automation_impl::offset: "
@@ -40,7 +40,7 @@ ossia::state_element automation::offset(ossia::time_value offset)
 
 ossia::state_element automation::state()
 {
-  auto& par = *parent;
+  auto& par = *parent();
   if (par.getRunning())
   {
     // if date hasn't been processed already

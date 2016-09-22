@@ -12,6 +12,10 @@ namespace ossia
 {
 namespace expressions
 {
+/**
+ * @brief expression_atom : numeric operators in expressions.
+ * @see expression.hpp
+ */
 class OSSIA_EXPORT expression_atom final :
     public expression_callback_container
 {

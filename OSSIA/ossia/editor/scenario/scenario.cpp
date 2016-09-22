@@ -44,7 +44,8 @@ static void process_timenode_dates(time_node& t, DateMap& map)
 
 state_element scenario::offset(time_value offset)
 {
-  if (parent->getRunning())
+  auto& p = *parent();
+  if (p.getRunning())
   {
     throw execution_error("scenario_impl::offset: "
                           "parent time constraint is running");
@@ -135,7 +136,7 @@ state_element scenario::offset(time_value offset)
 
 state_element scenario::state()
 {
-  auto& par = *parent;
+  auto& par = *parent();
   if (!par.getRunning())
   {
     throw execution_error("scenario_impl::state: "

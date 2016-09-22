@@ -6,6 +6,41 @@
 #include <ossia/editor/expression/expression_pulse.hpp>
 #include <ossia/editor/expression/expression_fwd.hpp>
 
+/**
+ * @file expression.hpp
+ *
+ * This file defines the expression API.
+ * An expression is a logical construct such as :
+ *
+ * (a:/b == 1) && (c:/d <= 2.)
+ *
+ * pulse(a:/b)
+ *
+ * !(c:/d == e:/f/g)
+ *
+ * etc...
+ *
+ * The basic logical operators are expression_not (!) and
+ * expression_composition (and, or, xor).
+ *
+ * expression_atom is used for numeric comparison : <=, ==, >, etc.
+ *
+ * expression_bool is a simple boolean value.
+ *
+ * expression_pulse is an expression that will become true
+ * if a particular message happened since the last time it has been updated.
+ *
+ * The expressions are organised as a tree.
+ * The expression results are passed by cascading callbacks
+ * to allow notification when an expression is listened to.
+ *
+ * \see expression_bool
+ * \see expression_atom
+ * \see expression_pulse
+ * \see expression_composition
+ * \see expression_not
+ */
+
 namespace ossia
 {
 namespace expressions
@@ -16,6 +51,9 @@ namespace expressions
  * @return The truth value of the expression
  */
 OSSIA_EXPORT bool evaluate(const expression_base& e);
+OSSIA_EXPORT inline bool evaluate(const expression_ptr& e)
+{ return evaluate(*e); }
+
 
 /**
  * @brief update
@@ -25,15 +63,8 @@ OSSIA_EXPORT bool evaluate(const expression_base& e);
  * refers, in order to check if the value has changed.
  */
 OSSIA_EXPORT void update(const expression_base& e);
-
-OSSIA_EXPORT inline bool evaluate(const expression_ptr& e)
-{
-  return evaluate(*e);
-}
 OSSIA_EXPORT inline void update(const expression_ptr& e)
-{
-  update(*e);
-}
+{ update(*e); }
 
 /**
  * @brief operator==(const expression_base& lhs, const expression_base& rhs) Compares two expressions.
@@ -82,17 +113,35 @@ const expression_base expression_false{
  * The following functions are factories used to create
  * expressions.
  */
+
+/**
+ * @brief make_expression_true
+ * @return A "true" expression_bool.
+ * @see expression_bool
+ */
 OSSIA_EXPORT inline expression_ptr make_expression_true()
 {
   return std::make_unique<expression_base>(
       eggs::variants::in_place<expression_bool>, true);
 }
+
+/**
+ * @brief make_expression_false
+ * @return A "false" expression_bool.
+ * @see expression_bool
+ */
 OSSIA_EXPORT inline expression_ptr make_expression_false()
 {
   return std::make_unique<expression_base>(
       eggs::variants::in_place<expression_bool>, false);
 }
 
+
+/**
+ * @brief make_expression_atom
+ * @return An expression_atom
+ * @see expression_atom
+ */
 template <typename... Args>
 expression_ptr make_expression_atom(Args&&... args)
 {
@@ -100,6 +149,11 @@ expression_ptr make_expression_atom(Args&&... args)
       eggs::variants::in_place<expression_atom>, std::forward<Args>(args)...);
 }
 
+/**
+ * @brief make_expression_bool
+ * @return An expression_bool
+ * @see expression_bool
+ */
 template <typename... Args>
 expression_ptr make_expression_bool(Args&&... args)
 {
@@ -107,6 +161,11 @@ expression_ptr make_expression_bool(Args&&... args)
       eggs::variants::in_place<expression_bool>, std::forward<Args>(args)...);
 }
 
+/**
+ * @brief make_expression_composition
+ * @return An expression_composition
+ * @see expression_composition
+ */
 template <typename... Args>
 expression_ptr make_expression_composition(Args&&... args)
 {
@@ -115,6 +174,11 @@ expression_ptr make_expression_composition(Args&&... args)
       std::forward<Args>(args)...);
 }
 
+/**
+ * @brief make_expression_not
+ * @return An expression_not
+ * @see expression_not
+ */
 template <typename... Args>
 expression_ptr make_expression_not(Args&&... args)
 {
@@ -122,6 +186,11 @@ expression_ptr make_expression_not(Args&&... args)
       eggs::variants::in_place<expression_not>, std::forward<Args>(args)...);
 }
 
+/**
+ * @brief make_expression_pulse
+ * @return An expression_pulse
+ * @see expression_pulse
+ */
 template <typename... Args>
 expression_ptr make_expression_pulse(Args&&... args)
 {

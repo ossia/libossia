@@ -44,7 +44,7 @@ loop::~loop()
 
 state_element loop::offset(time_value offset)
 {
-  if (parent->getRunning())
+  if (parent()->getRunning())
   {
     throw execution_error("loop::offset: "
                            "parent time constraint is running");
@@ -68,7 +68,8 @@ state_element loop::offset(time_value offset)
 
 state_element loop::state()
 {
-  if (!parent->getRunning())
+  auto& p = *parent();
+  if (!p.getRunning())
   {
     throw execution_error("loop::state: "
                           "parent time constraint is not running");
@@ -76,7 +77,7 @@ state_element loop::state()
   }
 
   // if date hasn't been processed already
-  time_value date = parent->getDate();
+  time_value date = p.getDate();
   if (date != mLastDate)
   {
     auto prev_last_date = mLastDate;
