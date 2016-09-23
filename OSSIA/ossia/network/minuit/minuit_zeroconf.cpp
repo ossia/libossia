@@ -105,15 +105,14 @@ zeroconf_server make_zeroconf_server(
 {
   auto server = std::make_unique<KDNSSD::PublicService>(
                   QString::fromStdString(description),
-                  QString::fromStdString(service));
+                  QString::fromStdString(service),
+                  local_port);
 
-  QByteArray lp; QDataStream{lp} << local_port;
-  QByteArray rp; QDataStream{rp} << remote_port;
   server->setTextData(
     QMap<QString, QByteArray>{
-          {"LocalPort", lp},
+          {"LocalPort", QString::number(local_port).toUtf8()},
           {"LocalName", QByteArray::fromStdString(local_name)},
-          {"RemotePort", rp}
+          {"RemotePort", QString::number(remote_port).toUtf8()}
     });
 
   server->publishAsync();
