@@ -146,6 +146,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit_zeroconf.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
 )
 
@@ -242,8 +243,4 @@ set(JAVA_HEADERS
 
 set(JAVA_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java/ossia-java.cpp"
-    )
-
-set(MINUIT_ZEROCONF_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit_zeroconf.cpp"
     )

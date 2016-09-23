@@ -116,7 +116,7 @@ zeroconf_server make_zeroconf_server(
           {"RemotePort", rp}
     });
 
-  server->publishAsync();
+  server->publish();
 
   return std::move(server);
 }
