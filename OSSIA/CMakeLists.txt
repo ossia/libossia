@@ -22,6 +22,8 @@ include(DebugMode)
 include(UseGold)
 include(LinkerWarnings)
 find_package(Boost REQUIRED)
+find_package(KF5DNSSD NO_MODULE)
+
 
 ### Protocol setup ###
 set(OSSIA_PROTOCOLS OSC Minuit)
@@ -124,6 +126,12 @@ if(OSSIA_JAVA)
         "${OSSIA_3RDPARTY_FOLDER}/jni_hpp/include"
         "${OSSIA_3RDPARTY_FOLDER}/jni_hpp/test"
         )
+endif()
+
+if(KF5DNSSD_FOUND)
+    target_sources(ossia PRIVATE ${MINUIT_ZEROCONF_HEADERS} ${MINUIT_ZEROCONF_SRCS})
+    target_link_libraries(ossia PRIVATE KF5::DNSSD)
+    target_compile_definitions(ossia PRIVATE OSSIA_ZEROCONF)
 endif()
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")
 source_group(Editor REGULAR_EXPRESSION "ossia/editor.*")
@@ -230,6 +238,8 @@ message(STATUS "OSSIA - Tests: ${OSSIA_TESTING}")
 message(STATUS "OSSIA - Static: ${OSSIA_STATIC}")
 message(STATUS "OSSIA - Framework: ${OSSIA_FRAMEWORK}")
 message(STATUS "OSSIA - Protocols: ${OSSIA_PROTOCOLS}")
+message(STATUS "OSSIA - Java: ${OSSIA_JAVA}")
+message(STATUS "OSSIA - Zeroconf: ${KF5DNSSD_FOUND}")
 
 set_property(TARGET ossia PROPERTY COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/ossia/prefix.hpp")
 cotire(ossia)

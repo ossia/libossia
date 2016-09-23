@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 #include <unordered_map>
+#include <ossia/network/minuit/minuit_zeroconf.hpp>
 
 namespace oscpack
 {
@@ -46,6 +47,8 @@ private:
 
   std::unique_ptr<osc::sender> mSender;
   std::unique_ptr<osc::receiver> mReceiver;
+
+  zeroconf_server mZeroconfServer;
 
 public:
   minuit_protocol(
@@ -91,6 +94,8 @@ public:
 private:
   void handleReceivedMessage(
       const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
+
+  void update_zeroconf();
 };
 }
 }

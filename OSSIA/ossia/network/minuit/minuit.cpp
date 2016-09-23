@@ -32,6 +32,8 @@ minuit_protocol::minuit_protocol(
 
   name_table.set_device_name(mLocalName);
   mReceiver->run();
+
+  update_zeroconf();
 }
 
 minuit_protocol::~minuit_protocol()
@@ -54,6 +56,8 @@ minuit_protocol& minuit_protocol::setIp(std::string ip)
   mIp = ip;
   mSender = std::make_unique<osc::sender>(mIp, mRemotePort);
 
+  update_zeroconf();
+
   return *this;
 }
 
@@ -66,6 +70,8 @@ minuit_protocol& minuit_protocol::setRemotePort(uint16_t in_port)
 {
   mRemotePort = in_port;
   mSender = std::make_unique<osc::sender>(mIp, mRemotePort);
+
+  update_zeroconf();
 
   return *this;
 }
@@ -82,6 +88,9 @@ minuit_protocol& minuit_protocol::setLocalPort(uint16_t out_port)
                                           const oscpack::IpEndpointName& ip) {
                               this->handleReceivedMessage(m, ip);
                             });
+
+  update_zeroconf();
+
   return *this;
 }
 
@@ -118,6 +127,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
   }
   return status == std::future_status::ready || node.children().size() != 0;
 }
+
 struct scope_timer
 {
     std::chrono::high_resolution_clock::time_point t1, t2;
@@ -164,7 +174,9 @@ bool minuit_protocol::push(const ossia::net::address_base& address)
     mSender->send(address, val);
 
     if(mLogger.outbound_logger)
-        mLogger.outbound_logger->info("Out: {0} {1}", ossia::net::address_string_from_node(address), val);
+        mLogger.outbound_logger->info("Out: {0} {1}",
+                                      ossia::net::address_string_from_node(address),
+                                      val);
 
     return true;
   }
@@ -262,7 +274,15 @@ void minuit_protocol::handleReceivedMessage(
     if (mDevice)
       ossia::minuit::minuit_message_handler::handleMinuitMessage(
           *this, *mDevice, address, m);
-  }
+    }
+}
+
+void minuit_protocol::update_zeroconf()
+{
+  mZeroconfServer = make_zeroconf_server(
+                      mLocalName + " Minuit server",
+                      "_ossia_minuit._tcp",
+                      mLocalName, mLocalPort, mRemotePort);
 }
 }
 }
