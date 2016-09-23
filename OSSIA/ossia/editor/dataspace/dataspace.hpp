@@ -22,6 +22,6 @@ using orientation = add_value<orientation_u>;
 using position = add_value<position_u>;
 using color = add_value<color_u>;
 using speed = add_value<speed_u>;
-using value_with_unit = eggs::variant<distance, position, speed, orientation, angle, color>;
-//using value_with_unit = add_value<unit_t>;
+
+using value_with_unit = brigand::transform<unit_t, brigand::bind<ossia::add_value, brigand::_1>>;
 }
