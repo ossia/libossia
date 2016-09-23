@@ -281,7 +281,7 @@ void minuit_protocol::update_zeroconf()
 {
   mZeroconfServer = make_zeroconf_server(
                       mLocalName + " Minuit server",
-                      "_ossia_minuit._tcp",
+                      "_minuit._tcp",
                       mLocalName, mLocalPort, mRemotePort);
 }
 }

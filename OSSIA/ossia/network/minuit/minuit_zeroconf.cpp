@@ -1,5 +1,5 @@
 #include "minuit_zeroconf.hpp"
-
+#include <iostream>
 #if defined(OSSIA_ZEROCONF)
 
 #include <KDNSSD/DNSSD/ServiceBrowser>
@@ -15,7 +15,7 @@ namespace ossia
 {
 namespace net
 {
-const auto minuit_service_name = QStringLiteral("_ossia_minuit._tcp");
+const auto minuit_service_name = QStringLiteral("_minuit._tcp");
 
 class zeroconf_browser :
     public QObject
@@ -116,7 +116,7 @@ zeroconf_server make_zeroconf_server(
           {"RemotePort", rp}
     });
 
-  server->publish();
+  server->publishAsync();
 
   return std::move(server);
 }

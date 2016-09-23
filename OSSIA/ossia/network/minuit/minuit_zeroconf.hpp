@@ -56,7 +56,7 @@ OSSIA_EXPORT std::vector<minuit_connection_data> list_minuit_devices();
  * @brief make_minuit_zeroconf_server
  *
  * The available services names are :
- * * Minuit: _ossia_minuit._tcp
+ * * Minuit: _minuit._tcp
  *
  * @return A running Zeroconf server exposing the Minuit device info.
  */
