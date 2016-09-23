@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <ossia_export.h>
 
 namespace ossia
 {
@@ -22,7 +23,7 @@ public:
 
   std::array<T, N> value;
 
-  constexpr Vec() = default;
+  constexpr Vec() { }
   constexpr Vec(std::array<float, N> v) : value(std::move(v))
   {
   }
@@ -46,7 +47,10 @@ public:
   bool operator<(const ossia::value&) const;
   bool operator<=(const ossia::value&) const;
 };
+}
 
+namespace ossia
+{
 using Vec2f = Vec<float, 2>;
 using Vec3f = Vec<float, 3>;
 using Vec4f = Vec<float, 4>;

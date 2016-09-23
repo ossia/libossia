@@ -3,6 +3,7 @@
 #include <type_traits>
 #include <iterator>
 #include <array>
+#include <ossia/detail/instantiations.hpp>
 
 /**
  * This header contains various range-style functions that mimic std::algorithm functions.

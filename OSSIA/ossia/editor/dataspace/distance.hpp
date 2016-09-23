@@ -37,62 +37,75 @@ struct distance_ratio :
   using linear_unit<distance_unit<distance_ratio<T>>, T>::linear_unit;
 };
 
+
 template<>
-class unit_trait<meter_u>
+struct unit_traits<meter_u>
 {
-  static constexpr const auto text{ossia::make_array("m")};
+  static constexpr const auto text()
+  { return ossia::make_array("m"); }
+};
+
+template<>
+struct unit_traits<kilometer_u>
+{
+  static constexpr const auto text()
+  { return ossia::make_array("km"); }
 };
 template<>
-class unit_trait<kilometer_u>
+struct unit_traits<decimeter_u>
 {
-  static constexpr const auto text{ossia::make_array("m")};
+  static constexpr const auto text()
+  { return ossia::make_array("dm"); }
 };
 template<>
-class unit_trait<decimeter_u>
+struct unit_traits<centimeter_u>
 {
-  static constexpr const auto text{ossia::make_array("dm")};
+  static constexpr const auto text()
+  { return ossia::make_array("cm"); }
 };
 template<>
-class unit_trait<centimeter_u>
+struct unit_traits<millimeter_u>
 {
-  static constexpr const auto text{ossia::make_array("cm")};
+  static constexpr const auto text()
+  { return ossia::make_array("mm"); }
 };
 template<>
-class unit_trait<millimeter_u>
+struct unit_traits<micrometer_u>
 {
-  static constexpr const auto text{ossia::make_array("mm")};
+  static constexpr const auto text()
+  { return ossia::make_array("um"); }
 };
 template<>
-class unit_trait<micrometer_u>
+struct unit_traits<nanometer_u>
 {
-  static constexpr const auto text{ossia::make_array("mm")};
+  static constexpr const auto text()
+  { return ossia::make_array("nm"); }
 };
 template<>
-class unit_trait<nanometer_u>
+struct unit_traits<picometer_u>
 {
-  static constexpr const auto text{ossia::make_array("nm")};
-};
-template<>
-class unit_trait<picometer_u>
-{
-  static constexpr const auto text{ossia::make_array("pm")};
+  static constexpr const auto text()
+  { return ossia::make_array("pm"); }
 };
 
 
 template<>
-class unit_trait<inch_u>
+struct unit_traits<inch_u>
 {
-  static constexpr const auto text{ossia::make_array("inch")};
+  static constexpr const auto text()
+  { return ossia::make_array("inch"); }
 };
 template<>
-class unit_trait<foot_u>
+struct unit_traits<foot_u>
 {
-  static constexpr const auto text{ossia::make_array("foot")};
+  static constexpr const auto text()
+  { return ossia::make_array("foot"); }
 };
 template<>
-class unit_trait<mile_u>
+struct unit_traits<mile_u>
 {
-  static constexpr const auto text{ossia::make_array("mile")};
+  static constexpr const auto text()
+  { return ossia::make_array("mile"); }
 };
 
 using meter = strong_value<meter_u>;

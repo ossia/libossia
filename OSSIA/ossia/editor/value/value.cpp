@@ -5,8 +5,14 @@
 #include <ossia/detail/logger.hpp>
 #include <sstream>
 
+template class eggs::variant<
+    ossia::Impulse, ossia::Bool, ossia::Int, ossia::Float, ossia::Char, ossia::String, ossia::Tuple, ossia::Vec2f,
+    ossia::Vec3f, ossia::Vec4f, ossia::Destination, ossia::Behavior>;
+
+template class std::vector<ossia::value>;
 namespace ossia
 {
+
 bool Bool::operator==(const ossia::value& v) const
 {
   return comparisons::NumericValue::apply(*this, v, std::equal_to<>{});

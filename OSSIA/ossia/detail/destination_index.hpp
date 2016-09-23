@@ -1,5 +1,6 @@
 #pragma once
 #include <boost/container/static_vector.hpp>
+#include <ossia/detail/instantiations.hpp>
 namespace ossia
 {
 /**
@@ -31,3 +32,4 @@ namespace ossia
  */
 using destination_index = boost::container::static_vector<char, 8>;
 }
+extern template class OSSIA_EXPORT boost::container::static_vector<char, 8>;

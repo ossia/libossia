@@ -6,7 +6,6 @@
 namespace ossia
 {
 class value;
-
 /**
  * @class Tuple tuple.hpp ossia/editor/value/value.hpp
  *

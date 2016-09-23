@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <boost/math/constants/constants.hpp>
+#include <ossia/detail/instantiations.hpp>
 
 #if defined(_MSC_VER)
 #define OSSIA_DECL_RELAXED_CONSTEXPR

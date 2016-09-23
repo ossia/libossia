@@ -15,7 +15,8 @@ struct angle_unit
 
 struct radian_u : public angle_unit<radian_u>
 {
-  static constexpr const auto text{ossia::make_array("radian", "rad")};
+  static constexpr const auto text()
+  { return ossia::make_array("radian", "rad"); }
 
   static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -30,7 +31,8 @@ struct radian_u : public angle_unit<radian_u>
 
 struct degree_u : public angle_unit<degree_u>
 {
-  static constexpr const auto text{ossia::make_array("degree", "deg")};
+  static constexpr const auto text()
+  { return ossia::make_array("degree", "deg"); }
 
   static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {

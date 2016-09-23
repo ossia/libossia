@@ -5,6 +5,7 @@
 #include <eggs/variant.hpp>
 
 #include <ossia_export.h>
+
 namespace ossia
 {
 namespace detail

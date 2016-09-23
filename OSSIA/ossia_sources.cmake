@@ -1,6 +1,7 @@
 set(API_HEADERS
     ## Editor ##
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/prefix.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/algorithms.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/callback_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/destination_index.hpp"
@@ -114,6 +115,7 @@ set(API_HEADERS
 set(SRCS
     ${API_HEADERS}
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/automation.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.cpp"
 
@@ -135,6 +137,8 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.cpp"

@@ -61,5 +61,8 @@ struct linear_unit : public T
 };
 
 template<typename T>
-class unit_trait;
+struct unit_traits
+{
+  static constexpr auto text() { return T::text(); }
+};
 }

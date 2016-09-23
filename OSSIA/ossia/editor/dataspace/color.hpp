@@ -15,7 +15,9 @@ struct color_unit
 
 struct argb_u : public color_unit<argb_u>
 {
-  static constexpr const auto text{ossia::make_array("argb")};
+  static constexpr const auto text()
+  { return ossia::make_array("argb"); }
+
   using value_type = Vec4f;
 
   static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -31,7 +33,8 @@ struct argb_u : public color_unit<argb_u>
 
 struct rgba_u : public color_unit<rgba_u>
 {
-  static constexpr const auto text{ossia::make_array("rgba")};
+  static constexpr const auto text()
+  { return ossia::make_array("rgba"); }
   using value_type = Vec4f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -47,7 +50,8 @@ struct rgba_u : public color_unit<rgba_u>
 
 struct rgb_u : public color_unit<rgb_u>
 {
-  static constexpr const auto text{ossia::make_array("rgb")};
+  static constexpr const auto text()
+  { return ossia::make_array("rgb"); }
   using value_type = Vec3f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -63,7 +67,8 @@ struct rgb_u : public color_unit<rgb_u>
 
 struct bgr_u : public color_unit<bgr_u>
 {
-  static constexpr const auto text{ossia::make_array("bgr")};
+  static constexpr const auto text()
+  { return ossia::make_array("bgr"); }
   using value_type = Vec3f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -79,7 +84,8 @@ struct bgr_u : public color_unit<bgr_u>
 
 struct argb8_u : public color_unit<argb8_u>
 {
-  static constexpr const auto text{ossia::make_array("argb8")};
+  static constexpr const auto text()
+  { return ossia::make_array("argb8"); }
   using value_type = Vec4f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -103,7 +109,8 @@ struct argb8_u : public color_unit<argb8_u>
 
 struct hsv_u : public color_unit<hsv_u>
 {
-  static constexpr const auto text{ossia::make_array("hsv")};
+  static constexpr const auto text()
+  { return ossia::make_array("hsv"); }
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -181,14 +188,16 @@ struct hsv_u : public color_unit<hsv_u>
 
 struct hsl_u : public color_unit<hsl_u>
 {
-  static constexpr const auto text{ossia::make_array("hsl")};
+  static constexpr const auto text()
+  { return ossia::make_array("hsl"); }
   using value_type = Vec3f;
 
 };
 
 struct cmy8_u : public color_unit<cmy8_u>
 {
-  static constexpr const auto text{ossia::make_array("cmy8")};
+  static constexpr const auto text()
+  { return ossia::make_array("cmy8"); }
   using value_type = Vec3f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -211,14 +220,16 @@ struct cmy8_u : public color_unit<cmy8_u>
 
 struct cmyk8_u : public color_unit<cmyk8_u>
 {
-  static constexpr const auto text{ossia::make_array("cmyk8")};
+  static constexpr const auto text()
+  { return ossia::make_array("cmyk8"); }
   using value_type = Vec4f;
 
 };
 
 struct xyz_u : public color_unit<xyz_u>
 {
-  static constexpr const auto text{ossia::make_array("xyz")};
+  static constexpr const auto text()
+  { return ossia::make_array("xyz"); }
   using value_type = Vec3f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -267,25 +278,29 @@ struct xyz_u : public color_unit<xyz_u>
 
 struct yxy_u : public color_unit<yxy_u>
 {
-  static constexpr const auto text{ossia::make_array("yxy")};
+  static constexpr const auto text()
+  { return ossia::make_array("yxy"); }
   using value_type = Vec3f;
 };
 
 struct hunter_lab_u : public color_unit<hunter_lab_u>
 {
-  static constexpr const auto text{ossia::make_array("hunter_lab")};
+  static constexpr const auto text()
+  { return ossia::make_array("hunter_lab"); }
   using value_type = Vec3f;
 };
 
 struct cie_lab_u : public color_unit<cie_lab_u>
 {
-  static constexpr const auto text{ossia::make_array("cie_lab")};
+  static constexpr const auto text()
+  { return ossia::make_array("cie_lab"); }
   using value_type = Vec3f;
 };
 
 struct cie_luv_u : public color_unit<cie_luv_u>
 {
-  static constexpr const auto text{ossia::make_array("cie_luv")};
+  static constexpr const auto text()
+  { return ossia::make_array("cie_luv"); }
   using value_type = Vec3f;
 };
 

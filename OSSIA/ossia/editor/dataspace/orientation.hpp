@@ -17,6 +17,9 @@ struct orientation_unit
 struct quaternion_u :
     public orientation_unit<quaternion_u>
 {
+  static constexpr const auto text()
+  { return ossia::make_array("quaternion"); }
+
   using value_type = Vec4f;
   static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -30,8 +33,11 @@ struct quaternion_u :
 };
 
 struct euler_u :
-    public orientation_unit<quaternion_u>
+    public orientation_unit<euler_u>
 {
+  static constexpr const auto text()
+  { return ossia::make_array("euler"); }
+
   using value_type = Vec4f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -76,6 +82,8 @@ struct euler_u :
 struct axis_u :
     public orientation_unit<axis_u>
 {
+  static constexpr const auto text()
+  { return ossia::make_array("axis"); }
   using value_type = Vec4f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)

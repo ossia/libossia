@@ -44,4 +44,47 @@ using speed =
   eggs::variant<
     meter_per_second, miles_per_hour, kilometer_per_hour, knot, foot_per_second, foot_per_hour>;
 
+
+template<>
+struct unit_traits<meter_per_second_u>
+{
+  static constexpr const auto text()
+  { return ossia::make_array("m/s"); }
+};
+
+template<>
+struct unit_traits<miles_per_hour_u>
+{
+  static constexpr const auto text()
+  { return ossia::make_array("mph"); }
+};
+
+template<>
+struct unit_traits<kilometer_per_hour_u>
+{
+  static constexpr const auto text()
+  { return ossia::make_array("k/h"); }
+};
+
+template<>
+struct unit_traits<knot_u>
+{
+  static constexpr const auto text()
+  { return ossia::make_array("kn"); }
+};
+
+template<>
+struct unit_traits<foot_per_hour_u>
+{
+  static constexpr const auto text()
+  { return ossia::make_array("f/h"); }
+};
+
+template<>
+struct unit_traits<foot_per_second_u>
+{
+  static constexpr const auto text()
+  { return ossia::make_array("f/s"); }
+};
+
 }

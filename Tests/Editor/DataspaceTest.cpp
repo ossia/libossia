@@ -32,6 +32,12 @@ struct unit_text_visitor
       return "";
   }
 
+  template<typename Unit>
+  boost::string_ref operator()(Unit)
+  {
+    return ossia::unit_traits<Unit>::text()[0];
+  }
+  /*
   // Angle
   boost::string_ref operator()(ossia::radian_u) { return "rad"; }
   boost::string_ref operator()(ossia::degree_u) { return "deg"; }
@@ -85,6 +91,7 @@ struct unit_text_visitor
   boost::string_ref operator()(ossia::knot_u) { return "kn"; }
   boost::string_ref operator()(ossia::foot_per_second_u) { return "ft/s"; }
   boost::string_ref operator()(ossia::foot_per_hour_u) { return "ft/h"; }
+  */
 };
 
 
