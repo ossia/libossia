@@ -3,8 +3,11 @@
 
 namespace ossia
 {
+
+
 template<typename T>
 struct distance_ratio;
+struct distance_dataspace;
 
 using meter_u = distance_ratio<std::ratio<1>>;
 using kilometer_u = distance_ratio<std::kilo>;
@@ -32,6 +35,64 @@ struct distance_ratio :
     public linear_unit<distance_unit<distance_ratio<T>>, T>
 {
   using linear_unit<distance_unit<distance_ratio<T>>, T>::linear_unit;
+};
+
+template<>
+class unit_trait<meter_u>
+{
+  static constexpr const auto text{ossia::make_array("m")};
+};
+template<>
+class unit_trait<kilometer_u>
+{
+  static constexpr const auto text{ossia::make_array("m")};
+};
+template<>
+class unit_trait<decimeter_u>
+{
+  static constexpr const auto text{ossia::make_array("dm")};
+};
+template<>
+class unit_trait<centimeter_u>
+{
+  static constexpr const auto text{ossia::make_array("cm")};
+};
+template<>
+class unit_trait<millimeter_u>
+{
+  static constexpr const auto text{ossia::make_array("mm")};
+};
+template<>
+class unit_trait<micrometer_u>
+{
+  static constexpr const auto text{ossia::make_array("mm")};
+};
+template<>
+class unit_trait<nanometer_u>
+{
+  static constexpr const auto text{ossia::make_array("nm")};
+};
+template<>
+class unit_trait<picometer_u>
+{
+  static constexpr const auto text{ossia::make_array("pm")};
+};
+
+
+template<>
+class unit_trait<inch_u>
+{
+  static constexpr const auto text{ossia::make_array("inch")};
+};
+template<>
+class unit_trait<foot_u>
+{
+  static constexpr const auto text{ossia::make_array("foot")};
+};
+template<>
+class unit_trait<mile_u>
+{
+  static constexpr const auto text{ossia::make_array("mile")};
 };
 
 using meter = strong_value<meter_u>;

@@ -284,24 +284,12 @@ generic_address& generic_address::setDefaultValue(const value& v)
     return *this;
 }
 
-dataspace_t generic_address::getDataspace() const
-{
-    return mSpace;
-}
-
-generic_address& generic_address::setDataspace(const dataspace_t& v)
-{
-    mSpace = v;
-    mNode.getDevice().onAddressModified(*this);
-    return *this;
-}
-
-dataspace_unit_t generic_address::getUnit() const
+unit_t generic_address::getUnit() const
 {
     return mUnit;
 }
 
-generic_address& generic_address::setUnit(const dataspace_unit_t& v)
+generic_address& generic_address::setUnit(const unit_t& v)
 {
     mUnit = v;
     mNode.getDevice().onAddressModified(*this);

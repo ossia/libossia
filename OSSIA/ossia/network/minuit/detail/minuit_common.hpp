@@ -97,15 +97,15 @@ inline boost::string_ref to_minuit_type_text(const ossia::value& val)
     {
       return "string";
     }
-    boost::string_ref operator()(ossia::Vec2f vec) const
+    boost::string_ref operator()(const ossia::Vec2f& vec) const
     {
       return "array";
     }
-    boost::string_ref operator()(ossia::Vec3f vec) const
+    boost::string_ref operator()(const ossia::Vec3f& vec) const
     {
       return "array";
     }
-    boost::string_ref operator()(ossia::Vec4f vec) const
+    boost::string_ref operator()(const ossia::Vec4f& vec) const
     {
       return "array";
     }

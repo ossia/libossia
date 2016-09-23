@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/editor/value/value.hpp>
 #include <ossia/editor/value/value_traits.hpp>
+#include <ossia/detail/algorithms.hpp>
 
 #include <ossia/detail/math.hpp>
 #include <ratio>
@@ -41,7 +42,6 @@ struct strong_value
 template<typename T, typename Ratio_T>
 struct linear_unit : public T
 {
-  using T::T;
   static constexpr strong_value<typename T::neutral_unit>
     to_neutral(strong_value<typename T::concrete_type> self)
   {
@@ -59,4 +59,7 @@ struct linear_unit : public T
     return double(Ratio_T::num) / double(Ratio_T::den);
   }
 };
+
+template<typename T>
+class unit_trait;
 }

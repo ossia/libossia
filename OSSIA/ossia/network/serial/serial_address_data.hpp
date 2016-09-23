@@ -35,7 +35,7 @@ struct serial_address_data :
   serial_address_data& operator=(serial_address_data&&) = default;
 
   serial_address_data(const std::string& name):
-    generic_address_data{name, {}, {}, {}, {}, {}}
+    generic_address_data{name}
   {
 
   }

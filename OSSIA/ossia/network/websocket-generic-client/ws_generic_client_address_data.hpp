@@ -31,7 +31,7 @@ struct ws_generic_client_address_data :
   ws_generic_client_address_data& operator=(ws_generic_client_address_data&&) = default;
 
   ws_generic_client_address_data(const std::string& name):
-    generic_address_data{name, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}}
+    generic_address_data{name}
   {
 
   }

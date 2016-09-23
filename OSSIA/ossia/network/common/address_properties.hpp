@@ -56,13 +56,4 @@ enum class repetition_filter
 };
 
 using tags_t = std::vector<std::string>;
-struct dataspace_t
-{
-
-};
-
-struct dataspace_unit_t
-{
-
-};
 }

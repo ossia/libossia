@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <type_traits>
 #include <iterator>
+#include <array>
 
 /**
  * This header contains various range-style functions that mimic std::algorithm functions.
@@ -56,5 +57,20 @@ template <typename Vector, typename Fun>
 auto remove_if(Vector&& v, Fun fun)
 {
   return std::remove_if(std::begin(v), std::end(v), fun);
+}
+
+// https://gist.github.com/klmr/2775736
+// note : license unclear, will be available in C++17.
+using namespace ossia;
+template <typename... T>
+constexpr auto make_array(T&&... values) ->
+        std::array<
+            typename std::decay<
+                typename std::common_type<T...>::type>::type,
+            sizeof...(T)> {
+    return std::array<
+        typename std::decay<
+            typename std::common_type<T...>::type>::type,
+        sizeof...(T)>{std::forward<T>(values)...};
 }
 }

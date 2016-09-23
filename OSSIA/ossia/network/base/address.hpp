@@ -3,7 +3,7 @@
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/network/domain/domain_fwd.hpp>
-
+#include <ossia/editor/dataspace/dataspace.hpp>
 #include <functional>
 #include <vector>
 #include <memory>
@@ -95,11 +95,8 @@ public:
   virtual ossia::value getDefaultValue() const;
   virtual address_base& setDefaultValue(const ossia::value& v);
 
-  virtual ossia::dataspace_t getDataspace() const;
-  virtual address_base& setDataspace(const ossia::dataspace_t& v);
-
-  virtual ossia::dataspace_unit_t getUnit() const;
-  virtual address_base& setUnit(const ossia::dataspace_unit_t& v);
+  virtual ossia::unit_t getUnit() const;
+  virtual address_base& setUnit(const ossia::unit_t& v);
 };
 
 

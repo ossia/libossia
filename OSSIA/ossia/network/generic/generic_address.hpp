@@ -22,6 +22,13 @@ struct generic_address_data
   generic_address_data& operator=(const generic_address_data&) = default;
   generic_address_data& operator=(generic_address_data&&) = default;
 
+
+  generic_address_data(std::string n):
+    node_name{std::move(n)}
+  {
+
+  }
+
   std::string node_name;
   boost::optional<ossia::val_type> type;
   boost::optional<ossia::net::domain> domain;
@@ -32,8 +39,7 @@ struct generic_address_data
   std::string description;
   ossia::value default_value;
   tags_t tags;
-  dataspace_t dataspace;
-  dataspace_unit_t unit;
+  unit_t unit;
 };
 
 class protocol_base;
@@ -55,8 +61,7 @@ protected:
   std::string mDescription;
   ossia::value mDefault;
   tags_t mTags;
-  dataspace_t mSpace;
-  dataspace_unit_t mUnit;
+  unit_t mUnit;
 
   ossia::net::value_callback mCallback;
 
@@ -106,11 +111,8 @@ public:
   ossia::value getDefaultValue() const override;
   generic_address& setDefaultValue(const ossia::value& v) override;
 
-  ossia::dataspace_t getDataspace() const override;
-  generic_address& setDataspace(const ossia::dataspace_t& v) override;
-
-  ossia::dataspace_unit_t getUnit() const override;
-  generic_address& setUnit(const ossia::dataspace_unit_t& v) override;
+  ossia::unit_t getUnit() const override;
+  generic_address& setUnit(const ossia::unit_t& v) override;
 
   void onFirstCallbackAdded() override;
   void onRemovingLastCallback() override;

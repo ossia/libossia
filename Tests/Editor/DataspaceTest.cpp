@@ -1,15 +1,14 @@
 #include <QtTest>
 #include <ossia/ossia.hpp>
 #include <ossia/editor/dataspace/dataspace.hpp>
-
-using namespace ossia;
+#include <ossia/detail/algorithms.hpp>
 
 namespace ossia
 {
 
 struct address_data
 {
-  dataspace_unit_t unit;
+  unit_t unit;
   ossia::value value;
 
   ossia::value_with_unit val;
@@ -17,6 +16,90 @@ struct address_data
 
 }
 
+struct foo
+{
+  static const constexpr auto vals{ossia::make_array("foo", "bar")};
+};
+
+struct unit_text_visitor
+{
+  template<typename... Args>
+  boost::string_ref operator()(const eggs::variant<Args...>& dataspace)
+  {
+    if(dataspace)
+      return eggs::variants::apply(*this, dataspace);
+    else
+      return "";
+  }
+
+  // Angle
+  boost::string_ref operator()(ossia::radian_u) { return "rad"; }
+  boost::string_ref operator()(ossia::degree_u) { return "deg"; }
+
+  // Color
+  boost::string_ref operator()(ossia::argb_u) { return "argb"; }
+  boost::string_ref operator()(ossia::rgba_u) { return "rgba"; }
+  boost::string_ref operator()(ossia::rgb_u) { return "rgb"; }
+  boost::string_ref operator()(ossia::bgr_u) { return "bgr"; }
+  boost::string_ref operator()(ossia::argb8_u) { return "argb8"; }
+  boost::string_ref operator()(ossia::hsv_u) { return "hsv"; }
+  boost::string_ref operator()(ossia::hsl_u) { return "hsl"; }
+  boost::string_ref operator()(ossia::cmy8_u) { return "cmy8"; }
+  boost::string_ref operator()(ossia::cmyk8_u) { return "cmyk8"; }
+  boost::string_ref operator()(ossia::xyz_u) { return "xyz"; }
+  boost::string_ref operator()(ossia::yxy_u) { return "yxy"; }
+  boost::string_ref operator()(ossia::hunter_lab_u) { return "hunter_lab"; }
+  boost::string_ref operator()(ossia::cie_lab_u) { return "cie_lab"; }
+  boost::string_ref operator()(ossia::cie_luv_u) { return "cie_luv"; }
+
+  // Distance
+  boost::string_ref operator()(ossia::meter_u) { return "m"; }
+  boost::string_ref operator()(ossia::kilometer_u) { return "km"; }
+  boost::string_ref operator()(ossia::decimeter_u) { return "dm"; }
+  boost::string_ref operator()(ossia::centimeter_u) { return "cm"; }
+  boost::string_ref operator()(ossia::millimeter_u) { return "mm"; }
+  boost::string_ref operator()(ossia::micrometer_u) { return "um"; }
+  boost::string_ref operator()(ossia::nanometer_u) { return "nm"; }
+  boost::string_ref operator()(ossia::picometer_u) { return "pm"; }
+  boost::string_ref operator()(ossia::inch_u) { return "inch"; }
+  boost::string_ref operator()(ossia::foot_u) { return "foot"; }
+  boost::string_ref operator()(ossia::mile_u) { return "mile"; }
+
+  // Orientation
+  boost::string_ref operator()(ossia::quaternion_u) { return "quaternion"; }
+  boost::string_ref operator()(ossia::euler_u) { return "euler"; }
+  boost::string_ref operator()(ossia::axis_u) { return "axis"; }
+
+  // Position
+  boost::string_ref operator()(ossia::cartesian_3d_u) { return "xyz"; }
+  boost::string_ref operator()(ossia::cartesian_2d_u) { return "xy"; }
+  boost::string_ref operator()(ossia::spherical_u) { return "spherical"; }
+  boost::string_ref operator()(ossia::polar_u) { return "polar"; }
+  boost::string_ref operator()(ossia::opengl_u) { return "openGL"; }
+  boost::string_ref operator()(ossia::cylindrical_u) { return "cylindrical"; }
+
+  // Speed
+  boost::string_ref operator()(ossia::meter_per_second_u) { return "m/s"; }
+  boost::string_ref operator()(ossia::miles_per_hour_u) { return "mph"; }
+  boost::string_ref operator()(ossia::kilometer_per_hour_u) { return "km/h"; }
+  boost::string_ref operator()(ossia::knot_u) { return "kn"; }
+  boost::string_ref operator()(ossia::foot_per_second_u) { return "ft/s"; }
+  boost::string_ref operator()(ossia::foot_per_hour_u) { return "ft/h"; }
+};
+
+
+struct unit_factory_visitor
+{
+  boost::string_ref text;
+/*
+  ossia::unit_t operator()(ossia::color_u)
+  {
+    static const std::unordered_map<std::string, ossia::unit_t> units
+    {
+      {
+    }
+  }*/
+};
 
 class DataspaceTest : public QObject
 {
@@ -62,6 +145,18 @@ private Q_SLOTS:
     // if we push a value of the same dataspace, we convert it
 
     // Maybe the "unit" types shouldn't hold a value, but just have a value_type member ?
+
+    ossia::unit_t u;
+    u = ossia::color_u{};
+    u = ossia::rgb_u{};
+    u = ossia::decimeter_u{};
+
+    ossia::color_u col;
+    col = ossia::rgb_u{};
+    // must not compile : col = ossia::decimeter_u{};
+
+    // With C++17 : static_assert(eggs::variants::apply(unit_text_visitor{}, col) == boost::string_ref("rgb"), "");
+    QCOMPARE(eggs::variants::apply(unit_text_visitor{}, col), boost::string_ref("rgb"));
   }
 };
 
