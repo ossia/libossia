@@ -139,7 +139,7 @@ std::vector<minuit_connection_data> list_minuit_devices()
   return {};
 }
 
-std::unique_ptr<KDNSSD::PublicService> make_zeroconf_server(std::__cxx11::string description, std::__cxx11::string service, std::__cxx11::string local_name, int32_t local_port, int32_t remote_port)
+std::unique_ptr<KDNSSD::PublicService> make_zeroconf_server(std::string description, std::string service, std::string local_name, int32_t local_port, int32_t remote_port)
 {
   return {};
 }
