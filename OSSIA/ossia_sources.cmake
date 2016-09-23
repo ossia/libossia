@@ -100,6 +100,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
 
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit_zeroconf.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_common.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_name_table.hpp"
@@ -243,9 +244,6 @@ set(JAVA_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java/ossia-java.cpp"
     )
 
-set(MINUIT_ZEROCONF_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit_zeroconf.hpp"
-    )
 set(MINUIT_ZEROCONF_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit_zeroconf.cpp"
     )
