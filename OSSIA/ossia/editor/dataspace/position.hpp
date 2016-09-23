@@ -16,7 +16,7 @@ struct cartesian_3d_u :
     public position_unit<cartesian_3d_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("cartesian3d", "xyz"); }
+  { return ossia::make_string_array("cart3D", "xyz"); }
 
   using value_type = Vec3f;
   static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -34,7 +34,7 @@ struct cartesian_2d_u :
     public position_unit<cartesian_2d_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("cartesian2d", "xy"); }
+  { return ossia::make_string_array("cart2D", "xy"); }
   using value_type = Vec2f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -52,7 +52,7 @@ struct spherical_u :
     public position_unit<spherical_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("spherical"); }
+  { return ossia::make_string_array("spherical", "aed"); }
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -90,7 +90,7 @@ struct polar_u :
     public position_unit<polar_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("polar"); }
+  { return ossia::make_string_array("polar", "ad"); }
   using value_type = Vec2f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -120,7 +120,7 @@ struct opengl_u :
     public position_unit<opengl_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("openGL"); }
+  { return ossia::make_string_array("openGL"); }
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -136,6 +136,8 @@ struct opengl_u :
 struct cylindrical_u :
     public position_unit<cylindrical_u>
 {
+  static constexpr const auto text()
+  { return ossia::make_string_array("cylindrical", "daz"); }
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -175,7 +177,5 @@ using cylindrical = strong_value<cylindrical_u>;
 
 using position_u =
   eggs::variant<cartesian_3d_u, cartesian_2d_u, spherical_u, polar_u, opengl_u, cylindrical_u>;
-using position =
-  eggs::variant<cartesian_3d, cartesian_2d, spherical, polar, opengl, cylindrical>;
 
 }

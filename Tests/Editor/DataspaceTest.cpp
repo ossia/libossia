@@ -3,6 +3,7 @@
 #include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia/detail/algorithms.hpp>
 
+#include <experimental/string_view>
 namespace ossia
 {
 
@@ -16,10 +17,6 @@ struct address_data
 
 }
 
-struct foo
-{
-  static const constexpr auto vals{ossia::make_array("foo", "bar")};
-};
 
 struct unit_text_visitor
 {
@@ -37,75 +34,50 @@ struct unit_text_visitor
   {
     return ossia::unit_traits<Unit>::text()[0];
   }
-  /*
-  // Angle
-  boost::string_ref operator()(ossia::radian_u) { return "rad"; }
-  boost::string_ref operator()(ossia::degree_u) { return "deg"; }
-
-  // Color
-  boost::string_ref operator()(ossia::argb_u) { return "argb"; }
-  boost::string_ref operator()(ossia::rgba_u) { return "rgba"; }
-  boost::string_ref operator()(ossia::rgb_u) { return "rgb"; }
-  boost::string_ref operator()(ossia::bgr_u) { return "bgr"; }
-  boost::string_ref operator()(ossia::argb8_u) { return "argb8"; }
-  boost::string_ref operator()(ossia::hsv_u) { return "hsv"; }
-  boost::string_ref operator()(ossia::hsl_u) { return "hsl"; }
-  boost::string_ref operator()(ossia::cmy8_u) { return "cmy8"; }
-  boost::string_ref operator()(ossia::cmyk8_u) { return "cmyk8"; }
-  boost::string_ref operator()(ossia::xyz_u) { return "xyz"; }
-  boost::string_ref operator()(ossia::yxy_u) { return "yxy"; }
-  boost::string_ref operator()(ossia::hunter_lab_u) { return "hunter_lab"; }
-  boost::string_ref operator()(ossia::cie_lab_u) { return "cie_lab"; }
-  boost::string_ref operator()(ossia::cie_luv_u) { return "cie_luv"; }
-
-  // Distance
-  boost::string_ref operator()(ossia::meter_u) { return "m"; }
-  boost::string_ref operator()(ossia::kilometer_u) { return "km"; }
-  boost::string_ref operator()(ossia::decimeter_u) { return "dm"; }
-  boost::string_ref operator()(ossia::centimeter_u) { return "cm"; }
-  boost::string_ref operator()(ossia::millimeter_u) { return "mm"; }
-  boost::string_ref operator()(ossia::micrometer_u) { return "um"; }
-  boost::string_ref operator()(ossia::nanometer_u) { return "nm"; }
-  boost::string_ref operator()(ossia::picometer_u) { return "pm"; }
-  boost::string_ref operator()(ossia::inch_u) { return "inch"; }
-  boost::string_ref operator()(ossia::foot_u) { return "foot"; }
-  boost::string_ref operator()(ossia::mile_u) { return "mile"; }
-
-  // Orientation
-  boost::string_ref operator()(ossia::quaternion_u) { return "quaternion"; }
-  boost::string_ref operator()(ossia::euler_u) { return "euler"; }
-  boost::string_ref operator()(ossia::axis_u) { return "axis"; }
-
-  // Position
-  boost::string_ref operator()(ossia::cartesian_3d_u) { return "xyz"; }
-  boost::string_ref operator()(ossia::cartesian_2d_u) { return "xy"; }
-  boost::string_ref operator()(ossia::spherical_u) { return "spherical"; }
-  boost::string_ref operator()(ossia::polar_u) { return "polar"; }
-  boost::string_ref operator()(ossia::opengl_u) { return "openGL"; }
-  boost::string_ref operator()(ossia::cylindrical_u) { return "cylindrical"; }
-
-  // Speed
-  boost::string_ref operator()(ossia::meter_per_second_u) { return "m/s"; }
-  boost::string_ref operator()(ossia::miles_per_hour_u) { return "mph"; }
-  boost::string_ref operator()(ossia::kilometer_per_hour_u) { return "km/h"; }
-  boost::string_ref operator()(ossia::knot_u) { return "kn"; }
-  boost::string_ref operator()(ossia::foot_per_second_u) { return "ft/s"; }
-  boost::string_ref operator()(ossia::foot_per_hour_u) { return "ft/h"; }
-  */
 };
+
+using unit_map = std::unordered_map<std::string, ossia::unit_t>;
+
+template<typename Arg, typename... Args>
+struct unit_map_factory
+{
+  void operator()(unit_map& m)
+  {
+    for(boost::string_ref v : Arg::text())
+      m.emplace(v.to_string(), ossia::unit_t{Arg{}});
+    unit_map_factory<Args...>{}(m);
+  }
+};
+
+template<typename Arg>
+struct unit_map_factory<Arg>
+{
+  void operator()(unit_map& m)
+  {
+    for(boost::string_ref v : Arg::text())
+      m.emplace(v.to_string(), ossia::unit_t{Arg{}});
+  }
+};
+
+
+template<typename... Args>
+std::unordered_map<std::string, ossia::unit_t> make_unit_map()
+{
+  std::unordered_map<std::string, ossia::unit_t> map;
+  unit_map_factory<Args...>{}(map);
+  return map;
+}
 
 
 struct unit_factory_visitor
 {
   boost::string_ref text;
-/*
+
   ossia::unit_t operator()(ossia::color_u)
   {
-    static const std::unordered_map<std::string, ossia::unit_t> units
-    {
-      {
-    }
-  }*/
+    static const auto units = make_unit_map<ossia::rgba_u, ossia::rgb_u>();
+    return {};
+  }
 };
 
 class DataspaceTest : public QObject

@@ -42,50 +42,50 @@ template<>
 struct unit_traits<meter_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("m"); }
+  { return ossia::make_string_array("m", "meters"); }
 };
 
 template<>
 struct unit_traits<kilometer_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("km"); }
+  { return ossia::make_string_array("km", "kilometers"); }
 };
 template<>
 struct unit_traits<decimeter_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("dm"); }
+  { return ossia::make_string_array("dm", "decimeters"); }
 };
 template<>
 struct unit_traits<centimeter_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("cm"); }
+  { return ossia::make_string_array("cm", "centimeters"); }
 };
 template<>
 struct unit_traits<millimeter_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("mm"); }
+  { return ossia::make_string_array("mm", "millimeters"); }
 };
 template<>
 struct unit_traits<micrometer_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("um"); }
+  { return ossia::make_string_array("um", "micrometers"); }
 };
 template<>
 struct unit_traits<nanometer_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("nm"); }
+  { return ossia::make_string_array("nm", "nanometers"); }
 };
 template<>
 struct unit_traits<picometer_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("pm"); }
+  { return ossia::make_string_array("pm", "picometers"); }
 };
 
 
@@ -93,19 +93,19 @@ template<>
 struct unit_traits<inch_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("inch"); }
+  { return ossia::make_string_array("inches", "\""); }
 };
 template<>
 struct unit_traits<foot_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("foot"); }
+  { return ossia::make_string_array("feet", "'"); }
 };
 template<>
 struct unit_traits<mile_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("mile"); }
+  { return ossia::make_string_array("miles"); }
 };
 
 using meter = strong_value<meter_u>;
@@ -123,7 +123,4 @@ using mile = strong_value<mile_u>;
 using distance_u =
   eggs::variant<
     meter_u, kilometer_u, decimeter_u, centimeter_u, millimeter_u, micrometer_u, nanometer_u, picometer_u, inch_u, foot_u, mile_u>;
-using distance =
-  eggs::variant<
-    meter, kilometer, decimeter, centimeter, millimeter, micrometer, nanometer, picometer, inch, foot, mile>;
 }

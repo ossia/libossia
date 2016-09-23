@@ -60,18 +60,13 @@ auto remove_if(Vector&& v, Fun fun)
   return std::remove_if(std::begin(v), std::end(v), fun);
 }
 
-// https://gist.github.com/klmr/2775736
-// note : license unclear, will be available in C++17.
-using namespace ossia;
-template <typename... T>
-constexpr auto make_array(T&&... values) ->
-        std::array<
-            typename std::decay<
-                typename std::common_type<T...>::type>::type,
-            sizeof...(T)> {
-    return std::array<
-        typename std::decay<
-            typename std::common_type<T...>::type>::type,
-        sizeof...(T)>{std::forward<T>(values)...};
+// See also https://gist.github.com/klmr/2775736
+template <typename... Args>
+constexpr std::array<boost::string_ref, sizeof...(Args)>
+  make_string_array(Args... args)
+{
+  return std::array<boost::string_ref, sizeof...(Args)>{
+        boost::string_ref{args, sizeof(args)-1}...
+  };
 }
 }

@@ -16,7 +16,7 @@ struct color_unit
 struct argb_u : public color_unit<argb_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("argb"); }
+  { return ossia::make_string_array("argb"); }
 
   using value_type = Vec4f;
 
@@ -34,7 +34,7 @@ struct argb_u : public color_unit<argb_u>
 struct rgba_u : public color_unit<rgba_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("rgba"); }
+  { return ossia::make_string_array("rgba"); }
   using value_type = Vec4f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -51,7 +51,7 @@ struct rgba_u : public color_unit<rgba_u>
 struct rgb_u : public color_unit<rgb_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("rgb"); }
+  { return ossia::make_string_array("rgb"); }
   using value_type = Vec3f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -68,7 +68,7 @@ struct rgb_u : public color_unit<rgb_u>
 struct bgr_u : public color_unit<bgr_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("bgr"); }
+  { return ossia::make_string_array("bgr"); }
   using value_type = Vec3f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -85,7 +85,7 @@ struct bgr_u : public color_unit<bgr_u>
 struct argb8_u : public color_unit<argb8_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("argb8"); }
+  { return ossia::make_string_array("argb8"); }
   using value_type = Vec4f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -110,7 +110,7 @@ struct argb8_u : public color_unit<argb8_u>
 struct hsv_u : public color_unit<hsv_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("hsv"); }
+  { return ossia::make_string_array("hsv"); }
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -189,7 +189,7 @@ struct hsv_u : public color_unit<hsv_u>
 struct hsl_u : public color_unit<hsl_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("hsl"); }
+  { return ossia::make_string_array("hsl"); }
   using value_type = Vec3f;
 
 };
@@ -197,7 +197,7 @@ struct hsl_u : public color_unit<hsl_u>
 struct cmy8_u : public color_unit<cmy8_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("cmy8"); }
+  { return ossia::make_string_array("cmy8"); }
   using value_type = Vec3f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -221,7 +221,7 @@ struct cmy8_u : public color_unit<cmy8_u>
 struct cmyk8_u : public color_unit<cmyk8_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("cmyk8"); }
+  { return ossia::make_string_array("cmyk8"); }
   using value_type = Vec4f;
 
 };
@@ -229,7 +229,7 @@ struct cmyk8_u : public color_unit<cmyk8_u>
 struct xyz_u : public color_unit<xyz_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("xyz"); }
+  { return ossia::make_string_array("xyz"); }
   using value_type = Vec3f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -279,28 +279,28 @@ struct xyz_u : public color_unit<xyz_u>
 struct yxy_u : public color_unit<yxy_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("yxy"); }
+  { return ossia::make_string_array("yxy"); }
   using value_type = Vec3f;
 };
 
 struct hunter_lab_u : public color_unit<hunter_lab_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("hunter_lab"); }
+  { return ossia::make_string_array("hunter_lab"); }
   using value_type = Vec3f;
 };
 
 struct cie_lab_u : public color_unit<cie_lab_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("cie_lab"); }
+  { return ossia::make_string_array("cie_lab"); }
   using value_type = Vec3f;
 };
 
 struct cie_luv_u : public color_unit<cie_luv_u>
 {
   static constexpr const auto text()
-  { return ossia::make_array("cie_luv"); }
+  { return ossia::make_string_array("cie_luv"); }
   using value_type = Vec3f;
 };
 
@@ -323,8 +323,4 @@ using yxy = strong_value<yxy_u>;
 using hunter_lab = strong_value<hunter_lab_u>;
 using cie_lab = strong_value<cie_lab_u>;
 using cie_luv = strong_value<cie_luv_u>;
-
-using color =
-  eggs::variant<
-    argb, rgba, rgb, bgr, argb8, hsv, hsl, cmy8, cmyk8, xyz, yxy, hunter_lab, cie_lab, cie_luv>;
 }

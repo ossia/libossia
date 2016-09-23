@@ -4,6 +4,7 @@
 #include <ossia/detail/algorithms.hpp>
 
 #include <ossia/detail/math.hpp>
+#include <brigand/algorithms/transform.hpp>
 #include <ratio>
 namespace ossia
 {
