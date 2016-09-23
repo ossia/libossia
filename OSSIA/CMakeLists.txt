@@ -128,6 +128,7 @@ endif()
 if(KF5DNSSD_FOUND)
     target_sources(ossia PRIVATE ${MINUIT_ZEROCONF_HEADERS} ${MINUIT_ZEROCONF_SRCS})
     target_link_libraries(ossia PRIVATE KF5::DNSSD)
+    set(OSSIA_ZEROCONF 1)
     target_compile_definitions(ossia PRIVATE OSSIA_ZEROCONF)
 endif()
 
