@@ -49,16 +49,9 @@ endif()
 
 include(ossia_sources.cmake)
 
-if(OSSIA_PROTOCOL_MIDI)
-    set(API_HEADERS ${API_HEADERS} ${MIDI_HEADERS})
-    set(API_HEADERS ${API_HEADERS} ${MIDI_HEADERS})
-    set(SRCS ${SRCS} ${MIDI_SRCS} ${API_HEADERS})
-endif()
-
 if(OSSIA_PROTOCOL_HTTP)
   find_package(Qt5 5.6 QUIET COMPONENTS Core Qml)
   if(${Qt5Qml_FOUND})
-    set(SRCS ${SRCS} ${HTTP_HEADERS} ${HTTP_SRCS})
     set(CMAKE_AUTOMOC 1)
   else()
     set(OSSIA_PROTOCOL_HTTP FALSE)
@@ -68,7 +61,6 @@ endif()
 if(OSSIA_PROTOCOL_WEBSOCKETS)
   find_package(Qt5 5.6 QUIET COMPONENTS Core Qml WebSockets)
   if(${Qt5WebSockets_FOUND})
-    set(SRCS ${SRCS} ${WS_CLIENT_HEADERS} ${WS_CLIENT_SRCS})
     set(CMAKE_AUTOMOC 1)
   else()
     set(OSSIA_PROTOCOL_WEBSOCKETS FALSE)
@@ -78,7 +70,6 @@ endif()
 if(OSSIA_PROTOCOL_SERIAL)
   find_package(Qt5 5.6 QUIET COMPONENTS Core SerialPort)
   if(${Qt5SerialPort_FOUND})
-    set(SRCS ${SRCS} ${SERIAL_HEADERS} ${SERIAL_SRCS})
     set(CMAKE_AUTOMOC 1)
   else()
     set(OSSIA_PROTOCOL_SERIAL FALSE)
@@ -99,26 +90,32 @@ endif()
 
 target_link_libraries(ossia PUBLIC boost)
 
+# Additional protocols
 if(OSSIA_PROTOCOL_MIDI)
+  target_sources(ossia PRIVATE ${MIDI_SRCS} ${MIDI_HEADERS})
   target_link_libraries(ossia PRIVATE ModernMIDI)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} MIDI)
 endif()
 
 if(OSSIA_PROTOCOL_HTTP)
+  target_sources(ossia PRIVATE ${HTTP_HEADERS} ${HTTP_SRCS})
   target_link_libraries(ossia PUBLIC Qt5::Qml)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} HTTP)
 endif()
 
 if(OSSIA_PROTOCOL_WEBSOCKETS)
+  target_sources(ossia PRIVATE ${WS_CLIENT_HEADERS} ${WS_CLIENT_SRCS})
   target_link_libraries(ossia PUBLIC Qt5::Qml Qt5::WebSockets)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} WebSockets)
 endif()
 
 if(OSSIA_PROTOCOL_SERIAL)
+  target_sources(ossia PRIVATE ${SERIAL_HEADERS} ${SERIAL_SRCS})
   target_link_libraries(ossia PUBLIC Qt5::SerialPort)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Serial)
 endif()
 
+# Additional features
 if(OSSIA_JAVA)
     target_sources(ossia PRIVATE ${JAVA_HEADERS} ${JAVA_SRCS})
     target_include_directories(ossia PRIVATE
@@ -133,6 +130,8 @@ if(KF5DNSSD_FOUND)
     target_link_libraries(ossia PRIVATE KF5::DNSSD)
     target_compile_definitions(ossia PRIVATE OSSIA_ZEROCONF)
 endif()
+
+# Useful properties
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")
 source_group(Editor REGULAR_EXPRESSION "ossia/editor.*")
 source_group(Network REGULAR_EXPRESSION "ossia/network.*")
@@ -184,7 +183,6 @@ else()
     use_gold(ossia)
 endif()
 add_linker_warnings(ossia)
-
 
 if(BUILD_SHARED_LIBS AND NOT OSSIA_STATIC)
   set_target_properties(ossia PROPERTIES

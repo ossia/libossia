@@ -7,14 +7,35 @@ install(TARGETS ossia
     INCLUDES DESTINATION include)
 
 # Install headers
-foreach(file ${API_HEADERS})
-    get_filename_component( dir ${file} DIRECTORY)
-    string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" dir_clean "${dir}")
-    install(
-      FILES "${file}"
-      DESTINATION "include/${dir_clean}"
-      COMPONENT Devel)
-endforeach()
+function(install_headers_rec theHeaders)
+
+    foreach(file ${theHeaders})
+        get_filename_component( dir ${file} DIRECTORY)
+        string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" dir_clean "${dir}")
+        install(
+          FILES "${file}"
+          DESTINATION "include/${dir_clean}"
+          COMPONENT Devel)
+    endforeach()
+
+endfunction()
+
+install_headers_rec(${API_HEADERS})
+if(OSSIA_ZEROCONF)
+    install_headers_rec(${MINUIT_ZEROCONF_HEADERS})
+endif()
+if(OSSIA_PROTOCOL_MIDI)
+    install_headers_rec(${MIDI_HEADERS})
+endif()
+if(OSSIA_PROTOCOL_HTTP)
+    install_headers_rec(${HTTP_HEADERS})
+endif()
+if(OSSIA_PROTOCOL_SERIAL)
+    install_headers_rec(${SERIAL_HEADERS})
+endif()
+if(OSSIA_PROTOCOL_WEBSOCKETS)
+    install_headers_rec(${SERIAL_HEADERS})
+endif()
 
 # Install export header
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ossia_export.h

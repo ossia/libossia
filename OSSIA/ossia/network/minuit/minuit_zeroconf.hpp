@@ -14,7 +14,7 @@ namespace ossia
 {
 namespace net
 {
-struct minuit_connection_data
+struct OSSIA_EXPORT minuit_connection_data
 {
   std::string name;
   std::string host;
@@ -22,7 +22,7 @@ struct minuit_connection_data
   int32_t local_port{};
 };
 
-struct zeroconf_server
+struct OSSIA_EXPORT zeroconf_server
 {
   zeroconf_server();
   zeroconf_server(const zeroconf_server&) = delete;
