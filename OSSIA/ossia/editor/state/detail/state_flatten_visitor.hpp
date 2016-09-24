@@ -9,11 +9,9 @@ struct state_flatten_visitor
 {
   ossia::state& state;
 
-  // Const reference overloads
-  void operator()(const message& messageToAppend)
+  auto find_same_address(const message& messageToAppend)
   {
-    // find message with the same address to replace it
-    auto it = find_if(state, [&](const state_element& e)
+    return find_if(state, [&](const state_element& e)
     {
       auto address = &messageToAppend.destination.value.get();
       if (auto m = e.target<message>())
@@ -23,7 +21,27 @@ struct state_flatten_visitor
       else
         return false;
     });
+  }
 
+  auto find_same_address(const piecewise_message& pw)
+  {
+    return find_if(state, [&](const state_element& e)
+    {
+      ossia::net::address_base* address = &pw.address.get();
+      if (auto m = e.target<message>())
+        return &m->destination.value.get() == address;
+      else if(auto p = e.target<piecewise_message>())
+        return &p->address.get() == address;
+      else
+        return false;
+    });
+  }
+
+  // Const reference overloads
+  void operator()(const message& messageToAppend)
+  {
+    // find message with the same address to replace it
+    auto it = find_same_address(messageToAppend);
     if (it == state.end())
     {
       state.add(messageToAppend);
@@ -34,7 +52,9 @@ struct state_flatten_visitor
       if(auto source_ptr = it->target<message>())
       {
         message& source = *source_ptr;
-        if(messageToAppend.destination.index.empty() && source.destination.index.empty())
+        auto to_append_index_empty = messageToAppend.destination.index.empty();
+        auto source_index_empty = source.destination.index.empty();
+        if(to_append_index_empty && source_index_empty)
         {
           // Simple case : we just replace the values
           value_merger<true>::merge_value(source.value, messageToAppend.value);
@@ -42,7 +62,7 @@ struct state_flatten_visitor
         else
         {
           piecewise_message pw{messageToAppend.destination.value, {}};
-          if(!messageToAppend.destination.index.empty() && !source.destination.index.empty())
+          if(!to_append_index_empty && !source_index_empty)
           {
             // Most complex case : we create a tuple big enough to host both values
             value_merger<true>::insert_in_tuple(pw.value, source.value, source.destination.index);
@@ -50,12 +70,12 @@ struct state_flatten_visitor
           }
           // For these cases, we mix in the one that has the index;
           // the one without index information becomes index [0] :
-          else if(!messageToAppend.destination.index.empty())
+          else if(!to_append_index_empty)
           {
             pw.value.value.push_back(source.value);
             value_merger<true>::insert_in_tuple(pw.value, messageToAppend.value, messageToAppend.destination.index);
           }
-          else if(!source.destination.index.empty())
+          else if(!source_index_empty)
           {
             value_merger<true>::insert_in_tuple(pw.value, source.value, source.destination.index);
             value_merger<true>::set_first_value(pw.value, messageToAppend.value);
@@ -84,17 +104,7 @@ struct state_flatten_visitor
 
   void operator()(const ossia::piecewise_message& pw)
   {
-    auto it = find_if(state, [&](const state_element& e)
-    {
-      ossia::net::address_base* address = &pw.address.get();
-      if (auto m = e.target<message>())
-        return &m->destination.value.get() == address;
-      else if(auto p = e.target<piecewise_message>())
-        return &p->address.get() == address;
-      else
-        return false;
-    });
-
+    auto it = find_same_address(pw);
     if (it == state.end())
     {
       state.add(pw);
@@ -151,17 +161,7 @@ struct state_flatten_visitor
   void operator()(message&& messageToAppend)
   {
     // find message with the same address to replace it
-    auto it = find_if(state, [&](const state_element& e)
-    {
-      auto address = &messageToAppend.destination.value.get();
-      if (auto m = e.target<message>())
-        return &m->destination.value.get() == address;
-      else if(auto p = e.target<piecewise_message>())
-        return &p->address.get() == address;
-      else
-        return false;
-    });
-
+    auto it = find_same_address(messageToAppend);
     if (it == state.end())
     {
       state.add(std::move(messageToAppend));
@@ -171,35 +171,37 @@ struct state_flatten_visitor
       // Merge messages
       if(auto source_ptr = it->target<message>())
       {
-        message& existing_mess = *source_ptr;
-        if(messageToAppend.destination.index.empty() && existing_mess.destination.index.empty())
+        message& source = *source_ptr;
+        auto to_append_index_empty = messageToAppend.destination.index.empty();
+        auto source_index_empty = source.destination.index.empty();
+        if(to_append_index_empty && source_index_empty)
         {
           // Simple case : we just replace the values
-          value_merger<true>::merge_value(existing_mess.value, std::move(messageToAppend.value));
+          value_merger<true>::merge_value(source.value, std::move(messageToAppend.value));
         }
         else
         {
           piecewise_message pw{messageToAppend.destination.value, {}};
-          if(!messageToAppend.destination.index.empty() && !existing_mess.destination.index.empty())
+          if(!to_append_index_empty && !source_index_empty)
           {
             // Most complex case : we create a tuple big enough to host both values
-            value_merger<true>::insert_in_tuple(pw.value, existing_mess.value, existing_mess.destination.index);
+            value_merger<true>::insert_in_tuple(pw.value, source.value, source.destination.index);
             value_merger<true>::insert_in_tuple(pw.value, std::move(messageToAppend.value), messageToAppend.destination.index);
           }
           // For these cases, we mix in the one that has the index;
           // the one without index information becomes index [0] :
-          else if(!messageToAppend.destination.index.empty())
+          else if(!to_append_index_empty)
           {
-            pw.value.value.push_back(existing_mess.value);
+            pw.value.value.push_back(source.value);
             value_merger<true>::insert_in_tuple(pw.value, std::move(messageToAppend.value), messageToAppend.destination.index);
           }
-          else if(!existing_mess.destination.index.empty())
+          else if(!source_index_empty)
           {
-            value_merger<true>::insert_in_tuple(pw.value, existing_mess.value, existing_mess.destination.index);
+            value_merger<true>::insert_in_tuple(pw.value, source.value, source.destination.index);
             value_merger<true>::set_first_value(pw.value, std::move(messageToAppend.value));
           }
 
-          state.remove(existing_mess);
+          state.remove(source);
           state.add(std::move(pw));
         }
       }
@@ -222,17 +224,7 @@ struct state_flatten_visitor
 
   void operator()(ossia::piecewise_message&& pw)
   {
-    auto it = find_if(state, [&](const state_element& e)
-    {
-      ossia::net::address_base* address = &pw.address.get();
-      if (auto m = e.target<message>())
-        return &m->destination.value.get() == address;
-      else if(auto p = e.target<piecewise_message>())
-        return &p->address.get() == address;
-      else
-        return false;
-    });
-
+    auto it = find_same_address(pw);
     if (it == state.end())
     {
       state.add(std::move(pw));

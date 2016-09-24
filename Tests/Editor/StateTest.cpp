@@ -1,15 +1,79 @@
 #include <QtTest>
 #include <ossia/ossia.hpp>
 #include <iostream>
+#include <boost/container/flat_set.hpp>
 
 using namespace ossia;
+namespace ossia
+{
+class OSSIA_EXPORT functional_state
+{
+public:
+  std::vector<ossia::Destination> inputs;
+  std::vector<ossia::Destination> outputs;
+  int priority;
 
+  std::function<ossia::state_element (const ossia::state_element&)> func;
+  void launch() const
+  {
+    if (func)
+      func();
+  }
+
+  friend bool operator==(const functional_state& lhs, const functional_state& rhs)
+  {
+    return false;
+  }
+  friend bool operator!=(const functional_state& lhs, const functional_state& rhs)
+  {
+    return true;
+  }
+};
+
+class OSSIA_EXPORT functional_state_composition
+{
+  std::vector<functional_state> call_chain;
+  // priority ? // priority relative to messages ?
+};
+}
 using namespace ossia::net;
 class StateTest : public QObject
 {
     Q_OBJECT
 
 private Q_SLOTS:
+  void test_functional()
+  {
+    // To change the hue, the whole value is required
+    // -> extend to taking the whole value irrelevant of the destination index ?
+    // -> who should handle this ?
+
+    ossia::functional_state autom_h;
+    ossia::Destination d;
+    // For an autom, same input & output
+    autom_h.inputs.push_back(d);
+    autom_h.outputs.push_back(d);
+    autom_h.func = [] (ossia::value s) {
+
+
+    };
+
+    ossia::functional_state autom_r;
+    autom_r.inputs.push_back(d);
+    autom_r.outputs.push_back(d);
+
+    // We have to make a difference between the values that map to the neutral
+    // unit and the ones that won't. Impossible.
+
+    // How to handle the case where changing the hue actually changes the whole
+    // color, but changing just "r" does not ?
+
+
+    // Case 2 : mappings
+
+    // Mapping 1 : a:/b[hue] -> c:/d[sat]
+    // Mapping 2 : c:/d[r] -> e:/f[r]
+  }
 
     /*! test life cycle and accessors functions */
     void test_basic()
