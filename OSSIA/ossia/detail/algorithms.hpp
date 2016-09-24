@@ -4,7 +4,7 @@
 #include <iterator>
 #include <array>
 #include <ossia/detail/instantiations.hpp>
-
+#include <iostream>
 /**
  * This header contains various range-style functions that mimic std::algorithm functions.
  * This won't be necessary anymore when ranges are introduced in C++20 (hopefully).
@@ -63,10 +63,10 @@ auto remove_if(Vector&& v, Fun fun)
 // See also https://gist.github.com/klmr/2775736
 template <typename... Args>
 constexpr std::array<boost::string_ref, sizeof...(Args)>
-  make_string_array(Args... args)
+  make_string_array(Args&&... args)
 {
   return std::array<boost::string_ref, sizeof...(Args)>{
-        boost::string_ref{args, sizeof(args)-1}...
+        boost::string_ref{args, sizeof(args) - 1}...
   };
 }
 }

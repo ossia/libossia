@@ -35,8 +35,8 @@ struct distance_ratio :
     public linear_unit<distance_unit<distance_ratio<T>>, T>
 {
   using linear_unit<distance_unit<distance_ratio<T>>, T>::linear_unit;
-};
 
+};
 
 template<>
 struct unit_traits<meter_u>

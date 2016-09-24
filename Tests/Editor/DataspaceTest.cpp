@@ -1,12 +1,12 @@
 #include <QtTest>
 #include <ossia/ossia.hpp>
 #include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/detail/algorithms.hpp>
 
 #include <experimental/string_view>
 namespace ossia
 {
-
 struct address_data
 {
   unit_t unit;
@@ -17,68 +17,6 @@ struct address_data
 
 }
 
-
-struct unit_text_visitor
-{
-  template<typename... Args>
-  boost::string_ref operator()(const eggs::variant<Args...>& dataspace)
-  {
-    if(dataspace)
-      return eggs::variants::apply(*this, dataspace);
-    else
-      return "";
-  }
-
-  template<typename Unit>
-  boost::string_ref operator()(Unit)
-  {
-    return ossia::unit_traits<Unit>::text()[0];
-  }
-};
-
-using unit_map = std::unordered_map<std::string, ossia::unit_t>;
-
-template<typename Arg, typename... Args>
-struct unit_map_factory
-{
-  void operator()(unit_map& m)
-  {
-    for(boost::string_ref v : Arg::text())
-      m.emplace(v.to_string(), ossia::unit_t{Arg{}});
-    unit_map_factory<Args...>{}(m);
-  }
-};
-
-template<typename Arg>
-struct unit_map_factory<Arg>
-{
-  void operator()(unit_map& m)
-  {
-    for(boost::string_ref v : Arg::text())
-      m.emplace(v.to_string(), ossia::unit_t{Arg{}});
-  }
-};
-
-
-template<typename... Args>
-std::unordered_map<std::string, ossia::unit_t> make_unit_map()
-{
-  std::unordered_map<std::string, ossia::unit_t> map;
-  unit_map_factory<Args...>{}(map);
-  return map;
-}
-
-
-struct unit_factory_visitor
-{
-  boost::string_ref text;
-
-  ossia::unit_t operator()(ossia::color_u)
-  {
-    static const auto units = make_unit_map<ossia::rgba_u, ossia::rgb_u>();
-    return {};
-  }
-};
 
 class DataspaceTest : public QObject
 {
@@ -91,6 +29,10 @@ private Q_SLOTS:
     // Dataspace : enforces a family of units
     // Unit : enforces a certain type of storage
 
+    static_assert(!ossia::is_unit_v<int>, "");
+    static_assert(ossia::is_unit_v<ossia::centimeter_u>, "");
+    static_assert(ossia::is_unit_v<ossia::rgb_u>, "");
+    static_assert(!ossia::is_unit_v<ossia::color_u>, "");
     constexpr ossia::centimeter c{{2.3}};
 
     constexpr ossia::millimeter m = c;
@@ -135,7 +77,23 @@ private Q_SLOTS:
     // must not compile : col = ossia::decimeter_u{};
 
     // With C++17 : static_assert(eggs::variants::apply(unit_text_visitor{}, col) == boost::string_ref("rgb"), "");
-    QCOMPARE(eggs::variants::apply(unit_text_visitor{}, col), boost::string_ref("rgb"));
+    QVERIFY(ossia::get_unit_text(col) == "rgb");
+    QCOMPARE(ossia::get_unit_text(col), boost::string_ref("rgb"));
+
+    {
+      ossia::unit_t some_unit = ossia::distance_u{};
+      QVERIFY(parse_unit("cm", some_unit) == ossia::centimeter_u{});
+    }
+
+    {
+      QVERIFY(parse_unit("cm", ossia::distance_u{}) == ossia::centimeter_u{});
+    }
+
+    {
+      ossia::unit_t some_unit = ossia::color_u{};
+      QVERIFY(parse_unit("cm", some_unit) != ossia::centimeter_u{});
+      QVERIFY(parse_unit("cm", some_unit) == ossia::color_u{});
+    }
   }
 };
 
