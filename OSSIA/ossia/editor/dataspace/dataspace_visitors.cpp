@@ -88,11 +88,28 @@ ossia::unit_t parse_unit(boost::string_ref text, T dataspace)
   return unit_factory_visitor{text}(dataspace);
 }
 
+unit_t parse_dataspace(boost::string_ref text)
+{
+  std::unordered_map<std::string, unit_t> dataspaces{
+    {"color", color_u{}},
+    {"distance", distance_u{}},
+    {"position", position_u{}},
+    {"speed", speed_u{}},
+    {"orientation", orientation_u{}},
+    {"angle", angle_u{}},
+    {"gain", gain_u{}},
+  };
+
+  auto it = dataspaces.find(text.to_string());
+  return it != dataspaces.end() ? it->second : unit_t{};
+}
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::color_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::distance_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::position_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::speed_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::orientation_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::angle_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::gain_u);
+
 
 }

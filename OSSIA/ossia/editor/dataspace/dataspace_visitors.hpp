@@ -10,6 +10,15 @@ namespace ossia
  */
 OSSIA_EXPORT boost::string_ref get_unit_text(ossia::unit_t);
 
+
+/**
+ * @brief parse_dataspace
+ * @param text Something like color, etc.
+ *
+ * @return A value corresponding to the dataspace, without any specific unit.
+ */
+OSSIA_EXPORT ossia::unit_t parse_dataspace(boost::string_ref text);
+
 /**
  * @brief parse_unit Takes a text and a dataspace and gives a corresponding unit.
  * @param text The text to parse
