@@ -34,6 +34,7 @@ ossia::state_element automation::offset(ossia::time_value offset)
     return {};
   }
   // edit a Message handling the new Value
+  // todo shouldn't it become mLastMessage ??
   return ossia::message{
       mDrivenAddress, computeValue(offset / par.getDurationNominal(), mDrive)};
 }
@@ -102,7 +103,6 @@ automation::computeValue(double position, const ossia::value& drive)
   struct computeValue_visitor
   {
     double position;
-    const ossia::value& drive;
 
     ossia::value operator()(const ossia::Behavior& b) const
     {
@@ -208,6 +208,6 @@ automation::computeValue(double position, const ossia::value& drive)
   };
 
 
-  return drive.apply(computeValue_visitor{position, drive});
+  return drive.apply(computeValue_visitor{position});
 }
 }

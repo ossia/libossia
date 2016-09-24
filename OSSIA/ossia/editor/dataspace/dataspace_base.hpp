@@ -6,38 +6,51 @@
 #include <ossia/detail/math.hpp>
 #include <brigand/algorithms/transform.hpp>
 #include <ratio>
+#include <type_traits>
 namespace ossia
 {
 // These algorithms are a more statically typed version
 // of the ones found in the Jamoma dataspace library.
 // Credits : Tim Place, Nils Peters, Trond Lossius, and certainly others.
 // This library also tries to avoid dynamic allocation whenever possible.
+
+template<typename T, typename U>
+using enable_if_same_dataspace = std::enable_if_t<
+std::is_same<
+ typename T::dataspace_type,
+ typename U::dataspace_type>::value>;
+
 template<typename Unit>
 struct strong_value
 {
   using unit_type = Unit;
   using value_type = typename Unit::value_type;
+  using dataspace_type = typename Unit::dataspace_type;
+  using neutral_unit = typename Unit::neutral_unit;
   value_type val;
 
+  // Constructor that takes anyything able to initialize val
   template<typename U,
            typename = std::enable_if_t<
              std::is_constructible<value_type, U>::value>>
-  constexpr strong_value(U other): val{other} { }
+  constexpr strong_value(U other):
+      val{other}
+  {
+  }
 
-  constexpr strong_value(value_type f): val{f} { }
-
-  constexpr strong_value(typename value_trait<value_type>::value_type f): val{f} { }
+  // Conversion constructor
   template<typename U,
-           typename = std::enable_if_t<
-              std::is_same<
-               typename U::dataspace_type,
-               typename unit_type::dataspace_type>::value>>
+           typename = enable_if_same_dataspace<U, unit_type>>
   constexpr strong_value(strong_value<U> other):
     val{unit_type::from_neutral(U::to_neutral(other))}
   {
   }
 
-  constexpr strong_value<Unit>(const strong_value<Unit>& other): val{other.val} { }
+  // Copy constructor
+  constexpr strong_value<Unit>(const strong_value<Unit>& other):
+      val{other.val}
+  {
+  }
 };
 
 template<typename T, typename Ratio_T>

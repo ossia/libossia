@@ -6,6 +6,67 @@
 using namespace ossia;
 namespace ossia
 {
+template<typename T, typename U>
+using enable_if_different_dataspace = std::enable_if_t<
+!std::is_same<
+ typename T::dataspace_type,
+ typename U::dataspace_type>::value>;
+
+template<typename T, typename U, typename = void>
+struct convert_unit_helper
+{
+        ossia::value_with_unit operator()(const strong_value<T>& value, const U& unit)
+        {
+            qDebug("bad");
+            return value;
+        }
+};
+
+template<typename T, typename U>
+struct convert_unit_helper<T,U, enable_if_same_dataspace<T, U>>
+{
+        ossia::value_with_unit operator()(const strong_value<T>& value, const U& unit)
+        {
+            qDebug("good");
+            return strong_value<U>(value);
+        }
+};
+
+struct convert_unit_visitor
+{
+        template<typename T, typename U>
+        ossia::value_with_unit operator()(const strong_value<T>& value, const U& unit)
+        {
+            return convert_unit_helper<T,U>{}(value, unit);
+        }
+
+        template<typename... Args1, typename... Args2>
+        ossia::value_with_unit operator()(const eggs::variant<Args1...>& value, const eggs::variant<Args2...>& dataspace)
+        {
+            return eggs::variants::apply(convert_unit_visitor{}, value, dataspace);
+        }
+};
+
+OSSIA_EXPORT
+ossia::value_with_unit convert(ossia::value_with_unit v, ossia::unit_t t)
+{
+    if(v && t)
+    {
+        return eggs::variants::apply(convert_unit_visitor{}, v, t);
+    }
+    else
+    {
+        return v;
+    }
+}
+
+
+OSSIA_EXPORT
+void merge(ossia::value t, ossia::value_with_unit v, ossia::destination_index idx)
+{
+
+}
+
 class OSSIA_EXPORT functional_state
 {
 public:
@@ -13,11 +74,11 @@ public:
   std::vector<ossia::Destination> outputs;
   int priority;
 
-  std::function<ossia::state_element (const ossia::state_element&)> func;
+  std::function<ossia::value_with_unit (ossia::value_with_unit)> func;
   void launch() const
   {
-    if (func)
-      func();
+    //if (func)
+    //  func();
   }
 
   friend bool operator==(const functional_state& lhs, const functional_state& rhs)
@@ -42,19 +103,52 @@ class StateTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+
+        void test_convert()
+        {
+            convert(ossia::centimeter(5),  ossia::millimeter_u{});
+            convert(ossia::centimeter(5),  ossia::rgb_u{});
+        }
+
   void test_functional()
   {
+      generic_device dev{std::make_unique<local_protocol>(), "test"};
+      auto n1 = dev.createChild("n1")->createAddress(val_type::TUPLE);
     // To change the hue, the whole value is required
     // -> extend to taking the whole value irrelevant of the destination index ?
     // -> who should handle this ?
 
+      qDebug() << sizeof(ossia::unit_t)
+               << sizeof(ossia::value)
+               << sizeof(ossia::value_with_unit)
+               << sizeof(ossia::color_u)
+               << sizeof(ossia::color)
+               << sizeof(rgb_u)
+               << sizeof(eggs::variant<rgb_u>);
     ossia::functional_state autom_h;
-    ossia::Destination d;
+    ossia::Destination d{*n1};
     // For an autom, same input & output
     autom_h.inputs.push_back(d);
     autom_h.outputs.push_back(d);
-    autom_h.func = [] (ossia::value s) {
+    autom_h.func = [] (ossia::value_with_unit s) {
+        // 1. res = computeValue()
+        ossia::value autom_res; // = computeValue();
+        ossia::unit_t autom_ds;
+        destination_index idx;
+        // destination_index ? how to say that we change h ? [0] + hsv...
 
+        // 2. potentially convert value to the automation dataspace
+        // e.g. if the automation changes h in hsv, we convert s to hsv
+        if(autom_ds)
+        {
+            s = convert(s, autom_ds);
+        }
+
+        // 3. merge the automation result in s
+        merge(autom_res, s, idx);
+
+        // 4. return s;
+        return s;
 
     };
 

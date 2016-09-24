@@ -307,7 +307,8 @@ struct cie_luv_u : public color_unit<cie_luv_u>
 
 using color_u =
   eggs::variant<
-    argb_u, rgba_u, rgb_u, bgr_u, argb8_u, hsv_u, hsl_u, cmy8_u, cmyk8_u, xyz_u, yxy_u, hunter_lab_u, cie_lab_u, cie_luv_u>;
+    argb_u, rgba_u, rgb_u, bgr_u, argb8_u, hsv_u, cmy8_u, xyz_u
+/*, hsl_u, cmyk8_u, yxy_u, hunter_lab_u, cie_lab_u, cie_luv_u*/>;
 
 using argb = strong_value<argb_u>;
 using rgba = strong_value<rgba_u>;
