@@ -1,8 +1,6 @@
 #pragma once
-
 #include <list>
 #include <stdexcept>
-#include <ossia/detail/instantiations.hpp>
 #include <ossia_export.h>
 namespace ossia
 {

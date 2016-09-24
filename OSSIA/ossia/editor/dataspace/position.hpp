@@ -15,7 +15,7 @@ struct position_unit
 struct cartesian_3d_u :
     public position_unit<cartesian_3d_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("cart3D", "xyz"); }
 
   using value_type = Vec3f;
@@ -33,7 +33,7 @@ struct cartesian_3d_u :
 struct cartesian_2d_u :
     public position_unit<cartesian_2d_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("cart2D", "xy"); }
   using value_type = Vec2f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -51,7 +51,7 @@ struct cartesian_2d_u :
 struct spherical_u :
     public position_unit<spherical_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("spherical", "aed"); }
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -89,7 +89,7 @@ struct spherical_u :
 struct polar_u :
     public position_unit<polar_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("polar", "ad"); }
   using value_type = Vec2f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -119,7 +119,7 @@ struct polar_u :
 struct opengl_u :
     public position_unit<opengl_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("openGL"); }
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -136,7 +136,7 @@ struct opengl_u :
 struct cylindrical_u :
     public position_unit<cylindrical_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("cylindrical", "daz"); }
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)

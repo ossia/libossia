@@ -44,42 +44,42 @@ using speed_u =
 template<>
 struct unit_traits<meter_per_second_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("m/s"); }
 };
 
 template<>
 struct unit_traits<miles_per_hour_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("mph", "mi/h"); }
 };
 
 template<>
 struct unit_traits<kilometer_per_hour_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("km/h", "kmph"); }
 };
 
 template<>
 struct unit_traits<knot_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("kn"); }
 };
 
 template<>
 struct unit_traits<foot_per_hour_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("ft/h"); }
 };
 
 template<>
 struct unit_traits<foot_per_second_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("ft/s"); }
 };
 

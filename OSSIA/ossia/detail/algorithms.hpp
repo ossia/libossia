@@ -3,9 +3,12 @@
 #include <type_traits>
 #include <iterator>
 #include <array>
-#include <ossia/detail/instantiations.hpp>
 #include <iostream>
+#include <boost/utility/string_ref.hpp>
+
 /**
+ * \file algorithms.hpp
+ *
  * This header contains various range-style functions that mimic std::algorithm functions.
  * This won't be necessary anymore when ranges are introduced in C++20 (hopefully).
  */

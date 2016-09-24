@@ -4,7 +4,7 @@
 namespace ossia
 {
 
-class argb_u;
+struct argb_u;
 template<typename Impl>
 struct color_unit
 {
@@ -15,7 +15,7 @@ struct color_unit
 
 struct argb_u : public color_unit<argb_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("argb"); }
 
   using value_type = Vec4f;
@@ -33,7 +33,7 @@ struct argb_u : public color_unit<argb_u>
 
 struct rgba_u : public color_unit<rgba_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("rgba"); }
   using value_type = Vec4f;
 
@@ -50,7 +50,7 @@ struct rgba_u : public color_unit<rgba_u>
 
 struct rgb_u : public color_unit<rgb_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("rgb"); }
   using value_type = Vec3f;
 
@@ -67,7 +67,7 @@ struct rgb_u : public color_unit<rgb_u>
 
 struct bgr_u : public color_unit<bgr_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("bgr"); }
   using value_type = Vec3f;
 
@@ -84,7 +84,7 @@ struct bgr_u : public color_unit<bgr_u>
 
 struct argb8_u : public color_unit<argb8_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("argb8"); }
   using value_type = Vec4f;
 
@@ -109,7 +109,7 @@ struct argb8_u : public color_unit<argb8_u>
 
 struct hsv_u : public color_unit<hsv_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("hsv"); }
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -155,9 +155,9 @@ struct hsv_u : public color_unit<hsv_u>
     const auto var_G = self.val.value[2];
     const auto var_B = self.val.value[3];
 
-    auto var_Min = std::min(std::min(var_R, var_G), var_B);    //Min. value of RGB
-    auto var_Max = std::max(std::max( var_R, var_G), var_B );    //Max. value of RGB
-    auto del_Max = var_Max - var_Min;             //Delta RGB value
+    const auto var_Min = std::min(std::min(var_R, var_G), var_B);    //Min. value of RGB
+    const auto var_Max = std::max(std::max( var_R, var_G), var_B );    //Max. value of RGB
+    const auto del_Max = var_Max - var_Min;             //Delta RGB value
 
 
     if ( del_Max == 0. )                     //This is a gray, no chroma...
@@ -166,7 +166,7 @@ struct hsv_u : public color_unit<hsv_u>
     }
     else                                    //Chromatic data...
     {
-      double H;
+      double H{};
       auto S = del_Max / var_Max;
       auto V = var_Max;
 
@@ -188,7 +188,7 @@ struct hsv_u : public color_unit<hsv_u>
 
 struct hsl_u : public color_unit<hsl_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("hsl"); }
   using value_type = Vec3f;
 
@@ -196,7 +196,7 @@ struct hsl_u : public color_unit<hsl_u>
 
 struct cmy8_u : public color_unit<cmy8_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("cmy8"); }
   using value_type = Vec3f;
 
@@ -220,7 +220,7 @@ struct cmy8_u : public color_unit<cmy8_u>
 
 struct cmyk8_u : public color_unit<cmyk8_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("cmyk8"); }
   using value_type = Vec4f;
 
@@ -228,7 +228,7 @@ struct cmyk8_u : public color_unit<cmyk8_u>
 
 struct xyz_u : public color_unit<xyz_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("xyz"); }
   using value_type = Vec3f;
 
@@ -278,28 +278,28 @@ struct xyz_u : public color_unit<xyz_u>
 
 struct yxy_u : public color_unit<yxy_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("yxy"); }
   using value_type = Vec3f;
 };
 
 struct hunter_lab_u : public color_unit<hunter_lab_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("hunter_lab"); }
   using value_type = Vec3f;
 };
 
 struct cie_lab_u : public color_unit<cie_lab_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("cie_lab"); }
   using value_type = Vec3f;
 };
 
 struct cie_luv_u : public color_unit<cie_luv_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("cie_luv"); }
   using value_type = Vec3f;
 };

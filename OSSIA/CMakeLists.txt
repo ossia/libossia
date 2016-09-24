@@ -163,6 +163,7 @@ else()
     -Wextra
     -Wno-unused-parameter
     -Wno-unknown-pragmas
+    -Wno-missing-braces
     -Wnon-virtual-dtor
     -pedantic
     -Wcast-align
@@ -170,7 +171,8 @@ else()
     -Woverloaded-virtual
     -pipe
     -Werror=return-type
-    -Werror=trigraphs)
+    -Werror=trigraphs
+    -Wmissing-field-initializers)
 
     if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND "${SUPPORTS_MISLEADING_INDENT_FLAG}")
         target_compile_options(ossia PUBLIC -Wmisleading-indentation)

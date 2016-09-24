@@ -2,24 +2,6 @@
 #include <ossia/network/domain/detail/domain_visitors.hpp>
 #include <ossia/network/domain/domain.hpp>
 
-template class ossia::net::domain_base<ossia::Impulse>;
-template class ossia::net::domain_base<ossia::Bool>;
-template class ossia::net::domain_base<ossia::Int>;
-template class ossia::net::domain_base<ossia::Float>;
-template class ossia::net::domain_base<ossia::Char>;
-template class ossia::net::domain_base<ossia::String>;
-template class ossia::net::domain_base<ossia::Tuple>;
-template class ossia::net::domain_base<ossia::Vec2f>;
-template class ossia::net::domain_base<ossia::Vec3f>;
-template class ossia::net::domain_base<ossia::Vec4f>;
-template class ossia::net::domain_base<ossia::Destination>;
-template class ossia::net::domain_base<ossia::Behavior>;
-
-template class eggs::variant<ossia::net::domain_base<ossia::Impulse>, ossia::net::domain_base<ossia::Bool>, ossia::net::domain_base<ossia::Int>,
-                                    ossia::net::domain_base<ossia::Float>, ossia::net::domain_base<ossia::Char>, ossia::net::domain_base<ossia::String>,
-                                    ossia::net::domain_base<ossia::Tuple>, ossia::net::domain_base<ossia::Vec2f>, ossia::net::domain_base<ossia::Vec3f>,
-                                    ossia::net::domain_base<ossia::Vec4f>, ossia::net::domain_base<ossia::Destination>,
-                                    ossia::net::domain_base<ossia::Behavior>>;
 namespace ossia
 {
 

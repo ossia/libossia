@@ -17,33 +17,33 @@ struct gain_unit
 namespace detail
 {
 const constexpr double DecibelHeadroom = 96.;
-const constexpr double GainMidiPower = std::log( std::log(12. / DecibelHeadroom + 1.) / std::log(127. / 100.) ) / std::log(2.);
-const constexpr double GainMidiPowPow2 = std::pow(2., GainMidiPower);
+const double GainMidiPower = std::log( std::log(12. / DecibelHeadroom + 1.) / std::log(127. / 100.) ) / std::log(2.);
+const double GainMidiPowPow2 = std::pow(2., GainMidiPower);
 
 template<typename T>
-constexpr T LinearGainToDecibels(const T value)
+T LinearGainToDecibels(const T value)
 {
     return value >= 0.
-            ? 20.0 * (std::log10(value))
+            ? 20.0 * std::log10(value)
             : 0.;
 }
 
 template<typename T>
-constexpr T LinearGainToDecibelsClipped(const T value)
+T LinearGainToDecibelsClipped(const T value)
 {
     return value <= 0.
             ? -DecibelHeadroom
-            : clamp_min(20.0 * (std::log10(value)), -DecibelHeadroom);
+            : clamp_min(20.0 * std::log10(value), -DecibelHeadroom);
 }
 
 template<typename T>
-constexpr T DecibelsToLinearGain(const T value)
+T DecibelsToLinearGain(const T value)
 {
     return std::pow(10., value * 0.05);
 }
 
 template<typename T>
-constexpr T DecibelsToLinearGainClipped(const T value)
+T DecibelsToLinearGainClipped(const T value)
 {
     return value <= -DecibelHeadroom
             ? 0.
@@ -51,7 +51,7 @@ constexpr T DecibelsToLinearGainClipped(const T value)
 }
 
 template<typename T>
-constexpr T MidiToLinearGain(const T value)
+T MidiToLinearGain(const T value)
 {
     return value <= 0.
             ? 0.
@@ -60,15 +60,15 @@ constexpr T MidiToLinearGain(const T value)
 }
 
 template<typename T>
-constexpr T DecibelsToMidi(const T value)
+T DecibelsToMidi(const T value)
 {
     return value <= -DecibelHeadroom
             ? 0.
-            : 100. * std::exp(std::log(value / DecibelHeadroom + 1.) / GainMidiPowPow2);
+            : 100. * std::exp(std::log1p(value / DecibelHeadroom) / GainMidiPowPow2);
 }
 
 template<typename T>
-constexpr T LinearGainToMidi(const T value)
+T LinearGainToMidi(const T value)
 {
     return DecibelsToMidi(LinearGainToDecibels(value));
 }
@@ -76,7 +76,7 @@ constexpr T LinearGainToMidi(const T value)
 
 struct linear_u : public gain_unit<linear_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("linear"); }
 
   static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -92,15 +92,15 @@ struct linear_u : public gain_unit<linear_u>
 
 struct midigain_u : public gain_unit<midigain_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("midigain"); }
 
-  static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
       return detail::MidiToLinearGain(self.val.value);
   }
 
-  static constexpr value_type from_neutral(strong_value<neutral_unit> self)
+  static value_type from_neutral(strong_value<neutral_unit> self)
   {
       return detail::LinearGainToMidi(self.val.value);
   }
@@ -108,15 +108,15 @@ struct midigain_u : public gain_unit<midigain_u>
 
 struct decibel_u : public gain_unit<decibel_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("db", "dB"); }
 
-  static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
       return detail::DecibelsToLinearGainClipped(self.val.value);
   }
 
-  static constexpr value_type from_neutral(strong_value<neutral_unit> self)
+  static value_type from_neutral(strong_value<neutral_unit> self)
   {
       return detail::LinearGainToDecibelsClipped(self.val.value);
   }
@@ -125,15 +125,15 @@ struct decibel_u : public gain_unit<decibel_u>
 
 struct decibel_raw_u : public gain_unit<decibel_raw_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("db-raw", "dB-raw"); }
 
-  static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
       return detail::DecibelsToLinearGain(self.val.value);
   }
 
-  static constexpr value_type from_neutral(strong_value<neutral_unit> self)
+  static value_type from_neutral(strong_value<neutral_unit> self)
   {
       return 20.0 * (std::log10(self.val.value));
   }

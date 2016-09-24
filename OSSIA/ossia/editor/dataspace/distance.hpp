@@ -41,50 +41,50 @@ struct distance_ratio :
 template<>
 struct unit_traits<meter_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("m", "meters"); }
 };
 
 template<>
 struct unit_traits<kilometer_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("km", "kilometers"); }
 };
 template<>
 struct unit_traits<decimeter_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("dm", "decimeters"); }
 };
 template<>
 struct unit_traits<centimeter_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("cm", "centimeters"); }
 };
 template<>
 struct unit_traits<millimeter_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("mm", "millimeters"); }
 };
 template<>
 struct unit_traits<micrometer_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("um", "micrometers"); }
 };
 template<>
 struct unit_traits<nanometer_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("nm", "nanometers"); }
 };
 template<>
 struct unit_traits<picometer_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("pm", "picometers"); }
 };
 
@@ -92,19 +92,19 @@ struct unit_traits<picometer_u>
 template<>
 struct unit_traits<inch_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("inches", "\""); }
 };
 template<>
 struct unit_traits<foot_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("feet", "'"); }
 };
 template<>
 struct unit_traits<mile_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("miles"); }
 };
 

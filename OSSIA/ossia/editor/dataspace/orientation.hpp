@@ -17,7 +17,7 @@ struct orientation_unit
 struct quaternion_u :
     public orientation_unit<quaternion_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("quaternion", "quat"); }
 
   using value_type = Vec4f;
@@ -35,7 +35,7 @@ struct quaternion_u :
 struct euler_u :
     public orientation_unit<euler_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("euler", "ypr"); }
 
   using value_type = Vec4f;
@@ -82,7 +82,7 @@ struct euler_u :
 struct axis_u :
     public orientation_unit<axis_u>
 {
-  static constexpr const auto text()
+  static constexpr auto text()
   { return ossia::make_string_array("axis", "xyza"); }
   using value_type = Vec4f;
 

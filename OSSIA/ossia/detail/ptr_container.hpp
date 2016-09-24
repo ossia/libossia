@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include <vector>
-#include <ossia/detail/instantiations.hpp>
 
 namespace ossia
 {
