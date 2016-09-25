@@ -33,7 +33,7 @@ private Q_SLOTS:
     static_assert(ossia::is_unit_v<ossia::centimeter_u>, "");
     static_assert(ossia::is_unit_v<ossia::rgb_u>, "");
     static_assert(!ossia::is_unit_v<ossia::color_u>, "");
-    constexpr ossia::centimeter c{{2.3}};
+    constexpr ossia::centimeter c{2.3};
 
     constexpr ossia::millimeter m = c;
 
