@@ -20,6 +20,12 @@ std::is_same<
  typename T::dataspace_type,
  typename U::dataspace_type>::value>;
 
+template<typename T, typename U>
+using enable_if_different_dataspace = std::enable_if_t<
+!std::is_same<
+ typename T::dataspace_type,
+ typename U::dataspace_type>::value>;
+
 template<typename Unit>
 struct strong_value
 {

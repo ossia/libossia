@@ -90,7 +90,7 @@ ossia::unit_t parse_unit(boost::string_ref text, T dataspace)
 
 unit_t parse_dataspace(boost::string_ref text)
 {
-  std::unordered_map<std::string, unit_t> dataspaces{
+  static const std::unordered_map<std::string, unit_t> dataspaces{
     {"color", color_u{}},
     {"distance", distance_u{}},
     {"position", position_u{}},
@@ -103,6 +103,93 @@ unit_t parse_dataspace(boost::string_ref text)
   auto it = dataspaces.find(text.to_string());
   return it != dataspaces.end() ? it->second : unit_t{};
 }
+
+
+template<typename T, typename U, typename = void>
+struct convert_unit_helper
+{
+  ossia::value_with_unit operator()(const strong_value<T>& value, const U& unit)
+  {
+    return value;
+  }
+};
+
+template<typename T, typename U>
+struct convert_unit_helper<T,U, enable_if_same_dataspace<T, U>>
+{
+  ossia::value_with_unit operator()(const strong_value<T>& value, const U& unit)
+  {
+    return strong_value<U>(value);
+  }
+};
+
+struct convert_unit_visitor
+{
+  template<typename T, typename U>
+  ossia::value_with_unit operator()(const strong_value<T>& value, const U& unit)
+  {
+    return convert_unit_helper<T,U>{}(value, unit);
+  }
+
+  template<typename... Args1, typename... Args2>
+  ossia::value_with_unit operator()(const eggs::variant<Args1...>& value, const eggs::variant<Args2...>& dataspace)
+  {
+    return eggs::variants::apply(*this, value, dataspace);
+  }
+};
+
+value_with_unit convert(value_with_unit v, unit_t t)
+{
+  if(v && t)
+  {
+    return eggs::variants::apply(convert_unit_visitor{}, v, t);
+  }
+  else
+  {
+    return v;
+  }
+}
+
+
+template<typename Visitor>
+struct value_with_unit_expander
+{
+  Visitor impl;
+
+  template<typename T>
+  ossia::value_with_unit operator()(const T& value)
+  {
+    return eggs::variants::apply(impl, value, dataspace);
+  }
+};
+
+struct value_merger
+{
+  ossia::destination_index index;
+
+  template<typename T, typename U>
+  ossia::value_with_unit operator()(const strong_value<T>& value_unit, const U& value)
+  {
+
+  }
+
+};
+
+ossia::value_with_unit merge(
+    ossia::value_with_unit vu,
+    const ossia::value& val,
+    ossia::destination_index idx)
+{
+  if(vu && val)
+  {
+    if(idx.empty())
+    {
+
+    }
+
+  }
+}
+
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::color_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::distance_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::position_u);
@@ -110,6 +197,5 @@ template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::speed_u
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::orientation_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::angle_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::gain_u);
-
 
 }
