@@ -33,14 +33,14 @@ struct strong_value
   using value_type = typename Unit::value_type;
   using dataspace_type = typename Unit::dataspace_type;
   using neutral_unit = typename Unit::neutral_unit;
-  value_type val;
+  value_type value;
 
   // Constructor that takes anyything able to initialize val
   template<typename U,
            typename = std::enable_if_t<
              std::is_constructible<value_type, U>::value>>
   constexpr strong_value(U other):
-      val{other}
+      value{other}
   {
   }
 
@@ -48,13 +48,13 @@ struct strong_value
   template<typename U,
            typename = enable_if_same_dataspace<U, unit_type>>
   constexpr strong_value(strong_value<U> other):
-    val{unit_type::from_neutral(U::to_neutral(other))}
+    value{unit_type::from_neutral(U::to_neutral(other))}
   {
   }
 
   // Copy constructor
   constexpr strong_value<Unit>(const strong_value<Unit>& other):
-      val{other.val}
+      value{other.value}
   {
   }
 };
@@ -65,13 +65,13 @@ struct linear_unit : public T
   static constexpr strong_value<typename T::neutral_unit>
     to_neutral(strong_value<typename T::concrete_type> self)
   {
-    return {self.val.value * ratio()};
+    return {self.value.value * ratio()};
   }
 
   static constexpr typename T::value_type
     from_neutral(strong_value<typename T::neutral_unit> self)
   {
-    return self.val.value / ratio();
+    return self.value.value / ratio();
   }
 
   static constexpr double ratio()
@@ -84,5 +84,11 @@ template<typename T>
 struct unit_traits
 {
   static constexpr auto text() { return T::text(); }
+};
+
+template<typename T>
+struct unit_traits<strong_value<T>>
+{
+  static constexpr auto text() { return unit_traits<T>::text(); }
 };
 }

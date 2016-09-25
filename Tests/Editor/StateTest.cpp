@@ -33,10 +33,49 @@ public:
 
 class OSSIA_EXPORT functional_state_composition
 {
+public:
   std::vector<functional_state> call_chain;
   // priority ? // priority relative to messages ?
 };
 }
+
+struct mock_autom2
+{
+  ossia::Destination mDestination;
+  ossia::unit_t mDataspace;
+  ossia::functional_state state()
+  {
+    ossia::functional_state autom_h;
+
+    // For an autom, same input & output
+    autom_h.inputs.push_back(mDestination);
+    autom_h.outputs.push_back(mDestination);
+    autom_h.func = [=] (ossia::value_with_unit s)
+    {
+      // destination_index ? how to say that we change h ? [0] + hsv...
+
+      // 2. potentially convert value to the automation dataspace
+      // e.g. if the automation changes h in hsv, we convert s to hsv
+      if(mDataspace)
+      {
+        s = convert(s, mDataspace);
+      }
+      std::cerr << "after conversion: " << to_pretty_string(s) << std::endl;
+
+      // 3. merge the automation result in s
+      s = merge(s, computeValue(), mDestination.index);
+      std::cerr << "after merge: " << to_pretty_string(s) << std::endl;
+
+      // 4. return s;
+      return s;
+    };
+
+    return autom_h;
+  }
+
+  ossia::Float computeValue() { return 1.; }
+};
+
 using namespace ossia::net;
 class StateTest : public QObject
 {
@@ -51,15 +90,6 @@ private Q_SLOTS:
     QVERIFY(res == ossia::millimeter{50});
     QVERIFY(res != ossia::centimeter{5});
     convert(ossia::centimeter(5),  ossia::rgb_u{});
-  }
-
-  void test_functional()
-  {
-    generic_device dev{std::make_unique<local_protocol>(), "test"};
-    auto n1 = dev.createChild("n1")->createAddress(val_type::TUPLE);
-    // To change the hue, the whole value is required
-    // -> extend to taking the whole value irrelevant of the destination index ?
-    // -> who should handle this ?
 
     qDebug() << sizeof(ossia::unit_t)
              << sizeof(ossia::value)
@@ -68,36 +98,33 @@ private Q_SLOTS:
              << sizeof(ossia::color)
              << sizeof(rgb_u)
              << sizeof(eggs::variant<rgb_u>);
-    ossia::functional_state autom_h;
+  }
+
+  void test_functional()
+  {
+    generic_device dev{std::make_unique<local_protocol>(), "test"};
+    auto n1 = dev.createChild("n1")->createAddress(val_type::TUPLE);
+
     ossia::Destination d{*n1};
-    // For an autom, same input & output
-    autom_h.inputs.push_back(d);
-    autom_h.outputs.push_back(d);
-    autom_h.func = [] (ossia::value_with_unit s) {
-      // 1. res = computeValue()
-      ossia::value autom_res; // = computeValue();
-      ossia::unit_t autom_ds;
-      destination_index idx;
-      // destination_index ? how to say that we change h ? [0] + hsv...
 
-      // 2. potentially convert value to the automation dataspace
-      // e.g. if the automation changes h in hsv, we convert s to hsv
-      if(autom_ds)
-      {
-        s = convert(s, autom_ds);
-      }
+    mock_autom2 autom_h{{*n1, {0}}, ossia::hsv_u{}};
+    // To change the hue, the whole value is required
+    // -> extend to taking the whole value irrelevant of the destination index ?
+    // -> who should handle this ?
 
-      // 3. merge the automation result in s
-      merge(autom_res, s, idx);
+    mock_autom2 autom_r{{*n1, {0}}, ossia::rgb_u{}};
 
-      // 4. return s;
-      return s;
+    functional_state_composition f;
+    f.call_chain.push_back(autom_h.state());
+    f.call_chain.push_back(autom_r.state());
 
-    };
+    ossia::rgb col{std::array<float, 3>{0.5, 0.7, 0.5}};
+    std::cerr << "First: " << to_pretty_string(col) << std::endl;
+    ossia::value_with_unit v = f.call_chain[0].func(col);
+    std::cerr << "2: " << to_pretty_string(v) << std::endl;
+    v = f.call_chain[1].func(v);
+    std::cerr << "3: " << to_pretty_string(v) << std::endl;
 
-    ossia::functional_state autom_r;
-    autom_r.inputs.push_back(d);
-    autom_r.outputs.push_back(d);
 
     // We have to make a difference between the values that map to the neutral
     // unit and the ones that won't. Impossible.

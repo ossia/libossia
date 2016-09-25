@@ -27,7 +27,7 @@ struct argb_u : public color_unit<argb_u>
 
   static constexpr value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return self.val.value;
+    return self.value.value;
   }
 };
 
@@ -39,12 +39,12 @@ struct rgba_u : public color_unit<rgba_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return std::array<double, 4>{self.val.value[3], self.val.value[0], self.val.value[1], self.val.value[2]};
+    return std::array<double, 4>{self.value.value[3], self.value.value[0], self.value.value[1], self.value.value[2]};
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return std::array<double, 4>{self.val.value[1], self.val.value[2], self.val.value[3], self.val.value[0]};
+    return std::array<double, 4>{self.value.value[1], self.value.value[2], self.value.value[3], self.value.value[0]};
   }
 };
 
@@ -56,12 +56,12 @@ struct rgb_u : public color_unit<rgb_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return std::array<double, 4>{1., self.val.value[0], self.val.value[1], self.val.value[2]};
+    return std::array<double, 4>{1., self.value.value[0], self.value.value[1], self.value.value[2]};
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return std::array<double, 3>{self.val.value[1], self.val.value[2], self.val.value[3]};
+    return std::array<double, 3>{self.value.value[1], self.value.value[2], self.value.value[3]};
   }
 };
 
@@ -73,12 +73,12 @@ struct bgr_u : public color_unit<bgr_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return std::array<double, 4>{1., self.val.value[2], self.val.value[1], self.val.value[0]};
+    return std::array<double, 4>{1., self.value.value[2], self.value.value[1], self.value.value[0]};
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return std::array<double, 3>{self.val.value[3], self.val.value[2], self.val.value[1]};
+    return std::array<double, 3>{self.value.value[3], self.value.value[2], self.value.value[1]};
   }
 };
 
@@ -91,19 +91,19 @@ struct argb8_u : public color_unit<argb8_u>
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return std::array<double, 4>{
-      self.val.value[0] / 255.,
-      self.val.value[1] / 255.,
-      self.val.value[2] / 255.,
-      self.val.value[3] / 255.};
+      self.value.value[0] / 255.,
+      self.value.value[1] / 255.,
+      self.value.value[2] / 255.,
+      self.value.value[3] / 255.};
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
     return std::array<double, 4>{
-      self.val.value[0] * 255.,
-      self.val.value[1] * 255.,
-      self.val.value[2] * 255.,
-      self.val.value[3] * 255.};
+      self.value.value[0] * 255.,
+      self.value.value[1] * 255.,
+      self.value.value[2] * 255.,
+      self.value.value[3] * 255.};
   }
 };
 
@@ -114,9 +114,9 @@ struct hsv_u : public color_unit<hsv_u>
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    const auto H = self.val.value[0];
-    const auto S = self.val.value[1];
-    const auto V = self.val.value[2];
+    const auto H = self.value.value[0];
+    const auto S = self.value.value[1];
+    const auto V = self.value.value[2];
     if ( S == 0. )
     {
       return std::array<double, 4>{1., V, V, V };
@@ -151,9 +151,9 @@ struct hsv_u : public color_unit<hsv_u>
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    const auto var_R = self.val.value[1];
-    const auto var_G = self.val.value[2];
-    const auto var_B = self.val.value[3];
+    const auto var_R = self.value.value[1];
+    const auto var_G = self.value.value[2];
+    const auto var_B = self.value.value[3];
 
     const auto var_Min = std::min(std::min(var_R, var_G), var_B);    //Min. value of RGB
     const auto var_Max = std::max(std::max( var_R, var_G), var_B );    //Max. value of RGB
@@ -204,17 +204,17 @@ struct cmy8_u : public color_unit<cmy8_u>
   {
     return std::array<double, 4>{
           1.,
-          (255. - self.val.value[0]) / 255.,
-          (255. - self.val.value[1]) / 255.,
-          (255. - self.val.value[2]) / 255.};
+          (255. - self.value.value[0]) / 255.,
+          (255. - self.value.value[1]) / 255.,
+          (255. - self.value.value[2]) / 255.};
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
     return std::array<double, 3>{
-      255. * (1. - self.val.value[1]),
-      255. * (1. - self.val.value[2]),
-      255. * (1. - self.val.value[3])};
+      255. * (1. - self.value.value[1]),
+      255. * (1. - self.value.value[2]),
+      255. * (1. - self.value.value[3])};
   }
 };
 
@@ -234,9 +234,9 @@ struct xyz_u : public color_unit<xyz_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    auto var_X = self.val.value[0] / 100.;        //X from 0 to  95.047      (Observer = 2°, Illuminant = D65)
-    auto var_Y = self.val.value[1] / 100.;        //Y from 0 to 100.000
-    auto var_Z = self.val.value[2] / 100.;        //Z from 0 to 108.883
+    auto var_X = self.value.value[0] / 100.;        //X from 0 to  95.047      (Observer = 2°, Illuminant = D65)
+    auto var_Y = self.value.value[1] / 100.;        //Y from 0 to 100.000
+    auto var_Z = self.value.value[2] / 100.;        //Z from 0 to 108.883
 
     auto var_R = var_X *  3.2406 + var_Y * -1.5372 + var_Z * -0.4986;
     auto var_G = var_X * -0.9689 + var_Y *  1.8758 + var_Z *  0.0415;
@@ -262,9 +262,9 @@ struct xyz_u : public color_unit<xyz_u>
                   ? std::pow( ( var + 0.055 ) / 1.055, 2.4)
                   : var / 12.92);
     };
-    auto var_R = translate(self.val.value[1]);
-    auto var_G = translate(self.val.value[2]);
-    auto var_B = translate(self.val.value[3]);
+    auto var_R = translate(self.value.value[1]);
+    auto var_G = translate(self.value.value[2]);
+    auto var_B = translate(self.value.value[3]);
 
     //Observer. = 2°, Illuminant = D65
 

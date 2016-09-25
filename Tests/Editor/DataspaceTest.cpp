@@ -2,6 +2,9 @@
 #include <ossia/ossia.hpp>
 #include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/editor/dataspace/detail/dataspace_convert.hpp>
+#include <ossia/editor/dataspace/detail/dataspace_merge.hpp>
+#include <ossia/editor/dataspace/detail/dataspace_parse.hpp>
 #include <ossia/detail/algorithms.hpp>
 
 #include <experimental/string_view>
@@ -28,6 +31,9 @@ private Q_SLOTS:
   {
     // Dataspace : enforces a family of units
     // Unit : enforces a certain type of storage
+    static_assert(ossia::detail::is_iterable_v<decltype(ossia::Vec3f::value)>, "");
+    static_assert(!ossia::detail::is_iterable_v<decltype(ossia::Float::value)>, "");
+    static_assert(!ossia::detail::is_iterable_v<const decltype(ossia::Float::value)>, "");
 
     static_assert(!ossia::is_unit_v<int>, "");
     static_assert(ossia::is_unit_v<ossia::centimeter_u>, "");
@@ -37,18 +43,18 @@ private Q_SLOTS:
 
     constexpr ossia::millimeter m = c;
 
-    static_assert(m.val.value == 23., "");
+    static_assert(m.value.value == 23., "");
 
-    static_assert(qFuzzyCompare(ossia::centimeter{ossia::inch{1}}.val.value, 2.54f), "");
-    static_assert(qFuzzyCompare(ossia::meter{ossia::mile{1}}.val.value, 1609.34f), "");
+    static_assert(qFuzzyCompare(ossia::centimeter{ossia::inch{1}}.value.value, 2.54f), "");
+    static_assert(qFuzzyCompare(ossia::meter{ossia::mile{1}}.value.value, 1609.34f), "");
 
 
-    static_assert(qFuzzyCompare(ossia::kilometer_per_hour{ossia::meter_per_second{1}}.val.value, 3.6f), "");
-    static_assert(qFuzzyCompare(ossia::miles_per_hour{ossia::meter_per_second{1}}.val.value, 2.236936f), "");
-    static_assert(qFuzzyCompare(ossia::foot_per_second{ossia::meter_per_second{1}}.val.value, 3.280840f), "");
-    static_assert(qFuzzyCompare(ossia::knot{ossia::meter_per_second{1}}.val.value, 1.943844f), "");
+    static_assert(qFuzzyCompare(ossia::kilometer_per_hour{ossia::meter_per_second{1}}.value.value, 3.6f), "");
+    static_assert(qFuzzyCompare(ossia::miles_per_hour{ossia::meter_per_second{1}}.value.value, 2.236936f), "");
+    static_assert(qFuzzyCompare(ossia::foot_per_second{ossia::meter_per_second{1}}.value.value, 3.280840f), "");
+    static_assert(qFuzzyCompare(ossia::knot{ossia::meter_per_second{1}}.value.value, 1.943844f), "");
 
-    static_assert(qFuzzyCompare(ossia::radian{ossia::degree{180}}.val.value, 3.14159f), "");
+    static_assert(qFuzzyCompare(ossia::radian{ossia::degree{180}}.value.value, 3.14159f), "");
     // Ex. 1 : making an automation of the correct type ? e.g. circular for circular units...
 
     // have some kind of unit transformer ?

@@ -29,5 +29,5 @@ namespace ossia
  *
  * There are at most 8 nested depth level.
  */
-using destination_index = boost::container::static_vector<char, 8>;
+using destination_index = boost::container::static_vector<uint8_t, 8>;
 }

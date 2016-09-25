@@ -316,4 +316,23 @@ inline ossia::value init_value(ossia::val_type type)
   throw invalid_value_type_error("init_value: Invalid type");
   return {};
 }
+
+/**
+ * @brief get_value_at_index
+ *
+ * for ossia::tuple{{1, 2}, 3} and index {}, return {{1, 2}, 3}.
+ * for ossia::tuple{{1, 2}, 3} and index {0}, return {1, 2}.
+ * for ossia::tuple{{1, 2}, 3} and index {0, 0}, return 1.
+ * for ossia::tuple{{1, 2}, 3} and index {0, 1}, return 2.
+ * for ossia::tuple{{1, 2}, 3} and index {0, 2}, return {}.
+ * for ossia::tuple{{1, 2}, 3} and index {1}, return 3.
+ * for ossia::tuple{{1, 2}, 3} and index {1, 0}, return {}.
+ * for ossia::tuple{{1, 2}, 3} and index {2}, return {}.
+ *
+ * @see @ref destination_index
+ * @return The value if it is found, else nothing.
+ */
+ossia::value get_value_at_index(
+    const ossia::value& val,
+    const ossia::destination_index& idx);
 }

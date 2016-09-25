@@ -58,6 +58,22 @@ ossia::value_with_unit convert(ossia::value_with_unit v, ossia::unit_t t);
 
 
 /**
+ * @brief convert Convert a value + unit to a simple value
+ * @param v Value to convert
+ * @return Corresponding ossia::value
+ */
+OSSIA_EXPORT
+ossia::value to_value(ossia::value_with_unit v);
+
+/**
+ * @brief to_pretty_string Pretty string of unit & value
+ *
+ * @return For example "[0.2, 1.6, 3.4] rgb"
+ */
+OSSIA_EXPORT
+std::string to_pretty_string(ossia::value_with_unit v);
+
+/**
  * @brief merge Merge a computed value in a unit-aware value
  *
  * The computed value is assumed to be of the same dataspace.

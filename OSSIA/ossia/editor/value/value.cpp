@@ -1,6 +1,7 @@
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/editor/value/value_comparison.hpp>
+#include <ossia/editor/value/value_algorithms.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/detail/logger.hpp>
 #include <sstream>
@@ -329,7 +330,7 @@ namespace
 {
 
 static void getTupleAsString(const ossia::Tuple& tuple, fmt::MemoryWriter&);
-struct ValueStringVisitor
+struct value_prettyprint_visitor
 {
   fmt::MemoryWriter& s;
 
@@ -359,19 +360,20 @@ struct ValueStringVisitor
   }
   void operator()(Vec2f vec) const
   {
-    s << "vec2f";
+    s << "vec2f: [" << vec.value[0] << " " << vec.value[1] << "]";
   }
   void operator()(Vec3f vec) const
   {
-    s << "vec3f";
+    s << "vec3f: [" << vec.value[0] << " " << vec.value[1] << " " << vec.value[2] << "]";
   }
   void operator()(Vec4f vec) const
   {
-    s << "vec4f";
+    s << "vec4f: [" << vec.value[0] << " " << vec.value[1] << " " << vec.value[2] << " " << vec.value[3] << "]";
   }
   void operator()(const Destination& d) const
   {
-    s << "destination";
+    s << "destination" << ossia::net::address_string_from_node(d.value);
+    // TODO pretty print index
   }
   void operator()(const Behavior&) const
   {
@@ -390,7 +392,7 @@ struct ValueStringVisitor
 
 static void getTupleAsString(const ossia::Tuple& tuple, fmt::MemoryWriter& s)
 {
-  ValueStringVisitor vis{s};
+  value_prettyprint_visitor vis{s};
 
   int n = tuple.value.size();
 
@@ -411,7 +413,18 @@ static void getTupleAsString(const ossia::Tuple& tuple, fmt::MemoryWriter& s)
 std::string to_pretty_string(const ossia::value& val)
 {
   fmt::MemoryWriter s;
-  val.apply(ValueStringVisitor{s});
+  val.apply(value_prettyprint_visitor{s});
   return s.str();
 }
+
+
+ossia::value get_value_at_index(
+    const ossia::value& val,
+    const ossia::destination_index& idx)
+{
+  if(idx.empty())
+    return val;
+  return val.apply(detail::destination_index_retriever{idx, idx.cbegin()});
+}
+
 }

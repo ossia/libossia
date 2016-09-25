@@ -36,4 +36,20 @@ struct OSSIA_EXPORT invalid_value_type_error :
   }
 };
 
+/**
+ * @brief The invalid_access_error struct
+ *
+ * Means that a destination_index could not
+ * be applied to a value properly.
+ */
+struct OSSIA_EXPORT invalid_access_error :
+    public std::runtime_error
+{
+  invalid_access_error(const char* e):
+    std::runtime_error(e)
+  {
+
+  }
+};
+
 }

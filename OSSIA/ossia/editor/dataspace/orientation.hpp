@@ -28,7 +28,7 @@ struct quaternion_u :
 
   static constexpr value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return self.val.value;
+    return self.value.value;
   }
 };
 
@@ -42,9 +42,9 @@ struct euler_u :
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    const auto yaw = self.val.value[0] * deg_to_rad * -0.5;
-    const auto pitch = self.val.value[1] * deg_to_rad * 0.5;
-    const auto roll = self.val.value[2] * deg_to_rad * 0.5;
+    const auto yaw = self.value.value[0] * deg_to_rad * -0.5;
+    const auto pitch = self.value.value[1] * deg_to_rad * 0.5;
+    const auto roll = self.value.value[2] * deg_to_rad * 0.5;
 
     const auto sinYaw = std::sin(yaw);
     const auto cosYaw = std::cos(yaw);
@@ -65,10 +65,10 @@ struct euler_u :
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    const auto x = self.val.value[0];
-    const auto y = self.val.value[1];
-    const auto z = self.val.value[2];
-    const auto w = self.val.value[3];
+    const auto x = self.value.value[0];
+    const auto y = self.value.value[1];
+    const auto z = self.value.value[2];
+    const auto w = self.value.value[3];
 
     return std::array<double, 4>{
           rad_to_deg * std::atan2(-2. * (z*w - x*y), w*w - x*x + y*y - z*z),
@@ -88,10 +88,10 @@ struct axis_u :
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    const auto x = self.val.value[0];
-    const auto y = self.val.value[1];
-    const auto z = self.val.value[2];
-    const auto angle = self.val.value[3] * deg_to_rad * 0.5;
+    const auto x = self.value.value[0];
+    const auto y = self.value.value[1];
+    const auto z = self.value.value[2];
+    const auto angle = self.value.value[3] * deg_to_rad * 0.5;
 
     const auto sinAngle = std::sin(angle);
 
@@ -113,10 +113,10 @@ struct axis_u :
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    const auto x = self.val.value[0];
-    const auto y = self.val.value[1];
-    const auto z = self.val.value[2];
-    const auto w = self.val.value[3];
+    const auto x = self.value.value[0];
+    const auto y = self.value.value[1];
+    const auto z = self.value.value[2];
+    const auto w = self.value.value[3];
 
     const auto sin_a = std::sqrt( 1.0 - w * w );
 

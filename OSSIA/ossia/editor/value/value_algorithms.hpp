@@ -137,4 +137,72 @@ static void merge_tuple(Tuple& lhs, Tuple_T&& rhs)
 }
 };
 
+
+namespace detail
+{
+/**
+ * @brief The destination_index_retriever struct
+ * Get the value associated with an index in a tuple.
+ * If the index cannot be reached, an exception is thrown.
+ *
+ * @todo testme
+ */
+struct destination_index_retriever
+{
+  const ossia::destination_index& index;
+  ossia::destination_index::const_iterator it;
+
+  ossia::value operator()(const ossia::Tuple& t)
+  {
+    if(it == index.end())
+    {
+      return t;
+    }
+    else if(t.value.size() > *it)
+    {
+      auto& val = t.value[*it];
+      ++it;
+      return val.apply(*this);
+    }
+    else
+    {
+      return {};
+    }
+  }
+
+  template<typename T>
+  ossia::value operator()(const T& t)
+  {
+    if(it == index.end())
+    {
+      return t;
+    }
+    else
+    {
+      return {};
+    }
+  }
+
+  template<int N>
+  ossia::value operator()(const Vec<float, N>& t)
+  {
+    if(it == index.end())
+    {
+      return t;
+    }
+    else if(t.value.size() > *it)
+    {
+      if(it + 1 == index.end())
+        return Float{t.value[*it]};
+    }
+
+    return {};
+  }
+
+  ossia::value operator()()
+  {
+    return {};
+  }
+};
+}
 }

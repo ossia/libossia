@@ -86,7 +86,7 @@ struct linear_u : public gain_unit<linear_u>
 
   static constexpr value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return self.val;
+    return self.value;
   }
 };
 
@@ -97,12 +97,12 @@ struct midigain_u : public gain_unit<midigain_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-      return detail::MidiToLinearGain(self.val.value);
+      return detail::MidiToLinearGain(self.value.value);
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-      return detail::LinearGainToMidi(self.val.value);
+      return detail::LinearGainToMidi(self.value.value);
   }
 };
 
@@ -113,12 +113,12 @@ struct decibel_u : public gain_unit<decibel_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-      return detail::DecibelsToLinearGainClipped(self.val.value);
+      return detail::DecibelsToLinearGainClipped(self.value.value);
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-      return detail::LinearGainToDecibelsClipped(self.val.value);
+      return detail::LinearGainToDecibelsClipped(self.value.value);
   }
 };
 
@@ -130,12 +130,12 @@ struct decibel_raw_u : public gain_unit<decibel_raw_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-      return detail::DecibelsToLinearGain(self.val.value);
+      return detail::DecibelsToLinearGain(self.value.value);
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-      return 20.0 * (std::log10(self.val.value));
+      return 20.0 * (std::log10(self.value.value));
   }
 };
 

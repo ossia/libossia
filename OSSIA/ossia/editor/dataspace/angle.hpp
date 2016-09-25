@@ -25,7 +25,7 @@ struct radian_u : public angle_unit<radian_u>
 
   static constexpr value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return self.val;
+    return self.value;
   }
 };
 
@@ -36,12 +36,12 @@ struct degree_u : public angle_unit<degree_u>
 
   static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return {self.val.value * ossia::deg_to_rad};
+    return {self.value.value * ossia::deg_to_rad};
   }
 
   static constexpr value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return {self.val.value * ossia::rad_to_deg};
+    return {self.value.value * ossia::rad_to_deg};
   }
 };
 

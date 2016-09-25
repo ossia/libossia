@@ -26,7 +26,7 @@ struct cartesian_3d_u :
 
   static constexpr value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return self.val.value;
+    return self.value.value;
   }
 };
 
@@ -38,12 +38,12 @@ struct cartesian_2d_u :
   using value_type = Vec2f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return std::array<double, 3>{self.val.value[0], self.val.value[1], 0.f};
+    return std::array<double, 3>{self.value.value[0], self.value.value[1], 0.f};
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return std::array<double, 2>{self.val.value[0], self.val.value[1]};
+    return std::array<double, 2>{self.value.value[0], self.value.value[1]};
   }
 };
 
@@ -56,9 +56,9 @@ struct spherical_u :
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    const auto a = self.val.value[0] * deg_to_rad;
-    const auto e = self.val.value[1] * deg_to_rad;
-    const auto d = self.val.value[2];
+    const auto a = self.value.value[0] * deg_to_rad;
+    const auto e = self.value.value[1] * deg_to_rad;
+    const auto d = self.value.value[2];
 
     const auto temp = std::cos(e) * d;
 
@@ -71,9 +71,9 @@ struct spherical_u :
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    const auto x = self.val.value[0];
-    const auto y = self.val.value[1];
-    const auto z = self.val.value[2];
+    const auto x = self.value.value[0];
+    const auto y = self.value.value[1];
+    const auto z = self.value.value[2];
 
     const auto temp = x * x + y * y;
 
@@ -94,8 +94,8 @@ struct polar_u :
   using value_type = Vec2f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    const auto a = self.val.value[0] * deg_to_rad;
-    const auto d = self.val.value[2];
+    const auto a = self.value.value[0] * deg_to_rad;
+    const auto d = self.value.value[2];
 
     return std::array<double, 3>{
           std::sin(a) * d,
@@ -106,8 +106,8 @@ struct polar_u :
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    const auto x = self.val.value[0];
-    const auto y = self.val.value[1];
+    const auto x = self.value.value[0];
+    const auto y = self.value.value[1];
 
     return std::array<double, 2>{
           std::atan2(x, y) * rad_to_deg,
@@ -124,12 +124,12 @@ struct opengl_u :
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return std::array<double, 3>{self.val.value[0], -self.val.value[2], self.val.value[1]};
+    return std::array<double, 3>{self.value.value[0], -self.value.value[2], self.value.value[1]};
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return std::array<double, 3>{self.val.value[0], self.val.value[2], -self.val.value[1]};
+    return std::array<double, 3>{self.value.value[0], self.value.value[2], -self.value.value[1]};
   }
 };
 
@@ -141,9 +141,9 @@ struct cylindrical_u :
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    const auto d = self.val.value[0];
-    const auto a = self.val.value[1] * deg_to_rad;
-    const auto z = self.val.value[2];
+    const auto d = self.value.value[0];
+    const auto a = self.value.value[1] * deg_to_rad;
+    const auto z = self.value.value[2];
 
     return std::array<double, 3>{
       std::sin(a) * d,
@@ -154,9 +154,9 @@ struct cylindrical_u :
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    const auto x = self.val.value[0];
-    const auto y = self.val.value[1];
-    const auto z = self.val.value[2];
+    const auto x = self.value.value[0];
+    const auto y = self.value.value[1];
+    const auto z = self.value.value[2];
 
     return std::array<double, 3>{
           std::pow(x * x + y * y, 0.5),
