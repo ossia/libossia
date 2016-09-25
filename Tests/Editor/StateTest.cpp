@@ -56,6 +56,7 @@ struct mock_autom2
 
       // 2. potentially convert value to the automation dataspace
       // e.g. if the automation changes h in hsv, we convert s to hsv
+      std::cerr << "before conversion: " << to_pretty_string(s) << std::endl;
       if(mDataspace)
       {
         s = convert(s, mDataspace);
@@ -73,7 +74,7 @@ struct mock_autom2
     return autom_h;
   }
 
-  ossia::Float computeValue() { return 1.; }
+  ossia::Float computeValue() { return 0.8; }
 };
 
 using namespace ossia::net;
@@ -107,7 +108,8 @@ private Q_SLOTS:
 
     ossia::Destination d{*n1};
 
-    mock_autom2 autom_h{{*n1, {0}}, ossia::hsv_u{}};
+    // change the V of HSV
+    mock_autom2 autom_v{{*n1, {2}}, ossia::hsv_u{}};
     // To change the hue, the whole value is required
     // -> extend to taking the whole value irrelevant of the destination index ?
     // -> who should handle this ?
@@ -115,10 +117,11 @@ private Q_SLOTS:
     mock_autom2 autom_r{{*n1, {0}}, ossia::rgb_u{}};
 
     functional_state_composition f;
-    f.call_chain.push_back(autom_h.state());
+    f.call_chain.push_back(autom_v.state());
     f.call_chain.push_back(autom_r.state());
 
-    ossia::rgb col{std::array<float, 3>{0.5, 0.7, 0.5}};
+    ossia::rgb col{std::array<float, 3>{0.3, 0.4, 0.6}};
+
     std::cerr << "First: " << to_pretty_string(col) << std::endl;
     ossia::value_with_unit v = f.call_chain[0].func(col);
     std::cerr << "2: " << to_pretty_string(v) << std::endl;

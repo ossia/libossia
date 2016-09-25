@@ -110,6 +110,8 @@ struct partial_value_merger_helper<T, U, enable_if_first_iterable<decltype(T::va
 {
   ossia::value_with_unit operator()(T value_unit, const U& value, const ossia::destination_index& idx)
   {
+    auto i = idx[0];
+    value_unit.value.value[i] = ossia::convert<std::remove_reference_t<decltype(value_unit.value.value[i])>>(value.value);
     return value_unit;
   }
 };
