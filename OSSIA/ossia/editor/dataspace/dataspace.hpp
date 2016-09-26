@@ -36,7 +36,7 @@ template <typename T>
 struct is_unit
 {
     template <typename U>
-    static char test(typename U::neutral_unit* x);
+    static char test(typename U::is_unit* x);
 
     template <typename U>
     static long test(U* x);

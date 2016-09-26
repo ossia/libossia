@@ -7,6 +7,7 @@ struct radian_u;
 template<typename Impl>
 struct angle_unit
 {
+  using is_unit = std::true_type;
   using neutral_unit = radian_u;
   using value_type = Float;
   using concrete_type = Impl;

@@ -24,6 +24,7 @@ using mile_u = distance_ratio<std::ratio<254 * 12 * 5280, 10000>>;
 template<typename Impl>
 struct distance_unit
 {
+  using is_unit = std::true_type;
   using neutral_unit = meter_u;
   using value_type = Float;
   using concrete_type = Impl;

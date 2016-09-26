@@ -17,6 +17,7 @@ using foot_per_second_u = speed_ratio<std::ratio<254 * 12, 10000>>;
 template<typename Impl>
 struct speed_unit
 {
+  using is_unit = std::true_type;
   using neutral_unit = meter_per_second_u;
   using value_type = Float;
   using concrete_type = Impl;

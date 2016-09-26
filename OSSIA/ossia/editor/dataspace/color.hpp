@@ -8,6 +8,7 @@ struct argb_u;
 template<typename Impl>
 struct color_unit
 {
+  using is_unit = std::true_type;
   using neutral_unit = argb_u;
   using concrete_type = Impl;
   using dataspace_type = struct color_dataspace;

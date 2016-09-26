@@ -8,6 +8,7 @@ struct quaternion_u;
 template<typename Impl>
 struct orientation_unit
 {
+  using is_unit = std::true_type;
   using dataspace_type = struct orientation_dataspace;
   using neutral_unit = quaternion_u;
   using concrete_type = Impl;

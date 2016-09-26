@@ -7,6 +7,7 @@ struct cartesian_3d_u;
 template<typename Impl>
 struct position_unit
 {
+  using is_unit = std::true_type;
   using dataspace_type = struct position_dataspace;
   using neutral_unit = cartesian_3d_u;
   using concrete_type = Impl;

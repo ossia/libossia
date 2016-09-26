@@ -59,6 +59,15 @@ struct strong_value
       value{other.value}
   {
   }
+
+  friend bool operator==(
+      const strong_value& lhs,
+      const strong_value& rhs)
+  { return lhs.value == rhs.value; }
+  friend bool operator!=(
+      const strong_value& lhs,
+      const strong_value& rhs)
+  { return lhs.value != rhs.value; }
 };
 
 template<typename T, typename Ratio_T>

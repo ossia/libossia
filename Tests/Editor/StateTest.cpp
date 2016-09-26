@@ -89,6 +89,7 @@ private Q_SLOTS:
     auto res = ossia::convert(ossia::centimeter(5),  ossia::millimeter_u{});
 
     QVERIFY(res == ossia::millimeter{50});
+    QVERIFY(res != ossia::millimeter{25});
     QVERIFY(res != ossia::centimeter{5});
     convert(ossia::centimeter(5),  ossia::rgb_u{});
 
@@ -238,6 +239,56 @@ private Q_SLOTS:
 
 
     flatten_and_filter(s1, m0);
+    QVERIFY(s1 == s2);
+
+    // Changing a value does overwrite
+    message m0_bis{{*n1, {0}}, Float{7.}};
+    flatten_and_filter(s1, m0_bis);
+
+    state_element expected_bis = piecewise_message{*n1, Tuple{Float{7.}, Float{10.}, Float{15.}}};
+    QVERIFY(s1.children()[0] == expected_bis);
+  }
+
+
+  void test_flatten_move()
+  {
+    generic_device dev{std::make_unique<local_protocol>(), "test"};
+    auto n1 = dev.createChild("n1")->createAddress(val_type::TUPLE);
+
+    state_element m0 = message{{*n1, {0}}, Float{5.}};
+    state_element m1 = message{{*n1, {1}}, Float{10.}};
+    state_element m2 = message{{*n1, {2}}, Float{15.}};
+
+    state s1;
+    flatten_and_filter(s1, m0);
+    flatten_and_filter(s1, m1);
+    flatten_and_filter(s1, m2);
+
+    QCOMPARE((int)s1.size(), 1);
+
+    auto pw = s1.children()[0].target<piecewise_message>();
+    QVERIFY(pw);
+    QVERIFY(pw->address == m0.target<message>()->destination.value);
+    Tuple expected{Float{5.}, Float{10.}, Float{15.}};
+    QVERIFY(pw->value == expected);
+
+    // permutations
+    state s2;
+    flatten_and_filter(s2, m2);
+    flatten_and_filter(s2, m1);
+    flatten_and_filter(s2, m0);
+
+    state s3;
+    flatten_and_filter(s3, m0);
+    flatten_and_filter(s3, m2);
+    flatten_and_filter(s3, m1);
+
+    QVERIFY(s1 == s2);
+    QVERIFY(s1 == s3);
+    QVERIFY(s2 == s3);
+
+
+    flatten_and_filter(s1, std::move(m0));
     QVERIFY(s1 == s2);
 
     // Changing a value does overwrite

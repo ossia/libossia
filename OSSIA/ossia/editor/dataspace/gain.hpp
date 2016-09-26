@@ -7,6 +7,7 @@ struct linear_u;
 template<typename Impl>
 struct gain_unit
 {
+  using is_unit = std::true_type;
   using neutral_unit = linear_u;
   using value_type = Float;
   using concrete_type = Impl;
