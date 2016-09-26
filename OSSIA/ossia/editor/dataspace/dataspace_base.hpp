@@ -35,6 +35,8 @@ struct strong_value
   using neutral_unit = typename Unit::neutral_unit;
   value_type value;
 
+  strong_value() = default;
+
   // Constructor that takes anyything able to initialize val
   template<typename U,
            typename = std::enable_if_t<

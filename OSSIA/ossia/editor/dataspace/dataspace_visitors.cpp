@@ -12,12 +12,16 @@ namespace ossia
 
 boost::string_ref get_unit_text(unit_t u)
 {
-  return eggs::variants::apply(detail::unit_text_visitor{}, u);
+  if(u)
+    return eggs::variants::apply(detail::unit_text_visitor{}, u);
+  return {};
 }
 
 unit_t parse_unit(boost::string_ref text, unit_t dataspace)
 {
-  return eggs::variants::apply(detail::unit_factory_visitor{text}, dataspace);
+  if(dataspace && !text.empty())
+    return eggs::variants::apply(detail::unit_factory_visitor{text}, dataspace);
+  return {};
 }
 
 template<typename T>

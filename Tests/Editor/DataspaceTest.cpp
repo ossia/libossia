@@ -6,7 +6,7 @@
 #include <ossia/editor/dataspace/detail/dataspace_merge.hpp>
 #include <ossia/editor/dataspace/detail/dataspace_parse.hpp>
 #include <ossia/detail/algorithms.hpp>
-
+#include <brigand/algorithms/for_each.hpp>
 #include <experimental/string_view>
 namespace ossia
 {
@@ -100,6 +100,83 @@ private Q_SLOTS:
       QVERIFY(parse_unit("cm", some_unit) != ossia::centimeter_u{});
       QVERIFY(parse_unit("cm", some_unit) == ossia::color_u{});
     }
+  }
+
+  void test_conversions()
+  {
+    ossia::unit_t unit;
+
+    // Construction
+    brigand::for_each<ossia::unit_t>([&] (auto t) {
+      brigand::for_each<typename decltype(t)::type>([&] (auto u) {
+        unit = typename decltype(u)::type{};
+      });
+    });
+
+    // Conversion
+    brigand::for_each<ossia::value_with_unit>([&] (auto t)
+    {
+      using dataspace_type = typename decltype(t)::type;
+
+      brigand::for_each<dataspace_type>([&] (auto unit_1)
+      {
+        using unit_1_type = typename decltype(unit_1)::type;
+        unit_1_type unit_1_v;
+
+        brigand::for_each<dataspace_type>([&] (auto unit_2)
+        {
+          using unit_2_type = typename decltype(unit_1)::type;
+
+          // Conversion at construction
+          unit_2_type unit_2_v = unit_1_v;
+          (void)unit_2_v;
+
+          // Conversion by convert function
+          auto res = convert(unit_1_v, typename unit_2_type::unit_type{});
+          auto val = to_value(res);
+          (void) val;
+          auto str = to_pretty_string(res);
+          (void) str;
+        });
+      });
+    });
+  }
+
+  void test_visitors()
+  {
+    // get_unit_text
+    ossia::get_unit_text(ossia::unit_t{});
+    brigand::for_each<ossia::unit_t>([&] (auto t) {
+      ossia::get_unit_text(typename decltype(t)::type{});
+      brigand::for_each<typename decltype(t)::type>([&] (auto u) {
+        ossia::get_unit_text(typename decltype(u)::type{});
+      });
+    });
+
+    // parse_dataspace
+    QVERIFY(ossia::parse_dataspace("color") == ossia::color_u{});
+    QVERIFY(ossia::parse_dataspace("tata") == ossia::unit_t{});
+    QVERIFY(ossia::parse_dataspace("") == ossia::unit_t{});
+
+    // parse_unit
+    auto p1 = ossia::parse_unit("tutu", ossia::unit_t{});
+    QVERIFY(!p1);
+    auto p2 = ossia::parse_unit("rgb", ossia::unit_t{});
+    QVERIFY(!p2);
+
+    brigand::for_each<ossia::unit_t>([&] (auto t) {
+      using dataspace_type = typename decltype(t)::type;
+      brigand::for_each<dataspace_type>([&] (auto u) {
+        using unit_type = typename decltype(u)::type;
+        auto unit_text_array = ossia::unit_traits<unit_type>::text();
+        for(auto unit_text : unit_text_array)
+        {
+          auto parsed_unit = ossia::parse_unit(unit_text, dataspace_type{});
+          QVERIFY(parsed_unit == unit_type{});
+        }
+      });
+    });
+
   }
 };
 
