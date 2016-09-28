@@ -36,6 +36,19 @@ class OSSIA_EXPORT time_event
       DISPOSED
     };
 
+    /**
+     * @brief The OffsetBehavior enum
+     * Describes what happens when a parent scenario
+     * does an offset beyond this event. This is useful to
+     * make default cases for the scenario.
+     */
+    enum class OffsetBehavior
+    {
+        EXPRESSION_TRUE, //! The condition is considered True
+        EXPRESSION_FALSE, //! The condition is considered False
+        EXPRESSION //! The condition will be evaluated
+    };
+
     /*! to get the event status back
      \param #Status new status */
     using ExecutionCallback = std::function<void(Status)>;
@@ -46,6 +59,7 @@ class OSSIA_EXPORT time_event
     time_node& mTimeNode;
     state mState;
     Status mStatus;
+    OffsetBehavior mOffsetBehavior{OffsetBehavior::EXPRESSION_TRUE};
 
     expression_ptr mExpression;
 
@@ -108,6 +122,18 @@ public:
   /*! get the status of the event
    \return #Status */
   Status getStatus() const ;
+
+  /**
+   * @brief getOffsetValue Returns the value of the condition if
+   * we are offseting past this time event.
+   */
+  OffsetBehavior getOffsetBehavior() const;
+
+  /**
+   * @brief setOffsetValue Sets the value of the condition if we are offseting
+   * past this time event.
+   */
+  time_event& setOffsetBehavior(OffsetBehavior);
 
   /*! get previous time contraints attached to the event
    \return #Container<#TimeConstraint> */

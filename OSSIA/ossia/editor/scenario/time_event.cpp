@@ -122,6 +122,17 @@ time_event::Status time_event::getStatus() const
   return mStatus;
 }
 
+time_event::OffsetBehavior time_event::getOffsetBehavior() const
+{
+  return mOffsetBehavior;
+}
+
+time_event& time_event::setOffsetBehavior(OffsetBehavior b)
+{
+  mOffsetBehavior = b;
+  return *this;
+}
+
 void time_event::setStatus(Status status)
 {
   mStatus = status;

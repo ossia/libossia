@@ -395,23 +395,44 @@ void scenario::process_offset(
     time_node& timenode, time_value offset)
 {
   time_value date = timenode.getDate();
-
-  for (const auto& event : timenode.timeEvents())
+  auto get_event_status = [] (const time_event& event)
   {
+    switch(event.getOffsetBehavior())
+    {
+      case time_event::OffsetBehavior::EXPRESSION_TRUE:
+        return time_event::Status::HAPPENED;
+      case time_event::OffsetBehavior::EXPRESSION_FALSE:
+        return time_event::Status::DISPOSED;
+      case time_event::OffsetBehavior::EXPRESSION:
+        return expressions::evaluate(event.getExpression())
+                          ? time_event::Status::HAPPENED
+                          : time_event::Status::DISPOSED;
+      default:
+        return time_event::Status::NONE;
+    }
+  };
+
+  for (auto& ev_ptr : timenode.timeEvents())
+  {
+    auto& event = *ev_ptr;
     time_event::Status eventStatus;
 
     // evaluate event status considering its time node date
     if (date < offset)
-      eventStatus = expressions::evaluate(event->getExpression())
-                        ? time_event::Status::HAPPENED
-                        : time_event::Status::DISPOSED;
+    {
+      eventStatus = get_event_status(event);
+    }
     else if (date == offset)
+    {
       eventStatus = time_event::Status::PENDING;
+    }
     else
+    {
       eventStatus = time_event::Status::NONE;
+    }
 
     // evaluate event status considering previous time constraints
-    for (const auto& timeConstraint : event->previousTimeConstraints())
+    for (const auto& timeConstraint : event.previousTimeConstraints())
     {
       time_value constraintOffset
           = offset - timeConstraint->getStartEvent().getTimeNode().getDate();
@@ -420,9 +441,8 @@ void scenario::process_offset(
       {
         eventStatus = time_event::Status::NONE;
       }
-      else if (
-          constraintOffset >= Zero
-          && constraintOffset <= timeConstraint->getDurationMax())
+      else if (constraintOffset >= Zero
+               && constraintOffset <= timeConstraint->getDurationMax())
       {
         eventStatus = constraintOffset > timeConstraint->getDurationMin()
                           ? time_event::Status::PENDING
@@ -430,21 +450,19 @@ void scenario::process_offset(
       }
       else if (constraintOffset > timeConstraint->getDurationMax())
       {
-        eventStatus = expressions::evaluate(event->getExpression())
-                          ? time_event::Status::HAPPENED
-                          : time_event::Status::DISPOSED;
+        eventStatus = get_event_status(event);
       }
     }
 
     // setup event status
-    event->setStatus(eventStatus);
+    event.setStatus(eventStatus);
 
     // add HAPPENED event to offset event list
     if (eventStatus == time_event::Status::HAPPENED)
-      mPastEventList.push_back(std::make_pair(date, event));
+      mPastEventList.push_back(std::make_pair(date, ev_ptr));
 
     // propagate offset processing to setup all TimeEvents
-    for (const auto& timeConstraint : event->nextTimeConstraints())
+    for (const auto& timeConstraint : event.nextTimeConstraints())
     {
       process_offset(timeConstraint->getEndEvent().getTimeNode(), offset);
     }
