@@ -2,7 +2,7 @@
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/network/common/address_properties.hpp>
-
+#include <ossia/network/base/name_validation.hpp>
 #include <functional>
 #include <memory>
 #include <string>
@@ -82,6 +82,5 @@ protected:
   std::vector<std::unique_ptr<node_base>> mChildren;
 };
 
-std::string sanitize_name(const std::string& name);
 }
 }

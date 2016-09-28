@@ -52,7 +52,7 @@ struct minuit_behavior<
       ossia::net::generic_device& dev,
       const oscpack::ReceivedMessage& mess)
   {
-    boost::string_ref full_address{mess.ArgumentsBegin()->AsString()};
+    boost::string_view full_address{mess.ArgumentsBegin()->AsString()};
     auto idx = full_address.find_first_of(":");
 
     if(idx == std::string::npos)
@@ -70,11 +70,11 @@ struct minuit_behavior<
     }
     else
     {
-      boost::string_ref address{full_address.data(), idx};
+      boost::string_view address{full_address.data(), idx};
 
       // Note : bug if address == "foo:"
       auto attr = get_attribute(
-            boost::string_ref(
+            boost::string_view(
               address.data() + idx + 1,
               full_address.size() - idx - 1));
 
@@ -164,7 +164,7 @@ struct minuit_behavior<
   template<typename Children>
   void handle_container(
       ossia::net::minuit_protocol& proto,
-      boost::string_ref address,
+      boost::string_view address,
       Children&& c)
   {
     proto.sender().send(proto.name_table.get_action(minuit_action::NamespaceReply),
@@ -180,7 +180,7 @@ struct minuit_behavior<
 
   void handle_data(
       ossia::net::minuit_protocol& proto,
-      boost::string_ref address)
+      boost::string_view address)
   {
     proto.sender().send(proto.name_table.get_action(minuit_action::NamespaceReply),
                     address,
@@ -210,7 +210,7 @@ struct minuit_behavior<
 
   std::vector<std::string> get_children_names(
       ossia::net::generic_device& dev,
-      boost::string_ref address)
+      boost::string_view address)
   {
     auto node = ossia::net::find_node(dev, address);
     if (!node)
@@ -224,9 +224,9 @@ struct minuit_behavior<
       ossia::net::generic_device& dev,
       const oscpack::ReceivedMessage& mess)
   {
-    boost::string_ref address{mess.ArgumentsBegin()->AsString()};
+    boost::string_view address{mess.ArgumentsBegin()->AsString()};
 
-    if(address == boost::string_ref("/"))
+    if(address == boost::string_view("/"))
     {
       handle_root(proto, get_children_names(dev, address));
     }
@@ -290,7 +290,7 @@ struct minuit_behavior<minuit_command::Answer, minuit_operation::Get>
       const oscpack::ReceivedMessage& mess)
   {
     auto mess_it = mess.ArgumentsBegin();
-    boost::string_ref full_address{mess_it->AsString()};
+    boost::string_view full_address{mess_it->AsString()};
     auto idx = full_address.find_first_of(":");
 
     if (idx == std::string::npos)
@@ -310,11 +310,11 @@ struct minuit_behavior<minuit_command::Answer, minuit_operation::Get>
     {
       // The OSC message is a Minuit one.
       // address contains the "sanitized" OSC-like address.
-      boost::string_ref address{full_address.data(), idx};
+      boost::string_view address{full_address.data(), idx};
 
       // Note : bug if address == "foo:"
       auto attr = get_attribute(
-            boost::string_ref(
+            boost::string_view(
               address.data() + idx + 1, full_address.size() - idx - 1));
 
       ++mess_it;
@@ -388,7 +388,7 @@ struct minuit_behavior<minuit_command::Answer,
   {
     // TODO refactor with get answer
     auto mess_it = mess.ArgumentsBegin();
-    boost::string_ref full_address{mess_it->AsString()};
+    boost::string_view full_address{mess_it->AsString()};
     auto idx = full_address.find_first_of(":");
 
     if (idx == std::string::npos)
@@ -408,11 +408,11 @@ struct minuit_behavior<minuit_command::Answer,
     {
       // The OSC message is a Minuit one.
       // address contains the "sanitized" OSC-like address.
-      boost::string_ref address{full_address.data(), idx};
+      boost::string_view address{full_address.data(), idx};
 
       // Note : bug if address == "foo:"
       auto attr = get_attribute(
-            boost::string_ref(
+            boost::string_view(
               address.data() + idx + 1, full_address.size() - idx - 1));
 
       ++mess_it;
@@ -491,10 +491,10 @@ struct minuit_behavior<minuit_command::Answer,
       Str s, oscpack::ReceivedMessageArgumentIterator beg_it,
       oscpack::ReceivedMessageArgumentIterator end_it)
   {
-    std::vector<boost::string_ref> elements;
+    std::vector<boost::string_view> elements;
     auto nodes_beg_it = find_if(beg_it, end_it, [=](const auto& mess) {
       return mess.IsString()
-             && boost::string_ref(mess.AsStringUnchecked()) == s;
+             && boost::string_view(mess.AsStringUnchecked()) == s;
     });
 
     ++nodes_beg_it; // It will point on the first past "nodes={".
@@ -503,7 +503,7 @@ struct minuit_behavior<minuit_command::Answer,
 
     auto nodes_end_it = find_if(nodes_beg_it, end_it, [](const auto& mess) {
       return mess.IsString()
-             && boost::string_ref(mess.AsStringUnchecked()) == "}";
+             && boost::string_view(mess.AsStringUnchecked()) == "}";
     });
 
     if (nodes_end_it == end_it)
@@ -533,7 +533,7 @@ struct minuit_behavior<minuit_command::Answer,
 
   static auto handle_container(
       ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
-      boost::string_ref address,
+      boost::string_view address,
       oscpack::ReceivedMessageArgumentIterator beg_it,
       oscpack::ReceivedMessageArgumentIterator end_it)
   {
@@ -560,7 +560,7 @@ struct minuit_behavior<minuit_command::Answer,
 
   static auto handle_data(
       ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
-      boost::string_ref address,
+      boost::string_view address,
       oscpack::ReceivedMessageArgumentIterator beg_it,
       oscpack::ReceivedMessageArgumentIterator end_it)
   {
@@ -583,7 +583,7 @@ struct minuit_behavior<minuit_command::Answer,
       {
         auto str = address.to_string() + ":type";
         proto.pending_get_requests++;
-        proto.sender().send(sub_request, boost::string_ref(str));
+        proto.sender().send(sub_request, boost::string_view(str));
 
         it = attribs.erase(it);
       }
@@ -609,7 +609,7 @@ struct minuit_behavior<minuit_command::Answer,
           str += ':';
           str.append(attrib.begin(), attrib.end());
           proto.pending_get_requests++;
-          proto.sender().send(sub_request, boost::string_ref(str));
+          proto.sender().send(sub_request, boost::string_view(str));
         }
       default:
         break;
@@ -619,7 +619,7 @@ struct minuit_behavior<minuit_command::Answer,
 
   static auto handle_minuit(
       ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
-      boost::string_ref address, minuit_type type,
+      boost::string_view address, minuit_type type,
       oscpack::ReceivedMessageArgumentIterator beg_it,
       oscpack::ReceivedMessageArgumentIterator end_it)
   {
@@ -650,7 +650,7 @@ struct minuit_behavior<minuit_command::Answer,
       const oscpack::ReceivedMessage& mess)
   {
     auto it = mess.ArgumentsBegin();
-    boost::string_ref address = it->AsString();
+    boost::string_view address = it->AsString();
     auto type = get_type((++it)->AsString()[0]);
 
     handle_minuit(proto, dev, address, type, it, mess.ArgumentsEnd());
@@ -670,7 +670,7 @@ class minuit_message_handler
 public:
   static void handleMinuitMessage(
       ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
-      boost::string_ref address, const oscpack::ReceivedMessage& m)
+      boost::string_view address, const oscpack::ReceivedMessage& m)
   {
     // Look for either ':' or '?'
     auto idx = address.find_first_of(":?!");

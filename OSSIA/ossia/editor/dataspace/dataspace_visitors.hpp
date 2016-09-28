@@ -9,7 +9,7 @@ namespace ossia
  * @return Text corresponding to the unit. For instance "rgb" or "xyz".
  */
 OSSIA_EXPORT
-boost::string_ref get_unit_text(ossia::unit_t);
+boost::string_view get_unit_text(ossia::unit_t);
 
 
 /**
@@ -19,7 +19,7 @@ boost::string_ref get_unit_text(ossia::unit_t);
  * @return A value corresponding to the dataspace, without any specific unit.
  */
 OSSIA_EXPORT
-ossia::unit_t parse_dataspace(boost::string_ref text);
+ossia::unit_t parse_dataspace(boost::string_view text);
 
 /**
  * @brief parse_unit Takes a text and a dataspace and gives a corresponding unit.
@@ -29,7 +29,7 @@ ossia::unit_t parse_dataspace(boost::string_ref text);
  * @return Corresponding unit, or the same unit as input if it was not found.
  */
 OSSIA_EXPORT
-ossia::unit_t parse_unit(boost::string_ref text, ossia::unit_t dataspace);
+ossia::unit_t parse_unit(boost::string_view text, ossia::unit_t dataspace);
 
 
 /**
@@ -39,7 +39,7 @@ ossia::unit_t parse_unit(boost::string_ref text, ossia::unit_t dataspace);
  */
 template<typename T>
 OSSIA_EXPORT
-ossia::unit_t parse_unit(boost::string_ref text, T dataspace);
+ossia::unit_t parse_unit(boost::string_view text, T dataspace);
 
 
 

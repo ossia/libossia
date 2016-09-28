@@ -1,7 +1,8 @@
 #pragma once
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/exceptions.hpp>
-#include <boost/utility/string_ref.hpp>
+#include <ossia/detail/algorithms.hpp>
+#include <boost/utility/string_view.hpp>
 #include <exception>
 #include <unordered_map>
 
@@ -68,64 +69,64 @@ enum class minuit_attribute
   RampFunctionParameters
 };
 
-inline boost::string_ref to_minuit_type_text(const ossia::value& val)
+inline boost::string_view to_minuit_type_text(const ossia::value& val)
 {
   // integer, decimal, string, generic, boolean, none, array.
   struct ValueStringVisitor
   {
-    boost::string_ref operator()(ossia::Impulse) const
+    boost::string_view operator()(ossia::Impulse) const
     {
-      return "none";
+      return make_string_view("none");
     }
-    boost::string_ref operator()(ossia::Int i) const
+    boost::string_view operator()(ossia::Int i) const
     {
-      return "integer";
+      return make_string_view("integer");
     }
-    boost::string_ref operator()(ossia::Float f) const
+    boost::string_view operator()(ossia::Float f) const
     {
-      return "decimal";
+      return make_string_view("decimal");
     }
-    boost::string_ref operator()(ossia::Bool b) const
+    boost::string_view operator()(ossia::Bool b) const
     {
-      return "boolean";
+      return make_string_view("boolean");
     }
-    boost::string_ref operator()(ossia::Char c) const
+    boost::string_view operator()(ossia::Char c) const
     {
-      return "string";
+      return make_string_view("string");
     }
-    boost::string_ref operator()(const ossia::String& str) const
+    boost::string_view operator()(const ossia::String& str) const
     {
-      return "string";
+      return make_string_view("string");
     }
-    boost::string_ref operator()(const ossia::Vec2f& vec) const
+    boost::string_view operator()(const ossia::Vec2f& vec) const
     {
-      return "array";
+      return make_string_view("array");
     }
-    boost::string_ref operator()(const ossia::Vec3f& vec) const
+    boost::string_view operator()(const ossia::Vec3f& vec) const
     {
-      return "array";
+      return make_string_view("array");
     }
-    boost::string_ref operator()(const ossia::Vec4f& vec) const
+    boost::string_view operator()(const ossia::Vec4f& vec) const
     {
-      return "array";
+      return make_string_view("array");
     }
-    boost::string_ref operator()(const ossia::Tuple& t) const
+    boost::string_view operator()(const ossia::Tuple& t) const
     {
-      return "array";
+      return make_string_view("array");
     }
-    boost::string_ref operator()(const ossia::Destination& d) const
+    boost::string_view operator()(const ossia::Destination& d) const
     {
       throw invalid_value_type_error("to_minuit_type_text: "
                                      "Trying to send Destination value");
       return {};
     }
-    boost::string_ref operator()(const ossia::Behavior&) const
+    boost::string_view operator()(const ossia::Behavior&) const
     {
       throw invalid_value_type_error("to_minuit_type_text: "
                                      "Trying to send Behavior value");
       return {};
     }
-    boost::string_ref operator()() const
+    boost::string_view operator()() const
     {
       throw invalid_value_type_error("to_minuit_type_text: "
                                      "Trying to send null value");
@@ -136,34 +137,34 @@ inline boost::string_ref to_minuit_type_text(const ossia::value& val)
   return val.apply(ValueStringVisitor{});
 }
 
-inline boost::string_ref to_minuit_type_text(ossia::val_type val)
+inline boost::string_view to_minuit_type_text(ossia::val_type val)
 {
   // integer, decimal, string, generic, boolean, none, array.
   switch(val)
   {
     case val_type::IMPULSE:
-      return "none";
+      return make_string_view("none");
     case val_type::INT:
-      return "integer";
+      return make_string_view("integer");
     case val_type::FLOAT:
-      return "decimal";
+      return make_string_view("decimal");
     case val_type::BOOL:
-      return "boolean";
+      return make_string_view("boolean");
     case val_type::CHAR:
     case val_type::STRING:
-      return "string";
+      return make_string_view("string");
     case val_type::VEC2F:
     case val_type::VEC3F:
     case val_type::VEC4F:
     case val_type::TUPLE:
-      return "array";
+      return make_string_view("array");
     default:
       throw invalid_value_type_error("to_minuit_type_text: Invalid type");
   }
   return {};
 }
 
-inline ossia::value value_from_minuit_type_text(boost::string_ref str)
+inline ossia::value value_from_minuit_type_text(boost::string_view str)
 {
   // integer, decimal, string, generic, boolean, none, array.
   // we can differentiate them by the first character
@@ -188,7 +189,7 @@ inline ossia::value value_from_minuit_type_text(boost::string_ref str)
   }
 }
 
-inline ossia::val_type type_from_minuit_type_text(boost::string_ref str)
+inline ossia::val_type type_from_minuit_type_text(boost::string_view str)
 {
   // integer, decimal, string, generic, boolean, none, array.
   // we can differentiate them by the first character
@@ -213,23 +214,23 @@ inline ossia::val_type type_from_minuit_type_text(boost::string_ref str)
   }
 }
 
-inline boost::string_ref to_minuit_service_text(ossia::access_mode acc)
+inline boost::string_view to_minuit_service_text(ossia::access_mode acc)
 {
   switch (acc)
   {
     case ossia::access_mode::BI:
-      return "parameter";
+      return make_string_view("parameter");
     case ossia::access_mode::GET:
-      return "return";
+      return make_string_view("return");
     case ossia::access_mode::SET:
-      return "message";
+      return make_string_view("message");
     default:
       throw parse_error("to_minuit_service_text: Invalid access mode");
   }
   return {};
 }
 
-inline ossia::access_mode from_minuit_service_text(boost::string_ref str)
+inline ossia::access_mode from_minuit_service_text(boost::string_view str)
 {
   switch (str[0])
   {
@@ -245,29 +246,29 @@ inline ossia::access_mode from_minuit_service_text(boost::string_ref str)
   return {};
 }
 
-inline boost::string_ref to_minuit_bounding_text(ossia::bounding_mode b)
+inline boost::string_view to_minuit_bounding_text(ossia::bounding_mode b)
 {
   switch (b)
   {
     case ossia::bounding_mode::FREE:
-      return "none";
+      return make_string_view("none");
     case ossia::bounding_mode::CLIP:
-      return "both";
+      return make_string_view("both");
     case ossia::bounding_mode::WRAP:
-      return "wrap";
+      return make_string_view("wrap");
     case ossia::bounding_mode::FOLD:
-      return "fold";
+      return make_string_view("fold");
     case ossia::bounding_mode::LOW:
-      return "low";;
+      return make_string_view("low");
     case ossia::bounding_mode::HIGH:
-      return "high";
+      return make_string_view("high");
     default:
       throw parse_error("to_minuit_bounding_text: Invalid bounding mode");
   }
   return {};
 }
 
-inline ossia::bounding_mode from_minuit_bounding_text(boost::string_ref str)
+inline ossia::bounding_mode from_minuit_bounding_text(boost::string_view str)
 {
   switch (str[0])
   {
@@ -289,44 +290,44 @@ inline ossia::bounding_mode from_minuit_bounding_text(boost::string_ref str)
   return {};
 }
 
-inline boost::string_ref to_minuit_attribute_text(minuit_attribute str)
+inline boost::string_view to_minuit_attribute_text(minuit_attribute str)
 {
   switch (str)
   {
     case minuit_attribute::Value:
-      return "value";
+      return make_string_view("value");
     case minuit_attribute::Service:
-      return "service";
+      return make_string_view("service");
     case minuit_attribute::Type:
-      return "type";
+      return make_string_view("type");
     case minuit_attribute::RangeBounds:
-      return "rangeBounds";
+      return make_string_view("rangeBounds");
     case minuit_attribute::RangeClipMode:
-      return "rangeClipmode";
+      return make_string_view("rangeClipmode");
     case minuit_attribute::Description:
-      return "description";
+      return make_string_view("description");
     case minuit_attribute::RepetitionFilter:
-      return "repetitionsFilter";
+      return make_string_view("repetitionsFilter");
     case minuit_attribute::Tags:
-      return "tags";
+      return make_string_view("tags");
     case minuit_attribute::Active:
-      return "active";
+      return make_string_view("active");
     case minuit_attribute::ValueDefault:
-      return "valueDefault";
+      return make_string_view("valueDefault");
     case minuit_attribute::Priority:
-      return "priority";
+      return make_string_view("priority");
     case minuit_attribute::Dataspace:
-      return "dataspace";
+      return make_string_view("dataspace");
     case minuit_attribute::DataspaceUnit:
-      return "dataspaceUnit";
+      return make_string_view("dataspaceUnit");
     case minuit_attribute::RampFunction:
-      return "rampFunction";
+      return make_string_view("rampFunction");
     case minuit_attribute::RampDrive:
-      return "rampDrive";
+      return make_string_view("rampDrive");
     case minuit_attribute::ValueStepSize:
-      return "valueStepsize";
+      return make_string_view("valueStepsize");
     case minuit_attribute::RampFunctionParameters:
-      return "rampFunctionParameters";
+      return make_string_view("rampFunctionParameters");
     default:
       throw parse_error("to_minuit_attribute_text: unhandled attribute");
   }
@@ -355,7 +356,7 @@ const std::unordered_map<std::string, minuit_attribute>
         {"rampFunctionParameters", minuit_attribute::RampFunctionParameters},
     };
 
-inline minuit_attribute get_attribute(boost::string_ref str)
+inline minuit_attribute get_attribute(boost::string_view str)
 {
   auto it = attribute_unordered_map.find(str.to_string());
   if (it != attribute_unordered_map.end())
@@ -411,7 +412,7 @@ inline minuit_operation get_operation(char str)
   return {};
 }
 
-inline minuit_operation get_operation(boost::string_ref str)
+inline minuit_operation get_operation(boost::string_view str)
 {
   return get_operation(str[0]);
 }

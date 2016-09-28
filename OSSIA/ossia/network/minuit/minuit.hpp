@@ -82,9 +82,9 @@ public:
   bool observe(ossia::net::address_base& address_base, bool enable) override;
   bool observe_quietly(ossia::net::address_base& address_base, bool enable) override;
 
-  void refresh(boost::string_ref req, const std::string& addr);
+  void refresh(boost::string_view req, const std::string& addr);
 
-  void refreshed(boost::string_ref addr);
+  void refreshed(boost::string_view addr);
 
   osc::sender& sender() const;
   ossia::minuit::name_table name_table;

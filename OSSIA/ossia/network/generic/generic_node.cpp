@@ -78,81 +78,18 @@ bool generic_node::removeAddress()
 }
 
 std::unique_ptr<ossia::net::node_base>
-generic_node::makeChild(const std::string& name)
+generic_node::makeChild(const std::string& name_base)
 {
-  // Find all the nodes that start with the same name.
-  auto len = name.size();
-  std::vector<int> instance_num;
-  instance_num.reserve(mChildren.size());
+  std::vector<std::string> brethren;
+  brethren.reserve(mChildren.size());
 
-  bool is_here = false;
-  for (const auto& node : mChildren)
-  {
-    const std::string& n_name = node->getName();
-    if (n_name == name)
-    {
-      is_here = true;
-    }
-    else
-    {
-      if (n_name.size() <= len)
-        continue;
+  std::transform(mChildren.begin(), mChildren.end(), std::back_inserter(brethren),
+                 [] (const auto& n) { return n->getName(); });
 
-      if (n_name.compare(0, len, name) == 0 && n_name[len] == '.')
-      {
-        // Instance
-        try
-        {
-          int n = std::stoi(n_name.substr(len));
-          instance_num.push_back(n);
-        }
-        catch (...)
-        {
-          continue;
-        }
-      }
-    }
-  };
-
-  if (!is_here)
-  {
-    return std::make_unique<generic_node>(name, mDevice, *this);
-  }
-  else
-  {
-    int n = instance_num.size();
-    if (n == 0)
-    {
-      return std::make_unique<generic_node>(name + ".1", mDevice, *this);
-    }
-    else
-    {
-      // Find first number not in list
-      std::sort(instance_num.begin(), instance_num.end());
-      int i = 0;
-
-      while (true)
-      {
-        if (i < n)
-        {
-          if ((1 + i) == instance_num[i])
-          {
-            i++;
-          }
-          else
-          {
-            return std::make_unique<generic_node>(
-                name + "." + std::to_string(1 + i), mDevice, *this);
-          }
-        }
-        else
-        {
-          return std::make_unique<generic_node>(
-              name + "." + std::to_string(1 + i), mDevice, *this);
-        }
-      }
-    }
-  }
+  return std::make_unique<generic_node>(
+              sanitize_name(name_base, brethren),
+              mDevice,
+              *this);
 }
 }
 }

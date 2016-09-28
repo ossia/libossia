@@ -6,26 +6,89 @@ namespace ossia
 {
 namespace net
 {
-std::string sanitize_name(const std::string& name)
+std::string sanitize_name(std::string ret)
 {
-    std::string ret = name;
-
     for(auto& c : ret)
     {
-        if((c >= 'a' && c <= 'z')
-                || (c >= 'A' && c <= 'Z')
-                || (c >= '0' && c <= '9')
-                || (c == '.')
-                || (c == '~')
-                || (c == '_')
-                || (c == '(')
-                || (c == ')')
-                || (c == '-'))
+        if(is_valid_character_for_name(c))
             continue;
         else
             c = '_';
     }
     return ret;
+}
+
+std::string sanitize_name(std::string name_base, const std::vector<std::string>& brethren)
+{
+    auto name = sanitize_name(name_base);
+    auto len = name.length();
+    bool is_here = false;
+    std::vector<int> instance_num;
+    instance_num.reserve(brethren.size());
+
+    for (const std::string& n_name : brethren)
+    {
+      if (n_name == name)
+      {
+        is_here = true;
+      }
+      else
+      {
+        if (n_name.size() <= len)
+          continue;
+
+        if (n_name.compare(0, len, name) == 0 && n_name[len] == '.')
+        {
+          // Instance
+          try
+          {
+            int n = std::stoi(n_name.substr(len)); // OPTIMIZEME
+            instance_num.push_back(n);
+          }
+          catch (...)
+          {
+            continue;
+          }
+        }
+      }
+    };
+
+    if (is_here)
+    {
+      int n = instance_num.size();
+      if (n == 0)
+      {
+        name += ".1";
+      }
+      else
+      {
+        // Find first number not in list
+        std::sort(instance_num.begin(), instance_num.end());
+        int i = 0;
+
+        while (true)
+        {
+          if (i < n)
+          {
+            if ((1 + i) == instance_num[i])
+            {
+              i++;
+            }
+            else
+            {
+              name += "." + std::to_string(1 + i);
+              break;
+            }
+          }
+          else
+          {
+            name += "." + std::to_string(1 + i);
+            break;
+          }
+        }
+      }
+    }
+    return name;
 }
 
 node_base::~node_base() = default;

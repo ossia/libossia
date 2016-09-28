@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/network/minuit/detail/minuit_common.hpp>
 #include <array>
-#include <boost/utility/string_ref.hpp>
+#include <boost/utility/string_view.hpp>
 #include <string>
 namespace ossia
 {
@@ -25,7 +25,7 @@ public:
     m_actions[(int)minuit_action::ListenError] = name + "!listen";
   }
 
-  boost::string_ref get_action(minuit_action c) const
+  boost::string_view get_action(minuit_action c) const
   {
     return m_actions[static_cast<int>(c)];
   }

@@ -154,7 +154,7 @@ bool minuit_protocol::pull(ossia::net::address_base& address)
 
   auto act = name_table.get_action(ossia::minuit::minuit_action::GetRequest);
   auto addr = ossia::net::get_osc_address_as_string(address);
-  this->mSender->send(act, boost::string_ref(addr));
+  this->mSender->send(act, boost::string_view(addr));
 
   fut.wait_for(std::chrono::milliseconds(25));
 
@@ -220,17 +220,17 @@ bool minuit_protocol::observe_quietly(
   return true;
 }
 
-void minuit_protocol::refresh(boost::string_ref req, const std::string& addr)
+void minuit_protocol::refresh(boost::string_view req, const std::string& addr)
 {
     auto it = mNamespaceRequests.find(addr);
     if (it == mNamespaceRequests.end())
     {
         mNamespaceRequests.insert(addr);
-        mSender->send(req, boost::string_ref{addr});
+        mSender->send(req, boost::string_view{addr});
     }
 }
 
-void minuit_protocol::refreshed(boost::string_ref addr)
+void minuit_protocol::refreshed(boost::string_view addr)
 {
     auto it = mNamespaceRequests.find(addr);
     if (it != mNamespaceRequests.end())
@@ -252,7 +252,7 @@ osc::sender& minuit_protocol::sender() const
 void minuit_protocol::handleReceivedMessage(
         const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 {
-    boost::string_ref address{m.AddressPattern()};
+    boost::string_view address{m.AddressPattern()};
 
     if (address.size() > 0 && address[0] == '/')
     {

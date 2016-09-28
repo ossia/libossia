@@ -46,7 +46,7 @@ struct osc_outbound_visitor
     }
     void operator()(const ossia::String& str) const
     {
-      p << boost::string_ref(str.value);
+      p << boost::string_view(str.value);
     }
     void operator()(ossia::Vec2f vec) const
     {

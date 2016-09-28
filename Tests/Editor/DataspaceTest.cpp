@@ -82,9 +82,9 @@ private Q_SLOTS:
     col = ossia::rgb_u{};
     // must not compile : col = ossia::decimeter_u{};
 
-    // With C++17 : static_assert(eggs::variants::apply(unit_text_visitor{}, col) == boost::string_ref("rgb"), "");
+    // With C++17 : static_assert(eggs::variants::apply(unit_text_visitor{}, col) == boost::string_view("rgb"), "");
     QVERIFY(ossia::get_unit_text(col) == "rgb");
-    QCOMPARE(ossia::get_unit_text(col), boost::string_ref("rgb"));
+    QCOMPARE(ossia::get_unit_text(col), boost::string_view("rgb"));
 
     {
       ossia::unit_t some_unit = ossia::distance_u{};

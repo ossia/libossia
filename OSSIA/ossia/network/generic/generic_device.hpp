@@ -2,7 +2,7 @@
 
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
-#include <boost/utility/string_ref.hpp>
+#include <boost/utility/string_view.hpp>
 namespace ossia
 {
 namespace net
@@ -39,8 +39,8 @@ public:
 
 // address : format /a/b/c
 OSSIA_EXPORT node_base*
-find_node(node_base& dev, boost::string_ref address_base);
+find_node(node_base& dev, boost::string_view address_base);
 OSSIA_EXPORT generic_node&
-find_or_create_node(generic_device& dev, boost::string_ref address_base);
+find_or_create_node(generic_device& dev, boost::string_view address_base);
 }
 }

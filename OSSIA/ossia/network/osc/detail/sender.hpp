@@ -37,7 +37,7 @@ public:
 
       send_impl(
           oscpack::MessageGenerator<>{}(
-                      boost::string_ref(addr.data() + begin, addr.size() - begin),
+                      boost::string_view(addr.data() + begin, addr.size() - begin),
                       std::forward<Args>(args)...));
   }
 
@@ -49,7 +49,7 @@ public:
   }
 
   template <typename... Args>
-  void send(boost::string_ref address, Args&&... args)
+  void send(boost::string_view address, Args&&... args)
   {
     send_impl(
         oscpack::MessageGenerator<>{}(address, std::forward<Args>(args)...));

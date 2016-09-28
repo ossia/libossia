@@ -10,14 +10,14 @@ namespace ossia
 {
 /// Parse ///
 
-boost::string_ref get_unit_text(unit_t u)
+boost::string_view get_unit_text(unit_t u)
 {
   if(u)
     return eggs::variants::apply(detail::unit_text_visitor{}, u);
   return {};
 }
 
-unit_t parse_unit(boost::string_ref text, unit_t dataspace)
+unit_t parse_unit(boost::string_view text, unit_t dataspace)
 {
   if(dataspace && !text.empty())
     return eggs::variants::apply(detail::unit_factory_visitor{text}, dataspace);
@@ -25,12 +25,12 @@ unit_t parse_unit(boost::string_ref text, unit_t dataspace)
 }
 
 template<typename T>
-ossia::unit_t parse_unit(boost::string_ref text, T dataspace)
+ossia::unit_t parse_unit(boost::string_view text, T dataspace)
 {
   return detail::unit_factory_visitor{text}(dataspace);
 }
 
-unit_t parse_dataspace(boost::string_ref text)
+unit_t parse_dataspace(boost::string_view text)
 {
   static const std::unordered_map<std::string, unit_t> dataspaces{
     {"color", color_u{}},
@@ -92,13 +92,13 @@ ossia::value_with_unit merge(
   return vu;
 }
 
-template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::color_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::distance_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::position_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::speed_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::orientation_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::angle_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_ref, ossia::gain_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::color_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::distance_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::position_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::speed_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::orientation_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::angle_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::gain_u);
 
 
 }
