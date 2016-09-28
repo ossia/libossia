@@ -1,7 +1,5 @@
 #!/bin/bash -eux
 
-git submodule init
-
 case "$TRAVIS_OS_NAME" in
   linux)
     sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551
