@@ -75,6 +75,9 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/speed.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/distance.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/color.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/gain.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/temperature.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/time.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/address_properties.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/network_logger.hpp"
