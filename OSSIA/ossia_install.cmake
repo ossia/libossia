@@ -56,6 +56,9 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/spdlog/include/
         DESTINATION include
         COMPONENT Devel)
 
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/brigand/brigand
+        DESTINATION include
+        COMPONENT Devel)
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
