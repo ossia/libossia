@@ -75,6 +75,26 @@ private Q_SLOTS:
 
     /* TODO */
   }
+
+  void test_sanitize()
+  {
+      QCOMPARE(QString::fromStdString(sanitize_name("foo")), QString("foo"));
+      QCOMPARE(QString::fromStdString(sanitize_name("foo*")), QString("foo_"));
+      QCOMPARE(QString::fromStdString(sanitize_name("fo$o$*")), QString("fo_o__"));
+      QCOMPARE(QString::fromStdString(sanitize_name("")), QString(""));
+
+      QCOMPARE(QString::fromStdString(sanitize_name("foo", {"foo"})), QString("foo.1"));
+      QCOMPARE(QString::fromStdString(sanitize_name("foo", {"foo", "foo.1"})), QString("foo.2"));
+
+      QCOMPARE(QString::fromStdString(sanitize_name("foo.1", {"foo"})), QString("foo.1"));
+      QCOMPARE(QString::fromStdString(sanitize_name("foo.1", {"foo", "foo.1"})), QString("foo.2"));
+
+      QCOMPARE(QString::fromStdString(sanitize_name("foo.2", {"foo"})), QString("foo.2"));
+      QCOMPARE(QString::fromStdString(sanitize_name("foo.2", {"foo", "foo.1"})), QString("foo.2"));
+
+      QCOMPARE(QString::fromStdString(sanitize_name("foo.3", {"foo"})), QString("foo.3"));
+      QCOMPARE(QString::fromStdString(sanitize_name("foo.3", {"foo", "foo.1"})), QString("foo.3"));
+  }
 };
 
 QTEST_APPLESS_MAIN(NodeTest)

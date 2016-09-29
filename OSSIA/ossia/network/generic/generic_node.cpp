@@ -28,7 +28,21 @@ generic_node::~generic_node()
 
 ossia::net::node_base& generic_node::setName(std::string name)
 {
-  mName = sanitize_name(std::move(name));
+  if(mParent)
+  {
+    auto& bros = mParent->mChildren;
+    std::vector<std::string> bros_names;
+    bros_names.reserve(bros.size());
+
+    std::transform(bros.begin(), bros.end(), std::back_inserter(bros_names),
+                   [] (const auto& n) { return n->getName(); });
+
+    mName = sanitize_name(std::move(name), bros_names);
+  }
+  else
+  {
+    mName = sanitize_name(std::move(name));
+  }
 
   // notify observers
   mDevice.onNodeRenamed(*this, mName);
@@ -80,14 +94,14 @@ bool generic_node::removeAddress()
 std::unique_ptr<ossia::net::node_base>
 generic_node::makeChild(const std::string& name_base)
 {
-  std::vector<std::string> brethren;
-  brethren.reserve(mChildren.size());
+  std::vector<std::string> child_names;
+  child_names.reserve(mChildren.size());
 
-  std::transform(mChildren.begin(), mChildren.end(), std::back_inserter(brethren),
+  std::transform(mChildren.begin(), mChildren.end(), std::back_inserter(child_names),
                  [] (const auto& n) { return n->getName(); });
 
   return std::make_unique<generic_node>(
-              sanitize_name(name_base, brethren),
+              sanitize_name(name_base, child_names),
               mDevice,
               *this);
 }
