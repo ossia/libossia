@@ -9,6 +9,7 @@ template<typename Impl>
 struct orientation_unit
 {
   using is_unit = std::true_type;
+  using is_multidimensional = std::true_type;
   using dataspace_type = struct orientation_dataspace;
   using neutral_unit = quaternion_u;
   using concrete_type = Impl;
@@ -20,6 +21,8 @@ struct quaternion_u :
 {
   static constexpr auto text()
   { return ossia::make_string_array("quaternion", "quat"); }
+  static constexpr auto array_parameters()
+  { return "1ijk"; } // TODO find something better than 1 ?
 
   using value_type = Vec4f;
   static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -38,6 +41,8 @@ struct euler_u :
 {
   static constexpr auto text()
   { return ossia::make_string_array("euler", "ypr"); }
+  static constexpr auto array_parameters()
+  { return "ypr"; }
 
   using value_type = Vec4f;
 
@@ -85,6 +90,8 @@ struct axis_u :
 {
   static constexpr auto text()
   { return ossia::make_string_array("axis", "xyza"); }
+  static constexpr auto array_parameters()
+  { return "xyza"; }
   using value_type = Vec4f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)

@@ -8,6 +8,7 @@ template<typename Impl>
 struct position_unit
 {
   using is_unit = std::true_type;
+  using is_multidimensional = std::true_type;
   using dataspace_type = struct position_dataspace;
   using neutral_unit = cartesian_3d_u;
   using concrete_type = Impl;
@@ -18,6 +19,8 @@ struct cartesian_3d_u :
 {
   static constexpr auto text()
   { return ossia::make_string_array("cart3D", "xyz"); }
+  static constexpr auto array_parameters()
+  { return "xyz"; }
 
   using value_type = Vec3f;
   static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -36,6 +39,8 @@ struct cartesian_2d_u :
 {
   static constexpr auto text()
   { return ossia::make_string_array("cart2D", "xy"); }
+  static constexpr auto array_parameters()
+  { return "xy"; }
   using value_type = Vec2f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -54,6 +59,8 @@ struct spherical_u :
 {
   static constexpr auto text()
   { return ossia::make_string_array("spherical", "aed"); }
+  static constexpr auto array_parameters()
+  { return "aed"; }
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -92,6 +99,8 @@ struct polar_u :
 {
   static constexpr auto text()
   { return ossia::make_string_array("polar", "ad"); }
+  static constexpr auto array_parameters()
+  { return "ad"; }
   using value_type = Vec2f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -122,6 +131,8 @@ struct opengl_u :
 {
   static constexpr auto text()
   { return ossia::make_string_array("openGL"); }
+  static constexpr auto array_parameters()
+  { return "xyz"; }
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -139,6 +150,8 @@ struct cylindrical_u :
 {
   static constexpr auto text()
   { return ossia::make_string_array("cylindrical", "daz"); }
+  static constexpr auto array_parameters()
+  { return "daz"; }
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
