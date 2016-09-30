@@ -154,7 +154,7 @@ bool minuit_protocol::pull(ossia::net::address_base& address)
 
   auto act = name_table.get_action(ossia::minuit::minuit_action::GetRequest);
   auto addr = ossia::net::get_osc_address_as_string(address);
-  this->mSender->send(act, boost::string_view(addr));
+  this->mSender->send(act, addr);
 
   fut.wait_for(std::chrono::milliseconds(25));
 
@@ -226,7 +226,7 @@ void minuit_protocol::refresh(boost::string_view req, const std::string& addr)
     if (it == mNamespaceRequests.end())
     {
         mNamespaceRequests.insert(addr);
-        mSender->send(req, boost::string_view{addr});
+        mSender->send(req, addr);
     }
 }
 
@@ -256,24 +256,24 @@ void minuit_protocol::handleReceivedMessage(
 
     if (address.size() > 0 && address[0] == '/')
     {
-        // Handle the OSC-like case where we receive a plain value.
-    std::unique_lock<std::mutex> lock(mListeningMutex);
-    auto it = mListening.find(m.AddressPattern());
-    if (it != mListening.end())
-    {
-      ossia::net::address_base& addr = *it->second;
-      lock.unlock();
+      // Handle the OSC-like case where we receive a plain value.
+      std::unique_lock<std::mutex> lock(mListeningMutex);
+      auto it = mListening.find(m.AddressPattern());
+      if (it != mListening.end())
+      {
+        ossia::net::address_base& addr = *it->second;
+        lock.unlock();
 
-      bool res = update_value(addr, m);
-      if(res && mLogger.inbound_logger)
+        bool res = update_value(addr, m);
+        if(res && mLogger.inbound_logger)
           mLogger.inbound_logger->info("In: {0} {1}", ossia::net::address_string_from_node(addr), addr.cloneValue());
+      }
     }
-  }
-  else
-  {
-    if (mDevice)
-      ossia::minuit::minuit_message_handler::handleMinuitMessage(
-          *this, *mDevice, address, m);
+    else
+    {
+      if (mDevice)
+        ossia::minuit::minuit_message_handler::handleMinuitMessage(
+              *this, *mDevice, address, m);
     }
 }
 

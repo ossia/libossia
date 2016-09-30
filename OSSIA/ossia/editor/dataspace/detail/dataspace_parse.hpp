@@ -10,10 +10,7 @@ struct unit_text_visitor
   template<typename... Args>
   boost::string_view operator()(const eggs::variant<Args...>& dataspace)
   {
-    if(dataspace)
-      return eggs::variants::apply(*this, dataspace);
-    else
-      return "";
+    return ossia::apply(*this, dataspace);
   }
 
   template<typename Unit>
@@ -21,8 +18,26 @@ struct unit_text_visitor
   {
     return ossia::unit_traits<Unit>::text()[0];
   }
+
+  boost::string_view operator()()
+  {
+    return {};
+  }
 };
 
+struct dataspace_text_visitor
+{
+  template<typename Dataspace>
+  boost::string_view operator()(const Dataspace& dataspace)
+  {
+    return ossia::dataspace_traits<Dataspace>::text()[0];
+  }
+
+  boost::string_view operator()()
+  {
+    return {};
+  }
+};
 
 using unit_map = std::unordered_map<std::string, ossia::unit_t>;
 
@@ -69,6 +84,9 @@ struct unit_factory_visitor
     auto it = units.find(text.to_string());
     return it != units.end() ? it->second : arg;
   }
+
+  ossia::unit_t operator()()
+  { return {}; }
 };
 }
 }

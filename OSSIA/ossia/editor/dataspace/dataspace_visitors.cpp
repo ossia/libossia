@@ -9,18 +9,20 @@
 namespace ossia
 {
 /// Parse ///
+boost::string_view get_dataspace_text(unit_t u)
+{
+  return ossia::apply(detail::dataspace_text_visitor{}, u);
+}
 
 boost::string_view get_unit_text(unit_t u)
 {
-  if(u)
-    return eggs::variants::apply(detail::unit_text_visitor{}, u);
-  return {};
+  return ossia::apply(detail::unit_text_visitor{}, u);
 }
 
 unit_t parse_unit(boost::string_view text, unit_t dataspace)
 {
-  if(dataspace && !text.empty())
-    return eggs::variants::apply(detail::unit_factory_visitor{text}, dataspace);
+  if(!text.empty())
+    return ossia::apply(detail::unit_factory_visitor{text}, dataspace);
   return {};
 }
 

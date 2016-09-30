@@ -102,4 +102,7 @@ struct unit_traits<strong_value<T>>
 {
   static constexpr auto text() { return unit_traits<T>::text(); }
 };
+
+template<typename T>
+struct dataspace_traits : public std::false_type {};
 }

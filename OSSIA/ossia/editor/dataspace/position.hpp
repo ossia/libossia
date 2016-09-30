@@ -179,4 +179,10 @@ using cylindrical = strong_value<cylindrical_u>;
 using position_u =
   eggs::variant<cartesian_3d_u, cartesian_2d_u, spherical_u, polar_u, opengl_u, cylindrical_u>;
 
+template<>
+struct dataspace_traits<position_u>
+{
+  static constexpr auto text()
+  { return ossia::make_string_array("position"); }
+};
 }

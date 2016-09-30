@@ -148,4 +148,11 @@ using decibel_raw = strong_value<decibel_raw_u>;
 using gain_u =
   eggs::variant<
     linear_u, midigain_u, decibel_u, decibel_raw_u>;
+
+template<>
+struct dataspace_traits<gain_u>
+{
+  static constexpr auto text()
+  { return ossia::make_string_array("gain"); }
+};
 }

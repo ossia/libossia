@@ -124,4 +124,11 @@ using mile = strong_value<mile_u>;
 using distance_u =
   eggs::variant<
     meter_u, kilometer_u, decimeter_u, centimeter_u, millimeter_u, micrometer_u, nanometer_u, picometer_u, inch_u, foot_u, mile_u>;
+
+template<>
+struct dataspace_traits<distance_u>
+{
+  static constexpr auto text()
+  { return ossia::make_string_array("distance"); }
+};
 }

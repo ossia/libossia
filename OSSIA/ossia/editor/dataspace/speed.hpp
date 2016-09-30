@@ -84,4 +84,11 @@ struct unit_traits<foot_per_second_u>
   { return ossia::make_string_array("ft/s"); }
 };
 
+template<>
+struct dataspace_traits<speed_u>
+{
+  static constexpr auto text()
+  { return ossia::make_string_array("speed"); }
+};
+
 }

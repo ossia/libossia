@@ -4,12 +4,21 @@
 
 namespace ossia
 {
+
+/**
+ * @brief get_dataspace_text
+ * @return Text corresponding to the dataspace. For instance "color" or "gain".
+ */
+OSSIA_EXPORT
+boost::string_view get_dataspace_text(ossia::unit_t);
+
 /**
  * @brief get_unit_text
  * @return Text corresponding to the unit. For instance "rgb" or "xyz".
  */
 OSSIA_EXPORT
 boost::string_view get_unit_text(ossia::unit_t);
+
 
 
 /**

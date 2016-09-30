@@ -52,4 +52,11 @@ using radian = strong_value<radian_u>;
 using angle_u =
   eggs::variant<
     degree_u, radian_u>;
+
+template<>
+struct dataspace_traits<angle_u>
+{
+  static constexpr auto text()
+  { return ossia::make_string_array("angle"); }
+};
 }

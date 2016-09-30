@@ -325,4 +325,11 @@ using yxy = strong_value<yxy_u>;
 using hunter_lab = strong_value<hunter_lab_u>;
 using cie_lab = strong_value<cie_lab_u>;
 using cie_luv = strong_value<cie_luv_u>;
+
+template<>
+struct dataspace_traits<color_u>
+{
+  static constexpr auto text()
+  { return ossia::make_string_array("color"); }
+};
 }

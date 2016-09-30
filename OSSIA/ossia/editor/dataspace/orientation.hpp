@@ -142,4 +142,11 @@ using euler = strong_value<euler_u>;
 using axis = strong_value<axis_u>;
 
 using orientation_u = eggs::variant<quaternion_u, euler_u, axis_u>;
+
+template<>
+struct dataspace_traits<orientation_u>
+{
+  static constexpr auto text()
+  { return ossia::make_string_array("orientation"); }
+};
 }
