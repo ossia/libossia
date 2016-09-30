@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -44,6 +45,8 @@ class OSSIA_EXPORT automation final :
     Destination getDrivenAddress() const;
     const ossia::value& getDriving() const;
 
+    void setUnit(ossia::unit_t);
+
   private:
     ossia::state_element offset(ossia::time_value) override;
     ossia::state_element state() override;
@@ -53,10 +56,11 @@ class OSSIA_EXPORT automation final :
     void pause() override;
     void resume() override;
 
-    static ossia::value computeValue(double, const ossia::value&);
+    static ossia::value computeValue(double, ossia::unit_t u, const ossia::value&);
 
     Destination mDrivenAddress;
     ossia::value mDrive;
     ossia::message mLastMessage;
+    ossia::unit_t mUnit;
 };
 }

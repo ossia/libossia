@@ -86,6 +86,11 @@ public:
   time_constraint* parent() const
   { return mParent; }
 
+  int32_t getPriority() const { return mPriority; }
+  void setPriority(int32_t i) { mPriority = i; }
+
+  bool getPriorityOverride() const { return mPriorityOverride; }
+  void setPriorityOverride(bool o) { mPriorityOverride = o;}
   protected:
     ossia::time_value mLastDate{ossia::Infinite};
     // used to filter multiple state calls at the
@@ -94,5 +99,7 @@ public:
 
   private:
     time_constraint* mParent{};
+    int32_t mPriority = 0;
+    bool mPriorityOverride = false;
 };
 }

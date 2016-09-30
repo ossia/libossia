@@ -36,7 +36,7 @@ ossia::state_element automation::offset(ossia::time_value offset)
   // edit a Message handling the new Value
   // todo shouldn't it become mLastMessage ??
   return ossia::message{
-      mDrivenAddress, computeValue(offset / par.getDurationNominal(), mDrive)};
+      mDrivenAddress, computeValue(offset / par.getDurationNominal(), mUnit, mDrive)};
 }
 
 ossia::state_element automation::state()
@@ -51,7 +51,7 @@ ossia::state_element automation::state()
       mLastDate = date;
 
       // edit a Message handling the new Value
-      mLastMessage.value = computeValue(par.getDate() / par.getDurationNominal(), mDrive);
+      mLastMessage.value = computeValue(par.getDate() / par.getDurationNominal(), mUnit, mDrive);
     }
 
     return mLastMessage;
@@ -97,117 +97,136 @@ const ossia::value& automation::getDriving() const
   return mDrive;
 }
 
-ossia::value
-automation::computeValue(double position, const ossia::value& drive)
+struct computeValue_visitor
 {
-  struct computeValue_visitor
-  {
-    double position;
+  double position;
+  ossia::unit_t unit;
 
-    ossia::value operator()(const ossia::Behavior& b) const
+  ossia::value error() const
+  {
+    throw invalid_value_type_error("computeValue_visitor: "
+                                   "Unhandled drive value type.");
+    return {};
+  }
+
+  template<typename T>
+  ossia::value operator()(const T&) const
+  {
+    return error();
+  }
+
+  ossia::value operator()() const
+  {
+    return error();
+  }
+
+  ossia::value operator()(const ossia::Behavior& b) const
+  {
+    auto base_curve = b.value.get();
+    if(!base_curve)
     {
-      auto base_curve = b.value.get();
-      auto t = base_curve->getType();
-      if (t.first == ossia::curve_segment_type::DOUBLE)
+      throw invalid_value_type_error("computeValue_visitor: "
+                                     "invalid Behavior");
+      return {};
+    }
+
+    auto t = base_curve->getType();
+    if (t.first == ossia::curve_segment_type::DOUBLE)
+    {
+      switch (t.second)
       {
-        switch (t.second)
+        case ossia::curve_segment_type::FLOAT:
         {
-          case ossia::curve_segment_type::FLOAT:
-          {
-            auto c = static_cast<curve<double, float>*>(base_curve);
-            return ossia::Float{c->valueAt(position)};
-          }
-          case ossia::curve_segment_type::INT:
-          {
-            auto c = static_cast<curve<double, int>*>(base_curve);
-            return ossia::Int{c->valueAt(position)};
-          }
-          case ossia::curve_segment_type::BOOL:
-          {
-            auto c = static_cast<curve<double, bool>*>(base_curve);
-            return ossia::Bool{c->valueAt(position)};
-          }
-          case ossia::curve_segment_type::DOUBLE:
-            break;
-          case ossia::curve_segment_type::ANY:
-          {
-            auto c = static_cast<constant_curve*>(base_curve);
-            // TODO we need a specific handling for destination.
-            return c->value();
-          }
+          auto c = static_cast<curve<double, float>*>(base_curve);
+          return ossia::Float{c->valueAt(position)};
+        }
+        case ossia::curve_segment_type::INT:
+        {
+          auto c = static_cast<curve<double, int>*>(base_curve);
+          return ossia::Int{c->valueAt(position)};
+        }
+        case ossia::curve_segment_type::BOOL:
+        {
+          auto c = static_cast<curve<double, bool>*>(base_curve);
+          return ossia::Bool{c->valueAt(position)};
+        }
+        case ossia::curve_segment_type::DOUBLE:
+          break;
+        case ossia::curve_segment_type::ANY:
+        {
+          auto c = static_cast<constant_curve*>(base_curve);
+          // TODO we need a specific handling for destination.
+          return c->value();
         }
       }
-
-
-      throw invalid_value_type_error("computeValue_visitor: drive curve type is not DOUBLE");
-      return {};
     }
 
-    ossia::value operator()(const ossia::Tuple& t) const
-    {
-      std::vector<ossia::value> t_value;
-      t_value.reserve(t.value.size());
 
-      for (const auto& e : t.value)
+    throw invalid_value_type_error("computeValue_visitor: "
+                                   "drive curve type is not DOUBLE");
+    return {};
+  }
+
+  ossia::value operator()(const ossia::Tuple& t) const
+  {
+    const auto n = t.value.size();
+    std::array<curve<double, float>*, 4> arr{nullptr, nullptr, nullptr, nullptr};
+    int arr_pos = 0;
+    if(n >= 2 &&
+       n <= 4 &&
+       all_of(
+         t.value,
+         [&] (const auto& v) {
+         if(v.getType() != ossia::val_type::BEHAVIOR)
+           return false;
+
+         auto c = v.template try_get<ossia::Behavior>()->value.get();
+         if(!c)
+           return false;
+
+         auto t = c->getType();
+         if(t.first == ossia::curve_segment_type::DOUBLE && t.second == ossia::curve_segment_type::FLOAT)
+         {
+           arr[arr_pos] = static_cast<ossia::curve<double,float>*>(c);
+           arr_pos++;
+           return true;
+         }
+         return false;
+    }))
+    {
+      // VecNf case.
+      switch(arr_pos)
       {
-        t_value.push_back(automation::computeValue(position, e));
+        case 2:
+          return ossia::make_vec(arr[0]->valueAt(position), arr[1]->valueAt(position));
+        case 3:
+          return ossia::make_vec(arr[0]->valueAt(position), arr[1]->valueAt(position), arr[2]->valueAt(position));
+        case 4:
+          return ossia::make_vec(arr[0]->valueAt(position), arr[1]->valueAt(position), arr[2]->valueAt(position), arr[3]->valueAt(position));
       }
-
-      return ossia::Tuple{std::move(t_value)};
     }
 
-    ossia::value error() const
-    {
-      throw invalid_value_type_error("computeValue_visitor: Unhandled drive value type.");
-      return {};
-    }
-    ossia::value operator()(const ossia::Int&)
-    {
-      return error();
-    }
-    ossia::value operator()(const ossia::Float&)
-    {
-      return error();
-    }
-    ossia::value operator()(const ossia::Bool&)
-    {
-      return error();
-    }
-    ossia::value operator()(const ossia::Char&)
-    {
-      return error();
-    }
-    ossia::value operator()(const ossia::String&)
-    {
-      return error();
-    }
-    ossia::value operator()(const ossia::Destination&)
-    {
-      return error();
-    }
-    ossia::value operator()(const ossia::Vec2f&)
-    {
-      return error();
-    }
-    ossia::value operator()(const ossia::Vec3f&)
-    {
-      return error();
-    }
-    ossia::value operator()(const ossia::Vec4f&)
-    {
-      return error();
-    }
-    ossia::value operator()(const ossia::Impulse&)
-    {
-      return error();
-    }
-    ossia::value operator()()
-    {
-      return error();
-    }
-  };
+    // General tuple case
+    std::vector<ossia::value> t_value;
+    t_value.reserve(n);
 
 
-  return drive.apply(computeValue_visitor{position});
+    for (const auto& e : t.value)
+    {
+      t_value.push_back(e.apply(*this));
+    }
+
+    return ossia::Tuple{std::move(t_value)};
+  }
+
+};
+
+ossia::value
+automation::computeValue(
+    double position,
+    ossia::unit_t u,
+    const ossia::value& drive)
+{
+  return drive.apply(computeValue_visitor{position, u});
 }
 }
