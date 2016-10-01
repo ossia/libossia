@@ -37,6 +37,14 @@ struct convert_unit_visitor
   {
     return eggs::variants::apply(*this, value, dataspace);
   }
+
+  template<typename... Args2>
+  ossia::value_with_unit operator()(const ossia::value& value, const eggs::variant<Args2...>& dataspace)
+  {
+    // Just set the unit on the value. Throw if it is incompatible ?
+    // TODO return eggs::variants::apply(*this, value, dataspace);
+    return {};
+  }
 };
 
 struct convert_to_value_visitor
@@ -51,6 +59,11 @@ struct convert_to_value_visitor
     ossia::value operator()(T val)
     {
       return val.value;
+    }
+
+    ossia::value operator()(ossia::value val)
+    {
+      return std::move(val);
     }
 };
 

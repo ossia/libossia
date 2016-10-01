@@ -103,4 +103,20 @@ T convert(const ossia::value& val)
     return val.apply(value_converter<T>{});
 }
 
+// Used to convert Tuple in Vec2f, Vec3f, Vec4f...
+template<typename T>
+T convert(const ossia::Tuple& val)
+{
+  // TODO should we have an error if the Tuple does not
+  // have the correct number of arguments ? Or just silently fill
+  // with zeros ?
+
+  T res;
+  int N = std::min((int)val.value.size(), (int)T::size_value);
+  for(int i = 0; i < N; i++)
+  {
+    res.value[i] = convert<float>(val.value[i]);
+  }
+  return res;
+}
 }

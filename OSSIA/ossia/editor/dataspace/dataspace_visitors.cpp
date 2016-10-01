@@ -78,6 +78,25 @@ std::string to_pretty_string(value_with_unit v)
 }
 
 /// Merge ///
+struct merger_impl
+{
+  const ossia::value& val;
+  ossia::destination_index idx;
+
+  ossia::value_with_unit operator()(const ossia::value& val)
+  {
+    // TODO use the standard merge algorithm in ossia::value ??return value_unit;
+    return {};
+  }
+
+  template<typename Dataspace_T>
+  ossia::value_with_unit operator()(const Dataspace_T& ds)
+  {
+    if(ds && val.v)
+      return eggs::variants::apply(detail::value_merger{idx}, ds, val.v);
+    return {};
+  }
+};
 
 ossia::value_with_unit merge(
     ossia::value_with_unit vu,
@@ -86,9 +105,7 @@ ossia::value_with_unit merge(
 {
   if(vu && val.valid())
   {
-    return eggs::variants::apply([&] (const auto& dataspace) -> ossia::value_with_unit {
-      return eggs::variants::apply(detail::value_merger{idx}, dataspace, val.v);
-    }, vu);
+    return eggs::variants::apply(merger_impl{val, idx}, vu);
   }
 
   return vu;

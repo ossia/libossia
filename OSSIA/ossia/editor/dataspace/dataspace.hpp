@@ -10,11 +10,19 @@
 #include <ossia/editor/dataspace/time.hpp>
 
 #include <brigand/algorithms/transform.hpp>
+#include <brigand/adapted/list.hpp>
 #include <type_traits>
+namespace brigand
+{
+template <typename... T>
+using eggs_variant_wrapper = typename eggs::variant<T...>;
+
+template <typename L>
+using as_eggs_variant = brigand::wrap<L, eggs_variant_wrapper>;
+}
 
 namespace ossia
 {
-
 
 template<typename T>
 using add_value = brigand::transform<T, brigand::bind<ossia::strong_value, brigand::_1>>;
@@ -29,7 +37,19 @@ using color = add_value<color_u>;
 using speed = add_value<speed_u>;
 using gain = add_value<gain_u>;
 
-using value_with_unit = brigand::transform<unit_t, brigand::bind<ossia::add_value, brigand::_1>>;
+// Basically eggs::variant<ossia::value, ossia::distance, ossia::position, ossia::speed...>
+using value_with_unit =
+brigand::as_eggs_variant<
+  brigand::append<
+    brigand::list<ossia::value>,
+    brigand::as_list<
+      brigand::transform<
+        unit_t,
+        brigand::bind<ossia::add_value, brigand::_1>
+      >
+    >
+  >
+>;
 
 
 template <typename T>

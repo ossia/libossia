@@ -31,18 +31,33 @@ public:
   }
 };
 
+
 class OSSIA_EXPORT functional_state_composition
 {
 public:
   std::vector<functional_state> call_chain;
   // priority ? // priority relative to messages ?
+
+
+  void launch() const
+  {
+    // 1. Get the value of the first ones, maybe with a pull ?
+    std::vector<ossia::value_with_unit> vals;
+
+    // 2. Apply recursively
+
+
+
+    //if (func)
+    //  func();
+  }
 };
 }
 
 struct mock_autom2
 {
   ossia::Destination mDestination;
-  ossia::unit_t mDataspace;
+  ossia::unit_t mUnit;
   ossia::functional_state state()
   {
     ossia::functional_state autom_h;
@@ -57,9 +72,9 @@ struct mock_autom2
       // 2. potentially convert value to the automation dataspace
       // e.g. if the automation changes h in hsv, we convert s to hsv
       std::cerr << "before conversion: " << to_pretty_string(s) << std::endl;
-      if(mDataspace)
+      if(mUnit)
       {
-        s = convert(s, mDataspace);
+        s = convert(s, mUnit);
       }
       std::cerr << "after conversion: " << to_pretty_string(s) << std::endl;
 

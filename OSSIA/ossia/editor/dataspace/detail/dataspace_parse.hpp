@@ -19,6 +19,11 @@ struct unit_text_visitor
     return ossia::unit_traits<Unit>::text()[0];
   }
 
+  boost::string_view operator()(const ossia::value&)
+  {
+    return {};
+  }
+
   boost::string_view operator()()
   {
     return {};

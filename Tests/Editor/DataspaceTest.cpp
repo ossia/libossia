@@ -114,6 +114,7 @@ private Q_SLOTS:
     });
 
     // Conversion
+    /* TODO
     brigand::for_each<ossia::value_with_unit>([&] (auto t)
     {
       using dataspace_type = typename decltype(t)::type;
@@ -140,6 +141,7 @@ private Q_SLOTS:
         });
       });
     });
+    */
   }
 
   void test_visitors()

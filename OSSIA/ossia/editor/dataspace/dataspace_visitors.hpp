@@ -1,10 +1,8 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace.hpp>
-#include <brigand/algorithms/fold.hpp>
 
 namespace ossia
 {
-
 /**
  * @brief get_dataspace_text
  * @return Text corresponding to the dataspace. For instance "color" or "gain".
