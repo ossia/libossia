@@ -17,19 +17,19 @@ struct make_value_helper
     return strong_value<U>{};
   }
 
-  ossia::value_with_unit operator()(const Int& t)
+  ossia::value_with_unit operator()(Int t)
   {
     return strong_value<U>{t.value};
   }
-  ossia::value_with_unit operator()(const Float& t)
+  ossia::value_with_unit operator()(Float t)
   {
     return strong_value<U>{t.value};
   }
-  ossia::value_with_unit operator()(const Char& t)
+  ossia::value_with_unit operator()(Char t)
   {
     return strong_value<U>{t.value};
   }
-  ossia::value_with_unit operator()(const Bool& t)
+  ossia::value_with_unit operator()(Bool t)
   {
     return strong_value<U>{t.value};
   }
@@ -51,7 +51,7 @@ struct make_value_helper<U, std::enable_if_t<std::is_same<typename U::value_type
     return strong_value<U>{ossia::convert<ossia::Vec2f>(t)};
   }
 
-  ossia::value_with_unit operator()(const ossia::Vec2f& t)
+  ossia::value_with_unit operator()(ossia::Vec2f t)
   {
     return strong_value<U>{t};
   }
@@ -73,7 +73,7 @@ struct make_value_helper<U, std::enable_if_t<std::is_same<typename U::value_type
     return strong_value<U>{ossia::convert<ossia::Vec3f>(t)};
   }
 
-  ossia::value_with_unit operator()(const ossia::Vec3f& t)
+  ossia::value_with_unit operator()(ossia::Vec3f t)
   {
     return strong_value<U>{t};
   }
@@ -96,7 +96,7 @@ struct make_value_helper<U, std::enable_if_t<std::is_same<typename U::value_type
     return strong_value<U>{ossia::convert<ossia::Vec4f>(t)};
   }
 
-  ossia::value_with_unit operator()(const ossia::Vec4f& t)
+  ossia::value_with_unit operator()(ossia::Vec4f t)
   {
     return strong_value<U>{t};
   }

@@ -2,7 +2,7 @@
 #include <ossia/ossia.hpp>
 #include <iostream>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
-
+#include <ossia/network/base/address.hpp>
 using namespace ossia;
 namespace ossia
 {
@@ -12,13 +12,33 @@ class OSSIA_EXPORT functional_state
 public:
   std::vector<ossia::Destination> inputs;
   std::vector<ossia::Destination> outputs;
-  int priority;
+  int priority = 0;
 
-  std::function<ossia::value_with_unit (ossia::value_with_unit)> func;
+  std::function<void (std::vector<ossia::value_with_unit>&)> func;
+
   void launch() const
   {
-    //if (func)
-    //  func();
+    // 1. Get the value of the first ones, maybe with a pull ?
+    std::vector<ossia::value_with_unit> vals;
+
+    vals.reserve(inputs.size());
+    for(auto& dest : inputs)
+    {
+      vals.push_back(ossia::net::get_value(dest));
+    }
+
+    // 2. Apply
+    if(func)
+      func(vals);
+
+    // 3. Push the values of the last one.
+    auto n_min = std::min(vals.size(), outputs.size());
+
+    for(int i = 0 ; i < n_min ; i++)
+    {
+      ossia::net::push_value(outputs[i], vals[i]);
+    }
+
   }
 
   friend bool operator==(const functional_state& lhs, const functional_state& rhs)
@@ -41,15 +61,34 @@ public:
 
   void launch() const
   {
-    // 1. Get the value of the first ones, maybe with a pull ?
-    std::vector<ossia::value_with_unit> vals;
+    if(call_chain.size() > 0)
+    {
+      // 1. Get the value of the first ones, maybe with a pull ?
+      std::vector<ossia::value_with_unit> vals;
+      auto& inputs = call_chain.front().inputs;
+      vals.reserve(inputs.size());
+      for(auto& dest : inputs)
+      {
+        vals.push_back(ossia::net::get_value(dest));
+      }
 
-    // 2. Apply recursively
+      // 2. Apply recursively
+      for(auto& e : call_chain)
+      {
+        if(e.func)
+          e.func(vals);
+      }
 
+      // 3. Push the values of the last one.
+      auto& outputs = call_chain.back().outputs;
+      auto n_min = std::min(vals.size(), outputs.size());
 
+      for(int i = 0 ; i < n_min ; i++)
+      {
+        ossia::net::push_value(outputs[i], vals[i]);
+      }
 
-    //if (func)
-    //  func();
+    }
   }
 };
 }
@@ -65,8 +104,11 @@ struct mock_autom2
     // For an autom, same input & output
     autom_h.inputs.push_back(mDestination);
     autom_h.outputs.push_back(mDestination);
-    autom_h.func = [=] (ossia::value_with_unit s)
+    autom_h.func = [=] (std::vector<ossia::value_with_unit>& v)
     {
+      assert(v.size() == 1);
+      auto& s = v[0];
+
       // destination_index ? how to say that we change h ? [0] + hsv...
 
       // 2. potentially convert value to the automation dataspace
@@ -82,8 +124,7 @@ struct mock_autom2
       s = merge(s, computeValue(), mDestination.index);
       std::cerr << "after merge: " << to_pretty_string(s) << std::endl;
 
-      // 4. return s;
-      return s;
+
     };
 
     return autom_h;
@@ -137,12 +178,13 @@ private Q_SLOTS:
     f.call_chain.push_back(autom_r.state());
 
     ossia::rgb col{std::array<float, 3>{0.3, 0.4, 0.6}};
+    std::vector<ossia::value_with_unit> vec; vec.push_back(col);
 
     std::cerr << "First: " << to_pretty_string(col) << std::endl;
-    ossia::value_with_unit v = f.call_chain[0].func(col);
-    std::cerr << "2: " << to_pretty_string(v) << std::endl;
-    v = f.call_chain[1].func(v);
-    std::cerr << "3: " << to_pretty_string(v) << std::endl;
+    f.call_chain[0].func(vec);
+    std::cerr << "2: " << to_pretty_string(vec[0]) << std::endl;
+    f.call_chain[1].func(vec);
+    std::cerr << "3: " << to_pretty_string(vec[0]) << std::endl;
 
 
     // We have to make a difference between the values that map to the neutral

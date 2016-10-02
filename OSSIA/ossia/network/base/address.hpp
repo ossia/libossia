@@ -187,7 +187,7 @@ private:
 OSSIA_EXPORT std::string address_string_from_node(const ossia::net::node_base&);
 OSSIA_EXPORT std::string address_string_from_node(const ossia::net::address_base&);
 
-OSSIA_EXPORT ossia::value_with_unit get_value(ossia::net::address_base& addr)
-;
+OSSIA_EXPORT ossia::value_with_unit get_value(const ossia::Destination& addr);
+OSSIA_EXPORT void push_value(const ossia::Destination& addr, const ossia::value_with_unit&);
 }
 }
