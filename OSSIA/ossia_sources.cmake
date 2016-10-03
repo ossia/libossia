@@ -44,6 +44,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_print_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/message.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/functional_state.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/behavior.hpp"
