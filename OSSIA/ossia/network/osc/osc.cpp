@@ -9,7 +9,7 @@
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <oscpack/osc/OscPrintReceivedElements.h>
-
+#include <ossia/detail/logger.hpp>
 namespace ossia
 {
 namespace net

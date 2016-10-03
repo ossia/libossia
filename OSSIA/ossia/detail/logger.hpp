@@ -7,5 +7,7 @@
 #define SPDLOG_DEBUG_ON
 #define SPDLOG_TRACE_ON
 
+#define SPDLOG_FMT_EXTERNAL
+#define FMT_HEADER_ONLY
 #include <spdlog/spdlog.h>
-#include <spdlog/fmt/ostr.h>
+#include <fmt/ostream.h>

@@ -6,7 +6,6 @@
 
 namespace ossia
 {
-class network_logger;
 class state;
 
 namespace net
@@ -53,7 +52,7 @@ public:
   { return mLogger; }
 
 protected:
-  ossia::network_logger mLogger;
+  network_logger mLogger;
 };
 }
 }

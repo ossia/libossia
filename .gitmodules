@@ -26,3 +26,6 @@
 [submodule "3rdparty/jni_hpp"]
 	path = 3rdparty/jni_hpp
 	url = https://github.com/jcelerier/jni.hpp
+[submodule "3rdparty/fmt"]
+	path = 3rdparty/fmt
+	url = https://github.com/fmtlib/fmt

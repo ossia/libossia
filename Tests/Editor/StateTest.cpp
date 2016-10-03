@@ -87,7 +87,6 @@ public:
       {
         ossia::net::push_value(outputs[i], vals[i]);
       }
-
     }
   }
 };

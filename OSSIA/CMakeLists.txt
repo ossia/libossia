@@ -212,6 +212,7 @@ target_include_directories(ossia
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/brigand>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/fmt>
 )
 
 target_include_directories(ossia SYSTEM
