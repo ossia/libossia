@@ -63,7 +63,7 @@ struct convert_to_value_visitor
 
     ossia::value operator()(ossia::value val)
     {
-      return std::move(val);
+      return val;
     }
 };
 
