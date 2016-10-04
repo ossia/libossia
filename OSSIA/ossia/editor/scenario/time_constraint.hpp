@@ -68,12 +68,12 @@ public:
    \return std::shared_ptr<#TimeConstraint> */
    static std::shared_ptr<time_constraint> create(
       time_constraint::ExecutionCallback, time_event&,
-      time_event&, time_value = Infinite, time_value = 0.,
+      time_event&, time_value = Infinite, time_value = Zero,
       time_value = Infinite);
 
    time_constraint(
        time_constraint::ExecutionCallback, time_event&,
-       time_event&, time_value = Infinite, time_value = 0.,
+       time_event&, time_value = Infinite, time_value = Zero,
        time_value = Infinite);
 
   /*! desctructor */

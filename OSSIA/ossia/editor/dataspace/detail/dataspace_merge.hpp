@@ -29,13 +29,22 @@ template<typename T, typename U, typename = void>
 struct whole_value_merger_helper;
 
 template<typename T, typename U>
-using enable_if_both_iterable =    std::enable_if_t< is_iterable_t<decltype(T::value)>::value &&  is_iterable_t<decltype(U::value)>::value>;
+const constexpr bool both_iterable = is_iterable_t<decltype(T::value)>::value && is_iterable_t<decltype(U::value)>::value;
 template<typename T, typename U>
-using enable_if_first_iterable =   std::enable_if_t< is_iterable_t<decltype(T::value)>::value && !is_iterable_t<decltype(U::value)>::value>;
+const constexpr bool first_iterable = is_iterable_t<decltype(T::value)>::value && !is_iterable_t<decltype(U::value)>::value;
 template<typename T, typename U>
-using enable_if_second_iterable =  std::enable_if_t<!is_iterable_t<decltype(T::value)>::value &&  is_iterable_t<decltype(U::value)>::value>;
+const constexpr bool second_iterable = !is_iterable_t<decltype(T::value)>::value && is_iterable_t<decltype(U::value)>::value;
 template<typename T, typename U>
-using enable_if_neither_iterable = std::enable_if_t<!is_iterable_t<decltype(T::value)>::value && !is_iterable_t<decltype(U::value)>::value>;
+const constexpr bool neither_iterable = !is_iterable_t<decltype(T::value)>::value && !is_iterable_t<decltype(U::value)>::value;
+
+template<typename T, typename U>
+using enable_if_both_iterable =    std::enable_if_t<both_iterable<T,U>>;
+template<typename T, typename U>
+using enable_if_first_iterable =   std::enable_if_t<first_iterable<T,U>>;
+template<typename T, typename U>
+using enable_if_second_iterable =  std::enable_if_t<second_iterable<T,U>>;
+template<typename T, typename U>
+using enable_if_neither_iterable = std::enable_if_t<neither_iterable<T,U>>;
 
 // Case where both T and U are array types, e.g. RGB && Tuple, or CMYK && Vec2f...
 template<typename T, typename U>

@@ -95,7 +95,7 @@ private Q_SLOTS:
     auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
     auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
     auto constraint_callback = std::bind(&MapperTest::constraint_callback, this, _1, _2, _3);
-    auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 400., 400., 400.);
+    auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 400._tv, 400._tv, 400._tv);
     constraint->addTimeProcess(
           std::make_unique<mapper>(*m_float_address, *m_int_address, Behavior(c)));
 
@@ -105,7 +105,7 @@ private Q_SLOTS:
     Float f(-10.);
     m_float_address->pushValue(f);
 
-    constraint->setGranularity(10.);
+    constraint->setGranularity(10._tv);
     constraint->start();
 
     while (constraint->getRunning())

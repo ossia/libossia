@@ -195,7 +195,7 @@ state_element scenario::state()
           if (prev_last_date == Infinite)
             cst.tick();
           else
-            cst.tick((date - prev_last_date) * 1000.);
+            cst.tick(time_value{(date - prev_last_date) * 1000.});
         }
         else
         {

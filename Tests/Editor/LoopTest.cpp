@@ -28,7 +28,7 @@ private Q_SLOTS:
         auto constraint_callback = std::bind(&LoopTest::constraint_callback, this, _1, _2, _3);
         auto event_callback = std::bind(&LoopTest::event_callback, this, _1);
 
-        loop l(25., constraint_callback, event_callback, event_callback);
+        loop l(25._tv, constraint_callback, event_callback, event_callback);
 
         QVERIFY(l.parent() == nullptr);
 
@@ -52,10 +52,10 @@ private Q_SLOTS:
         auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
 
-        auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100., 100., 100.);
+        auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
 
         constraint->addTimeProcess(
-              std::make_unique<loop>(25., constraint_callback, event_callback, event_callback));
+              std::make_unique<loop>(25._tv, constraint_callback, event_callback, event_callback));
 
         constraint->start();
 

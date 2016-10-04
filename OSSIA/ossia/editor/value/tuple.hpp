@@ -14,8 +14,9 @@ class value;
  */
 struct OSSIA_EXPORT Tuple
 {
-  using value_type = std::vector<ossia::value>;
-  value_type value;
+  using value_type = ossia::value;
+  using impl_type = std::vector<value_type>;
+  impl_type value;
 
   Tuple();
   Tuple(const Tuple&) = default;
@@ -27,8 +28,8 @@ struct OSSIA_EXPORT Tuple
 
   Tuple(std::initializer_list<ossia::value> v);
 
-  Tuple(const value_type& v);
-  Tuple(value_type&& v);
+  Tuple(const impl_type& v);
+  Tuple(impl_type&& v);
 
   bool operator==(const ossia::value&) const;
   bool operator!=(const ossia::value&) const;

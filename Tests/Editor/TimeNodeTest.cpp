@@ -35,7 +35,7 @@ private Q_SLOTS:
         time_value simultaneity_margin = node->getSimultaneityMargin();
         QVERIFY(simultaneity_margin == Zero);
 
-        node->setSimultaneityMargin(50.);
+        node->setSimultaneityMargin(50._tv);
         simultaneity_margin = node->getSimultaneityMargin();
         QVERIFY(simultaneity_margin == time_value(50.));
 

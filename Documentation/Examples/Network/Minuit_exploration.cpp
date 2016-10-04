@@ -61,7 +61,7 @@ void explore(const ossia::net::node_base& node)
 
       // display address info
       cerr << " : ";
-      cerr << to_pretty_string(addr->cloneValue());
+      cerr << value_to_pretty_string(addr->cloneValue());
 
       cerr << ", AccessMode(";
       switch (addr->getAccessMode())
@@ -140,5 +140,5 @@ void printDomain(const domain& d)
 
 void printValueCallback(const value& v)
 {
-  cerr << "Callback: " << to_pretty_string(v) << "\n";
+  cerr << "Callback: " << value_to_pretty_string(v) << "\n";
 }

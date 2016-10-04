@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -17,12 +18,12 @@ struct OSSIA_EXPORT Int
   }
 
   template <typename T>
-  constexpr Int(T*) = delete;
+  OSSIA_DECL_RELAXED_CONSTEXPR Int(T*) = delete;
 
-  constexpr Int(const Int&) = default;
-  constexpr Int(Int&&) = default;
-  constexpr Int& operator=(const Int&) = default;
-  constexpr Int& operator=(Int&&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Int(const Int&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Int(Int&&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Int& operator=(const Int&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Int& operator=(Int&&) = default;
 
   bool operator==(const ossia::value&) const;
   bool operator!=(const ossia::value&) const;

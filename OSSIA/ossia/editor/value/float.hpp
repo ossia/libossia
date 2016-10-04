@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia_export.h>
 #include <cinttypes>
 
@@ -13,19 +14,19 @@ struct OSSIA_EXPORT Float
 {
   float value;
 
-  constexpr Float(): value{} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR Float(): value{} { }
 
-  constexpr Float(float v) : value(v) { }
-  constexpr Float(double v) : value(float(v)) { }
-  constexpr Float(int32_t v) : value(float(v)) { }
-  constexpr Float(int64_t v) : value(float(v)) { }
-  constexpr Float(uint32_t v) : value(float(v)) { }
-  constexpr Float(uint64_t v) : value(float(v)) { }
+  OSSIA_DECL_RELAXED_CONSTEXPR Float(float v) : value(v) { }
+  OSSIA_DECL_RELAXED_CONSTEXPR Float(double v) : value(float(v)) { }
+  OSSIA_DECL_RELAXED_CONSTEXPR Float(int32_t v) : value(float(v)) { }
+  OSSIA_DECL_RELAXED_CONSTEXPR Float(int64_t v) : value(float(v)) { }
+  OSSIA_DECL_RELAXED_CONSTEXPR Float(uint32_t v) : value(float(v)) { }
+  OSSIA_DECL_RELAXED_CONSTEXPR Float(uint64_t v) : value(float(v)) { }
 
-  constexpr Float(const Float&) = default;
-  constexpr Float(Float&&) = default;
-  constexpr Float& operator=(const Float&) = default;
-  constexpr Float& operator=(Float&&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Float(const Float&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Float(Float&&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Float& operator=(const Float&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Float& operator=(Float&&) = default;
 
   bool operator==(const ossia::value&) const;
   bool operator!=(const ossia::value&) const;

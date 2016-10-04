@@ -74,12 +74,12 @@ private Q_SLOTS:
     auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
     auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
     auto constraint_callback = std::bind(&AutomationTest::constraint_callback, this, _1, _2, _3);
-    auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100., 100., 100.);
+    auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
     constraint->addTimeProcess(std::make_unique<automation>(*address, Behavior(c)));
 
     m_address_values.clear();
 
-    constraint->setGranularity(10.);
+    constraint->setGranularity(10._tv);
     constraint->start();
 
     while (constraint->getRunning())

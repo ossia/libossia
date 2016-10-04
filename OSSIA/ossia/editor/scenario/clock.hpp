@@ -44,8 +44,8 @@ public:
    \param drive mode
    \return std::shared_ptr<#Clock> */
   clock(
-      clock::ExecutionCallback, time_value = Infinite, time_value = 10.,
-      time_value = 0., float = 1.,
+      clock::ExecutionCallback, time_value = Infinite, time_value = time_value{10.},
+      time_value = Zero, float = 1.,
       clock::DriveMode = clock::DriveMode::INTERNAL);
 
   /*! destructor */

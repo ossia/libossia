@@ -53,8 +53,8 @@ state_element loop::offset(time_value offset)
   // reset internal mOffsetState
   mOffsetState.clear();
 
-  time_value patternOffset = std::fmod(
-      (double)offset, (double)mPatternConstraint->getDurationNominal());
+  time_value patternOffset{std::fmod(
+      (double)offset, (double)mPatternConstraint->getDurationNominal())};
   flatten_and_filter(mOffsetState, mPatternConstraint->offset(patternOffset));
 
   // compile mOffsetState with all HAPPENED event's states
@@ -124,7 +124,7 @@ state_element loop::state()
           if (prev_last_date == Infinite)
             mPatternConstraint->tick();
           else
-            mPatternConstraint->tick((date - prev_last_date) * 1000.);
+            mPatternConstraint->tick(time_value{(date - prev_last_date) * 1000.});
         }
         else
         {

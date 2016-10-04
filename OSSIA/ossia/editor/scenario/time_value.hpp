@@ -16,8 +16,13 @@ class OSSIA_EXPORT time_value
 public:
   /*! constructor
    \param int value */
-  constexpr time_value(double d = 0.) noexcept :
+  explicit constexpr time_value(double d) noexcept :
     m_value{d}
+  {
+  }
+
+  explicit constexpr time_value() noexcept :
+    m_value{0.}
   {
   }
 
@@ -124,11 +129,19 @@ public:
     return std::isinf(m_value);
   }
 
+  bool operator==(time_value rhs) const noexcept { return m_value == rhs.m_value; }
+  bool operator!=(time_value rhs) const noexcept { return m_value != rhs.m_value; }
 protected:
   double m_value;
 };
 
+OSSIA_EXPORT inline time_value operator "" _tv(long double v)
+{
+    return time_value(v);
+}
+
 const constexpr time_value Infinite{INFINITY};
 const constexpr time_value Zero{0.};
 const constexpr time_value One{1.};
+
 }

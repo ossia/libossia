@@ -410,7 +410,7 @@ static void getTupleAsString(const ossia::Tuple& tuple, fmt::MemoryWriter& s)
 }
 }
 
-std::string to_pretty_string(const ossia::value& val)
+std::string value_to_pretty_string(const ossia::value& val)
 {
   fmt::MemoryWriter s;
   val.apply(value_prettyprint_visitor{s});

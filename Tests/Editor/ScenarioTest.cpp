@@ -83,9 +83,9 @@ private Q_SLOTS:
 
         auto end_node = std::make_shared<time_node>();
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), e_callback));
-        auto constraint = time_constraint::create(mc_callback, *start_event, *end_event, 1000., 1000., 1000.);
+        auto constraint = time_constraint::create(mc_callback, *start_event, *end_event, 1000._tv, 1000._tv, 1000._tv);
 
-        QVERIFY(end_node->getDate() == 1000.);
+        QVERIFY(end_node->getDate() == 1000._tv);
     }
 
     /*! test edition functions */
@@ -102,7 +102,7 @@ private Q_SLOTS:
         auto end_node = std::make_shared<time_node>();
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), e_callback));
 
-        auto constraint = time_constraint::create(mc_callback, *start_event, *end_event, 1000., 1000., 1000.);
+        auto constraint = time_constraint::create(mc_callback, *start_event, *end_event, 1000._tv, 1000._tv, 1000._tv);
 
         scenar->addTimeConstraint(constraint);
         QVERIFY(scenar->timeConstraints().size() == 1);
@@ -125,6 +125,7 @@ private Q_SLOTS:
     //! \todo maybe a way to test many scenario would be to load them from a files
     void test_execution()
     {
+        using namespace ossia;
         auto mc_callback = std::bind(&ScenarioTest::main_constraint_callback, this, _1, _2, _3);
         auto fc_callback = std::bind(&ScenarioTest::first_constraint_callback, this, _1, _2, _3);
         auto sc_callback = std::bind(&ScenarioTest::second_constraint_callback, this, _1, _2, _3);
@@ -134,7 +135,7 @@ private Q_SLOTS:
         auto main_end_node = std::make_shared<time_node>();
         auto main_start_event = *(main_start_node->emplace(main_start_node->timeEvents().begin(), e_callback));
         auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), e_callback));
-        main_constraint = time_constraint::create(mc_callback, *main_start_event, *main_end_event, 5000., 5000, 5000.);
+        main_constraint = time_constraint::create(mc_callback, *main_start_event, *main_end_event, 5000._tv, 5000._tv, 5000._tv);
 
         auto main_scenario = std::make_unique<scenario>();
 
@@ -143,24 +144,24 @@ private Q_SLOTS:
         auto first_end_node = std::make_shared<time_node>();
         auto first_start_event = *(scenario_start_node->emplace(scenario_start_node->timeEvents().begin(), e_callback));
         auto first_end_event = *(first_end_node->emplace(first_end_node->timeEvents().begin(), e_callback));
-        auto first_constraint = time_constraint::create(fc_callback, *first_start_event, *first_end_event, 1500., 1500., 1500.);
+        auto first_constraint = time_constraint::create(fc_callback, *first_start_event, *first_end_event, 1500._tv, 1500._tv, 1500._tv);
 
         main_scenario->addTimeConstraint(first_constraint);
 
         auto second_end_node = std::make_shared<time_node>();
         auto second_end_event = *(second_end_node->emplace(second_end_node->timeEvents().begin(), e_callback));
-        auto second_constraint = time_constraint::create(sc_callback, *first_end_event, *second_end_event, 2000., 2000., 2000.);
+        auto second_constraint = time_constraint::create(sc_callback, *first_end_event, *second_end_event, 2000._tv, 2000._tv, 2000._tv);
 
         main_scenario->addTimeConstraint(second_constraint);
 
         main_constraint->addTimeProcess(std::move(main_scenario));
 
-        main_constraint->setSpeed(1.);
-        main_constraint->setGranularity(50.);
-        first_constraint->setSpeed(1.);
-        first_constraint->setGranularity(25.);
-        second_constraint->setSpeed(1.);
-        second_constraint->setGranularity(25.);
+        main_constraint->setSpeed(1._tv);
+        main_constraint->setGranularity(50._tv);
+        first_constraint->setSpeed(1._tv);
+        first_constraint->setGranularity(25._tv);
+        second_constraint->setSpeed(1._tv);
+        second_constraint->setGranularity(25._tv);
 
         events_date.clear();
         main_constraint->start();

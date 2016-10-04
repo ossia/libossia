@@ -8,6 +8,7 @@ using namespace ossia;
 using namespace std::chrono;
 using namespace std::placeholders;
 
+
 class ClockTest : public QObject
 {
     Q_OBJECT
@@ -57,6 +58,16 @@ class ClockTest : public QObject
 
         if (position >= One)
             m_last_frame_duration = duration_cast<microseconds>(steady_clock::now() - frame_start_date).count();
+    }
+
+    void make_clock_test(double duration,
+                         double granularity,
+                         double offset,
+                         float speed,
+                         clock::ExecutionCallback callback,
+                         bool display = false)
+    {
+        make_clock_test(time_value(duration), time_value(granularity), time_value(offset), speed, callback, display);
     }
 
     void make_clock_test(time_value duration,
@@ -140,27 +151,28 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
+        using namespace ossia;
         auto callback = std::bind(&ClockTest::clock_callback_light, this, _1, _2, _3);
         ossia::clock c(callback);
 
         QVERIFY(c.getDuration() == Infinite);
-        QVERIFY(c.getGranularity() == 10.);
-        QVERIFY(c.getOffset() == 0.);
-        QVERIFY(c.getSpeed() == 1.);
+        QVERIFY(c.getGranularity() == 10._tv);
+        QVERIFY(c.getOffset() == 0._tv);
+        QVERIFY(c.getSpeed() == 1._tv);
 
-        c.setDuration(1000.);
-        c.setGranularity(50.);
-        c.setOffset(500.);
-        c.setSpeed(2.);
+        c.setDuration(1000._tv);
+        c.setGranularity(50._tv);
+        c.setOffset(500._tv);
+        c.setSpeed(2._tv);
 
-        QVERIFY(c.getDuration() == 1000.);
-        QVERIFY(c.getGranularity() == 50.);
-        QVERIFY(c.getOffset() == 500.);
-        QVERIFY(c.getSpeed() == 2.);
+        QVERIFY(c.getDuration() == 1000._tv);
+        QVERIFY(c.getGranularity() == 50._tv);
+        QVERIFY(c.getOffset() == 500._tv);
+        QVERIFY(c.getSpeed() == 2._tv);
 
         QVERIFY(c.getRunning() == false);
-        QVERIFY(c.getPosition() == 0.5);
-        QVERIFY(c.getDate() == 500.);
+        QVERIFY(c.getPosition() == 0.5_tv);
+        QVERIFY(c.getDate() == 500._tv);
 
         //! \todo test clone()
     }
@@ -242,7 +254,7 @@ private Q_SLOTS:
 
         // setup clock
         auto callback = std::bind(&ClockTest::clock_callback_light, this, _1, _2, _3);
-        ossia::clock c(callback, 100., 10., 0., 1.);
+        ossia::clock c(callback, 100._tv, 10._tv, 0._tv, 1.);
 
         // clear frame vectors
         m_clock_positions.clear();
@@ -253,7 +265,7 @@ private Q_SLOTS:
         c.start();
 
         // wait the clock to pass 50 ms
-        while (c.getDate() < 50.)
+        while (c.getDate() < 50._tv)
             ;
 
         // then pause: the clock should be still running
@@ -271,7 +283,7 @@ private Q_SLOTS:
         QVERIFY(c.getRunning() == true);
 
         // wait the clock to pass 80 ms
-        while (c.getDate() < 80.) ;
+        while (c.getDate() < 80._tv) ;
         // then stop
         c.stop();
         QVERIFY(c.getRunning() == false);

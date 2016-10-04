@@ -90,5 +90,5 @@ int main()
 
 void printValueCallback(const value& v)
 {
-  cout << "Callback: " << to_pretty_string(v) << "\n";
+  cout << "Callback: " << value_to_pretty_string(v) << "\n";
 }

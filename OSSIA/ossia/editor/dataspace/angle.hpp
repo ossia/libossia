@@ -16,15 +16,15 @@ struct angle_unit
 
 struct radian_u : public angle_unit<radian_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("radian", "rad"); }
 
-  static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
+  static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return self;
   }
 
-  static constexpr value_type from_neutral(strong_value<neutral_unit> self)
+  static OSSIA_DECL_RELAXED_CONSTEXPR value_type from_neutral(strong_value<neutral_unit> self)
   {
     return self.value;
   }
@@ -32,15 +32,15 @@ struct radian_u : public angle_unit<radian_u>
 
 struct degree_u : public angle_unit<degree_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("degree", "deg"); }
 
-  static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
+  static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return {self.value.value * ossia::deg_to_rad};
   }
 
-  static constexpr value_type from_neutral(strong_value<neutral_unit> self)
+  static OSSIA_DECL_RELAXED_CONSTEXPR value_type from_neutral(strong_value<neutral_unit> self)
   {
     return {self.value.value * ossia::rad_to_deg};
   }
@@ -56,7 +56,7 @@ using angle_u =
 template<>
 struct dataspace_traits<angle_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("angle"); }
 };
 }

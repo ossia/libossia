@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <array>
 #include <ossia_export.h>
 
@@ -20,14 +21,14 @@ class Vec
 {
 public:
   static const constexpr int size_value = N;
-
+  using value_type = T;
   std::array<T, N> value;
 
-  constexpr Vec() { }
-  constexpr Vec(std::array<float, N> v) : value(std::move(v))
+  OSSIA_DECL_RELAXED_CONSTEXPR Vec() { }
+  OSSIA_DECL_RELAXED_CONSTEXPR Vec(std::array<float, N> v) : value(std::move(v))
   {
   }
-  constexpr Vec(std::array<double, N> v)
+  OSSIA_DECL_RELAXED_CONSTEXPR Vec(std::array<double, N> v)
   {
     for(int i = 0; i < N; i++)
     {
@@ -35,10 +36,10 @@ public:
     }
   }
 
-  constexpr Vec(const Vec&) = default;
-  constexpr Vec(Vec&&) = default;
-  constexpr Vec& operator=(const Vec&) = default;
-  constexpr Vec& operator=(Vec&&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Vec(const Vec&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Vec(Vec&&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Vec& operator=(const Vec&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Vec& operator=(Vec&&) = default;
 
   bool operator==(const ossia::value&) const;
   bool operator!=(const ossia::value&) const;

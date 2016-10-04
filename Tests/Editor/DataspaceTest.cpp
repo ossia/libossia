@@ -7,7 +7,7 @@
 #include <ossia/editor/dataspace/detail/dataspace_parse.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <brigand/algorithms/for_each.hpp>
-#include <experimental/string_view>
+
 namespace ossia
 {
 struct address_data
@@ -26,19 +26,13 @@ class DataspaceTest : public QObject
   Q_OBJECT
 
 private Q_SLOTS:
+
   /*! test impulse */
   void test_dataspace()
   {
+#if !defined(_MSC_VER)
     // Dataspace : enforces a family of units
     // Unit : enforces a certain type of storage
-    static_assert(ossia::detail::is_iterable_v<decltype(ossia::Vec3f::value)>, "");
-    static_assert(!ossia::detail::is_iterable_v<decltype(ossia::Float::value)>, "");
-    static_assert(!ossia::detail::is_iterable_v<const decltype(ossia::Float::value)>, "");
-
-    static_assert(!ossia::is_unit_v<int>, "");
-    static_assert(ossia::is_unit_v<ossia::centimeter_u>, "");
-    static_assert(ossia::is_unit_v<ossia::rgb_u>, "");
-    static_assert(!ossia::is_unit_v<ossia::color_u>, "");
     constexpr ossia::centimeter c{2.3};
 
     constexpr ossia::millimeter m = c;
@@ -55,6 +49,8 @@ private Q_SLOTS:
     static_assert(qFuzzyCompare(ossia::knot{ossia::meter_per_second{1}}.value.value, 1.943844f), "");
 
     static_assert(qFuzzyCompare(ossia::radian{ossia::degree{180}}.value.value, 3.14159f), "");
+
+#endif
     // Ex. 1 : making an automation of the correct type ? e.g. circular for circular units...
 
     // have some kind of unit transformer ?
@@ -100,6 +96,7 @@ private Q_SLOTS:
       QVERIFY(parse_unit("cm", some_unit) != ossia::centimeter_u{});
       QVERIFY(parse_unit("cm", some_unit) == ossia::color_u{});
     }
+
   }
 
   void test_conversions()

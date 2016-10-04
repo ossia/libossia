@@ -17,20 +17,20 @@ struct color_unit
 
 struct argb_u : public color_unit<argb_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("argb"); }
 
-  static constexpr auto array_parameters()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return "argb"; }
 
   using value_type = Vec4f;
 
-  static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
+  static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return self;
   }
 
-  static constexpr value_type from_neutral(strong_value<neutral_unit> self)
+  static OSSIA_DECL_RELAXED_CONSTEXPR value_type from_neutral(strong_value<neutral_unit> self)
   {
     return self.value.value;
   }
@@ -38,10 +38,10 @@ struct argb_u : public color_unit<argb_u>
 
 struct rgba_u : public color_unit<rgba_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("rgba"); }
 
-  static constexpr auto array_parameters()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return "rgba"; }
 
   using value_type = Vec4f;
@@ -59,10 +59,10 @@ struct rgba_u : public color_unit<rgba_u>
 
 struct rgb_u : public color_unit<rgb_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("rgb"); }
 
-  static constexpr auto array_parameters()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return "rgb"; }
 
   using value_type = Vec3f;
@@ -80,10 +80,10 @@ struct rgb_u : public color_unit<rgb_u>
 
 struct bgr_u : public color_unit<bgr_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("bgr"); }
 
-  static constexpr auto array_parameters()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return "bgr"; }
 
   using value_type = Vec3f;
@@ -101,10 +101,10 @@ struct bgr_u : public color_unit<bgr_u>
 
 struct argb8_u : public color_unit<argb8_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("argb8"); }
 
-  static constexpr auto array_parameters()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return "argb"; }
 
   using value_type = Vec4f;
@@ -130,10 +130,10 @@ struct argb8_u : public color_unit<argb8_u>
 
 struct hsv_u : public color_unit<hsv_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("hsv"); }
 
-  static constexpr auto array_parameters()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return "hsv"; }
 
   using value_type = Vec3f;
@@ -213,10 +213,10 @@ struct hsv_u : public color_unit<hsv_u>
 
 struct hsl_u : public color_unit<hsl_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("hsl"); }
 
-  static constexpr auto array_parameters()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return "hsl"; }
 
   using value_type = Vec3f;
@@ -225,10 +225,10 @@ struct hsl_u : public color_unit<hsl_u>
 
 struct cmy8_u : public color_unit<cmy8_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("cmy8"); }
 
-  static constexpr auto array_parameters()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return "cmy"; }
 
   using value_type = Vec3f;
@@ -253,10 +253,10 @@ struct cmy8_u : public color_unit<cmy8_u>
 
 struct cmyk8_u : public color_unit<cmyk8_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("cmyk8"); }
 
-  static constexpr auto array_parameters()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return "cmyk"; }
 
   using value_type = Vec4f;
@@ -265,10 +265,10 @@ struct cmyk8_u : public color_unit<cmyk8_u>
 
 struct xyz_u : public color_unit<xyz_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("xyz"); }
 
-  static constexpr auto array_parameters()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return "xyz"; }
 
   using value_type = Vec3f;
@@ -319,10 +319,10 @@ struct xyz_u : public color_unit<xyz_u>
 
 struct yxy_u : public color_unit<yxy_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("Yxy"); }
 
-  static constexpr auto array_parameters()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return "Yxy"; }
 
   using value_type = Vec3f;
@@ -330,27 +330,27 @@ struct yxy_u : public color_unit<yxy_u>
 
 struct hunter_lab_u : public color_unit<hunter_lab_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("hunter_lab"); }
-  static constexpr auto array_parameters()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return "lab"; }
   using value_type = Vec3f;
 };
 
 struct cie_lab_u : public color_unit<cie_lab_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("cie_lab"); }
-  static constexpr auto array_parameters()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return "lab"; }
   using value_type = Vec3f;
 };
 
 struct cie_luv_u : public color_unit<cie_luv_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("cie_luv"); }
-  static constexpr auto array_parameters()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return "luv"; }
   using value_type = Vec3f;
 };
@@ -379,7 +379,7 @@ using cie_luv = strong_value<cie_luv_u>;
 template<>
 struct dataspace_traits<color_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("color"); }
 };
 }

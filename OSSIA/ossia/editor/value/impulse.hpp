@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -21,33 +22,33 @@ class value;
  */
 struct OSSIA_EXPORT Impulse
 {
-  constexpr Impulse() = default;
-  constexpr Impulse(const Impulse&) = default;
-  constexpr Impulse(Impulse&&) = default;
-  constexpr Impulse& operator=(const Impulse&) = default;
-  constexpr Impulse& operator=(Impulse&&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Impulse() = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Impulse(const Impulse&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Impulse(Impulse&&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Impulse& operator=(const Impulse&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Impulse& operator=(Impulse&&) = default;
 
-  constexpr bool operator==(const value&) const
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(const value&) const
   {
     return true;
   }
-  constexpr bool operator!=(const value&) const
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(const value&) const
   {
     return false;
   }
-  constexpr bool operator>(const value&) const
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(const value&) const
   {
     return false;
   }
-  constexpr bool operator>=(const value&) const
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(const value&) const
   {
     return true;
   }
-  constexpr bool operator<(const value&) const
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(const value&) const
   {
     return false;
   }
-  constexpr bool operator<=(const value&) const
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(const value&) const
   {
     return true;
   }

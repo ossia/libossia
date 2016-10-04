@@ -77,15 +77,15 @@ T LinearGainToMidi(const T value)
 
 struct linear_u : public gain_unit<linear_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("linear"); }
 
-  static constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
+  static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return self;
   }
 
-  static constexpr value_type from_neutral(strong_value<neutral_unit> self)
+  static OSSIA_DECL_RELAXED_CONSTEXPR value_type from_neutral(strong_value<neutral_unit> self)
   {
     return self.value;
   }
@@ -93,7 +93,7 @@ struct linear_u : public gain_unit<linear_u>
 
 struct midigain_u : public gain_unit<midigain_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("midigain"); }
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -109,7 +109,7 @@ struct midigain_u : public gain_unit<midigain_u>
 
 struct decibel_u : public gain_unit<decibel_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("db", "dB"); }
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -126,7 +126,7 @@ struct decibel_u : public gain_unit<decibel_u>
 
 struct decibel_raw_u : public gain_unit<decibel_raw_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("db-raw", "dB-raw"); }
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -152,7 +152,7 @@ using gain_u =
 template<>
 struct dataspace_traits<gain_u>
 {
-  static constexpr auto text()
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("gain"); }
 };
 }

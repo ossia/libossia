@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -13,14 +14,14 @@ struct OSSIA_EXPORT Bool
   bool value;
 
   /*! constructor */
-  constexpr Bool(bool v = false) : value(v)
+  OSSIA_DECL_RELAXED_CONSTEXPR Bool(bool v = false) : value(v)
   {
   }
 
-  constexpr Bool(const Bool&) = default;
-  constexpr Bool(Bool&&) = default;
-  constexpr Bool& operator=(const Bool&) = default;
-  constexpr Bool& operator=(Bool&&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Bool(const Bool&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Bool(Bool&&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Bool& operator=(const Bool&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Bool& operator=(Bool&&) = default;
 
   bool operator==(const ossia::value&) const;
   bool operator!=(const ossia::value&) const;

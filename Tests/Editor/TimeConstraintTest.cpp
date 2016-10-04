@@ -29,34 +29,34 @@ private Q_SLOTS:
         auto end_node = std::make_shared<time_node>();
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback));
 
-        auto constraint = time_constraint::create(&constraint_callback, *start_event, *end_event, 1000.);
+        auto constraint = time_constraint::create(&constraint_callback, *start_event, *end_event, 1000._tv);
         QVERIFY(constraint != nullptr);
 
-        QVERIFY(constraint->getGranularity() == 1.);
-        QVERIFY(constraint->getOffset() == 0.);
-        QVERIFY(constraint->getSpeed() == 1.);
-        QVERIFY(constraint->getDurationNominal() == 1000.);
-        QVERIFY(constraint->getDurationMin() == 0.);
+        QVERIFY(constraint->getGranularity() == 1._tv);
+        QVERIFY(constraint->getOffset() == 0._tv);
+        QVERIFY(constraint->getSpeed() == 1._tv);
+        QVERIFY(constraint->getDurationNominal() == 1000._tv);
+        QVERIFY(constraint->getDurationMin() == 0._tv);
         QVERIFY(constraint->getDurationMax() == Infinite);
 
-        constraint->setGranularity(50.);
-        constraint->setSpeed(2.);
-        constraint->setDurationNominal(2000.);
-        constraint->setDurationMin(1000.);
-        constraint->setDurationMax(3000.);
-        auto state = constraint->offset(500.);
+        constraint->setGranularity(50._tv);
+        constraint->setSpeed(2._tv);
+        constraint->setDurationNominal(2000._tv);
+        constraint->setDurationMin(1000._tv);
+        constraint->setDurationMax(3000._tv);
+        auto state = constraint->offset(500._tv);
 
-        QVERIFY(constraint->getGranularity() == 50.);
-        QVERIFY(constraint->getSpeed() == 2.);
-        QVERIFY(constraint->getDurationNominal() == 2000.);
-        QVERIFY(constraint->getDurationMin() == 1000.);
-        QVERIFY(constraint->getDurationMax() == 3000.);
-        QVERIFY(constraint->getOffset() == 500.);
+        QVERIFY(constraint->getGranularity() == 50._tv);
+        QVERIFY(constraint->getSpeed() == 2._tv);
+        QVERIFY(constraint->getDurationNominal() == 2000._tv);
+        QVERIFY(constraint->getDurationMin() == 1000._tv);
+        QVERIFY(constraint->getDurationMax() == 3000._tv);
+        QVERIFY(constraint->getOffset() == 500._tv);
         QVERIFY(state.size() == 0);
 
-        QCOMPARE(double(constraint->getPosition()), 0.25);
+        QCOMPARE(constraint->getPosition(), 0.25_tv);
         QVERIFY(constraint->getRunning() == false);
-        QVERIFY(constraint->getDate() == 500.);
+        QVERIFY(constraint->getDate() == 500._tv);
 
         QVERIFY(&constraint->getStartEvent() == start_event.get());
         QVERIFY(&constraint->getEndEvent() == end_event.get());
@@ -73,7 +73,7 @@ private Q_SLOTS:
         auto end_node = std::make_shared<time_node>();
         auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback));
 
-        auto constraint = time_constraint::create(&constraint_callback, *start_event, *end_event, 1000.);
+        auto constraint = time_constraint::create(&constraint_callback, *start_event, *end_event, 1000._tv);
         auto scenar = std::make_unique<scenario>();
 
         auto scenar_ptr = scenar.get();

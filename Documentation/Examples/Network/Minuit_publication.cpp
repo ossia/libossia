@@ -91,6 +91,6 @@ int main()
 
 void printValueCallback(const value& v)
 {
-  cerr << "Callback: " << to_pretty_string(v) << "\n";
+  cerr << "Callback: " << value_to_pretty_string(v) << "\n";
 }
 

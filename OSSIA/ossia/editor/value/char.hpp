@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -14,14 +15,14 @@ struct OSSIA_EXPORT Char
 
   /*! constructor
    \param char value */
-  constexpr Char(char v = 0x00) : value(v)
+  OSSIA_DECL_RELAXED_CONSTEXPR Char(char v = 0x00) : value(v)
   {
   }
 
-  constexpr Char(const Char&) = default;
-  constexpr Char(Char&&) = default;
-  constexpr Char& operator=(const Char&) = default;
-  constexpr Char& operator=(Char&&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Char(const Char&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Char(Char&&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Char& operator=(const Char&) = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Char& operator=(Char&&) = default;
 
   bool operator==(const ossia::value&) const;
   bool operator!=(const ossia::value&) const;

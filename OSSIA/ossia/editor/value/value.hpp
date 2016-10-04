@@ -47,7 +47,7 @@ auto apply(Visitor&& v, Variant&& var) -> decltype(auto)
  * etc...
  *
  */
-OSSIA_EXPORT std::string to_pretty_string(const ossia::value& val);
+OSSIA_EXPORT std::string value_to_pretty_string(const ossia::value& val);
 
 /**
  * @brief The value class
@@ -71,7 +71,7 @@ OSSIA_EXPORT std::string to_pretty_string(const ossia::value& val);
  * \endcode
  *
  * A generic operation can be applied safely to a value with a visitor.
- * See for instance \ref to_pretty_string.
+ * See for instance \ref value_to_pretty_string.
  */
 class OSSIA_EXPORT value
 {
@@ -84,23 +84,23 @@ public:
 
   // Construction
   template <typename T>
-  constexpr value(T*) = delete;
-  constexpr value(ossia::Impulse val) : v{val} { }
-  constexpr value(ossia::Bool val) : v{val} { }
-  constexpr value(ossia::Int val) : v{val} { }
-  constexpr value(ossia::Float val) : v{val} { }
-  constexpr value(ossia::Char val) : v{val} { }
-  constexpr value(const ossia::String& val) : v{val} { }
-  constexpr value(const ossia::Tuple& val) : v{val} { }
-  constexpr value(const ossia::Vec2f& val) : v{val} { }
-  constexpr value(const ossia::Vec3f& val) : v{val} { }
-  constexpr value(const ossia::Vec4f& val) : v{val} { }
-  constexpr value(const ossia::Destination& val) : v{val} { }
-  constexpr value(ossia::net::address_base& val) : v{eggs::variants::in_place<ossia::Destination>, val} { }
-  constexpr value(const ossia::Behavior& val) : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(T*) = delete;
+  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Impulse val) : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Bool val) : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Int val) : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Float val) : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Char val) : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::String& val) : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Tuple& val) : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Vec2f& val) : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Vec3f& val) : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Vec4f& val) : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Destination& val) : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::net::address_base& val) : v{eggs::variants::in_place<ossia::Destination>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Behavior& val) : v{val} { }
 
   template<typename T, typename... Args>
-  constexpr value(detail::dummy<T> t, Args&&... args):
+  OSSIA_DECL_RELAXED_CONSTEXPR value(detail::dummy<T> t, Args&&... args):
     v{eggs::variants::in_place<typename detail::dummy<T>::type>, std::forward<Args>(args)...}
   {
 
@@ -111,10 +111,10 @@ public:
   { return ossia::value{detail::dummy<T>{}, std::forward<Args>(args)...}; }
 
   // Movable overloads
-  constexpr value(ossia::String&& val) : v{std::move(val)} { }
-  constexpr value(ossia::Tuple&& val) : v{std::move(val)} { }
-  constexpr value(ossia::Destination&& val) : v{std::move(val)} { }
-  constexpr value(ossia::Behavior&& val) : v{std::move(val)} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::String&& val) : v{std::move(val)} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Tuple&& val) : v{std::move(val)} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Destination&& val) : v{std::move(val)} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Behavior&& val) : v{std::move(val)} { }
 
 
   // Assignment
@@ -279,7 +279,7 @@ public:
   friend ostream_t& operator<<(ostream_t& os, const ossia::value& c)
   {
       // TODO OPTIMIZEME
-      return os << to_pretty_string(c);
+      return os << value_to_pretty_string(c);
   }
 };
 

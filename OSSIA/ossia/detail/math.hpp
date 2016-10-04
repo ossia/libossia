@@ -1,12 +1,7 @@
 #pragma once
 #include <cmath>
 #include <boost/math/constants/constants.hpp>
-
-#if defined(_MSC_VER)
-#define OSSIA_DECL_RELAXED_CONSTEXPR
-#else
-#define OSSIA_DECL_RELAXED_CONSTEXPR constexpr
-#endif
+#include <ossia/detail/config.hpp>
 /**
  * \file math.hpp
  *
@@ -15,17 +10,17 @@
 
 namespace ossia
 {
-const constexpr auto pi = boost::math::constants::pi<double>();
-const constexpr auto two_pi = boost::math::constants::two_pi<double>();
-const constexpr auto half_pi = boost::math::constants::half_pi<double>();
-const constexpr auto rad_to_deg = boost::math::constants::radian<double>();
-const constexpr auto deg_to_rad = boost::math::constants::degree<double>();
+const OSSIA_DECL_RELAXED_CONSTEXPR auto pi = boost::math::constants::pi<double>();
+const OSSIA_DECL_RELAXED_CONSTEXPR auto two_pi = boost::math::constants::two_pi<double>();
+const OSSIA_DECL_RELAXED_CONSTEXPR auto half_pi = boost::math::constants::half_pi<double>();
+const OSSIA_DECL_RELAXED_CONSTEXPR auto rad_to_deg = boost::math::constants::radian<double>();
+const OSSIA_DECL_RELAXED_CONSTEXPR auto deg_to_rad = boost::math::constants::degree<double>();
 
 /**
  * @brief clamp_min Returns the value bounded by a min
  */
 template <class T>
-constexpr T clamp_min(T d, const T min)
+OSSIA_DECL_RELAXED_CONSTEXPR T clamp_min(T d, const T min)
 {
   return d < min ? min : d;
 }
@@ -34,7 +29,7 @@ constexpr T clamp_min(T d, const T min)
  * @brief clamp_max Returns the value bounded by a max
  */
 template <class T>
-constexpr T clamp_max(T d, const T max)
+OSSIA_DECL_RELAXED_CONSTEXPR T clamp_max(T d, const T max)
 {
   return d > max ? max : d;
 }
@@ -43,7 +38,7 @@ constexpr T clamp_max(T d, const T max)
  * @brief clamp Returns the value bounded by a min and a max
  */
 template <class T>
-constexpr T clamp(T d, const T min, const T max)
+OSSIA_DECL_RELAXED_CONSTEXPR T clamp(T d, const T min, const T max)
 {
   return clamp_min(clamp_max(d, max), min);
 }

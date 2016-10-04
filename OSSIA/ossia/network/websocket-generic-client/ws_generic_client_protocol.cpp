@@ -172,7 +172,7 @@ void ws_generic_client_protocol::apply_reply(QJSValue arr)
 
     if(auto addr = n->getAddress())
     {
-      qDebug() << "Applied value" << QString::fromStdString(to_pretty_string(value_from_jsvalue(addr->cloneValue(), v)));
+      qDebug() << "Applied value" << QString::fromStdString(value_to_pretty_string(value_from_jsvalue(addr->cloneValue(), v)));
       addr->pushValue(value_from_jsvalue(addr->cloneValue(), v));
     }
   }
