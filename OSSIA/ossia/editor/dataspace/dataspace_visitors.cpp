@@ -70,15 +70,20 @@ value_with_unit convert(value_with_unit v, unit_t t)
 
 value to_value(value_with_unit v)
 {
-  if(v)
-    return eggs::variants::apply(detail::convert_to_value_visitor{}, v);
-  return {};
+  return ossia::apply(detail::convert_to_value_visitor{}, v);
+
 }
+
+unit_t to_unit(value_with_unit v)
+{
+  return ossia::apply(detail::convert_to_unit_visitor{}, v);
+}
+
 
 std::string to_pretty_string(value_with_unit v)
 {
   fmt::MemoryWriter s;
-  s << to_pretty_string(to_value(v)) << " " << get_pretty_unit_text(v);
+  s << to_pretty_string(to_value(v)) << " " << get_pretty_unit_text(to_unit(v));
   return s.str();
 }
 

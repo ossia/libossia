@@ -65,6 +65,37 @@ struct convert_to_value_visitor
     {
       return val;
     }
+
+    ossia::value operator()()
+    {
+      return {};
+    }
+};
+
+
+struct convert_to_unit_visitor
+{
+    template<typename... Args>
+    ossia::unit_t operator()(const eggs::variant<Args...>& value)
+    {
+      return eggs::variants::apply(*this, value);
+    }
+
+    template<typename T>
+    ossia::unit_t operator()(const T&)
+    {
+      return typename T::unit_type{};
+    }
+
+    ossia::unit_t operator()(ossia::value val)
+    {
+      return {};
+    }
+
+    ossia::unit_t operator()()
+    {
+      return {};
+    }
 };
 
 }

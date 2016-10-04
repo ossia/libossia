@@ -79,6 +79,13 @@ ossia::value_with_unit convert(ossia::value_with_unit v, ossia::unit_t t);
 OSSIA_EXPORT
 ossia::value to_value(ossia::value_with_unit v);
 
+
+/**
+ * @brief to_unit Get the unit part of a value_with_unit
+ */
+OSSIA_EXPORT
+ossia::unit_t to_unit(ossia::value_with_unit v);
+
 /**
  * @brief to_pretty_string Pretty string of unit & value
  *
