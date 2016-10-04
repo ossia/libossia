@@ -29,6 +29,9 @@ automation::~automation() = default;
 
 void automation::updateMessage(double t)
 {
+  ossia::net::address_base& addr = mDrivenAddress.value.get();
+  auto& idx = mDrivenAddress.index;
+  auto val = computeValue(t, mDrive);
   if(mUnit)
   {
     // TODO This could be optimized by directly using the relevant visitors.
@@ -39,13 +42,55 @@ void automation::updateMessage(double t)
               convert( // Put the current value in the Unit domain
                 ossia::net::get_value(mDrivenAddress),
                 mUnit),
-              computeValue(t, mDrive), // Compute the output of the automation
-              mDrivenAddress.index),
-          mDrivenAddress.value.get().getUnit()));
+              std::move(val), // Compute the output of the automation
+              idx),
+          addr.getUnit()));
+  }
+  else if(mDrivenAddress.index.size() == 1 && val.getType() == ossia::val_type::FLOAT)
+  {
+    switch(addr.getValueType())
+    {
+      case ossia::val_type::VEC2F:
+      {
+        auto cur_v = addr.cloneValue();
+        auto& arr = cur_v.get<ossia::Vec2f>();
+        if(idx[0] < arr.size_value)
+        {
+          arr.value[idx[0]] = val.get<Float>().value;
+        }
+        mLastMessage.value = arr;
+        break;
+      }
+      case ossia::val_type::VEC3F:
+      {
+        auto cur_v = addr.cloneValue();
+        auto& arr = cur_v.get<ossia::Vec3f>();
+        if(idx[0] < arr.size_value)
+        {
+          arr.value[idx[0]] = val.get<Float>().value;
+        }
+        mLastMessage.value = arr;
+        break;
+      }
+      case ossia::val_type::VEC4F:
+      {
+        auto cur_v = addr.cloneValue();
+        auto& arr = cur_v.get<ossia::Vec2f>();
+        if(idx[0] < arr.size_value)
+        {
+          arr.value[idx[0]] = val.get<Float>().value;
+        }
+        mLastMessage.value = arr;
+        break;
+      }
+      default:
+        mLastMessage.value = std::move(val);
+        break;
+    }
   }
   else
   {
-    mLastMessage.value = computeValue(t, mDrive);
+    mLastMessage.value = std::move(val);
   }
 }
 ossia::state_element automation::offset(ossia::time_value offset)
@@ -118,6 +163,11 @@ Destination automation::getDrivenAddress() const
 const ossia::value& automation::getDriving() const
 {
   return mDrive;
+}
+
+void automation::setUnit(unit_t u)
+{
+  mUnit = u;
 }
 
 struct computeValue_visitor

@@ -11,18 +11,37 @@ void message::launch() const
   else
   {
     auto cur = destination.value.get().cloneValue();
-    if(auto cur_tuple = cur.try_get<Tuple>())
+    auto cur_t = cur.getType();
+    switch(cur_t)
     {
-      // Insert the value of this message in the existing value array
-      value_merger<true>::insert_in_tuple(*cur_tuple, value, destination.index);
-      destination.value.get().pushValue(std::move(cur));
-    }
-    else
-    {
-      // Create a tuple and put the existing value at [0]
-      Tuple t{std::move(cur)};
-      value_merger<true>::insert_in_tuple(t, value, destination.index);
-      destination.value.get().pushValue(std::move(t));
+      case ossia::val_type::VEC2F:
+      case ossia::val_type::VEC3F:
+      case ossia::val_type::VEC4F:
+      {
+        eggs::variants::apply(
+              vec_merger{destination.index},
+              cur.v,
+              value.v);
+
+        destination.value.get().pushValue(std::move(cur));
+        break;
+      }
+      case ossia::val_type::TUPLE:
+      {
+        auto& cur_tuple = cur.get<Tuple>();
+        // Insert the value of this message in the existing value array
+        value_merger<true>::insert_in_tuple(cur_tuple, value, destination.index);
+        destination.value.get().pushValue(std::move(cur));
+        break;
+      }
+      default:
+      {
+        // Create a tuple and put the existing value at [0]
+        Tuple t{std::move(cur)};
+        value_merger<true>::insert_in_tuple(t, value, destination.index);
+        destination.value.get().pushValue(std::move(t));
+        break;
+      }
     }
 
   }

@@ -118,6 +118,7 @@ ossia::net::generic_address& generic_address::setValue(const ossia::value& val)
 {
   using namespace ossia;
   std::unique_lock<std::mutex> lock(mValueMutex);
+  // std::cerr << address_string_from_node(*this) << " : " << mValue << " <=== " << val << std::endl;
 
   // set value querying the value from another address
   auto dest = val.try_get<Destination>();
@@ -143,6 +144,7 @@ ossia::net::generic_address& generic_address::setValue(const ossia::value& val)
   {
     if (mValue.v.which() != val.v.which())
     {
+      // std::cerr << address_string_from_node(*this) << " TYPE CHANGE : " << mValue.v.which() << " <=== " << val.v.which() << std::endl;
       mValueType = val.getType();
       if(mDomain)
         mDomain = convert_domain(mDomain, mValueType);
@@ -164,6 +166,7 @@ ossia::val_type generic_address::getValueType() const
 
 ossia::net::generic_address& generic_address::setValueType(ossia::val_type type)
 {
+  // std::cerr << address_string_from_node(*this) << " TYPE CHANGE : " << (int) mValueType << " <=== " << (int) type << std::endl;
   mValueType = type;
 
   mValue = init_value(type);

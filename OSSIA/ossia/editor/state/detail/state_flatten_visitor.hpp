@@ -8,6 +8,23 @@ namespace ossia
 struct state_flatten_visitor
 {
   ossia::state& state;
+  bool same_vec_type(const ossia::value& lhs, const ossia::value& rhs)
+  {
+    const auto first = lhs.getType();
+    const auto second = rhs.getType();
+    if(first != second)
+      return false;
+
+    switch(first)
+    {
+      case ossia::val_type::VEC2F:
+      case ossia::val_type::VEC3F:
+      case ossia::val_type::VEC4F:
+        return true;
+      default:
+        return false;
+    }
+  }
 
   auto find_same_address(const message& messageToAppend)
   {
@@ -58,6 +75,22 @@ struct state_flatten_visitor
         {
           // Simple case : we just replace the values
           value_merger<true>::merge_value(source.value, messageToAppend.value);
+        }
+        else if(same_vec_type(source.value, messageToAppend.value))
+        {
+          // We handle the Vec types a bit differently :
+          // since it's very cheap, the value will contain the whole array data
+          // and the index will be the relevant index in the array.
+          // Hence we merge both indexes.
+
+          eggs::variants::apply(
+                vec_merger{messageToAppend.destination.index},
+                source.value.v,
+                messageToAppend.value.v);
+
+          // TODO find something better...
+          if(source.destination.index != messageToAppend.destination.index)
+            source.destination.index.clear();
         }
         else
         {
@@ -178,6 +211,22 @@ struct state_flatten_visitor
         {
           // Simple case : we just replace the values
           value_merger<true>::merge_value(source.value, std::move(messageToAppend.value));
+        }
+        else if(same_vec_type(source.value, messageToAppend.value))
+        {
+          // We handle the Vec types a bit differently :
+          // since it's very cheap, the value will contain the whole array data
+          // and the index will be the relevant index in the array.
+          // Hence we merge both indexes.
+
+          eggs::variants::apply(
+                vec_merger{messageToAppend.destination.index},
+                source.value.v,
+                messageToAppend.value.v);
+
+          // TODO find something better...
+          if(source.destination.index != messageToAppend.destination.index)
+            source.destination.index.clear();
         }
         else
         {
