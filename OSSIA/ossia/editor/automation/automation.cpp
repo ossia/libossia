@@ -1,6 +1,9 @@
 #include <ossia/editor/automation/automation.hpp>
 #include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/editor/curve/curve.hpp>
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/base/address.hpp>
+#include <boost/container/static_vector.hpp>
 #include <iostream>
 
 namespace ossia
@@ -8,22 +11,43 @@ namespace ossia
 
 automation::automation(
     Destination address, const ossia::value& drive)
-    : mDrivenAddress(address)
-    , mDrive(drive)
-    , mLastMessage{address, ossia::value{}}
+  : mDrivenAddress(address)
+  , mDrive(drive)
+  , mLastMessage{address, ossia::value{}}
 {
 }
 
 automation::automation(
     Destination address, ossia::value&& drive)
-    : mDrivenAddress(address)
-    , mDrive(std::move(drive))
-    , mLastMessage{address, ossia::value{}}
+  : mDrivenAddress(address)
+  , mDrive(std::move(drive))
+  , mLastMessage{address, ossia::value{}}
 {
 }
 
 automation::~automation() = default;
 
+void automation::updateMessage(double t)
+{
+  if(mUnit)
+  {
+    // TODO This could be optimized by directly using the relevant visitors.
+    mLastMessage.value =
+        to_value( // Go from Unit domain to Value domain
+          convert( // Convert to the resulting address unit
+            merge( // Merge the automation value with the "unit" value
+              convert( // Put the current value in the Unit domain
+                ossia::net::get_value(mDrivenAddress),
+                mUnit),
+              computeValue(t, mDrive), // Compute the output of the automation
+              mDrivenAddress.index),
+          mDrivenAddress.value.get().getUnit()));
+  }
+  else
+  {
+    mLastMessage.value = computeValue(t, mDrive);
+  }
+}
 ossia::state_element automation::offset(ossia::time_value offset)
 {
   auto& par = *parent();
@@ -34,9 +58,8 @@ ossia::state_element automation::offset(ossia::time_value offset)
     return {};
   }
   // edit a Message handling the new Value
-  // todo shouldn't it become mLastMessage ??
-  return ossia::message{
-      mDrivenAddress, computeValue(offset / par.getDurationNominal(), mUnit, mDrive)};
+  updateMessage(offset / par.getDurationNominal());
+  return mLastMessage;
 }
 
 ossia::state_element automation::state()
@@ -51,7 +74,7 @@ ossia::state_element automation::state()
       mLastDate = date;
 
       // edit a Message handling the new Value
-      mLastMessage.value = computeValue(par.getDate() / par.getDurationNominal(), mUnit, mDrive);
+      updateMessage(par.getDate() / par.getDurationNominal());
     }
 
     return mLastMessage;
@@ -100,7 +123,6 @@ const ossia::value& automation::getDriving() const
 struct computeValue_visitor
 {
   double position;
-  ossia::unit_t unit;
 
   ossia::value error() const
   {
@@ -167,35 +189,53 @@ struct computeValue_visitor
     return {};
   }
 
-  ossia::value operator()(const ossia::Tuple& t) const
+  static boost::container::static_vector<curve<double, float>*, 4> tuple_convertible_to_vec(const ossia::Tuple& t)
   {
     const auto n = t.value.size();
-    std::array<curve<double, float>*, 4> arr{nullptr, nullptr, nullptr, nullptr};
-    int arr_pos = 0;
-    if(n >= 2 &&
-       n <= 4 &&
-       all_of(
-         t.value,
-         [&] (const auto& v) {
-         if(v.getType() != ossia::val_type::BEHAVIOR)
-           return false;
 
-         auto c = v.template try_get<ossia::Behavior>()->value.get();
-         if(!c)
-           return false;
+    boost::container::static_vector<curve<double, float>*, 4> arr;
+    bool ok = false;
+    if(n >= 2 && n <= 4)
+    {
+      for(const ossia::value& v : t.value)
+      {
+        if(v.getType() != ossia::val_type::BEHAVIOR)
+          return {};
 
-         auto t = c->getType();
-         if(t.first == ossia::curve_segment_type::DOUBLE && t.second == ossia::curve_segment_type::FLOAT)
-         {
-           arr[arr_pos] = static_cast<ossia::curve<double,float>*>(c);
-           arr_pos++;
-           return true;
-         }
-         return false;
-    }))
+        auto c = v.try_get<ossia::Behavior>()->value.get();
+        if(!c)
+          return {};
+
+        auto t = c->getType();
+        if(t.first == ossia::curve_segment_type::DOUBLE && t.second == ossia::curve_segment_type::FLOAT)
+        {
+          arr.push_back(static_cast<ossia::curve<double,float>*>(c));
+          ok = true;
+          continue;
+        }
+        else
+        {
+          ok = false;
+          break;
+        }
+      }
+
+      if(ok)
+        return arr;
+      else
+        return {};
+    }
+    return {};
+  }
+
+  ossia::value operator()(const ossia::Tuple& t) const
+  {
+    auto arr = tuple_convertible_to_vec(t);
+
+    if(!arr.empty())
     {
       // VecNf case.
-      switch(arr_pos)
+      switch(arr.size())
       {
         case 2:
           return ossia::make_vec(arr[0]->valueAt(position), arr[1]->valueAt(position));
@@ -208,7 +248,7 @@ struct computeValue_visitor
 
     // General tuple case
     std::vector<ossia::value> t_value;
-    t_value.reserve(n);
+    t_value.reserve(t.value.size());
 
 
     for (const auto& e : t.value)
@@ -224,9 +264,9 @@ struct computeValue_visitor
 ossia::value
 automation::computeValue(
     double position,
-    ossia::unit_t u,
     const ossia::value& drive)
 {
-  return drive.apply(computeValue_visitor{position, u});
+  return drive.apply(computeValue_visitor{position});
 }
+
 }

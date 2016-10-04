@@ -74,7 +74,7 @@ address_base& address_base::setUnit(const unit_t& v) { return *this; }
 
 value_with_unit get_value(const ossia::Destination& d)
 {
-  auto& addr = d.value.get();
+  ossia::net::address_base& addr = d.value.get();
   auto v = addr.cloneValue(d.index);
   auto u = addr.getUnit();
   if(!u || !v.valid())

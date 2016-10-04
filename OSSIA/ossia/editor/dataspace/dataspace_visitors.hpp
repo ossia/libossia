@@ -17,6 +17,13 @@ boost::string_view get_dataspace_text(ossia::unit_t);
 OSSIA_EXPORT
 boost::string_view get_unit_text(ossia::unit_t);
 
+/**
+ * @brief get_pretty_unit_text Unit for human readability and debugging
+ *
+ * Format is dataspace.unit, e.g. distance.m/s or color.rgb
+ */
+OSSIA_EXPORT
+std::string get_pretty_unit_text(ossia::unit_t);
 
 
 /**

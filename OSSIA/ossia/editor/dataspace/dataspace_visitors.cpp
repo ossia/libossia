@@ -19,6 +19,11 @@ boost::string_view get_unit_text(unit_t u)
   return ossia::apply(detail::unit_text_visitor{}, u);
 }
 
+std::string get_pretty_unit_text(unit_t u)
+{
+    return get_dataspace_text(u).to_string() + "." + get_unit_text(u).to_string();
+}
+
 unit_t parse_unit(boost::string_view text, unit_t dataspace)
 {
   if(!text.empty())
@@ -73,7 +78,7 @@ value to_value(value_with_unit v)
 std::string to_pretty_string(value_with_unit v)
 {
   fmt::MemoryWriter s;
-  s << to_pretty_string(to_value(v)) << " " << eggs::variants::apply(detail::unit_text_visitor{}, v).to_string();
+  s << to_pretty_string(to_value(v)) << " " << get_pretty_unit_text(v);
   return s.str();
 }
 

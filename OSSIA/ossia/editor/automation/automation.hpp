@@ -56,7 +56,9 @@ class OSSIA_EXPORT automation final :
     void pause() override;
     void resume() override;
 
-    static ossia::value computeValue(double, ossia::unit_t u, const ossia::value&);
+    static ossia::value computeValue(double, const ossia::value&);
+
+    void updateMessage(double t);
 
     Destination mDrivenAddress;
     ossia::value mDrive;

@@ -161,7 +161,7 @@ public:
       if (mInitialPointOrdinateCacheUsed)
         return mInitialPointOrdinateCache;
 
-      auto& dest = *mInitialPointOrdinateDestination;
+      const Destination& dest = *mInitialPointOrdinateDestination;
       mInitialPointOrdinateCacheUsed = true;
       mInitialPointOrdinateCache = convertToTemplateTypeValue(
           dest.value.get().fetchValue(), dest.index.begin());

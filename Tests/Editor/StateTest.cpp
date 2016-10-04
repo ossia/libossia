@@ -4,10 +4,8 @@
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/base/address.hpp>
 using namespace ossia;
-namespace ossia
-{
 
-
+/*
 struct mock_autom2
 {
   ossia::Destination mDestination;
@@ -47,14 +45,6 @@ struct mock_autom2
 
   ossia::Float computeValue() { return 0.8; }
 };
-
-using namespace ossia::net;
-class StateTest : public QObject
-{
-  Q_OBJECT
-
-private Q_SLOTS:
-
   void test_convert()
   {
     auto res = ossia::convert(ossia::centimeter(5),  ossia::millimeter_u{});
@@ -114,7 +104,16 @@ private Q_SLOTS:
     // Mapping 1 : a:/b[hue] -> c:/d[sat]
     // Mapping 2 : c:/d[r] -> e:/f[r]
   }
+  */
 
+
+
+using namespace ossia::net;
+class StateTest : public QObject
+{
+  Q_OBJECT
+
+private Q_SLOTS:
   /*! test life cycle and accessors functions */
   void test_basic()
   {
