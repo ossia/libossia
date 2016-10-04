@@ -47,6 +47,14 @@ ossia::unit_t parse_unit(boost::string_view text, ossia::unit_t dataspace);
 
 
 /**
+ * @brief parse_pretty_unit Create a unit from a valid unit in the format
+ * of get_pretty_unit_text
+ */
+OSSIA_EXPORT
+ossia::unit_t parse_pretty_unit(boost::string_view text);
+
+
+/**
  * @brief parse_unit Alternative if we already have a dataspace type at hand.
  * @note T should be a dataspace, such as ossia::color_u.
  * @todo In 2020 enforce this with concepts...

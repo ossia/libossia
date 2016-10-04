@@ -37,6 +37,20 @@ ossia::unit_t parse_unit(boost::string_view text, T dataspace)
   return detail::unit_factory_visitor{text}(dataspace);
 }
 
+unit_t parse_pretty_unit(boost::string_view text)
+{
+  auto idx = text.find_first_of('.');
+  if(idx != std::string::npos)
+  {
+    if(auto d = parse_dataspace(text.substr(0, idx)))
+    {
+      return parse_unit(text.substr(idx + 1), d);
+    }
+  }
+
+  return {};
+}
+
 unit_t parse_dataspace(boost::string_view text)
 {
   static const std::unordered_map<std::string, unit_t> dataspaces{
@@ -128,6 +142,7 @@ template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::speed_
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::orientation_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::angle_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::gain_u);
+
 
 
 }
