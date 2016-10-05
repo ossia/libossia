@@ -202,17 +202,17 @@ int main()
     cout << "second_end_node date = " << second_end_node->getDate() << endl;
 
     // change main time_constraint speed, granularity and offset
-    main_constraint->setSpeed(1.);
-    main_constraint->setGranularity(50.);
+    main_constraint->setSpeed(1._tv);
+    main_constraint->setGranularity(50._tv);
 
     // set minimal duration of the first constraint to 1000 ms
-    first_constraint->setDurationMin(1000.);
+    first_constraint->setDurationMin(1000._tv);
 
     // change first and second time_constraint speed and granularity
-    first_constraint->setSpeed(1.);
-    first_constraint->setGranularity(50.);
-    second_constraint->setSpeed(1.);
-    second_constraint->setGranularity(50.);
+    first_constraint->setSpeed(1._tv);
+    first_constraint->setGranularity(50._tv);
+    second_constraint->setSpeed(1._tv);
+    second_constraint->setGranularity(50._tv);
 
     cout << "***** START *****" << endl;
 
@@ -227,7 +227,7 @@ int main()
     cout << "***** END *****" << endl;
 
     // set minimal duration of the first constraint to 500 ms
-    first_constraint->setDurationMin(750.);
+    first_constraint->setDurationMin(750._tv);
 
     // set first end time node expression to make it interactive
     // (instead of first end event)
@@ -237,10 +237,10 @@ int main()
     cout << "***** START *****" << endl;
 
     // play it again faster
-    main_constraint->setSpeed(2.);
+    main_constraint->setSpeed(2._tv);
 
     // start at 500 ms (and launch the state at this time)
-    main_constraint->offset(500.).launch();
+    main_constraint->offset(500._tv).launch();
 
     local_play_address->pushValue(Bool(true));
 
