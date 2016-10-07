@@ -1,9 +1,10 @@
 #pragma once
 #include <cmath>
+#include <cinttypes>
 #include <ossia_export.h>
+
 namespace ossia
 {
-
 /**
  * @brief The time_value class
  *
@@ -115,6 +116,26 @@ public:
 
     return time_value(m_value - t.m_value);
   }
+
+  /*! multiplication operator */
+  constexpr time_value operator*(float d) const noexcept
+  { return time_value(m_value * d); }
+
+  constexpr time_value operator*(double d) const noexcept
+  { return time_value(m_value * d); }
+
+  constexpr time_value operator*(int32_t d) const noexcept
+  { return time_value(m_value * d); }
+
+  constexpr time_value operator*(int64_t d) const noexcept
+  { return time_value(m_value * d); }
+
+  constexpr time_value operator*(uint32_t d) const noexcept
+  { return time_value(m_value * d); }
+
+  constexpr time_value operator*(uint64_t d) const noexcept
+  { return time_value(m_value * d); }
+
 
   /*! double casting operator */
   constexpr operator double() const noexcept

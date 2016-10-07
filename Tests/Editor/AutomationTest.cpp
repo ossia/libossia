@@ -62,7 +62,6 @@ private Q_SLOTS:
     curve_segment_linear<float> linearSegment;
 
     c->setInitialPointAbscissa(0.);
-    return;
     c->setInitialPointOrdinate(0.);
     c->addPoint(linearSegment, 0.5, 1.);
     c->addPoint(linearSegment, 1., 0.);
@@ -102,6 +101,54 @@ private Q_SLOTS:
       previous = v.get<Float>();
     }
     QVERIFY(different_from_previous);
+    m_address_values.clear();
+  }
+
+  void test_dataspace()
+  {
+
+    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
+    auto cld = device.createChild("child");
+    auto address = cld->createAddress(val_type::VEC3F);
+    address->setUnit(ossia::rgb_u{});
+    address->pushValue(make_vec(0.1, 0.1, 0.1));
+
+    address->add_callback([&] (const value&v) { address_callback(v); });
+
+    auto c = std::make_shared<curve<double, float>>();
+    curve_segment_linear<float> linearSegment;
+
+    c->setInitialPointAbscissa(0.);
+    c->setInitialPointOrdinate(0.);
+    c->addPoint(linearSegment, 1., 1.);
+
+    // TODO make a "make_base_scenario" function.
+    auto start_node = std::make_shared<time_node>();
+    auto end_node = std::make_shared<time_node>();
+    auto event_callback = std::bind(&AutomationTest::event_callback, this, _1);
+    auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
+    auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
+    auto constraint_callback = std::bind(&AutomationTest::constraint_callback, this, _1, _2, _3);
+    auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
+
+    auto autom = std::make_unique<automation>(Destination{*address, {2}}, Behavior(c));
+    autom->setUnit(ossia::hsv_u{});
+    auto& tp = (ossia::time_process&) *autom;
+
+    constraint->addTimeProcess(std::move(autom));
+
+    auto state = tp.offset(constraint->getDurationNominal() * 0.5);
+    auto mess = state.target<ossia::message>() ;
+    QVERIFY(mess != nullptr);
+
+    auto res = mess->value.try_get<ossia::Vec3f>();
+    QVERIFY(res);
+
+    auto expected = make_vec(0.5, 0.5, 0.5);
+    QVERIFY(res->value == expected.value);
+    qDebug() << res->value[0] << res->value[1] << res->value[2];
+
+
   }
 };
 
