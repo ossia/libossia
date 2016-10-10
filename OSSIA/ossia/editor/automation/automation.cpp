@@ -32,7 +32,7 @@ void automation::updateMessage(double t)
   ossia::net::address_base& addr = mDrivenAddress.value.get();
   auto& idx = mDrivenAddress.index;
   auto val = computeValue(t, mDrive);
-  if(mUnit)
+  if(mLastMessage.unit)
   {
     /* Useful for debug :
     {
@@ -52,6 +52,7 @@ void automation::updateMessage(double t)
     */
 
       // TODO This could be optimized by directly using the relevant visitors.
+    /*
     mLastMessage.value =
         to_value( // Go from Unit domain to Value domain
           convert( // Convert to the resulting address unit
@@ -62,10 +63,17 @@ void automation::updateMessage(double t)
               std::move(val), // Compute the output of the automation
               idx),
           addr.getUnit()));
+    */
 
-    // Since a unit conversion may change all the values irrelevant of the
-    // index, we disregard it here.
-    mLastMessage.destination.index.clear();
+    mLastMessage.value =
+        to_value(
+          merge( // Merge the automation value with the "unit" value
+            convert( // Put the current value in the Unit domain
+              ossia::net::get_value(mDrivenAddress),
+              mLastMessage.unit),
+            std::move(val), // Compute the output of the automation
+            idx)
+          );
   }
   else if(mDrivenAddress.index.size() == 1 && val.getType() == ossia::val_type::FLOAT)
   {
@@ -188,7 +196,7 @@ const ossia::value& automation::getDriving() const
 
 void automation::setUnit(unit_t u)
 {
-  mUnit = u;
+  mLastMessage.unit = u;
 }
 
 struct computeValue_visitor

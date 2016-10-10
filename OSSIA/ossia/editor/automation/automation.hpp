@@ -28,6 +28,7 @@ class address_base;
  *
  * The automation has a "source" domain, i.e. the data space in which the transformation
  * happens. The target domain is taken from the driven address_base.
+ * The unit is stored in mLastMessage.unit.
  *
  *
  * \see \ref Behavior \ref curve \ref curve_segment
@@ -63,6 +64,5 @@ class OSSIA_EXPORT automation final :
     Destination mDrivenAddress;
     ossia::value mDrive;
     ossia::message mLastMessage;
-    ossia::unit_t mUnit;
 };
 }

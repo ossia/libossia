@@ -435,7 +435,6 @@ struct state_flatten_visitor
     });
   }
 
-  //// const-reference overloads
   template<typename Message_T>
   void operator()(Message_T&& incoming)
   {
@@ -448,9 +447,29 @@ struct state_flatten_visitor
     else
     {
       // Merge messages
-      eggs::variants::apply([&] (auto& src) {
-        state_flatten_visitor_merger{state}(src, std::forward<Message_T>(incoming));
-      }, *it);
+      state_flatten_visitor_merger merger{state};
+      // Workaround for a GDB bug if we use a generic lambda
+      // in a template function (operator() here)
+      switch(it->which())
+      {
+        case 0: // state
+          merger(*it->template target<ossia::state>(), std::forward<Message_T>(incoming)); break;
+        case 1: // message
+          merger(*it->template target<ossia::message>(), std::forward<Message_T>(incoming)); break;
+        case 2: // custom state
+          merger(*it->template target<ossia::custom_state>(), std::forward<Message_T>(incoming)); break;
+        case 3: // pw message
+          merger(*it->template target<ossia::piecewise_message>(), std::forward<Message_T>(incoming)); break;
+        case 4: // vec2f
+          merger(*it->template target<ossia::piecewise_vec_message<2>>(), std::forward<Message_T>(incoming)); break;
+        case 5: // vec3f
+          merger(*it->template target<ossia::piecewise_vec_message<3>>(), std::forward<Message_T>(incoming)); break;
+        case 6: // vec4f
+          merger(*it->template target<ossia::piecewise_vec_message<4>>(), std::forward<Message_T>(incoming)); break;
+        default:
+          break;
+      }
+
     }
   }
 

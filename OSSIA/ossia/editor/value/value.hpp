@@ -36,6 +36,8 @@ auto apply(Visitor&& v, Variant&& var) -> decltype(auto)
 }
 
 
+OSSIA_EXPORT std::string to_pretty_string(const ossia::destination_index& index);
+
 /*!
  * \brief getValueAsString Returns a string corresponding to the value
  * \param val a valid value

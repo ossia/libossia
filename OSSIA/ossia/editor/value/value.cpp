@@ -279,23 +279,29 @@ bool operator!=(const Destination& lhs, const ossia::net::address_base& rhs)
 }
 
 
-std::string to_pretty_string(const Destination& d)
+std::string to_pretty_string(const destination_index& index)
 {
-  auto str = ossia::net::address_string_from_node(d.value.get());
+  std::string str;
 
-  const int n = d.index.size();
+  const int n = index.size();
   if(n > 0)
   {
     str += "[";
-    str += std::to_string(d.index[0]);
+    str += std::to_string(index[0]);
 
     for(int i = 1; i < n; i++)
     {
-      str += ", " + std::to_string(d.index[i]);
+      str += ", " + std::to_string(index[i]);
     }
     str += "]";
   }
+
   return str;
+}
+
+std::string to_pretty_string(const Destination& d)
+{
+  return ossia::net::address_string_from_node(d.value.get()) + to_pretty_string(d.index);
 }
 
 template <typename Comparator>

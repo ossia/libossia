@@ -117,6 +117,9 @@ ossia::value generic_address::cloneValue(ossia::destination_index index) const
 ossia::net::generic_address& generic_address::setValue(const ossia::value& val)
 {
   using namespace ossia;
+  if(!val.valid())
+    return *this;
+
   std::unique_lock<std::mutex> lock(mValueMutex);
   // std::cerr << address_string_from_node(*this) << " : " << mValue << " <=== " << val << std::endl;
 
