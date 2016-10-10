@@ -14,7 +14,7 @@ struct make_value_helper
   {
     // TODO maybe return first value for tuple or vecNf ?
     throw std::runtime_error("mismatching value type and unit");
-    return strong_value<U>{};
+    return {};
   }
 
   ossia::value_with_unit operator()(Int t)

@@ -21,7 +21,11 @@ boost::string_view get_unit_text(unit_t u)
 
 std::string get_pretty_unit_text(unit_t u)
 {
-    return get_dataspace_text(u).to_string() + "." + get_unit_text(u).to_string();
+    using namespace std::literals;
+    if(u)
+        return get_dataspace_text(u).to_string() + "." + get_unit_text(u).to_string();
+    else
+        return "none"s;
 }
 
 unit_t parse_unit(boost::string_view text, unit_t dataspace)
@@ -97,7 +101,7 @@ unit_t to_unit(value_with_unit v)
 std::string to_pretty_string(value_with_unit v)
 {
   fmt::MemoryWriter s;
-  s << to_pretty_string(to_value(v)) << " " << get_pretty_unit_text(to_unit(v));
+  s << value_to_pretty_string(to_value(v)) << " " << get_pretty_unit_text(to_unit(v));
   return s.str();
 }
 

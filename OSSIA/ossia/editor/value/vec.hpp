@@ -47,6 +47,10 @@ public:
   bool operator>=(const ossia::value&) const;
   bool operator<(const ossia::value&) const;
   bool operator<=(const ossia::value&) const;
+
+
+  bool operator==(const Vec& rhs) const { return value == rhs.value; }
+  bool operator!=(const Vec& rhs) const { return value != rhs.value; }
 };
 }
 

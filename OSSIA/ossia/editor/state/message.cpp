@@ -19,7 +19,7 @@ void message::launch() const
       case ossia::val_type::VEC4F:
       {
         eggs::variants::apply(
-              vec_merger{destination.index},
+              vec_merger{destination, destination, unit},
               cur.v,
               value.v);
 
@@ -61,5 +61,15 @@ void piecewise_message::launch() const
     address.get().pushValue(value);
   }
 }
+
+template<int N>
+void piecewise_vec_message<N>::launch() const
+{
+  // TODO
+}
+
+template class piecewise_vec_message<2>;
+template class piecewise_vec_message<3>;
+template class piecewise_vec_message<4>;
 
 }

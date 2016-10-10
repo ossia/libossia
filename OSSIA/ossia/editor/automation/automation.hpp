@@ -26,8 +26,8 @@ class address_base;
  * The driving \ref value can either be a single \ref Behavior or a \ref Tuple of \ref Behavior,
  * in accordance to the type of the driven \ref net::address_base.
  *
- * \todo The automation should have a "source" domain, i.e. the data space in which the transformation
- * happens. The target domain could be taken from the driven address_base.
+ * The automation has a "source" domain, i.e. the data space in which the transformation
+ * happens. The target domain is taken from the driven address_base.
  *
  *
  * \see \ref Behavior \ref curve \ref curve_segment

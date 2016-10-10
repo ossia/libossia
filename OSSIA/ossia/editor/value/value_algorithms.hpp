@@ -137,32 +137,6 @@ static void merge_tuple(Tuple& lhs, Tuple_T&& rhs)
 }
 };
 
-struct vec_merger
-{
-  ossia::destination_index index;
-  template<typename T, typename U>
-  void operator()(const T&, const U&) const
-  {
-    // Invalid cases.
-    // TODO Do nothing, or throw ?
-  }
-
-  template<int N>
-  void operator()(ossia::Vec<float, N>& orig, const ossia::Vec<float, N>& incoming) const
-  {
-    if(index.empty())
-    {
-      orig.value = incoming.value;
-    }
-    else
-    {
-      auto i = index[0];
-      if(i < N)
-        orig.value[i] = incoming.value[i];
-    }
-  }
-};
-
 namespace detail
 {
 /**

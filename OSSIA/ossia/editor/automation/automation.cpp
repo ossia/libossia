@@ -34,7 +34,24 @@ void automation::updateMessage(double t)
   auto val = computeValue(t, mDrive);
   if(mUnit)
   {
-    // TODO This could be optimized by directly using the relevant visitors.
+    /* Useful for debug :
+    {
+      auto v1 = ossia::net::get_value(mDrivenAddress);
+      auto v2 = convert(v1, mUnit);
+      auto v3 = merge(v2, val, idx);
+      auto v4 = convert(v3, addr.getUnit());
+      auto v5 = to_value(v4);
+
+      std::cerr << to_pretty_string(v1) << "\n"
+                << ossia::get_pretty_unit_text(mUnit) << "\n"
+                << to_pretty_string(v2) << "\n"
+                << to_pretty_string(v3) << "\n"
+                << to_pretty_string(v4) << "\n"
+                << to_pretty_string(v5) << "\n\n\n";
+    }
+    */
+
+      // TODO This could be optimized by directly using the relevant visitors.
     mLastMessage.value =
         to_value( // Go from Unit domain to Value domain
           convert( // Convert to the resulting address unit
@@ -45,6 +62,10 @@ void automation::updateMessage(double t)
               std::move(val), // Compute the output of the automation
               idx),
           addr.getUnit()));
+
+    // Since a unit conversion may change all the values irrelevant of the
+    // index, we disregard it here.
+    mLastMessage.destination.index.clear();
   }
   else if(mDrivenAddress.index.size() == 1 && val.getType() == ossia::val_type::FLOAT)
   {
@@ -75,7 +96,7 @@ void automation::updateMessage(double t)
       case ossia::val_type::VEC4F:
       {
         auto cur_v = addr.cloneValue();
-        auto& arr = cur_v.get<ossia::Vec2f>();
+        auto& arr = cur_v.get<ossia::Vec4f>();
         if(idx[0] < arr.size_value)
         {
           arr.value[idx[0]] = val.get<Float>().value;

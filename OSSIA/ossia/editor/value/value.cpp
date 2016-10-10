@@ -279,6 +279,21 @@ bool operator!=(const Destination& lhs, const ossia::net::address_base& rhs)
 }
 
 
+std::string to_pretty_string(const Destination& d)
+{
+  auto str = ossia::net::address_string_from_node(d.value.get());
+  if(!d.index.empty())
+  {
+    str += "[";
+    str += std::to_string(d.index[0]);
+    for(int i = 1; i < d.index.size(); i++)
+    {
+      str += ", " + std::to_string(d.index[i]);
+    }
+    str += "]";
+  }
+  return str;
+}
 
 template <typename Comparator>
 struct value_comparison_visitor
