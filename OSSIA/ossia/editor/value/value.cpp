@@ -282,11 +282,14 @@ bool operator!=(const Destination& lhs, const ossia::net::address_base& rhs)
 std::string to_pretty_string(const Destination& d)
 {
   auto str = ossia::net::address_string_from_node(d.value.get());
-  if(!d.index.empty())
+
+  const int n = d.index.size();
+  if(n > 0)
   {
     str += "[";
     str += std::to_string(d.index[0]);
-    for(int i = 1; i < d.index.size(); i++)
+
+    for(int i = 1; i < n; i++)
     {
       str += ", " + std::to_string(d.index[i]);
     }

@@ -64,6 +64,15 @@ OSSIA_EXPORT
 ossia::unit_t parse_unit(boost::string_view text, T dataspace);
 
 
+/**
+ * @brief make_value Create a value_with_unit
+ * @param v A value
+ * @param u A unit
+ *
+ * @return The same value with the unit attached if the types were correct.
+ */
+OSSIA_EXPORT
+value_with_unit make_value(const ossia::value& v, const ossia::unit_t& u);
 
 /**
  * @brief convert Convert a value to another unit in the same dataspace

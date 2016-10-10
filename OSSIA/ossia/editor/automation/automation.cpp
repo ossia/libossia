@@ -13,7 +13,7 @@ automation::automation(
     Destination address, const ossia::value& drive)
   : mDrivenAddress(address)
   , mDrive(drive)
-  , mLastMessage{address, ossia::value{}}
+  , mLastMessage{address, ossia::value{}, {}}
 {
 }
 
@@ -21,7 +21,7 @@ automation::automation(
     Destination address, ossia::value&& drive)
   : mDrivenAddress(address)
   , mDrive(std::move(drive))
-  , mLastMessage{address, ossia::value{}}
+  , mLastMessage{address, ossia::value{}, {}}
 {
 }
 

@@ -1,6 +1,5 @@
 #include <ossia/network/generic/generic_address.hpp>
 #include <ossia/network/generic/generic_node.hpp>
-#include <ossia/editor/dataspace/detail/make_value.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 
 
@@ -75,14 +74,8 @@ address_base& address_base::setUnit(const unit_t& v) { return *this; }
 value_with_unit get_value(const ossia::Destination& d)
 {
   ossia::net::address_base& addr = d.value.get();
-  auto v = addr.cloneValue(d.index);
-  auto u = addr.getUnit();
-  if(!u || !v.valid())
-    return v;
 
-  return eggs::variants::apply([&] (const auto& dataspace) -> ossia::value_with_unit {
-    return eggs::variants::apply(make_value_with_unit_visitor{}, v.v, dataspace);
-  }, u);
+  return make_value(addr.cloneValue(d.index), addr.getUnit());
 }
 
 void push_value(const Destination& d, const value_with_unit& v)

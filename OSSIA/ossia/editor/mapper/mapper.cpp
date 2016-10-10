@@ -12,7 +12,7 @@ mapper::mapper(
     : mDriverAddress{driverAddress}
     , mDrivenAddress{drivenAddress}
     , mDrive{drive}
-    , mLastMessage{mDrivenAddress, {}}
+    , mLastMessage{mDrivenAddress, {}, {}}
     , mDriverValueObserved(false)
 {
 }

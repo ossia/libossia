@@ -3,6 +3,7 @@
 #include <ossia/editor/dataspace/detail/dataspace_convert.hpp>
 #include <ossia/editor/dataspace/detail/dataspace_merge.hpp>
 #include <ossia/editor/dataspace/detail/dataspace_parse.hpp>
+#include <ossia/editor/dataspace/detail/make_value.hpp>
 #include <ossia/detail/logger.hpp>
 #include <unordered_map>
 
@@ -73,6 +74,16 @@ unit_t parse_dataspace(boost::string_view text)
 
 
 /// Convert ///
+value_with_unit make_value(const ossia::value& v, const ossia::unit_t& u)
+{
+  if(!u || !v.valid())
+    return v;
+
+  return eggs::variants::apply([&] (const auto& dataspace) -> ossia::value_with_unit {
+    return eggs::variants::apply(make_value_with_unit_visitor{}, v.v, dataspace);
+  }, u);
+}
+
 
 value_with_unit convert(value_with_unit v, unit_t t)
 {
