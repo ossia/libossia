@@ -35,8 +35,39 @@ struct vec_merger
   {
     // Invalid cases.
     // TODO Do nothing, or throw ?
-    throw std::runtime_error("vec_merger: invalid case");
+    // throw std::runtime_error("vec_merger: invalid case");
     return {};
+  }
+
+  template<int N>
+  ossia::state_element operator()(ossia::Vec<float, N>& orig, const Float& incoming) const
+  {
+    auto& existing_index = existing_dest.index;
+    auto& incoming_index = incoming_dest.index;
+    if(incoming_index.empty())
+    {
+      return {}; // TODO or maybe put it at index zero ... ?
+    }
+    else
+    {
+      auto i = incoming_index[0];
+      if(i < N)
+        orig.value[i] = incoming.value;
+
+      if(existing_index != incoming_index && !existing_index.empty())
+      {
+        // Case where we had a message setting the index [0] and another setting the index [2]
+        // for instance
+        piecewise_vec_message<N> mess{existing_dest.value, orig, unit, {}};
+        mess.used_values.set(existing_index[0]);
+        mess.used_values.set(i);
+        return mess;
+      }
+      else
+      {
+        return {};
+      }
+    }
   }
 
   template<int N>

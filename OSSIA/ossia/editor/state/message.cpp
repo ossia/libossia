@@ -26,7 +26,7 @@ void message::launch() const
   }
   else
   {
-    if(!unit || unit == addr_unit)
+    if(!unit || !addr_unit || unit == addr_unit)
     {
       auto cur = addr.cloneValue();
       auto cur_t = cur.getType();

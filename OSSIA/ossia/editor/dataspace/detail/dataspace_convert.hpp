@@ -11,7 +11,7 @@ struct convert_unit_helper
 {
   ossia::value_with_unit operator()(const strong_value<T>& value, const U& unit)
   {
-    return value;
+    return {};
   }
 };
 

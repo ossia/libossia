@@ -74,6 +74,15 @@ struct value_trait<ossia::Tuple>
 };
 
 template <>
+struct value_trait<ossia::Behavior>
+{
+  using ossia_type = ossia::Behavior;
+  using value_type = std::shared_ptr<curve_abstract>;
+  static const constexpr auto ossia_enum = val_type::BEHAVIOR;
+  static const constexpr bool is_numeric = false;
+};
+
+template <>
 struct value_trait<ossia::Destination>
 {
   using ossia_type = ossia::Destination;

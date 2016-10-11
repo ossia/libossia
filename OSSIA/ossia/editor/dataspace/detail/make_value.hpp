@@ -13,7 +13,7 @@ struct make_value_helper
   ossia::value_with_unit operator()(const T& t)
   {
     // TODO maybe return first value for tuple or vecNf ?
-    throw std::runtime_error("mismatching value type and unit");
+    // throw std::runtime_error("mismatching value type and unit");
     return {};
   }
 
@@ -42,7 +42,7 @@ struct make_value_helper<U, std::enable_if_t<std::is_same<typename U::value_type
   template<typename T>
   ossia::value_with_unit operator()(const T& t)
   {
-    throw std::runtime_error("mismatching value type and unit");
+    // throw std::runtime_error("mismatching value type and unit");
     return {};
   }
 
@@ -64,7 +64,7 @@ struct make_value_helper<U, std::enable_if_t<std::is_same<typename U::value_type
   template<typename T>
   ossia::value_with_unit operator()(const T& t)
   {
-    throw std::runtime_error("mismatching value type and unit");
+    // throw std::runtime_error("mismatching value type and unit");
     return {};
   }
 
@@ -87,7 +87,7 @@ struct make_value_helper<U, std::enable_if_t<std::is_same<typename U::value_type
   template<typename T>
   ossia::value_with_unit operator()(const T& t)
   {
-    throw std::runtime_error("mismatching value type and unit");
+    // throw std::runtime_error("mismatching value type and unit");
     return {};
   }
 

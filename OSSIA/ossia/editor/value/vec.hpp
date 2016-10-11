@@ -22,7 +22,7 @@ class Vec
 public:
   static const constexpr int size_value = N;
   using value_type = T;
-  std::array<T, N> value;
+  std::array<T, N> value = {};
 
   OSSIA_DECL_RELAXED_CONSTEXPR Vec() { }
   OSSIA_DECL_RELAXED_CONSTEXPR Vec(std::array<float, N> v) : value(std::move(v))

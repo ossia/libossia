@@ -11,7 +11,10 @@ function(ossia_add_test TESTNAME TESTSRCS)
     add_test(NAME ossia_target_${TESTNAME} COMMAND ossia_${TESTNAME})
 endFunction()
 
-ossia_add_test(AutomationTest              "${CMAKE_CURRENT_SOURCE_DIR}/Editor/AutomationTest.cpp")
+ossia_add_test(AutomationTest
+    "${CMAKE_CURRENT_SOURCE_DIR}/Editor/AutomationTest.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TestUtils.hpp"
+    )
 
 if(NOT OSSIA_CI)
     # this test is too reliant on specific hardward capabilities to run on travis

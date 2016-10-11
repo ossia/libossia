@@ -220,7 +220,6 @@ private Q_SLOTS:
     QVERIFY(s1.children()[0] == expected_bis);
   }
 
-
   void test_flatten_move()
   {
     generic_device dev{std::make_unique<local_protocol>(), "test"};

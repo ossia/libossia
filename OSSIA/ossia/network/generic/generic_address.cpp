@@ -5,6 +5,7 @@
 #include <ossia/network/domain/domain_conversion.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/exceptions.hpp>
+#include <ossia/editor/value/value_conversion.hpp>
 #include <iostream>
 #include <map>
 
@@ -145,15 +146,24 @@ ossia::net::generic_address& generic_address::setValue(const ossia::value& val)
   // copy the new value
   else
   {
-    if (mValue.v.which() != val.v.which())
+    if (mValue.v.which() == val.v.which())
     {
+      mValue = val;
+    }
+    else
+    {
+      mValue = ossia::convert(val, mValue.getType());
+
+      /*
+      // Alternative : try to convert to the actual value type.
+      // There should be a choice here : for instance we should be able to convert
+      // the values coming from the network, but change the type of the values coming from here.
       // std::cerr << address_string_from_node(*this) << " TYPE CHANGE : " << mValue.v.which() << " <=== " << val.v.which() << std::endl;
       mValueType = val.getType();
       if(mDomain)
         mDomain = convert_domain(mDomain, mValueType);
+      */
     }
-
-    mValue = val;
   }
 
   auto clone = mValue;
