@@ -188,6 +188,17 @@ void piecewise_vec_message<N>::launch() const
     }
     else
     {
+
+
+      addr.pushValue(
+            ossia::to_value(
+              ossia::convert(
+                ossia::make_value(value, unit),
+                addr_unit
+                )
+              )
+            );
+      return;
       addr.pushValue(
                 to_value( // Go from Unit domain to Value domain
                   convert( // Convert to the resulting address unit
