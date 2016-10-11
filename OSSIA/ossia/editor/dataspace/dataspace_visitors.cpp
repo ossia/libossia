@@ -89,7 +89,10 @@ value_with_unit convert(value_with_unit v, unit_t t)
 {
   if(v && t)
   {
-    return eggs::variants::apply(detail::convert_unit_visitor{}, v, t);
+    if(auto value = v.target<ossia::value>())
+      return make_value(*value, t);
+    else
+      return eggs::variants::apply(detail::convert_unit_visitor{}, v, t);
   }
   else
   {
@@ -120,7 +123,7 @@ std::string to_pretty_string(value_with_unit v)
 struct merger_impl
 {
   const ossia::value& val;
-  ossia::destination_index idx;
+  const ossia::destination_index& idx;
 
   ossia::value_with_unit operator()(const ossia::value& val)
   {
@@ -136,7 +139,30 @@ struct merger_impl
     return {};
   }
 };
+template<int N>
+struct vec_merger_impl
+{
+  const ossia::Vec<float, N>& val;
+  const std::bitset<N>& idx;
 
+  ossia::value_with_unit operator()(const ossia::value& val)
+  {
+    // TODO use the standard merge algorithm in ossia::value ??return value_unit;
+    return {};
+  }
+
+  template<typename Dataspace_T>
+  ossia::value_with_unit operator()(const Dataspace_T& ds)
+  {
+    if(ds)
+    {
+      return eggs::variants::apply([&] (auto& unit) -> ossia::value_with_unit {
+        return detail::vec_value_merger<N>{idx}(unit, val);
+      }, ds);
+    }
+    return {};
+  }
+};
 ossia::value_with_unit merge(
     ossia::value_with_unit vu,
     const ossia::value& val,
@@ -145,6 +171,45 @@ ossia::value_with_unit merge(
   if(vu && val.valid())
   {
     return eggs::variants::apply(merger_impl{val, idx}, vu);
+  }
+
+  return vu;
+}
+
+ossia::value_with_unit merge(
+    ossia::value_with_unit vu,
+    const ossia::Vec2f& val,
+    std::bitset<2> idx)
+{
+  if(vu)
+  {
+    return eggs::variants::apply(vec_merger_impl<2>{val, idx}, vu);
+  }
+
+  return vu;
+}
+
+ossia::value_with_unit merge(
+    ossia::value_with_unit vu,
+    const ossia::Vec3f& val,
+    std::bitset<3> idx)
+{
+  if(vu)
+  {
+    return eggs::variants::apply(vec_merger_impl<3>{val, idx}, vu);
+  }
+
+  return vu;
+}
+
+ossia::value_with_unit merge(
+    ossia::value_with_unit vu,
+    const ossia::Vec4f& val,
+    std::bitset<4> idx)
+{
+  if(vu)
+  {
+    return eggs::variants::apply(vec_merger_impl<4>{val, idx}, vu);
   }
 
   return vu;

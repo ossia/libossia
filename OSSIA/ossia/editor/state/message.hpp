@@ -68,7 +68,7 @@ struct OSSIA_EXPORT piecewise_message
 };
 
 template<int N>
-struct piecewise_vec_message
+struct OSSIA_EXPORT piecewise_vec_message
 {
   std::reference_wrapper<ossia::net::address_base> address;
   Vec<float, N> value;

@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace.hpp>
+#include <bitset>
 
 namespace ossia
 {
@@ -120,7 +121,7 @@ std::string to_pretty_string(ossia::value_with_unit v);
  *
  * @param The value with an unit
  * @param The value to merge
- * @param Optional destination index to merge with
+ * @param Optional destination index or bitset to merge with
  * @return
  */
 OSSIA_EXPORT
@@ -129,4 +130,21 @@ ossia::value_with_unit merge(
     const ossia::value&,
     ossia::destination_index);
 
+OSSIA_EXPORT
+ossia::value_with_unit merge(
+    ossia::value_with_unit,
+    const ossia::Vec2f&,
+    std::bitset<2>);
+
+OSSIA_EXPORT
+ossia::value_with_unit merge(
+    ossia::value_with_unit,
+    const ossia::Vec3f&,
+    std::bitset<3>);
+
+OSSIA_EXPORT
+ossia::value_with_unit merge(
+    ossia::value_with_unit,
+    const ossia::Vec4f&,
+    std::bitset<4>);
 }

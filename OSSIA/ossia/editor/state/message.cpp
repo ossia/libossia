@@ -2,6 +2,7 @@
 #include <ossia/network/base/address.hpp>
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/editor/value/value_traits.hpp>
 namespace ossia
 {
 void message::launch() const
@@ -64,6 +65,7 @@ void message::launch() const
     }
     else
     {
+      /*
       {
         auto v1 = ossia::net::get_value(addr);
         auto v2 =
@@ -81,14 +83,15 @@ void message::launch() const
         auto v5 =
             ossia::to_value(v4);
 
-        std::cerr << ossia::value_to_pretty_string(value) << "\n";
-        std::cerr << ossia::to_pretty_string(v1) << "\n";
-        std::cerr << ossia::to_pretty_string(v2) << "\n";
-        std::cerr << ossia::to_pretty_string(destination.index) << "\n";
-        std::cerr << ossia::to_pretty_string(v3) << "\n";
-        std::cerr << ossia::to_pretty_string(v4) << "\n";
-        std::cerr << ossia::value_to_pretty_string(v5) << "\n\n\n";
+        std::cerr << "v: " << ossia::value_to_pretty_string(value) << "\n";
+        std::cerr << "v1: " << ossia::to_pretty_string(v1) << "\n";
+        std::cerr << "v2: " << ossia::to_pretty_string(v2) << "\n";
+        std::cerr << "di: " << ossia::to_pretty_string(destination.index) << "\n";
+        std::cerr << "v3: " << ossia::to_pretty_string(v3) << "\n";
+        std::cerr << "v4: " << ossia::to_pretty_string(v4) << "\n";
+        std::cerr << "v5: " << ossia::value_to_pretty_string(v5) << "\n\n\n";
       }
+      */
       addr.pushValue(
             ossia::to_value(
               ossia::convert(
@@ -123,12 +126,9 @@ void piecewise_message::launch() const
 template<int N>
 void piecewise_vec_message<N>::launch() const
 {
-  // piecewise_vec_message's basis is the current address value so
-  // we can just push it, with a potential conversion
-
   ossia::net::address_base& addr = address.get();
   auto addr_unit = addr.getUnit();
-  if(unit == addr_unit)
+  if(!unit || !addr_unit || unit == addr_unit)
   {
     if(used_values.all())
     {
@@ -137,60 +137,70 @@ void piecewise_vec_message<N>::launch() const
     else
     {
       auto val = addr.cloneValue();
-      switch(val.getType())
+      if(val.getType() == ossia::value_trait<Vec<float, N>>::ossia_enum)
       {
-        case ossia::val_type::VEC2F:
+        auto& v = val.get<Vec<float, N>>();
+        for(int i = 0; i < N; i++)
         {
-          auto& v = val.get<Vec2f>();
-          for(int i = 0; i < v.size_value; i++)
+          if(used_values.test(i))
           {
-            if(used_values.test(i))
-            {
-              v.value[i] = value.value[i];
-            }
+            v.value[i] = value.value[i];
           }
-          break;
         }
-        case ossia::val_type::VEC3F:
-        {
-          auto& v = val.get<Vec3f>();
-          for(int i = 0; i < v.size_value; i++)
-          {
-            if(used_values.test(i))
-            {
-              v.value[i] = value.value[i];
-            }
-          }
-          break;
-        }
-        case ossia::val_type::VEC4F:
-        {
-          auto& v = val.get<Vec4f>();
-          for(int i = 0; i < v.size_value; i++)
-          {
-            if(used_values.test(i))
-            {
-              v.value[i] = value.value[i];
-            }
-          }
-          break;
-        }
-        default:
-          break;
+
+        addr.pushValue(val);
       }
-      addr.pushValue(val);
     }
   }
-  else
+  else // unit != addr_unit
   {
-    addr.pushValue(
-          ossia::to_value(
+
+
+    if(used_values.all())
+    {
+      /*
+      {
+        auto v1 = ossia::make_value(value, unit);
+        auto v2 =
             ossia::convert(
-              ossia::make_value(value, unit),
-              addr_unit
+              v1,
+              addr_unit);
+        auto v3 =
+            ossia::to_value(v2);
+
+        std::cout << std::flush;
+        std::cerr << std::flush;
+        std::cerr << "v: " << ossia::value_to_pretty_string(value) << "\n";
+        std::cerr << "v1: " << ossia::to_pretty_string(v1) << "\n";
+        std::cerr << "v2: " << ossia::to_pretty_string(v2) << "\n";
+        std::cerr << "v3: " << ossia::to_pretty_string(v3) << "\n";
+      }
+      */
+
+      addr.pushValue(
+            ossia::to_value(
+              ossia::convert(
+                ossia::make_value(value, unit),
+                addr_unit
+                )
               )
-            )
-          );
+            );
+    }
+    else
+    {
+      addr.pushValue(
+                to_value( // Go from Unit domain to Value domain
+                  convert( // Convert to the resulting address unit
+                    merge( // Merge the automation value with the "unit" value
+                      convert( // Put the current value in the Unit domain
+                        ossia::net::get_value(addr),
+                        unit),
+                      value, // Compute the output of the automation
+                      used_values),
+                  addr.getUnit())));
+
+    }
+
   }
 
 }

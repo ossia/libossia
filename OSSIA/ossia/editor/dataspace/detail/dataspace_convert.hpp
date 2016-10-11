@@ -41,8 +41,9 @@ struct convert_unit_visitor
   template<typename... Args2>
   ossia::value_with_unit operator()(const ossia::value& value, const eggs::variant<Args2...>& dataspace)
   {
-    // Just set the unit on the value. Throw if it is incompatible ?
-    // TODO return eggs::variants::apply(*this, value, dataspace);
+    // Just set the unit on the value. This case is handled in value_with_unit and should not be
+    // triggered here.
+    // Throw if it is incompatible ?
     return {};
   }
 };
