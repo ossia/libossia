@@ -327,7 +327,7 @@ struct DestinationValue
   }
 };
 
-template <int N, typename Fun>
+template <std::size_t N, typename Fun>
 struct VecVisitor
 {
   const Vec<float, N>& lhs;
@@ -371,34 +371,34 @@ struct VecValue
 };
 }
 
-template <typename T, int N>
+template <typename T, std::size_t N>
 bool Vec<T, N>::operator==(const ossia::value& v) const
 {
   return comparisons::VecValue::apply(*this, v, std::equal_to<>{});
 }
-template <typename T, int N>
+template <typename T, std::size_t N>
 bool Vec<T, N>::operator!=(const ossia::value& v) const
 {
   return !comparisons::VecValue::apply(*this, v, std::equal_to<>{});
 }
 
-template <typename T, int N>
+template <typename T, std::size_t N>
 bool Vec<T, N>::operator>(const ossia::value& v) const
 {
   return comparisons::VecValue::apply(*this, v, std::greater<>{});
 }
-template <typename T, int N>
+template <typename T, std::size_t N>
 bool Vec<T, N>::operator>=(const ossia::value& v) const
 {
   return comparisons::VecValue::apply(*this, v, std::greater_equal<>{});
 }
 
-template <typename T, int N>
+template <typename T, std::size_t N>
 bool Vec<T, N>::operator<(const ossia::value& v) const
 {
   return comparisons::VecValue::apply(*this, v, std::less<>{});
 }
-template <typename T, int N>
+template <typename T, std::size_t N>
 bool Vec<T, N>::operator<=(const ossia::value& v) const
 {
   return comparisons::VecValue::apply(*this, v, std::less_equal<>{});

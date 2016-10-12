@@ -241,7 +241,7 @@ struct osc_inbound_visitor
       }
     }
 
-    template <int N>
+    template <std::size_t N>
     ossia::value operator()(ossia::Vec<float, N> vec) const
     {
       if (numArguments == N)

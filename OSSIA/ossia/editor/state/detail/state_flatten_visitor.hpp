@@ -39,7 +39,7 @@ struct vec_merger
     return {};
   }
 
-  template<int N>
+  template<std::size_t N>
   ossia::state_element operator()(ossia::Vec<float, N>& orig, const Float& incoming) const
   {
     auto& existing_index = existing_dest.index;
@@ -70,7 +70,7 @@ struct vec_merger
     }
   }
 
-  template<int N>
+  template<std::size_t N>
   ossia::state_element operator()(ossia::Vec<float, N>& orig, const ossia::Vec<float, N>& incoming) const
   {
     auto& existing_index = existing_dest.index;
@@ -176,7 +176,7 @@ struct state_flatten_visitor_merger
     }
   }
 
-  template<int N>
+  template<std::size_t N>
   void operator()(piecewise_vec_message<N>& existing, const message& incoming)
   {
     auto t = incoming.value.getType();
@@ -257,10 +257,10 @@ struct state_flatten_visitor_merger
   }
 
   //// Piecewise Vec Message incoming
-  template<int N>
+  template<std::size_t N>
   void operator()(piecewise_vec_message<N>& existing, const piecewise_vec_message<N>& incoming)
   {
-    for(int i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       if(incoming.used_values.test(i))
       {
@@ -389,34 +389,34 @@ struct state_flatten_visitor_merger
                              "impossible case (custom_state <- *");
   }
 
-  template<int M>
+  template<std::size_t M>
   void operator()(message& existing, const piecewise_vec_message<M>& incoming)
   {
     throw std::runtime_error("state_flatten_visitor_merger: "
                              "impossible case (message <- const piecewise_vec_message&");
   }
 
-  template<int M>
+  template<std::size_t M>
   void operator()(piecewise_message& existing, const piecewise_vec_message<M>& incoming)
   {
     throw std::runtime_error("state_flatten_visitor_merger: "
                              "impossible case (piecewise_message <- const piecewise_vec_message&");
   }
 
-  template<int N>
+  template<std::size_t N>
   void operator()(piecewise_vec_message<N>& existing, const piecewise_message& incoming)
   {
     throw std::runtime_error("state_flatten_visitor_merger: "
                              "impossible case (piecewise_vec_message <- const piecewise_message&");
   }
-  template<int N>
+  template<std::size_t N>
   void operator()(piecewise_vec_message<N>& existing, piecewise_message&& incoming)
   {
     throw std::runtime_error("state_flatten_visitor_merger: "
                              "impossible case (piecewise_vec_message <- piecewise_message&&");
   }
 
-  template<int N, int M>
+  template<std::size_t N, std::size_t M>
   void operator()(piecewise_vec_message<N>& existing, const piecewise_vec_message<M>& incoming)
   {
     throw std::runtime_error("state_flatten_visitor_merger: "
@@ -438,7 +438,7 @@ struct state_flatten_visitor
     return &m.address.get();
   }
 
-  template<int N>
+  template<std::size_t N>
   static ossia::net::address_base* address_ptr(const piecewise_vec_message<N>& m)
   {
     return &m.address.get();
@@ -477,26 +477,27 @@ struct state_flatten_visitor
     }
     else
     {
+      using namespace eggs::variants;
       // Merge messages
       state_flatten_visitor_merger merger{state};
       // Workaround for a GDB bug if we use a generic lambda
       // in a template function (operator() here)
       switch(it->which())
       {
-        case 0: // state
-          merger(*it->template target<ossia::state>(), std::forward<Message_T>(incoming)); break;
-        case 1: // message
-          merger(*it->template target<ossia::message>(), std::forward<Message_T>(incoming)); break;
-        case 2: // custom state
-          merger(*it->template target<ossia::custom_state>(), std::forward<Message_T>(incoming)); break;
-        case 3: // pw message
-          merger(*it->template target<ossia::piecewise_message>(), std::forward<Message_T>(incoming)); break;
-        case 4: // vec2f
-          merger(*it->template target<ossia::piecewise_vec_message<2>>(), std::forward<Message_T>(incoming)); break;
-        case 5: // vec3f
-          merger(*it->template target<ossia::piecewise_vec_message<3>>(), std::forward<Message_T>(incoming)); break;
-        case 6: // vec4f
-          merger(*it->template target<ossia::piecewise_vec_message<4>>(), std::forward<Message_T>(incoming)); break;
+        case 0:
+          merger(*it->template target<state_element_by_index<0>>(), std::forward<Message_T>(incoming)); break;
+        case 1:
+          merger(*it->template target<state_element_by_index<1>>(), std::forward<Message_T>(incoming)); break;
+        case 2:
+          merger(*it->template target<state_element_by_index<2>>(), std::forward<Message_T>(incoming)); break;
+        case 3:
+          merger(*it->template target<state_element_by_index<3>>(), std::forward<Message_T>(incoming)); break;
+        case 4:
+          merger(*it->template target<state_element_by_index<4>>(), std::forward<Message_T>(incoming)); break;
+        case 5:
+          merger(*it->template target<state_element_by_index<5>>(), std::forward<Message_T>(incoming)); break;
+        case 6:
+          merger(*it->template target<state_element_by_index<6>>(), std::forward<Message_T>(incoming)); break;
         default:
           break;
       }

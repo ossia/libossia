@@ -141,12 +141,11 @@ private Q_SLOTS:
     auto mess = state.target<ossia::message>() ;
     QVERIFY(mess != nullptr);
 
-    auto res = mess->value.try_get<ossia::Vec3f>();
-    QVERIFY(res);
+    ossia::message expected{Destination{*address, {2}}, Float{0.5}, ossia::hsv_u{}};
 
-    auto expected = make_vec(0.5, 0.5, 0.5);
-    QVERIFY(res->value == expected.value);
-    qDebug() << res->value[0] << res->value[1] << res->value[2];
+    ossia::print(std::cerr, *mess);
+    ossia::print(std::cerr, expected);
+    QCOMPARE(*mess, expected);
 
 
   }

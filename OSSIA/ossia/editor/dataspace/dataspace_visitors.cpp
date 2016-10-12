@@ -139,7 +139,21 @@ struct merger_impl
     return {};
   }
 };
-template<int N>
+
+template<std::size_t N>
+struct vec_merger_impl_helper
+{
+  const ossia::Vec<float, N>& val;
+  const std::bitset<N>& idx;
+
+  template<typename Unit_T>
+  ossia::value_with_unit operator()(const Unit_T& unit)
+  {
+    return detail::vec_value_merger<N>{idx}(unit, val);
+  }
+};
+
+template<std::size_t N>
 struct vec_merger_impl
 {
   const ossia::Vec<float, N>& val;
@@ -156,9 +170,7 @@ struct vec_merger_impl
   {
     if(ds)
     {
-      return eggs::variants::apply([&] (auto& unit) -> ossia::value_with_unit {
-        return detail::vec_value_merger<N>{idx}(unit, val);
-      }, ds);
+      return eggs::variants::apply(vec_merger_impl_helper<N>{val, idx}, ds);
     }
     return {};
   }

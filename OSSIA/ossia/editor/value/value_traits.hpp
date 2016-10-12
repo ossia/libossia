@@ -4,7 +4,7 @@
 namespace ossia
 {
 
-template <typename T, int N>
+template <typename T, std::size_t N>
 class Vec;
 
 template <typename T>
@@ -134,7 +134,7 @@ template <>
 struct matching_value<std::string> { using type = String; };
 template <>
 struct matching_value<std::vector<value>> { using type = Tuple; };
-template <int N>
+template <std::size_t N>
 struct matching_value<std::array<float, N>> { using type = Vec<float, N>; };
 
 

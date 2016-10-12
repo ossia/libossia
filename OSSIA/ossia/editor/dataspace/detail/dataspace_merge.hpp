@@ -113,7 +113,7 @@ struct partial_value_merger_helper<T, U, enable_if_both_iterable<decltype(T::val
     return value_unit;
   }
 
-  template<int N>
+  template<std::size_t N>
   ossia::value_with_unit operator()(T value_unit, const U& value, const std::bitset<N>& idx)
   {
     if(handle_vec(value_unit.value, value, idx))
@@ -121,14 +121,14 @@ struct partial_value_merger_helper<T, U, enable_if_both_iterable<decltype(T::val
     return {};
   }
 
-  template<int N>
-  bool handle_vec(Vec<float, N>& src, Vec<float, N>& incoming, const std::bitset<N>& idx)
+  template<std::size_t N>
+  bool handle_vec(Vec<float, N>& src, const Vec<float, N>& incoming, const std::bitset<N>& idx)
   {
-    for(int i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       if(idx.test(i))
       {
-        src[i] = incoming[i];
+        src.value[i] = incoming.value[i];
       }
     }
     return true;
@@ -151,7 +151,7 @@ struct partial_value_merger_helper<T, U, enable_if_first_iterable<decltype(T::va
     return value_unit;
   }
 
-  template<int N>
+  template<std::size_t N>
   ossia::value_with_unit operator()(T value_unit, const U& value, const std::bitset<N>& idx)
   {
     return {};
@@ -166,7 +166,7 @@ struct partial_value_merger_helper<T, U, enable_if_second_iterable<decltype(T::v
     return value_unit;
   }
 
-  template<int N>
+  template<std::size_t N>
   ossia::value_with_unit operator()(T value_unit, const U& value, const std::bitset<N>& idx)
   {
     return {};
@@ -181,7 +181,7 @@ struct partial_value_merger_helper<T, U, enable_if_neither_iterable<decltype(T::
     return value_unit;
   }
 
-  template<int N>
+  template<std::size_t N>
   ossia::value_with_unit operator()(T value_unit, const U& value, const std::bitset<N>& idx)
   {
     return {};
@@ -227,7 +227,7 @@ struct value_merger
   }
 };
 
-template<int N>
+template<std::size_t N>
 struct vec_value_merger
 {
   const std::bitset<N>& index;
@@ -238,7 +238,7 @@ struct vec_value_merger
     return {};
   }
 
-  template<typename T, typename U>
+  template<typename T>
   ossia::value_with_unit operator()(const strong_value<T>& value_unit, const Vec<float, N>& value)
   {
     if(index.all())

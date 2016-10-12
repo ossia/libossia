@@ -16,11 +16,11 @@ class value;
  *
  * \see Tuple
  */
-template <typename T, int N>
+template <typename T, std::size_t N>
 class Vec
 {
 public:
-  static const constexpr int size_value = N;
+  static const constexpr std::size_t size_value = N;
   using value_type = T;
   std::array<T, N> value = {};
 
@@ -30,7 +30,7 @@ public:
   }
   OSSIA_DECL_RELAXED_CONSTEXPR Vec(std::array<double, N> v)
   {
-    for(int i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       value[i] = v[i];
     }

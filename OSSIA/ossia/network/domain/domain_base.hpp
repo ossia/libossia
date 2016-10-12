@@ -178,7 +178,7 @@ struct OSSIA_EXPORT domain_base<Tuple>
   value clamp(bounding_mode b, Tuple&& val) const;
 };
 
-template <int N>
+template <std::size_t N>
 struct OSSIA_EXPORT domain_base<Vec<float, N>>
 {
   value clamp(bounding_mode b, const Vec<float, N>& val) const

@@ -123,7 +123,7 @@ void piecewise_message::launch() const
   }
 }
 
-template<int N>
+template<std::size_t N>
 void piecewise_vec_message<N>::launch() const
 {
   ossia::net::address_base& addr = address.get();
@@ -140,7 +140,7 @@ void piecewise_vec_message<N>::launch() const
       if(val.getType() == ossia::value_trait<Vec<float, N>>::ossia_enum)
       {
         auto& v = val.get<Vec<float, N>>();
-        for(int i = 0; i < N; i++)
+        for(std::size_t i = 0; i < N; i++)
         {
           if(used_values.test(i))
           {
@@ -188,17 +188,22 @@ void piecewise_vec_message<N>::launch() const
     }
     else
     {
+      /*
+      {
+        auto v1 = ossia::net::get_value(addr);
+        auto v2 = convert(v1, unit);
+        auto v3 = merge(v2, value, used_values);
+        auto v4 = convert(v3, addr.getUnit());
+        auto v5 = to_value(v4);
 
+        std::cerr << to_pretty_string(v1) << "\n"
+                  << to_pretty_string(v2) << "\n"
+                  << to_pretty_string(v3) << "\n"
+                  << to_pretty_string(v4) << "\n"
+                  << to_pretty_string(v5) << "\n\n\n";
+      }
+      */
 
-      addr.pushValue(
-            ossia::to_value(
-              ossia::convert(
-                ossia::make_value(value, unit),
-                addr_unit
-                )
-              )
-            );
-      return;
       addr.pushValue(
                 to_value( // Go from Unit domain to Value domain
                   convert( // Convert to the resulting address unit
@@ -211,9 +216,7 @@ void piecewise_vec_message<N>::launch() const
                   addr.getUnit())));
 
     }
-
   }
-
 }
 
 template class piecewise_vec_message<2>;

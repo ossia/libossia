@@ -2,7 +2,7 @@
 #include <eggs/variant.hpp>
 namespace ossia
 {
-template <typename T, int N>
+template <typename T, std::size_t N>
 class Vec;
 using Vec2f = Vec<float, 2>;
 using Vec3f = Vec<float, 3>;

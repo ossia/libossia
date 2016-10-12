@@ -29,98 +29,99 @@ automation::~automation() = default;
 
 void automation::updateMessage(double t)
 {
-  ossia::net::address_base& addr = mDrivenAddress.value.get();
-  auto& idx = mDrivenAddress.index;
-  auto val = computeValue(t, mDrive);
-  if(mLastMessage.unit)
-  {
-    /* Useful for debug :
-    {
-      auto v1 = ossia::net::get_value(mDrivenAddress);
-      auto v2 = convert(v1, mUnit);
-      auto v3 = merge(v2, val, idx);
-      auto v4 = convert(v3, addr.getUnit());
-      auto v5 = to_value(v4);
+  mLastMessage.value = computeValue(t, mDrive);
+  return;
+//  ossia::net::address_base& addr = mDrivenAddress.value.get();
+//  auto& idx = mDrivenAddress.index;
+//  if(mLastMessage.unit)
+//  {
+//    /* Useful for debug :
+//    {
+//      auto v1 = ossia::net::get_value(mDrivenAddress);
+//      auto v2 = convert(v1, mUnit);
+//      auto v3 = merge(v2, val, idx);
+//      auto v4 = convert(v3, addr.getUnit());
+//      auto v5 = to_value(v4);
 
-      std::cerr << to_pretty_string(v1) << "\n"
-                << ossia::get_pretty_unit_text(mUnit) << "\n"
-                << to_pretty_string(v2) << "\n"
-                << to_pretty_string(v3) << "\n"
-                << to_pretty_string(v4) << "\n"
-                << to_pretty_string(v5) << "\n\n\n";
-    }
-    */
+//      std::cerr << to_pretty_string(v1) << "\n"
+//                << ossia::get_pretty_unit_text(mUnit) << "\n"
+//                << to_pretty_string(v2) << "\n"
+//                << to_pretty_string(v3) << "\n"
+//                << to_pretty_string(v4) << "\n"
+//                << to_pretty_string(v5) << "\n\n\n";
+//    }
+//    */
 
-      // TODO This could be optimized by directly using the relevant visitors.
-    /*
-    mLastMessage.value =
-        to_value( // Go from Unit domain to Value domain
-          convert( // Convert to the resulting address unit
-            merge( // Merge the automation value with the "unit" value
-              convert( // Put the current value in the Unit domain
-                ossia::net::get_value(mDrivenAddress),
-                mUnit),
-              std::move(val), // Compute the output of the automation
-              idx),
-          addr.getUnit()));
-    */
+//      // TODO This could be optimized by directly using the relevant visitors.
+//    /*
+//    mLastMessage.value =
+//        to_value( // Go from Unit domain to Value domain
+//          convert( // Convert to the resulting address unit
+//            merge( // Merge the automation value with the "unit" value
+//              convert( // Put the current value in the Unit domain
+//                ossia::net::get_value(mDrivenAddress),
+//                mUnit),
+//              std::move(val), // Compute the output of the automation
+//              idx),
+//          addr.getUnit()));
+//    */
 
-    mLastMessage.value =
-        to_value(
-          merge( // Merge the automation value with the "unit" value
-            convert( // Put the current value in the Unit domain
-              ossia::net::get_value(mDrivenAddress),
-              mLastMessage.unit),
-            std::move(val), // Compute the output of the automation
-            idx)
-          );
-  }
-  else if(mDrivenAddress.index.size() == 1 && val.getType() == ossia::val_type::FLOAT)
-  {
-    switch(addr.getValueType())
-    {
-      case ossia::val_type::VEC2F:
-      {
-        auto cur_v = addr.cloneValue();
-        auto& arr = cur_v.get<ossia::Vec2f>();
-        if(idx[0] < arr.size_value)
-        {
-          arr.value[idx[0]] = val.get<Float>().value;
-        }
-        mLastMessage.value = arr;
-        break;
-      }
-      case ossia::val_type::VEC3F:
-      {
-        auto cur_v = addr.cloneValue();
-        auto& arr = cur_v.get<ossia::Vec3f>();
-        if(idx[0] < arr.size_value)
-        {
-          arr.value[idx[0]] = val.get<Float>().value;
-        }
-        mLastMessage.value = arr;
-        break;
-      }
-      case ossia::val_type::VEC4F:
-      {
-        auto cur_v = addr.cloneValue();
-        auto& arr = cur_v.get<ossia::Vec4f>();
-        if(idx[0] < arr.size_value)
-        {
-          arr.value[idx[0]] = val.get<Float>().value;
-        }
-        mLastMessage.value = arr;
-        break;
-      }
-      default:
-        mLastMessage.value = std::move(val);
-        break;
-    }
-  }
-  else
-  {
-    mLastMessage.value = std::move(val);
-  }
+//    mLastMessage.value =
+//        to_value(
+//          merge( // Merge the automation value with the "unit" value
+//            convert( // Put the current value in the Unit domain
+//              ossia::net::get_value(mDrivenAddress),
+//              mLastMessage.unit),
+//            std::move(val), // Compute the output of the automation
+//            idx)
+//          );
+//  }
+//  else if(mDrivenAddress.index.size() == 1 && val.getType() == ossia::val_type::FLOAT)
+//  {
+//    switch(addr.getValueType())
+//    {
+//      case ossia::val_type::VEC2F:
+//      {
+//        auto cur_v = addr.cloneValue();
+//        auto& arr = cur_v.get<ossia::Vec2f>();
+//        if(idx[0] < arr.size_value)
+//        {
+//          arr.value[idx[0]] = val.get<Float>().value;
+//        }
+//        mLastMessage.value = arr;
+//        break;
+//      }
+//      case ossia::val_type::VEC3F:
+//      {
+//        auto cur_v = addr.cloneValue();
+//        auto& arr = cur_v.get<ossia::Vec3f>();
+//        if(idx[0] < arr.size_value)
+//        {
+//          arr.value[idx[0]] = val.get<Float>().value;
+//        }
+//        mLastMessage.value = arr;
+//        break;
+//      }
+//      case ossia::val_type::VEC4F:
+//      {
+//        auto cur_v = addr.cloneValue();
+//        auto& arr = cur_v.get<ossia::Vec4f>();
+//        if(idx[0] < arr.size_value)
+//        {
+//          arr.value[idx[0]] = val.get<Float>().value;
+//        }
+//        mLastMessage.value = arr;
+//        break;
+//      }
+//      default:
+//        mLastMessage.value = std::move(val);
+//        break;
+//    }
+//  }
+//  else
+//  {
+//    mLastMessage.value = std::move(val);
+//  }
 }
 ossia::state_element automation::offset(ossia::time_value offset)
 {

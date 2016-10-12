@@ -124,7 +124,7 @@ struct domain_conversion<domain_base<Tuple>>
   }
 };
 
-template <int N>
+template <std::size_t N>
 struct domain_conversion<domain_base<Vec<float, N>>>
 {
   domain operator()(const domain_base<Vec<float, N>>& src)

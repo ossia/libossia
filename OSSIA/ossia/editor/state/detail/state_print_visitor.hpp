@@ -50,7 +50,7 @@ struct state_print_visitor
         << ossia::value_to_pretty_string(m.value) << "\n";
   }
 
-  template<int N>
+  template<std::size_t N>
   void operator()(const piecewise_vec_message<N>& m)
   {
     // TODO
