@@ -6,6 +6,7 @@
 #include <iostream>
 
 using namespace ossia;
+// TODO move this code where it is useful.
 template<ossia::val_type>
 struct matching_domain;
 template<>
