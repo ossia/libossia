@@ -58,7 +58,7 @@ struct osc_outbound_visitor
     }
     void operator()(ossia::Vec4f vec) const
     {
-      p << vec.value[0] << vec.value[1] << vec.value[2] << vec.value[4];
+      p << vec.value[0] << vec.value[1] << vec.value[2] << vec.value[3];
     }
     void operator()(const ossia::Destination& d) const
     {
