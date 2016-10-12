@@ -204,12 +204,14 @@ struct minuit_behavior<
                     "Data",
                     "attributes={",
                     "type"             ,
+                    "dataspace"        ,
                     "repetitionsFilter",
                     "service"          ,
                     "priority"         ,
                     "value"            ,
                     "rangeBounds"      ,
                     "rangeClipmode"    ,
+                    "dataspaceUnit"    ,
                     "}");
 
   }

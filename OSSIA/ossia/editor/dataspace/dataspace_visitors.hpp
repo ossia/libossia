@@ -75,6 +75,15 @@ ossia::unit_t parse_unit(boost::string_view text, T dataspace);
 OSSIA_EXPORT
 value_with_unit make_value(const ossia::value& v, const ossia::unit_t& u);
 
+
+/**
+ * @brief matching_type Get the implementation type of an unit
+ * @param u An unit
+ * @return The matching type. Will return Impulse if the unit is invalid.
+ */
+OSSIA_EXPORT
+ossia::val_type matching_type(const ossia::unit_t& u);
+
 /**
  * @brief convert Convert a value to another unit in the same dataspace
  * @param v A value

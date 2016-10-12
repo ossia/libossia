@@ -6,6 +6,7 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <ossia/editor/value/value_conversion.hpp>
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <iostream>
 #include <map>
 
@@ -14,28 +15,28 @@ namespace ossia
 namespace net
 {
 generic_address::generic_address(const ossia::net::node_base& node)
-    : mNode{node}
-    , mProtocol{node.getDevice().getProtocol()}
-    , mValueType(ossia::val_type::IMPULSE)
-    , mAccessMode(ossia::access_mode::BI)
-    , mBoundingMode(ossia::bounding_mode::FREE)
-    , mRepetitionFilter(ossia::repetition_filter::OFF)
-    , mValue(ossia::Impulse{})
-    , mDefault(ossia::Impulse{})
+  : mNode{node}
+  , mProtocol{node.getDevice().getProtocol()}
+  , mValueType(ossia::val_type::IMPULSE)
+  , mAccessMode(ossia::access_mode::BI)
+  , mBoundingMode(ossia::bounding_mode::FREE)
+  , mRepetitionFilter(ossia::repetition_filter::OFF)
+  , mValue(ossia::Impulse{})
+  , mDefault(ossia::Impulse{})
 {
 }
 
 generic_address::generic_address(
     const generic_address_data& data,
     const ossia::net::node_base& node)
-    : mNode{node}
-    , mProtocol{node.getDevice().getProtocol()}
-    , mValueType(data.type.get_value_or(ossia::val_type::IMPULSE))
-    , mAccessMode(data.access.get_value_or(ossia::access_mode::BI))
-    , mBoundingMode(data.bounding.get_value_or(ossia::bounding_mode::FREE))
-    , mRepetitionFilter(data.repetition_filter.get_value_or(ossia::repetition_filter::OFF))
-    , mValue(init_value(mValueType))
-    , mDefault(init_value(mValueType))
+  : mNode{node}
+  , mProtocol{node.getDevice().getProtocol()}
+  , mValueType(data.type.get_value_or(ossia::val_type::IMPULSE))
+  , mAccessMode(data.access.get_value_or(ossia::access_mode::BI))
+  , mBoundingMode(data.bounding.get_value_or(ossia::bounding_mode::FREE))
+  , mRepetitionFilter(data.repetition_filter.get_value_or(ossia::repetition_filter::OFF))
+  , mValue(init_value(mValueType))
+  , mDefault(init_value(mValueType))
 {
 }
 
@@ -266,50 +267,64 @@ void generic_address::onRemovingLastCallback()
 
 std::vector<std::string> generic_address::getTags() const
 {
-    return mTags;
+  return mTags;
 }
 
 generic_address& generic_address::setTags(const std::vector<std::string>& v)
 {
-    mTags = v;
-    mNode.getDevice().onAddressModified(*this);
-    return *this;
+  mTags = v;
+  mNode.getDevice().onAddressModified(*this);
+  return *this;
 }
 
 std::string generic_address::getDescription() const
 {
-    return mDescription;
+  return mDescription;
 }
 
 generic_address& generic_address::setDescription(const std::string& v)
 {
-    mDescription = v;
-    mNode.getDevice().onAddressModified(*this);
-    return *this;
+  mDescription = v;
+  mNode.getDevice().onAddressModified(*this);
+  return *this;
 }
 
 value generic_address::getDefaultValue() const
 {
-    return mDefault;
+  return mDefault;
 }
 
 generic_address& generic_address::setDefaultValue(const value& v)
 {
-    mDefault = v;
-    mNode.getDevice().onAddressModified(*this);
-    return *this;
+  mDefault = v;
+  mNode.getDevice().onAddressModified(*this);
+  return *this;
 }
 
 unit_t generic_address::getUnit() const
 {
-    return mUnit;
+  return mUnit;
 }
 
 generic_address& generic_address::setUnit(const unit_t& v)
 {
-    mUnit = v;
-    mNode.getDevice().onAddressModified(*this);
-    return *this;
+  std::lock_guard<std::mutex> lock(mValueMutex);
+  mUnit = v;
+
+  // update the type to match the unit.
+  if(v)
+  {
+    auto vt = ossia::matching_type(v);
+    if(vt != ossia::val_type::IMPULSE)
+    {
+      mValueType = vt;
+      mValue = ossia::convert(mValue, mValueType);
+      if(mDomain)
+        mDomain = convert_domain(mDomain, mValueType);
+    }
+  }
+  mNode.getDevice().onAddressModified(*this);
+  return *this;
 }
 }
 }

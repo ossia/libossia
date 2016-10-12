@@ -265,9 +265,7 @@ void minuit_protocol::handleReceivedMessage(
         ossia::net::address_base& addr = *it->second;
         lock.unlock();
 
-        bool res = update_value(addr, m);
-        if(res && mLogger.inbound_logger)
-          mLogger.inbound_logger->info("In: {0} {1}", ossia::net::address_string_from_node(addr), addr.cloneValue());
+        update_value(addr, m);
       }
     }
     else
@@ -276,6 +274,9 @@ void minuit_protocol::handleReceivedMessage(
         ossia::minuit::minuit_message_handler::handleMinuitMessage(
               *this, *mDevice, address, m);
     }
+
+    if(mLogger.inbound_logger)
+      mLogger.inbound_logger->info("In: {0}", m);
 }
 
 void minuit_protocol::update_zeroconf()

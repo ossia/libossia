@@ -80,11 +80,32 @@ value_with_unit make_value(const ossia::value& v, const ossia::unit_t& u)
     return v;
 
   return eggs::variants::apply([&] (const auto& dataspace) -> ossia::value_with_unit {
+    if(!dataspace)
+      return v;
     return eggs::variants::apply(make_value_with_unit_visitor{}, v.v, dataspace);
   }, u);
 }
 
+val_type matching_type(const unit_t& u)
+{
+  if(!u)
+    return ossia::val_type::IMPULSE;
 
+  return eggs::variants::apply(
+        [&] (const auto& dataspace) -> ossia::val_type
+  {
+    if(!dataspace)
+      return ossia::val_type::IMPULSE;
+
+    return eggs::variants::apply(
+          [] (auto unit) -> ossia::val_type
+    {
+      using unit_t = decltype(unit);
+      return ossia::value_trait<typename unit_t::value_type>::ossia_enum;
+    }, dataspace);
+  }, u);
+
+}
 value_with_unit convert(value_with_unit v, unit_t t)
 {
   if(v && t)
@@ -234,6 +255,7 @@ template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::speed_
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::orientation_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::angle_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::gain_u);
+
 
 
 
