@@ -219,8 +219,8 @@ void piecewise_vec_message<N>::launch() const
   }
 }
 
-template class piecewise_vec_message<2>;
-template class piecewise_vec_message<3>;
-template class piecewise_vec_message<4>;
+template struct piecewise_vec_message<2>;
+template struct piecewise_vec_message<3>;
+template struct piecewise_vec_message<4>;
 
 }
