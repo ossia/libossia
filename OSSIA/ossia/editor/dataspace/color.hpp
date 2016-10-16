@@ -21,7 +21,7 @@ struct argb_u : public color_unit<argb_u>
   { return ossia::make_string_array("argb"); }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "argb"; }
+  { return ossia::make_string_view("argb"); }
 
   using value_type = Vec4f;
 
@@ -42,7 +42,7 @@ struct rgba_u : public color_unit<rgba_u>
   { return ossia::make_string_array("rgba"); }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "rgba"; }
+  { return ossia::make_string_view("rgba"); }
 
   using value_type = Vec4f;
 
@@ -63,7 +63,7 @@ struct rgb_u : public color_unit<rgb_u>
   { return ossia::make_string_array("rgb"); }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "rgb"; }
+  { return ossia::make_string_view("rgb"); }
 
   using value_type = Vec3f;
 
@@ -84,7 +84,7 @@ struct bgr_u : public color_unit<bgr_u>
   { return ossia::make_string_array("bgr"); }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "bgr"; }
+  { return ossia::make_string_view("bgr"); }
 
   using value_type = Vec3f;
 
@@ -105,7 +105,7 @@ struct argb8_u : public color_unit<argb8_u>
   { return ossia::make_string_array("argb8"); }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "argb"; }
+  { return ossia::make_string_view("argb"); }
 
   using value_type = Vec4f;
 
@@ -134,7 +134,7 @@ struct hsv_u : public color_unit<hsv_u>
   { return ossia::make_string_array("hsv"); }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "hsv"; }
+  { return ossia::make_string_view("hsv"); }
 
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -217,7 +217,7 @@ struct hsl_u : public color_unit<hsl_u>
   { return ossia::make_string_array("hsl"); }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "hsl"; }
+  { return ossia::make_string_view("hsl"); }
 
   using value_type = Vec3f;
 
@@ -229,7 +229,7 @@ struct cmy8_u : public color_unit<cmy8_u>
   { return ossia::make_string_array("cmy8"); }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "cmy"; }
+  { return ossia::make_string_view("cmy"); }
 
   using value_type = Vec3f;
 
@@ -257,7 +257,7 @@ struct cmyk8_u : public color_unit<cmyk8_u>
   { return ossia::make_string_array("cmyk8"); }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "cmyk"; }
+  { return ossia::make_string_view("cmyk"); }
 
   using value_type = Vec4f;
 
@@ -269,7 +269,7 @@ struct xyz_u : public color_unit<xyz_u>
   { return ossia::make_string_array("xyz"); }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "xyz"; }
+  { return ossia::make_string_view("xyz"); }
 
   using value_type = Vec3f;
 
@@ -323,7 +323,7 @@ struct yxy_u : public color_unit<yxy_u>
   { return ossia::make_string_array("Yxy"); }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "Yxy"; }
+  { return ossia::make_string_view("Yxy"); }
 
   using value_type = Vec3f;
 };
@@ -333,7 +333,7 @@ struct hunter_lab_u : public color_unit<hunter_lab_u>
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("hunter_lab"); }
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "lab"; }
+  { return ossia::make_string_view("lab"); }
   using value_type = Vec3f;
 };
 
@@ -342,7 +342,7 @@ struct cie_lab_u : public color_unit<cie_lab_u>
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("cie_lab"); }
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "lab"; }
+  { return ossia::make_string_view("lab"); }
   using value_type = Vec3f;
 };
 
@@ -351,7 +351,7 @@ struct cie_luv_u : public color_unit<cie_luv_u>
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("cie_luv"); }
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "luv"; }
+  { return ossia::make_string_view("luv"); }
   using value_type = Vec3f;
 };
 

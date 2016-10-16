@@ -12,9 +12,6 @@ T convert(float f)
 
 namespace detail
 {
-// Remove with C++17
-template<typename... Args>
-using void_t = void;
 
 template<typename T, typename = void>
 struct is_iterable_t : public std::false_type{};

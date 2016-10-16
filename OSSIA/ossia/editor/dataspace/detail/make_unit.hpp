@@ -1,9 +1,9 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace.hpp>
 #include <brigand/algorithms/for_each.hpp>
+
 namespace ossia
 {
-
 class make_unit_helper
 {
 public:
@@ -29,19 +29,19 @@ public:
 
     return {};
   }
-  
+
 private:
   /**
-   * We have two arrays here : 
+   * We have two arrays here :
    * One (units) with all the units sequentially ordered.
-   * One (indices) with the starting index of each dataspace 
-   * i.e:  
-   * indices[0] == 0 
+   * One (indices) with the starting index of each dataspace
+   * i.e:
+   * indices[0] == 0
    * indices[1] == position of "first position unit" in the units array
    */
   using indices_array = std::array<uint64_t, brigand::size<ossia::unit_t>::value>;
   using units_array = std::array<ossia::unit_t, unit_count::value>;
-  
+
   const indices_array indices;
   const units_array units;
 
@@ -77,11 +77,6 @@ private:
     });
     return arr;
   }
-};
-
-class make_unit_symbols_helper
-{
-  // TODO return a boost::spirit::qi::symbols
 };
 
 }

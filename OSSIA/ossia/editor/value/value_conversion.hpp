@@ -172,11 +172,8 @@ struct numeric_value_converter
     }
   };
 
-  template<typename... Args>
-  using void_t = void;
-
   template<typename T>
-  struct value_converter<T, void_t<typename value_trait<T>::ossia_type>>
+  struct value_converter<T, ossia::void_t<typename value_trait<T>::ossia_type>>
   {
     T operator()() { return T{}; }
 

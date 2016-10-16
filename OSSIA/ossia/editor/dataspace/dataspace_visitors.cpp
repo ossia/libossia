@@ -73,6 +73,11 @@ unit_t parse_dataspace(boost::string_view text)
   return it != dataspaces.end() ? it->second : unit_t{};
 }
 
+const unit_parse_symbols_t& get_unit_parser()
+{
+    static const detail::make_unit_symbols_helper m;
+    return m.map;
+}
 
 /// Convert ///
 value_with_unit make_value(const ossia::value& v, const ossia::unit_t& u)

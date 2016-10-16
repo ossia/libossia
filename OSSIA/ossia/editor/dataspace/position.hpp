@@ -20,7 +20,7 @@ struct cartesian_3d_u :
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("cart3D", "xyz"); }
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "xyz"; }
+  { return ossia::make_string_view("xyz"); }
 
   using value_type = Vec3f;
   static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
@@ -40,7 +40,7 @@ struct cartesian_2d_u :
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("cart2D", "xy"); }
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "xy"; }
+  { return ossia::make_string_view("xy"); }
   using value_type = Vec2f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -60,7 +60,7 @@ struct spherical_u :
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("spherical", "aed"); }
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "aed"; }
+  { return ossia::make_string_view("aed"); }
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -100,7 +100,7 @@ struct polar_u :
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("polar", "ad"); }
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "ad"; }
+  { return ossia::make_string_view("ad"); }
   using value_type = Vec2f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -132,7 +132,7 @@ struct opengl_u :
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("openGL"); }
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "xyz"; }
+  { return ossia::make_string_view("xyz"); }
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
@@ -151,7 +151,7 @@ struct cylindrical_u :
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("cylindrical", "daz"); }
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
-  { return "daz"; }
+  { return ossia::make_string_view("daz"); }
   using value_type = Vec3f;
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {

@@ -1,4 +1,5 @@
 #include <ossia/editor/dataspace/detail/dataspace_merge.hpp>
+#include <ossia/editor/dataspace/dataspace_parse.hpp>
 #include <QtTest>
 #include "TestUtils.hpp"
 class DataspaceMergeTest : public QObject
@@ -361,7 +362,7 @@ private Q_SLOTS:
       m.launch();
       QVERIFY(fuzzy_compare(t.vec3f_addr->cloneValue().get<ossia::Vec3f>(), ossia::make_vec(0.5, 0.35, 0.35)));
     }
-    
+
     // Piecewise Vecf, 1 member, different unit and same dataspace
     {
       t.vec3f_addr->pushValue(ossia::make_vec(1., 0., 0.));
@@ -378,7 +379,7 @@ private Q_SLOTS:
       m.launch();
       QVERIFY(fuzzy_compare(t.vec3f_addr->cloneValue().get<ossia::Vec3f>(), ossia::make_vec(0.0, 1., 1.)));
     }
-    
+
 
     // Piecewise Vecf, 1 member, different dataspace
     {
@@ -510,16 +511,18 @@ private Q_SLOTS:
     ossia::TestUtils t;
     t.vec3f_addr->setUnit(ossia::rgb_u{});
     t.vec3f_addr->pushValue(ossia::make_vec(0.5, 0.5, 0.5));
-    
+
     {
       ossia::state s;
-      
+
       ossia::message m1{*t.vec3f_addr, ossia::make_vec(0.1, 0.2, 0.3)};
-      
-      
+
+
       ossia::flatten_and_filter(s, m1);
       //ossia::message m1{t.vec3f_addr, ossia::make_vec(0.1, 0.2, 0.3)};
     }
+
+    auto p = ossia::get_unit_parser();
 
 
   }
