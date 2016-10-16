@@ -92,6 +92,7 @@ void message::launch() const
         std::cerr << "v5: " << ossia::value_to_pretty_string(v5) << "\n\n\n";
       }
       */
+
       addr.pushValue(
             ossia::to_value(
               ossia::convert(
@@ -203,6 +204,7 @@ void piecewise_vec_message<N>::launch() const
                   << to_pretty_string(v5) << "\n\n\n";
       }
       */
+
 
       addr.pushValue(
                 to_value( // Go from Unit domain to Value domain

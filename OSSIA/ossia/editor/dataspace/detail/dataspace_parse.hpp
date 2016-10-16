@@ -98,6 +98,9 @@ struct unit_factory_visitor
   { return {}; }
 };
 
+template<typename Unit>
+using enable_if_multidimensional = std::enable_if_t<Unit::is_multidimensional::value>;
+
 template<typename Dataspace, typename Unit, typename = void>
 struct make_unit_symbols_sub_helper
 {
@@ -126,8 +129,9 @@ struct make_unit_symbols_sub_helper
     }
   }
 };
+
 template<typename Dataspace, typename Unit>
-struct make_unit_symbols_sub_helper<Dataspace, Unit, std::enable_if_t<Unit::is_multidimensional::value>>
+struct make_unit_symbols_sub_helper<Dataspace, Unit, enable_if_multidimensional<Unit>>
 {
   void operator()(unit_parse_symbols_t& map)
   {

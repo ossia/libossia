@@ -28,6 +28,15 @@ std::string get_pretty_unit_text(ossia::unit_t);
 
 
 /**
+ * @brief get_unit_accessor Return the character corresponding to the accessor
+ *
+ * e.g. for unit == rgb, n == 1, the function returns 'g'.
+ * @note Will return 0 (as in "(char)0") if anything is invalid.
+ */
+OSSIA_EXPORT
+char get_unit_accessor(const ossia::unit_t&, uint8_t n);
+
+/**
  * @brief parse_dataspace
  * @param text Something like color, etc.
  *
@@ -79,10 +88,10 @@ value_with_unit make_value(const ossia::value& v, const ossia::unit_t& u);
  * @brief get_unit Create an unit from indexes in the variant
  * @param dataspace Identifier in the first variant
  * @param unit Optional identifier in the second variant
- * 
+ *
  * Ex. : position.opengl_u == (1, 4).
  * This is useful for concise serialization / deserialization.
- * 
+ *
  * @return A corresponding unit
  */
 OSSIA_EXPORT

@@ -10,4 +10,5 @@ using unit_parse_symbols_t = boost::spirit::qi::symbols<char, ossia::destination
 
 OSSIA_EXPORT
 const unit_parse_symbols_t& get_unit_parser();
+
 }

@@ -2,18 +2,15 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/editor/value/value_algorithms.hpp>
+#include <ossia/network/base/address.hpp>
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <iostream>
 namespace ossia
 {
 
-static bool same_vec_type(const ossia::value& lhs, const ossia::value& rhs)
+static constexpr bool is_vec(ossia::val_type v)
 {
-  const auto first = lhs.getType();
-  const auto second = rhs.getType();
-  if(first != second)
-    return false;
-
-  switch(first)
+  switch(v)
   {
     case ossia::val_type::VEC2F:
     case ossia::val_type::VEC3F:
@@ -22,6 +19,16 @@ static bool same_vec_type(const ossia::value& lhs, const ossia::value& rhs)
     default:
       return false;
   }
+}
+
+static bool same_vec_type(const ossia::value& lhs, const ossia::value& rhs)
+{
+  const auto first = lhs.getType();
+  const auto second = rhs.getType();
+  if(first != second)
+    return false;
+
+  return is_vec(first);
 }
 
 struct vec_merger
@@ -38,6 +45,53 @@ struct vec_merger
     // throw std::runtime_error("vec_merger: invalid case");
     return {};
   }
+
+  template<int N>
+  auto make_piecewise_from_floats(Float orig, Float incoming) const
+  {
+    piecewise_vec_message<N> mess{existing_dest.value, {}, unit, {}};
+
+    auto& existing_index = existing_dest.index;
+    if(existing_index[0] < N)
+    {
+      mess.value.value[existing_index[0]] = orig.value;
+      mess.used_values.set(existing_index[0]);
+    }
+
+    auto& incoming_index = incoming_dest.index;
+    if(incoming_index[0] < N)
+    {
+      mess.value.value[incoming_index[0]] = incoming.value;
+      mess.used_values.set(incoming_index[0]);
+    }
+    return mess;
+  }
+
+  ossia::state_element operator()(Float orig, Float incoming) const
+  {
+    auto& existing_index = existing_dest.index;
+    auto& incoming_index = incoming_dest.index;
+
+    if(!existing_index.empty() &&
+       !incoming_index.empty() &&
+       existing_index != incoming_index)
+    {
+      switch(ossia::matching_type(unit))
+      {
+        case ossia::val_type::VEC2F:
+          return make_piecewise_from_floats<2>(orig, incoming);
+        case ossia::val_type::VEC3F:
+          return make_piecewise_from_floats<3>(orig, incoming);
+        case ossia::val_type::VEC4F:
+          return make_piecewise_from_floats<4>(orig, incoming);
+        default:
+          break;
+      }
+    }
+
+    return ossia::message{incoming_dest, incoming, unit};
+  }
+
 
   template<std::size_t N>
   ossia::state_element operator()(ossia::Vec<float, N>& orig, const Float& incoming) const
@@ -113,7 +167,8 @@ struct state_flatten_visitor_merger
   {
     auto to_append_index_empty = incoming.destination.index.empty();
     auto source_index_empty = existing.destination.index.empty();
-    if(same_vec_type(existing.value, incoming.value))
+    if(same_vec_type(existing.value, incoming.value) ||
+       is_vec(existing.destination.value.get().getValueType()))
     {
       // We handle the Vec types a bit differently :
       // since it's very cheap, the value will contain the whole array data
@@ -274,9 +329,15 @@ struct state_flatten_visitor_merger
   //// Message incoming
   void operator()(message& existing, message&& incoming)
   {
+//    std::cerr << ossia::to_pretty_string(existing.destination) << " : "
+//              << ossia::value_to_pretty_string(existing.value) << " <= "
+//              << ossia::to_pretty_string(incoming.destination) << " : "
+//              << ossia::value_to_pretty_string(incoming.value) << std::endl;
+
     auto to_append_index_empty = incoming.destination.index.empty();
     auto source_index_empty = existing.destination.index.empty();
-    if(same_vec_type(existing.value, incoming.value))
+    if(same_vec_type(existing.value, incoming.value) ||
+       is_vec(existing.destination.value.get().getValueType()))
     {
       // We handle the Vec types a bit differently :
       // since it's very cheap, the value will contain the whole array data
@@ -510,7 +571,7 @@ struct state_flatten_visitor
     state.reserve(state.size() + s.size());
     for (const auto& e : s)
     {
-      flatten_and_filter(state, e);
+      ossia::apply(*this, e);
     }
   }
 
@@ -524,7 +585,7 @@ struct state_flatten_visitor
     state.reserve(state.size() + s.size());
     for (auto&& e : s)
     {
-      flatten_and_filter(state, std::move(e));
+      ossia::apply(*this, std::move(e));
     }
   }
 

@@ -75,8 +75,50 @@ unit_t parse_dataspace(boost::string_view text)
 
 const unit_parse_symbols_t& get_unit_parser()
 {
-    static const detail::make_unit_symbols_helper m;
-    return m.map;
+  static const detail::make_unit_symbols_helper m;
+  return m.map;
+}
+
+namespace detail
+{
+template<typename Unit, typename = void>
+struct unit_accessor_helper
+{
+  char operator()(uint8_t n)
+  {
+    return 0;
+  }
+};
+
+template<typename Unit>
+struct unit_accessor_helper<Unit, detail::enable_if_multidimensional<Unit>>
+{
+  char operator()(uint8_t n)
+  {
+    const auto& a = Unit::array_parameters();
+    if(n < a.size())
+      return a[n];
+    return 0;
+  }
+};
+}
+char get_unit_accessor(const ossia::unit_t& unit, uint8_t n)
+{
+  if(unit)
+  {
+    return eggs::variants::apply([=] (auto d) {
+      if(d)
+      {
+        return eggs::variants::apply([=] (auto u) {
+          return detail::unit_accessor_helper<decltype(u)>{}(n);
+        }, d);
+      }
+
+      return '\0';
+    }, unit);
+  }
+
+  return 0;
 }
 
 /// Convert ///
