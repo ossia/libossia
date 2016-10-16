@@ -75,6 +75,18 @@ ossia::unit_t parse_unit(boost::string_view text, T dataspace);
 OSSIA_EXPORT
 value_with_unit make_value(const ossia::value& v, const ossia::unit_t& u);
 
+/**
+ * @brief get_unit Create an unit from indexes in the variant
+ * @param dataspace Identifier in the first variant
+ * @param unit Optional identifier in the second variant
+ * 
+ * Ex. : position.opengl_u == (1, 4).
+ * This is useful for concise serialization / deserialization.
+ * 
+ * @return A corresponding unit
+ */
+OSSIA_EXPORT
+ossia::unit_t make_unit(uint64_t dataspace, uint64_t unit);
 
 /**
  * @brief matching_type Get the implementation type of an unit

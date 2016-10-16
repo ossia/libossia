@@ -4,6 +4,7 @@
 #include <ossia/editor/dataspace/detail/dataspace_merge.hpp>
 #include <ossia/editor/dataspace/detail/dataspace_parse.hpp>
 #include <ossia/editor/dataspace/detail/make_value.hpp>
+#include <ossia/editor/dataspace/detail/make_unit.hpp>
 #include <ossia/detail/logger.hpp>
 #include <unordered_map>
 
@@ -84,6 +85,12 @@ value_with_unit make_value(const ossia::value& v, const ossia::unit_t& u)
       return v;
     return eggs::variants::apply(make_value_with_unit_visitor{}, v.v, dataspace);
   }, u);
+}
+
+unit_t make_unit(uint64_t dataspace, uint64_t unit)
+{
+  static const ossia::make_unit_helper f;
+  return f.get_unit(dataspace, unit);
 }
 
 val_type matching_type(const unit_t& u)
@@ -255,8 +262,5 @@ template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::speed_
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::orientation_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::angle_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::gain_u);
-
-
-
 
 }

@@ -10,6 +10,8 @@
 #include <ossia/editor/dataspace/time.hpp>
 
 #include <brigand/algorithms/transform.hpp>
+#include <brigand/algorithms/fold.hpp>
+#include <brigand/functions/arithmetic.hpp>
 #include <brigand/adapted/list.hpp>
 #include <type_traits>
 namespace brigand
@@ -75,4 +77,13 @@ template<typename T>
 typename std::enable_if_t<is_unit_v<T>, bool> operator==(T, T) { return true; }
 template<typename T>
 typename std::enable_if_t<is_unit_v<T>, bool> operator!=(T, T) { return false; }
+
+using unit_sizes =
+  brigand::transform<
+    brigand::as_list<ossia::unit_t>, brigand::bind<brigand::size, brigand::_1>>;
+
+using unit_count = brigand::fold<
+  unit_sizes,
+  brigand::uint64_t<0>,
+  brigand::plus<brigand::_state, brigand::_element>>;
 }
