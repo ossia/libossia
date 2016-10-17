@@ -201,6 +201,31 @@ private Q_SLOTS:
 
 
 private:
+  const std::vector<ossia::value> value_to_test{
+      ossia::Impulse{},
+      ossia::Int{0},
+      ossia::Int{-1000},
+      ossia::Int{1000},
+      ossia::Float{0},
+      ossia::Float{-1000},
+      ossia::Float{1000},
+      ossia::Bool{true},
+      ossia::Bool{false},
+      ossia::Char{},
+      ossia::Char{'a'},
+      ossia::String{""},
+      ossia::String{"ossia"},
+      ossia::Tuple{},
+      ossia::Tuple{ossia::Int{0}},
+      ossia::Tuple{ossia::Int{0}, ossia::Int{1}},
+      ossia::Tuple{ossia::Float{0}, ossia::Int{1}},
+      ossia::Tuple{ossia::Float{0}, ossia::Int{1}, ossia::String{}, ossia::Impulse{}},
+      ossia::Tuple{ossia::Float{0}, ossia::Float{1000}},
+      ossia::Vec2f{},
+      ossia::Vec3f{},
+      ossia::Vec4f{}
+  };
+
   void test_comm_generic(
       std::unique_ptr<ossia::net::protocol_base> local_proto,
       std::unique_ptr<ossia::net::protocol_base> remote_proto)
@@ -213,23 +238,30 @@ private:
     auto push_all_values = [&] {
       for(int i = 0; i < N; i++)
       {
-        for(int j = 0; j < N; j++)
+        for(const ossia::value& val : value_to_test)
         {
-          local_addr[i]->setValueType((ossia::val_type) j);
-          local_addr[i]->pushValue(ossia::init_value((ossia::val_type) j));
+          local_addr[i]->setValueType(val.getType());
+          local_addr[i]->pushValue(val);
         }
       }
-      std::this_thread::sleep_for(std::chrono::milliseconds(50));
+      std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
       for(int i = 0; i < N; i++)
       {
-        for(int j = 0; j < N; j++)
+        local_addr[i]->setValueType((ossia::val_type) i);
+        local_addr[i]->pushValue(ossia::init_value((ossia::val_type) i));
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+      for(int i = 0; i < N; i++)
+      {
+        for(const ossia::value& val : value_to_test)
         {
-          remote_addr[i]->setValueType((ossia::val_type) j);
-          remote_addr[i]->pushValue(ossia::init_value((ossia::val_type) j));
+          remote_addr[i]->setValueType(val.getType());
+          remote_addr[i]->pushValue(val);
         }
       }
-      std::this_thread::sleep_for(std::chrono::milliseconds(50));
+      std::this_thread::sleep_for(std::chrono::milliseconds(20));
     };
 
     push_all_values();

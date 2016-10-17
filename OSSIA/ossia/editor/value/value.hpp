@@ -24,7 +24,7 @@ class value;
  * This allows a simpler handling of the default case.
  */
 template <typename Visitor, typename Variant>
-auto apply(Visitor&& v, Variant&& var) -> decltype(auto)
+auto apply(Visitor&& v, Variant&& var) -> decltype(std::forward<Visitor>(v)())
 {
   // Thanks K-Ballo (eggs-cpp/variant#21)
   if (var)
