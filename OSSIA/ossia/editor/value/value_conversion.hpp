@@ -180,7 +180,7 @@ struct numeric_value_converter
     template<typename U>
     T operator()(U&& u)
     {
-      return T{value_converter<decltype(T::value)>{}(std::forward<U>(u))};
+      return T{value_converter<decltype(std::declval<T>().value)>{}(std::forward<U>(u))};
     }
   };
 
