@@ -38,11 +38,11 @@ struct strong_value
   strong_value() = default;
 
   // Constructor that takes anyything able to initialize val
-  template<typename U,
+  template<typename... Args,
            typename = std::enable_if_t<
-             std::is_constructible<value_type, U>::value>>
-  constexpr strong_value(U other):
-      value{other}
+             std::is_constructible<value_type, Args...>::value>>
+  constexpr strong_value(Args&&... other):
+      value{std::forward<Args>(other)...}
   {
   }
 

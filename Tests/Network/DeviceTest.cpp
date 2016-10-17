@@ -1,7 +1,7 @@
 #include <QtTest>
 #include <ossia/ossia.hpp>
 #include <ossia/network/http/http.hpp>
-
+#include <ossia/network/midi/midi.hpp>
 #include <ossia/network/websocket-generic-client/ws_generic_client.hpp>
 #include <iostream>
 
@@ -126,6 +126,20 @@ private Q_SLOTS:
     }
   }
 
+  void test_midi()
+  {
+      using namespace ossia::net::midi;
+      auto proto = std::make_unique<midi_protocol>();
+
+      for(auto& e : proto->scan())
+      {
+          proto->setInfo(e);
+          auto dev = std::make_unique<ossia::net::midi::midi_device>(std::move(proto));
+          dev->setName("dada");
+          dev->updateNamespace();
+      }
+
+  }
 
   void test_comm_osc()
   {

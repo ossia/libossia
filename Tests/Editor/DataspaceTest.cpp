@@ -177,6 +177,131 @@ private Q_SLOTS:
     });
 
   }
+
+  void test_get_dataspace_text()
+  {
+    using namespace ossia;
+
+    {
+      QVERIFY(get_dataspace_text({}).empty());
+
+      QVERIFY(get_dataspace_text(ossia::color_u{}) == "color");
+      QVERIFY(get_dataspace_text(ossia::rgb_u{}) == "color");
+
+      QVERIFY(get_dataspace_text(ossia::centimeter_u{}) == "distance");
+      QVERIFY(get_dataspace_text(ossia::distance_u{}) == "distance");
+    }
+
+    {
+      QVERIFY(get_unit_text({}).empty());
+
+      QVERIFY(get_unit_text(ossia::color_u{}).empty());
+      QVERIFY(get_unit_text(ossia::rgb_u{}) == "rgb");
+
+      QVERIFY(get_unit_text(ossia::distance_u{}).empty());
+      QVERIFY(get_unit_text(ossia::centimeter_u{}) == "cm");
+    }
+
+    {
+      QVERIFY(get_pretty_unit_text({}) == "none");
+
+      QVERIFY(get_pretty_unit_text(ossia::color_u{}) == "color");
+      QVERIFY(get_pretty_unit_text(ossia::rgb_u{}) == "color.rgb");
+
+      QVERIFY(get_pretty_unit_text(ossia::distance_u{}) == "distance");
+      QVERIFY(get_pretty_unit_text(ossia::centimeter_u{}) == "distance.cm");
+    }
+
+    {
+      QVERIFY(get_unit_accessor({}, 0) == 0);
+      QVERIFY(get_unit_accessor({}, -1) == 0);
+      QVERIFY(get_unit_accessor({}, 1) == 0);
+      QVERIFY(get_unit_accessor({}, 255) == 0);
+
+      QVERIFY(get_unit_accessor(ossia::centimeter_u{}, 0) == 0);
+      QVERIFY(get_unit_accessor(ossia::centimeter_u{}, -1) == 0);
+      QVERIFY(get_unit_accessor(ossia::centimeter_u{}, 1) == 0);
+      QVERIFY(get_unit_accessor(ossia::centimeter_u{}, 255) == 0);
+
+      QVERIFY(get_unit_accessor(ossia::rgb_u{}, 0) == 'r');
+      QVERIFY(get_unit_accessor(ossia::rgb_u{}, 1) == 'g');
+      QVERIFY(get_unit_accessor(ossia::rgb_u{}, 2) == 'b');
+      QVERIFY(get_unit_accessor(ossia::rgb_u{}, 3) == 0);
+      QVERIFY(get_unit_accessor(ossia::rgb_u{}, -1) == 0);
+      QVERIFY(get_unit_accessor(ossia::rgb_u{}, 255) == 0);
+    }
+
+    {
+      QVERIFY(parse_dataspace("") == ossia::unit_t{});
+      QVERIFY(parse_dataspace("none") == ossia::unit_t{});
+      QVERIFY(parse_dataspace("color") == ossia::color_u{});
+      QVERIFY(parse_dataspace("distance") == ossia::distance_u{});
+    }
+
+    {
+      QVERIFY(parse_unit("rgb", ossia::unit_t{}) == ossia::unit_t{});
+      QVERIFY(parse_unit("rgb", ossia::color_u{}) == ossia::rgb_u{});
+      QVERIFY(parse_unit("rgb", ossia::distance_u{}) == ossia::distance_u{});
+      QVERIFY(parse_unit("rgb", ossia::unit_t{ossia::color_u{}}) == ossia::rgb_u{});
+      QVERIFY(parse_unit("rgb", ossia::unit_t{ossia::distance_u{}}) == ossia::distance_u{});
+      // should not compile : QVERIFY(parse_unit("rgb", ossia::rgb_u{}) == ossia::rgb_u{});
+      // should not compile : QVERIFY(parse_unit("rgb", ossia::hsv_u{}) == ossia::rgb_u{});
+    }
+
+    {
+      QVERIFY(parse_pretty_unit("") == ossia::unit_t{});
+      QVERIFY(parse_pretty_unit("none") == ossia::unit_t{});
+      QVERIFY(parse_pretty_unit("rgb") == ossia::unit_t{});
+      QVERIFY(parse_pretty_unit("color.rgb") == ossia::rgb_u{});
+      QVERIFY(parse_pretty_unit("color.tata") == ossia::color_u{});
+      QVERIFY(parse_pretty_unit("color.cm") == ossia::color_u{});
+      QVERIFY(parse_pretty_unit("distance.cm") == ossia::centimeter_u{});
+    }
+
+    {
+      QVERIFY(make_value(ossia::Float{1.2}, ossia::centimeter_u{}) == ossia::centimeter{1.2});
+      QVERIFY(make_value(ossia::Float{1.2}, ossia::rgb_u{}) == ossia::value_with_unit{});
+      QVERIFY(make_value(make_vec(1.2, 1.3, 32.5), ossia::rgb_u{}) == ossia::rgb{make_vec(1.2, 1.3, 32.5)});
+      QVERIFY(make_value(ossia::Tuple{Float{1.2}, Float{1.3}, Float{32.5}}, ossia::rgb_u{}) == ossia::rgb{make_vec(1.2, 1.3, 32.5)});
+    }
+
+    {
+      QVERIFY(make_unit(0, 0) == ossia::meter_u{});
+      QVERIFY(make_unit(1, 0) == ossia::cartesian_3d_u{});
+      QVERIFY(make_unit(1, 1) == ossia::cartesian_2d_u{});
+      QVERIFY(make_unit(-1, -1) == ossia::unit_t{});
+      QVERIFY(make_unit(-1, 0) == ossia::unit_t{});
+      QVERIFY(make_unit(0, -1) == ossia::unit_t{});
+      QVERIFY(make_unit(0, 100) == ossia::unit_t{});
+      QVERIFY(make_unit(100, 0) == ossia::unit_t{});
+      QVERIFY(make_unit(100, 100) == ossia::unit_t{});
+    }
+
+    {
+      QVERIFY(matching_type(ossia::unit_t{}) == ossia::val_type::IMPULSE);
+      QVERIFY(matching_type(ossia::rgb_u{}) == ossia::val_type::VEC3F);
+      QVERIFY(matching_type(ossia::rgba_u{}) == ossia::val_type::VEC4F);
+      QVERIFY(matching_type(ossia::centimeter_u{}) == ossia::val_type::FLOAT);
+    }
+
+    {
+      QVERIFY(convert(ossia::rgb{make_vec(1.2, 1.3, 32.5)}, ossia::bgr_u{}) == ossia::bgr{make_vec(32.5, 1.3, 1.2)});
+      QVERIFY(convert(ossia::rgb{make_vec(1.2, 1.3, 32.5)}, ossia::centimeter_u{}) == ossia::value_with_unit{});
+      QVERIFY(convert(ossia::value_with_unit{}, ossia::centimeter_u{}) == ossia::value_with_unit{});
+    }
+
+    {
+      QVERIFY(to_value(ossia::value_with_unit{}) == ossia::value{});
+      QVERIFY(to_value(ossia::rgb{make_vec(1.2, 1.3, 32.5)}) == make_vec(1.2, 1.3, 32.5));
+      QVERIFY(to_value(ossia::centimeter{2.3}) == Float{2.3});
+    }
+
+    {
+      QVERIFY(to_unit(ossia::value_with_unit{}) == ossia::unit_t{});
+      QVERIFY(to_unit(ossia::rgb{make_vec(1.2, 1.3, 32.5)}) == ossia::rgb_u{});
+      QVERIFY(to_unit(ossia::centimeter{2.3}) == ossia::centimeter_u{});
+    }
+  }
 };
 
 QTEST_APPLESS_MAIN(DataspaceTest)

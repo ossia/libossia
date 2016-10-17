@@ -317,37 +317,89 @@ struct value_comparison_visitor
 
 bool value::operator==(const value& rhs) const
 {
-  return eggs::variants::apply(
-      value_comparison_visitor<std::equal_to<>>{rhs}, v);
+  if(v && rhs.v)
+  {
+    return eggs::variants::apply(
+          value_comparison_visitor<std::equal_to<>>{rhs}, v);
+  }
+  else if(!v && !rhs.v)
+  {
+    return true;
+  }
+  return false;
 }
 
 bool value::operator!=(const value& rhs) const
 {
-  return eggs::variants::apply(
-      value_comparison_visitor<std::not_equal_to<>>{rhs}, v);
+  if(v && rhs.v)
+  {
+    return eggs::variants::apply(
+        value_comparison_visitor<std::not_equal_to<>>{rhs}, v);
+  }
+  else if(!v && !rhs.v)
+  {
+    return false;
+  }
+  return true;
 }
 
 bool value::operator>(const value& rhs) const
 {
-  return eggs::variants::apply(
-      value_comparison_visitor<std::greater<>>{rhs}, v);
+  if(v && rhs.v)
+  {
+    return eggs::variants::apply(
+          value_comparison_visitor<std::greater<>>{rhs}, v);
+  }
+  else
+  {
+    return false;
+  }
 }
 
 bool value::operator>=(const value& rhs) const
 {
-  return eggs::variants::apply(
-      value_comparison_visitor<std::greater_equal<>>{rhs}, v);
+  if(v && rhs.v)
+  {
+    return eggs::variants::apply(
+          value_comparison_visitor<std::greater_equal<>>{rhs}, v);
+  }
+  else if(!v && !rhs.v)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 bool value::operator<(const value& rhs) const
 {
-  return eggs::variants::apply(value_comparison_visitor<std::less<>>{rhs}, v);
+  if(v && rhs.v)
+  {
+    return eggs::variants::apply(value_comparison_visitor<std::less<>>{rhs}, v);
+  }
+  else
+  {
+    return false;
+  }
 }
 
 bool value::operator<=(const value& rhs) const
 {
-  return eggs::variants::apply(
-      value_comparison_visitor<std::less_equal<>>{rhs}, v);
+  if(v && rhs.v)
+  {
+    return eggs::variants::apply(
+          value_comparison_visitor<std::less_equal<>>{rhs}, v);
+  }
+  else if(!v && !rhs.v)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 namespace

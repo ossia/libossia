@@ -25,9 +25,17 @@ std::string get_pretty_unit_text(unit_t u)
 {
     using namespace std::literals;
     if(u)
-        return get_dataspace_text(u).to_string() + "." + get_unit_text(u).to_string();
+    {
+        auto str = get_dataspace_text(u).to_string();
+        auto str2 = get_unit_text(u);
+        if(!str2.empty())
+          return str + "." + str2.to_string();
+        return str;
+    }
     else
+    {
         return "none"s;
+    }
 }
 
 unit_t parse_unit(boost::string_view text, unit_t dataspace)

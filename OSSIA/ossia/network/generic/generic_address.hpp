@@ -75,47 +75,47 @@ public:
 
   ~generic_address();
 
-  const ossia::net::node_base& getNode() const override;
+  const ossia::net::node_base& getNode() const final override;
 
-  void pullValue() override;
+  void pullValue() final override;
 
-  ossia::net::generic_address& pushValue(const ossia::value&) override;
-  ossia::net::generic_address& pushValue() override;
+  ossia::net::generic_address& pushValue(const ossia::value&) final override;
+  ossia::net::generic_address& pushValue() final override;
 
   const ossia::value& getValue() const;
-  ossia::value cloneValue(ossia::destination_index = {}) const override;
-  generic_address& setValue(const ossia::value&) override;
+  ossia::value cloneValue(ossia::destination_index = {}) const final override;
+  generic_address& setValue(const ossia::value&) final override;
 
-  ossia::val_type getValueType() const override;
-  ossia::net::generic_address& setValueType(ossia::val_type) override;
+  ossia::val_type getValueType() const final override;
+  ossia::net::generic_address& setValueType(ossia::val_type) final override;
 
-  ossia::access_mode getAccessMode() const override;
-  ossia::net::generic_address& setAccessMode(ossia::access_mode) override;
+  ossia::access_mode getAccessMode() const final override;
+  ossia::net::generic_address& setAccessMode(ossia::access_mode) final override;
 
-  const ossia::net::domain& getDomain() const override;
-  ossia::net::generic_address& setDomain(const ossia::net::domain&) override;
+  const ossia::net::domain& getDomain() const final override;
+  ossia::net::generic_address& setDomain(const ossia::net::domain&) final override;
 
-  ossia::bounding_mode getBoundingMode() const override;
-  ossia::net::generic_address& setBoundingMode(ossia::bounding_mode) override;
+  ossia::bounding_mode getBoundingMode() const final override;
+  ossia::net::generic_address& setBoundingMode(ossia::bounding_mode) final override;
 
-  ossia::repetition_filter getRepetitionFilter() const override;
+  ossia::repetition_filter getRepetitionFilter() const final override;
   ossia::net::generic_address&
-      setRepetitionFilter(ossia::repetition_filter) override;
+      setRepetitionFilter(ossia::repetition_filter) final override;
 
-  std::vector<std::string> getTags() const override;
-  generic_address& setTags(const std::vector<std::string>& v) override;
+  std::vector<std::string> getTags() const final override;
+  generic_address& setTags(const std::vector<std::string>& v) final override;
 
-  std::string getDescription() const override;
-  generic_address& setDescription(const std::string& v) override;
+  std::string getDescription() const final override;
+  generic_address& setDescription(const std::string& v) final override;
 
-  ossia::value getDefaultValue() const override;
-  generic_address& setDefaultValue(const ossia::value& v) override;
+  ossia::value getDefaultValue() const final override;
+  generic_address& setDefaultValue(const ossia::value& v) final override;
 
-  ossia::unit_t getUnit() const override;
-  generic_address& setUnit(const ossia::unit_t& v) override;
+  ossia::unit_t getUnit() const final override;
+  generic_address& setUnit(const ossia::unit_t& v) final override;
 
-  void onFirstCallbackAdded() override;
-  void onRemovingLastCallback() override;
+  void onFirstCallbackAdded() final override;
+  void onRemovingLastCallback() final override;
 
 private:
 };
