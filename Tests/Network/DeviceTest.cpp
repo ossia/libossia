@@ -215,16 +215,21 @@ private:
       {
         for(int j = 0; j < N; j++)
         {
+          local_addr[i]->setValueType((ossia::val_type) j);
           local_addr[i]->pushValue(ossia::init_value((ossia::val_type) j));
         }
       }
+      std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
       for(int i = 0; i < N; i++)
       {
         for(int j = 0; j < N; j++)
         {
+          remote_addr[i]->setValueType((ossia::val_type) j);
           remote_addr[i]->pushValue(ossia::init_value((ossia::val_type) j));
         }
       }
+      std::this_thread::sleep_for(std::chrono::milliseconds(50));
     };
 
     push_all_values();

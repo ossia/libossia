@@ -757,6 +757,79 @@ private Q_SLOTS:
       ossia::piecewise_vec_message<3> expected{*t.vec3f_addr, ossia::make_vec(1., 0., 5.), ossia::hsv_u{}, make_bitset(true, false, true)};
       QVERIFY(*s.begin() == expected);
     }
+  }
+
+  void flatten_same_tuple_message_on_tuple_address()
+  {
+      ossia::TestUtils t;
+      t.tuple_addr->setUnit({});
+
+      { // cref
+        ossia::state s;
+
+        ossia::message m1{*t.tuple_addr, ossia::Tuple{ossia::Float{0.}, ossia::Float{0.5}, ossia::Float{0.2}}, {}};
+
+        ossia::flatten_and_filter(s, m1);
+
+        QVERIFY(s.size() == 1);
+        QVERIFY(*s.begin() == m1);
+
+        ossia::flatten_and_filter(s, m1);
+
+        QVERIFY(s.size() == 1);
+        QVERIFY(*s.begin() == m1);
+      }
+
+      { // rvalue
+        ossia::state s;
+
+        ossia::message m1{*t.tuple_addr, ossia::Tuple{ossia::Float{0.}, ossia::Float{0.5}, ossia::Float{0.2}}, {}};
+
+        ossia::flatten_and_filter(s, ossia::message{m1});
+
+        QVERIFY(s.size() == 1);
+        QVERIFY(*s.begin() == m1);
+
+        ossia::flatten_and_filter(s, ossia::message{m1});
+
+        QVERIFY(s.size() == 1);
+        QVERIFY(*s.begin() == m1);
+      }
+
+
+      t.tuple_addr->setUnit(ossia::rgb_u{});
+
+      { // cref
+        ossia::state s;
+
+        ossia::message m1{*t.tuple_addr, ossia::Tuple{ossia::Float{0.}, ossia::Float{0.5}, ossia::Float{0.2}}, ossia::rgb_u{}};
+
+        ossia::flatten_and_filter(s, m1);
+
+        QVERIFY(s.size() == 1);
+        QVERIFY(*s.begin() == m1);
+
+        ossia::flatten_and_filter(s, m1);
+
+        QVERIFY(s.size() == 1);
+        QVERIFY(*s.begin() == m1);
+      }
+
+      { // rvalue
+        ossia::state s;
+
+        ossia::message m1{*t.tuple_addr, ossia::Tuple{ossia::Float{0.}, ossia::Float{0.5}, ossia::Float{0.2}}, ossia::rgb_u{}};
+
+        ossia::flatten_and_filter(s, ossia::message{m1});
+
+        QVERIFY(s.size() == 1);
+        QVERIFY(*s.begin() == m1);
+
+        ossia::flatten_and_filter(s, ossia::message{m1});
+
+        QVERIFY(s.size() == 1);
+        QVERIFY(*s.begin() == m1);
+      }
 
   }
 

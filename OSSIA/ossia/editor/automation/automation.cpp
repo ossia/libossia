@@ -330,7 +330,6 @@ struct computeValue_visitor
     std::vector<ossia::value> t_value;
     t_value.reserve(t.value.size());
 
-
     for (const auto& e : t.value)
     {
       t_value.push_back(e.apply(*this));
