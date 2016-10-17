@@ -76,7 +76,13 @@ struct vec_merger
        !incoming_index.empty() &&
        existing_index != incoming_index)
     {
-      switch(ossia::matching_type(unit))
+      ossia::val_type type;
+      if(unit)
+        type = ossia::matching_type(unit);
+      else
+        type = existing_dest.value.get().getValueType();
+
+      switch(type)
       {
         case ossia::val_type::VEC2F:
           return make_piecewise_from_floats<2>(orig, incoming);

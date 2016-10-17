@@ -506,24 +506,257 @@ private Q_SLOTS:
     }
   }
 
-  void flatten_test()
+  void flatten_same_vec_message_on_vec_address()
   {
     ossia::TestUtils t;
     t.vec3f_addr->setUnit(ossia::rgb_u{});
     t.vec3f_addr->pushValue(ossia::make_vec(0.5, 0.5, 0.5));
 
-    {
+
+    { // cref
       ossia::state s;
 
-      ossia::message m1{*t.vec3f_addr, ossia::make_vec(0.1, 0.2, 0.3)};
-
+      ossia::message m1{*t.vec3f_addr, ossia::make_vec(0.1, 0.2, 0.3), {}};
 
       ossia::flatten_and_filter(s, m1);
-      //ossia::message m1{t.vec3f_addr, ossia::make_vec(0.1, 0.2, 0.3)};
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m1);
+
+      ossia::flatten_and_filter(s, m1);
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m1);
     }
 
-    auto p = ossia::get_unit_parser();
+    { // rvalue
+      ossia::state s;
 
+      ossia::message m1{*t.vec3f_addr, ossia::make_vec(0.1, 0.2, 0.3), {}};
+
+      ossia::flatten_and_filter(s, ossia::message{m1});
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m1);
+
+      ossia::flatten_and_filter(s, ossia::message{m1});
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m1);
+    }
+  }
+
+
+  void flatten_different_vec_message_on_vec_address()
+  {
+    ossia::TestUtils t;
+    t.vec3f_addr->setUnit(ossia::rgb_u{});
+    t.vec3f_addr->pushValue(ossia::make_vec(0.5, 0.5, 0.5));
+
+    { // cref
+      ossia::state s;
+
+      ossia::message m1{*t.vec3f_addr, ossia::make_vec(0.1, 0.2, 0.3), {}};
+      ossia::message m2{*t.vec3f_addr, ossia::make_vec(0.4, 0.5, 0.6), {}};
+
+      ossia::flatten_and_filter(s, m1);
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m1);
+
+      ossia::flatten_and_filter(s, m2);
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m2);
+    }
+
+    { // rvalue
+      ossia::state s;
+
+      ossia::message m1{*t.vec3f_addr, ossia::make_vec(0.1, 0.2, 0.3), {}};
+      ossia::message m2{*t.vec3f_addr, ossia::make_vec(0.4, 0.5, 0.6), {}};
+
+      ossia::flatten_and_filter(s, ossia::message{m1});
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m1);
+
+      ossia::flatten_and_filter(s, ossia::message{m2});
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m2);
+    }
+  }
+
+  void flatten_different_float_message_on_vec_address_without_unit()
+  {
+    ossia::TestUtils t;
+    t.vec3f_addr->setUnit(ossia::rgb_u{});
+    t.vec3f_addr->pushValue(ossia::make_vec(0.5, 0.5, 0.5));
+
+    { // cref
+      ossia::state s;
+
+      ossia::message m1{{*t.vec3f_addr, {0}}, ossia::Float{1.}, {}};
+      ossia::message m2{{*t.vec3f_addr, {2}}, ossia::Float{5.}, {}};
+
+      ossia::flatten_and_filter(s, m1);
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m1);
+
+      ossia::flatten_and_filter(s, m2);
+
+      QVERIFY(s.size() == 1);
+      ossia::piecewise_vec_message<3> expected{*t.vec3f_addr, ossia::make_vec(1., 0., 5.), {}, make_bitset(true, false, true)};
+      QVERIFY(*s.begin() == expected);
+    }
+
+    { // rvalue
+      ossia::state s;
+
+      ossia::message m1{{*t.vec3f_addr, {0}}, ossia::Float{1.}, {}};
+      ossia::message m2{{*t.vec3f_addr, {2}}, ossia::Float{5.}, {}};
+
+      ossia::flatten_and_filter(s, ossia::message{m1});
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m1);
+
+      ossia::flatten_and_filter(s, ossia::message{m2});
+
+      QVERIFY(s.size() == 1);
+      ossia::piecewise_vec_message<3> expected{*t.vec3f_addr, ossia::make_vec(1., 0., 5.), {}, make_bitset(true, false, true)};
+      QVERIFY(*s.begin() == expected);
+    }
+
+    // Same but without an unit on the address
+    t.vec3f_addr->setUnit({});
+    t.vec3f_addr->pushValue(ossia::make_vec(0.5, 0.5, 0.5));
+
+    { // cref
+      ossia::state s;
+
+      ossia::message m1{{*t.vec3f_addr, {0}}, ossia::Float{1.}, {}};
+      ossia::message m2{{*t.vec3f_addr, {2}}, ossia::Float{5.}, {}};
+
+      ossia::flatten_and_filter(s, m1);
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m1);
+
+      ossia::flatten_and_filter(s, m2);
+
+      QVERIFY(s.size() == 1);
+      ossia::piecewise_vec_message<3> expected{*t.vec3f_addr, ossia::make_vec(1., 0., 5.), {}, make_bitset(true, false, true)};
+      QVERIFY(*s.begin() == expected);
+    }
+
+    { // rvalue
+      ossia::state s;
+
+      ossia::message m1{{*t.vec3f_addr, {0}}, ossia::Float{1.}, {}};
+      ossia::message m2{{*t.vec3f_addr, {2}}, ossia::Float{5.}, {}};
+
+      ossia::flatten_and_filter(s, ossia::message{m1});
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m1);
+
+      ossia::flatten_and_filter(s, ossia::message{m2});
+
+      QVERIFY(s.size() == 1);
+      ossia::piecewise_vec_message<3> expected{*t.vec3f_addr, ossia::make_vec(1., 0., 5.), {}, make_bitset(true, false, true)};
+      QVERIFY(*s.begin() == expected);
+    }
+  }
+
+
+  void flatten_different_float_message_on_vec_address_with_same_unit()
+  {
+    ossia::TestUtils t;
+    t.vec3f_addr->setUnit(ossia::rgb_u{});
+    t.vec3f_addr->pushValue(ossia::make_vec(0.5, 0.5, 0.5));
+
+    { // cref
+      ossia::state s;
+
+      ossia::message m1{{*t.vec3f_addr, {0}}, ossia::Float{1.}, ossia::rgb_u{}};
+      ossia::message m2{{*t.vec3f_addr, {2}}, ossia::Float{5.}, ossia::rgb_u{}};
+
+      ossia::flatten_and_filter(s, m1);
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m1);
+
+      ossia::flatten_and_filter(s, m2);
+
+      QVERIFY(s.size() == 1);
+      ossia::piecewise_vec_message<3> expected{*t.vec3f_addr, ossia::make_vec(1., 0., 5.), ossia::rgb_u{}, make_bitset(true, false, true)};
+      QVERIFY(*s.begin() == expected);
+    }
+
+    { // rvalue
+      ossia::state s;
+
+      ossia::message m1{{*t.vec3f_addr, {0}}, ossia::Float{1.}, ossia::rgb_u{}};
+      ossia::message m2{{*t.vec3f_addr, {2}}, ossia::Float{5.}, ossia::rgb_u{}};
+
+      ossia::flatten_and_filter(s, ossia::message{m1});
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m1);
+
+      ossia::flatten_and_filter(s, ossia::message{m2});
+
+      QVERIFY(s.size() == 1);
+      ossia::piecewise_vec_message<3> expected{*t.vec3f_addr, ossia::make_vec(1., 0., 5.), ossia::rgb_u{}, make_bitset(true, false, true)};
+      QVERIFY(*s.begin() == expected);
+    }
+
+  }
+
+  void flatten_different_float_message_on_vec_address_with_different_unit()
+  {
+    ossia::TestUtils t;
+    t.vec3f_addr->setUnit(ossia::rgb_u{});
+    t.vec3f_addr->pushValue(ossia::make_vec(0.5, 0.5, 0.5));
+
+    { // cref
+      ossia::state s;
+
+      ossia::message m1{{*t.vec3f_addr, {0}}, ossia::Float{1.}, ossia::hsv_u{}};
+      ossia::message m2{{*t.vec3f_addr, {2}}, ossia::Float{5.}, ossia::hsv_u{}};
+
+      ossia::flatten_and_filter(s, m1);
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m1);
+
+      ossia::flatten_and_filter(s, m2);
+
+      QVERIFY(s.size() == 1);
+      ossia::piecewise_vec_message<3> expected{*t.vec3f_addr, ossia::make_vec(1., 0., 5.), ossia::hsv_u{}, make_bitset(true, false, true)};
+      QVERIFY(*s.begin() == expected);
+    }
+
+    { // rvalue
+      ossia::state s;
+
+      ossia::message m1{{*t.vec3f_addr, {0}}, ossia::Float{1.}, ossia::hsv_u{}};
+      ossia::message m2{{*t.vec3f_addr, {2}}, ossia::Float{5.}, ossia::hsv_u{}};
+
+      ossia::flatten_and_filter(s, ossia::message{m1});
+
+      QVERIFY(s.size() == 1);
+      QVERIFY(*s.begin() == m1);
+
+      ossia::flatten_and_filter(s, ossia::message{m2});
+
+      QVERIFY(s.size() == 1);
+      ossia::piecewise_vec_message<3> expected{*t.vec3f_addr, ossia::make_vec(1., 0., 5.), ossia::hsv_u{}, make_bitset(true, false, true)};
+      QVERIFY(*s.begin() == expected);
+    }
 
   }
 
