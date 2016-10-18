@@ -96,7 +96,7 @@ private Q_SLOTS:
     c->addPoint(linearSegment, 10., 10);
 
     QVERIFY(c->valueAt(-10.) == -10);
-    QVERIFY(c->valueAt(-9.5) == -9);
+    QCOMPARE(c->valueAt(-9.5), -9);
     QVERIFY(c->valueAt(-9.) == -9);
     QVERIFY(c->valueAt(-8.5) == -8);
     QVERIFY(c->valueAt(-8) == -8);

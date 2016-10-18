@@ -30,72 +30,72 @@ namespace ossia
 namespace easing
 {
 
-template <typename T>
 struct ease
 {
-  constexpr T operator()(T a, T b, T t) const
+  template <typename T, typename U, typename V>
+  constexpr T operator()(T a, U b, V t) const
   {
     return std::fma(t, b, std::fma(-t, a, a));
   }
 };
 
-template <typename T>
 struct linear
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return t;
   }
 };
 
-template <typename T>
 struct quadraticIn
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return std::pow(t, 2);
   }
 };
 
-template <typename T>
 struct quadraticOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return -(t * (t - 2.));
   }
 };
 
-template <typename T>
 struct quadraticInOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return (t < 0.5) ? 2. * t * t : (-2. * t * t) + (4. * t) - 1.;
   }
 };
 
-template <typename T>
 struct cubicIn
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return std::pow(t, 3);
   }
 };
 
-template <typename T>
 struct cubicOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return std::pow(t - 1., 3) + 1.;
   }
 };
 
-template <typename T>
 struct cubicInOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return (t < T(0.5))
@@ -104,27 +104,27 @@ struct cubicInOut
   }
 };
 
-template <typename T>
 struct quarticIn
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return std::pow(t, 4);
   }
 };
 
-template <typename T>
 struct quarticOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return std::pow(t - 1., 3) * (1. - t) + 1.;
   }
 };
 
-template <typename T>
 struct quarticInOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return (t < 0.5)
@@ -133,27 +133,27 @@ struct quarticInOut
   }
 };
 
-template <typename T>
 struct quinticIn
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return std::pow(t, 5);
   }
 };
 
-template <typename T>
 struct quinticOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return std::pow(t - 1., 5) + 1.;
   }
 };
 
-template <typename T>
 struct quinticInOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return (t < 0.5)
@@ -162,54 +162,54 @@ struct quinticInOut
   }
 };
 
-template <typename T>
 struct sineIn
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return std::sin((t - 1.) * half_pi) + 1.;
   }
 };
 
-template <typename T>
 struct sineOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return std::sin(t * half_pi);
   }
 };
 
-template <typename T>
 struct sineInOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return 0.5 * (1. - std::cos(t * pi));
   }
 };
 
-template <typename T>
 struct circularIn
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return 1. - std::sqrt(1. - (t * t));
   }
 };
 
-template <typename T>
 struct circularOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return std::sqrt((2. - t) * t);
   }
 };
 
-template <typename T>
 struct circularInOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return (t < 0.5)
@@ -218,27 +218,27 @@ struct circularInOut
   }
 };
 
-template <typename T>
 struct exponentialIn
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return (t <= 0) ? t : std::exp2(10. * (t - 1.));
   }
 };
 
-template <typename T>
 struct exponentialOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return (t >= 1.) ? t : 1. - std::exp2(-10. * t);
   }
 };
 
-template <typename T>
 struct exponentialInOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return (t <= 0. || t >= 1.)
@@ -249,27 +249,27 @@ struct exponentialInOut
   }
 };
 
-template <typename T>
 struct elasticIn
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return std::sin(13. * half_pi * t) * std::exp2(10. * (t - 1.));
   }
 };
 
-template <typename T>
 struct elasticOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return sin(-13. * half_pi * (t + 1.)) * std::exp2(-10. * t) + 1.;
   }
 };
 
-template <typename T>
 struct elasticInOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return (t < 0.5)
@@ -281,27 +281,27 @@ struct elasticInOut
   }
 };
 
-template <typename T>
 struct backIn
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return std::pow(t, 3) - t * std::sin(t * pi);
   }
 };
 
-template <typename T>
 struct backOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return 1. - (std::pow(1. - t, 3) - (1. - t) * std::sin((1. - t) * pi));
   }
 };
 
-template <typename T>
 struct backInOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return (t < 0.5)
@@ -310,9 +310,9 @@ struct backInOut
   }
 };
 
-template <typename T>
 struct bounceOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return t < 4. / 11.
@@ -325,29 +325,29 @@ struct bounceOut
   }
 };
 
-template <typename T>
 struct bounceIn
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
-    return 1. - bounceOut<T>{}(1. - t);
+    return 1. - bounceOut{}(1. - t);
   }
 };
 
-template <typename T>
 struct bounceInOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return t < 0.5
-        ? 0.5 * bounceIn<T>{}(t * 2.)
-        : 0.5 * bounceOut<T>{}(t * 2. - 1.) + 0.5;
+        ? 0.5 * bounceIn{}(t * 2.)
+        : 0.5 * bounceOut{}(t * 2. - 1.) + 0.5;
   }
 };
 
-template <typename T>
 struct perlinInOut
 {
+  template <typename T>
   constexpr T operator()(T t) const
   {
     return 6. * std::pow(t, 5) - 15. * std::pow(t, 4) + 10. * std::pow(t, 3);
@@ -360,7 +360,7 @@ struct curve_segment_ease
 {
   Y operator()(double ratio, Y start, Y end) const
   {
-    return easing::ease<Y>{}(start, end, Easing{}(ratio));
+    return easing::ease{}(start, end, Easing{}(ratio));
   }
 };
 }

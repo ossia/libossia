@@ -7,7 +7,7 @@ struct curve_segment_linear
 {
   Y operator()(double ratio, Y start, Y end) const
   {
-    return ossia::easing::ease<Y>{}(start, end, ratio);
+    return ossia::easing::ease{}(start, end, ratio);
   }
 };
 }
