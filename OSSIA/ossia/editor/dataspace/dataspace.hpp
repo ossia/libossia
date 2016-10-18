@@ -28,7 +28,7 @@ namespace ossia
 
 template<typename T>
 using add_value = brigand::transform<T, brigand::bind<ossia::strong_value, brigand::_1>>;
-using unit_t = eggs::variant<distance_u, position_u, speed_u, orientation_u, angle_u, color_u, gain_u>;
+using unit_t = eggs::variant<distance_u, position_u, speed_u, orientation_u, angle_u, color_u, gain_u, time_u>;
 
 
 using angle = add_value<angle_u>;
@@ -38,6 +38,7 @@ using position = add_value<position_u>;
 using color = add_value<color_u>;
 using speed = add_value<speed_u>;
 using gain = add_value<gain_u>;
+using time = add_value<time_u>;
 
 // Basically eggs::variant<ossia::value, ossia::distance, ossia::position, ossia::speed...>
 using value_with_unit =

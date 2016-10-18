@@ -15,6 +15,7 @@ const OSSIA_DECL_RELAXED_CONSTEXPR auto two_pi = boost::math::constants::two_pi<
 const OSSIA_DECL_RELAXED_CONSTEXPR auto half_pi = boost::math::constants::half_pi<double>();
 const OSSIA_DECL_RELAXED_CONSTEXPR auto rad_to_deg = boost::math::constants::radian<double>();
 const OSSIA_DECL_RELAXED_CONSTEXPR auto deg_to_rad = boost::math::constants::degree<double>();
+const OSSIA_DECL_RELAXED_CONSTEXPR auto ln_2 = boost::math::constants::ln_two<double>();
 
 /**
  * @brief clamp_min Returns the value bounded by a min

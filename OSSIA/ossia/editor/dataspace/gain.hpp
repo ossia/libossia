@@ -19,7 +19,7 @@ namespace detail
 {
 const constexpr double DecibelHeadroom = 96.;
 const double GainMidiPower = std::log( std::log(12. / DecibelHeadroom + 1.) / std::log(127. / 100.) ) / std::log(2.);
-const double GainMidiPowPow2 = std::pow(2., GainMidiPower);
+const double GainMidiPowPow2 = std::exp2(GainMidiPower);
 
 template<typename T>
 T LinearGainToDecibels(const T value)
@@ -57,7 +57,7 @@ T MidiToLinearGain(const T value)
     return value <= 0.
             ? 0.
             : DecibelsToLinearGainClipped(
-                  DecibelHeadroom * ( std::pow( value / 100., std::pow(2., GainMidiPower)) - 1.));
+                  DecibelHeadroom * ( std::pow( value / 100., std::exp2(GainMidiPower)) - 1.));
 }
 
 template<typename T>
