@@ -35,7 +35,7 @@ struct ease
 {
   constexpr T operator()(T a, T b, T t) const
   {
-    return a + (b - a) * t;
+    return std::fma(t, b, std::fma(-t, a, a));
   }
 };
 
@@ -360,7 +360,7 @@ struct curve_segment_ease
 {
   Y operator()(double ratio, Y start, Y end) const
   {
-    return start + Easing{}(ratio) * (end - start);
+    return easing::ease<Y>{}(start, end, Easing{}(ratio));
   }
 };
 }
