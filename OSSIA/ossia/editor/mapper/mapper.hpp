@@ -29,13 +29,13 @@ class OSSIA_EXPORT mapper final :
 {
 public:
   mapper(
-      ossia::net::address_base&, ossia::net::address_base&,
+      ossia::Destination, ossia::Destination,
       const ossia::value&);
 
   ~mapper();
 
-  const ossia::net::address_base& getDriverAddress() const;
-  const ossia::net::address_base& getDrivenAddress() const;
+  const ossia::Destination& getDriverAddress() const;
+  const ossia::Destination& getDrivenAddress() const;
 
   const ossia::value& getDriving() const;
 
@@ -53,8 +53,8 @@ private:
 
   void driverValueCallback(const ossia::value& value);
 
-  ossia::net::address_base& mDriverAddress;
-  ossia::net::address_base& mDrivenAddress;
+  ossia::Destination& mDriverAddress;
+  ossia::Destination& mDrivenAddress;
   ossia::value mDrive;
 
   ossia::message mLastMessage;

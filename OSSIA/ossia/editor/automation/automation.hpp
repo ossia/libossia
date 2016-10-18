@@ -46,8 +46,6 @@ class OSSIA_EXPORT automation final :
     Destination getDrivenAddress() const;
     const ossia::value& getDriving() const;
 
-    void setUnit(ossia::unit_t);
-
   private:
     ossia::state_element offset(ossia::time_value) override;
     ossia::state_element state() override;

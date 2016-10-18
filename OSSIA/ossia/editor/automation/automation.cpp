@@ -195,11 +195,6 @@ const ossia::value& automation::getDriving() const
   return mDrive;
 }
 
-void automation::setUnit(unit_t u)
-{
-  mLastMessage.destination.unit = u;
-}
-
 struct computeValue_visitor
 {
   double position;

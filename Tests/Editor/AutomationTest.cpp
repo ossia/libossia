@@ -131,8 +131,8 @@ private Q_SLOTS:
     auto constraint_callback = std::bind(&AutomationTest::constraint_callback, this, _1, _2, _3);
     auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
 
-    auto autom = std::make_unique<automation>(Destination{*address, {2}}, Behavior(c));
-    autom->setUnit(ossia::hsv_u{});
+    auto autom = std::make_unique<automation>(Destination{*address, {2}, ossia::hsv_u{}}, Behavior(c));
+
     auto& tp = (ossia::time_process&) *autom;
 
     constraint->addTimeProcess(std::move(autom));

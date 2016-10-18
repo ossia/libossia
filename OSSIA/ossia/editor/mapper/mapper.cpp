@@ -7,8 +7,8 @@ namespace ossia
 {
 
 mapper::mapper(
-      ossia::net::address_base& driverAddress,
-      ossia::net::address_base& drivenAddress,
+      ossia::Destination driverAddress,
+      ossia::Destination drivenAddress,
       const ossia::value& drive)
     : mDriverAddress{driverAddress}
     , mDrivenAddress{drivenAddress}
@@ -70,10 +70,10 @@ void mapper::start()
   // start driver address value observation
   if (!mDriverValueObserved)
   {
-    mDriverValueCallbackIndex = mDriverAddress.add_callback(
+    mDriverValueCallbackIndex = mDriverAddress.value.get().add_callback(
         [this](const ossia::value& val) { driverValueCallback(val); });
     mDriverValueObserved = true;
-    auto def_val = mDriverAddress.cloneValue();
+    auto def_val = mDriverAddress.value.get().cloneValue();
     driverValueCallback(def_val);
   }
 }
@@ -83,7 +83,7 @@ void mapper::stop()
   // stop driver address value observation
   if (mDriverValueObserved)
   {
-    mDriverAddress.remove_callback(mDriverValueCallbackIndex);
+    mDriverAddress.value.get().remove_callback(mDriverValueCallbackIndex);
     mDriverValueObserved = false;
   }
 }
@@ -96,12 +96,12 @@ void mapper::resume()
 {
 }
 
-const ossia::net::address_base& mapper::getDriverAddress() const
+const ossia::Destination& mapper::getDriverAddress() const
 {
   return mDriverAddress;
 }
 
-const ossia::net::address_base& mapper::getDrivenAddress() const
+const ossia::Destination& mapper::getDrivenAddress() const
 {
   return mDrivenAddress;
 }

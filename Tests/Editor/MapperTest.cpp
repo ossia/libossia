@@ -62,8 +62,8 @@ private Q_SLOTS:
 
     QVERIFY(mapping->parent() == nullptr);
 
-    QVERIFY(&mapping->getDriverAddress() == float_address);
-    QVERIFY(&mapping->getDrivenAddress() == int_address);
+    QVERIFY(&mapping->getDriverAddress().value.get() == float_address);
+    QVERIFY(&mapping->getDrivenAddress().value.get() == int_address);
     QVERIFY(mapping->getDriving() == f);
 
     //! \todo test clone()
@@ -97,7 +97,7 @@ private Q_SLOTS:
     auto constraint_callback = std::bind(&MapperTest::constraint_callback, this, _1, _2, _3);
     auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 400._tv, 400._tv, 400._tv);
     constraint->addTimeProcess(
-          std::make_unique<mapper>(*m_float_address, *m_int_address, Behavior(c)));
+          std::make_unique<mapper>(Destination{*m_float_address}, Destination{*m_int_address}, Behavior(c)));
 
     m_float_address_values.clear();
     m_int_address_values.clear();
