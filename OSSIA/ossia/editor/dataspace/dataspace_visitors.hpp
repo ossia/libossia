@@ -1,5 +1,7 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/network/common/address_properties.hpp>
+#include <ossia/detail/destination_index.hpp>
 #include <bitset>
 
 namespace ossia

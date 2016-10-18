@@ -35,11 +35,6 @@ struct state_print_visitor
         << ossia::to_pretty_string(m.destination) << " => "
         << ossia::value_to_pretty_string(m.value);
 
-    if(m.unit)
-    {
-      out << " " << ossia::get_pretty_unit_text(m.unit);
-    }
-
     out << "\n";
   }
 

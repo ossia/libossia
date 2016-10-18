@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace_base.hpp>
+#include <eggs/variant.hpp>
 
 namespace ossia
 {
@@ -18,7 +19,7 @@ struct gain_unit
 namespace detail
 {
 const constexpr double DecibelHeadroom = 96.;
-const double GainMidiPower = std::log( std::log(12. / DecibelHeadroom + 1.) / std::log(127. / 100.) ) / std::log(2.);
+const double GainMidiPower = std::log( std::log1p(12. / DecibelHeadroom) / std::log(127. / 100.) ) / std::log(2.);
 const double GainMidiPowPow2 = std::exp2(GainMidiPower);
 
 template<typename T>

@@ -141,7 +141,7 @@ private Q_SLOTS:
     auto mess = state.target<ossia::message>() ;
     QVERIFY(mess != nullptr);
 
-    ossia::message expected{Destination{*address, {2}}, Float{0.5}, ossia::hsv_u{}};
+    ossia::message expected{Destination{*address, {2}, ossia::hsv_u{}}, Float{0.5}};
 
     ossia::print(std::cerr, *mess);
     ossia::print(std::cerr, expected);

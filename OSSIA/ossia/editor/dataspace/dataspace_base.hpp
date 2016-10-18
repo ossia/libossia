@@ -1,7 +1,7 @@
 #pragma once
-#include <ossia/editor/value/value.hpp>
-#include <ossia/editor/value/value_traits.hpp>
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/editor/value/float.hpp>
+#include <ossia/editor/value/vec.hpp>
 
 #include <ossia/detail/math.hpp>
 #include <brigand/algorithms/transform.hpp>

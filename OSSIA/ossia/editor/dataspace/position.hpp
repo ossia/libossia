@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace_base.hpp>
+#include <eggs/variant.hpp>
 
 namespace ossia
 {
@@ -121,7 +122,7 @@ struct polar_u :
 
     return std::array<double, 2>{
           std::atan2(x, y) * rad_to_deg,
-          std::pow(x * x + y * y, 0.5)
+          std::sqrt(x * x + y * y)
         };
   }
 };

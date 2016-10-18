@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace_base.hpp>
+#include <eggs/variant.hpp>
 
 namespace ossia
 {
@@ -35,12 +36,12 @@ struct bark_u : public time_unit<bark_u>
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("bark"); }
 
-  static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return 1.0 / (600. * std::sinh(self.value.value / 6.));
   }
 
-  static OSSIA_DECL_RELAXED_CONSTEXPR value_type from_neutral(strong_value<neutral_unit> self)
+  static value_type from_neutral(strong_value<neutral_unit> self)
   {
     return 6. * std::asinh(1.0 / (self.value.value * 600.0));
   }
@@ -67,12 +68,12 @@ struct cent_u : public time_unit<cent_u>
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("cents"); }
 
-  static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return 1. / (440.0 * std::exp2((self.value.value - 6900.0) / 1200.0));
   }
 
-  static OSSIA_DECL_RELAXED_CONSTEXPR value_type from_neutral(strong_value<neutral_unit> self)
+  static value_type from_neutral(strong_value<neutral_unit> self)
   {
     return 6900.0 + 1200.0 * std::log(1. / (440.0 * self.value.value)) / ossia::ln_2;
   }
@@ -99,12 +100,12 @@ struct mel_u : public time_unit<mel_u>
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("mel"); }
 
-  static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return 1.0 / (700.0 * (std::pow(10, self.value.value / 2595.0) - 1.0));
   }
 
-  static OSSIA_DECL_RELAXED_CONSTEXPR value_type from_neutral(strong_value<neutral_unit> self)
+  static value_type from_neutral(strong_value<neutral_unit> self)
   {
     return 2595.0 * std::log10(1 + 1.0 / (self.value.value * 700.0));
   }
@@ -115,12 +116,12 @@ struct midi_pitch_u : public time_unit<midi_pitch_u>
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("midinote"); }
 
-  static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return 1. / (440.0 * std::exp2((self.value.value - 69.0) / 12.0 ));
   }
 
-  static OSSIA_DECL_RELAXED_CONSTEXPR value_type from_neutral(strong_value<neutral_unit> self)
+  static value_type from_neutral(strong_value<neutral_unit> self)
   {
     return 69.0 - 12.0 * std::log(440.0 * self.value.value) / ossia::ln_2;
   }
@@ -161,19 +162,20 @@ struct sample_u : public time_unit<sample_u<N>>
 };
 */
 
+static const double exp_69_12 = std::exp2(69. / 12.);
 struct playback_speed_u : public time_unit<playback_speed_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("speed"); }
 
-  static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return std::exp2(69. / 12.) / (440.0 * self.value.value);
+    return exp_69_12 / (440.0 * self.value.value);
   }
 
-  static OSSIA_DECL_RELAXED_CONSTEXPR value_type from_neutral(strong_value<neutral_unit> self)
+  static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return std::exp2(69. / 12.) / (440.0 * self.value.value);
+    return exp_69_12 / (440.0 * self.value.value);
   }
 };
 
@@ -193,8 +195,8 @@ using playback_speed = strong_value<playback_speed_u>;
 // using sample = strong_value<sample_u<N>>;
 
 using time_u =
-eggs::variant<
-second_u, bark_u, bpm_u, cent_u, frequency_u, mel_u, midi_pitch_u, millisecond_u, playback_speed_u>;
+  eggs::variant<
+    second_u, bark_u, bpm_u, cent_u, frequency_u, mel_u, midi_pitch_u, millisecond_u, playback_speed_u>;
 
 template<>
 struct dataspace_traits<time_u>

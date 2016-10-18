@@ -35,7 +35,6 @@ struct vec_merger
 {
   const ossia::Destination& existing_dest;
   const ossia::Destination& incoming_dest;
-  const ossia::unit_t& unit;
 
   template<typename T, typename U>
   ossia::state_element operator()(const T&, const U&) const
@@ -49,7 +48,7 @@ struct vec_merger
   template<int N>
   auto make_piecewise_from_floats(Float orig, Float incoming) const
   {
-    piecewise_vec_message<N> mess{existing_dest.value, {}, unit, {}};
+    piecewise_vec_message<N> mess{existing_dest.value, {}, incoming_dest.unit, {}};
 
     auto& existing_index = existing_dest.index;
     if(existing_index[0] < N)
@@ -77,8 +76,8 @@ struct vec_merger
        existing_index != incoming_index)
     {
       ossia::val_type type;
-      if(unit)
-        type = ossia::matching_type(unit);
+      if(incoming_dest.unit)
+        type = ossia::matching_type(incoming_dest.unit);
       else
         type = existing_dest.value.get().getValueType();
 
@@ -95,7 +94,7 @@ struct vec_merger
       }
     }
 
-    return ossia::message{incoming_dest, incoming, unit};
+    return ossia::message{incoming_dest, incoming};
   }
 
 
@@ -118,7 +117,7 @@ struct vec_merger
       {
         // Case where we had a message setting the index [0] and another setting the index [2]
         // for instance
-        piecewise_vec_message<N> mess{existing_dest.value, orig, unit, {}};
+        piecewise_vec_message<N> mess{existing_dest.value, orig, incoming_dest.unit, {}};
         mess.used_values.set(existing_index[0]);
         mess.used_values.set(i);
         return mess;
@@ -150,7 +149,7 @@ struct vec_merger
       {
         // Case where we had a message setting the index [0] and another setting the index [2]
         // for instance
-        piecewise_vec_message<N> mess{existing_dest.value, orig, unit, {}};
+        piecewise_vec_message<N> mess{existing_dest.value, orig, incoming_dest.unit, {}};
         mess.used_values.set(existing_index[0]);
         mess.used_values.set(i);
         return mess;
@@ -181,7 +180,7 @@ struct state_flatten_visitor_merger
       // and the index will be the relevant index in the array.
       // Hence we merge both indexes.
       auto res = eggs::variants::apply(
-            vec_merger{existing.destination, incoming.destination, incoming.unit},
+            vec_merger{existing.destination, incoming.destination},
             existing.value.v,
             incoming.value.v);
 
@@ -199,7 +198,7 @@ struct state_flatten_visitor_merger
     }
     else
     {
-      piecewise_message pw{incoming.destination.value, {}, incoming.unit};
+      piecewise_message pw{incoming.destination.value, {}, incoming.destination.unit};
       if(!to_append_index_empty && !source_index_empty)
       {
         // Most complex case : we create a tuple big enough to host both values
@@ -350,7 +349,7 @@ struct state_flatten_visitor_merger
       // and the index will be the relevant index in the array.
       // Hence we merge both indexes.
       auto res = eggs::variants::apply(
-            vec_merger{existing.destination, incoming.destination, incoming.unit},
+            vec_merger{existing.destination, incoming.destination},
             existing.value.v,
             incoming.value.v);
 
@@ -368,7 +367,7 @@ struct state_flatten_visitor_merger
     }
     else
     {
-      piecewise_message pw{incoming.destination.value, {}, incoming.unit};
+      piecewise_message pw{incoming.destination.value, {}, incoming.destination.unit};
       if(!to_append_index_empty && !source_index_empty)
       {
         // Most complex case : we create a tuple big enough to host both values
@@ -519,15 +518,15 @@ struct state_flatten_visitor
     {
       auto address = address_ptr(incoming);
       if (auto m = e.target<message>())
-        return &m->destination.value.get() == address && incoming.unit == m->unit;
+        return &m->destination.value.get() == address && incoming.get_unit() == m->get_unit();
       else if(auto p = e.target<piecewise_message>())
-        return &p->address.get() == address && incoming.unit == p->unit;
+        return &p->address.get() == address && incoming.get_unit() == p->get_unit();
       else if(auto p2 = e.target<piecewise_vec_message<2>>())
-        return &p2->address.get() == address && incoming.unit == p2->unit;
+        return &p2->address.get() == address && incoming.get_unit() == p2->get_unit();
       else if(auto p3 = e.target<piecewise_vec_message<3>>())
-        return &p3->address.get() == address && incoming.unit == p3->unit;
+        return &p3->address.get() == address && incoming.get_unit() == p3->get_unit();
       else if(auto p4 = e.target<piecewise_vec_message<4>>())
-        return &p4->address.get() == address && incoming.unit == p4->unit;
+        return &p4->address.get() == address && incoming.get_unit() == p4->get_unit();
       else
         return false;
     });

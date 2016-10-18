@@ -2,6 +2,7 @@
 #include <ossia/editor/value/value.hpp>
 #include <ossia/editor/value/value_comparison.hpp>
 #include <ossia/editor/value/value_algorithms.hpp>
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/detail/logger.hpp>
 #include <sstream>
@@ -220,11 +221,24 @@ Destination& Destination::operator=(Destination&&) = default;
 
 Destination::Destination(ossia::net::address_base& v) : value(v)
 {
+  // TODO should we also copy the unit of the address ?
 }
 
 Destination::Destination(ossia::net::address_base& v, destination_index idx)
     : value(v), index(std::move(idx))
 {
+  // TODO should we also copy the unit of the address ?
+}
+
+Destination::Destination(ossia::net::address_base& v, destination_index idx, const ossia::unit_t& u)
+    : value(v), index(std::move(idx)), unit{u}
+{
+}
+
+Destination::Destination(net::address_base& v, const unit_t&u)
+  : value(v), unit{u}
+{
+
 }
 
 bool Destination::operator==(const ossia::value& v) const
@@ -449,7 +463,10 @@ struct value_prettyprint_visitor
   void operator()(const Destination& d) const
   {
     s << "destination" << ossia::net::address_string_from_node(d.value);
-    // TODO pretty print index
+    if(d.unit)
+    {
+      s << " " << ossia::get_pretty_unit_text(d.unit);
+    }
   }
   void operator()(const Behavior&) const
   {

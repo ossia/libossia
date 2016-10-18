@@ -8,6 +8,7 @@ namespace ossia
 void message::launch() const
 {
   ossia::net::address_base& addr = destination.value.get();
+  const auto& unit = destination.unit;
   auto addr_unit = addr.getUnit();
   if(destination.index.empty())
   {
@@ -38,7 +39,7 @@ void message::launch() const
         case ossia::val_type::VEC4F:
         {
           eggs::variants::apply(
-                vec_merger{destination, destination, unit},
+                vec_merger{destination, destination},
                 cur.v,
                 value.v);
 

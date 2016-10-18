@@ -20,7 +20,7 @@ private Q_SLOTS:
         auto localIntNode = device.createChild("my_int");
         auto localIntAddress = localIntNode->createAddress(val_type::INT);
 
-        message message{*localIntAddress, Int(10), {}};
+        message message{*localIntAddress, Int(10)};
 
         //! \todo test clone()
     }

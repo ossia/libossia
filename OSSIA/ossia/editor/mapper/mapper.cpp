@@ -7,12 +7,13 @@ namespace ossia
 {
 
 mapper::mapper(
-    ossia::net::address_base& driverAddress,
-    ossia::net::address_base& drivenAddress, const ossia::value& drive)
+      ossia::net::address_base& driverAddress,
+      ossia::net::address_base& drivenAddress,
+      const ossia::value& drive)
     : mDriverAddress{driverAddress}
     , mDrivenAddress{drivenAddress}
     , mDrive{drive}
-    , mLastMessage{mDrivenAddress, {}, {}}
+    , mLastMessage{mDrivenAddress, {}}
     , mDriverValueObserved(false)
 {
 }

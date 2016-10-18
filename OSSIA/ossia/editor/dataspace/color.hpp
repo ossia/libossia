@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace_base.hpp>
+#include <eggs/variant.hpp>
 // Algorithms taken from http://www.easyrgb.com
 namespace ossia
 {

@@ -13,7 +13,7 @@ automation::automation(
     Destination address, const ossia::value& drive)
   : mDrivenAddress(address)
   , mDrive(drive)
-  , mLastMessage{address, ossia::value{}, {}}
+  , mLastMessage{address, ossia::value{}}
 {
 }
 
@@ -21,7 +21,7 @@ automation::automation(
     Destination address, ossia::value&& drive)
   : mDrivenAddress(address)
   , mDrive(std::move(drive))
-  , mLastMessage{address, ossia::value{}, {}}
+  , mLastMessage{address, ossia::value{}}
 {
 }
 
@@ -197,7 +197,7 @@ const ossia::value& automation::getDriving() const
 
 void automation::setUnit(unit_t u)
 {
-  mLastMessage.unit = u;
+  mLastMessage.destination.unit = u;
 }
 
 struct computeValue_visitor

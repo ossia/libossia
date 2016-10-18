@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/network/common/address_properties.hpp>
+#include <ossia/editor/dataspace/dataspace.hpp>
 #include <initializer_list>
 #include <memory>
 #include <ossia_export.h>
@@ -25,9 +26,12 @@ class OSSIA_EXPORT Destination final
 public:
   std::reference_wrapper<net::address_base> value;
   destination_index index;
+  ossia::unit_t unit;
 
   Destination(net::address_base& v);
   Destination(net::address_base& v, destination_index);
+  Destination(net::address_base& v, destination_index, const ossia::unit_t&);
+  Destination(net::address_base& v, const ossia::unit_t&);
 
   Destination(const Destination& other);
   Destination(Destination&& other);

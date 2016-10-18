@@ -141,8 +141,8 @@ private Q_SLOTS:
     generic_device dev{std::make_unique<local_protocol>(), "test"};
     auto n1 = dev.createChild("n1")->createAddress(val_type::TUPLE);
 
-    message m0{{*n1, {0}}, Float{5.}, {}};
-    message m1{{*n1, {0}}, Float{5.}, {}};
+    message m0{{*n1, {0}}, Float{5.}};
+    message m1{{*n1, {0}}, Float{5.}};
     QVERIFY(m0 == m1);
 
     state s1, s2;
@@ -165,7 +165,7 @@ private Q_SLOTS:
 
     state s;
 
-    message m0{{*n1, {0}}, Float{5.}, {}};
+    message m0{{*n1, {0}}, Float{5.}};
     s.add(m0);
     s.remove(m0);
     QCOMPARE((int)s.size(), 0);
@@ -176,9 +176,9 @@ private Q_SLOTS:
     generic_device dev{std::make_unique<local_protocol>(), "test"};
     auto n1 = dev.createChild("n1")->createAddress(val_type::TUPLE);
 
-    message m0{{*n1, {0}}, Float{5.}, {}};
-    message m1{{*n1, {1}}, Float{10.}, {}};
-    message m2{{*n1, {2}}, Float{15.}, {}};
+    message m0{{*n1, {0}}, Float{5.}};
+    message m1{{*n1, {1}}, Float{10.}};
+    message m2{{*n1, {2}}, Float{15.}};
 
     state s1;
     flatten_and_filter(s1, m0);
@@ -213,7 +213,7 @@ private Q_SLOTS:
     QVERIFY(s1 == s2);
 
     // Changing a value does overwrite
-    message m0_bis{{*n1, {0}}, Float{7.}, {}};
+    message m0_bis{{*n1, {0}}, Float{7.}};
     flatten_and_filter(s1, m0_bis);
 
     state_element expected_bis = piecewise_message{*n1, Tuple{Float{7.}, Float{10.}, Float{15.}}, {}};
@@ -225,9 +225,9 @@ private Q_SLOTS:
     generic_device dev{std::make_unique<local_protocol>(), "test"};
     auto n1 = dev.createChild("n1")->createAddress(val_type::TUPLE);
 
-    state_element m0 = message{{*n1, {0}}, Float{5.}, {}};
-    state_element m1 = message{{*n1, {1}}, Float{10.}, {}};
-    state_element m2 = message{{*n1, {2}}, Float{15.}, {}};
+    state_element m0 = message{{*n1, {0}}, Float{5.}};
+    state_element m1 = message{{*n1, {1}}, Float{10.}};
+    state_element m2 = message{{*n1, {2}}, Float{15.}};
 
     state s1;
     flatten_and_filter(s1, m0);
@@ -262,7 +262,7 @@ private Q_SLOTS:
     QVERIFY(s1 == s2);
 
     // Changing a value does overwrite
-    message m0_bis{{*n1, {0}}, Float{7.}, {}};
+    message m0_bis{{*n1, {0}}, Float{7.}};
     flatten_and_filter(s1, m0_bis);
 
     state_element expected_bis = piecewise_message{*n1, Tuple{Float{7.}, Float{10.}, Float{15.}}, {}};

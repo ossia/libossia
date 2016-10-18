@@ -70,7 +70,7 @@ private Q_SLOTS:
     // Message float, no unit
     {
       ossia::Float expected(3.2);
-      ossia::message m{*t.float_addr, expected, {}};
+      ossia::message m{*t.float_addr, expected};
       m.launch();
       QVERIFY(t.float_addr->cloneValue() == expected);
     }
@@ -78,7 +78,7 @@ private Q_SLOTS:
     // Message float, unit
     {
       ossia::Float expected(3.2);
-      ossia::message m{*t.float_addr, expected, ossia::meter_per_second_u{}};
+      ossia::message m{{*t.float_addr, ossia::meter_per_second_u{}}, expected};
       m.launch();
       QVERIFY(t.float_addr->cloneValue() == expected);
     }
@@ -90,7 +90,7 @@ private Q_SLOTS:
     // Message float, no unit
     {
       ossia::Float expected(3.2);
-      ossia::message m{*t.float_addr, expected, {}};
+      ossia::message m{*t.float_addr, expected};
       m.launch();
       QVERIFY(t.float_addr->cloneValue() == expected);
     }
@@ -98,14 +98,14 @@ private Q_SLOTS:
     // Message float, same unit
     {
       ossia::Float expected(3.2);
-      ossia::message m{*t.float_addr, expected, ossia::meter_per_second_u{}};
+      ossia::message m{{*t.float_addr, ossia::meter_per_second_u{}}, expected};
       m.launch();
       QVERIFY(t.float_addr->cloneValue() == expected);
     }
 
     // Message float, different unit and same dataspace
     {
-      ossia::message m{*t.float_addr, ossia::Float(1.), ossia::kilometer_per_hour_u{}};
+      ossia::message m{{*t.float_addr, ossia::kilometer_per_hour_u{}}, ossia::Float(1.)};
       m.launch();
       QVERIFY(t.float_addr->cloneValue() == ossia::Float(1. / 3.6)); // 1km/h -> 0.27777 m/s
     }
@@ -113,7 +113,7 @@ private Q_SLOTS:
     // Message float, different dataspace
     {
       // The message is ignored, we keep the previous value
-      ossia::message m{*t.float_addr, ossia::Float(1234.), ossia::meter_u{}};
+      ossia::message m{{*t.float_addr, ossia::meter_u{}}, ossia::Float(1234.)};
       m.launch();
       QVERIFY(t.float_addr->cloneValue() == ossia::Float(1. / 3.6));
     }
