@@ -322,6 +322,18 @@ private Q_SLOTS:
 
     get_unit_parser();
   }
+
+  void convert_benchmark()
+  {
+    const int N = 100000;
+    auto t1 = std::chrono::high_resolution_clock::now();
+    for(int i = 0; i < N; i++)
+      ossia::convert(ossia::rgb{ossia::make_vec(1.2, 1.3, 32.5)}, ossia::hsv_u{});
+    auto t2 = std::chrono::high_resolution_clock::now();
+
+    qDebug() << "convert time: "
+             << std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count() / double(N);
+  }
 };
 
 QTEST_APPLESS_MAIN(DataspaceTest)
