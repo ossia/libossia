@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/ossia.hpp>
-
+#include <QMetaType>
+#include <QTest>
 namespace ossia
 {
 struct TestUtils
@@ -17,4 +18,13 @@ struct TestUtils
   ossia::net::address_base* vec4f_addr = device.createChild("vec4f")->createAddress(val_type::VEC4F);
   ossia::net::address_base* tuple_addr = device.createChild("tuple")->createAddress(val_type::TUPLE);
 };
+}
+Q_DECLARE_METATYPE(ossia::value)
+namespace QTest {
+template<>
+inline char* toString(const ossia::value &point)
+{
+    QByteArray ba = QByteArray::fromStdString(ossia::value_to_pretty_string(point));
+    return qstrdup(ba.data());
+}
 }

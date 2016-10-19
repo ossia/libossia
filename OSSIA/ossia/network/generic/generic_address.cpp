@@ -168,6 +168,8 @@ ossia::net::generic_address& generic_address::setValue(const ossia::value& val)
     }
   }
 
+  mValue = ossia::net::clamp(mDomain, getBoundingMode(), mValue);
+
   auto clone = mValue;
   lock.unlock();
   send(clone);

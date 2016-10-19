@@ -128,23 +128,21 @@ private Q_SLOTS:
 
   void test_midi()
   {
-      using namespace ossia::net::midi;
-      try {
+    using namespace ossia::net::midi;
+    try {
       auto proto = std::make_unique<midi_protocol>();
       auto res = proto->scan();
       for(auto e : res)
       {
-          ossia::net::midi::midi_device dev(std::make_unique<midi_protocol>(e));
-          dev.setName("dada");
-          dev.updateNamespace();
+        ossia::net::midi::midi_device dev(std::make_unique<midi_protocol>(e));
+        dev.setName("dada");
+        dev.updateNamespace();
       }
 
-      }
-      catch(...)
-      {
-
-      }
-
+    }
+    catch(...)
+    {
+    }
   }
 
   void test_comm_osc()
@@ -201,6 +199,10 @@ private Q_SLOTS:
             f.readAll()),
           "test" };
 
+    // For the sake of coverage...
+    const auto& const_dev = http_device;
+    QCOMPARE(&http_device.getRootNode(), &const_dev.getRootNode());
+
     // We have to wait a bit for the event loop to run.
     QTimer t;
     connect(&t, &QTimer::timeout, [&] () {
@@ -222,28 +224,28 @@ private Q_SLOTS:
 
 private:
   const std::vector<ossia::value> value_to_test{
-      ossia::Impulse{},
-      ossia::Int{0},
-      ossia::Int{-1000},
-      ossia::Int{1000},
-      ossia::Float{0},
-      ossia::Float{-1000},
-      ossia::Float{1000},
-      ossia::Bool{true},
-      ossia::Bool{false},
-      ossia::Char{},
-      ossia::Char{'a'},
-      ossia::String{""},
-      ossia::String{"ossia"},
-      ossia::Tuple{},
-      ossia::Tuple{ossia::Int{0}},
-      ossia::Tuple{ossia::Int{0}, ossia::Int{1}},
-      ossia::Tuple{ossia::Float{0}, ossia::Int{1}},
-      ossia::Tuple{ossia::Float{0}, ossia::Int{1}, ossia::String{}, ossia::Impulse{}},
-      ossia::Tuple{ossia::Float{0}, ossia::Float{1000}},
-      ossia::Vec2f{},
-      ossia::Vec3f{},
-      ossia::Vec4f{}
+    ossia::Impulse{},
+    ossia::Int{0},
+    ossia::Int{-1000},
+    ossia::Int{1000},
+    ossia::Float{0},
+    ossia::Float{-1000},
+    ossia::Float{1000},
+    ossia::Bool{true},
+    ossia::Bool{false},
+    ossia::Char{},
+    ossia::Char{'a'},
+    ossia::String{""},
+    ossia::String{"ossia"},
+    ossia::Tuple{},
+    ossia::Tuple{ossia::Int{0}},
+    ossia::Tuple{ossia::Int{0}, ossia::Int{1}},
+    ossia::Tuple{ossia::Float{0}, ossia::Int{1}},
+    ossia::Tuple{ossia::Float{0}, ossia::Int{1}, ossia::String{}, ossia::Impulse{}},
+    ossia::Tuple{ossia::Float{0}, ossia::Float{1000}},
+    ossia::Vec2f{},
+    ossia::Vec3f{},
+    ossia::Vec4f{}
   };
 
   void test_comm_generic(

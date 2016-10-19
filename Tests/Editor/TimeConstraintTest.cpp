@@ -1,3 +1,5 @@
+#include "TestUtils.hpp"
+
 #include <QtTest>
 #include <ossia/ossia.hpp>
 #include <iostream>
@@ -87,10 +89,40 @@ private Q_SLOTS:
     /*! test execution functions */
     void test_execution()
     {
-        //! \todo test setup()
-        //! \todo test stop()
-        //! \todo test pause()
-        //! \todo test resume()
+      TestUtils t;
+      auto start_node = std::make_shared<time_node>();
+      auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), &event_callback));
+
+      auto end_node = std::make_shared<time_node>();
+      auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback));
+
+      auto constraint = time_constraint::create(&constraint_callback, *start_event, *end_event, 1000._tv);
+
+      auto s = new scenario;
+
+      constraint->addTimeProcess(std::unique_ptr<ossia::time_process>(s));
+      auto a = new automation{*t.float_addr, Behavior{std::make_shared<curve<double, float>>()}};
+      constraint->addTimeProcess(std::unique_ptr<ossia::time_process>(a));
+      auto m = new mapper{*t.float_addr, *t.float_addr, Behavior{std::make_shared<curve<float, float>>()}};
+      constraint->addTimeProcess(std::unique_ptr<ossia::time_process>(m));
+      auto l = new loop{10._tv, {}, {}, {}};
+      constraint->addTimeProcess(std::unique_ptr<ossia::time_process>(l));
+
+      constraint->start();
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      constraint->pause();
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      constraint->resume();
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      constraint->stop();
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+      QVERIFY_EXCEPTION_THROWN(constraint->state(), execution_error);
+      QVERIFY_EXCEPTION_THROWN(static_cast<time_process*>(a)->state(), execution_error);
+      QVERIFY_EXCEPTION_THROWN(static_cast<time_process*>(s)->state(), execution_error);
+      QVERIFY_EXCEPTION_THROWN(static_cast<time_process*>(m)->state(), execution_error);
+      QVERIFY_EXCEPTION_THROWN(static_cast<time_process*>(l)->state(), execution_error);
+
     }
 };
 

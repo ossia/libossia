@@ -1,10 +1,14 @@
 #include <QtTest>
-#include <ossia/ossia.hpp>
 #include <iostream>
 #include "TestUtils.hpp"
 
 using namespace ossia;
 using namespace ossia::net;
+template<typename T>
+ossia::value to_val(T f) { return typename matching_value<T>::type{f}; }
+template<typename R, typename T>
+ossia::value to(T f) { return R{(decltype(R{}.value))f}; }
+
 class DomainTest : public QObject
 {
     Q_OBJECT
@@ -58,11 +62,11 @@ class DomainTest : public QObject
             // "default" min max constraint,
             // constraint added by the unit type (e.g. rgb : between 0 / 1)
             // additional constraints..
-            Tuple t{Float{(val_t)(min.value - 100)},
+            Tuple t{T{(val_t)(min.value - 100)},
                     min,
-                    Float{(val_t)((min.value + max.value) / 2)},
+                    T{(val_t)((min.value + max.value) / 2)},
                     max,
-                    Float{(val_t)(max.value + 100)}};
+                    T{(val_t)(max.value + 100)}};
             for(int i = 0; i < 6; i++)
             {
                 addr.setBoundingMode((bounding_mode)i);
@@ -70,26 +74,24 @@ class DomainTest : public QObject
             }
         }
 
-
-        void test_clamp_tuple(ossia::net::address_base& addr)
+        template<typename T>
+        void test_clamp_tuple(ossia::net::address_base& addr, T min, T max)
         {
-            const Float min{0};
-            const Float max{1};
-            domain_base<Tuple> dom{ossia::value{min}, ossia::value{max}};
+            domain_base<Tuple> dom{value{min}, value{max}};
 
             addr.setDomain(dom);
 
             // min and max
-            push_all(addr, min, max);
+            push_tuple(addr, min, max);
 
             // no min
             dom.min.reset();
-            push_all(addr, min, max);
+            push_tuple(addr, min, max);
 
             // no max
             dom.min = min;
             dom.max.reset();
-            push_all(addr, min, max);
+            push_tuple(addr, min, max);
 
             // nothing
             dom.min.reset();
@@ -97,6 +99,43 @@ class DomainTest : public QObject
             push_tuple(addr, min, max);
         }
 
+
+
+        template<typename R>
+        void test_clamp_lowlevel()
+        {
+          QCOMPARE(ossia::clamp(to<R>(-1),  to<R>(0), to<R>(1)), to<R>(0));
+          QCOMPARE(ossia::clamp(to<R>(0),   to<R>(0), to<R>(1)), to<R>(0));
+          QCOMPARE(ossia::clamp(to<R>(0.5), to<R>(0), to<R>(1)), to<R>(0.5));
+          QCOMPARE(ossia::clamp(to<R>(1),   to<R>(0), to<R>(1)), to<R>(1));
+          QCOMPARE(ossia::clamp(to<R>(10),  to<R>(0), to<R>(1)), to<R>(1));
+
+          QCOMPARE(ossia::clamp_min(to<R>(-1),  to<R>(0)), to<R>(0));
+          QCOMPARE(ossia::clamp_min(to<R>(0),   to<R>(0)), to<R>(0));
+          QCOMPARE(ossia::clamp_min(to<R>(0.5), to<R>(0)), to<R>(0.5));
+          QCOMPARE(ossia::clamp_min(to<R>(1),   to<R>(0)), to<R>(1));
+          QCOMPARE(ossia::clamp_min(to<R>(10),  to<R>(0)), to<R>(10));
+
+          QCOMPARE(ossia::clamp_max(to<R>(-1),  to<R>(1)), to<R>(-1));
+          QCOMPARE(ossia::clamp_max(to<R>(0),   to<R>(1)), to<R>(0));
+          QCOMPARE(ossia::clamp_max(to<R>(0.5), to<R>(1)), to<R>(0.5));
+          QCOMPARE(ossia::clamp_max(to<R>(1),   to<R>(1)), to<R>(1));
+          QCOMPARE(ossia::clamp_max(to<R>(10),  to<R>(1)), to<R>(1));
+
+          /** Needs fuzzy comparison for compare. **/
+          (ossia::wrap(to<R>(-1.3),  to<R>(0), to<R>(1)), to<R>(0.7));
+          (ossia::wrap(to<R>(0),   to<R>(0), to<R>(1)), to<R>(0));
+          (ossia::wrap(to<R>(0.5), to<R>(0), to<R>(1)), to<R>(0.5));
+          (ossia::wrap(to<R>(1.3),   to<R>(0), to<R>(1)), to<R>(0.3));
+          (ossia::wrap(to<R>(10.),  to<R>(0), to<R>(1)), to<R>(0));
+
+          (ossia::fold(to<R>(-1.3),  to<R>(0), to<R>(1)), to<R>(0.7));
+          (ossia::fold(to<R>(0),   to<R>(0), to<R>(1)), to<R>(0));
+          (ossia::fold(to<R>(0.5), to<R>(0), to<R>(1)), to<R>(0.5));
+          (ossia::fold(to<R>(1.3),   to<R>(0), to<R>(1)), to<R>(0.3));
+          (ossia::fold(to<R>(10.),  to<R>(0), to<R>(1)), to<R>(0));
+
+        }
 private Q_SLOTS:
 
     /*! test life cycle and accessors functions */
@@ -127,7 +166,7 @@ private Q_SLOTS:
         QVERIFY(d3 != dom);
     }
 
-    void test_clamp()
+    void test_clamp_address()
     {
         TestUtils t;
         test_clamp_numeric(*t.float_addr, Float{0.}, Float{1.});
@@ -135,8 +174,140 @@ private Q_SLOTS:
         test_clamp_numeric(*t.bool_addr, Bool{false}, Bool{true});
         test_clamp_numeric(*t.char_addr, Char{'a'}, Char{'z'});
 
+        test_clamp_tuple(*t.tuple_addr, Float{0.}, Float{1.});
+        test_clamp_tuple(*t.tuple_addr, Int{0}, Int{100});
+        test_clamp_tuple(*t.tuple_addr, Bool{false}, Bool{true});
+        test_clamp_tuple(*t.tuple_addr, Char{'a'}, Char{'z'});
+
+
+        test_clamp_lowlevel<Int>();
+        test_clamp_lowlevel<Float>();
+        test_clamp_lowlevel<Char>();
     }
 
+    void test_clamp_float()
+    {
+      ossia::Float min{0.}, max{1.};
+      auto dom = ossia::net::make_domain(min, max);
+
+      for(float i = -100; i < 100; i++)
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::FREE, Float{i});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res, Float{i});
+      }
+
+      // Clip
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::CLIP, Float{-100});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res, min);
+      }
+
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::CLIP, Float{0});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res, min);
+      }
+
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::CLIP, Float{0.5});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res, Float{0.5});
+      }
+
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::CLIP, Float{1});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res, max);
+      }
+
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::CLIP, Float{100});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res, max);
+      }
+
+      // Low
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::LOW, Float{-100});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res, min);
+      }
+
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::LOW, Float{0});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res, min);
+      }
+
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::LOW, Float{0.5});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res, Float{0.5});
+      }
+
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::LOW, Float{1});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res, Float{1});
+      }
+
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::LOW, Float{100});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res, Float{100});
+      }
+
+      // High
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::HIGH, Float{-100});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res, Float{-100});
+      }
+
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::HIGH, Float{0});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res,  Float{0});
+      }
+
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::HIGH, Float{0.5});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res, Float{0.5});
+      }
+
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::CLIP, Float{1});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res, max);
+      }
+
+      {
+        auto clamped = ossia::net::clamp(dom, ossia::bounding_mode::CLIP, Float{100});
+        auto res = clamped.try_get<Float>();
+        QVERIFY(res);
+        QCOMPARE(*res, max);
+      }
+
+
+    }
 
 };
 
