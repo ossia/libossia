@@ -12,14 +12,15 @@ class DomainTest : public QObject
         template<typename T>
         void push_all(ossia::net::address_base& addr, T min, T max)
         {
+            using val_t = decltype(T{}.value);
             for(int i = 0; i < 6; i++)
             {
                 addr.setBoundingMode((bounding_mode)i);
-                addr.pushValue(T{min.value - 100});
+                addr.pushValue(T{(val_t)(min.value - 100)});
                 addr.pushValue(min);
-                addr.pushValue(T{(min.value + max.value) / 2});
+                addr.pushValue(T{(val_t)((min.value + max.value) / 2)});
                 addr.pushValue(max);
-                addr.pushValue(T{max.value + 100});
+                addr.pushValue(T{(val_t)(max.value + 100)});
             }
         }
 
@@ -50,13 +51,18 @@ class DomainTest : public QObject
         template<typename T>
         void push_tuple(ossia::net::address_base& addr, T min, T max)
         {
+            using val_t = decltype(T{}.value);
             // TODO why couldn't domain operate on dataspaces ?
             // e.g. for a position, we could want to limit its norm ?
             // Maybe the domain could be a list of constraint :
             // "default" min max constraint,
             // constraint added by the unit type (e.g. rgb : between 0 / 1)
             // additional constraints..
-            Tuple t{Float{min.value - 100}, min, Float{(min.value + max.value) / 2}, max, Float{max.value + 100}};
+            Tuple t{Float{(val_t)(min.value - 100)},
+                    min,
+                    Float{(val_t)((min.value + max.value) / 2)},
+                    max,
+                    Float{(val_t)(max.value + 100)}};
             for(int i = 0; i < 6; i++)
             {
                 addr.setBoundingMode((bounding_mode)i);
