@@ -44,22 +44,22 @@ struct OSSIA_EXPORT domain_base
 
     if (values.empty())
     {
-      bool has_min = bool(min);
-      bool has_max = bool(max);
+      const bool has_min = bool(min);
+      const bool has_max = bool(max);
       if (has_min && has_max)
       {
         switch (b)
         {
           case bounding_mode::CLIP:
-            return T(ossia::clamp(std::forward<U>(val).value, *min, *max));
+            return T(ossia::clamp(std::forward<U>(val).value, min.get(), max.get()));
           case bounding_mode::WRAP:
-            return T(ossia::wrap(std::forward<U>(val).value, *min, *max));
+            return T(ossia::wrap(std::forward<U>(val).value, min.get(), max.get()));
           case bounding_mode::FOLD:
-            return T(ossia::fold(std::forward<U>(val).value, *min, *max));
+            return T(ossia::fold(std::forward<U>(val).value, min.get(), max.get()));
           case bounding_mode::LOW:
-            return T(ossia::clamp_min(std::forward<U>(val).value, *min));
+            return T(ossia::clamp_min(std::forward<U>(val).value, min.get()));
           case bounding_mode::HIGH:
-            return T(ossia::clamp_max(std::forward<U>(val).value, *max));
+            return T(ossia::clamp_max(std::forward<U>(val).value, max.get()));
           default:
             return std::forward<U>(val);
         }
@@ -70,7 +70,7 @@ struct OSSIA_EXPORT domain_base
         {
           case bounding_mode::CLIP:
           case bounding_mode::LOW:
-            return T(ossia::clamp_min(std::forward<U>(val).value, *min));
+            return T(ossia::clamp_min(std::forward<U>(val).value, min.get()));
           default:
             return std::forward<U>(val);
         }
@@ -81,7 +81,7 @@ struct OSSIA_EXPORT domain_base
         {
           case bounding_mode::CLIP:
           case bounding_mode::HIGH:
-            return T(ossia::clamp_max(val.value, *max));
+            return T(ossia::clamp_max(val.value, max.get()));
           default:
             return std::forward<U>(val);
         }
@@ -173,19 +173,25 @@ struct OSSIA_EXPORT domain_base<Tuple>
 {
   boost::optional<ossia::value> min;
   boost::optional<ossia::value> max;
+  boost::container::flat_set<Tuple> values;
 
   value clamp(bounding_mode b, const Tuple& val) const;
   value clamp(bounding_mode b, Tuple&& val) const;
+  value clamp(bounding_mode b, Int val) const;
+  value clamp(bounding_mode b, Float val) const;
+  value clamp(bounding_mode b, Bool val) const;
+  value clamp(bounding_mode b, Char val) const;
 };
 
 template <std::size_t N>
 struct OSSIA_EXPORT domain_base<Vec<float, N>>
 {
-  value clamp(bounding_mode b, const Vec<float, N>& val) const
-  {
-    // TODO
-    return val;
-  }
+  using value_type = float;
+  boost::optional<value_type> min;
+  boost::optional<value_type> max;
+  boost::container::flat_set<Vec<float, N>> values;
+
+  value clamp(bounding_mode b, const Vec<float, N>& val) const;
 };
 
 

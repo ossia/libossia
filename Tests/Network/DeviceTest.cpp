@@ -59,11 +59,11 @@ ossia::net::domain make_domain(ossia::val_type t)
     case ossia::val_type::TUPLE:
       return ossia::net::domain_base<Tuple>{};
     case ossia::val_type::VEC2F:
-      return ossia::net::domain_base<Vec2f>{};
+      return ossia::net::domain_base<Vec2f>();
     case ossia::val_type::VEC3F:
-      return ossia::net::domain_base<Vec3f>{};
+      return ossia::net::domain_base<Vec3f>();
     case ossia::val_type::VEC4F:
-      return ossia::net::domain_base<Vec4f>{};
+      return ossia::net::domain_base<Vec4f>();
     default:
       return {};
   }

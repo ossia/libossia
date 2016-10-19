@@ -11,29 +11,65 @@ struct domain_clamp_visitor
 
   template <typename T, typename U>
   ossia::value operator()(T&& value, const U& bad_domain)
-  {
-    return std::forward<T>(value);
-  }
+  { return {}; }
 
   template <typename T>
   ossia::value operator()(T&& value, const domain_base<T>& domain)
+  { return domain.clamp(b, std::forward<T>(value)); }
+
+  ossia::value operator()(const Tuple& value, const domain_base<Tuple>& domain)
+  { return domain.clamp(b, value); }
+  ossia::value operator()(Tuple&& value, const domain_base<Tuple>& domain)
+  { return domain.clamp(b, std::move(value)); }
+
+  template <typename T>
+  ossia::value operator()(const Tuple& value, const domain_base<T>& domain)
   {
-    return domain.clamp(b, std::forward<T>(value));
+    Tuple res = value;
+    for(auto& val : res)
+    {
+      if(val.which() == ossia::value_trait<T>::ossia_enum)
+        val = eggs::variants::apply([] (auto& sub_val) { return this->operator()(sub_val, domain); }, val);
+    }
+    return res;
   }
+
+  template <typename T>
+  ossia::value operator()(Tuple&& value, const domain_base<T>& domain)
+  {
+    for(auto& val : value)
+    {
+      if(val.which() == ossia::value_trait<T>::ossia_enum)
+        val = eggs::variants::apply([] (auto& sub_val) { return this->operator()(sub_val, domain); }, val);
+    }
+    // TODO currently other values (strings, etc...) are ignored; what should we do here ?
+    return std::move(value);
+  }
+
+  template <int N>
+  ossia::value operator()(Vec<float, N> value, const domain_base<Float>& domain)
+  {
+    for(int i = 0; i < N; i++)
+    {
+      value.value[i] = domain.clamp(b, value.value[i]);
+    }
+    return value;
+  }
+
 };
 
 struct domain_min_visitor
 {
   auto operator()(const domain_base<Int>& value)
-  { return value.min ? value::make<Int>(*value.min) : ossia::value{}; }
+  { return value.min ? value::make<Int>(value.min.get()) : ossia::value{}; }
   auto operator()(const domain_base<Float>& value)
-  { return value.min ? value::make<Float>(*value.min) : ossia::value{}; }
+  { return value.min ? value::make<Float>(value.min.get()) : ossia::value{}; }
   auto operator()(const domain_base<Bool>& value)
-  { return value.min ? value::make<Bool>(*value.min) : ossia::value{}; }
+  { return value.min ? value::make<Bool>(value.min.get()) : ossia::value{}; }
   auto operator()(const domain_base<Char>& value)
-  { return value.min ? value::make<Char>(*value.min) : ossia::value{}; }
+  { return value.min ? value::make<Char>(value.min.get()) : ossia::value{}; }
   auto operator()(const domain_base<Tuple>& value)
-  { return value.min ? *value.min : ossia::value{}; }
+  { return value.min ? value.min.get() : ossia::value{}; }
 
   template <typename... T>
   auto operator()(const T&...)
@@ -45,15 +81,15 @@ struct domain_min_visitor
 struct domain_max_visitor
 {
   auto operator()(const domain_base<Int>& value)
-  { return value.max ? value::make<Int>(*value.max) : ossia::value{}; }
+  { return value.max ? value::make<Int>(value.max.get()) : ossia::value{}; }
   auto operator()(const domain_base<Float>& value)
-  { return value.max ? value::make<Float>(*value.max) : ossia::value{}; }
+  { return value.max ? value::make<Float>(value.max.get()) : ossia::value{}; }
   auto operator()(const domain_base<Bool>& value)
-  { return value.max ? value::make<Bool>(*value.max) : ossia::value{}; }
+  { return value.max ? value::make<Bool>(value.max.get()) : ossia::value{}; }
   auto operator()(const domain_base<Char>& value)
-  { return value.max ? value::make<Char>(*value.max) : ossia::value{}; }
+  { return value.max ? value::make<Char>(value.max.get()) : ossia::value{}; }
   auto operator()(const domain_base<Tuple>& value)
-  { return value.max ? *value.max : ossia::value{}; }
+  { return value.max ? value.max.get() : ossia::value{}; }
 
   template <typename... T>
   auto operator()(const T&...)
@@ -149,8 +185,9 @@ struct domain_set_max_visitor
   }
 };
 
-struct domain_creation_visitor
+struct domain_minmax_creation_visitor
 {
+  // Two operands overloads : used to create a domain from a min / max
   domain operator()(const Int& min, const Int& max)
   {
     return domain_base<Int>{min.value, max.value};
@@ -181,6 +218,13 @@ struct domain_creation_visitor
     // Cases where there is no possible domain
     return domain{};
   }
+
+  // Three operands overloads : used to create a domain from a min, a max, and a current value.
+};
+
+struct domain_values_creation_visitor
+{
+  // TODO create a domain from a set of available values.
 };
 }
 }

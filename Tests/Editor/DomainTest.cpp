@@ -104,6 +104,48 @@ class DomainTest : public QObject
         template<typename R>
         void test_clamp_lowlevel()
         {
+          // cref
+          auto a = to<R>(-1);
+          auto b = to<R>(0);
+          auto c = to<R>(0.5);
+          auto d = to<R>(1);
+          auto e = to<R>(10);
+          auto f = to<R>(-1.3);
+          auto g = to<R>(1.3);
+
+
+          QCOMPARE(ossia::clamp(a,  b, d), b);
+          QCOMPARE(ossia::clamp(b,   b, d), b);
+          QCOMPARE(ossia::clamp(c, b, d), c);
+          QCOMPARE(ossia::clamp(d,   b, d), d);
+          QCOMPARE(ossia::clamp(e,  b, d), d);
+
+          QCOMPARE(ossia::clamp_min(a,  b), b);
+          QCOMPARE(ossia::clamp_min(b,   b), b);
+          QCOMPARE(ossia::clamp_min(c, b), c);
+          QCOMPARE(ossia::clamp_min(d,   b), d);
+          QCOMPARE(ossia::clamp_min(e,  b), e);
+
+          QCOMPARE(ossia::clamp_max(a,  d), a);
+          QCOMPARE(ossia::clamp_max(b,   d), b);
+          QCOMPARE(ossia::clamp_max(c, d), c);
+          QCOMPARE(ossia::clamp_max(d,   d), d);
+          QCOMPARE(ossia::clamp_max(e,  d), d);
+
+          /** Needs fuzzy comparison for compare. **/
+          (ossia::wrap(f,  b, d), (void) to<R>(0.7));
+          (ossia::wrap(b,   b, d), (void) b);
+          (ossia::wrap(c, b, d), (void) c);
+          (ossia::wrap(g,   b, d), (void) to<R>(0.3));
+          (ossia::wrap(e,  b, d), (void) b);
+
+          (ossia::fold(f,  b, d), (void) to<R>(0.7));
+          (ossia::fold(b,   b, d), (void) b);
+          (ossia::fold(c, b, d), (void) c);
+          (ossia::fold(g,   b, d), (void) to<R>(0.3));
+          (ossia::fold(e,  b, d), (void) b);
+
+          // rvalue
           QCOMPARE(ossia::clamp(to<R>(-1),  to<R>(0), to<R>(1)), to<R>(0));
           QCOMPARE(ossia::clamp(to<R>(0),   to<R>(0), to<R>(1)), to<R>(0));
           QCOMPARE(ossia::clamp(to<R>(0.5), to<R>(0), to<R>(1)), to<R>(0.5));

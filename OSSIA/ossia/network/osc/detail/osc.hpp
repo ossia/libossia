@@ -441,8 +441,8 @@ operator<<(oscpack::OutboundPacketStream& p, const ossia::value& val)
 inline oscpack::OutboundPacketStream&
 operator<<(oscpack::OutboundPacketStream& p, const ossia::net::domain& dom)
 {
-  auto dom_min = ossia::net::min(dom);
-  auto dom_max = ossia::net::max(dom);
+  auto dom_min = ossia::net::get_min(dom);
+  auto dom_max = ossia::net::get_max(dom);
   if (bool(dom_min.v) && bool(dom_max.v))
     p << dom_min << dom_max;
 

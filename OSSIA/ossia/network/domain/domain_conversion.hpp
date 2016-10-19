@@ -120,7 +120,7 @@ struct domain_conversion<domain_base<Tuple>>
   template <typename T>
   domain operator()(const T&)
   {
-    return domain_base<Tuple>{};
+    return domain_base<Tuple>();
   }
 };
 
@@ -135,7 +135,7 @@ struct domain_conversion<domain_base<Vec<float, N>>>
   template <typename T>
   domain operator()(const T&)
   {
-    return domain_base<Vec<float, N>>{};
+    return domain_base<Vec<float, N>>();
   }
 };
 

@@ -9,7 +9,7 @@ ossia_value_t ossia_domain_get_min(
         if(!domain)
             return nullptr;
 
-        return convert(ossia::net::min(domain->domain));
+        return convert(ossia::net::get_min(domain->domain));
     });
 }
 
@@ -34,7 +34,7 @@ ossia_value_t ossia_domain_get_max(
         if(!domain)
             return nullptr;
 
-        return convert(ossia::net::max(domain->domain));
+        return convert(ossia::net::get_max(domain->domain));
     });
 }
 
