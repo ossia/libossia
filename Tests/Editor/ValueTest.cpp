@@ -561,7 +561,13 @@ private Q_SLOTS:
     Destination d2(*localTupleAddress, {1});
     QVERIFY(d2.index.size() == 1);
     QVERIFY(d2.index[0] == 1);
+
+    Destination d3 = d1;
+    QVERIFY(&d3.value.get() == &d1.value.get());
+    Destination d4 = std::move(d1);
+    QVERIFY(&d4.value.get() == &d3.value.get());
   }
+
 
   /*! test behavior */
   void test_behavior()

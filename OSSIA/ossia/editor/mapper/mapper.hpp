@@ -53,8 +53,8 @@ private:
 
   void driverValueCallback(const ossia::value& value);
 
-  ossia::Destination& mDriverAddress;
-  ossia::Destination& mDrivenAddress;
+  ossia::Destination mDriverAddress;
+  ossia::Destination mDrivenAddress;
   ossia::value mDrive;
 
   ossia::message mLastMessage;

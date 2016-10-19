@@ -50,19 +50,19 @@ private Q_SLOTS:
     ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
 
     auto float_n = device.createChild("float");
-    auto float_address = float_n->createAddress(val_type::FLOAT);
+    ossia::net::address_base* float_address = float_n->createAddress(val_type::FLOAT);
 
     auto int_n = device.createChild("int");
     auto int_address = int_n->createAddress(val_type::INT);
 
     Float f(0);
 
-    auto mapping = std::make_shared<mapper>(*float_address, *int_address, f);
+    std::shared_ptr<mapper> mapping = std::make_shared<mapper>(*float_address, *int_address, f);
     QVERIFY(mapping != nullptr);
 
     QVERIFY(mapping->parent() == nullptr);
 
-    QVERIFY(&mapping->getDriverAddress().value.get() == float_address);
+    QCOMPARE(&mapping->getDriverAddress().value.get(), float_address);
     QVERIFY(&mapping->getDrivenAddress().value.get() == int_address);
     QVERIFY(mapping->getDriving() == f);
 
