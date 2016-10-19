@@ -52,6 +52,7 @@ class OSSIA_EXPORT midi_protocol final : public ossia::net::protocol_base
 
 public:
   midi_protocol();
+  midi_protocol(midi_info);
   ~midi_protocol();
 
   bool setInfo(midi_info);

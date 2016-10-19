@@ -15,6 +15,12 @@ midi_protocol::midi_protocol() :
 {
 }
 
+midi_protocol::midi_protocol(midi_info m):
+    midi_protocol()
+{
+  setInfo(m);
+}
+
 midi_protocol::~midi_protocol()
 {
   try

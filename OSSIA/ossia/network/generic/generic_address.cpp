@@ -218,6 +218,8 @@ generic_address::setDomain(const ossia::net::domain& domain)
 {
   if(mDomain != domain)
   {
+    // TODO we should check that the domain is correct
+    // for the type of the value.
     mDomain = domain;
     mNode.getDevice().onAddressModified(*this);
   }

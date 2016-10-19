@@ -131,13 +131,12 @@ private Q_SLOTS:
       using namespace ossia::net::midi;
       try {
       auto proto = std::make_unique<midi_protocol>();
-
-      for(auto& e : proto->scan())
+      auto res = proto->scan();
+      for(auto e : res)
       {
-          proto->setInfo(e);
-          auto dev = std::make_unique<ossia::net::midi::midi_device>(std::move(proto));
-          dev->setName("dada");
-          dev->updateNamespace();
+          ossia::net::midi::midi_device dev(std::make_unique<midi_protocol>(e));
+          dev.setName("dada");
+          dev.updateNamespace();
       }
 
       }
@@ -283,6 +282,13 @@ private:
         }
       }
       std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+      for(int i = 0; i < N; i++)
+      {
+        remote_addr[i]->setValueType((ossia::val_type) i);
+        remote_addr[i]->pushValue(ossia::init_value((ossia::val_type) i));
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(20));
     };
 
     push_all_values();
@@ -337,7 +343,6 @@ private:
 
     test_all_values(local_addr);
     test_all_values(remote_addr);
-
   }
 };
 

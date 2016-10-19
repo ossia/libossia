@@ -85,7 +85,7 @@ struct domain_set_min_visitor_impl
   Domain& domain;
   template<typename T>
   void operator()(const T&) { }
-  void operator()() { }
+  void operator()() {  domain.min.reset(); }
 
   void operator()(Int v) { domain.min = v.value; }
   void operator()(Float v) { domain.min = v.value; }
@@ -99,7 +99,7 @@ struct domain_set_max_visitor_impl
   Domain& domain;
   template<typename T>
   void operator()(const T&) { }
-  void operator()() { }
+  void operator()() { domain.max.reset(); }
 
   void operator()(Int v) { domain.max = v.value; }
   void operator()(Float v) { domain.max = v.value; }
