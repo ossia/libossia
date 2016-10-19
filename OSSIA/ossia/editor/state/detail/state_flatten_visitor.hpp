@@ -9,7 +9,7 @@
 namespace ossia
 {
 
-static constexpr bool is_vec(ossia::val_type v)
+static OSSIA_DECL_RELAXED_CONSTEXPR bool is_vec(ossia::val_type v)
 {
   switch(v)
   {
