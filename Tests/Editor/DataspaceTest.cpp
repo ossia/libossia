@@ -111,8 +111,12 @@ private Q_SLOTS:
     });
 
     // Conversion
-    /* TODO
-    brigand::for_each<ossia::value_with_unit>([&] (auto t)
+    #if defined(__GNUC__)
+    using useful_units = brigand::transform<
+        ossia::unit_t,
+        brigand::bind<ossia::add_value, brigand::_1>
+      >;
+    brigand::for_each<useful_units>([&] (auto t)
     {
       using dataspace_type = typename decltype(t)::type;
 
@@ -138,7 +142,7 @@ private Q_SLOTS:
         });
       });
     });
-    */
+    #endif
   }
 
   void test_visitors()
