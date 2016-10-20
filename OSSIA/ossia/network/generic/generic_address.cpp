@@ -151,16 +151,17 @@ ossia::val_type generic_address::getValueType() const
 
 ossia::net::generic_address& generic_address::setValueType(ossia::val_type type)
 {
-  std::unique_lock<std::mutex> lock(mValueMutex);
-  // std::cerr << address_string_from_node(*this) << " TYPE CHANGE : " << (int) mValueType << " <=== " << (int) type << std::endl;
-  mValueType = type;
+  {
+    std::lock_guard<std::mutex> lock(mValueMutex);
+    // std::cerr << address_string_from_node(*this) << " TYPE CHANGE : " << (int) mValueType << " <=== " << (int) type << std::endl;
+    mValueType = type;
 
-  mValue = init_value(type);
-  /*
+    mValue = init_value(type);
+    /*
   if(mDomain)
     mDomain = convert_domain(mDomain, mValueType);
   */
-
+  }
   mNode.getDevice().onAddressModified(*this);
   return *this;
 }
@@ -284,22 +285,24 @@ unit_t generic_address::getUnit() const
 
 generic_address& generic_address::setUnit(const unit_t& v)
 {
-  std::lock_guard<std::mutex> lock(mValueMutex);
-  mUnit = v;
-
-  // update the type to match the unit.
-  if(v)
   {
-    auto vt = ossia::matching_type(v);
-    if(vt != ossia::val_type::IMPULSE)
-    {
-      mValueType = vt;
-      mValue = ossia::convert(mValue, mValueType);
+    std::lock_guard<std::mutex> lock(mValueMutex);
+    mUnit = v;
 
-      /*
+    // update the type to match the unit.
+    if(v)
+    {
+      auto vt = ossia::matching_type(v);
+      if(vt != ossia::val_type::IMPULSE)
+      {
+        mValueType = vt;
+        mValue = ossia::convert(mValue, mValueType);
+
+        /*
       if(mDomain)
         mDomain = convert_domain(mDomain, mValueType);
       */
+      }
     }
   }
   mNode.getDevice().onAddressModified(*this);
