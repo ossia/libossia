@@ -1,31 +1,13 @@
 #pragma once
-#include <ossia/detail/math.hpp>
-#include <ossia/editor/value/value.hpp>
-#include <ossia/editor/value/value_traits.hpp>
-#include <boost/container/flat_set.hpp>
-#include <boost/optional.hpp>
-#include <type_traits>
-
+#include <ossia/network/domain/numeric_domain.hpp>
 namespace ossia
 {
-
-OSSIA_EXPORT ossia::value clamp(const ossia::value& val, const ossia::value& min, const ossia::value& max);
-OSSIA_EXPORT ossia::value wrap(const ossia::value& val, const ossia::value& min, const ossia::value& max);
-OSSIA_EXPORT ossia::value fold(const ossia::value& val, const ossia::value& min, const ossia::value& max);
-OSSIA_EXPORT ossia::value clamp_min(const ossia::value& val, const ossia::value& min);
-OSSIA_EXPORT ossia::value clamp_max(const ossia::value& val, const ossia::value& max);
-
-OSSIA_EXPORT ossia::value clamp(ossia::value&& val, const ossia::value& min, const ossia::value& max);
-OSSIA_EXPORT ossia::value wrap(ossia::value&& val, const ossia::value& min, const ossia::value& max);
-OSSIA_EXPORT ossia::value fold(ossia::value&& val, const ossia::value& min, const ossia::value& max);
-OSSIA_EXPORT ossia::value clamp_min(ossia::value&& val, const ossia::value& min);
-OSSIA_EXPORT ossia::value clamp_max(ossia::value&& val, const ossia::value& max);
-
 namespace net
 {
 template <typename T>
 struct OSSIA_EXPORT domain_base
 {
+  using ossia_type = T;
   using value_type = typename value_trait<T>::value_type;
   boost::optional<value_type> min;
   boost::optional<value_type> max;
@@ -39,96 +21,7 @@ struct OSSIA_EXPORT domain_base
   template<typename U>
   value clamp(bounding_mode b, U&& val) const
   {
-    if (b == bounding_mode::FREE)
-      return std::forward<U>(val);
-
-    if (values.empty())
-    {
-      const bool has_min = bool(min);
-      const bool has_max = bool(max);
-      if (has_min && has_max)
-      {
-        switch (b)
-        {
-          case bounding_mode::CLIP:
-            return T(ossia::clamp(std::forward<U>(val).value, min.get(), max.get()));
-          case bounding_mode::WRAP:
-            return T(ossia::wrap(std::forward<U>(val).value, min.get(), max.get()));
-          case bounding_mode::FOLD:
-            return T(ossia::fold(std::forward<U>(val).value, min.get(), max.get()));
-          case bounding_mode::LOW:
-            return T(ossia::clamp_min(std::forward<U>(val).value, min.get()));
-          case bounding_mode::HIGH:
-            return T(ossia::clamp_max(std::forward<U>(val).value, max.get()));
-          default:
-            return std::forward<U>(val);
-        }
-      }
-      else if (has_min)
-      {
-        switch(b)
-        {
-          case bounding_mode::CLIP:
-          case bounding_mode::LOW:
-            return T(ossia::clamp_min(std::forward<U>(val).value, min.get()));
-          default:
-            return std::forward<U>(val);
-        }
-      }
-      else if (has_max)
-      {
-        switch(b)
-        {
-          case bounding_mode::CLIP:
-          case bounding_mode::HIGH:
-            return T(ossia::clamp_max(val.value, max.get()));
-          default:
-            return std::forward<U>(val);
-        }
-      }
-      else
-      {
-        return std::forward<U>(val);
-      }
-    }
-    else
-    {
-      // Return a valid value only if it is in the given values
-      auto it = values.find(val.value);
-      if (it != values.end())
-      {
-        return T(*it);
-      }
-      else
-      {
-        return ossia::value{};
-      }
-
-      /* Alternative : return the closest element to value
-      auto it = values.lower_bound(val.value);
-      if(it != values.end())
-      {
-          if(it == values.begin())
-          {
-              // The closest is the first element
-              return T(it);
-          }
-          else
-          {
-              // Find the closest element between this one and the previous.
-              auto prev = it - 1;
-              auto prev_diff = std::abs(val.value - *prev);
-              auto cur_diff = std::abs(val.value - *it);
-              return prev_diff > cur_diff ? *it : *prev;
-          }
-      }
-      else if(it == values.end())
-      {
-          // Closest element is the latest
-          return T(*values.rbegin());
-      }
-      */
-    }
+    return numeric_clamp<domain_base<T>>{*this}(b, std::forward<U>(val));
   }
 };
 
@@ -168,32 +61,39 @@ struct OSSIA_EXPORT domain_base<String>
   value clamp(bounding_mode b, const String& val) const;
 };
 
+/** Compare all the values one by one **/
 template <>
 struct OSSIA_EXPORT domain_base<Tuple>
 {
-  boost::optional<ossia::value> min;
-  boost::optional<ossia::value> max;
+  boost::optional<Tuple> min;
+  boost::optional<Tuple> max;
   boost::container::flat_set<Tuple> values;
 
   value clamp(bounding_mode b, const Tuple& val) const;
   value clamp(bounding_mode b, Tuple&& val) const;
-  value clamp(bounding_mode b, Int val) const;
-  value clamp(bounding_mode b, Float val) const;
-  value clamp(bounding_mode b, Bool val) const;
-  value clamp(bounding_mode b, Char val) const;
 };
 
+/** Compare all the values one by one **/
 template <std::size_t N>
 struct OSSIA_EXPORT domain_base<Vec<float, N>>
 {
   using value_type = float;
-  boost::optional<value_type> min;
-  boost::optional<value_type> max;
+  boost::optional<Vec<float, N>> min;
+  boost::optional<Vec<float, N>> max;
   boost::container::flat_set<Vec<float, N>> values;
 
   value clamp(bounding_mode b, const Vec<float, N>& val) const;
 };
 
+
+
+struct OSSIA_EXPORT generic_domain
+{
+  boost::optional<ossia::value> min;
+  boost::optional<ossia::value> max;
+  boost::container::flat_set<ossia::value> values;
+
+};
 
 template<typename T>
 struct domain_min_max
@@ -255,6 +155,6 @@ using domain
                     domain_base<Float>, domain_base<Char>, domain_base<String>,
                     domain_base<Tuple>, domain_base<Vec2f>, domain_base<Vec3f>,
                     domain_base<Vec4f>, domain_base<Destination>,
-                    domain_base<Behavior>>;
+                    domain_base<Behavior>, generic_domain>;
 }
 }

@@ -187,8 +187,10 @@ ossia::net::generic_address& generic_address::setValueType(ossia::val_type type)
   mValueType = type;
 
   mValue = init_value(type);
+  /*
   if(mDomain)
     mDomain = convert_domain(mDomain, mValueType);
+  */
 
   mNode.getDevice().onAddressModified(*this);
   return *this;
@@ -324,8 +326,11 @@ generic_address& generic_address::setUnit(const unit_t& v)
     {
       mValueType = vt;
       mValue = ossia::convert(mValue, mValueType);
+
+      /*
       if(mDomain)
         mDomain = convert_domain(mDomain, mValueType);
+      */
     }
   }
   mNode.getDevice().onAddressModified(*this);

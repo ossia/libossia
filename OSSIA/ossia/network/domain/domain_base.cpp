@@ -284,220 +284,6 @@ value clamp(const domain& dom, bounding_mode b, ossia::value&& val)
   return val;
 }
 
-value domain_base<Tuple>::clamp(bounding_mode b, const Tuple& val) const
-{
-  // TODO Tuple domain is in fact some kind of generic_domain.
-  // Instead of having the for-loops here, we should have them in domain_clamp_visitor.
-  // Same for vec.
-  if (b == bounding_mode::FREE)
-    return val;
-
-  if(values.empty())
-  {
-    const bool has_min = bool(min);
-    const bool has_max = bool(max);
-    if (has_min && has_max)
-    {
-      ossia::Tuple res;
-      res.value.reserve(val.value.size());
-
-      switch (b)
-      {
-        case bounding_mode::CLIP:
-          for(auto& v : val.value)
-          {
-            res.value.push_back(ossia::clamp(v, min.get(), max.get()));
-          }
-          break;
-        case bounding_mode::WRAP:
-          for(auto& v : val.value)
-          {
-            res.value.push_back(ossia::wrap(v, min.get(), max.get()));
-          }
-          break;
-        case bounding_mode::FOLD:
-          for(auto& v : val.value)
-          {
-            res.value.push_back(ossia::fold(v, min.get(), max.get()));
-          }
-          break;
-        case bounding_mode::LOW:
-          for(auto& v : val.value)
-          {
-            res.value.push_back(ossia::clamp_min(v, min.get()));
-          }
-          break;
-        case bounding_mode::HIGH:
-          for(auto& v : val.value)
-          {
-            res.value.push_back(ossia::clamp_max(v, max.get()));
-          }
-          break;
-        default:
-          return val;
-      }
-
-      return res;
-    }
-    else if (has_min)
-    {
-      switch(b)
-      {
-        case bounding_mode::CLIP:
-        case bounding_mode::LOW:
-        {
-          ossia::Tuple res;
-          for(auto& v : val.value)
-          {
-            res.value.push_back(ossia::clamp_min(v, min.get()));
-          }
-          return res;
-        }
-        default:
-          return val;
-      }
-    }
-    else if (has_max)
-    {
-      switch(b)
-      {
-        case bounding_mode::CLIP:
-        case bounding_mode::HIGH:
-        {
-          ossia::Tuple res;
-          for(auto& v : val.value)
-          {
-            res.value.push_back(ossia::clamp_max(v, max.get()));
-          }
-          return res;
-        }
-        default:
-          return val;
-      }
-    }
-    else
-    {
-      return val;
-    }
-  }
-  else
-  {
-    // Return a valid value only if it is in the given values
-    auto it = values.find(val.value);
-    if (it != values.end())
-    {
-      return val;
-    }
-    else
-    {
-      return ossia::value{};
-    }
-  }
-}
-
-value domain_base<Tuple>::clamp(bounding_mode b, Tuple&& val) const
-{
-  if (b == bounding_mode::FREE)
-    return std::move(val);
-
-  if(values.empty())
-  {
-    const bool has_min = bool(min);
-    const bool has_max = bool(max);
-    if (has_min && has_max)
-    {
-      switch (b)
-      {
-        case bounding_mode::CLIP:
-          for(auto& v : val.value)
-          {
-            v = ossia::clamp(v, min.get(), max.get());
-          }
-          break;
-        case bounding_mode::WRAP:
-          for(auto& v : val.value)
-          {
-            v = ossia::wrap(v, min.get(), max.get());
-          }
-          break;
-        case bounding_mode::FOLD:
-          for(auto& v : val.value)
-          {
-            v = ossia::fold(v, min.get(), max.get());
-          }
-          break;
-        case bounding_mode::LOW:
-          for(auto& v : val.value)
-          {
-            v = ossia::clamp_min(v, min.get());
-          }
-          break;
-        case bounding_mode::HIGH:
-          for(auto& v : val.value)
-          {
-            v = ossia::clamp_max(v, max.get());
-          }
-          break;
-        default:
-          return std::move(val);
-      }
-
-      return std::move(val);
-    }
-    else if (has_min)
-    {
-      switch(b)
-      {
-        case bounding_mode::CLIP:
-        case bounding_mode::LOW:
-        {
-          for(auto& v : val.value)
-          {
-            v = ossia::clamp_min(v, min.get());
-          }
-          return std::move(val);
-        }
-        default:
-          return std::move(val);
-      }
-    }
-    else if (has_max)
-    {
-      switch(b)
-      {
-        case bounding_mode::CLIP:
-        case bounding_mode::HIGH:
-        {
-          for(auto& v : val.value)
-          {
-            v = ossia::clamp_max(v, max.get());
-          }
-          return std::move(val);
-        }
-        default:
-          return std::move(val);
-      }
-    }
-    else
-    {
-      return std::move(val);
-    }
-  }
-  else
-  {
-    // Return a valid value only if it is in the given values
-    auto it = values.find(val.value);
-    if (it != values.end())
-    {
-      return val;
-    }
-    else
-    {
-      return ossia::value{};
-    }
-  }
-}
-
 value domain_base<String>::clamp(bounding_mode b, const String& val) const
 {
   if (values.empty())
@@ -518,119 +304,19 @@ value domain_base<String>::clamp(bounding_mode b, const String& val) const
   }
 }
 
-
-template<int N>
-struct arraylike_domain_clamp_simple
-{
-  using vec = Vec<float, N>;
-  const domain_base<vec>& domain;
-
-  ossia::value operator()(bounding_mode b, vec val) const
-  {
-    if (b == bounding_mode::FREE)
-      return val;
-
-    const bool has_min = bool(domain.min);
-    const bool has_max = bool(domain.max);
-    if (has_min && has_max)
-    {
-      const auto min = domain.min.get();
-      const auto max = domain.max.get();
-      switch (b)
-      {
-        case bounding_mode::CLIP:
-          for(int i = 0; i < N; i++)
-          {
-            val.value[i] = ossia::clamp(val.value[i], min, max);
-          }
-          break;
-        case bounding_mode::WRAP:
-          for(int i = 0; i < N; i++)
-          {
-            val.value[i] = ossia::wrap(val.value[i], min, max);
-          }
-          break;
-        case bounding_mode::FOLD:
-          for(int i = 0; i < N; i++)
-          {
-            val.value[i] = ossia::fold(val.value[i], min, max);
-          }
-          break;
-        case bounding_mode::LOW:
-          for(int i = 0; i < N; i++)
-          {
-            val.value[i] = ossia::clamp_min(val.value[i], min);
-          }
-          break;
-        case bounding_mode::HIGH:
-          for(int i = 0; i < N; i++)
-          {
-            val.value[i] = ossia::clamp_max(val.value[i], max);
-          }
-          break;
-        default:
-          return val;
-      }
-
-      return val;
-    }
-    else if (has_min)
-    {
-      switch(b)
-      {
-        case bounding_mode::CLIP:
-        case bounding_mode::LOW:
-        {
-          for(int i = 0; i < N; i++)
-          {
-            val.value[i] = ossia::clamp_min(val.value[i], domain.min.get());
-          }
-          return val;
-        }
-        default:
-          return val;
-      }
-    }
-    else if (has_max)
-    {
-      switch(b)
-      {
-        case bounding_mode::CLIP:
-        case bounding_mode::HIGH:
-        {
-          for(int i = 0; i < N; i++)
-          {
-            val.value[i] = ossia::clamp_max(val.value[i], domain.max.get());
-          }
-          return val;
-        }
-        default:
-          return val;
-      }
-    }
-    else
-    {
-      return val;
-    }
-  }
-};
-
 template<>
 OSSIA_EXPORT value domain_base<Vec2f>::clamp(bounding_mode b, const Vec2f& val) const
 {
-  return arraylike_domain_clamp_simple<val.size_value>{*this}(b, val);
 }
 
 template<>
 OSSIA_EXPORT value domain_base<Vec3f>::clamp(bounding_mode b, const Vec3f& val) const
 {
-  return arraylike_domain_clamp_simple<val.size_value>{*this}(b, val);
 }
 
 template<>
 OSSIA_EXPORT value domain_base<Vec4f>::clamp(bounding_mode b, const Vec4f& val) const
 {
-  return arraylike_domain_clamp_simple<val.size_value>{*this}(b, val);
 }
 
 domain init_domain(ossia::val_type type)
@@ -665,6 +351,10 @@ domain init_domain(ossia::val_type type)
       return domain{};
   }
 }
+
+
+
+
 
 /*
 template<>

@@ -17,11 +17,6 @@ struct domain_clamp_visitor
   ossia::value operator()(T&& value, const domain_base<T>& domain)
   { return domain.clamp(b, std::forward<T>(value)); }
 
-  ossia::value operator()(const Tuple& value, const domain_base<Tuple>& domain)
-  { return domain.clamp(b, value); }
-  ossia::value operator()(Tuple&& value, const domain_base<Tuple>& domain)
-  { return domain.clamp(b, std::move(value)); }
-
   template <typename T>
   ossia::value operator()(const Tuple& value, const domain_base<T>& domain)
   {
@@ -47,15 +42,20 @@ struct domain_clamp_visitor
   }
 
   template <int N>
-  ossia::value operator()(Vec<float, N> value, const domain_base<Float>& domain)
-  {
-    for(int i = 0; i < N; i++)
-    {
-      value.value[i] = domain.clamp(b, value.value[i]);
-    }
-    return value;
-  }
+  ossia::value operator()(const Vec<float, N>& value, const domain_base<Float>& domain)
+  { return domain.clamp(b, value); }
 
+  template <int N>
+  ossia::value operator()(const Vec<float, N>& value, const domain_base<Int>& domain)
+  { return domain.clamp(b, value); }
+
+  template <int N>
+  ossia::value operator()(const Vec<float, N>& value, const domain_base<Bool>& domain)
+  { return domain.clamp(b, value); }
+
+  template <int N>
+  ossia::value operator()(const Vec<float, N>& value, const domain_base<Char>& domain)
+  { return domain.clamp(b, value); }
 };
 
 struct domain_min_visitor
