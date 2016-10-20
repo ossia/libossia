@@ -77,44 +77,11 @@ const ossia::value& generic_address::getValue() const
   return mValue;
 }
 
-ossia::value generic_address::cloneValue(ossia::destination_index index) const
+ossia::value generic_address::cloneValue() const
 {
-  using namespace ossia;
   std::lock_guard<std::mutex> lock(mValueMutex);
 
-  if (mValue.valid())
-  {
-    if (index.empty() || mValueType != val_type::TUPLE)
-    {
-      return mValue;
-    }
-    else if (index.size() == 1)
-    {
-      // clone value from tuple element at index
-      const auto& tuple = mValue.get<Tuple>();
-      return tuple.value[index[0]];
-    }
-    else
-    {
-      // create a new tuple from tuple's values at index
-      const auto& tuple = mValue.get<Tuple>();
-      Tuple values;
-      values.value.reserve(index.size());
-
-      for (char i : index)
-      {
-        values.value.push_back(tuple.value[i]);
-      }
-
-      return values;
-    }
-  }
-  else
-  {
-    throw invalid_value_type_error("generic_address::cloneValue: "
-                                   "cloning null value");
-    return {};
-  }
+  return mValue;
 }
 
 ossia::net::generic_address& generic_address::setValue(const ossia::value& val)
@@ -168,7 +135,8 @@ ossia::net::generic_address& generic_address::setValue(const ossia::value& val)
     }
   }
 
-  mValue = ossia::net::clamp(mDomain, getBoundingMode(), mValue);
+  // TODO clamping the input implies ensuring that
+  // mValue = ossia::net::clamp(mDomain, mBoundingMode, mValue);
 
   auto clone = mValue;
   lock.unlock();
@@ -183,6 +151,7 @@ ossia::val_type generic_address::getValueType() const
 
 ossia::net::generic_address& generic_address::setValueType(ossia::val_type type)
 {
+  std::unique_lock<std::mutex> lock(mValueMutex);
   // std::cerr << address_string_from_node(*this) << " TYPE CHANGE : " << (int) mValueType << " <=== " << (int) type << std::endl;
   mValueType = type;
 

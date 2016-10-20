@@ -4,6 +4,7 @@
 #include <ossia/network/midi/midi.hpp>
 #include <ossia/network/websocket-generic-client/ws_generic_client.hpp>
 #include <iostream>
+#include "../Editor/TestUtils.hpp"
 
 using namespace ossia;
 // TODO move this code where it is useful.
@@ -344,7 +345,12 @@ private:
     };
 
     test_all_values(local_addr);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     test_all_values(remote_addr);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 };
 

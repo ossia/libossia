@@ -28,3 +28,8 @@ inline char* toString(const ossia::value &point)
     return qstrdup(ba.data());
 }
 }
+
+inline QDebug operator<<(QDebug s, const ossia::value& v)
+{
+    return s << QString::fromStdString(ossia::value_to_pretty_string(v));
+}

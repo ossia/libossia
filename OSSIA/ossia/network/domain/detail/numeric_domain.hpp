@@ -66,7 +66,7 @@ struct numeric_clamp
           case bounding_mode::HIGH:
             return T(ossia::clamp_max(std::forward<U>(val).value, max));
           default:
-            return std::forward<U>(val);
+            break;
         }
       }
       else if (has_min)
@@ -78,7 +78,7 @@ struct numeric_clamp
           case bounding_mode::LOW:
             return T(ossia::clamp_min(std::forward<U>(val).value, min));
           default:
-            return std::forward<U>(val);
+            break;
         }
       }
       else if (has_max)
@@ -90,13 +90,11 @@ struct numeric_clamp
           case bounding_mode::HIGH:
             return T(ossia::clamp_max(val.value, max));
           default:
-            return std::forward<U>(val);
+            break;
         }
       }
-      else
-      {
-        return std::forward<U>(val);
-      }
+
+      return std::forward<U>(val);
     }
     else
     {

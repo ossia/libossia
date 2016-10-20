@@ -133,13 +133,14 @@ bool osc_protocol::observe(ossia::net::address_base& address, bool enable)
 void osc_protocol::handleReceivedMessage(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 {
-  std::unique_lock<std::mutex> lock(mListeningMutex);
-  auto it = mListening.find(m.AddressPattern());
-  if (it != mListening.end())
   {
-    ossia::net::address_base& addr = *it->second;
-    lock.unlock();
-    update_value(addr, m);
+    std::lock_guard<std::mutex> lock(mListeningMutex);
+    auto it = mListening.find(m.AddressPattern());
+    if (it != mListening.end())
+    {
+      ossia::net::address_base& addr = *it->second;
+      update_value(addr, m);
+    }
   }
 
   if(mLogger.inbound_logger)

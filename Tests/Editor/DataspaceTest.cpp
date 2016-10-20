@@ -269,7 +269,7 @@ private Q_SLOTS:
     {
       QVERIFY(make_value(ossia::Int{10}, ossia::centimeter_u{}) == ossia::centimeter{10});
       QVERIFY(make_value(ossia::Char{10}, ossia::centimeter_u{}) == ossia::centimeter{10});
-      QVERIFY(make_value(ossia::Bool{10}, ossia::centimeter_u{}) == ossia::centimeter{1});
+      QVERIFY(make_value(ossia::Bool{true}, ossia::centimeter_u{}) == ossia::centimeter{1});
       QVERIFY(make_value(ossia::Float{1.2}, ossia::centimeter_u{}) == ossia::centimeter{1.2});
       QVERIFY(make_value(ossia::Float{1.2}, ossia::rgb_u{}) == ossia::value_with_unit{});
       QVERIFY(make_value(ossia::Impulse{}, ossia::rgb_u{}) == ossia::value_with_unit{});

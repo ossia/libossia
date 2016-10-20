@@ -83,7 +83,7 @@ public:
   ossia::net::generic_address& pushValue() final override;
 
   const ossia::value& getValue() const;
-  ossia::value cloneValue(ossia::destination_index = {}) const final override;
+  ossia::value cloneValue() const final override;
   generic_address& setValue(const ossia::value&) final override;
 
   ossia::val_type getValueType() const final override;

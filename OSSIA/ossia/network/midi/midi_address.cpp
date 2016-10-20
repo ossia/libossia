@@ -50,9 +50,8 @@ const ossia::value& midi_address::getValue() const
   return mValue;
 }
 
-ossia::value midi_address::cloneValue(destination_index) const
+ossia::value midi_address::cloneValue() const
 {
-  // TODO use the vec parameter
   return mValue;
 }
 

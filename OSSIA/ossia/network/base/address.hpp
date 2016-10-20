@@ -65,7 +65,18 @@ public:
    */
   virtual address_base& pushValue() = 0;
 
-  virtual value cloneValue(destination_index = {}) const = 0;
+  virtual value cloneValue() const = 0;
+
+  /**
+   * @brief cloneValueAtIndex Returns the sub-value at the index given by destination_index
+   */
+  value cloneValue(ossia::destination_index) const;
+
+  /**
+   * @brief cloneValueAtIndex Returns a tuple of sub-values matching the indexes
+   */
+  Tuple cloneValue(const std::vector<ossia::destination_index>&) const;
+
   virtual address_base& setValue(const value&) = 0;
 
   value fetchValue();

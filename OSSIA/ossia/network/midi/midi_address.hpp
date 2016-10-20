@@ -133,7 +133,7 @@ public:
   address_base& pushValue() override;
   const value& getValue() const;
 
-  value cloneValue(destination_index) const override;
+  value cloneValue() const override;
   address_base& setValue(const value& v) override;
 
   ossia::val_type getValueType() const override;

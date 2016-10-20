@@ -258,12 +258,11 @@ void minuit_protocol::handleReceivedMessage(
     if (address.size() > 0 && address[0] == '/')
     {
       // Handle the OSC-like case where we receive a plain value.
-      std::unique_lock<std::mutex> lock(mListeningMutex);
+      std::lock_guard<std::mutex> lock(mListeningMutex);
       auto it = mListening.find(m.AddressPattern());
       if (it != mListening.end())
       {
         ossia::net::address_base& addr = *it->second;
-        lock.unlock();
 
         update_value(addr, m);
       }

@@ -49,6 +49,25 @@ std::string address_string_from_node(const ossia::net::address_base& addr)
     return address_string_from_node(addr.getNode());
 }
 
+value address_base::cloneValue(destination_index idx) const
+{
+  return get_value_at_index(cloneValue(), idx);
+}
+
+Tuple address_base::cloneValue(const std::vector<destination_index>& indices) const
+{
+  Tuple t;
+  t.value.reserve(indices.size());
+
+  auto v = cloneValue();
+  for(auto idx : indices)
+  {
+    t.value.push_back(get_value_at_index(v, idx));
+  }
+
+  return t;
+}
+
 value address_base::fetchValue()
 {
   pullValue();
