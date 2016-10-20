@@ -16,15 +16,17 @@ namespace net
 {
 namespace midi
 {
+const std::string& midi_node_name(midi_size_t i);
+
 class OSSIA_EXPORT note_on_N_node final : public midi_node
 {
-  const std::string mName;
+  const std::string& mName;
 
 public:
   note_on_N_node(
       midi_size_t channel,
       midi_size_t note, midi_device& aDevice, ossia::net::node_base& aParent)
-      : midi_node{aDevice, aParent}, mName{std::to_string(note)}
+      : midi_node{aDevice, aParent}, mName{midi_node_name(note)}
   {
       mAddress = std::make_unique<midi_address>(
           address_info{channel, address_info::Type::NoteOn_N, note}, *this);
@@ -38,13 +40,13 @@ public:
 
 class OSSIA_EXPORT note_off_N_node final : public midi_node
 {
-  const std::string mName;
+  const std::string& mName;
 
 public:
   note_off_N_node(
           midi_size_t channel,
       midi_size_t note, midi_device& aDevice, ossia::net::node_base& aParent)
-      : midi_node{aDevice, aParent}, mName{std::to_string(note)}
+      : midi_node{aDevice, aParent}, mName{midi_node_name(note)}
   {
       mAddress = std::make_unique<midi_address>(
           address_info{channel, address_info::Type::NoteOff_N, note}, *this);
@@ -58,13 +60,13 @@ public:
 
 class OSSIA_EXPORT control_N_node final : public midi_node
 {
-  const std::string mName;
+  const std::string& mName;
 
 public:
   control_N_node(
       midi_size_t channel,
       midi_size_t param, midi_device& aDevice, ossia::net::node_base& aParent)
-      : midi_node{aDevice, aParent}, mName{std::to_string(param)}
+      : midi_node{aDevice, aParent}, mName{midi_node_name(param)}
   {
       mAddress = std::make_unique<midi_address>(
           address_info{channel, address_info::Type::CC_N, param}, *this);
@@ -78,13 +80,13 @@ public:
 
 class OSSIA_EXPORT program_N_node final : public midi_node
 {
-  const std::string mName;
+  const std::string& mName;
 
 public:
   program_N_node(
       midi_size_t channel,
       midi_size_t param, midi_device& aDevice, ossia::net::node_base& aParent)
-      : midi_node{aDevice, aParent}, mName{std::to_string(param)}
+      : midi_node{aDevice, aParent}, mName{midi_node_name(param)}
   {
       mAddress = std::make_unique<midi_address>(
           address_info{channel, address_info::Type::PC_N, param}, *this);
@@ -114,7 +116,8 @@ public:
 
   std::string getName() const final override
   {
-    return "program";
+    using namespace std::literals;
+    return "program"s;
   }
 };
 
@@ -136,7 +139,8 @@ public:
 
   std::string getName() const final override
   {
-    return "on";
+    using namespace std::literals;
+    return "on"s;
   }
 };
 
@@ -158,7 +162,8 @@ public:
 
   std::string getName() const final override
   {
-    return "off";
+    using namespace std::literals;
+    return "off"s;
   }
 };
 
@@ -180,36 +185,33 @@ public:
 
   std::string getName() const final override
   {
-    return "control";
+    using namespace std::literals;
+    return "control"s;
   }
 };
 
 class OSSIA_EXPORT channel_node final : public midi_node
 {
   const midi_size_t mChannel;
-  const std::string mName;
+  const std::string& mName;
 
 public:
   channel_node(midi_size_t channel, midi_device& aDevice)
       : midi_node(aDevice, aDevice)
       , mChannel{channel}
-      , mName(std::to_string(channel))
+      , mName(midi_node_name(channel))
   {
       {
-        auto non = std::make_unique<note_on_node>(mChannel, mDevice);
-        mChildren.push_back(std::move(non));
+        mChildren.push_back(std::make_unique<note_on_node>(mChannel, mDevice));
       }
       {
-        auto noff = std::make_unique<note_off_node>(mChannel, mDevice);
-        mChildren.push_back(std::move(noff));
+        mChildren.push_back(std::make_unique<note_off_node>(mChannel, mDevice));
       }
       {
-        auto cc = std::make_unique<control_node>(mChannel, mDevice);
-        mChildren.push_back(std::move(cc));
+        mChildren.push_back(std::make_unique<control_node>(mChannel, mDevice));
       }
       {
-        auto pc = std::make_unique<program_node>(mChannel, mDevice);
-        mChildren.push_back(std::move(pc));
+        mChildren.push_back(std::make_unique<program_node>(mChannel, mDevice));
       }
   }
 

@@ -18,8 +18,35 @@ getAddressFromNode_rec(const node_base& n, std::vector<std::string>& str)
   str.push_back(n.getName());
 }
 
+static void
+getAddressFromNode_rec2(const node_base& n, std::string& str)
+{
+  if (auto p = n.getParent())
+  {
+    getAddressFromNode_rec2(*p, str);
+  }
+  else
+  {
+    // we're at the root
+    str += n.getName();
+    str += ':';
+    return;
+  }
+
+  str += '/';
+  str += n.getName();
+}
+
 std::string address_string_from_node(const ossia::net::node_base& node)
 {
+  std::string s;
+  s.reserve(80);
+  getAddressFromNode_rec2(node, s);
+  if(s.back() == ':') // case of only device.
+    s += '/';
+  return s;
+
+  /*
   std::vector<std::string> vec;
   getAddressFromNode_rec(node, vec);
 
@@ -42,6 +69,7 @@ std::string address_string_from_node(const ossia::net::node_base& node)
     str.append(vec.at(n - 1));
 
   return str;
+  */
 }
 
 std::string address_string_from_node(const ossia::net::address_base& addr)

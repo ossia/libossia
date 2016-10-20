@@ -8,6 +8,24 @@ namespace net
 {
 namespace midi
 {
+
+struct midi_name_table
+{
+  midi_name_table()
+  {
+    for(int i = 0; i < 128; i++)
+      names[i] = std::to_string(i);
+  }
+
+  std::array<std::string, 128> names;
+};
+
+const std::string& midi_node_name(midi_size_t i)
+{
+  static const midi_name_table tbl;
+  return tbl.names[i];
+}
+
 midi_node::midi_node(midi_device& aDevice, node_base& aParent)
     : mDevice{aDevice}, mParent{aParent}
 {
