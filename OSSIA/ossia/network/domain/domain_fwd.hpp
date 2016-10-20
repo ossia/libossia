@@ -18,16 +18,16 @@ struct Tuple;
 struct Behavior;
 class Destination;
 
+class value;
 namespace net
 {
 template <typename T>
 struct domain_base;
-struct generic_domain;
 using domain
     = eggs::variant<domain_base<Impulse>, domain_base<Bool>, domain_base<Int>,
                     domain_base<Float>, domain_base<Char>, domain_base<String>,
                     domain_base<Tuple>, domain_base<Vec2f>, domain_base<Vec3f>,
                     domain_base<Vec4f>, domain_base<Destination>,
-                    domain_base<Behavior>, generic_domain>;
+                    domain_base<Behavior>, domain_base<ossia::value>>;
 }
 }

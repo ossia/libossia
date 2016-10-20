@@ -118,6 +118,15 @@ struct value_trait<ossia::Vec<float, 4>>
   static const constexpr bool is_numeric = false;
 };
 
+template <>
+struct value_trait<ossia::value>
+{
+  using ossia_type = ossia::value;
+  using value_type = ossia::value;
+  static const constexpr bool is_numeric = false;
+};
+
+
 
 // Reverse mapping from implementation type to ossia type
 template <typename T>

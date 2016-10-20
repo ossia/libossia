@@ -1,4 +1,5 @@
 #include "domain_base.hpp"
+#include <boost/container/small_vector.hpp>
 #include <ossia/network/domain/detail/domain_visitors.hpp>
 #include <ossia/network/domain/domain.hpp>
 
@@ -193,12 +194,18 @@ value get_max(const domain& dom)
 
 void set_min(domain& dom, const ossia::value& val)
 {
-  return ossia::apply(domain_set_min_visitor{val}, dom);
+  if(dom && val.valid())
+    return eggs::variants::apply(domain_set_min_visitor{}, dom, val.v);
+  else if(dom) // Remove the value
+    return eggs::variants::apply(domain_set_min_visitor{}, dom);
 }
 
 void set_max(domain& dom, const ossia::value& val)
 {
-  return ossia::apply(domain_set_max_visitor{val}, dom);
+  if(dom && val.valid())
+    return eggs::variants::apply(domain_set_max_visitor{}, dom, val.v);
+  else if(dom)
+    return eggs::variants::apply(domain_set_max_visitor{}, dom);
 }
 
 domain make_domain(const ossia::value& min, const ossia::value& max)
@@ -216,28 +223,12 @@ domain make_domain(
 {
   if (val.size() == 2 && val[0].valid() && val[1].valid())
   {
-    if(cur.getType() != val_type::TUPLE)
-    {
-      return eggs::variants::apply(domain_minmax_creation_visitor{}, val[0].v, val[1].v);
-    }
-    else
-    {
-      return ossia::net::domain_base<Tuple>{val[0], val[1], boost::container::flat_set<Tuple>{}};
-    }
+    return eggs::variants::apply(domain_minmax_creation_visitor{}, val[0].v, val[1].v);
   }
   else
   {
-    for(auto& val : v)
-    {
-
-    }
+    return eggs::variants::apply(domain_values_creation_visitor{val}, cur.v);
   }
-
-  if (min.valid() && max.valid())
-  {
-    return eggs::variants::apply(domain_minmax_creation_visitor{}, min.v, max.v);
-  }
-  return {};
 }
 
 bool
@@ -282,41 +273,6 @@ value clamp(const domain& dom, bounding_mode b, ossia::value&& val)
     return eggs::variants::apply(domain_clamp_visitor{b}, std::move(val.v), dom);
   }
   return val;
-}
-
-value domain_base<String>::clamp(bounding_mode b, const String& val) const
-{
-  if (values.empty())
-  {
-    return val;
-  }
-  else
-  {
-    auto it = values.find(val.value);
-    if (it != values.end())
-    {
-      return String(*it);
-    }
-    else
-    {
-      return ossia::value{};
-    }
-  }
-}
-
-template<>
-OSSIA_EXPORT value domain_base<Vec2f>::clamp(bounding_mode b, const Vec2f& val) const
-{
-}
-
-template<>
-OSSIA_EXPORT value domain_base<Vec3f>::clamp(bounding_mode b, const Vec3f& val) const
-{
-}
-
-template<>
-OSSIA_EXPORT value domain_base<Vec4f>::clamp(bounding_mode b, const Vec4f& val) const
-{
 }
 
 domain init_domain(ossia::val_type type)

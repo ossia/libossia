@@ -1,31 +1,36 @@
 #pragma once
 #include <ossia/detail/math.hpp>
-#include <ossia/editor/value/value.hpp>
-#include <ossia/editor/value/value_traits.hpp>
-#include <boost/container/flat_set.hpp>
-#include <boost/optional.hpp>
-#include <type_traits>
+#include <ossia/network/domain/domain_base.hpp>
 
 namespace ossia
 {
-
-OSSIA_EXPORT ossia::value clamp(const ossia::value& val, const ossia::value& min, const ossia::value& max);
-OSSIA_EXPORT ossia::value wrap(const ossia::value& val, const ossia::value& min, const ossia::value& max);
-OSSIA_EXPORT ossia::value fold(const ossia::value& val, const ossia::value& min, const ossia::value& max);
-OSSIA_EXPORT ossia::value clamp_min(const ossia::value& val, const ossia::value& min);
-OSSIA_EXPORT ossia::value clamp_max(const ossia::value& val, const ossia::value& max);
-
-OSSIA_EXPORT ossia::value clamp(ossia::value&& val, const ossia::value& min, const ossia::value& max);
-OSSIA_EXPORT ossia::value wrap(ossia::value&& val, const ossia::value& min, const ossia::value& max);
-OSSIA_EXPORT ossia::value fold(ossia::value&& val, const ossia::value& min, const ossia::value& max);
-OSSIA_EXPORT ossia::value clamp_min(ossia::value&& val, const ossia::value& min);
-OSSIA_EXPORT ossia::value clamp_max(ossia::value&& val, const ossia::value& max);
-
 namespace net
 {
 
 template <typename T>
-struct OSSIA_EXPORT domain_base;
+struct domain_base;
+
+template<typename Domain>
+struct value_set_clamp
+{
+  const Domain& domain;
+  template<typename U>
+  value operator()(bounding_mode b, U&& val)
+  {
+    const auto& values = domain.values;
+    if (values.empty())
+    {
+      return std::forward<U>(val);
+    }
+    else
+    {
+      auto it = values.find(val.value);
+      return (it != values.end())
+          ? ossia::value{std::forward<U>(val)}
+          : ossia::value{};
+    }
+  }
+};
 
 template<typename Domain>
 struct numeric_clamp

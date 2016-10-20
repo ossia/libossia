@@ -77,7 +77,7 @@ class DomainTest : public QObject
         template<typename T>
         void test_clamp_tuple(ossia::net::address_base& addr, T min, T max)
         {
-            domain_base<Tuple> dom{value{min}, value{max}};
+            domain_base<T> dom{min, max};
 
             addr.setDomain(dom);
 
@@ -89,7 +89,7 @@ class DomainTest : public QObject
             push_tuple(addr, min, max);
 
             // no max
-            dom.min = min;
+            dom.min = min.value;
             dom.max.reset();
             push_tuple(addr, min, max);
 

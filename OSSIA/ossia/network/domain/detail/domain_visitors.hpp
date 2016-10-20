@@ -1,5 +1,8 @@
 #pragma once
 #include <ossia/network/domain/domain_base.hpp>
+#include <ossia/network/domain/detail/generic_domain.hpp>
+#include <ossia/network/domain/detail/numeric_domain.hpp>
+#include <ossia/network/domain/detail/array_domain.hpp>
 
 namespace ossia
 {
@@ -9,14 +12,48 @@ struct domain_clamp_visitor
 {
   bounding_mode b;
 
+  // General case with incompatible values
   template <typename T, typename U>
   ossia::value operator()(T&& value, const U& bad_domain)
   { return {}; }
 
+  // Generic case
   template <typename T>
-  ossia::value operator()(T&& value, const domain_base<T>& domain)
-  { return domain.clamp(b, std::forward<T>(value)); }
+  ossia::value operator()(T&& value, const domain_base<ossia::value>& domain)
+  { return generic_clamp{domain}(b, std::forward<T>(value)); }
 
+  // Values without meaningful domains
+  ossia::value operator()(Impulse value, const domain_base<Impulse>& domain)
+  { return value; }
+  ossia::value operator()(const Behavior& value, const domain_base<Behavior>& domain)
+  { return value; }
+  ossia::value operator()(Behavior&& value, const domain_base<Behavior>& domain)
+  { return std::move(value); }
+  ossia::value operator()(const Destination& value, const domain_base<Destination>& domain)
+  { return value; }
+  ossia::value operator()(Destination&& value, const domain_base<Destination>& domain)
+  { return std::move(value); }
+
+  // Numeric values
+  ossia::value operator()(Int value, const domain_base<Int>& domain)
+  { return numeric_clamp<domain_base<Int>>{domain}(b, value); }
+  ossia::value operator()(Float value, const domain_base<Float>& domain)
+  { return numeric_clamp<domain_base<Float>>{domain}(b, value); }
+  ossia::value operator()(Char value, const domain_base<Char>& domain)
+  { return numeric_clamp<domain_base<Char>>{domain}(b, value); }
+  ossia::value operator()(Bool value, const domain_base<Bool>& domain)
+  { return numeric_clamp<domain_base<Bool>>{domain}(b, value); }
+
+  // Strings
+  ossia::value operator()(const String& value, const domain_base<String>& domain)
+  { return value_set_clamp<domain_base<String>>{domain}(b, value); }
+  ossia::value operator()(String&& value, const domain_base<String>& domain)
+  { return value_set_clamp<domain_base<String>>{domain}(b, std::move(value)); }
+
+
+  // Tuples
+  // First case : tuple with another domain : we try to filter all the values
+  // of the tuple that are filterable by this domain.
   template <typename T>
   ossia::value operator()(const Tuple& value, const domain_base<T>& domain)
   {
@@ -24,7 +61,7 @@ struct domain_clamp_visitor
     for(auto& val : res.value)
     {
       if(val.getType() == ossia::value_trait<T>::ossia_enum)
-        val = eggs::variants::apply([&] (auto& sub_val) { return this->operator()(sub_val, domain); }, val);
+        val = eggs::variants::apply([&] (auto& sub_val) { return this->operator()(sub_val, domain); }, val.v);
     }
     return res;
   }
@@ -35,41 +72,65 @@ struct domain_clamp_visitor
     for(auto& val : value.value)
     {
       if(val.getType() == ossia::value_trait<T>::ossia_enum)
-        val = eggs::variants::apply([&] (auto& sub_val) { return this->operator()(sub_val, domain); }, val);
+        val = eggs::variants::apply([&] (auto& sub_val) { return this->operator()(sub_val, domain); }, val.v);
     }
     // TODO currently other values (strings, etc...) are ignored; what should we do here ?
     return std::move(value);
   }
 
+  ossia::value operator()(const Tuple& value, const domain_base<ossia::value>& domain)
+  {
+    Tuple res = value;
+    for(auto& val : res.value)
+    {
+      val = generic_clamp{domain}(b, val);
+    }
+    return res;
+  }
+
+  ossia::value operator()(Tuple&& value, const domain_base<ossia::value>& domain)
+  {
+    for(auto& val : value.value)
+    {
+      val = generic_clamp{domain}(b, std::move(val));
+    }
+    // TODO currently other values (strings, etc...) are ignored; what should we do here ?
+    return std::move(value);
+  }
+
+  // Second case : we filter a whole tuple.
+  ossia::value operator()(const Tuple& value, const domain_base<Tuple>& domain)
+  { return tuple_clamp{domain}(b, value); }
+  ossia::value operator()(Tuple&& value, const domain_base<Tuple>& domain)
+  { return tuple_clamp{domain}(b, std::move(value)); }
+
+  // Vec : we can either filter each value, or filter the whole shebang
   template <int N>
   ossia::value operator()(const Vec<float, N>& value, const domain_base<Float>& domain)
-  { return domain.clamp(b, value); }
+  { return numeric_clamp<domain_base<Float>>{domain}(b, value); }
 
   template <int N>
   ossia::value operator()(const Vec<float, N>& value, const domain_base<Int>& domain)
-  { return domain.clamp(b, value); }
+  { return numeric_clamp<domain_base<Int>>{domain}(b, value); }
 
   template <int N>
   ossia::value operator()(const Vec<float, N>& value, const domain_base<Bool>& domain)
-  { return domain.clamp(b, value); }
+  { return numeric_clamp<domain_base<Bool>>{domain}(b, value); }
 
   template <int N>
   ossia::value operator()(const Vec<float, N>& value, const domain_base<Char>& domain)
-  { return domain.clamp(b, value); }
+  { return numeric_clamp<domain_base<Char>>{domain}(b, value); }
+
+  template <int N>
+  ossia::value operator()(const Vec<float, N>& value, const domain_base<Vec<float, N>>& domain)
+  { return vec_clamp<N>{domain}(b, value); }
 };
 
 struct domain_min_visitor
 {
-  auto operator()(const domain_base<Int>& value)
+  template<typename T, typename U = decltype(std::declval<T>().min)>
+  ossia::value operator()(const domain_base<Int>& value)
   { return value.min ? value::make<Int>(value.min.get()) : ossia::value{}; }
-  auto operator()(const domain_base<Float>& value)
-  { return value.min ? value::make<Float>(value.min.get()) : ossia::value{}; }
-  auto operator()(const domain_base<Bool>& value)
-  { return value.min ? value::make<Bool>(value.min.get()) : ossia::value{}; }
-  auto operator()(const domain_base<Char>& value)
-  { return value.min ? value::make<Char>(value.min.get()) : ossia::value{}; }
-  auto operator()(const domain_base<Tuple>& value)
-  { return value.min ? value.min.get() : ossia::value{}; }
 
   template <typename... T>
   auto operator()(const T&...)
@@ -80,16 +141,9 @@ struct domain_min_visitor
 
 struct domain_max_visitor
 {
-  auto operator()(const domain_base<Int>& value)
+  template<typename T, typename U = decltype(std::declval<T>().max)>
+  ossia::value operator()(const domain_base<Int>& value)
   { return value.max ? value::make<Int>(value.max.get()) : ossia::value{}; }
-  auto operator()(const domain_base<Float>& value)
-  { return value.max ? value::make<Float>(value.max.get()) : ossia::value{}; }
-  auto operator()(const domain_base<Bool>& value)
-  { return value.max ? value::make<Bool>(value.max.get()) : ossia::value{}; }
-  auto operator()(const domain_base<Char>& value)
-  { return value.max ? value::make<Char>(value.max.get()) : ossia::value{}; }
-  auto operator()(const domain_base<Tuple>& value)
-  { return value.max ? value.max.get() : ossia::value{}; }
 
   template <typename... T>
   auto operator()(const T&...)
@@ -115,72 +169,105 @@ struct domain_convert_min_max_visitor
   { return domain_min_max<T>{value}; }
 };
 
-template<typename Domain>
-struct domain_set_min_visitor_impl
-{
-  Domain& domain;
-  template<typename T>
-  void operator()(const T&) { }
-  void operator()() {  domain.min.reset(); }
-
-  void operator()(Int v) { domain.min = v.value; }
-  void operator()(Float v) { domain.min = v.value; }
-  void operator()(Char v) { domain.min = v.value; }
-  void operator()(Bool v) { domain.min = v.value; }
-};
-
-template<typename Domain>
-struct domain_set_max_visitor_impl
-{
-  Domain& domain;
-  template<typename T>
-  void operator()(const T&) { }
-  void operator()() { domain.max.reset(); }
-
-  void operator()(Int v) { domain.max = v.value; }
-  void operator()(Float v) { domain.max = v.value; }
-  void operator()(Char v) { domain.max = v.value; }
-  void operator()(Bool v) { domain.max = v.value; }
-};
 
 struct domain_set_min_visitor
 {
-  const ossia::value& val;
+  void operator()(domain_base<Int>& domain, Int incoming)
+  { domain.min = incoming.value; }
+  void operator()(domain_base<Float>& domain, Float incoming)
+  { domain.min = incoming.value; }
+  void operator()(domain_base<Char>& domain, Char incoming)
+  { domain.min = incoming.value; }
+  void operator()(domain_base<Bool>& domain, Bool incoming)
+  { domain.min = incoming.value; }
+  void operator()(domain_base<Tuple>& domain, const Tuple& incoming)
+  { domain.min = incoming.value; }
 
-  void operator()(domain_base<Int>& value)
-  { val.apply(domain_set_min_visitor_impl<domain_base<Int>>{value}); }
-  void operator()(domain_base<Float>& value)
-  { val.apply(domain_set_min_visitor_impl<domain_base<Float>>{value}); }
-  void operator()(domain_base<Bool>& value)
-  { val.apply(domain_set_min_visitor_impl<domain_base<Bool>>{value}); }
-  void operator()(domain_base<Char>& value)
-  { val.apply(domain_set_min_visitor_impl<domain_base<Char>>{value}); }
-  void operator()(domain_base<Tuple>& value)
-  { value.min = val; }
+  template<int N>
+  void operator()(domain_base<Vec<float, N>>& domain, const Vec<float, N>& incoming)
+  { domain.min = incoming; }
 
-  template <typename... T>
-  void operator()(const T&...)
+  template<typename T>
+  void operator()(domain_base<ossia::value>& domain, const T& incoming)
+  { domain.min = ossia::value{incoming}; }
+
+  // Removal cases
+  // Here we could maybe allow a cast or something like this...
+  // for e.g. int -> float
+  template <typename... U>
+  void operator()(domain_base<Int>& domain, U&&...)
+  { domain.min.reset(); }
+  template <typename... U>
+  void operator()(domain_base<Float>& domain, U&&...)
+  { domain.min.reset(); }
+  template <typename... U>
+  void operator()(domain_base<Char>& domain, U&&...)
+  { domain.min.reset(); }
+  template <typename... U>
+  void operator()(domain_base<Bool>& domain, U&&...)
+  { domain.min.reset(); }
+  template <typename... U>
+  void operator()(domain_base<Tuple>& domain, U&&...)
+  { domain.min.reset(); }
+  template<int N, typename... U>
+  void operator()(domain_base<Vec<float, N>>& domain, U&&...)
+  { domain.min.reset(); }
+  template <typename... U>
+  void operator()(domain_base<ossia::value>& domain, U&&...)
+  { domain.min.reset(); }
+
+  template <typename T, typename... U>
+  void operator()(const domain_base<T>& domain, U&&...)
   {
   }
 };
 
 struct domain_set_max_visitor
 {
-  const ossia::value& val;
+  void operator()(domain_base<Int>& domain, Int incoming)
+  { domain.max = incoming.value; }
+  void operator()(domain_base<Float>& domain, Float incoming)
+  { domain.max = incoming.value; }
+  void operator()(domain_base<Char>& domain, Char incoming)
+  { domain.max = incoming.value; }
+  void operator()(domain_base<Bool>& domain, Bool incoming)
+  { domain.max = incoming.value; }
+  void operator()(domain_base<Tuple>& domain, const Tuple& incoming)
+  { domain.max = incoming.value; }
 
-  void operator()(domain_base<Int>& value)
-  { val.apply(domain_set_max_visitor_impl<domain_base<Int>>{value}); }
-  void operator()(domain_base<Float>& value)
-  { val.apply(domain_set_max_visitor_impl<domain_base<Float>>{value}); }
-  void operator()(domain_base<Bool>& value)
-  { val.apply(domain_set_max_visitor_impl<domain_base<Bool>>{value}); }
-  void operator()(domain_base<Char>& value)
-  { val.apply(domain_set_max_visitor_impl<domain_base<Char>>{value}); }
-  void operator()(domain_base<Tuple>& value)
-  { value.max = val; }
+  template<int N>
+  void operator()(domain_base<Vec<float, N>>& domain, const Vec<float, N>& incoming)
+  { domain.max = incoming; }
 
-  template <typename... T>
-  void operator()(const T&...)
+  template<typename T>
+  void operator()(domain_base<ossia::value>& domain, const T& incoming)
+  { domain.max = ossia::value{incoming}; }
+
+  // Removal cases
+  template <typename... U>
+  void operator()(domain_base<Int>& domain, U&&...)
+  { domain.max.reset(); }
+  template <typename... U>
+  void operator()(domain_base<Float>& domain, U&&...)
+  { domain.max.reset(); }
+  template <typename... U>
+  void operator()(domain_base<Char>& domain, U&&...)
+  { domain.max.reset(); }
+  template <typename... U>
+  void operator()(domain_base<Bool>& domain, U&&...)
+  { domain.max.reset(); }
+  template <typename... U>
+  void operator()(domain_base<Tuple>& domain, U&&...)
+  { domain.max.reset(); }
+  template<int N, typename... U>
+  void operator()(domain_base<Vec<float, N>>& domain, U&&...)
+  { domain.max.reset(); }
+  template <typename... U>
+  void operator()(domain_base<ossia::value>& domain, U&&...)
+  { domain.max.reset(); }
+
+  template <typename T, typename... U>
+  void operator()(const domain_base<T>& domain, U&&...)
   {
   }
 };
@@ -224,7 +311,15 @@ struct domain_minmax_creation_visitor
 
 struct domain_values_creation_visitor
 {
+  const boost::container::small_vector<ossia::value, 2>& values;
   // TODO create a domain from a set of available values.
+  template <typename T>
+  domain operator()(const T& min)
+  {
+    // Cases where there is no possible domain
+    return domain{};
+  }
+
 };
 }
 }
