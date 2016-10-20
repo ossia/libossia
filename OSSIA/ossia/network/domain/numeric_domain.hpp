@@ -42,8 +42,8 @@ struct numeric_clamp
 
     if (domain.values.empty())
     {
-      const bool has_min = bool(min);
-      const bool has_max = bool(max);
+      const bool has_min = bool(domain.min);
+      const bool has_max = bool(domain.max);
       if (has_min && has_max)
       {
         const auto min = domain.min.get();
@@ -66,6 +66,7 @@ struct numeric_clamp
       }
       else if (has_min)
       {
+        const auto min = domain.min.get();
         switch(b)
         {
           case bounding_mode::CLIP:
@@ -77,6 +78,7 @@ struct numeric_clamp
       }
       else if (has_max)
       {
+        const auto max = domain.max.get();
         switch(b)
         {
           case bounding_mode::CLIP:
@@ -168,26 +170,31 @@ struct numeric_clamp
             for(int i = 0; i < N; i++) val.value[i] = ossia::clamp_max(val.value[i], max);
             break;
           default:
+            break;
         }
       }
       else if (has_min)
       {
+        const auto min = domain.min.get();
         switch(b)
         {
           case bounding_mode::CLIP:
           case bounding_mode::LOW:
             for(int i = 0; i < N; i++) val.value[i] = ossia::clamp_min(val.value[i], min);
           default:
+            break;
         }
       }
       else if (has_max)
       {
+        const auto max = domain.max.get();
         switch(b)
         {
           case bounding_mode::CLIP:
           case bounding_mode::HIGH:
             for(int i = 0; i < N; i++) val.value[i] = ossia::clamp_max(val.value[i], max);
           default:
+            break;
         }
       }
 
@@ -201,10 +208,7 @@ struct numeric_clamp
         auto it = values.find(val[i]);
         if (it == values.end())
         {
-          // TODO should we remove the "bad" value instead ?
-          // this is a bit weird... here clamping to the closest value
-          // would make most sense.
-          val[i] = 0.;
+          return {};
         }
       }
 

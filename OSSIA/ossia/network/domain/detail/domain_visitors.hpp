@@ -21,10 +21,10 @@ struct domain_clamp_visitor
   ossia::value operator()(const Tuple& value, const domain_base<T>& domain)
   {
     Tuple res = value;
-    for(auto& val : res)
+    for(auto& val : res.value)
     {
-      if(val.which() == ossia::value_trait<T>::ossia_enum)
-        val = eggs::variants::apply([] (auto& sub_val) { return this->operator()(sub_val, domain); }, val);
+      if(val.getType() == ossia::value_trait<T>::ossia_enum)
+        val = eggs::variants::apply([&] (auto& sub_val) { return this->operator()(sub_val, domain); }, val);
     }
     return res;
   }
@@ -32,10 +32,10 @@ struct domain_clamp_visitor
   template <typename T>
   ossia::value operator()(Tuple&& value, const domain_base<T>& domain)
   {
-    for(auto& val : value)
+    for(auto& val : value.value)
     {
-      if(val.which() == ossia::value_trait<T>::ossia_enum)
-        val = eggs::variants::apply([] (auto& sub_val) { return this->operator()(sub_val, domain); }, val);
+      if(val.getType() == ossia::value_trait<T>::ossia_enum)
+        val = eggs::variants::apply([&] (auto& sub_val) { return this->operator()(sub_val, domain); }, val);
     }
     // TODO currently other values (strings, etc...) are ignored; what should we do here ?
     return std::move(value);
