@@ -130,8 +130,35 @@ struct numeric_value_converter
     template<typename U>
     std::array<float, N> operator()(const U&)
     {
-      // TODO
       return {};
+    }
+
+    std::array<float, N> operator()(Float f)
+    {
+      std::array<float, N> a;
+      a.fill(f.value);
+      return a;
+    }
+
+    std::array<float, N> operator()(Int f)
+    {
+      std::array<float, N> a;
+      a.fill(f.value);
+      return a;
+    }
+
+    std::array<float, N> operator()(Char f)
+    {
+      std::array<float, N> a;
+      a.fill(f.value);
+      return a;
+    }
+
+    std::array<float, N> operator()(Bool f)
+    {
+      std::array<float, N> a;
+      a.fill(f.value ? 1. : 0.);
+      return a;
     }
 
     std::array<float, N> operator()() { return {}; }
