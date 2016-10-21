@@ -124,12 +124,12 @@ private Q_SLOTS:
 
     // Message float, no index, no unit
     {
-      // The message is ignored, we keep the previous value
       ossia::message m{*t.vec3f_addr, ossia::Float(1234.), {}};
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue() == ossia::make_vec(0., 0., 0.));
+      QVERIFY(t.vec3f_addr->cloneValue() == ossia::make_vec(1234., 1234., 1234.));
     }
 
+    t.vec3f_addr->pushValue(ossia::make_vec(0., 0., 0.));
     // Message float, no index, unit
     {
       // The message is ignored, we keep the previous value
@@ -205,20 +205,20 @@ private Q_SLOTS:
 
     // Message float, no index, no unit
     {
-      // The message is ignored, we keep the previous value
       ossia::message m{*t.vec3f_addr, ossia::Float(1234.), {}};
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue() == ossia::make_vec(0., 0., 0.));
+      QVERIFY(t.vec3f_addr->cloneValue() == ossia::make_vec(1234., 1234., 1234.));
     }
 
+    t.vec3f_addr->pushValue(ossia::make_vec(0., 0., 0.));
     // Message float, no index, unit
     {
-      // The message is ignored, we keep the previous value
-      ossia::message m{*t.vec3f_addr, ossia::Float(1234.), {}};
+      ossia::message m{*t.vec3f_addr, ossia::Float(1234.), t.vec3f_addr->getUnit()};
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue() == ossia::make_vec(0., 0., 0.));
+      QVERIFY(t.vec3f_addr->cloneValue() == ossia::make_vec(1234., 1234., 1234.));
     }
 
+    t.vec3f_addr->pushValue(ossia::make_vec(0., 0., 0.));
     // Message float, index, no unit
     {
       ossia::message m{{*t.vec3f_addr, {1}}, ossia::Float(1234.), {}};
