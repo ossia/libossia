@@ -86,7 +86,7 @@ private Q_SLOTS:
     // Let the time for callbacks to happen...
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    QVERIFY(m_address_values.size() == 11);
+    QVERIFY(m_address_values.size() == 10 || m_address_values.size() == 11 || m_address_values.size() == 12);
 
     Float zero(0);
     QVERIFY(m_address_values[0] == zero);

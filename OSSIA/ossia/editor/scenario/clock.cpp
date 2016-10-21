@@ -286,6 +286,10 @@ void clock::request_stop()
     if (mStatusCallback)
       mStatusCallback(ClockExecutionStatus::STOPPED);
   }
+  mPosition = 0;
+  mDate = 0;
+  mLastTime = {};
+  mElapsedTime = 0;
 }
 
 void clock::do_start()
@@ -299,6 +303,7 @@ void clock::do_start()
   // reset timing informations
   mRunning = true;
   mPaused = false;
+  mShouldStop = false;
 
   // set clock at a tick
   mDate = std::floor(mOffset / (mGranularity * mSpeed))
