@@ -48,18 +48,27 @@ struct strong_value
   }
 */
   constexpr strong_value(Float other) : value{ other } { }
+  constexpr strong_value(float other) : value{ other } { }
+  constexpr strong_value(double other) : value{ other } { }
+  constexpr strong_value(int other) : value{ other } { }
+  constexpr strong_value(char other) : value{ other } { }
+  constexpr strong_value(bool other) : value{ other } { }
   constexpr strong_value(Vec2f other) : value{ other } { }
   constexpr strong_value(Vec3f other) : value{ other } { }
   constexpr strong_value(Vec4f other) : value{ other } { }
+  constexpr strong_value(std::array<float, 2> other) : value{ other } { }
+  constexpr strong_value(std::array<float, 3> other) : value{ other } { }
+  constexpr strong_value(std::array<float, 4> other) : value{ other } { }
+  constexpr strong_value(std::array<double, 2> other) : value{ other } { }
+  constexpr strong_value(std::array<double, 3> other) : value{ other } { }
+  constexpr strong_value(std::array<double, 4> other) : value{ other } { }
 
   // Conversion constructor
   template<typename U>
   constexpr strong_value(strong_value<U> other):
     value{unit_type::from_neutral(U::to_neutral(other))}
   { 
-    static_assert(std::is_same<
-        typename dataspace_type,
-        typename U::dataspace_type>::value, "Trying to convert between different dataspaces");
+    static_assert(std::is_same<dataspace_type, typename U::dataspace_type>::value, "Trying to convert between different dataspaces");
   }
 
   // Copy constructor

@@ -221,6 +221,7 @@ private Q_SLOTS:
         test_clamp_tuple(*t.tuple_addr, Bool{false}, Bool{true});
         test_clamp_tuple(*t.tuple_addr, Char{'a'}, Char{'z'});
 
+        // TODO test tuple with Tuple domain.
 
         test_clamp_lowlevel<Int>();
         test_clamp_lowlevel<Float>();

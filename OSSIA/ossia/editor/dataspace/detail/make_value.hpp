@@ -22,19 +22,19 @@ struct make_value_helper<U, ossia::Float>
 
   ossia::value_with_unit operator()(Int t)
   {
-    return strong_value<U>{t.value};
+    return strong_value<U>(float(t.value));
   }
   ossia::value_with_unit operator()(Float t)
   {
-    return strong_value<U>{t.value};
+    return strong_value<U>(float(t.value));
   }
   ossia::value_with_unit operator()(Char t)
   {
-    return strong_value<U>{t.value};
+    return strong_value<U>(float(t.value));
   }
   ossia::value_with_unit operator()(Bool t)
   {
-    return strong_value<U>{t.value};
+    return strong_value<U>(float(t.value));
   }
 };
 
@@ -110,7 +110,7 @@ struct make_value_with_unit_visitor
   template<typename Val, typename Unit>
   ossia::value_with_unit operator()(const Val& v, const Unit& u)
   {
-    return make_value_helper<Unit, Unit::value_type>{}(v);
+    return make_value_helper<Unit, typename Unit::value_type>{}(v);
   }
 };
 

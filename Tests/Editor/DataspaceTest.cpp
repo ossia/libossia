@@ -60,7 +60,7 @@ private Q_SLOTS:
       ossia::centimeter::dataspace_type,
       ossia::millimeter::dataspace_type>::value, "invalid");
     using t1 = ossia::enable_if_same_dataspace<ossia::centimeter, ossia::millimeter>;
-    using t2 = ossia::enable_if_same_dataspace<ossia::rgb, ossia::millimeter>;
+    //using t2 = ossia::enable_if_same_dataspace<ossia::rgb, ossia::millimeter>;
       
     ossia::centimeter c{2.3};
 
