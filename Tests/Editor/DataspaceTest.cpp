@@ -29,13 +29,12 @@ class DataspaceTest : public QObject
   void test_conversions_impl()
   {
     // Conversion
-    using dataspace_type = ossia::distance;
-    brigand::for_each<dataspace_type>([&] (auto unit_1)
+    brigand::for_each<T>([&] (auto unit_1)
     {
       using unit_1_type = typename decltype(unit_1)::type;
       unit_1_type unit_1_v;
 
-      brigand::for_each<dataspace_type>([&] (auto unit_2)
+      brigand::for_each<T>([&] (auto unit_2)
       {
         using unit_2_type = typename decltype(unit_2)::type;
         // Conversion at construction
@@ -59,9 +58,9 @@ private Q_SLOTS:
     static_assert(std::is_same<
       ossia::centimeter::dataspace_type,
       ossia::millimeter::dataspace_type>::value, "invalid");
-    using t1 = ossia::enable_if_same_dataspace<ossia::centimeter, ossia::millimeter>;
+    //using t1 = ossia::enable_if_same_dataspace<ossia::centimeter, ossia::millimeter>;
     //using t2 = ossia::enable_if_same_dataspace<ossia::rgb, ossia::millimeter>;
-      
+
     ossia::centimeter c{2.3};
 
     ossia::millimeter m = c;
@@ -70,10 +69,10 @@ private Q_SLOTS:
 
   void test_dataspace()
   {
-#if !defined(_MSC_VER) 
+#if !defined(_MSC_VER)
     // Dataspace : enforces a family of units
     // Unit : enforces a certain type of storage
-    constexpr ossia::centimeter c{2.3}; 
+    constexpr ossia::centimeter c{2.3};
 
     constexpr ossia::millimeter m = c;
 

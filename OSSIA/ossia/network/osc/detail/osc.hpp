@@ -355,7 +355,7 @@ inline ossia::value filter_value(
 {
   if (dom)
   {
-    auto res = ossia::net::clamp(dom, mode, std::forward<Value_T>(base_val));
+    auto res = ossia::net::apply_domain(dom, mode, std::forward<Value_T>(base_val));
     if (res.valid())
       return res;
     else

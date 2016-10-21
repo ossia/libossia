@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/domain/domain.hpp>
-#include <ossia/network/domain/detail/domain_visitors.hpp>
+#include <ossia/network/domain/detail/apply_domain.hpp>
 
 namespace ossia
 {
@@ -20,9 +20,9 @@ struct domain_conversion
   {
     U f;
     if (t.min)
-      f.min = *t.min;
+      f.min = t.min.get();
     if (t.max)
-      f.max = *t.max;
+      f.max = t.max.get();
     if (!t.values.empty())
       for (auto val : t.values)
         f.values.insert(val);
@@ -33,9 +33,9 @@ struct domain_conversion
   {
     U f;
     if (t.min)
-      f.min = *t.min;
+      f.min = t.min.get();
     if (t.max)
-      f.max = *t.max;
+      f.max = t.max.get();
     if (!t.values.empty())
       for (auto val : t.values)
         f.values.insert(val);
@@ -46,9 +46,9 @@ struct domain_conversion
   {
     U f;
     if (t.min)
-      f.min = *t.min;
+      f.min = t.min.get();
     if (t.max)
-      f.max = *t.max;
+      f.max = t.max.get();
     if (!t.values.empty())
       for (auto val : t.values)
         f.values.insert(val);
@@ -59,9 +59,9 @@ struct domain_conversion
   {
     U f;
     if (t.min)
-      f.min = *t.min;
+      f.min = t.min.get();
     if (t.max)
-      f.max = *t.max;
+      f.max = t.max.get();
     if (!t.values.empty())
       for (auto val : t.values)
         f.values.insert(val);
@@ -76,36 +76,6 @@ struct domain_conversion<domain_base<Impulse>>
   domain operator()(const T&)
   {
     return domain_base<Impulse>{};
-  }
-};
-
-template <>
-struct domain_conversion<domain_base<Destination>>
-{
-  domain operator()(const domain_base<Destination>& src)
-  {
-    return src;
-  }
-
-  template <typename T>
-  domain operator()(const T&)
-  {
-    return domain_base<Destination>{};
-  }
-};
-
-template <>
-struct domain_conversion<domain_base<Behavior>>
-{
-  domain operator()(const domain_base<Behavior>& src)
-  {
-    return src;
-  }
-
-  template <typename T>
-  domain operator()(const T&)
-  {
-    return domain_base<Behavior>{};
   }
 };
 
@@ -154,6 +124,8 @@ struct domain_conversion<domain_base<String>>
   }
 };
 
+// TODO handle the ossia::value case
+
 inline domain convert_domain(const domain& dom, ossia::val_type newtype)
 {
   switch (newtype)
@@ -189,11 +161,7 @@ inline domain convert_domain(const domain& dom, ossia::val_type newtype)
       return eggs::variants::apply(
           domain_conversion<domain_base<Vec4f>>{}, dom);
     case val_type::DESTINATION:
-      return eggs::variants::apply(
-          domain_conversion<domain_base<Destination>>{}, dom);
     case val_type::BEHAVIOR:
-      return eggs::variants::apply(
-          domain_conversion<domain_base<Behavior>>{}, dom);
     default:
       return domain{};
   }

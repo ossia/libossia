@@ -45,16 +45,6 @@ struct OSSIA_EXPORT domain_base<Impulse>
 };
 
 template <>
-struct OSSIA_EXPORT domain_base<Behavior>
-{
-};
-
-template <>
-struct OSSIA_EXPORT domain_base<Destination>
-{
-};
-
-template <>
 struct OSSIA_EXPORT domain_base<String>
 {
   boost::container::flat_set<std::string> values;
@@ -79,7 +69,7 @@ struct OSSIA_EXPORT domain_base<Tuple>
   domain_base<ossia_type>(ossia_type&& v1, ossia_type&& v2): min{std::move(v1)}, max{std::move(v2)} { }
 };
 
-template <int N>
+template <std::size_t N>
 struct OSSIA_EXPORT domain_base<Vec<float, N>>
 {
   using ossia_type = Vec<float, N>;
@@ -116,44 +106,6 @@ struct OSSIA_EXPORT domain_base<ossia::value>
   domain_base<ossia_type>(ossia_type&& v1, ossia_type&& v2): min{std::move(v1)}, max{std::move(v2)} { }
 };
 
-template<typename T>
-struct domain_min_max
-{
-  domain_min_max(const domain_base<T>& dom):
-    min{dom.min},
-    max{dom.max}
-  {
-
-  }
-
-  decltype(domain_base<T>::min) min;
-  decltype(domain_base<T>::max) max;
-};
-
-
-template<>
-struct OSSIA_EXPORT domain_min_max<Impulse>
-{
-  domain_min_max(const domain_base<Impulse>& dom) { }
-};
-
-template<>
-struct OSSIA_EXPORT domain_min_max<String>
-{
-  domain_min_max(const domain_base<String>& dom) { }
-};
-
-template<>
-struct OSSIA_EXPORT domain_min_max<Destination>
-{
-  domain_min_max(const domain_base<Destination>& dom) { }
-};
-
-template<>
-struct OSSIA_EXPORT domain_min_max<Behavior>
-{
-  domain_min_max(const domain_base<Behavior>& dom) { }
-};
 /**
  * \typedef domain A domain of values
  *
@@ -175,7 +127,6 @@ using domain
     = eggs::variant<domain_base<Impulse>, domain_base<Bool>, domain_base<Int>,
                     domain_base<Float>, domain_base<Char>, domain_base<String>,
                     domain_base<Tuple>, domain_base<Vec2f>, domain_base<Vec3f>,
-                    domain_base<Vec4f>, domain_base<Destination>,
-                    domain_base<Behavior>, domain_base<ossia::value>>;
+                    domain_base<Vec4f>, domain_base<ossia::value>>;
 }
 }

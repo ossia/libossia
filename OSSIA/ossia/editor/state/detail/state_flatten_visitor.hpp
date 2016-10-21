@@ -46,7 +46,7 @@ struct vec_merger
     return {};
   }
 
-  template<int N>
+  template<std::size_t N>
   auto make_piecewise_from_floats(Float orig, Float incoming) const
   {
     piecewise_vec_message<N> mess{existing_dest.value, {}, incoming_dest.unit, {}};
