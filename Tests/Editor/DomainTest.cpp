@@ -52,6 +52,95 @@ class DomainTest : public QObject
     push_all(addr, min, max);
   }
 
+  template<std::size_t N>
+  void push_all_vec(ossia::net::address_base& addr, Float min, Float max)
+  {
+    using val_t = Vec<float, N>;
+    std::vector<Vec<float, N>> test_vecs;
+    for(float f : {min.value - 100, min.value, (min.value + max.value) / 2, max.value, max.value + 100})
+    {
+      val_t vec;
+      vec.value.fill(f);
+      test_vecs.push_back(vec);
+    }
+
+    for(int i = 0; i < 6; i++)
+    {
+      addr.setBoundingMode((bounding_mode)i);
+      for(auto& vec : test_vecs)
+        addr.pushValue(vec);
+    }
+  }
+
+  template<std::size_t N>
+  void push_all_vec(ossia::net::address_base& addr, Vec<float, N> min, Vec<float, N> max)
+  {
+    using val_t = Vec<float, N>;
+    std::vector<Vec<float, N>> test_vecs;
+    for(float f : {min.value[0] - 100, min.value[0], (min.value[0] + max.value[0]) / 2, max.value[0], max.value[0] + 100})
+    {
+      val_t vec;
+      vec.value.fill(f);
+      test_vecs.push_back(vec);
+    }
+
+    for(int i = 0; i < 6; i++)
+    {
+      addr.setBoundingMode((bounding_mode)i);
+      for(auto& vec : test_vecs)
+        addr.pushValue(vec);
+    }
+  }
+
+  template<std::size_t N>
+  void test_clamp_vec(ossia::net::address_base& addr, Float min, Float max)
+  {
+    auto dom = ossia::net::make_domain(min, max);
+    addr.setDomain(dom);
+
+    // min and max
+    push_all_vec<N>(addr, min, max);
+
+    // no min
+    ossia::net::set_min(dom, {});
+    push_all_vec<N>(addr, min, max);
+
+    // no max
+    ossia::net::set_min(dom, min);
+    ossia::net::set_max(dom, {});
+    push_all_vec<N>(addr, min, max);
+
+    // nothing
+    ossia::net::set_min(dom, {});
+    ossia::net::set_max(dom, {});
+    push_all_vec<N>(addr, min, max);
+  }
+
+  template<std::size_t N>
+  void test_clamp_vec(ossia::net::address_base& addr, Vec<float, N> min, Vec<float, N> max)
+  {
+    auto dom = ossia::net::make_domain(min, max);
+    addr.setDomain(dom);
+
+    // min and max
+    push_all_vec<N>(addr, min, max);
+
+    // no min
+    ossia::net::set_min(dom, {});
+    push_all_vec<N>(addr, min, max);
+
+    // no max
+    ossia::net::set_min(dom, min);
+    ossia::net::set_max(dom, {});
+    push_all_vec<N>(addr, min, max);
+
+    // nothing
+    ossia::net::set_min(dom, {});
+    ossia::net::set_max(dom, {});
+    push_all_vec<N>(addr, min, max);
+  }
+
+
   template<typename T>
   void push_tuple(ossia::net::address_base& addr, T min, T max)
   {
@@ -212,6 +301,7 @@ private Q_SLOTS:
   {
     TestUtils t;
     test_clamp_numeric(*t.float_addr, Float{0.}, Float{1.});
+    test_clamp_numeric(*t.vec2f_addr, Float{0.}, Float{1.});
     test_clamp_numeric(*t.int_addr, Int{0}, Int{100});
     test_clamp_numeric(*t.bool_addr, Bool{false}, Bool{true});
     test_clamp_numeric(*t.char_addr, Char{'a'}, Char{'z'});
@@ -220,6 +310,15 @@ private Q_SLOTS:
     test_clamp_tuple(*t.tuple_addr, Int{0}, Int{100});
     test_clamp_tuple(*t.tuple_addr, Bool{false}, Bool{true});
     test_clamp_tuple(*t.tuple_addr, Char{'a'}, Char{'z'});
+
+
+    test_clamp_vec<2>(*t.vec2f_addr, Float{0.}, Float{1.});
+    test_clamp_vec<3>(*t.vec3f_addr, Float{0.}, Float{1.});
+    test_clamp_vec<4>(*t.vec4f_addr, Float{0.}, Float{1.});
+
+    test_clamp_vec(*t.vec2f_addr, make_vec(0., 0.), make_vec(1., 1.));
+    test_clamp_vec(*t.vec3f_addr, make_vec(0., 0., 0.), make_vec(1., 1., 1.));
+    test_clamp_vec(*t.vec4f_addr, make_vec(0., 0., 0., 0.), make_vec(1., 1., 1., 1.));
 
     // TODO test tuple with Tuple domain.
 
