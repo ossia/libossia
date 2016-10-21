@@ -1,0 +1,4 @@
+leak:Qt5Qml.*
+leak:Qt5Core.*
+leak:QArrayData::allocate
+leak:CRYPTO_malloc

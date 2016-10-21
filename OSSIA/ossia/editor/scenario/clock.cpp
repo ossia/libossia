@@ -286,10 +286,6 @@ void clock::request_stop()
     if (mStatusCallback)
       mStatusCallback(ClockExecutionStatus::STOPPED);
   }
-  mPosition = 0;
-  mDate = 0;
-  mLastTime = {};
-  mElapsedTime = 0;
 }
 
 void clock::do_start()
