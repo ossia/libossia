@@ -83,6 +83,8 @@ private Q_SLOTS:
 
     while (constraint->getRunning())
       ;
+    // Let the time for callbacks to happen...
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     QVERIFY(m_address_values.size() == 11);
 

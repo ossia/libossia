@@ -25,6 +25,33 @@ class DataspaceTest : public QObject
 {
   Q_OBJECT
 
+  template<typename T>
+  void test_conversions_impl()
+  {
+    // Conversion
+    using dataspace_type = ossia::distance;
+    brigand::for_each<dataspace_type>([&] (auto unit_1)
+    {
+      using unit_1_type = typename decltype(unit_1)::type;
+      unit_1_type unit_1_v;
+
+      brigand::for_each<dataspace_type>([&] (auto unit_2)
+      {
+        using unit_2_type = typename decltype(unit_2)::type;
+
+        // Conversion at construction
+        unit_2_type unit_2_v = unit_1_v;
+        (void)unit_2_v;
+
+        // Conversion by convert function
+        auto res = convert(unit_1_v, typename unit_2_type::unit_type{});
+        auto val = to_value(res);
+        (void) val;
+        auto str = to_pretty_string(res);
+        (void) str;
+      });
+    });
+  }
 private Q_SLOTS:
 
   /*! test impulse */
@@ -99,7 +126,7 @@ private Q_SLOTS:
 
   }
 
-  void test_conversions()
+  void test_conversions_at_construction()
   {
     ossia::unit_t unit;
 
@@ -109,40 +136,18 @@ private Q_SLOTS:
         unit = typename decltype(u)::type{};
       });
     });
+  }
 
-    // Conversion
-    #if defined(__GNUC__)
-    using useful_units = brigand::transform<
-        ossia::unit_t,
-        brigand::bind<ossia::add_value, brigand::_1>
-      >;
-    brigand::for_each<useful_units>([&] (auto t)
-    {
-      using dataspace_type = typename decltype(t)::type;
-
-      brigand::for_each<dataspace_type>([&] (auto unit_1)
-      {
-        using unit_1_type = typename decltype(unit_1)::type;
-        unit_1_type unit_1_v;
-
-        brigand::for_each<dataspace_type>([&] (auto unit_2)
-        {
-          using unit_2_type = typename decltype(unit_2)::type;
-
-          // Conversion at construction
-          unit_2_type unit_2_v = unit_1_v;
-          (void)unit_2_v;
-
-          // Conversion by convert function
-          auto res = convert(unit_1_v, typename unit_2_type::unit_type{});
-          auto val = to_value(res);
-          (void) val;
-          auto str = to_pretty_string(res);
-          (void) str;
-        });
-      });
-    });
-    #endif
+  void test_conversions()
+  {
+    test_conversions_impl<ossia::distance>();
+    test_conversions_impl<ossia::angle>();
+    test_conversions_impl<ossia::color>();
+    test_conversions_impl<ossia::position>();
+    test_conversions_impl<ossia::orientation>();
+    test_conversions_impl<ossia::speed>();
+    test_conversions_impl<ossia::gain>();
+    test_conversions_impl<ossia::time>();
   }
 
   void test_visitors()
