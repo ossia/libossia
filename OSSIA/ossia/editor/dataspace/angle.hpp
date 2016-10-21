@@ -4,6 +4,7 @@
 
 namespace ossia
 {
+struct angle_dataspace;
 struct radian_u;
 template<typename Impl>
 struct angle_unit
@@ -12,7 +13,7 @@ struct angle_unit
   using neutral_unit = radian_u;
   using value_type = Float;
   using concrete_type = Impl;
-  using dataspace_type = struct angle_dataspace;
+  using dataspace_type = angle_dataspace;
 };
 
 struct radian_u : public angle_unit<radian_u>

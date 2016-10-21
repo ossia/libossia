@@ -35,23 +35,31 @@ struct strong_value
   using neutral_unit = typename Unit::neutral_unit;
   value_type value;
 
-  strong_value() = default;
+  constexpr strong_value() = default;
 
   // Constructor that takes anyything able to initialize val
+/* Sadly does not work on MSVC........
   template<typename... Args,
-           typename = std::enable_if_t<
-             std::is_constructible<value_type, Args...>::value>>
-  constexpr strong_value(Args&&... other):
+           typename = std::enable_if<
+             std::is_constructible<value_type, Args...>::value>::type>
+      OSSIA_DECL_RELAXED_CONSTEXPR strong_value(Args&&... other):
       value{std::forward<Args>(other)...}
   {
   }
+*/
+  constexpr strong_value(Float other) : value{ other } { }
+  constexpr strong_value(Vec2f other) : value{ other } { }
+  constexpr strong_value(Vec3f other) : value{ other } { }
+  constexpr strong_value(Vec4f other) : value{ other } { }
 
   // Conversion constructor
-  template<typename U,
-           typename = enable_if_same_dataspace<U, unit_type>>
+  template<typename U>
   constexpr strong_value(strong_value<U> other):
     value{unit_type::from_neutral(U::to_neutral(other))}
-  {
+  { 
+    static_assert(std::is_same<
+        typename dataspace_type,
+        typename U::dataspace_type>::value, "Trying to convert between different dataspaces");
   }
 
   // Copy constructor

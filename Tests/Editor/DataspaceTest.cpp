@@ -38,9 +38,8 @@ class DataspaceTest : public QObject
       brigand::for_each<dataspace_type>([&] (auto unit_2)
       {
         using unit_2_type = typename decltype(unit_2)::type;
-
         // Conversion at construction
-        unit_2_type unit_2_v = unit_1_v;
+        unit_2_type unit_2_v(unit_1_v);
         (void)unit_2_v;
 
         // Conversion by convert function
@@ -55,12 +54,26 @@ class DataspaceTest : public QObject
 private Q_SLOTS:
 
   /*! test impulse */
+  void test_dataspace_simple()
+  {
+    static_assert(std::is_same<
+      ossia::centimeter::dataspace_type,
+      ossia::millimeter::dataspace_type>::value, "invalid");
+    using t1 = ossia::enable_if_same_dataspace<ossia::centimeter, ossia::millimeter>;
+    using t2 = ossia::enable_if_same_dataspace<ossia::rgb, ossia::millimeter>;
+      
+    ossia::centimeter c{2.3};
+
+    ossia::millimeter m = c;
+    QCOMPARE(m.value.value, 23.f);
+  }
+
   void test_dataspace()
   {
-#if !defined(_MSC_VER)
+#if !defined(_MSC_VER) 
     // Dataspace : enforces a family of units
     // Unit : enforces a certain type of storage
-    constexpr ossia::centimeter c{2.3};
+    constexpr ossia::centimeter c{2.3}; 
 
     constexpr ossia::millimeter m = c;
 
@@ -77,7 +90,6 @@ private Q_SLOTS:
 
     static_assert(qFuzzyCompare(ossia::radian{ossia::degree{180}}.value.value, 3.14159f), "");
 
-#endif
     // Ex. 1 : making an automation of the correct type ? e.g. circular for circular units...
 
     // have some kind of unit transformer ?
@@ -124,6 +136,7 @@ private Q_SLOTS:
       QVERIFY(parse_unit("cm", some_unit) == ossia::color_u{});
     }
 
+#endif
   }
 
   void test_conversions_at_construction()
@@ -272,6 +285,7 @@ private Q_SLOTS:
     }
 
     {
+qDebug() << ossia::to_pretty_string(make_value(ossia::Int{ 10 }, ossia::centimeter_u{})).c_str();
       QVERIFY(make_value(ossia::Int{10}, ossia::centimeter_u{}) == ossia::centimeter{10});
       QVERIFY(make_value(ossia::Char{10}, ossia::centimeter_u{}) == ossia::centimeter{10});
       QVERIFY(make_value(ossia::Bool{true}, ossia::centimeter_u{}) == ossia::centimeter{1});

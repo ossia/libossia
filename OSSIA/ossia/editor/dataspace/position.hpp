@@ -5,12 +5,13 @@
 namespace ossia
 {
 struct cartesian_3d_u;
+struct position_dataspace;
 template<typename Impl>
 struct position_unit
 {
   using is_unit = std::true_type;
   using is_multidimensional = std::true_type;
-  using dataspace_type = struct position_dataspace;
+  using dataspace_type = position_dataspace;
   using neutral_unit = cartesian_3d_u;
   using concrete_type = Impl;
 };

@@ -5,8 +5,11 @@
 namespace ossia
 {
 
-template<typename U, typename = void>
-struct make_value_helper
+template<typename U, typename V>
+struct make_value_helper;
+
+template<typename U>
+struct make_value_helper<U, ossia::Float>
 {
 
   template<typename T>
@@ -36,7 +39,7 @@ struct make_value_helper
 };
 
 template<typename U>
-struct make_value_helper<U, std::enable_if_t<std::is_same<typename U::value_type, ossia::Vec2f>::value>>
+struct make_value_helper<U, ossia::Vec2f>
 {
 
   template<typename T>
@@ -58,7 +61,7 @@ struct make_value_helper<U, std::enable_if_t<std::is_same<typename U::value_type
 };
 
 template<typename U>
-struct make_value_helper<U, std::enable_if_t<std::is_same<typename U::value_type, ossia::Vec3f>::value>>
+struct make_value_helper<U, ossia::Vec3f>
 {
 
   template<typename T>
@@ -81,7 +84,7 @@ struct make_value_helper<U, std::enable_if_t<std::is_same<typename U::value_type
 
 
 template<typename U>
-struct make_value_helper<U, std::enable_if_t<std::is_same<typename U::value_type, ossia::Vec4f>::value>>
+struct make_value_helper<U, ossia::Vec4f>
 {
 
   template<typename T>
@@ -107,7 +110,7 @@ struct make_value_with_unit_visitor
   template<typename Val, typename Unit>
   ossia::value_with_unit operator()(const Val& v, const Unit& u)
   {
-    return make_value_helper<Unit>{}(v);
+    return make_value_helper<Unit, Unit::value_type>{}(v);
   }
 };
 

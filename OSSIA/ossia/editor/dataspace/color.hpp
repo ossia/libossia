@@ -6,6 +6,7 @@ namespace ossia
 {
 
 struct argb_u;
+struct color_dataspace;
 template<typename Impl>
 struct color_unit
 {
@@ -13,7 +14,7 @@ struct color_unit
   using is_multidimensional = std::true_type; // number of dimensiosn -> decltype(value)::size_value
   using neutral_unit = argb_u;
   using concrete_type = Impl;
-  using dataspace_type = struct color_dataspace;
+  using dataspace_type = color_dataspace;
 };
 
 struct argb_u : public color_unit<argb_u>

@@ -153,8 +153,8 @@ struct numeric_clamp
       const bool has_max = bool(domain.max);
       if (has_min && has_max)
       {
-        const auto min = domain.min.get();
-        const auto max = domain.max.get();
+        const float min = domain.min.get();
+        const float max = domain.max.get();
         switch (b)
         {
           case bounding_mode::CLIP:
@@ -178,7 +178,7 @@ struct numeric_clamp
       }
       else if (has_min)
       {
-        const auto min = domain.min.get();
+        const float min = domain.min.get();
         switch(b)
         {
           case bounding_mode::CLIP:
@@ -190,7 +190,7 @@ struct numeric_clamp
       }
       else if (has_max)
       {
-        const auto max = domain.max.get();
+        const float max = domain.max.get();
         switch(b)
         {
           case bounding_mode::CLIP:
@@ -208,7 +208,7 @@ struct numeric_clamp
       for(int i = 0; i < N; i++)
       {
         // Return a valid value only if it is in the given values
-        auto it = values.find(val[i]);
+        auto it = values.find(val.value[i]);
         if (it == values.end())
         {
           return {};

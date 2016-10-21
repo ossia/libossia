@@ -4,6 +4,7 @@
 
 namespace ossia
 {
+struct time_dataspace;
 struct second_u;
 template<typename Impl>
 struct time_unit
@@ -12,7 +13,7 @@ struct time_unit
   using neutral_unit = second_u;
   using value_type = Float;
   using concrete_type = Impl;
-  using dataspace_type = struct time_dataspace;
+  using dataspace_type = time_dataspace;
 };
 
 struct second_u : public time_unit<second_u>

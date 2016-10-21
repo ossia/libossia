@@ -29,7 +29,7 @@ struct distance_unit
   using neutral_unit = meter_u;
   using value_type = Float;
   using concrete_type = Impl;
-  using dataspace_type = struct distance_dataspace;
+  using dataspace_type = distance_dataspace;
 };
 
 template<typename T>

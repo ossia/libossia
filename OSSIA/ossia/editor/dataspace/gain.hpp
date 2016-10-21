@@ -5,6 +5,7 @@
 namespace ossia
 {
 struct linear_u;
+struct gain_dataspace;
 template<typename Impl>
 struct gain_unit
 {
@@ -12,7 +13,7 @@ struct gain_unit
   using neutral_unit = linear_u;
   using value_type = Float;
   using concrete_type = Impl;
-  using dataspace_type = struct gain_dataspace;
+  using dataspace_type = gain_dataspace;
 };
 
 /** Utility functions taken from Jamoma TTBase.h **/
