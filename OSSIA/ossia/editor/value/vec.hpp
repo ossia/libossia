@@ -17,7 +17,7 @@ class value;
  * \see Tuple
  */
 template <typename T, std::size_t N>
-class Vec
+class OSSIA_EXPORT Vec
 {
 public:
   static const constexpr std::size_t size_value = N;
@@ -56,9 +56,9 @@ public:
 
 namespace ossia
 {
-using Vec2f = Vec<float, 2>;
-using Vec3f = Vec<float, 3>;
-using Vec4f = Vec<float, 4>;
+using Vec2f = Vec<float, 2ul>;
+using Vec3f = Vec<float, 3ul>;
+using Vec4f = Vec<float, 4ul>;
 
 inline Vec2f make_vec(float f1, float f2) { return std::array<float, 2>{f1, f2}; }
 inline Vec3f make_vec(float f1, float f2, float f3) { return std::array<float, 3>{f1, f2, f3}; }

@@ -89,8 +89,8 @@ private Q_SLOTS:
     QVERIFY(m_address_values.size() == 10 || m_address_values.size() == 11 || m_address_values.size() == 12);
 
     Float zero(0);
-    QVERIFY(m_address_values[0] == zero);
-    QVERIFY(m_address_values[10] == zero);
+    QVERIFY(m_address_values.front() == zero);
+    QVERIFY(m_address_values.back() == zero);
 
     // check if all values are differents from the previous value
     Float previous(-1);

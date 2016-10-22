@@ -92,27 +92,27 @@ struct value_trait<ossia::Destination>
 };
 
 template <>
-struct value_trait<ossia::Vec<float, 2>>
+struct value_trait<ossia::Vec2f>
 {
-  using ossia_type = ossia::Vec<float, 2>;
+  using ossia_type = ossia::Vec2f;
   using value_type = std::array<float, 2>;
   static const constexpr auto ossia_enum = val_type::VEC2F;
   static const constexpr bool is_numeric = false;
 };
 
 template <>
-struct value_trait<ossia::Vec<float, 3>>
+struct value_trait<ossia::Vec3f>
 {
-  using ossia_type = ossia::Vec<float, 3>;
+  using ossia_type = ossia::Vec3f;
   using value_type = std::array<float, 3>;
   static const constexpr auto ossia_enum = val_type::VEC3F;
   static const constexpr bool is_numeric = false;
 };
 
 template <>
-struct value_trait<ossia::Vec<float, 4>>
+struct value_trait<ossia::Vec4f>
 {
-  using ossia_type = ossia::Vec<float, 4>;
+  using ossia_type = ossia::Vec4f;
   using value_type = std::array<float, 4>;
   static const constexpr auto ossia_enum = val_type::VEC4F;
   static const constexpr bool is_numeric = false;
