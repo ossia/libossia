@@ -112,14 +112,8 @@ struct OSSIA_EXPORT domain_base<ossia::value>
  * The practical domain may be different according to the value type.
  * For instance, \ref domain_base<Impulse> has no min nor max.
  *
- * Domains for Int, Bool, Float, Char have a min, a max and a set of values.
+ * Domains for most types have a min, a max and a set of values.
  * Domain for String has a set of values.
- * Other domains are not implemented yet.
- *
- * A domain_base should implement the following method :
- * \code
- * ossia::value clamp(bounding_mode, const T&) const
- * \endcode
  *
  * It is used to restrict a value to the domain if available.
  */

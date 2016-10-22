@@ -51,7 +51,7 @@ struct make_value_helper<U, ossia::Vec2f>
 
   ossia::value_with_unit operator()(const ossia::Tuple& t)
   {
-    return strong_value<U>{ossia::convert<ossia::Vec2f>(t)};
+    return strong_value<U>{ossia::convert<std::array<float, 2>>(t)};
   }
 
   ossia::value_with_unit operator()(ossia::Vec2f t)
@@ -73,7 +73,7 @@ struct make_value_helper<U, ossia::Vec3f>
 
   ossia::value_with_unit operator()(const ossia::Tuple& t)
   {
-    return strong_value<U>{ossia::convert<ossia::Vec3f>(t)};
+    return strong_value<U>{ossia::convert<std::array<float, 3>>(t)};
   }
 
   ossia::value_with_unit operator()(ossia::Vec3f t)
@@ -96,7 +96,7 @@ struct make_value_helper<U, ossia::Vec4f>
 
   ossia::value_with_unit operator()(const ossia::Tuple& t)
   {
-    return strong_value<U>{ossia::convert<ossia::Vec4f>(t)};
+    return strong_value<U>{ossia::convert<std::array<float, 4>>(t)};
   }
 
   ossia::value_with_unit operator()(ossia::Vec4f t)

@@ -3,6 +3,7 @@
 #include <ossia/editor/value/value_comparison.hpp>
 #include <ossia/editor/value/value_algorithms.hpp>
 #include <ossia/editor/value/value_traits.hpp>
+#include <ossia/editor/value/detail/value_conversion_impl.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/detail/logger.hpp>
@@ -14,6 +15,38 @@ namespace ossia
 template class Vec<float, 2ul>;
 template class Vec<float, 3ul>;
 template class Vec<float, 4ul>;
+
+template
+Impulse convert<Impulse>(const ossia::value& val);
+template
+int convert<int>(const ossia::value& val);
+template
+float convert<float>(const ossia::value& val);
+template
+double convert<double>(const ossia::value& val);
+template
+bool convert<bool>(const ossia::value& val);
+template
+char convert<char>(const ossia::value& val);
+template
+std::string convert<std::string>(const ossia::value& val);
+template
+std::vector<ossia::value> convert<std::vector<ossia::value>>(const ossia::value& val);
+template
+std::array<float, 2> convert<std::array<float, 2>>(const ossia::value& val);
+template
+std::array<float, 3> convert<std::array<float, 3>>(const ossia::value& val);
+template
+std::array<float, 4> convert<std::array<float, 4>>(const ossia::value& val);
+
+
+template
+std::array<float, 2> convert<std::array<float, 2>>(const ossia::Tuple& val);
+template
+std::array<float, 3> convert<std::array<float, 3>>(const ossia::Tuple& val);
+template
+std::array<float, 4> convert<std::array<float, 4>>(const ossia::Tuple& val);
+
 
 bool Bool::operator==(const ossia::value& v) const
 {
@@ -534,5 +567,13 @@ bool is_array(const ossia::value& val)
       return ossia::value_trait<std::remove_const_t<std::remove_reference_t<decltype(v)>>>::is_array;
     }, val.v);
   return false;
+}
+
+ossia::value convert(const ossia::value& val, ossia::val_type newtype)
+{
+  return lift(newtype, [&] (auto t) -> ossia::value {
+    using ossia_type = typename decltype(t)::ossia_type;
+    return convert<ossia_type>(val);
+  });
 }
 }

@@ -31,6 +31,7 @@ OSSIA_EXPORT domain make_domain(
 OSSIA_EXPORT domain init_domain(
     ossia::val_type type);
 
+OSSIA_EXPORT bool operator==(const domain_base<Impulse>& lhs, const domain_base<Impulse>& rhs);
 OSSIA_EXPORT bool operator==(const domain_base<String>& lhs, const domain_base<String>& rhs);
 OSSIA_EXPORT bool operator==(const domain_base<Char>& lhs, const domain_base<Char>& rhs);
 OSSIA_EXPORT bool operator==(const domain_base<Bool>& lhs, const domain_base<Bool>& rhs);
@@ -41,12 +42,6 @@ OSSIA_EXPORT bool operator==(const domain_base<Vec2f>& lhs, const domain_base<Ve
 OSSIA_EXPORT bool operator==(const domain_base<Vec3f>& lhs, const domain_base<Vec3f>& rhs);
 OSSIA_EXPORT bool operator==(const domain_base<Vec4f>& lhs, const domain_base<Vec4f>& rhs);
 OSSIA_EXPORT bool operator==(const domain_base<ossia::value>& lhs, const domain_base<ossia::value>& rhs);
-
-template <typename T>
-bool operator==(const domain_base<T>& lhs, const domain_base<T>& rhs)
-{
-  return true;
-}
 
 template <typename T>
 bool operator!=(const domain_base<T>& lhs, const domain_base<T>& rhs)

@@ -1,6 +1,4 @@
 #pragma once
-#include <vector>
-#include <string>
 namespace ossia
 {
 /**
@@ -53,6 +51,4 @@ enum class repetition_filter
   OFF,
   ON
 };
-
-using tags_t = std::vector<std::string>;
 }

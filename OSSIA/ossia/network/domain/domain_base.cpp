@@ -158,6 +158,11 @@ domain make_domain(
 }
 
 bool
+operator==(const domain_base<Impulse>& lhs, const domain_base<Impulse>& rhs)
+{
+  return true;
+}
+bool
 operator==(const domain_base<Int>& lhs, const domain_base<Int>& rhs)
 {
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;

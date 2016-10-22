@@ -30,8 +30,9 @@ class OSSIA_EXPORT mapper final :
 {
 public:
   mapper(
-      ossia::Destination, ossia::Destination,
-      const ossia::behavior&);
+      ossia::Destination,
+      ossia::Destination,
+      ossia::behavior);
 
   ~mapper();
 

@@ -1,5 +1,6 @@
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/value/value_conversion.hpp>
+#include <ossia/editor/value/detail/value_conversion_impl.hpp>
 #include <ossia/editor/dataspace/detail/dataspace_convert.hpp>
 #include <ossia/editor/dataspace/detail/dataspace_merge.hpp>
 #include <ossia/editor/dataspace/detail/dataspace_parse.hpp>

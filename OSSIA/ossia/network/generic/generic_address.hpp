@@ -9,8 +9,13 @@
 #include <mutex>
 #include <thread>
 
+#include <vector>
+#include <string>
+
 namespace ossia
 {
+using tags_t = std::vector<std::string>;
+
 namespace net
 {
 

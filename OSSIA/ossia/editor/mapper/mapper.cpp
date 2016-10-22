@@ -9,10 +9,10 @@ namespace ossia
 mapper::mapper(
       ossia::Destination driverAddress,
       ossia::Destination drivenAddress,
-      const ossia::behavior& drive)
+      ossia::behavior drive)
     : mDriverAddress{std::move(driverAddress)}
     , mDrivenAddress{std::move(drivenAddress)}
-    , mDrive{drive}
+    , mDrive{std::move(drive)}
     , mLastMessage{mDrivenAddress, {}}
     , mDriverValueObserved(false)
 {

@@ -6,6 +6,7 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <ossia/editor/value/value_conversion.hpp>
+#include <ossia/editor/value/detail/value_conversion_impl.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <iostream>
 #include <map>
