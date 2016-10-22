@@ -14,7 +14,7 @@ void message::launch() const
   {
     if(!unit || unit == addr_unit)
     {
-      addr.pushValue(value);
+      addr.pushValue(message_value);
     }
     else
     {
@@ -22,7 +22,7 @@ void message::launch() const
       addr.pushValue(
             ossia::to_value(
               ossia::convert(
-                ossia::make_value(value, unit),
+                ossia::make_value(message_value, unit),
                 addr_unit)));
     }
   }
@@ -41,7 +41,7 @@ void message::launch() const
           eggs::variants::apply(
                 vec_merger{destination, destination},
                 cur.v,
-                value.v);
+                message_value.v);
 
           addr.pushValue(std::move(cur));
           break;
@@ -50,7 +50,7 @@ void message::launch() const
         {
           auto& cur_tuple = cur.get<Tuple>();
           // Insert the value of this message in the existing value array
-          value_merger<true>::insert_in_tuple(cur_tuple, value, destination.index);
+          value_merger<true>::insert_in_tuple(cur_tuple, message_value, destination.index);
           addr.pushValue(std::move(cur));
           break;
         }
@@ -58,7 +58,7 @@ void message::launch() const
         {
           // Create a tuple and put the existing value at [0]
           Tuple t{std::move(cur)};
-          value_merger<true>::insert_in_tuple(t, value, destination.index);
+          value_merger<true>::insert_in_tuple(t, message_value, destination.index);
           addr.pushValue(std::move(t));
           break;
         }
@@ -101,7 +101,7 @@ void message::launch() const
                   ossia::convert(
                     ossia::net::get_value(addr),
                     unit),
-                  value,
+                  message_value,
                   destination.index),
                 addr_unit)
               )
@@ -116,12 +116,12 @@ void piecewise_message::launch() const
   auto cur = address.get().cloneValue();
   if(auto cur_tuple = cur.target<Tuple>())
   {
-    value_merger<true>::merge_tuple(*cur_tuple, value);
+    value_merger<true>::merge_tuple(*cur_tuple, message_value);
     address.get().pushValue(std::move(cur));
   }
   else
   {
-    address.get().pushValue(value);
+    address.get().pushValue(message_value);
   }
 }
 
@@ -134,7 +134,7 @@ void piecewise_vec_message<N>::launch() const
   {
     if(used_values.all())
     {
-      addr.pushValue(value);
+      addr.pushValue(message_value);
     }
     else
     {
@@ -146,7 +146,7 @@ void piecewise_vec_message<N>::launch() const
         {
           if(used_values.test(i))
           {
-            v.value[i] = value.value[i];
+            v[i] = message_value[i];
           }
         }
 
@@ -182,7 +182,7 @@ void piecewise_vec_message<N>::launch() const
       addr.pushValue(
             ossia::to_value(
               ossia::convert(
-                ossia::make_value(value, unit),
+                ossia::make_value(message_value, unit),
                 addr_unit
                 )
               )
@@ -214,7 +214,7 @@ void piecewise_vec_message<N>::launch() const
                       convert( // Put the current value in the Unit domain
                         ossia::net::get_value(addr),
                         unit),
-                      value, // Compute the output of the automation
+                      message_value, // Compute the output of the automation
                       used_values),
                   addr.getUnit())));
 

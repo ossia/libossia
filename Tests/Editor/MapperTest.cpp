@@ -39,7 +39,7 @@ class MapperTest : public QObject
 
     // prepare next float value
     const Float current = m_float_address->cloneValue().get<Float>();
-    m_float_address->pushValue(Float(current.value + 0.5));
+    m_float_address->pushValue(Float(current + 0.5));
   }
 
 private Q_SLOTS:
@@ -62,8 +62,8 @@ private Q_SLOTS:
 
     QVERIFY(mapping->parent() == nullptr);
 
-    QCOMPARE(&mapping->getDriverAddress().value.get(), float_address);
-    QVERIFY(&mapping->getDrivenAddress().value.get() == int_address);
+    QCOMPARE(&mapping->getDriverAddress().get(), float_address);
+    QVERIFY(&mapping->getDrivenAddress().get() == int_address);
     QVERIFY(mapping->getDriving() == b);
 
     //! \todo test clone()
@@ -122,9 +122,9 @@ private Q_SLOTS:
       Float f = v.get<Float>();
       Int i = it->get<Int>();
 
-      int result = c->valueAt(f.value);
+      int result = c->valueAt(f);
 
-      QVERIFY(i.value == result);
+      QVERIFY(i == result);
 
       it++;
     }

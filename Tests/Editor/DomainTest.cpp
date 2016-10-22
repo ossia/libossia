@@ -4,10 +4,8 @@
 
 using namespace ossia;
 using namespace ossia::net;
-template<typename T>
-ossia::value to_val(T f) { return typename matching_value<T>::type{f}; }
 template<typename R, typename T>
-ossia::value to(T f) { return R{(decltype(R{}.value))f}; }
+ossia::value to(T f) { return R{(decltype(R{}))f}; }
 
 class DomainTest : public QObject
 {
@@ -16,15 +14,15 @@ class DomainTest : public QObject
   template<typename T>
   void push_all(ossia::net::address_base& addr, T min, T max)
   {
-    using val_t = decltype(T{}.value);
+    using val_t = decltype(T{});
     for(int i = 0; i < 6; i++)
     {
       addr.setBoundingMode((bounding_mode)i);
-      addr.pushValue(T{(val_t)(min.value - 100)});
+      addr.pushValue(T{(val_t)(min - 100)});
       addr.pushValue(min);
-      addr.pushValue(T{(val_t)((min.value + max.value) / 2)});
+      addr.pushValue(T{(val_t)((min + max) / 2)});
       addr.pushValue(max);
-      addr.pushValue(T{(val_t)(max.value + 100)});
+      addr.pushValue(T{(val_t)(max + 100)});
     }
   }
 
@@ -57,10 +55,10 @@ class DomainTest : public QObject
   {
     using val_t = Vec<float, N>;
     std::vector<Vec<float, N>> test_vecs;
-    for(float f : {min.value - 100, min.value, (min.value + max.value) / 2, max.value, max.value + 100})
+    for(float f : {min - 100, min, (min + max) / 2, max, max + 100})
     {
       val_t vec;
-      vec.value.fill(f);
+      vec.fill(f);
       test_vecs.push_back(vec);
     }
 
@@ -77,10 +75,10 @@ class DomainTest : public QObject
   {
     using val_t = Vec<float, N>;
     std::vector<Vec<float, N>> test_vecs;
-    for(float f : {min.value[0] - 100, min.value[0], (min.value[0] + max.value[0]) / 2, max.value[0], max.value[0] + 100})
+    for(float f : {min[0] - 100, min[0], (min[0] + max[0]) / 2, max[0], max[0] + 100})
     {
       val_t vec;
-      vec.value.fill(f);
+      vec.fill(f);
       test_vecs.push_back(vec);
     }
 
@@ -144,18 +142,18 @@ class DomainTest : public QObject
   template<typename T>
   void push_tuple(ossia::net::address_base& addr, T min, T max)
   {
-    using val_t = decltype(T{}.value);
+    using val_t = T;
     // TODO why couldn't domain operate on dataspaces ?
     // e.g. for a position, we could want to limit its norm ?
     // Maybe the domain could be a list of constraint :
     // "default" min max constraint,
     // constraint added by the unit type (e.g. rgb : between 0 / 1)
     // additional constraints..
-    Tuple t{T{(val_t)(min.value - 100)},
+    Tuple t{T{(val_t)(min - 100)},
             min,
-                T{(val_t)((min.value + max.value) / 2)},
+                T{(val_t)((min + max) / 2)},
                   max,
-                      T{(val_t)(max.value + 100)}};
+                      T{(val_t)(max + 100)}};
     for(int i = 0; i < 6; i++)
     {
       addr.setBoundingMode((bounding_mode)i);
@@ -178,7 +176,7 @@ class DomainTest : public QObject
     push_tuple(addr, min, max);
 
     // no max
-    dom.min = min.value;
+    dom.min = min;
     dom.max.reset();
     push_tuple(addr, min, max);
 
@@ -277,8 +275,8 @@ private Q_SLOTS:
     QVERIFY(*dom.min  == 1);
     QVERIFY(*dom.max  == 24);
 
-    dom.values = {1, 10, 24};
-    QVERIFY(dom.values.size() == 3);
+    doms = {1, 10, 24};
+    QVERIFY(doms.size() == 3);
 
     auto copy = dom;
     QCOMPARE(copy, dom);

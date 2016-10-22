@@ -12,9 +12,6 @@
 namespace ossia
 {
 
-template class Vec<float, 2ul>;
-template class Vec<float, 3ul>;
-template class Vec<float, 4ul>;
 
 template
 Impulse convert<Impulse>(const ossia::value& val);
@@ -47,7 +44,7 @@ std::array<float, 3> convert<std::array<float, 3>>(const ossia::Tuple& val);
 template
 std::array<float, 4> convert<std::array<float, 4>>(const ossia::Tuple& val);
 
-
+/*
 bool Bool::operator==(const ossia::value& v) const
 {
   return comparisons::NumericValue::apply(*this, v, std::equal_to<>{});
@@ -245,7 +242,7 @@ bool Tuple::operator<=(const ossia::value& v) const
 {
   return comparisons::TupleValue::apply(*this, v, std::less_equal<>{});
 }
-
+*/
 Destination::Destination(const Destination& other) = default;
 Destination::Destination(Destination&& other) = default;
 
@@ -276,53 +273,65 @@ Destination::Destination(net::address_base& v, const unit_t&u)
 
 bool Destination::operator==(const ossia::value& v) const
 {
-  return comparisons::DestinationValue::apply(*this, v, std::equal_to<>{});
+  throw;
+  // TODO return comparisons::DestinationValue::apply(*this, v, std::equal_to<>{});
 }
 
 bool Destination::operator!=(const ossia::value& v) const
 {
-  return !comparisons::DestinationValue::apply(*this, v, std::equal_to<>{});
+  throw;
+  // return !comparisons::DestinationValue::apply(*this, v, std::equal_to<>{});
 }
 
 bool Destination::operator>(const ossia::value& v) const
 {
-  return comparisons::DestinationValue::apply(*this, v, std::greater<>{});
+  throw;
+  // return comparisons::DestinationValue::apply(*this, v, std::greater<>{});
 }
 
 bool Destination::operator>=(const ossia::value& v) const
 {
+  throw;
+  /*
   return comparisons::DestinationValue::apply(
       *this, v, std::greater_equal<>{});
+  */
 }
 
 bool Destination::operator<(const ossia::value& v) const
 {
-  return comparisons::DestinationValue::apply(*this, v, std::less<>{});
+  throw;
+  //return comparisons::DestinationValue::apply(*this, v, std::less<>{});
 }
 
 bool Destination::operator<=(const ossia::value& v) const
 {
-  return comparisons::DestinationValue::apply(*this, v, std::less_equal<>{});
+  throw;
+  //return comparisons::DestinationValue::apply(*this, v, std::less_equal<>{});
 }
 
 bool operator==(const Destination& lhs, const Destination& rhs)
 {
-  return lhs.value == rhs.value && lhs.index == rhs.index;
+  throw;
+  //return lhs.value == rhs.value && lhs.index == rhs.index;
 }
 
 bool operator!=(const Destination& lhs, const Destination& rhs)
 {
-  return lhs.value != rhs.value || lhs.index != rhs.index;
+  throw;
+  //return lhs.value != rhs.value || lhs.index != rhs.index;
 }
 
 bool operator==(const Destination& lhs, const ossia::net::address_base& rhs)
 {
-  return lhs.value == rhs && lhs.index.empty();
+  throw;
+  //return lhs.value == rhs && lhs.index.empty();
 }
 
 bool operator!=(const Destination& lhs, const ossia::net::address_base& rhs)
 {
-  return lhs.value != rhs || !lhs.index.empty();
+  throw;
+  //return lhs.value != rhs || !lhs.index.empty();
 }
 
 
@@ -358,7 +367,10 @@ struct value_comparison_visitor
   template <typename T>
   bool operator()(const T& lhs)
   {
-    return Comparator{}(lhs, rhs);
+    assert(false);
+    return false;
+    // TODO
+    // return Comparator{}(lhs, rhs);
   }
 };
 
@@ -463,35 +475,35 @@ struct value_prettyprint_visitor
   }
   void operator()(Int i) const
   {
-    s << "int: " << i.value;
+    s << "int: " << i;
   }
   void operator()(Float f) const
   {
-    s << "float: " << f.value;
+    s << "float: " << f;
   }
   void operator()(Bool b) const
   {
-    s << "bool: " << b.value;
+    s << "bool: " << b;
   }
   void operator()(Char c) const
   {
-    s << "char: " << c.value;
+    s << "char: " << c;
   }
   void operator()(const String& str) const
   {
-    s << "string: " << str.value;
+    s << "string: " << str;
   }
   void operator()(Vec2f vec) const
   {
-    s << "vec2f: [" << vec.value[0] << " " << vec.value[1] << "]";
+    s << "vec2f: [" << vec[0] << " " << vec[1] << "]";
   }
   void operator()(Vec3f vec) const
   {
-    s << "vec3f: [" << vec.value[0] << " " << vec.value[1] << " " << vec.value[2] << "]";
+    s << "vec3f: [" << vec[0] << " " << vec[1] << " " << vec[2] << "]";
   }
   void operator()(Vec4f vec) const
   {
-    s << "vec4f: [" << vec.value[0] << " " << vec.value[1] << " " << vec.value[2] << " " << vec.value[3] << "]";
+    s << "vec4f: [" << vec[0] << " " << vec[1] << " " << vec[2] << " " << vec[3] << "]";
   }
   void operator()(const Destination& d) const
   {
@@ -516,12 +528,12 @@ static void getTupleAsString(const ossia::Tuple& tuple, fmt::MemoryWriter& s)
 {
   value_prettyprint_visitor vis{s};
 
-  int n = tuple.value.size();
+  int n = tuple.size();
 
   s << "[";
   for (int i = 0; i < n; i++)
   {
-    const auto& val = tuple.value[i];
+    const auto& val = tuple[i];
 
     if (val.valid())
       eggs::variants::apply(vis, val.v);

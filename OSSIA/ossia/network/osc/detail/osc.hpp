@@ -30,42 +30,42 @@ struct osc_outbound_visitor
     }
     void operator()(ossia::Int i) const
     {
-      p << int32_t(i.value);
+      p << int32_t(i);
     }
     void operator()(ossia::Float f) const
     {
-      p << f.value;
+      p << float(f);
     }
     void operator()(ossia::Bool b) const
     {
-      p << int32_t(b.value);
+      p << int32_t(b);
     }
     void operator()(ossia::Char c) const
     {
-      p << int32_t(c.value);
+      p << int32_t(c);
     }
     void operator()(const ossia::String& str) const
     {
-      p << boost::string_view(str.value);
+      p << (boost::string_view)str;
     }
     void operator()(ossia::Vec2f vec) const
     {
-      p << vec.value[0] << vec.value[1];
+      p << vec[0] << vec[1];
     }
     void operator()(ossia::Vec3f vec) const
     {
-      p << vec.value[0] << vec.value[1] << vec.value[2];
+      p << vec[0] << vec[1] << vec[2];
     }
     void operator()(ossia::Vec4f vec) const
     {
-      p << vec.value[0] << vec.value[1] << vec.value[2] << vec.value[3];
+      p << vec[0] << vec[1] << vec[2] << vec[3];
     }
     void operator()(const ossia::Destination& d) const
     {
     }
     void operator()(const ossia::Tuple& t) const
     {
-      for (const auto& val : t.value)
+      for (const auto& val : t)
       {
         p << val;
       }
@@ -250,9 +250,9 @@ struct osc_inbound_visitor
         for (; vec_it != vec_end; ++vec_it)
         {
           if (vec_it->IsFloat())
-            ret.value[i] = vec_it->AsFloatUnchecked();
+            ret[i] = vec_it->AsFloatUnchecked();
           else if (vec_it->IsDouble())
-            ret.value[i] = vec_it->AsDoubleUnchecked();
+            ret[i] = vec_it->AsDoubleUnchecked();
           else
             return vec;
 
@@ -301,13 +301,13 @@ struct osc_inbound_visitor
     ossia::value operator()(const ossia::Tuple&)
     {
       /* This code preserves type info, this is not what we want.
-    int n = t.value.size();
+    int n = t.size();
     if (numArguments == n)
     {
       for (int i = 0; i < n; i++)
       {
-        auto res = eggs::variants::apply(*this, t.value[i].v);
-        t.value[i] = std::move(res);
+        auto res = eggs::variants::apply(*this, t[i].v);
+        t[i] = std::move(res);
         ++cur_it;
       }
     }
@@ -315,7 +315,7 @@ struct osc_inbound_visitor
       ossia::Tuple t;
       for(int i = 0; i < numArguments; ++i)
       {
-        t.value.push_back(create_value(cur_it));
+        t.push_back(create_value(cur_it));
         ++cur_it;
       }
       return t;

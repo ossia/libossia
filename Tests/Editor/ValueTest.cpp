@@ -458,14 +458,14 @@ private Q_SLOTS:
   void test_tuple()
   {
     Tuple t1{Int(5), Float(0.2), String("abc")};
-    QVERIFY(t1.value[0].getType() == val_type::INT);
-    QVERIFY(t1.value[1].getType() == val_type::FLOAT);
-    QVERIFY(t1.value[2].getType() == val_type::STRING);
+    QVERIFY(t1[0].getType() == val_type::INT);
+    QVERIFY(t1[1].getType() == val_type::FLOAT);
+    QVERIFY(t1[2].getType() == val_type::STRING);
 
     Tuple t2 = t1;
-    QVERIFY(t2.value[0].getType() == val_type::INT);
-    QVERIFY(t2.value[1].getType() == val_type::FLOAT);
-    QVERIFY(t2.value[2].getType() == val_type::STRING);
+    QVERIFY(t2[0].getType() == val_type::INT);
+    QVERIFY(t2[1].getType() == val_type::FLOAT);
+    QVERIFY(t2[2].getType() == val_type::STRING);
 
     QVERIFY(t1 == t2);
     QVERIFY(!(t1 != t2));

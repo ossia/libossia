@@ -18,7 +18,7 @@ struct numeric_clamp
   template<typename U>
   value operator()(bounding_mode b, U&& val) const
   {
-    using T = typename Domain::ossia_type;
+    using T = typename Domain::value_type;
 
     if (b == bounding_mode::FREE)
       return std::forward<U>(val);
@@ -34,15 +34,15 @@ struct numeric_clamp
         switch (b)
         {
           case bounding_mode::CLIP:
-            return T(ossia::clamp(std::forward<U>(val).value, min, max));
+            return T(ossia::clamp(std::forward<U>(val), min, max));
           case bounding_mode::WRAP:
-            return T(ossia::wrap(std::forward<U>(val).value, min, max));
+            return T(ossia::wrap(std::forward<U>(val), min, max));
           case bounding_mode::FOLD:
-            return T(ossia::fold(std::forward<U>(val).value, min, max));
+            return T(ossia::fold(std::forward<U>(val), min, max));
           case bounding_mode::LOW:
-            return T(ossia::clamp_min(std::forward<U>(val).value, min));
+            return T(ossia::clamp_min(std::forward<U>(val), min));
           case bounding_mode::HIGH:
-            return T(ossia::clamp_max(std::forward<U>(val).value, max));
+            return T(ossia::clamp_max(std::forward<U>(val), max));
           default:
             break;
         }
@@ -54,7 +54,7 @@ struct numeric_clamp
         {
           case bounding_mode::CLIP:
           case bounding_mode::LOW:
-            return T(ossia::clamp_min(std::forward<U>(val).value, min));
+            return T(ossia::clamp_min(std::forward<U>(val), min));
           default:
             break;
         }
@@ -66,7 +66,7 @@ struct numeric_clamp
         {
           case bounding_mode::CLIP:
           case bounding_mode::HIGH:
-            return T(ossia::clamp_max(val.value, max));
+            return T(ossia::clamp_max(val, max));
           default:
             break;
         }
@@ -77,7 +77,7 @@ struct numeric_clamp
     else
     {
       // Return a valid value only if it is in the given values
-      auto it = domain.values.find(val.value);
+      auto it = domain.values.find(val);
       if (it != domain.values.end())
       {
         return T(*it);
@@ -136,19 +136,19 @@ struct numeric_clamp
         switch (b)
         {
           case bounding_mode::CLIP:
-            for(std::size_t i = 0; i < N; i++) val.value[i] = ossia::clamp(val.value[i], min, max);
+            for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp(val[i], min, max);
             break;
           case bounding_mode::WRAP:
-            for(std::size_t i = 0; i < N; i++) val.value[i] = ossia::wrap(val.value[i], min, max);
+            for(std::size_t i = 0; i < N; i++) val[i] = ossia::wrap(val[i], min, max);
             break;
           case bounding_mode::FOLD:
-            for(std::size_t i = 0; i < N; i++) val.value[i] = ossia::fold(val.value[i], min, max);
+            for(std::size_t i = 0; i < N; i++) val[i] = ossia::fold(val[i], min, max);
             break;
           case bounding_mode::LOW:
-            for(std::size_t i = 0; i < N; i++) val.value[i] = ossia::clamp_min(val.value[i], min);
+            for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_min(val[i], min);
             break;
           case bounding_mode::HIGH:
-            for(std::size_t i = 0; i < N; i++) val.value[i] = ossia::clamp_max(val.value[i], max);
+            for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_max(val[i], max);
             break;
           default:
             break;
@@ -161,7 +161,7 @@ struct numeric_clamp
         {
           case bounding_mode::CLIP:
           case bounding_mode::LOW:
-            for(std::size_t i = 0; i < N; i++) val.value[i] = ossia::clamp_min(val.value[i], min);
+            for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_min(val[i], min);
           default:
             break;
         }
@@ -173,7 +173,7 @@ struct numeric_clamp
         {
           case bounding_mode::CLIP:
           case bounding_mode::HIGH:
-            for(std::size_t i = 0; i < N; i++) val.value[i] = ossia::clamp_max(val.value[i], max);
+            for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_max(val[i], max);
           default:
             break;
         }
@@ -186,7 +186,7 @@ struct numeric_clamp
       for(std::size_t i = 0; i < N; i++)
       {
         // Return a valid value only if it is in the given values
-        auto it = values.find(val.value[i]);
+        auto it = values.find(val[i]);
         if (it == values.end())
         {
           return {};

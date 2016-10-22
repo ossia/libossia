@@ -187,11 +187,11 @@ private Q_SLOTS:
 
     QCOMPARE((int)s1.size(), 1);
 
-    auto pw = s1.children()[0].target<piecewise_message>();
+    const piecewise_message* pw = s1.children()[0].target<piecewise_message>();
     QVERIFY(pw);
     QVERIFY(pw->address == m0.destination.value);
     Tuple expected{Float{5.}, Float{10.}, Float{15.}};
-    QVERIFY(pw->value == expected);
+    QVERIFY(pw->message_value == expected);
 
     // permutations
     state s2;
@@ -236,11 +236,11 @@ private Q_SLOTS:
 
     QCOMPARE((int)s1.size(), 1);
 
-    auto pw = s1.children()[0].target<piecewise_message>();
+    const piecewise_message* pw = s1.children()[0].target<piecewise_message>();
     QVERIFY(pw);
     QVERIFY(pw->address == m0.target<message>()->destination.value);
     Tuple expected{Float{5.}, Float{10.}, Float{15.}};
-    QVERIFY(pw->value == expected);
+    QVERIFY(pw->message_value == expected);
 
     // permutations
     state s2;

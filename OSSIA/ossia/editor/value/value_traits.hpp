@@ -4,9 +4,6 @@
 namespace ossia
 {
 
-template <typename T, std::size_t N>
-class Vec;
-
 template <typename T>
 struct value_trait;
 
@@ -154,19 +151,6 @@ struct matching_value<std::array<float, N>> { using type = Vec<float, N>; };
 
 template <typename T>
 using matching_value_t = typename matching_value<T>::type;
-
-
-template<typename T, typename = matching_value_t<T>>
-auto get(const ossia::value& v)
-{
-  return v.get<matching_value_t<T>>().value;
-}
-
-template<typename T, typename = matching_value_t<T>>
-auto get(ossia::value&& v)
-{
-  return std::move(v).get<matching_value_t<T>>().value;
-}
 
 /**
  * @brief is_numeric True if the value is of a numeric type

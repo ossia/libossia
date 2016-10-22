@@ -87,18 +87,26 @@ public:
   // Construction
   template <typename T>
   OSSIA_DECL_RELAXED_CONSTEXPR value(T*) = delete;
-  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Impulse val) : v{val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Bool val) : v{val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Int val) : v{val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Float val) : v{val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Char val) : v{val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::String& val) : v{val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Tuple& val) : v{val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Vec2f& val) : v{val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Vec3f& val) : v{val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Vec4f& val) : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(Impulse val) : v{val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Destination& val) : v{val} { }
+
+  OSSIA_DECL_RELAXED_CONSTEXPR value(bool val) : v{eggs::variants::in_place<ossia::Bool>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(int val) : v{eggs::variants::in_place<ossia::Int>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(char val) : v{eggs::variants::in_place<ossia::Char>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(float val) : v{eggs::variants::in_place<ossia::Float>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(const std::string& val) : v{eggs::variants::in_place<ossia::String>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(const std::vector<ossia::value>& val) : v{eggs::variants::in_place<ossia::Tuple>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 2> val) : v{eggs::variants::in_place<ossia::Vec2f>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 3> val) : v{eggs::variants::in_place<ossia::Vec3f>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 4> val) : v{eggs::variants::in_place<ossia::Vec4f>, val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::net::address_base& val) : v{eggs::variants::in_place<ossia::Destination>, val} { }
+
+  // Movable overloads
+  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Destination&& val) : v{std::move(val)} { }
+
+  OSSIA_DECL_RELAXED_CONSTEXPR explicit value(std::string&& val) : v{eggs::variants::in_place<ossia::String>, std::move(val)} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR explicit value(std::vector<ossia::value>&& val) : v{eggs::variants::in_place<ossia::Tuple>, std::move(val)} { }
+
 
   template<typename T, typename... Args>
   OSSIA_DECL_RELAXED_CONSTEXPR value(detail::dummy<T> t, Args&&... args):
@@ -107,63 +115,13 @@ public:
 
   }
 
+  // To initialize a value directly with correct arguments
   template<typename T, typename... Args>
   static ossia::value make(Args&&... args)
   { return ossia::value{detail::dummy<T>{}, std::forward<Args>(args)...}; }
 
-  // Movable overloads
-  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::String&& val) : v{std::move(val)} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Tuple&& val) : v{std::move(val)} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Destination&& val) : v{std::move(val)} { }
-
-
   // Assignment
   value& operator=(ossia::Impulse val)
-  {
-    v = val;
-    return *this;
-  }
-  value& operator=(ossia::Bool val)
-  {
-    v = val;
-    return *this;
-  }
-  value& operator=(ossia::Int val)
-  {
-    v = val;
-    return *this;
-  }
-  value& operator=(ossia::Float val)
-  {
-    v = val;
-    return *this;
-  }
-  value& operator=(ossia::Char val)
-  {
-    v = val;
-    return *this;
-  }
-  value& operator=(const ossia::String& val)
-  {
-    v = val;
-    return *this;
-  }
-  value& operator=(const ossia::Tuple& val)
-  {
-    v = val;
-    return *this;
-  }
-  value& operator=(const ossia::Vec2f& val)
-  {
-    v = val;
-    return *this;
-  }
-  value& operator=(const ossia::Vec3f& val)
-  {
-    v = val;
-    return *this;
-  }
-  value& operator=(const ossia::Vec4f& val)
   {
     v = val;
     return *this;
@@ -173,21 +131,65 @@ public:
     v = val;
     return *this;
   }
+  value& operator=(bool val)
+  {
+    v = Bool{val};
+    return *this;
+  }
+  value& operator=(int val)
+  {
+    v = Int{val};
+    return *this;
+  }
+  value& operator=(float val)
+  {
+    v = Float{val};
+    return *this;
+  }
+  value& operator=(char val)
+  {
+    v = Char{val};
+    return *this;
+  }
+  value& operator=(const std::string& val)
+  {
+    v = String{val};
+    return *this;
+  }
+  value& operator=(const std::vector<ossia::value>& val)
+  {
+    v = Tuple{val};
+    return *this;
+  }
+  value& operator=(std::array<float, 2> val)
+  {
+    v = Vec<float, 2>{val};
+    return *this;
+  }
+  value& operator=(std::array<float, 3> val)
+  {
+    v = Vec<float, 3>{val};
+    return *this;
+  }
+  value& operator=(std::array<float, 4> val)
+  {
+    v = Vec<float, 4>{val};
+    return *this;
+  }
+  value& operator=(ossia::net::address_base& val)
+  {
+    v = Destination{val};
+    return *this;
+  }
 
-  // Movable overloads
-  value& operator=(ossia::String&& val)
+  value& operator=(std::string&& val)
   {
-    v = std::move(val);
+    v = String{std::move(val)};
     return *this;
   }
-  value& operator=(ossia::Tuple&& val)
+  value& operator=(std::vector<ossia::value>&& val)
   {
-    v = std::move(val);
-    return *this;
-  }
-  value& operator=(ossia::Destination&& val)
-  {
-    v = std::move(val);
+    v = Tuple{std::move(val)};
     return *this;
   }
 

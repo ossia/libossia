@@ -160,26 +160,26 @@ struct generic_clamp
       if (has_min && has_max)
       {
         ossia::Tuple res;
-        res.value.reserve(val.value.size());
+        res.reserve(val.size());
         const auto& min = domain.min.get();
         const auto& max = domain.max.get();
 
         switch (b)
         {
           case bounding_mode::CLIP:
-            for(auto& v : val.value) res.value.push_back(ossia::clamp(v, min, max));
+            for(auto& v : val) res.push_back(ossia::clamp(v, min, max));
             break;
           case bounding_mode::WRAP:
-            for(auto& v : val.value) res.value.push_back(ossia::wrap(v, min, max));
+            for(auto& v : val) res.push_back(ossia::wrap(v, min, max));
             break;
           case bounding_mode::FOLD:
-            for(auto& v : val.value) res.value.push_back(ossia::fold(v, min, max));
+            for(auto& v : val) res.push_back(ossia::fold(v, min, max));
             break;
           case bounding_mode::LOW:
-            for(auto& v : val.value) res.value.push_back(ossia::clamp_min(v, min));
+            for(auto& v : val) res.push_back(ossia::clamp_min(v, min));
             break;
           case bounding_mode::HIGH:
-            for(auto& v : val.value) res.value.push_back(ossia::clamp_max(v, max));
+            for(auto& v : val) res.push_back(ossia::clamp_max(v, max));
             break;
           default:
             return val;
@@ -196,10 +196,10 @@ struct generic_clamp
           {
             const auto& min = domain.min.get();
             ossia::Tuple res;
-            res.value.reserve(val.value.size());
-            for(auto& v : val.value)
+            res.reserve(val.size());
+            for(auto& v : val)
             {
-              res.value.push_back(ossia::clamp_min(v, min));
+              res.push_back(ossia::clamp_min(v, min));
             }
             return res;
           }
@@ -216,10 +216,10 @@ struct generic_clamp
           {
             const auto& max = domain.max.get();
             ossia::Tuple res;
-            res.value.reserve(val.value.size());
-            for(auto& v : val.value)
+            res.reserve(val.size());
+            for(auto& v : val)
             {
-              res.value.push_back(ossia::clamp_max(v, max));
+              res.push_back(ossia::clamp_max(v, max));
             }
             return res;
           }
@@ -234,7 +234,7 @@ struct generic_clamp
     }
     else
     {
-      for(auto& v : val.value)
+      for(auto& v : val)
       {
         // Return a valid value only if all the subvalues are in the given values
         auto it = values.find(v);
@@ -264,19 +264,19 @@ struct generic_clamp
         switch (b)
         {
           case bounding_mode::CLIP:
-            for(auto& v : val.value) v = ossia::clamp(v, min, max);
+            for(auto& v : val) v = ossia::clamp(v, min, max);
             break;
           case bounding_mode::WRAP:
-            for(auto& v : val.value) v = ossia::wrap(v, min, max);
+            for(auto& v : val) v = ossia::wrap(v, min, max);
             break;
           case bounding_mode::FOLD:
-            for(auto& v : val.value) v = ossia::fold(v, min, max);
+            for(auto& v : val) v = ossia::fold(v, min, max);
             break;
           case bounding_mode::LOW:
-            for(auto& v : val.value) v = ossia::clamp_min(v, min);
+            for(auto& v : val) v = ossia::clamp_min(v, min);
             break;
           case bounding_mode::HIGH:
-            for(auto& v : val.value) v = ossia::clamp_max(v, max);
+            for(auto& v : val) v = ossia::clamp_max(v, max);
             break;
           default:
             return std::move(val);
@@ -292,7 +292,7 @@ struct generic_clamp
           case bounding_mode::CLIP:
           case bounding_mode::LOW:
           {
-            for(auto& v : val.value) v = ossia::clamp_min(v, min);
+            for(auto& v : val) v = ossia::clamp_min(v, min);
             return std::move(val);
           }
           default:
@@ -307,7 +307,7 @@ struct generic_clamp
           case bounding_mode::CLIP:
           case bounding_mode::HIGH:
           {
-            for(auto& v : val.value) v = ossia::clamp_max(v, max);
+            for(auto& v : val) v = ossia::clamp_max(v, max);
             return std::move(val);
           }
           default:
@@ -321,7 +321,7 @@ struct generic_clamp
     }
     else
     {
-      for(auto& v : val.value)
+      for(auto& v : val)
       {
         // Return a valid value only if it is in the given values
         auto it = values.find(v);

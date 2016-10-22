@@ -23,7 +23,7 @@ struct value_set_clamp
     }
     else
     {
-      auto it = values.find(val.value);
+      auto it = values.find(val);
       return (it != values.end())
           ? ossia::value{std::forward<U>(val)}
           : ossia::value{};

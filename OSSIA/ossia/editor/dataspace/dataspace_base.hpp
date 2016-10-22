@@ -33,7 +33,7 @@ struct strong_value
   using value_type = typename Unit::value_type;
   using dataspace_type = typename Unit::dataspace_type;
   using neutral_unit = typename Unit::neutral_unit;
-  value_type value;
+  value_type dataspace_value;
 
   constexpr strong_value() = default;
 
@@ -47,44 +47,43 @@ struct strong_value
   {
   }
 */
-  constexpr strong_value(Float other) : value{ other } { }
-  constexpr strong_value(float other) : value{ other } { }
-  constexpr strong_value(double other) : value{ other } { }
-  constexpr strong_value(int other) : value{ other } { }
-  constexpr strong_value(char other) : value{ other } { }
-  constexpr strong_value(bool other) : value{ other } { }
-  constexpr strong_value(Vec2f other) : value{ other } { }
-  constexpr strong_value(Vec3f other) : value{ other } { }
-  constexpr strong_value(Vec4f other) : value{ other } { }
-  constexpr strong_value(std::array<float, 2> other) : value{ other } { }
-  constexpr strong_value(std::array<float, 3> other) : value{ other } { }
-  constexpr strong_value(std::array<float, 4> other) : value{ other } { }
-  constexpr strong_value(std::array<double, 2> other) : value{ other } { }
-  constexpr strong_value(std::array<double, 3> other) : value{ other } { }
-  constexpr strong_value(std::array<double, 4> other) : value{ other } { }
+  constexpr strong_value(float other) : dataspace_value{ other } { }
+  constexpr strong_value(double other) : dataspace_value{ other } { }
+  constexpr strong_value(int other) : dataspace_value{ other } { }
+  constexpr strong_value(char other) : dataspace_value{ other } { }
+  constexpr strong_value(bool other) : dataspace_value{ other } { }
+  constexpr strong_value(std::array<float, 2> other) : dataspace_value{ other } { }
+  constexpr strong_value(std::array<float, 3> other) : dataspace_value{ other } { }
+  constexpr strong_value(std::array<float, 4> other) : dataspace_value{ other } { }
+  constexpr strong_value(std::array<double, 2> other) : dataspace_value{ other[0], other[1] } { }
+  constexpr strong_value(std::array<double, 3> other) : dataspace_value{ other[0], other[1], other[2] } { }
+  constexpr strong_value(std::array<double, 4> other) : dataspace_value{ other[0], other[1], other[2], other[3] } { }
+  constexpr strong_value(float f0, float f1) : dataspace_value{ f0, f1 } { }
+  constexpr strong_value(float f0, float f1, float f2) : dataspace_value{ f0, f1, f2 } { }
+  constexpr strong_value(float f0, float f1, float f2, float f3) : dataspace_value{ f0, f1, f2, f3} { }
 
   // Conversion constructor
   template<typename U>
   constexpr strong_value(strong_value<U> other):
-    value{unit_type::from_neutral(U::to_neutral(other))}
-  { 
+    dataspace_value{unit_type::from_neutral(U::to_neutral(other))}
+  {
     static_assert(std::is_same<dataspace_type, typename U::dataspace_type>::value, "Trying to convert between different dataspaces");
   }
 
   // Copy constructor
   constexpr strong_value<Unit>(const strong_value<Unit>& other):
-      value{other.value}
+      dataspace_value{other.dataspace_value}
   {
   }
 
   friend bool operator==(
       const strong_value& lhs,
       const strong_value& rhs)
-  { return lhs.value == rhs.value; }
+  { return lhs.dataspace_value == rhs.dataspace_value; }
   friend bool operator!=(
       const strong_value& lhs,
       const strong_value& rhs)
-  { return lhs.value != rhs.value; }
+  { return lhs.dataspace_value != rhs.dataspace_value; }
 };
 
 template<typename T, typename Ratio_T>
@@ -93,13 +92,13 @@ struct linear_unit : public T
   static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<typename T::neutral_unit>
     to_neutral(strong_value<typename T::concrete_type> self)
   {
-    return {self.value.value * ratio()};
+    return {self.dataspace_value * ratio()};
   }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR typename T::value_type
     from_neutral(strong_value<typename T::neutral_unit> self)
   {
-    return self.value.value / ratio();
+    return self.dataspace_value / ratio();
   }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR double ratio()

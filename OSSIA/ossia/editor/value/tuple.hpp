@@ -6,36 +6,55 @@
 namespace ossia
 {
 class value;
-/**
- * @class Tuple tuple.hpp ossia/editor/value/value.hpp
- *
- * A tuple is a vector of \ref ossia::value.
- * Using a tuple incurs a dynamic allocation.
- */
-struct OSSIA_EXPORT Tuple
-{
-  using value_type = ossia::value;
-  using impl_type = std::vector<value_type>;
-  impl_type value;
+using Tuple = std::vector<ossia::value>;
+///**
+// * @class Tuple tuple.hpp ossia/editor/value/value.hpp
+// *
+// * A tuple is a vector of \ref ossia::value.
+// * Using a tuple incurs a dynamic allocation.
+// */
+//struct OSSIA_EXPORT Tuple
+//{
+//  using value_type = ossia::value;
+//  using impl_type = std::vector<value_type>;
+//  impl_type value;
 
-  Tuple();
-  Tuple(const Tuple&) = default;
-  Tuple(Tuple&&) = default;
-  Tuple& operator=(const Tuple&) = default;
-  Tuple& operator=(Tuple&&) = default;
+//  operator const impl_type&() const { return value; }
+//  operator impl_type&() { return value; }
 
-  explicit Tuple(const ossia::value& v);
+//  auto& operator[](std::size_t i) { return value[i]; }
+//  auto& operator[](std::size_t i) const { return value[i]; }
 
-  Tuple(std::initializer_list<ossia::value> v);
+//  std::size_t size() const { return value.size(); }
+//  bool empty() const { return value.empty(); }
+//  void resize(std::size_t n) { return value.resize(n); }
+//  void reserve(std::size_t n) { return value.reserve(n); }
+//  template<typename Arg>
+//  void push_back(Arg&& arg) { return value.push_back(std::forward<Arg>(arg)); }
+//  auto begin() { return value.begin(); }
+//  auto end() { return value.end(); }
+//  auto begin() const { return value.begin(); }
+//  auto end() const { return value.end(); }
+//  auto cbegin() const { return value.cbegin(); }
+//  auto cend() const { return value.cend(); }
+//  Tuple();
+//  Tuple(const Tuple&) = default;
+//  Tuple(Tuple&&) = default;
+//  Tuple& operator=(const Tuple&) = default;
+//  Tuple& operator=(Tuple&&) = default;
 
-  Tuple(const impl_type& v);
-  Tuple(impl_type&& v);
+//  explicit Tuple(const ossia::value& v);
 
-  bool operator==(const ossia::value&) const;
-  bool operator!=(const ossia::value&) const;
-  bool operator>(const ossia::value&) const;
-  bool operator>=(const ossia::value&) const;
-  bool operator<(const ossia::value&) const;
-  bool operator<=(const ossia::value&) const;
-};
+//  Tuple(std::initializer_list<ossia::value> v);
+
+//  Tuple(const impl_type& v);
+//  Tuple(impl_type&& v);
+
+//  bool operator==(const ossia::value&) const;
+//  bool operator!=(const ossia::value&) const;
+//  bool operator>(const ossia::value&) const;
+//  bool operator>=(const ossia::value&) const;
+//  bool operator<(const ossia::value&) const;
+//  bool operator<=(const ossia::value&) const;
+//};
 }

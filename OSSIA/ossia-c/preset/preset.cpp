@@ -413,29 +413,29 @@ rapidjson::Value ossia_to_json_value(const ossia::value& val, rapidjson::Documen
     switch (tvalue) {
     case ossia::val_type::BOOL: {
         auto typedval = val.get<ossia::Bool>();
-        jsonvalue.SetBool(typedval.value);
+        jsonvalue.SetBool(typedval);
     }
         break;
     case ossia::val_type::INT: {
         auto typedval = val.get<ossia::Int>();
-        jsonvalue.SetInt(typedval.value);
+        jsonvalue.SetInt(typedval);
     }
         break;
     case ossia::val_type::FLOAT: {
         auto typedval = val.get<ossia::Float>();
-        jsonvalue.SetDouble(typedval.value);
+        jsonvalue.SetDouble(typedval);
     }
         break;
     case ossia::val_type::CHAR: {
         auto typedval = val.get<ossia::Char>();
         char buff[2];
-        std::sprintf(buff, "%c", typedval.value);
+        std::sprintf(buff, "%c", (char)typedval);
         jsonvalue.SetString(buff, docallocator);
     }
         break;
     case ossia::val_type::STRING: {
         auto typedval = val.get<ossia::String>();
-        jsonvalue.SetString(typedval.value, docallocator);
+        jsonvalue.SetString(typedval, docallocator);
     }
         break;
     default:
@@ -588,19 +588,19 @@ std::string ossia_value_to_std_string(const ossia::value& val) {
     std::stringstream ss;
     switch (val.getType()) {
     case ossia::val_type::BOOL :
-        ss << "Bool " << val.get<ossia::Bool>().value;
+        ss << "Bool " << val.get<ossia::Bool>();
         break;
     case ossia::val_type::INT :
-        ss << "Int " << val.get<ossia::Int>().value;
+        ss << "Int " << val.get<ossia::Int>();
         break;
     case ossia::val_type::FLOAT :
-        ss << "Float " << val.get<ossia::Float>().value;
+        ss << "Float " << val.get<ossia::Float>();
         break;
     case ossia::val_type::CHAR :
-        ss << "Char " << val.get<ossia::Char>().value;
+        ss << "Char " << val.get<ossia::Char>();
         break;
     case ossia::val_type::STRING :
-        ss << "String " << val.get<ossia::String>().value;
+        ss << "String " << val.get<ossia::String>();
         break;
     default:
         ss << "Other";

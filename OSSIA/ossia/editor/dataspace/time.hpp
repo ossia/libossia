@@ -28,7 +28,7 @@ struct second_u : public time_unit<second_u>
 
   static OSSIA_DECL_RELAXED_CONSTEXPR value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return self.value;
+    return self.dataspace_value;
   }
 };
 
@@ -39,12 +39,12 @@ struct bark_u : public time_unit<bark_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return 1.0 / (600. * std::sinh(self.value.value / 6.));
+    return 1.0 / (600. * std::sinh(self.dataspace_value / 6.));
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 6. * std::asinh(1.0 / (self.value.value * 600.0));
+    return 6. * std::asinh(1.0 / (self.dataspace_value * 600.0));
   }
 };
 
@@ -55,12 +55,12 @@ struct bpm_u : public time_unit<bpm_u>
 
   static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return 60.0 / self.value.value;
+    return 60.0 / self.dataspace_value;
   }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 60.0 / self.value.value;
+    return 60.0 / self.dataspace_value;
   }
 };
 
@@ -71,12 +71,12 @@ struct cent_u : public time_unit<cent_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return 1. / (440.0 * std::exp2((self.value.value - 6900.0) / 1200.0));
+    return 1. / (440.0 * std::exp2((self.dataspace_value - 6900.0) / 1200.0));
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 6900.0 + 1200.0 * std::log(1. / (440.0 * self.value.value)) / ossia::ln_2;
+    return 6900.0 + 1200.0 * std::log(1. / (440.0 * self.dataspace_value)) / ossia::ln_2;
   }
 };
 
@@ -87,12 +87,12 @@ struct frequency_u : public time_unit<frequency_u>
 
   static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return 1.0 / self.value.value;
+    return 1.0 / self.dataspace_value;
   }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 1.0 / self.value.value;
+    return 1.0 / self.dataspace_value;
   }
 };
 
@@ -103,12 +103,12 @@ struct mel_u : public time_unit<mel_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return 1.0 / (700.0 * (std::pow(10, self.value.value / 2595.0) - 1.0));
+    return 1.0 / (700.0 * (std::pow(10, self.dataspace_value / 2595.0) - 1.0));
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 2595.0 * std::log10(1 + 1.0 / (self.value.value * 700.0));
+    return 2595.0 * std::log10(1 + 1.0 / (self.dataspace_value * 700.0));
   }
 };
 
@@ -119,12 +119,12 @@ struct midi_pitch_u : public time_unit<midi_pitch_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return 1. / (440.0 * std::exp2((self.value.value - 69.0) / 12.0 ));
+    return 1. / (440.0 * std::exp2((self.dataspace_value - 69.0) / 12.0 ));
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 69.0 - 12.0 * std::log(440.0 * self.value.value) / ossia::ln_2;
+    return 69.0 - 12.0 * std::log(440.0 * self.dataspace_value) / ossia::ln_2;
   }
 };
 
@@ -135,12 +135,12 @@ struct millisecond_u : public time_unit<millisecond_u>
 
   static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return 0.001 * self.value.value;
+    return 0.001 * self.dataspace_value;
   }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 1000.0 * self.value.value;
+    return 1000.0 * self.dataspace_value;
   }
 };
 
@@ -171,12 +171,12 @@ struct playback_speed_u : public time_unit<playback_speed_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return exp_69_12 / (440.0 * self.value.value);
+    return exp_69_12 / (440.0 * self.dataspace_value);
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return exp_69_12 / (440.0 * self.value.value);
+    return exp_69_12 / (440.0 * self.dataspace_value);
   }
 };
 

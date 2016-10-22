@@ -56,7 +56,7 @@ struct apply_domain_visitor
   ossia::value operator()(const Tuple& value, const domain_base<ossia::value>& domain) const
   {
     Tuple res = value;
-    for(auto& val : res.value)
+    for(auto& val : res)
     {
       val = generic_clamp{domain}(b, val);
     }
@@ -65,7 +65,7 @@ struct apply_domain_visitor
 
   ossia::value operator()(Tuple&& value, const domain_base<ossia::value>& domain) const
   {
-    for(auto& val : value.value)
+    for(auto& val : value)
     {
       val = generic_clamp{domain}(b, std::move(val));
     }
@@ -118,7 +118,7 @@ template <typename T>
 ossia::value apply_domain_visitor::operator()(const Tuple& value, const domain_base<T>& domain) const
 {
   Tuple res = value;
-  for(auto& val : res.value)
+  for(auto& val : res)
   {
     if(val.getType() == ossia::value_trait<T>::ossia_enum)
       val = eggs::variants::apply(tuple_apply_domain_helper<domain_base<T>>{*this, domain}, val.v);
@@ -129,7 +129,7 @@ ossia::value apply_domain_visitor::operator()(const Tuple& value, const domain_b
 template <typename T>
 ossia::value apply_domain_visitor::operator()(Tuple&& value, const domain_base<T>& domain) const
 {
-  for(auto& val : value.value)
+  for(auto& val : value)
   {
     if(val.getType() == ossia::value_trait<T>::ossia_enum)
       val = eggs::variants::apply(tuple_apply_domain_helper<domain_base<T>>{*this, domain}, std::move(val.v));

@@ -1,22 +1,8 @@
 #pragma once
 #include <eggs/variant.hpp>
+#include <ossia/editor/value/value_base.hpp>
 namespace ossia
 {
-template <typename T, std::size_t N>
-class Vec;
-using Vec2f = Vec<float, 2ul>;
-using Vec3f = Vec<float, 3ul>;
-using Vec4f = Vec<float, 4ul>;
-
-struct Impulse;
-struct Bool;
-struct Int;
-struct Float;
-struct Char;
-struct String;
-struct Tuple;
-class Destination;
-
 class value;
 namespace net
 {

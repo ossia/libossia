@@ -15,7 +15,7 @@ class DataspaceMergeTest : public QObject
     double eps = 1e-6;
     for(std::size_t i = 0; i < N; i++)
     {
-      if(std::abs(v1.value[i] - v2.value[i]) > eps)
+      if(std::abs(v1[i] - v2[i]) > eps)
         b = false;
     }
     return b;
@@ -46,12 +46,12 @@ class DataspaceMergeTest : public QObject
 private Q_SLOTS:
   void static_test()
   {
-    static_assert(ossia::detail::is_iterable_v<decltype(ossia::Vec3f::value)>, "");
-    static_assert(!ossia::detail::is_iterable_v<decltype(ossia::Float::value)>, "");
-    static_assert(!ossia::detail::is_iterable_v<const decltype(ossia::Float::value)>, "");
+    static_assert(ossia::detail::is_iterable_v<decltype(ossia::Vec3f)>, "");
+    static_assert(!ossia::detail::is_iterable_v<decltype(ossia::Float)>, "");
+    static_assert(!ossia::detail::is_iterable_v<const decltype(ossia::Float)>, "");
 
-    static_assert(!ossia::detail::is_iterable_v<decltype(ossia::centimeter::value)>, "");
-    static_assert(ossia::detail::is_iterable_v<decltype(ossia::rgb::value)>, "RGB is not iterable");
+    static_assert(!ossia::detail::is_iterable_v<decltype(ossia::centimeter::dataspace_value)>, "");
+    static_assert(ossia::detail::is_iterable_v<decltype(ossia::rgb::dataspace_value)>, "RGB is not iterable");
 
     static_assert(!ossia::is_unit_v<int>, "");
     static_assert(ossia::is_unit_v<ossia::centimeter_u>, "");

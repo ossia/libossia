@@ -13,20 +13,20 @@ struct apply_ternary_fun_visitor
   { return std::forward<T>(val); }
 
   ossia::value operator()(Int val, Int min, Int max)
-  { return Int{f(val.value, min.value, max.value)}; }
+  { return Int{f(val, min, max)}; }
   ossia::value operator()(Float val, Float min, Float max)
-  { return Float{f(val.value, min.value, max.value)}; }
+  { return Float{f(val, min, max)}; }
   ossia::value operator()(Char val, Char min, Char max)
-  { return Char{f(val.value, min.value, max.value)}; }
+  { return Char{f(val, min, max)}; }
   ossia::value operator()(Bool val, Bool min, Bool max)
-  { return Bool{f(val.value, min.value, max.value)}; }
+  { return Bool{f(val, min, max)}; }
 
   template<std::size_t N>
   ossia::value operator()(Vec<float, N> val, const Vec<float, N>& min, const Vec<float, N>& max)
   {
     for(std::size_t i = 0; i < N; i++)
     {
-      val.value[i] = f(val.value[i], min.value[i], max.value[i]);
+      val[i] = f(val[i], min[i], max[i]);
     }
     return val;
   }
@@ -36,7 +36,7 @@ struct apply_ternary_fun_visitor
   {
     for(std::size_t i = 0; i < N; i++)
     {
-      val.value[i] = f(val.value[i], min.value, max.value);
+      val[i] = f(val[i], min, max);
     }
     return val;
   }
@@ -46,15 +46,15 @@ struct apply_ternary_fun_visitor
   ossia::value operator()(const Tuple& incoming, const Tuple& min, const Tuple& max)
   {
     Tuple val;
-    const auto N = incoming.value.size();
-    const auto nmin = min.value.size();
-    const auto nmax = max.value.size();
+    const auto N = incoming.size();
+    const auto nmin = min.size();
+    const auto nmax = max.size();
     if(N == nmin && N == nmax)
     {
-      val.value.reserve(N);
+      val.reserve(N);
       for(std::size_t i = 0; i < N; i++)
       {
-        val.value.push_back(eggs::variants::apply(*this, incoming.value[i].v, min.value[i].v, max.value[i].v));
+        val.push_back(eggs::variants::apply(*this, incoming[i].v, min[i].v, max[i].v));
       }
     }
     return val;
@@ -62,14 +62,14 @@ struct apply_ternary_fun_visitor
 
   ossia::value operator()(Tuple&& val, const Tuple& min, const Tuple& max)
   {
-    const auto N = val.value.size();
-    const auto nmin = min.value.size();
-    const auto nmax = max.value.size();
+    const auto N = val.size();
+    const auto nmin = min.size();
+    const auto nmax = max.size();
     if(N == nmin && N == nmax)
     {
       for(std::size_t i = 0; i < N; i++)
       {
-        val.value[i] = eggs::variants::apply(*this, std::move(val).value[i].v, min.value[i].v, max.value[i].v);
+        val[i] = eggs::variants::apply(*this, std::move(val)[i].v, min[i].v, max[i].v);
       }
     }
     return std::move(val);
@@ -78,21 +78,21 @@ struct apply_ternary_fun_visitor
   ossia::value operator()(const Tuple& incoming, const ossia::value& min, const ossia::value& max)
   {
     Tuple val;
-    const auto N = incoming.value.size();
-    val.value.reserve(N);
+    const auto N = incoming.size();
+    val.reserve(N);
     for(std::size_t i = 0; i < N; i++)
     {
-      val.value.push_back(eggs::variants::apply(*this, incoming.value[i].v, min.v, max.v));
+      val.push_back(eggs::variants::apply(*this, incoming[i].v, min.v, max.v));
     }
     return val;
   }
 
   ossia::value operator()(Tuple&& val, const ossia::value& min, const ossia::value& max)
   {
-    const auto N = val.value.size();
+    const auto N = val.size();
     for(std::size_t i = 0; i < N; i++)
     {
-      val.value[i] = eggs::variants::apply(*this, std::move(val).value[i].v, min.v, max.v);
+      val[i] = eggs::variants::apply(*this, std::move(val)[i].v, min.v, max.v);
     }
     return std::move(val);
   }
@@ -118,20 +118,20 @@ struct apply_binary_fun_visitor
   { return std::forward<T>(val); }
 
   ossia::value operator()(Int val, Int min)
-  { return Int{f(val.value, min.value)}; }
+  { return Int{f(val, min)}; }
   ossia::value operator()(Float val, Float min)
-  { return Float{f(val.value, min.value)}; }
+  { return Float{f(val, min)}; }
   ossia::value operator()(Char val, Char min)
-  { return Char{f(val.value, min.value)}; }
+  { return Char{f(val, min)}; }
   ossia::value operator()(Bool val, Bool min)
-  { return Bool{f(val.value, min.value)}; }
+  { return Bool{f(val, min)}; }
 
   template<std::size_t N>
   ossia::value operator()(Vec<float, N> val, const Vec<float, N>& min)
   {
     for(std::size_t i = 0; i < N; i++)
     {
-      val.value[i] = f(val.value[i], min.value[i]);
+      val[i] = f(val[i], min[i]);
     }
     return val;
   }
@@ -141,7 +141,7 @@ struct apply_binary_fun_visitor
   {
     for(std::size_t i = 0; i < N; i++)
     {
-      val.value[i] = f(val.value[i], min.value);
+      val[i] = f(val[i], min);
     }
     return val;
   }
@@ -151,14 +151,14 @@ struct apply_binary_fun_visitor
   ossia::value operator()(const Tuple& incoming, const Tuple& min)
   {
     Tuple val;
-    const auto N = incoming.value.size();
-    const auto nmin = min.value.size();
+    const auto N = incoming.size();
+    const auto nmin = min.size();
     if(N == nmin)
     {
-      val.value.reserve(N);
+      val.reserve(N);
       for(std::size_t i = 0; i < N; i++)
       {
-        val.value.push_back(eggs::variants::apply(*this, incoming.value[i].v, min.value[i].v));
+        val.push_back(eggs::variants::apply(*this, incoming[i].v, min[i].v));
       }
     }
     return val;
@@ -166,13 +166,13 @@ struct apply_binary_fun_visitor
 
   ossia::value operator()(Tuple&& val, const Tuple& min)
   {
-    const auto N = val.value.size();
-    const auto nmin = min.value.size();
+    const auto N = val.size();
+    const auto nmin = min.size();
     if(N == nmin)
     {
       for(std::size_t i = 0; i < N; i++)
       {
-        val.value[i] = eggs::variants::apply(*this, std::move(val).value[i].v, min.value[i].v);
+        val[i] = eggs::variants::apply(*this, std::move(val)[i].v, min[i].v);
       }
     }
     return std::move(val);
@@ -181,21 +181,21 @@ struct apply_binary_fun_visitor
   ossia::value operator()(const Tuple& incoming, const ossia::value& min)
   {
     Tuple val;
-    const auto N = incoming.value.size();
-    val.value.reserve(N);
+    const auto N = incoming.size();
+    val.reserve(N);
     for(std::size_t i = 0; i < N; i++)
     {
-      val.value.push_back(eggs::variants::apply(*this, incoming.value[i].v, min.v));
+      val.push_back(eggs::variants::apply(*this, incoming[i].v, min.v));
     }
     return val;
   }
 
   ossia::value operator()(Tuple&& val, const ossia::value& min)
   {
-    const auto N = val.value.size();
+    const auto N = val.size();
     for(std::size_t i = 0; i < N; i++)
     {
-      val.value[i] = eggs::variants::apply(*this, std::move(val).value[i].v, min.v);
+      val[i] = eggs::variants::apply(*this, std::move(val)[i].v, min.v);
     }
     return std::move(val);
   }

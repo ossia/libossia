@@ -6,7 +6,7 @@
 
 namespace ossia
 {
-
+/*
 namespace comparisons
 {
 struct Impulse_T
@@ -89,27 +89,27 @@ struct NumericValue
     public:
       bool operator()(Impulse) const
       {
-        return fun(lhs.value, Impulse_T{});
+        return fun(lhs, Impulse_T{});
       }
       bool operator()(Int v) const
       {
-        return fun(lhs.value, v.value);
+        return fun(lhs, v);
       }
       bool operator()(Float v) const
       {
-        return fun(lhs.value, v.value);
+        return fun(lhs, v);
       }
       bool operator()(Bool v) const
       {
-        return fun(lhs.value, v.value);
+        return fun(lhs, v);
       }
       bool operator()(Char v) const
       {
-        return fun(lhs.value, v.value);
+        return fun(lhs, v);
       }
       bool operator()(const Tuple& v) const
       {
-        return (v.value.size() == 1) && (fun(lhs, v.value[0]));
+        return (v.size() == 1) && (fun(lhs, v[0]));
       }
       bool operator()(const Destination& d) const
       {
@@ -118,7 +118,7 @@ struct NumericValue
 
       bool operator()(const String& v) const
       {
-        return fun(lhs.value, String_T{});
+        return fun(lhs, String_T{});
       }
       bool operator()(Vec2f v) const
       {
@@ -157,31 +157,31 @@ struct StringValue
     public:
       bool operator()(Impulse) const
       {
-        return fun(lhs.value, Impulse_T{});
+        return fun(lhs, Impulse_T{});
       }
       bool operator()(const String& v) const
       {
-        return fun(lhs.value, v.value);
+        return fun(lhs, v);
       }
       bool operator()(Int v) const
       {
-        return fun(v.value, String_T{});
+        return fun(v, String_T{});
       }
       bool operator()(Float v) const
       {
-        return fun(v.value, String_T{});
+        return fun(v, String_T{});
       }
       bool operator()(Bool v) const
       {
-        return fun(v.value, String_T{});
+        return fun(v, String_T{});
       }
       bool operator()(Char v) const
       {
-        return fun(v.value, String_T{});
+        return fun(v, String_T{});
       }
       bool operator()(const Tuple& v) const
       {
-        return (v.value.size() == 1) && (fun(lhs, v.value[0]));
+        return (v.size() == 1) && (fun(lhs, v[0]));
       }
 
       bool operator()(const Destination& d) const
@@ -191,15 +191,15 @@ struct StringValue
 
       bool operator()(Vec2f v) const
       {
-        return fun(v.value, String_T{});
+        return fun(v, String_T{});
       }
       bool operator()(Vec3f v) const
       {
-        return fun(v.value, String_T{});
+        return fun(v, String_T{});
       }
       bool operator()(Vec4f v) const
       {
-        return fun(v.value, String_T{});
+        return fun(v, String_T{});
       }
 
       bool operator()() const
@@ -223,16 +223,16 @@ struct TupleVisitor
 public:
   bool operator()(Impulse) const
   {
-    return fun(lhs.value, Impulse_T{});
+    return fun(lhs, Impulse_T{});
   }
   bool operator()(const Tuple& t) const
   {
-    if (lhs.value.size() != t.value.size())
+    if (lhs.size() != t.size())
       return false;
 
     bool result = true;
-    auto tit = t.value.begin();
-    for (const auto& val : lhs.value)
+    auto tit = t.begin();
+    for (const auto& val : lhs)
     {
       result &= fun(val, *tit);
       if (!result)
@@ -246,8 +246,8 @@ public:
   template <typename T>
   bool operator()(const T& v) const
   {
-    if (lhs.value.size() == 1)
-      return fun(lhs.value[0], rhs);
+    if (lhs.size() == 1)
+      return fun(lhs[0], rhs);
 
     return false;
   }
@@ -328,11 +328,11 @@ struct VecVisitor
 public:
   bool operator()(Impulse) const
   {
-    return fun(lhs.value, Impulse_T{});
+    return fun(lhs, Impulse_T{});
   }
   bool operator()(const Vec<float, N>& d) const
   {
-    return fun(lhs.value, d.value);
+    return fun(lhs, d);
   }
 
   template <typename T>
@@ -395,4 +395,6 @@ OSSIA_EXPORT bool Vec<T, N>::operator<=(const ossia::value& v) const
 {
   return comparisons::VecValue::apply(*this, v, std::less_equal<>{});
 }
+
+*/
 }

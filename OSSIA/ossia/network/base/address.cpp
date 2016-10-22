@@ -85,12 +85,12 @@ value address_base::cloneValue(destination_index idx) const
 Tuple address_base::cloneValue(const std::vector<destination_index>& indices) const
 {
   Tuple t;
-  t.value.reserve(indices.size());
+  t.reserve(indices.size());
 
   auto v = cloneValue();
   for(auto idx : indices)
   {
-    t.value.push_back(get_value_at_index(v, idx));
+    t.push_back(get_value_at_index(v, idx));
   }
 
   return t;

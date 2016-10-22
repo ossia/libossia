@@ -56,7 +56,7 @@ ossia::state_element mapper::state()
       // forget the former value
       mValueToMap.reset();
 
-      mLastMessage.value = std::move(newval);
+      mLastMessage.message_value = std::move(newval);
 
       return mLastMessage;
     }
@@ -70,10 +70,10 @@ void mapper::start()
   // start driver address value observation
   if (!mDriverValueObserved)
   {
-    mDriverValueCallbackIndex = mDriverAddress.value.get().add_callback(
+    mDriverValueCallbackIndex = mDriverAddress.get().add_callback(
         [this](const ossia::value& val) { driverValueCallback(val); });
     mDriverValueObserved = true;
-    auto def_val = mDriverAddress.value.get().cloneValue();
+    auto def_val = mDriverAddress.get().cloneValue();
     driverValueCallback(def_val);
   }
 }
@@ -83,7 +83,7 @@ void mapper::stop()
   // stop driver address value observation
   if (mDriverValueObserved)
   {
-    mDriverAddress.value.get().remove_callback(mDriverValueCallbackIndex);
+    mDriverAddress.get().remove_callback(mDriverValueCallbackIndex);
     mDriverValueObserved = false;
   }
 }
@@ -129,17 +129,17 @@ struct mapper_compute_visitor
           case ossia::curve_segment_type::FLOAT:
           {
             auto c = static_cast<curve<float, float>*>(base_curve);
-            return ossia::Float{c->valueAt(val.value)};
+            return ossia::Float{c->valueAt(val)};
           }
           case ossia::curve_segment_type::INT:
           {
             auto c = static_cast<curve<float, int>*>(base_curve);
-            return ossia::Int{c->valueAt(val.value)};
+            return ossia::Int{c->valueAt(val)};
           }
           case ossia::curve_segment_type::BOOL:
           {
             auto c = static_cast<curve<float, bool>*>(base_curve);
-            return ossia::Bool{c->valueAt(val.value)};
+            return ossia::Bool{c->valueAt(val)};
           }
           case ossia::curve_segment_type::DOUBLE:
           case ossia::curve_segment_type::ANY:
@@ -154,17 +154,17 @@ struct mapper_compute_visitor
           case ossia::curve_segment_type::FLOAT:
           {
             auto c = static_cast<curve<int, float>*>(base_curve);
-            return ossia::Float{c->valueAt(val.value)};
+            return ossia::Float{c->valueAt(val)};
           }
           case ossia::curve_segment_type::INT:
           {
             auto c = static_cast<curve<int, int>*>(base_curve);
-            return ossia::Int{c->valueAt(val.value)};
+            return ossia::Int{c->valueAt(val)};
           }
           case ossia::curve_segment_type::BOOL:
           {
             auto c = static_cast<curve<int, bool>*>(base_curve);
-            return ossia::Bool{c->valueAt(val.value)};
+            return ossia::Bool{c->valueAt(val)};
           }
           case ossia::curve_segment_type::DOUBLE:
           case ossia::curve_segment_type::ANY:
@@ -179,17 +179,17 @@ struct mapper_compute_visitor
           case ossia::curve_segment_type::FLOAT:
           {
             auto c = static_cast<curve<bool, float>*>(base_curve);
-            return ossia::Float{c->valueAt(val.value)};
+            return ossia::Float{c->valueAt(val)};
           }
           case ossia::curve_segment_type::INT:
           {
             auto c = static_cast<curve<bool, int>*>(base_curve);
-            return ossia::Int{c->valueAt(val.value)};
+            return ossia::Int{c->valueAt(val)};
           }
           case ossia::curve_segment_type::BOOL:
           {
             auto c = static_cast<curve<bool, bool>*>(base_curve);
-            return ossia::Bool{c->valueAt(val.value)};
+            return ossia::Bool{c->valueAt(val)};
           }
           case ossia::curve_segment_type::DOUBLE:
           case ossia::curve_segment_type::ANY:
@@ -211,11 +211,11 @@ struct mapper_compute_visitor
     {
       std::vector<ossia::value> t_value;
       t_value.reserve(t_drive.size());
-      auto it_driver = t_driver->value.begin();
+      auto it_driver = t_driver->begin();
 
       for (const auto& e_drive : t_drive)
       {
-        if (it_driver == t_driver->value.end())
+        if (it_driver == t_driver->end())
           break;
 
         t_value.push_back(mapper::computeValue(*it_driver, e_drive));

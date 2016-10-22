@@ -34,7 +34,7 @@ struct quaternion_u :
 
   static OSSIA_DECL_RELAXED_CONSTEXPR value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return self.value.value;
+    return self.dataspace_value;
   }
 };
 
@@ -50,9 +50,9 @@ struct euler_u :
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    const auto yaw = self.value.value[0] * deg_to_rad * -0.5;
-    const auto pitch = self.value.value[1] * deg_to_rad * 0.5;
-    const auto roll = self.value.value[2] * deg_to_rad * 0.5;
+    const auto yaw = self.dataspace_value[0] * deg_to_rad * -0.5;
+    const auto pitch = self.dataspace_value[1] * deg_to_rad * 0.5;
+    const auto roll = self.dataspace_value[2] * deg_to_rad * 0.5;
 
     const auto sinYaw = std::sin(yaw);
     const auto cosYaw = std::cos(yaw);
@@ -73,12 +73,12 @@ struct euler_u :
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    const auto x = self.value.value[0];
-    const auto y = self.value.value[1];
-    const auto z = self.value.value[2];
-    const auto w = self.value.value[3];
+    const auto x = self.dataspace_value[0];
+    const auto y = self.dataspace_value[1];
+    const auto z = self.dataspace_value[2];
+    const auto w = self.dataspace_value[3];
 
-    return std::array<double, 4>{
+    return {
           rad_to_deg * std::atan2(-2. * (z*w - x*y), w*w - x*x + y*y - z*z),
           rad_to_deg * std::asin(2. * (w*x + y*z)),
           rad_to_deg * std::atan2(2. * (w*y + x*z), w*w - x*x - y*y + z*z)
@@ -98,10 +98,10 @@ struct axis_u :
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    const auto x = self.value.value[0];
-    const auto y = self.value.value[1];
-    const auto z = self.value.value[2];
-    const auto angle = self.value.value[3] * deg_to_rad * 0.5;
+    const auto x = self.dataspace_value[0];
+    const auto y = self.dataspace_value[1];
+    const auto z = self.dataspace_value[2];
+    const auto angle = self.dataspace_value[3] * deg_to_rad * 0.5;
 
     const auto sinAngle = std::sin(angle);
 
@@ -123,10 +123,10 @@ struct axis_u :
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    const auto x = self.value.value[0];
-    const auto y = self.value.value[1];
-    const auto z = self.value.value[2];
-    const auto w = self.value.value[3];
+    const auto x = self.dataspace_value[0];
+    const auto y = self.dataspace_value[1];
+    const auto z = self.dataspace_value[2];
+    const auto w = self.dataspace_value[3];
 
     const auto sin_a = std::sqrt( 1.0 - w * w );
 
@@ -135,7 +135,7 @@ struct axis_u :
             ? 1.0
             : 1.0 / sin_a;
 
-    return std::array<double, 4>{
+    return {
      x * sin_a2,
      y * sin_a2,
      z * sin_a2,

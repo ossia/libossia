@@ -57,9 +57,9 @@ struct convert_to_value_visitor
     }
 
     template<typename T>
-    ossia::value operator()(T val)
+    ossia::value operator()(strong_value<T> val)
     {
-      return val.value;
+      return val.dataspace_value;
     }
 
     ossia::value operator()(ossia::value val)

@@ -38,16 +38,16 @@ static void merge_value(ossia::value& dest, Value_T&& src)
     else if(src_tuple_ptr)
     {
       // If one of the two values is invalid, we always keep the other
-      if(src_tuple_ptr->value.empty())
+      if(src_tuple_ptr->empty())
       {
         Tuple t{dest};
         dest = std::move(t);
         return;
       }
-      else if(!src_tuple_ptr->value[0].valid())
+      else if(!(*src_tuple_ptr)[0].valid())
       {
         Tuple t = *src_tuple_ptr;
-        t.value[0] = dest;
+        t[0] = dest;
         dest = std::move(t);
         return;
       }
@@ -75,7 +75,7 @@ static void insert_in_tuple(Tuple& t, Value_T&& v, const ossia::destination_inde
   Tuple* cur_ptr = &t;
   for(auto it = idx.begin(); it != idx.end(); )
   {
-    auto& cur = cur_ptr->value;
+    auto& cur = *cur_ptr;
     std::size_t pos = *it;
     if(cur.size() < pos + 1)
     {
@@ -111,28 +111,28 @@ static void insert_in_tuple(Tuple& t, Value_T&& v, const ossia::destination_inde
 template<typename Value_T>
 static void set_first_value(Tuple& t, Value_T&& val)
 {
-  if(t.value.empty())
+  if(t.empty())
   {
-    t.value.push_back(std::forward<Value_T>(val));
+    t.push_back(std::forward<Value_T>(val));
   }
   else
   {
-    merge_value(t.value[0], std::forward<Value_T>(val));
+    merge_value(t[0], std::forward<Value_T>(val));
   }
 }
 
 template<typename Tuple_T>
 static void merge_tuple(Tuple& lhs, Tuple_T&& rhs)
 {
-  std::size_t n = rhs.value.size();
-  if(lhs.value.size() < n)
+  std::size_t n = rhs.size();
+  if(lhs.size() < n)
   {
-    lhs.value.resize(n);
+    lhs.resize(n);
   }
 
   for(std::size_t i = 0u; i < n; i++)
   {
-    merge_value(lhs.value[i], std::forward<Tuple_T>(rhs).value[i]);
+    merge_value(lhs[i], std::forward<Tuple_T>(rhs)[i]);
   }
 }
 };
@@ -157,9 +157,9 @@ struct destination_index_retriever
     {
       return t;
     }
-    else if(t.value.size() > *it)
+    else if(t.size() > *it)
     {
-      auto& val = t.value[*it];
+      auto& val = t[*it];
       ++it;
       return val.apply(*this);
     }
@@ -189,10 +189,10 @@ struct destination_index_retriever
     {
       return t;
     }
-    else if(t.value.size() > *it)
+    else if(t.size() > *it)
     {
       if(it + 1 == index.end())
-        return Float{t.value[*it]};
+        return Float{t[*it]};
     }
 
     return {};

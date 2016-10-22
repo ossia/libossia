@@ -1,14 +1,13 @@
 #include "ossia_utils.hpp"
 template<typename Requested_T>
-auto get_value(ossia_value_t val)
--> decltype(((Requested_T*)nullptr)->value)
+Requested_T get_value(ossia_value_t val)
 {
   if(!val)
     return {};
 
   if(auto casted_val = convert(val).target<Requested_T>())
   {
-    return casted_val->value;
+    return *casted_val;
   }
 
   return {};
@@ -59,7 +58,7 @@ ossia_value_t ossia_value_create_tuple(
   ossia::Tuple t;
   for(int i = 0; i < size; i++)
   {
-    t.value.push_back(convert(values[i]));
+    t.push_back(convert(values[i]));
   }
   return convert(std::move(t));
 }
@@ -112,7 +111,7 @@ const char* ossia_value_to_string(
 
   if(auto casted_val = convert(val).target<ossia::String>())
   {
-    auto& s = casted_val->value;
+    auto& s = *casted_val;
     auto size = s.size();
     char *buf = new char[size + 1];
     std::strcpy(buf, s.c_str());

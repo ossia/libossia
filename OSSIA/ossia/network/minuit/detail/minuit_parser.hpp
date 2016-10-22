@@ -536,7 +536,7 @@ struct minuit_behavior<minuit_command::Answer,
           str += ':';
           str.append(it->begin(), it->end());
           proto.pending_get_requests++;
-          proto.sender().send(sub_request, str);
+          proto.sender().send(sub_request, boost::string_view(str));
 
           it = attribs.erase(it);
         }
@@ -564,7 +564,7 @@ struct minuit_behavior<minuit_command::Answer,
           str += ':';
           str.append(attrib.begin(), attrib.end());
           proto.pending_get_requests++;
-          proto.sender().send(sub_request, str);
+          proto.sender().send(sub_request, boost::string_view(str));
         }
       default:
         break;

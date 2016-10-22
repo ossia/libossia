@@ -221,17 +221,17 @@ bool midi_protocol::push(const address_base& address)
       mOutput->send(
           mm::MakeNoteOn(
               adrinfo.channel, adrinfo.note,
-              adrs.getValue().get<Int>().value));
+              adrs.getValue().get<Int>()));
       return true;
     }
 
     case address_info::Type::NoteOn:
     {
-      auto& val = adrs.getValue().get<Tuple>().value;
+      auto& val = adrs.getValue().get<Tuple>();
       mOutput->send(
           mm::MakeNoteOn(
-              adrinfo.channel, val[0].get<Int>().value,
-              val[1].get<Int>().value));
+              adrinfo.channel, val[0].get<Int>(),
+              val[1].get<Int>()));
       return true;
     }
 
@@ -240,17 +240,17 @@ bool midi_protocol::push(const address_base& address)
       mOutput->send(
           mm::MakeNoteOff(
               adrinfo.channel, adrinfo.note,
-              adrs.getValue().get<Int>().value));
+              adrs.getValue().get<Int>()));
       return true;
     }
 
     case address_info::Type::NoteOff:
     {
-      auto& val = adrs.getValue().get<Tuple>().value;
+      auto& val = adrs.getValue().get<Tuple>();
       mOutput->send(
           mm::MakeNoteOff(
-              adrinfo.channel, val[0].get<Int>().value,
-              val[1].get<Int>().value));
+              adrinfo.channel, val[0].get<Int>(),
+              val[1].get<Int>()));
       return true;
     }
 
@@ -259,17 +259,17 @@ bool midi_protocol::push(const address_base& address)
       mOutput->send(
           mm::MakeControlChange(
               adrinfo.channel, adrinfo.note,
-              adrs.getValue().get<Int>().value));
+              adrs.getValue().get<Int>()));
       return true;
     }
 
     case address_info::Type::CC:
     {
-      auto& val = adrs.getValue().get<Tuple>().value;
+      auto& val = adrs.getValue().get<Tuple>();
       mOutput->send(
           mm::MakeControlChange(
-              adrinfo.channel, val[0].get<Int>().value,
-              val[1].get<Int>().value));
+              adrinfo.channel, val[0].get<Int>(),
+              val[1].get<Int>()));
       return true;
     }
 
@@ -277,7 +277,7 @@ bool midi_protocol::push(const address_base& address)
     {
       mOutput->send(
           mm::MakeProgramChange(
-              adrinfo.channel, adrs.getValue().get<Int>().value));
+              adrinfo.channel, adrs.getValue().get<Int>()));
       return true;
     }
 

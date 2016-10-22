@@ -29,7 +29,7 @@ automation::~automation() = default;
 
 void automation::updateMessage(double t)
 {
-  mLastMessage.value = computeValue(t, mDrive);
+  mLastMessage.message_value = computeValue(t, mDrive);
   return;
 //  ossia::net::address_base& addr = mDrivenAddress.value.get();
 //  auto& idx = mDrivenAddress.index;
@@ -86,7 +86,7 @@ void automation::updateMessage(double t)
 //        auto& arr = cur_v.get<ossia::Vec2f>();
 //        if(idx[0] < arr.size_value)
 //        {
-//          arr.value[idx[0]] = val.get<Float>().value;
+//          arr[idx[0]] = val.get<Float>().value;
 //        }
 //        mLastMessage.value = arr;
 //        break;
@@ -97,7 +97,7 @@ void automation::updateMessage(double t)
 //        auto& arr = cur_v.get<ossia::Vec3f>();
 //        if(idx[0] < arr.size_value)
 //        {
-//          arr.value[idx[0]] = val.get<Float>().value;
+//          arr[idx[0]] = val.get<Float>().value;
 //        }
 //        mLastMessage.value = arr;
 //        break;
@@ -108,7 +108,7 @@ void automation::updateMessage(double t)
 //        auto& arr = cur_v.get<ossia::Vec4f>();
 //        if(idx[0] < arr.size_value)
 //        {
-//          arr.value[idx[0]] = val.get<Float>().value;
+//          arr[idx[0]] = val.get<Float>().value;
 //        }
 //        mLastMessage.value = arr;
 //        break;
@@ -320,12 +320,12 @@ struct computeValue_visitor
 
     // General tuple case
     Tuple t;
-    t.value.reserve(b.size());
+    t.reserve(b.size());
 
     for(const auto& e : b)
     {
       if(e)
-        t.value.push_back(eggs::variants::apply(*this, e));
+        t.push_back(eggs::variants::apply(*this, e));
       else
         return {};
     }

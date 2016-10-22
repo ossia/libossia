@@ -22,7 +22,7 @@ struct domain_min_visitor_helper<T, void_t<decltype(std::declval<T>().min)>>
   ossia::value operator()(const T& value) const
   {
     if(value.min)
-      return value::make<typename T::ossia_type>(value.min.get());
+      return value::make<typename T::value_type>(value.min.get());
     else
       return ossia::value{};
   }
@@ -58,7 +58,7 @@ struct domain_max_visitor_helper<T, void_t<decltype(std::declval<T>().max)>>
   ossia::value operator()(const T& value) const
   {
     if(value.max)
-      return value::make<typename T::ossia_type>(value.max.get());
+      return value::make<typename T::value_type>(value.max.get());
     else
       return ossia::value{};
   }
@@ -105,15 +105,15 @@ struct domain_max_visitor
 struct domain_set_min_visitor
 {
   void operator()(domain_base<Int>& domain, Int incoming)
-  { domain.min = incoming.value; }
+  { domain.min = incoming; }
   void operator()(domain_base<Float>& domain, Float incoming)
-  { domain.min = incoming.value; }
+  { domain.min = incoming; }
   void operator()(domain_base<Char>& domain, Char incoming)
-  { domain.min = incoming.value; }
+  { domain.min = incoming; }
   void operator()(domain_base<Bool>& domain, Bool incoming)
-  { domain.min = incoming.value; }
+  { domain.min = incoming; }
   void operator()(domain_base<Tuple>& domain, const Tuple& incoming)
-  { domain.min = incoming.value; }
+  { domain.min = incoming; }
 
   template<std::size_t N>
   void operator()(domain_base<Vec<float, N>>& domain, const Vec<float, N>& incoming)
@@ -157,15 +157,15 @@ struct domain_set_min_visitor
 struct domain_set_max_visitor
 {
   void operator()(domain_base<Int>& domain, Int incoming)
-  { domain.max = incoming.value; }
+  { domain.max = incoming; }
   void operator()(domain_base<Float>& domain, Float incoming)
-  { domain.max = incoming.value; }
+  { domain.max = incoming; }
   void operator()(domain_base<Char>& domain, Char incoming)
-  { domain.max = incoming.value; }
+  { domain.max = incoming; }
   void operator()(domain_base<Bool>& domain, Bool incoming)
-  { domain.max = incoming.value; }
+  { domain.max = incoming; }
   void operator()(domain_base<Tuple>& domain, const Tuple& incoming)
-  { domain.max = incoming.value; }
+  { domain.max = incoming; }
 
   template<std::size_t N>
   void operator()(domain_base<Vec<float, N>>& domain, const Vec<float, N>& incoming)
@@ -248,7 +248,7 @@ struct domain_value_set_creation_visitor
     for(auto& value : values)
     {
       if(auto r = value.target<T>())
-        dom.values.insert(r->value);
+        dom.values.insert(*r);
     }
     return dom;
   }
