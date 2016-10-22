@@ -107,7 +107,7 @@ struct polar_u :
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     const auto a = self.value.value[0] * deg_to_rad;
-    const auto d = self.value.value[2];
+    const auto d = self.value.value[1];
 
     return std::array<double, 3>{
           std::sin(a) * d,
