@@ -85,12 +85,12 @@ struct spherical_u :
     const auto y = self.value.value[1];
     const auto z = self.value.value[2];
 
-    const auto temp = x * x + y * y;
+    const auto temp = std::pow(x, 2.) + std::pow(y, 2.);
 
     return std::array<double, 3>{
           std::atan2(x, y) * rad_to_deg,
-          std::atan2(z, std::pow(temp, 0.5)) * rad_to_deg,
-          std::pow(temp + (z * z), 0.5)
+          std::atan2(z, std::sqrt(temp)) * rad_to_deg,
+          std::sqrt(temp + std::pow(z, 2.))
         };
   }
 };
@@ -123,7 +123,7 @@ struct polar_u :
 
     return std::array<double, 2>{
           std::atan2(x, y) * rad_to_deg,
-          std::sqrt(x * x + y * y)
+          ossia::norm(x, y)
         };
   }
 };
@@ -175,7 +175,7 @@ struct cylindrical_u :
     const auto z = self.value.value[2];
 
     return std::array<double, 3>{
-          std::pow(x * x + y * y, 0.5),
+          ossia::norm(x, y),
           std::atan2(x, y) * rad_to_deg,
           z
         };

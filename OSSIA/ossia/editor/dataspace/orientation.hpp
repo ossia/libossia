@@ -106,7 +106,7 @@ struct axis_u :
     const auto sinAngle = std::sin(angle);
 
     //vector normalization:
-    const auto norm = std::sqrt(x*x + y*y + z*z);
+    const auto norm = ossia::norm(x, y, z);
     const auto n = norm > 0.0 ? 1.0 / norm : norm;
 
     /* x = x * n;

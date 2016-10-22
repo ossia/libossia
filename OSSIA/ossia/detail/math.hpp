@@ -17,6 +17,18 @@ const OSSIA_DECL_RELAXED_CONSTEXPR auto rad_to_deg = boost::math::constants::rad
 const OSSIA_DECL_RELAXED_CONSTEXPR auto deg_to_rad = boost::math::constants::degree<double>();
 const OSSIA_DECL_RELAXED_CONSTEXPR auto ln_2 = boost::math::constants::ln_two<double>();
 
+template<typename T>
+auto norm(T x, T y)
+{
+  return std::sqrt(std::pow(x, 2) + std::pow(y, 2));
+}
+
+template<typename T>
+auto norm(T x, T y, T z)
+{
+  return std::sqrt(std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2));
+}
+
 /**
  * @brief clamp_min Returns the value bounded by a min
  */
