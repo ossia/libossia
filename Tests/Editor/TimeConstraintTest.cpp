@@ -101,9 +101,9 @@ private Q_SLOTS:
       auto s = new scenario;
 
       constraint->addTimeProcess(std::unique_ptr<ossia::time_process>(s));
-      auto a = new automation{*t.float_addr, Behavior{std::make_shared<curve<double, float>>()}};
+      auto a = new automation{*t.float_addr, std::make_shared<curve<double, float>>()};
       constraint->addTimeProcess(std::unique_ptr<ossia::time_process>(a));
-      auto m = new mapper{*t.float_addr, *t.float_addr, Behavior{std::make_shared<curve<float, float>>()}};
+      auto m = new mapper{*t.float_addr, *t.float_addr, std::make_shared<curve<float, float>>()};
       constraint->addTimeProcess(std::unique_ptr<ossia::time_process>(m));
       auto l = new loop{10._tv, {}, {}, {}};
       constraint->addTimeProcess(std::unique_ptr<ossia::time_process>(l));

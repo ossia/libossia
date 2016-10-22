@@ -2,6 +2,7 @@
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/editor/curve/behavior.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -37,14 +38,14 @@ class OSSIA_EXPORT automation final :
     public ossia::time_process
 {
   public:
-    automation(Destination, const ossia::value&);
-    automation(Destination, ossia::value&&);
+    automation(Destination, const ossia::behavior&);
+    automation(Destination, ossia::behavior&&);
     automation(const automation&);
 
     ~automation();
 
     Destination getDrivenAddress() const;
-    const ossia::value& getDriving() const;
+    const ossia::behavior& getDriving() const;
 
   private:
     ossia::state_element offset(ossia::time_value) override;
@@ -55,12 +56,12 @@ class OSSIA_EXPORT automation final :
     void pause() override;
     void resume() override;
 
-    static ossia::value computeValue(double, const ossia::value&);
+    static ossia::value computeValue(double, const ossia::behavior&);
 
     void updateMessage(double t);
 
     Destination mDrivenAddress;
-    ossia::value mDrive;
+    ossia::behavior mDrive;
     ossia::message mLastMessage;
 };
 }

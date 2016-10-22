@@ -335,7 +335,7 @@ private Q_SLOTS:
     for(float i = -100; i < 100; i++)
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::FREE, Float{i});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res, Float{i});
     }
@@ -343,35 +343,35 @@ private Q_SLOTS:
     // Clip
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::CLIP, Float{-100});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res, min);
     }
 
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::CLIP, Float{0});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res, min);
     }
 
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::CLIP, Float{0.5});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res, Float{0.5});
     }
 
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::CLIP, Float{1});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res, max);
     }
 
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::CLIP, Float{100});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res, max);
     }
@@ -379,35 +379,35 @@ private Q_SLOTS:
     // Low
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::LOW, Float{-100});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res, min);
     }
 
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::LOW, Float{0});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res, min);
     }
 
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::LOW, Float{0.5});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res, Float{0.5});
     }
 
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::LOW, Float{1});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res, Float{1});
     }
 
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::LOW, Float{100});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res, Float{100});
     }
@@ -415,35 +415,35 @@ private Q_SLOTS:
     // High
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::HIGH, Float{-100});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res, Float{-100});
     }
 
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::HIGH, Float{0});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res,  Float{0});
     }
 
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::HIGH, Float{0.5});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res, Float{0.5});
     }
 
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::CLIP, Float{1});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res, max);
     }
 
     {
       auto clamped = ossia::net::apply_domain(dom, ossia::bounding_mode::CLIP, Float{100});
-      auto res = clamped.try_get<Float>();
+      auto res = clamped.target<Float>();
       QVERIFY(res);
       QCOMPARE(*res, max);
     }

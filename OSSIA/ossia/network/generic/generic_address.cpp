@@ -94,7 +94,7 @@ ossia::net::generic_address& generic_address::setValue(const ossia::value& val)
   // std::cerr << address_string_from_node(*this) << " : " << mValue << " <=== " << val << std::endl;
 
   // set value querying the value from another address
-  auto dest = val.try_get<Destination>();
+  auto dest = val.target<Destination>();
   if (dest && mValueType != val_type::DESTINATION)
   {
     const Destination& destination = *dest;

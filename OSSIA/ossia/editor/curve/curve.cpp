@@ -1,5 +1,6 @@
 #include <ossia/editor/curve/curve_abstract.hpp>
 #include <ossia/editor/curve/curve.hpp>
+#include <ossia/editor/curve/behavior.hpp>
 
 template class ossia::curve<int, int>;
 template class ossia::curve<int, float>;
@@ -21,5 +22,24 @@ namespace ossia
 {
 curve_abstract::~curve_abstract()
 {
+}
+
+void behavior::reset()
+{
+  struct behavior_reset
+  {
+      void operator()(const curve_ptr& p)
+      {
+        if(p)
+          p->reset();
+      }
+
+      void operator()(const std::vector<behavior>& p)
+      {
+        for(auto& b : p)
+          eggs::variants::apply(*this, b);
+      }
+  };
+  eggs::variants::apply(behavior_reset{}, *this);
 }
 }

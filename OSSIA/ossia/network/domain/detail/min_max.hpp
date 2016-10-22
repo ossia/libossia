@@ -229,8 +229,6 @@ struct domain_minmax_creation_visitor
   { return domain{}; }
   domain operator()(const Destination&, const Destination&)
   { return domain{}; }
-  domain operator()(const Behavior&, const Behavior&)
-  { return domain{}; }
 };
 
 
@@ -249,15 +247,13 @@ struct domain_value_set_creation_visitor
     domain_base<T> dom;
     for(auto& value : values)
     {
-      if(auto r = value.try_get<T>())
+      if(auto r = value.target<T>())
         dom.values.insert(r->value);
     }
     return dom;
   }
 
   domain operator()(const Destination&)
-  { return domain{}; }
-  domain operator()(const Behavior&)
   { return domain{}; }
   domain operator()(const Impulse&)
   { return domain{}; }

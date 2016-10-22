@@ -288,12 +288,6 @@ public:
         return {};
         ;
       }
-      Y operator()(const Behavior&) const
-      {
-        throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
-                                       "Cannot convert Behavior to a numeric type");
-        return {};
-      }
       Y operator()() const
       {
         throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "

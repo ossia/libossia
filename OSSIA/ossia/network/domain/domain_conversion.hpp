@@ -161,7 +161,6 @@ inline domain convert_domain(const domain& dom, ossia::val_type newtype)
       return eggs::variants::apply(
           domain_conversion<domain_base<Vec4f>>{}, dom);
     case val_type::DESTINATION:
-    case val_type::BEHAVIOR:
     default:
       return domain{};
   }

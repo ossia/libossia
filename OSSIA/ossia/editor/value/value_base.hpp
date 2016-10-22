@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/detail/instantiations.hpp>
-#include <ossia/editor/value/behavior.hpp>
 #include <ossia/editor/value/bool.hpp>
 #include <ossia/editor/value/char.hpp>
 #include <ossia/editor/value/destination.hpp>

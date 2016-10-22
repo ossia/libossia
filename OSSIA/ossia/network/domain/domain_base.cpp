@@ -251,7 +251,6 @@ domain init_domain(ossia::val_type type)
     case val_type::VEC4F:
       return domain_base<Vec4f>();
     case val_type::DESTINATION:
-    case val_type::BEHAVIOR:
     default:
       return domain{};
   }

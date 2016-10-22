@@ -17,7 +17,7 @@ struct value_set_clamp
   value operator()(bounding_mode b, U&& val)
   {
     const auto& values = domain.values;
-    if (values.empty())
+    if (b == bounding_mode::FREE || values.empty())
     {
       return std::forward<U>(val);
     }

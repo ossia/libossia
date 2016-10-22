@@ -47,8 +47,7 @@ enum ossia_type
   VEC2F_T,
   VEC3F_T,
   VEC4F_T,
-  DESTINATION_T,
-  BEHAVIOR_T
+  DESTINATION_T
 };
 
 enum ossia_access_mode

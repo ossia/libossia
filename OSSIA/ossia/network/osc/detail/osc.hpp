@@ -63,9 +63,6 @@ struct osc_outbound_visitor
     void operator()(const ossia::Destination& d) const
     {
     }
-    void operator()(const ossia::Behavior&) const
-    {
-    }
     void operator()(const ossia::Tuple& t) const
     {
       for (const auto& val : t.value)
@@ -272,10 +269,6 @@ struct osc_inbound_visitor
     ossia::value operator()(const ossia::Destination& d) const
     {
       return d;
-    }
-    ossia::value operator()(const ossia::Behavior& b) const
-    {
-      return b;
     }
 
     ossia::value create_value(oscpack::ReceivedMessageArgumentIterator it)

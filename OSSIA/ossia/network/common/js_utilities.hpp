@@ -114,7 +114,6 @@ public:
   }
 
   ossia::value operator()(const Destination& t) { return t; }
-  ossia::value operator()(const Behavior& t) { return t; }
   ossia::value operator()() const { return {}; }
 
 };
@@ -144,8 +143,7 @@ public:
     Vec2f, //! \see ossia::Vec2f
     Vec3f, //! \see ossia::Vec3f
     Vec4f, //! \see ossia::Vec4f
-    Destination, //! \see ossia::Destination
-    Behavior,    //! \see ossia::Behavior
+    Destination //! \see ossia::Destination
   };
 
   enum class access_mode
@@ -369,7 +367,6 @@ struct js_value_outbound_visitor
   }
 
   QJSValue operator()(const Destination& t) { return {}; }
-  QJSValue operator()(const Behavior& t) { return {}; }
   QJSValue operator()() const { return {}; }
 
 };
@@ -458,7 +455,6 @@ struct js_string_outbound_visitor
   }
 
   QString operator()(const Destination& t) { return (*this)(Impulse{}); }
-  QString operator()(const Behavior& t) { return (*this)(Impulse{}); }
   QString operator()() const { return (*this)(Impulse{}); }
 
 };

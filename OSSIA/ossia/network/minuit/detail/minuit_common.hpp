@@ -120,12 +120,6 @@ inline boost::string_view to_minuit_type_text(const ossia::value& val)
                                      "Trying to send Destination value");
       return {};
     }
-    boost::string_view operator()(const ossia::Behavior&) const
-    {
-      throw invalid_value_type_error("to_minuit_type_text: "
-                                     "Trying to send Behavior value");
-      return {};
-    }
     boost::string_view operator()() const
     {
       throw invalid_value_type_error("to_minuit_type_text: "

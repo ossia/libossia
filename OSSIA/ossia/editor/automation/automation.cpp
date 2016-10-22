@@ -10,7 +10,7 @@ namespace ossia
 {
 
 automation::automation(
-    Destination address, const ossia::value& drive)
+    Destination address, const ossia::behavior& drive)
   : mDrivenAddress(address)
   , mDrive(drive)
   , mLastMessage{address, ossia::value{}}
@@ -18,7 +18,7 @@ automation::automation(
 }
 
 automation::automation(
-    Destination address, ossia::value&& drive)
+    Destination address, ossia::behavior&& drive)
   : mDrivenAddress(address)
   , mDrive(std::move(drive))
   , mLastMessage{address, ossia::value{}}
@@ -164,13 +164,7 @@ ossia::state_element automation::state()
 
 void automation::start()
 {
-  if (auto b = mDrive.try_get<ossia::Behavior>())
-  {
-    if (auto& curve = b->value)
-    {
-      curve->reset();
-    }
-  }
+  mDrive.reset();
 }
 
 void automation::stop()
@@ -190,7 +184,7 @@ Destination automation::getDrivenAddress() const
   return mDrivenAddress;
 }
 
-const ossia::value& automation::getDriving() const
+const ossia::behavior& automation::getDriving() const
 {
   return mDrive;
 }
@@ -217,9 +211,9 @@ struct computeValue_visitor
     return error();
   }
 
-  ossia::value operator()(const ossia::Behavior& b) const
+  ossia::value operator()(const curve_ptr& c) const
   {
-    auto base_curve = b.value.get();
+    auto base_curve = c.get();
     if(!base_curve)
     {
       throw invalid_value_type_error("computeValue_visitor: "
@@ -264,20 +258,23 @@ struct computeValue_visitor
     return {};
   }
 
-  static boost::container::static_vector<curve<double, float>*, 4> tuple_convertible_to_vec(const ossia::Tuple& t)
+  using vec_behavior = boost::container::static_vector<curve<double, float>*, 4>;
+  static vec_behavior tuple_convertible_to_vec(
+      const std::vector<ossia::behavior>& t)
   {
-    const auto n = t.value.size();
+    const auto n = t.size();
 
     boost::container::static_vector<curve<double, float>*, 4> arr;
     bool ok = false;
     if(n >= 2 && n <= 4)
     {
-      for(const ossia::value& v : t.value)
+      for(const ossia::behavior& v : t)
       {
-        if(v.getType() != ossia::val_type::BEHAVIOR)
+        auto target = v.target<std::shared_ptr<ossia::curve_abstract>>();
+        if(!target)
           return {};
 
-        auto c = v.try_get<ossia::Behavior>()->value.get();
+        ossia::curve_abstract* c = target->get();
         if(!c)
           return {};
 
@@ -303,9 +300,9 @@ struct computeValue_visitor
     return {};
   }
 
-  ossia::value operator()(const ossia::Tuple& t) const
+  ossia::value operator()(const std::vector<ossia::behavior>& b)
   {
-    auto arr = tuple_convertible_to_vec(t);
+    vec_behavior arr = tuple_convertible_to_vec(b);
 
     if(!arr.empty())
     {
@@ -322,25 +319,29 @@ struct computeValue_visitor
     }
 
     // General tuple case
-    std::vector<ossia::value> t_value;
-    t_value.reserve(t.value.size());
+    Tuple t;
+    t.value.reserve(b.size());
 
-    for (const auto& e : t.value)
+    for(const auto& e : b)
     {
-      t_value.push_back(e.apply(*this));
+      if(e)
+        t.value.push_back(eggs::variants::apply(*this, e));
+      else
+        return {};
     }
 
-    return ossia::Tuple{std::move(t_value)};
+    return std::move(t);
   }
-
 };
 
 ossia::value
 automation::computeValue(
     double position,
-    const ossia::value& drive)
+    const ossia::behavior& drive)
 {
-  return drive.apply(computeValue_visitor{position});
+  if(drive)
+    return eggs::variants::apply(computeValue_visitor{position}, drive);
+  return {};
 }
 
 }

@@ -114,7 +114,7 @@ void piecewise_message::launch() const
 {
   // If values are missing, merge with the existing ones
   auto cur = address.get().cloneValue();
-  if(auto cur_tuple = cur.try_get<Tuple>())
+  if(auto cur_tuple = cur.target<Tuple>())
   {
     value_merger<true>::merge_tuple(*cur_tuple, value);
     address.get().pushValue(std::move(cur));

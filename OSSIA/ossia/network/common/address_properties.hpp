@@ -18,8 +18,7 @@ enum class val_type
   VEC2F, //! \see Vec2f
   VEC3F, //! \see Vec3f
   VEC4F, //! \see Vec4f
-  DESTINATION, //! \see Destination
-  BEHAVIOR,    //! \see Behavior
+  DESTINATION //! \see Destination
 };
 
 

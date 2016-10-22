@@ -20,8 +20,8 @@ static void merge_value(ossia::value& dest, Value_T&& src)
   }
   else
   {
-    auto dest_tuple_ptr = dest.try_get<Tuple>();
-    auto src_tuple_ptr = src.template try_get<Tuple>();
+    auto dest_tuple_ptr = dest.target<Tuple>();
+    auto src_tuple_ptr = src.template target<Tuple>();
 
     if(dest_tuple_ptr && src_tuple_ptr)
     {
@@ -91,7 +91,7 @@ static void insert_in_tuple(Tuple& t, Value_T&& v, const ossia::destination_inde
     else
     {
       // We go through another depth layer.
-      if(auto sub_tuple = cur[pos].try_get<ossia::Tuple>())
+      if(auto sub_tuple = cur[pos].target<ossia::Tuple>())
       {
         cur_ptr = sub_tuple;
       }
@@ -102,7 +102,7 @@ static void insert_in_tuple(Tuple& t, Value_T&& v, const ossia::destination_inde
         cur[pos] = std::move(t);
 
         // And use it for the next iteration
-        cur_ptr = cur[pos].try_get<ossia::Tuple>();
+        cur_ptr = cur[pos].target<ossia::Tuple>();
       }
     }
   }

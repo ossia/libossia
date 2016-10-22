@@ -217,11 +217,6 @@ struct value_merger
   {
     return value_unit;
   }
-  template<typename T>
-  ossia::value_with_unit operator()(const strong_value<T>& value_unit, const Behavior& value)
-  {
-    return value_unit;
-  }
 };
 
 template<std::size_t N>

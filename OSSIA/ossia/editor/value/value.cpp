@@ -2,6 +2,7 @@
 #include <ossia/editor/value/value.hpp>
 #include <ossia/editor/value/value_comparison.hpp>
 #include <ossia/editor/value/value_algorithms.hpp>
+#include <ossia/editor/value/value_traits.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/detail/logger.hpp>
@@ -467,10 +468,6 @@ struct value_prettyprint_visitor
       s << " " << ossia::get_pretty_unit_text(d.unit);
     }
   }
-  void operator()(const Behavior&) const
-  {
-    s << "behavior";
-  }
   void operator()(const Tuple& t) const
   {
     s << "tuple:";
@@ -519,4 +516,23 @@ ossia::value get_value_at_index(
   return val.apply(detail::destination_index_retriever{idx, idx.cbegin()});
 }
 
+bool is_numeric(const ossia::value& val)
+{
+  if(val.valid())
+    return eggs::variants::apply(
+          [] (auto& v) {
+      return ossia::value_trait<std::remove_const_t<std::remove_reference_t<decltype(v)>>>::is_numeric;
+    }, val.v);
+  return false;
+}
+
+bool is_array(const ossia::value& val)
+{
+  if(val.valid())
+    return eggs::variants::apply(
+          [] (auto& v) {
+      return ossia::value_trait<std::remove_const_t<std::remove_reference_t<decltype(v)>>>::is_array;
+    }, val.v);
+  return false;
+}
 }

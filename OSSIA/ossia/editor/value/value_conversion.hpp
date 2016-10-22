@@ -35,7 +35,6 @@ struct numeric_value_converter
   T operator()(Char v) { return v.value; }
   T operator()() const { return T{}; }
 
-  T operator()(const Behavior&) const { return T{}; }
   T operator()(const Destination&) const { return T{}; }
   T operator()(const String& v) const { return T{}; }
   T operator()(Vec2f v) const { return v.value[0]; }
@@ -79,7 +78,6 @@ struct numeric_value_converter
     T operator()(Char v) { return std::to_string(v.value); }
     T operator()() const { return T{}; }
 
-    T operator()(const Behavior&) const { return T{}; }
     T operator()(const Destination&) const { return T{}; }
     T operator()(const String& v) const { return T{}; }
 
@@ -165,30 +163,6 @@ struct numeric_value_converter
   };
 
   template<>
-  struct value_converter<decltype(Behavior::value)>
-  {
-    using T = decltype(Behavior::value);
-    template<typename U>
-    T operator()(const U&)
-    {
-      return {};
-    }
-
-    T operator()() { return {}; }
-  };
-
-  template<>
-  struct value_converter<Behavior>
-  {
-    template<typename... U>
-    Behavior operator()(U&&...)
-    {
-      throw invalid_value_type_error("value_converter<Behavior>: "
-                                     "Don't try to convert from / to a Behavior");
-    }
-  };
-
-  template<>
   struct value_converter<Destination>
   {
     template<typename... U>
@@ -259,8 +233,6 @@ struct numeric_value_converter
         return f(ossia::value_trait<Vec3f>{}, std::forward<Args>(args)...);
       case val_type::VEC4F:
         return f(ossia::value_trait<Vec4f>{}, std::forward<Args>(args)...);
-      case val_type::BEHAVIOR:
-        return f(ossia::value_trait<Behavior>{}, std::forward<Args>(args)...);
       case val_type::DESTINATION:
         return f(ossia::value_trait<Destination>{}, std::forward<Args>(args)...);
     }

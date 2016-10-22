@@ -6,7 +6,7 @@ auto get_value(ossia_value_t val)
   if(!val)
     return {};
 
-  if(auto casted_val = convert(val).try_get<Requested_T>())
+  if(auto casted_val = convert(val).target<Requested_T>())
   {
     return casted_val->value;
   }
@@ -110,7 +110,7 @@ const char* ossia_value_to_string(
   if(!val)
     return nullptr;
 
-  if(auto casted_val = convert(val).try_get<ossia::String>())
+  if(auto casted_val = convert(val).target<ossia::String>())
   {
     auto& s = casted_val->value;
     auto size = s.size();

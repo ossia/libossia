@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia_export.h>
 #include <utility>
-
+#include <memory>
 namespace ossia
 {
 /**
@@ -46,4 +46,6 @@ public:
    * Call before a new execution. */
   virtual void reset() = 0;
 };
+
+using curve_ptr = std::shared_ptr<ossia::curve_abstract>;
 }

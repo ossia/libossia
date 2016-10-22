@@ -132,10 +132,6 @@ struct NumericValue
       {
         return false;
       }
-      bool operator()(const Behavior&) const
-      {
-        return false;
-      }
 
       bool operator()() const
       {
@@ -204,10 +200,6 @@ struct StringValue
       bool operator()(Vec4f v) const
       {
         return fun(v.value, String_T{});
-      }
-      bool operator()(const Behavior&) const
-      {
-        return false;
       }
 
       bool operator()() const

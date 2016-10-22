@@ -15,7 +15,6 @@ struct Float;
 struct Char;
 struct String;
 struct Tuple;
-struct Behavior;
 class Destination;
 
 class value;

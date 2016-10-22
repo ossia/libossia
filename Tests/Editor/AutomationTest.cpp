@@ -36,15 +36,15 @@ private Q_SLOTS:
     auto cld = device.createChild("child");
     auto address = cld->createAddress(val_type::FLOAT);
 
-    Float f(0);
+    behavior b;
 
-    auto autom = std::make_shared<automation>(*address, f);
+    auto autom = std::make_shared<automation>(*address, b);
     QVERIFY(autom != nullptr);
 
     QVERIFY(autom->parent() == nullptr);
 
     QVERIFY(autom->getDrivenAddress() == *address);
-    QVERIFY(autom->getDriving() == f);
+    QVERIFY(autom->getDriving() == b);
 
     //! \todo test clone()
   }
@@ -74,7 +74,7 @@ private Q_SLOTS:
     auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
     auto constraint_callback = std::bind(&AutomationTest::constraint_callback, this, _1, _2, _3);
     auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
-    constraint->addTimeProcess(std::make_unique<automation>(*address, Behavior(c)));
+    constraint->addTimeProcess(std::make_unique<automation>(*address, c));
 
     m_address_values.clear();
 
@@ -133,7 +133,7 @@ private Q_SLOTS:
     auto constraint_callback = std::bind(&AutomationTest::constraint_callback, this, _1, _2, _3);
     auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
 
-    auto autom = std::make_unique<automation>(Destination{*address, {2}, ossia::hsv_u{}}, Behavior(c));
+    auto autom = std::make_unique<automation>(Destination{*address, {2}, ossia::hsv_u{}}, c);
 
     auto& tp = (ossia::time_process&) *autom;
 

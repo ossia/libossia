@@ -27,13 +27,13 @@ bool expression_atom::evaluate() const
 void expression_atom::update() const
 {
   // pull value of the first operand if it is a Destination
-  if (auto d = mFirstValue.try_get<Destination>())
+  if (auto d = mFirstValue.target<Destination>())
   {
     d->value.get().pullValue();
   }
 
   // pull value of the second operand if it is a Destination
-  if (auto d = mSecondValue.try_get<Destination>())
+  if (auto d = mSecondValue.target<Destination>())
   {
     d->value.get().pullValue();
   }
@@ -58,7 +58,7 @@ void expression_atom::onFirstCallbackAdded()
 {
   // start first operand observation if it is a Destination
   //! \todo what about Tuple of Destinations ?
-  if (auto d = mFirstValue.try_get<Destination>())
+  if (auto d = mFirstValue.target<Destination>())
   {
     mFirstValueCallbackIndex = d->value.get().add_callback(
         [&](const ossia::value& result) { firstValueCallback(result); });
@@ -67,7 +67,7 @@ void expression_atom::onFirstCallbackAdded()
 
   // start second operand observation if it is a Destination
   //! \todo what about Tuple of Destinations ?
-  if (auto d = mSecondValue.try_get<Destination>())
+  if (auto d = mSecondValue.target<Destination>())
   {
     mSecondValueCallbackIndex = d->value.get().add_callback(
         [&](const ossia::value& result) { secondValueCallback(result); });
@@ -79,14 +79,14 @@ void expression_atom::onRemovingLastCallback()
 {
   // stop first operand observation if it is a Destination
   //! \todo what about Tuple of Destinations ?
-  if (auto d = mFirstValue.try_get<Destination>())
+  if (auto d = mFirstValue.target<Destination>())
   {
     d->value.get().remove_callback(mFirstValueCallbackIndex);
   }
 
   // start second operand observation if it is a Destination
   //! \todo what about Tuple of Destinations ?
-  if (auto d = mSecondValue.try_get<Destination>())
+  if (auto d = mSecondValue.target<Destination>())
   {
     d->value.get().remove_callback(mSecondValueCallbackIndex);
   }
