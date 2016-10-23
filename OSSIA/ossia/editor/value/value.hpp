@@ -201,6 +201,9 @@ public:
   value& operator=(value&& other) noexcept { v = std::move(other.v); return *this; }
 
 
+  operator value_type&() { return v; }
+  operator const value_type&() const { return v; }
+
   // Operations
   template <typename T>
   const T& get() const
@@ -215,13 +218,13 @@ public:
   }
 
   template <typename T>
-  const T* target() const
+  const T* target() const noexcept
   {
     return v.target<T>();
   }
 
   template <typename T>
-  T* target()
+  T* target()  noexcept
   {
     return v.target<T>();
   }
@@ -239,12 +242,12 @@ public:
     return static_cast<ossia::val_type>(t);
   }
 
-  bool valid() const
+  bool valid() const noexcept
   {
     return bool(v);
   }
 
-  void reset()
+  void reset() noexcept
   {
     v = value_type{};
   }

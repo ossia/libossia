@@ -29,7 +29,7 @@ struct OSSIA_EXPORT domain_base
   boost::optional<value_type> max;
   boost::container::flat_set<value_type> values;
 
-  domain_base() noexcept = default;
+  domain_base() noexcept { }
   domain_base(const domain_base&) = default;
   domain_base(domain_base&&) noexcept = default;
   domain_base& operator=(const domain_base&) = default;
@@ -57,7 +57,7 @@ struct OSSIA_EXPORT domain_base<Tuple>
   boost::optional<value_type> max;
   boost::container::flat_set<value_type> values;
 
-  domain_base<value_type>() noexcept = default;
+  domain_base<value_type>() noexcept { }
   domain_base<value_type>(const domain_base<value_type>&) = default;
   domain_base<value_type>(domain_base<value_type>&&) noexcept = default;
   domain_base<value_type>& operator=(const domain_base<value_type>&) = default;
@@ -75,7 +75,7 @@ struct OSSIA_EXPORT domain_base<Vec<float, N>>
   boost::optional<Vec<float, N>> max;
   boost::container::flat_set<Vec<float, N>> values;
 
-  domain_base<value_type>() noexcept = default;
+  domain_base<value_type>() noexcept { }
   domain_base<value_type>(const domain_base<value_type>&) = default;
   domain_base<value_type>(domain_base<value_type>&&) noexcept = default;
   domain_base<value_type>& operator=(const domain_base<value_type>&) = default;
@@ -92,7 +92,7 @@ struct OSSIA_EXPORT domain_base<ossia::value>
   boost::optional<value_type> max;
   boost::container::flat_set<value_type> values;
 
-  domain_base<value_type>() noexcept = default;
+  domain_base<value_type>() noexcept { }
   domain_base<value_type>(const domain_base<value_type>&) = default;
   domain_base<value_type>(domain_base<value_type>&&) noexcept = default;
   domain_base<value_type>& operator=(const domain_base<value_type>&) = default;
