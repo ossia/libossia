@@ -78,13 +78,13 @@ private Q_SLOTS:
 
     static_assert(m.dataspace_value == 23., "");
 
-    static_assert(qFuzzyCompare(ossia::centimeter{ossia::inch{1}}.dataspace_value, 2.54f), "");
-    static_assert(qFuzzyCompare(ossia::meter{ossia::mile{1}}.dataspace_value, 1609.34f), "");
+    static_assert(qFuzzyCompare(ossia::centimeter{ossia::inch{1.}}.dataspace_value, 2.54f), "");
+    static_assert(qFuzzyCompare(ossia::meter{ossia::mile{1.}}.dataspace_value, 1609.34f), "");
 
 
-    static_assert(qFuzzyCompare(ossia::kilometer_per_hour{ossia::meter_per_second{1}}.dataspace_value, 3.6f), "");
-    static_assert(qFuzzyCompare(ossia::miles_per_hour{ossia::meter_per_second{1}}.dataspace_value, 2.236936f), "");
-    static_assert(qFuzzyCompare(ossia::foot_per_second{ossia::meter_per_second{1}}.dataspace_value, 3.280840f), "");
+    static_assert(qFuzzyCompare(ossia::kilometer_per_hour{ossia::meter_per_second{1.}}.dataspace_value, 3.6f), "");
+    static_assert(qFuzzyCompare(ossia::miles_per_hour{ossia::meter_per_second{1.}}.dataspace_value, 2.236936f), "");
+    static_assert(qFuzzyCompare(ossia::foot_per_second{ossia::meter_per_second{1.}}.dataspace_value, 3.280840f), "");
     static_assert(qFuzzyCompare(ossia::knot{ossia::meter_per_second{1}}.dataspace_value, 1.943844f), "");
 
     static_assert(qFuzzyCompare(ossia::radian{ossia::degree{180}}.dataspace_value, 3.14159f), "");

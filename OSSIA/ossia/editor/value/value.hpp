@@ -94,6 +94,7 @@ public:
   OSSIA_DECL_RELAXED_CONSTEXPR value(int val) : v{eggs::variants::in_place<ossia::Int>, val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(char val) : v{eggs::variants::in_place<ossia::Char>, val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(float val) : v{eggs::variants::in_place<ossia::Float>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(double val) : v{eggs::variants::in_place<ossia::Float>, val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(const std::string& val) : v{eggs::variants::in_place<ossia::String>, val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(const std::vector<ossia::value>& val) : v{eggs::variants::in_place<ossia::Tuple>, val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 2> val) : v{eggs::variants::in_place<ossia::Vec2f>, val} { }

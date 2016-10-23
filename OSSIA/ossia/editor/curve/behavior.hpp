@@ -14,7 +14,7 @@ namespace ossia
  * \see \ref curve_abstract
  * \see \ref curve
  */
-struct OSSIA_EXPORT behavior :
+struct OSSIA_EXPORT behavior final :
     public eggs::variant<std::shared_ptr<curve_abstract>, std::vector<behavior>>
 {
   using eggs::variant<std::shared_ptr<curve_abstract>, std::vector<behavior>>::variant;

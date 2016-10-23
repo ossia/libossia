@@ -112,10 +112,14 @@ struct OSSIA_EXPORT domain_base<ossia::value>
  *
  * It is used to restrict a value to the domain if available.
  */
-using domain
-    = eggs::variant<domain_base<Impulse>, domain_base<Bool>, domain_base<Int>,
+using domain_base_variant = eggs::variant<domain_base<Impulse>, domain_base<Bool>, domain_base<Int>,
                     domain_base<Float>, domain_base<Char>, domain_base<String>,
                     domain_base<Tuple>, domain_base<Vec2f>, domain_base<Vec3f>,
                     domain_base<Vec4f>, domain_base<ossia::value>>;
+
+struct domain final : public domain_base_variant
+{
+  using domain_base_variant::domain_base_variant;
+};
 }
 }

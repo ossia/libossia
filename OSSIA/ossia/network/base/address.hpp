@@ -4,6 +4,8 @@
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/network/domain/domain_fwd.hpp>
 #include <ossia/editor/dataspace/dataspace_fwd.hpp>
+#include <ossia/editor/value/tuple.hpp>
+#include <ossia/editor/value/destination.hpp>
 #include <functional>
 #include <vector>
 #include <memory>
