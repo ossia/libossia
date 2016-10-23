@@ -49,9 +49,9 @@ struct strong_value
 */
   constexpr strong_value(float other) : dataspace_value{ other } { }
   constexpr strong_value(double other) : dataspace_value{ (float)other } { }
-  constexpr strong_value(int other) : dataspace_value{ other } { }
-  constexpr strong_value(char other) : dataspace_value{ other } { }
-  constexpr strong_value(bool other) : dataspace_value{ other } { }
+  constexpr strong_value(int other) : dataspace_value{ (float)other } { }
+  constexpr strong_value(char other) : dataspace_value{ (float)other } { }
+  constexpr strong_value(bool other) : dataspace_value{ (float)other } { }
   constexpr strong_value(std::array<float, 2> other) : dataspace_value{ other } { }
   constexpr strong_value(std::array<float, 3> other) : dataspace_value{ other } { }
   constexpr strong_value(std::array<float, 4> other) : dataspace_value{ other } { }
