@@ -29,11 +29,11 @@ struct OSSIA_EXPORT domain_base
   boost::optional<value_type> max;
   boost::container::flat_set<value_type> values;
 
-  domain_base() = default;
+  domain_base() noexcept = default;
   domain_base(const domain_base&) = default;
-  domain_base(domain_base&&) = default;
+  domain_base(domain_base&&) noexcept = default;
   domain_base& operator=(const domain_base&) = default;
-  domain_base& operator=(domain_base&&) = default;
+  domain_base& operator=(domain_base&&) noexcept = default;
 
   domain_base(value_type v1, value_type v2): min{v1}, max{v2} { }
 };
@@ -57,11 +57,11 @@ struct OSSIA_EXPORT domain_base<Tuple>
   boost::optional<value_type> max;
   boost::container::flat_set<value_type> values;
 
-  domain_base<value_type>() = default;
+  domain_base<value_type>() noexcept = default;
   domain_base<value_type>(const domain_base<value_type>&) = default;
-  domain_base<value_type>(domain_base<value_type>&&) = default;
+  domain_base<value_type>(domain_base<value_type>&&) noexcept = default;
   domain_base<value_type>& operator=(const domain_base<value_type>&) = default;
-  domain_base<value_type>& operator=(domain_base<value_type>&&) = default;
+  domain_base<value_type>& operator=(domain_base<value_type>&&) noexcept = default;
 
   domain_base<value_type>(const value_type& v1, const value_type& v2): min{v1}, max{v2} { }
   domain_base<value_type>(value_type&& v1, value_type&& v2): min{std::move(v1)}, max{std::move(v2)} { }
@@ -75,11 +75,11 @@ struct OSSIA_EXPORT domain_base<Vec<float, N>>
   boost::optional<Vec<float, N>> max;
   boost::container::flat_set<Vec<float, N>> values;
 
-  domain_base<value_type>() = default;
+  domain_base<value_type>() noexcept = default;
   domain_base<value_type>(const domain_base<value_type>&) = default;
-  domain_base<value_type>(domain_base<value_type>&&) = default;
+  domain_base<value_type>(domain_base<value_type>&&) noexcept = default;
   domain_base<value_type>& operator=(const domain_base<value_type>&) = default;
-  domain_base<value_type>& operator=(domain_base<value_type>&&) = default;
+  domain_base<value_type>& operator=(domain_base<value_type>&&) noexcept = default;
 
   domain_base<value_type>(const value_type& v1, const value_type& v2): min{v1}, max{v2} { }
 };
@@ -92,11 +92,11 @@ struct OSSIA_EXPORT domain_base<ossia::value>
   boost::optional<value_type> max;
   boost::container::flat_set<value_type> values;
 
-  domain_base<value_type>() = default;
+  domain_base<value_type>() noexcept = default;
   domain_base<value_type>(const domain_base<value_type>&) = default;
-  domain_base<value_type>(domain_base<value_type>&&) = default;
+  domain_base<value_type>(domain_base<value_type>&&) noexcept = default;
   domain_base<value_type>& operator=(const domain_base<value_type>&) = default;
-  domain_base<value_type>& operator=(domain_base<value_type>&&) = default;
+  domain_base<value_type>& operator=(domain_base<value_type>&&) noexcept = default;
 
   domain_base<value_type>(const value_type& v1, const value_type& v2): min{v1}, max{v2} { }
   domain_base<value_type>(value_type&& v1, value_type&& v2): min{std::move(v1)}, max{std::move(v2)} { }
@@ -121,7 +121,11 @@ using domain_base_variant = eggs::variant<domain_base<Impulse>, domain_base<Bool
 struct OSSIA_EXPORT domain final : public domain_base_variant
 {
   using domain_base_variant::domain_base_variant;
-
+  OSSIA_DECL_RELAXED_CONSTEXPR domain() noexcept = default;
+  domain(const domain&) = default;
+  domain(domain&&) noexcept = default;
+  domain& operator=(const domain&) = default;
+  domain& operator=(domain&&) noexcept = default;
   value get_min() const;
   value get_max() const;
 

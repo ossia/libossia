@@ -87,30 +87,30 @@ public:
   // Construction
   template <typename T>
   OSSIA_DECL_RELAXED_CONSTEXPR value(T*) = delete;
-  OSSIA_DECL_RELAXED_CONSTEXPR value(Impulse val) : v{val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Destination& val) : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(Impulse val) noexcept : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Destination& val) noexcept : v{val} { }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR value(bool val) : v{eggs::variants::in_place<ossia::Bool>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(int val) : v{eggs::variants::in_place<ossia::Int>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(char val) : v{eggs::variants::in_place<ossia::Char>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(float val) : v{eggs::variants::in_place<ossia::Float>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(double val) : v{eggs::variants::in_place<ossia::Float>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(const std::string& val) : v{eggs::variants::in_place<ossia::String>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(const std::vector<ossia::value>& val) : v{eggs::variants::in_place<ossia::Tuple>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 2> val) : v{eggs::variants::in_place<ossia::Vec2f>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 3> val) : v{eggs::variants::in_place<ossia::Vec3f>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 4> val) : v{eggs::variants::in_place<ossia::Vec4f>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::net::address_base& val) : v{eggs::variants::in_place<ossia::Destination>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(bool val) noexcept : v{eggs::variants::in_place<ossia::Bool>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(int val) noexcept : v{eggs::variants::in_place<ossia::Int>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(char val) noexcept : v{eggs::variants::in_place<ossia::Char>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(float val) noexcept : v{eggs::variants::in_place<ossia::Float>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(double val) noexcept : v{eggs::variants::in_place<ossia::Float>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(const std::string& val) noexcept : v{eggs::variants::in_place<ossia::String>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(const std::vector<ossia::value>& val) noexcept : v{eggs::variants::in_place<ossia::Tuple>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 2> val) noexcept : v{eggs::variants::in_place<ossia::Vec2f>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 3> val) noexcept : v{eggs::variants::in_place<ossia::Vec3f>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 4> val) noexcept : v{eggs::variants::in_place<ossia::Vec4f>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::net::address_base& val) noexcept : v{eggs::variants::in_place<ossia::Destination>, val} { }
 
   // Movable overloads
-  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Destination&& val) : v{std::move(val)} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Destination&& val) noexcept : v{std::move(val)} { }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR explicit value(std::string&& val) : v{eggs::variants::in_place<ossia::String>, std::move(val)} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR explicit value(std::vector<ossia::value>&& val) : v{eggs::variants::in_place<ossia::Tuple>, std::move(val)} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR explicit value(std::string&& val) noexcept : v{eggs::variants::in_place<ossia::String>, std::move(val)} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR explicit value(std::vector<ossia::value>&& val) noexcept : v{eggs::variants::in_place<ossia::Tuple>, std::move(val)} { }
 
 
   template<typename T, typename... Args>
-  OSSIA_DECL_RELAXED_CONSTEXPR value(detail::dummy<T> t, Args&&... args):
+  OSSIA_DECL_RELAXED_CONSTEXPR value(detail::dummy<T> t, Args&&... args) noexcept :
     v{eggs::variants::in_place<typename detail::dummy<T>::type>, std::forward<Args>(args)...}
   {
 
@@ -118,87 +118,87 @@ public:
 
   // To initialize a value directly with correct arguments
   template<typename T, typename... Args>
-  static ossia::value make(Args&&... args)
+  static ossia::value make(Args&&... args) noexcept
   { return ossia::value{detail::dummy<T>{}, std::forward<Args>(args)...}; }
 
   // Assignment
-  value& operator=(ossia::Impulse val)
+  value& operator=(ossia::Impulse val) noexcept
   {
     v = val;
     return *this;
   }
-  value& operator=(const ossia::Destination& val)
+  value& operator=(const ossia::Destination& val) noexcept
   {
     v = val;
     return *this;
   }
-  value& operator=(bool val)
+  value& operator=(bool val) noexcept
   {
     v = Bool{val};
     return *this;
   }
-  value& operator=(int val)
+  value& operator=(int val) noexcept
   {
     v = Int{val};
     return *this;
   }
-  value& operator=(float val)
+  value& operator=(float val) noexcept
   {
     v = Float{val};
     return *this;
   }
-  value& operator=(char val)
+  value& operator=(char val) noexcept
   {
     v = Char{val};
     return *this;
   }
-  value& operator=(const std::string& val)
+  value& operator=(const std::string& val) noexcept
   {
     v = String{val};
     return *this;
   }
-  value& operator=(const std::vector<ossia::value>& val)
+  value& operator=(const std::vector<ossia::value>& val) noexcept
   {
     v = Tuple{val};
     return *this;
   }
-  value& operator=(std::array<float, 2> val)
+  value& operator=(std::array<float, 2> val) noexcept
   {
     v = Vec<float, 2>{val};
     return *this;
   }
-  value& operator=(std::array<float, 3> val)
+  value& operator=(std::array<float, 3> val) noexcept
   {
     v = Vec<float, 3>{val};
     return *this;
   }
-  value& operator=(std::array<float, 4> val)
+  value& operator=(std::array<float, 4> val) noexcept
   {
     v = Vec<float, 4>{val};
     return *this;
   }
-  value& operator=(ossia::net::address_base& val)
+  value& operator=(ossia::net::address_base& val) noexcept
   {
     v = Destination{val};
     return *this;
   }
 
-  value& operator=(std::string&& val)
+  value& operator=(std::string&& val) noexcept
   {
     v = String{std::move(val)};
     return *this;
   }
-  value& operator=(std::vector<ossia::value>&& val)
+  value& operator=(std::vector<ossia::value>&& val) noexcept
   {
     v = Tuple{std::move(val)};
     return *this;
   }
 
-  value() = default;
+  value() noexcept = default;
   value(const value& other) = default;
-  value(value&& other) = default;
+  value(value&& other) noexcept : v{std::move(other.v)} {}
   value& operator=(const value& other) = default;
-  value& operator=(value&& other) = default;
+  value& operator=(value&& other) noexcept { v = std::move(other.v); return *this; }
 
 
   // Operations
