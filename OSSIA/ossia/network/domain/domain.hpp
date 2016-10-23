@@ -49,5 +49,20 @@ bool operator!=(const domain_base<T>& lhs, const domain_base<T>& rhs)
   return !(lhs == rhs);
 }
 
+
+inline value domain::get_min() const
+{ return net::get_min(*this); }
+inline value domain::get_max() const
+{ return net::get_max(*this); }
+
+inline void domain::set_min(const ossia::value& val)
+{ return net::set_min(*this, val); }
+inline void domain::set_max(const ossia::value& val)
+{ return net::set_max(*this, val); }
+
+inline value domain::apply(bounding_mode b, const ossia::value& val) const
+{ return net::apply_domain(*this, b, val); }
+inline value domain::apply(bounding_mode b, ossia::value&& val) const
+{ return net::apply_domain(*this, b, std::move(val)); }
 }
 }

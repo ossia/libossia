@@ -67,13 +67,13 @@ public:
   { safe_function(__func__, e, [&] { ; }); }
 
   jni::jint GetInt(jni::JNIEnv& e)
-  { return safe_function(__func__, e, [&] { return val.get<Int>().value; }); }
+  { return safe_function(__func__, e, [&] { return val.get<Int>(); }); }
   jni::jfloat GetFloat(jni::JNIEnv& e)
-  { return safe_function(__func__, e, [&] { return val.get<Float>().value; }); }
+  { return safe_function(__func__, e, [&] { return val.get<Float>(); }); }
   jni::jchar GetChar(jni::JNIEnv& e)
-  { return safe_function(__func__, e, [&] { return val.get<Char>().value; }); }
+  { return safe_function(__func__, e, [&] { return val.get<Char>(); }); }
   jni::jboolean GetBool(jni::JNIEnv& e)
-  { return safe_function(__func__, e, [&] { return val.get<Bool>().value; }); }
+  { return safe_function(__func__, e, [&] { return val.get<Bool>(); }); }
   jni::String GetString(jni::JNIEnv& e)
   {
     return safe_function(__func__, e, [&] {

@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/editor/value/value_traits.hpp>
+#include <ossia/editor/value/value_conversion.hpp>
 #include <boost/container/flat_set.hpp>
 #include <boost/optional.hpp>
 #include <type_traits>
@@ -117,9 +118,54 @@ using domain_base_variant = eggs::variant<domain_base<Impulse>, domain_base<Bool
                     domain_base<Tuple>, domain_base<Vec2f>, domain_base<Vec3f>,
                     domain_base<Vec4f>, domain_base<ossia::value>>;
 
-struct domain final : public domain_base_variant
+struct OSSIA_EXPORT domain final : public domain_base_variant
 {
   using domain_base_variant::domain_base_variant;
+
+  value get_min() const;
+  value get_max() const;
+
+  template<typename T>
+  T get_min() const { return get_min().get<T>(); }
+  template<typename T>
+  T get_max() const { return get_max().get<T>(); }
+
+  template<typename T>
+  boost::optional<T> maybe_min() const
+  {
+    auto v = get_min();
+    auto u = v.target<T>();
+    if(u)
+      return *u;
+    else
+      return {};
+  }
+
+  template<typename T>
+  boost::optional<T> maybe_max() const
+  {
+    auto v = get_max();
+    auto u = v.target<T>();
+    if(u)
+      return *u;
+    else
+      return {};
+  }
+
+  template<typename T>
+  T convert_min() const { return ossia::convert<T>(get_min()); }
+  template<typename T>
+  T convert_max() const { return ossia::convert<T>(get_max()); }
+
+  void set_min(const ossia::value& val);
+  void set_max(const ossia::value& val);
+
+  value apply(
+      bounding_mode b,
+      const ossia::value& val) const;
+  value apply(
+      bounding_mode b,
+      ossia::value&& val) const;
 };
 }
 }
