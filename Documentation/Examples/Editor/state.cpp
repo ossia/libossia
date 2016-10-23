@@ -102,7 +102,7 @@ int main()
     this_thread::sleep_for( std::chrono::milliseconds(500));
 
     auto f = samplerateAddress->cloneValue().get<Float>();
-    wait = f.value > 0.5;
+    wait = f > 0.5;
 
     if (!wait)
       cout << "done !" << endl;

@@ -162,11 +162,11 @@ int main()
     second_curve->setInitialPointOrdinate(1.);
     second_curve->addPoint(second_powerSegment, 1., 2.);
 
-    // create a Tuple value of 3 Behavior values based on the same curve
-    Tuple first_curves{Behavior(first_curve), Behavior(first_curve), Behavior(first_curve)};
+    // create a Tuple value of 3 behavior values based on the same curve
+    std::vector<behavior> first_curves{first_curve, first_curve, first_curve};
 
-    // create a Tuple value of 3 Behavior values based on the same curve
-    Tuple second_curves{Behavior(second_curve), Behavior(second_curve), Behavior(second_curve)};
+    // create a Tuple value of 3 behavior values based on the same curve
+    std::vector<behavior> second_curves{second_curve, second_curve, second_curve};
 
     // create a first Automation to drive /test address by the linear curve
     auto first_automation = std::make_unique<automation>(*local_test_address, first_curves);
@@ -256,7 +256,7 @@ void local_play_callback(const value& v)
     if (v.getType() == val_type::BOOL)
     {
         auto b = v.get<Bool>();
-        if (b.value)
+        if (b)
             main_constraint->start();
         else
             main_constraint->stop();
@@ -271,12 +271,12 @@ void local_test_callback(const value& v)
     {
       auto t = v.get<Tuple>();
 
-        for (auto e : t.value)
+        for (auto e : t)
         {
             if (e.getType() == val_type::FLOAT)
             {
                 auto f = e.get<Float>();
-                cout << f.value << " ";
+                cout << f << " ";
             }
         }
     }
