@@ -48,16 +48,16 @@ struct strong_value
   }
 */
   constexpr strong_value(float other) : dataspace_value{ other } { }
-  constexpr strong_value(double other) : dataspace_value{ other } { }
+  constexpr strong_value(double other) : dataspace_value{ (float)other } { }
   constexpr strong_value(int other) : dataspace_value{ other } { }
   constexpr strong_value(char other) : dataspace_value{ other } { }
   constexpr strong_value(bool other) : dataspace_value{ other } { }
   constexpr strong_value(std::array<float, 2> other) : dataspace_value{ other } { }
   constexpr strong_value(std::array<float, 3> other) : dataspace_value{ other } { }
   constexpr strong_value(std::array<float, 4> other) : dataspace_value{ other } { }
-  constexpr strong_value(std::array<double, 2> other) : dataspace_value{ other[0], other[1] } { }
-  constexpr strong_value(std::array<double, 3> other) : dataspace_value{ other[0], other[1], other[2] } { }
-  constexpr strong_value(std::array<double, 4> other) : dataspace_value{ other[0], other[1], other[2], other[3] } { }
+  constexpr strong_value(std::array<double, 2> other) : dataspace_value{ (float)other[0], (float)other[1] } { }
+  constexpr strong_value(std::array<double, 3> other) : dataspace_value{ (float)other[0], (float)other[1], (float)other[2] } { }
+  constexpr strong_value(std::array<double, 4> other) : dataspace_value{ (float)other[0], (float)other[1], (float)other[2], (float)other[3] } { }
   constexpr strong_value(float f0, float f1) : dataspace_value{ f0, f1 } { }
   constexpr strong_value(float f0, float f1, float f2) : dataspace_value{ f0, f1, f2 } { }
   constexpr strong_value(float f0, float f1, float f2, float f3) : dataspace_value{ f0, f1, f2, f3} { }

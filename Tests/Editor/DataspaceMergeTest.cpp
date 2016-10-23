@@ -46,12 +46,13 @@ class DataspaceMergeTest : public QObject
 private Q_SLOTS:
   void static_test()
   {
-    static_assert(ossia::detail::is_iterable_v<decltype(ossia::Vec3f)>, "");
-    static_assert(!ossia::detail::is_iterable_v<decltype(ossia::Float)>, "");
-    static_assert(!ossia::detail::is_iterable_v<const decltype(ossia::Float)>, "");
+    static_assert(ossia::detail::is_array<ossia::Vec3f>::value, "");
+    static_assert(ossia::detail::is_array<const ossia::Vec3f>::value, "");
+    static_assert(!ossia::detail::is_array<ossia::Float>::value, "");
+    static_assert(!ossia::detail::is_array<const ossia::Float>::value, "");
 
-    static_assert(!ossia::detail::is_iterable_v<decltype(ossia::centimeter::dataspace_value)>, "");
-    static_assert(ossia::detail::is_iterable_v<decltype(ossia::rgb::dataspace_value)>, "RGB is not iterable");
+    static_assert(!ossia::detail::is_array<decltype(ossia::centimeter::dataspace_value)>::value, "");
+    static_assert(ossia::detail::is_array<decltype(ossia::rgb::dataspace_value)>::value, "RGB is not iterable");
 
     static_assert(!ossia::is_unit_v<int>, "");
     static_assert(ossia::is_unit_v<ossia::centimeter_u>, "");

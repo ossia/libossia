@@ -113,20 +113,20 @@ struct argb8_u : public color_unit<argb8_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return {
+    return make_vec(
       self.dataspace_value[0] / 255.,
       self.dataspace_value[1] / 255.,
       self.dataspace_value[2] / 255.,
-      self.dataspace_value[3] / 255.};
+      self.dataspace_value[3] / 255.);
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return {
+    return make_vec(
       self.dataspace_value[0] * 255.,
       self.dataspace_value[1] * 255.,
       self.dataspace_value[2] * 255.,
-      self.dataspace_value[3] * 255.};
+      self.dataspace_value[3] * 255.);
   }
 };
 
@@ -161,17 +161,17 @@ struct hsv_u : public color_unit<hsv_u>
       switch(var_i)
       {
         case 0:
-          return { 1., V, var_3, var_1 };
+          return make_vec( 1., V, var_3, var_1 );
         case 1:
-          return { 1., var_2, V, var_1 };
+          return make_vec( 1., var_2, V, var_1 );
         case 2:
-          return { 1., var_1, V, var_3 };
+          return make_vec( 1., var_1, V, var_3 );
         case 3:
-          return { 1., var_1, var_2, V };
+          return make_vec( 1., var_1, var_2, V );
         case 4:
-          return { 1., var_3, var_1, V };
+          return make_vec( 1., var_3, var_1, V );
         default:
-          return { 1., V, var_1, var_2 };
+          return make_vec( 1., V, var_1, var_2 );
       }
     }
   }
@@ -207,7 +207,7 @@ struct hsv_u : public color_unit<hsv_u>
 
       if ( H < 0. ) H += 1.;
       if ( H > 1. ) H -= 1.;
-      return { H, S, V };
+      return make_vec( H, S, V );
     }
   }
 
@@ -237,19 +237,19 @@ struct cmy8_u : public color_unit<cmy8_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return {
+    return make_vec(
           1.,
           (255. - self.dataspace_value[0]) / 255.,
           (255. - self.dataspace_value[1]) / 255.,
-          (255. - self.dataspace_value[2]) / 255.};
+          (255. - self.dataspace_value[2]) / 255.);
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return {
+    return make_vec(
       255. * (1. - self.dataspace_value[1]),
       255. * (1. - self.dataspace_value[2]),
-      255. * (1. - self.dataspace_value[3])};
+      255. * (1. - self.dataspace_value[3]));
   }
 };
 
@@ -292,9 +292,9 @@ struct xyz_u : public color_unit<xyz_u>
           : var * 12.92;
     };
 
-    return {
+    return make_vec(
           1., translate(var_R), translate(var_G), translate(var_B)
-        };
+        );
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
@@ -311,11 +311,11 @@ struct xyz_u : public color_unit<xyz_u>
 
     //Observer. = 2°, Illuminant = D65
 
-    return {
+    return make_vec(
         var_R * 0.4124 + var_G * 0.3576 + var_B * 0.1805,
         var_R * 0.2126 + var_G * 0.7152 + var_B * 0.0722,
         var_R * 0.0193 + var_G * 0.1192 + var_B * 0.9505
-      };
+      );
   }
 };
 

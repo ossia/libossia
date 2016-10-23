@@ -69,10 +69,10 @@ TEST_CASE ("Building device from preset") {
         REQUIRE(get_node(localDevice, "/device")->children().size() == 2);
         REQUIRE(get_node(localDevice, "/device/a.1")->children().size() == 1);
         REQUIRE(get_node(localDevice, "/device/a.1/b")->children().size() == 2);
-        REQUIRE(get_node(localDevice, "/device/a.1/b/c.1")->getAddress()->cloneValue().get<ossia::Int>().value == i1.value);
-        REQUIRE(get_node(localDevice, "/device/a.1/b/c.2")->getAddress()->cloneValue().get<ossia::Int>().value == i2.value);
+        REQUIRE(get_node(localDevice, "/device/a.1/b/c.1")->getAddress()->cloneValue().get<ossia::Int>() == i1);
+        REQUIRE(get_node(localDevice, "/device/a.1/b/c.2")->getAddress()->cloneValue().get<ossia::Int>() == i2);
         REQUIRE(get_node(localDevice, "/device/a.2/b.1")->children().size() == 2);
-        REQUIRE(get_node(localDevice, "/device/a.2/b.1/c")->getAddress()->cloneValue().get<ossia::Int>().value == i3.value);
-        REQUIRE(get_node(localDevice, "/device/a.2/b.1/d")->getAddress()->cloneValue().get<ossia::Int>().value == i4.value);
+        REQUIRE(get_node(localDevice, "/device/a.2/b.1/c")->getAddress()->cloneValue().get<ossia::Int>() == i3);
+        REQUIRE(get_node(localDevice, "/device/a.2/b.1/d")->getAddress()->cloneValue().get<ossia::Int>() == i4);
     }
 }

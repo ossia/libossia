@@ -17,7 +17,7 @@ namespace detail
 template<typename T>
 struct is_array
 {
-  static const constexpr bool value = value_trait<T>::is_array;
+  static const constexpr bool value = value_trait<std::remove_const_t<T>>::is_array;
 };
 
 template<typename T, typename U, typename = void>

@@ -273,65 +273,53 @@ Destination::Destination(net::address_base& v, const unit_t&u)
 
 bool Destination::operator==(const ossia::value& v) const
 {
-  throw;
-  // TODO return comparisons::DestinationValue::apply(*this, v, std::equal_to<>{});
+  return comparisons::DestinationValue::apply(*this, v, std::equal_to<>{});
 }
 
 bool Destination::operator!=(const ossia::value& v) const
 {
-  throw;
-  // return !comparisons::DestinationValue::apply(*this, v, std::equal_to<>{});
+  return !comparisons::DestinationValue::apply(*this, v, std::equal_to<>{});
 }
 
 bool Destination::operator>(const ossia::value& v) const
 {
-  throw;
-  // return comparisons::DestinationValue::apply(*this, v, std::greater<>{});
+  return comparisons::DestinationValue::apply(*this, v, std::greater<>{});
 }
 
 bool Destination::operator>=(const ossia::value& v) const
 {
-  throw;
-  /*
   return comparisons::DestinationValue::apply(
       *this, v, std::greater_equal<>{});
-  */
 }
 
 bool Destination::operator<(const ossia::value& v) const
 {
-  throw;
-  //return comparisons::DestinationValue::apply(*this, v, std::less<>{});
+  return comparisons::DestinationValue::apply(*this, v, std::less<>{});
 }
 
 bool Destination::operator<=(const ossia::value& v) const
 {
-  throw;
-  //return comparisons::DestinationValue::apply(*this, v, std::less_equal<>{});
+  return comparisons::DestinationValue::apply(*this, v, std::less_equal<>{});
 }
 
 bool operator==(const Destination& lhs, const Destination& rhs)
 {
-  throw;
-  //return lhs.value == rhs.value && lhs.index == rhs.index;
+  return lhs.value == rhs.value && lhs.index == rhs.index;
 }
 
 bool operator!=(const Destination& lhs, const Destination& rhs)
 {
-  throw;
-  //return lhs.value != rhs.value || lhs.index != rhs.index;
+  return lhs.value != rhs.value || lhs.index != rhs.index;
 }
 
 bool operator==(const Destination& lhs, const ossia::net::address_base& rhs)
 {
-  throw;
-  //return lhs.value == rhs && lhs.index.empty();
+  return lhs.value == rhs && lhs.index.empty();
 }
 
 bool operator!=(const Destination& lhs, const ossia::net::address_base& rhs)
 {
-  throw;
-  //return lhs.value != rhs || !lhs.index.empty();
+  return lhs.value != rhs || !lhs.index.empty();
 }
 
 
@@ -367,47 +355,314 @@ struct value_comparison_visitor
   template <typename T>
   bool operator()(const T& lhs)
   {
-    assert(false);
-    return false;
-    // TODO
-    // return Comparator{}(lhs, rhs);
+    return Comparator{}(lhs, rhs);
   }
 };
 
-bool value::operator==(const value& rhs) const
+template <typename Comparator>
+struct value_comparison_visitor2;
+
+// Definition is afterwards
+template <typename Value, typename Comparator>
+struct partial_lhs_value_comparison_visitor2
 {
-  if(v && rhs.v)
+  const Value& lhs;
+
+  template<typename T>
+  bool operator()(const T& rhs);
+};
+
+template <typename Value, typename Comparator>
+struct partial_rhs_value_comparison_visitor2
+{
+  const Value& rhs;
+  template<typename T>
+  bool operator()(const T& lhs);
+};
+
+template <typename Comparator>
+struct value_comparison_visitor2
+{
+  template <typename T, typename U>
+  bool operator()(const T& lhs, const U& rhs) const
+  {
+    return Comparator{}(lhs, rhs);
+  }
+
+  template <typename T>
+  bool operator()(const T& lhs, const T& rhs) const
+  {
+    return Comparator{}(lhs, rhs);
+  }
+
+  // String - *
+  bool operator()(const String& lhs, Int v) const
+  {
+    return Comparator{}(v, comparisons::String_T{});
+  }
+  bool operator()(const String& lhs, Float v) const
+  {
+    return Comparator{}(v, comparisons::String_T{});
+  }
+  bool operator()(const String& lhs, Bool v) const
+  {
+    return Comparator{}(v, comparisons::String_T{});
+  }
+  bool operator()(const String& lhs, Char v) const
+  {
+    return Comparator{}(v, comparisons::String_T{});
+  }
+
+  bool operator()(const String& lhs, const Vec2f& v) const
+  {
+    return Comparator{}(v, comparisons::String_T{});
+  }
+  bool operator()(const String& lhs, const Vec3f& v) const
+  {
+    return Comparator{}(v, comparisons::String_T{});
+  }
+  bool operator()(const String& lhs, const Vec4f& v) const
+  {
+    return Comparator{}(v, comparisons::String_T{});
+  }
+
+
+  // * - String
+  bool operator()(Int v, const String& lhs) const
+  {
+    return Comparator{}(v, comparisons::String_T{});
+  }
+  bool operator()(Float v, const String& lhs) const
+  {
+    return Comparator{}(v, comparisons::String_T{});
+  }
+  bool operator()(Bool v, const String& lhs) const
+  {
+    return Comparator{}(v, comparisons::String_T{});
+  }
+  bool operator()(Char v, const String& lhs) const
+  {
+    return Comparator{}(v, comparisons::String_T{});
+  }
+
+  bool operator()(const Vec2f& v, const String& lhs) const
+  {
+    return Comparator{}(v, comparisons::String_T{});
+  }
+  bool operator()(const Vec3f& v, const String& lhs) const
+  {
+    return Comparator{}(v, comparisons::String_T{});
+  }
+  bool operator()(const Vec4f& v, const String& lhs) const
+  {
+    return Comparator{}(v, comparisons::String_T{});
+  }
+
+  // Destination
+  template<typename T>
+  bool operator()(const T& lhs, const Destination& d) const
+  {
+    return Comparator{}(lhs, d.value.get().cloneValue(d.index));
+  }
+
+  template<typename T>
+  bool operator()(const Destination& d, const T& rhs) const
+  {
+    return Comparator{}(d.value.get().cloneValue(d.index), rhs);
+  }
+
+  bool operator()(const Impulse& lhs, const Destination& d) const
+  {
+    return Comparator{}(Impulse{}, Impulse{});
+  }
+
+  bool operator()(const Destination& d, const Impulse& rhs) const
+  {
+    return Comparator{}(Impulse{}, Impulse{});
+  }
+
+  bool operator()(const Destination& lhs, const Destination& d) const
+  {
+    return Comparator{}(lhs.value.get().cloneValue(d.index), d.value.get().cloneValue(d.index));
+  }
+
+  bool operator()(const Tuple& lhs, const Destination& d) const
+  {
+    return Comparator{}(lhs, d.value.get().cloneValue(d.index));
+  }
+
+  bool operator()(const Destination& d, const Tuple& rhs) const
+  {
+    return Comparator{}(d.value.get().cloneValue(d.index), rhs);
+  }
+
+  bool operator()(const Vec<float, 2>& lhs, const Destination& d) const
+  { return Comparator{}(lhs, d.value.get().cloneValue(d.index)); }
+
+  bool operator()(const Destination& d, const Vec<float, 2>& rhs) const
+  { return Comparator{}(d.value.get().cloneValue(d.index), rhs); }
+
+  bool operator()(const Vec<float, 3>& lhs, const Destination& d) const
+  { return Comparator{}(lhs, d.value.get().cloneValue(d.index)); }
+
+  bool operator()(const Destination& d, const Vec<float, 3>& rhs) const
+  { return Comparator{}(d.value.get().cloneValue(d.index), rhs); }
+
+  bool operator()(const Vec<float, 4>& lhs, const Destination& d) const
+  { return Comparator{}(lhs, d.value.get().cloneValue(d.index)); }
+
+  bool operator()(const Destination& d, const Vec<float, 4>& rhs) const
+  { return Comparator{}(d.value.get().cloneValue(d.index), rhs); }
+
+
+
+
+  // Tuple
+  template<typename T>
+  bool operator()(const T& lhs, const Tuple& v) const
+  {
+    // Note : v.size == 1 only makes sense if comparator is ==...
+    return (v.size() == 1) && v[0].v && (
+          eggs::variants::apply(
+            partial_lhs_value_comparison_visitor2<T, Comparator>{lhs},
+            v[0].v));
+  }
+
+  template<typename T>
+  bool operator()(const Tuple& v, const T& rhs) const
+  {
+    // Note : v.size == 1 only makes sense if comparator is ==...
+    return (v.size() == 1) && v[0].v && (
+          eggs::variants::apply(
+            partial_rhs_value_comparison_visitor2<T, Comparator>{rhs},
+            v[0].v));
+  }
+
+  bool operator()(const Impulse& lhs, const Tuple& v) const
+  {
+    return Comparator{}(v, lhs);
+  }
+  bool operator()(const Tuple& lhs, const Impulse& v) const
+  {
+    return Comparator{}(v, lhs);
+  }
+
+  bool operator()(const Tuple& lhs, const Tuple& rhs) const
+  {
+    if (lhs.size() != rhs.size())
+      return false;
+
+    bool result = true;
+    auto tit = rhs.begin();
+    for (const auto& val : lhs)
+    {
+      if(val.valid() && tit->valid())
+      {
+        result &= eggs::variants::apply(*this, val.v, tit->v);
+      }
+      else // TODO handle case where !val && !tit
+      {
+        result = false;
+        break;
+      }
+      if (!result)
+        break;
+      tit++;
+    }
+
+    return result;
+  }
+
+
+  template<std::size_t N>
+  bool operator()(const Tuple& lhs, const Vec<float, N>& v) const
+  {
+    // TODO
+    return false;
+  }
+
+  template<std::size_t N>
+  bool operator()(const Vec<float, N>& v, const Tuple& rhs) const
+  {
+    // TODO
+    return false;
+  }
+
+  template<typename T, std::size_t N>
+  bool operator()(const T& lhs, const Vec<float, N>& v) const
+  {
+    return false;
+  }
+
+  template<typename T, std::size_t N>
+  bool operator()(const Vec<float, N>& v, const T& rhs) const
+  {
+    return false;
+  }
+
+  template<std::size_t N>
+  bool operator()(const Vec<float, N>& lhs, const Vec<float, N>& rhs) const
+  {
+    bool b = true;
+    for(std::size_t i = 0; i < N; i++)
+      b &= Comparator{}(lhs[i], rhs[i]);
+    return b;
+  }
+
+  template<std::size_t N, std::size_t M>
+  bool operator()(const Vec<float, N>& lhs, const Vec<float, M>& rhs) const
+  {
+    return false;
+  }
+
+};
+
+  template<typename Value, typename Comparator> template<typename T>
+  bool partial_lhs_value_comparison_visitor2<Value, Comparator>::operator()(const T& rhs)
+  {
+    return value_comparison_visitor2<Comparator>{}(lhs, rhs);
+  }
+
+  template<typename Value, typename Comparator> template<typename T>
+  bool partial_rhs_value_comparison_visitor2<Value, Comparator>::operator()(const T& lhs)
+  {
+    return value_comparison_visitor2<Comparator>{}(lhs, rhs);
+  }
+
+bool operator==(const value& lhs, const value& rhs)
+{
+  if(lhs.v && rhs.v)
   {
     return eggs::variants::apply(
-          value_comparison_visitor<std::equal_to<>>{rhs}, v);
+          value_comparison_visitor2<std::equal_to<>>{}, lhs.v, rhs.v);
   }
-  else if(!v && !rhs.v)
+  else if(!lhs.v && !rhs.v)
   {
     return true;
   }
   return false;
 }
 
-bool value::operator!=(const value& rhs) const
+bool operator!=(const value& lhs, const value& rhs)
 {
-  if(v && rhs.v)
+  if(lhs.v && rhs.v)
   {
-    return eggs::variants::apply(
-        value_comparison_visitor<std::not_equal_to<>>{rhs}, v);
+    return !eggs::variants::apply(
+        value_comparison_visitor2<std::equal_to<>>{}, lhs.v, rhs.v);
   }
-  else if(!v && !rhs.v)
+  else if(!lhs.v && !rhs.v)
   {
     return false;
   }
   return true;
 }
 
-bool value::operator>(const value& rhs) const
+bool operator>(const value& lhs, const value& rhs)
 {
-  if(v && rhs.v)
+  if(lhs.v && rhs.v)
   {
     return eggs::variants::apply(
-          value_comparison_visitor<std::greater<>>{rhs}, v);
+          value_comparison_visitor2<std::greater<>>{}, lhs.v, rhs.v);
   }
   else
   {
@@ -415,14 +670,14 @@ bool value::operator>(const value& rhs) const
   }
 }
 
-bool value::operator>=(const value& rhs) const
+bool operator>=(const value& lhs, const value& rhs)
 {
-  if(v && rhs.v)
+  if(lhs.v && rhs.v)
   {
     return eggs::variants::apply(
-          value_comparison_visitor<std::greater_equal<>>{rhs}, v);
+          value_comparison_visitor2<std::greater_equal<>>{}, lhs.v, rhs.v);
   }
-  else if(!v && !rhs.v)
+  else if(!lhs.v && !rhs.v)
   {
     return true;
   }
@@ -432,11 +687,11 @@ bool value::operator>=(const value& rhs) const
   }
 }
 
-bool value::operator<(const value& rhs) const
+bool operator<(const value& lhs, const value& rhs)
 {
-  if(v && rhs.v)
+  if(lhs.v && rhs.v)
   {
-    return eggs::variants::apply(value_comparison_visitor<std::less<>>{rhs}, v);
+    return eggs::variants::apply(value_comparison_visitor2<std::less<>>{}, lhs.v, rhs.v);;
   }
   else
   {
@@ -444,14 +699,14 @@ bool value::operator<(const value& rhs) const
   }
 }
 
-bool value::operator<=(const value& rhs) const
+bool operator<=(const value& lhs, const value& rhs)
 {
-  if(v && rhs.v)
+  if(lhs.v && rhs.v)
   {
     return eggs::variants::apply(
-          value_comparison_visitor<std::less_equal<>>{rhs}, v);
+          value_comparison_visitor2<std::less_equal<>>{}, lhs.v, rhs.v);
   }
-  else if(!v && !rhs.v)
+  else if(!lhs.v && !rhs.v)
   {
     return true;
   }
@@ -561,23 +816,38 @@ ossia::value get_value_at_index(
   return val.apply(detail::destination_index_retriever{idx, idx.cbegin()});
 }
 
+namespace detail
+{
+struct is_numeric_helper
+{
+  template<typename T>
+  bool operator()(const T&)
+  {
+    return ossia::value_trait<T>::is_numeric;
+  }
+};
+
+struct is_array_helper
+{
+  template<typename T>
+  bool operator()(const T&)
+  {
+    return ossia::value_trait<T>::is_array;
+  }
+};
+}
+
 bool is_numeric(const ossia::value& val)
 {
   if(val.valid())
-    return eggs::variants::apply(
-          [] (auto& v) {
-      return ossia::value_trait<std::remove_const_t<std::remove_reference_t<decltype(v)>>>::is_numeric;
-    }, val.v);
+    return eggs::variants::apply(detail::is_numeric_helper{}, val.v);
   return false;
 }
 
 bool is_array(const ossia::value& val)
 {
   if(val.valid())
-    return eggs::variants::apply(
-          [] (auto& v) {
-      return ossia::value_trait<std::remove_const_t<std::remove_reference_t<decltype(v)>>>::is_array;
-    }, val.v);
+    return eggs::variants::apply(detail::is_array_helper{}, val.v);
   return false;
 }
 

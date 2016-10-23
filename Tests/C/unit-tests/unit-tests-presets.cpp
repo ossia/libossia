@@ -29,11 +29,11 @@ TEST_CASE ("JSON array") {
         auto i3 = p.find("/a.1.0")->second.get<ossia::Int>();
         auto i4 = p.find("/a.1.1")->second.get<ossia::Int>();
         auto i5 = p.find("/a.1.2")->second.get<ossia::Int>();
-        REQUIRE(i1.value == 3);
-        REQUIRE(i2.value == -6);
-        REQUIRE(i3.value == 9);
-        REQUIRE(i4.value == 2);
-        REQUIRE(i5.value == 11);
+        REQUIRE(i1 == 3);
+        REQUIRE(i2 == -6);
+        REQUIRE(i3 == 9);
+        REQUIRE(i4 == 2);
+        REQUIRE(i5 == 11);
     }
 
     SECTION ("Empty array") {
@@ -54,10 +54,10 @@ TEST_CASE ("Parsing nested objects") {
     auto ace = p.find("/a/c/e")->second.get<ossia::Int>();
     auto bf1 = p.find("/b/f1")->second.get<ossia::Bool>();
     auto bf2f3 = p.find("/b/f2/f3")->second.get<ossia::Bool>();
-    REQUIRE(acd.value == 13);
-    REQUIRE(ace.value == 5);
-    REQUIRE(bf1.value == true);
-    REQUIRE(bf2f3.value == false);
+    REQUIRE(acd == 13);
+    REQUIRE(ace == 5);
+    REQUIRE(bf1 == true);
+    REQUIRE(bf2f3 == false);
 }
 
 TEST_CASE ("Empty object") {
@@ -160,12 +160,12 @@ TEST_CASE ("Building JSON array") {
         REQUIRE(d["a"][1].IsArray());
         REQUIRE(d["a"][1].Size() == 2);
 
-        REQUIRE(d["a"][0][0][0].GetInt() == i1.value);
-        REQUIRE(d["a"][0][1][0].GetInt() == i2.value);
-        REQUIRE(d["a"][0][1][1].GetInt() == i3.value);
-        REQUIRE(d["a"][0][1][2].GetInt() == i4.value);
-        REQUIRE(d["a"][1][0].GetInt() == i5.value);
-        REQUIRE(d["a"][1][1].GetInt() == i6.value);
+        REQUIRE(d["a"][0][0][0].GetInt() == i1);
+        REQUIRE(d["a"][0][1][0].GetInt() == i2);
+        REQUIRE(d["a"][0][1][1].GetInt() == i3);
+        REQUIRE(d["a"][0][1][2].GetInt() == i4);
+        REQUIRE(d["a"][1][0].GetInt() == i5);
+        REQUIRE(d["a"][1][1].GetInt() == i6);
     }
 }
 
@@ -191,21 +191,21 @@ TEST_CASE ("Building object"){
     REQUIRE(d.MemberCount() == 2);
     REQUIRE(d.HasMember("a"));
     REQUIRE(d["a"].IsInt());
-    REQUIRE(d["a"].GetInt() == i1.value);
+    REQUIRE(d["a"].GetInt() == i1);
     REQUIRE(d.HasMember("b"));
     REQUIRE(d["b"].IsObject());
     REQUIRE(d["b"].MemberCount() == 3);
     REQUIRE(d["b"].HasMember("c"));
     REQUIRE(d["b"]["c"].IsInt());
-    REQUIRE(d["b"]["c"].GetInt() == i2.value);
+    REQUIRE(d["b"]["c"].GetInt() == i2);
     REQUIRE(d["b"].HasMember("d"));
     REQUIRE(d["b"]["d"].IsInt());
-    REQUIRE(d["b"]["d"].GetInt() == i3.value);
+    REQUIRE(d["b"]["d"].GetInt() == i3);
     REQUIRE(d["b"].HasMember("e"));
     REQUIRE(d["b"]["e"].IsObject());
     REQUIRE(d["b"]["e"].MemberCount() == 1);
     REQUIRE(d["b"]["e"].HasMember("f"));
-    REQUIRE(d["b"]["e"]["f"].GetInt() == i4.value);
+    REQUIRE(d["b"]["e"]["f"].GetInt() == i4);
 }
 
 TEST_CASE ("Nested arrays and objects") {
@@ -238,9 +238,9 @@ TEST_CASE ("Nested arrays and objects") {
     REQUIRE(d["a"][0]["b"]["c"].IsArray());
     REQUIRE(d["a"][0]["b"]["c"].Size() == 2);
     REQUIRE(d["a"][0]["b"]["c"][0].IsInt());
-    REQUIRE(d["a"][0]["b"]["c"][0].GetInt() == i1.value);
+    REQUIRE(d["a"][0]["b"]["c"][0].GetInt() == i1);
     REQUIRE(d["a"][0]["b"]["c"][1].IsInt());
-    REQUIRE(d["a"][0]["b"]["c"][1].GetInt() == i2.value);
+    REQUIRE(d["a"][0]["b"]["c"][1].GetInt() == i2);
     REQUIRE(d["a"][1].IsObject());
     REQUIRE(d["a"][1].HasMember("b"));
     REQUIRE(d["a"][1]["b"].IsArray());
@@ -248,10 +248,10 @@ TEST_CASE ("Nested arrays and objects") {
     REQUIRE(d["a"][1]["b"][0].IsObject());
     REQUIRE(d["a"][1]["b"][0].HasMember("c"));
     REQUIRE(d["a"][1]["b"][0]["c"].IsInt());
-    REQUIRE(d["a"][1]["b"][0]["c"].GetInt() == i3.value);
+    REQUIRE(d["a"][1]["b"][0]["c"].GetInt() == i3);
     REQUIRE(d["a"][1]["b"][0].HasMember("d"));
     REQUIRE(d["a"][1]["b"][0]["d"].IsInt());
-    REQUIRE(d["a"][1]["b"][0]["d"].GetInt() == i4.value);
+    REQUIRE(d["a"][1]["b"][0]["d"].GetInt() == i4);
 }
 
 TEST_CASE ("Types conversion") {

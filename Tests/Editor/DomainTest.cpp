@@ -275,8 +275,8 @@ private Q_SLOTS:
     QVERIFY(*dom.min  == 1);
     QVERIFY(*dom.max  == 24);
 
-    doms = {1, 10, 24};
-    QVERIFY(doms.size() == 3);
+    dom.values = {1, 10, 24};
+    QVERIFY(dom.values.size() == 3);
 
     auto copy = dom;
     QCOMPARE(copy, dom);

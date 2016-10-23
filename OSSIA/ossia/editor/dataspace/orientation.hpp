@@ -79,9 +79,9 @@ struct euler_u :
     const auto w = self.dataspace_value[3];
 
     return {
-          rad_to_deg * std::atan2(-2. * (z*w - x*y), w*w - x*x + y*y - z*z),
-          rad_to_deg * std::asin(2. * (w*x + y*z)),
-          rad_to_deg * std::atan2(2. * (w*y + x*z), w*w - x*x - y*y + z*z)
+          (float)(rad_to_deg * std::atan2(-2. * (z*w - x*y), w*w - x*x + y*y - z*z)),
+          (float)(rad_to_deg * std::asin(2. * (w*x + y*z))),
+          (float)(rad_to_deg * std::atan2(2. * (w*y + x*z), w*w - x*x - y*y + z*z))
         };
   }
 };
@@ -136,10 +136,10 @@ struct axis_u :
             : 1.0 / sin_a;
 
     return {
-     x * sin_a2,
-     y * sin_a2,
-     z * sin_a2,
-     rad_to_deg * 2.0 * std::atan2(sin_a, w)
+     (float)(x * sin_a2),
+     (float)(y * sin_a2),
+     (float)(z * sin_a2),
+     (float)(rad_to_deg * 2.0 * std::atan2(sin_a, w))
     };
   }
 };

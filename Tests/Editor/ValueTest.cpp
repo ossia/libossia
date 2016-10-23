@@ -32,7 +32,7 @@ private Q_SLOTS:
     QVERIFY(p1 == Int());
     QVERIFY(p1 == Float());
     QVERIFY(p1 == Char());
-    QVERIFY(p1 == String());
+    QVERIFY(p1 == value::make<String>());
     QVERIFY(p1 == Tuple());
     //! \todo == comparison with generic
     //! \todo == comparison with destination
@@ -42,7 +42,7 @@ private Q_SLOTS:
     QVERIFY(!(p1 != Int()));
     QVERIFY(!(p1 != Float()));
     QVERIFY(!(p1 != Char()));
-    QVERIFY(!(p1 != String()));
+    QVERIFY(!(p1 != value::make<String>()));
     QVERIFY(!(p1 != Tuple()));
     //! \todo != comparison with generic
     //! \todo != comparison with destination
@@ -52,7 +52,7 @@ private Q_SLOTS:
     QVERIFY(!(p1 > Int()));
     QVERIFY(!(p1 > Float()));
     QVERIFY(!(p1 > Char()));
-    QVERIFY(!(p1 > String()));
+    QVERIFY(!(p1 > value::make<String>()));
     QVERIFY(!(p1 > Tuple()));
     //! \todo > comparison with generic
     //! \todo > comparison with destination
@@ -62,7 +62,7 @@ private Q_SLOTS:
     QVERIFY(p1 >= Int());
     QVERIFY(p1 >= Float());
     QVERIFY(p1 >= Char());
-    QVERIFY(p1 >= String());
+    QVERIFY(p1 >= value::make<String>());
     QVERIFY(p1 >= Tuple());
     //! \todo >= comparison with generic
     //! \todo >= comparison with destination
@@ -72,7 +72,7 @@ private Q_SLOTS:
     QVERIFY(!(p1 < Int()));
     QVERIFY(!(p1 < Float()));
     QVERIFY(!(p1 < Char()));
-    QVERIFY(!(p1 < String()));
+    QVERIFY(!(p1 < value::make<String>()));
     QVERIFY(!(p1 < Tuple()));
     //! \todo < comparison with generic
     //! \todo < comparison with destination
@@ -82,7 +82,7 @@ private Q_SLOTS:
     QVERIFY(p1 <= Int());
     QVERIFY(p1 <= Float());
     QVERIFY(p1 <= Char());
-    QVERIFY(p1 <= String());
+    QVERIFY(p1 <= value::make<String>());
     QVERIFY(p1 <= Tuple());
     //! \todo <= comparison with generic
     //! \todo <= comparison with destination
@@ -104,8 +104,8 @@ private Q_SLOTS:
     QVERIFY(b1 == Int(1));
     QVERIFY(b1 == Float(1));
     QVERIFY(b1 == Char(0x01));
-    QVERIFY(!(b1 == String()));
-    QVERIFY(b1 == Tuple(Int(1)));
+    QVERIFY(!(b1 == value::make<String>()));
+    QVERIFY(b1 == Tuple{Int(1)});
     //! \todo == comparison with generic
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
@@ -114,8 +114,8 @@ private Q_SLOTS:
     QVERIFY(b1 != Int());
     QVERIFY(b1 != Float());
     QVERIFY(b1 != Char(0x00));
-    QVERIFY(b1 != String());
-    QVERIFY(b1 != Tuple(Int(0)));
+    QVERIFY(b1 != value::make<String>());
+    QVERIFY(b1 != Tuple{Int(0)});
     //! \todo != comparison with generic
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
@@ -124,8 +124,8 @@ private Q_SLOTS:
     QVERIFY(b1 > Int(0));
     QVERIFY(!(b1 > Float(2)));
     QVERIFY(b1 > Char(0x00));
-    QVERIFY(!(b1 > String()));
-    QVERIFY(!(b1 > Tuple({Int(0), Int(0)})));
+    QVERIFY(!(b1 > value::make<String>()));
+    QVERIFY(!(b1 > Tuple{Int(0), Int(0)}));
     //! \todo > comparison with generic
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
@@ -134,7 +134,7 @@ private Q_SLOTS:
     QVERIFY(!(b1 >= Int(2)));
     QVERIFY(b1 >= Float(1));
     QVERIFY(!(b1 >= Char(0x03)));
-    QVERIFY(!(b1 >= String()));
+    QVERIFY(!(b1 >= value::make<String>()));
     QVERIFY(!(b1 >= Tuple()));
     //! \todo >= comparison with generic
     //! \todo >= comparison with destination
@@ -144,8 +144,8 @@ private Q_SLOTS:
     QVERIFY(b1 < Int(2));
     QVERIFY(!(b1 < Float(1)));
     QVERIFY(!(b1 < Char()));
-    QVERIFY(!(b1 < String()));
-    QVERIFY(b1 < Tuple(Float(3)));
+    QVERIFY(!(b1 < value::make<String>()));
+    QVERIFY(b1 < Tuple{Float(3)});
     //! \todo < comparison with generic
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
@@ -154,7 +154,7 @@ private Q_SLOTS:
     QVERIFY(!(b1 <= Int()));
     QVERIFY(b1 <= Float(1));
     QVERIFY(b1 <= Char(0x32));
-    QVERIFY(!(b1 <= String()));
+    QVERIFY(!(b1 <= value::make<String>()));
     QVERIFY(!(b1 <= Tuple()));
     //! \todo <= comparison with generic
     //! \todo <= comparison with destination
@@ -177,8 +177,8 @@ private Q_SLOTS:
     QVERIFY(!(i1 == Bool(true)));
     QVERIFY(!(i1 == Float(1)));
     QVERIFY(i1 == Char(0x05));
-    QVERIFY(!(i1 == String()));
-    QVERIFY(i1 == Tuple(Int(5)));
+    QVERIFY(!(i1 == value::make<String>()));
+    QVERIFY(i1 == Tuple{Int(5)});
     //! \todo == comparison with generic
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
@@ -187,8 +187,8 @@ private Q_SLOTS:
     QVERIFY(i1 != Bool());
     QVERIFY(i1 != Float());
     QVERIFY(i1 != Char(0x00));
-    QVERIFY(i1 != String());
-    QVERIFY(i1 != Tuple(Int(0)));
+    QVERIFY(i1 != value::make<String>());
+    QVERIFY(i1 != Tuple{Int(0)});
     //! \todo != comparison with generic
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
@@ -197,8 +197,8 @@ private Q_SLOTS:
     QVERIFY(i1 > Bool(false));
     QVERIFY(i1 > Float(2));
     QVERIFY(i1 > Char(0x00));
-    QVERIFY(!(i1 > String()));
-    QVERIFY(!(i1 > Tuple({Int(0), Int(0)})));
+    QVERIFY(!(i1 > value::make<String>()));
+    QVERIFY(!(i1 > Tuple{Int(0), Int(0)}));
     //! \todo > comparison with generic
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
@@ -207,7 +207,7 @@ private Q_SLOTS:
     QVERIFY(i1 >= Bool(true));
     QVERIFY(i1 >= Float(1));
     QVERIFY(i1 >= Char(0x03));
-    QVERIFY(!(i1 >= String()));
+    QVERIFY(!(i1 >= value::make<String>()));
     QVERIFY(!(i1 >= Tuple()));
     //! \todo >= comparison with generic
     //! \todo >= comparison with destination
@@ -217,8 +217,8 @@ private Q_SLOTS:
     QVERIFY(!(i1 < Bool(true)));
     QVERIFY(!(i1 < Float(1)));
     QVERIFY(!(i1 < Char()));
-    QVERIFY(!(i1 < String()));
-    QVERIFY(!(i1 < Tuple(Float(3))));
+    QVERIFY(!(i1 < value::make<String>()));
+    QVERIFY(!(i1 < Tuple{Float(3)}));
     //! \todo < comparison with generic
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
@@ -227,7 +227,7 @@ private Q_SLOTS:
     QVERIFY(!(i1 <= Bool()));
     QVERIFY(!(i1 <= Float(1)));
     QVERIFY(i1 <= Char(0x32));
-    QVERIFY(!(i1 <= String()));
+    QVERIFY(!(i1 <= value::make<String>()));
     QVERIFY(!(i1 <= Tuple()));
     //! \todo <= comparison with generic
     //! \todo <= comparison with destination
@@ -250,8 +250,8 @@ private Q_SLOTS:
     QVERIFY(!(f1 == Bool(true)));
     QVERIFY(!(f1 == Int(1)));
     QVERIFY(f1 == Char(0x05));
-    QVERIFY(!(f1 == String()));
-    QVERIFY(f1 == Tuple(Int(5)));
+    QVERIFY(!(f1 == value::make<String>()));
+    QVERIFY(f1 == Tuple{Int(5)});
     //! \todo == comparison with generic
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
@@ -260,8 +260,8 @@ private Q_SLOTS:
     QVERIFY(f1 != Bool());
     QVERIFY(f1 != Int());
     QVERIFY(f1 != Char(0x00));
-    QVERIFY(f1 != String());
-    QVERIFY(f1 != Tuple(Int(0)));
+    QVERIFY(f1 != value::make<String>());
+    QVERIFY(f1 != Tuple{Int(0)});
     //! \todo != comparison with generic
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
@@ -270,8 +270,8 @@ private Q_SLOTS:
     QVERIFY(f1 > Bool(false));
     QVERIFY(f1 > Int(2));
     QVERIFY(f1 > Char(0x00));
-    QVERIFY(!(f1 > String()));
-    QVERIFY(!(f1 > Tuple({Int(0), Int(0)})));
+    QVERIFY(!(f1 > value::make<String>()));
+    QVERIFY(!(f1 > Tuple{Int(0), Int(0)}));
     //! \todo > comparison with generic
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
@@ -280,7 +280,7 @@ private Q_SLOTS:
     QVERIFY(f1 >= Bool(true));
     QVERIFY(f1 >= Int(1));
     QVERIFY(f1 >= Char(0x03));
-    QVERIFY(!(f1 >= String()));
+    QVERIFY(!(f1 >= value::make<String>()));
     QVERIFY(!(f1 >= Tuple()));
     //! \todo >= comparison with generic
     //! \todo >= comparison with destination
@@ -290,8 +290,8 @@ private Q_SLOTS:
     QVERIFY(!(f1 < Bool(true)));
     QVERIFY(!(f1 < Int(1)));
     QVERIFY(!(f1 < Char()));
-    QVERIFY(!(f1 < String()));
-    QVERIFY(!(f1 < Tuple(Float(3))));
+    QVERIFY(!(f1 < value::make<String>()));
+    QVERIFY(!(f1 < Tuple{Float{3}}));
     //! \todo < comparison with generic
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
@@ -300,7 +300,7 @@ private Q_SLOTS:
     QVERIFY(!(f1 <= Bool()));
     QVERIFY(!(f1 <= Int(1)));
     QVERIFY(f1 <= Char(0x32));
-    QVERIFY(!(f1 <= String()));
+    QVERIFY(!(f1 <= value::make<String>()));
     QVERIFY(!(f1 <= Tuple()));
     //! \todo <= comparison with generic
     //! \todo <= comparison with destination
@@ -323,8 +323,8 @@ private Q_SLOTS:
     QVERIFY(!(c1 == Bool(true)));
     QVERIFY(!(c1 == Int(1)));
     QVERIFY(c1 == Char(0x05));
-    QVERIFY(!(c1 == String()));
-    QVERIFY(c1 == Tuple(Int(5)));
+    QVERIFY(!(c1 == value::make<String>()));
+    QVERIFY(c1 == Tuple{Int{5}});
     //! \todo == comparison with generic
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
@@ -333,8 +333,8 @@ private Q_SLOTS:
     QVERIFY(c1 != Bool());
     QVERIFY(c1 != Int());
     QVERIFY(c1 != Char(0x00));
-    QVERIFY(c1 != String());
-    QVERIFY(c1 != Tuple(Int(0)));
+    QVERIFY(c1 != value::make<String>());
+    QVERIFY(c1 != Tuple{Int{0}});
     //! \todo != comparison with generic
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
@@ -343,7 +343,7 @@ private Q_SLOTS:
     QVERIFY(c1 > Bool(false));
     QVERIFY(c1 > Int(2));
     QVERIFY(c1 > Char(0x00));
-    QVERIFY(!(c1 > String()));
+    QVERIFY(!(c1 > value::make<String>()));
     QVERIFY(!(c1 > Tuple({Int(0), Int(0)})));
     //! \todo > comparison with generic
     //! \todo > comparison with destination
@@ -353,7 +353,7 @@ private Q_SLOTS:
     QVERIFY(c1 >= Bool(true));
     QVERIFY(c1 >= Int(1));
     QVERIFY(c1 >= Char(0x03));
-    QVERIFY(!(c1 >= String()));
+    QVERIFY(!(c1 >= value::make<String>()));
     QVERIFY(!(c1 >= Tuple()));
     //! \todo >= comparison with generic
     //! \todo >= comparison with destination
@@ -363,8 +363,8 @@ private Q_SLOTS:
     QVERIFY(!(c1 < Bool(true)));
     QVERIFY(!(c1 < Int(1)));
     QVERIFY(!(c1 < Char()));
-    QVERIFY(!(c1 < String()));
-    QVERIFY(!(c1 < Tuple(Float(3))));
+    QVERIFY(!(c1 < value::make<String>()));
+    QVERIFY(!(c1 < Tuple{Float{3}}));
     //! \todo < comparison with generic
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
@@ -373,7 +373,7 @@ private Q_SLOTS:
     QVERIFY(!(c1 <= Bool()));
     QVERIFY(!(c1 <= Int(1)));
     QVERIFY(c1 <= Char(0x32));
-    QVERIFY(!(c1 <= String()));
+    QVERIFY(!(c1 <= value::make<String>()));
     QVERIFY(!(c1 <= Tuple()));
     //! \todo <= comparison with generic
     //! \todo <= comparison with destination
@@ -381,10 +381,10 @@ private Q_SLOTS:
   }
 
   /*! test string */
-  void test_string()
+  void test_value_string()
   {
-    String s1("qsd");
-    String s2 = s1;
+    auto s1 = value::make<String>("qsd");
+    auto s2 = s1;
 
     QVERIFY(s1 == s2);
     QVERIFY(!(s1 != s2));
@@ -398,7 +398,7 @@ private Q_SLOTS:
     QVERIFY(!(s1 == Int(1)));
     QVERIFY(!(s1 == Float(0)));
     QVERIFY(!(s1 == Char(0x05)));
-    QVERIFY(!(s1 == Tuple(Int(5))));
+    QVERIFY(!(s1 == Tuple{Int{5}}));
     //! \todo == comparison with generic
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
@@ -408,7 +408,7 @@ private Q_SLOTS:
     QVERIFY(s1 != Int());
     QVERIFY(s1 != Float(1));
     QVERIFY(s1 != Char(0x00));
-    QVERIFY(!(s1 != Tuple(String("qsd"))));
+    QVERIFY(!(s1 != Tuple{String("qsd")}));
     //! \todo != comparison with generic
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
@@ -418,7 +418,7 @@ private Q_SLOTS:
     QVERIFY(!(s1 > Int(2)));
     QVERIFY(!(s1 > Float(0.1)));
     QVERIFY(!(s1 > Char(0x00)));
-    QVERIFY(!(s1 > Tuple({Int(0), Int(0)})));
+    QVERIFY(!(s1 > Tuple{Int(0), Int(0)}));
     //! \todo > comparison with generic
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
@@ -438,7 +438,8 @@ private Q_SLOTS:
     QVERIFY(!(s1 < Int(1)));
     QVERIFY(!(s1 < Float(3)));
     QVERIFY(!(s1 < Char()));
-    QVERIFY(s1 < Tuple(String("wxc")));
+
+    QVERIFY(s1 < Tuple{String("wxc")});
     //! \todo < comparison with generic
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
@@ -479,7 +480,7 @@ private Q_SLOTS:
     QVERIFY(!(t1 == Int(1)));
     QVERIFY(!(t1 == Float(5)));
     QVERIFY(!(t1 == Char(0x05)));
-    QVERIFY(!(t1 == String()));
+    QVERIFY(!(t1 == value::make<String>()));
     //! \todo == comparison with generic
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
@@ -489,7 +490,7 @@ private Q_SLOTS:
     QVERIFY(t1 != Int());
     QVERIFY(t1 != Float(5));
     QVERIFY(t1 != Char(0x00));
-    QVERIFY(t1 != String());
+    QVERIFY(t1 != value::make<String>());
     //! \todo != comparison with generic
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
@@ -529,7 +530,7 @@ private Q_SLOTS:
     QVERIFY(!(t1 <= Int(1)));
     QVERIFY(!(t1 <= Float()));
     QVERIFY(!(t1 <= Char(0x32)));
-    QVERIFY(!(t1 <= String()));
+    QVERIFY(!(t1 <= value::make<String>()));
     //! \todo <= comparison with generic
     //! \todo <= comparison with destination
     //! \todo <= comparison with behavior

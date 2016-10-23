@@ -6,7 +6,7 @@
 
 namespace ossia
 {
-/*
+
 namespace comparisons
 {
 struct Impulse_T
@@ -362,7 +362,7 @@ struct VecValue
   }
 };
 }
-
+/*
 template <typename T, std::size_t N>
 OSSIA_EXPORT bool Vec<T, N>::operator==(const ossia::value& v) const
 {
@@ -395,6 +395,5 @@ OSSIA_EXPORT bool Vec<T, N>::operator<=(const ossia::value& v) const
 {
   return comparisons::VecValue::apply(*this, v, std::less_equal<>{});
 }
-
 */
 }

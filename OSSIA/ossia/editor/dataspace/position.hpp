@@ -73,9 +73,9 @@ struct spherical_u :
     const auto temp = std::cos(e) * d;
 
     return strong_value<neutral_unit>{
-      std::sin(a) * temp,
-      std::cos(a) * temp,
-      std::sin(e) * d
+      (float)(std::sin(a) * temp),
+      (float)(std::cos(a) * temp),
+      (float)(std::sin(e) * d)
     };
   }
 
@@ -88,9 +88,9 @@ struct spherical_u :
     const auto temp = std::pow(x, 2.) + std::pow(y, 2.);
 
     return {
-          std::atan2(x, y) * rad_to_deg,
-          std::atan2(z, std::sqrt(temp)) * rad_to_deg,
-          std::sqrt(temp + std::pow(z, 2.))
+          (float)(std::atan2(x, y) * rad_to_deg),
+          (float)(std::atan2(z, std::sqrt(temp)) * rad_to_deg),
+          (float)(std::sqrt(temp + std::pow(z, 2.)))
         };
   }
 };
@@ -110,8 +110,8 @@ struct polar_u :
     const auto d = self.dataspace_value[1];
 
     return {
-          std::sin(a) * d,
-          std::cos(a) * d,
+          (float)(std::sin(a) * d),
+          (float)(std::cos(a) * d),
           0.
         };
   }
@@ -122,8 +122,8 @@ struct polar_u :
     const auto y = self.dataspace_value[1];
 
     return {
-          std::atan2(x, y) * rad_to_deg,
-          ossia::norm(x, y)
+          (float)(std::atan2(x, y) * rad_to_deg),
+          (float)(ossia::norm(x, y))
         };
   }
 };
@@ -162,8 +162,8 @@ struct cylindrical_u :
     const auto z = self.dataspace_value[2];
 
     return {
-      std::sin(a) * d,
-      std::cos(a) * d,
+      (float)(std::sin(a) * d),
+      (float)(std::cos(a) * d),
       z
     };
   }
@@ -175,8 +175,8 @@ struct cylindrical_u :
     const auto z = self.dataspace_value[2];
 
     return {
-          ossia::norm(x, y),
-          std::atan2(x, y) * rad_to_deg,
+          (float)(ossia::norm(x, y)),
+          (float)(std::atan2(x, y) * rad_to_deg),
           z
         };
   }

@@ -169,21 +169,21 @@ private Q_SLOTS:
         std::vector<value> value1 = {Float(0.1), Float(0.2), Float(0.3)};
         std::vector<value> value2 = {Float(0.2), Float(0.3), Float(0.4)};
 
-        auto testTupleExprA = make_expression_atom(Tuple(value1),
+        auto testTupleExprA = make_expression_atom(value1,
                                                      expression_atom::Comparator::GREATER_THAN,
-                                                     Tuple(value2));
+                                                   value2);
 
         QVERIFY(evaluate(testTupleExprA) == false);
 
-        auto testTupleExprB = make_expression_atom(Tuple(value1),
+        auto testTupleExprB = make_expression_atom(value1,
                                                      expression_atom::Comparator::LOWER_THAN,
-                                                     Tuple(value2));
+                                                   value2);
 
         QVERIFY(evaluate(testTupleExprB) == true);
 
-        auto testTupleExprC = make_expression_atom(Tuple(value1),
+        auto testTupleExprC = make_expression_atom(value1,
                                                      expression_atom::Comparator::EQUAL,
-                                                     Impulse());
+                                                   Impulse());
 
         QVERIFY(evaluate(testTupleExprC) == true);
 

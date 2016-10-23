@@ -260,12 +260,12 @@ public:
     return ossia::apply(std::forward<Visitor>(vis), v);
   }
 
-  bool operator==(const value& rhs) const;
-  bool operator!=(const value& rhs) const;
-  bool operator>(const value& rhs) const;
-  bool operator>=(const value& rhs) const;
-  bool operator<(const value& rhs) const;
-  bool operator<=(const value& rhs) const;
+  friend OSSIA_EXPORT bool operator==(const value& lhs, const value& rhs);
+  friend OSSIA_EXPORT bool operator!=(const value& lhs, const value& rhs);
+  friend OSSIA_EXPORT bool operator>(const value& lhs, const value& rhs);
+  friend OSSIA_EXPORT bool operator>=(const value& lhs, const value& rhs);
+  friend OSSIA_EXPORT bool operator<(const value& lhs, const value& rhs);
+  friend OSSIA_EXPORT bool operator<=(const value& lhs, const value& rhs);
 
   template<typename ostream_t>
   friend ostream_t& operator<<(ostream_t& os, const ossia::value& c)

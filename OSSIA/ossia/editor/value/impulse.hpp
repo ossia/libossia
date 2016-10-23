@@ -28,29 +28,95 @@ struct OSSIA_EXPORT Impulse
   OSSIA_DECL_RELAXED_CONSTEXPR Impulse& operator=(const Impulse&) = default;
   OSSIA_DECL_RELAXED_CONSTEXPR Impulse& operator=(Impulse&&) = default;
 
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(const value&) const
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(ossia::Impulse) const
   {
     return true;
   }
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(const value&) const
+
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(ossia::Impulse) const
   {
     return false;
   }
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(const value&) const
+
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(ossia::Impulse) const
   {
     return false;
   }
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(const value&) const
+
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(ossia::Impulse) const
   {
     return true;
   }
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(const value&) const
+
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(ossia::Impulse) const
   {
     return false;
   }
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(const value&) const
+
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(ossia::Impulse) const
   {
     return true;
   }
 };
+
+template<typename T>
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(const T&, ossia::Impulse)
+{
+  return true;
+}
+template<typename T>
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(const T&, ossia::Impulse)
+{
+  return false;
+}
+template<typename T>
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(const T&, ossia::Impulse)
+{
+  return false;
+}
+template<typename T>
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(const T&, ossia::Impulse)
+{
+  return true;
+}
+template<typename T>
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(const T&, ossia::Impulse)
+{
+  return false;
+}
+template<typename T>
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(const T&, ossia::Impulse)
+{
+  return true;
+}
+template<typename T>
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(ossia::Impulse, const T&)
+{
+  return true;
+}
+template<typename T>
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(ossia::Impulse, const T&)
+{
+  return false;
+}
+template<typename T>
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(ossia::Impulse, const T&)
+{
+  return false;
+}
+template<typename T>
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(ossia::Impulse, const T&)
+{
+  return true;
+}
+template<typename T>
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(ossia::Impulse, const T&)
+{
+  return false;
+}
+template<typename T>
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(ossia::Impulse, const T&)
+{
+  return true;
+}
 }
