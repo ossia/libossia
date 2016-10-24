@@ -18,6 +18,8 @@ case "$TRAVIS_OS_NAME" in
   osx)
     # work around a homebrew bug
     set +e
+    brew remove boost
+    brew cleanup
 
     brew install wget gnu-tar
     ARCHIVE=homebrew-cache.tar.xz
