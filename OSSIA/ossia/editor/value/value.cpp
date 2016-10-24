@@ -345,7 +345,11 @@ std::string to_pretty_string(const destination_index& index)
 
 std::string to_pretty_string(const Destination& d)
 {
-  return ossia::net::address_string_from_node(d.value.get()) + to_pretty_string(d.index);
+  using namespace std::literals;
+  return
+      ossia::net::address_string_from_node(d.value.get()) +
+      to_pretty_string(d.index)
+      + (d.unit ? ("["s + ossia::get_pretty_unit_text(d.unit) + "]"s) : ":"s);
 }
 
 template <typename Comparator>

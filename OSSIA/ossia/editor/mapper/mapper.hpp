@@ -53,7 +53,7 @@ private:
 
   static ossia::value computeValue(const ossia::value&, const ossia::behavior&);
 
-  void driverValueCallback(const ossia::value& value);
+  void driverValueCallback(ossia::value value);
 
   ossia::Destination mDriverAddress;
   ossia::Destination mDrivenAddress;

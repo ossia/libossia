@@ -244,8 +244,18 @@ ossia::state time_constraint::state_impl()
 void time_constraint::ClockCallback(
     time_value position, time_value date, unsigned char droppedTicks)
 {
-  if (mCallback)
-    (mCallback)(position, date, state_impl());
+  try
+  {
+    if (mCallback)
+      (mCallback)(position, date, state_impl());
+  }
+  catch(std::exception& e)
+  {
+    // TODO log
+    std::cerr << "time_constraint::ClockCallback catched : "
+              << e.what()
+              << std::endl;
+  }
 }
 
 }
