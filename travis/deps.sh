@@ -20,7 +20,7 @@ case "$TRAVIS_OS_NAME" in
     set +e
 
     brew install wget gnu-tar
-    wget https://github.com/OSSIA/iscore-sdk/releases/download/6.0-osx/homebrew-cache.tar.gz -O homebrew-cache.tar.gz
+    wget https://github.com/OSSIA/iscore-sdk/releases/download/6.0-osx/homebrew-cache.tar.xz -O homebrew-cache.tar.xz
     gtar xhzf homebrew-cache.tar.gz --directory /usr/local/Cellar
     brew link --force boost cmake ninja qt5 wget
 
