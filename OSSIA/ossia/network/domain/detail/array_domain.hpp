@@ -26,67 +26,140 @@ struct tuple_clamp
       {
         const Tuple& min = domain.min.get();
         const Tuple& max = domain.max.get();
-
-        if(N != min.size() || N != max.size())
-          return {};
-
-        ossia::Tuple res;
-        res.resize(N);
-        switch (b)
+        if(min.size() == 1 && max.size() == 1)
         {
-          case bounding_mode::CLIP:
-            for(std::size_t i = 0; i < N; i++) res[i] = ossia::clamp(val[i], min[i], max[i]);
-            break;
-          case bounding_mode::WRAP:
-            for(std::size_t i = 0; i < N; i++) res[i] = ossia::wrap(val[i], min[i], max[i]);
-            break;
-          case bounding_mode::FOLD:
-            for(std::size_t i = 0; i < N; i++) res[i] = ossia::fold(val[i], min[i], max[i]);
-            break;
-          case bounding_mode::LOW:
-            for(std::size_t i = 0; i < N; i++) res[i] = ossia::clamp_min(val[i], min[i]);
-            break;
-          case bounding_mode::HIGH:
-            for(std::size_t i = 0; i < N; i++) res[i] = ossia::clamp_max(val[i], max[i]);
-            break;
-          default:
-            break;
+          ossia::Tuple res;
+          res.resize(N);
+
+          const auto min_v = min[0];
+          const auto max_v = max[0];
+
+          switch (b)
+          {
+            case bounding_mode::CLIP:
+              for(std::size_t i = 0; i < N; i++) res[i] = ossia::clamp(val[i], min_v, max_v);
+              break;
+            case bounding_mode::WRAP:
+              for(std::size_t i = 0; i < N; i++) res[i] = ossia::wrap(val[i], min_v, max_v);
+              break;
+            case bounding_mode::FOLD:
+              for(std::size_t i = 0; i < N; i++) res[i] = ossia::fold(val[i], min_v, max_v);
+              break;
+            case bounding_mode::LOW:
+              for(std::size_t i = 0; i < N; i++) res[i] = ossia::clamp_min(val[i], min_v);
+              break;
+            case bounding_mode::HIGH:
+              for(std::size_t i = 0; i < N; i++) res[i] = ossia::clamp_max(val[i], max_v);
+              break;
+            default:
+              break;
+          }
+          return res;
         }
-        return res;
+        else if(N != min.size() || N != max.size())
+        {
+          return {};
+        }
+        else
+        {
+          ossia::Tuple res;
+          res.resize(N);
+          switch (b)
+          {
+            case bounding_mode::CLIP:
+              for(std::size_t i = 0; i < N; i++) res[i] = ossia::clamp(val[i], min[i], max[i]);
+              break;
+            case bounding_mode::WRAP:
+              for(std::size_t i = 0; i < N; i++) res[i] = ossia::wrap(val[i], min[i], max[i]);
+              break;
+            case bounding_mode::FOLD:
+              for(std::size_t i = 0; i < N; i++) res[i] = ossia::fold(val[i], min[i], max[i]);
+              break;
+            case bounding_mode::LOW:
+              for(std::size_t i = 0; i < N; i++) res[i] = ossia::clamp_min(val[i], min[i]);
+              break;
+            case bounding_mode::HIGH:
+              for(std::size_t i = 0; i < N; i++) res[i] = ossia::clamp_max(val[i], max[i]);
+              break;
+            default:
+              break;
+          }
+          return res;
+        }
       }
       else if (has_min)
       {
         const Tuple& min = domain.min.get();
-        if(N != min.size())
-          return {};
-        ossia::Tuple res;
-        res.resize(N);
-        switch(b)
+        if(min.size() == 1)
         {
-          case bounding_mode::CLIP:
-          case bounding_mode::LOW:
-            for(std::size_t i = 0; i < N; i++) res[i] = ossia::clamp_min(val[i], min[i]);
-          default:
-            break;
+          ossia::Tuple res;
+          res.resize(N);
+          const auto min_v = min[0];
+          switch(b)
+          {
+            case bounding_mode::CLIP:
+            case bounding_mode::LOW:
+              for(std::size_t i = 0; i < N; i++) res[i] = ossia::clamp_min(val[i], min_v);
+            default:
+              break;
+          }
+          return res;
         }
-        return res;
+        else if(N != min.size())
+        {
+          return {};
+        }
+        else
+        {
+          ossia::Tuple res;
+          res.resize(N);
+          switch(b)
+          {
+            case bounding_mode::CLIP:
+            case bounding_mode::LOW:
+              for(std::size_t i = 0; i < N; i++) res[i] = ossia::clamp_min(val[i], min[i]);
+            default:
+              break;
+          }
+          return res;
+        }
       }
       else if (has_max)
       {
         const Tuple& max = domain.max.get();
-        if(N != max.size())
-          return {};
-        ossia::Tuple res;
-        res.resize(N);
-        switch(b)
+        if(max.size() == 1)
         {
-          case bounding_mode::CLIP:
-          case bounding_mode::HIGH:
-            for(std::size_t i = 0; i < N; i++) res[i] = ossia::clamp_max(val[i], max[i]);
-          default:
-            break;
+          ossia::Tuple res;
+          res.resize(N);
+          const auto max_v = max[0];
+          switch(b)
+          {
+            case bounding_mode::CLIP:
+            case bounding_mode::HIGH:
+              for(std::size_t i = 0; i < N; i++) res[i] = ossia::clamp_max(val[i], max_v);
+            default:
+              break;
+          }
+          return res;
         }
-        return res;
+        else if(N != max.size())
+        {
+          return {};
+        }
+        else
+        {
+          ossia::Tuple res;
+          res.resize(N);
+          switch(b)
+          {
+            case bounding_mode::CLIP:
+            case bounding_mode::HIGH:
+              for(std::size_t i = 0; i < N; i++) res[i] = ossia::clamp_max(val[i], max[i]);
+            default:
+              break;
+          }
+          return res;
+        }
       }
 
       return val;
@@ -118,62 +191,129 @@ struct tuple_clamp
         const Tuple& min = domain.min.get();
         const Tuple& max = domain.max.get();
 
-        if(N != min.size() || N != max.size())
-          return {};
-
-        switch (b)
+        if(min.size() == 1 && max.size() == 1)
         {
-          case bounding_mode::CLIP:
-            for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp(val[i], min[i], max[i]);
-            break;
-          case bounding_mode::WRAP:
-            for(std::size_t i = 0; i < N; i++) val[i] = ossia::wrap(val[i], min[i], max[i]);
-            break;
-          case bounding_mode::FOLD:
-            for(std::size_t i = 0; i < N; i++) val[i] = ossia::fold(val[i], min[i], max[i]);
-            break;
-          case bounding_mode::LOW:
-            for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_min(val[i], min[i]);
-            break;
-          case bounding_mode::HIGH:
-            for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_max(val[i], max[i]);
-            break;
-          default:
-            break;
+          const auto min_v = min[0];
+          const auto max_v = max[0];
+
+          switch (b)
+          {
+            case bounding_mode::CLIP:
+              for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp(val[i], min_v, max_v);
+              break;
+            case bounding_mode::WRAP:
+              for(std::size_t i = 0; i < N; i++) val[i] = ossia::wrap(val[i], min_v, max_v);
+              break;
+            case bounding_mode::FOLD:
+              for(std::size_t i = 0; i < N; i++) val[i] = ossia::fold(val[i], min_v, max_v);
+              break;
+            case bounding_mode::LOW:
+              for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_min(val[i], min_v);
+              break;
+            case bounding_mode::HIGH:
+              for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_max(val[i], max_v);
+              break;
+            default:
+              break;
+          }
+          return std::move(val);
         }
-        return std::move(val);
+        else if(N != min.size() || N != max.size())
+        {
+          return {};
+        }
+        else
+        {
+          switch (b)
+          {
+            case bounding_mode::CLIP:
+              for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp(val[i], min[i], max[i]);
+              break;
+            case bounding_mode::WRAP:
+              for(std::size_t i = 0; i < N; i++) val[i] = ossia::wrap(val[i], min[i], max[i]);
+              break;
+            case bounding_mode::FOLD:
+              for(std::size_t i = 0; i < N; i++) val[i] = ossia::fold(val[i], min[i], max[i]);
+              break;
+            case bounding_mode::LOW:
+              for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_min(val[i], min[i]);
+              break;
+            case bounding_mode::HIGH:
+              for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_max(val[i], max[i]);
+              break;
+            default:
+              break;
+          }
+          return std::move(val);
+        }
       }
       else if (has_min)
       {
         const Tuple& min = domain.min.get();
-        if(N != min.size())
-          return {};
+        const auto min_v = min[0];
 
-        switch(b)
+        if(min.size() == 1)
         {
-          case bounding_mode::CLIP:
-          case bounding_mode::LOW:
-            for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_min(val[i], min[i]);
-          default:
-            break;
+          switch(b)
+          {
+            case bounding_mode::CLIP:
+            case bounding_mode::HIGH:
+              for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_min(val[i], min_v);
+            default:
+              break;
+          }
+          return std::move(val);
         }
-        return std::move(val);
+        else if(N != min.size())
+        {
+          return {};
+        }
+        else
+        {
+          switch(b)
+          {
+            case bounding_mode::CLIP:
+            case bounding_mode::HIGH:
+              for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_min(val[i], min[i]);
+            default:
+              break;
+          }
+          return std::move(val);
+        }
       }
       else if (has_max)
       {
         const Tuple& max = domain.max.get();
-        if(N != max.size())
-          return {};
+        const auto max_v = max[0];
 
-        switch(b)
+        if(max.size() == 1)
         {
-          case bounding_mode::CLIP:
-          case bounding_mode::HIGH:
-            for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_max(val[i], max[i]);
-          default:
-            break;
+          switch(b)
+          {
+            case bounding_mode::CLIP:
+            case bounding_mode::HIGH:
+              for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_max(val[i], max_v);
+            default:
+              break;
+          }
+          return std::move(val);
         }
-        return std::move(val);
+        else if(N != max.size())
+        {
+          return {};
+        }
+        else
+        {
+          switch(b)
+          {
+            case bounding_mode::CLIP:
+            case bounding_mode::HIGH:
+              for(std::size_t i = 0; i < N; i++) val[i] = ossia::clamp_max(val[i], max[i]);
+            default:
+              break;
+          }
+          return std::move(val);
+        }
       }
       return std::move(val);
     }
