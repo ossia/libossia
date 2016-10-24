@@ -1,6 +1,7 @@
 #include <ossia/editor/mapper/mapper.hpp>
 #include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/editor/curve/curve.hpp>
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <iostream>
 
 namespace ossia
@@ -20,6 +21,7 @@ mapper::mapper(
 
 mapper::~mapper()
 {
+  stop();
 }
 
 ossia::state_element mapper::offset(ossia::time_value offset)
@@ -47,18 +49,20 @@ ossia::state_element mapper::state()
   {
     mLastDate = date;
 
-    std::lock_guard<std::mutex> lock(mValueToMapMutex);
-    if (mValueToMap.valid())
     {
-      // edit a Message handling the mapped value
-      auto newval = computeValue(mValueToMap, mDrive);
+      std::unique_lock<std::mutex> lock(mValueToMapMutex);
+      if (mValueToMap.valid())
+      {
+        // edit a Message handling the mapped value
+        auto val = mValueToMap;
+        // forget the former value
 
-      // forget the former value
-      mValueToMap.reset();
+        mValueToMap.reset();
+        lock.unlock();
 
-      mLastMessage.message_value = std::move(newval);
-
-      return mLastMessage;
+        mLastMessage.message_value = computeValue(val, mDrive);
+        return mLastMessage;
+      }
     }
   }
 
@@ -113,120 +117,181 @@ const ossia::behavior& mapper::getDriving() const
 
 struct mapper_compute_visitor
 {
-  const ossia::value& driver;
-
-  ossia::value operator()(const ossia::curve_ptr& c)
+  ossia::value operator()(ossia::Float driver, const std::shared_ptr<curve_abstract>& c)
   {
     auto base_curve = c.get();
     auto t = base_curve->getType();
-    switch (t.first)
+    if(t.first != ossia::curve_segment_type::FLOAT)
+      return {};
+
+    switch (t.second)
     {
       case ossia::curve_segment_type::FLOAT:
       {
-        auto& val = driver.get<ossia::Float>();
-        switch (t.second)
-        {
-          case ossia::curve_segment_type::FLOAT:
-          {
-            auto c = static_cast<curve<float, float>*>(base_curve);
-            return ossia::Float{c->valueAt(val)};
-          }
-          case ossia::curve_segment_type::INT:
-          {
-            auto c = static_cast<curve<float, int>*>(base_curve);
-            return ossia::Int{c->valueAt(val)};
-          }
-          case ossia::curve_segment_type::BOOL:
-          {
-            auto c = static_cast<curve<float, bool>*>(base_curve);
-            return ossia::Bool{c->valueAt(val)};
-          }
-          case ossia::curve_segment_type::DOUBLE:
-          case ossia::curve_segment_type::ANY:
-            break;
-        }
+        auto c = static_cast<curve<float, float>*>(base_curve);
+        return ossia::Float{c->valueAt(driver)};
       }
       case ossia::curve_segment_type::INT:
       {
-        auto& val = driver.get<ossia::Int>();
-        switch (t.second)
-        {
-          case ossia::curve_segment_type::FLOAT:
-          {
-            auto c = static_cast<curve<int, float>*>(base_curve);
-            return ossia::Float{c->valueAt(val)};
-          }
-          case ossia::curve_segment_type::INT:
-          {
-            auto c = static_cast<curve<int, int>*>(base_curve);
-            return ossia::Int{c->valueAt(val)};
-          }
-          case ossia::curve_segment_type::BOOL:
-          {
-            auto c = static_cast<curve<int, bool>*>(base_curve);
-            return ossia::Bool{c->valueAt(val)};
-          }
-          case ossia::curve_segment_type::DOUBLE:
-          case ossia::curve_segment_type::ANY:
-            break;
-        }
+        auto c = static_cast<curve<float, int>*>(base_curve);
+        return ossia::Int{c->valueAt(driver)};
       }
       case ossia::curve_segment_type::BOOL:
       {
-        auto& val = driver.get<ossia::Bool>();
-        switch (t.second)
-        {
-          case ossia::curve_segment_type::FLOAT:
-          {
-            auto c = static_cast<curve<bool, float>*>(base_curve);
-            return ossia::Float{c->valueAt(val)};
-          }
-          case ossia::curve_segment_type::INT:
-          {
-            auto c = static_cast<curve<bool, int>*>(base_curve);
-            return ossia::Int{c->valueAt(val)};
-          }
-          case ossia::curve_segment_type::BOOL:
-          {
-            auto c = static_cast<curve<bool, bool>*>(base_curve);
-            return ossia::Bool{c->valueAt(val)};
-          }
-          case ossia::curve_segment_type::DOUBLE:
-          case ossia::curve_segment_type::ANY:
-            break;
-        }
+        auto c = static_cast<curve<float, bool>*>(base_curve);
+        return ossia::Bool{c->valueAt(driver)};
       }
       case ossia::curve_segment_type::DOUBLE:
       case ossia::curve_segment_type::ANY:
-        break;
+        return {};
     }
-
-    throw invalid_value_type_error("mapper_impl::computeValue: "
-                                   "base_curve->getType() is incorrect");
   }
 
-  ossia::value operator()(const std::vector<ossia::behavior>& t_drive)
+  ossia::value operator()(ossia::Int driver, const std::shared_ptr<curve_abstract>& c)
   {
-    if (auto t_driver = driver.target<ossia::Tuple>())
+    auto base_curve = c.get();
+    auto t = base_curve->getType();
+    if(t.first != ossia::curve_segment_type::INT)
+      return {};
+
+    switch (t.second)
     {
-      std::vector<ossia::value> t_value;
-      t_value.reserve(t_drive.size());
-      auto it_driver = t_driver->begin();
-
-      for (const auto& e_drive : t_drive)
+      case ossia::curve_segment_type::FLOAT:
       {
-        if (it_driver == t_driver->end())
-          break;
-
-        t_value.push_back(mapper::computeValue(*it_driver, e_drive));
-        it_driver++;
+        auto c = static_cast<curve<int, float>*>(base_curve);
+        return ossia::Float{c->valueAt(driver)};
       }
+      case ossia::curve_segment_type::INT:
+      {
+        auto c = static_cast<curve<int, int>*>(base_curve);
+        return ossia::Int{c->valueAt(driver)};
+      }
+      case ossia::curve_segment_type::BOOL:
+      {
+        auto c = static_cast<curve<int, bool>*>(base_curve);
+        return ossia::Bool{c->valueAt(driver)};
+      }
+      case ossia::curve_segment_type::DOUBLE:
+      case ossia::curve_segment_type::ANY:
+        return {};
+    }
+  }
 
-      return ossia::Tuple{std::move(t_value)};
+  ossia::value operator()(ossia::Bool driver, const std::shared_ptr<curve_abstract>& c)
+  {
+    auto base_curve = c.get();
+    auto t = base_curve->getType();
+    if(t.first != ossia::curve_segment_type::BOOL)
+      return {};
+
+    switch (t.second)
+    {
+      case ossia::curve_segment_type::FLOAT:
+      {
+        auto c = static_cast<curve<bool, float>*>(base_curve);
+        return ossia::Float{c->valueAt(driver)};
+      }
+      case ossia::curve_segment_type::INT:
+      {
+        auto c = static_cast<curve<bool, int>*>(base_curve);
+        return ossia::Int{c->valueAt(driver)};
+      }
+      case ossia::curve_segment_type::BOOL:
+      {
+        auto c = static_cast<curve<bool, bool>*>(base_curve);
+        return ossia::Bool{c->valueAt(driver)};
+      }
+      case ossia::curve_segment_type::DOUBLE:
+      case ossia::curve_segment_type::ANY:
+        return {};
+    }
+  }
+
+  ossia::value operator()(const ossia::Tuple& t_driver, const std::shared_ptr<curve_abstract>& c)
+  {
+    std::vector<ossia::value> t_value = t_driver;
+    for (auto& v : t_value)
+    {
+      if(v.valid())
+      {
+        v = eggs::variants::apply([&] (const auto& e) {
+          return this->operator ()(e, c);
+        }, std::move(v.v));
+      }
     }
 
-    throw invalid_value_type_error("mapper_impl::computeValue: "
-                                   "t_driver is incorrect");
+    return t_value;
+  }
+
+  template<std::size_t N>
+  ossia::value operator()(ossia::Vec<float, N> driver, const std::shared_ptr<curve_abstract>& c)
+  {
+    auto base_curve = c.get();
+    auto t = base_curve->getType();
+    if(t.first == ossia::curve_segment_type::FLOAT && t.second == ossia::curve_segment_type::FLOAT)
+    {
+      auto c = static_cast<curve<float, float>*>(base_curve);
+      for(std::size_t i = 0; i < N; i++)
+      {
+        driver[i] = c->valueAt(driver[i]);
+      }
+      return driver;
+    }
+    else
+    {
+      return {};
+    }
+  }
+
+  template<std::size_t N>
+  ossia::value operator()(ossia::Vec<float, N> driver, const std::vector<ossia::behavior>& t_drive)
+  {
+    if(t_drive.size() != N)
+      return {};
+
+    for(std::size_t i = 0; i < N; i++)
+    {
+      auto curve_p = t_drive[i].target<std::shared_ptr<curve_abstract>>();
+      if(!curve_p)
+        return {};
+
+      auto c = curve_p->get();
+      if(!c)
+        return {};
+
+      auto t = c->getType();
+      if(t.first == ossia::curve_segment_type::FLOAT && t.second == ossia::curve_segment_type::FLOAT)
+        driver[i] = static_cast<curve<float, float>*>(c)->valueAt(driver[i]);
+      else
+        return {};
+    }
+
+    return driver;
+  }
+
+  ossia::value operator()(const ossia::Tuple& t_driver, const std::vector<ossia::behavior>& t_drive)
+  {
+    std::vector<ossia::value> t_value;
+    t_value.reserve(t_drive.size());
+    auto it_driver = t_driver.begin();
+
+    for (const auto& e_drive : t_drive)
+    {
+      if (it_driver == t_driver.end())
+        break;
+
+      t_value.push_back(mapper::computeValue(*it_driver, e_drive));
+      it_driver++;
+    }
+
+    return t_value;
+  }
+
+  template<typename T, typename U>
+  ossia::value operator()(const T& driver, const U& t_drive)
+  {
+    throw invalid_value_type_error("mapper_compute_visitor_2: "
+                                   "invalid case");
     return {};
   }
 };
@@ -234,9 +299,9 @@ struct mapper_compute_visitor
 ossia::value mapper::computeValue(
     const ossia::value& driver, const ossia::behavior& drive)
 {
-  if(drive)
+  if(driver.valid() && drive)
   {
-    return eggs::variants::apply(mapper_compute_visitor{driver}, drive);
+    return eggs::variants::apply(mapper_compute_visitor{}, driver.v, drive);
   }
 
   throw invalid_value_type_error("mapper_impl::computeValue: "
@@ -244,10 +309,30 @@ ossia::value mapper::computeValue(
   return {};
 }
 
-void mapper::driverValueCallback(const ossia::value& value)
+void mapper::driverValueCallback(ossia::value value)
 {
-  std::lock_guard<std::mutex> lock(mValueToMapMutex);
+  auto driverUnit = mDriverAddress.get().getUnit();
+  if(driverUnit && mDriverAddress.unit && driverUnit != mDriverAddress.unit)
+  {
+    auto v1 = ossia::make_value(value, driverUnit);
+    auto v2 = ossia::convert(v1, mDriverAddress.unit);
+    auto v3 = ossia::to_value(v2);
+    if(mDriverAddress.index.size() == 1)
+    {
+      value = get_value_at_index(v3, mDriverAddress.index);
+    }
+    else
+    {
+      value = v3;
+    }
+  }
 
-  mValueToMap = value;
+  {
+    std::lock_guard<std::mutex> lock(mValueToMapMutex);
+
+    mValueToMap = value;
+  }
+  // If the driver destination's unit is different from the actual
+  // address's unit, we convert and extract the value.
 }
 }
