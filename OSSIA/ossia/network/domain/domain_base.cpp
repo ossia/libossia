@@ -4,7 +4,28 @@
 #include <ossia/network/domain/detail/clamp_visitors.hpp>
 #include <ossia/network/domain/detail/min_max.hpp>
 #include <ossia/network/domain/domain.hpp>
-
+#define FAST_COMPILES
+#if defined(FAST_COMPILES)
+namespace ossia
+{
+template<typename T>
+auto&
+move(const T& t)
+{
+  return t;
+}
+}
+#else
+namespace ossia
+{
+template<typename T>
+constexpr typename std::remove_reference<T>::type&&
+move(T&& t) noexcept
+{
+  return static_cast<typename std::remove_reference<T>::type&&>(t);
+}
+}
+#endif
 namespace ossia
 {
 struct clamp_functor
@@ -73,35 +94,35 @@ ossia::value fold(const ossia::value& val, const ossia::value& min, const ossia:
 ossia::value clamp(ossia::value&& val, const ossia::value& min, const ossia::value& max)
 {
   if(val.valid() && min.valid() && max.valid())
-    return eggs::variants::apply(apply_ternary_fun_visitor<clamp_functor>{}, std::move(val).v, min.v, max.v);
+    return eggs::variants::apply(apply_ternary_fun_visitor<clamp_functor>{}, ossia::move(val).v, min.v, max.v);
   return val;
 }
 
 ossia::value clamp_min(ossia::value&& val, const ossia::value& min)
 {
   if(val.valid() && min.valid())
-    return eggs::variants::apply(apply_binary_fun_visitor<clamp_min_functor>{}, std::move(val).v, min.v);
+    return eggs::variants::apply(apply_binary_fun_visitor<clamp_min_functor>{}, ossia::move(val).v, min.v);
   return val;
 }
 
 ossia::value clamp_max(ossia::value&& val, const ossia::value& max)
 {
   if(val.valid() && max.valid())
-    return eggs::variants::apply(apply_binary_fun_visitor<clamp_max_functor>{}, std::move(val).v, max.v);
+    return eggs::variants::apply(apply_binary_fun_visitor<clamp_max_functor>{}, ossia::move(val).v, max.v);
   return val;
 }
 
 ossia::value wrap(ossia::value&& val, const ossia::value& min, const ossia::value& max)
 {
   if(val.valid() && min.valid() && max.valid())
-    return eggs::variants::apply(apply_ternary_fun_visitor<wrap_functor>{}, std::move(val).v, min.v, max.v);
+    return eggs::variants::apply(apply_ternary_fun_visitor<wrap_functor>{}, ossia::move(val).v, min.v, max.v);
   return val;
 }
 
 ossia::value fold(ossia::value&& val, const ossia::value& min, const ossia::value& max)
 {
   if(val.valid() && min.valid() && max.valid())
-    return eggs::variants::apply(apply_ternary_fun_visitor<fold_functor>{}, std::move(val).v, min.v, max.v);
+    return eggs::variants::apply(apply_ternary_fun_visitor<fold_functor>{}, ossia::move(val).v, min.v, max.v);
   return val;
 }
 
@@ -226,7 +247,7 @@ value apply_domain(const domain& dom, bounding_mode b, ossia::value&& val)
 {
   if (bool(dom) && bool(val.v))
   {
-    return eggs::variants::apply(apply_domain_visitor{b}, std::move(val.v), dom);
+    return eggs::variants::apply(apply_domain_visitor{b}, ossia::move(val.v), dom);
   }
   return val;
 }

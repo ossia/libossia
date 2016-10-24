@@ -2,11 +2,9 @@
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/generic/generic_address.hpp>
 
-#include <ossia/network/domain/domain_conversion.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <ossia/editor/value/value_conversion.hpp>
-#include <ossia/editor/value/detail/value_conversion_impl.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <iostream>
 #include <map>

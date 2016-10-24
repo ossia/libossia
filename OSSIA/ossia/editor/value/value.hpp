@@ -51,6 +51,12 @@ OSSIA_EXPORT std::string to_pretty_string(const ossia::destination_index& index)
  */
 OSSIA_EXPORT std::string value_to_pretty_string(const ossia::value& val);
 
+using value_variant_type = eggs::variant<Impulse, Bool, Int, Float, Char, String, Tuple, Vec2f, Vec3f, Vec4f, Destination>;
+struct OSSIA_EXPORT value_variant : public value_variant_type
+{
+        using value_variant_type::value_variant_type;
+};
+
 /**
  * @brief The value class
  *
@@ -78,9 +84,7 @@ OSSIA_EXPORT std::string value_to_pretty_string(const ossia::value& val);
 class OSSIA_EXPORT value
 {
 public:
-  using value_type
-      = eggs::variant<Impulse, Bool, Int, Float, Char, String, Tuple, Vec2f,
-                      Vec3f, Vec4f, Destination>;
+  using value_type = value_variant;
 
   value_type v;
 

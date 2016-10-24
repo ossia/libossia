@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/network/domain/domain.hpp>
-#include <ossia/network/domain/detail/apply_domain.hpp>
 
 namespace ossia
 {

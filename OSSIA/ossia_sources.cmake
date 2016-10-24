@@ -107,6 +107,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/array_domain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/value_set_domain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/apply_domain.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/domain_impl.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.hpp"

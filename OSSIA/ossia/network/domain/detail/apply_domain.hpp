@@ -16,26 +16,26 @@ struct apply_domain_visitor
 
   // General case with incompatible values
   template <typename T, typename U>
-  ossia::value operator()(T&& value, const U& bad_domain) const
+  ossia::value operator()(const T& value, const U& bad_domain) const
   { return {}; }
 
   // Generic case
   template <typename T>
   ossia::value operator()(T&& value, const domain_base<ossia::value>& domain) const
-  { return generic_clamp{domain}(b, std::forward<T>(value)); }
+  { return generic_clamp{domain}(b, std::move(value)); }
+
+  template <typename T>
+  ossia::value operator()(const T& value, const domain_base<ossia::value>& domain) const
+  { return generic_clamp{domain}(b, value); }
 
   // Values without meaningful domains
   ossia::value operator()(Impulse value, const domain_base<Impulse>& domain) const
   { return value; }
   // Numeric values
-  ossia::value operator()(Int value, const domain_base<Int>& domain) const
-  { return numeric_clamp<domain_base<Int>>{domain}(b, value); }
-  ossia::value operator()(Float value, const domain_base<Float>& domain) const
-  { return numeric_clamp<domain_base<Float>>{domain}(b, value); }
-  ossia::value operator()(Char value, const domain_base<Char>& domain) const
-  { return numeric_clamp<domain_base<Char>>{domain}(b, value); }
-  ossia::value operator()(Bool value, const domain_base<Bool>& domain) const
-  { return numeric_clamp<domain_base<Bool>>{domain}(b, value); }
+  ossia::value operator()(Int value, const domain_base<Int>& domain) const;
+  ossia::value operator()(Float value, const domain_base<Float>& domain) const;
+  ossia::value operator()(Char value, const domain_base<Char>& domain) const;
+  ossia::value operator()(Bool value, const domain_base<Bool>& domain) const;
 
   // Strings
   ossia::value operator()(const String& value, const domain_base<String>& domain) const
@@ -53,52 +53,30 @@ struct apply_domain_visitor
   template <typename T>
   ossia::value operator()(Tuple&& value, const domain_base<T>& domain) const;
 
-  ossia::value operator()(const Tuple& value, const domain_base<ossia::value>& domain) const
-  {
-    Tuple res = value;
-    for(auto& val : res)
-    {
-      val = generic_clamp{domain}(b, val);
-    }
-    return res;
-  }
-
-  ossia::value operator()(Tuple&& value, const domain_base<ossia::value>& domain) const
-  {
-    for(auto& val : value)
-    {
-      val = generic_clamp{domain}(b, std::move(val));
-    }
-    // TODO currently other values (strings, etc...) are ignored; what should we do here ?
-    return std::move(value);
-  }
+  ossia::value operator()(const Tuple& value, const domain_base<ossia::value>& domain) const;
+  ossia::value operator()(Tuple&& value, const domain_base<ossia::value>& domain) const;
 
   // Second case : we filter a whole tuple.
-  ossia::value operator()(const Tuple& value, const domain_base<Tuple>& domain) const
-  { return tuple_clamp{domain}(b, value); }
-  ossia::value operator()(Tuple&& value, const domain_base<Tuple>& domain) const
-  { return tuple_clamp{domain}(b, std::move(value)); }
+  ossia::value operator()(const Tuple& value, const domain_base<Tuple>& domain) const;
+  ossia::value operator()(Tuple&& value, const domain_base<Tuple>& domain) const;
 
   // Vec : we can either filter each value, or filter the whole shebang
-  template <std::size_t N>
-  ossia::value operator()(const Vec<float, N>& value, const domain_base<Float>& domain) const
-  { return numeric_clamp<domain_base<Float>>{domain}(b, value); }
+  ossia::value operator()(const Vec<float, 2>& value, const domain_base<Float>& domain) const;
+  ossia::value operator()(const Vec<float, 2>& value, const domain_base<Int>& domain) const;
+  ossia::value operator()(const Vec<float, 2>& value, const domain_base<Bool>& domain) const;
+  ossia::value operator()(const Vec<float, 2>& value, const domain_base<Char>& domain) const;
+  ossia::value operator()(const Vec<float, 2>& value, const domain_base<Vec<float, 2>>& domain) const;
+  ossia::value operator()(const Vec<float, 3>& value, const domain_base<Float>& domain) const;
+  ossia::value operator()(const Vec<float, 3>& value, const domain_base<Int>& domain) const;
+  ossia::value operator()(const Vec<float, 3>& value, const domain_base<Bool>& domain) const;
+  ossia::value operator()(const Vec<float, 3>& value, const domain_base<Char>& domain) const;
+  ossia::value operator()(const Vec<float, 3>& value, const domain_base<Vec<float, 3>>& domain) const;
+  ossia::value operator()(const Vec<float, 4>& value, const domain_base<Float>& domain) const;
+  ossia::value operator()(const Vec<float, 4>& value, const domain_base<Int>& domain) const;
+  ossia::value operator()(const Vec<float, 4>& value, const domain_base<Bool>& domain) const;
+  ossia::value operator()(const Vec<float, 4>& value, const domain_base<Char>& domain) const;
+  ossia::value operator()(const Vec<float, 4>& value, const domain_base<Vec<float, 4>>& domain) const;
 
-  template <std::size_t N>
-  ossia::value operator()(const Vec<float, N>& value, const domain_base<Int>& domain) const
-  { return numeric_clamp<domain_base<Int>>{domain}(b, value); }
-
-  template <std::size_t N>
-  ossia::value operator()(const Vec<float, N>& value, const domain_base<Bool>& domain) const
-  { return numeric_clamp<domain_base<Bool>>{domain}(b, value); }
-
-  template <std::size_t N>
-  ossia::value operator()(const Vec<float, N>& value, const domain_base<Char>& domain) const
-  { return numeric_clamp<domain_base<Char>>{domain}(b, value); }
-
-  template <std::size_t N>
-  ossia::value operator()(const Vec<float, N>& value, const domain_base<Vec<float, N>>& domain) const
-  { return vec_clamp<N>{domain}(b, value); }
 };
 
 template<typename Domain_T>

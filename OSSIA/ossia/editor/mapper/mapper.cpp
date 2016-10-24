@@ -143,6 +143,7 @@ struct mapper_compute_visitor
       }
       case ossia::curve_segment_type::DOUBLE:
       case ossia::curve_segment_type::ANY:
+      default:
         return {};
     }
   }
@@ -173,6 +174,7 @@ struct mapper_compute_visitor
       }
       case ossia::curve_segment_type::DOUBLE:
       case ossia::curve_segment_type::ANY:
+      default:
         return {};
     }
   }
@@ -203,6 +205,7 @@ struct mapper_compute_visitor
       }
       case ossia::curve_segment_type::DOUBLE:
       case ossia::curve_segment_type::ANY:
+      default:
         return {};
     }
   }

@@ -44,7 +44,7 @@ endif()
 
 
 # Dependencies
-find_package(Boost 1.62 REQUIRED)
+find_package(Boost REQUIRED)
 add_library(boost INTERFACE IMPORTED)
 set_property(TARGET boost PROPERTY
     INTERFACE_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})
