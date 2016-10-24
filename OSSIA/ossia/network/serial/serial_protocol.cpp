@@ -64,10 +64,10 @@ bool serial_protocol::push(const ossia::net::address_base& addr)
     switch(addr.getValueType())
     {
         case ossia::val_type::FLOAT:
-            s << " " << std::setprecision(4) << std::to_string(ad.getValue().get<ossia::Float>().value);
+            s << " " << std::setprecision(4) << std::to_string(ad.getValue().get<ossia::Float>());
             break;
         case ossia::val_type::INT:
-            s << " " << std::to_string(ad.getValue().get<ossia::Int>().value);
+            s << " " << std::to_string(ad.getValue().get<ossia::Int>());
             break;
         case ossia::val_type::IMPULSE:
             break;
