@@ -247,5 +247,5 @@ message(STATUS "OSSIA - Zeroconf: ${KF5DNSSD_FOUND}")
 
 set_property(TARGET ossia PROPERTY COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/ossia/prefix.hpp")
 if(NOT OSSIA_SANITIZE)
-#cotire(ossia)
+cotire(ossia)
 endif()
