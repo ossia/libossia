@@ -120,18 +120,24 @@ using domain_base_variant = eggs::variant<domain_base<Impulse>, domain_base<Bool
 
 struct OSSIA_EXPORT domain final : public domain_base_variant
 {
+  OSSIA_DECL_RELAXED_CONSTEXPR domain() noexcept = default;
+
 #if defined(_MSC_VER)
-  template<typename... Args>
-  domain(Args&&... args): domain_base_variant(std::forward<Args>(args)...) { }
+  template<typename T>
+  domain(const T& arg): domain_base_variant(arg) { }
+  domain(const domain& d) : domain_base_variant{ (const domain_base_variant&)d } { }
+  domain(domain&& d) : domain_base_variant{ std::move((domain_base_variant&)d) } { }
+  domain& operator=(const domain& d) { ((domain_base_variant&)(*this)) = (const domain_base_variant&)d; return *this; }
+  domain& operator=(domain&& d) { ((domain_base_variant&)(*this)) = std::move((domain_base_variant&)d); return *this; } 
+  ~domain() { }
 #else
   using domain_base_variant::domain_base_variant;
-#endif
-
-  OSSIA_DECL_RELAXED_CONSTEXPR domain() noexcept = default;
   domain(const domain&) = default;
   domain(domain&&) noexcept = default;
   domain& operator=(const domain&) = default;
   domain& operator=(domain&&) noexcept = default;
+#endif
+
   value get_min() const;
   value get_max() const;
 

@@ -14,35 +14,35 @@ namespace ossia
 
 
 template
-Impulse convert<Impulse>(const ossia::value& val);
+OSSIA_EXPORT Impulse convert<Impulse>(const ossia::value& val);
 template
-int convert<int>(const ossia::value& val);
+OSSIA_EXPORT int convert<int>(const ossia::value& val);
 template
-float convert<float>(const ossia::value& val);
+OSSIA_EXPORT float convert<float>(const ossia::value& val);
 template
-double convert<double>(const ossia::value& val);
+OSSIA_EXPORT double convert<double>(const ossia::value& val);
 template
-bool convert<bool>(const ossia::value& val);
+OSSIA_EXPORT bool convert<bool>(const ossia::value& val);
 template
-char convert<char>(const ossia::value& val);
+OSSIA_EXPORT char convert<char>(const ossia::value& val);
 template
-std::string convert<std::string>(const ossia::value& val);
+OSSIA_EXPORT std::string convert<std::string>(const ossia::value& val);
 template
-std::vector<ossia::value> convert<std::vector<ossia::value>>(const ossia::value& val);
+OSSIA_EXPORT std::vector<ossia::value> convert<std::vector<ossia::value>>(const ossia::value& val);
 template
-std::array<float, 2> convert<std::array<float, 2>>(const ossia::value& val);
+OSSIA_EXPORT std::array<float, 2> convert<std::array<float, 2>>(const ossia::value& val);
 template
-std::array<float, 3> convert<std::array<float, 3>>(const ossia::value& val);
+OSSIA_EXPORT std::array<float, 3> convert<std::array<float, 3>>(const ossia::value& val);
 template
-std::array<float, 4> convert<std::array<float, 4>>(const ossia::value& val);
+OSSIA_EXPORT std::array<float, 4> convert<std::array<float, 4>>(const ossia::value& val);
 
 
 template
-std::array<float, 2> convert<std::array<float, 2>>(const ossia::Tuple& val);
+OSSIA_EXPORT std::array<float, 2> convert<std::array<float, 2>>(const ossia::Tuple& val);
 template
-std::array<float, 3> convert<std::array<float, 3>>(const ossia::Tuple& val);
+OSSIA_EXPORT std::array<float, 3> convert<std::array<float, 3>>(const ossia::Tuple& val);
 template
-std::array<float, 4> convert<std::array<float, 4>>(const ossia::Tuple& val);
+OSSIA_EXPORT std::array<float, 4> convert<std::array<float, 4>>(const ossia::Tuple& val);
 
 /*
 bool Bool::operator==(const ossia::value& v) const
