@@ -103,17 +103,17 @@ ossia::value clamp_min(ossia::value&& val, const ossia::value& min)
 
 ossia::value clamp_max(ossia::value&& val, const ossia::value& max)
 {
-  return clamp_max(val, min);
+  return clamp_max(val, max);
 }
 
 ossia::value wrap(ossia::value&& val, const ossia::value& min, const ossia::value& max)
 {
-  return wrap(val, min);
+  return wrap(val, min, max);
 }
 
 ossia::value fold(ossia::value&& val, const ossia::value& min, const ossia::value& max)
 {
-  return fold(val, min);
+  return fold(val, min, max);
 }
 #else
 ossia::value clamp(ossia::value&& val, const ossia::value& min, const ossia::value& max)
