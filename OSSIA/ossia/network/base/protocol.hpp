@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <memory>
 

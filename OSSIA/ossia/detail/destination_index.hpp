@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <boost/container/static_vector.hpp>
 namespace ossia
 {

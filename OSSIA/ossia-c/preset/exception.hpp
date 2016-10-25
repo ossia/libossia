@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 
 #include <exception>
 #include <string>

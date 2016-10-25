@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <algorithm>
 #include <type_traits>
 #include <iterator>

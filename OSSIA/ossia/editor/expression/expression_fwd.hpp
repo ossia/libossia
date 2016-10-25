@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia/detail/callback_container.hpp>
 
 #include <eggs/variant.hpp>

@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <functional>
 #include <string>
-#include <eggs/variant.hpp>
+#include <ossia/detail/config.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/detail/ptr_container.hpp>
@@ -22,5 +22,6 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/protocol.hpp>
+#include <eggs/variant.hpp>
 
 #endif

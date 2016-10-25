@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <eggs/variant.hpp>
 #include <ossia/editor/curve/curve_abstract.hpp>
 #include <vector>
