@@ -4,12 +4,11 @@
 #include <ossia/network/domain/detail/clamp_visitors.hpp>
 #include <ossia/network/domain/detail/min_max.hpp>
 #include <ossia/network/domain/domain.hpp>
-//#define FAST_COMPILES
 #if defined(FAST_COMPILES)
 namespace ossia
 {
 template<typename T>
-auto&
+OSSIA_INLINE auto&
 move(const T& t)
 {
   return t;
@@ -91,6 +90,32 @@ ossia::value fold(const ossia::value& val, const ossia::value& min, const ossia:
 }
 
 /// Move-overloads
+#if defined(FAST_COMPILES)
+ossia::value clamp(ossia::value&& val, const ossia::value& min, const ossia::value& max)
+{
+  return clamp(val, min, max);
+}
+
+ossia::value clamp_min(ossia::value&& val, const ossia::value& min)
+{
+  return clamp_min(val, min);
+}
+
+ossia::value clamp_max(ossia::value&& val, const ossia::value& max)
+{
+  return clamp_max(val, min);
+}
+
+ossia::value wrap(ossia::value&& val, const ossia::value& min, const ossia::value& max)
+{
+  return wrap(val, min);
+}
+
+ossia::value fold(ossia::value&& val, const ossia::value& min, const ossia::value& max)
+{
+  return fold(val, min);
+}
+#else
 ossia::value clamp(ossia::value&& val, const ossia::value& min, const ossia::value& max)
 {
   if(val.valid() && min.valid() && max.valid())
@@ -125,7 +150,7 @@ ossia::value fold(ossia::value&& val, const ossia::value& min, const ossia::valu
     return eggs::variants::apply(apply_ternary_fun_visitor<fold_functor>{}, ossia::move(val).v, min.v, max.v);
   return val;
 }
-
+#endif
 
 namespace net
 {

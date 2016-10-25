@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/editor/value/value.hpp>
 
+#define FAST_COMPILES
 namespace ossia
 {
 // For clamp, wrap, fold...
@@ -11,6 +12,7 @@ struct apply_ternary_fun_visitor
   template<typename T, typename U, typename V>
   OSSIA_INLINE ossia::value operator()(const T& val, const U& min, const V& max)
   { return val; }
+  #if !defined(FAST_COMPILES)
   template<typename U, typename V>
   OSSIA_INLINE ossia::value operator()(Tuple&& val, const U& min, const V& max)
   { return std::move(val); }
@@ -23,6 +25,7 @@ struct apply_ternary_fun_visitor
   template<typename U, typename V>
   OSSIA_INLINE ossia::value operator()(const String& val, const U& min, const V& max)
   { return val; }
+  #endif
 
   OSSIA_INLINE ossia::value operator()(Int val, Int min, Int max)
   { return Int{f(val, min, max)}; }
@@ -129,6 +132,8 @@ struct apply_binary_fun_visitor
   template<typename T, typename U>
   OSSIA_INLINE ossia::value operator()(const T& val, const U& min)
   { return val; }
+  
+  #if !defined(FAST_COMPILES)
   template<typename U>
   OSSIA_INLINE ossia::value operator()(Tuple&& val, const U& min)
   { return std::move(val); }
@@ -141,6 +146,7 @@ struct apply_binary_fun_visitor
   template<typename U>
   OSSIA_INLINE ossia::value operator()(const String& val, const U& min)
   { return val; }
+  #endif
 
   OSSIA_INLINE ossia::value operator()(Int val, Int min)
   { return Int{f(val, min)}; }
