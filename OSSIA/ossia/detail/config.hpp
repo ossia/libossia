@@ -4,6 +4,7 @@
 /// Constexpr support ///
 #if defined(_MSC_VER)
 #define OSSIA_DECL_RELAXED_CONSTEXPR
+#define EGGS_CXX11_NOEXCEPT_IF(...)
 #else
 #define OSSIA_DECL_RELAXED_CONSTEXPR constexpr
 #endif

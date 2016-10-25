@@ -62,7 +62,9 @@ enum ossia_bounding_mode
   FREE,
   CLIP,
   WRAP,
-  FOLD
+  FOLD,
+  LOW,
+  HIGH
 };
 //// Protocol ////
 

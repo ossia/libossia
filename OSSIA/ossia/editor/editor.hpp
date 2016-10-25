@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/editor/state/state_element.hpp>
 

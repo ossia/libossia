@@ -60,17 +60,14 @@ using value_variant_type = eggs::variant<
     std::array<float, 2ul>, std::array<float, 3ul>, std::array<float, 4ul>, 
     Destination>;
 
+#if defined(_MSC_VER)
+using value_variant = value_variant_type;
+#else
 struct OSSIA_EXPORT value_variant : public value_variant_type
 {
-#if defined(_MSC_VER)
-    value_variant() = default;
-
-    template<typename... Args>
-    value_variant(Args&&... args) : value_variant_type(std::forward<Args>(args)...) { }
-#else
     using value_variant_type::value_variant_type;
-#endif
 };
+#endif
 
 /**
  * @brief The value class
