@@ -156,6 +156,8 @@ if(MSVC)
         "/wd4275" # DLL stuff
         "/wd4244" # return : conversion from foo to bar, possible loss of data
         "/wd4800" # conversion from int to bool, performance warning
+        "/wd4503" # decorated name length exceeded
+        "/MP"
         )
 else()
     target_compile_options(ossia PUBLIC

@@ -768,7 +768,7 @@ private Q_SLOTS:
       { // cref
         ossia::state s;
 
-        ossia::message m1{*t.tuple_addr, ossia::Tuple{ossia::Float{0.}, ossia::Float{0.5}, ossia::Float{0.2}}, {}};
+        ossia::message m1{*t.tuple_addr, ossia::Tuple{0., 0.5, 0.2}, {}};
 
         ossia::flatten_and_filter(s, m1);
 
@@ -784,7 +784,7 @@ private Q_SLOTS:
       { // rvalue
         ossia::state s;
 
-        ossia::message m1{*t.tuple_addr, ossia::Tuple{ossia::Float{0.}, ossia::Float{0.5}, ossia::Float{0.2}}, {}};
+        ossia::message m1{*t.tuple_addr, ossia::Tuple{0., 0.5, 0.2}, {}};
 
         ossia::flatten_and_filter(s, ossia::message{m1});
 
@@ -803,7 +803,7 @@ private Q_SLOTS:
       { // cref
         ossia::state s;
 
-        ossia::message m1{*t.tuple_addr, ossia::Tuple{ossia::Float{0.}, ossia::Float{0.5}, ossia::Float{0.2}}, ossia::rgb_u{}};
+        ossia::message m1{*t.tuple_addr, ossia::Tuple{0., 0.5, 0.2}, ossia::rgb_u{}};
 
         ossia::flatten_and_filter(s, m1);
 
@@ -819,7 +819,7 @@ private Q_SLOTS:
       { // rvalue
         ossia::state s;
 
-        ossia::message m1{*t.tuple_addr, ossia::Tuple{ossia::Float{0.}, ossia::Float{0.5}, ossia::Float{0.2}}, ossia::rgb_u{}};
+        ossia::message m1{*t.tuple_addr, ossia::Tuple{0., 0.5, 0.2}, ossia::rgb_u{}};
 
         ossia::flatten_and_filter(s, ossia::message{m1});
 

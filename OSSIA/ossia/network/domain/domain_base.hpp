@@ -120,7 +120,13 @@ using domain_base_variant = eggs::variant<domain_base<Impulse>, domain_base<Bool
 
 struct OSSIA_EXPORT domain final : public domain_base_variant
 {
+#if defined(_MSC_VER)
+  template<typename... Args>
+  domain(Args&&... args): domain_base_variant(std::forward<Args>(args)...) { }
+#else
   using domain_base_variant::domain_base_variant;
+#endif
+
   OSSIA_DECL_RELAXED_CONSTEXPR domain() noexcept = default;
   domain(const domain&) = default;
   domain(domain&&) noexcept = default;

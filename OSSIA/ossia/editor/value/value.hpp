@@ -13,7 +13,6 @@ namespace detail
 template<typename T>
 struct dummy { using type = T; };
 }
-class value;
 
 /**
  * \brief ossia::apply : helper function to apply a visitor to a variant
@@ -38,6 +37,8 @@ auto apply(Visitor&& v, Variant&& var) -> decltype(std::forward<Visitor>(v)())
 
 OSSIA_EXPORT std::string to_pretty_string(const ossia::destination_index& index);
 
+class value;
+
 /*!
  * \brief getValueAsString Returns a string corresponding to the value
  * \param val a valid value
@@ -51,10 +52,24 @@ OSSIA_EXPORT std::string to_pretty_string(const ossia::destination_index& index)
  */
 OSSIA_EXPORT std::string value_to_pretty_string(const ossia::value& val);
 
-using value_variant_type = eggs::variant<Impulse, Bool, Int, Float, Char, String, Tuple, Vec2f, Vec3f, Vec4f, Destination>;
+using value_variant_type = eggs::variant<
+    Impulse, 
+    bool, int, float, char, 
+    std::string, 
+    std::vector<ossia::value>, 
+    std::array<float, 2ul>, std::array<float, 3ul>, std::array<float, 4ul>, 
+    Destination>;
+
 struct OSSIA_EXPORT value_variant : public value_variant_type
 {
-        using value_variant_type::value_variant_type;
+#if defined(_MSC_VER)
+    value_variant() = default;
+
+    template<typename... Args>
+    value_variant(Args&&... args) : value_variant_type(std::forward<Args>(args)...) { }
+#else
+    using value_variant_type::value_variant_type;
+#endif
 };
 
 /**
@@ -138,47 +153,47 @@ public:
   }
   value& operator=(bool val) noexcept
   {
-    v = Bool{val};
+    v = val;
     return *this;
   }
   value& operator=(int val) noexcept
   {
-    v = Int{val};
+    v = val;
     return *this;
   }
   value& operator=(float val) noexcept
   {
-    v = Float{val};
+    v = val;
     return *this;
   }
   value& operator=(char val) noexcept
   {
-    v = Char{val};
+    v = val;
     return *this;
   }
   value& operator=(const std::string& val) noexcept
   {
-    v = String{val};
+    v = val;
     return *this;
   }
   value& operator=(const std::vector<ossia::value>& val) noexcept
   {
-    v = Tuple{val};
+    v = val;
     return *this;
   }
   value& operator=(std::array<float, 2> val) noexcept
   {
-    v = Vec<float, 2>{val};
+    v = val;
     return *this;
   }
   value& operator=(std::array<float, 3> val) noexcept
   {
-    v = Vec<float, 3>{val};
+    v = val;
     return *this;
   }
   value& operator=(std::array<float, 4> val) noexcept
   {
-    v = Vec<float, 4>{val};
+    v = val;
     return *this;
   }
   value& operator=(ossia::net::address_base& val) noexcept
@@ -189,12 +204,12 @@ public:
 
   value& operator=(std::string&& val) noexcept
   {
-    v = String{std::move(val)};
+    v = std::move(val);
     return *this;
   }
   value& operator=(std::vector<ossia::value>&& val) noexcept
   {
-    v = Tuple{std::move(val)};
+    v = std::move(val);
     return *this;
   }
 
