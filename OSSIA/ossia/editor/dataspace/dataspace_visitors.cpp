@@ -210,14 +210,14 @@ struct merger_impl
   const ossia::value& val;
   const ossia::destination_index& idx;
 
-  ossia::value_with_unit operator()(const ossia::value& val)
+  OSSIA_INLINE ossia::value_with_unit operator()(const ossia::value& val)
   {
     // TODO use the standard merge algorithm in ossia::value ??return value_unit;
     return {};
   }
 
   template<typename Dataspace_T>
-  ossia::value_with_unit operator()(const Dataspace_T& ds)
+  OSSIA_INLINE ossia::value_with_unit operator()(const Dataspace_T& ds)
   {
     if(ds && val.v)
       return eggs::variants::apply(detail::value_merger{idx}, ds, val.v);
@@ -232,7 +232,7 @@ struct vec_merger_impl_helper
   const std::bitset<N>& idx;
 
   template<typename Unit_T>
-  ossia::value_with_unit operator()(const Unit_T& unit)
+  OSSIA_INLINE ossia::value_with_unit operator()(const Unit_T& unit)
   {
     return detail::vec_value_merger<N>{idx}(unit, val);
   }
@@ -244,14 +244,14 @@ struct vec_merger_impl
   const ossia::Vec<float, N>& val;
   const std::bitset<N>& idx;
 
-  ossia::value_with_unit operator()(const ossia::value& val)
+  OSSIA_INLINE ossia::value_with_unit operator()(const ossia::value& val)
   {
     // TODO use the standard merge algorithm in ossia::value ??return value_unit;
     return {};
   }
 
   template<typename Dataspace_T>
-  ossia::value_with_unit operator()(const Dataspace_T& ds)
+  OSSIA_INLINE ossia::value_with_unit operator()(const Dataspace_T& ds)
   {
     if(ds)
     {

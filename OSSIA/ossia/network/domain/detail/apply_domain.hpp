@@ -16,20 +16,20 @@ struct apply_domain_visitor
 
   // General case with incompatible values
   template <typename T, typename U>
-  ossia::value operator()(const T& value, const U& bad_domain) const
+  OSSIA_INLINE ossia::value operator()(const T& value, const U& bad_domain) const
   { return {}; }
 
   // Generic case
   template <typename T>
-  ossia::value operator()(T&& value, const domain_base<ossia::value>& domain) const
+  OSSIA_INLINE ossia::value operator()(T&& value, const domain_base<ossia::value>& domain) const
   { return generic_clamp{domain}(b, std::move(value)); }
 
   template <typename T>
-  ossia::value operator()(const T& value, const domain_base<ossia::value>& domain) const
+  OSSIA_INLINE ossia::value operator()(const T& value, const domain_base<ossia::value>& domain) const
   { return generic_clamp{domain}(b, value); }
 
   // Values without meaningful domains
-  ossia::value operator()(Impulse value, const domain_base<Impulse>& domain) const
+  OSSIA_INLINE ossia::value operator()(Impulse value, const domain_base<Impulse>& domain) const
   { return value; }
   // Numeric values
   ossia::value operator()(Int value, const domain_base<Int>& domain) const;
@@ -38,9 +38,9 @@ struct apply_domain_visitor
   ossia::value operator()(Bool value, const domain_base<Bool>& domain) const;
 
   // Strings
-  ossia::value operator()(const String& value, const domain_base<String>& domain) const
+  OSSIA_INLINE ossia::value operator()(const String& value, const domain_base<String>& domain) const
   { return value_set_clamp<domain_base<String>>{domain}(b, value); }
-  ossia::value operator()(String&& value, const domain_base<String>& domain) const
+  OSSIA_INLINE ossia::value operator()(String&& value, const domain_base<String>& domain) const
   { return value_set_clamp<domain_base<String>>{domain}(b, std::move(value)); }
 
 
@@ -86,7 +86,7 @@ struct tuple_apply_domain_helper
   const Domain_T& dom;
 
   template<typename U>
-  ossia::value operator()(U&& u) const
+  OSSIA_INLINE ossia::value operator()(U&& u) const
   {
     return vis(std::forward<U>(u), dom);
   }

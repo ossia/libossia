@@ -130,9 +130,9 @@ struct OSSIA_EXPORT domain final : public domain_base_variant
   value get_max() const;
 
   template<typename T>
-  T get_min() const { return get_min().get<T>(); }
+  OSSIA_INLINE T get_min() const { return get_min().get<T>(); }
   template<typename T>
-  T get_max() const { return get_max().get<T>(); }
+  OSSIA_INLINE T get_max() const { return get_max().get<T>(); }
 
   template<typename T>
   boost::optional<T> maybe_min() const
@@ -157,9 +157,9 @@ struct OSSIA_EXPORT domain final : public domain_base_variant
   }
 
   template<typename T>
-  T convert_min() const { return ossia::convert<T>(get_min()); }
+  OSSIA_INLINE T convert_min() const { return ossia::convert<T>(get_min()); }
   template<typename T>
-  T convert_max() const { return ossia::convert<T>(get_max()); }
+  OSSIA_INLINE T convert_max() const { return ossia::convert<T>(get_max()); }
 
   void set_min(const ossia::value& val);
   void set_max(const ossia::value& val);

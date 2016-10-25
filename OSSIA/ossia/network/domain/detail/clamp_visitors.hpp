@@ -9,16 +9,28 @@ struct apply_ternary_fun_visitor
 {
   TernaryFun f;
   template<typename T, typename U, typename V>
-  ossia::value operator()(T&& val, const U& min, const V& max)
-  { return std::forward<T>(val); }
+  OSSIA_INLINE ossia::value operator()(const T& val, const U& min, const V& max)
+  { return val; }
+  template<typename U, typename V>
+  OSSIA_INLINE ossia::value operator()(Tuple&& val, const U& min, const V& max)
+  { return std::move(val); }
+  template<typename U, typename V>
+  OSSIA_INLINE ossia::value operator()(const Tuple& val, const U& min, const V& max)
+  { return val; }
+  template<typename U, typename V>
+  OSSIA_INLINE ossia::value operator()(String&& val, const U& min, const V& max)
+  { return std::move(val); }
+  template<typename U, typename V>
+  OSSIA_INLINE ossia::value operator()(const String& val, const U& min, const V& max)
+  { return val; }
 
-  ossia::value operator()(Int val, Int min, Int max)
+  OSSIA_INLINE ossia::value operator()(Int val, Int min, Int max)
   { return Int{f(val, min, max)}; }
-  ossia::value operator()(Float val, Float min, Float max)
+  OSSIA_INLINE ossia::value operator()(Float val, Float min, Float max)
   { return Float{f(val, min, max)}; }
-  ossia::value operator()(Char val, Char min, Char max)
+  OSSIA_INLINE ossia::value operator()(Char val, Char min, Char max)
   { return Char{f(val, min, max)}; }
-  ossia::value operator()(Bool val, Bool min, Bool max)
+  OSSIA_INLINE ossia::value operator()(Bool val, Bool min, Bool max)
   { return Bool{f(val, min, max)}; }
 
   template<std::size_t N>
@@ -113,17 +125,30 @@ template<typename BinaryFun>
 struct apply_binary_fun_visitor
 {
   BinaryFun f;
-  template<typename T, typename U>
-  ossia::value operator()(T&& val, const U& min)
-  { return std::forward<T>(val); }
 
-  ossia::value operator()(Int val, Int min)
+  template<typename T, typename U>
+  OSSIA_INLINE ossia::value operator()(const T& val, const U& min)
+  { return val; }
+  template<typename U>
+  OSSIA_INLINE ossia::value operator()(Tuple&& val, const U& min)
+  { return std::move(val); }
+  template<typename U>
+  OSSIA_INLINE ossia::value operator()(const Tuple& val, const U& min)
+  { return val; }
+  template<typename U>
+  OSSIA_INLINE ossia::value operator()(String&& val, const U& min)
+  { return std::move(val); }
+  template<typename U>
+  OSSIA_INLINE ossia::value operator()(const String& val, const U& min)
+  { return val; }
+
+  OSSIA_INLINE ossia::value operator()(Int val, Int min)
   { return Int{f(val, min)}; }
-  ossia::value operator()(Float val, Float min)
+  OSSIA_INLINE ossia::value operator()(Float val, Float min)
   { return Float{f(val, min)}; }
-  ossia::value operator()(Char val, Char min)
+  OSSIA_INLINE ossia::value operator()(Char val, Char min)
   { return Char{f(val, min)}; }
-  ossia::value operator()(Bool val, Bool min)
+  OSSIA_INLINE ossia::value operator()(Bool val, Bool min)
   { return Bool{f(val, min)}; }
 
   template<std::size_t N>

@@ -10,7 +10,7 @@ struct domain_conversion
 {
 
   template <typename T>
-  domain operator()(const T&)
+  OSSIA_INLINE domain operator()(const T&)
   {
     return U{};
   }
@@ -72,7 +72,7 @@ template <>
 struct domain_conversion<domain_base<Impulse>>
 {
   template <typename T>
-  domain operator()(const T&)
+  OSSIA_INLINE domain operator()(const T&)
   {
     return domain_base<Impulse>{};
   }
@@ -81,13 +81,13 @@ struct domain_conversion<domain_base<Impulse>>
 template <>
 struct domain_conversion<domain_base<Tuple>>
 {
-  domain operator()(const domain_base<Tuple>& src)
+  OSSIA_INLINE domain operator()(const domain_base<Tuple>& src)
   {
     return src;
   }
 
   template <typename T>
-  domain operator()(const T&)
+  OSSIA_INLINE domain operator()(const T&)
   {
     return domain_base<Tuple>();
   }
@@ -96,13 +96,13 @@ struct domain_conversion<domain_base<Tuple>>
 template <std::size_t N>
 struct domain_conversion<domain_base<Vec<float, N>>>
 {
-  domain operator()(const domain_base<Vec<float, N>>& src)
+  OSSIA_INLINE domain operator()(const domain_base<Vec<float, N>>& src)
   {
     return src;
   }
 
   template <typename T>
-  domain operator()(const T&)
+  OSSIA_INLINE domain operator()(const T&)
   {
     return domain_base<Vec<float, N>>();
   }
@@ -111,13 +111,13 @@ struct domain_conversion<domain_base<Vec<float, N>>>
 template <>
 struct domain_conversion<domain_base<String>>
 {
-  domain operator()(const domain_base<String>& src)
+  OSSIA_INLINE domain operator()(const domain_base<String>& src)
   {
     return src;
   }
 
   template <typename T>
-  domain operator()(const T&)
+  OSSIA_INLINE domain operator()(const T&)
   {
     return domain_base<String>();
   }

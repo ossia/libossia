@@ -12,23 +12,23 @@ namespace detail
 struct unit_text_visitor
 {
   template<typename... Args>
-  boost::string_view operator()(const eggs::variant<Args...>& dataspace)
+  OSSIA_INLINE boost::string_view operator()(const eggs::variant<Args...>& dataspace)
   {
     return ossia::apply(*this, dataspace);
   }
 
   template<typename Unit>
-  boost::string_view operator()(Unit)
+  OSSIA_INLINE boost::string_view operator()(Unit)
   {
     return ossia::unit_traits<Unit>::text()[0];
   }
 
-  boost::string_view operator()(const ossia::value&)
+  OSSIA_INLINE boost::string_view operator()(const ossia::value&)
   {
     return {};
   }
 
-  boost::string_view operator()()
+  OSSIA_INLINE boost::string_view operator()()
   {
     return {};
   }
@@ -37,12 +37,12 @@ struct unit_text_visitor
 struct dataspace_text_visitor
 {
   template<typename Dataspace>
-  boost::string_view operator()(const Dataspace& dataspace)
+  OSSIA_INLINE boost::string_view operator()(const Dataspace& dataspace)
   {
     return ossia::dataspace_traits<Dataspace>::text()[0];
   }
 
-  boost::string_view operator()()
+  OSSIA_INLINE boost::string_view operator()()
   {
     return {};
   }
@@ -94,7 +94,7 @@ struct unit_factory_visitor
     return it != units.end() ? it->second : arg;
   }
 
-  ossia::unit_t operator()()
+  OSSIA_INLINE ossia::unit_t operator()()
   { return {}; }
 };
 

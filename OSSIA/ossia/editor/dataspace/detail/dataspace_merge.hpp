@@ -64,7 +64,7 @@ struct whole_value_merger_helper<T, U, enable_if_both_iterable<T, U>>
 template<typename T, typename U>
 struct whole_value_merger_helper<T, U, enable_if_first_iterable<T, U>>
 {
-  ossia::value_with_unit operator()(T value_unit, const U& value)
+  OSSIA_INLINE ossia::value_with_unit operator()(T value_unit, const U& value)
   {
     return value_unit;
   }
@@ -74,7 +74,7 @@ struct whole_value_merger_helper<T, U, enable_if_first_iterable<T, U>>
 template<typename T, typename U>
 struct whole_value_merger_helper<T, U, enable_if_second_iterable<T, U>>
 {
-  ossia::value_with_unit operator()(T value_unit, const U& value)
+  OSSIA_INLINE ossia::value_with_unit operator()(T value_unit, const U& value)
   {
     return value_unit;
   }
@@ -84,7 +84,7 @@ struct whole_value_merger_helper<T, U, enable_if_second_iterable<T, U>>
 template<typename T, typename U>
 struct whole_value_merger_helper<T, U, enable_if_neither_iterable<T, U>>
 {
-  ossia::value_with_unit operator()(T value_unit, const U& value)
+  OSSIA_INLINE ossia::value_with_unit operator()(T value_unit, const U& value)
   {
     value_unit.dataspace_value = value;
     return value_unit;
@@ -133,7 +133,7 @@ struct partial_value_merger_helper<T, U, enable_if_both_iterable<T, U>>
   }
 
   template<typename... Args>
-  bool handle_vec(Args&&...)
+  OSSIA_INLINE bool handle_vec(Args&&...)
   {
     return false;
   }
@@ -150,7 +150,7 @@ struct partial_value_merger_helper<T, U, enable_if_first_iterable<T, U>>
   }
 
   template<std::size_t N>
-  ossia::value_with_unit operator()(T value_unit, const U& value, const std::bitset<N>& idx)
+  OSSIA_INLINE ossia::value_with_unit operator()(T value_unit, const U& value, const std::bitset<N>& idx)
   {
     return {};
   }
@@ -159,13 +159,13 @@ struct partial_value_merger_helper<T, U, enable_if_first_iterable<T, U>>
 template<typename T, typename U>
 struct partial_value_merger_helper<T, U, enable_if_second_iterable<T, U>>
 {
-  ossia::value_with_unit operator()(T value_unit, const U& value, const ossia::destination_index& idx)
+  OSSIA_INLINE ossia::value_with_unit operator()(T value_unit, const U& value, const ossia::destination_index& idx)
   {
     return value_unit;
   }
 
   template<std::size_t N>
-  ossia::value_with_unit operator()(T value_unit, const U& value, const std::bitset<N>& idx)
+  OSSIA_INLINE ossia::value_with_unit operator()(T value_unit, const U& value, const std::bitset<N>& idx)
   {
     return {};
   }
@@ -174,13 +174,13 @@ struct partial_value_merger_helper<T, U, enable_if_second_iterable<T, U>>
 template<typename T, typename U>
 struct partial_value_merger_helper<T, U, enable_if_neither_iterable<T, U>>
 {
-  ossia::value_with_unit operator()(T value_unit, const U& value, const ossia::destination_index& idx)
+  OSSIA_INLINE ossia::value_with_unit operator()(T value_unit, const U& value, const ossia::destination_index& idx)
   {
     return value_unit;
   }
 
   template<std::size_t N>
-  ossia::value_with_unit operator()(T value_unit, const U& value, const std::bitset<N>& idx)
+  OSSIA_INLINE ossia::value_with_unit operator()(T value_unit, const U& value, const std::bitset<N>& idx)
   {
     return {};
   }
@@ -209,17 +209,17 @@ struct value_merger
   }
 
   template<typename T>
-  ossia::value_with_unit operator()(const strong_value<T>& value_unit, Impulse value)
+  OSSIA_INLINE ossia::value_with_unit operator()(const strong_value<T>& value_unit, Impulse value)
   {
     return value_unit;
   }
   template<typename T>
-  ossia::value_with_unit operator()(const strong_value<T>& value_unit, const Destination& value)
+  OSSIA_INLINE ossia::value_with_unit operator()(const strong_value<T>& value_unit, const Destination& value)
   {
     return value_unit;
   }
   template<typename T>
-  ossia::value_with_unit operator()(const strong_value<T>& value_unit, const String& value)
+  OSSIA_INLINE ossia::value_with_unit operator()(const strong_value<T>& value_unit, const String& value)
   {
     return value_unit;
   }
@@ -231,7 +231,7 @@ struct vec_value_merger
   const std::bitset<N>& index;
 
   template<typename T, typename U>
-  ossia::value_with_unit operator()(const strong_value<T>& value_unit, const U& value)
+  OSSIA_INLINE ossia::value_with_unit operator()(const strong_value<T>& value_unit, const U& value)
   {
     return {};
   }
