@@ -317,16 +317,14 @@ void mapper::driverValueCallback(ossia::value value)
   auto driverUnit = mDriverAddress.get().getUnit();
   if(driverUnit && mDriverAddress.unit && driverUnit != mDriverAddress.unit)
   {
-    auto v1 = ossia::make_value(value, driverUnit);
-    auto v2 = ossia::convert(v1, mDriverAddress.unit);
-    auto v3 = ossia::to_value(v2);
+    auto v = ossia::convert(value, driverUnit, mDriverAddress.unit);
     if(mDriverAddress.index.size() == 1)
     {
-      value = get_value_at_index(v3, mDriverAddress.index);
+      value = get_value_at_index(std::move(v), mDriverAddress.index);
     }
     else
     {
-      value = v3;
+      value = std::move(v);
     }
   }
 

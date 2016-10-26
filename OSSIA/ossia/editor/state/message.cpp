@@ -19,11 +19,7 @@ void message::launch() const
     else
     {
       // Convert from this message's unit to the address's unit
-      addr.pushValue(
-            ossia::to_value(
-              ossia::convert(
-                ossia::make_value(message_value, unit),
-                addr_unit)));
+      addr.pushValue(ossia::convert(message_value, unit, addr_unit));
     }
   }
   else
@@ -179,14 +175,7 @@ void piecewise_vec_message<N>::launch() const
       }
       */
 
-      addr.pushValue(
-            ossia::to_value(
-              ossia::convert(
-                ossia::make_value(message_value, unit),
-                addr_unit
-                )
-              )
-            );
+      addr.pushValue(ossia::convert(message_value, unit, addr_unit));
     }
     else
     {

@@ -159,7 +159,6 @@ struct value_converter<std::array<float, N>>
     return {};
   }
 
-  template<typename U>
   std::array<float, N> operator()(Vec<float, N> v)
   {
     return v;

@@ -120,6 +120,19 @@ ossia::val_type matching_type(const ossia::unit_t& u);
 OSSIA_EXPORT
 ossia::value_with_unit convert(ossia::value_with_unit v, ossia::unit_t t);
 
+/**
+ * @brief convert Convert a value to another unit.
+ * @param v A value.
+ * @param source_unit The unit of v.
+ * @param destination_unit The unit in which v shall be converted.
+ *
+ * Dataspaces ought to be similar.
+ *
+ * @return Converted value, else the input value.
+ */
+OSSIA_EXPORT
+ossia::value convert(ossia::value v, ossia::unit_t source_unit, ossia::unit_t destination_unit);
+
 
 /**
  * @brief convert Convert a value + unit to a simple value

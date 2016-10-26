@@ -312,6 +312,17 @@ ossia::value_with_unit merge(
   return vu;
 }
 
+ossia::value convert(
+        ossia::value value,
+        ossia::unit_t source_unit,
+        ossia::unit_t destination_unit)
+{
+  return ossia::to_value(
+              ossia::convert(
+                  ossia::make_value(value, source_unit),
+                  destination_unit));
+}
+
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::color_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::distance_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::position_u);
@@ -320,5 +331,6 @@ template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::orient
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::angle_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::gain_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::time_u);
+
 
 }
