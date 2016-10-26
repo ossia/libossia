@@ -14,7 +14,7 @@ automation::automation(
   : mDrivenAddress(address)
   , mDrive(drive)
   , mLastMessage{address, ossia::value{}}
-  , mDrivenType{mDrivenAddress.value.get().getValueType()}
+  , mDrivenType{mDrivenAddress.value.get().cloneValue(mDrivenAddress.index).getType()}
 {
 }
 
@@ -23,7 +23,7 @@ automation::automation(
   : mDrivenAddress(address)
   , mDrive(std::move(drive))
   , mLastMessage{address, ossia::value{}}
-  , mDrivenType{mDrivenAddress.value.get().getValueType()}
+  , mDrivenType{mDrivenAddress.value.get().cloneValue(mDrivenAddress.index).getType()}
 {
 }
 
