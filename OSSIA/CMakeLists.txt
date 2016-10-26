@@ -145,6 +145,7 @@ if(WIN32)
         _CRT_SECURE_NO_WARNINGS
         WIN32_LEAN_AND_MEAN)
     target_compile_options(ossia PUBLIC "/bigobj")
+    target_compile_options(ossia PUBLIC "$<$<CONFIG:Release>:/GL>")
     target_link_libraries(ossia PRIVATE Ws2_32 winmm)
 endif()
 
