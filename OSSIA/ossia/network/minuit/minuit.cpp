@@ -140,7 +140,6 @@ struct scope_timer
     {
       using namespace std::chrono;
       t2 = high_resolution_clock::now();
-      std::cerr <<  duration_cast<milliseconds>(t2 - t1).count() << "\n";
     }
 };
 

@@ -123,35 +123,41 @@ struct osc_inbound_visitor
         return i;
       }
     }
+
+    float get_float(oscpack::ReceivedMessageArgumentIterator it, float f) const
+    {
+        try {
+          switch (it->TypeTag())
+          {
+            case oscpack::INT32_TYPE_TAG:
+              return it->AsInt32Unchecked();
+            case oscpack::INT64_TYPE_TAG:
+              return it->AsInt64Unchecked();
+            case oscpack::FLOAT_TYPE_TAG:
+              return it->AsFloatUnchecked();
+            case oscpack::DOUBLE_TYPE_TAG:
+              return it->AsDoubleUnchecked();
+            case oscpack::CHAR_TYPE_TAG:
+              return it->AsCharUnchecked();
+            case oscpack::TRUE_TYPE_TAG:
+              return 1.f;
+            case oscpack::FALSE_TYPE_TAG:
+              return 0.f;
+            case oscpack::STRING_TYPE_TAG:
+              return boost::lexical_cast<float>(it->AsStringUnchecked());
+            case oscpack::SYMBOL_TYPE_TAG:
+              return boost::lexical_cast<float>(it->AsSymbolUnchecked());
+            default:
+              return f;
+          }
+        } catch(const boost::bad_lexical_cast &) {
+          return f;
+        }
+    }
+
     ossia::value operator()(ossia::Float f) const
     {
-      try {
-        switch (cur_it->TypeTag())
-        {
-          case oscpack::INT32_TYPE_TAG:
-            return ossia::Float{float(cur_it->AsInt32Unchecked())};
-          case oscpack::INT64_TYPE_TAG:
-            return ossia::Float{float(cur_it->AsInt64Unchecked())};
-          case oscpack::FLOAT_TYPE_TAG:
-            return ossia::Float{float(cur_it->AsFloatUnchecked())};
-          case oscpack::DOUBLE_TYPE_TAG:
-            return ossia::Float{float(cur_it->AsDoubleUnchecked())};
-          case oscpack::CHAR_TYPE_TAG:
-            return ossia::Float{float(cur_it->AsCharUnchecked())};
-          case oscpack::TRUE_TYPE_TAG:
-            return ossia::Float{1.};
-          case oscpack::FALSE_TYPE_TAG:
-            return ossia::Float{0.};
-          case oscpack::STRING_TYPE_TAG:
-            return ossia::Float{boost::lexical_cast<float>(cur_it->AsStringUnchecked())};
-          case oscpack::SYMBOL_TYPE_TAG:
-            return ossia::Float{boost::lexical_cast<float>(cur_it->AsSymbolUnchecked())};
-          default:
-            return f;
-        }
-      } catch(const boost::bad_lexical_cast &) {
-        return f;
-      }
+        return get_float(cur_it, f);
     }
 
     ossia::value operator()(ossia::Bool b) const
@@ -238,6 +244,7 @@ struct osc_inbound_visitor
       }
     }
 
+
     template <std::size_t N>
     ossia::value operator()(ossia::Vec<float, N> vec) const
     {
@@ -249,13 +256,7 @@ struct osc_inbound_visitor
         auto vec_end = end_it;
         for (; vec_it != vec_end; ++vec_it)
         {
-          if (vec_it->IsFloat())
-            ret[i] = vec_it->AsFloatUnchecked();
-          else if (vec_it->IsDouble())
-            ret[i] = vec_it->AsDoubleUnchecked();
-          else
-            return vec;
-
+          ret[i] = get_float(vec_it, 0.);
           i++;
         }
         return ret;

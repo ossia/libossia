@@ -32,7 +32,6 @@ automation::~automation() = default;
 void automation::updateMessage(double t)
 {
   mLastMessage.message_value = computeValue(t, mDrivenType, mDrive);
-  ossia::print(std::cerr, mLastMessage) << std::endl;
 }
 
 ossia::state_element automation::offset(ossia::time_value offset)
