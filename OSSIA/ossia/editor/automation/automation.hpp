@@ -56,12 +56,16 @@ class OSSIA_EXPORT automation final :
     void pause() override;
     void resume() override;
 
-    static ossia::value computeValue(double, const ossia::behavior&);
+    static ossia::value computeValue(
+        double,
+        ossia::val_type drivenType,
+        const ossia::behavior&);
 
     void updateMessage(double t);
 
     Destination mDrivenAddress;
     ossia::behavior mDrive;
     ossia::message mLastMessage;
+    ossia::val_type mDrivenType{};
 };
 }

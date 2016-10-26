@@ -14,6 +14,7 @@ automation::automation(
   : mDrivenAddress(address)
   , mDrive(drive)
   , mLastMessage{address, ossia::value{}}
+  , mDrivenType{mDrivenAddress.value.get().getValueType()}
 {
 }
 
@@ -22,6 +23,7 @@ automation::automation(
   : mDrivenAddress(address)
   , mDrive(std::move(drive))
   , mLastMessage{address, ossia::value{}}
+  , mDrivenType{mDrivenAddress.value.get().getValueType()}
 {
 }
 
@@ -29,7 +31,7 @@ automation::~automation() = default;
 
 void automation::updateMessage(double t)
 {
-  mLastMessage.message_value = computeValue(t, mDrive);
+  mLastMessage.message_value = computeValue(t, mDrivenType, mDrive);
   ossia::print(std::cerr, mLastMessage) << std::endl;
 }
 
@@ -102,6 +104,7 @@ const ossia::behavior& automation::getDriving() const
 struct computeValue_visitor
 {
   double position;
+  ossia::val_type driven_type;
 
   ossia::value error() const
   {
@@ -121,6 +124,36 @@ struct computeValue_visitor
     return error();
   }
 
+  template<int N>
+  ossia::value make_filled_vec(
+      ossia::curve_abstract* base_curve,
+      ossia::curve_segment_type t) const
+  {
+    switch (t)
+    {
+      case ossia::curve_segment_type::FLOAT:
+      {
+        auto c = static_cast<curve<double, float>*>(base_curve);
+        return fill_vec<N>(float(c->valueAt(position)));
+      }
+      case ossia::curve_segment_type::INT:
+      {
+        auto c = static_cast<curve<double, int>*>(base_curve);
+        return fill_vec<N>(int(c->valueAt(position)));
+      }
+      case ossia::curve_segment_type::BOOL:
+      {
+        auto c = static_cast<curve<double, bool>*>(base_curve);
+        return fill_vec<N>(bool(c->valueAt(position)));
+      }
+      case ossia::curve_segment_type::DOUBLE:
+      case ossia::curve_segment_type::ANY:
+        break;
+    }
+
+    return {};
+  }
+
   ossia::value operator()(const curve_ptr& c) const
   {
     auto base_curve = c.get();
@@ -134,32 +167,53 @@ struct computeValue_visitor
     auto t = base_curve->getType();
     if (t.first == ossia::curve_segment_type::DOUBLE)
     {
-      switch (t.second)
+      switch (driven_type)
       {
-        case ossia::curve_segment_type::FLOAT:
+        case ossia::val_type::FLOAT:
+        case ossia::val_type::INT:
+        case ossia::val_type::BOOL:
         {
-          auto c = static_cast<curve<double, float>*>(base_curve);
-          return ossia::Float{c->valueAt(position)};
-        }
-        case ossia::curve_segment_type::INT:
-        {
-          auto c = static_cast<curve<double, int>*>(base_curve);
-          return ossia::Int{c->valueAt(position)};
-        }
-        case ossia::curve_segment_type::BOOL:
-        {
-          auto c = static_cast<curve<double, bool>*>(base_curve);
-          return ossia::Bool{c->valueAt(position)};
-        }
-        case ossia::curve_segment_type::DOUBLE:
+          switch (t.second)
+          {
+            case ossia::curve_segment_type::FLOAT:
+            {
+              auto c = static_cast<curve<double, float>*>(base_curve);
+              return ossia::Float{c->valueAt(position)};
+            }
+            case ossia::curve_segment_type::INT:
+            {
+              auto c = static_cast<curve<double, int>*>(base_curve);
+              return ossia::Int{c->valueAt(position)};
+            }
+            case ossia::curve_segment_type::BOOL:
+            {
+              auto c = static_cast<curve<double, bool>*>(base_curve);
+              return ossia::Bool{c->valueAt(position)};
+            }
+            case ossia::curve_segment_type::DOUBLE:
+              break;
+            case ossia::curve_segment_type::ANY:
+            {
+              auto c = static_cast<constant_curve*>(base_curve);
+              // TODO we need a specific handling for destination.
+              return c->value();
+            }
+          }
           break;
-        case ossia::curve_segment_type::ANY:
-        {
-          auto c = static_cast<constant_curve*>(base_curve);
-          // TODO we need a specific handling for destination.
-          return c->value();
         }
+
+        case ossia::val_type::VEC2F:
+          return make_filled_vec<2>(base_curve, t.second);
+        case ossia::val_type::VEC3F:
+          return make_filled_vec<3>(base_curve, t.second);
+        case ossia::val_type::VEC4F:
+          return make_filled_vec<4>(base_curve, t.second);
+
+
+        default:
+          break;
       }
+
     }
 
 
@@ -247,10 +301,11 @@ struct computeValue_visitor
 ossia::value
 automation::computeValue(
     double position,
+    ossia::val_type drivenType,
     const ossia::behavior& drive)
 {
   if(drive)
-    return eggs::variants::apply(computeValue_visitor{position}, drive);
+    return eggs::variants::apply(computeValue_visitor{position, drivenType}, drive);
   return {};
 }
 

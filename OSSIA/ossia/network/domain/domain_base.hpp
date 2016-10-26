@@ -31,9 +31,18 @@ struct OSSIA_EXPORT domain_base
 
   domain_base() noexcept { }
   domain_base(const domain_base&) = default;
-  domain_base(domain_base&&) noexcept = default;
+  domain_base(domain_base&& other) noexcept :
+    min{std::move(other.min)},
+    max{std::move(other.max)},
+    values{std::move(other.values)} { }
   domain_base& operator=(const domain_base&) = default;
-  domain_base& operator=(domain_base&&) noexcept = default;
+  domain_base& operator=(domain_base&& other) noexcept
+  {
+    min = std::move(other.min);
+    max = std::move(other.max);
+    values= std::move(other.values);
+    return *this;
+  }
 
   domain_base(value_type v1, value_type v2): min{v1}, max{v2} { }
 };
@@ -128,7 +137,7 @@ struct OSSIA_EXPORT domain final : public domain_base_variant
   domain(const domain& d) : domain_base_variant{ (const domain_base_variant&)d } { }
   domain(domain&& d) : domain_base_variant{ std::move((domain_base_variant&)d) } { }
   domain& operator=(const domain& d) { ((domain_base_variant&)(*this)) = (const domain_base_variant&)d; return *this; }
-  domain& operator=(domain&& d) { ((domain_base_variant&)(*this)) = std::move((domain_base_variant&)d); return *this; } 
+  domain& operator=(domain&& d) { ((domain_base_variant&)(*this)) = std::move((domain_base_variant&)d); return *this; }
   ~domain() { }
 #else
   using domain_base_variant::domain_base_variant;
