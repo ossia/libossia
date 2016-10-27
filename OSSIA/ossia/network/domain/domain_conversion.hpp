@@ -100,6 +100,49 @@ struct domain_conversion<domain_base<Vec<float, N>>>
   {
     return src;
   }
+  domain_base<Vec<float, N>> tuple_func(const domain_base<Tuple>& t)
+  {
+      auto to_vec = [] (const Tuple& sub)
+      {
+          Vec<float, N> vec;
+          for (std::size_t i = 0; i < N; i++)
+              vec[i] = ossia::convert<float>(sub[i]);
+          return vec;
+      };
+
+      domain_base<Vec<float, N>> dom;
+      if(t.min)
+      {
+          const Tuple& min = t.min.get();
+          if(min.size() == N)
+          {
+              dom.min = to_vec(min);
+          }
+      }
+      if(t.max)
+      {
+          const Tuple& max = t.max.get();
+          if(max.size() == N)
+          {
+              dom.max = to_vec(max);
+          }
+      }
+
+      for(auto& val : t.values)
+      {
+          if(val.size() == N)
+          {
+              dom.values.insert(to_vec(val));
+          }
+      }
+
+      return dom;
+  }
+
+  OSSIA_INLINE domain operator()(const domain_base<Tuple>& t)
+  {
+      return tuple_func(t);
+  }
 
   template <typename T>
   OSSIA_INLINE domain operator()(const T&)

@@ -1,4 +1,5 @@
 #include <ossia/network/domain/detail/apply_domain.hpp>
+#include <ossia/network/domain/domain_conversion.hpp>
 
 namespace ossia
 {
@@ -956,6 +957,9 @@ ossia::value apply_domain_visitor::operator()(const Vec<float, 2>& value, const 
 ossia::value apply_domain_visitor::operator()(const Vec<float, 2>& value, const domain_base<Vec<float, 2>>& domain) const
 { return vec_clamp<2>{domain}(b, value); }
 
+ossia::value apply_domain_visitor::operator()(const Vec<float, 2>& value, const domain_base<Tuple>& domain) const
+{ return vec_clamp<2>{ossia::net::domain_conversion<domain_base<Vec<float, 2>>>{}.tuple_func(domain)}(b, value); }
+
 ossia::value apply_domain_visitor::operator()(const Vec<float, 3>& value, const domain_base<Float>& domain) const
 { return numeric_clamp<domain_base<Float>>{domain}(b, value); }
 
@@ -970,6 +974,9 @@ ossia::value apply_domain_visitor::operator()(const Vec<float, 3>& value, const 
 
 ossia::value apply_domain_visitor::operator()(const Vec<float, 3>& value, const domain_base<Vec<float, 3>>& domain) const
 { return vec_clamp<3>{domain}(b, value); }
+
+ossia::value apply_domain_visitor::operator()(const Vec<float, 3>& value, const domain_base<Tuple>& domain) const
+{ return vec_clamp<3>{ossia::net::domain_conversion<domain_base<Vec<float, 3>>>{}.tuple_func(domain)}(b, value); }
 
 ossia::value apply_domain_visitor::operator()(const Vec<float, 4>& value, const domain_base<Float>& domain) const
 { return numeric_clamp<domain_base<Float>>{domain}(b, value); }
@@ -986,9 +993,8 @@ ossia::value apply_domain_visitor::operator()(const Vec<float, 4>& value, const 
 ossia::value apply_domain_visitor::operator()(const Vec<float, 4>& value, const domain_base<Vec<float, 4>>& domain) const
 { return vec_clamp<4>{domain}(b, value); }
 
-template struct vec_clamp<2>;
-template struct vec_clamp<3>;
-template struct vec_clamp<4>;
+ossia::value apply_domain_visitor::operator()(const Vec<float, 4>& value, const domain_base<Tuple>& domain) const
+{ return vec_clamp<4>{ossia::net::domain_conversion<domain_base<Vec<float, 4>>>{}.tuple_func(domain)}(b, value); }
 
 }
 }

@@ -66,16 +66,21 @@ struct apply_domain_visitor
   ossia::value operator()(const Vec<float, 2>& value, const domain_base<Bool>& domain) const;
   ossia::value operator()(const Vec<float, 2>& value, const domain_base<Char>& domain) const;
   ossia::value operator()(const Vec<float, 2>& value, const domain_base<Vec<float, 2>>& domain) const;
+  ossia::value operator()(const Vec<float, 2>& value, const domain_base<Tuple>& domain) const;
+
   ossia::value operator()(const Vec<float, 3>& value, const domain_base<Float>& domain) const;
   ossia::value operator()(const Vec<float, 3>& value, const domain_base<Int>& domain) const;
   ossia::value operator()(const Vec<float, 3>& value, const domain_base<Bool>& domain) const;
   ossia::value operator()(const Vec<float, 3>& value, const domain_base<Char>& domain) const;
   ossia::value operator()(const Vec<float, 3>& value, const domain_base<Vec<float, 3>>& domain) const;
+  ossia::value operator()(const Vec<float, 3>& value, const domain_base<Tuple>& domain) const;
+
   ossia::value operator()(const Vec<float, 4>& value, const domain_base<Float>& domain) const;
   ossia::value operator()(const Vec<float, 4>& value, const domain_base<Int>& domain) const;
   ossia::value operator()(const Vec<float, 4>& value, const domain_base<Bool>& domain) const;
   ossia::value operator()(const Vec<float, 4>& value, const domain_base<Char>& domain) const;
   ossia::value operator()(const Vec<float, 4>& value, const domain_base<Vec<float, 4>>& domain) const;
+  ossia::value operator()(const Vec<float, 4>& value, const domain_base<Tuple>& domain) const;
 
 };
 
