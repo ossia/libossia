@@ -278,9 +278,13 @@ void clock::request_stop()
   if (mRunning)
   {
     if(mDriveMode == DriveMode::EXTERNAL)
+    {
       mRunning = false;
+    }
     else
+    {
       mShouldStop = true;
+    }
 
     mPaused = false;
     if (mStatusCallback)

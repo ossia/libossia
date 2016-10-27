@@ -165,6 +165,8 @@ public:
 
   void setStatus(Status status);
 
+  void reset();
+
   /* To be called before deletion, to break the shared_ptr cycle */
   void cleanup();
 private:

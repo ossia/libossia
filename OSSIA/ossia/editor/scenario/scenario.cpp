@@ -156,7 +156,7 @@ state_element scenario::state()
 
     // process the scenario from the first TimeNode to the running constraints
     ptr_container<time_event> statusChangedEvents;
-    auto& n = *mTimeNodes[0];
+    time_node& n = *mTimeNodes[0];
     n.process(statusChangedEvents);
 
     // add the state of each newly HAPPENED TimeEvent
@@ -303,6 +303,11 @@ void scenario::stop()
     {
       cst.stop();
     }
+  }
+
+  for(const auto& node : mTimeNodes)
+  {
+      node->reset();
   }
 }
 

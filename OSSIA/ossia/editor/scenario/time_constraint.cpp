@@ -75,6 +75,11 @@ void time_constraint::stop()
   {
     timeProcess->stop();
   }
+
+  mClock->mDate = 0;
+  mClock->mPosition = 0;
+  mClock->mLastTime = clock::clock_type::time_point{};
+  mClock->mElapsedTime = 0;
 }
 
 ossia::state time_constraint::offset(time_value date)

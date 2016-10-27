@@ -166,7 +166,9 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
         for (auto& timeConstraint : timeEvent->previousTimeConstraints())
         {
           if (timeConstraint->getDate() >= timeConstraint->getDurationMax())
+          {
             maximalDurationReached = true;
+          }
         }
 
         break;
@@ -270,7 +272,18 @@ void time_node::resultCallback(bool result)
 {
   //! \note the result of the expression is not exploited here.
   //! \note the observation of the expression allows to observe all Destination
-  //! value contained into it.
+    //! value contained into it.
+}
+
+void time_node::reset()
+{
+    for(auto& timeEvent : mTimeEvents)
+    {
+        timeEvent->reset();
+    }
+
+    mPendingEvents.clear();
+
 }
 
 void time_node::cleanup()

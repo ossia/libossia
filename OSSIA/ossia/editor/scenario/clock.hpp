@@ -12,6 +12,7 @@ namespace ossia
 {
 class OSSIA_EXPORT clock
 {
+    friend class time_constraint;
 public:
   using clock_type = std::chrono::steady_clock;
   /*! to get the clock execution back

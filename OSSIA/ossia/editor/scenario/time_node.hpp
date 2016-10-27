@@ -132,6 +132,8 @@ class OSSIA_EXPORT time_node final :
 
     void resultCallback(bool result);
 
+    void reset();
+
     /* To be called before deletion, to break the shared_ptr cycle */
     void cleanup();
   private:

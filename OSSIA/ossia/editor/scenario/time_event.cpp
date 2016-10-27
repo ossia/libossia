@@ -137,7 +137,12 @@ void time_event::setStatus(Status status)
 {
   mStatus = status;
   if (mCallback)
-    (mCallback)(mStatus);
+      (mCallback)(mStatus);
+}
+
+void time_event::reset()
+{
+    setStatus(Status::NONE);
 }
 
 void time_event::cleanup()
