@@ -46,3 +46,25 @@ using unit_count = brigand::fold<
   brigand::uint64_t<0>,
   brigand::plus<brigand::_state, brigand::_element>>;
 }
+
+
+namespace std
+{
+template<> struct hash<ossia::distance_u>
+{ std::size_t operator()(const ossia::distance_u& k) const { return k.which(); } };
+template<> struct hash<ossia::position_u>
+{ std::size_t operator()(const ossia::position_u& k) const { return k.which(); } };
+template<> struct hash<ossia::speed_u>
+{ std::size_t operator()(const ossia::speed_u& k) const { return k.which(); } };
+template<> struct hash<ossia::orientation_u>
+{ std::size_t operator()(const ossia::orientation_u& k) const { return k.which(); } };
+template<> struct hash<ossia::angle_u>
+{ std::size_t operator()(const ossia::angle_u& k) const { return k.which(); } };
+template<> struct hash<ossia::color_u>
+{ std::size_t operator()(const ossia::color_u& k) const { return k.which(); } };
+template<> struct hash<ossia::gain_u>
+{ std::size_t operator()(const ossia::gain_u& k) const { return k.which(); } };
+template<> struct hash<ossia::time_u>
+{ std::size_t operator()(const ossia::time_u& k) const { return k.which(); } };
+
+}
