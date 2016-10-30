@@ -8,16 +8,9 @@ namespace net
 namespace detail
 {
 /// Min ///
-template<typename T, typename = void>
-struct domain_min_visitor_helper
-{
-  template <typename U>
-  OSSIA_INLINE ossia::value operator()(const U&) const
-  { return ossia::value{}; }
-};
 
 template<typename T>
-struct domain_min_visitor_helper<T, void_t<decltype(std::declval<T>().min)>>
+struct domain_min_visitor_helper
 {
   OSSIA_INLINE ossia::value operator()(const T& value) const
   {
@@ -25,6 +18,24 @@ struct domain_min_visitor_helper<T, void_t<decltype(std::declval<T>().min)>>
       return value::make<typename T::value_type>(value.min.get());
     else
       return ossia::value{};
+  }
+};
+
+template<>
+struct domain_min_visitor_helper<domain_base<Impulse>>
+{
+  OSSIA_INLINE ossia::value operator()(const domain_base<Impulse>& value) const
+  {
+    return Impulse{};
+  }
+};
+
+template<>
+struct domain_min_visitor_helper<domain_base<String>>
+{
+  OSSIA_INLINE ossia::value operator()(const domain_base<String>& value) const
+  {
+    return {};
   }
 };
 
@@ -43,17 +54,10 @@ struct domain_min_visitor_helper<domain_base<ossia::value>>
 };
 
 
-/// Max ///
-template<typename T, typename = void>
-struct domain_max_visitor_helper
-{
-  template <typename U>
-  OSSIA_INLINE ossia::value operator()(const U&) const
-  { return ossia::value{}; }
-};
 
+/// Max ///
 template<typename T>
-struct domain_max_visitor_helper<T, void_t<decltype(std::declval<T>().max)>>
+struct domain_max_visitor_helper
 {
   OSSIA_INLINE ossia::value operator()(const T& value) const
   {
@@ -61,6 +65,24 @@ struct domain_max_visitor_helper<T, void_t<decltype(std::declval<T>().max)>>
       return value::make<typename T::value_type>(value.max.get());
     else
       return ossia::value{};
+  }
+};
+
+template<>
+struct domain_max_visitor_helper<domain_base<Impulse>>
+{
+  OSSIA_INLINE ossia::value operator()(const domain_base<Impulse>& value) const
+  {
+    return Impulse{};
+  }
+};
+
+template<>
+struct domain_max_visitor_helper<domain_base<String>>
+{
+  OSSIA_INLINE ossia::value operator()(const domain_base<String>& value) const
+  {
+    return {};
   }
 };
 
