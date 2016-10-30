@@ -281,7 +281,7 @@ inline ossia::net::domain get_domain(
   {
     auto cur_it = beg_it;
     ++beg_it;
-    val.push_back(ossia::net::to_value(cur, cur_it, beg_it, 1));
+    val.push_back(ossia::net::to_numeric_value(cur, cur_it, beg_it));
   }
 
   return ossia::net::make_domain(val, cur);
