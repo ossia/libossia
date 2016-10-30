@@ -518,6 +518,66 @@ inline bool update_value(
   return update_value(
         addr, mess.ArgumentsBegin(), mess.ArgumentsEnd(), mess.ArgumentCount());
 }
+
+struct osc_write_domain_visitor
+{
+  ossia::net::osc_outbound_visitor vis;
+  template<typename T>
+  void operator()(const T& dom)
+  {
+    if(dom.min && dom.max)
+    {
+      vis(dom.min.get());
+      vis(dom.max.get());
+    }
+  }
+
+  template<std::size_t N>
+  void operator()(const domain_base<ossia::Vec<float, N>>& dom)
+  {
+    if(dom.min && dom.max)
+    {
+      vis(dom.min.get()[0]);
+      vis(dom.max.get()[0]);
+    }
+  }
+
+  void operator()(const domain_base<Tuple>& dom)
+  {
+    if(dom.min && dom.max)
+    {
+      const Tuple& min = dom.min.get();
+      const Tuple& max = dom.max.get();
+      if(!min.empty() && !max.empty())
+      {
+        vis(ossia::convert<float>(min[0]));
+        vis(ossia::convert<float>(max[0]));
+      }
+    }
+  }
+
+  void operator()(const domain_base<ossia::value>& dom)
+  {
+    if(dom.min && dom.max)
+    {
+      vis(ossia::convert<float>(dom.min.get()));
+      vis(ossia::convert<float>(dom.max.get()));
+    }
+  }
+
+  void operator()(const domain_base<ossia::Impulse>& dom)
+  {
+  }
+
+  void operator()(const domain_base<ossia::String>& dom)
+  {
+  }
+
+  void operator()()
+  {
+  }
+};
+
 }
 }
 
@@ -530,13 +590,11 @@ operator<<(oscpack::OutboundPacketStream& p, const ossia::value& val)
   return p;
 }
 
+
 inline oscpack::OutboundPacketStream&
 operator<<(oscpack::OutboundPacketStream& p, const ossia::net::domain& dom)
 {
-  auto dom_min = dom.get_min();
-  auto dom_max = dom.get_max();
-  if (bool(dom_min.v) && bool(dom_max.v))
-    p << dom_min << dom_max;
+  ossia::apply(ossia::net::osc_write_domain_visitor{p}, dom);
 
   return p;
 }
