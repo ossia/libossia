@@ -475,21 +475,21 @@ private Q_SLOTS:
 
     { // Empty domain
       domain d = domain_base<Impulse>();
-      QVERIFY(get_min(d) == value{});
-      QVERIFY(get_max(d) == value{});
+      QVERIFY(get_min(d) == Impulse{});
+      QVERIFY(get_max(d) == Impulse{});
 
 
       set_min(d, Impulse{});
-      QVERIFY(get_min(d) == value{});
+      QVERIFY(get_min(d) == Impulse{});
 
       set_max(d, Impulse{});
-      QVERIFY(get_max(d) == value{});
+      QVERIFY(get_max(d) == Impulse{});
 
       set_min(d, Int{});
-      QVERIFY(get_min(d) == value{});
+      QVERIFY(get_min(d) == Impulse{});
 
       set_max(d, Int{});
-      QVERIFY(get_max(d) == value{});
+      QVERIFY(get_max(d) == Impulse{});
 
       // etc...
     }
