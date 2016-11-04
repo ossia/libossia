@@ -225,6 +225,18 @@ struct osc_utilities
     }
   }
 
+  static ossia::Tuple create_tuple(
+      oscpack::ReceivedMessageArgumentIterator cur_it, int numArguments)
+  {
+    ossia::Tuple t;
+    for(int i = 0; i < numArguments; ++i)
+    {
+      t.push_back(osc_utilities::create_value(cur_it));
+      ++cur_it;
+    }
+    return t;
+  }
+
 };
 
 struct osc_inbound_visitor
@@ -335,13 +347,7 @@ struct osc_inbound_visitor
       }
     }
     */
-      ossia::Tuple t;
-      for(int i = 0; i < numArguments; ++i)
-      {
-        t.push_back(osc_utilities::create_value(cur_it));
-        ++cur_it;
-      }
-      return t;
+      return osc_utilities::create_tuple(cur_it, numArguments);
     }
 
     ossia::value operator()() const

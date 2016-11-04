@@ -5,6 +5,7 @@
 #include <ossia/network/base/protocol.hpp>
 #include <mutex>
 #include <unordered_map>
+#include <atomic>
 
 namespace oscpack
 {
@@ -27,13 +28,15 @@ private:
   uint16_t mRemotePort{}; /// the port that a remote device opens
   uint16_t mLocalPort{};  /// the port where a remote device sends OSC messages
                           /// to (opened in this library)
-  bool mLearning{};       /// if the device is currently learning from inbound
+  std::atomic_bool mLearning{};       /// if the device is currently learning from inbound
                           /// messages.
   std::mutex mListeningMutex;
   std::unordered_map<std::string, ossia::net::address_base*> mListening;
 
   std::unique_ptr<osc::sender> mSender;
   std::unique_ptr<osc::receiver> mReceiver;
+
+  ossia::net::device_base* mDevice{};
 
 public:
   osc_protocol(std::string ip, uint16_t remote_port, uint16_t local_port);
@@ -55,7 +58,7 @@ public:
   osc_protocol& setLocalPort(uint16_t);
 
   bool getLearningStatus() const;
-  osc_protocol& setLearningStatus(ossia::net::device_base&, bool);
+  osc_protocol& setLearningStatus(bool);
 
   bool update(ossia::net::node_base& node_base) override;
 
@@ -68,6 +71,8 @@ public:
 private:
   void handleReceivedMessage(
       const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
+  void handleLearn(const oscpack::ReceivedMessage& m);
+  void setDevice(ossia::net::device_base& dev) override;
 };
 }
 }
