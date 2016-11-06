@@ -60,6 +60,12 @@ void time_event::dispose()
 
   mStatus = time_event::Status::DISPOSED;
 
+  // stop previous TimeConstraints
+  for (auto& timeConstraint : previousTimeConstraints())
+  {
+    timeConstraint->stop();
+  }
+
   // dispose next TimeConstraints end event if everything is disposed before
   for (auto& nextTimeConstraint : nextTimeConstraints())
   {
