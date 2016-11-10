@@ -31,7 +31,8 @@ ws_generic_client_node::ws_generic_client_node(
 
 ws_generic_client_node::~ws_generic_client_node()
 {
-
+  mChildren.clear();
+  mAddress.reset();
 }
 
 device_base& ws_generic_client_node::getDevice() const

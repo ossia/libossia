@@ -100,20 +100,20 @@ bool ws_generic_client_protocol::push(const ossia::net::address_base& address_ba
   return false;
 }
 
-bool ws_generic_client_protocol::observe(ossia::net::address_base& addr, bool enable)
+bool ws_generic_client_protocol::observe(ossia::net::address_base& addr_base, bool enable)
 {
-  auto a = QString::fromStdString(address_string_from_node(addr));
+  auto& addr = static_cast<ws_generic_client_address&>(addr_base);
   if(enable)
   {
-    QMetaObject::invokeMethod(mItem,
-                              "openListening",
-                              Q_ARG(QVariant, a));
+    auto& fun = addr.data().openListening;
+    if(fun.isCallable())
+      fun.call();
   }
   else
   {
-    QMetaObject::invokeMethod(mItem,
-                              "closeListening",
-                              Q_ARG(QVariant, a));
+    auto& fun = addr.data().closeListening;
+    if(fun.isCallable())
+      fun.call();
   }
   return true;
 }
@@ -140,7 +140,7 @@ void ws_generic_client_protocol::slot_push(const ws_generic_client_address* addr
   {
       if(dat.isString())
       {
-        qDebug() << "senidng" << dat.toString().replace("$val", value_to_js_string(addr.cloneValue()));
+        qDebug() << "sending" << dat.toString().replace("$val", value_to_js_string(addr.cloneValue()));
         mWebsocket->sendTextMessage(
               dat.toString().replace("$val", value_to_js_string(addr.cloneValue())));
       }

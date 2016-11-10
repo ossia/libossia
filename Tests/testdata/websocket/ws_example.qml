@@ -3,13 +3,6 @@ import org.ossia 1.0
 
 QtObject
 {
-    function openListening(address) {
-
-    }
-
-    function closeListening(address) {
-
-    }
 
     function onMessage(message) {
         console.log(message);
@@ -29,12 +22,21 @@ QtObject
                         {
                             name: "tutu",
                             request: "{ \"name\": \"toto\", \"value\": $val }",
-                            type: Ossia.Float
+                            type: Ossia.Float,
+                            unit: "color.rgb"
                         },
                         {
                             name: "titi",
                             request: function (value) {
                                 return JSON.stringify({ tutu: value })
+                            },
+
+                            openListening: function () {
+                                return "open titi listening";
+                            },
+
+                            closeListening: function () {
+                                return "close titi listening";
                             }
                         }
                     ]

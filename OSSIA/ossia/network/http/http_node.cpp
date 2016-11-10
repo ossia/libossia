@@ -31,7 +31,8 @@ http_node::http_node(
 
 http_node::~http_node()
 {
-
+  mChildren.clear();
+  mAddress.reset();
 }
 
 device_base& http_node::getDevice() const

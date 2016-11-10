@@ -29,6 +29,10 @@ public:
   const ws_generic_client_address_data_base& data() const
   { return mData; }
 
+  // Non-const overload required to call functions on it since QJSValue::call is not const
+  ws_generic_client_address_data_base& data()
+  { return mData; }
+
 private:
 };
 }

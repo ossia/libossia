@@ -4,6 +4,7 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/generic/generic_address.hpp>
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <QStringBuilder>
 #include <QHash>
 #include <QString>
@@ -18,112 +19,12 @@ namespace ossia
 namespace net
 {
 
-template<typename Device_T, typename Node_T, typename Protocol_T>
-void create_device(Device_T& device, QJSValue root);
-template<typename Device_T, typename Node_T, typename Protocol_T>
-void create_node_rec(QJSValue js, Device_T& device, Node_T& parent);
-
-template<typename Device_T, typename Node_T, typename Protocol_T>
-void create_device(Device_T& device, QJSValue root)
-{
-  if(!root.isArray())
-    return;
-
-  QJSValueIterator it(root);
-  while (it.hasNext()) {
-    it.next();
-    create_node_rec<Device_T, Node_T, Protocol_T>(it.value(), device, static_cast<Node_T&>(device));
-  }
-}
-
-
-template<typename Device_T, typename Node_T, typename Protocol_T>
-void create_node_rec(QJSValue js, Device_T& device, Node_T& parent)
-{
-  auto data = Protocol_T::read_data(js);
-  if(data.node_name.empty())
-    return;
-
-  auto node = new Node_T{data, device, parent};
-  parent.add_child(std::unique_ptr<ossia::net::node_base>(node));
-
-  device.onNodeCreated(*node);
-
-  QJSValue children = js.property("children");
-  if(!children.isArray())
-    return;
-
-  QJSValueIterator it(children);
-  while (it.hasNext()) {
-    it.next();
-    create_node_rec<Device_T, Node_T, Protocol_T>(it.value(), device, *node);
-  }
-}
-
-
-struct js_value_inbound_visitor
-{
-  const QJSValue& val;
-public:
-  ossia::value operator()(Impulse) const
-  {
-    return Impulse{};
-  }
-
-  ossia::value operator()(Int v) const
-  {
-    return ossia::Int(val.toInt());
-  }
-  ossia::value operator()(Float v) const
-  {
-    return ossia::Float(val.toNumber());
-  }
-  ossia::value operator()(Bool v) const
-  {
-    return ossia::Bool(val.toBool());
-  }
-  ossia::value operator()(Char v) const
-  {
-    auto str = val.toString();
-    if(str.size() > 0)
-      return ossia::Char(str[0].toLatin1());
-    return v;
-  }
-
-  ossia::value operator()(const String& v) const
-  {
-    return ossia::String(val.toString().toStdString());
-  }
-
-  ossia::value operator()(const Tuple& v) const
-  {
-    return v; // TODO
-  }
-
-  ossia::value operator()(Vec2f v) const
-  {
-    return v; // TODO
-  }
-  ossia::value operator()(Vec3f v) const
-  {
-    return v; // TODO
-  }
-  ossia::value operator()(Vec4f v) const
-  {
-    return v; // TODO
-  }
-
-  ossia::value operator()(const Destination& t) { return t; }
-  ossia::value operator()() const { return {}; }
-
-};
-
-inline ossia::value value_from_jsvalue(ossia::value cur, const QJSValue& v)
-{
-  return cur.apply(js_value_inbound_visitor{v});
-}
-
-
+/**
+ * @brief The qml_context struct
+ *
+ * This class is used to allow QML scripts to access common enums
+ * in Ossia.
+ */
 struct qml_context
 {
 private:
@@ -174,6 +75,13 @@ public:
   Q_ENUM(bounding_mode)
   Q_ENUM(repetition_filter)
 };
+
+
+/**
+ * @brief The matching_ossia_enum struct
+ *
+ * Allows converting between QML enums and Ossia enums
+ */
 template<typename T>
 struct matching_ossia_enum
 {
@@ -200,135 +108,57 @@ struct matching_ossia_enum<ossia::repetition_filter>
   using type = qml_context::repetition_filter;
 };
 
-template<typename T>
-boost::optional<T> get_enum(const QJSValue& val)
+
+/**
+ * @brief The js_value_inbound_visitor struct
+ *
+ * Converts a QJSValue to an ossia::value according to the current value's type
+ */
+struct js_value_inbound_visitor
 {
-  if(val.isNumber())
-  {
-    int n = val.toInt();
-    if(n >= 0 && n < QMetaEnum::fromType<typename matching_ossia_enum<T>::type>().keyCount())
-    {
-      return static_cast<T>(n);
-    }
-  }
-  return {};
-}
-inline boost::optional<ossia::val_type> to_ossia_type(int t)
-{
-  if(t >= 0 && t < 10)
-    return static_cast<ossia::val_type>(t);
-  return {};
-}
+  const QJSValue& val;
+public:
+  ossia::value operator()(Impulse) const;
 
-inline generic_address_data make_address_data(const QJSValue& js)
-{
-  generic_address_data dat;
+  ossia::value operator()(Int v) const;
+  ossia::value operator()(Float v) const;
+  ossia::value operator()(Bool v) const;
+  ossia::value operator()(Char v) const;
 
-  QJSValue name = js.property("name");
-  if(name.isString())
-  {
-    dat.node_name = name.toString().toStdString();
-  }
-  else
-  {
-    return dat;
-  }
+  ossia::value operator()(const String& v) const;
+  ossia::value operator()(const Tuple& v) const;
 
-  dat.type = get_enum<ossia::val_type>(js.property("type"));
+  ossia::value operator()(Vec2f v) const;
+  ossia::value operator()(Vec3f v) const;
+  ossia::value operator()(Vec4f v) const;
 
-  if(dat.type)
-  {
-    auto base_v = init_value(*dat.type);
-    auto domain = init_domain(*dat.type);
-    set_min(domain, value_from_jsvalue(base_v, js.property("min")));
-    set_max(domain, value_from_jsvalue(base_v, js.property("max")));
+  ossia::value operator()(const Destination& t);
+  ossia::value operator()() const;
+};
 
-    dat.domain = domain;
-    dat.access = get_enum<ossia::access_mode>(js.property("access"));
-    dat.bounding = get_enum<ossia::bounding_mode>(js.property("bounding"));
-    dat.repetition_filter = get_enum<ossia::repetition_filter>(js.property("repetition_filter"));
-  }
-
-  return dat;
-}
-
-
-
-inline QJSValue value_to_js_value(const ossia::value& cur, QJSEngine& engine);
-
+/**
+ * @brief The js_value_outbound_visitor struct
+ *
+ * Creates a QJSValue from an ossia::value
+ */
 struct js_value_outbound_visitor
 {
   QJSEngine& engine;
 
-  QJSValue to_enum(qml_context::val_type t) const
-  {
-    return engine.toScriptValue(QVariant::fromValue(t));
-  }
+  QJSValue to_enum(qml_context::val_type t) const;
 
-  QJSValue operator()(Impulse) const
-  {
-    QJSValue v;
-    v.setProperty("type", to_enum(qml_context::val_type::Impulse));
-    return v;
-  }
+  QJSValue operator()(Impulse) const;
 
-  QJSValue operator()(Int val) const
-  {
-    QJSValue v;
-    v.setProperty("type", to_enum(qml_context::val_type::Int));
-    v.setProperty("value", int32_t(val));
-    return v;
-  }
-  QJSValue operator()(Float val) const
-  {
-    QJSValue v;
-    v.setProperty("type", to_enum(qml_context::val_type::Float));
-    v.setProperty("value", val);
-    return v;
-  }
-  QJSValue operator()(Bool val) const
-  {
-    QJSValue v;
-    v.setProperty("type", to_enum(qml_context::val_type::Bool));
-    v.setProperty("value", val);
-    return v;
-  }
-  QJSValue operator()(Char val) const
-  {
-    QJSValue v;
-    v.setProperty("type", to_enum(qml_context::val_type::Char));
-    v.setProperty("value", val);
-    return v;
-  }
+  QJSValue operator()(Int val) const;
+  QJSValue operator()(Float val) const;
+  QJSValue operator()(Bool val) const;
+  QJSValue operator()(Char val) const;
 
-  QJSValue operator()(const String& val) const
-  {
-    QJSValue v;
-    v.setProperty("type", to_enum(qml_context::val_type::String));
-    v.setProperty("value", QString::fromStdString(val));
-    return v;
-  }
+  QJSValue operator()(const String& val) const;
 
-  QJSValue make_tuple(const std::vector<ossia::value>& arr) const
-  {
-    auto array = engine.newArray(arr.size());
-    int i = 0;
+  QJSValue make_tuple(const std::vector<ossia::value>& arr) const;
 
-    for(const auto& child : arr)
-    {
-      array.setProperty(i++, value_to_js_value(child, engine));
-    }
-
-    return array;
-  }
-
-  QJSValue operator()(const Tuple& val) const
-  {
-    QJSValue v;
-    v.setProperty("type", to_enum(qml_context::val_type::Tuple));
-    v.setProperty("value", make_tuple(val));
-    return v;
-  }
+  QJSValue operator()(const Tuple& val) const;
 
   template<std::size_t N>
   QJSValue make_array(const std::array<float, N>& arr) const
@@ -344,87 +174,35 @@ struct js_value_outbound_visitor
     return array;
   }
 
-  QJSValue operator()(Vec2f val) const
-  {
-    QJSValue v;
-    v.setProperty("type", to_enum(qml_context::val_type::Vec2f));
-    v.setProperty("value", make_array(val));
-    return v;
-  }
-  QJSValue operator()(Vec3f val) const
-  {
-    QJSValue v;
-    v.setProperty("type", to_enum(qml_context::val_type::Vec3f));
-    v.setProperty("value", make_array(val));
-    return v;
-  }
-  QJSValue operator()(Vec4f val) const
-  {
-    QJSValue v;
-    v.setProperty("type", to_enum(qml_context::val_type::Vec4f));
-    v.setProperty("value", make_array(val));
-    return v;
-  }
+  QJSValue operator()(Vec2f val) const;
+  QJSValue operator()(Vec3f val) const;
+  QJSValue operator()(Vec4f val) const;
 
-  QJSValue operator()(const Destination& t) { return {}; }
-  QJSValue operator()() const { return {}; }
-
+  QJSValue operator()(const Destination& t);
+  QJSValue operator()() const;
 };
 
-inline QJSValue value_to_js_value(const ossia::value& cur, QJSEngine& engine)
-{
-  return cur.apply(js_value_outbound_visitor{engine});
-}
 
-
-inline QString value_to_js_string(const ossia::value& cur);
+/**
+ * @brief The js_value_outbound_visitor struct
+ *
+ * Creates a QString from an ossia::value.
+ * This is used for replacing value parameters by the actual value
+ * in JSON messages for instance.
+ */
 struct js_string_outbound_visitor
 {
-  QString operator()(Impulse) const
-  {
-    return QStringLiteral("\"\"");
-  }
+  QString operator()(Impulse) const;
 
-  QString operator()(Int val) const
-  {
-    return QString::number(int32_t(val));
-  }
+  QString operator()(Int val) const;
 
-  QString operator()(Float val) const
-  {
-    return QString::number(val);
-  }
-  QString operator()(Bool val) const
-  {
-    return val ? QStringLiteral("true") : QStringLiteral("false");
-  }
-  QString operator()(Char val) const
-  {
-    return "\"" % QString{val} % "\"";
-  }
+  QString operator()(Float val) const;
+  QString operator()(Bool val) const;
+  QString operator()(Char val) const;
 
-  QString operator()(const String& val) const
-  {
-    return "\"" % QString::fromStdString(val) % "\"";
-  }
+  QString operator()(const String& val) const;
 
-  QString operator()(const Tuple& val) const
-  {
-    QString s = "[";
-
-    std::size_t n = val.size();
-    if(n != 0)
-    {
-      s += value_to_js_string(val[0]);
-      for(std::size_t i = 1; i < n; i++)
-      {
-        s += ", " % value_to_js_string(val[i]);
-      }
-    }
-
-    s += "]";
-    return s;
-  }
+  QString operator()(const Tuple& val) const;
 
   template<std::size_t N>
   QString make_array(const std::array<float, N>& arr) const
@@ -441,27 +219,106 @@ struct js_string_outbound_visitor
     return s;
   }
 
-  QString operator()(Vec2f val) const
-  {
-    return make_array(val);
-  }
-  QString operator()(Vec3f val) const
-  {
-    return make_array(val);
-  }
-  QString operator()(Vec4f val) const
-  {
-    return make_array(val);
-  }
+  QString operator()(Vec2f val) const;
+  QString operator()(Vec3f val) const;
+  QString operator()(Vec4f val) const;
 
-  QString operator()(const Destination& t) { return (*this)(Impulse{}); }
-  QString operator()() const { return (*this)(Impulse{}); }
-
+  QString operator()(const Destination& t);
+  QString operator()() const;
 };
+
+inline ossia::value value_from_jsvalue(ossia::value cur, const QJSValue& v)
+{
+  return cur.apply(js_value_inbound_visitor{v});
+}
+
+inline QJSValue value_to_js_value(const ossia::value& cur, QJSEngine& engine)
+{
+  return cur.apply(js_value_outbound_visitor{engine});
+}
 
 inline QString value_to_js_string(const ossia::value& cur)
 {
   return cur.apply(js_string_outbound_visitor{});
+}
+
+/**
+ * @brief get_enum Gets an ossia enum from a QJSValue
+ *
+ * This function tries to convert a weakly-typed JS enum to a strongly-typed C++ enum.
+ */
+template<typename T>
+boost::optional<T> get_enum(const QJSValue& val)
+{
+  if(val.isNumber())
+  {
+    const int n = val.toInt();
+    if(n >= 0 && n < QMetaEnum::fromType<typename matching_ossia_enum<T>::type>().keyCount())
+    {
+      return static_cast<T>(n);
+    }
+  }
+  return {};
+}
+
+/**
+ * @brief make_address_data Extracts all the data required to build an address from a QJSValue
+ */
+generic_address_data make_address_data(const QJSValue& js);
+
+
+/**
+ * @defgroup JSTreeCreation
+ *
+ * The following functions iterate over a tree given in Javscript
+ * in order to create corresponding Ossia structures
+ */
+
+template<typename Device_T, typename Node_T, typename Protocol_T>
+/** @ingroup JSTreeCreation **/
+void create_device(Device_T& device, QJSValue root);
+
+template<typename Device_T, typename Node_T, typename Protocol_T>
+/** @ingroup JSTreeCreation **/
+void create_node_rec(QJSValue js, Device_T& device, Node_T& parent);
+
+template<typename Device_T, typename Node_T, typename Protocol_T>
+/** @ingroup JSTreeCreation **/
+void create_device(Device_T& device, QJSValue root)
+{
+  if(!root.isArray())
+    return;
+
+  QJSValueIterator it(root);
+  while (it.hasNext()) {
+    it.next();
+    create_node_rec<Device_T, Node_T, Protocol_T>(it.value(), device, static_cast<Node_T&>(device));
+  }
+}
+
+
+template<typename Device_T, typename Node_T, typename Protocol_T>
+/** @ingroup JSTreeCreation **/
+void create_node_rec(QJSValue js, Device_T& device, Node_T& parent)
+{
+  auto data = Protocol_T::read_data(js);
+  if(data.node_name.empty())
+    return;
+
+  auto node = new Node_T{data, device, parent};
+  parent.add_child(std::unique_ptr<ossia::net::node_base>(node));
+
+  device.onNodeCreated(*node);
+
+  QJSValue children = js.property("children");
+  if(!children.isArray())
+    return;
+
+  QJSValueIterator it(children);
+  while (it.hasNext()) {
+    it.next();
+    create_node_rec<Device_T, Node_T, Protocol_T>(it.value(), device, *node);
+  }
 }
 
 }
