@@ -227,6 +227,8 @@ struct js_string_outbound_visitor
   QString operator()() const;
 };
 
+ossia::value value_from_jsvalue(const QJSValue& v);
+
 inline ossia::value value_from_jsvalue(ossia::value cur, const QJSValue& v)
 {
   return cur.apply(js_value_inbound_visitor{v});
