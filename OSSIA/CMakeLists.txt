@@ -22,8 +22,10 @@ include(DebugMode)
 include(UseGold)
 include(LinkerWarnings)
 find_package(Boost REQUIRED)
-find_package(KF5DNSSD NO_MODULE)
-
+find_package(KF5DNSSD QUIET NO_MODULE)
+if(NOT KF5DNSSD) 
+  message(STATUS "Install KF5-DNSSD to build with Zeroconf / Bonjour support")
+endif()
 
 ### Protocol setup ###
 set(OSSIA_PROTOCOLS OSC Minuit)
