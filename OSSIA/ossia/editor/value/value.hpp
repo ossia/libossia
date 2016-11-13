@@ -53,11 +53,11 @@ class value;
 OSSIA_EXPORT std::string value_to_pretty_string(const ossia::value& val);
 
 using value_variant_type = eggs::variant<
-    Impulse, 
-    bool, int, float, char, 
-    std::string, 
-    std::vector<ossia::value>, 
-    std::array<float, 2ul>, std::array<float, 3ul>, std::array<float, 4ul>, 
+    Impulse,
+    bool, int, float, char,
+    std::string,
+    std::vector<ossia::value>,
+    std::array<float, 2ul>, std::array<float, 3ul>, std::array<float, 4ul>,
     Destination>;
 
 #if defined(_MSC_VER)
@@ -103,6 +103,7 @@ public:
   // Construction
   template <typename T>
   OSSIA_DECL_RELAXED_CONSTEXPR value(T*) = delete;
+  ~value() noexcept { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(Impulse val) noexcept : v{val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Destination& val) noexcept : v{val} { }
 
