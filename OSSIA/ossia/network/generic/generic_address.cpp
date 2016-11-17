@@ -85,6 +85,12 @@ ossia::value generic_address::cloneValue() const
 
 ossia::net::generic_address& generic_address::setValue(const ossia::value& val)
 {
+  send(setValueQuiet(val));
+  return *this;
+}
+
+ossia::value generic_address::setValueQuiet(const value& val)
+{
   using namespace ossia;
   if(!val.valid())
     return *this;
@@ -123,24 +129,21 @@ ossia::net::generic_address& generic_address::setValue(const ossia::value& val)
       mValue = ossia::convert(val, mValue.getType());
 
       /*
-      // Alternative : try to convert to the actual value type.
-      // There should be a choice here : for instance we should be able to convert
-      // the values coming from the network, but change the type of the values coming from here.
-      // std::cerr << address_string_from_node(*this) << " TYPE CHANGE : " << mValue.v.which() << " <=== " << val.v.which() << std::endl;
-      mValueType = val.getType();
-      if(mDomain)
-        mDomain = convert_domain(mDomain, mValueType);
-      */
+        // Alternative : try to convert to the actual value type.
+        // There should be a choice here : for instance we should be able to convert
+        // the values coming from the network, but change the type of the values coming from here.
+        // std::cerr << address_string_from_node(*this) << " TYPE CHANGE : " << mValue.v.which() << " <=== " << val.v.which() << std::endl;
+        mValueType = val.getType();
+        if(mDomain)
+          mDomain = convert_domain(mDomain, mValueType);
+        */
     }
   }
 
   // TODO clamping the input implies ensuring that
   // mValue = ossia::net::clamp(mDomain, mBoundingMode, mValue);
 
-  auto clone = mValue;
-  lock.unlock();
-  send(clone);
-  return *this;
+  return mValue;
 }
 
 ossia::val_type generic_address::getValueType() const

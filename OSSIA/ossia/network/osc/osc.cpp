@@ -136,12 +136,25 @@ void osc_protocol::handleReceivedMessage(
 {
   if(!mLearning)
   {
+    auto addr_txt = m.AddressPattern();
     std::lock_guard<std::mutex> lock(mListeningMutex);
-    auto it = mListening.find(m.AddressPattern());
+    auto it = mListening.find(addr_txt);
     if (it != mListening.end())
     {
       ossia::net::address_base& addr = *it->second;
       update_value(addr, m);
+    }
+    else
+    {
+      // We still want to save the value even if it is not listened to.
+      if(auto n = find_node(mDevice->getRootNode(), addr_txt))
+      {
+        if(auto base_addr = n->getAddress())
+        {
+          auto addr = static_cast<ossia::net::generic_address*>(base_addr);
+          update_value_quiet(*addr, m);
+        }
+      }
     }
   }
   else

@@ -265,6 +265,18 @@ void minuit_protocol::handleReceivedMessage(
 
         update_value(addr, m);
       }
+      else
+      {
+        // We still want to save the value even if it is not listened to.
+        if(auto n = find_node(mDevice->getRootNode(), addr_txt))
+        {
+          if(auto base_addr = n->getAddress())
+          {
+            auto addr = static_cast<ossia::net::generic_address*>(base_addr);
+            update_value_quiet(*addr, m);
+          }
+        }
+      }
     }
     else
     {

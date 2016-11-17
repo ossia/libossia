@@ -525,6 +525,32 @@ inline bool update_value(
         addr, mess.ArgumentsBegin(), mess.ArgumentsEnd(), mess.ArgumentCount());
 }
 
+inline bool update_value_quiet(
+    ossia::net::generic_address& addr,
+    oscpack::ReceivedMessageArgumentIterator beg_it,
+    oscpack::ReceivedMessageArgumentIterator end_it, int N)
+{
+  auto res = filter_value(
+               addr.getDomain(),
+               ossia::net::to_value(addr.cloneValue(), beg_it, end_it, N),
+               addr.getBoundingMode());
+
+  if (res.valid())
+  {
+    addr.setValueQuiet(std::move(res));
+    return true;
+  }
+  return false;
+}
+
+inline bool update_value_quiet(
+    ossia::net::generic_address& addr,
+    const oscpack::ReceivedMessage& mess)
+{
+  return update_value_quiet(
+        addr, mess.ArgumentsBegin(), mess.ArgumentsEnd(), mess.ArgumentCount());
+}
+
 struct osc_write_domain_visitor
 {
   ossia::net::osc_outbound_visitor vis;

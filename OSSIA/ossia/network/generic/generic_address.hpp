@@ -91,6 +91,9 @@ public:
   ossia::value cloneValue() const final override;
   generic_address& setValue(const ossia::value&) final override;
 
+  /** Set a value without sending notifications **/
+  ossia::value setValueQuiet(const ossia::value&);
+
   ossia::val_type getValueType() const final override;
   ossia::net::generic_address& setValueType(ossia::val_type) final override;
 
