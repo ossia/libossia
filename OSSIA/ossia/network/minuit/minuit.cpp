@@ -256,9 +256,10 @@ void minuit_protocol::handleReceivedMessage(
 
     if (address.size() > 0 && address[0] == '/')
     {
+      auto addr_txt = m.AddressPattern();
       // Handle the OSC-like case where we receive a plain value.
       std::lock_guard<std::mutex> lock(mListeningMutex);
-      auto it = mListening.find(m.AddressPattern());
+      auto it = mListening.find(addr_txt);
       if (it != mListening.end())
       {
         ossia::net::address_base& addr = *it->second;
