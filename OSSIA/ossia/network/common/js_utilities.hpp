@@ -1,4 +1,5 @@
 #pragma once
+#if defined(QT_CORE_LIB)
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/network/domain/domain.hpp>
@@ -327,3 +328,6 @@ void create_node_rec(QJSValue js, Device_T& device, Node_T& parent)
 }
 
 Q_DECLARE_METATYPE(ossia::net::qml_context)
+#else
+#error This file requires Qt.
+#endif

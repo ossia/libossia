@@ -1,3 +1,4 @@
+#if defined(QT_CORE_LIB)
 #include "js_utilities.hpp"
 namespace ossia
 {
@@ -366,3 +367,4 @@ value value_from_jsvalue(const QJSValue& v)
 }
 
 }
+#endif
