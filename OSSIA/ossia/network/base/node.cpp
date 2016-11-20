@@ -116,6 +116,17 @@ node_base* node_base::createChild(const std::string& name)
   return ptr;
 }
 
+node_base* node_base::findChild(const std::string& name)
+{
+  for(auto& node : mChildren)
+  {
+    if(node->getName() == name)
+      return node.get();
+  }
+
+  return nullptr;
+}
+
 bool node_base::removeChild(const std::string& name)
 {
   auto& dev = getDevice();
