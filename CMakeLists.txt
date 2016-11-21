@@ -30,6 +30,10 @@ endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
 
+if(OSSIA_CI)
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O1 -gline-tables-only"
+endif()
+
 if(OSSIA_STATIC)
   set(BUILD_SHARED_LIBS OFF)
   set(OSSIA_FRAMEWORK OFF)
