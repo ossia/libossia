@@ -173,27 +173,25 @@ struct minuit_behavior<
     minuit_command::Request,
     minuit_operation::Namespace>
 {
-  template<typename Children>
   void handle_root(
       ossia::net::minuit_protocol& proto,
-      Children&& c)
+      const std::vector<std::string>& c)
   {
-    proto.sender().send(proto.name_table.get_action(minuit_action::NamespaceReply),
-                    "/",
-                    "Application",
-                    "nodes={",
-                    c,
-                    "}",
-                    "attributes={",
-                    "}");
-
+      proto.sender().send(proto.name_table.get_action(minuit_action::NamespaceReply),
+                      "/",
+                      "Application",
+                      "nodes={",
+                      c,
+                      "}",
+                      "attributes={",
+                      "}");
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
 
-  template<typename Children>
   void handle_container(
       ossia::net::minuit_protocol& proto,
       boost::string_view address,
-      Children&& c)
+      const std::vector<std::string>& c)
   {
     proto.sender().send(proto.name_table.get_action(minuit_action::NamespaceReply),
                     address,
@@ -203,7 +201,7 @@ struct minuit_behavior<
                     "}",
                     "attributes={",
                     "}");
-
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
 
   void handle_data(
@@ -224,9 +222,30 @@ struct minuit_behavior<
                     "rangeClipmode"    ,
                     "dataspaceUnit"    ,
                     "}");
-
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
 
+  void handle_data_container(
+      ossia::net::minuit_protocol& proto,
+      boost::string_view address,
+      const std::vector<std::string>& c)
+  {
+    proto.sender().send(proto.name_table.get_action(minuit_action::NamespaceReply),
+                    address,
+                    "Data",
+                    "attributes={",
+                    "type"             ,
+                    "dataspace"        ,
+                    "repetitionsFilter",
+                    "service"          ,
+                    "priority"         ,
+                    "value"            ,
+                    "rangeBounds"      ,
+                    "rangeClipmode"    ,
+                    "dataspaceUnit"    ,
+                    "}");
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
   auto get_children_names(const ossia::net::node_base& node)
   {
     std::vector<std::string> v;
@@ -272,7 +291,14 @@ struct minuit_behavior<
       }
       else
       {
-        handle_container(proto, address, get_children_names(dev, address));
+        if(node->getAddress())
+        {
+          handle_data_container(proto, address, get_children_names(dev, address));
+        }
+        else
+        {
+          handle_container(proto, address, get_children_names(dev, address));
+        }
       }
     }
   }

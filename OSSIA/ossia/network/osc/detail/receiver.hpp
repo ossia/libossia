@@ -70,7 +70,7 @@ template <typename MessageHandler>
  *
  * Listens to OSC messages and handles them.
  */
-class listener : public oscpack::OscPacketListener
+class listener final : public oscpack::OscPacketListener
 {
 public:
   listener(MessageHandler msg) : m_messageHandler{msg}
@@ -91,6 +91,31 @@ protected:
       std::cerr << "OSC Parse Error: '";
       oscpack::debug(std::cerr, m);
       std::cerr << "'" << e.what() << std::endl;
+    }
+    catch(...)
+    {
+      std::cerr << "OSC Error\n";
+    }
+  }
+
+  void ProcessPacket( const char *data, int size,
+      const oscpack::IpEndpointName& remoteEndpoint ) override
+  {
+    try
+    {
+      oscpack::ReceivedPacket p( data, size );
+      if( p.IsBundle() )
+        this->ProcessBundle( oscpack::ReceivedBundle(p), remoteEndpoint );
+      else
+        this->ProcessMessage( oscpack::ReceivedMessage(p), remoteEndpoint );
+    }
+    catch (std::exception& e)
+    {
+      std::cerr << "OSC Parse Error: '" << e.what() << std::endl;
+    }
+    catch(...)
+    {
+      std::cerr << "OSC Error\n";
     }
   }
 

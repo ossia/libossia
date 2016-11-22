@@ -44,7 +44,7 @@ inline oscpack::OutboundPacketStream& operator<<(
   return p;
 }
 
-template <int BufferSize = 1024>
+template <int BufferSize = 1024*1024>
 class MessageGenerator
 {
 public:
@@ -56,11 +56,17 @@ public:
     operator()(name, args...);
   }
 
+  void clear()
+  {
+    std::fill_n(buffer.begin(), p.Size(), 0);
+    p.Clear();
+  }
+
   template <typename... T>
   const oscpack::OutboundPacketStream&
   operator()(const std::string& name, const T&... args)
   {
-    p.Clear();
+    clear();
     p << oscpack::BeginMessageN(name);
     subfunc(args...);
     p << oscpack::EndMessage();
@@ -71,7 +77,7 @@ public:
   const oscpack::OutboundPacketStream&
   operator()(boost::string_view name, const T&... args)
   {
-    p.Clear();
+    clear();
     p << oscpack::BeginMessageN(name);
     subfunc(args...);
     p << oscpack::EndMessage();
@@ -82,7 +88,7 @@ public:
   const oscpack::OutboundPacketStream&
   operator()(small_string_base<N> name, const T&... args)
   {
-    p.Clear();
+    clear();
     p << oscpack::BeginMessageN(name);
     subfunc(args...);
     p << oscpack::EndMessage();
@@ -93,7 +99,7 @@ public:
   const oscpack::OutboundPacketStream&
   operator()(const std::string& name, const std::vector<Val_T>& values)
   {
-    p.Clear();
+    clear();
     p << oscpack::BeginMessageN(name) << values << oscpack::EndMessage();
     return p;
   }

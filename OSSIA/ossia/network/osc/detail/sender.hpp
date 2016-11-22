@@ -19,6 +19,7 @@ namespace osc
  */
 class sender
 {
+  oscpack::MessageGenerator<> m;
 public:
   sender(ossia::net::network_logger& l, const std::string& ip, const int port)
       : m_logger{l}
@@ -34,30 +35,30 @@ public:
       auto begin = addr.find(':') + 1;
 
       send_impl(
-          oscpack::MessageGenerator<>{}(
-                      boost::string_view(addr.data() + begin, addr.size() - begin),
-                      std::forward<Args>(args)...));
+          m(
+              boost::string_view(addr.data() + begin, addr.size() - begin),
+              std::forward<Args>(args)...));
   }
 
   template <typename... Args>
   void send(const std::string& address, Args&&... args)
   {
     send_impl(
-        oscpack::MessageGenerator<>{}(address, std::forward<Args>(args)...));
+        m(address, std::forward<Args>(args)...));
   }
 
   template <typename... Args>
   void send(boost::string_view address, Args&&... args)
   {
     send_impl(
-        oscpack::MessageGenerator<>{}(address, std::forward<Args>(args)...));
+        m(address, std::forward<Args>(args)...));
   }
 
   template <int N, typename... Args>
   void send(oscpack::small_string_base<N> address, Args&&... args)
   {
     send_impl(
-        oscpack::MessageGenerator<>{}(address, std::forward<Args>(args)...));
+        m(address, std::forward<Args>(args)...));
   }
 
   const std::string& ip() const
@@ -80,9 +81,13 @@ private:
 
   void send_impl(const oscpack::OutboundPacketStream& m)
   {
-    // debug(m);
-    m_socket.Send(m.Data(), m.Size());
+    try {
+      m_socket.Send(m.Data(), m.Size());
 
+    } catch(...)
+    {
+
+    }
     if(m_logger.outbound_logger)
       m_logger.outbound_logger->info("Out: {0}", boost::string_view(m.Data(), m.Size()));
   }

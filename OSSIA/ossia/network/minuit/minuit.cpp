@@ -146,8 +146,24 @@ bool minuit_protocol::update(ossia::net::node_base& node)
   }
 
   mPendingGetRequests = 0;
-  { lock_type lock(mNamespaceRequestsMutex); mNamespaceRequests.clear(); }
-  { lock_type lock(mGetRequestsMutex); mGetRequests.clear(); }
+  {
+    lock_type lock(mNamespaceRequestsMutex);
+    for(const auto& node : mNamespaceRequests)
+    {
+      if(mLogger.error_logger)
+        mLogger.error_logger->error("Namespace request unmatched: {0}", node);
+    }
+    mNamespaceRequests.clear();
+  }
+  {
+    lock_type lock(mGetRequestsMutex);
+    for(const auto& node : mGetRequests)
+    {
+      if(mLogger.error_logger)
+        mLogger.error_logger->error("Namespace request unmatched: {0}", node);
+    }
+    mGetRequests.clear();
+  }
 
   return status == std::future_status::ready || node.children().size() != 0;
 }
