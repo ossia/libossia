@@ -54,9 +54,18 @@ void generic_address::pullValue()
   mProtocol.pull(*this);
 }
 
+std::future<void> generic_address::pullValueAsync()
+{
+  return mProtocol.pullAsync(*this);
+}
+
+void generic_address::requestValue()
+{
+  mProtocol.request(*this);
+}
+
 ossia::net::generic_address& generic_address::pushValue(const ossia::value& value)
 {
-  // std::cerr << mNode.getName() << " <= " << ossia::value_to_pretty_string(value) << std::endl;
   setValue(value);
 
   mProtocol.push(*this);

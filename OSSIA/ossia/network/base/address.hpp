@@ -11,6 +11,7 @@
 #include <memory>
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
+#include <future>
 
 namespace ossia
 {
@@ -53,6 +54,29 @@ public:
    * This may be a blocking call.
    */
   virtual void pullValue() = 0;
+
+  /**
+   * @brief pullValueAsync
+   *
+   * Requests the current value over the network.
+   * Not all protocols may provide this capability.
+   *
+   * This function returns a future that can be waited
+   * upon by client code.
+   */
+  virtual std::future<void> pullValueAsync();
+
+  /**
+   * @brief requestValue
+   *
+   * Requests the current value over the network.
+   * Not all protocols may provide this capability.
+   *
+   * This call may not block but there is no guarantee
+   * that the value has been pulled when the call returns.
+   */
+  virtual void requestValue();
+
   /**
    * @brief pushValue
    *

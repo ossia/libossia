@@ -3,6 +3,9 @@
 #include <oscpack/ip/UdpSocket.h>
 #include <oscpack/osc/OscOutboundPacketStream.h>
 #include <ossia/network/base/address.hpp>
+#include <ossia/detail/logger.hpp>
+#include <ossia/network/common/network_logger.hpp>
+#include <oscpack/osc/OscPrintReceivedElements.h>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -17,14 +20,9 @@ namespace osc
 class sender
 {
 public:
-  sender() = default;
-  sender(sender&&) = default;
-  sender(const sender&) = delete;
-  sender& operator=(const sender&) = default;
-  sender& operator=(sender&&) = default;
-
-  sender(const std::string& ip, const int port)
-      : m_socket{oscpack::IpEndpointName(ip.c_str(), port)}
+  sender(ossia::net::network_logger& l, const std::string& ip, const int port)
+      : m_logger{l}
+      , m_socket{oscpack::IpEndpointName(ip.c_str(), port)}
       , m_ip(ip)
       , m_port(port)
   {
@@ -79,12 +77,17 @@ private:
     std::replace(s.begin(), s.end(), '\0', ' ');
     std::cerr << s << "\n";
   }
+
   void send_impl(const oscpack::OutboundPacketStream& m)
   {
     // debug(m);
     m_socket.Send(m.Data(), m.Size());
+
+    if(m_logger.outbound_logger)
+      m_logger.outbound_logger->info("Out: {0}", boost::string_view(m.Data(), m.Size()));
   }
 
+  ossia::net::network_logger& m_logger;
   oscpack::UdpTransmitSocket m_socket;
   std::string m_ip;
   int m_port;

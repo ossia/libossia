@@ -31,6 +31,7 @@ class generic_device;
 class OSSIA_EXPORT minuit_protocol final : public ossia::net::protocol_base
 {
 private:
+  using lock_type = std::lock_guard<std::mutex>;
   std::string mLocalName;
   std::string mIp;
   uint16_t mRemotePort{}; /// the port that a remote device opens
@@ -40,10 +41,16 @@ private:
   std::mutex mListeningMutex;
   std::unordered_map<std::string, ossia::net::address_base*> mListening;
 
-  std::promise<void> mNamespacePromise;
+  std::promise<void> mNamespaceFinishedPromise;
   ossia::net::generic_device* mDevice{};
 
+  std::mutex mNamespaceRequestsMutex;
   std::set<std::string, std::less<>> mNamespaceRequests;
+
+  std::mutex mGetRequestsMutex;
+  std::promise<void> mGetFinishedPromise;
+  std::vector<std::string> mGetRequests;
+  std::atomic_int mPendingGetRequests{};
 
   std::unique_ptr<osc::sender> mSender;
   std::unique_ptr<osc::receiver> mReceiver;
@@ -76,21 +83,22 @@ public:
   bool update(ossia::net::node_base& node_base) override;
 
   bool pull(ossia::net::address_base& address_base) override;
+  std::future<void> pullAsync(address_base&) override;
+  void request(ossia::net::address_base& address_base) override;
 
   bool push(const ossia::net::address_base& address_base) override;
 
   bool observe(ossia::net::address_base& address_base, bool enable) override;
   bool observe_quietly(ossia::net::address_base& address_base, bool enable) override;
 
-  void refresh(boost::string_view req, const std::string& addr);
+  void namespace_refresh(boost::string_view req, const std::string& addr);
+  void namespace_refreshed(boost::string_view addr);
 
-  void refreshed(boost::string_view addr);
+  void get_refresh(boost::string_view req, const std::string& addr);
+  void get_refreshed(boost::string_view req);
 
   osc::sender& sender() const;
   ossia::minuit::name_table name_table;
-  std::promise<void> get_promise;
-  std::atomic_int pending_get_requests{};
-
 private:
   void handleReceivedMessage(
       const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);

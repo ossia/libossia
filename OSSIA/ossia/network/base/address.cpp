@@ -43,6 +43,16 @@ std::string address_string_from_node(const ossia::net::address_base& addr)
     return address_string_from_node(addr.getNode());
 }
 
+std::future<void> address_base::pullValueAsync()
+{
+  return {};
+}
+
+void address_base::requestValue()
+{
+
+}
+
 value address_base::cloneValue(destination_index idx) const
 {
   return get_value_at_index(cloneValue(), idx);

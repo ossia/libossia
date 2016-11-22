@@ -83,6 +83,8 @@ public:
   const ossia::net::node_base& getNode() const final override;
 
   void pullValue() final override;
+  std::future<void> pullValueAsync() final override;
+  void requestValue() final override;
 
   ossia::net::generic_address& pushValue(const ossia::value&) final override;
   ossia::net::generic_address& pushValue() final override;
