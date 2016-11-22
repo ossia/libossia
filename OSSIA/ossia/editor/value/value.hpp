@@ -103,7 +103,7 @@ public:
   // Construction
   template <typename T>
   OSSIA_DECL_RELAXED_CONSTEXPR value(T*) = delete;
-  ~value() noexcept { }
+  ~value() noexcept;
   OSSIA_DECL_RELAXED_CONSTEXPR value(Impulse val) noexcept : v{val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Destination& val) noexcept : v{val} { }
 

@@ -30,27 +30,27 @@ namespace ossia
 struct clamp_functor
 {
   template<typename... T>
-  OSSIA_INLINE auto operator()(T&&... args) { return ossia::clamp(std::forward<T>(args)...); }
+  static OSSIA_INLINE auto compute(T&&... args) { return ossia::clamp(std::forward<T>(args)...); }
 };
 struct clamp_min_functor
 {
   template<typename... T>
-  OSSIA_INLINE auto operator()(T&&... args) { return ossia::clamp_min(std::forward<T>(args)...); }
+  static OSSIA_INLINE auto compute(T&&... args) { return ossia::clamp_min(std::forward<T>(args)...); }
 };
 struct clamp_max_functor
 {
   template<typename... T>
-  OSSIA_INLINE auto operator()(T&&... args) { return ossia::clamp_max(std::forward<T>(args)...); }
+  static OSSIA_INLINE auto compute(T&&... args) { return ossia::clamp_max(std::forward<T>(args)...); }
 };
 struct wrap_functor
 {
   template<typename... T>
-  OSSIA_INLINE auto operator()(T&&... args) { return ossia::wrap(std::forward<T>(args)...); }
+  static OSSIA_INLINE auto compute(T&&... args) { return ossia::wrap(std::forward<T>(args)...); }
 };
 struct fold_functor
 {
   template<typename... T>
-  OSSIA_INLINE auto operator()(T&&... args) { return ossia::fold(std::forward<T>(args)...); }
+  static OSSIA_INLINE auto compute(T&&... args) { return ossia::fold(std::forward<T>(args)...); }
 };
 
 /// Const-reference overloads

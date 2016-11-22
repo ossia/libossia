@@ -8,7 +8,6 @@ namespace ossia
 template<typename TernaryFun>
 struct apply_ternary_fun_visitor
 {
-  TernaryFun f;
   template<typename T, typename U, typename V>
   OSSIA_INLINE ossia::value operator()(const T& val, const U& min, const V& max)
   { return val; }
@@ -28,20 +27,20 @@ struct apply_ternary_fun_visitor
   #endif
 
   OSSIA_INLINE ossia::value operator()(Int val, Int min, Int max)
-  { return Int{f(val, min, max)}; }
+  { return TernaryFun::compute(val, min, max); }
   OSSIA_INLINE ossia::value operator()(Float val, Float min, Float max)
-  { return Float{f(val, min, max)}; }
+  { return TernaryFun::compute(val, min, max); }
   OSSIA_INLINE ossia::value operator()(Char val, Char min, Char max)
-  { return Char{f(val, min, max)}; }
+  { return (Char) TernaryFun::compute((Int)val, (Int)min, (Int)max); }
   OSSIA_INLINE ossia::value operator()(Bool val, Bool min, Bool max)
-  { return Bool{f(val, min, max)}; }
+  { return (Bool) TernaryFun::compute((Int)val, (Int)min, (Int)max); }
 
   template<std::size_t N>
   ossia::value operator()(Vec<float, N> val, const Vec<float, N>& min, const Vec<float, N>& max)
   {
     for(std::size_t i = 0; i < N; i++)
     {
-      val[i] = f(val[i], min[i], max[i]);
+      val[i] = TernaryFun::compute(val[i], min[i], max[i]);
     }
     return val;
   }
@@ -51,7 +50,7 @@ struct apply_ternary_fun_visitor
   {
     for(std::size_t i = 0; i < N; i++)
     {
-      val[i] = f(val[i], min, max);
+      val[i] = TernaryFun::compute(val[i], min, max);
     }
     return val;
   }
@@ -127,12 +126,10 @@ struct apply_ternary_fun_visitor
 template<typename BinaryFun>
 struct apply_binary_fun_visitor
 {
-  BinaryFun f;
-
   template<typename T, typename U>
   OSSIA_INLINE ossia::value operator()(const T& val, const U& min)
   { return val; }
-  
+
   #if !defined(FAST_COMPILES)
   template<typename U>
   OSSIA_INLINE ossia::value operator()(Tuple&& val, const U& min)
@@ -149,20 +146,20 @@ struct apply_binary_fun_visitor
   #endif
 
   OSSIA_INLINE ossia::value operator()(Int val, Int min)
-  { return Int{f(val, min)}; }
+  { return Int{BinaryFun::compute(val, min)}; }
   OSSIA_INLINE ossia::value operator()(Float val, Float min)
-  { return Float{f(val, min)}; }
+  { return Float{BinaryFun::compute(val, min)}; }
   OSSIA_INLINE ossia::value operator()(Char val, Char min)
-  { return Char{f(val, min)}; }
+  { return (Char) BinaryFun::compute((Int)val, (Int)min); }
   OSSIA_INLINE ossia::value operator()(Bool val, Bool min)
-  { return Bool{f(val, min)}; }
+  { return (Bool) BinaryFun::compute((Int)val, (Int)min); }
 
   template<std::size_t N>
   ossia::value operator()(Vec<float, N> val, const Vec<float, N>& min)
   {
     for(std::size_t i = 0; i < N; i++)
     {
-      val[i] = f(val[i], min[i]);
+      val[i] = BinaryFun::compute(val[i], min[i]);
     }
     return val;
   }
@@ -172,7 +169,7 @@ struct apply_binary_fun_visitor
   {
     for(std::size_t i = 0; i < N; i++)
     {
-      val[i] = f(val[i], min);
+      val[i] = BinaryFun::compute(val[i], min);
     }
     return val;
   }

@@ -862,4 +862,10 @@ ossia::value convert(const ossia::value& val, ossia::val_type newtype)
     return convert<ossia_type>(val);
   });
 }
+
+value::~value()
+{
+
+}
+
 }
