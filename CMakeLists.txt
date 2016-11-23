@@ -53,20 +53,20 @@ if(OSSIA_COVERAGE)
 endif()
 if(MSVC)
     set(OSSIA_LINK_OPTIONS
-        "/PDBCompress"
-        "/OPT:REF"
-        "/OPT:ICF"
+        "-PDBCompress"
+        "-OPT:REF"
+        "-OPT:ICF"
         )
     set(OSSIA_COMPILE_OPTIONS
-        "/wd4068" # pragma mark -
-        "/wd4250" # inherits via dominance
-        "/wd4251" # DLL stuff
-        "/wd4275" # DLL stuff
-        "/wd4244" # return : conversion from foo to bar, possible loss of data
-        "/wd4800" # conversion from int to bool, performance warning
-        "/wd4503" # decorated name length exceeded
-        "/MP"
-        "/bigobj"
+        "-wd4068" # pragma mark -
+        "-wd4250" # inherits via dominance
+        "-wd4251" # DLL stuff
+        "-wd4275" # DLL stuff
+        "-wd4244" # return : conversion from foo to bar, possible loss of data
+        "-wd4800" # conversion from int to bool, performance warning
+        "-wd4503" # decorated name length exceeded
+        "-MP"
+        "-bigobj"
         ${OSSIA_LINK_OPTIONS}
     )
 else()
