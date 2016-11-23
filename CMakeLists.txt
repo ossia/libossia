@@ -74,6 +74,7 @@ else()
         -Wl,--gdb-index
         -fvar-tracking-assignments
         -Wa,--compress-debug-sections
+        -Wl,--compress-debug-sections=zlib
         )
     if(OSSIA_CI)
         set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -s)
