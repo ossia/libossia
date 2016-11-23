@@ -52,6 +52,11 @@ if(OSSIA_COVERAGE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_COVERAGE}")
 endif()
 if(MSVC)
+    set(OSSIA_LINK_OPTIONS
+        "/PDBCompress"
+        "/OPT:REF"
+        "/OPT:ICF"
+        )
     set(OSSIA_COMPILE_OPTIONS
         "/wd4068" # pragma mark -
         "/wd4250" # inherits via dominance
@@ -62,6 +67,7 @@ if(MSVC)
         "/wd4503" # decorated name length exceeded
         "/MP"
         "/bigobj"
+        ${OSSIA_LINK_OPTIONS}
     )
 else()
     set(OSSIA_LINK_OPTIONS
