@@ -863,7 +863,7 @@ ossia::value convert(const ossia::value& val, ossia::val_type newtype)
   });
 }
 
-value::~value()
+value::~value() noexcept
 {
 
 }

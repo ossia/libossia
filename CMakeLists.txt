@@ -74,16 +74,24 @@ else()
         -ffunction-sections
         -fdata-sections
        # -Wl,-strip_unused
-        -Wl,--gc-sections
-        -gsplit-dwarf
         -gdwarf-4
-        -Wl,--gdb-index
-        -fvar-tracking-assignments
-        -Wa,--compress-debug-sections
-        -Wl,--compress-debug-sections=zlib
         )
+    if(CMAKE_COMPILER_IS_GNUCXX)
+        set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} 
+            -Wl,--gc-sections
+            -Wl,--gdb-index
+            -fvar-tracking-assignments
+            -Wl,--compress-debug-sections=zlib
+            -gsplit-dwarf
+            -Wa,--compress-debug-sections
+            )
+    else()
+    endif()
+
     if(OSSIA_CI)
-        set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -s)
+        if(CMAKE_COMPILER_IS_GNUCXX)
+            set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -s)
+        endif()
     endif()
     set(OSSIA_COMPILE_OPTIONS
         -Wall
@@ -103,6 +111,11 @@ else()
         ${OSSIA_LINK_OPTIONS}
     )
 
+    if(OSSIA_CI)
+        if(NOT CMAKE_COMPILER_IS_GNUCXX)
+            set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -Wl,-S)
+        endif()
+    endif()
     if("${SUPPORTS_MISLEADING_INDENT_FLAG}")
         set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS} -Wmisleading-indentation)
     endif()
