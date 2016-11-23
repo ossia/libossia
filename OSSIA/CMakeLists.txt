@@ -7,9 +7,6 @@ set(ossia_VERSION 1.0.0)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0042 NEW)
 cmake_policy(SET CMP0063 NEW)
-include(CheckCXXCompilerFlag)
-check_cxx_compiler_flag(-Wmisleading-indentation SUPPORTS_MISLEADING_INDENT_FLAG)
-
 include(cotire)
 
 include(GenerateExportHeader)
@@ -146,43 +143,12 @@ if(WIN32)
         NOMINMAX
         _CRT_SECURE_NO_WARNINGS
         WIN32_LEAN_AND_MEAN)
-    target_compile_options(ossia PUBLIC "/bigobj")
     target_compile_options(ossia PUBLIC "$<$<CONFIG:Release>:/GL>")
     target_link_libraries(ossia PRIVATE Ws2_32 winmm)
 endif()
 
-if(MSVC)
-    target_compile_options(ossia PUBLIC
-        "/wd4068" # pragma mark -
-        "/wd4250" # inherits via dominance
-        "/wd4251" # DLL stuff
-        "/wd4275" # DLL stuff
-        "/wd4244" # return : conversion from foo to bar, possible loss of data
-        "/wd4800" # conversion from int to bool, performance warning
-        "/wd4503" # decorated name length exceeded
-        "/MP"
-        )
-else()
-    target_compile_options(ossia PUBLIC
-    -Wall
-    -Wextra
-    -Wno-unused-parameter
-    -Wno-unknown-pragmas
-    -Wno-missing-braces
-    -Wnon-virtual-dtor
-    -pedantic
-    -Wcast-align
-    -Wunused
-    -Woverloaded-virtual
-    -pipe
-    -Werror=return-type
-    -Werror=trigraphs
-    -Wmissing-field-initializers)
-
-    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND "${SUPPORTS_MISLEADING_INDENT_FLAG}")
-        target_compile_options(ossia PUBLIC -Wmisleading-indentation)
-    endif()
-endif()
+target_compile_options(ossia PUBLIC ${OSSIA_COMPILE_OPTIONS})
+target_link_libraries(ossia PUBLIC ${OSSIA_LINK_OPTIONS})
 
 if(OSSIA_SANITIZE)
     sanitize_build(ossia)

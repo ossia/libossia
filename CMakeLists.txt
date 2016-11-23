@@ -16,6 +16,10 @@ option(OSSIA_DISABLE_COTIRE "Disable cotire" OFF)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0042 NEW)
 cmake_policy(SET CMP0063 NEW)
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag("-Wmisleading-indentation" SUPPORTS_MISLEADING_INDENT_FLAG)
+check_cxx_compiler_flag("-Wl,-z,defs" WL_ZDEFS_SUPPORTED)
+check_cxx_compiler_flag("-fuse-ld=gold" GOLD_LINKER_SUPPORTED)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
@@ -47,7 +51,55 @@ if(OSSIA_COVERAGE)
   include("${CMAKE_CURRENT_LIST_DIR}/CMake/CodeCoverage.cmake")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_COVERAGE}")
 endif()
+if(MSVC)
+    set(OSSIA_COMPILE_OPTIONS
+        "/wd4068" # pragma mark -
+        "/wd4250" # inherits via dominance
+        "/wd4251" # DLL stuff
+        "/wd4275" # DLL stuff
+        "/wd4244" # return : conversion from foo to bar, possible loss of data
+        "/wd4800" # conversion from int to bool, performance warning
+        "/wd4503" # decorated name length exceeded
+        "/MP"
+        "/bigobj"
+    )
+else()
+    set(OSSIA_LINK_OPTIONS
+        -ffunction-sections
+        -fdata-sections
+       # -Wl,-strip_unused
+        -Wl,--gc-sections
+        -gsplit-dwarf
+        -gdwarf-4
+        -Wl,--gdb-index
+        -fvar-tracking-assignments
+        -Wa,--compress-debug-sections
+        )
+    if(OSSIA_CI)
+        set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -s)
+    endif()
+    set(OSSIA_COMPILE_OPTIONS
+        -Wall
+        -Wextra
+        -Wno-unused-parameter
+        -Wno-unknown-pragmas
+        -Wno-missing-braces
+        -Wnon-virtual-dtor
+        -pedantic
+        -Wcast-align
+        -Wunused
+        -Woverloaded-virtual
+        -pipe
+        -Werror=return-type
+        -Werror=trigraphs
+        -Wmissing-field-initializers
+        ${OSSIA_LINK_OPTIONS}
+    )
 
+    if("${SUPPORTS_MISLEADING_INDENT_FLAG}")
+        set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS} -Wmisleading-indentation)
+    endif()
+endif()
 
 # Dependencies
 find_package(Boost REQUIRED)
