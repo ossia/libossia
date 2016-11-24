@@ -19,7 +19,6 @@ namespace osc
  */
 class sender
 {
-  oscpack::MessageGenerator<> m;
 public:
   sender(ossia::net::network_logger& l, const std::string& ip, const int port)
       : m_logger{l}
@@ -33,16 +32,17 @@ public:
   {
       auto addr = ossia::net::address_string_from_node(address);
       auto begin = addr.find(':') + 1;
+      oscpack::MessageGenerator<> m;
 
       send_impl(
-          m(
-              boost::string_view(addr.data() + begin, addr.size() - begin),
-              std::forward<Args>(args)...));
+          m(boost::string_view(addr.data() + begin, addr.size() - begin),
+            std::forward<Args>(args)...));
   }
 
   template <typename... Args>
   void send(const std::string& address, Args&&... args)
   {
+    oscpack::MessageGenerator<> m;
     send_impl(
         m(address, std::forward<Args>(args)...));
   }
@@ -50,6 +50,7 @@ public:
   template <typename... Args>
   void send(boost::string_view address, Args&&... args)
   {
+    oscpack::MessageGenerator<> m;
     send_impl(
         m(address, std::forward<Args>(args)...));
   }
@@ -57,6 +58,7 @@ public:
   template <int N, typename... Args>
   void send(oscpack::small_string_base<N> address, Args&&... args)
   {
+    oscpack::MessageGenerator<> m;
     send_impl(
         m(address, std::forward<Args>(args)...));
   }

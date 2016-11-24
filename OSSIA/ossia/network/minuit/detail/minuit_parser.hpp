@@ -10,6 +10,7 @@
 #include <ossia/network/osc/detail/sender.hpp>
 #include <boost/container/small_vector.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#define MINUIT_WAIT_TIME
 namespace ossia
 {
 namespace minuit

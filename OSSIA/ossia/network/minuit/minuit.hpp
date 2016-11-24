@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 #include <unordered_map>
+#include <atomic>
 #include <ossia/network/minuit/minuit_zeroconf.hpp>
 
 namespace oscpack
@@ -57,6 +58,8 @@ private:
 
   zeroconf_server mZeroconfServer;
 
+  std::atomic<long long> mLastSentMessage;
+  std::atomic<long long> mLastReceivedMessage;
 public:
   minuit_protocol(
       const std::string& local_name, const std::string& remote_ip,

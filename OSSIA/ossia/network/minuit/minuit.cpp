@@ -12,6 +12,12 @@ namespace ossia
 {
 namespace net
 {
+
+static auto get_time()
+{
+  return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+}
+
 minuit_protocol::minuit_protocol(
     const std::string& local_name, const std::string& remote_ip,
     uint16_t remote_port, uint16_t local_port)
@@ -24,6 +30,8 @@ minuit_protocol::minuit_protocol(
                                 const oscpack::IpEndpointName& ip) {
                   this->handleReceivedMessage(m, ip);
                 })}
+    , mLastSentMessage{get_time()}
+    , mLastReceivedMessage{get_time()}
 {
   if(mReceiver->port() != local_port)
   {
@@ -121,28 +129,63 @@ bool minuit_protocol::update(ossia::net::node_base& node)
     {
       mSender->send(req, boost::string_view(addr));
     }
+    mLastSentMessage = get_time();
   }
-  status = fut.wait_for(std::chrono::seconds(5));
-
-  using namespace std::chrono;
-
-  // Then we wait for the "get" requests
-  if(mPendingGetRequests > 0 || status != std::future_status::ready)
+  // While messages are being received regularly, we wait.
+  mLastReceivedMessage = get_time();
+  auto prev_t = mLastReceivedMessage.load();
+  bool ok = false;
+  while(!ok)
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    status = fut.wait_for(std::chrono::milliseconds(100));
+    if(mLastReceivedMessage == prev_t)
+      ok = true;
+    else
+      prev_t = mLastReceivedMessage;
+  }
 
-    auto t1 = high_resolution_clock::now();
-    while(true)
+  auto check_unfinished = [&] {
+    lock_type lock(mNamespaceRequestsMutex);
+    return mNamespaceRequests.size() > 0 || mPendingGetRequests > 0  || status != std::future_status::ready;
+  };
+
+  if(check_unfinished())
+  {
+    std::vector<std::string> nreq, greq;
+    for(int i = 0; i < 100; i++)
     {
-      auto t2 = std::chrono::high_resolution_clock::now();
-      if(duration_cast<milliseconds>(t2 - t1).count() > 4000) {
-        break;
+      status = fut.wait_for(std::chrono::milliseconds(250));
+      if(!check_unfinished())
+      {
+          break;
       }
-      if(mPendingGetRequests == 0) {
-        break;
+      else
+      {
+        {
+          lock_type lock(mNamespaceRequestsMutex);
+          nreq.clear();
+          ossia::copy(mNamespaceRequests, nreq);
+        }
+        for(const auto& req : nreq)
+        {
+          mSender->send(name_table.get_action(ossia::minuit::minuit_action::NamespaceRequest), boost::string_view(req));
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+
+        {
+          lock_type lock(mGetRequestsMutex);
+          greq.clear();
+          ossia::copy(mGetRequests, greq);
+        }
+        for(const auto& req : greq)
+        {
+          mSender->send(name_table.get_action(ossia::minuit::minuit_action::GetRequest), boost::string_view(req));
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+
       }
-      std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
+
   }
 
   mPendingGetRequests = 0;
@@ -174,6 +217,7 @@ void minuit_protocol::request(ossia::net::address_base& address)
   auto addr = ossia::net::get_osc_address_as_string(address);
   addr += ":value";
   this->mSender->send(act, boost::string_view(addr));
+  mLastSentMessage = get_time();
 }
 
 std::future<void> minuit_protocol::pullAsync(address_base& address)
@@ -211,6 +255,7 @@ bool minuit_protocol::push(const ossia::net::address_base& address)
   if (val.valid())
   {
     mSender->send(address, val);
+    mLastSentMessage = get_time();
     return true;
   }
 
@@ -235,6 +280,8 @@ bool minuit_protocol::observe(ossia::net::address_base& address, bool enable)
     this->mSender->send(act, address, "disable");
     mListening.erase(get_osc_address_as_string(address));
   }
+
+  mLastSentMessage = get_time();
 
   return true;
 }
@@ -261,6 +308,7 @@ void minuit_protocol::namespace_refresh(boost::string_view req, const std::strin
   {
     mNamespaceRequests.insert(addr);
     mSender->send(req, boost::string_view(addr));
+    mLastSentMessage = get_time();
   }
 }
 
@@ -288,6 +336,8 @@ void minuit_protocol::get_refresh(boost::string_view req, const std::string& add
     mGetRequests.push_back(addr);
     mPendingGetRequests++;
     mSender->send(req, boost::string_view(addr));
+
+    mLastSentMessage = get_time();
   }
 }
 
@@ -311,7 +361,6 @@ osc::sender& minuit_protocol::sender() const
 {
     return *mSender;
 }
-
 struct minuit_task
 {
   std::function<void()> handle;
@@ -355,6 +404,8 @@ void minuit_protocol::handleReceivedMessage(
 
     if(mLogger.inbound_logger)
       mLogger.inbound_logger->info("In: {0}", m);
+
+    mLastReceivedMessage = get_time();
 }
 
 void minuit_protocol::update_zeroconf()
