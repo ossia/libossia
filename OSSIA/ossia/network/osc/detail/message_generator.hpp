@@ -131,18 +131,12 @@ private:
 class DynamicMessageGenerator
 {
 public:
-  DynamicMessageGenerator() :
-    buffer([] { std::vector<char> c; c.reserve(1024*1024); return c;}()),
-    p{buffer.data(), buffer.size()}
-  {
-
-  }
+  DynamicMessageGenerator() = default;
 
   template <typename... T>
   DynamicMessageGenerator(
       const std::string& name,
-      const T&... args):
-    DynamicMessageGenerator()
+      const T&... args)
   {
     operator()(name, args...);
   }
@@ -206,7 +200,7 @@ private:
     subfunc(args...);
   }
 
-  std::vector<char> buffer;
-  oscpack::OutboundPacketStream p{buffer.data(), buffer.size()};
+  std::unique_ptr<char[]> buffer{std::make_unique<char[]>(1024*1024)};
+  oscpack::OutboundPacketStream p{buffer.get(), 1024 * 1024};
 };
 }

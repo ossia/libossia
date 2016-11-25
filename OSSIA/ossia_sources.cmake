@@ -1,6 +1,7 @@
 set(API_HEADERS
     ## Editor ##
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/prefix.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/context.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/algorithms.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/config.hpp"
@@ -75,6 +76,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_visitors.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_parse.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_fwd.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_base_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/position.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/orientation.hpp"
@@ -137,6 +139,7 @@ set(API_HEADERS
 set(SRCS
     ${API_HEADERS}
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/automation.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.cpp"
@@ -162,6 +165,7 @@ set(SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_visitors.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/dataspace_impl.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/js_utilities.cpp"
 

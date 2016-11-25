@@ -64,35 +64,9 @@ struct spherical_u :
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return ossia::make_string_view("aed"); }
   using value_type = Vec3f;
-  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
-  {
-    const auto a = self.dataspace_value[0] * deg_to_rad;
-    const auto e = self.dataspace_value[1] * deg_to_rad;
-    const auto d = self.dataspace_value[2];
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self);
 
-    const auto temp = std::cos(e) * d;
-
-    return strong_value<neutral_unit>{
-      (float)(std::sin(a) * temp),
-      (float)(std::cos(a) * temp),
-      (float)(std::sin(e) * d)
-    };
-  }
-
-  static value_type from_neutral(strong_value<neutral_unit> self)
-  {
-    const auto x = self.dataspace_value[0];
-    const auto y = self.dataspace_value[1];
-    const auto z = self.dataspace_value[2];
-
-    const auto temp = std::pow(x, 2.) + std::pow(y, 2.);
-
-    return {
-          (float)(std::atan2(x, y) * rad_to_deg),
-          (float)(std::atan2(z, std::sqrt(temp)) * rad_to_deg),
-          (float)(std::sqrt(temp + std::pow(z, 2.)))
-        };
-  }
+  static value_type from_neutral(strong_value<neutral_unit> self);
 };
 
 // ad
@@ -155,31 +129,9 @@ struct cylindrical_u :
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return ossia::make_string_view("daz"); }
   using value_type = Vec3f;
-  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
-  {
-    const auto d = self.dataspace_value[0];
-    const auto a = self.dataspace_value[1] * deg_to_rad;
-    const auto z = self.dataspace_value[2];
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self);
 
-    return {
-      (float)(std::sin(a) * d),
-      (float)(std::cos(a) * d),
-      z
-    };
-  }
-
-  static value_type from_neutral(strong_value<neutral_unit> self)
-  {
-    const auto x = self.dataspace_value[0];
-    const auto y = self.dataspace_value[1];
-    const auto z = self.dataspace_value[2];
-
-    return {
-          (float)(ossia::norm(x, y)),
-          (float)(std::atan2(x, y) * rad_to_deg),
-          z
-        };
-  }
+  static value_type from_neutral(strong_value<neutral_unit> self);
 };
 
 
@@ -200,4 +152,6 @@ struct dataspace_traits<position_u>
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("position"); }
 };
+
+
 }

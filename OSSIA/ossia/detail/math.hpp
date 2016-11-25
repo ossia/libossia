@@ -33,7 +33,7 @@ auto norm(T x, T y, T z)
  * @brief clamp_min Returns the value bounded by a min
  */
 template <class T>
-OSSIA_DECL_RELAXED_CONSTEXPR T clamp_min(T d, const T min)
+OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR T clamp_min(T d, const T min)
 {
   return d < min ? min : d;
 }
@@ -42,7 +42,7 @@ OSSIA_DECL_RELAXED_CONSTEXPR T clamp_min(T d, const T min)
  * @brief clamp_max Returns the value bounded by a max
  */
 template <class T>
-OSSIA_DECL_RELAXED_CONSTEXPR T clamp_max(T d, const T max)
+OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR T clamp_max(T d, const T max)
 {
   return d > max ? max : d;
 }
@@ -51,7 +51,7 @@ OSSIA_DECL_RELAXED_CONSTEXPR T clamp_max(T d, const T max)
  * @brief clamp Returns the value bounded by a min and a max
  */
 template <class T>
-OSSIA_DECL_RELAXED_CONSTEXPR T clamp(T d, const T min, const T max)
+OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR T clamp(T d, const T min, const T max)
 {
   return clamp_min(clamp_max(d, max), min);
 }
@@ -60,7 +60,7 @@ OSSIA_DECL_RELAXED_CONSTEXPR T clamp(T d, const T min, const T max)
 // Wrap & Fold code taken from Jamoma TTLimits.h.
 // Credits : Nils Peters, Nov. 2008
 template <class T>
-OSSIA_DECL_RELAXED_CONSTEXPR T wrap(T val, const T low, const T high)
+OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR T wrap(T val, const T low, const T high)
 {
   if ((val >= low) && (val < high))
     return val;
@@ -71,7 +71,7 @@ OSSIA_DECL_RELAXED_CONSTEXPR T wrap(T val, const T low, const T high)
 }
 
 template <class T>
-OSSIA_DECL_RELAXED_CONSTEXPR T fold(T val, const T low, const T high)
+OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR T fold(T val, const T low, const T high)
 {
   if ((val >= low) && (val <= high))
     return val;

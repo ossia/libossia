@@ -139,77 +139,9 @@ struct hsv_u : public color_unit<hsv_u>
   { return ossia::make_string_view("hsv"); }
 
   using value_type = Vec3f;
-  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
-  {
-    const auto H = self.dataspace_value[0];
-    const auto S = self.dataspace_value[1];
-    const auto V = self.dataspace_value[2];
-    if ( S == 0. )
-    {
-      return {1., V, V, V };
-    }
-    else
-    {
-      auto var_h = H * 6.;
-      if ( var_h == 6. )
-        var_h = 0.;      //H must be < 1
-      int var_i = var_h;             //Or ... var_i = floor( var_h )
-      auto var_1 = V * ( 1. - S );
-      auto var_2 = V * ( 1. - S * ( var_h - var_i ) );
-      auto var_3 = V * ( 1. - S * ( 1. - ( var_h - var_i ) ) );
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self);
 
-      switch(var_i)
-      {
-        case 0:
-          return make_vec( 1., V, var_3, var_1 );
-        case 1:
-          return make_vec( 1., var_2, V, var_1 );
-        case 2:
-          return make_vec( 1., var_1, V, var_3 );
-        case 3:
-          return make_vec( 1., var_1, var_2, V );
-        case 4:
-          return make_vec( 1., var_3, var_1, V );
-        default:
-          return make_vec( 1., V, var_1, var_2 );
-      }
-    }
-  }
-
-  static value_type from_neutral(strong_value<neutral_unit> self)
-  {
-    const auto var_R = self.dataspace_value[1];
-    const auto var_G = self.dataspace_value[2];
-    const auto var_B = self.dataspace_value[3];
-
-    const auto var_Min = std::min(std::min(var_R, var_G), var_B);    //Min. value of RGB
-    const auto var_Max = std::max(std::max( var_R, var_G), var_B );    //Max. value of RGB
-    const auto del_Max = var_Max - var_Min;             //Delta RGB value
-
-
-    if ( del_Max == 0. )                     //This is a gray, no chroma...
-    {
-      return { 0., 0., var_Max};
-    }
-    else                                    //Chromatic data...
-    {
-      double H{};
-      auto S = del_Max / var_Max;
-      auto V = var_Max;
-
-      auto del_R = ( ( ( var_Max - var_R ) / 6. ) + ( del_Max / 2. ) ) / del_Max;
-      auto del_G = ( ( ( var_Max - var_G ) / 6. ) + ( del_Max / 2. ) ) / del_Max;
-      auto del_B = ( ( ( var_Max - var_B ) / 6. ) + ( del_Max / 2. ) ) / del_Max;
-
-      if      ( var_R == var_Max ) H = del_B - del_G;
-      else if ( var_G == var_Max ) H = ( 1. / 3. ) + del_R - del_B;
-      else if ( var_B == var_Max ) H = ( 2. / 3. ) + del_G - del_R;
-
-      if ( H < 0. ) H += 1.;
-      if ( H > 1. ) H -= 1.;
-      return make_vec( H, S, V );
-    }
-  }
+  static value_type from_neutral(strong_value<neutral_unit> self);
 
 };
 
@@ -275,48 +207,9 @@ struct xyz_u : public color_unit<xyz_u>
 
   using value_type = Vec3f;
 
-  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
-  {
-    auto var_X = self.dataspace_value[0] / 100.;        //X from 0 to  95.047      (Observer = 2°, Illuminant = D65)
-    auto var_Y = self.dataspace_value[1] / 100.;        //Y from 0 to 100.000
-    auto var_Z = self.dataspace_value[2] / 100.;        //Z from 0 to 108.883
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self);
 
-    auto var_R = var_X *  3.2406 + var_Y * -1.5372 + var_Z * -0.4986;
-    auto var_G = var_X * -0.9689 + var_Y *  1.8758 + var_Z *  0.0415;
-    auto var_B = var_X *  0.0557 + var_Y * -0.2040 + var_Z *  1.0570;
-
-    auto translate = [] (auto var) {
-      return
-          var > 0.0031308
-          ? 1.055 * ( std::pow(var, ( 1 / 2.4 )) ) - 0.055
-          : var * 12.92;
-    };
-
-    return make_vec(
-          1., translate(var_R), translate(var_G), translate(var_B)
-        );
-  }
-
-  static value_type from_neutral(strong_value<neutral_unit> self)
-  {
-    auto translate = [] (auto var) {
-      return
-          100. * (( var > 0.04045 )
-                  ? std::pow( ( var + 0.055 ) / 1.055, 2.4)
-                  : var / 12.92);
-    };
-    auto var_R = translate(self.dataspace_value[1]);
-    auto var_G = translate(self.dataspace_value[2]);
-    auto var_B = translate(self.dataspace_value[3]);
-
-    //Observer. = 2°, Illuminant = D65
-
-    return make_vec(
-        var_R * 0.4124 + var_G * 0.3576 + var_B * 0.1805,
-        var_R * 0.2126 + var_G * 0.7152 + var_B * 0.0722,
-        var_R * 0.0193 + var_G * 0.1192 + var_B * 0.9505
-      );
-  }
+  static value_type from_neutral(strong_value<neutral_unit> self);
 };
 
 struct yxy_u : public color_unit<yxy_u>
@@ -384,4 +277,5 @@ struct dataspace_traits<color_u>
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("color"); }
 };
+
 }

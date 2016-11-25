@@ -48,42 +48,9 @@ struct euler_u :
 
   using value_type = Vec4f;
 
-  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
-  {
-    const auto yaw = self.dataspace_value[0] * deg_to_rad * -0.5;
-    const auto pitch = self.dataspace_value[1] * deg_to_rad * 0.5;
-    const auto roll = self.dataspace_value[2] * deg_to_rad * 0.5;
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self);
 
-    const auto sinYaw = std::sin(yaw);
-    const auto cosYaw = std::cos(yaw);
-    const auto sinPitch = std::sin(pitch);
-    const auto cosPitch = std::cos(pitch);
-    const auto sinRoll = std::sin(roll);
-    const auto cosRoll = std::cos(roll);
-    const auto cosPitchCosRoll = cosPitch * cosRoll;
-    const auto sinPitchSinRoll = sinPitch * sinRoll;
-
-    return std::array<double, 4>{
-     cosYaw * sinPitch * cosRoll  - sinYaw * cosPitch * sinRoll, //X
-     cosYaw * cosPitch * sinRoll  + sinYaw * sinPitch * cosRoll, //Y
-     sinYaw * cosPitchCosRoll     + cosYaw * sinPitchSinRoll, //Z
-     cosYaw * cosPitchCosRoll     - sinYaw * sinPitchSinRoll //W
-     };
-  }
-
-  static value_type from_neutral(strong_value<neutral_unit> self)
-  {
-    const auto x = self.dataspace_value[0];
-    const auto y = self.dataspace_value[1];
-    const auto z = self.dataspace_value[2];
-    const auto w = self.dataspace_value[3];
-
-    return {
-          (float)(rad_to_deg * std::atan2(-2. * (z*w - x*y), w*w - x*x + y*y - z*z)),
-          (float)(rad_to_deg * std::asin(2. * (w*x + y*z))),
-          (float)(rad_to_deg * std::atan2(2. * (w*y + x*z), w*w - x*x - y*y + z*z))
-        };
-  }
+  static value_type from_neutral(strong_value<neutral_unit> self);
 };
 
 
@@ -96,52 +63,9 @@ struct axis_u :
   { return ossia::make_string_view("xyza"); }
   using value_type = Vec4f;
 
-  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
-  {
-    const auto x = self.dataspace_value[0];
-    const auto y = self.dataspace_value[1];
-    const auto z = self.dataspace_value[2];
-    const auto angle = self.dataspace_value[3] * deg_to_rad * 0.5;
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self);
 
-    const auto sinAngle = std::sin(angle);
-
-    //vector normalization:
-    const auto norm = ossia::norm(x, y, z);
-    const auto n = norm > 0.0 ? 1.0 / norm : norm;
-
-    /* x = x * n;
-    y = y * n;
-    z = z * n; */
-
-    return std::array<double, 4>{
-     x * n * sinAngle, //X
-     y * n * sinAngle, //Y
-     z * n * sinAngle, //Z
-     std::cos(angle) //W
-    };
-  }
-
-  static value_type from_neutral(strong_value<neutral_unit> self)
-  {
-    const auto x = self.dataspace_value[0];
-    const auto y = self.dataspace_value[1];
-    const auto z = self.dataspace_value[2];
-    const auto w = self.dataspace_value[3];
-
-    const auto sin_a = std::sqrt( 1.0 - w * w );
-
-    const auto sin_a2 =
-        std::fabs(sin_a) < 0.0005
-            ? 1.0
-            : 1.0 / sin_a;
-
-    return {
-     (float)(x * sin_a2),
-     (float)(y * sin_a2),
-     (float)(z * sin_a2),
-     (float)(rad_to_deg * 2.0 * std::atan2(sin_a, w))
-    };
-  }
+  static value_type from_neutral(strong_value<neutral_unit> self);
 };
 
 
@@ -158,4 +82,6 @@ struct dataspace_traits<orientation_u>
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("orientation"); }
 };
+
+
 }
