@@ -18,7 +18,7 @@ struct orientation_unit
 };
 
 
-struct quaternion_u :
+struct OSSIA_EXPORT quaternion_u :
     public orientation_unit<quaternion_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
@@ -38,7 +38,7 @@ struct quaternion_u :
   }
 };
 
-struct euler_u :
+struct OSSIA_EXPORT euler_u :
     public orientation_unit<euler_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
@@ -54,7 +54,7 @@ struct euler_u :
 };
 
 
-struct axis_u :
+struct OSSIA_EXPORT axis_u :
     public orientation_unit<axis_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()

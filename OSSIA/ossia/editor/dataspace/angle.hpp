@@ -16,7 +16,7 @@ struct angle_unit
   using dataspace_type = angle_dataspace;
 };
 
-struct radian_u : public angle_unit<radian_u>
+struct OSSIA_EXPORT radian_u : public angle_unit<radian_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("radian", "rad"); }
@@ -32,7 +32,7 @@ struct radian_u : public angle_unit<radian_u>
   }
 };
 
-struct degree_u : public angle_unit<degree_u>
+struct OSSIA_EXPORT degree_u : public angle_unit<degree_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("degree", "deg"); }

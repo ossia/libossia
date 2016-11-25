@@ -16,7 +16,7 @@ struct position_unit
   using concrete_type = Impl;
 };
 
-struct cartesian_3d_u :
+struct OSSIA_EXPORT cartesian_3d_u :
     public position_unit<cartesian_3d_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
@@ -36,7 +36,7 @@ struct cartesian_3d_u :
   }
 };
 
-struct cartesian_2d_u :
+struct OSSIA_EXPORT cartesian_2d_u :
     public position_unit<cartesian_2d_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
@@ -56,7 +56,7 @@ struct cartesian_2d_u :
 };
 
 // aed
-struct spherical_u :
+struct OSSIA_EXPORT spherical_u :
     public position_unit<spherical_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
@@ -70,7 +70,7 @@ struct spherical_u :
 };
 
 // ad
-struct polar_u :
+struct OSSIA_EXPORT polar_u :
     public position_unit<polar_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
@@ -102,7 +102,7 @@ struct polar_u :
   }
 };
 
-struct opengl_u :
+struct OSSIA_EXPORT opengl_u :
     public position_unit<opengl_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
@@ -121,7 +121,7 @@ struct opengl_u :
   }
 };
 
-struct cylindrical_u :
+struct OSSIA_EXPORT cylindrical_u :
     public position_unit<cylindrical_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()

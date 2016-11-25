@@ -17,7 +17,7 @@ struct color_unit
   using dataspace_type = color_dataspace;
 };
 
-struct argb_u : public color_unit<argb_u>
+struct OSSIA_EXPORT argb_u : public color_unit<argb_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("argb"); }
@@ -38,7 +38,7 @@ struct argb_u : public color_unit<argb_u>
   }
 };
 
-struct rgba_u : public color_unit<rgba_u>
+struct OSSIA_EXPORT rgba_u : public color_unit<rgba_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("rgba"); }
@@ -59,7 +59,7 @@ struct rgba_u : public color_unit<rgba_u>
   }
 };
 
-struct rgb_u : public color_unit<rgb_u>
+struct OSSIA_EXPORT rgb_u : public color_unit<rgb_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("rgb"); }
@@ -80,7 +80,7 @@ struct rgb_u : public color_unit<rgb_u>
   }
 };
 
-struct bgr_u : public color_unit<bgr_u>
+struct OSSIA_EXPORT bgr_u : public color_unit<bgr_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("bgr"); }
@@ -101,7 +101,7 @@ struct bgr_u : public color_unit<bgr_u>
   }
 };
 
-struct argb8_u : public color_unit<argb8_u>
+struct OSSIA_EXPORT argb8_u : public color_unit<argb8_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("argb8"); }
@@ -130,7 +130,7 @@ struct argb8_u : public color_unit<argb8_u>
   }
 };
 
-struct hsv_u : public color_unit<hsv_u>
+struct OSSIA_EXPORT hsv_u : public color_unit<hsv_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("hsv"); }
@@ -145,7 +145,7 @@ struct hsv_u : public color_unit<hsv_u>
 
 };
 
-struct hsl_u : public color_unit<hsl_u>
+struct OSSIA_EXPORT hsl_u : public color_unit<hsl_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("hsl"); }
@@ -157,7 +157,7 @@ struct hsl_u : public color_unit<hsl_u>
 
 };
 
-struct cmy8_u : public color_unit<cmy8_u>
+struct OSSIA_EXPORT cmy8_u : public color_unit<cmy8_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("cmy8"); }
@@ -185,7 +185,7 @@ struct cmy8_u : public color_unit<cmy8_u>
   }
 };
 
-struct cmyk8_u : public color_unit<cmyk8_u>
+struct OSSIA_EXPORT cmyk8_u : public color_unit<cmyk8_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("cmyk8"); }
@@ -197,7 +197,7 @@ struct cmyk8_u : public color_unit<cmyk8_u>
 
 };
 
-struct xyz_u : public color_unit<xyz_u>
+struct OSSIA_EXPORT xyz_u : public color_unit<xyz_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("xyz"); }
@@ -212,7 +212,7 @@ struct xyz_u : public color_unit<xyz_u>
   static value_type from_neutral(strong_value<neutral_unit> self);
 };
 
-struct yxy_u : public color_unit<yxy_u>
+struct OSSIA_EXPORT yxy_u : public color_unit<yxy_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("Yxy"); }
@@ -223,7 +223,7 @@ struct yxy_u : public color_unit<yxy_u>
   using value_type = Vec3f;
 };
 
-struct hunter_lab_u : public color_unit<hunter_lab_u>
+struct OSSIA_EXPORT hunter_lab_u : public color_unit<hunter_lab_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("hunter_lab"); }
@@ -232,7 +232,7 @@ struct hunter_lab_u : public color_unit<hunter_lab_u>
   using value_type = Vec3f;
 };
 
-struct cie_lab_u : public color_unit<cie_lab_u>
+struct OSSIA_EXPORT cie_lab_u : public color_unit<cie_lab_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("cie_lab"); }
@@ -241,7 +241,7 @@ struct cie_lab_u : public color_unit<cie_lab_u>
   using value_type = Vec3f;
 };
 
-struct cie_luv_u : public color_unit<cie_luv_u>
+struct OSSIA_EXPORT cie_luv_u : public color_unit<cie_luv_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("cie_luv"); }
