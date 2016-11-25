@@ -32,35 +32,28 @@ public:
   {
       auto addr = ossia::net::address_string_from_node(address);
       auto begin = addr.find(':') + 1;
-      oscpack::MessageGenerator<> m;
 
-      send_impl(
-          m(boost::string_view(addr.data() + begin, addr.size() - begin),
-            std::forward<Args>(args)...));
+      send_base(
+            boost::string_view(addr.data() + begin, addr.size() - begin),
+            std::forward<Args>(args)...);
   }
 
   template <typename... Args>
   void send(const std::string& address, Args&&... args)
   {
-    oscpack::MessageGenerator<> m;
-    send_impl(
-        m(address, std::forward<Args>(args)...));
+    send_base(address, std::forward<Args>(args)...);
   }
 
   template <typename... Args>
   void send(boost::string_view address, Args&&... args)
   {
-    oscpack::MessageGenerator<> m;
-    send_impl(
-        m(address, std::forward<Args>(args)...));
+    send_base(address, std::forward<Args>(args)...);
   }
 
   template <int N, typename... Args>
   void send(oscpack::small_string_base<N> address, Args&&... args)
   {
-    oscpack::MessageGenerator<> m;
-    send_impl(
-        m(address, std::forward<Args>(args)...));
+    send_base(address, std::forward<Args>(args)...);
   }
 
   const std::string& ip() const
@@ -81,11 +74,27 @@ private:
     std::cerr << s << "\n";
   }
 
+  template<typename... Args>
+  void send_base(Args&&... args)
+  {
+    try
+    {
+      oscpack::MessageGenerator<> m;
+
+      send_impl(m(args...));
+    }
+    catch(const oscpack::OutOfBufferMemoryException&)
+    {
+      oscpack::DynamicMessageGenerator m;
+
+      send_impl(m(args...));
+    }
+  }
+
   void send_impl(const oscpack::OutboundPacketStream& m)
   {
     try {
       m_socket.Send(m.Data(), m.Size());
-
     } catch(...)
     {
 

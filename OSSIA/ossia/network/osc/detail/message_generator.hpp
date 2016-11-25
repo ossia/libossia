@@ -44,7 +44,8 @@ inline oscpack::OutboundPacketStream& operator<<(
   return p;
 }
 
-template <int BufferSize = 1024*1024>
+
+template <int BufferSize = 2048>
 class MessageGenerator
 {
 public:
@@ -122,6 +123,90 @@ private:
   }
 
   alignas(128) std::array<char, BufferSize> buffer;
+  oscpack::OutboundPacketStream p{buffer.data(), buffer.size()};
+};
+
+
+// TODO have a queue of dynamic messages
+class DynamicMessageGenerator
+{
+public:
+  DynamicMessageGenerator() :
+    buffer([] { std::vector<char> c; c.reserve(1024*1024); return c;}()),
+    p{buffer.data(), buffer.size()}
+  {
+
+  }
+
+  template <typename... T>
+  DynamicMessageGenerator(
+      const std::string& name,
+      const T&... args):
+    DynamicMessageGenerator()
+  {
+    operator()(name, args...);
+  }
+
+  template <typename... T>
+  const oscpack::OutboundPacketStream&
+  operator()(const std::string& name, const T&... args)
+  {
+    p << oscpack::BeginMessageN(name);
+    subfunc(args...);
+    p << oscpack::EndMessage();
+    return p;
+  }
+
+  template <typename... T>
+  const oscpack::OutboundPacketStream&
+  operator()(boost::string_view name, const T&... args)
+  {
+    p << oscpack::BeginMessageN(name);
+    subfunc(args...);
+    p << oscpack::EndMessage();
+    return p;
+  }
+
+  template <int N, typename... T>
+  const oscpack::OutboundPacketStream&
+  operator()(small_string_base<N> name, const T&... args)
+  {
+    p << oscpack::BeginMessageN(name);
+    subfunc(args...);
+    p << oscpack::EndMessage();
+    return p;
+  }
+
+  template <typename Val_T>
+  const oscpack::OutboundPacketStream&
+  operator()(const std::string& name, const std::vector<Val_T>& values)
+  {
+    p << oscpack::BeginMessageN(name) << values << oscpack::EndMessage();
+    return p;
+  }
+
+  const oscpack::OutboundPacketStream& stream() const
+  {
+    return p;
+  }
+
+private:
+  void subfunc()
+  {
+  }
+
+  template <typename Arg1, typename... Args>
+  void subfunc(Arg1&& arg1, Args&&... args)
+  {
+    static_assert(
+        !std::is_pointer<std::remove_cv_t<std::remove_reference_t<Arg1>>>::
+            value,
+        "Do not send raw string literals");
+    p << arg1;
+    subfunc(args...);
+  }
+
+  std::vector<char> buffer;
   oscpack::OutboundPacketStream p{buffer.data(), buffer.size()};
 };
 }
