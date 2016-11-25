@@ -147,8 +147,8 @@ if(WIN32)
     target_link_libraries(ossia PRIVATE Ws2_32 winmm)
 endif()
 
-target_compile_options(ossia PUBLIC ${OSSIA_COMPILE_OPTIONS})
-target_link_libraries(ossia PUBLIC ${OSSIA_LINK_OPTIONS})
+target_compile_options(ossia PRIVATE ${OSSIA_COMPILE_OPTIONS})
+target_link_libraries(ossia PRIVATE ${OSSIA_LINK_OPTIONS})
 
 if(OSSIA_SANITIZE)
     sanitize_build(ossia)
