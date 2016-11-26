@@ -177,7 +177,7 @@ struct make_unit_symbols_helper
 
   make_unit_symbols_helper()
   {
-    brigand::for_each<ossia::unit_t>([&] (auto t) {
+    brigand::for_each<ossia::unit_variant>([&] (auto t) {
       using dataspace_type = typename decltype(t)::type;
       brigand::for_each<dataspace_type>([&] (auto u) {
         using unit_type = typename decltype(u)::type;

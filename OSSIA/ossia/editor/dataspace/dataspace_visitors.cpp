@@ -6,6 +6,7 @@
 #include <ossia/editor/dataspace/detail/dataspace_parse.hpp>
 #include <ossia/editor/dataspace/detail/make_value.hpp>
 #include <ossia/editor/dataspace/detail/make_unit.hpp>
+#include <ossia/editor/dataspace/value_with_unit.hpp>
 #include <ossia/detail/logger.hpp>
 #include <unordered_map>
 

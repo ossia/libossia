@@ -1,11 +1,17 @@
 #pragma once
-#include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia/network/common/address_properties.hpp>
+#include <ossia/editor/value/vec.hpp>
 #include <ossia/detail/destination_index.hpp>
+#include <boost/utility/string_view.hpp>
 #include <bitset>
+#include <ossia_export.h>
 
 namespace ossia
 {
+class unit_t;
+class value;
+class value_with_unit;
+
 /**
  * @brief get_dataspace_text
  * @return Text corresponding to the dataspace. For instance "color" or "gain".

@@ -1,10 +1,10 @@
 #pragma once
-#include <memory>
-
 #include <ossia/editor/value/value.hpp>
+#include <ossia/editor/state/destination_qualifiers.hpp>
 #include <ossia_export.h>
 #include <utility>
 #include <bitset>
+#include <memory>
 
 namespace ossia
 {
@@ -12,23 +12,6 @@ namespace net
 {
 class address_base;
 }
-
-struct OSSIA_EXPORT destination_qualifiers
-{
-  ossia::destination_index accessors;
-  ossia::unit_t unit;
-
-  bool operator==(const destination_qualifiers &a) const
-  {
-    return accessors == a.accessors && unit == a.unit;
-  }
-
-  bool operator!=(const destination_qualifiers &a) const
-  {
-    return accessors != a.accessors || unit != a.unit;
-  }
-};
-
 /**
  * @brief The message struct
  *

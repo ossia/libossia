@@ -1,6 +1,7 @@
 #include <ossia/network/generic/generic_address.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/editor/dataspace/value_with_unit.hpp>
 
 
 namespace ossia

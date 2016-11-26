@@ -36,34 +36,34 @@ private Q_SLOTS:
         QVERIFY(evaluate(testImpulseExprB) == false);
 
         auto testImpulseExprC = make_expression_atom(
-                    Impulse(), expression_atom::Comparator::EQUAL, Bool(true));
+                    Impulse(), expression_atom::Comparator::EQUAL, true);
         QCOMPARE(testImpulseExprC->target<expression_atom>()->getFirstOperand().getType(), val_type::IMPULSE);
         QCOMPARE(testImpulseExprC->target<expression_atom>()->getSecondOperand().getType(), val_type::BOOL);
 
         QVERIFY(evaluate(testImpulseExprC) == true);
 
         auto testImpulseExprD = make_expression_atom(
-                    Impulse(), expression_atom::Comparator::EQUAL, Int());
+                    Impulse(), expression_atom::Comparator::EQUAL, 0);
 
         QVERIFY(evaluate(testImpulseExprD) == true);
 
         auto testImpulseExprE = make_expression_atom(
-                    Impulse(), expression_atom::Comparator::EQUAL, Float());
+                    Impulse(), expression_atom::Comparator::EQUAL, 0.0);
 
         QVERIFY(evaluate(testImpulseExprE) == true);
 
         auto testImpulseExprF = make_expression_atom(
-                    Impulse(), expression_atom::Comparator::EQUAL, Char());
+                    Impulse(), expression_atom::Comparator::EQUAL, char{0});
 
         QVERIFY(evaluate(testImpulseExprF) == true);
 
         auto testImpulseExprG = make_expression_atom(
-                    Impulse(), expression_atom::Comparator::EQUAL, String());
+                    Impulse(), expression_atom::Comparator::EQUAL, std::string{});
 
         QVERIFY(evaluate(testImpulseExprG) == true);
 
         auto testImpulseExprH = make_expression_atom(
-                    Impulse(), expression_atom::Comparator::EQUAL, Tuple());
+                    Impulse(), expression_atom::Comparator::EQUAL, std::vector<ossia::value>{});
 
         QVERIFY(evaluate(testImpulseExprH) == true);
 
@@ -74,17 +74,17 @@ private Q_SLOTS:
     void test_bool()
     {
         auto testBoolExprA = make_expression_atom(
-                    Bool(true), expression_atom::Comparator::EQUAL, Bool(true));
+                    true, expression_atom::Comparator::EQUAL, true);
 
         QVERIFY(evaluate(testBoolExprA) == true);
 
         auto testBoolExprB = make_expression_atom(
-                    Bool(true), expression_atom::Comparator::DIFFERENT, Bool(true));
+                    true, expression_atom::Comparator::DIFFERENT, true);
 
         QVERIFY(evaluate(testBoolExprB) == false);
 
         auto testBoolExprC = make_expression_atom(
-                    Bool(true), expression_atom::Comparator::EQUAL, Impulse());
+                    true, expression_atom::Comparator::EQUAL, Impulse());
 
         QVERIFY(evaluate(testBoolExprC) == true);
 
@@ -94,19 +94,19 @@ private Q_SLOTS:
     /*! evaluate expressions with int values */
     void test_int()
     {
-        auto testIntExprA = make_expression_atom(Int(10),
+        auto testIntExprA = make_expression_atom(10,
                                                    expression_atom::Comparator::GREATER_THAN,
-                                                   Int(5));
+                                                   5);
 
         QVERIFY(evaluate(testIntExprA) == true);
 
-        auto testIntExprB = make_expression_atom(Int(10),
+        auto testIntExprB = make_expression_atom(10,
                                                    expression_atom::Comparator::LOWER_THAN,
-                                                   Int(5));
+                                                   5);
 
         QVERIFY(evaluate(testIntExprB) == false);
 
-        auto testIntExprC = make_expression_atom(Int(10),
+        auto testIntExprC = make_expression_atom(10,
                                                     expression_atom::Comparator::EQUAL,
                                                     Impulse());
 
@@ -118,19 +118,19 @@ private Q_SLOTS:
     /*! evaluate expressions with float values */
     void test_float()
     {
-        auto testFloatExprA = make_expression_atom(Float(10.),
+        auto testFloatExprA = make_expression_atom(10.,
                                                      expression_atom::Comparator::GREATER_THAN_OR_EQUAL,
-                                                     Float(10.));
+                                                     10.);
 
         QVERIFY(evaluate(testFloatExprA) == true);
 
-        auto testFloatExprB = make_expression_atom(Float(10.),
+        auto testFloatExprB = make_expression_atom(10.,
                                                      expression_atom::Comparator::LOWER_THAN_OR_EQUAL,
-                                                     Float(10.));
+                                                     10.);
 
         QVERIFY(evaluate(testFloatExprB) == true);
 
-        auto testFloatExprC = make_expression_atom(Float(10.),
+        auto testFloatExprC = make_expression_atom(10.,
                                                      expression_atom::Comparator::EQUAL,
                                                      Impulse());
 
@@ -142,19 +142,19 @@ private Q_SLOTS:
     /*! evaluate expressions with string values */
     void test_string()
     {
-        auto testStringExprA = make_expression_atom(String("abc"),
+        auto testStringExprA = make_expression_atom(std::string("abc"),
                                                       expression_atom::Comparator::GREATER_THAN_OR_EQUAL,
-                                                      String("bcd"));
+                                                      std::string("bcd"));
 
         QVERIFY(evaluate(testStringExprA) == false);
 
-        auto testStringExprB = make_expression_atom(String("abc"),
+        auto testStringExprB = make_expression_atom(std::string("abc"),
                                                       expression_atom::Comparator::LOWER_THAN_OR_EQUAL,
-                                                      String("bcd"));
+                                                      std::string("bcd"));
 
         QVERIFY(evaluate(testStringExprB) == true);
 
-        auto testStringExprC = make_expression_atom(String("abc"),
+        auto testStringExprC = make_expression_atom(std::string("abc"),
                                                       expression_atom::Comparator::EQUAL,
                                                       Impulse());
 
@@ -166,8 +166,8 @@ private Q_SLOTS:
     /*! evaluate expressions with tuple values */
     void test_tuple()
     {
-        std::vector<value> value1 = {Float(0.1), Float(0.2), Float(0.3)};
-        std::vector<value> value2 = {Float(0.2), Float(0.3), Float(0.4)};
+        std::vector<value> value1{0.1, 0.2, 0.3};
+        std::vector<value> value2{0.2, 0.3, 0.4};
 
         auto testTupleExprA = make_expression_atom(value1,
                                                      expression_atom::Comparator::GREATER_THAN,
@@ -322,17 +322,17 @@ private Q_SLOTS:
     /*! test comparison operator */
     void test_comparison()
     {
-        auto testExprA = make_expression_atom(Bool(true),
+        auto testExprA = make_expression_atom(true,
                                                     expression_atom::Comparator::EQUAL,
-                                                    Bool(true));
+                                                    true);
 
-        auto testExprB = make_expression_atom(Bool(true),
+        auto testExprB = make_expression_atom(true,
                                                     expression_atom::Comparator::DIFFERENT,
-                                                    Bool(true));
+                                                    true);
 
-        auto testExprC = make_expression_atom(Bool(true),
+        auto testExprC = make_expression_atom(true,
                                                 expression_atom::Comparator::EQUAL,
-                                                Bool(true));
+                                                true);
 
         QVERIFY(expression_false != *testExprA);
         QVERIFY(expression_true != *testExprA);

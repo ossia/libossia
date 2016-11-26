@@ -67,15 +67,15 @@ int main()
   // update tree value
   oscImpulseAddress->setValue(Impulse{});
 
-  oscBoolAddress->setValue(Bool{true});
+  oscBoolAddress->setValue(true);
 
-  oscIntAddress->setValue(Int{5});
+  oscIntAddress->setValue(5);
 
-  oscFloatAddress->setValue(Float{0.5});
+  oscFloatAddress->setValue(0.5);
 
-  oscStringAddress->setValue(String{"Hello world!"});
+  oscStringAddress->setValue("Hello world!"s);
 
-  oscTupleAddress->setValue(Tuple{Float(0.1), Float(0.2), Float(0.3)});
+  oscTupleAddress->setValue(std::vector<ossia::value>{0.1, 0.2, 0.3});
 
   while (true)
     ;

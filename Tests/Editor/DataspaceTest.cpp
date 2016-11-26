@@ -143,7 +143,7 @@ private Q_SLOTS:
     ossia::unit_t unit;
 
     // Construction
-    brigand::for_each<ossia::unit_t>([&] (auto t) {
+    brigand::for_each<ossia::unit_variant>([&] (auto t) {
       brigand::for_each<typename decltype(t)::type>([&] (auto u) {
         unit = typename decltype(u)::type{};
       });
@@ -166,7 +166,7 @@ private Q_SLOTS:
   {
     // get_unit_text
     ossia::get_unit_text(ossia::unit_t{});
-    brigand::for_each<ossia::unit_t>([&] (auto t) {
+    brigand::for_each<ossia::unit_variant>([&] (auto t) {
       ossia::get_unit_text(typename decltype(t)::type{});
       brigand::for_each<typename decltype(t)::type>([&] (auto u) {
         ossia::get_unit_text(typename decltype(u)::type{});
@@ -184,7 +184,7 @@ private Q_SLOTS:
     auto p2 = ossia::parse_unit("rgb", ossia::unit_t{});
     QVERIFY(!p2);
 
-    brigand::for_each<ossia::unit_t>([&] (auto t) {
+    brigand::for_each<ossia::unit_variant>([&] (auto t) {
       using dataspace_type = typename decltype(t)::type;
       brigand::for_each<dataspace_type>([&] (auto u) {
         using unit_type = typename decltype(u)::type;

@@ -112,7 +112,7 @@ private Q_SLOTS:
     auto localTupleNode = device.createChild("my_tuple");
     auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
 
-    Tuple t{Float(-1.), Float(0.), Float(1.)};
+    std::vector<ossia::value> t{float{-1.}, float{0.}, float{1.}};
     localTupleAddress->setValue(t);
 
     auto c = std::make_shared<curve<double, float>>();

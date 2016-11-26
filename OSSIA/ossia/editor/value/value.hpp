@@ -103,6 +103,13 @@ public:
   // Construction
   template <typename T>
   OSSIA_DECL_RELAXED_CONSTEXPR value(T*) = delete;
+  template <int N>
+  OSSIA_DECL_RELAXED_CONSTEXPR value(const char (&txt)[N]):
+      v{eggs::variants::in_place<std::string>, txt, N}
+  {
+
+  }
+
   ~value() noexcept;
   OSSIA_DECL_RELAXED_CONSTEXPR value(Impulse val) noexcept : v{val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Destination& val) noexcept : v{val} { }

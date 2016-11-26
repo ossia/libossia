@@ -71,16 +71,16 @@ int main()
 
   // update tree value
   localImpulseAddress->pushValue(Impulse{});
-  localBoolAddress->pushValue(Bool{true});
-  localIntAddress->pushValue(Int{123});
-  localFloatAddress->pushValue(Float{0.5});
-  localStringAddress->pushValue(String{"hello world !"});
+  localBoolAddress->pushValue(true);
+  localIntAddress->pushValue(123);
+  localFloatAddress->pushValue(0.5);
+  localStringAddress->pushValue("hello world !"s);
 
   // FIXME
   // Destination d(localFloatNode);
   // localDestinationAddress->pushValue(&d);
 
-  localTupleAddress->pushValue(Tuple{Float(0.1), Float(0.2), Float(0.3)});
+  localTupleAddress->pushValue(std::vector<ossia::value>{0., 1., 2.});
 
   // declare a distant program as a Minuit device
   local_proto.exposeTo(std::make_unique<net::minuit_protocol>("B", "127.0.0.1", 9999, 6666));

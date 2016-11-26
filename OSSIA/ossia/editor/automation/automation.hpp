@@ -1,7 +1,6 @@
 #pragma once
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
-#include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia/editor/curve/behavior.hpp>
 #include <ossia_export.h>
 

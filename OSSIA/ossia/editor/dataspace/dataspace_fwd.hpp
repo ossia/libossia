@@ -3,7 +3,6 @@
 #include <ossia/editor/dataspace/dataspace_base.hpp>
 #include <eggs/variant.hpp>
 #include <brigand/algorithms/transform.hpp>
-#include <brigand/algorithms/fold.hpp>
 #include <brigand/functions/arithmetic.hpp>
 #include <brigand/adapted/list.hpp>
 #include <type_traits>
@@ -32,18 +31,5 @@ using speed = add_value<speed_u>;
 using gain = add_value<gain_u>;
 using time = add_value<time_u>;
 
-// Basically eggs::variant<ossia::value, ossia::distance, ossia::position, ossia::speed...>
-using value_with_unit =
-brigand::as_eggs_variant<
-  brigand::append<
-    brigand::list<ossia::value>,
-    brigand::as_list<
-      brigand::transform<
-        unit_t,
-        brigand::bind<ossia::add_value, brigand::_1>
-      >
-    >
-  >
->;
 }
 

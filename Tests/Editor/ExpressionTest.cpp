@@ -22,7 +22,7 @@ private Q_SLOTS:
         QVERIFY(expr_false != nullptr);
         QVERIFY(evaluate(expr_false) == false);
 
-        auto expr_true = make_expression_bool(true);
+        auto expr_true = make_expression_true();
         QVERIFY(expr_true != nullptr);
         QVERIFY(evaluate(expr_true) == true);
 
@@ -39,7 +39,7 @@ private Q_SLOTS:
         QVERIFY(expressions::expression_true == expressions::expression_true);
 
         auto expression_false = make_expression_bool(false);
-        auto expression_true = make_expression_bool(true);
+        auto expression_true = make_expression_true();
 
         QVERIFY(expressions::expression_false == *expression_false);
         QVERIFY(expressions::expression_false != *expression_true);

@@ -16,19 +16,19 @@ struct matching_domain<ossia::val_type::IMPULSE>
 { using type = ossia::net::domain_base<Impulse>; };
 template<>
 struct matching_domain<ossia::val_type::BOOL>
-{ using type = ossia::net::domain_base<Bool>; };
+{ using type = ossia::net::domain_base<bool>; };
 template<>
 struct matching_domain<ossia::val_type::INT>
-{ using type = ossia::net::domain_base<Int>; };
+{ using type = ossia::net::domain_base<int>; };
 template<>
 struct matching_domain<ossia::val_type::FLOAT>
-{ using type = ossia::net::domain_base<Float>; };
+{ using type = ossia::net::domain_base<float>; };
 template<>
 struct matching_domain<ossia::val_type::CHAR>
-{ using type = ossia::net::domain_base<Char>; };
+{ using type = ossia::net::domain_base<char>; };
 template<>
 struct matching_domain<ossia::val_type::STRING>
-{ using type = ossia::net::domain_base<String>; };
+{ using type = ossia::net::domain_base<std::string>; };
 template<>
 struct matching_domain<ossia::val_type::TUPLE>
 { using type = ossia::net::domain_base<std::vector<ossia::value>>; };
@@ -49,15 +49,15 @@ ossia::net::domain make_domain(ossia::val_type t)
     case ossia::val_type::IMPULSE:
       return ossia::net::domain_base<Impulse>{};
     case ossia::val_type::BOOL:
-      return ossia::net::domain_base<Bool>{};
+      return ossia::net::domain_base<bool>{};
     case ossia::val_type::INT:
-      return ossia::net::domain_base<Int>{};
+      return ossia::net::domain_base<int>{};
     case ossia::val_type::FLOAT:
-      return ossia::net::domain_base<Float>{};
+      return ossia::net::domain_base<float>{};
     case ossia::val_type::CHAR:
-      return ossia::net::domain_base<Char>{};
+      return ossia::net::domain_base<char>{};
     case ossia::val_type::STRING:
-      return ossia::net::domain_base<String>();
+      return ossia::net::domain_base<std::string>();
     case ossia::val_type::TUPLE:
       return ossia::net::domain_base<std::vector<ossia::value>>{};
     case ossia::val_type::VEC2F:

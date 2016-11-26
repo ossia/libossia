@@ -35,8 +35,8 @@ private Q_SLOTS:
 
         QVERIFY(!address->getDomain());
 
-        address->setDomain(net::make_domain(Int(0), Int(100)));
-        QVERIFY(address->getDomain() == net::make_domain(Int(0), Int(100)));
+        address->setDomain(net::make_domain(0, 100));
+        QVERIFY(address->getDomain() == net::make_domain(0, 100));
 
         QVERIFY(address->getBoundingMode() == ossia::bounding_mode::FREE);
 

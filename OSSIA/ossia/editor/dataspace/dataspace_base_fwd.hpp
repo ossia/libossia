@@ -1,6 +1,5 @@
 #pragma once
 #include <ratio>
-
 namespace eggs
 {
 namespace variants
@@ -101,6 +100,8 @@ using time_u =
   eggs::variant<
     second_u, bark_u, bpm_u, cent_u, frequency_u, mel_u, midi_pitch_u, millisecond_u, playback_speed_u>;
 
-using unit_t = eggs::variant<distance_u, position_u, speed_u, orientation_u, angle_u, color_u, gain_u, time_u>;
+using unit_variant = eggs::variant<distance_u, position_u, speed_u, orientation_u, angle_u, color_u, gain_u, time_u>;
+struct unit_t;
 
+struct value_with_unit;
 }
