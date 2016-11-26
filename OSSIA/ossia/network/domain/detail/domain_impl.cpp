@@ -6,6 +6,21 @@ namespace ossia
 namespace net
 {
 
+value domain::get_min() const
+{ return net::get_min(*this); }
+value domain::get_max() const
+{ return net::get_max(*this); }
+
+void domain::set_min(const ossia::value& val)
+{ return net::set_min(*this, val); }
+void domain::set_max(const ossia::value& val)
+{ return net::set_max(*this, val); }
+
+value domain::apply(bounding_mode b, const ossia::value& val) const
+{ return net::apply_domain(*this, b, val); }
+value domain::apply(bounding_mode b, ossia::value&& val) const
+{ return net::apply_domain(*this, b, std::move(val)); }
+
 template<typename Domain>
 template<typename U>
 ossia::value numeric_clamp<Domain>::operator()(bounding_mode b, U&& val) const
@@ -107,7 +122,7 @@ ossia::value numeric_clamp<Domain>::operator()(bounding_mode b, U&& val) const
 }
 template<typename T>
 template<std::size_t N>
-ossia::value numeric_clamp<T>::operator()(bounding_mode b, Vec<float, N> val) const
+ossia::value numeric_clamp<T>::operator()(bounding_mode b, std::array<float, N> val) const
 {
   if (b == bounding_mode::FREE)
     return val;
@@ -186,7 +201,7 @@ ossia::value numeric_clamp<T>::operator()(bounding_mode b, Vec<float, N> val) co
   }
 }
 
-value tuple_clamp::operator()(bounding_mode b, const Tuple& val) const
+value tuple_clamp::operator()(bounding_mode b, const std::vector<ossia::value>& val) const
 {
   if (b == bounding_mode::FREE)
     return val;
@@ -200,11 +215,11 @@ value tuple_clamp::operator()(bounding_mode b, const Tuple& val) const
     const bool has_max = bool(domain.max);
     if (has_min && has_max)
     {
-      const Tuple& min = domain.min.get();
-      const Tuple& max = domain.max.get();
+      const std::vector<ossia::value>& min = domain.min.get();
+      const std::vector<ossia::value>& max = domain.max.get();
       if(min.size() == 1 && max.size() == 1)
       {
-        ossia::Tuple res;
+        std::vector<ossia::value> res;
         res.resize(N);
 
         const auto min_v = min[0];
@@ -238,7 +253,7 @@ value tuple_clamp::operator()(bounding_mode b, const Tuple& val) const
       }
       else
       {
-        ossia::Tuple res;
+        std::vector<ossia::value> res;
         res.resize(N);
         switch (b)
         {
@@ -265,10 +280,10 @@ value tuple_clamp::operator()(bounding_mode b, const Tuple& val) const
     }
     else if (has_min)
     {
-      const Tuple& min = domain.min.get();
+      const std::vector<ossia::value>& min = domain.min.get();
       if(min.size() == 1)
       {
-        ossia::Tuple res;
+        std::vector<ossia::value> res;
         res.resize(N);
         const auto min_v = min[0];
         switch(b)
@@ -287,7 +302,7 @@ value tuple_clamp::operator()(bounding_mode b, const Tuple& val) const
       }
       else
       {
-        ossia::Tuple res;
+        std::vector<ossia::value> res;
         res.resize(N);
         switch(b)
         {
@@ -302,10 +317,10 @@ value tuple_clamp::operator()(bounding_mode b, const Tuple& val) const
     }
     else if (has_max)
     {
-      const Tuple& max = domain.max.get();
+      const std::vector<ossia::value>& max = domain.max.get();
       if(max.size() == 1)
       {
-        ossia::Tuple res;
+        std::vector<ossia::value> res;
         res.resize(N);
         const auto max_v = max[0];
         switch(b)
@@ -324,7 +339,7 @@ value tuple_clamp::operator()(bounding_mode b, const Tuple& val) const
       }
       else
       {
-        ossia::Tuple res;
+        std::vector<ossia::value> res;
         res.resize(N);
         switch(b)
         {
@@ -349,7 +364,7 @@ value tuple_clamp::operator()(bounding_mode b, const Tuple& val) const
   }
 }
 
-value tuple_clamp::operator()(bounding_mode b, Tuple&& val) const
+value tuple_clamp::operator()(bounding_mode b, std::vector<ossia::value>&& val) const
 {
   if (b == bounding_mode::FREE)
     return val;
@@ -363,8 +378,8 @@ value tuple_clamp::operator()(bounding_mode b, Tuple&& val) const
     const bool has_max = bool(domain.max);
     if (has_min && has_max)
     {
-      const Tuple& min = domain.min.get();
-      const Tuple& max = domain.max.get();
+      const std::vector<ossia::value>& min = domain.min.get();
+      const std::vector<ossia::value>& max = domain.max.get();
 
       if(min.size() == 1 && max.size() == 1)
       {
@@ -424,7 +439,7 @@ value tuple_clamp::operator()(bounding_mode b, Tuple&& val) const
     }
     else if (has_min)
     {
-      const Tuple& min = domain.min.get();
+      const std::vector<ossia::value>& min = domain.min.get();
       const auto min_v = min[0];
 
       if(min.size() == 1)
@@ -458,7 +473,7 @@ value tuple_clamp::operator()(bounding_mode b, Tuple&& val) const
     }
     else if (has_max)
     {
-      const Tuple& max = domain.max.get();
+      const std::vector<ossia::value>& max = domain.max.get();
       const auto max_v = max[0];
 
       if(max.size() == 1)
@@ -502,7 +517,7 @@ value tuple_clamp::operator()(bounding_mode b, Tuple&& val) const
 }
 
 template<std::size_t N>
-value vec_clamp<N>::operator()(bounding_mode b, Vec<float, N> val) const
+value vec_clamp<N>::operator()(bounding_mode b, std::array<float, N> val) const
 {
   if (b == bounding_mode::FREE)
     return val;
@@ -515,8 +530,8 @@ value vec_clamp<N>::operator()(bounding_mode b, Vec<float, N> val) const
     const bool has_max = bool(domain.max);
     if (has_min && has_max)
     {
-      const Vec<float, N>& min = domain.min.get();
-      const Vec<float, N>& max = domain.max.get();
+      const std::array<float, N>& min = domain.min.get();
+      const std::array<float, N>& max = domain.max.get();
       switch (b)
       {
         case bounding_mode::CLIP:
@@ -540,7 +555,7 @@ value vec_clamp<N>::operator()(bounding_mode b, Vec<float, N> val) const
     }
     else if (has_min)
     {
-      const Vec<float, N>& min = domain.min.get();
+      const std::array<float, N>& min = domain.min.get();
       switch(b)
       {
         case bounding_mode::CLIP:
@@ -552,7 +567,7 @@ value vec_clamp<N>::operator()(bounding_mode b, Vec<float, N> val) const
     }
     else if (has_max)
     {
-      const Vec<float, N>& max = domain.max.get();
+      const std::array<float, N>& max = domain.max.get();
       switch(b)
       {
         case bounding_mode::CLIP:
@@ -710,7 +725,7 @@ value generic_clamp::operator()(bounding_mode b, value&& v) const
 }
 
 
-value generic_clamp::operator()(bounding_mode b, const Tuple& val) const
+value generic_clamp::operator()(bounding_mode b, const std::vector<ossia::value>& val) const
 {
   if (b == bounding_mode::FREE)
     return val;
@@ -722,7 +737,7 @@ value generic_clamp::operator()(bounding_mode b, const Tuple& val) const
     const bool has_max = bool(domain.max);
     if (has_min && has_max)
     {
-      ossia::Tuple res;
+      std::vector<ossia::value> res;
       res.reserve(val.size());
       const auto& min = domain.min.get();
       const auto& max = domain.max.get();
@@ -758,7 +773,7 @@ value generic_clamp::operator()(bounding_mode b, const Tuple& val) const
         case bounding_mode::LOW:
         {
           const auto& min = domain.min.get();
-          ossia::Tuple res;
+          std::vector<ossia::value> res;
           res.reserve(val.size());
           for(auto& v : val)
           {
@@ -778,7 +793,7 @@ value generic_clamp::operator()(bounding_mode b, const Tuple& val) const
         case bounding_mode::HIGH:
         {
           const auto& max = domain.max.get();
-          ossia::Tuple res;
+          std::vector<ossia::value> res;
           res.reserve(val.size());
           for(auto& v : val)
           {
@@ -811,7 +826,7 @@ value generic_clamp::operator()(bounding_mode b, const Tuple& val) const
 }
 
 
-value generic_clamp::operator()(bounding_mode b, Tuple&& val) const
+value generic_clamp::operator()(bounding_mode b, std::vector<ossia::value>&& val) const
 {
   if (b == bounding_mode::FREE)
     return std::move(val);
@@ -903,21 +918,21 @@ value generic_clamp::operator()(bounding_mode b, Tuple&& val) const
 
 
 
-value apply_domain_visitor::operator()(Int value, const domain_base<Int>& domain) const
-{ return numeric_clamp<domain_base<Int>>{domain}(b, value); }
+value apply_domain_visitor::operator()(int32_t value, const domain_base<int32_t>& domain) const
+{ return numeric_clamp<domain_base<int32_t>>{domain}(b, value); }
 
-value apply_domain_visitor::operator()(Float value, const domain_base<Float>& domain) const
-{ return numeric_clamp<domain_base<Float>>{domain}(b, value); }
+value apply_domain_visitor::operator()(float value, const domain_base<float>& domain) const
+{ return numeric_clamp<domain_base<float>>{domain}(b, value); }
 
-value apply_domain_visitor::operator()(Char value, const domain_base<Char>& domain) const
-{ return numeric_clamp<domain_base<Char>>{domain}(b, value); }
+value apply_domain_visitor::operator()(char value, const domain_base<char>& domain) const
+{ return numeric_clamp<domain_base<char>>{domain}(b, value); }
 
-value apply_domain_visitor::operator()(Bool value, const domain_base<Bool>& domain) const
-{ return numeric_clamp<domain_base<Bool>>{domain}(b, value); }
+value apply_domain_visitor::operator()(bool value, const domain_base<bool>& domain) const
+{ return numeric_clamp<domain_base<bool>>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Tuple& value, const domain_base<ossia::value>& domain) const
+ossia::value apply_domain_visitor::operator()(const std::vector<ossia::value>& value, const domain_base<ossia::value>& domain) const
 {
-  Tuple res = value;
+  std::vector<ossia::value> res = value;
   for(auto& val : res)
   {
     val = generic_clamp{domain}(b, val);
@@ -925,7 +940,7 @@ ossia::value apply_domain_visitor::operator()(const Tuple& value, const domain_b
   return res;
 }
 
-ossia::value apply_domain_visitor::operator()(Tuple&& value, const domain_base<ossia::value>& domain) const
+ossia::value apply_domain_visitor::operator()(std::vector<ossia::value>&& value, const domain_base<ossia::value>& domain) const
 {
   for(auto& val : value)
   {
@@ -936,65 +951,65 @@ ossia::value apply_domain_visitor::operator()(Tuple&& value, const domain_base<o
 }
 
 // Second case : we filter a whole tuple.
-ossia::value apply_domain_visitor::operator()(const Tuple& value, const domain_base<Tuple>& domain) const
+ossia::value apply_domain_visitor::operator()(const std::vector<ossia::value>& value, const domain_base<std::vector<ossia::value>>& domain) const
 { return tuple_clamp{domain}(b, value); }
-ossia::value apply_domain_visitor::operator()(Tuple&& value, const domain_base<Tuple>& domain) const
+ossia::value apply_domain_visitor::operator()(std::vector<ossia::value>&& value, const domain_base<std::vector<ossia::value>>& domain) const
 { return tuple_clamp{domain}(b, std::move(value)); }
 
 // Vec : we can either filter each value, or filter the whole shebang
-ossia::value apply_domain_visitor::operator()(const Vec<float, 2>& value, const domain_base<Float>& domain) const
-{ return numeric_clamp<domain_base<Float>>{domain}(b, value); }
+ossia::value apply_domain_visitor::operator()(const std::array<float, 2>& value, const domain_base<float>& domain) const
+{ return numeric_clamp<domain_base<float>>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 2>& value, const domain_base<Int>& domain) const
-{ return numeric_clamp<domain_base<Int>>{domain}(b, value); }
+ossia::value apply_domain_visitor::operator()(const std::array<float, 2>& value, const domain_base<int32_t>& domain) const
+{ return numeric_clamp<domain_base<int32_t>>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 2>& value, const domain_base<Bool>& domain) const
-{ return numeric_clamp<domain_base<Bool>>{domain}(b, value); }
+ossia::value apply_domain_visitor::operator()(const std::array<float, 2>& value, const domain_base<bool>& domain) const
+{ return numeric_clamp<domain_base<bool>>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 2>& value, const domain_base<Char>& domain) const
-{ return numeric_clamp<domain_base<Char>>{domain}(b, value); }
+ossia::value apply_domain_visitor::operator()(const std::array<float, 2>& value, const domain_base<char>& domain) const
+{ return numeric_clamp<domain_base<char>>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 2>& value, const domain_base<Vec<float, 2>>& domain) const
+ossia::value apply_domain_visitor::operator()(const std::array<float, 2>& value, const domain_base<std::array<float, 2>>& domain) const
 { return vec_clamp<2>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 2>& value, const domain_base<Tuple>& domain) const
-{ return vec_clamp<2>{ossia::net::domain_conversion<domain_base<Vec<float, 2>>>{}.tuple_func(domain)}(b, value); }
+ossia::value apply_domain_visitor::operator()(const std::array<float, 2>& value, const domain_base<std::vector<ossia::value>>& domain) const
+{ return vec_clamp<2>{ossia::net::domain_conversion<domain_base<std::array<float, 2>>>{}.tuple_func(domain)}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 3>& value, const domain_base<Float>& domain) const
-{ return numeric_clamp<domain_base<Float>>{domain}(b, value); }
+ossia::value apply_domain_visitor::operator()(const std::array<float, 3>& value, const domain_base<float>& domain) const
+{ return numeric_clamp<domain_base<float>>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 3>& value, const domain_base<Int>& domain) const
-{ return numeric_clamp<domain_base<Int>>{domain}(b, value); }
+ossia::value apply_domain_visitor::operator()(const std::array<float, 3>& value, const domain_base<int32_t>& domain) const
+{ return numeric_clamp<domain_base<int32_t>>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 3>& value, const domain_base<Bool>& domain) const
-{ return numeric_clamp<domain_base<Bool>>{domain}(b, value); }
+ossia::value apply_domain_visitor::operator()(const std::array<float, 3>& value, const domain_base<bool>& domain) const
+{ return numeric_clamp<domain_base<bool>>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 3>& value, const domain_base<Char>& domain) const
-{ return numeric_clamp<domain_base<Char>>{domain}(b, value); }
+ossia::value apply_domain_visitor::operator()(const std::array<float, 3>& value, const domain_base<char>& domain) const
+{ return numeric_clamp<domain_base<char>>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 3>& value, const domain_base<Vec<float, 3>>& domain) const
+ossia::value apply_domain_visitor::operator()(const std::array<float, 3>& value, const domain_base<std::array<float, 3>>& domain) const
 { return vec_clamp<3>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 3>& value, const domain_base<Tuple>& domain) const
-{ return vec_clamp<3>{ossia::net::domain_conversion<domain_base<Vec<float, 3>>>{}.tuple_func(domain)}(b, value); }
+ossia::value apply_domain_visitor::operator()(const std::array<float, 3>& value, const domain_base<std::vector<ossia::value>>& domain) const
+{ return vec_clamp<3>{ossia::net::domain_conversion<domain_base<std::array<float, 3>>>{}.tuple_func(domain)}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 4>& value, const domain_base<Float>& domain) const
-{ return numeric_clamp<domain_base<Float>>{domain}(b, value); }
+ossia::value apply_domain_visitor::operator()(const std::array<float, 4>& value, const domain_base<float>& domain) const
+{ return numeric_clamp<domain_base<float>>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 4>& value, const domain_base<Int>& domain) const
-{ return numeric_clamp<domain_base<Int>>{domain}(b, value); }
+ossia::value apply_domain_visitor::operator()(const std::array<float, 4>& value, const domain_base<int32_t>& domain) const
+{ return numeric_clamp<domain_base<int32_t>>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 4>& value, const domain_base<Bool>& domain) const
-{ return numeric_clamp<domain_base<Bool>>{domain}(b, value); }
+ossia::value apply_domain_visitor::operator()(const std::array<float, 4>& value, const domain_base<bool>& domain) const
+{ return numeric_clamp<domain_base<bool>>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 4>& value, const domain_base<Char>& domain) const
-{ return numeric_clamp<domain_base<Char>>{domain}(b, value); }
+ossia::value apply_domain_visitor::operator()(const std::array<float, 4>& value, const domain_base<char>& domain) const
+{ return numeric_clamp<domain_base<char>>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 4>& value, const domain_base<Vec<float, 4>>& domain) const
+ossia::value apply_domain_visitor::operator()(const std::array<float, 4>& value, const domain_base<std::array<float, 4>>& domain) const
 { return vec_clamp<4>{domain}(b, value); }
 
-ossia::value apply_domain_visitor::operator()(const Vec<float, 4>& value, const domain_base<Tuple>& domain) const
-{ return vec_clamp<4>{ossia::net::domain_conversion<domain_base<Vec<float, 4>>>{}.tuple_func(domain)}(b, value); }
+ossia::value apply_domain_visitor::operator()(const std::array<float, 4>& value, const domain_base<std::vector<ossia::value>>& domain) const
+{ return vec_clamp<4>{ossia::net::domain_conversion<domain_base<std::array<float, 4>>>{}.tuple_func(domain)}(b, value); }
 
 }
 }

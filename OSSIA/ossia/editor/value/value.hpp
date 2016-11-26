@@ -107,13 +107,13 @@ public:
   OSSIA_DECL_RELAXED_CONSTEXPR value(Impulse val) noexcept : v{val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Destination& val) noexcept : v{val} { }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR value(bool val) noexcept : v{eggs::variants::in_place<ossia::Bool>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(int val) noexcept : v{eggs::variants::in_place<ossia::Int>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(char val) noexcept : v{eggs::variants::in_place<ossia::Char>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(float val) noexcept : v{eggs::variants::in_place<ossia::Float>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(double val) noexcept : v{eggs::variants::in_place<ossia::Float>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(const std::string& val) noexcept : v{eggs::variants::in_place<ossia::String>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(const std::vector<ossia::value>& val) noexcept : v{eggs::variants::in_place<ossia::Tuple>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(bool val) noexcept : v{eggs::variants::in_place<bool>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(int val) noexcept : v{eggs::variants::in_place<int32_t>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(char val) noexcept : v{eggs::variants::in_place<char>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(float val) noexcept : v{eggs::variants::in_place<float>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(double val) noexcept : v{eggs::variants::in_place<float>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(const std::string& val) noexcept : v{eggs::variants::in_place<std::string>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(const std::vector<ossia::value>& val) noexcept : v{eggs::variants::in_place<std::vector<ossia::value>>, val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 2> val) noexcept : v{eggs::variants::in_place<ossia::Vec2f>, val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 3> val) noexcept : v{eggs::variants::in_place<ossia::Vec3f>, val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 4> val) noexcept : v{eggs::variants::in_place<ossia::Vec4f>, val} { }
@@ -122,8 +122,8 @@ public:
   // Movable overloads
   OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::Destination&& val) noexcept : v{std::move(val)} { }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR explicit value(std::string&& val) noexcept : v{eggs::variants::in_place<ossia::String>, std::move(val)} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR explicit value(std::vector<ossia::value>&& val) noexcept : v{eggs::variants::in_place<ossia::Tuple>, std::move(val)} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR explicit value(std::string&& val) noexcept : v{eggs::variants::in_place<std::string>, std::move(val)} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR explicit value(std::vector<ossia::value>&& val) noexcept : v{eggs::variants::in_place<std::vector<ossia::value>>, std::move(val)} { }
 
 
   template<typename T, typename... Args>
@@ -303,17 +303,17 @@ inline ossia::value init_value(ossia::val_type type)
     case val_type::IMPULSE:
       return Impulse{};
     case val_type::BOOL:
-      return Bool{};
+      return bool{};
     case val_type::INT:
-      return Int{};
+      return int32_t{};
     case val_type::FLOAT:
-      return Float{};
+      return float{};
     case val_type::CHAR:
-      return Char{};
+      return char{};
     case val_type::STRING:
-      return String{};
+      return std::string{};
     case val_type::TUPLE:
-      return Tuple{};
+      return std::vector<ossia::value>{};
     case val_type::VEC2F:
       return Vec2f{};
     case val_type::VEC3F:

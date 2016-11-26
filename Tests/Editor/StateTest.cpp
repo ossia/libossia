@@ -43,7 +43,7 @@ struct mock_autom2
     return autom_h;
   }
 
-  ossia::Float computeValue() { return 0.8; }
+  float computeValue() { return 0.8; }
 };
   void test_convert()
   {

@@ -1,10 +1,11 @@
 #pragma once
 #include <ossia/network/common/address_properties.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <vector>
+#include <ossia_export.h>
 
 namespace ossia
 {
-
+class value;
 /**
  * @brief convert Convert a value to the given type.
  * @param val A value
@@ -19,7 +20,7 @@ OSSIA_EXPORT T convert(
  */
 template<typename T>
 OSSIA_EXPORT T convert(
-    const ossia::Tuple& val);
+    const std::vector<ossia::value>& val);
 
 OSSIA_EXPORT ossia::value convert(
     const ossia::value& val,

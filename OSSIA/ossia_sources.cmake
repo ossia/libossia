@@ -101,6 +101,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_functions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_conversion.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/numeric_domain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/min_max.hpp"

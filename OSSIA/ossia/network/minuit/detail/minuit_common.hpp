@@ -78,23 +78,23 @@ inline boost::string_view to_minuit_type_text(const ossia::value& val)
     {
       return make_string_view("none");
     }
-    boost::string_view operator()(ossia::Int i) const
+    boost::string_view operator()(int32_t i) const
     {
       return make_string_view("integer");
     }
-    boost::string_view operator()(ossia::Float f) const
+    boost::string_view operator()(float f) const
     {
       return make_string_view("decimal");
     }
-    boost::string_view operator()(ossia::Bool b) const
+    boost::string_view operator()(bool b) const
     {
       return make_string_view("boolean");
     }
-    boost::string_view operator()(ossia::Char c) const
+    boost::string_view operator()(char c) const
     {
       return make_string_view("string");
     }
-    boost::string_view operator()(const ossia::String& str) const
+    boost::string_view operator()(const std::string& str) const
     {
       return make_string_view("string");
     }
@@ -110,7 +110,7 @@ inline boost::string_view to_minuit_type_text(const ossia::value& val)
     {
       return make_string_view("array");
     }
-    boost::string_view operator()(const ossia::Tuple& t) const
+    boost::string_view operator()(const std::vector<ossia::value>& t) const
     {
       return make_string_view("array");
     }
@@ -166,18 +166,18 @@ inline ossia::value value_from_minuit_type_text(boost::string_view str)
   switch (str[0])
   {
     case 'i': // integer
-      return ossia::Int{};
+      return int32_t{};
     case 'd': // decimal
-      return ossia::Float{};
+      return float{};
     case 's': // string
-      return ossia::String{};
+      return std::string{};
     case 'b': // boolean
-      return ossia::Bool{};
+      return bool{};
     case 'n': // none
       return ossia::Impulse{};
     case 'a': // array
     case 'g': // generic
-      return ossia::Tuple{};
+      return std::vector<ossia::value>{};
     default:
       return {};
   }

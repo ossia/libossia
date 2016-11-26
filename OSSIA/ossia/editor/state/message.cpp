@@ -44,7 +44,7 @@ void message::launch() const
         }
         case ossia::val_type::TUPLE:
         {
-          auto& cur_tuple = cur.get<Tuple>();
+          auto& cur_tuple = cur.get<std::vector<ossia::value>>();
           // Insert the value of this message in the existing value array
           value_merger<true>::insert_in_tuple(cur_tuple, message_value, destination.index);
           addr.pushValue(std::move(cur));
@@ -53,7 +53,7 @@ void message::launch() const
         default:
         {
           // Create a tuple and put the existing value at [0]
-          Tuple t{std::move(cur)};
+          std::vector<ossia::value> t{std::move(cur)};
           value_merger<true>::insert_in_tuple(t, message_value, destination.index);
           addr.pushValue(std::move(t));
           break;
@@ -110,7 +110,7 @@ void piecewise_message::launch() const
 {
   // If values are missing, merge with the existing ones
   auto cur = address.get().cloneValue();
-  if(auto cur_tuple = cur.target<Tuple>())
+  if(auto cur_tuple = cur.target<std::vector<ossia::value>>())
   {
     value_merger<true>::merge_tuple(*cur_tuple, message_value);
     address.get().pushValue(std::move(cur));
@@ -135,9 +135,9 @@ void piecewise_vec_message<N>::launch() const
     else
     {
       auto val = addr.cloneValue();
-      if(val.getType() == ossia::value_trait<Vec<float, N>>::ossia_enum)
+      if(val.getType() == ossia::value_trait<std::array<float, N>>::ossia_enum)
       {
-        auto& v = val.get<Vec<float, N>>();
+        auto& v = val.get<std::array<float, N>>();
         for(std::size_t i = 0; i < N; i++)
         {
           if(used_values.test(i))

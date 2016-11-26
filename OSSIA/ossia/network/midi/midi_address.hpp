@@ -76,12 +76,12 @@ struct address_info
       case Type::NoteOn:
       case Type::NoteOff:
       case Type::CC:
-        return ossia::Tuple{ossia::Int{val}, ossia::Int{val}};
+        return std::vector<ossia::value>{int32_t{val}, int32_t{val}};
       case Type::NoteOn_N:
       case Type::NoteOff_N:
       case Type::CC_N:
       case Type::PC:
-        return ossia::Int{val};
+        return int32_t{val};
       case Type::PC_N:
         return ossia::Impulse{};
     }

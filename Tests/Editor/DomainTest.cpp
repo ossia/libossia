@@ -327,7 +327,7 @@ private Q_SLOTS:
 
   void test_clamp_float()
   {
-    ossia::Float min{0.}, max{1.};
+    float min{0.}, max{1.};
     auto dom = ossia::net::make_domain(min, max);
 
     for(float i = -100; i < 100; i++)

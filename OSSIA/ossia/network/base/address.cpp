@@ -58,9 +58,9 @@ value address_base::cloneValue(destination_index idx) const
   return get_value_at_index(cloneValue(), idx);
 }
 
-Tuple address_base::cloneValue(const std::vector<destination_index>& indices) const
+std::vector<ossia::value> address_base::cloneValue(const std::vector<destination_index>& indices) const
 {
-  Tuple t;
+  std::vector<ossia::value> t;
   t.reserve(indices.size());
 
   auto v = cloneValue();

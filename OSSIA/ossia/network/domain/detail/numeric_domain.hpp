@@ -22,7 +22,7 @@ struct numeric_clamp
    * Fast algorithm for applying a numeric domain to a Vec<float>
    */
   template<std::size_t N>
-  ossia::value operator()(bounding_mode b, Vec<float, N> val) const;
+  ossia::value operator()(bounding_mode b, std::array<float, N> val) const;
 };
 
 }

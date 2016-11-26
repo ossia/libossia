@@ -31,7 +31,7 @@ struct matching_domain<ossia::val_type::STRING>
 { using type = ossia::net::domain_base<String>; };
 template<>
 struct matching_domain<ossia::val_type::TUPLE>
-{ using type = ossia::net::domain_base<Tuple>; };
+{ using type = ossia::net::domain_base<std::vector<ossia::value>>; };
 template<>
 struct matching_domain<ossia::val_type::VEC2F>
 { using type = ossia::net::domain_base<Vec2f>; };
@@ -59,7 +59,7 @@ ossia::net::domain make_domain(ossia::val_type t)
     case ossia::val_type::STRING:
       return ossia::net::domain_base<String>();
     case ossia::val_type::TUPLE:
-      return ossia::net::domain_base<Tuple>{};
+      return ossia::net::domain_base<std::vector<ossia::value>>{};
     case ossia::val_type::VEC2F:
       return ossia::net::domain_base<Vec2f>();
     case ossia::val_type::VEC3F:
@@ -227,24 +227,24 @@ private Q_SLOTS:
 private:
   const std::vector<ossia::value> value_to_test{
     ossia::Impulse{},
-    ossia::Int{0},
-    ossia::Int{-1000},
-    ossia::Int{1000},
-    ossia::Float{0},
-    ossia::Float{-1000},
-    ossia::Float{1000},
-    ossia::Bool{true},
-    ossia::Bool{false},
-    ossia::Char{},
-    ossia::Char{'a'},
-    ossia::String{""},
-    ossia::String{"ossia"},
-    ossia::Tuple{},
-    ossia::Tuple{ossia::Int{0}},
-    ossia::Tuple{ossia::Int{0}, ossia::Int{1}},
-    ossia::Tuple{ossia::Float{0}, ossia::Int{1}},
-    ossia::Tuple{ossia::Float{0}, ossia::Int{1}, ossia::String{}, ossia::Impulse{}},
-    ossia::Tuple{ossia::Float{0}, ossia::Float{1000}},
+    int32_t{0},
+    int32_t{-1000},
+    int32_t{1000},
+    float{0},
+    float{-1000},
+    float{1000},
+    bool{true},
+    bool{false},
+    char{},
+    char{'a'},
+    std::string{""},
+    std::string{"ossia"},
+    std::vector<ossia::value>{},
+    std::vector<ossia::value>{int32_t{0}},
+    std::vector<ossia::value>{int32_t{0}, int32_t{1}},
+    std::vector<ossia::value>{float{0}, int32_t{1}},
+    std::vector<ossia::value>{float{0}, int32_t{1}, std::string{}, ossia::Impulse{}},
+    std::vector<ossia::value>{float{0}, float{1000}},
     ossia::Vec2f{},
     ossia::Vec3f{},
     ossia::Vec4f{}

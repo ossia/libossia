@@ -228,7 +228,7 @@ struct merger_impl
 template<std::size_t N>
 struct vec_merger_impl_helper
 {
-  const ossia::Vec<float, N>& val;
+  const std::array<float, N>& val;
   const std::bitset<N>& idx;
 
   template<typename Unit_T>
@@ -241,7 +241,7 @@ struct vec_merger_impl_helper
 template<std::size_t N>
 struct vec_merger_impl
 {
-  const ossia::Vec<float, N>& val;
+  const std::array<float, N>& val;
   const std::bitset<N>& idx;
 
   OSSIA_INLINE ossia::value_with_unit operator()(const ossia::value& val)

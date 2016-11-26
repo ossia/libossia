@@ -177,17 +177,17 @@ struct computeValue_visitor
             case ossia::curve_segment_type::FLOAT:
             {
               auto c = static_cast<curve<double, float>*>(base_curve);
-              return ossia::Float{c->valueAt(position)};
+              return float{c->valueAt(position)};
             }
             case ossia::curve_segment_type::INT:
             {
               auto c = static_cast<curve<double, int>*>(base_curve);
-              return ossia::Int{c->valueAt(position)};
+              return int32_t{c->valueAt(position)};
             }
             case ossia::curve_segment_type::BOOL:
             {
               auto c = static_cast<curve<double, bool>*>(base_curve);
-              return ossia::Bool{c->valueAt(position)};
+              return bool{c->valueAt(position)};
             }
             case ossia::curve_segment_type::DOUBLE:
               break;
@@ -282,7 +282,7 @@ struct computeValue_visitor
     }
 
     // General tuple case
-    Tuple t;
+    std::vector<ossia::value> t;
     t.reserve(b.size());
 
     for(const auto& e : b)

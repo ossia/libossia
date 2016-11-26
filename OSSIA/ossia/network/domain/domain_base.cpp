@@ -8,8 +8,7 @@
 namespace ossia
 {
 template<typename T>
-OSSIA_INLINE auto&
-move(const T& t)
+auto& move(const T& t)
 {
   return t;
 }
@@ -209,27 +208,27 @@ operator==(const domain_base<Impulse>& lhs, const domain_base<Impulse>& rhs)
   return true;
 }
 bool
-operator==(const domain_base<Int>& lhs, const domain_base<Int>& rhs)
+operator==(const domain_base<int32_t>& lhs, const domain_base<int32_t>& rhs)
 {
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
 }
 bool
-operator==(const domain_base<Float>& lhs, const domain_base<Float>& rhs)
+operator==(const domain_base<float>& lhs, const domain_base<float>& rhs)
 {
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
 }
 bool
-operator==(const domain_base<Bool>& lhs, const domain_base<Bool>& rhs)
+operator==(const domain_base<bool>& lhs, const domain_base<bool>& rhs)
 {
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
 }
 bool
-operator==(const domain_base<Char>& lhs, const domain_base<Char>& rhs)
+operator==(const domain_base<char>& lhs, const domain_base<char>& rhs)
 {
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
 }
 bool
-operator==(const domain_base<Tuple>& lhs, const domain_base<Tuple>& rhs)
+operator==(const domain_base<std::vector<ossia::value>>& lhs, const domain_base<std::vector<ossia::value>>& rhs)
 {
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
 }
@@ -254,7 +253,7 @@ operator==(const domain_base<ossia::value>& lhs, const domain_base<ossia::value>
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
 }
 bool
-operator==(const domain_base<String>& lhs, const domain_base<String>& rhs)
+operator==(const domain_base<std::string>& lhs, const domain_base<std::string>& rhs)
 {
   return lhs.values == rhs.values;
 }
@@ -284,17 +283,17 @@ domain init_domain(ossia::val_type type)
     case val_type::IMPULSE:
       return domain_base<Impulse>{};
     case val_type::INT:
-      return domain_base<Int>{};
+      return domain_base<int32_t>{};
     case val_type::FLOAT:
-      return domain_base<Float>{};
+      return domain_base<float>{};
     case val_type::BOOL:
-      return domain_base<Bool>{};
+      return domain_base<bool>{};
     case val_type::CHAR:
-      return domain_base<Char>{};
+      return domain_base<char>{};
     case val_type::STRING:
-      return domain_base<String>();
+      return domain_base<std::string>();
     case val_type::TUPLE:
-      return domain_base<Tuple>();
+      return domain_base<std::vector<ossia::value>>();
     case val_type::VEC2F:
       return domain_base<Vec2f>();
     case val_type::VEC3F:

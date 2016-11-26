@@ -117,7 +117,7 @@ const ossia::behavior& mapper::getDriving() const
 
 struct mapper_compute_visitor
 {
-  ossia::value operator()(ossia::Float driver, const std::shared_ptr<curve_abstract>& c)
+  ossia::value operator()(float driver, const std::shared_ptr<curve_abstract>& c)
   {
     auto base_curve = c.get();
     auto t = base_curve->getType();
@@ -129,17 +129,17 @@ struct mapper_compute_visitor
       case ossia::curve_segment_type::FLOAT:
       {
         auto c = static_cast<curve<float, float>*>(base_curve);
-        return ossia::Float{c->valueAt(driver)};
+        return float{c->valueAt(driver)};
       }
       case ossia::curve_segment_type::INT:
       {
         auto c = static_cast<curve<float, int>*>(base_curve);
-        return ossia::Int{c->valueAt(driver)};
+        return int32_t{c->valueAt(driver)};
       }
       case ossia::curve_segment_type::BOOL:
       {
         auto c = static_cast<curve<float, bool>*>(base_curve);
-        return ossia::Bool{c->valueAt(driver)};
+        return bool{c->valueAt(driver)};
       }
       case ossia::curve_segment_type::DOUBLE:
       case ossia::curve_segment_type::ANY:
@@ -148,7 +148,7 @@ struct mapper_compute_visitor
     }
   }
 
-  ossia::value operator()(ossia::Int driver, const std::shared_ptr<curve_abstract>& c)
+  ossia::value operator()(int32_t driver, const std::shared_ptr<curve_abstract>& c)
   {
     auto base_curve = c.get();
     auto t = base_curve->getType();
@@ -160,17 +160,17 @@ struct mapper_compute_visitor
       case ossia::curve_segment_type::FLOAT:
       {
         auto c = static_cast<curve<int, float>*>(base_curve);
-        return ossia::Float{c->valueAt(driver)};
+        return float{c->valueAt(driver)};
       }
       case ossia::curve_segment_type::INT:
       {
         auto c = static_cast<curve<int, int>*>(base_curve);
-        return ossia::Int{c->valueAt(driver)};
+        return int32_t{c->valueAt(driver)};
       }
       case ossia::curve_segment_type::BOOL:
       {
         auto c = static_cast<curve<int, bool>*>(base_curve);
-        return ossia::Bool{c->valueAt(driver)};
+        return bool{c->valueAt(driver)};
       }
       case ossia::curve_segment_type::DOUBLE:
       case ossia::curve_segment_type::ANY:
@@ -179,7 +179,7 @@ struct mapper_compute_visitor
     }
   }
 
-  ossia::value operator()(ossia::Bool driver, const std::shared_ptr<curve_abstract>& c)
+  ossia::value operator()(bool driver, const std::shared_ptr<curve_abstract>& c)
   {
     auto base_curve = c.get();
     auto t = base_curve->getType();
@@ -191,17 +191,17 @@ struct mapper_compute_visitor
       case ossia::curve_segment_type::FLOAT:
       {
         auto c = static_cast<curve<bool, float>*>(base_curve);
-        return ossia::Float{c->valueAt(driver)};
+        return float{c->valueAt(driver)};
       }
       case ossia::curve_segment_type::INT:
       {
         auto c = static_cast<curve<bool, int>*>(base_curve);
-        return ossia::Int{c->valueAt(driver)};
+        return int32_t{c->valueAt(driver)};
       }
       case ossia::curve_segment_type::BOOL:
       {
         auto c = static_cast<curve<bool, bool>*>(base_curve);
-        return ossia::Bool{c->valueAt(driver)};
+        return bool{c->valueAt(driver)};
       }
       case ossia::curve_segment_type::DOUBLE:
       case ossia::curve_segment_type::ANY:
@@ -210,7 +210,7 @@ struct mapper_compute_visitor
     }
   }
 
-  ossia::value operator()(const ossia::Tuple& t_driver, const std::shared_ptr<curve_abstract>& c)
+  ossia::value operator()(const std::vector<ossia::value>& t_driver, const std::shared_ptr<curve_abstract>& c)
   {
     std::vector<ossia::value> t_value = t_driver;
     for (auto& v : t_value)
@@ -227,7 +227,7 @@ struct mapper_compute_visitor
   }
 
   template<std::size_t N>
-  ossia::value operator()(ossia::Vec<float, N> driver, const std::shared_ptr<curve_abstract>& c)
+  ossia::value operator()(std::array<float, N> driver, const std::shared_ptr<curve_abstract>& c)
   {
     auto base_curve = c.get();
     auto t = base_curve->getType();
@@ -247,7 +247,7 @@ struct mapper_compute_visitor
   }
 
   template<std::size_t N>
-  ossia::value operator()(ossia::Vec<float, N> driver, const std::vector<ossia::behavior>& t_drive)
+  ossia::value operator()(std::array<float, N> driver, const std::vector<ossia::behavior>& t_drive)
   {
     if(t_drive.size() != N)
       return {};
@@ -272,7 +272,7 @@ struct mapper_compute_visitor
     return driver;
   }
 
-  ossia::value operator()(const ossia::Tuple& t_driver, const std::vector<ossia::behavior>& t_drive)
+  ossia::value operator()(const std::vector<ossia::value>& t_driver, const std::vector<ossia::behavior>& t_drive)
   {
     std::vector<ossia::value> t_value;
     t_value.reserve(t_drive.size());

@@ -284,10 +284,10 @@ private Q_SLOTS:
     }
 
     {
-qDebug() << ossia::to_pretty_string(make_value(ossia::Int{ 10 }, ossia::centimeter_u{})).c_str();
-      QVERIFY(make_value(ossia::Int{10}, ossia::centimeter_u{}) == ossia::centimeter{10});
-      QVERIFY(make_value(ossia::Char{10}, ossia::centimeter_u{}) == ossia::centimeter{10});
-      QVERIFY(make_value(ossia::Bool{true}, ossia::centimeter_u{}) == ossia::centimeter{1});
+qDebug() << ossia::to_pretty_string(make_value(int32_t{ 10 }, ossia::centimeter_u{})).c_str();
+      QVERIFY(make_value(int32_t{10}, ossia::centimeter_u{}) == ossia::centimeter{10});
+      QVERIFY(make_value(char{10}, ossia::centimeter_u{}) == ossia::centimeter{10});
+      QVERIFY(make_value(bool{true}, ossia::centimeter_u{}) == ossia::centimeter{1});
       QVERIFY(make_value(1.2, ossia::centimeter_u{}) == ossia::centimeter{1.2});
       QVERIFY(make_value(1.2, ossia::rgb_u{}) == ossia::value_with_unit{});
       QVERIFY(make_value(ossia::Impulse{}, ossia::rgb_u{}) == ossia::value_with_unit{});
@@ -296,7 +296,7 @@ qDebug() << ossia::to_pretty_string(make_value(ossia::Int{ 10 }, ossia::centimet
       QVERIFY(make_value(make_vec(1.2, 1.3, 32.5), ossia::rgb_u{}) == ossia::rgb{make_vec(1.2, 1.3, 32.5)});
       QVERIFY(make_value(make_vec(1.2, 1.3, 32.5, 0.7), ossia::rgba_u{}) == ossia::rgba{make_vec(1.2, 1.3, 32.5, 0.7)});
       QVERIFY(make_value(make_vec(1.2, 1.3), ossia::cartesian_2d_u{}) == ossia::cartesian_2d{make_vec(1.2, 1.3)});
-      QVERIFY(make_value(ossia::Tuple{1.2, 1.3, 32.5}, ossia::rgb_u{}) == ossia::rgb{make_vec(1.2, 1.3, 32.5)});
+      QVERIFY(make_value(std::vector<ossia::value>{1.2, 1.3, 32.5}, ossia::rgb_u{}) == ossia::rgb{make_vec(1.2, 1.3, 32.5)});
     }
 
     {

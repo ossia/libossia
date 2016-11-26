@@ -101,7 +101,7 @@ public:
   /**
    * @brief cloneValueAtIndex Returns a tuple of sub-values matching the indexes
    */
-  Tuple cloneValue(const std::vector<ossia::destination_index>&) const;
+  std::vector<ossia::value> cloneValue(const std::vector<ossia::destination_index>&) const;
 
   virtual address_base& setValue(const value&) = 0;
 

@@ -76,7 +76,7 @@ else()
         -gdwarf-4
         )
     if(CMAKE_COMPILER_IS_GNUCXX)
-        set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} 
+        set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
             -Wl,--gc-sections
             -Wl,--gdb-index
             -fvar-tracking-assignments

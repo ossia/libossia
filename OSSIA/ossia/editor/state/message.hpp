@@ -76,7 +76,7 @@ struct OSSIA_EXPORT message
 struct OSSIA_EXPORT piecewise_message
 {
   std::reference_wrapper<ossia::net::address_base> address;
-  Tuple message_value;
+  std::vector<ossia::value> message_value;
   ossia::unit_t unit;
 
   const ossia::unit_t& get_unit() const { return unit; }
@@ -101,7 +101,7 @@ template<std::size_t N>
 struct OSSIA_EXPORT piecewise_vec_message
 {
   std::reference_wrapper<ossia::net::address_base> address;
-  Vec<float, N> message_value;
+  std::array<float, N> message_value;
   ossia::unit_t unit;
   std::bitset<N> used_values; // True for each value that has been set.
 

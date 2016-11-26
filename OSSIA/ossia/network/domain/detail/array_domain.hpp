@@ -10,10 +10,10 @@ namespace net
  */
 struct tuple_clamp
 {
-  const net::domain_base<Tuple>& domain;
+  const net::domain_base<std::vector<ossia::value>>& domain;
 
-  ossia::value operator()(bounding_mode b, const Tuple& val) const;
-  ossia::value operator()(bounding_mode b, Tuple&& val) const;
+  ossia::value operator()(bounding_mode b, const std::vector<ossia::value>& val) const;
+  ossia::value operator()(bounding_mode b, std::vector<ossia::value>&& val) const;
   // TODO numeric_tuple_clamp that will be used instead
   // of the loops in domain_clamp_visitor
 
@@ -22,9 +22,9 @@ struct tuple_clamp
 template<std::size_t N>
 struct vec_clamp
 {
-  const net::domain_base<Vec<float, N>>& domain;
+  const net::domain_base<std::array<float, N>>& domain;
 
-  ossia::value operator()(bounding_mode b, Vec<float, N> val) const;
+  ossia::value operator()(bounding_mode b, std::array<float, N> val) const;
 };
 
 }

@@ -10,39 +10,39 @@ value js_value_inbound_visitor::operator()(Impulse) const
   return Impulse{};
 }
 
-value js_value_inbound_visitor::operator()(Int v) const
+value js_value_inbound_visitor::operator()(int32_t v) const
 {
-  return ossia::Int(val.toInt());
+  return int32_t(val.toInt());
 }
 
-value js_value_inbound_visitor::operator()(Float v) const
+value js_value_inbound_visitor::operator()(float v) const
 {
-  return ossia::Float(val.toNumber());
+  return float(val.toNumber());
 }
 
-value js_value_inbound_visitor::operator()(Bool v) const
+value js_value_inbound_visitor::operator()(bool v) const
 {
-  return ossia::Bool(val.toBool());
+  return bool(val.toBool());
 }
 
-value js_value_inbound_visitor::operator()(Char v) const
+value js_value_inbound_visitor::operator()(char v) const
 {
   auto str = val.toString();
   if(str.size() > 0)
-    return ossia::Char(str[0].toLatin1());
+    return char(str[0].toLatin1());
   return v;
 }
 
-value js_value_inbound_visitor::operator()(const String &v) const
+value js_value_inbound_visitor::operator()(const std::string &v) const
 {
-  return ossia::String(val.toString().toStdString());
+  return std::string(val.toString().toStdString());
 }
 
-value js_value_inbound_visitor::operator()(const Tuple &v) const
+value js_value_inbound_visitor::operator()(const std::vector<ossia::value> &v) const
 {
   if(val.isArray())
   {
-    Tuple t;
+    std::vector<ossia::value> t;
 
     QJSValueIterator it(val);
     while(it.hasNext())
@@ -171,7 +171,7 @@ QJSValue js_value_outbound_visitor::operator()(Impulse) const
   return v;
 }
 
-QJSValue js_value_outbound_visitor::operator()(Int val) const
+QJSValue js_value_outbound_visitor::operator()(int32_t val) const
 {
   QJSValue v;
   v.setProperty("type", to_enum(qml_context::val_type::Int));
@@ -179,7 +179,7 @@ QJSValue js_value_outbound_visitor::operator()(Int val) const
   return v;
 }
 
-QJSValue js_value_outbound_visitor::operator()(Float val) const
+QJSValue js_value_outbound_visitor::operator()(float val) const
 {
   QJSValue v;
   v.setProperty("type", to_enum(qml_context::val_type::Float));
@@ -187,7 +187,7 @@ QJSValue js_value_outbound_visitor::operator()(Float val) const
   return v;
 }
 
-QJSValue js_value_outbound_visitor::operator()(Bool val) const
+QJSValue js_value_outbound_visitor::operator()(bool val) const
 {
   QJSValue v;
   v.setProperty("type", to_enum(qml_context::val_type::Bool));
@@ -195,7 +195,7 @@ QJSValue js_value_outbound_visitor::operator()(Bool val) const
   return v;
 }
 
-QJSValue js_value_outbound_visitor::operator()(Char val) const
+QJSValue js_value_outbound_visitor::operator()(char val) const
 {
   QJSValue v;
   v.setProperty("type", to_enum(qml_context::val_type::Char));
@@ -203,7 +203,7 @@ QJSValue js_value_outbound_visitor::operator()(Char val) const
   return v;
 }
 
-QJSValue js_value_outbound_visitor::operator()(const String &val) const
+QJSValue js_value_outbound_visitor::operator()(const std::string &val) const
 {
   QJSValue v;
   v.setProperty("type", to_enum(qml_context::val_type::String));
@@ -224,7 +224,7 @@ QJSValue js_value_outbound_visitor::make_tuple(const std::vector<value> &arr) co
   return array;
 }
 
-QJSValue js_value_outbound_visitor::operator()(const Tuple &val) const
+QJSValue js_value_outbound_visitor::operator()(const std::vector<ossia::value> &val) const
 {
   QJSValue v;
   v.setProperty("type", to_enum(qml_context::val_type::Tuple));
@@ -268,32 +268,32 @@ QString js_string_outbound_visitor::operator()(Impulse) const
   return QStringLiteral("\"\"");
 }
 
-QString js_string_outbound_visitor::operator()(Int val) const
+QString js_string_outbound_visitor::operator()(int32_t val) const
 {
   return QString::number(int32_t(val));
 }
 
-QString js_string_outbound_visitor::operator()(Float val) const
+QString js_string_outbound_visitor::operator()(float val) const
 {
   return QString::number(val);
 }
 
-QString js_string_outbound_visitor::operator()(Bool val) const
+QString js_string_outbound_visitor::operator()(bool val) const
 {
   return val ? QStringLiteral("true") : QStringLiteral("false");
 }
 
-QString js_string_outbound_visitor::operator()(Char val) const
+QString js_string_outbound_visitor::operator()(char val) const
 {
   return "\"" % QString{val} % "\"";
 }
 
-QString js_string_outbound_visitor::operator()(const String &val) const
+QString js_string_outbound_visitor::operator()(const std::string &val) const
 {
   return "\"" % QString::fromStdString(val) % "\"";
 }
 
-QString js_string_outbound_visitor::operator()(const Tuple &val) const
+QString js_string_outbound_visitor::operator()(const std::vector<ossia::value> &val) const
 {
   QString s = "[";
 
@@ -348,7 +348,7 @@ value value_from_jsvalue(const QJSValue& v)
   {
     // TODO handle vec2/vec3/vec4
     QJSValueIterator it(v);
-    Tuple t;
+    std::vector<ossia::value> t;
     while(it.hasNext())
     {
       t.push_back(value_from_jsvalue(it.value()));

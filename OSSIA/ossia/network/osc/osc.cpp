@@ -165,7 +165,7 @@ void osc_protocol::handleReceivedMessage(
 }
 
 template<std::size_t N>
-static bool is_vec(ossia::Tuple& t)
+static bool is_vec(std::vector<ossia::value>& t)
 {
   if(t.size() != N)
     return false;
