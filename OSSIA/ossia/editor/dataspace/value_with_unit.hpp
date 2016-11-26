@@ -33,9 +33,9 @@ struct OSSIA_EXPORT value_with_unit final : public value_with_unit_variant
 #else
   using value_with_unit_variant::value_with_unit_variant;
   value_with_unit(const value_with_unit&) = default;
-  value_with_unit(value_with_unit&&) noexcept = default;
+  value_with_unit(value_with_unit&&other) noexcept : value_with_unit_variant{std::move(other)} { }
   value_with_unit& operator=(const value_with_unit&) = default;
-  value_with_unit& operator=(value_with_unit&&) noexcept = default;
+  value_with_unit& operator=(value_with_unit&& other) noexcept { (value_with_unit_variant&) *this = std::move(other); return *this; }
 #endif
 };
 

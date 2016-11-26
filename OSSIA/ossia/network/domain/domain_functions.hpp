@@ -8,8 +8,8 @@ class value;
 namespace net
 {
 template<typename T>
-class domain_base;
-class domain;
+struct domain_base;
+struct domain;
 
 OSSIA_EXPORT value apply_domain(
     const domain& dom,

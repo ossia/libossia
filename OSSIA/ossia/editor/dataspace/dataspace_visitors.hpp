@@ -8,9 +8,9 @@
 
 namespace ossia
 {
-class unit_t;
+struct unit_t;
 class value;
-class value_with_unit;
+struct value_with_unit;
 
 /**
  * @brief get_dataspace_text
