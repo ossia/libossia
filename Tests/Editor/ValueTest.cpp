@@ -131,9 +131,7 @@ private Q_SLOTS:
     //! \todo > comparison with behavior
 
     QVERIFY(b1 >= Impulse());
-    QVERIFY(!(b1 >= 2));
     QVERIFY(b1 >= 1.);
-    QVERIFY(!(b1 >= char(0x03)));
     QVERIFY(!(b1 >= value::make<std::string>()));
     QVERIFY(!(b1 >= std::vector<ossia::value>{}));
     //! \todo >= comparison with generic
@@ -141,9 +139,7 @@ private Q_SLOTS:
     //! \todo >= comparison with behavior
 
     QVERIFY(!(b1 < Impulse()));
-    QVERIFY(b1 < 2);
     QVERIFY(!(b1 < 1.));
-    QVERIFY(!(b1 < char{}));
     QVERIFY(!(b1 < value::make<std::string>()));
     QVERIFY(b1 < std::vector<ossia::value>{float(3)});
     //! \todo < comparison with generic
@@ -153,7 +149,6 @@ private Q_SLOTS:
     QVERIFY(b1 <= Impulse());
     QVERIFY(!(b1 <= int32_t{}));
     QVERIFY(b1 <= 1.);
-    QVERIFY(b1 <= char(0x32));
     QVERIFY(!(b1 <= value::make<std::string>()));
     QVERIFY(!(b1 <= std::vector<ossia::value>{}));
     //! \todo <= comparison with generic

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ossia/editor/scenario/time_value.hpp>
-#include <ossia/editor/state/state_element.hpp>
+#include <ossia/editor/state/state_element_fwd.hpp>
 #include <memory>
 #include <ossia_export.h>
 #include <string>

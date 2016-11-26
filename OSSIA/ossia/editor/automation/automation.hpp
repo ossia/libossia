@@ -1,5 +1,7 @@
 #pragma once
 #include <ossia/detail/ptr_container.hpp>
+#include <ossia/editor/value/destination.hpp>
+#include <ossia/editor/state/state_element.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/editor/curve/behavior.hpp>
 #include <ossia_export.h>

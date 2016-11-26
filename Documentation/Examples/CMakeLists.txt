@@ -6,9 +6,8 @@ function(ossia_add_example TESTNAME TESTSRCS)
 
     if(OSSIA_SANITIZE)
         sanitize_build(ossia_${TESTNAME}_example)
-    else()
-        use_gold(ossia_${TESTNAME}_example)
     endif()
+    use_gold(ossia_${TESTNAME}_example)
 
 endFunction()
 

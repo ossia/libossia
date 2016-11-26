@@ -12,9 +12,8 @@ function(ossia_add_test TESTNAME TESTSRCS)
 
     if(OSSIA_SANITIZE)
         sanitize_build(ossia_${TESTNAME})
-    else()
-        use_gold(ossia_${TESTNAME})
     endif()
+    use_gold(ossia_${TESTNAME})
 
     add_test(NAME ossia_target_${TESTNAME} COMMAND ossia_${TESTNAME})
 endFunction()
@@ -78,9 +77,8 @@ function(ossia_add_test_c TESTNAME TESTSRCS)
 
     if(OSSIA_SANITIZE)
         sanitize_build(ossia_${TESTNAME}_test)
-    else()
-        use_gold(ossia_${TESTNAME}_test)
     endif()
+    use_gold(ossia_${TESTNAME}_test)
 
     add_test(NAME ossia_target_${TESTNAME}_test COMMAND ossia_${TESTNAME}_test)
 endFunction()

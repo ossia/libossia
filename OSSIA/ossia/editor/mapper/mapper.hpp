@@ -2,6 +2,7 @@
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/clock.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/editor/state/state_element.hpp>
 #include <ossia/editor/state/state.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ossia/editor/curve/behavior.hpp>

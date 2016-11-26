@@ -19,7 +19,7 @@ int main(int argc, char** argv)
       }
   }
 
-  auto n1 = localTestNode->createChild(std::to_string(1000));
+  localTestNode->createChild(std::to_string(1000));
 
   for(int k = 1; k <= 9; k++)
   {

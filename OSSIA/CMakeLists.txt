@@ -152,9 +152,8 @@ target_link_libraries(ossia PRIVATE ${OSSIA_LINK_OPTIONS})
 
 if(OSSIA_SANITIZE)
     sanitize_build(ossia)
-else()
-    use_gold(ossia)
 endif()
+use_gold(ossia)
 add_linker_warnings(ossia)
 
 if(BUILD_SHARED_LIBS AND NOT OSSIA_STATIC)
