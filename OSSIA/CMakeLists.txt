@@ -156,7 +156,7 @@ endif()
 use_gold(ossia)
 add_linker_warnings(ossia)
 
-if(BUILD_SHARED_LIBS AND NOT OSSIA_STATIC)
+if(BUILD_SHARED_LIBS AND NOT "${OSSIA_STATIC}")
   set_target_properties(ossia PROPERTIES
       CXX_VISIBILITY_PRESET hidden
       VISIBILITY_INLINES_HIDDEN 1
@@ -214,6 +214,6 @@ message(STATUS "OSSIA - Java: ${OSSIA_JAVA}")
 message(STATUS "OSSIA - Zeroconf: ${KF5DNSSD_FOUND}")
 
 set_property(TARGET ossia PROPERTY COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/ossia/prefix.hpp")
-if(NOT ${OSSIA_SANITIZE} AND NOT ${OSSIA_DISABLE_COTIRE} AND NOT ${DISABLE_COTIRE})
+if(NOT "${OSSIA_SANITIZE}" AND NOT "${OSSIA_DISABLE_COTIRE}" AND NOT "${DISABLE_COTIRE}")
 cotire(ossia)
 endif()
