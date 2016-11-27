@@ -2,6 +2,7 @@ OSSIA API
 ===
 Application Programming Interface for OSSIA
 
+[Documentation](http://ossia.github.io/API/html)
 
 Build Status
 ============

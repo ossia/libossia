@@ -6,6 +6,7 @@
 #include <ossia/editor/dataspace/dataspace_fwd.hpp>
 #include <ossia/editor/value/tuple.hpp>
 #include <ossia/editor/value/destination.hpp>
+#include <ossia/network/base/value_callback.hpp>
 #include <functional>
 #include <vector>
 #include <memory>
@@ -20,7 +21,6 @@ namespace net
 {
 class node_base;
 
-using value_callback = std::function<void(const value&)>;
 
 /**
  * @brief The address_base class

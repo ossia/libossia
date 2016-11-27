@@ -68,7 +68,7 @@ protected:
   tags_t mTags;
   unit_t mUnit;
 
-  ossia::net::value_callback mCallback;
+  ossia::value_callback mCallback;
 
 public:
   ossia::value PreviousValue;
