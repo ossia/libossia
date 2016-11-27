@@ -63,7 +63,11 @@ if(MSVC)
         "/wd4275" # DLL stuff
         "/wd4244" # return : conversion from foo to bar, possible loss of data
         "/wd4800" # conversion from int to bool, performance warning
+        "/wd4804" # unsafe mix of const bool <= const int
+        "/wd4805" # unsafe mix of const bool == const int
+        "/wd4996" # SCL_SECURE_NO_WARNINGS
         "/wd4503" # decorated name length exceeded
+        "/wd4305" # argument : truncation from double to float
         "/MP"
         "/bigobj"
         ${OSSIA_LINK_OPTIONS}

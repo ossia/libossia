@@ -31,5 +31,14 @@ using speed = add_value<speed_u>;
 using gain = add_value<gain_u>;
 using time = add_value<time_u>;
 
+#if defined(_MSC_VER)
+inline void swap(ossia::distance& lhs, ossia::distance& rhs);
+inline void swap(ossia::position& lhs, ossia::position& rhs);
+inline void swap(ossia::angle& lhs, ossia::angle& rhs);
+inline void swap(ossia::orientation& lhs, ossia::orientation& rhs);
+inline void swap(ossia::color& lhs, ossia::color& rhs);
+inline void swap(ossia::gain& lhs, ossia::gain& rhs);
+inline void swap(ossia::time& lhs, ossia::time& rhs);
+inline void swap(ossia::speed& lhs, ossia::speed& rhs);
+#endif
 }
-

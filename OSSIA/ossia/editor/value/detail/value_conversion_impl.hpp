@@ -227,7 +227,7 @@ T convert(const std::vector<ossia::value>& val)
   // have the correct number of arguments ? Or just silently fill
   // with zeros ?
 
-  T res;
+  T res{};
   const auto N = std::min(val.size(), detail::array_size<T>::value);
   for(std::size_t i = 0; i < N; i++)
   {

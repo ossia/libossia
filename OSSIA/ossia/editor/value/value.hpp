@@ -110,7 +110,6 @@ public:
 
   }
 
-  ~value() noexcept;
   OSSIA_DECL_RELAXED_CONSTEXPR value(Impulse val) noexcept : v{val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Destination& val) noexcept : v{val} { }
 
@@ -218,12 +217,12 @@ public:
     return *this;
   }
 
-  value() noexcept = default;
-  value(const value& other) = default;
+  value() noexcept { }
+  ~value() noexcept;
+  value(const value& other) noexcept : v{other.v} { }
   value(value&& other) noexcept : v{std::move(other.v)} {}
-  value& operator=(const value& other) = default;
+  value& operator=(const value& other) noexcept { v = other.v; return *this; }
   value& operator=(value&& other) noexcept { v = std::move(other.v); return *this; }
-
 
   operator value_type&() { return v; }
   operator const value_type&() const { return v; }

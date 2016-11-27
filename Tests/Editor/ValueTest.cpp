@@ -554,7 +554,7 @@ private Q_SLOTS:
     Destination d1(*localTupleAddress);
     QVERIFY(d1.index.size() == 0);
 
-    Destination d2(*localTupleAddress, {1});
+    Destination d2(*localTupleAddress, ossia::destination_index{1});
     QVERIFY(d2.index.size() == 1);
     QVERIFY(d2.index[0] == 1);
 

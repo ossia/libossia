@@ -1,5 +1,7 @@
 #pragma once
 #include <ratio>
+#include <ossia/detail/config.hpp>
+
 namespace eggs
 {
 namespace variants
@@ -51,7 +53,7 @@ using mile_u = distance_ratio<std::ratio<254 * 12 * 5280, 10000>>;
 using distance_u =
   eggs::variant<
     meter_u, kilometer_u, decimeter_u, centimeter_u, millimeter_u, micrometer_u, nanometer_u, picometer_u, inch_u, foot_u, mile_u>;
-
+    
 struct linear_u;
 struct midigain_u;
 struct decibel_u;

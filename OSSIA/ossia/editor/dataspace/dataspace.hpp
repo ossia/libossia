@@ -66,8 +66,18 @@ using unit_count = brigand::fold<
   unit_sizes,
   brigand::uint64_t<0>,
   brigand::plus<brigand::_state, brigand::_element>>;
-}
 
+#if defined(_MSC_VER)
+inline void swap(ossia::distance& lhs, ossia::distance& rhs) { return std::swap(lhs, rhs); }
+inline void swap(ossia::position& lhs, ossia::position& rhs) { return std::swap(lhs, rhs); }
+inline void swap(ossia::angle& lhs, ossia::angle& rhs) { return std::swap(lhs, rhs); }
+inline void swap(ossia::orientation& lhs, ossia::orientation& rhs) { return std::swap(lhs, rhs); }
+inline void swap(ossia::color& lhs, ossia::color& rhs) { return std::swap(lhs, rhs); }
+inline void swap(ossia::gain& lhs, ossia::gain& rhs) { return std::swap(lhs, rhs); }
+inline void swap(ossia::time& lhs, ossia::time& rhs) { return std::swap(lhs, rhs); }
+inline void swap(ossia::speed& lhs, ossia::speed& rhs) { return std::swap(lhs, rhs); }
+#endif
+}
 
 namespace std
 {
