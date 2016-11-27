@@ -36,7 +36,6 @@ struct strong_value
   value_type dataspace_value;
 
   OSSIA_INLINE constexpr strong_value() noexcept: dataspace_value{} { }
-  ~strong_value() noexcept { }
   OSSIA_INLINE constexpr strong_value(const strong_value& other) noexcept : dataspace_value{ other.dataspace_value } { }
   OSSIA_INLINE constexpr strong_value(strong_value&& other) noexcept : dataspace_value{ std::move(other.dataspace_value) } { }
   OSSIA_INLINE strong_value& operator=(const strong_value& other) noexcept { dataspace_value = other.dataspace_value; return *this; }
