@@ -87,6 +87,10 @@ else()
             -Wl,--compress-debug-sections=zlib
             -gsplit-dwarf
             -Wa,--compress-debug-sections
+            --dynamic-list-cpp-new
+            --dynamic-list-cpp-typeinfo
+            -Bsymbolic-functions
+            
             )
     else()
     endif()
