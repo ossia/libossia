@@ -73,6 +73,9 @@ public:
     return mChildren;
   }
 
+
+  mutable Nano::Signal<void(const node_base&)> aboutToBeDeleted;
+
 protected:
   /** Should return nullptr if no child is to be added */
   virtual std::unique_ptr<node_base> makeChild(const std::string& name) = 0;

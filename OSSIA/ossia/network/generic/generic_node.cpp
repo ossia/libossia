@@ -23,6 +23,8 @@ generic_node::generic_node(std::string name, ossia::net::device_base& aDevice)
 
 generic_node::~generic_node()
 {
+  aboutToBeDeleted(*this);
+
   mChildren.clear();
   removeAddress();
 }

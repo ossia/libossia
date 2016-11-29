@@ -31,6 +31,8 @@ http_node::http_node(
 
 http_node::~http_node()
 {
+  aboutToBeDeleted(*this);
+
   mChildren.clear();
   mAddress.reset();
 }
