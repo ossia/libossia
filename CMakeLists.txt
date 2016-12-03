@@ -12,6 +12,8 @@ option(OSSIA_CI "Continuous integration run" OFF)
 option(OSSIA_FRAMEWORK "Build an OS X framework" OFF)
 option(OSSIA_JAVA "Build JNI bindings" OFF)
 option(OSSIA_DISABLE_COTIRE "Disable cotire" OFF)
+option(OSSIA_NO_SONAME "Set NO_SONAME property" OFF)
+
 # Configuration
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0042 NEW)
@@ -101,6 +103,7 @@ else()
         endif()
     endif()
     set(OSSIA_COMPILE_OPTIONS
+        -std=c++14
         -Wall
         -Wextra
         -Wno-unused-parameter

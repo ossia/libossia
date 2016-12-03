@@ -8,8 +8,8 @@
 #include <vector>
 #include <list>
 #include <memory>
-#include <hopscotch_map.h>
 #include <functional>
+#include <hopscotch_map.h>
 #include <string>
 #include <ossia/detail/config.hpp>
 #include <ossia/detail/algorithms.hpp>
