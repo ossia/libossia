@@ -8,7 +8,7 @@
 #include <ossia/editor/dataspace/detail/make_unit.hpp>
 #include <ossia/editor/dataspace/value_with_unit.hpp>
 #include <ossia/detail/logger.hpp>
-#include <unordered_map>
+#include <hopscotch_map.h>
 
 namespace ossia
 {
@@ -69,7 +69,7 @@ unit_t parse_pretty_unit(boost::string_view text)
 
 unit_t parse_dataspace(boost::string_view text)
 {
-  static const std::unordered_map<std::string, unit_t> dataspaces{
+  static const tsl::hopscotch_map<std::string, unit_t> dataspaces{
     {"color", color_u{}},
     {"distance", distance_u{}},
     {"position", position_u{}},

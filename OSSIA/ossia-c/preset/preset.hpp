@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
+#include <hopscotch_map.h>
 #include <memory>
 #include <ossia-c/preset/exception.hpp>
 #include <ossia_export.h>
@@ -21,7 +21,7 @@ namespace ossia
 {
 namespace presets
 {
-using Preset = std::unordered_map<std::string, ossia::value>;
+using Preset = tsl::hopscotch_map<std::string, ossia::value>;
 using PresetPair = std::pair<std::string, ossia::value>;
 
 OSSIA_EXPORT Preset read_json(const std::string&);

@@ -4,7 +4,7 @@
 
 #include <ossia/network/base/protocol.hpp>
 #include <mutex>
-#include <unordered_map>
+#include <hopscotch_map.h>
 #include <atomic>
 
 namespace oscpack
@@ -31,7 +31,7 @@ private:
   std::atomic_bool mLearning{};       /// if the device is currently learning from inbound
                           /// messages.
   std::mutex mListeningMutex;
-  std::unordered_map<std::string, ossia::net::address_base*> mListening;
+  tsl::hopscotch_map<std::string, ossia::net::address_base*> mListening;
 
   std::unique_ptr<osc::sender> mSender;
   std::unique_ptr<osc::receiver> mReceiver;

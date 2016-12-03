@@ -4,7 +4,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <boost/utility/string_view.hpp>
 #include <exception>
-#include <unordered_map>
+#include <hopscotch_map.h>
 
 namespace ossia
 {
@@ -328,7 +328,7 @@ inline boost::string_view to_minuit_attribute_text(minuit_attribute str)
   return {};
 }
 
-const std::unordered_map<std::string, minuit_attribute>
+const tsl::hopscotch_map<std::string, minuit_attribute>
     attribute_unordered_map{
         {"value", minuit_attribute::Value},
         {"type", minuit_attribute::Type},

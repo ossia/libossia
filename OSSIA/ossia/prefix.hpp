@@ -8,7 +8,7 @@
 #include <vector>
 #include <list>
 #include <memory>
-#include <unordered_map>
+#include <hopscotch_map.h>
 #include <functional>
 #include <string>
 #include <ossia/detail/config.hpp>

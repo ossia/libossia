@@ -9,7 +9,7 @@
 #include <future>
 #include <set>
 #include <string>
-#include <unordered_map>
+#include <hopscotch_map.h>
 #include <atomic>
 #include <ossia/network/minuit/minuit_zeroconf.hpp>
 
@@ -40,7 +40,7 @@ private:
                           /// to (opened in this library)
 
   std::mutex mListeningMutex;
-  std::unordered_map<std::string, ossia::net::address_base*> mListening;
+  tsl::hopscotch_map<std::string, ossia::net::address_base*> mListening;
 
   std::promise<void> mNamespaceFinishedPromise;
   ossia::net::generic_device* mDevice{};

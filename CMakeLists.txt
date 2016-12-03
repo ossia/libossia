@@ -90,7 +90,7 @@ else()
             -Wl,--dynamic-list-cpp-new
             -Wl,--dynamic-list-cpp-typeinfo
             -Wl,-Bsymbolic-functions
-            
+
             )
     else()
     endif()
@@ -139,6 +139,7 @@ if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
     add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/ModernMIDI" EXCLUDE_FROM_ALL)
 endif()
 add_subdirectory(3rdparty/oscpack EXCLUDE_FROM_ALL)
+include_directories(SYSTEM "${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src")
 
 # Main library
 add_subdirectory(OSSIA)

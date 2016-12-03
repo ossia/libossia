@@ -32,3 +32,6 @@
 [submodule "3rdparty/readerwriterqueue"]
 	path = 3rdparty/readerwriterqueue
 	url = https://github.com/cameron314/readerwriterqueue
+[submodule "3rdparty/hopscotch-map"]
+	path = 3rdparty/hopscotch-map
+	url = https://github.com/Tessil/hopscotch-map.git
