@@ -161,7 +161,9 @@ if(BUILD_SHARED_LIBS AND NOT "${OSSIA_STATIC}")
       CXX_VISIBILITY_PRESET hidden
       VISIBILITY_INLINES_HIDDEN 1
       VERSION ${ossia_VERSION}
-      SOVERSION 1)
+      SOVERSION 1
+      NO_SONAME 1)
+
 else()
   set_target_properties(ossia PROPERTIES
       VERSION ${ossia_VERSION})
