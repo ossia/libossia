@@ -38,10 +38,10 @@ class OSSIA_EXPORT time_node final :
 
     ptr_container<time_event> mPendingEvents;
 
-    time_value mSimultaneityMargin;
+    time_value mSimultaneityMargin = Zero;
 
 
-    bool mObserveExpression;
+    bool mObserveExpression = false;
     bool mCallbackSet = false;
 
   public:
