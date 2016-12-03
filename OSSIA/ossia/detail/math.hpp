@@ -1,7 +1,7 @@
 #pragma once
 #include <cmath>
-#include <boost/math/constants/constants.hpp>
 #include <ossia/detail/config.hpp>
+#include <boost/math/constants/constants.hpp>
 /**
  * \file math.hpp
  *
