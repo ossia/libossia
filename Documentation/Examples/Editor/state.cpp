@@ -55,7 +55,7 @@ int main()
           bitdepthMessage = message{*bitdepthAddress, bitdepthAddress->cloneValue()};
 
           // change the value
-          bitdepthAddress->pushValue(Int(10));
+          bitdepthAddress->pushValue(10);
 
           // attach to callback to display later value update
           bitdepthAddress->add_callback(printValueCallback);
@@ -69,7 +69,7 @@ int main()
           samplerateMessage = message{*samplerateAddress, samplerateAddress->cloneValue()};
 
           // change the value
-          samplerateAddress->pushValue(Float(0.5));
+          samplerateAddress->pushValue(0.5);
 
           // attach to callback to display later value update
           samplerateAddress->add_callback(printValueCallback);
@@ -101,7 +101,7 @@ int main()
   {
     this_thread::sleep_for( std::chrono::milliseconds(500));
 
-    auto f = samplerateAddress->cloneValue().get<Float>();
+    auto f = samplerateAddress->cloneValue().get<float>();
     wait = f > 0.5;
 
     if (!wait)

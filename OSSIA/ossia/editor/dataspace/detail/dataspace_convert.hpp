@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/value/value_traits.hpp>
+#include <ossia/editor/dataspace/value_with_unit.hpp>
 namespace ossia
 {
 namespace detail

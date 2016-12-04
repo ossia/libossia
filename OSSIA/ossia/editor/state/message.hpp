@@ -1,10 +1,10 @@
 #pragma once
-#include <memory>
-
 #include <ossia/editor/value/value.hpp>
+#include <ossia/editor/state/destination_qualifiers.hpp>
 #include <ossia_export.h>
 #include <utility>
 #include <bitset>
+#include <memory>
 
 namespace ossia
 {
@@ -12,23 +12,6 @@ namespace net
 {
 class address_base;
 }
-
-struct OSSIA_EXPORT destination_qualifiers
-{
-  ossia::destination_index accessors;
-  ossia::unit_t unit;
-
-  bool operator==(const destination_qualifiers &a) const
-  {
-    return accessors == a.accessors && unit == a.unit;
-  }
-
-  bool operator!=(const destination_qualifiers &a) const
-  {
-    return accessors != a.accessors || unit != a.unit;
-  }
-};
-
 /**
  * @brief The message struct
  *
@@ -76,7 +59,7 @@ struct OSSIA_EXPORT message
 struct OSSIA_EXPORT piecewise_message
 {
   std::reference_wrapper<ossia::net::address_base> address;
-  Tuple message_value;
+  std::vector<ossia::value> message_value;
   ossia::unit_t unit;
 
   const ossia::unit_t& get_unit() const { return unit; }
@@ -101,7 +84,7 @@ template<std::size_t N>
 struct OSSIA_EXPORT piecewise_vec_message
 {
   std::reference_wrapper<ossia::net::address_base> address;
-  Vec<float, N> message_value;
+  std::array<float, N> message_value;
   ossia::unit_t unit;
   std::bitset<N> used_values; // True for each value that has been set.
 

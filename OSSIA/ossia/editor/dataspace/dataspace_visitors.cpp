@@ -6,23 +6,24 @@
 #include <ossia/editor/dataspace/detail/dataspace_parse.hpp>
 #include <ossia/editor/dataspace/detail/make_value.hpp>
 #include <ossia/editor/dataspace/detail/make_unit.hpp>
+#include <ossia/editor/dataspace/value_with_unit.hpp>
 #include <ossia/detail/logger.hpp>
-#include <unordered_map>
+#include <hopscotch_map.h>
 
 namespace ossia
 {
 /// Parse ///
-boost::string_view get_dataspace_text(unit_t u)
+boost::string_view get_dataspace_text(const unit_t& u)
 {
   return ossia::apply(detail::dataspace_text_visitor{}, u);
 }
 
-boost::string_view get_unit_text(unit_t u)
+boost::string_view get_unit_text(const unit_t& u)
 {
   return ossia::apply(detail::unit_text_visitor{}, u);
 }
 
-std::string get_pretty_unit_text(unit_t u)
+std::string get_pretty_unit_text(const unit_t& u)
 {
     using namespace std::literals;
     if(u)
@@ -39,7 +40,7 @@ std::string get_pretty_unit_text(unit_t u)
     }
 }
 
-unit_t parse_unit(boost::string_view text, unit_t dataspace)
+unit_t parse_unit(boost::string_view text, const unit_t& dataspace)
 {
   if(!text.empty())
     return ossia::apply(detail::unit_factory_visitor{text}, dataspace);
@@ -68,7 +69,7 @@ unit_t parse_pretty_unit(boost::string_view text)
 
 unit_t parse_dataspace(boost::string_view text)
 {
-  static const std::unordered_map<std::string, unit_t> dataspaces{
+  static const tsl::hopscotch_map<std::string, unit_t> dataspaces{
     {"color", color_u{}},
     {"distance", distance_u{}},
     {"position", position_u{}},
@@ -170,7 +171,7 @@ val_type matching_type(const unit_t& u)
   }, u);
 
 }
-value_with_unit convert(value_with_unit v, unit_t t)
+value_with_unit convert(const value_with_unit& v, const unit_t& t)
 {
   if(v && t)
   {
@@ -185,19 +186,19 @@ value_with_unit convert(value_with_unit v, unit_t t)
   }
 }
 
-value to_value(value_with_unit v)
+value to_value(const value_with_unit& v)
 {
   return ossia::apply(detail::convert_to_value_visitor{}, v);
 
 }
 
-unit_t to_unit(value_with_unit v)
+unit_t to_unit(const value_with_unit& v)
 {
   return ossia::apply(detail::convert_to_unit_visitor{}, v);
 }
 
 
-std::string to_pretty_string(value_with_unit v)
+std::string to_pretty_string(const value_with_unit& v)
 {
   fmt::MemoryWriter s;
   s << value_to_pretty_string(to_value(v)) << " " << get_pretty_unit_text(to_unit(v));
@@ -228,7 +229,7 @@ struct merger_impl
 template<std::size_t N>
 struct vec_merger_impl_helper
 {
-  const ossia::Vec<float, N>& val;
+  const std::array<float, N>& val;
   const std::bitset<N>& idx;
 
   template<typename Unit_T>
@@ -241,7 +242,7 @@ struct vec_merger_impl_helper
 template<std::size_t N>
 struct vec_merger_impl
 {
-  const ossia::Vec<float, N>& val;
+  const std::array<float, N>& val;
   const std::bitset<N>& idx;
 
   OSSIA_INLINE ossia::value_with_unit operator()(const ossia::value& val)
@@ -261,7 +262,7 @@ struct vec_merger_impl
   }
 };
 ossia::value_with_unit merge(
-    ossia::value_with_unit vu,
+    const value_with_unit& vu,
     const ossia::value& val,
     ossia::destination_index idx)
 {
@@ -274,7 +275,7 @@ ossia::value_with_unit merge(
 }
 
 ossia::value_with_unit merge(
-    ossia::value_with_unit vu,
+    const value_with_unit& vu,
     const ossia::Vec2f& val,
     std::bitset<2> idx)
 {
@@ -287,7 +288,7 @@ ossia::value_with_unit merge(
 }
 
 ossia::value_with_unit merge(
-    ossia::value_with_unit vu,
+    const value_with_unit& vu,
     const ossia::Vec3f& val,
     std::bitset<3> idx)
 {
@@ -300,7 +301,7 @@ ossia::value_with_unit merge(
 }
 
 ossia::value_with_unit merge(
-    ossia::value_with_unit vu,
+    const value_with_unit& vu,
     const ossia::Vec4f& val,
     std::bitset<4> idx)
 {
@@ -313,9 +314,9 @@ ossia::value_with_unit merge(
 }
 
 ossia::value convert(
-        ossia::value value,
-        ossia::unit_t source_unit,
-        ossia::unit_t destination_unit)
+        const ossia::value& value,
+        const ossia::unit_t& source_unit,
+        const ossia::unit_t& destination_unit)
 {
   return ossia::to_value(
               ossia::convert(

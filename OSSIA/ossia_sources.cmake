@@ -1,6 +1,7 @@
 set(API_HEADERS
     ## Editor ##
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/prefix.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/context.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/algorithms.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/config.hpp"
@@ -41,6 +42,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_value.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/clock.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/custom_state.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/destination_qualifiers.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_execution_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_flatten_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_print_visitor.hpp"
@@ -75,7 +77,9 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_visitors.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_parse.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_fwd.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_base_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/value_with_unit.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/position.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/orientation.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/angle.hpp"
@@ -99,6 +103,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_functions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_conversion.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/numeric_domain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/min_max.hpp"
@@ -113,6 +118,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/value_callback.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/name_validation.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_address.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.hpp"
@@ -137,6 +143,7 @@ set(API_HEADERS
 set(SRCS
     ${API_HEADERS}
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/automation.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.cpp"
@@ -162,6 +169,7 @@ set(SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_visitors.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/dataspace_impl.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/js_utilities.cpp"
 

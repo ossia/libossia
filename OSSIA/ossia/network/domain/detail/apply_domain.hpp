@@ -32,16 +32,16 @@ struct apply_domain_visitor
   OSSIA_INLINE ossia::value operator()(Impulse value, const domain_base<Impulse>& domain) const
   { return value; }
   // Numeric values
-  ossia::value operator()(Int value, const domain_base<Int>& domain) const;
-  ossia::value operator()(Float value, const domain_base<Float>& domain) const;
-  ossia::value operator()(Char value, const domain_base<Char>& domain) const;
-  ossia::value operator()(Bool value, const domain_base<Bool>& domain) const;
+  ossia::value operator()(int32_t value, const domain_base<int32_t>& domain) const;
+  ossia::value operator()(float value, const domain_base<float>& domain) const;
+  ossia::value operator()(char value, const domain_base<char>& domain) const;
+  ossia::value operator()(bool value, const domain_base<bool>& domain) const;
 
   // Strings
-  OSSIA_INLINE ossia::value operator()(const String& value, const domain_base<String>& domain) const
-  { return value_set_clamp<domain_base<String>>{domain}(b, value); }
-  OSSIA_INLINE ossia::value operator()(String&& value, const domain_base<String>& domain) const
-  { return value_set_clamp<domain_base<String>>{domain}(b, std::move(value)); }
+  OSSIA_INLINE ossia::value operator()(const std::string& value, const domain_base<std::string>& domain) const
+  { return value_set_clamp<domain_base<std::string>>{domain}(b, value); }
+  OSSIA_INLINE ossia::value operator()(std::string&& value, const domain_base<std::string>& domain) const
+  { return value_set_clamp<domain_base<std::string>>{domain}(b, std::move(value)); }
 
 
   // Tuples
@@ -49,38 +49,38 @@ struct apply_domain_visitor
   // of the tuple that are filterable by this domain.
   // They are defined outside the class to handle a GCC bug...
   template <typename T>
-  ossia::value operator()(const Tuple& value, const domain_base<T>& domain) const;
+  ossia::value operator()(const std::vector<ossia::value>& value, const domain_base<T>& domain) const;
   template <typename T>
-  ossia::value operator()(Tuple&& value, const domain_base<T>& domain) const;
+  ossia::value operator()(std::vector<ossia::value>&& value, const domain_base<T>& domain) const;
 
-  ossia::value operator()(const Tuple& value, const domain_base<ossia::value>& domain) const;
-  ossia::value operator()(Tuple&& value, const domain_base<ossia::value>& domain) const;
+  ossia::value operator()(const std::vector<ossia::value>& value, const domain_base<ossia::value>& domain) const;
+  ossia::value operator()(std::vector<ossia::value>&& value, const domain_base<ossia::value>& domain) const;
 
   // Second case : we filter a whole tuple.
-  ossia::value operator()(const Tuple& value, const domain_base<Tuple>& domain) const;
-  ossia::value operator()(Tuple&& value, const domain_base<Tuple>& domain) const;
+  ossia::value operator()(const std::vector<ossia::value>& value, const domain_base<std::vector<ossia::value>>& domain) const;
+  ossia::value operator()(std::vector<ossia::value>&& value, const domain_base<std::vector<ossia::value>>& domain) const;
 
   // Vec : we can either filter each value, or filter the whole shebang
-  ossia::value operator()(const Vec<float, 2>& value, const domain_base<Float>& domain) const;
-  ossia::value operator()(const Vec<float, 2>& value, const domain_base<Int>& domain) const;
-  ossia::value operator()(const Vec<float, 2>& value, const domain_base<Bool>& domain) const;
-  ossia::value operator()(const Vec<float, 2>& value, const domain_base<Char>& domain) const;
-  ossia::value operator()(const Vec<float, 2>& value, const domain_base<Vec<float, 2>>& domain) const;
-  ossia::value operator()(const Vec<float, 2>& value, const domain_base<Tuple>& domain) const;
+  ossia::value operator()(const std::array<float, 2>& value, const domain_base<float>& domain) const;
+  ossia::value operator()(const std::array<float, 2>& value, const domain_base<int32_t>& domain) const;
+  ossia::value operator()(const std::array<float, 2>& value, const domain_base<bool>& domain) const;
+  ossia::value operator()(const std::array<float, 2>& value, const domain_base<char>& domain) const;
+  ossia::value operator()(const std::array<float, 2>& value, const domain_base<std::array<float, 2>>& domain) const;
+  ossia::value operator()(const std::array<float, 2>& value, const domain_base<std::vector<ossia::value>>& domain) const;
 
-  ossia::value operator()(const Vec<float, 3>& value, const domain_base<Float>& domain) const;
-  ossia::value operator()(const Vec<float, 3>& value, const domain_base<Int>& domain) const;
-  ossia::value operator()(const Vec<float, 3>& value, const domain_base<Bool>& domain) const;
-  ossia::value operator()(const Vec<float, 3>& value, const domain_base<Char>& domain) const;
-  ossia::value operator()(const Vec<float, 3>& value, const domain_base<Vec<float, 3>>& domain) const;
-  ossia::value operator()(const Vec<float, 3>& value, const domain_base<Tuple>& domain) const;
+  ossia::value operator()(const std::array<float, 3>& value, const domain_base<float>& domain) const;
+  ossia::value operator()(const std::array<float, 3>& value, const domain_base<int32_t>& domain) const;
+  ossia::value operator()(const std::array<float, 3>& value, const domain_base<bool>& domain) const;
+  ossia::value operator()(const std::array<float, 3>& value, const domain_base<char>& domain) const;
+  ossia::value operator()(const std::array<float, 3>& value, const domain_base<std::array<float, 3>>& domain) const;
+  ossia::value operator()(const std::array<float, 3>& value, const domain_base<std::vector<ossia::value>>& domain) const;
 
-  ossia::value operator()(const Vec<float, 4>& value, const domain_base<Float>& domain) const;
-  ossia::value operator()(const Vec<float, 4>& value, const domain_base<Int>& domain) const;
-  ossia::value operator()(const Vec<float, 4>& value, const domain_base<Bool>& domain) const;
-  ossia::value operator()(const Vec<float, 4>& value, const domain_base<Char>& domain) const;
-  ossia::value operator()(const Vec<float, 4>& value, const domain_base<Vec<float, 4>>& domain) const;
-  ossia::value operator()(const Vec<float, 4>& value, const domain_base<Tuple>& domain) const;
+  ossia::value operator()(const std::array<float, 4>& value, const domain_base<float>& domain) const;
+  ossia::value operator()(const std::array<float, 4>& value, const domain_base<int32_t>& domain) const;
+  ossia::value operator()(const std::array<float, 4>& value, const domain_base<bool>& domain) const;
+  ossia::value operator()(const std::array<float, 4>& value, const domain_base<char>& domain) const;
+  ossia::value operator()(const std::array<float, 4>& value, const domain_base<std::array<float, 4>>& domain) const;
+  ossia::value operator()(const std::array<float, 4>& value, const domain_base<std::vector<ossia::value>>& domain) const;
 
 };
 
@@ -98,9 +98,9 @@ struct tuple_apply_domain_helper
 };
 
 template <typename T>
-ossia::value apply_domain_visitor::operator()(const Tuple& value, const domain_base<T>& domain) const
+ossia::value apply_domain_visitor::operator()(const std::vector<ossia::value>& value, const domain_base<T>& domain) const
 {
-  Tuple res = value;
+  std::vector<ossia::value> res = value;
   for(auto& val : res)
   {
     if(val.getType() == ossia::value_trait<T>::ossia_enum)
@@ -110,7 +110,7 @@ ossia::value apply_domain_visitor::operator()(const Tuple& value, const domain_b
 }
 
 template <typename T>
-ossia::value apply_domain_visitor::operator()(Tuple&& value, const domain_base<T>& domain) const
+ossia::value apply_domain_visitor::operator()(std::vector<ossia::value>&& value, const domain_base<T>& domain) const
 {
   for(auto& val : value)
   {

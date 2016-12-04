@@ -1,24 +1,30 @@
 #pragma once
-#include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia/network/common/address_properties.hpp>
+#include <ossia/editor/value/vec.hpp>
 #include <ossia/detail/destination_index.hpp>
+#include <boost/utility/string_view.hpp>
 #include <bitset>
+#include <ossia_export.h>
 
 namespace ossia
 {
+struct unit_t;
+class value;
+struct value_with_unit;
+
 /**
  * @brief get_dataspace_text
  * @return Text corresponding to the dataspace. For instance "color" or "gain".
  */
 OSSIA_EXPORT
-boost::string_view get_dataspace_text(ossia::unit_t);
+boost::string_view get_dataspace_text(const ossia::unit_t&);
 
 /**
  * @brief get_unit_text
  * @return Text corresponding to the unit. For instance "rgb" or "xyz".
  */
 OSSIA_EXPORT
-boost::string_view get_unit_text(ossia::unit_t);
+boost::string_view get_unit_text(const ossia::unit_t&);
 
 /**
  * @brief get_pretty_unit_text Unit for human readability and debugging
@@ -26,7 +32,7 @@ boost::string_view get_unit_text(ossia::unit_t);
  * Format is dataspace.unit, e.g. distance.m/s or color.rgb
  */
 OSSIA_EXPORT
-std::string get_pretty_unit_text(ossia::unit_t);
+std::string get_pretty_unit_text(const ossia::unit_t&);
 
 
 /**
@@ -55,7 +61,7 @@ ossia::unit_t parse_dataspace(boost::string_view text);
  * @return Corresponding unit, or the same unit as input if it was not found.
  */
 OSSIA_EXPORT
-ossia::unit_t parse_unit(boost::string_view text, ossia::unit_t dataspace);
+ossia::unit_t parse_unit(boost::string_view text, const ossia::unit_t& dataspace);
 
 
 /**
@@ -118,7 +124,7 @@ ossia::val_type matching_type(const ossia::unit_t& u);
  * and convertible, else the input value
  */
 OSSIA_EXPORT
-ossia::value_with_unit convert(ossia::value_with_unit v, ossia::unit_t t);
+ossia::value_with_unit convert(const ossia::value_with_unit& v, const ossia::unit_t& t);
 
 /**
  * @brief convert Convert a value to another unit.
@@ -131,7 +137,7 @@ ossia::value_with_unit convert(ossia::value_with_unit v, ossia::unit_t t);
  * @return Converted value, else the input value.
  */
 OSSIA_EXPORT
-ossia::value convert(ossia::value v, ossia::unit_t source_unit, ossia::unit_t destination_unit);
+ossia::value convert(const ossia::value& v, const ossia::unit_t& source_unit, const ossia::unit_t& destination_unit);
 
 
 /**
@@ -140,14 +146,14 @@ ossia::value convert(ossia::value v, ossia::unit_t source_unit, ossia::unit_t de
  * @return Corresponding ossia::value
  */
 OSSIA_EXPORT
-ossia::value to_value(ossia::value_with_unit v);
+ossia::value to_value(const ossia::value_with_unit& v);
 
 
 /**
  * @brief to_unit Get the unit part of a value_with_unit
  */
 OSSIA_EXPORT
-ossia::unit_t to_unit(ossia::value_with_unit v);
+ossia::unit_t to_unit(const ossia::value_with_unit& v);
 
 /**
  * @brief to_pretty_string Pretty string of unit & value
@@ -155,7 +161,7 @@ ossia::unit_t to_unit(ossia::value_with_unit v);
  * @return For example "[0.2, 1.6, 3.4] rgb"
  */
 OSSIA_EXPORT
-std::string to_pretty_string(ossia::value_with_unit v);
+std::string to_pretty_string(const ossia::value_with_unit& v);
 
 /**
  * @brief merge Merge a computed value in a unit-aware value
@@ -171,25 +177,25 @@ std::string to_pretty_string(ossia::value_with_unit v);
  */
 OSSIA_EXPORT
 ossia::value_with_unit merge(
-    ossia::value_with_unit,
+    const ossia::value_with_unit&,
     const ossia::value&,
     ossia::destination_index);
 
 OSSIA_EXPORT
 ossia::value_with_unit merge(
-    ossia::value_with_unit,
+    const ossia::value_with_unit&,
     const ossia::Vec2f&,
     std::bitset<2>);
 
 OSSIA_EXPORT
 ossia::value_with_unit merge(
-    ossia::value_with_unit,
+    const ossia::value_with_unit&,
     const ossia::Vec3f&,
     std::bitset<3>);
 
 OSSIA_EXPORT
 ossia::value_with_unit merge(
-    ossia::value_with_unit,
+    const ossia::value_with_unit&,
     const ossia::Vec4f&,
     std::bitset<4>);
 }

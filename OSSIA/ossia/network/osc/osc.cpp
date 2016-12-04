@@ -20,7 +20,7 @@ osc_protocol::osc_protocol(
   : mIp{ip}
   , mRemotePort{remote_port}
   , mLocalPort{local_port}
-  , mSender{std::make_unique<osc::sender>(ip, remote_port)}
+  , mSender{std::make_unique<osc::sender>(mLogger, ip, remote_port)}
   , mReceiver{std::make_unique<osc::receiver>(local_port, [=](const oscpack::ReceivedMessage& m,
                                               const oscpack::IpEndpointName& ip) {
   this->handleReceivedMessage(m, ip);
@@ -46,7 +46,7 @@ const std::string& osc_protocol::getIp() const
 osc_protocol& osc_protocol::setIp(std::string ip)
 {
   mIp = ip;
-  mSender = std::make_unique<osc::sender>(mIp, mRemotePort);
+  mSender = std::make_unique<osc::sender>(mLogger, mIp, mRemotePort);
 
   return *this;
 }
@@ -59,7 +59,7 @@ uint16_t osc_protocol::getRemotePort() const
 osc_protocol& osc_protocol::setRemotePort(uint16_t in_port)
 {
   mRemotePort = in_port;
-  mSender = std::make_unique<osc::sender>(mIp, mRemotePort);
+  mSender = std::make_unique<osc::sender>(mLogger, mIp, mRemotePort);
 
   return *this;
 }
@@ -111,8 +111,6 @@ bool osc_protocol::push(const ossia::net::address_base& address)
   if (val.valid())
   {
     mSender->send(address, val);
-    if(mLogger.outbound_logger)
-      mLogger.outbound_logger->info("Out: {0} {1}", ossia::net::address_string_from_node(address), val);
     return true;
   }
   return false;
@@ -167,7 +165,7 @@ void osc_protocol::handleReceivedMessage(
 }
 
 template<std::size_t N>
-static bool is_vec(ossia::Tuple& t)
+static bool is_vec(std::vector<ossia::value>& t)
 {
   if(t.size() != N)
     return false;

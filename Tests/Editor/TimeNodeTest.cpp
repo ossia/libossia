@@ -26,7 +26,7 @@ private Q_SLOTS:
 
         QVERIFY(node->getExpression() == expressions::expression_true);
 
-        auto expression = expressions::make_expression_bool(true);
+        auto expression = expressions::make_expression_true();
         auto& expr_ref = *expression;
         node->setExpression(std::move(expression));
 

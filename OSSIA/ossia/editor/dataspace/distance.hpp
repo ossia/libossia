@@ -27,7 +27,7 @@ struct distance_unit
 {
   using is_unit = std::true_type;
   using neutral_unit = meter_u;
-  using value_type = Float;
+  using value_type = float;
   using concrete_type = Impl;
   using dataspace_type = distance_dataspace;
 };
@@ -121,10 +121,6 @@ using picometer = strong_value<picometer_u>;
 using inch = strong_value<inch_u>;
 using foot = strong_value<foot_u>;
 using mile = strong_value<mile_u>;
-
-using distance_u =
-  eggs::variant<
-    meter_u, kilometer_u, decimeter_u, centimeter_u, millimeter_u, micrometer_u, nanometer_u, picometer_u, inch_u, foot_u, mile_u>;
 
 template<>
 struct dataspace_traits<distance_u>

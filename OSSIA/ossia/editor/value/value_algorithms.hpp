@@ -20,8 +20,8 @@ static void merge_value(ossia::value& dest, Value_T&& src)
   }
   else
   {
-    auto dest_tuple_ptr = dest.target<Tuple>();
-    auto src_tuple_ptr = src.template target<Tuple>();
+    auto dest_tuple_ptr = dest.target<std::vector<ossia::value>>();
+    auto src_tuple_ptr = src.template target<std::vector<ossia::value>>();
 
     if(dest_tuple_ptr && src_tuple_ptr)
     {
@@ -40,13 +40,13 @@ static void merge_value(ossia::value& dest, Value_T&& src)
       // If one of the two values is invalid, we always keep the other
       if(src_tuple_ptr->empty())
       {
-        Tuple t{dest};
+        std::vector<ossia::value> t{dest};
         dest = std::move(t);
         return;
       }
       else if(!(*src_tuple_ptr)[0].valid())
       {
-        Tuple t = *src_tuple_ptr;
+        std::vector<ossia::value> t = *src_tuple_ptr;
         t[0] = dest;
         dest = std::move(t);
         return;
@@ -70,9 +70,9 @@ static void merge_value(ossia::value& dest, Value_T&& src)
 }
 
 template<typename Value_T>
-static void insert_in_tuple(Tuple& t, Value_T&& v, const ossia::destination_index& idx)
+static void insert_in_tuple(std::vector<ossia::value>& t, Value_T&& v, const ossia::destination_index& idx)
 {
-  Tuple* cur_ptr = &t;
+  std::vector<ossia::value>* cur_ptr = &t;
   for(auto it = idx.begin(); it != idx.end(); )
   {
     auto& cur = *cur_ptr;
@@ -91,25 +91,25 @@ static void insert_in_tuple(Tuple& t, Value_T&& v, const ossia::destination_inde
     else
     {
       // We go through another depth layer.
-      if(auto sub_tuple = cur[pos].target<ossia::Tuple>())
+      if(auto sub_tuple = cur[pos].target<std::vector<ossia::value>>())
       {
         cur_ptr = sub_tuple;
       }
       else
       {
         // We put the current value at cur[pos] at index 0 of the newly-created sub-tuple.
-        Tuple t{cur[pos]};
+        std::vector<ossia::value> t{cur[pos]};
         cur[pos] = std::move(t);
 
         // And use it for the next iteration
-        cur_ptr = cur[pos].target<ossia::Tuple>();
+        cur_ptr = cur[pos].target<std::vector<ossia::value>>();
       }
     }
   }
 }
 
 template<typename Value_T>
-static void set_first_value(Tuple& t, Value_T&& val)
+static void set_first_value(std::vector<ossia::value>& t, Value_T&& val)
 {
   if(t.empty())
   {
@@ -122,7 +122,7 @@ static void set_first_value(Tuple& t, Value_T&& val)
 }
 
 template<typename Tuple_T>
-static void merge_tuple(Tuple& lhs, Tuple_T&& rhs)
+static void merge_tuple(std::vector<ossia::value>& lhs, Tuple_T&& rhs)
 {
   std::size_t n = rhs.size();
   if(lhs.size() < n)
@@ -151,7 +151,7 @@ struct destination_index_retriever
   const ossia::destination_index& index;
   ossia::destination_index::const_iterator it;
 
-  ossia::value operator()(const ossia::Tuple& t)
+  ossia::value operator()(const std::vector<ossia::value>& t)
   {
     if(it == index.end())
     {
@@ -183,7 +183,7 @@ struct destination_index_retriever
   }
 
   template<std::size_t N>
-  ossia::value operator()(const Vec<float, N>& t)
+  ossia::value operator()(const std::array<float, N>& t)
   {
     if(it == index.end())
     {
@@ -192,7 +192,7 @@ struct destination_index_retriever
     else if(t.size() > *it)
     {
       if(it + 1 == index.end())
-        return Float{t[*it]};
+        return float{t[*it]};
     }
 
     return {};

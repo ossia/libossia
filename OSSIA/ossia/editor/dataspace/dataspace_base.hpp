@@ -35,7 +35,11 @@ struct strong_value
   using neutral_unit = typename Unit::neutral_unit;
   value_type dataspace_value;
 
-  constexpr strong_value() = default;
+  OSSIA_INLINE constexpr strong_value() noexcept: dataspace_value{} { }
+  OSSIA_INLINE constexpr strong_value(const strong_value& other) noexcept : dataspace_value{ other.dataspace_value } { }
+  OSSIA_INLINE constexpr strong_value(strong_value&& other) noexcept : dataspace_value{ std::move(other.dataspace_value) } { }
+  OSSIA_INLINE strong_value& operator=(const strong_value& other) noexcept { dataspace_value = other.dataspace_value; return *this; }
+  OSSIA_INLINE strong_value& operator=(strong_value&& other) noexcept { dataspace_value = std::move(other.dataspace_value); return *this; }
 
   // Constructor that takes anyything able to initialize val
 /* Sadly does not work on MSVC........
@@ -47,33 +51,27 @@ struct strong_value
   {
   }
 */
-  OSSIA_INLINE constexpr strong_value(float other) : dataspace_value{ other } { }
-  OSSIA_INLINE constexpr strong_value(double other) : dataspace_value{ (float)other } { }
-  OSSIA_INLINE constexpr strong_value(int other) : dataspace_value{ (float)other } { }
-  OSSIA_INLINE constexpr strong_value(char other) : dataspace_value{ (float)other } { }
-  OSSIA_INLINE constexpr strong_value(bool other) : dataspace_value{ (float)other } { }
-  OSSIA_INLINE constexpr strong_value(std::array<float, 2> other) : dataspace_value{ other } { }
-  OSSIA_INLINE constexpr strong_value(std::array<float, 3> other) : dataspace_value{ other } { }
-  OSSIA_INLINE constexpr strong_value(std::array<float, 4> other) : dataspace_value{ other } { }
-  OSSIA_INLINE constexpr strong_value(std::array<double, 2> other) : dataspace_value{ (float)other[0], (float)other[1] } { }
-  OSSIA_INLINE constexpr strong_value(std::array<double, 3> other) : dataspace_value{ (float)other[0], (float)other[1], (float)other[2] } { }
-  OSSIA_INLINE constexpr strong_value(std::array<double, 4> other) : dataspace_value{ (float)other[0], (float)other[1], (float)other[2], (float)other[3] } { }
-  OSSIA_INLINE constexpr strong_value(float f0, float f1) : dataspace_value{ f0, f1 } { }
-  OSSIA_INLINE constexpr strong_value(float f0, float f1, float f2) : dataspace_value{ f0, f1, f2 } { }
-  OSSIA_INLINE constexpr strong_value(float f0, float f1, float f2, float f3) : dataspace_value{ f0, f1, f2, f3} { }
+  OSSIA_INLINE constexpr strong_value(float other) noexcept : dataspace_value{ other } { }
+  OSSIA_INLINE constexpr strong_value(double other) noexcept : dataspace_value{ (float)other } { }
+  OSSIA_INLINE constexpr strong_value(int other) noexcept : dataspace_value{ (float)other } { }
+  OSSIA_INLINE constexpr strong_value(char other) noexcept : dataspace_value{ (float)other } { }
+  OSSIA_INLINE constexpr strong_value(bool other) noexcept : dataspace_value{ (float)other } { }
+  OSSIA_INLINE constexpr strong_value(std::array<float, 2> other) noexcept : dataspace_value{ other } { }
+  OSSIA_INLINE constexpr strong_value(std::array<float, 3> other) noexcept : dataspace_value{ other } { }
+  OSSIA_INLINE constexpr strong_value(std::array<float, 4> other) noexcept : dataspace_value{ other } { }
+  OSSIA_INLINE constexpr strong_value(std::array<double, 2> other) noexcept : dataspace_value{ (float)other[0], (float)other[1] } { }
+  OSSIA_INLINE constexpr strong_value(std::array<double, 3> other) noexcept : dataspace_value{ (float)other[0], (float)other[1], (float)other[2] } { }
+  OSSIA_INLINE constexpr strong_value(std::array<double, 4> other) noexcept : dataspace_value{ (float)other[0], (float)other[1], (float)other[2], (float)other[3] } { }
+  OSSIA_INLINE constexpr strong_value(float f0, float f1) noexcept : dataspace_value{ f0, f1 } { }
+  OSSIA_INLINE constexpr strong_value(float f0, float f1, float f2) noexcept : dataspace_value{ f0, f1, f2 } { }
+  OSSIA_INLINE constexpr strong_value(float f0, float f1, float f2, float f3) noexcept : dataspace_value{ f0, f1, f2, f3} { }
 
   // Conversion constructor
   template<typename U>
-  constexpr strong_value(strong_value<U> other):
+  constexpr strong_value(strong_value<U> other) noexcept :
     dataspace_value{unit_type::from_neutral(U::to_neutral(other))}
   {
     static_assert(std::is_same<dataspace_type, typename U::dataspace_type>::value, "Trying to convert between different dataspaces");
-  }
-
-  // Copy constructor
-  OSSIA_INLINE constexpr strong_value<Unit>(const strong_value<Unit>& other):
-      dataspace_value{other.dataspace_value}
-  {
   }
 
   OSSIA_INLINE friend bool operator==(

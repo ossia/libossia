@@ -48,13 +48,13 @@ public:
   ossia::value val;
 
   void SetInt(jni::JNIEnv& e, jni::jlong a)
-  { safe_function(__func__, e, [&] { val = Int{a}; }); }
+  { safe_function(__func__, e, [&] { val = int{a}; }); }
   void SetFloat(jni::JNIEnv& e, jni::jfloat a)
-  { safe_function(__func__, e, [&] { val = Float{a}; }); }
+  { safe_function(__func__, e, [&] { val = float{a}; }); }
   void SetChar(jni::JNIEnv& e, jni::jchar a)
-  { safe_function(__func__, e, [&] { val = Char{a}; }); }
+  { safe_function(__func__, e, [&] { val = char{a}; }); }
   void SetBool(jni::JNIEnv& e, jni::jboolean a)
-  { safe_function(__func__, e, [&] { val = Bool{a}; }); }
+  { safe_function(__func__, e, [&] { val = bool{a}; }); }
   void SetString(jni::JNIEnv& e, jni::String a)
   { safe_function(__func__, e, [&] { ; }); }
   void SetTuple(jni::JNIEnv& e, ValueArray a)
@@ -67,13 +67,13 @@ public:
   { safe_function(__func__, e, [&] { ; }); }
 
   jni::jint GetInt(jni::JNIEnv& e)
-  { return safe_function(__func__, e, [&] { return val.get<Int>(); }); }
+  { return safe_function(__func__, e, [&] { return val.get<int>(); }); }
   jni::jfloat GetFloat(jni::JNIEnv& e)
-  { return safe_function(__func__, e, [&] { return val.get<Float>(); }); }
+  { return safe_function(__func__, e, [&] { return val.get<float>(); }); }
   jni::jchar GetChar(jni::JNIEnv& e)
-  { return safe_function(__func__, e, [&] { return val.get<Char>(); }); }
+  { return safe_function(__func__, e, [&] { return val.get<char>(); }); }
   jni::jboolean GetBool(jni::JNIEnv& e)
-  { return safe_function(__func__, e, [&] { return val.get<Bool>(); }); }
+  { return safe_function(__func__, e, [&] { return val.get<bool>(); }); }
   jni::String GetString(jni::JNIEnv& e)
   {
     return safe_function(__func__, e, [&] {

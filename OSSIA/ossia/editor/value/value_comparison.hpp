@@ -91,23 +91,23 @@ struct NumericValue
       {
         return fun(lhs, Impulse_T{});
       }
-      bool operator()(Int v) const
+      bool operator()(int32_t v) const
       {
         return fun(lhs, v);
       }
-      bool operator()(Float v) const
+      bool operator()(float v) const
       {
         return fun(lhs, v);
       }
-      bool operator()(Bool v) const
+      bool operator()(bool v) const
       {
         return fun(lhs, v);
       }
-      bool operator()(Char v) const
+      bool operator()(char v) const
       {
         return fun(lhs, v);
       }
-      bool operator()(const Tuple& v) const
+      bool operator()(const std::vector<ossia::value>& v) const
       {
         return (v.size() == 1) && (fun(lhs, v[0]));
       }
@@ -116,7 +116,7 @@ struct NumericValue
         return fun(lhs, d.value.get().cloneValue(d.index));
       }
 
-      bool operator()(const String& v) const
+      bool operator()(const std::string& v) const
       {
         return fun(lhs, String_T{});
       }
@@ -147,11 +147,11 @@ struct NumericValue
 struct StringValue
 {
   template <typename Fun>
-  static bool apply(const String& lhs, const ossia::value& val, Fun fun)
+  static bool apply(const std::string& lhs, const ossia::value& val, Fun fun)
   {
     struct visitor
     {
-      const String& lhs;
+      const std::string& lhs;
       Fun fun;
 
     public:
@@ -159,27 +159,27 @@ struct StringValue
       {
         return fun(lhs, Impulse_T{});
       }
-      bool operator()(const String& v) const
+      bool operator()(const std::string& v) const
       {
         return fun(lhs, v);
       }
-      bool operator()(Int v) const
+      bool operator()(int32_t v) const
       {
         return fun(v, String_T{});
       }
-      bool operator()(Float v) const
+      bool operator()(float v) const
       {
         return fun(v, String_T{});
       }
-      bool operator()(Bool v) const
+      bool operator()(bool v) const
       {
         return fun(v, String_T{});
       }
-      bool operator()(Char v) const
+      bool operator()(char v) const
       {
         return fun(v, String_T{});
       }
-      bool operator()(const Tuple& v) const
+      bool operator()(const std::vector<ossia::value>& v) const
       {
         return (v.size() == 1) && (fun(lhs, v[0]));
       }
@@ -216,7 +216,7 @@ struct StringValue
 template <typename Fun>
 struct TupleVisitor
 {
-  const Tuple& lhs;
+  const std::vector<ossia::value>& lhs;
   const ossia::value& rhs;
   Fun fun;
 
@@ -225,7 +225,7 @@ public:
   {
     return fun(lhs, Impulse_T{});
   }
-  bool operator()(const Tuple& t) const
+  bool operator()(const std::vector<ossia::value>& t) const
   {
     if (lhs.size() != t.size())
       return false;
@@ -258,7 +258,7 @@ public:
   }
 };
 template <typename Fun>
-auto make_tuple_visitor(const Tuple& lhs, const ossia::value& val, Fun f)
+auto make_tuple_visitor(const std::vector<ossia::value>& lhs, const ossia::value& val, Fun f)
 {
   return TupleVisitor<Fun>{lhs, val, f};
 }
@@ -266,7 +266,7 @@ auto make_tuple_visitor(const Tuple& lhs, const ossia::value& val, Fun f)
 struct TupleValue
 {
   template <typename Fun>
-  static bool apply(const Tuple& lhs, const ossia::value& val, Fun fun)
+  static bool apply(const std::vector<ossia::value>& lhs, const ossia::value& val, Fun fun)
   {
     auto vis = make_tuple_visitor(lhs, val, fun);
 
@@ -322,7 +322,7 @@ struct DestinationValue
 template <std::size_t N, typename Fun>
 struct VecVisitor
 {
-  const Vec<float, N>& lhs;
+  const std::array<float, N>& lhs;
   Fun fun;
 
 public:
@@ -330,7 +330,7 @@ public:
   {
     return fun(lhs, Impulse_T{});
   }
-  bool operator()(const Vec<float, N>& d) const
+  bool operator()(const std::array<float, N>& d) const
   {
     return fun(lhs, d);
   }

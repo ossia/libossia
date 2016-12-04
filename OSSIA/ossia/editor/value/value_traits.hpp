@@ -18,9 +18,9 @@ struct value_trait<ossia::Impulse>
 };
 
 template <>
-struct value_trait<ossia::Int>
+struct value_trait<int32_t>
 {
-  using ossia_type = ossia::Int;
+  using ossia_type = int32_t;
   using value_type = int;
   static const constexpr auto ossia_enum = val_type::INT;
   static const constexpr bool is_numeric = true;
@@ -28,9 +28,9 @@ struct value_trait<ossia::Int>
 };
 
 template <>
-struct value_trait<ossia::Float>
+struct value_trait<float>
 {
-  using ossia_type = ossia::Float;
+  using ossia_type = float;
   using value_type = float;
   static const constexpr auto ossia_enum = val_type::FLOAT;
   static const constexpr bool is_numeric = true;
@@ -38,9 +38,9 @@ struct value_trait<ossia::Float>
 };
 
 template <>
-struct value_trait<ossia::Bool>
+struct value_trait<bool>
 {
-  using ossia_type = ossia::Bool;
+  using ossia_type = bool;
   using value_type = bool;
   static const constexpr auto ossia_enum = val_type::BOOL;
   static const constexpr bool is_numeric = true;
@@ -48,9 +48,9 @@ struct value_trait<ossia::Bool>
 };
 
 template <>
-struct value_trait<ossia::Char>
+struct value_trait<char>
 {
-  using ossia_type = ossia::Char;
+  using ossia_type = char;
   using value_type = char;
   static const constexpr auto ossia_enum = val_type::CHAR;
   static const constexpr bool is_numeric = true;
@@ -58,9 +58,9 @@ struct value_trait<ossia::Char>
 };
 
 template <>
-struct value_trait<ossia::String>
+struct value_trait<std::string>
 {
-  using ossia_type = ossia::String;
+  using ossia_type = std::string;
   using value_type = std::string;
   static const constexpr auto ossia_enum = val_type::STRING;
   static const constexpr bool is_numeric = false;
@@ -68,9 +68,9 @@ struct value_trait<ossia::String>
 };
 
 template <>
-struct value_trait<ossia::Tuple>
+struct value_trait<std::vector<ossia::value>>
 {
-  using ossia_type = ossia::Tuple;
+  using ossia_type = std::vector<ossia::value>;
   using value_type = std::vector<value>;
   static const constexpr auto ossia_enum = val_type::TUPLE;
   static const constexpr bool is_numeric = false;
@@ -125,32 +125,6 @@ struct value_trait<ossia::value>
   static const constexpr bool is_numeric = false;
   static const constexpr bool is_array = false;
 };
-
-
-
-// Reverse mapping from implementation type to ossia type
-template <typename T>
-struct matching_value { };
-template <>
-struct matching_value<bool> { using type = Bool; };
-template <>
-struct matching_value<int> { using type = Int; };
-template <>
-struct matching_value<float> { using type = Float; };
-template <>
-struct matching_value<double> { using type = Float; };
-template <>
-struct matching_value<char> { using type = Char; };
-template <>
-struct matching_value<std::string> { using type = String; };
-template <>
-struct matching_value<std::vector<value>> { using type = Tuple; };
-template <std::size_t N>
-struct matching_value<std::array<float, N>> { using type = Vec<float, N>; };
-
-
-template <typename T>
-using matching_value_t = typename matching_value<T>::type;
 
 /**
  * @brief is_numeric True if the value is of a numeric type

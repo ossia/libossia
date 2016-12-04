@@ -47,11 +47,12 @@ case "$TRAVIS_OS_NAME" in
         sudo apt-get install -qq doxygen doxygen-doc doxygen-gui graphviz
         cd ../Documentation/Doxygen
 
-        doxygen 2>&1 | tee doxygen.log
+        doxygen > doxygen.log
         (
             # inspired from generateDocumentationAndDeploy.sh, Jeroen de Bruijn
             git clone -b gh-pages https://git@$GH_REPO_REF
             cd $GH_REPO_NAME
+            echo "$(pwd)"
 
             # Set the push default to simple i.e. push only the current branch.
             git config --global push.default simple
@@ -65,14 +66,14 @@ case "$TRAVIS_OS_NAME" in
             mv ../html .
 
             if [ -d "html" ] && [ -f "html/index.html" ]; then
+                echo "Commiting..."
                 git add --all
                 git commit -m "Deploy code docs to GitHub Pages Travis build: ${TRAVIS_BUILD_NUMBER}" -m "Commit: ${TRAVIS_COMMIT}"
-                git push --force "https://${GH_REPO_TOKEN}@${GH_REPO_REF}" > /dev/null 2>&1
+                git push --force "https://${GH_REPO_TOKEN}@${GH_REPO_REF}" 
             fi
 
-        )
 
-        doxygen
+        )
       ;;
     esac
   ;;

@@ -3,7 +3,7 @@
 #include <ossia/editor/dataspace/dataspace_parse.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <brigand/algorithms/for_each.hpp>
-#include <unordered_map>
+#include <hopscotch_map.h>
 
 namespace ossia
 {
@@ -48,7 +48,7 @@ struct dataspace_text_visitor
   }
 };
 
-using unit_map = std::unordered_map<std::string, ossia::unit_t>;
+using unit_map = tsl::hopscotch_map<std::string, ossia::unit_t>;
 
 template<typename Arg, typename... Args>
 struct unit_map_factory
@@ -74,9 +74,9 @@ struct unit_map_factory<Arg>
 template<typename... Args>
 struct make_unit_map
 {
-  std::unordered_map<std::string, ossia::unit_t> operator()()
+  tsl::hopscotch_map<std::string, ossia::unit_t> operator()()
   {
-    std::unordered_map<std::string, ossia::unit_t> map;
+    tsl::hopscotch_map<std::string, ossia::unit_t> map;
     unit_map_factory<Args...>{}(map);
     return map;
   }
@@ -177,7 +177,7 @@ struct make_unit_symbols_helper
 
   make_unit_symbols_helper()
   {
-    brigand::for_each<ossia::unit_t>([&] (auto t) {
+    brigand::for_each<ossia::unit_variant>([&] (auto t) {
       using dataspace_type = typename decltype(t)::type;
       brigand::for_each<dataspace_type>([&] (auto u) {
         using unit_type = typename decltype(u)::type;

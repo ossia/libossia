@@ -77,23 +77,23 @@ private Q_SLOTS:
     Impulse p;
     localImpulseAddress->pushValue(p);
 
-    Bool b(false);
+    bool b = false;
     localBoolAddress->pushValue(b);
 
-    Int i(5);
+    int i = 5;
     localIntAddress->pushValue(i);
 
-    Float f(0.5);
+    float f = 0.5;
     localFloatAddress->pushValue(f);
 
-    String s("abc");
+    std::string s = "abc";
     localStringAddress->pushValue(s);
 
     //! \todo
     //Destination d(localFloatNode);
     //localDestinationAddress->pushValue(d);
 
-    Tuple t{Float(0.1), Float(0.2), Float(0.3)};
+    std::vector<ossia::value> t{1., 2., 3.};
     localTupleAddress->pushValue(t);
 
     // evaluate expressions after Destination value updates

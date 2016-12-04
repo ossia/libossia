@@ -46,7 +46,7 @@ int main()
   auto localTupleNode = device.createChild("my_tuple");
   auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
 
-  localTupleAddress->setValue(Tuple{Float(-1.), Float(0.), Float(1.)});
+  localTupleAddress->setValue(std::vector<ossia::value>{-1., 0., 1.});
 
   cout << "*** test 3 ***" << endl;
   c->setInitialPointOrdinateDestination(Destination(*localTupleAddress));

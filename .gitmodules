@@ -29,6 +29,12 @@
 [submodule "3rdparty/fmt"]
 	path = 3rdparty/fmt
 	url = https://github.com/fmtlib/fmt
+[submodule "3rdparty/readerwriterqueue"]
+	path = 3rdparty/readerwriterqueue
+	url = https://github.com/cameron314/readerwriterqueue
+[submodule "3rdparty/hopscotch-map"]
+	path = 3rdparty/hopscotch-map
+	url = https://github.com/Tessil/hopscotch-map.git
 [submodule "OSSIA/ossia-pd/pure-data"]
 	path = OSSIA/ossia-pd/pure-data
 	url = git://git.code.sf.net/p/pure-data/pure-data

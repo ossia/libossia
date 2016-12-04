@@ -137,7 +137,7 @@ int main()
       return expressions::make_expression_atom(
         Destination(*local_test_address),
         expressions::expression_atom::Comparator::GREATER_THAN_OR_EQUAL,
-        Tuple{Float(0.7), Float(0.7), Float(0.7)});
+        std::vector<ossia::value>{0.7, 0.7, 0.7});
     };
 
     // set first end event expression to make it interactive
@@ -181,15 +181,15 @@ int main()
     second_constraint->addTimeProcess(std::move(second_automation));
 
     // add "/test 0. 0. 0." message to first time_constraint's start State
-    message first_start_message{*local_test_address, Tuple{Float(0.), Float(0.), Float(0.)}};
+    message first_start_message{*local_test_address, std::vector<ossia::value>{0., 0., 0.}};
     first_constraint->getStartEvent().addState(first_start_message);
 
     // add "/test 1. 1. 1." message to first time_constraint's end State
-    message first_end_message{*local_test_address, Tuple{Float(1.), Float(1.), Float(1.)}};
+    message first_end_message{*local_test_address, std::vector<ossia::value>{1., 1., 1.}};
     first_constraint->getEndEvent().addState(first_end_message);
 
     // add "/test 2. 2. 2." message to second time_constraint's end State
-    message second_end_message{*local_test_address, Tuple{Float(2.), Float(2.), Float(2.)}};
+    message second_end_message{*local_test_address, std::vector<ossia::value>{2., 2., 2.}};
     second_constraint->getStartEvent().addState(second_end_message);
 
     /*
@@ -242,7 +242,7 @@ int main()
     // start at 500 ms (and launch the state at this time)
     main_constraint->offset(500._tv).launch();
 
-    local_play_address->pushValue(Bool(true));
+    local_play_address->pushValue(true);
 
     // wait the main time_constraint end
     while (main_constraint->getRunning())
@@ -255,7 +255,7 @@ void local_play_callback(const value& v)
 {
     if (v.getType() == val_type::BOOL)
     {
-        auto b = v.get<Bool>();
+        auto b = v.get<bool>();
         if (b)
             main_constraint->start();
         else
@@ -269,13 +269,13 @@ void local_test_callback(const value& v)
 
     if (v.getType() == val_type::TUPLE)
     {
-      auto t = v.get<Tuple>();
+      auto t = v.get<std::vector<ossia::value>>();
 
         for (auto e : t)
         {
             if (e.getType() == val_type::FLOAT)
             {
-                auto f = e.get<Float>();
+                auto f = e.get<float>();
                 cout << f << " ";
             }
         }

@@ -235,19 +235,19 @@ public:
     struct visitor
     {
       destination_index::const_iterator index;
-      Y operator()(Int i) const
+      Y operator()(int32_t i) const
       {
         return i;
       }
-      Y operator()(Float f) const
+      Y operator()(float f) const
       {
         return f;
       }
-      Y operator()(Bool b) const
+      Y operator()(bool b) const
       {
         return b;
       }
-      Y operator()(Char c) const
+      Y operator()(char c) const
       {
         return c;
       }
@@ -263,7 +263,7 @@ public:
       {
         return vec[*index];
       }
-      Y operator()(const Tuple& t) const
+      Y operator()(const std::vector<ossia::value>& t) const
       {
         auto& val = t[*index];
         return convertToTemplateTypeValue(val, index + 1);
@@ -275,7 +275,7 @@ public:
                                        "Cannot convert Impulse to a numeric type");
         return {};
       }
-      Y operator()(const String& str) const
+      Y operator()(const std::string& str) const
       {
         throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
                                        "Cannot convert String to a numeric type");

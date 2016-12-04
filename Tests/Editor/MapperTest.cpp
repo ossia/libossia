@@ -38,8 +38,8 @@ class MapperTest : public QObject
     m_float_address_values.push_back(m_float_address->cloneValue());
 
     // prepare next float value
-    const Float current = m_float_address->cloneValue().get<Float>();
-    m_float_address->pushValue(Float(current + 0.5));
+    const float current = m_float_address->cloneValue().get<float>();
+    m_float_address->pushValue(current + 0.5);
   }
 
 private Q_SLOTS:
@@ -102,7 +102,7 @@ private Q_SLOTS:
     m_float_address_values.clear();
     m_int_address_values.clear();
 
-    Float f(-10.);
+    float f(-10.);
     m_float_address->pushValue(f);
 
     constraint->setGranularity(10._tv);
@@ -119,8 +119,8 @@ private Q_SLOTS:
     auto it = m_int_address_values.begin();
     for (auto v : m_float_address_values)
     {
-      Float f = v.get<Float>();
-      Int i = it->get<Int>();
+      float f = v.get<float>();
+      int i = it->get<int>();
 
       int result = c->valueAt(f);
 

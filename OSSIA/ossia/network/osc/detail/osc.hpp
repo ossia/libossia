@@ -28,23 +28,23 @@ struct osc_outbound_visitor
     void operator()(ossia::Impulse) const
     {
     }
-    void operator()(ossia::Int i) const
+    void operator()(int32_t i) const
     {
       p << int32_t(i);
     }
-    void operator()(ossia::Float f) const
+    void operator()(float f) const
     {
       p << float(f);
     }
-    void operator()(ossia::Bool b) const
+    void operator()(bool b) const
     {
       p << int32_t(b);
     }
-    void operator()(ossia::Char c) const
+    void operator()(char c) const
     {
       p << int32_t(c);
     }
-    void operator()(const ossia::String& str) const
+    void operator()(const std::string& str) const
     {
       p << (boost::string_view)str;
     }
@@ -63,7 +63,7 @@ struct osc_outbound_visitor
     void operator()(const ossia::Destination& d) const
     {
     }
-    void operator()(const ossia::Tuple& t) const
+    void operator()(const std::vector<ossia::value>& t) const
     {
       for (const auto& val : t)
       {
@@ -176,23 +176,23 @@ struct osc_utilities
     switch (it->TypeTag())
     {
       case oscpack::INT32_TYPE_TAG:
-        return ossia::Char{char(it->AsInt32Unchecked())};
+        return char{char(it->AsInt32Unchecked())};
       case oscpack::INT64_TYPE_TAG:
-        return ossia::Char{char(it->AsInt64Unchecked())};
+        return char{char(it->AsInt64Unchecked())};
       case oscpack::FLOAT_TYPE_TAG:
-        return ossia::Char{char(it->AsFloatUnchecked())};
+        return char{char(it->AsFloatUnchecked())};
       case oscpack::DOUBLE_TYPE_TAG:
-        return ossia::Char{char(it->AsDoubleUnchecked())};
+        return char{char(it->AsDoubleUnchecked())};
       case oscpack::CHAR_TYPE_TAG:
-        return ossia::Char{char(it->AsCharUnchecked())};
+        return char{char(it->AsCharUnchecked())};
       case oscpack::TRUE_TYPE_TAG:
-        return ossia::Char{'T'};
+        return char{'T'};
       case oscpack::FALSE_TYPE_TAG:
-        return ossia::Char{'F'};
+        return char{'F'};
       case oscpack::STRING_TYPE_TAG:
-        return ossia::Char{it->AsStringUnchecked()[0]};
+        return char{it->AsStringUnchecked()[0]};
       case oscpack::SYMBOL_TYPE_TAG:
-        return ossia::Char{it->AsSymbolUnchecked()[0]};
+        return char{it->AsSymbolUnchecked()[0]};
       default:
         return c;
     }
@@ -203,32 +203,32 @@ struct osc_utilities
     switch (it->TypeTag())
     {
       case oscpack::INT32_TYPE_TAG:
-        return ossia::Int{it->AsInt32Unchecked()};
+        return int32_t{it->AsInt32Unchecked()};
       case oscpack::INT64_TYPE_TAG:
-        return ossia::Int{(int)it->AsInt64Unchecked()};
+        return int32_t{(int)it->AsInt64Unchecked()};
       case oscpack::FLOAT_TYPE_TAG:
-        return ossia::Float{it->AsFloatUnchecked()};
+        return float{it->AsFloatUnchecked()};
       case oscpack::DOUBLE_TYPE_TAG:
-        return ossia::Float{(float)it->AsDoubleUnchecked()};
+        return float{(float)it->AsDoubleUnchecked()};
       case oscpack::CHAR_TYPE_TAG:
-        return ossia::Char{it->AsCharUnchecked()};
+        return char{it->AsCharUnchecked()};
       case oscpack::TRUE_TYPE_TAG:
-        return ossia::Bool{true};
+        return bool{true};
       case oscpack::FALSE_TYPE_TAG:
-        return ossia::Bool{false};
+        return bool{false};
       case oscpack::STRING_TYPE_TAG:
-        return ossia::String{it->AsStringUnchecked()};
+        return std::string{it->AsStringUnchecked()};
       case oscpack::SYMBOL_TYPE_TAG:
-        return ossia::String{it->AsSymbolUnchecked()};
+        return std::string{it->AsSymbolUnchecked()};
       default:
         return ossia::Impulse{};
     }
   }
 
-  static ossia::Tuple create_tuple(
+  static std::vector<ossia::value> create_tuple(
       oscpack::ReceivedMessageArgumentIterator cur_it, int numArguments)
   {
-    ossia::Tuple t;
+    std::vector<ossia::value> t;
     for(int i = 0; i < numArguments; ++i)
     {
       t.push_back(osc_utilities::create_value(cur_it));
@@ -257,48 +257,48 @@ struct osc_inbound_visitor
       return imp;
     }
 
-    ossia::value operator()(ossia::Int i) const
+    ossia::value operator()(int32_t i) const
     {
       return osc_utilities::get_int(cur_it, i);
     }
 
-    ossia::value operator()(ossia::Float f) const
+    ossia::value operator()(float f) const
     {
       return osc_utilities::get_float(cur_it, f);
     }
 
-    ossia::value operator()(ossia::Bool b) const
+    ossia::value operator()(bool b) const
     {
       return osc_utilities::get_bool(cur_it, b);
     }
 
-    ossia::value operator()(ossia::Char c) const
+    ossia::value operator()(char c) const
     {
       return osc_utilities::get_char(cur_it, c);
     }
 
-    ossia::value operator()(const ossia::String& str) const
+    ossia::value operator()(const std::string& str) const
     {
       switch (cur_it->TypeTag())
       {
         case oscpack::INT32_TYPE_TAG:
-          return ossia::String{std::to_string(cur_it->AsInt32Unchecked())};
+          return std::string{std::to_string(cur_it->AsInt32Unchecked())};
         case oscpack::INT64_TYPE_TAG:
-          return ossia::String{std::to_string(cur_it->AsInt64Unchecked())};
+          return std::string{std::to_string(cur_it->AsInt64Unchecked())};
         case oscpack::FLOAT_TYPE_TAG:
-          return ossia::String{std::to_string(cur_it->AsFloatUnchecked())};
+          return std::string{std::to_string(cur_it->AsFloatUnchecked())};
         case oscpack::DOUBLE_TYPE_TAG:
-          return ossia::String{std::to_string(cur_it->AsDoubleUnchecked())};
+          return std::string{std::to_string(cur_it->AsDoubleUnchecked())};
         case oscpack::CHAR_TYPE_TAG:
-          return ossia::String{std::to_string(cur_it->AsCharUnchecked())};
+          return std::string{std::to_string(cur_it->AsCharUnchecked())};
         case oscpack::TRUE_TYPE_TAG:
-          return ossia::String{"true"};
+          return std::string{"true"};
         case oscpack::FALSE_TYPE_TAG:
-          return ossia::String{"false"};
+          return std::string{"false"};
         case oscpack::STRING_TYPE_TAG:
-          return ossia::String{cur_it->AsStringUnchecked()};
+          return std::string{cur_it->AsStringUnchecked()};
         case oscpack::SYMBOL_TYPE_TAG:
-          return ossia::String{cur_it->AsSymbolUnchecked()};
+          return std::string{cur_it->AsSymbolUnchecked()};
         default:
           return str;
       }
@@ -306,11 +306,11 @@ struct osc_inbound_visitor
 
 
     template <std::size_t N>
-    ossia::value operator()(ossia::Vec<float, N> vec) const
+    ossia::value operator()(std::array<float, N> vec) const
     {
       if (numArguments == N)
       {
-        ossia::Vec<float, N> ret;
+        std::array<float, N> ret;
         std::size_t i = 0;
         auto vec_it = beg_it;
         auto vec_end = end_it;
@@ -333,7 +333,7 @@ struct osc_inbound_visitor
     }
 
 
-    ossia::value operator()(const ossia::Tuple&)
+    ossia::value operator()(const std::vector<ossia::value>&)
     {
       /* This code preserves type info, this is not what we want.
     int n = t.size();
@@ -370,33 +370,33 @@ struct osc_inbound_numeric_visitor
       return imp;
     }
 
-    ossia::value operator()(ossia::Int i) const
+    ossia::value operator()(int32_t i) const
     {
       return osc_utilities::get_int(cur_it, i);
     }
 
-    ossia::value operator()(ossia::Float f) const
+    ossia::value operator()(float f) const
     {
       return osc_utilities::get_float(cur_it, f);
     }
 
-    ossia::value operator()(ossia::Bool b) const
+    ossia::value operator()(bool b) const
     {
       return osc_utilities::get_bool(cur_it, b);
     }
 
-    ossia::value operator()(ossia::Char c) const
+    ossia::value operator()(char c) const
     {
       return osc_utilities::get_char(cur_it, c);
     }
 
-    ossia::value operator()(const ossia::String& str) const
+    ossia::value operator()(const std::string& str) const
     {
       return str;
     }
 
     template <std::size_t N>
-    ossia::value operator()(ossia::Vec<float, N> vec) const
+    ossia::value operator()(std::array<float, N> vec) const
     {
       return osc_utilities::get_float(cur_it, vec[0]);
     }
@@ -406,7 +406,7 @@ struct osc_inbound_numeric_visitor
       return d;
     }
 
-    ossia::value operator()(const ossia::Tuple& t)
+    ossia::value operator()(const std::vector<ossia::value>& t)
     {
       return osc_utilities::get_float(cur_it, !t.empty() ? ossia::convert<float>(t[0]) : 0.f);
     }
@@ -565,7 +565,7 @@ struct osc_write_domain_visitor
   }
 
   template<std::size_t N>
-  void operator()(const domain_base<ossia::Vec<float, N>>& dom)
+  void operator()(const domain_base<std::array<float, N>>& dom)
   {
     if(dom.min && dom.max)
     {
@@ -574,12 +574,12 @@ struct osc_write_domain_visitor
     }
   }
 
-  void operator()(const domain_base<Tuple>& dom)
+  void operator()(const domain_base<std::vector<ossia::value>>& dom)
   {
     if(dom.min && dom.max)
     {
-      const Tuple& min = dom.min.get();
-      const Tuple& max = dom.max.get();
+      const std::vector<ossia::value>& min = dom.min.get();
+      const std::vector<ossia::value>& max = dom.max.get();
       if(!min.empty() && !max.empty())
       {
         vis(ossia::convert<float>(min[0]));
@@ -601,7 +601,7 @@ struct osc_write_domain_visitor
   {
   }
 
-  void operator()(const domain_base<ossia::String>& dom)
+  void operator()(const domain_base<std::string>& dom)
   {
   }
 

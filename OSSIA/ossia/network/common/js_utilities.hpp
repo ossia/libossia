@@ -1,4 +1,5 @@
 #pragma once
+#if defined(QT_CORE_LIB)
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/network/domain/domain.hpp>
@@ -35,12 +36,12 @@ public:
   enum class val_type
   {
     Impulse, //! \see ossia::Impulse
-    Bool, //! \see ossia::Bool
-    Int, //! \see ossia::Int
-    Float, //! \see ossia::Float
-    Char, //! \see ossia::Char
-    String, //! \see ossia::String
-    Tuple, //! \see ossia::Tuple
+    Bool, //! \see bool
+    Int, //! \see int32_t
+    Float, //! \see float
+    Char, //! \see char
+    String, //! \see std::string
+    Tuple, //! \see std::vector<ossia::value>
     Vec2f, //! \see ossia::Vec2f
     Vec3f, //! \see ossia::Vec3f
     Vec4f, //! \see ossia::Vec4f
@@ -120,13 +121,13 @@ struct js_value_inbound_visitor
 public:
   ossia::value operator()(Impulse) const;
 
-  ossia::value operator()(Int v) const;
-  ossia::value operator()(Float v) const;
-  ossia::value operator()(Bool v) const;
-  ossia::value operator()(Char v) const;
+  ossia::value operator()(int32_t v) const;
+  ossia::value operator()(float v) const;
+  ossia::value operator()(bool v) const;
+  ossia::value operator()(char v) const;
 
-  ossia::value operator()(const String& v) const;
-  ossia::value operator()(const Tuple& v) const;
+  ossia::value operator()(const std::string& v) const;
+  ossia::value operator()(const std::vector<ossia::value>& v) const;
 
   ossia::value operator()(Vec2f v) const;
   ossia::value operator()(Vec3f v) const;
@@ -149,16 +150,16 @@ struct js_value_outbound_visitor
 
   QJSValue operator()(Impulse) const;
 
-  QJSValue operator()(Int val) const;
-  QJSValue operator()(Float val) const;
-  QJSValue operator()(Bool val) const;
-  QJSValue operator()(Char val) const;
+  QJSValue operator()(int32_t val) const;
+  QJSValue operator()(float val) const;
+  QJSValue operator()(bool val) const;
+  QJSValue operator()(char val) const;
 
-  QJSValue operator()(const String& val) const;
+  QJSValue operator()(const std::string& val) const;
 
   QJSValue make_tuple(const std::vector<ossia::value>& arr) const;
 
-  QJSValue operator()(const Tuple& val) const;
+  QJSValue operator()(const std::vector<ossia::value>& val) const;
 
   template<std::size_t N>
   QJSValue make_array(const std::array<float, N>& arr) const
@@ -194,15 +195,15 @@ struct js_string_outbound_visitor
 {
   QString operator()(Impulse) const;
 
-  QString operator()(Int val) const;
+  QString operator()(int32_t val) const;
 
-  QString operator()(Float val) const;
-  QString operator()(Bool val) const;
-  QString operator()(Char val) const;
+  QString operator()(float val) const;
+  QString operator()(bool val) const;
+  QString operator()(char val) const;
 
-  QString operator()(const String& val) const;
+  QString operator()(const std::string& val) const;
 
-  QString operator()(const Tuple& val) const;
+  QString operator()(const std::vector<ossia::value>& val) const;
 
   template<std::size_t N>
   QString make_array(const std::array<float, N>& arr) const
@@ -327,3 +328,6 @@ void create_node_rec(QJSValue js, Device_T& device, Node_T& parent)
 }
 
 Q_DECLARE_METATYPE(ossia::net::qml_context)
+#else
+#error This file requires Qt.
+#endif

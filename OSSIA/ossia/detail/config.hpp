@@ -1,5 +1,6 @@
 #pragma once
 #include <type_traits>
+#define BOOST_MATH_DISABLE_FLOAT128
 
 /// Constexpr support ///
 #if defined(_MSC_VER)

@@ -38,211 +38,12 @@ OSSIA_EXPORT std::array<float, 4> convert<std::array<float, 4>>(const ossia::val
 
 
 template
-OSSIA_EXPORT std::array<float, 2> convert<std::array<float, 2>>(const ossia::Tuple& val);
+OSSIA_EXPORT std::array<float, 2> convert<std::array<float, 2>>(const std::vector<ossia::value>& val);
 template
-OSSIA_EXPORT std::array<float, 3> convert<std::array<float, 3>>(const ossia::Tuple& val);
+OSSIA_EXPORT std::array<float, 3> convert<std::array<float, 3>>(const std::vector<ossia::value>& val);
 template
-OSSIA_EXPORT std::array<float, 4> convert<std::array<float, 4>>(const ossia::Tuple& val);
+OSSIA_EXPORT std::array<float, 4> convert<std::array<float, 4>>(const std::vector<ossia::value>& val);
 
-/*
-bool Bool::operator==(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::equal_to<>{});
-}
-
-bool Bool::operator!=(const ossia::value& v) const
-{
-  return !comparisons::NumericValue::apply(*this, v, std::equal_to<>{});
-}
-
-bool Bool::operator>(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::greater<>{});
-}
-
-bool Bool::operator>=(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::greater_equal<>{});
-}
-
-bool Bool::operator<(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::less<>{});
-}
-
-bool Bool::operator<=(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::less_equal<>{});
-}
-
-bool Int::operator==(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::equal_to<>{});
-}
-
-bool Int::operator!=(const ossia::value& v) const
-{
-  return !comparisons::NumericValue::apply(*this, v, std::equal_to<>{});
-}
-
-bool Int::operator>(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::greater<>{});
-}
-
-bool Int::operator>=(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::greater_equal<>{});
-}
-
-bool Int::operator<(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::less<>{});
-}
-
-bool Int::operator<=(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::less_equal<>{});
-}
-
-bool Float::operator==(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::equal_to<>{});
-}
-
-bool Float::operator!=(const ossia::value& v) const
-{
-  return !comparisons::NumericValue::apply(*this, v, std::equal_to<>{});
-}
-
-bool Float::operator>(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::greater<>{});
-}
-
-bool Float::operator>=(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::greater_equal<>{});
-}
-
-bool Float::operator<(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::less<>{});
-}
-
-bool Float::operator<=(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::less_equal<>{});
-}
-
-bool Char::operator==(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::equal_to<>{});
-}
-
-bool Char::operator!=(const ossia::value& v) const
-{
-  return !comparisons::NumericValue::apply(*this, v, std::equal_to<>{});
-}
-
-bool Char::operator>(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::greater<>{});
-}
-
-bool Char::operator>=(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::greater_equal<>{});
-}
-
-bool Char::operator<(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::less<>{});
-}
-
-bool Char::operator<=(const ossia::value& v) const
-{
-  return comparisons::NumericValue::apply(*this, v, std::less_equal<>{});
-}
-
-bool String::operator==(const ossia::value& v) const
-{
-  return comparisons::StringValue::apply(*this, v, std::equal_to<>{});
-}
-
-bool String::operator!=(const ossia::value& v) const
-{
-  return !comparisons::StringValue::apply(*this, v, std::equal_to<>{});
-}
-
-bool String::operator>(const ossia::value& v) const
-{
-  return comparisons::StringValue::apply(*this, v, std::greater<>{});
-}
-
-bool String::operator>=(const ossia::value& v) const
-{
-  return comparisons::StringValue::apply(*this, v, std::greater_equal<>{});
-}
-
-bool String::operator<(const ossia::value& v) const
-{
-  return comparisons::StringValue::apply(*this, v, std::less<>{});
-}
-
-bool String::operator<=(const ossia::value& v) const
-{
-  return comparisons::StringValue::apply(*this, v, std::less_equal<>{});
-}
-
-Tuple::Tuple() = default;
-Tuple::Tuple(std::initializer_list<ossia::value> v) : value(v)
-{
-}
-
-Tuple::Tuple(const std::vector<ossia::value>& v) : value(v)
-{
-}
-
-Tuple::Tuple(std::vector<ossia::value>&& v) : value(std::move(v))
-{
-}
-
-Tuple::Tuple(const ossia::value& v)
-{
-  value.push_back(v);
-}
-
-bool Tuple::operator==(const ossia::value& v) const
-{
-  return comparisons::TupleValue::apply(*this, v, std::equal_to<>{});
-}
-
-bool Tuple::operator!=(const ossia::value& v) const
-{
-  return !comparisons::TupleValue::apply(*this, v, std::equal_to<>{});
-}
-
-bool Tuple::operator>(const ossia::value& v) const
-{
-  return comparisons::TupleValue::apply(*this, v, std::greater<>{});
-}
-
-bool Tuple::operator>=(const ossia::value& v) const
-{
-  return comparisons::TupleValue::apply(*this, v, std::greater_equal<>{});
-}
-
-bool Tuple::operator<(const ossia::value& v) const
-{
-  return comparisons::TupleValue::apply(*this, v, std::less<>{});
-}
-
-bool Tuple::operator<=(const ossia::value& v) const
-{
-  return comparisons::TupleValue::apply(*this, v, std::less_equal<>{});
-}
-*/
 Destination::Destination(const Destination& other) = default;
 Destination::Destination(Destination&& other) = default;
 
@@ -400,64 +201,64 @@ struct value_comparison_visitor2
   }
 
   // String - *
-  bool operator()(const String& lhs, Int v) const
+  bool operator()(const std::string& lhs, int32_t v) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
-  bool operator()(const String& lhs, Float v) const
+  bool operator()(const std::string& lhs, float v) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
-  bool operator()(const String& lhs, Bool v) const
+  bool operator()(const std::string& lhs, bool v) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
-  bool operator()(const String& lhs, Char v) const
+  bool operator()(const std::string& lhs, char v) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
 
-  bool operator()(const String& lhs, const Vec2f& v) const
+  bool operator()(const std::string& lhs, const Vec2f& v) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
-  bool operator()(const String& lhs, const Vec3f& v) const
+  bool operator()(const std::string& lhs, const Vec3f& v) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
-  bool operator()(const String& lhs, const Vec4f& v) const
+  bool operator()(const std::string& lhs, const Vec4f& v) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
 
 
   // * - String
-  bool operator()(Int v, const String& lhs) const
+  bool operator()(int32_t v, const std::string& lhs) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
-  bool operator()(Float v, const String& lhs) const
+  bool operator()(float v, const std::string& lhs) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
-  bool operator()(Bool v, const String& lhs) const
+  bool operator()(bool v, const std::string& lhs) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
-  bool operator()(Char v, const String& lhs) const
+  bool operator()(char v, const std::string& lhs) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
 
-  bool operator()(const Vec2f& v, const String& lhs) const
+  bool operator()(const Vec2f& v, const std::string& lhs) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
-  bool operator()(const Vec3f& v, const String& lhs) const
+  bool operator()(const Vec3f& v, const std::string& lhs) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
-  bool operator()(const Vec4f& v, const String& lhs) const
+  bool operator()(const Vec4f& v, const std::string& lhs) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
@@ -490,32 +291,32 @@ struct value_comparison_visitor2
     return Comparator{}(lhs.value.get().cloneValue(d.index), d.value.get().cloneValue(d.index));
   }
 
-  bool operator()(const Tuple& lhs, const Destination& d) const
+  bool operator()(const std::vector<ossia::value>& lhs, const Destination& d) const
   {
     return Comparator{}(lhs, d.value.get().cloneValue(d.index));
   }
 
-  bool operator()(const Destination& d, const Tuple& rhs) const
+  bool operator()(const Destination& d, const std::vector<ossia::value>& rhs) const
   {
     return Comparator{}(d.value.get().cloneValue(d.index), rhs);
   }
 
-  bool operator()(const Vec<float, 2>& lhs, const Destination& d) const
+  bool operator()(const std::array<float, 2>& lhs, const Destination& d) const
   { return Comparator{}(lhs, d.value.get().cloneValue(d.index)); }
 
-  bool operator()(const Destination& d, const Vec<float, 2>& rhs) const
+  bool operator()(const Destination& d, const std::array<float, 2>& rhs) const
   { return Comparator{}(d.value.get().cloneValue(d.index), rhs); }
 
-  bool operator()(const Vec<float, 3>& lhs, const Destination& d) const
+  bool operator()(const std::array<float, 3>& lhs, const Destination& d) const
   { return Comparator{}(lhs, d.value.get().cloneValue(d.index)); }
 
-  bool operator()(const Destination& d, const Vec<float, 3>& rhs) const
+  bool operator()(const Destination& d, const std::array<float, 3>& rhs) const
   { return Comparator{}(d.value.get().cloneValue(d.index), rhs); }
 
-  bool operator()(const Vec<float, 4>& lhs, const Destination& d) const
+  bool operator()(const std::array<float, 4>& lhs, const Destination& d) const
   { return Comparator{}(lhs, d.value.get().cloneValue(d.index)); }
 
-  bool operator()(const Destination& d, const Vec<float, 4>& rhs) const
+  bool operator()(const Destination& d, const std::array<float, 4>& rhs) const
   { return Comparator{}(d.value.get().cloneValue(d.index), rhs); }
 
 
@@ -523,7 +324,7 @@ struct value_comparison_visitor2
 
   // Tuple
   template<typename T>
-  bool operator()(const T& lhs, const Tuple& v) const
+  bool operator()(const T& lhs, const std::vector<ossia::value>& v) const
   {
     // Note : v.size == 1 only makes sense if comparator is ==...
     return (v.size() == 1) && v[0].v && (
@@ -533,7 +334,7 @@ struct value_comparison_visitor2
   }
 
   template<typename T>
-  bool operator()(const Tuple& v, const T& rhs) const
+  bool operator()(const std::vector<ossia::value>& v, const T& rhs) const
   {
     // Note : v.size == 1 only makes sense if comparator is ==...
     return (v.size() == 1) && v[0].v && (
@@ -542,16 +343,16 @@ struct value_comparison_visitor2
             v[0].v));
   }
 
-  bool operator()(const Impulse& lhs, const Tuple& v) const
+  bool operator()(const Impulse& lhs, const std::vector<ossia::value>& v) const
   {
     return Comparator{}(v, lhs);
   }
-  bool operator()(const Tuple& lhs, const Impulse& v) const
+  bool operator()(const std::vector<ossia::value>& lhs, const Impulse& v) const
   {
     return Comparator{}(v, lhs);
   }
 
-  bool operator()(const Tuple& lhs, const Tuple& rhs) const
+  bool operator()(const std::vector<ossia::value>& lhs, const std::vector<ossia::value>& rhs) const
   {
     if (lhs.size() != rhs.size())
       return false;
@@ -579,33 +380,33 @@ struct value_comparison_visitor2
 
 
   template<std::size_t N>
-  bool operator()(const Tuple& lhs, const Vec<float, N>& v) const
+  bool operator()(const std::vector<ossia::value>& lhs, const std::array<float, N>& v) const
   {
     // TODO
     return false;
   }
 
   template<std::size_t N>
-  bool operator()(const Vec<float, N>& v, const Tuple& rhs) const
+  bool operator()(const std::array<float, N>& v, const std::vector<ossia::value>& rhs) const
   {
     // TODO
     return false;
   }
 
   template<typename T, std::size_t N>
-  bool operator()(const T& lhs, const Vec<float, N>& v) const
+  bool operator()(const T& lhs, const std::array<float, N>& v) const
   {
     return false;
   }
 
   template<typename T, std::size_t N>
-  bool operator()(const Vec<float, N>& v, const T& rhs) const
+  bool operator()(const std::array<float, N>& v, const T& rhs) const
   {
     return false;
   }
 
   template<std::size_t N>
-  bool operator()(const Vec<float, N>& lhs, const Vec<float, N>& rhs) const
+  bool operator()(const std::array<float, N>& lhs, const std::array<float, N>& rhs) const
   {
     bool b = true;
     for(std::size_t i = 0; i < N; i++)
@@ -614,7 +415,7 @@ struct value_comparison_visitor2
   }
 
   template<std::size_t N, std::size_t M>
-  bool operator()(const Vec<float, N>& lhs, const Vec<float, M>& rhs) const
+  bool operator()(const std::array<float, N>& lhs, const std::array<float, M>& rhs) const
   {
     return false;
   }
@@ -723,7 +524,7 @@ bool operator<=(const value& lhs, const value& rhs)
 namespace
 {
 
-static void getTupleAsString(const ossia::Tuple& tuple, fmt::MemoryWriter&);
+static void getTupleAsString(const std::vector<ossia::value>& tuple, fmt::MemoryWriter&);
 struct value_prettyprint_visitor
 {
   fmt::MemoryWriter& s;
@@ -732,23 +533,23 @@ struct value_prettyprint_visitor
   {
     s << "impulse";
   }
-  void operator()(Int i) const
+  void operator()(int32_t i) const
   {
     s << "int: " << i;
   }
-  void operator()(Float f) const
+  void operator()(float f) const
   {
     s << "float: " << f;
   }
-  void operator()(Bool b) const
+  void operator()(bool b) const
   {
     s << "bool: " << b;
   }
-  void operator()(Char c) const
+  void operator()(char c) const
   {
     s << "char: " << c;
   }
-  void operator()(const String& str) const
+  void operator()(const std::string& str) const
   {
     s << "string: " << str;
   }
@@ -772,7 +573,7 @@ struct value_prettyprint_visitor
       s << " " << ossia::get_pretty_unit_text(d.unit);
     }
   }
-  void operator()(const Tuple& t) const
+  void operator()(const std::vector<ossia::value>& t) const
   {
     s << "tuple:";
     getTupleAsString(t, s);
@@ -783,7 +584,7 @@ struct value_prettyprint_visitor
   }
 };
 
-static void getTupleAsString(const ossia::Tuple& tuple, fmt::MemoryWriter& s)
+static void getTupleAsString(const std::vector<ossia::value>& tuple, fmt::MemoryWriter& s)
 {
   value_prettyprint_visitor vis{s};
 
@@ -862,4 +663,10 @@ ossia::value convert(const ossia::value& val, ossia::val_type newtype)
     return convert<ossia_type>(val);
   });
 }
+
+value::~value() noexcept
+{
+
+}
+
 }

@@ -69,60 +69,60 @@ int main()
     cout << boolalpha << "testImpulseExprB is " << evaluate(testImpulseExprB) << endl;
 
     // evaluate expression with Bool
-    auto testBoolExprA = make_expression_atom(Bool(true),
+    auto testBoolExprA = make_expression_atom(true,
                                                 expression_atom::Comparator::EQUAL,
-                                                Bool(true));
+                                                true);
 
     cout << boolalpha << "testBoolExprA is " << evaluate(testBoolExprA) << endl;
 
-    auto testBoolExprB = make_expression_atom(Bool(true),
+    auto testBoolExprB = make_expression_atom(true,
                                                 expression_atom::Comparator::DIFFERENT,
-                                                Bool(true));
+                                                true);
 
     cout << boolalpha << "testBoolExprB is " << evaluate(testBoolExprB) << endl;
 
     // evaluate expression with Int
-    auto testIntExprA = make_expression_atom(Int(10),
+    auto testIntExprA = make_expression_atom(10,
                                                expression_atom::Comparator::GREATER_THAN,
-                                               Int(5));
+                                               5);
 
     cout << boolalpha << "testIntExprA is " << evaluate(testIntExprA) << endl;
 
-    auto testIntExprB = make_expression_atom(Int(10),
+    auto testIntExprB = make_expression_atom(10,
                                                expression_atom::Comparator::LOWER_THAN,
-                                               Int(5));
+                                               5);
 
     cout << boolalpha << "testIntExprB is " << evaluate(testIntExprB) << endl;
 
     // evaluate expression with Float
-    auto testFloatExprA = make_expression_atom(Float(10.),
+    auto testFloatExprA = make_expression_atom(10.,
                                                  expression_atom::Comparator::GREATER_THAN_OR_EQUAL,
-                                                 Float(10.));
+                                                 10.);
 
     cout << boolalpha << "testFloatExprA is " << evaluate(testFloatExprA) << endl;
 
-    auto testFloatExprB = make_expression_atom(Float(10.),
+    auto testFloatExprB = make_expression_atom(10.,
                                                  expression_atom::Comparator::LOWER_THAN_OR_EQUAL,
-                                                 Float(10.));
+                                                 10.);
 
     cout << boolalpha << "testFloatExprB is " << evaluate(testFloatExprB) << endl;
 
     // evaluate expression with String
-    auto testStringExprA = make_expression_atom(String("abc"),
+    auto testStringExprA = make_expression_atom("abc"s,
                                                  expression_atom::Comparator::GREATER_THAN_OR_EQUAL,
-                                                 String("bcd"));
+                                                 "bcd"s);
 
     cout << boolalpha << "testStringExprA is " << evaluate(testStringExprA) << endl;
 
-    auto testStringExprB = make_expression_atom(String("abc"),
+    auto testStringExprB = make_expression_atom("abc"s,
                                                   expression_atom::Comparator::LOWER_THAN_OR_EQUAL,
-                                                  String("bcd"));
+                                                  "bcd"s);
 
     cout << boolalpha << "testStringExprB is " << evaluate(testStringExprB) << endl;
 
     // evaluate expression with Tuple
-    Tuple value1 = {Float(0.1), Float(0.2), Float(0.3)};
-    Tuple value2 = {Float(0.2), Float(0.3), Float(0.4)};
+    std::vector<ossia::value> value1{0.1, 0.2, 0.3};
+    std::vector<ossia::value> value2{0.2, 0.3, 0.4};
 
     auto testTupleExprA = make_expression_atom(value1,
                                                  expression_atom::Comparator::GREATER_THAN,
@@ -137,28 +137,28 @@ int main()
     cout << boolalpha << "testTupleExprB is " << evaluate(testTupleExprB) << endl;
 
     // update node's value
-    Bool b1(false);
+    bool b1(false);
     localBoolAddress1->setValue(b1);
 
-    Bool b2(true);
+    bool b2(true);
     localBoolAddress2->setValue(b2);
 
-    Int i1(5);
+    int i1(5);
     localIntAddress1->setValue(i1);
 
-    Int i2(10);
+    int i2(10);
     localIntAddress2->setValue(i2);
 
-    Float f1(0.5);
+    float f1(0.5);
     localFloatAddress1->setValue(f1);
 
-    Float f2(0.2);
+    float f2(0.2);
     localFloatAddress2->setValue(f2);
 
-    String s1("abc");
+    std::string s1("abc");
     localStringAddress1->setValue(s1);
 
-    String s2("bcd");
+    std::string s2("bcd");
     localStringAddress2->setValue(s2);
 
     Destination d1(*localFloatAddress1);
@@ -167,10 +167,10 @@ int main()
     Destination d2(*localFloatAddress2);
     localDestinationAddress2->setValue(d2);
 
-    Tuple t1(value1);
+    std::vector<ossia::value> t1(value1);
     localTupleAddress1->setValue(t1);
 
-    Tuple t2(value2);
+    std::vector<ossia::value> t2(value2);
     localTupleAddress2->setValue(t2);
 
     // evaluate expression with Destination

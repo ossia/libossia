@@ -335,21 +335,21 @@ ossia::value json_to_ossia_value(const rapidjson::Value& value){
 
     switch (tval) {
     case rapidjson::kFalseType:
-        val = ossia::Bool(false);
+        val = bool(false);
         break;
     case rapidjson::kTrueType:
-        val = ossia::Bool(true);
+        val = bool(true);
         break;
     case rapidjson::kNumberType:
         if (value.IsInt()) {
-            val = ossia::Int(value.GetInt());
+            val = int32_t(value.GetInt());
         }
         else {
-            val = ossia::Float(value.GetDouble());
+            val = float(value.GetDouble());
         }
         break;
     case rapidjson::kStringType:
-        val = ossia::String(value.GetString());
+        val = std::string(value.GetString());
         break;
     default:
         break;
@@ -412,29 +412,29 @@ rapidjson::Value ossia_to_json_value(const ossia::value& val, rapidjson::Documen
 
     switch (tvalue) {
     case ossia::val_type::BOOL: {
-        auto typedval = val.get<ossia::Bool>();
+        auto typedval = val.get<bool>();
         jsonvalue.SetBool(typedval);
     }
         break;
     case ossia::val_type::INT: {
-        auto typedval = val.get<ossia::Int>();
+        auto typedval = val.get<int32_t>();
         jsonvalue.SetInt(typedval);
     }
         break;
     case ossia::val_type::FLOAT: {
-        auto typedval = val.get<ossia::Float>();
+        auto typedval = val.get<float>();
         jsonvalue.SetDouble(typedval);
     }
         break;
     case ossia::val_type::CHAR: {
-        auto typedval = val.get<ossia::Char>();
+        auto typedval = val.get<char>();
         char buff[2];
         std::sprintf(buff, "%c", (char)typedval);
         jsonvalue.SetString(buff, docallocator);
     }
         break;
     case ossia::val_type::STRING: {
-        auto typedval = val.get<ossia::String>();
+        auto typedval = val.get<std::string>();
         jsonvalue.SetString(typedval, docallocator);
     }
         break;
@@ -588,19 +588,19 @@ std::string ossia_value_to_std_string(const ossia::value& val) {
     std::stringstream ss;
     switch (val.getType()) {
     case ossia::val_type::BOOL :
-        ss << "Bool " << val.get<ossia::Bool>();
+        ss << "Bool " << val.get<bool>();
         break;
     case ossia::val_type::INT :
-        ss << "Int " << val.get<ossia::Int>();
+        ss << "Int " << val.get<int32_t>();
         break;
     case ossia::val_type::FLOAT :
-        ss << "Float " << val.get<ossia::Float>();
+        ss << "Float " << val.get<float>();
         break;
     case ossia::val_type::CHAR :
-        ss << "Char " << val.get<ossia::Char>();
+        ss << "Char " << val.get<char>();
         break;
     case ossia::val_type::STRING :
-        ss << "String " << val.get<ossia::String>();
+        ss << "String " << val.get<std::string>();
         break;
     default:
         ss << "Other";

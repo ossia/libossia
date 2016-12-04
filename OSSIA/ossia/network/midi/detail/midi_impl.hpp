@@ -32,6 +32,8 @@ public:
           address_info{channel, address_info::Type::NoteOn_N, note}, *this);
   }
 
+  ~note_on_N_node() { aboutToBeDeleted(*this); }
+
   std::string getName() const final override
   {
     return mName;
@@ -51,6 +53,8 @@ public:
       mAddress = std::make_unique<midi_address>(
           address_info{channel, address_info::Type::NoteOff_N, note}, *this);
   }
+
+  ~note_off_N_node() { aboutToBeDeleted(*this); }
 
   std::string getName() const final override
   {
@@ -72,6 +76,8 @@ public:
           address_info{channel, address_info::Type::CC_N, param}, *this);
   }
 
+  ~control_N_node() { aboutToBeDeleted(*this); }
+
   std::string getName() const final override
   {
     return mName;
@@ -91,6 +97,8 @@ public:
       mAddress = std::make_unique<midi_address>(
           address_info{channel, address_info::Type::PC_N, param}, *this);
   }
+
+  ~program_N_node() { aboutToBeDeleted(*this); }
 
   std::string getName() const final override
   {
@@ -113,6 +121,8 @@ public:
         mChildren.push_back(std::move(ptr));
       }
   }
+
+  ~program_node() { aboutToBeDeleted(*this); }
 
   std::string getName() const final override
   {
@@ -137,6 +147,8 @@ public:
       }
   }
 
+  ~note_on_node() { aboutToBeDeleted(*this); }
+
   std::string getName() const final override
   {
     using namespace std::literals;
@@ -160,6 +172,8 @@ public:
       }
   }
 
+  ~note_off_node() { aboutToBeDeleted(*this); }
+
   std::string getName() const final override
   {
     using namespace std::literals;
@@ -182,6 +196,8 @@ public:
         mChildren.push_back(std::move(ptr));
       }
   }
+
+  ~control_node() { aboutToBeDeleted(*this); }
 
   std::string getName() const final override
   {
@@ -215,19 +231,21 @@ public:
       }
   }
 
+  ~channel_node() { aboutToBeDeleted(*this); }
+
   std::array<ossia::message, 2> note_on(midi_size_t note, midi_size_t vel)
   {
       return {{
-          ossia::message{ *mChildren[0]->getAddress(), Tuple{Int{note}, Int{vel}}},
-          ossia::message{ *mChildren[0]->children()[note]->getAddress(), Int{vel}}
+          ossia::message{ *mChildren[0]->getAddress(), std::vector<ossia::value>{int32_t{note}, int32_t{vel}}},
+          ossia::message{ *mChildren[0]->children()[note]->getAddress(), int32_t{vel}}
       }};
   }
 
   std::array<ossia::message, 2> note_off(midi_size_t note, midi_size_t vel)
   {
       return {{
-          ossia::message{*mChildren[1]->getAddress(), Tuple{Int{note}, Int{vel}}},
-          ossia::message{*mChildren[1]->children()[note]->getAddress(), Int{vel}}
+          ossia::message{*mChildren[1]->getAddress(), std::vector<ossia::value>{int32_t{note}, int32_t{vel}}},
+          ossia::message{*mChildren[1]->children()[note]->getAddress(), int32_t{vel}}
       }};
   }
 

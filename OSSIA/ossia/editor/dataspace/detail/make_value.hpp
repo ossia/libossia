@@ -9,7 +9,7 @@ template<typename U, typename V>
 struct make_value_helper;
 
 template<typename U>
-struct make_value_helper<U, ossia::Float>
+struct make_value_helper<U, float>
 {
 
   template<typename T>
@@ -20,19 +20,19 @@ struct make_value_helper<U, ossia::Float>
     return {};
   }
 
-  OSSIA_INLINE ossia::value_with_unit operator()(Int t)
+  OSSIA_INLINE ossia::value_with_unit operator()(int32_t t)
   {
     return strong_value<U>(float(t));
   }
-  OSSIA_INLINE ossia::value_with_unit operator()(Float t)
+  OSSIA_INLINE ossia::value_with_unit operator()(float t)
   {
     return strong_value<U>(float(t));
   }
-  OSSIA_INLINE ossia::value_with_unit operator()(Char t)
+  OSSIA_INLINE ossia::value_with_unit operator()(char t)
   {
     return strong_value<U>(float(t));
   }
-  OSSIA_INLINE ossia::value_with_unit operator()(Bool t)
+  OSSIA_INLINE ossia::value_with_unit operator()(bool t)
   {
     return strong_value<U>(float(t));
   }
@@ -49,7 +49,7 @@ struct make_value_helper<U, ossia::Vec2f>
     return {};
   }
 
-  OSSIA_INLINE ossia::value_with_unit operator()(const ossia::Tuple& t)
+  OSSIA_INLINE ossia::value_with_unit operator()(const std::vector<ossia::value>& t)
   {
     return strong_value<U>{ossia::convert<std::array<float, 2>>(t)};
   }
@@ -76,7 +76,7 @@ struct make_value_helper<U, ossia::Vec3f>
     return {};
   }
 
-  OSSIA_INLINE ossia::value_with_unit operator()(const ossia::Tuple& t)
+  OSSIA_INLINE ossia::value_with_unit operator()(const std::vector<ossia::value>& t)
   {
     return strong_value<U>{ossia::convert<std::array<float, 3>>(t)};
   }
@@ -104,7 +104,7 @@ struct make_value_helper<U, ossia::Vec4f>
     return {};
   }
 
-  OSSIA_INLINE ossia::value_with_unit operator()(const ossia::Tuple& t)
+  OSSIA_INLINE ossia::value_with_unit operator()(const std::vector<ossia::value>& t)
   {
     return strong_value<U>{ossia::convert<std::array<float, 4>>(t)};
   }

@@ -112,7 +112,7 @@ private Q_SLOTS:
     auto localTupleNode = device.createChild("my_tuple");
     auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
 
-    Tuple t{Float(-1.), Float(0.), Float(1.)};
+    std::vector<ossia::value> t{float{-1.}, float{0.}, float{1.}};
     localTupleAddress->setValue(t);
 
     auto c = std::make_shared<curve<double, float>>();
@@ -120,7 +120,7 @@ private Q_SLOTS:
 
     c->setInitialPointAbscissa(0.);
 
-    Destination d(*localTupleAddress, {1});
+    Destination d(*localTupleAddress, ossia::destination_index{1});
     c->setInitialPointOrdinateDestination(d);
 
     QVERIFY(c->getInitialPointOrdinateDestination() == d);

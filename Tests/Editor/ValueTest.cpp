@@ -12,8 +12,8 @@ private Q_SLOTS:
 
   void test_wrapped()
   {
-    QVERIFY(Impulse() == Bool(true));
-    QVERIFY(ossia::value(Impulse()) == ossia::value(Bool(true)));
+    QVERIFY(Impulse() == true);
+    QVERIFY(ossia::value(Impulse()) == ossia::value(true));
   }
 
   /*! test impulse */
@@ -28,62 +28,62 @@ private Q_SLOTS:
     QVERIFY(!(p1 < p2));
     QVERIFY(p1 <= p2);
 
-    QVERIFY(p1 == Bool());
-    QVERIFY(p1 == Int());
-    QVERIFY(p1 == Float());
-    QVERIFY(p1 == Char());
-    QVERIFY(p1 == value::make<String>());
-    QVERIFY(p1 == Tuple());
+    QVERIFY(p1 == bool{});
+    QVERIFY(p1 == int32_t{});
+    QVERIFY(p1 == float{});
+    QVERIFY(p1 == char{});
+    QVERIFY(p1 == value::make<std::string>());
+    QVERIFY(p1 == std::vector<ossia::value>{});
     //! \todo == comparison with generic
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
 
-    QVERIFY(!(p1 != Bool()));
-    QVERIFY(!(p1 != Int()));
-    QVERIFY(!(p1 != Float()));
-    QVERIFY(!(p1 != Char()));
-    QVERIFY(!(p1 != value::make<String>()));
-    QVERIFY(!(p1 != Tuple()));
+    QVERIFY(!(p1 != bool{}));
+    QVERIFY(!(p1 != int32_t{}));
+    QVERIFY(!(p1 != float{}));
+    QVERIFY(!(p1 != char{}));
+    QVERIFY(!(p1 != value::make<std::string>()));
+    QVERIFY(!(p1 != std::vector<ossia::value>{}));
     //! \todo != comparison with generic
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
 
-    QVERIFY(!(p1 > Bool()));
-    QVERIFY(!(p1 > Int()));
-    QVERIFY(!(p1 > Float()));
-    QVERIFY(!(p1 > Char()));
-    QVERIFY(!(p1 > value::make<String>()));
-    QVERIFY(!(p1 > Tuple()));
+    QVERIFY(!(p1 > bool{}));
+    QVERIFY(!(p1 > int32_t{}));
+    QVERIFY(!(p1 > float{}));
+    QVERIFY(!(p1 > char{}));
+    QVERIFY(!(p1 > value::make<std::string>()));
+    QVERIFY(!(p1 > std::vector<ossia::value>{}));
     //! \todo > comparison with generic
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
 
-    QVERIFY(p1 >= Bool());
-    QVERIFY(p1 >= Int());
-    QVERIFY(p1 >= Float());
-    QVERIFY(p1 >= Char());
-    QVERIFY(p1 >= value::make<String>());
-    QVERIFY(p1 >= Tuple());
+    QVERIFY(p1 >= bool{});
+    QVERIFY(p1 >= int32_t{});
+    QVERIFY(p1 >= float{});
+    QVERIFY(p1 >= char{});
+    QVERIFY(p1 >= value::make<std::string>());
+    QVERIFY(p1 >= std::vector<ossia::value>{});
     //! \todo >= comparison with generic
     //! \todo >= comparison with destination
     //! \todo >= comparison with behavior
 
-    QVERIFY(!(p1 < Bool()));
-    QVERIFY(!(p1 < Int()));
-    QVERIFY(!(p1 < Float()));
-    QVERIFY(!(p1 < Char()));
-    QVERIFY(!(p1 < value::make<String>()));
-    QVERIFY(!(p1 < Tuple()));
+    QVERIFY(!(p1 < bool{}));
+    QVERIFY(!(p1 < int32_t{}));
+    QVERIFY(!(p1 < float{}));
+    QVERIFY(!(p1 < char{}));
+    QVERIFY(!(p1 < value::make<std::string>()));
+    QVERIFY(!(p1 < std::vector<ossia::value>{}));
     //! \todo < comparison with generic
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
 
-    QVERIFY(p1 <= Bool());
-    QVERIFY(p1 <= Int());
-    QVERIFY(p1 <= Float());
-    QVERIFY(p1 <= Char());
-    QVERIFY(p1 <= value::make<String>());
-    QVERIFY(p1 <= Tuple());
+    QVERIFY(p1 <= bool{});
+    QVERIFY(p1 <= int32_t{});
+    QVERIFY(p1 <= float{});
+    QVERIFY(p1 <= char{});
+    QVERIFY(p1 <= value::make<std::string>());
+    QVERIFY(p1 <= std::vector<ossia::value>{});
     //! \todo <= comparison with generic
     //! \todo <= comparison with destination
     //! \todo <= comparison with behavior
@@ -92,7 +92,7 @@ private Q_SLOTS:
   /*! test bool */
   void test_bool()
   {
-    Bool b1(true), b2(true);
+    bool b1(true), b2(true);
     QVERIFY(b1 == b2);
     QVERIFY(!(b1 != b2));
     QVERIFY(!(b1 > b2));
@@ -101,70 +101,65 @@ private Q_SLOTS:
     QVERIFY(b1 <= b2);
 
     QVERIFY(b1 == Impulse());
-    QVERIFY(b1 == Int(1));
-    QVERIFY(b1 == Float(1));
-    QVERIFY(b1 == Char(0x01));
-    QVERIFY(!(b1 == value::make<String>()));
-    QVERIFY(b1 == Tuple{Int(1)});
+    QVERIFY(b1 == int32_t(1));
+    QVERIFY(b1 == 1.);
+    QVERIFY(b1 == char{0x01});
+    QVERIFY(!(b1 == value::make<std::string>()));
+    QVERIFY(b1 == std::vector<ossia::value>{int32_t(1)});
     //! \todo == comparison with generic
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
 
     QVERIFY(!(b1 != Impulse()));
-    QVERIFY(b1 != Int());
-    QVERIFY(b1 != Float());
-    QVERIFY(b1 != Char(0x00));
-    QVERIFY(b1 != value::make<String>());
-    QVERIFY(b1 != Tuple{Int(0)});
+    QVERIFY(b1 != int32_t{});
+    QVERIFY(b1 != float{});
+    QVERIFY(b1 != char{0x00});
+    QVERIFY(b1 != value::make<std::string>());
+    QVERIFY(b1 != std::vector<ossia::value>{0});
     //! \todo != comparison with generic
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
 
     QVERIFY(!(b1 > Impulse()));
-    QVERIFY(b1 > Int(0));
-    QVERIFY(!(b1 > Float(2)));
-    QVERIFY(b1 > Char(0x00));
-    QVERIFY(!(b1 > value::make<String>()));
-    QVERIFY(!(b1 > Tuple{Int(0), Int(0)}));
+    QVERIFY(b1 > int32_t(0));
+    QVERIFY(!(b1 > float(2)));
+    QVERIFY(b1 > char{0x00});
+    QVERIFY(!(b1 > value::make<std::string>()));
+    QVERIFY(!(b1 > std::vector<ossia::value>{0, 0}));
     //! \todo > comparison with generic
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
 
     QVERIFY(b1 >= Impulse());
-    QVERIFY(!(b1 >= Int(2)));
-    QVERIFY(b1 >= Float(1));
-    QVERIFY(!(b1 >= Char(0x03)));
-    QVERIFY(!(b1 >= value::make<String>()));
-    QVERIFY(!(b1 >= Tuple()));
+    QVERIFY(b1 >= 1.);
+    QVERIFY(!(b1 >= value::make<std::string>()));
+    QVERIFY(!(b1 >= std::vector<ossia::value>{}));
     //! \todo >= comparison with generic
     //! \todo >= comparison with destination
     //! \todo >= comparison with behavior
 
     QVERIFY(!(b1 < Impulse()));
-    QVERIFY(b1 < Int(2));
-    QVERIFY(!(b1 < Float(1)));
-    QVERIFY(!(b1 < Char()));
-    QVERIFY(!(b1 < value::make<String>()));
-    QVERIFY(b1 < Tuple{Float(3)});
+    QVERIFY(!(b1 < 1.));
+    QVERIFY(!(b1 < value::make<std::string>()));
+    QVERIFY(b1 < std::vector<ossia::value>{float(3)});
     //! \todo < comparison with generic
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
 
     QVERIFY(b1 <= Impulse());
-    QVERIFY(!(b1 <= Int()));
-    QVERIFY(b1 <= Float(1));
-    QVERIFY(b1 <= Char(0x32));
-    QVERIFY(!(b1 <= value::make<String>()));
-    QVERIFY(!(b1 <= Tuple()));
+    QVERIFY(!(b1 <= int32_t{}));
+    QVERIFY(b1 <= 1.);
+    QVERIFY(!(b1 <= value::make<std::string>()));
+    QVERIFY(!(b1 <= std::vector<ossia::value>{}));
     //! \todo <= comparison with generic
     //! \todo <= comparison with destination
     //! \todo <= comparison with behavior
   }
 
   /*! test int */
-  void test_int()
+  void test_int32_t()
   {
-    Int i1(5), i2(5);
+    int32_t i1(5), i2(5);
 
     QVERIFY(i1 == i2);
     QVERIFY(!(i1 != i2));
@@ -174,61 +169,61 @@ private Q_SLOTS:
     QVERIFY(i1 <= i2);
 
     QVERIFY(i1 == Impulse());
-    QVERIFY(!(i1 == Bool(true)));
-    QVERIFY(!(i1 == Float(1)));
-    QVERIFY(i1 == Char(0x05));
-    QVERIFY(!(i1 == value::make<String>()));
-    QVERIFY(i1 == Tuple{Int(5)});
+    QVERIFY(!(i1 == true));
+    QVERIFY(!(i1 == 1.));
+    QVERIFY(i1 == char(0x05));
+    QVERIFY(!(i1 == value::make<std::string>()));
+    QVERIFY(i1 == std::vector<ossia::value>{int32_t(5)});
     //! \todo == comparison with generic
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
 
     QVERIFY(!(i1 != Impulse()));
-    QVERIFY(i1 != Bool());
-    QVERIFY(i1 != Float());
-    QVERIFY(i1 != Char(0x00));
-    QVERIFY(i1 != value::make<String>());
-    QVERIFY(i1 != Tuple{Int(0)});
+    QVERIFY(i1 != bool{});
+    QVERIFY(i1 != float{});
+    QVERIFY(i1 != char{0x00});
+    QVERIFY(i1 != value::make<std::string>());
+    QVERIFY(i1 != std::vector<ossia::value>{0});
     //! \todo != comparison with generic
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
 
     QVERIFY(!(i1 > Impulse()));
-    QVERIFY(i1 > Bool(false));
-    QVERIFY(i1 > Float(2));
-    QVERIFY(i1 > Char(0x00));
-    QVERIFY(!(i1 > value::make<String>()));
-    QVERIFY(!(i1 > Tuple{Int(0), Int(0)}));
+    QVERIFY(i1 > bool(false));
+    QVERIFY(i1 > float(2));
+    QVERIFY(i1 > char{0x00});
+    QVERIFY(!(i1 > value::make<std::string>()));
+    QVERIFY(!(i1 > std::vector<ossia::value>{0, 0}));
     //! \todo > comparison with generic
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
 
     QVERIFY(i1 >= Impulse());
-    QVERIFY(i1 >= Bool(true));
-    QVERIFY(i1 >= Float(1));
-    QVERIFY(i1 >= Char(0x03));
-    QVERIFY(!(i1 >= value::make<String>()));
-    QVERIFY(!(i1 >= Tuple()));
+    QVERIFY(i1 >= true);
+    QVERIFY(i1 >= 1.);
+    QVERIFY(i1 >= char(0x03));
+    QVERIFY(!(i1 >= value::make<std::string>()));
+    QVERIFY(!(i1 >= std::vector<ossia::value>{}));
     //! \todo >= comparison with generic
     //! \todo >= comparison with destination
     //! \todo >= comparison with behavior
 
     QVERIFY(!(i1 < Impulse()));
-    QVERIFY(!(i1 < Bool(true)));
-    QVERIFY(!(i1 < Float(1)));
-    QVERIFY(!(i1 < Char()));
-    QVERIFY(!(i1 < value::make<String>()));
-    QVERIFY(!(i1 < Tuple{Float(3)}));
+    QVERIFY(!(i1 < true));
+    QVERIFY(!(i1 < 1.));
+    QVERIFY(!(i1 < char{}));
+    QVERIFY(!(i1 < value::make<std::string>()));
+    QVERIFY(!(i1 < std::vector<ossia::value>{float(3)}));
     //! \todo < comparison with generic
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
 
     QVERIFY(i1 <= Impulse());
-    QVERIFY(!(i1 <= Bool()));
-    QVERIFY(!(i1 <= Float(1)));
-    QVERIFY(i1 <= Char(0x32));
-    QVERIFY(!(i1 <= value::make<String>()));
-    QVERIFY(!(i1 <= Tuple()));
+    QVERIFY(!(i1 <= bool{}));
+    QVERIFY(!(i1 <= 1.));
+    QVERIFY(i1 <= char(0x32));
+    QVERIFY(!(i1 <= value::make<std::string>()));
+    QVERIFY(!(i1 <= std::vector<ossia::value>{}));
     //! \todo <= comparison with generic
     //! \todo <= comparison with destination
     //! \todo <= comparison with behavior
@@ -237,8 +232,8 @@ private Q_SLOTS:
   /*! test flaot */
   void test_float()
   {
-    Float f1(5);
-    Float f2 = f1;
+    float f1(5);
+    float f2 = f1;
     QVERIFY(f1 == f2);
     QVERIFY(!(f1 != f2));
     QVERIFY(!(f1 > f2));
@@ -247,61 +242,61 @@ private Q_SLOTS:
     QVERIFY(f1 <= f2);
 
     QVERIFY(f1 == Impulse());
-    QVERIFY(!(f1 == Bool(true)));
-    QVERIFY(!(f1 == Int(1)));
-    QVERIFY(f1 == Char(0x05));
-    QVERIFY(!(f1 == value::make<String>()));
-    QVERIFY(f1 == Tuple{Int(5)});
+    QVERIFY(!(f1 == true));
+    QVERIFY(!(f1 == int32_t(1)));
+    QVERIFY(f1 == char(0x05));
+    QVERIFY(!(f1 == value::make<std::string>()));
+    QVERIFY(f1 == std::vector<ossia::value>{int32_t(5)});
     //! \todo == comparison with generic
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
 
     QVERIFY(!(f1 != Impulse()));
-    QVERIFY(f1 != Bool());
-    QVERIFY(f1 != Int());
-    QVERIFY(f1 != Char(0x00));
-    QVERIFY(f1 != value::make<String>());
-    QVERIFY(f1 != Tuple{Int(0)});
+    QVERIFY(f1 != bool{});
+    QVERIFY(f1 != int32_t{});
+    QVERIFY(f1 != char{0x00});
+    QVERIFY(f1 != value::make<std::string>());
+    QVERIFY(f1 != std::vector<ossia::value>{0});
     //! \todo != comparison with generic
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
 
     QVERIFY(!(f1 > Impulse()));
-    QVERIFY(f1 > Bool(false));
-    QVERIFY(f1 > Int(2));
-    QVERIFY(f1 > Char(0x00));
-    QVERIFY(!(f1 > value::make<String>()));
-    QVERIFY(!(f1 > Tuple{Int(0), Int(0)}));
+    QVERIFY(f1 > bool(false));
+    QVERIFY(f1 > 2);
+    QVERIFY(f1 > char{0x00});
+    QVERIFY(!(f1 > value::make<std::string>()));
+    QVERIFY(!(f1 > std::vector<ossia::value>{0, 0}));
     //! \todo > comparison with generic
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
 
     QVERIFY(f1 >= Impulse());
-    QVERIFY(f1 >= Bool(true));
-    QVERIFY(f1 >= Int(1));
-    QVERIFY(f1 >= Char(0x03));
-    QVERIFY(!(f1 >= value::make<String>()));
-    QVERIFY(!(f1 >= Tuple()));
+    QVERIFY(f1 >= true);
+    QVERIFY(f1 >= int32_t(1));
+    QVERIFY(f1 >= char(0x03));
+    QVERIFY(!(f1 >= value::make<std::string>()));
+    QVERIFY(!(f1 >= std::vector<ossia::value>{}));
     //! \todo >= comparison with generic
     //! \todo >= comparison with destination
     //! \todo >= comparison with behavior
 
     QVERIFY(!(f1 < Impulse()));
-    QVERIFY(!(f1 < Bool(true)));
-    QVERIFY(!(f1 < Int(1)));
-    QVERIFY(!(f1 < Char()));
-    QVERIFY(!(f1 < value::make<String>()));
-    QVERIFY(!(f1 < Tuple{Float{3}}));
+    QVERIFY(!(f1 < true));
+    QVERIFY(!(f1 < int32_t(1)));
+    QVERIFY(!(f1 < char{}));
+    QVERIFY(!(f1 < value::make<std::string>()));
+    QVERIFY(!(f1 < std::vector<ossia::value>{3.}));
     //! \todo < comparison with generic
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
 
     QVERIFY(f1 <= Impulse());
-    QVERIFY(!(f1 <= Bool()));
-    QVERIFY(!(f1 <= Int(1)));
-    QVERIFY(f1 <= Char(0x32));
-    QVERIFY(!(f1 <= value::make<String>()));
-    QVERIFY(!(f1 <= Tuple()));
+    QVERIFY(!(f1 <= bool{}));
+    QVERIFY(!(f1 <= int32_t(1)));
+    QVERIFY(f1 <= char(0x32));
+    QVERIFY(!(f1 <= value::make<std::string>()));
+    QVERIFY(!(f1 <= std::vector<ossia::value>{}));
     //! \todo <= comparison with generic
     //! \todo <= comparison with destination
     //! \todo <= comparison with behavior
@@ -310,8 +305,8 @@ private Q_SLOTS:
   /*! test char */
   void test_char()
   {
-    Char c1(5);
-    Char c2 = c1;
+    char c1(5);
+    char c2 = c1;
     QVERIFY(c1 == c2);
     QVERIFY(!(c1 != c2));
     QVERIFY(!(c1 > c2));
@@ -320,61 +315,61 @@ private Q_SLOTS:
     QVERIFY(c1 <= c2);
 
     QVERIFY(c1 == Impulse());
-    QVERIFY(!(c1 == Bool(true)));
-    QVERIFY(!(c1 == Int(1)));
-    QVERIFY(c1 == Char(0x05));
-    QVERIFY(!(c1 == value::make<String>()));
-    QVERIFY(c1 == Tuple{Int{5}});
+    QVERIFY(!(c1 == true));
+    QVERIFY(!(c1 == int32_t(1)));
+    QVERIFY(c1 == char(0x05));
+    QVERIFY(!(c1 == value::make<std::string>()));
+    QVERIFY(c1 == std::vector<ossia::value>{5});
     //! \todo == comparison with generic
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
 
     QVERIFY(!(c1 != Impulse()));
-    QVERIFY(c1 != Bool());
-    QVERIFY(c1 != Int());
-    QVERIFY(c1 != Char(0x00));
-    QVERIFY(c1 != value::make<String>());
-    QVERIFY(c1 != Tuple{Int{0}});
+    QVERIFY(c1 != bool{});
+    QVERIFY(c1 != int32_t{});
+    QVERIFY(c1 != char{0x00});
+    QVERIFY(c1 != value::make<std::string>());
+    QVERIFY(c1 != std::vector<ossia::value>{0});
     //! \todo != comparison with generic
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
 
     QVERIFY(!(c1 > Impulse()));
-    QVERIFY(c1 > Bool(false));
-    QVERIFY(c1 > Int(2));
-    QVERIFY(c1 > Char(0x00));
-    QVERIFY(!(c1 > value::make<String>()));
-    QVERIFY(!(c1 > Tuple({Int(0), Int(0)})));
+    QVERIFY(c1 > bool(false));
+    QVERIFY(c1 > 2);
+    QVERIFY(c1 > char{0x00});
+    QVERIFY(!(c1 > value::make<std::string>()));
+    QVERIFY(!(c1 > std::vector<ossia::value>({int32_t(0), int32_t(0)})));
     //! \todo > comparison with generic
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
 
     QVERIFY(c1 >= Impulse());
-    QVERIFY(c1 >= Bool(true));
-    QVERIFY(c1 >= Int(1));
-    QVERIFY(c1 >= Char(0x03));
-    QVERIFY(!(c1 >= value::make<String>()));
-    QVERIFY(!(c1 >= Tuple()));
+    QVERIFY(c1 >= true);
+    QVERIFY(c1 >= int32_t(1));
+    QVERIFY(c1 >= char(0x03));
+    QVERIFY(!(c1 >= value::make<std::string>()));
+    QVERIFY(!(c1 >= std::vector<ossia::value>{}));
     //! \todo >= comparison with generic
     //! \todo >= comparison with destination
     //! \todo >= comparison with behavior
 
     QVERIFY(!(c1 < Impulse()));
-    QVERIFY(!(c1 < Bool(true)));
-    QVERIFY(!(c1 < Int(1)));
-    QVERIFY(!(c1 < Char()));
-    QVERIFY(!(c1 < value::make<String>()));
-    QVERIFY(!(c1 < Tuple{Float{3}}));
+    QVERIFY(!(c1 < true));
+    QVERIFY(!(c1 < int32_t(1)));
+    QVERIFY(!(c1 < char{}));
+    QVERIFY(!(c1 < value::make<std::string>()));
+    QVERIFY(!(c1 < std::vector<ossia::value>{3.}));
     //! \todo < comparison with generic
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
 
     QVERIFY(c1 <= Impulse());
-    QVERIFY(!(c1 <= Bool()));
-    QVERIFY(!(c1 <= Int(1)));
-    QVERIFY(c1 <= Char(0x32));
-    QVERIFY(!(c1 <= value::make<String>()));
-    QVERIFY(!(c1 <= Tuple()));
+    QVERIFY(!(c1 <= bool{}));
+    QVERIFY(!(c1 <= int32_t(1)));
+    QVERIFY(c1 <= char(0x32));
+    QVERIFY(!(c1 <= value::make<std::string>()));
+    QVERIFY(!(c1 <= std::vector<ossia::value>{}));
     //! \todo <= comparison with generic
     //! \todo <= comparison with destination
     //! \todo <= comparison with behavior
@@ -383,7 +378,7 @@ private Q_SLOTS:
   /*! test string */
   void test_value_string()
   {
-    auto s1 = value::make<String>("qsd");
+    auto s1 = value::make<std::string>("qsd");
     auto s2 = s1;
 
     QVERIFY(s1 == s2);
@@ -394,76 +389,76 @@ private Q_SLOTS:
     QVERIFY(s1 <= s2);
 
     QVERIFY(s1 == Impulse());
-    QVERIFY(!(s1 == Bool(true)));
-    QVERIFY(!(s1 == Int(1)));
-    QVERIFY(!(s1 == Float(0)));
-    QVERIFY(!(s1 == Char(0x05)));
-    QVERIFY(!(s1 == Tuple{Int{5}}));
+    QVERIFY(!(s1 == true));
+    QVERIFY(!(s1 == int32_t(1)));
+    QVERIFY(!(s1 == float(0)));
+    QVERIFY(!(s1 == char(0x05)));
+    QVERIFY(!(s1 == std::vector<ossia::value>{5}));
     //! \todo == comparison with generic
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
 
     QVERIFY(!(s1 != Impulse()));
-    QVERIFY(s1 != Bool());
-    QVERIFY(s1 != Int());
-    QVERIFY(s1 != Float(1));
-    QVERIFY(s1 != Char(0x00));
-    QVERIFY(!(s1 != Tuple{String("qsd")}));
+    QVERIFY(s1 != bool{});
+    QVERIFY(s1 != int32_t{});
+    QVERIFY(s1 != 1.);
+    QVERIFY(s1 != char{0x00});
+    QVERIFY(!(s1 != std::vector<ossia::value>{std::string("qsd")}));
     //! \todo != comparison with generic
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
 
     QVERIFY(!(s1 > Impulse()));
-    QVERIFY(!(s1 > Bool(false)));
-    QVERIFY(!(s1 > Int(2)));
-    QVERIFY(!(s1 > Float(0.1)));
-    QVERIFY(!(s1 > Char(0x00)));
-    QVERIFY(!(s1 > Tuple{Int(0), Int(0)}));
+    QVERIFY(!(s1 > bool(false)));
+    QVERIFY(!(s1 > 2));
+    QVERIFY(!(s1 > float(0.1)));
+    QVERIFY(!(s1 > char{0x00}));
+    QVERIFY(!(s1 > std::vector<ossia::value>{0, 0}));
     //! \todo > comparison with generic
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
 
     QVERIFY(s1 >= Impulse());
-    QVERIFY(!(s1 >= Bool(true)));
-    QVERIFY(!(s1 >= Int(1)));
-    QVERIFY(!(s1 >= Float(5)));
-    QVERIFY(!(s1 >= Char(0x03)));
-    QVERIFY(!(s1 >= Tuple()));
+    QVERIFY(!(s1 >= true));
+    QVERIFY(!(s1 >= int32_t(1)));
+    QVERIFY(!(s1 >= float(5)));
+    QVERIFY(!(s1 >= char(0x03)));
+    QVERIFY(!(s1 >= std::vector<ossia::value>{}));
     //! \todo >= comparison with generic
     //! \todo >= comparison with destination
     //! \todo >= comparison with behavior
 
     QVERIFY(!(s1 < Impulse()));
-    QVERIFY(!(s1 < Bool(true)));
-    QVERIFY(!(s1 < Int(1)));
-    QVERIFY(!(s1 < Float(3)));
-    QVERIFY(!(s1 < Char()));
+    QVERIFY(!(s1 < true));
+    QVERIFY(!(s1 < int32_t(1)));
+    QVERIFY(!(s1 < float(3)));
+    QVERIFY(!(s1 < char{}));
 
-    QVERIFY(s1 < Tuple{String("wxc")});
+    QVERIFY(s1 < std::vector<ossia::value>{std::string("wxc")});
     //! \todo < comparison with generic
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
 
     QVERIFY(s1 <= Impulse());
-    QVERIFY(!(s1 <= Bool()));
-    QVERIFY(!(s1 <= Int(1)));
-    QVERIFY(!(s1 <= Float()));
-    QVERIFY(!(s1 <= Char(0x32)));
-    QVERIFY(!(s1 <= Tuple()));
+    QVERIFY(!(s1 <= bool{}));
+    QVERIFY(!(s1 <= int32_t(1)));
+    QVERIFY(!(s1 <= float{}));
+    QVERIFY(!(s1 <= char(0x32)));
+    QVERIFY(!(s1 <= std::vector<ossia::value>{}));
     //! \todo <= comparison with generic
     //! \todo <= comparison with destination
     //! \todo <= comparison with behavior
   }
 
-  /*! test tuple */
+  /*! test std::vector<ossia::value> */
   void test_tuple()
   {
-    Tuple t1{Int(5), Float(0.2), String("abc")};
+    std::vector<ossia::value> t1{int32_t(5), float(0.2), std::string("abc")};
     QVERIFY(t1[0].getType() == val_type::INT);
     QVERIFY(t1[1].getType() == val_type::FLOAT);
     QVERIFY(t1[2].getType() == val_type::STRING);
 
-    Tuple t2 = t1;
+    std::vector<ossia::value> t2 = t1;
     QVERIFY(t2[0].getType() == val_type::INT);
     QVERIFY(t2[1].getType() == val_type::FLOAT);
     QVERIFY(t2[2].getType() == val_type::STRING);
@@ -476,61 +471,61 @@ private Q_SLOTS:
     QVERIFY(t1 <= t2);
 
     QVERIFY(t1 == Impulse());
-    QVERIFY(!(t1 == Bool(true)));
-    QVERIFY(!(t1 == Int(1)));
-    QVERIFY(!(t1 == Float(5)));
-    QVERIFY(!(t1 == Char(0x05)));
-    QVERIFY(!(t1 == value::make<String>()));
+    QVERIFY(!(t1 == true));
+    QVERIFY(!(t1 == int32_t(1)));
+    QVERIFY(!(t1 == float(5)));
+    QVERIFY(!(t1 == char(0x05)));
+    QVERIFY(!(t1 == value::make<std::string>()));
     //! \todo == comparison with generic
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
 
     QVERIFY(!(t1 != Impulse()));
-    QVERIFY(t1 != Bool());
-    QVERIFY(t1 != Int());
-    QVERIFY(t1 != Float(5));
-    QVERIFY(t1 != Char(0x00));
-    QVERIFY(t1 != value::make<String>());
+    QVERIFY(t1 != bool{});
+    QVERIFY(t1 != int32_t{});
+    QVERIFY(t1 != float(5));
+    QVERIFY(t1 != char{0x00});
+    QVERIFY(t1 != value::make<std::string>());
     //! \todo != comparison with generic
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
 
     QVERIFY(!(t1 > Impulse()));
-    QVERIFY(!(t1 > Bool(false)));
-    QVERIFY(!(t1 > Int(2)));
-    QVERIFY(!(t1 > Float(15)));
-    QVERIFY(!(t1 > Char(0x00)));
-    QVERIFY(!(t1 > String("abc")));
+    QVERIFY(!(t1 > bool(false)));
+    QVERIFY(!(t1 > 2));
+    QVERIFY(!(t1 > float(15)));
+    QVERIFY(!(t1 > char{0x00}));
+    QVERIFY(!(t1 > std::string("abc")));
     //! \todo > comparison with generic
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
 
     QVERIFY(t1 >= Impulse());
-    QVERIFY(!(t1 >= Bool(true)));
-    QVERIFY(!(t1 >= Int(1)));
-    QVERIFY(!(t1 >= Float(-23)));
-    QVERIFY(!(t1 >= Char(0x03)));
-    QVERIFY(!(t1 >= String("wxc")));
+    QVERIFY(!(t1 >= true));
+    QVERIFY(!(t1 >= int32_t(1)));
+    QVERIFY(!(t1 >= float(-23)));
+    QVERIFY(!(t1 >= char(0x03)));
+    QVERIFY(!(t1 >= std::string("wxc")));
     //! \todo >= comparison with generic
     //! \todo >= comparison with destination
     //! \todo >= comparison with behavior
 
     QVERIFY(!(t1 < Impulse()));
-    QVERIFY(!(t1 < Bool(true)));
-    QVERIFY(!(t1 < Int(1)));
-    QVERIFY(!(t1 < Float(0.098)));
-    QVERIFY(!(t1 < Char()));
-    QVERIFY(!(t1 < String("wxc")));
+    QVERIFY(!(t1 < true));
+    QVERIFY(!(t1 < int32_t(1)));
+    QVERIFY(!(t1 < float(0.098)));
+    QVERIFY(!(t1 < char{}));
+    QVERIFY(!(t1 < std::string("wxc")));
     //! \todo < comparison with generic
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
 
     QVERIFY(t1 <= Impulse());
-    QVERIFY(!(t1 <= Bool()));
-    QVERIFY(!(t1 <= Int(1)));
-    QVERIFY(!(t1 <= Float()));
-    QVERIFY(!(t1 <= Char(0x32)));
-    QVERIFY(!(t1 <= value::make<String>()));
+    QVERIFY(!(t1 <= bool{}));
+    QVERIFY(!(t1 <= int32_t(1)));
+    QVERIFY(!(t1 <= float{}));
+    QVERIFY(!(t1 <= char(0x32)));
+    QVERIFY(!(t1 <= value::make<std::string>()));
     //! \todo <= comparison with generic
     //! \todo <= comparison with destination
     //! \todo <= comparison with behavior
@@ -553,13 +548,13 @@ private Q_SLOTS:
     auto localTupleNode = device.createChild("my_tuple");
     auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
 
-    Tuple t{Float(-1.), Float(0.), Float(1.)};
+    std::vector<ossia::value> t{float(-1.), float(0.), float(1.)};
     localTupleAddress->setValue(t);
 
     Destination d1(*localTupleAddress);
     QVERIFY(d1.index.size() == 0);
 
-    Destination d2(*localTupleAddress, {1});
+    Destination d2(*localTupleAddress, ossia::destination_index{1});
     QVERIFY(d2.index.size() == 1);
     QVERIFY(d2.index[0] == 1);
 

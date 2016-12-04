@@ -20,11 +20,11 @@ class ExpressionCompositionTest : public QObject
   }
 
   auto make_exprA()
-  { return make_expression_atom(Bool(true), expression_atom::Comparator::EQUAL, Bool(true)); }
+  { return make_expression_atom(true, expression_atom::Comparator::EQUAL, true); }
   auto make_exprB()
-  { return make_expression_atom(Bool(false), expression_atom::Comparator::EQUAL, Bool(false)); }
+  { return make_expression_atom(false, expression_atom::Comparator::EQUAL, false); }
   auto make_exprC()
-  { return make_expression_atom(Bool(false), expression_atom::Comparator::DIFFERENT, Bool(false)); }
+  { return make_expression_atom(false, expression_atom::Comparator::DIFFERENT, false); }
 
 private Q_SLOTS:
 
@@ -125,7 +125,7 @@ private Q_SLOTS:
     m_result = false;
     m_result_callback_called = false;
 
-    Int i1(5);
+    int i1(5);
     localIntAddress1->pushValue(i1);
 
     QVERIFY(m_result_callback_called == true && m_result == false);
@@ -133,7 +133,7 @@ private Q_SLOTS:
     m_result = false;
     m_result_callback_called = false;
 
-    Int i2(6);
+    int i2(6);
     localIntAddress2->pushValue(i2);
 
     QVERIFY(m_result_callback_called == true && m_result == false);
@@ -141,7 +141,7 @@ private Q_SLOTS:
     m_result = false;
     m_result_callback_called = false;
 
-    Int i3(7);
+    int i3(7);
     localIntAddress3->pushValue(i3);
 
     QVERIFY(m_result_callback_called == true && m_result == true);
@@ -153,7 +153,7 @@ private Q_SLOTS:
     m_result = false;
     m_result_callback_called = false;
 
-    Int i4(10);
+    int i4(10);
     localIntAddress2->pushValue(i4);
 
     QVERIFY(m_result_callback_called == false && m_result == false);

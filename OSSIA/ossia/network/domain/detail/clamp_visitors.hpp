@@ -8,7 +8,6 @@ namespace ossia
 template<typename TernaryFun>
 struct apply_ternary_fun_visitor
 {
-  TernaryFun f;
   template<typename T, typename U, typename V>
   OSSIA_INLINE ossia::value operator()(const T& val, const U& min, const V& max)
   { return val; }
@@ -27,40 +26,40 @@ struct apply_ternary_fun_visitor
   { return val; }
   #endif
 
-  OSSIA_INLINE ossia::value operator()(Int val, Int min, Int max)
-  { return Int{f(val, min, max)}; }
-  OSSIA_INLINE ossia::value operator()(Float val, Float min, Float max)
-  { return Float{f(val, min, max)}; }
-  OSSIA_INLINE ossia::value operator()(Char val, Char min, Char max)
-  { return Char{f(val, min, max)}; }
-  OSSIA_INLINE ossia::value operator()(Bool val, Bool min, Bool max)
-  { return Bool{f(val, min, max)}; }
+  OSSIA_INLINE ossia::value operator()(int32_t val, int32_t min, int32_t max)
+  { return TernaryFun::compute(val, min, max); }
+  OSSIA_INLINE ossia::value operator()(float val, float min, float max)
+  { return TernaryFun::compute(val, min, max); }
+  OSSIA_INLINE ossia::value operator()(char val, char min, char max)
+  { return (char) TernaryFun::compute((int32_t)val, (int32_t)min, (int32_t)max); }
+  OSSIA_INLINE ossia::value operator()(bool val, bool min, bool max)
+  { return (bool) TernaryFun::compute((int32_t)val, (int32_t)min, (int32_t)max); }
 
   template<std::size_t N>
-  ossia::value operator()(Vec<float, N> val, const Vec<float, N>& min, const Vec<float, N>& max)
+  ossia::value operator()(std::array<float, N> val, const std::array<float, N>& min, const std::array<float, N>& max)
   {
     for(std::size_t i = 0; i < N; i++)
     {
-      val[i] = f(val[i], min[i], max[i]);
+      val[i] = TernaryFun::compute(val[i], min[i], max[i]);
     }
     return val;
   }
 
   template<std::size_t N>
-  ossia::value operator()(Vec<float, N> val, Float min, Float max)
+  ossia::value operator()(std::array<float, N> val, float min, float max)
   {
     for(std::size_t i = 0; i < N; i++)
     {
-      val[i] = f(val[i], min, max);
+      val[i] = TernaryFun::compute(val[i], min, max);
     }
     return val;
   }
 
   // TODO handle clamping of Tuple between two values of other types
   // (see apply_domain.hpp)
-  ossia::value operator()(const Tuple& incoming, const Tuple& min, const Tuple& max)
+  ossia::value operator()(const std::vector<ossia::value>& incoming, const std::vector<ossia::value>& min, const std::vector<ossia::value>& max)
   {
-    Tuple val;
+    std::vector<ossia::value> val;
     const auto N = incoming.size();
     const auto nmin = min.size();
     const auto nmax = max.size();
@@ -75,7 +74,7 @@ struct apply_ternary_fun_visitor
     return val;
   }
 
-  ossia::value operator()(Tuple&& val, const Tuple& min, const Tuple& max)
+  ossia::value operator()(std::vector<ossia::value>&& val, const std::vector<ossia::value>& min, const std::vector<ossia::value>& max)
   {
     const auto N = val.size();
     const auto nmin = min.size();
@@ -90,9 +89,9 @@ struct apply_ternary_fun_visitor
     return std::move(val);
   }
 
-  ossia::value operator()(const Tuple& incoming, const ossia::value& min, const ossia::value& max)
+  ossia::value operator()(const std::vector<ossia::value>& incoming, const ossia::value& min, const ossia::value& max)
   {
-    Tuple val;
+    std::vector<ossia::value> val;
     const auto N = incoming.size();
     val.reserve(N);
     for(std::size_t i = 0; i < N; i++)
@@ -102,7 +101,7 @@ struct apply_ternary_fun_visitor
     return val;
   }
 
-  ossia::value operator()(Tuple&& val, const ossia::value& min, const ossia::value& max)
+  ossia::value operator()(std::vector<ossia::value>&& val, const ossia::value& min, const ossia::value& max)
   {
     const auto N = val.size();
     for(std::size_t i = 0; i < N; i++)
@@ -127,12 +126,10 @@ struct apply_ternary_fun_visitor
 template<typename BinaryFun>
 struct apply_binary_fun_visitor
 {
-  BinaryFun f;
-
   template<typename T, typename U>
   OSSIA_INLINE ossia::value operator()(const T& val, const U& min)
   { return val; }
-  
+
   #if !defined(FAST_COMPILES)
   template<typename U>
   OSSIA_INLINE ossia::value operator()(Tuple&& val, const U& min)
@@ -148,40 +145,40 @@ struct apply_binary_fun_visitor
   { return val; }
   #endif
 
-  OSSIA_INLINE ossia::value operator()(Int val, Int min)
-  { return Int{f(val, min)}; }
-  OSSIA_INLINE ossia::value operator()(Float val, Float min)
-  { return Float{f(val, min)}; }
-  OSSIA_INLINE ossia::value operator()(Char val, Char min)
-  { return Char{f(val, min)}; }
-  OSSIA_INLINE ossia::value operator()(Bool val, Bool min)
-  { return Bool{f(val, min)}; }
+  OSSIA_INLINE ossia::value operator()(int32_t val, int32_t min)
+  { return int32_t{BinaryFun::compute(val, min)}; }
+  OSSIA_INLINE ossia::value operator()(float val, float min)
+  { return float{BinaryFun::compute(val, min)}; }
+  OSSIA_INLINE ossia::value operator()(char val, char min)
+  { return (char) BinaryFun::compute((int32_t)val, (int32_t)min); }
+  OSSIA_INLINE ossia::value operator()(bool val, bool min)
+  { return (bool) BinaryFun::compute((int32_t)val, (int32_t)min); }
 
   template<std::size_t N>
-  ossia::value operator()(Vec<float, N> val, const Vec<float, N>& min)
+  ossia::value operator()(std::array<float, N> val, const std::array<float, N>& min)
   {
     for(std::size_t i = 0; i < N; i++)
     {
-      val[i] = f(val[i], min[i]);
+      val[i] = BinaryFun::compute(val[i], min[i]);
     }
     return val;
   }
 
   template<std::size_t N>
-  ossia::value operator()(Vec<float, N> val, Float min)
+  ossia::value operator()(std::array<float, N> val, float min)
   {
     for(std::size_t i = 0; i < N; i++)
     {
-      val[i] = f(val[i], min);
+      val[i] = BinaryFun::compute(val[i], min);
     }
     return val;
   }
 
   // TODO handle clamping of Tuple between two values of other types
   // (see apply_domain.hpp)
-  ossia::value operator()(const Tuple& incoming, const Tuple& min)
+  ossia::value operator()(const std::vector<ossia::value>& incoming, const std::vector<ossia::value>& min)
   {
-    Tuple val;
+    std::vector<ossia::value> val;
     const auto N = incoming.size();
     const auto nmin = min.size();
     if(N == nmin)
@@ -195,7 +192,7 @@ struct apply_binary_fun_visitor
     return val;
   }
 
-  ossia::value operator()(Tuple&& val, const Tuple& min)
+  ossia::value operator()(std::vector<ossia::value>&& val, const std::vector<ossia::value>& min)
   {
     const auto N = val.size();
     const auto nmin = min.size();
@@ -209,9 +206,9 @@ struct apply_binary_fun_visitor
     return std::move(val);
   }
 
-  ossia::value operator()(const Tuple& incoming, const ossia::value& min)
+  ossia::value operator()(const std::vector<ossia::value>& incoming, const ossia::value& min)
   {
-    Tuple val;
+    std::vector<ossia::value> val;
     const auto N = incoming.size();
     val.reserve(N);
     for(std::size_t i = 0; i < N; i++)
@@ -221,7 +218,7 @@ struct apply_binary_fun_visitor
     return val;
   }
 
-  ossia::value operator()(Tuple&& val, const ossia::value& min)
+  ossia::value operator()(std::vector<ossia::value>&& val, const ossia::value& min)
   {
     const auto N = val.size();
     for(std::size_t i = 0; i < N; i++)

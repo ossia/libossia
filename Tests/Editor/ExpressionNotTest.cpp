@@ -24,9 +24,9 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto expression = make_expression_atom(Bool(false),
+        auto expression = make_expression_atom(false,
                                                  expression_atom::Comparator::DIFFERENT,
-                                                 Bool(false));
+                                                 false);
 
         auto not_expression = make_expression_not(std::move(expression));
         QVERIFY(not_expression != nullptr);
@@ -36,17 +36,17 @@ private Q_SLOTS:
     /*! test comparison operator */
     void test_comparison()
     {
-        auto exprA = make_expression_atom(Bool(true),
+        auto exprA = make_expression_atom(true,
                                             expression_atom::Comparator::EQUAL,
-                                            Bool(true));
+                                            true);
 
-        auto exprB = make_expression_atom(Bool(false),
+        auto exprB = make_expression_atom(false,
                                             expression_atom::Comparator::EQUAL,
-                                            Bool(false));
+                                            false);
 
-        auto exprC = make_expression_atom(Bool(true),
+        auto exprC = make_expression_atom(true,
                                             expression_atom::Comparator::EQUAL,
-                                            Bool(true));
+                                            true);
 
         auto not_exprA = make_expression_not(std::move(exprA));
         auto not_exprB = make_expression_not(std::move(exprB));
@@ -85,24 +85,21 @@ private Q_SLOTS:
         m_result = false;
         m_result_callback_called = false;
 
-        Int i1(5);
-        localIntAddress1->pushValue(i1);
+        localIntAddress1->pushValue(5);
 
         QVERIFY(m_result_callback_called == true && m_result == false);
 
         m_result = false;
         m_result_callback_called = false;
 
-        Int i2(5);
-        localIntAddress2->pushValue(i2);
+        localIntAddress2->pushValue(5);
 
         QVERIFY(m_result_callback_called == true && m_result == true);
 
         m_result = false;
         m_result_callback_called = false;
 
-        Int i3(10);
-        localIntAddress2->pushValue(i3);
+        localIntAddress2->pushValue(10);
 
         QVERIFY(m_result_callback_called == true && m_result == false);
 
@@ -113,7 +110,7 @@ private Q_SLOTS:
         m_result = false;
         m_result_callback_called = false;
 
-        localIntAddress2->pushValue(i2);
+        localIntAddress2->pushValue(5);
 
         QVERIFY(m_result_callback_called == false && m_result == false);
     }

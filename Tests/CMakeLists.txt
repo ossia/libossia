@@ -7,7 +7,14 @@ get_target_property(OSSIA_PROTOCOLS ossia OSSIA_PROTOCOLS)
 
 function(ossia_add_test TESTNAME TESTSRCS)
     add_executable(ossia_${TESTNAME} ${TESTSRCS})
-    target_link_libraries(ossia_${TESTNAME} Qt5::Core Qt5::Test ossia)
+    target_compile_options(ossia_${TESTNAME} PUBLIC ${OSSIA_COMPILE_OPTIONS})
+    target_link_libraries(ossia_${TESTNAME} PUBLIC ${OSSIA_LINK_OPTIONS} Qt5::Core Qt5::Test ossia)
+
+    if(OSSIA_SANITIZE)
+        sanitize_build(ossia_${TESTNAME})
+    endif()
+    use_gold(ossia_${TESTNAME})
+
     add_test(NAME ossia_target_${TESTNAME} COMMAND ossia_${TESTNAME})
 endFunction()
 
@@ -64,7 +71,15 @@ endif()
 
 function(ossia_add_test_c TESTNAME TESTSRCS)
     add_executable(ossia_${TESTNAME}_test ${TESTSRCS})
-    target_link_libraries(ossia_${TESTNAME}_test ossia)
+
+    target_compile_options(ossia_${TESTNAME}_test PUBLIC ${OSSIA_COMPILE_OPTIONS})
+    target_link_libraries(ossia_${TESTNAME}_test PUBLIC ${OSSIA_LINK_OPTIONS} ossia)
+
+    if(OSSIA_SANITIZE)
+        sanitize_build(ossia_${TESTNAME}_test)
+    endif()
+    use_gold(ossia_${TESTNAME}_test)
+
     add_test(NAME ossia_target_${TESTNAME}_test COMMAND ossia_${TESTNAME}_test)
 endFunction()
 

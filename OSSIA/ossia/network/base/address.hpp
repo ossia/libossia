@@ -6,11 +6,13 @@
 #include <ossia/editor/dataspace/dataspace_fwd.hpp>
 #include <ossia/editor/value/tuple.hpp>
 #include <ossia/editor/value/destination.hpp>
+#include <ossia/network/base/value_callback.hpp>
 #include <functional>
 #include <vector>
 #include <memory>
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
+#include <future>
 
 namespace ossia
 {
@@ -19,7 +21,6 @@ namespace net
 {
 class node_base;
 
-using value_callback = std::function<void(const value&)>;
 
 /**
  * @brief The address_base class
@@ -53,6 +54,29 @@ public:
    * This may be a blocking call.
    */
   virtual void pullValue() = 0;
+
+  /**
+   * @brief pullValueAsync
+   *
+   * Requests the current value over the network.
+   * Not all protocols may provide this capability.
+   *
+   * This function returns a future that can be waited
+   * upon by client code.
+   */
+  virtual std::future<void> pullValueAsync();
+
+  /**
+   * @brief requestValue
+   *
+   * Requests the current value over the network.
+   * Not all protocols may provide this capability.
+   *
+   * This call may not block but there is no guarantee
+   * that the value has been pulled when the call returns.
+   */
+  virtual void requestValue();
+
   /**
    * @brief pushValue
    *
@@ -77,7 +101,7 @@ public:
   /**
    * @brief cloneValueAtIndex Returns a tuple of sub-values matching the indexes
    */
-  Tuple cloneValue(const std::vector<ossia::destination_index>&) const;
+  std::vector<ossia::value> cloneValue(const std::vector<ossia::destination_index>&) const;
 
   virtual address_base& setValue(const value&) = 0;
 

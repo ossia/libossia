@@ -31,6 +31,8 @@ ws_generic_client_node::ws_generic_client_node(
 
 ws_generic_client_node::~ws_generic_client_node()
 {
+  aboutToBeDeleted(*this);
+
   mChildren.clear();
   mAddress.reset();
 }

@@ -6,7 +6,7 @@
 #include <ossia/editor/exceptions.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <iostream>
-#include <unordered_map>
+#include <hopscotch_map.h>
 #include <cassert>
 
 namespace ossia
@@ -26,7 +26,7 @@ scenario::~scenario()
   }
 }
 
-using DateMap = std::unordered_map<time_node*, time_value>;
+using DateMap = tsl::hopscotch_map<time_node*, time_value>;
 using EventPtr = std::shared_ptr<ossia::time_event>;
 using ConstraintPtr = std::shared_ptr<ossia::time_constraint>;
 static void process_timenode_dates(time_node& t, DateMap& map)
@@ -57,7 +57,7 @@ state_element scenario::offset(time_value offset)
   ossia::state cur_state;
 
   // Precompute the default date of every timenode.
-  std::unordered_map<time_node*, time_value> time_map;
+  tsl::hopscotch_map<time_node*, time_value> time_map;
   process_timenode_dates(*mTimeNodes[0], time_map);
 
   // Set *every* time constraint prior to this one to be rigid

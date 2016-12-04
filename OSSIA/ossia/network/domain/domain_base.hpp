@@ -7,6 +7,7 @@
 
 namespace ossia
 {
+
 OSSIA_EXPORT ossia::value clamp(const ossia::value& val, const ossia::value& min, const ossia::value& max);
 OSSIA_EXPORT ossia::value wrap(const ossia::value& val, const ossia::value& min, const ossia::value& max);
 OSSIA_EXPORT ossia::value fold(const ossia::value& val, const ossia::value& min, const ossia::value& max);
@@ -53,15 +54,15 @@ struct OSSIA_EXPORT domain_base<Impulse>
 };
 
 template <>
-struct OSSIA_EXPORT domain_base<String>
+struct OSSIA_EXPORT domain_base<std::string>
 {
   boost::container::flat_set<std::string> values;
 };
 
 template <>
-struct OSSIA_EXPORT domain_base<Tuple>
+struct OSSIA_EXPORT domain_base<std::vector<ossia::value>>
 {
-  using value_type = Tuple;
+  using value_type = std::vector<ossia::value>;
   boost::optional<value_type> min;
   boost::optional<value_type> max;
   boost::container::flat_set<value_type> values;
@@ -77,12 +78,12 @@ struct OSSIA_EXPORT domain_base<Tuple>
 };
 
 template <std::size_t N>
-struct OSSIA_EXPORT domain_base<Vec<float, N>>
+struct OSSIA_EXPORT domain_base<std::array<float, N>>
 {
-  using value_type = Vec<float, N>;
-  boost::optional<Vec<float, N>> min;
-  boost::optional<Vec<float, N>> max;
-  boost::container::flat_set<Vec<float, N>> values;
+  using value_type = std::array<float, N>;
+  boost::optional<std::array<float, N>> min;
+  boost::optional<std::array<float, N>> max;
+  boost::container::flat_set<std::array<float, N>> values;
 
   domain_base<value_type>() noexcept { }
   domain_base<value_type>(const domain_base<value_type>&) = default;
@@ -122,9 +123,9 @@ struct OSSIA_EXPORT domain_base<ossia::value>
  *
  * It is used to restrict a value to the domain if available.
  */
-using domain_base_variant = eggs::variant<domain_base<Impulse>, domain_base<Bool>, domain_base<Int>,
-                    domain_base<Float>, domain_base<Char>, domain_base<String>,
-                    domain_base<Tuple>, domain_base<Vec2f>, domain_base<Vec3f>,
+using domain_base_variant = eggs::variant<domain_base<Impulse>, domain_base<bool>, domain_base<int32_t>,
+                    domain_base<float>, domain_base<char>, domain_base<std::string>,
+                    domain_base<std::vector<ossia::value>>, domain_base<Vec2f>, domain_base<Vec3f>,
                     domain_base<Vec4f>, domain_base<ossia::value>>;
 
 struct OSSIA_EXPORT domain final : public domain_base_variant

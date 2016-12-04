@@ -2,6 +2,7 @@
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/value/value_conversion.hpp>
 #include <ossia/editor/value/value_traits.hpp>
+#include <ossia/editor/dataspace/value_with_unit.hpp>
 
 namespace ossia
 {
@@ -120,7 +121,7 @@ struct partial_value_merger_helper<T, U, enable_if_both_iterable<T, U>>
   }
 
   template<std::size_t N>
-  bool handle_vec(Vec<float, N>& src, const Vec<float, N>& incoming, const std::bitset<N>& idx)
+  bool handle_vec(std::array<float, N>& src, const std::array<float, N>& incoming, const std::bitset<N>& idx)
   {
     for(std::size_t i = 0; i < N; i++)
     {
@@ -219,7 +220,7 @@ struct value_merger
     return value_unit;
   }
   template<typename T>
-  OSSIA_INLINE ossia::value_with_unit operator()(const strong_value<T>& value_unit, const String& value)
+  OSSIA_INLINE ossia::value_with_unit operator()(const strong_value<T>& value_unit, const std::string& value)
   {
     return value_unit;
   }
@@ -237,12 +238,12 @@ struct vec_value_merger
   }
 
   template<typename T>
-  ossia::value_with_unit operator()(const strong_value<T>& value_unit, const Vec<float, N>& value)
+  ossia::value_with_unit operator()(const strong_value<T>& value_unit, const std::array<float, N>& value)
   {
     if(index.all())
-      return whole_value_merger_helper<strong_value<T>, Vec<float, N>>{}(value_unit, value);
+      return whole_value_merger_helper<strong_value<T>, std::array<float, N>>{}(value_unit, value);
     else if(index.any())
-      return partial_value_merger_helper<strong_value<T>, Vec<float, N>>{}(value_unit, value, index);
+      return partial_value_merger_helper<strong_value<T>, std::array<float, N>>{}(value_unit, value, index);
     else
       return value_unit;
   }

@@ -1,6 +1,7 @@
 #include <ossia/network/generic/generic_address.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/editor/dataspace/value_with_unit.hpp>
 
 
 namespace ossia
@@ -43,14 +44,24 @@ std::string address_string_from_node(const ossia::net::address_base& addr)
     return address_string_from_node(addr.getNode());
 }
 
+std::future<void> address_base::pullValueAsync()
+{
+  return {};
+}
+
+void address_base::requestValue()
+{
+
+}
+
 value address_base::cloneValue(destination_index idx) const
 {
   return get_value_at_index(cloneValue(), idx);
 }
 
-Tuple address_base::cloneValue(const std::vector<destination_index>& indices) const
+std::vector<ossia::value> address_base::cloneValue(const std::vector<destination_index>& indices) const
 {
-  Tuple t;
+  std::vector<ossia::value> t;
   t.reserve(indices.size());
 
   auto v = cloneValue();

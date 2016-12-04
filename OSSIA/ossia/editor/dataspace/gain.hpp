@@ -11,7 +11,7 @@ struct gain_unit
 {
   using is_unit = std::true_type;
   using neutral_unit = linear_u;
-  using value_type = Float;
+  using value_type = float;
   using concrete_type = Impl;
   using dataspace_type = gain_dataspace;
 };
@@ -77,7 +77,7 @@ T LinearGainToMidi(const T value)
 }
 }
 
-struct linear_u : public gain_unit<linear_u>
+struct OSSIA_EXPORT linear_u : public gain_unit<linear_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("linear"); }
@@ -93,7 +93,7 @@ struct linear_u : public gain_unit<linear_u>
   }
 };
 
-struct midigain_u : public gain_unit<midigain_u>
+struct OSSIA_EXPORT midigain_u : public gain_unit<midigain_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("midigain"); }
@@ -109,7 +109,7 @@ struct midigain_u : public gain_unit<midigain_u>
   }
 };
 
-struct decibel_u : public gain_unit<decibel_u>
+struct OSSIA_EXPORT decibel_u : public gain_unit<decibel_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("db", "dB"); }
@@ -126,7 +126,7 @@ struct decibel_u : public gain_unit<decibel_u>
 };
 
 
-struct decibel_raw_u : public gain_unit<decibel_raw_u>
+struct OSSIA_EXPORT decibel_raw_u : public gain_unit<decibel_raw_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("db-raw", "dB-raw"); }

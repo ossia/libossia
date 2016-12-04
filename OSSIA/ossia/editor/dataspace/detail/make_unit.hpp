@@ -39,7 +39,7 @@ private:
    * indices[0] == 0
    * indices[1] == position of "first position unit" in the units array
    */
-  using indices_array = std::array<uint64_t, brigand::size<ossia::unit_t>::value>;
+  using indices_array = std::array<uint64_t, brigand::size<ossia::unit_variant>::value>;
   using units_array = std::array<ossia::unit_t, unit_count::value>;
 
   const indices_array indices;
@@ -51,7 +51,7 @@ private:
 
     uint64_t i = 0;
     uint64_t sum = 0;
-    brigand::for_each<ossia::unit_t>([&] (auto t) {
+    brigand::for_each<ossia::unit_variant>([&] (auto t) {
       using dataspace_type = typename decltype(t)::type;
       arr[i] = sum;
       sum += brigand::size<dataspace_type>::value;
@@ -67,7 +67,7 @@ private:
     units_array arr;
 
     uint64_t i = 0;
-    brigand::for_each<ossia::unit_t>([&] (auto t) {
+    brigand::for_each<ossia::unit_variant>([&] (auto t) {
       using dataspace_type = typename decltype(t)::type;
       brigand::for_each<dataspace_type>([&] (auto u) {
         using unit_type = typename decltype(u)::type;

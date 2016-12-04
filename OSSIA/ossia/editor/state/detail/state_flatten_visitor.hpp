@@ -55,7 +55,7 @@ struct vec_merger
   }
 
   template<std::size_t N>
-  auto make_piecewise_from_floats(Float orig, Float incoming) const
+  auto make_piecewise_from_floats(float orig, float incoming) const
   {
     piecewise_vec_message<N> mess{existing_dest.value, {}, incoming_dest.unit, {}};
 
@@ -75,7 +75,7 @@ struct vec_merger
     return mess;
   }
 
-  ossia::state_element operator()(Float orig, Float incoming) const
+  ossia::state_element operator()(float orig, float incoming) const
   {
     auto& existing_index = existing_dest.index;
     auto& incoming_index = incoming_dest.index;
@@ -108,7 +108,7 @@ struct vec_merger
 
 
   template<std::size_t N>
-  ossia::state_element operator()(ossia::Vec<float, N>& orig, Float incoming) const
+  ossia::state_element operator()(std::array<float, N>& orig, float incoming) const
   {
     auto& existing_index = existing_dest.index;
     auto& incoming_index = incoming_dest.index;
@@ -139,7 +139,7 @@ struct vec_merger
   }
 
   template<std::size_t N>
-  ossia::state_element operator()(ossia::Vec<float, N>& orig, const ossia::Vec<float, N>& incoming) const
+  ossia::state_element operator()(std::array<float, N>& orig, const std::array<float, N>& incoming) const
   {
     auto& existing_index = existing_dest.index;
     auto& incoming_index = incoming_dest.index;
@@ -260,7 +260,7 @@ struct state_flatten_visitor_merger
           auto i = incoming.destination.index[0];
           if(i < N)
           {
-            existing.message_value[i] = incoming.message_value.get<ossia::Float>();
+            existing.message_value[i] = incoming.message_value.get<float>();
             existing.used_values.set(i);
           }
         }

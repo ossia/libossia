@@ -2,6 +2,7 @@
 #include <ossia/detail/config.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <memory>
+#include <future>
 
 #include <ossia_export.h>
 
@@ -31,11 +32,9 @@ public:
   virtual ~protocol_base();
 
   virtual bool pull(address_base&) = 0;
+  virtual std::future<void> pullAsync(address_base&);
+  virtual void request(address_base&);
   virtual bool push(const address_base&) = 0;
-  virtual bool pushState(const state&)
-  {
-    return false;
-  }
 
   virtual bool observe(address_base&, bool) = 0;
   virtual bool observe_quietly(address_base&, bool)
@@ -55,5 +54,6 @@ public:
 protected:
   network_logger mLogger;
 };
+
 }
 }

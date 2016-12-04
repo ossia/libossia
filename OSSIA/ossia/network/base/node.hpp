@@ -63,6 +63,7 @@ public:
 
   // The parent has ownership
   node_base* createChild(const std::string& name);
+  node_base* findChild(const std::string& name);
   bool removeChild(const std::string& name);
   bool removeChild(const node_base& name);
   void clearChildren();
@@ -71,6 +72,9 @@ public:
   {
     return mChildren;
   }
+
+
+  mutable Nano::Signal<void(const node_base&)> aboutToBeDeleted;
 
 protected:
   /** Should return nullptr if no child is to be added */

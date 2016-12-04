@@ -24,38 +24,38 @@ ossia_value_t ossia_value_create_impulse()
 ossia_value_t ossia_value_create_int(
     int value)
 {
-  return convert(ossia::Int{value});
+  return convert(int32_t{value});
 }
 
 ossia_value_t ossia_value_create_float(
     float value)
 {
-  return convert(ossia::Float{value});
+  return convert(float{value});
 }
 
 ossia_value_t ossia_value_create_bool(
     bool value)
 {
-  return convert(ossia::Bool{value});
+  return convert(bool{value});
 }
 
 ossia_value_t ossia_value_create_char(
     char value)
 {
-  return convert(ossia::Char{value});
+  return convert(char{value});
 }
 
 ossia_value_t ossia_value_create_string(
     const char* value)
 {
-  return convert(ossia::String{value});
+  return convert(std::string{value});
 }
 
 ossia_value_t ossia_value_create_tuple(
     ossia_value_t* values,
     int size)
 {
-  ossia::Tuple t;
+  std::vector<ossia::value> t;
   for(int i = 0; i < size; i++)
   {
     t.push_back(convert(values[i]));
@@ -82,25 +82,25 @@ ossia_type ossia_value_get_type(
 int ossia_value_to_int(
     ossia_value_t val)
 {
-  return get_value<ossia::Int>(val);
+  return get_value<int32_t>(val);
 }
 
 float ossia_value_to_float(
     ossia_value_t val)
 {
-  return get_value<ossia::Float>(val);
+  return get_value<float>(val);
 }
 
 bool ossia_value_to_bool(
     ossia_value_t val)
 {
-  return get_value<ossia::Bool>(val);
+  return get_value<bool>(val);
 }
 
 char ossia_value_to_char(
     ossia_value_t val)
 {
-  return get_value<ossia::Char>(val);
+  return get_value<char>(val);
 }
 
 const char* ossia_value_to_string(
@@ -109,7 +109,7 @@ const char* ossia_value_to_string(
   if(!val)
     return nullptr;
 
-  if(auto casted_val = convert(val).target<ossia::String>())
+  if(auto casted_val = convert(val).target<std::string>())
   {
     auto& s = *casted_val;
     auto size = s.size();

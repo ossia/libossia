@@ -35,7 +35,6 @@ int main()
      /test/my_int
      /test/my_float
      /test/my_string
-     /test/my_destination
      /test/my_tuple
      */
 
@@ -61,10 +60,6 @@ int main()
   auto oscStringAddress = oscStringNode->createAddress(val_type::STRING);
   oscStringAddress->add_callback(printValueCallback);
 
-  auto oscDestinationNode = oscTestNode->createChild("my_destination");
-  auto oscDestinationAddress = oscDestinationNode->createAddress(val_type::DESTINATION);
-  oscDestinationAddress->add_callback(printValueCallback);
-
   auto oscTupleNode = oscTestNode->createChild("my_tuple");
   auto oscTupleAddress = oscTupleNode->createAddress(val_type::TUPLE);
   oscTupleAddress->add_callback(printValueCallback);
@@ -72,17 +67,15 @@ int main()
   // update tree value
   oscImpulseAddress->setValue(Impulse{});
 
-  oscBoolAddress->setValue(Bool{true});
+  oscBoolAddress->setValue(true);
 
-  oscIntAddress->setValue(Int{5});
+  oscIntAddress->setValue(5);
 
-  oscFloatAddress->setValue(Float{0.5});
+  oscFloatAddress->setValue(0.5);
 
-  oscStringAddress->setValue(String{"Hello world!"});
+  oscStringAddress->setValue("Hello world!"s);
 
-  oscDestinationAddress->setValue(Destination{*oscFloatAddress});
-
-  oscTupleAddress->setValue(Tuple{Float(0.1), Float(0.2), Float(0.3)});
+  oscTupleAddress->setValue(std::vector<ossia::value>{0.1, 0.2, 0.3});
 
   while (true)
     ;
