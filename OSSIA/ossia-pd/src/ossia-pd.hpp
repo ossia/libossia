@@ -34,22 +34,22 @@ struct value_visitor
     {
         post("%s receive an impulse",x->x_name->s_name);
     }
-    void operator()(Int i) const
+    void operator()(int32_t i) const
     {
         post("%s receive an Integer %d",x->x_name->s_name, i);
     }
-    void operator()(Float f) const
+    void operator()(float f) const
     {
         t_atom a;
         SETFLOAT(&a,f);
         outlet_float(x->x_dataout, (t_float) f);
         outlet_anything(x->x_setout,gensym("set"),1,&a);
     }
-    void operator()(Bool b) const
+    void operator()(bool b) const
     {
         post("%s receive a Boolean %d",x->x_name->s_name, b);
     }
-    void operator()(const String& str) const
+    void operator()(const std::string& str) const
     {
         post("%s receive a String %s",x->x_name->s_name, str.c_str());
         t_symbol* s=gensym(str.c_str());
@@ -58,7 +58,7 @@ struct value_visitor
         outlet_symbol(x->x_dataout, s);
         outlet_anything(x->x_setout,gensym("set"),1,&a);
     }
-    void operator()(Char c) const
+    void operator()(char c) const
     {
         post("%s receive a Char %s",x->x_name->s_name, c);
         outlet_float(x->x_dataout, (float)c);
@@ -86,7 +86,7 @@ struct value_visitor
       }
       */
     }
-    void operator()(const Tuple& t) const
+    void operator()(const std::vector<ossia::value>& t) const
     {
       //getTupleAsString(t, s);
       post("%s receive a Tuple",x->x_name->s_name);

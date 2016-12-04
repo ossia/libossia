@@ -3,7 +3,7 @@
 #include "parameter.hpp"
 
 static t_eclass *remote_class;
-static std::list<ossia::net::value_callback> dummy_list;
+static std::list<ossia::value_callback> dummy_list;
 
 static void remote_free(t_remote* x);
 
@@ -18,12 +18,12 @@ static void remote_set(t_remote *x, t_symbol* s, int argc, t_atom* argv){
         while(argc--){
             switch(argv->a_type){
             case A_FLOAT:
-                x->x_node->getAddress()->pushValue(ossia::Float(argv->a_w.w_float));
+                x->x_node->getAddress()->pushValue(float(argv->a_w.w_float));
                 break;
             case A_SYMBOL:
             {
                 // FIXME : this call operator()(Char c) instead of operator()(const String& s)
-                x->x_node->getAddress()->pushValue(ossia::String(argv->a_w.w_symbol->s_name));
+                x->x_node->getAddress()->pushValue(std::string(argv->a_w.w_symbol->s_name));
                 break;
             }
             default:
@@ -93,7 +93,7 @@ bool t_remote :: unregister(){
 
 static void remote_float(t_remote *x, t_float val){
     if ( x->x_node && x->x_node->getAddress() ){
-        x->x_node->getAddress()->pushValue(ossia::Float(val));
+        x->x_node->getAddress()->pushValue(float(val));
     } else {
         pd_error(x,"[ossia.remote %s] is not registered to any parameter", x->x_name->s_name);
     }

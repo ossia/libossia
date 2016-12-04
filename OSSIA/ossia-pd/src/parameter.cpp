@@ -17,12 +17,12 @@ static void parameter_set(t_parameter *x, t_symbol* s, int argc, t_atom* argv){
         while(argc--){
             switch(argv->a_type){
             case A_FLOAT:
-                x->x_localAddress->pushValue(ossia::Float(argv->a_w.w_float));
+                x->x_localAddress->pushValue(float(argv->a_w.w_float));
                 break;
             case A_SYMBOL:
             {
                 // FIXME : this call operator()(Char c) instead of operator()(const String& s)
-                x->x_localAddress->pushValue(ossia::String(argv->a_w.w_symbol->s_name));
+                x->x_localAddress->pushValue(std::string(argv->a_w.w_symbol->s_name));
                 break;
             }
             default:
@@ -109,7 +109,7 @@ bool t_parameter :: unregister(){
 
 static void parameter_float(t_parameter *x, t_float val){
     if ( x->x_localAddress ){
-        x->x_localAddress->pushValue(ossia::Float(val));
+        x->x_localAddress->pushValue(float(val));
     }
 }
 
