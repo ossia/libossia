@@ -8,10 +8,10 @@ set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
 
 set(PD_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/externals/")
 set(PD_MAIN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/pure-data)
+include_directories(${PD_MAIN_PATH}/src)
 
 add_subdirectory(CicmWrapper)
 
-include_directories(${PD_MAIN_PATH}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/CicmWrapper/Sources)
 
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../../3rdparty")
