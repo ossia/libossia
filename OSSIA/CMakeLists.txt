@@ -252,3 +252,5 @@ set_property(TARGET ossia PROPERTY COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURREN
 if(NOT ${OSSIA_SANITIZE} AND NOT ${OSSIA_DISABLE_COTIRE} AND NOT ${DISABLE_COTIRE})
 cotire(ossia)
 endif()
+
+add_subdirectory(ossia-pd)

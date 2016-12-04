@@ -29,3 +29,9 @@
 [submodule "3rdparty/fmt"]
 	path = 3rdparty/fmt
 	url = https://github.com/fmtlib/fmt
+[submodule "OSSIA/ossia-pd/pure-data"]
+	path = OSSIA/ossia-pd/pure-data
+	url = git://git.code.sf.net/p/pure-data/pure-data
+[submodule "OSSIA/ossia-pd/CicmWrapper"]
+	path = OSSIA/ossia-pd/CicmWrapper
+	url = https://github.com/avilleret/CicmWrapper.git
