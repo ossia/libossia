@@ -1,3 +1,4 @@
+*.pd_linux
 *.orig
 *.o
 *.i386.o-*
