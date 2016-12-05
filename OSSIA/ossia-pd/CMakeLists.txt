@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.0)
 project("ossia-pd")
 
+if(WIN32)
+    message("Pd externals not ready to build yet on Windows")
+    return()
+endif()
+
 set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_MACOSX_RPATH Off)
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.4)
