@@ -11,7 +11,6 @@ set(CMAKE_MACOSX_RPATH Off)
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.4)
 set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
 
-set(PD_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/externals/")
 set(PD_MAIN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/pure-data)
 include_directories(${PD_MAIN_PATH}/src)
 
@@ -40,9 +39,6 @@ add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
 target_link_libraries(${PROJECT_NAME} CicmWrapper)
 target_link_libraries(${PROJECT_NAME} ossia)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PD_OUTPUT_PATH})
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PD_OUTPUT_PATH})
-set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${PD_OUTPUT_PATH})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 
 if(APPLE)
