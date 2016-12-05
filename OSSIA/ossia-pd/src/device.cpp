@@ -125,6 +125,14 @@ void t_device :: unregister_children(){
         t_remote* remote = (t_remote*) v.x;
         remote->unregister();
     }
+
+    std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 0);
+    std::sort(models.begin(), models.end());
+    for (auto v : models){
+        t_model* model = (t_model*) v.x;
+        model->unregister();
+    }
+
     std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
     std::sort(params.begin(), params.end());
     std::cout << "params size: " << params.size() << std::endl;
@@ -141,12 +149,6 @@ void t_device :: unregister_children(){
         view->unregister();
     }
     */
-    std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 0);
-    std::sort(models.begin(), models.end());
-    for (auto v : models){
-        t_model* model = (t_model*) v.x;
-        model->unregister();
-    }
 }
 
 extern "C" void setup_ossia0x2edevice(void)
