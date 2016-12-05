@@ -33,6 +33,7 @@ set(PROJECT_SRCS
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
 target_link_libraries(${PROJECT_NAME} CicmWrapper)
 target_link_libraries(${PROJECT_NAME} ossia)
+target_compile_options(${PROJECT_NAME} -std=c++14)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PD_OUTPUT_PATH})
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PD_OUTPUT_PATH})
