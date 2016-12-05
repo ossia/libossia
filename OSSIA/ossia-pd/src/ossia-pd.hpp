@@ -126,7 +126,7 @@ static t_pd* find_parent(t_eobj* x, t_symbol* classname, int start_level=0){
         canvas = canvas->gl_owner;
     }
 
-    do{
+    while (canvas){
         t_gobj* list = canvas->gl_list;
         while(list){
             if (list->g_pd->c_name == classname){
@@ -135,7 +135,7 @@ static t_pd* find_parent(t_eobj* x, t_symbol* classname, int start_level=0){
             list = list->g_next;
         }
         canvas = canvas->gl_owner;
-    } while (canvas);
+    }
     return nullptr;
 }
 
