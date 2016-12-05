@@ -4,16 +4,18 @@ project("ossia-pd")
 set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_MACOSX_RPATH Off)
 set(PD_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/externals/")
-set(PD_MAIN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/pure-data)
 
-include_directories(${PD_MAIN_PATH}/src)
+
+set(OSSIA_PD_PATH "${OSSIA_3RDPARTY_FOLDER}/pure-data")
+set(OSSIA_CICM_PATH "${OSSIA_3RDPARTY_FOLDER}/CicmWrapper")
+include_directories("${OSSIA_PD_PATH}/src")
 
 set(OLD_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 set(BUILD_SHARED_LIBS OFF)
-add_subdirectory(CicmWrapper)
+add_subdirectory("${OSSIA_CICM_PATH}" "${CMAKE_CURRENT_BINARY_DIR}/Cicm-build")
 set(BUILD_SHARED_LIBS ${OLD_BUILD_SHARED_LIBS})
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/CicmWrapper/Sources)
+include_directories("${OSSIA_CICM_PATH}/Sources")
 
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../../3rdparty")
 include_directories(SYSTEM "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include")

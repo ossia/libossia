@@ -30,7 +30,7 @@ add_subdirectory(3rdparty/oscpack EXCLUDE_FROM_ALL)
 add_subdirectory(OSSIA)
 
 if(OSSIA_PD)
-add_subdirectory(OSSIA/ossia-pd)
+    add_subdirectory(OSSIA/ossia-pd)
 endif()
 
 # Examples & tests

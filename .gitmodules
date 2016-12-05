@@ -36,8 +36,8 @@
 	path = 3rdparty/hopscotch-map
 	url = https://github.com/Tessil/hopscotch-map.git
 [submodule "OSSIA/ossia-pd/pure-data"]
-	path = OSSIA/ossia-pd/pure-data
+	path = 3rdparty/pure-data
 	url = git://git.code.sf.net/p/pure-data/pure-data
 [submodule "OSSIA/ossia-pd/CicmWrapper"]
-	path = OSSIA/ossia-pd/CicmWrapper
+	path = 3rdparty/CicmWrapper
 	url = https://github.com/avilleret/CicmWrapper.git

@@ -72,7 +72,7 @@ else()
 endif()
 
 if(OSSIA_COVERAGE)
-  include("${CMAKE_CURRENT_LIST_DIR}/CMake/CodeCoverage.cmake")
+  include(CodeCoverage)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_COVERAGE}")
 endif()
 
