@@ -64,6 +64,10 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/fmt/fmt
         DESTINATION include
         COMPONENT Devel)
 
+install(FILES ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_map.h
+        DESTINATION include/
+        COMPONENT Devel)
+
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
   "${CMAKE_CURRENT_BINARY_DIR}/ossia/ossiaConfigVersion.cmake"

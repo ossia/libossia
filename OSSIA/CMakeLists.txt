@@ -197,6 +197,7 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI/third_party>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/oscpack>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src>
 
       $<INSTALL_INTERFACE:include/nano-signal-slot>
       $<INSTALL_INTERFACE:include>
@@ -211,19 +212,22 @@ include(ossia_tooling.cmake)
 ### Some status info ###
 message(STATUS "OSSIA - Sanitize: ${OSSIA_SANITIZE}")
 message(STATUS "OSSIA - Tidy: ${OSSIA_TIDY}")
+message(STATUS "OSSIA - Static: ${OSSIA_STATIC}")
+message(STATUS "OSSIA - Coverage: ${OSSIA_COVERAGE}")
 message(STATUS "OSSIA - Examples: ${OSSIA_EXAMPLES}")
 message(STATUS "OSSIA - Tests: ${OSSIA_TESTING}")
-message(STATUS "OSSIA - Static: ${OSSIA_STATIC}")
+message(STATUS "OSSIA - CI: ${OSSIA_CI}")
 message(STATUS "OSSIA - Framework: ${OSSIA_FRAMEWORK}")
-message(STATUS "OSSIA - Protocols: ${OSSIA_PROTOCOLS}")
 message(STATUS "OSSIA - Java: ${OSSIA_JAVA}")
+message(STATUS "OSSIA - Protocols: ${OSSIA_PROTOCOLS}")
 message(STATUS "OSSIA - Zeroconf: ${KF5DNSSD_FOUND}")
+message(STATUS "OSSIA - LTO: ${OSSIA_LTO}")
+message(STATUS "OSSIA - PureData: ${OSSIA_PD}")
+message(STATUS "OSSIA - OSX Architectures: ${OSSIA_OSX_FAT_LIBRARIES}")
+message(STATUS "OSSIA - OSX Retrocompatibility: ${OSSIA_OSX_RETROCOMPATIBILITY}")
 
 set_property(TARGET ossia PROPERTY COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/ossia/prefix.hpp")
 if(NOT "${OSSIA_SANITIZE}" AND NOT "${OSSIA_DISABLE_COTIRE}" AND NOT "${DISABLE_COTIRE}")
 cotire(ossia)
 endif()
 
-if(OSSIA_PD)
-add_subdirectory(ossia-pd)
-endif()
