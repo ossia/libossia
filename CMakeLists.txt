@@ -15,6 +15,7 @@ option(OSSIA_DISABLE_COTIRE "Disable cotire" OFF)
 option(OSSIA_NO_SONAME "Set NO_SONAME property" OFF)
 option(OSSIA_LTO "Link-time optimizations. Fails on Windows." OFF)
 option(OSSIA_PD "Build PureData externals" ON)
+option(OSSIA_OSX_FAT_LIBRARIES "Build 32 and 64 bit fat libraries on OS X" OFF)
 
 # Configuration
 cmake_policy(SET CMP0020 NEW)
@@ -36,6 +37,10 @@ elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*86.*")
 else()
     message("Could not determine target architecture")
     return()
+endif()
+
+if(OSSIA_OSX_FAT_LIBRARIES)
+set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
 endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE 1)

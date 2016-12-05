@@ -1,22 +1,18 @@
 cmake_minimum_required(VERSION 3.0)
 project("ossia-pd")
 
-if(WIN32)
-    message("Pd externals not ready to build yet on Windows")
-    return()
-endif()
-
 set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_MACOSX_RPATH Off)
-set(CMAKE_OSX_DEPLOYMENT_TARGET 10.4)
-set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
-
+set(CMAKE_OSX_DEPLOYMENT_TARGET 10.9)
 set(PD_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/externals/")
 set(PD_MAIN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/pure-data)
 
 include_directories(${PD_MAIN_PATH}/src)
 
+set(OLD_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
+set(BUILD_SHARED_LIBS OFF)
 add_subdirectory(CicmWrapper)
+set(BUILD_SHARED_LIBS ${OLD_BUILD_SHARED_LIBS})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/CicmWrapper/Sources)
 
@@ -39,7 +35,9 @@ add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
 use_gold(${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE CicmWrapper ossia)
-if(UNIX AND NOT APPLE)
+if(APPLE)
+    target_link_libraries(${PROJECT_NAME} PRIVATE -Wl,-undefined,dynamic_lookup)
+elseif(UNIX)
     target_link_libraries(${PROJECT_NAME} PRIVATE -Wl,--warn-unresolved-symbols)
 endif()
 target_compile_options(${PROJECT_NAME} PRIVATE -std=c++14)
