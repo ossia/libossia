@@ -174,6 +174,11 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/js_utilities.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/clamp.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/clamp_min.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/clamp_max.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/wrap.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/fold.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.cpp"
