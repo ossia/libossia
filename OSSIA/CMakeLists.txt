@@ -189,6 +189,7 @@ target_include_directories(ossia
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/brigand>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/fmt>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src>
 )
 
 target_include_directories(ossia SYSTEM
@@ -197,7 +198,6 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI/third_party>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/oscpack>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src>
 
       $<INSTALL_INTERFACE:include/nano-signal-slot>
       $<INSTALL_INTERFACE:include>
