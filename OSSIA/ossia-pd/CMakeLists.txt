@@ -3,8 +3,6 @@ project("ossia-pd")
 
 set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_MACOSX_RPATH Off)
-set(PD_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/externals/")
-
 
 set(OSSIA_PD_PATH "${OSSIA_3RDPARTY_FOLDER}/pure-data")
 set(OSSIA_CICM_PATH "${OSSIA_3RDPARTY_FOLDER}/CicmWrapper")
@@ -42,10 +40,6 @@ elseif(UNIX)
     target_link_libraries(${PROJECT_NAME} PRIVATE -Wl,--warn-unresolved-symbols)
 endif()
 target_compile_options(${PROJECT_NAME} PRIVATE -std=c++14)
-
-set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PD_OUTPUT_PATH})
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PD_OUTPUT_PATH})
-set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${PD_OUTPUT_PATH})
 
 # Win32 uses DLL as a suffix for pd externals
 set_target_properties(${PROJECT_NAME}
