@@ -14,6 +14,7 @@ option(OSSIA_JAVA "Build JNI bindings" OFF)
 option(OSSIA_DISABLE_COTIRE "Disable cotire" OFF)
 option(OSSIA_NO_SONAME "Set NO_SONAME property" OFF)
 option(OSSIA_LTO "Link-time optimizations. Fails on Windows." OFF)
+option(OSSIA_PD "Build PureData externals" ON)
 
 # Configuration
 cmake_policy(SET CMP0020 NEW)

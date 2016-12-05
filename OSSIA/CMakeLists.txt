@@ -224,4 +224,6 @@ if(NOT "${OSSIA_SANITIZE}" AND NOT "${OSSIA_DISABLE_COTIRE}" AND NOT "${DISABLE_
 cotire(ossia)
 endif()
 
+if(OSSIA_PD)
 add_subdirectory(ossia-pd)
+endif()

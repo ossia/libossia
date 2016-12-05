@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.0)
 project("ossia-pd")
 
+if(WIN32)
+    message("Pd externals not ready to build yet on Windows")
+    return()
+endif()
+
 set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_MACOSX_RPATH Off)
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.4)
@@ -8,6 +13,8 @@ set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
 
 set(PD_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/externals/")
 set(PD_MAIN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/pure-data)
+include_directories(${PD_MAIN_PATH}/src)
+
 include_directories(${PD_MAIN_PATH}/src)
 
 add_subdirectory(CicmWrapper)
