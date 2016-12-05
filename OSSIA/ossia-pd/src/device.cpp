@@ -41,6 +41,7 @@ static void *device_new(t_symbol *name, int argc, t_atom *argv)
         try {
             if(x->x_protocol == gensym("Minuit")){
                 local_proto.exposeTo(std::make_unique<ossia::net::minuit_protocol>("B", x->x_remoteip->s_name, x->x_remoteport, x->x_localport));
+                logpost(x,3,"connect to %s on port %d, listening on port %d",  x->x_remoteip->s_name, x->x_remoteport, x->x_localport);
             } else {
                 pd_error((t_object*)x, "Unknown protocol: %s", x->x_protocol->s_name);
             }
@@ -161,11 +162,11 @@ extern "C" void setup_ossia0x2edevice(void)
 
         CLASS_ATTR_SYMBOL(c, "protocol",    1, t_device, x_protocol);
         CLASS_ATTR_DEFAULT(c, "protocol", 0, "Minuit");
-        CLASS_ATTR_SYMBOL(c, "localport",    1, t_device, x_localport);
+        CLASS_ATTR_INT(c, "localport",    1, t_device, x_localport);
         CLASS_ATTR_DEFAULT(c, "localport", 0, "6666");
         CLASS_ATTR_SYMBOL(c, "remoteip",    1, t_device, x_remoteip);
         CLASS_ATTR_DEFAULT(c, "remoteip",0,"127.0.0.1");
-        CLASS_ATTR_ATOM  (c, "remoteport", 1, t_device, x_remoteport);
+        CLASS_ATTR_INT(c, "remoteport", 1, t_device, x_remoteport);
         CLASS_ATTR_DEFAULT(c, "remoteport", 0, "9999");
     }
 
