@@ -36,14 +36,30 @@ set(PROJECT_SRCS
   src/remote.hpp)
 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
-target_link_libraries(${PROJECT_NAME} CicmWrapper)
-target_link_libraries(${PROJECT_NAME} ossia)
-target_compile_options(${PROJECT_NAME} -std=c++14)
+use_gold(${PROJECT_NAME})
+
+target_link_libraries(${PROJECT_NAME} PRIVATE CicmWrapper ossia)
+if(UNIX AND NOT APPLE)
+    target_link_libraries(${PROJECT_NAME} PRIVATE -Wl,--warn-unresolved-symbols)
+endif()
+target_compile_options(${PROJECT_NAME} PRIVATE -std=c++14)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PD_OUTPUT_PATH})
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PD_OUTPUT_PATH})
 set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${PD_OUTPUT_PATH})
-#TODO set extension according to platform (.l_ia64, l_arm, .pd_darwin, ...)
-set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".pd_linux")
-set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "ossia")
+
+# Win32 uses DLL as a suffix for pd externals
+set_target_properties(${PROJECT_NAME}
+  PROPERTIES
+    PREFIX ""
+    OUTPUT_NAME "ossia")
+
+if(APPLE)
+    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".pd_darwin")
+elseif(UNIX)
+    if(${OSSIA_ARCHITECTURE} MATCHES "arm")
+        set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".l_arm")
+    else()
+        set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".pd_linux")
+    endif()
+endif()
