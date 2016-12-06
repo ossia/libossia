@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-#include <boost/container/static_vector.hpp>
+#include <chobo/static_vector.hpp>
 namespace ossia
 {
 /**
@@ -30,5 +30,5 @@ namespace ossia
  *
  * There are at most 8 nested depth level.
  */
-using destination_index = boost::container::static_vector<uint8_t, 8>;
+using destination_index = chobo::static_vector<uint8_t, 8>;
 }
