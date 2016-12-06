@@ -19,9 +19,9 @@ struct domain_conversion
   {
     U f;
     if (t.min)
-      f.min = t.min.get();
+      f.min = *t.min;
     if (t.max)
-      f.max = t.max.get();
+      f.max = *t.max;
     if (!t.values.empty())
       for (auto val : t.values)
         f.values.insert(val);
@@ -32,9 +32,9 @@ struct domain_conversion
   {
     U f;
     if (t.min)
-      f.min = t.min.get();
+      f.min = *t.min;
     if (t.max)
-      f.max = t.max.get();
+      f.max = *t.max;
     if (!t.values.empty())
       for (auto val : t.values)
         f.values.insert(val);
@@ -45,9 +45,9 @@ struct domain_conversion
   {
     U f;
     if (t.min)
-      f.min = t.min.get();
+      f.min = *t.min;
     if (t.max)
-      f.max = t.max.get();
+      f.max = *t.max;
     if (!t.values.empty())
       for (auto val : t.values)
         f.values.insert(val);
@@ -58,9 +58,9 @@ struct domain_conversion
   {
     U f;
     if (t.min)
-      f.min = t.min.get();
+      f.min = *t.min;
     if (t.max)
-      f.max = t.max.get();
+      f.max = *t.max;
     if (!t.values.empty())
       for (auto val : t.values)
         f.values.insert(val);
@@ -113,7 +113,7 @@ struct domain_conversion<domain_base<std::array<float, N>>>
       domain_base<std::array<float, N>> dom;
       if(t.min)
       {
-          const std::vector<ossia::value>& min = t.min.get();
+          const std::vector<ossia::value>& min = *t.min;
           if(min.size() == N)
           {
               dom.min = to_vec(min);
@@ -121,7 +121,7 @@ struct domain_conversion<domain_base<std::array<float, N>>>
       }
       if(t.max)
       {
-          const std::vector<ossia::value>& max = t.max.get();
+          const std::vector<ossia::value>& max = *t.max;
           if(max.size() == N)
           {
               dom.max = to_vec(max);

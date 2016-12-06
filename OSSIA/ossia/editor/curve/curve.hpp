@@ -8,7 +8,7 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <boost/container/flat_map.hpp>
-#include <boost/optional.hpp>
+#include <ossia/detail/optional.hpp>
 #include <functional>
 #include <map>
 #include <memory>
@@ -187,7 +187,7 @@ public:
 
   /*! get initial point abscissa destination
  \return const Destination* */
-  boost::optional<Destination> getInitialPointAbscissaDestination() const
+  ossia::optional<Destination> getInitialPointAbscissaDestination() const
   {
     return mInitialPointAbscissaDestination;
   }
@@ -195,7 +195,7 @@ public:
 
   /*! get initial point ordinate destination
  \return const Destination* */
-  boost::optional<Destination> getInitialPointOrdinateDestination() const
+  ossia::optional<Destination> getInitialPointOrdinateDestination() const
   {
     return mInitialPointOrdinateDestination;
   }
@@ -301,10 +301,10 @@ public:
 
 private:
   X mInitialPointAbscissa;
-  boost::optional<ossia::Destination> mInitialPointAbscissaDestination;
+  ossia::optional<ossia::Destination> mInitialPointAbscissaDestination;
 
   Y mInitialPointOrdinate;
-  boost::optional<ossia::Destination> mInitialPointOrdinateDestination;
+  ossia::optional<ossia::Destination> mInitialPointOrdinateDestination;
 
   using map_type = curve_map<X, std::pair<Y, ossia::curve_segment<Y>>>;
   map_type mPointsMap;

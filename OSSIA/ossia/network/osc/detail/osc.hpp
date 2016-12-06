@@ -559,8 +559,8 @@ struct osc_write_domain_visitor
   {
     if(dom.min && dom.max)
     {
-      vis(dom.min.get());
-      vis(dom.max.get());
+      vis(*dom.min);
+      vis(*dom.max);
     }
   }
 
@@ -569,8 +569,8 @@ struct osc_write_domain_visitor
   {
     if(dom.min && dom.max)
     {
-      vis(dom.min.get()[0]);
-      vis(dom.max.get()[0]);
+      vis((*dom.min)[0]);
+      vis((*dom.max)[0]);
     }
   }
 
@@ -578,8 +578,8 @@ struct osc_write_domain_visitor
   {
     if(dom.min && dom.max)
     {
-      const std::vector<ossia::value>& min = dom.min.get();
-      const std::vector<ossia::value>& max = dom.max.get();
+      const std::vector<ossia::value>& min = *dom.min;
+      const std::vector<ossia::value>& max = *dom.max;
       if(!min.empty() && !max.empty())
       {
         vis(ossia::convert<float>(min[0]));
@@ -592,8 +592,8 @@ struct osc_write_domain_visitor
   {
     if(dom.min && dom.max)
     {
-      vis(ossia::convert<float>(dom.min.get()));
-      vis(ossia::convert<float>(dom.max.get()));
+      vis(ossia::convert<float>(*dom.min));
+      vis(ossia::convert<float>(*dom.max));
     }
   }
 

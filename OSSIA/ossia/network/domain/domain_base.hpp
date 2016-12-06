@@ -2,7 +2,7 @@
 #include <ossia/editor/value/value_traits.hpp>
 #include <ossia/editor/value/value_conversion.hpp>
 #include <boost/container/flat_set.hpp>
-#include <boost/optional.hpp>
+#include <ossia/detail/optional.hpp>
 #include <type_traits>
 
 namespace ossia
@@ -26,8 +26,8 @@ template <typename T>
 struct OSSIA_EXPORT domain_base
 {
   using value_type = typename value_trait<T>::value_type;
-  boost::optional<value_type> min;
-  boost::optional<value_type> max;
+  ossia::optional<value_type> min;
+  ossia::optional<value_type> max;
   boost::container::flat_set<value_type> values;
 
   domain_base() noexcept { }
@@ -63,8 +63,8 @@ template <>
 struct OSSIA_EXPORT domain_base<std::vector<ossia::value>>
 {
   using value_type = std::vector<ossia::value>;
-  boost::optional<value_type> min;
-  boost::optional<value_type> max;
+  ossia::optional<value_type> min;
+  ossia::optional<value_type> max;
   boost::container::flat_set<value_type> values;
 
   domain_base<value_type>() noexcept { }
@@ -81,8 +81,8 @@ template <std::size_t N>
 struct OSSIA_EXPORT domain_base<std::array<float, N>>
 {
   using value_type = std::array<float, N>;
-  boost::optional<std::array<float, N>> min;
-  boost::optional<std::array<float, N>> max;
+  ossia::optional<std::array<float, N>> min;
+  ossia::optional<std::array<float, N>> max;
   boost::container::flat_set<std::array<float, N>> values;
 
   domain_base<value_type>() noexcept { }
@@ -98,8 +98,8 @@ template <>
 struct OSSIA_EXPORT domain_base<ossia::value>
 {
   using value_type = ossia::value;
-  boost::optional<value_type> min;
-  boost::optional<value_type> max;
+  ossia::optional<value_type> min;
+  ossia::optional<value_type> max;
   boost::container::flat_set<value_type> values;
 
   domain_base<value_type>() noexcept { }
@@ -157,7 +157,7 @@ struct OSSIA_EXPORT domain final : public domain_base_variant
   OSSIA_INLINE T get_max() const { return get_max().get<T>(); }
 
   template<typename T>
-  boost::optional<T> maybe_min() const
+  ossia::optional<T> maybe_min() const
   {
     auto v = get_min();
     auto u = v.target<T>();
@@ -168,7 +168,7 @@ struct OSSIA_EXPORT domain final : public domain_base_variant
   }
 
   template<typename T>
-  boost::optional<T> maybe_max() const
+  ossia::optional<T> maybe_max() const
   {
     auto v = get_max();
     auto u = v.target<T>();

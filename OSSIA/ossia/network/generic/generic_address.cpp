@@ -30,10 +30,10 @@ generic_address::generic_address(
     const ossia::net::node_base& node)
   : mNode{node}
   , mProtocol{node.getDevice().getProtocol()}
-  , mValueType(data.type.get_value_or(ossia::val_type::IMPULSE))
-  , mAccessMode(data.access.get_value_or(ossia::access_mode::BI))
-  , mBoundingMode(data.bounding.get_value_or(ossia::bounding_mode::FREE))
-  , mRepetitionFilter(data.repetition_filter.get_value_or(ossia::repetition_filter::OFF))
+  , mValueType(get_value_or(data.type, ossia::val_type::IMPULSE))
+  , mAccessMode(get_value_or(data.access, ossia::access_mode::BI))
+  , mBoundingMode(get_value_or(data.bounding, ossia::bounding_mode::FREE))
+  , mRepetitionFilter(get_value_or(data.repetition_filter, ossia::repetition_filter::OFF))
   , mValue(init_value(mValueType))
   , mDefault(init_value(mValueType))
 {

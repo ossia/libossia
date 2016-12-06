@@ -1,7 +1,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
-#include <boost/optional.hpp>
+#include <ossia/detail/optional.hpp>
 #include <boost/iterator/counting_iterator.hpp>
 #include <iostream>
 namespace ossia
@@ -24,7 +24,7 @@ std::string sanitize_name(std::string name_base, const std::vector<std::string>&
 {
   auto name = sanitize_name(name_base);
   bool is_here = false;
-  boost::optional<int> name_instance;
+  ossia::optional<int> name_instance;
   std::vector<int> instance_num;
   instance_num.reserve(brethren.size());
 
