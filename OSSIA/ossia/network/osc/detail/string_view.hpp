@@ -19,8 +19,7 @@ struct param_traits<T, std::enable_if_t<std::is_same<T, std::string>::value>>
 
 template <typename T>
 struct param_traits<T,
-                    std::enable_if_t<std::is_same<T,
-                                                  boost::string_view>::value>>
+                    std::enable_if_t<std::is_same<T, ossia::string_view>::value>>
 {
   using type = T;
 };

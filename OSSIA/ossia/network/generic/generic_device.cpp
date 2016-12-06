@@ -2,6 +2,7 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 namespace ossia
 {
@@ -119,9 +120,9 @@ generic_node& find_or_create_node_rec(
 
 ossia::string_view sanitize_address(ossia::string_view address)
 {
-  if (address.starts_with('/'))
+  if (boost::algorithm::starts_with(address, "/"))
     address.remove_prefix(1);
-  if (address.ends_with('/'))
+  if (boost::algorithm::ends_with(address, "/"))
     address.remove_suffix(1);
   return address;
 }
