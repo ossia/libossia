@@ -34,7 +34,7 @@ public:
       auto begin = addr.find(':') + 1;
 
       send_base(
-            boost::string_view(addr.data() + begin, addr.size() - begin),
+            ossia::string_view(addr.data() + begin, addr.size() - begin),
             std::forward<Args>(args)...);
   }
 
@@ -45,7 +45,7 @@ public:
   }
 
   template <typename... Args>
-  void send(boost::string_view address, Args&&... args)
+  void send(ossia::string_view address, Args&&... args)
   {
     send_base(address, std::forward<Args>(args)...);
   }
@@ -100,7 +100,7 @@ private:
 
     }
     if(m_logger.outbound_logger)
-      m_logger.outbound_logger->info("Out: {0}", boost::string_view(m.Data(), m.Size()));
+      m_logger.outbound_logger->info("Out: {0}", ossia::string_view(m.Data(), m.Size()));
   }
 
   ossia::net::network_logger& m_logger;

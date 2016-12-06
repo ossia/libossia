@@ -13,12 +13,12 @@
 namespace ossia
 {
 /// Parse ///
-boost::string_view get_dataspace_text(const unit_t& u)
+ossia::string_view get_dataspace_text(const unit_t& u)
 {
   return ossia::apply(detail::dataspace_text_visitor{}, u);
 }
 
-boost::string_view get_unit_text(const unit_t& u)
+ossia::string_view get_unit_text(const unit_t& u)
 {
   return ossia::apply(detail::unit_text_visitor{}, u);
 }
@@ -40,7 +40,7 @@ std::string get_pretty_unit_text(const unit_t& u)
     }
 }
 
-unit_t parse_unit(boost::string_view text, const unit_t& dataspace)
+unit_t parse_unit(ossia::string_view text, const unit_t& dataspace)
 {
   if(!text.empty())
     return ossia::apply(detail::unit_factory_visitor{text}, dataspace);
@@ -48,12 +48,12 @@ unit_t parse_unit(boost::string_view text, const unit_t& dataspace)
 }
 
 template<typename T>
-ossia::unit_t parse_unit(boost::string_view text, T dataspace)
+ossia::unit_t parse_unit(ossia::string_view text, T dataspace)
 {
   return detail::unit_factory_visitor{text}(dataspace);
 }
 
-unit_t parse_pretty_unit(boost::string_view text)
+unit_t parse_pretty_unit(ossia::string_view text)
 {
   auto idx = text.find_first_of('.');
   if(idx != std::string::npos)
@@ -67,7 +67,7 @@ unit_t parse_pretty_unit(boost::string_view text)
   return {};
 }
 
-unit_t parse_dataspace(boost::string_view text)
+unit_t parse_dataspace(ossia::string_view text)
 {
   static const tsl::hopscotch_map<std::string, unit_t> dataspaces{
     {"color", color_u{}},
@@ -324,14 +324,14 @@ ossia::value convert(
                   destination_unit));
 }
 
-template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::color_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::distance_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::position_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::speed_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::orientation_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::angle_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::gain_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(boost::string_view, ossia::time_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::color_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::distance_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::position_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::speed_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::orientation_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::angle_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::gain_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::time_u);
 
 
 }

@@ -46,7 +46,7 @@ struct osc_outbound_visitor
     }
     void operator()(const std::string& str) const
     {
-      p << (boost::string_view)str;
+      p << (ossia::string_view)str;
     }
     void operator()(ossia::Vec2f vec) const
     {

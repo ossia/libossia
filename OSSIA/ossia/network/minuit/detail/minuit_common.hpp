@@ -2,7 +2,7 @@
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <ossia/detail/algorithms.hpp>
-#include <boost/utility/string_view.hpp>
+#include <ossia/detail/string_view.hpp>
 #include <exception>
 #include <hopscotch_map.h>
 
@@ -69,58 +69,58 @@ enum class minuit_attribute
   RampFunctionParameters
 };
 
-inline boost::string_view to_minuit_type_text(const ossia::value& val)
+inline ossia::string_view to_minuit_type_text(const ossia::value& val)
 {
   // integer, decimal, string, generic, boolean, none, array.
   struct ValueStringVisitor
   {
-    boost::string_view operator()(ossia::Impulse) const
+    ossia::string_view operator()(ossia::Impulse) const
     {
       return make_string_view("none");
     }
-    boost::string_view operator()(int32_t i) const
+    ossia::string_view operator()(int32_t i) const
     {
       return make_string_view("integer");
     }
-    boost::string_view operator()(float f) const
+    ossia::string_view operator()(float f) const
     {
       return make_string_view("decimal");
     }
-    boost::string_view operator()(bool b) const
+    ossia::string_view operator()(bool b) const
     {
       return make_string_view("boolean");
     }
-    boost::string_view operator()(char c) const
+    ossia::string_view operator()(char c) const
     {
       return make_string_view("string");
     }
-    boost::string_view operator()(const std::string& str) const
+    ossia::string_view operator()(const std::string& str) const
     {
       return make_string_view("string");
     }
-    boost::string_view operator()(const ossia::Vec2f& vec) const
+    ossia::string_view operator()(const ossia::Vec2f& vec) const
     {
       return make_string_view("array");
     }
-    boost::string_view operator()(const ossia::Vec3f& vec) const
+    ossia::string_view operator()(const ossia::Vec3f& vec) const
     {
       return make_string_view("array");
     }
-    boost::string_view operator()(const ossia::Vec4f& vec) const
+    ossia::string_view operator()(const ossia::Vec4f& vec) const
     {
       return make_string_view("array");
     }
-    boost::string_view operator()(const std::vector<ossia::value>& t) const
+    ossia::string_view operator()(const std::vector<ossia::value>& t) const
     {
       return make_string_view("array");
     }
-    boost::string_view operator()(const ossia::Destination& d) const
+    ossia::string_view operator()(const ossia::Destination& d) const
     {
       throw invalid_value_type_error("to_minuit_type_text: "
                                      "Trying to send Destination value");
       return {};
     }
-    boost::string_view operator()() const
+    ossia::string_view operator()() const
     {
       throw invalid_value_type_error("to_minuit_type_text: "
                                      "Trying to send null value");
@@ -131,7 +131,7 @@ inline boost::string_view to_minuit_type_text(const ossia::value& val)
   return val.apply(ValueStringVisitor{});
 }
 
-inline boost::string_view to_minuit_type_text(ossia::val_type val)
+inline ossia::string_view to_minuit_type_text(ossia::val_type val)
 {
   // integer, decimal, string, generic, boolean, none, array.
   switch(val)
@@ -158,7 +158,7 @@ inline boost::string_view to_minuit_type_text(ossia::val_type val)
   return {};
 }
 
-inline ossia::value value_from_minuit_type_text(boost::string_view str)
+inline ossia::value value_from_minuit_type_text(ossia::string_view str)
 {
   // integer, decimal, string, generic, boolean, none, array.
   // we can differentiate them by the first character
@@ -183,7 +183,7 @@ inline ossia::value value_from_minuit_type_text(boost::string_view str)
   }
 }
 
-inline ossia::val_type type_from_minuit_type_text(boost::string_view str)
+inline ossia::val_type type_from_minuit_type_text(ossia::string_view str)
 {
   // integer, decimal, string, generic, boolean, none, array.
   // we can differentiate them by the first character
@@ -208,7 +208,7 @@ inline ossia::val_type type_from_minuit_type_text(boost::string_view str)
   }
 }
 
-inline boost::string_view to_minuit_service_text(ossia::access_mode acc)
+inline ossia::string_view to_minuit_service_text(ossia::access_mode acc)
 {
   switch (acc)
   {
@@ -224,7 +224,7 @@ inline boost::string_view to_minuit_service_text(ossia::access_mode acc)
   return {};
 }
 
-inline ossia::access_mode from_minuit_service_text(boost::string_view str)
+inline ossia::access_mode from_minuit_service_text(ossia::string_view str)
 {
   switch (str[0])
   {
@@ -240,7 +240,7 @@ inline ossia::access_mode from_minuit_service_text(boost::string_view str)
   return {};
 }
 
-inline boost::string_view to_minuit_bounding_text(ossia::bounding_mode b)
+inline ossia::string_view to_minuit_bounding_text(ossia::bounding_mode b)
 {
   switch (b)
   {
@@ -262,7 +262,7 @@ inline boost::string_view to_minuit_bounding_text(ossia::bounding_mode b)
   return {};
 }
 
-inline ossia::bounding_mode from_minuit_bounding_text(boost::string_view str)
+inline ossia::bounding_mode from_minuit_bounding_text(ossia::string_view str)
 {
   switch (str[0])
   {
@@ -284,7 +284,7 @@ inline ossia::bounding_mode from_minuit_bounding_text(boost::string_view str)
   return {};
 }
 
-inline boost::string_view to_minuit_attribute_text(minuit_attribute str)
+inline ossia::string_view to_minuit_attribute_text(minuit_attribute str)
 {
   switch (str)
   {
@@ -350,7 +350,7 @@ const tsl::hopscotch_map<std::string, minuit_attribute>
         {"rampFunctionParameters", minuit_attribute::RampFunctionParameters},
     };
 
-inline minuit_attribute get_attribute(boost::string_view str)
+inline minuit_attribute get_attribute(ossia::string_view str)
 {
   auto it = attribute_unordered_map.find(str.to_string());
   if (it != attribute_unordered_map.end())
@@ -406,7 +406,7 @@ inline minuit_operation get_operation(char str)
   return {};
 }
 
-inline minuit_operation get_operation(boost::string_view str)
+inline minuit_operation get_operation(ossia::string_view str)
 {
   return get_operation(str[0]);
 }

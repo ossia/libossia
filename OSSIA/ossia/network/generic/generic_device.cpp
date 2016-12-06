@@ -25,7 +25,7 @@ namespace
 {
 node_base* find_node_rec(
     node_base& node,
-    boost::string_view address) // Format a/b/c -> b/c -> c
+    ossia::string_view address) // Format a/b/c -> b/c -> c
 {
   auto first_slash_index = address.find_first_of('/');
 
@@ -69,7 +69,7 @@ node_base* find_node_rec(
 
 generic_node& find_or_create_node_rec(
     generic_node& node,
-    boost::string_view address) // Format a/b/c -> b/c -> c
+    ossia::string_view address) // Format a/b/c -> b/c -> c
 {
   auto first_slash_index = address.find_first_of('/');
 
@@ -117,7 +117,7 @@ generic_node& find_or_create_node_rec(
   }
 }
 
-boost::string_view sanitize_address(boost::string_view address)
+ossia::string_view sanitize_address(ossia::string_view address)
 {
   if (address.starts_with('/'))
     address.remove_prefix(1);
@@ -127,7 +127,7 @@ boost::string_view sanitize_address(boost::string_view address)
 }
 }
 
-node_base* find_node(node_base& dev, boost::string_view address)
+node_base* find_node(node_base& dev, ossia::string_view address)
 {
   address = sanitize_address(address);
   if (address.empty())
@@ -138,7 +138,7 @@ node_base* find_node(node_base& dev, boost::string_view address)
 }
 
 generic_node&
-find_or_create_node(generic_device& dev, boost::string_view address)
+find_or_create_node(generic_device& dev, ossia::string_view address)
 {
   address = sanitize_address(address);
   if (address.empty())

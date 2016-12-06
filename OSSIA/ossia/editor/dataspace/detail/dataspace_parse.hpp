@@ -12,23 +12,23 @@ namespace detail
 struct unit_text_visitor
 {
   template<typename... Args>
-  OSSIA_INLINE boost::string_view operator()(const eggs::variant<Args...>& dataspace)
+  OSSIA_INLINE ossia::string_view operator()(const eggs::variant<Args...>& dataspace)
   {
     return ossia::apply(*this, dataspace);
   }
 
   template<typename Unit>
-  OSSIA_INLINE boost::string_view operator()(Unit)
+  OSSIA_INLINE ossia::string_view operator()(Unit)
   {
     return ossia::unit_traits<Unit>::text()[0];
   }
 
-  OSSIA_INLINE boost::string_view operator()(const ossia::value&)
+  OSSIA_INLINE ossia::string_view operator()(const ossia::value&)
   {
     return {};
   }
 
-  OSSIA_INLINE boost::string_view operator()()
+  OSSIA_INLINE ossia::string_view operator()()
   {
     return {};
   }
@@ -37,12 +37,12 @@ struct unit_text_visitor
 struct dataspace_text_visitor
 {
   template<typename Dataspace>
-  OSSIA_INLINE boost::string_view operator()(const Dataspace& dataspace)
+  OSSIA_INLINE ossia::string_view operator()(const Dataspace& dataspace)
   {
     return ossia::dataspace_traits<Dataspace>::text()[0];
   }
 
-  OSSIA_INLINE boost::string_view operator()()
+  OSSIA_INLINE ossia::string_view operator()()
   {
     return {};
   }
@@ -55,7 +55,7 @@ struct unit_map_factory
 {
   void operator()(unit_map& m)
   {
-    for(boost::string_view v : ossia::unit_traits<Arg>::text())
+    for(ossia::string_view v : ossia::unit_traits<Arg>::text())
       m.emplace(v.to_string(), ossia::unit_t{Arg{}});
     unit_map_factory<Args...>{}(m);
   }
@@ -66,7 +66,7 @@ struct unit_map_factory<Arg>
 {
   void operator()(unit_map& m)
   {
-    for(boost::string_view v : ossia::unit_traits<Arg>::text())
+    for(ossia::string_view v : ossia::unit_traits<Arg>::text())
       m.emplace(v.to_string(), ossia::unit_t{Arg{}});
   }
 };
@@ -84,7 +84,7 @@ struct make_unit_map
 
 struct unit_factory_visitor
 {
-  boost::string_view text;
+  ossia::string_view text;
 
   template<typename Dataspace_T>
   ossia::unit_t operator()(Dataspace_T arg)
