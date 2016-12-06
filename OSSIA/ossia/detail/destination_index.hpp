@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+#include <iterator>
 #include <chobo/static_vector.hpp>
 namespace ossia
 {
