@@ -1,7 +1,6 @@
 #pragma once
 #include <cmath>
 #include <ossia/detail/config.hpp>
-#include <boost/math/constants/constants.hpp>
 /**
  * \file math.hpp
  *
@@ -10,12 +9,12 @@
 
 namespace ossia
 {
-const OSSIA_DECL_RELAXED_CONSTEXPR auto pi = boost::math::constants::pi<double>();
-const OSSIA_DECL_RELAXED_CONSTEXPR auto two_pi = boost::math::constants::two_pi<double>();
-const OSSIA_DECL_RELAXED_CONSTEXPR auto half_pi = boost::math::constants::half_pi<double>();
-const OSSIA_DECL_RELAXED_CONSTEXPR auto rad_to_deg = boost::math::constants::radian<double>();
-const OSSIA_DECL_RELAXED_CONSTEXPR auto deg_to_rad = boost::math::constants::degree<double>();
-const OSSIA_DECL_RELAXED_CONSTEXPR auto ln_2 = boost::math::constants::ln_two<double>();
+const OSSIA_DECL_RELAXED_CONSTEXPR auto pi = 3.141592653589793238462643383279502884;
+const OSSIA_DECL_RELAXED_CONSTEXPR auto two_pi = 6.283185307179586476925286766559005768;
+const OSSIA_DECL_RELAXED_CONSTEXPR auto half_pi = 1.570796326794896619231321691639751442;
+const OSSIA_DECL_RELAXED_CONSTEXPR auto rad_to_deg = 5.729577951308232087679815481410517033e+01;
+const OSSIA_DECL_RELAXED_CONSTEXPR auto deg_to_rad = 1.745329251994329576923690768488612713e-02;
+const OSSIA_DECL_RELAXED_CONSTEXPR auto ln_2 = 6.931471805599453094172321214581765680e-01;
 
 template<typename T>
 auto norm(T x, T y)

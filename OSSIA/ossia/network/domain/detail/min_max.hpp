@@ -15,7 +15,7 @@ struct domain_min_visitor_helper
   OSSIA_INLINE ossia::value operator()(const T& value) const
   {
     if(value.min)
-      return value::make<typename T::value_type>(value.min.get());
+      return value::make<typename T::value_type>(*value.min);
     else
       return ossia::value{};
   }
@@ -47,7 +47,7 @@ struct domain_min_visitor_helper<domain_base<ossia::value>>
     // TODO for this case, it would maybe be better to
     // use the empty state of value instead of a boost::optional ?
     if(value.min)
-      return value.min.get();
+      return *value.min;
     else
       return ossia::value{};
   }
@@ -62,7 +62,7 @@ struct domain_max_visitor_helper
   OSSIA_INLINE ossia::value operator()(const T& value) const
   {
     if(value.max)
-      return value::make<typename T::value_type>(value.max.get());
+      return value::make<typename T::value_type>(*value.max);
     else
       return ossia::value{};
   }
@@ -94,7 +94,7 @@ struct domain_max_visitor_helper<domain_base<ossia::value>>
     // TODO for this case, it would maybe be better to
     // use the empty state of value instead of a boost::optional ?
     if(value.max)
-      return value.max.get();
+      return *value.max;
     else
       return ossia::value{};
   }
@@ -150,25 +150,25 @@ struct domain_set_min_visitor
   // for e.g. int -> float
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<int32_t>& domain, U&&...)
-  { domain.min.reset(); }
+  { domain.min = ossia::none; }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<float>& domain, U&&...)
-  { domain.min.reset(); }
+  { domain.min = ossia::none; }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<char>& domain, U&&...)
-  { domain.min.reset(); }
+  { domain.min = ossia::none; }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<bool>& domain, U&&...)
-  { domain.min.reset(); }
+  { domain.min = ossia::none; }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<std::vector<ossia::value>>& domain, U&&...)
-  { domain.min.reset(); }
+  { domain.min = ossia::none; }
   template<std::size_t N, typename... U>
   OSSIA_INLINE void operator()(domain_base<std::array<float, N>>& domain, U&&...)
-  { domain.min.reset(); }
+  { domain.min = ossia::none; }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<ossia::value>& domain, U&&...)
-  { domain.min.reset(); }
+  { domain.min = ossia::none; }
 
   template <typename T, typename... U>
   OSSIA_INLINE void operator()(const domain_base<T>& domain, U&&...)
@@ -200,25 +200,25 @@ struct domain_set_max_visitor
   // Removal cases
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<int32_t>& domain, U&&...)
-  { domain.max.reset(); }
+  { domain.max = ossia::none; }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<float>& domain, U&&...)
-  { domain.max.reset(); }
+  { domain.max = ossia::none; }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<char>& domain, U&&...)
-  { domain.max.reset(); }
+  { domain.max = ossia::none; }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<bool>& domain, U&&...)
-  { domain.max.reset(); }
+  { domain.max = ossia::none; }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<std::vector<ossia::value>>& domain, U&&...)
-  { domain.max.reset(); }
+  { domain.max = ossia::none; }
   template<std::size_t N, typename... U>
   OSSIA_INLINE void operator()(domain_base<std::array<float, N>>& domain, U&&...)
-  { domain.max.reset(); }
+  { domain.max = ossia::none; }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<ossia::value>& domain, U&&...)
-  { domain.max.reset(); }
+  { domain.max = ossia::none; }
 
   template <typename T, typename... U>
   OSSIA_INLINE void operator()(const domain_base<T>& domain, U&&...)

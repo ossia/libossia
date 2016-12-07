@@ -17,7 +17,6 @@ option(OSSIA_OSX_RETROCOMPATIBILITY "Build for older OS X versions" OFF)
 
 if(OSSIA_OSX_RETROCOMPATIBILITY)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.9)
-    set(OSSIA_OSX_FAT_LIBRARIES ON)
 endif()
 
 if(OSSIA_OSX_FAT_LIBRARIES)
@@ -25,6 +24,7 @@ if(OSSIA_OSX_FAT_LIBRARIES)
 endif()
 
 # System detection
+include(ProcessorCount)
 include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-Wmisleading-indentation" SUPPORTS_MISLEADING_INDENT_FLAG)
 check_cxx_compiler_flag("-Wl,-z,defs" WL_ZDEFS_SUPPORTED)

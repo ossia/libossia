@@ -25,7 +25,7 @@ bool is_valid_character_for_name(Char_T c)
         || (c == '-');
 }
 
-inline boost::string_view name_characters() noexcept
+inline ossia::string_view name_characters() noexcept
 { return make_string_view("a-zA-Z0-9_~().-"); }
 
 }

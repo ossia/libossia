@@ -65,7 +65,7 @@ struct minuit_behavior<
       ossia::net::generic_device& dev,
       const oscpack::ReceivedMessage& mess)
   {
-    boost::string_view full_address{mess.ArgumentsBegin()->AsString()};
+    ossia::string_view full_address{mess.ArgumentsBegin()->AsString()};
     auto idx = full_address.find_first_of(":");
 
     if(idx == std::string::npos)
@@ -83,11 +83,11 @@ struct minuit_behavior<
     }
     else
     {
-      boost::string_view address{full_address.data(), idx};
+      ossia::string_view address{full_address.data(), idx};
 
       // Note : bug if address == "foo:"
       auto attr = get_attribute(
-            boost::string_view(
+            ossia::string_view(
               address.data() + idx + 1,
               full_address.size() - idx - 1));
 
@@ -191,7 +191,7 @@ struct minuit_behavior<
 
   void handle_container(
       ossia::net::minuit_protocol& proto,
-      boost::string_view address,
+      ossia::string_view address,
       const std::vector<std::string>& c)
   {
     proto.sender().send(proto.name_table.get_action(minuit_action::NamespaceReply),
@@ -207,7 +207,7 @@ struct minuit_behavior<
 
   void handle_data(
       ossia::net::minuit_protocol& proto,
-      boost::string_view address)
+      ossia::string_view address)
   {
     proto.sender().send(proto.name_table.get_action(minuit_action::NamespaceReply),
                     address,
@@ -228,7 +228,7 @@ struct minuit_behavior<
 
   void handle_data_container(
       ossia::net::minuit_protocol& proto,
-      boost::string_view address,
+      ossia::string_view address,
       const std::vector<std::string>& c)
   {
     proto.sender().send(proto.name_table.get_action(minuit_action::NamespaceReply),
@@ -260,7 +260,7 @@ struct minuit_behavior<
 
   std::vector<std::string> get_children_names(
       ossia::net::generic_device& dev,
-      boost::string_view address)
+      ossia::string_view address)
   {
     auto node = ossia::net::find_node(dev, address);
     if (!node)
@@ -274,9 +274,9 @@ struct minuit_behavior<
       ossia::net::generic_device& dev,
       const oscpack::ReceivedMessage& mess)
   {
-    boost::string_view address{mess.ArgumentsBegin()->AsString()};
+    ossia::string_view address{mess.ArgumentsBegin()->AsString()};
 
-    if(address == boost::string_view("/"))
+    if(address == ossia::string_view("/"))
     {
       handle_root(proto, get_children_names(dev, address));
     }
@@ -336,7 +336,7 @@ struct minuit_behavior<
       ossia::net::generic_device& dev,
       const oscpack::ReceivedMessage& mess)
   {
-    boost::string_view full_address;
+    ossia::string_view full_address;
     auto mess_it = mess.ArgumentsBegin();
     full_address = mess_it->AsStringUnchecked();
     auto idx = full_address.find_first_of(":");
@@ -358,11 +358,11 @@ struct minuit_behavior<
     {
       // The OSC message is a Minuit one.
       // address contains the "sanitized" OSC-like address.
-      boost::string_view address{full_address.data(), idx};
+      ossia::string_view address{full_address.data(), idx};
 
       // Note : bug if address == "foo:"
       auto attr = get_attribute(
-            boost::string_view(
+            ossia::string_view(
               address.data() + idx + 1, full_address.size() - idx - 1));
 
       ++mess_it;
@@ -466,10 +466,10 @@ struct minuit_behavior<minuit_command::Answer,
       Str s, oscpack::ReceivedMessageArgumentIterator beg_it,
       oscpack::ReceivedMessageArgumentIterator end_it)
   {
-    std::vector<boost::string_view> elements;
+    std::vector<ossia::string_view> elements;
     auto nodes_beg_it = find_if(beg_it, end_it, [=](const auto& mess) {
       return mess.IsString()
-             && boost::string_view(mess.AsStringUnchecked()) == s;
+             && ossia::string_view(mess.AsStringUnchecked()) == s;
     });
 
     ++nodes_beg_it; // It will point on the first past "nodes={".
@@ -511,7 +511,7 @@ struct minuit_behavior<minuit_command::Answer,
 
   static auto handle_container(
       ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
-      boost::string_view address,
+      ossia::string_view address,
       oscpack::ReceivedMessageArgumentIterator beg_it,
       oscpack::ReceivedMessageArgumentIterator end_it)
   {
@@ -542,7 +542,7 @@ struct minuit_behavior<minuit_command::Answer,
 
   static auto handle_data(
       ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
-      boost::string_view address,
+      ossia::string_view address,
       oscpack::ReceivedMessageArgumentIterator beg_it,
       oscpack::ReceivedMessageArgumentIterator end_it)
   {
@@ -612,7 +612,7 @@ struct minuit_behavior<minuit_command::Answer,
 
   static auto handle_minuit(
       ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
-      boost::string_view address, minuit_type type,
+      ossia::string_view address, minuit_type type,
       oscpack::ReceivedMessageArgumentIterator beg_it,
       oscpack::ReceivedMessageArgumentIterator end_it)
   {
@@ -643,7 +643,7 @@ struct minuit_behavior<minuit_command::Answer,
       const oscpack::ReceivedMessage& mess)
   {
     auto it = mess.ArgumentsBegin();
-    boost::string_view address = it->AsString();
+    ossia::string_view address = it->AsString();
     auto type = get_type((++it)->AsString()[0]);
 
     handle_minuit(proto, dev, address, type, it, mess.ArgumentsEnd());
@@ -663,7 +663,7 @@ class minuit_message_handler
 public:
   static void handleMinuitMessage(
       ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
-      boost::string_view address, const oscpack::ReceivedMessage& m)
+      ossia::string_view address, const oscpack::ReceivedMessage& m)
   {
     // Look for either ':' or '?'
     auto idx = address.find_first_of(":?!");

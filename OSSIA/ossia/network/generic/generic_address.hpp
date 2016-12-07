@@ -5,7 +5,7 @@
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
-#include <boost/optional.hpp>
+#include <ossia/detail/optional.hpp>
 #include <mutex>
 #include <thread>
 
@@ -35,11 +35,11 @@ struct generic_address_data
   }
 
   std::string node_name;
-  boost::optional<ossia::val_type> type;
-  boost::optional<ossia::net::domain> domain;
-  boost::optional<ossia::access_mode> access;
-  boost::optional<ossia::bounding_mode> bounding;
-  boost::optional<ossia::repetition_filter> repetition_filter;
+  ossia::optional<ossia::val_type> type;
+  ossia::optional<ossia::net::domain> domain;
+  ossia::optional<ossia::access_mode> access;
+  ossia::optional<ossia::bounding_mode> bounding;
+  ossia::optional<ossia::repetition_filter> repetition_filter;
 
   std::string description;
   ossia::value default_value;

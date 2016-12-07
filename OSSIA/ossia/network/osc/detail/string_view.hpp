@@ -1,13 +1,11 @@
 #pragma once
-#include <boost/utility/string_view.hpp>
 #include <functional>
 #include <oscpack/osc/SmallString.h>
 #include <type_traits>
-namespace detail
-{
-using string_view = boost::string_view;
-// using string_view = std::string;
+#include <ossia/detail/string_view.hpp>
 
+namespace ossia
+{
 template <typename T, typename Enable = void>
 struct param_traits
 {
@@ -21,8 +19,7 @@ struct param_traits<T, std::enable_if_t<std::is_same<T, std::string>::value>>
 
 template <typename T>
 struct param_traits<T,
-                    std::enable_if_t<std::is_same<T,
-                                                  boost::string_view>::value>>
+                    std::enable_if_t<std::is_same<T, ossia::string_view>::value>>
 {
   using type = T;
 };

@@ -8,7 +8,7 @@
 #include <tuple>
 #include <utility>
 
-#include <boost/utility/string_view.hpp>
+#include <ossia/detail/string_view.hpp>
 
 /**
  * \file algorithms.hpp
@@ -140,14 +140,14 @@ void for_each_in_tuple(const std::tuple<Ts...> & tuple, F func)
 
 // See also https://gist.github.com/klmr/2775736
 template<std::size_t N>
-constexpr boost::string_view make_string_view(const char (&str)[N]) noexcept
+constexpr ossia::string_view make_string_view(const char (&str)[N]) noexcept
 { return {str, N - 1}; }
 
 template <typename... Args>
-constexpr std::array<boost::string_view, sizeof...(Args)>
+constexpr std::array<ossia::string_view, sizeof...(Args)>
   make_string_array(Args&&... args)
 {
-  return std::array<boost::string_view, sizeof...(Args)>{
+  return std::array<ossia::string_view, sizeof...(Args)>{
         make_string_view(args)...
   };
 }

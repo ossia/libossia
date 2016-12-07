@@ -11,7 +11,7 @@ namespace oscpack
 {
 inline oscpack::OutboundPacketStream& operator<<(
     oscpack::OutboundPacketStream& p,
-    const std::vector<boost::string_view>& values)
+    const std::vector<ossia::string_view>& values)
 {
   for (auto val : values)
   {
@@ -27,7 +27,7 @@ inline oscpack::OutboundPacketStream& operator<<(
 {
   auto addr = ossia::net::address_string_from_node(address);
   auto begin = addr.find(':') + 1;
-  p << boost::string_view(addr.data() + begin, addr.size() - begin);
+  p << ossia::string_view(addr.data() + begin, addr.size() - begin);
 
   return p;
 }
@@ -38,7 +38,7 @@ inline oscpack::OutboundPacketStream& operator<<(
 {
   for (const auto& val : values)
   {
-    p << boost::string_view(val);
+    p << ossia::string_view(val);
   }
 
   return p;
@@ -75,7 +75,7 @@ public:
 
   template <typename... T>
   const oscpack::OutboundPacketStream&
-  operator()(boost::string_view name, const T&... args)
+  operator()(ossia::string_view name, const T&... args)
   {
     p << oscpack::BeginMessageN(name);
     subfunc(args...);
@@ -153,7 +153,7 @@ public:
 
   template <typename... T>
   const oscpack::OutboundPacketStream&
-  operator()(boost::string_view name, const T&... args)
+  operator()(ossia::string_view name, const T&... args)
   {
     p << oscpack::BeginMessageN(name);
     subfunc(args...);

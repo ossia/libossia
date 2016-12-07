@@ -1,6 +1,7 @@
 #include "parameter.hpp"
 #include "device.hpp"
 #include "model.hpp"
+#include <limits>
 
 static t_eclass *parameter_class;
 
@@ -126,8 +127,8 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
         x->x_absolute = false;
         x->x_node = nullptr;
         x->x_localAddress = nullptr;
-        x->range[0] = FLT_MIN;
-        x->range[1] = FLT_MAX;
+        x->range[0] = std::numeric_limits<float>::min();
+        x->range[1] = std::numeric_limits<float>::max();
 
         x->x_setout  = outlet_new((t_object*)x,nullptr);
         x->x_dataout = outlet_new((t_object*)x,nullptr);

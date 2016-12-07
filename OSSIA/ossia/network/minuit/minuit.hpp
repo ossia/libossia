@@ -94,11 +94,11 @@ public:
   bool observe(ossia::net::address_base& address_base, bool enable) override;
   bool observe_quietly(ossia::net::address_base& address_base, bool enable) override;
 
-  void namespace_refresh(boost::string_view req, const std::string& addr);
-  void namespace_refreshed(boost::string_view addr);
+  void namespace_refresh(ossia::string_view req, const std::string& addr);
+  void namespace_refreshed(ossia::string_view addr);
 
-  void get_refresh(boost::string_view req, const std::string& addr);
-  void get_refreshed(boost::string_view req);
+  void get_refresh(ossia::string_view req, const std::string& addr);
+  void get_refreshed(ossia::string_view req);
 
   osc::sender& sender() const;
   ossia::minuit::name_table name_table;

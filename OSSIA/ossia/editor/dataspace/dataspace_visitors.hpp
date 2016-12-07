@@ -2,7 +2,7 @@
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/editor/value/vec.hpp>
 #include <ossia/detail/destination_index.hpp>
-#include <boost/utility/string_view.hpp>
+#include <ossia/detail/string_view.hpp>
 #include <bitset>
 #include <ossia_export.h>
 
@@ -17,14 +17,14 @@ struct value_with_unit;
  * @return Text corresponding to the dataspace. For instance "color" or "gain".
  */
 OSSIA_EXPORT
-boost::string_view get_dataspace_text(const ossia::unit_t&);
+ossia::string_view get_dataspace_text(const ossia::unit_t&);
 
 /**
  * @brief get_unit_text
  * @return Text corresponding to the unit. For instance "rgb" or "xyz".
  */
 OSSIA_EXPORT
-boost::string_view get_unit_text(const ossia::unit_t&);
+ossia::string_view get_unit_text(const ossia::unit_t&);
 
 /**
  * @brief get_pretty_unit_text Unit for human readability and debugging
@@ -51,7 +51,7 @@ char get_unit_accessor(const ossia::unit_t&, uint8_t n);
  * @return A value corresponding to the dataspace, without any specific unit.
  */
 OSSIA_EXPORT
-ossia::unit_t parse_dataspace(boost::string_view text);
+ossia::unit_t parse_dataspace(ossia::string_view text);
 
 /**
  * @brief parse_unit Takes a text and a dataspace and gives a corresponding unit.
@@ -61,7 +61,7 @@ ossia::unit_t parse_dataspace(boost::string_view text);
  * @return Corresponding unit, or the same unit as input if it was not found.
  */
 OSSIA_EXPORT
-ossia::unit_t parse_unit(boost::string_view text, const ossia::unit_t& dataspace);
+ossia::unit_t parse_unit(ossia::string_view text, const ossia::unit_t& dataspace);
 
 
 /**
@@ -69,7 +69,7 @@ ossia::unit_t parse_unit(boost::string_view text, const ossia::unit_t& dataspace
  * of get_pretty_unit_text
  */
 OSSIA_EXPORT
-ossia::unit_t parse_pretty_unit(boost::string_view text);
+ossia::unit_t parse_pretty_unit(ossia::string_view text);
 
 
 /**
@@ -79,7 +79,7 @@ ossia::unit_t parse_pretty_unit(boost::string_view text);
  */
 template<typename T>
 OSSIA_EXPORT
-ossia::unit_t parse_unit(boost::string_view text, T dataspace);
+ossia::unit_t parse_unit(ossia::string_view text, T dataspace);
 
 
 /**

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ossia/ossia.hpp>
+#include <sstream>
 
 extern "C" {
 #include <cicm_wrapper.h>

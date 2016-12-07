@@ -3,7 +3,7 @@
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/base/address.hpp>
-#include <boost/container/static_vector.hpp>
+#include <chobo/static_vector.hpp>
 #include <iostream>
 
 namespace ossia
@@ -221,13 +221,13 @@ struct computeValue_visitor
     return {};
   }
 
-  using vec_behavior = boost::container::static_vector<curve<double, float>*, 4>;
+  using vec_behavior = chobo::static_vector<curve<double, float>*, 4>;
   static vec_behavior tuple_convertible_to_vec(
       const std::vector<ossia::behavior>& t)
   {
     const auto n = t.size();
 
-    boost::container::static_vector<curve<double, float>*, 4> arr;
+    chobo::static_vector<curve<double, float>*, 4> arr;
     bool ok = false;
     if(n >= 2 && n <= 4)
     {

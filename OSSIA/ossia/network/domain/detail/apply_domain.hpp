@@ -5,6 +5,27 @@
 #include <ossia/network/domain/detail/array_domain.hpp>
 #include <ossia/network/domain/detail/value_set_domain.hpp>
 
+#if defined(FAST_COMPILES)
+namespace ossia
+{
+template<typename T>
+auto& move(const T& t)
+{
+  return t;
+}
+}
+#else
+namespace ossia
+{
+template<typename T>
+constexpr typename std::remove_reference<T>::type&&
+move(T&& t) noexcept
+{
+  return static_cast<typename std::remove_reference<T>::type&&>(t);
+}
+}
+#endif
+
 namespace ossia
 {
 namespace net

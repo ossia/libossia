@@ -188,7 +188,7 @@ static bool is_vec(std::vector<ossia::value>& t)
 void osc_protocol::handleLearn(const oscpack::ReceivedMessage& m)
 {
   // Find-or-add algorithm
-  boost::string_view addr = m.AddressPattern();
+  ossia::string_view addr = m.AddressPattern();
   std::vector<std::string> v;
   boost::algorithm::split(v, addr, boost::algorithm::is_any_of("/"));
 

@@ -36,8 +36,8 @@ ossia::value numeric_clamp<Domain>::operator()(bounding_mode b, U&& val) const
     const bool has_max = bool(domain.max);
     if (has_min && has_max)
     {
-      const auto min = domain.min.get();
-      const auto max = domain.max.get();
+      const auto min = *domain.min;
+      const auto max = *domain.max;
       switch (b)
       {
         case bounding_mode::CLIP:
@@ -56,7 +56,7 @@ ossia::value numeric_clamp<Domain>::operator()(bounding_mode b, U&& val) const
     }
     else if (has_min)
     {
-      const auto min = domain.min.get();
+      const auto min = *domain.min;
       switch(b)
       {
         case bounding_mode::CLIP:
@@ -68,7 +68,7 @@ ossia::value numeric_clamp<Domain>::operator()(bounding_mode b, U&& val) const
     }
     else if (has_max)
     {
-      const auto max = domain.max.get();
+      const auto max = *domain.max;
       switch(b)
       {
         case bounding_mode::CLIP:
@@ -135,8 +135,8 @@ ossia::value numeric_clamp<T>::operator()(bounding_mode b, std::array<float, N> 
     const bool has_max = bool(domain.max);
     if (has_min && has_max)
     {
-      const float min = domain.min.get();
-      const float max = domain.max.get();
+      const float min = *domain.min;
+      const float max = *domain.max;
       switch (b)
       {
         case bounding_mode::CLIP:
@@ -160,7 +160,7 @@ ossia::value numeric_clamp<T>::operator()(bounding_mode b, std::array<float, N> 
     }
     else if (has_min)
     {
-      const float min = domain.min.get();
+      const float min = *domain.min;
       switch(b)
       {
         case bounding_mode::CLIP:
@@ -172,7 +172,7 @@ ossia::value numeric_clamp<T>::operator()(bounding_mode b, std::array<float, N> 
     }
     else if (has_max)
     {
-      const float max = domain.max.get();
+      const float max = *domain.max;
       switch(b)
       {
         case bounding_mode::CLIP:
@@ -215,8 +215,8 @@ value tuple_clamp::operator()(bounding_mode b, const std::vector<ossia::value>& 
     const bool has_max = bool(domain.max);
     if (has_min && has_max)
     {
-      const std::vector<ossia::value>& min = domain.min.get();
-      const std::vector<ossia::value>& max = domain.max.get();
+      const std::vector<ossia::value>& min = *domain.min;
+      const std::vector<ossia::value>& max = *domain.max;
       if(min.size() == 1 && max.size() == 1)
       {
         std::vector<ossia::value> res;
@@ -280,7 +280,7 @@ value tuple_clamp::operator()(bounding_mode b, const std::vector<ossia::value>& 
     }
     else if (has_min)
     {
-      const std::vector<ossia::value>& min = domain.min.get();
+      const std::vector<ossia::value>& min = *domain.min;
       if(min.size() == 1)
       {
         std::vector<ossia::value> res;
@@ -317,7 +317,7 @@ value tuple_clamp::operator()(bounding_mode b, const std::vector<ossia::value>& 
     }
     else if (has_max)
     {
-      const std::vector<ossia::value>& max = domain.max.get();
+      const std::vector<ossia::value>& max = *domain.max;
       if(max.size() == 1)
       {
         std::vector<ossia::value> res;
@@ -378,8 +378,8 @@ value tuple_clamp::operator()(bounding_mode b, std::vector<ossia::value>&& val) 
     const bool has_max = bool(domain.max);
     if (has_min && has_max)
     {
-      const std::vector<ossia::value>& min = domain.min.get();
-      const std::vector<ossia::value>& max = domain.max.get();
+      const std::vector<ossia::value>& min = *domain.min;
+      const std::vector<ossia::value>& max = *domain.max;
 
       if(min.size() == 1 && max.size() == 1)
       {
@@ -439,7 +439,7 @@ value tuple_clamp::operator()(bounding_mode b, std::vector<ossia::value>&& val) 
     }
     else if (has_min)
     {
-      const std::vector<ossia::value>& min = domain.min.get();
+      const std::vector<ossia::value>& min = *domain.min;
       const auto min_v = min[0];
 
       if(min.size() == 1)
@@ -473,7 +473,7 @@ value tuple_clamp::operator()(bounding_mode b, std::vector<ossia::value>&& val) 
     }
     else if (has_max)
     {
-      const std::vector<ossia::value>& max = domain.max.get();
+      const std::vector<ossia::value>& max = *domain.max;
       const auto max_v = max[0];
 
       if(max.size() == 1)
@@ -530,8 +530,8 @@ value vec_clamp<N>::operator()(bounding_mode b, std::array<float, N> val) const
     const bool has_max = bool(domain.max);
     if (has_min && has_max)
     {
-      const std::array<float, N>& min = domain.min.get();
-      const std::array<float, N>& max = domain.max.get();
+      const std::array<float, N>& min = *domain.min;
+      const std::array<float, N>& max = *domain.max;
       switch (b)
       {
         case bounding_mode::CLIP:
@@ -555,7 +555,7 @@ value vec_clamp<N>::operator()(bounding_mode b, std::array<float, N> val) const
     }
     else if (has_min)
     {
-      const std::array<float, N>& min = domain.min.get();
+      const std::array<float, N>& min = *domain.min;
       switch(b)
       {
         case bounding_mode::CLIP:
@@ -567,7 +567,7 @@ value vec_clamp<N>::operator()(bounding_mode b, std::array<float, N> val) const
     }
     else if (has_max)
     {
-      const std::array<float, N>& max = domain.max.get();
+      const std::array<float, N>& max = *domain.max;
       switch(b)
       {
         case bounding_mode::CLIP:
@@ -601,8 +601,8 @@ value generic_clamp::operator()(bounding_mode b, const value& v) const
     const bool has_max = bool(domain.max);
     if (has_min && has_max)
     {
-      const auto& min = domain.min.get();
-      const auto& max = domain.max.get();
+      const auto& min = *domain.min;
+      const auto& max = *domain.max;
       switch (b)
       {
         case bounding_mode::CLIP:
@@ -621,7 +621,7 @@ value generic_clamp::operator()(bounding_mode b, const value& v) const
     }
     else if (has_min)
     {
-      const auto& min = domain.min.get();
+      const auto& min = *domain.min;
       switch(b)
       {
         case bounding_mode::CLIP:
@@ -633,7 +633,7 @@ value generic_clamp::operator()(bounding_mode b, const value& v) const
     }
     else if (has_max)
     {
-      const auto& max = domain.max.get();
+      const auto& max = *domain.max;
       switch(b)
       {
         case bounding_mode::CLIP:
@@ -669,8 +669,8 @@ value generic_clamp::operator()(bounding_mode b, value&& v) const
     const bool has_max = bool(domain.max);
     if (has_min && has_max)
     {
-      const auto& min = domain.min.get();
-      const auto& max = domain.max.get();
+      const auto& min = *domain.min;
+      const auto& max = *domain.max;
       switch (b)
       {
         case bounding_mode::CLIP:
@@ -689,7 +689,7 @@ value generic_clamp::operator()(bounding_mode b, value&& v) const
     }
     else if (has_min)
     {
-      const auto& min = domain.min.get();
+      const auto& min = *domain.min;
       switch(b)
       {
         case bounding_mode::CLIP:
@@ -701,7 +701,7 @@ value generic_clamp::operator()(bounding_mode b, value&& v) const
     }
     else if (has_max)
     {
-      const auto& max = domain.max.get();
+      const auto& max = *domain.max;
       switch(b)
       {
         case bounding_mode::CLIP:
@@ -739,8 +739,8 @@ value generic_clamp::operator()(bounding_mode b, const std::vector<ossia::value>
     {
       std::vector<ossia::value> res;
       res.reserve(val.size());
-      const auto& min = domain.min.get();
-      const auto& max = domain.max.get();
+      const auto& min = *domain.min;
+      const auto& max = *domain.max;
 
       switch (b)
       {
@@ -772,7 +772,7 @@ value generic_clamp::operator()(bounding_mode b, const std::vector<ossia::value>
         case bounding_mode::CLIP:
         case bounding_mode::LOW:
         {
-          const auto& min = domain.min.get();
+          const auto& min = *domain.min;
           std::vector<ossia::value> res;
           res.reserve(val.size());
           for(auto& v : val)
@@ -792,7 +792,7 @@ value generic_clamp::operator()(bounding_mode b, const std::vector<ossia::value>
         case bounding_mode::CLIP:
         case bounding_mode::HIGH:
         {
-          const auto& max = domain.max.get();
+          const auto& max = *domain.max;
           std::vector<ossia::value> res;
           res.reserve(val.size());
           for(auto& v : val)
@@ -838,8 +838,8 @@ value generic_clamp::operator()(bounding_mode b, std::vector<ossia::value>&& val
     const bool has_max = bool(domain.max);
     if (has_min && has_max)
     {
-      const auto& min = domain.min.get();
-      const auto& max = domain.max.get();
+      const auto& min = *domain.min;
+      const auto& max = *domain.max;
       switch (b)
       {
         case bounding_mode::CLIP:
@@ -865,7 +865,7 @@ value generic_clamp::operator()(bounding_mode b, std::vector<ossia::value>&& val
     }
     else if (has_min)
     {
-      const auto& min = domain.min.get();
+      const auto& min = *domain.min;
       switch(b)
       {
         case bounding_mode::CLIP:
@@ -880,7 +880,7 @@ value generic_clamp::operator()(bounding_mode b, std::vector<ossia::value>&& val
     }
     else if (has_max)
     {
-      const auto& max = domain.max.get();
+      const auto& max = *domain.max;
       switch(b)
       {
         case bounding_mode::CLIP:

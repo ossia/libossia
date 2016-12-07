@@ -13,7 +13,7 @@
 #include <QJSValueIterator>
 #include <QJSEngine>
 #include <QMetaEnum>
-#include <boost/optional.hpp>
+#include <ossia/detail/optional.hpp>
 
 namespace ossia
 {
@@ -251,7 +251,7 @@ inline QString value_to_js_string(const ossia::value& cur)
  * This function tries to convert a weakly-typed JS enum to a strongly-typed C++ enum.
  */
 template<typename T>
-boost::optional<T> get_enum(const QJSValue& val)
+ossia::optional<T> get_enum(const QJSValue& val)
 {
   if(val.isNumber())
   {

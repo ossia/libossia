@@ -41,3 +41,6 @@
 [submodule "OSSIA/ossia-pd/CicmWrapper"]
 	path = 3rdparty/CicmWrapper
 	url = https://github.com/avilleret/CicmWrapper.git
+[submodule "3rdparty/chobo-shl"]
+	path = 3rdparty/chobo-shl
+	url = https://github.com/Chobolabs/chobo-shl
