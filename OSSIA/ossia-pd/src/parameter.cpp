@@ -69,7 +69,7 @@ bool t_param :: register_node(ossia::net::node_base* node){
         std::cout << "create node :  " << x_name->s_name << std::endl;
         x_node = node->createChild(x_name->s_name);
         if(x_type == gensym("symbol")){
-            x_localAddress = x_node->createAddress(ossia::val_type::CHAR);
+            x_localAddress = x_node->createAddress(ossia::val_type::STRING);
         } else {
             x_localAddress = x_node->createAddress(ossia::val_type::FLOAT);
             //TODO : set domain x_localAddress->setDomain()

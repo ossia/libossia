@@ -21,7 +21,6 @@ static void remote_set(t_remote *x, t_symbol* s, int argc, t_atom* argv){
                 break;
             case A_SYMBOL:
             {
-                // FIXME : this call operator()(Char c) instead of operator()(const String& s)
                 x->x_node->getAddress()->pushValue(std::string(argv->a_w.w_symbol->s_name));
                 break;
             }
