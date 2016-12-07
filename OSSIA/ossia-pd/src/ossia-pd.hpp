@@ -240,3 +240,4 @@ static std::string get_absolute_path(ossia::net::node_base* node)
     }
     return fullpath.str();
 }
+template<typename T> extern bool obj_register(T *x);

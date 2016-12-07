@@ -28,28 +28,3 @@ struct t_param
     bool register_node(ossia::net::node_base* node);
     bool unregister();
 };
-
-// self registering (at loadbang or when creating the object)
-template<typename T>
-static bool obj_register(T *x)
-{
-    if (x->x_node) return true; // already registered
-
-    // first try to locate a ossia.model in the parent hierarchy...
-    t_model *model;
-    t_device *device = (t_device*) find_parent(&x->x_obj,osym_device, 0);
-    ossia::net::node_base*  node = nullptr;
-
-    if (!device) {
-        std::cerr << "no device at all, abording" << std::endl;
-        return false; // not ready to register : if there is no device, model will be unable to register too
-    }
-
-    if ((model = find_parent_alive<t_model>(&x->x_obj,osym_model, 0))){
-        node = model->x_node;
-    } else {
-        node = device->x_node;
-    }
-
-    return x->register_node(node);
-}
