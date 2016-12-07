@@ -83,14 +83,6 @@ bool t_remote :: register_node(ossia::net::node_base* node){
     return false;
 }
 
-static void remote_unregister(t_remote* x, t_symbol* s, void* ptr){
-    ossia::net::node_base* node = (ossia::net::node_base*) ptr;
-    if ( node == x->x_node ){
-        x->x_node = nullptr;
-        std::cout << "t_remote " << x->x_name->s_name << " invalidate x_node pointer" << std::endl;
-    }
-}
-
 bool t_remote :: unregister(){
     std::cout << "unregister remote : " << x_name->s_name << std::endl;
 
@@ -123,8 +115,6 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
         x->x_dataout = outlet_new((t_object*)x,nullptr);
         x->x_dumpout = outlet_new((t_object*)x,gensym("dumpout"));
         x->x_callbackit = boost::none;
-        t_pd * a;
-        pd_bind((t_pd*)x, osym_send_remote );
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
@@ -159,7 +149,6 @@ extern "C" void setup_ossia0x2eremote(void)
         eclass_addmethod(c, (method) remote_float,      "float",      A_FLOAT, 0);
         eclass_addmethod(c, (method) remote_set,        "set",        A_GIMME, 0);
         eclass_addmethod(c, (method) remote_bang,       "bang",       A_NULL, 0);
-        eclass_addmethod(c, (method) remote_unregister,       "unregister", A_POINTER, 0);
     }
 
     remote_class = c;
