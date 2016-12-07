@@ -172,17 +172,17 @@ class DomainTest : public QObject
     push_tuple(addr, min, max);
 
     // no min
-    dom.min.reset();
+    dom.min = ossia::none;
     push_tuple(addr, min, max);
 
     // no max
     dom.min = min;
-    dom.max.reset();
+    dom.max = ossia::none;
     push_tuple(addr, min, max);
 
     // nothing
-    dom.min.reset();
-    dom.max.reset();
+    dom.min = ossia::none;
+    dom.max = ossia::none;
     push_tuple(addr, min, max);
   }
 
