@@ -20,4 +20,11 @@ struct t_remote
     bool register_node(ossia::net::node_base* node);
     bool unregister();
     boost::optional<ossia::callback_container<ossia::value_callback>::iterator> x_callbackit;
+    void quarantining();
+    void dequarantining();
+
+    static std::vector<t_remote*>& remote_quarantine(){
+        static std::vector<t_remote*> quarantine;
+        return quarantine;
+    }
 };

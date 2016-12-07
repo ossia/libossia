@@ -39,6 +39,18 @@ static void remote_bang(t_remote *x){
     if ( x->x_node->getAddress() ) x->x_node->getAddress()->pullValue();
 }
 
+void t_remote :: quarantining(){
+    for (auto y : remote_quarantine()){
+        if (y == this){
+            std::cerr << "already in quarantine" << std::endl;
+            return;
+        }
+    }
+    remote_quarantine().push_back(this);
+}
+
+void t_remote :: dequarantining(){
+    remote_quarantine().erase(std::remove(remote_quarantine().begin(), remote_quarantine().end(), this), remote_quarantine().end());
 static void remote_loadbang(t_remote *x){
     std::cout << "[ossia.remote] loadbang" << std::endl;
     if (obj_register<t_remote>(x)) remote_bang(x); // if correctly registered then pull the value
