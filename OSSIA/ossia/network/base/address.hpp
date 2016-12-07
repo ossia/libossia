@@ -26,7 +26,7 @@ class node_base;
  * @brief The address_base class
  *
  * An address holds attributes and values.
- * One can suscribe to modification of the value.
+ * One can subscribe to modification of the value.
  *
  * \see generic_address
  *
