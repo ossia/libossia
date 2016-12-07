@@ -35,7 +35,8 @@ static void remote_set(t_remote *x, t_symbol* s, int argc, t_atom* argv){
 }
 
 static void remote_bang(t_remote *x){
-    if ( x->x_node->getAddress() ) x->x_node->getAddress()->pullValue();
+    if ( x->x_node && x->x_node->getAddress() ) x->x_node->getAddress()->pullValue();
+    else x->error();
 }
 
 void t_remote :: quarantining(){
