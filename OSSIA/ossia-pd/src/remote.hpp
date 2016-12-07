@@ -19,7 +19,10 @@ struct t_remote
     void setValue(const ossia::value& val);
     bool register_node(ossia::net::node_base* node);
     bool unregister();
+
     boost::optional<ossia::callback_container<ossia::value_callback>::iterator> x_callbackit;
+    void error(){    logpost((t_object*)this,4,"[ossia.remote %s] is not registered to any parameter",x_name->s_name); }
+
     void addressRemovingHandler(const ossia::net::address_base& address) {
         x_callbackit = boost::none;
         unregister();

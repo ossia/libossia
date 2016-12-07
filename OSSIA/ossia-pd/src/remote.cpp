@@ -30,7 +30,7 @@ static void remote_set(t_remote *x, t_symbol* s, int argc, t_atom* argv){
             argv++;
         }
     } else {
-        pd_error(x,"[ossia.remote %s] is not registered to any parameter",x->x_name->s_name);
+        x->error();
     }
 }
 
@@ -57,21 +57,19 @@ static void remote_loadbang(t_remote *x){
 }
 
 bool t_remote :: register_node(ossia::net::node_base* node){
-    std::cout << "register remote : " << x_name->s_name << std::endl;
 
     if (x_node && x_node->getParent() == node ) return true; // already register to this node;
 
-    unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
+    unregister(); // we should unregister here because we may have add a node between the registered node and the remote
 
-    if (!node){
-        std::cout << "t_remote :: register(node) : invalid node" << std::endl;
-        return false;
-    }
+    std::cout << "[ossia.remote] register remote : " << x_name->s_name << std::endl;
 
     if(node){
         for (const auto& child : node->children()){
+            std::cout << "childe name: " << child->getName() << std::endl;
             if(child->getName() == x_name->s_name){
                 x_node = child.get();
+
                 x_callbackit = x_node->getAddress()->add_callback([=](const ossia::value& v){
                     setValue(v);
                 });
@@ -79,6 +77,8 @@ bool t_remote :: register_node(ossia::net::node_base* node){
                 return true;
             }
         }
+    } else {
+        return false;
     }
     return false;
 }
@@ -91,6 +91,9 @@ bool t_remote :: unregister(){
         x_node->getAddress()->remove_callback(*x_callbackit);
         x_callbackit = boost::none;
     }
+    quarantining();
+    std::cout << "remote_quarantine size: " << remote_quarantine().size() << std::endl;
+
     x_node = nullptr;
     return true;
 }
@@ -106,6 +109,8 @@ static void remote_float(t_remote *x, t_float val){
 static void *remote_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_remote *x = (t_remote *)eobj_new(remote_class);
+
+    std::cout<< "[ossia.remote]: new instance" << std::endl;
 
     if(x)
     {
@@ -124,8 +129,6 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
             error("You have to pass a name as the first argument");
             x->x_name = gensym("untitledRemote");
         }
-
-        ;
     }
 
     return (x);
@@ -134,6 +137,7 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
 static void remote_free(t_remote *x)
 {
     x->unregister();
+    x->dequarantining();
     outlet_free(x->x_setout);
     outlet_free(x->x_dataout);
     outlet_free(x->x_dumpout);
