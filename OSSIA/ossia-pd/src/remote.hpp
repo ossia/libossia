@@ -1,6 +1,7 @@
 #pragma once
 #include "ossia-pd.hpp"
 #include "device.hpp"
+#include "boost/optional.hpp"
 
 using namespace ossia;
 
@@ -16,7 +17,7 @@ struct t_remote
 
     ossia::net::node_base* x_node;
     void setValue(const ossia::value& val);
-    ossia::callback_container<ossia::value_callback>::iterator    x_callbackit;
     bool register_node(ossia::net::node_base* node);
     bool unregister();
+    boost::optional<ossia::callback_container<ossia::value_callback>::iterator> x_callbackit;
 };

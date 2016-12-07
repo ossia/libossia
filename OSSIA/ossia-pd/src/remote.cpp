@@ -3,7 +3,6 @@
 #include "parameter.hpp"
 
 static t_eclass *remote_class;
-static std::list<ossia::value_callback> dummy_list;
 
 static void remote_free(t_remote* x);
 
@@ -82,10 +81,10 @@ static void remote_unregister(t_remote* x, t_symbol* s, void* ptr){
 bool t_remote :: unregister(){
     std::cout << "unregister remote : " << x_name->s_name << std::endl;
 
-    if (x_callbackit != dummy_list.end()) {
+    if (x_callbackit != boost::none) {
         // we have to remove the callback, but assigning x_callbackit to dummy_list.end(); seems weird to me..., have to think about a better solution
-        x_node->getAddress()->remove_callback(x_callbackit);
-        x_callbackit = dummy_list.end();
+        x_node->getAddress()->remove_callback(*x_callbackit);
+        x_callbackit = boost::none;
     }
     x_node = nullptr;
     return true;
@@ -107,10 +106,10 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
     {
         x->x_absolute = false;
         x->x_node = nullptr;
-        x->x_callbackit = dummy_list.end(); // FIXME : I don't like this so much, but needed to not remove callback in t_remote::unregister function
         x->x_setout = outlet_new((t_object*)x, nullptr);
         x->x_dataout = outlet_new((t_object*)x,nullptr);
         x->x_dumpout = outlet_new((t_object*)x,gensym("dumpout"));
+        x->x_callbackit = boost::none;
         t_pd * a;
         pd_bind((t_pd*)x, osym_send_remote );
 
