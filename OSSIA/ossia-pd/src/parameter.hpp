@@ -6,12 +6,14 @@
 
 using namespace ossia;
 
-struct t_parameter
+struct t_param
 {
     t_eobj      x_obj;
 
     t_symbol* x_type;
     t_atom x_default;
+    // TODO use optional for range
+    // TODO add clipmode (or bounding ?) attribute
     float range[2];
 
     t_symbol*   x_name;

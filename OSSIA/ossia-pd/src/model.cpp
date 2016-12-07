@@ -1,7 +1,6 @@
 // A starter for Pd objects
 #include "model.hpp"
 #include "parameter.hpp"
-#include "remote.hpp"
 
 static t_eclass *model_class;
 
@@ -35,7 +34,6 @@ static void model_dump(t_model *x)
     outlet_anything(x->dumpout,gensym("fullpath"), 1, &a);
 }
 
-//FIXME : model is registered twice and parameter don't seem to be registered under model's node
 bool t_model :: register_node(ossia::net::node_base*  node){
     std::cout << "[ossia.model] : register model : " << x_name->s_name << std::endl;
 
@@ -57,16 +55,10 @@ bool t_model :: register_node(ossia::net::node_base*  node){
     std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
     std::sort(params.begin(), params.end());
     for (auto v : params){
-        t_parameter* param = (t_parameter*) v.x;
+        t_param* param = (t_param*) v.x;
         param->register_node(x_node);
     }
 
-    std::vector<obj_hierachy> remotes = find_child(x_obj.o_canvas->gl_list, osym_remote, 0);
-    std::sort(remotes.begin(), remotes.end());
-    for (auto v : remotes){
-        t_remote* remote = (t_remote*) v.x;
-        remote->register_node(x_node);
-    }
     return true;
 }
 
@@ -79,15 +71,8 @@ bool t_model :: unregister(){
     std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
     std::sort(params.begin(), params.end());
     for (auto v : params){
-        t_parameter* param = (t_parameter*) v.x;
+        t_param* param = (t_param*) v.x;
         if (!param->x_node || param->x_node->getParent() == x_node) param->register_node(x_node->getParent());
-    }
-
-    std::vector<obj_hierachy> remotes = find_child(x_obj.o_canvas->gl_list, osym_remote, 0);
-    std::sort(remotes.begin(), remotes.end());
-    for (auto v : remotes){
-        t_remote* remote = (t_remote*) v.x;
-        if (!remote->x_node || remote->x_node->getParent() == x_node) remote->register_node(x_node->getParent());
     }
 
     std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 0);
@@ -131,8 +116,6 @@ static void model_free(t_model *x)
 {
     x->x_dead = true;
     x->unregister();
-    // FIXME : we do you want to register again here ?
-    // x->register_node(nullptr);
 }
 
 extern "C" void setup_ossia0x2emodel(void)

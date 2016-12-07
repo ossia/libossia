@@ -86,7 +86,7 @@ void t_device :: register_children(){
     std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
     std::sort(params.begin(), params.end());
     for (auto v : params){
-        t_parameter* param = (t_parameter*) v.x;
+        t_param* param = (t_param*) v.x;
         param->register_node(this->x_node);
     }
 
@@ -137,7 +137,7 @@ void t_device :: unregister_children(){
     std::sort(params.begin(), params.end());
     std::cout << "params size: " << params.size() << std::endl;
     for (auto v : params){
-        t_parameter* param = (t_parameter*) v.x;
+        t_param* param = (t_param*) v.x;
         param->unregister();
     }
     /*

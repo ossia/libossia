@@ -111,14 +111,14 @@ public:
     }
 };
 
-/*!
- * \fn                static t_class* find_parent(t_eobj* x, t_symbol* classname)
- * \brief             Find the first instance of classname beside or above (in a parent patcher) context.
- * \details           The function iterate all objects at the same level or above x and return the first instance of classname found.
- * \param x           The object around which to search.
- * \param classname   The name of the object object we are looking for.
- * \param start_level Level above current object where to start. 0 for current patcher, 1 start searching in parent canvas.
- * \return The instance of the found object.
+/**
+ * @fn                static t_class* find_parent(t_eobj* x, t_symbol* classname)
+ * @brief             Find the first instance of classname beside or above (in a parent patcher) context.
+ * @details           The function iterate all objects at the same level or above x and return the first instance of classname found.
+ * @param x           The object around which to search.
+ * @param classname   The name of the object object we are looking for.
+ * @param start_level Level above current object where to start. 0 for current patcher, 1 start searching in parent canvas.
+ * @return The instance of the found object.
  */
 static t_pd* find_parent(t_eobj* x, t_symbol* classname, int start_level=0){
     t_canvas* canvas = x->o_canvas;
