@@ -74,6 +74,7 @@ bool t_remote :: register_node(ossia::net::node_base* node){
                 x_callbackit = x_node->getAddress()->add_callback([=](const ossia::value& v){
                     setValue(v);
                 });
+                x_node->getDevice().onAddressRemoving.connect<t_remote, &t_remote::addressRemovingHandler>(this);
                 return true;
             }
         }

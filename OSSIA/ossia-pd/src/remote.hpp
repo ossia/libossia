@@ -20,6 +20,11 @@ struct t_remote
     bool register_node(ossia::net::node_base* node);
     bool unregister();
     boost::optional<ossia::callback_container<ossia::value_callback>::iterator> x_callbackit;
+    void addressRemovingHandler(const ossia::net::address_base& address) {
+        x_callbackit = boost::none;
+        unregister();
+    };
+
     void quarantining();
     void dequarantining();
 
