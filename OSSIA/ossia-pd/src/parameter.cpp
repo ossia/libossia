@@ -72,7 +72,7 @@ bool t_param :: register_node(ossia::net::node_base* node){
             x_localAddress = x_node->createAddress(ossia::val_type::STRING);
         } else {
             x_localAddress = x_node->createAddress(ossia::val_type::FLOAT);
-            //TODO : set domain x_localAddress->setDomain()
+            x_localAddress->setDomain(ossia::net::make_domain(range[0],range[1]));
         }
         x_localAddress->add_callback([=](const ossia::value& v){
             setValue(v);
