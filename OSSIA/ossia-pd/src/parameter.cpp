@@ -89,9 +89,6 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
 
     if(x && d)
     {
-        x->x_absolute = false;
-        x->x_node = nullptr;
-        x->x_localAddress = nullptr;
         x->range[0] = std::numeric_limits<float>::min();
         x->range[1] = std::numeric_limits<float>::max();
 
@@ -103,15 +100,17 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
             x->x_name = atom_getsymbol(argv);
             if (x->x_name != osym_empty && x->x_name->s_name[0] == '/') x->x_absolute = true;
 
-            // if we only pass a default value without setting parameter type,
-            // the type is deduced from the default value (for now in Pd only symbol and float)
-            if(x->x_default.a_type == A_SYMBOL) x->x_type = gensym("symbol");
         } else {
             error("You have to pass a name as the first argument");
             x->x_name=gensym("untitledParam");
         }
 
         ebox_attrprocess_viabinbuf(x, d);
+
+        // if we only pass a default value without setting parameter type,
+        // the type is deduced from the default value (for now in Pd only symbol and float)
+        if(x->x_default.a_type == A_SYMBOL) x->x_type = gensym("symbol");
+        else x->x_type = gensym("float");
     }
 
     return (x);
@@ -134,18 +133,19 @@ extern "C" void setup_ossia0x2eparam(void)
         eclass_addmethod(c, (method) parameter_loadbang,   "loadbang",   A_NULL, 0);
         eclass_addmethod(c, (method) parameter_float,      "float",      A_FLOAT, 0);
         eclass_addmethod(c, (method) obj_set<t_param>,     "set",        A_GIMME, 0);
-        eclass_addmethod(c, (method) obj_bang<t_param>,       "bang",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_bang<t_param>,    "bang",       A_NULL, 0);
         eclass_addmethod(c, (method) parameter_dump,       "dump",       A_NULL, 0);
 
-        CLASS_ATTR_SYMBOL(c, "type",    1, t_param, x_type);
-        CLASS_ATTR_DEFAULT(c, "type",0,"float");
-        CLASS_ATTR_ATOM  (c, "default", 1, t_param, x_default);
-        CLASS_ATTR_FLOAT_ARRAY(c, "range", 0, t_param, range, 2);
-        CLASS_ATTR_FLOAT(c, "min", 0, t_param, range);
+        CLASS_ATTR_SYMBOL     (c, "type",    0, t_param, x_type);
+        CLASS_ATTR_ATOM       (c, "default", 0, t_param, x_default);
+        CLASS_ATTR_FLOAT_ARRAY(c, "range",   0, t_param, range, 2);
+        CLASS_ATTR_FLOAT      (c, "min",     0, t_param, range);
         // CLASS_ATTR_FLOAT(c, "max", 0, t_parameter, range+1);
         eclass_new_attr_typed(c,"max", "float", 1, 0, 0, calcoffset(t_param,range)+sizeof(float));
 
-        eclass_register(CLASS_OBJ, c);
+        CLASS_ATTR_DEFAULT(c, "type", 0, "float");
+
+        // eclass_register(CLASS_OBJ, c);
 
     }
 

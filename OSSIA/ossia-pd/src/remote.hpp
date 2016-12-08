@@ -9,13 +9,13 @@ struct t_remote
 {
     t_eobj      x_obj;
 
-    t_symbol*   x_name;
-    t_outlet*   x_setout;
-    t_outlet*   x_dataout;
-    t_outlet*   x_dumpout;
-    bool        x_absolute;
+    t_symbol*   x_name{};
+    t_outlet*   x_setout{};
+    t_outlet*   x_dataout{};
+    t_outlet*   x_dumpout{};
+    bool        x_absolute = false;
 
-    ossia::net::node_base* x_node;
+    ossia::net::node_base* x_node{};
     void setValue(const ossia::value& val);
     bool register_node(ossia::net::node_base* node);
     bool unregister();

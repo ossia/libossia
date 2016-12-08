@@ -10,6 +10,7 @@ static void device_loadbang(t_device* x){
     x->register_children();
 }
 
+// FIXME if device is created after param or remote, those are not register properly
 static void *device_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_device *x = (t_device *)eobj_new(device_class);
@@ -17,12 +18,8 @@ static void *device_new(t_symbol *name, int argc, t_atom *argv)
 
     if(x && d)
     {
-        x->x_device = nullptr;
-        x->x_node = nullptr;
-        x->x_localport = 6666;
-        x->x_remoteport = 9999;
         x->x_name = gensym("Pd");
-        x->x_remoteip = gensym("127.0.0.1");
+        // NOTE Don't know why this is not set by the CICM default setter
         x->x_protocol = gensym("Minuit");
 
         x->x_dumpout = outlet_new((t_object*)x,gensym("dumpout"));
@@ -173,13 +170,14 @@ extern "C" void setup_ossia0x2edevice(void)
 
         // TODO : add method to expose with other protocol/ports/IP
 
-        CLASS_ATTR_SYMBOL(c, "protocol",    1, t_device, x_protocol);
-        CLASS_ATTR_DEFAULT(c, "protocol", 0, "Minuit");
-        CLASS_ATTR_INT(c, "localport",    1, t_device, x_localport);
-        CLASS_ATTR_DEFAULT(c, "localport", 0, "6666");
-        CLASS_ATTR_SYMBOL(c, "remoteip",    1, t_device, x_remoteip);
-        CLASS_ATTR_DEFAULT(c, "remoteip",0,"127.0.0.1");
-        CLASS_ATTR_INT(c, "remoteport", 1, t_device, x_remoteport);
+        CLASS_ATTR_SYMBOL (c, "protocol",   0, t_device, x_protocol);
+        CLASS_ATTR_SYMBOL (c, "remoteip",   0, t_device, x_remoteip);
+        CLASS_ATTR_INT    (c, "localport",  0, t_device, x_localport);
+        CLASS_ATTR_INT    (c, "remoteport", 0, t_device, x_remoteport);
+
+        CLASS_ATTR_DEFAULT(c, "protocol",   0, "Minuit");
+        CLASS_ATTR_DEFAULT(c, "remoteip",   0, "127.0.0.1");
+        CLASS_ATTR_DEFAULT(c, "localport",  0, "6666");
         CLASS_ATTR_DEFAULT(c, "remoteport", 0, "9999");
     }
 

@@ -11,7 +11,7 @@ static void model_register(t_model *x)
     int l;
     if (!(device = (t_device*) find_parent(&x->x_obj,osym_device, 0, &l)))
     {
-        // TODO shouldn't things be set to null here ?
+        x->x_node = nullptr;
         return;
     }
     // look for an [ossia.model] instance in the parent patchers
@@ -99,9 +99,6 @@ static void *model_new(t_symbol *name, int argc, t_atom *argv)
 
     if(x)
     {
-        x->x_absolute = false;
-        x->x_node = nullptr;
-        x->x_dead = false;
         x->dumpout = outlet_new((t_object*)x, gensym("dumpout"));
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
