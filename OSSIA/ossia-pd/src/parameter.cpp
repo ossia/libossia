@@ -13,12 +13,12 @@ void t_param::setValue(const ossia::value& v){
     v.apply(vm);
 }
 
-static void parameter_dump(t_model *x)
+static void parameter_dump(t_param *x)
 {
     t_atom a;
     std::string fullpath = get_absolute_path(x->x_node);
     SETSYMBOL(&a,gensym(fullpath.c_str()));
-    outlet_anything(x->dumpout,gensym("fullpath"), 1, &a);
+    outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
 }
 
 void parameter_loadbang(t_param* x){

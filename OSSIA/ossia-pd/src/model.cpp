@@ -9,8 +9,11 @@ static void model_register(t_model *x)
     t_device* device = nullptr;
 
     int l;
-    if (!(device = (t_device*) find_parent(&x->x_obj,osym_device, 0, &l))) return;
-
+    if (!(device = (t_device*) find_parent(&x->x_obj,osym_device, 0, &l)))
+    {
+        // TODO shouldn't things be set to null here ?
+        return;
+    }
     // look for an [ossia.model] instance in the parent patchers
     t_model* model = find_parent_alive<t_model>(&x->x_obj,osym_model, 1, &l);
     if (model)  {
