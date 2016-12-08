@@ -46,8 +46,7 @@ extern "C" void ossia_setup(void)
 }
 
 // self registering (at loadbang or when creating the object)
-template<typename T>
-static bool obj_register(T *x)
+template<typename T> bool obj_register(T *x)
 {
     if (x->x_node) return true; // already registered
 
