@@ -36,3 +36,9 @@ struct t_remote
         return quarantine;
     }
 };
+
+static void remote_loadbang(t_remote *x){
+    std::cout << "[ossia.remote] loadbang" << std::endl;
+    bool res = obj_register<t_remote>(x);
+    // if (res) remote_bang(x); // if correctly registered then pull the value
+}

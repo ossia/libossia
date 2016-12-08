@@ -52,10 +52,6 @@ void t_remote :: quarantining(){
 void t_remote :: dequarantining(){
     remote_quarantine().erase(std::remove(remote_quarantine().begin(), remote_quarantine().end(), this), remote_quarantine().end());
 }
-static void remote_loadbang(t_remote *x){
-    std::cout << "[ossia.remote] loadbang" << std::endl;
-    if (obj_register<t_remote>(x)) remote_bang(x); // if correctly registered then pull the value
-}
 
 bool t_remote :: register_node(ossia::net::node_base* node){
 
