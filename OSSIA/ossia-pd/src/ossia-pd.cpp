@@ -123,3 +123,11 @@ template<typename T> void obj_set(T *x, t_symbol* , int argc, t_atom* argv){
 
 template void obj_set<t_param> (t_param  *x, t_symbol* s, int argc, t_atom* argv);
 template void obj_set<t_remote>(t_remote *x, t_symbol* s, int argc, t_atom* argv);
+
+template<typename T> void obj_bang(T *x){
+    if ( x->x_node && x->x_node->getAddress() ) x->x_node->getAddress()->pullValue();
+}
+
+template void obj_bang<t_param> (t_param  *x);
+template void obj_bang<t_remote>(t_remote *x);
+

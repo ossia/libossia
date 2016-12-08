@@ -12,11 +12,6 @@ void t_remote::setValue(const ossia::value& v){
     v.apply(vm);
 }
 
-static void remote_bang(t_remote *x){
-    if ( x->x_node && x->x_node->getAddress() ) x->x_node->getAddress()->pullValue();
-    else x->error();
-}
-
 void t_remote :: quarantining(){
     for (auto y : remote_quarantine()){
         if (y == this){
@@ -127,7 +122,7 @@ extern "C" void setup_ossia0x2eremote(void)
         eclass_addmethod(c, (method) remote_loadbang,   "loadbang",   A_NULL, 0);
         eclass_addmethod(c, (method) remote_float,      "float",      A_FLOAT, 0);
         eclass_addmethod(c, (method) obj_set<t_remote>, "set",        A_GIMME, 0);
-        eclass_addmethod(c, (method) remote_bang,       "bang",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_bang<t_remote>,"bang",       A_NULL, 0);
     }
 
     remote_class = c;

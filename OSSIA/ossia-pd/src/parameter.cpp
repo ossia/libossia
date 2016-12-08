@@ -21,10 +21,6 @@ static void parameter_dump(t_model *x)
     outlet_anything(x->dumpout,gensym("fullpath"), 1, &a);
 }
 
-static void parameter_bang(t_param *x){
-    if ( x->x_localAddress ) x->x_localAddress->pullValue();
-}
-
 void parameter_loadbang(t_param* x){
     std::cout << "[ossia.parameter] loadbang" << std::endl;
     obj_register<t_param>(x);
@@ -138,7 +134,7 @@ extern "C" void setup_ossia0x2eparam(void)
         eclass_addmethod(c, (method) parameter_loadbang,   "loadbang",   A_NULL, 0);
         eclass_addmethod(c, (method) parameter_float,      "float",      A_FLOAT, 0);
         eclass_addmethod(c, (method) obj_set<t_param>,     "set",        A_GIMME, 0);
-        eclass_addmethod(c, (method) parameter_bang,       "bang",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_bang<t_param>,       "bang",       A_NULL, 0);
         eclass_addmethod(c, (method) parameter_dump,       "dump",       A_NULL, 0);
 
         CLASS_ATTR_SYMBOL(c, "type",    1, t_param, x_type);
