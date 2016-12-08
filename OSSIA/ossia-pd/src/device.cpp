@@ -151,6 +151,16 @@ void t_device :: unregister_children(){
     */
 }
 
+static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
+    logpost((t_object*)x,2,"device_expose");
+    if (argc && argv->a_type == A_SYMBOL){
+        if (argv->a_w.w_symbol == gensym("Minuit")){
+            // TODO how to add protocol to actual device ?
+            // remote_ip remote_port local_port
+        }
+    }
+}
+
 extern "C" void setup_ossia0x2edevice(void)
 {
     t_eclass *c = eclass_new("ossia.device", (method)device_new, (method)device_free, (short)sizeof(t_device), CLASS_DEFAULT, A_GIMME, 0);
@@ -159,6 +169,7 @@ extern "C" void setup_ossia0x2edevice(void)
     {
         eclass_addmethod(c, (method) device_loadbang, "loadbang", A_NULL, 0);
         eclass_addmethod(c, (method) device_dump, "dump", A_NULL, 0);
+        eclass_addmethod(c, (method) device_expose, "expose", A_GIMME, 0);
 
         // TODO : add method to expose with other protocol/ports/IP
 
