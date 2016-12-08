@@ -8,10 +8,11 @@ static void model_register(t_model *x)
 {
     t_device* device = nullptr;
 
-    if (!(device = (t_device*) find_parent(&x->x_obj,osym_device, 0))) return;
+    int l;
+    if (!(device = (t_device*) find_parent(&x->x_obj,osym_device, 0, &l))) return;
 
     // look for an [ossia.model] instance in the parent patchers
-    t_model* model = find_parent_alive<t_model>(&x->x_obj,osym_model, 1);
+    t_model* model = find_parent_alive<t_model>(&x->x_obj,osym_model, 1, &l);
     if (model)  {
         x->register_node(model->x_node);
         std::cout << "found a parent model" << std::endl;
