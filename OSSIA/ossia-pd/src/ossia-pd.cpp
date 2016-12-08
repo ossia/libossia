@@ -8,6 +8,7 @@
 #include "ossia-pd.hpp"
 #include "model.hpp"
 #include "device.hpp"
+#include "view.hpp"
 #include "remote.hpp"
 #include "parameter.hpp"
 

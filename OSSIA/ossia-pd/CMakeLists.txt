@@ -70,7 +70,9 @@ set(PROJECT_SRCS
   src/parameter.cpp
   src/parameter.hpp
   src/remote.cpp
-  src/remote.hpp)
+  src/remote.hpp
+  src/view.cpp
+  src/view.hpp)
 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
 use_gold(${PROJECT_NAME})
