@@ -13,26 +13,6 @@ void t_param::setValue(const ossia::value& v){
     v.apply(vm);
 }
 
-static void parameter_set(t_param *x, t_symbol* s, int argc, t_atom* argv){
-    if ( x->x_localAddress ){
-        while(argc--){
-            switch(argv->a_type){
-            case A_FLOAT:
-                x->x_localAddress->pushValue(float(argv->a_w.w_float));
-                break;
-            case A_SYMBOL:
-            {
-                x->x_localAddress->pushValue(std::string(argv->a_w.w_symbol->s_name));
-                break;
-            }
-            default:
-                pd_error(x,"atom type %d is not supported", argv->a_type);
-            }
-            argv++;
-        }
-    }
-}
-
 static void parameter_dump(t_model *x)
 {
     t_atom a;
@@ -78,7 +58,7 @@ bool t_param :: register_node(ossia::net::node_base* node){
             setValue(v);
         });
         if (x_default.a_type != A_NULL){
-            parameter_set(this,gensym("set"),1,&x_default);
+            obj_set<t_param>(this,gensym("set"),1,&x_default);
         }
     } else {
         return false;
@@ -157,7 +137,7 @@ extern "C" void setup_ossia0x2eparam(void)
     {
         eclass_addmethod(c, (method) parameter_loadbang,   "loadbang",   A_NULL, 0);
         eclass_addmethod(c, (method) parameter_float,      "float",      A_FLOAT, 0);
-        eclass_addmethod(c, (method) parameter_set,        "set",        A_GIMME, 0);
+        eclass_addmethod(c, (method) obj_set<t_param>,     "set",        A_GIMME, 0);
         eclass_addmethod(c, (method) parameter_bang,       "bang",       A_NULL, 0);
         eclass_addmethod(c, (method) parameter_dump,       "dump",       A_NULL, 0);
 

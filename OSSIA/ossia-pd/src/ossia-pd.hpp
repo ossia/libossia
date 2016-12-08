@@ -255,3 +255,4 @@ static std::string get_absolute_path(ossia::net::node_base* node)
 }
 
 template<typename T> extern bool obj_register(T *x);
+template<typename T> extern void obj_set(T *x, t_symbol* s, int argc, t_atom* argv);

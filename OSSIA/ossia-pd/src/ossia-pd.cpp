@@ -100,3 +100,26 @@ template bool obj_register<t_param> (t_param *x);
 template bool obj_register<t_remote>(t_remote *x);
 template bool obj_register<t_model> (t_model *x);
 template bool obj_register<t_view>  (t_view *x);
+
+template<typename T> void obj_set(T *x, t_symbol* , int argc, t_atom* argv){
+    if ( x->x_node && x->x_node->getAddress() ){
+        while(argc--){
+            switch(argv->a_type){
+            case A_FLOAT:
+                x->x_node->getAddress()->pushValue(float(argv->a_w.w_float));
+                break;
+            case A_SYMBOL:
+            {
+                x->x_node->getAddress()->pushValue(std::string(argv->a_w.w_symbol->s_name));
+                break;
+            }
+            default:
+                pd_error(x,"atom type %d is not supported", argv->a_type);
+            }
+            argv++;
+        }
+    }
+}
+
+template void obj_set<t_param> (t_param  *x, t_symbol* s, int argc, t_atom* argv);
+template void obj_set<t_remote>(t_remote *x, t_symbol* s, int argc, t_atom* argv);
