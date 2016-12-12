@@ -1,4 +1,5 @@
 #include <ossia/editor/scenario/clock.hpp>
+#include <ossia/detail/math.hpp>
 #include <cassert>
 #include <iostream>
 
@@ -61,7 +62,7 @@ bool clock::tick()
   if (paused || !running)
     return false;
 
-  int64_t granularityInUs(std::llround(mGranularity * 1000.));
+  int64_t granularityInUs(ossia::llround(mGranularity * 1000.));
   int64_t droppedTicks = 0;
 
   // how many time since the last tick ?
@@ -78,7 +79,7 @@ bool clock::tick()
   else
   {
     // how much ticks it represents ?
-    droppedTicks = std::llround(std::floor(deltaInUs / granularityInUs));
+    droppedTicks = ossia::llround(std::floor(deltaInUs / granularityInUs));
 
     // adjust date and elapsed time considering the dropped ticks
     if (droppedTicks)
@@ -163,11 +164,11 @@ bool clock::tick(time_value usec)
   if (mPaused || !mRunning)
     return false;
 
-  int64_t granularityInUs(std::llround(mGranularity * 1000));
+  int64_t granularityInUs(ossia::llround(mGranularity * 1000));
   int64_t droppedTicks = 0;
 
   // how many time since the last tick ?
-  int64_t deltaInUs = std::llround(usec);
+  int64_t deltaInUs = ossia::llround(usec);
 
   assert(mDriveMode == clock::DriveMode::EXTERNAL);
   // if too early: avoid this tick

@@ -7,6 +7,7 @@
 #include <oscpack/osc/OscPrintReceivedElements.h>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
+#include <ossia/detail/string_view.hpp>
 
 namespace ossia
 {
@@ -36,7 +37,7 @@ minuit_protocol::minuit_protocol(
   if(mReceiver->port() != local_port)
   {
     throw ossia::connection_error{"minuit_protocol::minuit_protocol: "
-                                  "Could not connect to port: " + std::to_string(local_port)};
+                                  "Could not connect to port: " + boost::lexical_cast<std::string>(local_port)};
   }
 
   name_table.set_device_name(mLocalName);
@@ -315,7 +316,11 @@ void minuit_protocol::namespace_refresh(ossia::string_view req, const std::strin
 void minuit_protocol::namespace_refreshed(ossia::string_view addr)
 {
   lock_type lock(mNamespaceRequestsMutex);
+#if defined(__ANDROID_API__)
+  auto it = mNamespaceRequests.find(addr.to_string());
+#else
   auto it = mNamespaceRequests.find(addr);
+#endif
   if (it != mNamespaceRequests.end())
   {
     mNamespaceRequests.erase(it);

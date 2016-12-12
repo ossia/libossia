@@ -3,6 +3,8 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/detail/optional.hpp>
 #include <boost/iterator/counting_iterator.hpp>
+#define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
+#include <boost/lexical_cast.hpp>
 #include <iostream>
 namespace ossia
 {
@@ -36,7 +38,7 @@ std::string sanitize_name(std::string name_base, const std::vector<std::string>&
     {
       try
       {
-        name_instance = std::stoi(name.substr(pos + 1)); // OPTIMIZEME
+        name_instance = boost::lexical_cast<int>(name.substr(pos + 1)); // OPTIMIZEME
         root_name = name.substr(0, pos);
       }
       catch (...)
@@ -62,7 +64,7 @@ std::string sanitize_name(std::string name_base, const std::vector<std::string>&
       // Instance
       try
       {
-        int n = std::stoi(n_name.substr(root_len + 1)); // OPTIMIZEME
+        int n = boost::lexical_cast<int>(n_name.substr(root_len + 1)); // OPTIMIZEME
         instance_num.push_back(n);
       }
       catch (...)
@@ -91,7 +93,7 @@ std::string sanitize_name(std::string name_base, const std::vector<std::string>&
     else
     {
       std::sort(instance_num.begin(), instance_num.end());
-      return root_name + "." + std::to_string(instance_num.back() + 1);
+      return root_name + "." + boost::lexical_cast<std::string>(instance_num.back() + 1);
     }
   }
 }

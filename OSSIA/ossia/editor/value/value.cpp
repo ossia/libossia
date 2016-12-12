@@ -132,11 +132,11 @@ std::string to_pretty_string(const destination_index& index)
   if(n > 0)
   {
     str += "[";
-    str += std::to_string(index[0]);
+    str += boost::lexical_cast<std::string>(index[0]);
 
     for(int i = 1; i < n; i++)
     {
-      str += ", " + std::to_string(index[i]);
+      str += ", " + boost::lexical_cast<std::string>(index[i]);
     }
     str += "]";
   }

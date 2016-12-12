@@ -14,7 +14,7 @@ struct midi_name_table
   midi_name_table()
   {
     for(int i = 0; i < 128; i++)
-      names[i] = std::to_string(i);
+      names[i] = boost::lexical_cast<std::string>(i);
   }
 
   std::array<std::string, 128> names;
