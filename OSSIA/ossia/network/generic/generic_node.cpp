@@ -31,6 +31,7 @@ generic_node::~generic_node()
 
 ossia::net::node_base& generic_node::setName(std::string name)
 {
+  auto old_name = mName;
   if(mParent)
   {
     auto& bros = mParent->mChildren;
@@ -48,7 +49,7 @@ ossia::net::node_base& generic_node::setName(std::string name)
   }
 
   // notify observers
-  mDevice.onNodeRenamed(*this, mName);
+  mDevice.onNodeRenamed(*this, old_name);
 
   return *this;
 }

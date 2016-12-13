@@ -102,7 +102,7 @@ else()
     set(OSSIA_LINK_OPTIONS
         -ffunction-sections
         -fdata-sections
-        -gdwarf-4
+        -gdwarf-5
         )
 
     if(CMAKE_COMPILER_IS_GNUCXX)
