@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/osc/detail/string_view.hpp>
-#include <boost/container/small_vector.hpp>
+#include <chobo/small_vector.hpp>
 #include <oscpack/osc/OscOutboundPacketStream.h>
 #include <ossia/network/base/address.hpp>
 

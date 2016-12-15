@@ -8,7 +8,7 @@
 #include <oscpack/osc/OscReceivedElements.h>
 #include <oscpack/osc/OscPrintReceivedElements.h>
 #include <ossia/network/osc/detail/sender.hpp>
-#include <boost/container/small_vector.hpp>
+#include <chobo/small_vector.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #define MINUIT_WAIT_TIME
 namespace ossia
@@ -311,7 +311,7 @@ inline ossia::net::domain get_domain(
     oscpack::ReceivedMessageArgumentIterator beg_it,
     oscpack::ReceivedMessageArgumentIterator end_it)
 {
-  boost::container::small_vector<ossia::value, 2> val;
+  chobo::small_vector<ossia::value, 2> val;
   const auto cur = addr.cloneValue();
 
   // We read all the values one by one
