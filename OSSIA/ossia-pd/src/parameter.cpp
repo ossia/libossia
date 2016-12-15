@@ -95,6 +95,7 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
         x->x_setout  = outlet_new((t_object*)x,nullptr);
         x->x_dataout = outlet_new((t_object*)x,nullptr);
         x->x_dumpout = outlet_new((t_object*)x,gensym("dumpout"));
+        x->x_node = nullptr;
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
