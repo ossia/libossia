@@ -21,6 +21,9 @@ static void *device_new(t_symbol *name, int argc, t_atom *argv)
         x->x_name = gensym("Pd");
         // NOTE Don't know why this is not set by the CICM default setter
         x->x_protocol = gensym("Minuit");
+        x->x_remoteip = gensym("127.0.0.1");
+        x->x_localport = 9998;
+        x->x_remoteport = 13579;
 
         x->x_dumpout = outlet_new((t_object*)x,gensym("dumpout"));
 
@@ -177,8 +180,8 @@ extern "C" void setup_ossia0x2edevice(void)
 
         CLASS_ATTR_DEFAULT(c, "protocol",   0, "Minuit");
         CLASS_ATTR_DEFAULT(c, "remoteip",   0, "127.0.0.1");
-        CLASS_ATTR_DEFAULT(c, "localport",  0, "6666");
-        CLASS_ATTR_DEFAULT(c, "remoteport", 0, "9999");
+        CLASS_ATTR_DEFAULT(c, "localport",  0, "9998");
+        CLASS_ATTR_DEFAULT(c, "remoteport", 0, "13579");
     }
 
     device_class = c;
