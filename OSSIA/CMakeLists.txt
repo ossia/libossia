@@ -149,6 +149,9 @@ if(WIN32)
     target_link_libraries(ossia PRIVATE Ws2_32 winmm)
 endif()
 
+find_package(Threads)
+target_link_libraries(ossia PUBLIC ${CMAKE_THREAD_LIBS_INIT} )
+
 target_compile_options(ossia PRIVATE ${OSSIA_COMPILE_OPTIONS})
 target_link_libraries(ossia PRIVATE ${OSSIA_LINK_OPTIONS})
 
