@@ -27,4 +27,5 @@ struct t_param
     void setValue(const ossia::value& val);
     bool register_node(ossia::net::node_base* node);
     bool unregister();
+    void isDeleted(const ossia::net::node_base& n);
 };

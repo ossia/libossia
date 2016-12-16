@@ -22,7 +22,6 @@ static void parameter_dump(t_param *x)
 }
 
 void parameter_loadbang(t_param* x){
-    std::cout << "[ossia.parameter] loadbang" << std::endl;
     obj_register<t_param>(x);
 }
 
@@ -44,6 +43,7 @@ bool t_param :: register_node(ossia::net::node_base* node){
         }
         std::cout << "create node :  " << x_name->s_name << std::endl;
         x_node = node->createChild(x_name->s_name);
+        x_node->aboutToBeDeleted.connect<t_param, &t_param::isDeleted>(this);
         if(x_type == gensym("symbol")){
             x_localAddress = x_node->createAddress(ossia::val_type::STRING);
         } else {
@@ -71,6 +71,13 @@ bool t_param :: unregister(){
         x_localAddress = nullptr;
     }
     return true;
+}
+
+void t_param :: isDeleted(const ossia::net::node_base& n)
+{
+    std::cout << "[ossia.param] parameter is unregistered : " << x_name->s_name << std::endl;
+    x_node = nullptr;
+    x_localAddress = nullptr;
 }
 
 static void parameter_float(t_param *x, t_float val){
