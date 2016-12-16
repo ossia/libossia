@@ -43,6 +43,7 @@ extern "C" void ossia_setup(void)
     setup_ossia0x2edevice();
     setup_ossia0x2eparam();
     setup_ossia0x2eremote();
+    setup_ossia0x2eview();
 }
 
 // self registering (at loadbang or when creating the object)
