@@ -2,6 +2,7 @@
 #include "model.hpp"
 #include "parameter.hpp"
 #include "remote.hpp"
+#include "view.hpp"
 
 static t_eclass *device_class;
 
@@ -106,13 +107,12 @@ void t_device :: register_children(){
         remote->register_node(this->x_node);
     }
 
-    /*
-    std::vector<t_pd*> views = find_child(x_obj.o_canvas->gl_list, osym_view, 0);
+    std::vector<obj_hierachy> views = find_child(x_obj.o_canvas->gl_list, osym_view, 0);
+    std::sort(views.begin(), views.end());
     for (auto v : views){
-        t_view* view = (t_view*) v;
-        view->register_device(this);
+        t_view* view = (t_view*) v.x;
+        view->register_node(this->x_node);
     }
-    */
 }
 
 void t_device :: unregister_children(){
