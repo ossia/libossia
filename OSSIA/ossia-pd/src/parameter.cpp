@@ -29,12 +29,14 @@ bool t_param :: register_node(ossia::net::node_base* node){
 
     if(node){
         std::cout << "[ossia.param] :  x->x_node->children.size() : " << node->children().size() << std::endl;
-        for (const auto& child : node->children()){
-            if(child->getName() == x_name->s_name){
-                pd_error(this, "a parameter with adress '%s' already exists.", x_name->s_name);
-                return false;
-            }
+
+        x_node = node->findChild(x_name->s_name);
+        if(x_node){
+            pd_error(this, "a parameter with adress '%s' already exists.", x_name->s_name);
+            x_node = nullptr;
+            return false;
         }
+
         std::cout << "create node :  " << x_name->s_name << std::endl;
         x_node = node->createChild(x_name->s_name);
         x_node->aboutToBeDeleted.connect<t_param, &t_param::isDeleted>(this);

@@ -29,17 +29,14 @@ bool t_remote :: register_node(ossia::net::node_base* node){
     std::cout << "[ossia.remote] register remote : " << x_name->s_name << std::endl;
 
     if(node){
-        for (const auto& child : node->children()){
-            std::cout << "childe name: " << child->getName() << std::endl;
-            if(child->getName() == x_name->s_name){
-                x_node = child.get();
-
-                x_callbackit = x_node->getAddress()->add_callback([=](const ossia::value& v){
-                    setValue(v);
-                });
-                x_node->getDevice().onAddressRemoving.connect<t_remote, &t_remote::addressRemovingHandler>(this);
-                return true;
-            }
+        x_node = node->findChild(x_name->s_name);
+        if (x_node){
+            x_callbackit = x_node->getAddress()->add_callback([=](const ossia::value& v){
+                setValue(v);
+            });
+            x_node->aboutToBeDeleted.connect<t_remote, &t_remote::isDeleted>(this);
+            x_node->getDevice().onAddressRemoving.connect<t_remote, &t_remote::addressRemovingHandler>(this);
+            return true;
         }
     } else {
         return false;

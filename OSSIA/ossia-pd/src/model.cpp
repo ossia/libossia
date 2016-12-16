@@ -44,12 +44,7 @@ bool t_model :: register_node(ossia::net::node_base*  node){
     x_node = nullptr;
 
     if (node){
-        for (const auto& child : node->children()){
-            if (child->getName() == x_name->s_name){
-                x_node = child.get();
-                break;
-            }
-        }
+        x_node = node->findChild(x_name->s_name);
         if (!x_node) x_node = node->createChild(x_name->s_name);
 
         std::cout << "[ossia.model] : model node : " << x_node->getName() << std::endl;
