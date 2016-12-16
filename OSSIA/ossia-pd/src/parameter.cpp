@@ -7,12 +7,6 @@ static t_eclass *parameter_class;
 
 static void parameter_free(t_param* x);
 
-void t_param::setValue(const ossia::value& v){
-    value_visitor<t_param> vm;
-    vm.x = (t_param*) &x_obj;
-    v.apply(vm);
-}
-
 static void parameter_dump(t_param *x)
 {
     t_atom a;

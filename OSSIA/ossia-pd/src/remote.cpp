@@ -6,12 +6,6 @@ static t_eclass *remote_class;
 
 static void remote_free(t_remote* x);
 
-void t_remote::setValue(const ossia::value& v){
-    value_visitor<t_remote> vm;
-    vm.x = (t_remote*) &x_obj;
-    v.apply(vm);
-}
-
 void t_remote :: quarantining(){
     for (auto y : remote_quarantine()){
         if (y == this){

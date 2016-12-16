@@ -69,8 +69,10 @@ set(PROJECT_SRCS
   src/device.hpp
   src/model.cpp
   src/model.hpp
-  src/ossia-pd.hpp
   src/ossia-pd.cpp
+  src/ossia-pd.hpp
+  src/ossia_obj_base.cpp
+  src/ossia_obj_base.hpp
   src/parameter.cpp
   src/parameter.hpp
   src/remote.cpp
