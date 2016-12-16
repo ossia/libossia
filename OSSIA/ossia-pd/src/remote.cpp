@@ -53,7 +53,7 @@ bool t_remote :: unregister(){
         x_callbackit = boost::none;
     }
     quarantining();
-    std::cout << "remote_quarantine size: " << remote_quarantine().size() << std::endl;
+    std::cout << "remote_quarantine size: " << std::dec << remote_quarantine().size() << std::endl;
 
     x_node = nullptr;
     return true;
@@ -67,6 +67,7 @@ static void remote_float(t_remote *x, t_float val){
     }
 }
 
+// TODO when we create the remote after the view it is not connected to node
 static void *remote_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_remote *x = (t_remote *)eobj_new(remote_class);
@@ -78,6 +79,7 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
         x->x_setout = outlet_new((t_object*)x, nullptr);
         x->x_dataout = outlet_new((t_object*)x,nullptr);
         x->x_dumpout = outlet_new((t_object*)x,gensym("dumpout"));
+        x->x_callbackit = boost::none;
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);

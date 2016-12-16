@@ -35,7 +35,7 @@ static void model_dump(t_model *x)
     t_atom a;
     std::string fullpath = get_absolute_path(x->x_node);
     SETSYMBOL(&a,gensym(fullpath.c_str()));
-    outlet_anything(x->dumpout,gensym("fullpath"), 1, &a);
+    outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
 }
 
 bool t_model :: register_node(ossia::net::node_base*  node){
@@ -94,7 +94,7 @@ static void *model_new(t_symbol *name, int argc, t_atom *argv)
 
     if(x)
     {
-        x->dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+        x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
