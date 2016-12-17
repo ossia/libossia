@@ -9,7 +9,6 @@ static void remote_free(t_remote* x);
 void t_remote :: quarantining(){
     for (auto y : remote_quarantine()){
         if (y == this){
-            std::cerr << "already in quarantine" << std::endl;
             return;
         }
     }
@@ -25,8 +24,6 @@ bool t_remote :: register_node(ossia::net::node_base* node){
     if (x_node && x_node->getParent() == node ) return true; // already register to this node;
 
     unregister(); // we should unregister here because we may have add a node between the registered node and the remote
-
-    std::cout << "[ossia.remote] register remote : " << x_name->s_name << std::endl;
 
     if(node){
         x_node = node->findChild(x_name->s_name);
@@ -45,15 +42,12 @@ bool t_remote :: register_node(ossia::net::node_base* node){
 }
 
 bool t_remote :: unregister(){
-    std::cout << "unregister remote : " << x_name->s_name << std::endl;
-
     if (x_callbackit != boost::none) {
         // we have to remove the callback, but assigning x_callbackit to dummy_list.end(); seems weird to me..., have to think about a better solution
         x_node->getAddress()->remove_callback(*x_callbackit);
         x_callbackit = boost::none;
     }
     quarantining();
-    std::cout << "remote_quarantine size: " << std::dec << remote_quarantine().size() << std::endl;
 
     x_node = nullptr;
     return true;
