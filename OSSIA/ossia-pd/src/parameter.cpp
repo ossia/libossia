@@ -92,8 +92,8 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
 
     if(x && d)
     {
-        x->range[0] = std::numeric_limits<float>::min();
-        x->range[1] = std::numeric_limits<float>::max();
+        x->range[0] = 0.;
+        x->range[1] = 1.;
 
         x->x_setout  = outlet_new((t_object*)x,nullptr);
         x->x_dataout = outlet_new((t_object*)x,nullptr);
