@@ -111,3 +111,9 @@ void push_value(const Destination& d, const value_with_unit& v)
 
 }
 }
+
+std::ostream& operator<<(std::ostream& s, const ossia::net::address_base& addr)
+{
+  return s << ossia::net::address_string_from_node(addr);
+}
+

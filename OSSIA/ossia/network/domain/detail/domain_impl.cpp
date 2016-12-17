@@ -1,6 +1,6 @@
 #include <ossia/network/domain/detail/apply_domain.hpp>
 #include <ossia/network/domain/domain_conversion.hpp>
-
+#include <fmt/format.h>
 namespace ossia
 {
 namespace net
@@ -20,6 +20,58 @@ value domain::apply(bounding_mode b, const ossia::value& val) const
 { return net::apply_domain(*this, b, val); }
 value domain::apply(bounding_mode b, ossia::value&& val) const
 { return net::apply_domain(*this, b, std::move(val)); }
+
+struct domain_prettyprint_visitor
+{
+  fmt::MemoryWriter& writer;
+  template<typename Domain>
+  void operator()(Domain& dom)
+  {
+    if(dom.min)
+    {
+      writer << "min:";
+      writer << *dom.min;
+    }
+
+    if(dom.max)
+    {
+      writer << "max:";
+      writer << *dom.max;
+    }
+
+  }
+
+  void operator()(domain_base<bool>& dom)
+  {
+    writer << true << "bool";
+  }
+  void operator()(domain_base<Impulse>& dom)
+  {
+    writer << "impulse";
+  }
+
+  void operator()(domain_base<std::string>& dom)
+  {
+    writer << "string";
+  }
+
+  void operator()(domain_base<ossia::value>& dom)
+  {
+    writer << "generic";
+  }
+
+  void operator()(domain_base<std::vector<ossia::value>>& dom)
+  {
+    writer << "tuple";
+  }
+};
+
+std::string domain::to_pretty_string() const
+{
+  fmt::MemoryWriter s;
+  eggs::variants::apply(domain_prettyprint_visitor{s}, (domain_base_variant&)*this);
+  return s.str();
+}
 
 template<typename Domain>
 template<typename U>
@@ -1012,4 +1064,11 @@ ossia::value apply_domain_visitor::operator()(const std::array<float, 4>& value,
 { return vec_clamp<4>{ossia::net::domain_conversion<domain_base<std::array<float, 4>>>{}.tuple_func(domain)}(b, value); }
 
 }
+}
+
+std::ostream& operator<<(std::ostream& s, const ossia::net::domain& d)
+{
+  // OPTIMIZEME
+  s << d.to_pretty_string();
+  return s;
 }

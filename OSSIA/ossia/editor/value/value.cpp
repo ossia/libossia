@@ -523,8 +523,6 @@ bool operator<=(const value& lhs, const value& rhs)
 
 namespace
 {
-
-static void getTupleAsString(const std::vector<ossia::value>& tuple, fmt::MemoryWriter&);
 struct value_prettyprint_visitor
 {
   fmt::MemoryWriter& s;
@@ -555,15 +553,18 @@ struct value_prettyprint_visitor
   }
   void operator()(Vec2f vec) const
   {
-    s << "vec2f: [" << vec[0] << " " << vec[1] << "]";
+    s << "vec2f: ";
+    s << vec;
   }
   void operator()(Vec3f vec) const
   {
-    s << "vec3f: [" << vec[0] << " " << vec[1] << " " << vec[2] << "]";
+    s << "vec3f: ";
+    s << vec;
   }
   void operator()(Vec4f vec) const
   {
-    s << "vec4f: [" << vec[0] << " " << vec[1] << " " << vec[2] << " " << vec[3] << "]";
+    s << "vec4f: ";
+    s << vec;
   }
   void operator()(const Destination& d) const
   {
@@ -575,8 +576,7 @@ struct value_prettyprint_visitor
   }
   void operator()(const std::vector<ossia::value>& t) const
   {
-    s << "tuple:";
-    getTupleAsString(t, s);
+    s << "tuple:" << t;
   }
   void operator()() const
   {
@@ -584,24 +584,6 @@ struct value_prettyprint_visitor
   }
 };
 
-static void getTupleAsString(const std::vector<ossia::value>& tuple, fmt::MemoryWriter& s)
-{
-  value_prettyprint_visitor vis{s};
-
-  int n = tuple.size();
-
-  s << "[";
-  for (int i = 0; i < n; i++)
-  {
-    const auto& val = tuple[i];
-
-    if (val.valid())
-      eggs::variants::apply(vis, val.v);
-    if (i < n - 1)
-      s << ", ";
-  }
-  s << "]";
-}
 }
 
 std::string value_to_pretty_string(const ossia::value& val)
@@ -669,4 +651,60 @@ value::~value() noexcept
 
 }
 
+}
+
+fmt::MemoryWriter&operator<<(fmt::MemoryWriter& s, const std::vector<ossia::value>& tuple)
+{
+  ossia::value_prettyprint_visitor vis{s};
+
+  const int n = tuple.size();
+
+  s << "[";
+  for (int i = 0; i < n; i++)
+  {
+    const auto& val = tuple[i];
+
+    if (val.valid())
+      eggs::variants::apply(vis, val.v);
+    if (i < n - 1)
+      s << ", ";
+  }
+  s << "]";
+  return s;
+}
+
+fmt::MemoryWriter&operator<<(fmt::MemoryWriter& s, const std::array<float, 2>& vec)
+{
+  s << "[" << vec[0] << " " << vec[1] << "]";
+  return s;
+}
+
+fmt::MemoryWriter&operator<<(fmt::MemoryWriter& s, const std::array<float, 3>& vec)
+{
+  s << "[" << vec[0] << " " << vec[1] << " " << vec[2] << "]";
+  return s;
+}
+
+fmt::MemoryWriter&operator<<(fmt::MemoryWriter& s, const std::array<float, 4>& vec)
+{
+  s << "[" << vec[0] << " " << vec[1] << " " << vec[2] << " " << vec[3] << "]";
+  return s;
+}
+
+std::ostream& operator<<(std::ostream& s, const std::vector<std::string>& tuple)
+{
+  const int n = tuple.size();
+
+  s << "[";
+  if(!tuple.empty())
+  {
+    s << tuple[0];
+    for (int i = 1; i < n; i++)
+    {
+      s << ", " << tuple[i];
+    }
+  }
+  s << "]";
+
+  return s;
 }

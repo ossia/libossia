@@ -233,7 +233,7 @@ struct OSSIA_EXPORT domain final : public domain_base_variant
   OSSIA_DECL_RELAXED_CONSTEXPR domain() noexcept { }
 
   template<typename T>
-  domain(const T& arg): domain_base_variant(arg) { }
+  domain(const ossia::net::domain_base<T>& arg): domain_base_variant(arg) { }
   domain(const domain& d) : domain_base_variant{ (const domain_base_variant&)d } { }
   domain(domain&& d) : domain_base_variant{ std::move((domain_base_variant&)d) } { }
   domain& operator=(const domain& d) { ((domain_base_variant&)(*this)) = (const domain_base_variant&)d; return *this; }
@@ -283,6 +283,8 @@ struct OSSIA_EXPORT domain final : public domain_base_variant
   value apply(
       bounding_mode b,
       ossia::value&& val) const;
+
+  std::string to_pretty_string() const;
 };
 }
 }

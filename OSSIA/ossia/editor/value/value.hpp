@@ -5,6 +5,13 @@
 
 #include <ossia_export.h>
 
+namespace fmt
+{
+template<typename T, typename Allocator>
+class BasicMemoryWriter;
+using MemoryWriter = BasicMemoryWriter<char, std::allocator<char>>;
+}
+
 namespace ossia
 {
 namespace detail
@@ -352,3 +359,9 @@ ossia::value get_value_at_index(
     const ossia::value& val,
     const ossia::destination_index& idx);
 }
+
+fmt::MemoryWriter& operator<<(fmt::MemoryWriter&, const std::vector<ossia::value>& tuple);
+fmt::MemoryWriter& operator<<(fmt::MemoryWriter&, const std::array<float, 2ul>& tuple);
+fmt::MemoryWriter& operator<<(fmt::MemoryWriter&, const std::array<float, 3ul>& tuple);
+fmt::MemoryWriter& operator<<(fmt::MemoryWriter&, const std::array<float, 4ul>& tuple);
+std::ostream& operator<<(std::ostream&, const std::vector<std::string>& tuple);

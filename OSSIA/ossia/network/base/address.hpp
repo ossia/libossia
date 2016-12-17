@@ -228,3 +228,6 @@ OSSIA_EXPORT ossia::value_with_unit get_value(const ossia::Destination& addr);
 OSSIA_EXPORT void push_value(const ossia::Destination& addr, const ossia::value_with_unit&);
 }
 }
+
+std::ostream& operator<<(std::ostream&, const ossia::net::address_base&);
+
