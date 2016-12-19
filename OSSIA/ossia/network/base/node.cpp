@@ -100,6 +100,16 @@ std::string sanitize_name(std::string name_base, const std::vector<std::string>&
 
 node_base::~node_base() = default;
 
+ossia::optional<instance_bounds> node_base::getDynamicInstances() const
+{
+  return mInstances;
+}
+
+void node_base::setDynamicInstances(ossia::optional<instance_bounds> i)
+{
+  mInstances = i;
+}
+
 node_base* node_base::createChild(const std::string& name)
 {
   auto& dev = getDevice();
