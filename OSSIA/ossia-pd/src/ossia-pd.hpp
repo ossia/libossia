@@ -241,7 +241,7 @@ static std::string get_absolute_path(ossia::net::node_base* node)
     std::vector<std::string> vs;
     while (node){
         std::string name;
-        name = node->getName(); // FIXME why this crash ?
+        name = node->getName();
         vs.push_back(name);
         node = node->getParent();
     }

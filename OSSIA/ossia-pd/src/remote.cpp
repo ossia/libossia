@@ -66,8 +66,6 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_remote *x = (t_remote *)eobj_new(remote_class);
 
-    std::cout<< "[ossia.remote]: new instance" << std::endl;
-
     if(x)
     {
         x->x_setout = outlet_new((t_object*)x, nullptr);

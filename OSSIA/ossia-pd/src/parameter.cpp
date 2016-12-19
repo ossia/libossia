@@ -7,6 +7,7 @@ static t_eclass *parameter_class;
 
 static void parameter_free(t_param* x);
 
+// TODO put this in base class or templatize
 static void parameter_dump(t_param *x)
 {
     t_atom a;
@@ -25,19 +26,15 @@ bool t_param :: register_node(ossia::net::node_base* node){
 
     unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
 
-    std::cout << "[ossia.param] : register parameter : " << x_name->s_name << std::endl;
 
     if(node){
-        std::cout << "[ossia.param] :  x->x_node->children.size() : " << node->children().size() << std::endl;
-
         x_node = node->findChild(x_name->s_name);
         if(x_node){
-            pd_error(this, "a parameter with adress '%s' already exists.", x_name->s_name);
+            // pd_error(this, "a parameter with adress '%s' already exists.", x_name->s_name);
             x_node = nullptr;
             return false;
         }
 
-        std::cout << "create node :  " << x_name->s_name << std::endl;
         x_node = node->createChild(x_name->s_name);
         x_node->aboutToBeDeleted.connect<t_param, &t_param::isDeleted>(this);
         if(x_type == gensym("symbol")){
@@ -60,7 +57,6 @@ bool t_param :: register_node(ossia::net::node_base* node){
 }
 
 bool t_param :: unregister(){
-    std::cout << "[ossia.param] unregister parameter : " << x_name->s_name << std::endl;
     if (x_node) {
         x_node->getParent()->removeChild(x_name->s_name);
         x_node = nullptr;
@@ -71,7 +67,6 @@ bool t_param :: unregister(){
 
 void t_param :: isDeleted(const ossia::net::node_base& n)
 {
-    std::cout << "[ossia.param] parameter is unregistered : " << x_name->s_name << std::endl;
     x_node = nullptr;
     x_localAddress = nullptr;
 }
@@ -85,8 +80,6 @@ static void parameter_float(t_param *x, t_float val){
 static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_param *x = (t_param *)eobj_new(parameter_class);
-
-    std::cout << "[ossia.parameter] new instance: " << std::hex << x << std::endl;
 
     t_binbuf* d = binbuf_via_atoms(argc,argv);
 
@@ -105,7 +98,7 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
             if (x->x_name != osym_empty && x->x_name->s_name[0] == '/') x->x_absolute = true;
 
         } else {
-            error("You have to pass a name as the first argument");
+            pd_error(x,"You have to pass a name as the first argument");
             x->x_name=gensym("untitledParam");
         }
 

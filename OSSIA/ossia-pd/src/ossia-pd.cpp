@@ -59,14 +59,11 @@ template<typename T> bool obj_register(T *x)
 {
     if (x->x_node) return true; // already registered
 
-    std::cout << "obj_register: " << x->x_name->s_name << std::endl;
-
     int l;
     t_device *device = (t_device*) find_parent(&x->x_obj,osym_device, 0, &l);
 
     // first try to locate a ossia.device in the parent hierarchy...
     if (!device) {
-        std::cerr << "no device at all, abording" << std::endl;
         return false; // not ready to register : if there is no device, model will be unable to register too
     }
 
@@ -96,7 +93,6 @@ template<typename T> bool obj_register(T *x)
     bool res = x->register_node(node);
 
     if ( !std::is_same<T,t_remote>::value ){
-        std::cout << "remote_quarantine.size(): " << t_remote::remote_quarantine().size() << std::endl;
         for (auto remote : t_remote::remote_quarantine()){
             remote_loadbang(remote);
         }

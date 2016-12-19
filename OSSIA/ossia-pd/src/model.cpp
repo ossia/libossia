@@ -18,15 +18,12 @@ static void model_register(t_model *x)
     t_model* model = find_parent_alive<t_model>(&x->x_obj,osym_model, 1, &l);
     if (model)  {
         x->register_node(model->x_node);
-        std::cout << "found a parent model" << std::endl;
         return;
     }
-    std::cout << "found a parent device" << std::endl;
     x->register_node(device->x_node);
 }
 
 static void model_loadbang(t_model *x){
-    std::cout << "[ossia.model] loadbang" << std::endl;
     model_register(x);
 }
 
@@ -39,16 +36,11 @@ static void model_dump(t_model *x)
 }
 
 bool t_model :: register_node(ossia::net::node_base*  node){
-    std::cout << "[ossia.model] : register model : " << x_name->s_name << std::endl;
-
     x_node = nullptr;
 
     if (node){
         x_node = node->findChild(x_name->s_name);
         if (!x_node) x_node = node->createChild(x_name->s_name);
-
-        std::cout << "[ossia.model] : model node : " << x_node->getName() << std::endl;
-        std::cout << "[ossia.model] : model node children count : " << std::hex << x_node->children().size() << std::endl;
     }
 
     std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
@@ -62,7 +54,6 @@ bool t_model :: register_node(ossia::net::node_base*  node){
 }
 
 bool t_model :: unregister(){
-    std::cout << "[ossia.model] : unregister model : " << x_name->s_name << std::endl;
 
     if(!x_node) return true; // not registered
 
@@ -90,7 +81,6 @@ bool t_model :: unregister(){
 static void *model_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_model *x = (t_model *)eobj_new(model_class);
-    std::cout << "[ossia.model] new instance: " << std::hex << x << std::endl;
 
     if(x)
     {

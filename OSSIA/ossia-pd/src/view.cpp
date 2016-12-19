@@ -46,14 +46,10 @@ bool t_view :: register_node(ossia::net::node_base*  node){
     if (node){
         x_node = node->findChild(x_name->s_name);
         if (!x_node) {
-            std::cerr << "[ossia.view] : there is no node " << x_name->s_name << std::endl;
             // TODO should put it in quarantine
             // x_node = node->createChild(x_name->s_name);
             return false;
         }
-
-        std::cout << "[ossia.view] : view node : " << x_node->getName() << std::endl;
-        std::cout << "[ossia.view] : view node children count : " << std::hex << x_node->children().size() << std::endl;
     }
 
     std::vector<obj_hierachy> remotes = find_child(x_obj.o_canvas->gl_list, osym_remote, 0);
@@ -73,8 +69,6 @@ bool t_view :: register_node(ossia::net::node_base*  node){
 }
 
 bool t_view :: unregister(){
-    std::cout << "[ossia.view] : unregister view : " << x_name->s_name << std::endl;
-
     if(!x_node) return true; // not registered
 
     // when removing a view, we should re-register all its children to parent node
@@ -101,7 +95,6 @@ bool t_view :: unregister(){
 static void *view_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_view *x = (t_view *)eobj_new(view_class);
-    std::cout << "[ossia.view] new instance: " << std::hex << x << std::endl;
 
     if(x)
     {

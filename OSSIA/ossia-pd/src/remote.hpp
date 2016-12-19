@@ -12,7 +12,6 @@ struct t_remote : ossia_obj_base
     // void isDeleted(const ossia::net::node_base& n);
 
     boost::optional<ossia::callback_container<ossia::value_callback>::iterator> x_callbackit;
-    void error(){    logpost((t_object*)this,4,"[ossia.remote %s] is not registered to any parameter",x_name->s_name); }
 
     void addressRemovingHandler(const ossia::net::address_base& address) {
         x_callbackit = boost::none;
@@ -20,7 +19,6 @@ struct t_remote : ossia_obj_base
     };
 
     void isDeleted(const ossia::net::node_base& n){
-        std::cout << "t_remote node is being deleted" << std::endl;
         x_callbackit = boost::none;
         unregister();
     }
@@ -35,7 +33,6 @@ struct t_remote : ossia_obj_base
 };
 
 static void remote_loadbang(t_remote *x){
-    std::cout << "[ossia.remote] loadbang" << std::endl;
     bool res = obj_register<t_remote>(x);
     // if (res) remote_bang(x); // if correctly registered then pull the value
 }

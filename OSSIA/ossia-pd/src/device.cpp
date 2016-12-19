@@ -7,7 +7,6 @@
 static t_eclass *device_class;
 
 static void device_loadbang(t_device* x){
-    std::cout << "device model loadbang : " << x->x_name->s_name << std::endl;
     x->register_children();
 }
 
@@ -116,11 +115,9 @@ void t_device :: register_children(){
 }
 
 void t_device :: unregister_children(){
-    std::cout << "t_device :: unregister_children()" << std::endl;
     // unregister in the reverse order to unregister parameter and remote before model and view
     std::vector<obj_hierachy> remotes = find_child(x_obj.o_canvas->gl_list, osym_remote, 0);
     std::sort(remotes.begin(), remotes.end());
-    std::cout << "remote size: " << remotes.size() << std::endl;
     for (auto v : remotes){
         t_remote* remote = (t_remote*) v.x;
         remote->unregister();
@@ -135,24 +132,20 @@ void t_device :: unregister_children(){
 
     std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
     std::sort(params.begin(), params.end());
-    std::cout << "params size: " << params.size() << std::endl;
     for (auto v : params){
         t_param* param = (t_param*) v.x;
         param->unregister();
     }
-    /*
+
     std::vector<obj_hierachy> views = find_child(x_obj.o_canvas->gl_list, osym_view, 0);
     std::sort(views.begin(), views.end());
-    std::cout << "views size: " << views.size() << std::endl;
     for (auto v : views){
         t_view* view = (t_view*) v.x;
         view->unregister();
     }
-    */
 }
 
 static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
-    logpost((t_object*)x,2,"device_expose");
     if (argc && argv->a_type == A_SYMBOL){
         if (argv->a_w.w_symbol == gensym("Minuit")){
             // TODO how to add protocol to actual device ?
