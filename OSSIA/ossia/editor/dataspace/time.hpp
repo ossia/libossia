@@ -44,7 +44,7 @@ struct bark_u : public time_unit<bark_u>
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 6. * std::asinh(1.0 / (self.dataspace_value * 600.0));
+    return 6. * ossia::asinh(1.0 / (self.dataspace_value * 600.0));
   }
 };
 
@@ -71,7 +71,7 @@ struct cent_u : public time_unit<cent_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return 1. / (440.0 * std::exp2((self.dataspace_value - 6900.0) / 1200.0));
+    return 1. / (440.0 * ossia::exp2((self.dataspace_value - 6900.0) / 1200.0));
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
@@ -119,7 +119,7 @@ struct midi_pitch_u : public time_unit<midi_pitch_u>
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return 1. / (440.0 * std::exp2((self.dataspace_value - 69.0) / 12.0 ));
+    return 1. / (440.0 * ossia::exp2((self.dataspace_value - 69.0) / 12.0 ));
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
@@ -163,7 +163,7 @@ struct sample_u : public time_unit<sample_u<N>>
 };
 */
 
-static const double exp_69_12 = std::exp2(69. / 12.);
+static const double exp_69_12 = ossia::exp2(69. / 12.);
 struct playback_speed_u : public time_unit<playback_speed_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()

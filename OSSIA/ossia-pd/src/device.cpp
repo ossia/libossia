@@ -2,14 +2,15 @@
 #include "model.hpp"
 #include "parameter.hpp"
 #include "remote.hpp"
+#include "view.hpp"
 
 static t_eclass *device_class;
 
 static void device_loadbang(t_device* x){
-    std::cout << "device model loadbang : " << x->x_name->s_name << std::endl;
     x->register_children();
 }
 
+// FIXME if device is created after param or remote, those are not register properly
 static void *device_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_device *x = (t_device *)eobj_new(device_class);
@@ -17,13 +18,12 @@ static void *device_new(t_symbol *name, int argc, t_atom *argv)
 
     if(x && d)
     {
-        x->x_device = nullptr;
-        x->x_node = nullptr;
-        x->x_localport = 6666;
-        x->x_remoteport = 9999;
         x->x_name = gensym("Pd");
-        x->x_remoteip = gensym("127.0.0.1");
+        // NOTE Don't know why this is not set by the CICM default setter
         x->x_protocol = gensym("Minuit");
+        x->x_remoteip = gensym("127.0.0.1");
+        x->x_localport = 9998;
+        x->x_remoteport = 13579;
 
         x->x_dumpout = outlet_new((t_object*)x,gensym("dumpout"));
 
@@ -41,6 +41,7 @@ static void *device_new(t_symbol *name, int argc, t_atom *argv)
         try {
             if(x->x_protocol == gensym("Minuit")){
                 local_proto.exposeTo(std::make_unique<ossia::net::minuit_protocol>("B", x->x_remoteip->s_name, x->x_remoteport, x->x_localport));
+                logpost(x,3,"connect to %s on port %d, listening on port %d",  x->x_remoteip->s_name, x->x_remoteport, x->x_localport);
             } else {
                 pd_error((t_object*)x, "Unknown protocol: %s", x->x_protocol->s_name);
             }
@@ -85,7 +86,7 @@ void t_device :: register_children(){
     std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
     std::sort(params.begin(), params.end());
     for (auto v : params){
-        t_parameter* param = (t_parameter*) v.x;
+        t_param* param = (t_param*) v.x;
         param->register_node(this->x_node);
     }
 
@@ -105,46 +106,51 @@ void t_device :: register_children(){
         remote->register_node(this->x_node);
     }
 
-    /*
-    std::vector<t_pd*> views = find_child(x_obj.o_canvas->gl_list, osym_view, 0);
+    std::vector<obj_hierachy> views = find_child(x_obj.o_canvas->gl_list, osym_view, 0);
+    std::sort(views.begin(), views.end());
     for (auto v : views){
-        t_view* view = (t_view*) v;
-        view->register_device(this);
+        t_view* view = (t_view*) v.x;
+        view->register_node(this->x_node);
     }
-    */
 }
 
 void t_device :: unregister_children(){
-    std::cout << "t_device :: unregister_children()" << std::endl;
     // unregister in the reverse order to unregister parameter and remote before model and view
     std::vector<obj_hierachy> remotes = find_child(x_obj.o_canvas->gl_list, osym_remote, 0);
     std::sort(remotes.begin(), remotes.end());
-    std::cout << "remote size: " << remotes.size() << std::endl;
     for (auto v : remotes){
         t_remote* remote = (t_remote*) v.x;
         remote->unregister();
     }
-    std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
-    std::sort(params.begin(), params.end());
-    std::cout << "params size: " << params.size() << std::endl;
-    for (auto v : params){
-        t_parameter* param = (t_parameter*) v.x;
-        param->unregister();
-    }
-    /*
-    std::vector<obj_hierachy> views = find_child(x_obj.o_canvas->gl_list, osym_view, 0);
-    std::sort(views.begin(), views.end());
-    std::cout << "views size: " << views.size() << std::endl;
-    for (auto v : views){
-        t_view* view = (t_view*) v.x;
-        view->unregister();
-    }
-    */
+
     std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 0);
     std::sort(models.begin(), models.end());
     for (auto v : models){
         t_model* model = (t_model*) v.x;
         model->unregister();
+    }
+
+    std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
+    std::sort(params.begin(), params.end());
+    for (auto v : params){
+        t_param* param = (t_param*) v.x;
+        param->unregister();
+    }
+
+    std::vector<obj_hierachy> views = find_child(x_obj.o_canvas->gl_list, osym_view, 0);
+    std::sort(views.begin(), views.end());
+    for (auto v : views){
+        t_view* view = (t_view*) v.x;
+        view->unregister();
+    }
+}
+
+static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
+    if (argc && argv->a_type == A_SYMBOL){
+        if (argv->a_w.w_symbol == gensym("Minuit")){
+            // TODO how to add protocol to actual device ?
+            // remote_ip remote_port local_port
+        }
     }
 }
 
@@ -156,17 +162,19 @@ extern "C" void setup_ossia0x2edevice(void)
     {
         eclass_addmethod(c, (method) device_loadbang, "loadbang", A_NULL, 0);
         eclass_addmethod(c, (method) device_dump, "dump", A_NULL, 0);
+        eclass_addmethod(c, (method) device_expose, "expose", A_GIMME, 0);
 
         // TODO : add method to expose with other protocol/ports/IP
 
-        CLASS_ATTR_SYMBOL(c, "protocol",    1, t_device, x_protocol);
-        CLASS_ATTR_DEFAULT(c, "protocol", 0, "Minuit");
-        CLASS_ATTR_SYMBOL(c, "localport",    1, t_device, x_localport);
-        CLASS_ATTR_DEFAULT(c, "localport", 0, "6666");
-        CLASS_ATTR_SYMBOL(c, "remoteip",    1, t_device, x_remoteip);
-        CLASS_ATTR_DEFAULT(c, "remoteip",0,"127.0.0.1");
-        CLASS_ATTR_ATOM  (c, "remoteport", 1, t_device, x_remoteport);
-        CLASS_ATTR_DEFAULT(c, "remoteport", 0, "9999");
+        CLASS_ATTR_SYMBOL (c, "protocol",   0, t_device, x_protocol);
+        CLASS_ATTR_SYMBOL (c, "remoteip",   0, t_device, x_remoteip);
+        CLASS_ATTR_INT    (c, "localport",  0, t_device, x_localport);
+        CLASS_ATTR_INT    (c, "remoteport", 0, t_device, x_remoteport);
+
+        CLASS_ATTR_DEFAULT(c, "protocol",   0, "Minuit");
+        CLASS_ATTR_DEFAULT(c, "remoteip",   0, "127.0.0.1");
+        CLASS_ATTR_DEFAULT(c, "localport",  0, "9998");
+        CLASS_ATTR_DEFAULT(c, "remoteport", 0, "13579");
     }
 
     device_class = c;

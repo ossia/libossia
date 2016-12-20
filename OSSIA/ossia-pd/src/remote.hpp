@@ -1,22 +1,38 @@
 #pragma once
-#include "ossia-pd.hpp"
+#include "ossia_obj_base.hpp"
 #include "device.hpp"
+#include <boost/optional.hpp>
 
 using namespace ossia;
 
-struct t_remote
+struct t_remote : ossia_obj_base
 {
-    t_eobj      x_obj;
-
-    t_symbol*   x_name;
-    t_outlet*   x_setout;
-    t_outlet*   x_dataout;
-    t_outlet*   x_dumpout;
-    bool        x_absolute;
-
-    ossia::net::node_base* x_node;
-    void setValue(const ossia::value& val);
-    ossia::callback_container<ossia::value_callback>::iterator    x_callbackit;
     bool register_node(ossia::net::node_base* node);
     bool unregister();
+    // void isDeleted(const ossia::net::node_base& n);
+
+    boost::optional<ossia::callback_container<ossia::value_callback>::iterator> x_callbackit;
+
+    void addressRemovingHandler(const ossia::net::address_base& address) {
+        x_callbackit = boost::none;
+        unregister();
+    };
+
+    void isDeleted(const ossia::net::node_base& n){
+        x_callbackit = boost::none;
+        unregister();
+    }
+
+    void quarantining();
+    void dequarantining();
+
+    static std::vector<t_remote*>& remote_quarantine(){
+        static std::vector<t_remote*> quarantine;
+        return quarantine;
+    }
 };
+
+static void remote_loadbang(t_remote *x){
+    bool res = obj_register<t_remote>(x);
+    // if (res) remote_bang(x); // if correctly registered then pull the value
+}

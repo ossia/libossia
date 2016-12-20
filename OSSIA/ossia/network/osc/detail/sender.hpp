@@ -74,6 +74,7 @@ private:
     std::cerr << s << "\n";
   }
 
+
   template<typename... Args>
   void send_base(Args&&... args)
   {
@@ -89,6 +90,16 @@ private:
 
       send_impl(m(args...));
     }
+
+    if(m_logger.outbound_logger)
+    {
+      std::string format_string;
+      format_string.reserve(5 + 3 * sizeof...(args));
+      format_string += "Out: ";
+      for(std::size_t i = 0; i < sizeof...(args); i++)
+        format_string += "{} ";
+      m_logger.outbound_logger->info(format_string.c_str(), args...);
+    }
   }
 
   void send_impl(const oscpack::OutboundPacketStream& m)
@@ -99,8 +110,6 @@ private:
     {
 
     }
-    if(m_logger.outbound_logger)
-      m_logger.outbound_logger->info("Out: {0}", ossia::string_view(m.Data(), m.Size()));
   }
 
   ossia::net::network_logger& m_logger;

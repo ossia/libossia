@@ -35,7 +35,7 @@ struct ease
   template <typename T, typename U, typename V>
   constexpr T operator()(T a, U b, V t) const
   {
-    return std::fma(t, b, std::fma(-t, a, a));
+    return ossia::fma(t, b, ossia::fma(-t, a, a));
   }
 };
 
@@ -223,7 +223,7 @@ struct exponentialIn
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return (t <= 0) ? t : std::exp2(10. * (t - 1.));
+    return (t <= 0) ? t : ossia::exp2(10. * (t - 1.));
   }
 };
 
@@ -232,7 +232,7 @@ struct exponentialOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return (t >= 1.) ? t : 1. - std::exp2(-10. * t);
+    return (t >= 1.) ? t : 1. - ossia::exp2(-10. * t);
   }
 };
 
@@ -244,8 +244,8 @@ struct exponentialInOut
     return (t <= 0. || t >= 1.)
         ? t
         : (t < 0.5)
-           ?  0.5 * std::exp2(( 20. * t) - 10.)
-           : -0.5 * std::exp2((-20. * t) + 10.) + 1.;
+           ?  0.5 * ossia::exp2(( 20. * t) - 10.)
+           : -0.5 * ossia::exp2((-20. * t) + 10.) + 1.;
   }
 };
 
@@ -254,7 +254,7 @@ struct elasticIn
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return std::sin(13. * half_pi * t) * std::exp2(10. * (t - 1.));
+    return std::sin(13. * half_pi * t) * ossia::exp2(10. * (t - 1.));
   }
 };
 
@@ -263,7 +263,7 @@ struct elasticOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return sin(-13. * half_pi * (t + 1.)) * std::exp2(-10. * t) + 1.;
+    return sin(-13. * half_pi * (t + 1.)) * ossia::exp2(-10. * t) + 1.;
   }
 };
 
@@ -274,9 +274,9 @@ struct elasticInOut
   {
     return (t < 0.5)
         ? 0.5 * std::sin(13. * half_pi * (2. * t))
-              * std::exp2(10. * ((2. * t) - 1.))
+              * ossia::exp2(10. * ((2. * t) - 1.))
         : 0.5 * (std::sin(-13. * half_pi * ((2. * t - 1) + 1))
-                 * std::exp2(-10. * (2. * t - 1.))
+                 * ossia::exp2(-10. * (2. * t - 1.))
                  + 2.);
   }
 };

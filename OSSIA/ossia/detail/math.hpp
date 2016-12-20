@@ -9,6 +9,21 @@
 
 namespace ossia
 {
+#if defined(__ANDROID_API__)
+using ::remainder;
+using ::exp2;
+using ::log1p;
+using ::asinh;
+using ::fma;
+using ::llround;
+#else
+using std::remainder;
+using std::exp2;
+using std::log1p;
+using std::asinh;
+using std::fma;
+using std::llround;
+#endif
 const OSSIA_DECL_RELAXED_CONSTEXPR auto pi = 3.141592653589793238462643383279502884;
 const OSSIA_DECL_RELAXED_CONSTEXPR auto two_pi = 6.283185307179586476925286766559005768;
 const OSSIA_DECL_RELAXED_CONSTEXPR auto half_pi = 1.570796326794896619231321691639751442;
@@ -76,7 +91,7 @@ OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR T fold(T val, const T low, const T hig
     return val;
   else
   {
-    return std::fabs(std::remainder(val - low, 2. * std::fabs(low - high)))
+    return std::fabs(ossia::remainder(val - low, 2. * std::fabs(low - high)))
            + low;
   }
 }

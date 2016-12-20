@@ -3,7 +3,7 @@
 #include "ossia-pd.hpp"
 #include "device.hpp"
 
-struct t_model
+struct t_view
 {
     t_eobj      x_obj;
     t_symbol*   x_name{};

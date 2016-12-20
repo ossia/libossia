@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia_export.h>
-#include <boost/container/small_vector.hpp>
+#include <chobo/small_vector.hpp>
 #include <ossia/editor/value/value_base.hpp>
 namespace ossia
 {
@@ -30,7 +30,7 @@ OSSIA_EXPORT domain make_domain(
     const ossia::value& max);
 
 OSSIA_EXPORT domain make_domain(
-    const boost::container::small_vector<ossia::value, 2>& val,
+    const chobo::small_vector<ossia::value, 2>& val,
     const ossia::value& cur);
 
 OSSIA_EXPORT domain init_domain(
@@ -56,3 +56,5 @@ bool operator!=(const domain_base<T>& lhs, const domain_base<T>& rhs)
 
 }
 }
+
+std::ostream& operator<<(std::ostream&, const ossia::net::domain&);

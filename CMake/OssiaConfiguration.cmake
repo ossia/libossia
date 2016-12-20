@@ -14,6 +14,7 @@ option(OSSIA_LTO "Link-time optimizations. Fails on Windows." OFF)
 option(OSSIA_PD "Build PureData externals" ON)
 option(OSSIA_OSX_FAT_LIBRARIES "Build 32 and 64 bit fat libraries on OS X" OFF)
 option(OSSIA_OSX_RETROCOMPATIBILITY "Build for older OS X versions" OFF)
+option(OSSIA_MOST_STATIC "Build for older OS X versions" OFF)
 
 if(OSSIA_OSX_RETROCOMPATIBILITY)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.9)
@@ -21,6 +22,12 @@ endif()
 
 if(OSSIA_OSX_FAT_LIBRARIES)
     set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
+endif()
+
+if(OSSIA_MOST_STATIC)
+    set(OSSIA_STATIC ON)
+    set(CMAKE_LINK_SEARCH_END_STATIC ON)
+    set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
 endif()
 
 # System detection
@@ -102,21 +109,28 @@ else()
     set(OSSIA_LINK_OPTIONS
         -ffunction-sections
         -fdata-sections
-        -gdwarf-4
         )
 
     if(CMAKE_COMPILER_IS_GNUCXX)
         set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
             -Wl,--gc-sections
-            -Wl,--gdb-index
             -fvar-tracking-assignments
             -Wl,--compress-debug-sections=zlib
-            -gsplit-dwarf
             -Wa,--compress-debug-sections
             -Wl,--dynamic-list-cpp-new
             -Wl,--dynamic-list-cpp-typeinfo
             -Wl,-Bsymbolic-functions
             )
+
+        if(GOLD_LINKER_SUPPORTED)
+            set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
+                -Wl,--gdb-index
+                -gsplit-dwarf
+                )
+        endif()
+        if(OSSIA_MOST_STATIC)
+            set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -static -static-libgcc -static-libstdc++)
+        endif()
     endif()
 
     if(OSSIA_CI)

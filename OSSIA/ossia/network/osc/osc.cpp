@@ -29,7 +29,7 @@ osc_protocol::osc_protocol(
   if(mReceiver->port() != local_port)
   {;
     throw ossia::connection_error{"osc_protocol::osc_protocol: "
-                                  "Could not connect to port: " + std::to_string(local_port)};
+                                  "Could not connect to port: " + boost::lexical_cast<std::string>(local_port)};
   }
   mReceiver->run();
 }

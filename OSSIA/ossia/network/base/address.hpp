@@ -26,7 +26,7 @@ class node_base;
  * @brief The address_base class
  *
  * An address holds attributes and values.
- * One can suscribe to modification of the value.
+ * One can subscribe to modification of the value.
  *
  * \see generic_address
  *
@@ -228,3 +228,6 @@ OSSIA_EXPORT ossia::value_with_unit get_value(const ossia::Destination& addr);
 OSSIA_EXPORT void push_value(const ossia::Destination& addr, const ossia::value_with_unit&);
 }
 }
+
+std::ostream& operator<<(std::ostream&, const ossia::net::address_base&);
+

@@ -20,8 +20,8 @@ struct gain_unit
 namespace detail
 {
 const constexpr double DecibelHeadroom = 96.;
-const double GainMidiPower = std::log( std::log1p(12. / DecibelHeadroom) / std::log(127. / 100.) ) / std::log(2.);
-const double GainMidiPowPow2 = std::exp2(GainMidiPower);
+const double GainMidiPower = std::log( ossia::log1p(12. / DecibelHeadroom) / std::log(127. / 100.) ) / std::log(2.);
+const double GainMidiPowPow2 = ossia::exp2(GainMidiPower);
 
 template<typename T>
 T LinearGainToDecibels(const T value)
@@ -59,7 +59,7 @@ T MidiToLinearGain(const T value)
     return value <= 0.
             ? 0.
             : DecibelsToLinearGainClipped(
-                  DecibelHeadroom * ( std::pow( value / 100., std::exp2(GainMidiPower)) - 1.));
+                  DecibelHeadroom * ( std::pow( value / 100., ossia::exp2(GainMidiPower)) - 1.));
 }
 
 template<typename T>
@@ -67,7 +67,7 @@ T DecibelsToMidi(const T value)
 {
     return value <= -DecibelHeadroom
             ? 0.
-            : 100. * std::exp(std::log1p(value / DecibelHeadroom) / GainMidiPowPow2);
+            : 100. * std::exp(ossia::log1p(value / DecibelHeadroom) / GainMidiPowPow2);
 }
 
 template<typename T>

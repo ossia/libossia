@@ -3,6 +3,8 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/midi/detail/channel.hpp>
 
+#define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
+#include <boost/lexical_cast.hpp>
 namespace ossia
 {
 namespace net
@@ -48,23 +50,23 @@ struct address_info
     switch (type)
     {
       case Type::NoteOn:
-        return "/" + std::to_string(channel) + "/note/on";
+        return "/" + boost::lexical_cast<std::string>(channel) + "/note/on";
       case Type::NoteOff:
-        return "/" + std::to_string(channel) + "/note/off";
+        return "/" + boost::lexical_cast<std::string>(channel) + "/note/off";
       case Type::CC:
-        return "/" + std::to_string(channel) + "/CC";
+        return "/" + boost::lexical_cast<std::string>(channel) + "/CC";
       case Type::NoteOn_N:
-        return "/" + std::to_string(channel) + "/note/on/"
-               + std::to_string(note);
+        return "/" + boost::lexical_cast<std::string>(channel) + "/note/on/"
+               + boost::lexical_cast<std::string>(note);
       case Type::NoteOff_N:
-        return "/" + std::to_string(channel) + "/note/off/"
-               + std::to_string(note);
+        return "/" + boost::lexical_cast<std::string>(channel) + "/note/off/"
+               + boost::lexical_cast<std::string>(note);
       case Type::CC_N:
-        return "/" + std::to_string(channel) + "/CC/" + std::to_string(note);
+        return "/" + boost::lexical_cast<std::string>(channel) + "/CC/" + boost::lexical_cast<std::string>(note);
       case Type::PC:
-        return "/" + std::to_string(channel) + "/PC";
+        return "/" + boost::lexical_cast<std::string>(channel) + "/PC";
       case Type::PC_N:
-        return "/" + std::to_string(channel) + "/PC/" + std::to_string(note);
+        return "/" + boost::lexical_cast<std::string>(channel) + "/PC/" + boost::lexical_cast<std::string>(note);
     }
     return {};
   }

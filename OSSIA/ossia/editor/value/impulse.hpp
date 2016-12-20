@@ -22,15 +22,15 @@ class value;
  */
 struct OSSIA_EXPORT Impulse
 {
-  OSSIA_DECL_RELAXED_CONSTEXPR Impulse() noexcept = default;
-  OSSIA_DECL_RELAXED_CONSTEXPR Impulse(const Impulse&) noexcept = default;
-  OSSIA_DECL_RELAXED_CONSTEXPR Impulse(Impulse&&) noexcept = default;
-  OSSIA_DECL_RELAXED_CONSTEXPR Impulse& operator=(const Impulse&) noexcept = default;
-  OSSIA_DECL_RELAXED_CONSTEXPR Impulse& operator=(Impulse&&) noexcept = default;
+  OSSIA_DECL_RELAXED_CONSTEXPR Impulse() noexcept { }
+  OSSIA_DECL_RELAXED_CONSTEXPR Impulse(const Impulse&) noexcept { }
+  OSSIA_DECL_RELAXED_CONSTEXPR Impulse(Impulse&&) noexcept { }
+  OSSIA_DECL_RELAXED_CONSTEXPR Impulse& operator=(const Impulse&) noexcept { return *this; }
+  OSSIA_DECL_RELAXED_CONSTEXPR Impulse& operator=(Impulse&&) noexcept { return *this; }
 
   OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(ossia::Impulse) const
   {
-    return true;
+      return true;
   }
 
   OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(ossia::Impulse) const

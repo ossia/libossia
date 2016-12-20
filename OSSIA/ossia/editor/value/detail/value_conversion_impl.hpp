@@ -85,10 +85,10 @@ struct value_converter<std::string>
 {
   using T = std::string;
   T operator()(Impulse) const { return T{}; }
-  T operator()(int32_t v) { return std::to_string(v); }
-  T operator()(float v) { return std::to_string(v); }
-  T operator()(bool v) { return std::to_string(v); }
-  T operator()(char v) { return std::to_string(v); }
+  T operator()(int32_t v) { return boost::lexical_cast<std::string>(v); }
+  T operator()(float v) { return boost::lexical_cast<std::string>(v); }
+  T operator()(bool v) { return boost::lexical_cast<std::string>(v); }
+  T operator()(char v) { return boost::lexical_cast<std::string>(v); }
   T operator()(const std::string& v) const { return v; }
 
   T operator()(const Destination&) const { return T{}; }
@@ -98,9 +98,9 @@ struct value_converter<std::string>
   T operator()(std::array<float, N> v) const
   {
     std::string s = "[";
-    s += std::to_string(v[0]);
+    s += boost::lexical_cast<std::string>(v[0]);
     for(std::size_t i = 1; i < N; i++)
-      s += ", " + std::to_string(v[i]);
+      s += ", " + boost::lexical_cast<std::string>(v[i]);
     s += "]";
     return s;
   }

@@ -3,90 +3,52 @@
 #include "parameter.hpp"
 
 static t_eclass *remote_class;
-static std::list<ossia::value_callback> dummy_list;
 
 static void remote_free(t_remote* x);
 
-void t_remote::setValue(const ossia::value& v){
-    value_visitor<t_remote> vm;
-    vm.x = (t_remote*) &x_obj;
-    v.apply(vm);
-}
-
-static void remote_set(t_remote *x, t_symbol* s, int argc, t_atom* argv){
-    if ( x->x_node && x->x_node->getAddress() ){
-        while(argc--){
-            switch(argv->a_type){
-            case A_FLOAT:
-                x->x_node->getAddress()->pushValue(float(argv->a_w.w_float));
-                break;
-            case A_SYMBOL:
-            {
-                // FIXME : this call operator()(Char c) instead of operator()(const String& s)
-                x->x_node->getAddress()->pushValue(std::string(argv->a_w.w_symbol->s_name));
-                break;
-            }
-            default:
-                pd_error(x,"atom type %d is not supported", argv->a_type);
-            }
-            argv++;
+void t_remote :: quarantining(){
+    for (auto y : remote_quarantine()){
+        if (y == this){
+            return;
         }
-    } else {
-        pd_error(x,"[ossia.remote %s] is not registered to any parameter",x->x_name->s_name);
     }
+    remote_quarantine().push_back(this);
 }
 
-static void remote_bang(t_remote *x){
-    if ( x->x_node->getAddress() ) x->x_node->getAddress()->pullValue();
-}
-
-static void remote_loadbang(t_remote *x){
-    std::cout << "[ossia.remote] loadbang" << std::endl;
-    if (obj_register<t_remote>(x)) remote_bang(x); // if correctly registered then pull the value
+void t_remote :: dequarantining(){
+    remote_quarantine().erase(std::remove(remote_quarantine().begin(), remote_quarantine().end(), this), remote_quarantine().end());
 }
 
 bool t_remote :: register_node(ossia::net::node_base* node){
-    std::cout << "register remote : " << x_name->s_name << std::endl;
 
     if (x_node && x_node->getParent() == node ) return true; // already register to this node;
 
-    unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
-
-    if (!node){
-        std::cout << "t_remote :: register(node) : invalid node" << std::endl;
-        return false;
-    }
+    unregister(); // we should unregister here because we may have add a node between the registered node and the remote
 
     if(node){
-        for (const auto& child : node->children()){
-            if(child->getName() == x_name->s_name){
-                x_node = child.get();
-                x_callbackit = x_node->getAddress()->add_callback([=](const ossia::value& v){
-                    setValue(v);
-                });
-                return true;
-            }
+        x_node = node->findChild(x_name->s_name);
+        if (x_node){
+            x_callbackit = x_node->getAddress()->add_callback([=](const ossia::value& v){
+                setValue(v);
+            });
+            x_node->aboutToBeDeleted.connect<t_remote, &t_remote::isDeleted>(this);
+            x_node->getDevice().onAddressRemoving.connect<t_remote, &t_remote::addressRemovingHandler>(this);
+            return true;
         }
+    } else {
+        return false;
     }
     return false;
 }
 
-static void remote_unregister(t_remote* x, t_symbol* s, void* ptr){
-    ossia::net::node_base* node = (ossia::net::node_base*) ptr;
-    if ( node == x->x_node ){
-        x->x_node = nullptr;
-        std::cout << "t_remote " << x->x_name->s_name << " invalidate x_node pointer" << std::endl;
-    }
-}
-
 bool t_remote :: unregister(){
-    std::cout << "unregister remote : " << x_name->s_name << std::endl;
-
-    if (x_callbackit != dummy_list.end()) {
+    if (x_callbackit != boost::none) {
         // we have to remove the callback, but assigning x_callbackit to dummy_list.end(); seems weird to me..., have to think about a better solution
-        x_node->getAddress()->remove_callback(x_callbackit);
-        x_callbackit = dummy_list.end();
+        x_node->getAddress()->remove_callback(*x_callbackit);
+        x_callbackit = boost::none;
     }
+    quarantining();
+
     x_node = nullptr;
     return true;
 }
@@ -99,20 +61,17 @@ static void remote_float(t_remote *x, t_float val){
     }
 }
 
+// TODO when we create the remote after the view it is not connected to node
 static void *remote_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_remote *x = (t_remote *)eobj_new(remote_class);
 
     if(x)
     {
-        x->x_absolute = false;
-        x->x_node = nullptr;
-        x->x_callbackit = dummy_list.end(); // FIXME : I don't like this so much, but needed to not remove callback in t_remote::unregister function
         x->x_setout = outlet_new((t_object*)x, nullptr);
         x->x_dataout = outlet_new((t_object*)x,nullptr);
         x->x_dumpout = outlet_new((t_object*)x,gensym("dumpout"));
-        t_pd * a;
-        pd_bind((t_pd*)x, osym_send_remote );
+        x->x_callbackit = boost::none;
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
@@ -122,8 +81,6 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
             error("You have to pass a name as the first argument");
             x->x_name = gensym("untitledRemote");
         }
-
-        ;
     }
 
     return (x);
@@ -132,6 +89,7 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
 static void remote_free(t_remote *x)
 {
     x->unregister();
+    x->dequarantining();
     outlet_free(x->x_setout);
     outlet_free(x->x_dataout);
     outlet_free(x->x_dumpout);
@@ -145,9 +103,8 @@ extern "C" void setup_ossia0x2eremote(void)
     {
         eclass_addmethod(c, (method) remote_loadbang,   "loadbang",   A_NULL, 0);
         eclass_addmethod(c, (method) remote_float,      "float",      A_FLOAT, 0);
-        eclass_addmethod(c, (method) remote_set,        "set",        A_GIMME, 0);
-        eclass_addmethod(c, (method) remote_bang,       "bang",       A_NULL, 0);
-        eclass_addmethod(c, (method) remote_unregister,       "unregister", A_POINTER, 0);
+        eclass_addmethod(c, (method) obj_set<t_remote>, "set",        A_GIMME, 0);
+        eclass_addmethod(c, (method) obj_bang<t_remote>,"bang",       A_NULL, 0);
     }
 
     remote_class = c;

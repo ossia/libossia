@@ -6,6 +6,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <ossia/detail/optional.hpp>
 
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
@@ -17,6 +18,12 @@ namespace net
 class device_base;
 class address_base;
 class node_base;
+
+struct OSSIA_EXPORT instance_bounds
+{
+  ossia::optional<uint32_t> min_instances;
+  ossia::optional<uint32_t> max_instances;
+};
 
 /**
  * @brief The node_base class
@@ -59,6 +66,10 @@ public:
 
   virtual address_base* getAddress() const = 0;
   virtual address_base* createAddress(val_type = val_type::IMPULSE) = 0;
+
+  ossia::optional<instance_bounds> getDynamicInstances() const;
+  void setDynamicInstances(ossia::optional<instance_bounds>);
+
   virtual bool removeAddress() = 0;
 
   // The parent has ownership
@@ -74,7 +85,15 @@ public:
   }
 
 
+  //! The node subclasses must call this in their destructor.
   mutable Nano::Signal<void(const node_base&)> aboutToBeDeleted;
+
+  /**
+   * @brief This will be called on preset loading, when an instance is created.
+   *
+   * The user has the guarantee that all the sub-nodes are loaded when this is called.
+   */
+  mutable Nano::Signal<void(const node_base&)> siblingInstanceCreated;
 
 protected:
   /** Should return nullptr if no child is to be added */
@@ -84,6 +103,7 @@ protected:
   virtual void removingChild(node_base& node_base) = 0;
 
   std::vector<std::unique_ptr<node_base>> mChildren;
+  ossia::optional<instance_bounds> mInstances;
 };
 
 }

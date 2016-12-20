@@ -282,15 +282,15 @@ struct osc_inbound_visitor
       switch (cur_it->TypeTag())
       {
         case oscpack::INT32_TYPE_TAG:
-          return std::string{std::to_string(cur_it->AsInt32Unchecked())};
+          return std::string{boost::lexical_cast<std::string>(cur_it->AsInt32Unchecked())};
         case oscpack::INT64_TYPE_TAG:
-          return std::string{std::to_string(cur_it->AsInt64Unchecked())};
+          return std::string{boost::lexical_cast<std::string>(cur_it->AsInt64Unchecked())};
         case oscpack::FLOAT_TYPE_TAG:
-          return std::string{std::to_string(cur_it->AsFloatUnchecked())};
+          return std::string{boost::lexical_cast<std::string>(cur_it->AsFloatUnchecked())};
         case oscpack::DOUBLE_TYPE_TAG:
-          return std::string{std::to_string(cur_it->AsDoubleUnchecked())};
+          return std::string{boost::lexical_cast<std::string>(cur_it->AsDoubleUnchecked())};
         case oscpack::CHAR_TYPE_TAG:
-          return std::string{std::to_string(cur_it->AsCharUnchecked())};
+          return std::string{boost::lexical_cast<std::string>(cur_it->AsCharUnchecked())};
         case oscpack::TRUE_TYPE_TAG:
           return std::string{"true"};
         case oscpack::FALSE_TYPE_TAG:

@@ -41,9 +41,15 @@ if(IOS OR CMAKE_SYSTEM_NAME MATCHES Emscripten)
 endif()
 
 if(APPLE)
-    set(CMAKE_INSTALL_NAME_DIR @rpath)
-    set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
-    set(CMAKE_INSTALL_RPATH "@loader_path/../Frameworks;@executable_path;")
+  set(CMAKE_INSTALL_NAME_DIR @rpath)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+  set(CMAKE_INSTALL_RPATH "@loader_path/../Frameworks;@executable_path;")
+endif()
+
+if(TARGET ModernMIDI)
+  set(OSSIA_PROTOCOL_MIDI ON)
+else()
+  set(OSSIA_PROTOCOL_MIDI OFF)
 endif()
 
 include(ossia_sources.cmake)
@@ -148,6 +154,9 @@ if(WIN32)
     endif()
     target_link_libraries(ossia PRIVATE Ws2_32 winmm)
 endif()
+
+find_package(Threads)
+target_link_libraries(ossia PUBLIC ${CMAKE_THREAD_LIBS_INIT} )
 
 target_compile_options(ossia PRIVATE ${OSSIA_COMPILE_OPTIONS})
 target_link_libraries(ossia PRIVATE ${OSSIA_LINK_OPTIONS})

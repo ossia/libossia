@@ -1,5 +1,5 @@
 #pragma once
-#if defined(__native_client__)
+#if defined(__native_client__) || defined(__ANDROID_API__)
 #define OSSIA_USE_BOOST_OPTIONAL 1
 #elif defined(_MSC_VER)
 #define OSSIA_USE_BOOST_OPTIONAL 1

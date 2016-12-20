@@ -5,6 +5,12 @@
 
 #include <ossia_export.h>
 
+namespace fmt
+{
+template<typename T>
+class BasicWriter;
+}
+
 namespace ossia
 {
 namespace detail
@@ -352,3 +358,20 @@ ossia::value get_value_at_index(
     const ossia::value& val,
     const ossia::destination_index& idx);
 }
+
+
+OSSIA_EXPORT fmt::BasicWriter<char>& operator<<(
+    fmt::BasicWriter<char>& s,
+    const std::vector<ossia::value>& tuple);
+OSSIA_EXPORT fmt::BasicWriter<char>& operator<<(
+    fmt::BasicWriter<char>& s,
+    const std::array<float, 2>& vec);
+OSSIA_EXPORT fmt::BasicWriter<char>& operator<<(
+    fmt::BasicWriter<char>& s,
+    const std::array<float, 3>& vec);
+OSSIA_EXPORT fmt::BasicWriter<char>& operator<<(
+    fmt::BasicWriter<char>& s,
+    const std::array<float, 4>& vec);
+OSSIA_EXPORT std::ostream& operator<<(
+    std::ostream&,
+    const std::vector<std::string>& tuple);

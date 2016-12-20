@@ -1,5 +1,4 @@
 #pragma once
-
 #include <ossia/ossia.hpp>
 #include <sstream>
 
@@ -11,6 +10,7 @@ extern "C" void setup_ossia0x2emodel(void);
 extern "C" void setup_ossia0x2edevice(void);
 extern "C" void setup_ossia0x2eparam(void);
 extern "C" void setup_ossia0x2eremote(void);
+extern "C" void setup_ossia0x2eview(void);
 
 // define some useful OSSIA symbols
 static t_symbol* osym_empty               = gensym("");
@@ -111,23 +111,25 @@ public:
     }
 };
 
-/*!
- * \fn                static t_class* find_parent(t_eobj* x, t_symbol* classname)
- * \brief             Find the first instance of classname beside or above (in a parent patcher) context.
- * \details           The function iterate all objects at the same level or above x and return the first instance of classname found.
- * \param x           The object around which to search.
- * \param classname   The name of the object object we are looking for.
- * \param start_level Level above current object where to start. 0 for current patcher, 1 start searching in parent canvas.
- * \return The instance of the found object.
+/**
+ * @fn                static t_class* find_parent(t_eobj* x, t_symbol* classname)
+ * @brief             Find the first instance of classname beside or above (in a parent patcher) context.
+ * @details           The function iterate all objects at the same level or above x and return the first instance of classname found.
+ * @param x           The object around which to search.
+ * @param classname   The name of the object object we are looking for.
+ * @param start_level Level above current object where to start. 0 for current patcher, 1 start searching in parent canvas.
+ * @return The instance of the found object.
  */
-static t_pd* find_parent(t_eobj* x, t_symbol* classname, int start_level=0){
+static t_pd* find_parent(t_eobj* x, t_symbol* classname, int start_level, int* level){
     t_canvas* canvas = x->o_canvas;
+
+    *level = start_level;
 
     while(canvas && start_level--){
         canvas = canvas->gl_owner;
     }
 
-    do{
+    while (canvas){
         t_gobj* list = canvas->gl_list;
         while(list){
             if (list->g_pd->c_name == classname){
@@ -136,16 +138,26 @@ static t_pd* find_parent(t_eobj* x, t_symbol* classname, int start_level=0){
             list = list->g_next;
         }
         canvas = canvas->gl_owner;
-    } while (canvas);
+        *level++;
+    }
     return nullptr;
 }
 
+
 template<typename T>
-static T* find_parent_alive(t_eobj* x, t_symbol* classname, int start_level = 0){
-    T* obj = (T*) find_parent(x,classname, start_level);
+/**
+ * @brief find_parent_alive
+ * @details Find a parent that is not being remove soon
+ * @param x
+ * @param classname
+ * @param start_level
+ * @return
+ */
+static T* find_parent_alive(t_eobj* x, t_symbol* classname, int start_level, int* level){
+    T* obj = (T*) find_parent(x,classname, start_level, level);
     if (obj){
         while (obj && obj->x_dead ){
-            obj = find_parent_alive<T>(&obj->x_obj,classname, 1);
+            obj = find_parent_alive<T>(&obj->x_obj,classname, 1, level);
         }
     }
     return obj;
@@ -228,7 +240,8 @@ static std::string get_absolute_path(ossia::net::node_base* node)
 {
     std::vector<std::string> vs;
     while (node){
-        std::string name = node->getName(); // FIXME why this crash ?
+        std::string name;
+        name = node->getName();
         vs.push_back(name);
         node = node->getParent();
     }
@@ -240,3 +253,8 @@ static std::string get_absolute_path(ossia::net::node_base* node)
     }
     return fullpath.str();
 }
+
+template<typename T> extern void obj_dump_path(T *x);
+template<typename T> extern bool obj_register(T *x);
+template<typename T> extern void obj_set(T *x, t_symbol* s, int argc, t_atom* argv);
+template<typename T> extern void obj_bang(T *x);
