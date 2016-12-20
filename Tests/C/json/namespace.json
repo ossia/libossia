@@ -1,0 +1,1804 @@
+{
+  "sol_canope": {
+    "appName": "sol_canope",
+    "appVersion": "0.1",
+    "creatorName": "fr.blueyeti",
+    "cueManager": {
+      "cue": {
+        "type": "string",
+        "valueDefault": "Particles",
+        "priority": "0",
+        "description": "config cue of the animation"
+      }
+    },
+    "particles_display": {
+      "folder": {
+        "type": "string",
+        "valueDefault": "medias/icones/",
+        "priority": "0",
+        "description": "folder of img files"
+      },
+      "dim": {
+        "type": "string",
+        "valueDefault": "1000 10",
+        "rangeBounds": "1 10000",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "number of particles : matrix dim",
+        "readonly": "0"
+      }
+    },
+    "particles_display_control": {
+      "scale": {
+        "setAll": {
+          "type": "decimal",
+          "valueDefault": "1.",
+          "rangeBounds": "0. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "size of the particles",
+          "readonly": "0"
+        },
+        "random": {
+          "type": "decimal",
+          "valueDefault": "0.",
+          "rangeBounds": "0. 1.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "random over size of the particles",
+          "readonly": "0"
+        }
+      }
+    },
+    "reveal": {
+      "finish": {
+        "thresh": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0. 1.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "finish the reveal when this ratio of the surface is reach",
+          "readonly": "0"
+        },
+        "waitAfter": {
+          "type": "decimal",
+          "valueDefault": "2.",
+          "rangeBounds": "0. 1.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "time in sec to wait before enable erase after new picture",
+          "readonly": "0"
+        }
+      },
+      "dim": {
+        "type": "integerArray",
+        "valueDefault": "1920 1200",
+        "rangeBounds": "1 10000",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "screen resolution",
+        "readonly": "0"
+      }
+    },
+    "reveal_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file for reveal"
+      }
+    },
+    "reveal_file2": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file for reveal"
+      }
+    },
+    "reveal_file3": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file for reveal"
+      }
+    },
+    "reveal_file4": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file for reveal"
+      }
+    },
+    "reveal_file5": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file for reveal"
+      }
+    },
+    "reveal_file6": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file for reveal"
+      }
+    },
+    "reveal_file7": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file for reveal"
+      }
+    },
+    "reveal_file8": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file for reveal"
+      }
+    },
+    "search_brgd_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "background image file for search & find"
+      }
+    },
+    "1_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "1_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "1_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "1_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    },
+    "2_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "2_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "2_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "2_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    },
+    "3_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "3_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "3_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "3_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    },
+    "4_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "4_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "4_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "4_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    },
+    "5_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "5_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "5_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "5_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    },
+    "6_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "6_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "6_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "6_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    },
+    "7_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "7_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "7_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "7_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    },
+    "8_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "8_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "8_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "8_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    },
+    "9_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "9_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "9_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "9_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    },
+    "10_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "10_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "10_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "10_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    },
+    "11_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "11_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "11_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "11_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    },
+    "12_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "12_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "12_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "12_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    },
+    "13_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "13_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "13_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "13_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    },
+    "14_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "14_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "14_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "14_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    },
+    "15_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "15_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "15_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "15_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    },
+    "16_search_file": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "16_search_file_checked": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no image",
+        "readonly": "0"
+      },
+      "filename": {
+        "type": "filepath",
+        "valueDefault": "0",
+        "priority": "0",
+        "description": "image file 1 for search & find"
+      }
+    },
+    "16_search_display": {
+      "3D" : {
+        "position": {
+          "type": "decimalArray",
+          "valueDefault": "0. 0. 0.",
+          "rangeBounds": "-2. 2.",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "position of object",
+          "readonly": "0"
+        }
+      }
+    },
+    "16_search_zone": {
+      "mute": {
+        "type": "boolean",
+        "valueDefault": "1",
+        "priority": "0",
+        "description": "no interaction",
+        "readonly": "0"
+      },
+      "score": {
+        "state": {
+          "type": "boolean",
+          "valueDefault": "1",
+          "priority": "0",
+          "description": "1-true give a point if checked, false : wrong choice",
+          "readonly": "0"
+        }
+      },
+      "type": {
+        "type": "integer",
+        "valueDefault": "1",
+        "rangeBounds": "0. 1.",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "zone type : 0 none 1: alpha 2 : circle",
+        "readonly": "0"
+      },
+      "countdown" : {
+        "radius": {
+          "type": "decimal",
+          "valueDefault": "0.9",
+          "rangeBounds": "0 2",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "size": {
+          "type": "decimal",
+          "valueDefault": "0.2",
+          "rangeBounds": "0 2",
+          "valueStepSize": "0.1",
+          "priority": "0",
+          "description": "countdown radius",
+          "readonly": "0"
+        },
+        "color": {
+          "type": "decimalArray",
+          "valueDefault": "0.000000 0.619608 0.878431",
+          "rangeBounds": "1 10000",
+          "valueStepSize": "1",
+          "priority": "0",
+          "description": "countdown color",
+          "readonly": "0"
+        }
+      }
+    }
+  }
+}
