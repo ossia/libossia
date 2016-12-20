@@ -1,5 +1,6 @@
 #include <ossia/network/domain/detail/apply_domain.hpp>
 #include <ossia/network/domain/domain_conversion.hpp>
+#include <ossia/detail/logger.hpp>
 #include <fmt/format.h>
 namespace ossia
 {
@@ -38,7 +39,6 @@ struct domain_prettyprint_visitor
       writer << "max:";
       writer << *dom.max;
     }
-
   }
 
   void operator()(domain_base<bool>& dom)

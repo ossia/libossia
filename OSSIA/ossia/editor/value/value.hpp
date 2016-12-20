@@ -7,9 +7,8 @@
 
 namespace fmt
 {
-template<typename T, typename Allocator>
-class BasicMemoryWriter;
-using MemoryWriter = BasicMemoryWriter<char, std::allocator<char>>;
+template<typename T>
+class BasicWriter;
 }
 
 namespace ossia
@@ -360,8 +359,19 @@ ossia::value get_value_at_index(
     const ossia::destination_index& idx);
 }
 
-fmt::MemoryWriter& operator<<(fmt::MemoryWriter&, const std::vector<ossia::value>& tuple);
-fmt::MemoryWriter& operator<<(fmt::MemoryWriter&, const std::array<float, 2ul>& tuple);
-fmt::MemoryWriter& operator<<(fmt::MemoryWriter&, const std::array<float, 3ul>& tuple);
-fmt::MemoryWriter& operator<<(fmt::MemoryWriter&, const std::array<float, 4ul>& tuple);
-std::ostream& operator<<(std::ostream&, const std::vector<std::string>& tuple);
+
+OSSIA_EXPORT fmt::BasicWriter<char>& operator<<(
+    fmt::BasicWriter<char>& s,
+    const std::vector<ossia::value>& tuple);
+OSSIA_EXPORT fmt::BasicWriter<char>& operator<<(
+    fmt::BasicWriter<char>& s,
+    const std::array<float, 2>& vec);
+OSSIA_EXPORT fmt::BasicWriter<char>& operator<<(
+    fmt::BasicWriter<char>& s,
+    const std::array<float, 3>& vec);
+OSSIA_EXPORT fmt::BasicWriter<char>& operator<<(
+    fmt::BasicWriter<char>& s,
+    const std::array<float, 4>& vec);
+OSSIA_EXPORT std::ostream& operator<<(
+    std::ostream&,
+    const std::vector<std::string>& tuple);
