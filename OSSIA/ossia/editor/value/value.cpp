@@ -523,9 +523,10 @@ bool operator<=(const value& lhs, const value& rhs)
 
 namespace
 {
+template<typename Vis>
 struct value_prettyprint_visitor
 {
-  fmt::MemoryWriter& s;
+  Vis& s;
 
   void operator()(Impulse) const
   {
@@ -589,7 +590,7 @@ struct value_prettyprint_visitor
 std::string value_to_pretty_string(const ossia::value& val)
 {
   fmt::MemoryWriter s;
-  val.apply(value_prettyprint_visitor{s});
+  val.apply(value_prettyprint_visitor<fmt::MemoryWriter>{s});
   return s.str();
 }
 
@@ -653,9 +654,11 @@ value::~value() noexcept
 
 }
 
-fmt::MemoryWriter&operator<<(fmt::MemoryWriter& s, const std::vector<ossia::value>& tuple)
+fmt::BasicWriter<char>& operator<<(
+    fmt::BasicWriter<char>& s,
+    const std::vector<ossia::value>& tuple)
 {
-  ossia::value_prettyprint_visitor vis{s};
+  ossia::value_prettyprint_visitor<fmt::BasicWriter<char>> vis{s};
 
   const int n = tuple.size();
 
@@ -673,19 +676,25 @@ fmt::MemoryWriter&operator<<(fmt::MemoryWriter& s, const std::vector<ossia::valu
   return s;
 }
 
-fmt::MemoryWriter&operator<<(fmt::MemoryWriter& s, const std::array<float, 2>& vec)
+fmt::BasicWriter<char>& operator<<(
+    fmt::BasicWriter<char>& s,
+    const std::array<float, 2>& vec)
 {
   s << "[" << vec[0] << " " << vec[1] << "]";
   return s;
 }
 
-fmt::MemoryWriter&operator<<(fmt::MemoryWriter& s, const std::array<float, 3>& vec)
+fmt::BasicWriter<char>& operator<<(
+    fmt::BasicWriter<char>& s,
+    const std::array<float, 3>& vec)
 {
   s << "[" << vec[0] << " " << vec[1] << " " << vec[2] << "]";
   return s;
 }
 
-fmt::MemoryWriter&operator<<(fmt::MemoryWriter& s, const std::array<float, 4>& vec)
+fmt::BasicWriter<char>& operator<<(
+    fmt::BasicWriter<char>& s,
+    const std::array<float, 4>& vec)
 {
   s << "[" << vec[0] << " " << vec[1] << " " << vec[2] << " " << vec[3] << "]";
   return s;

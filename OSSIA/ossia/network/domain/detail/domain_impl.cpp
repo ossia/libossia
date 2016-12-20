@@ -38,7 +38,6 @@ struct domain_prettyprint_visitor
       writer << "max:";
       writer << *dom.max;
     }
-
   }
 
   void operator()(domain_base<bool>& dom)
