@@ -1,0 +1,170 @@
+{
+  "occupation": { 
+    "languages": {
+      "main": {
+        "type": "string",
+        "valueDefault": "FR",
+        "priority": "0",
+        "description": "Langage principal"
+      }
+    },
+    "screen": {
+      "w": {
+        "type": "integer",
+        "valueDefault": "1920",
+        "rangeBounds": "800 1920",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "Resolution",
+        "readonly": "0"
+      },
+      "h": {
+        "type": "integer",
+        "valueDefault": "1080",
+        "rangeBounds": "600 1080",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "Resolution",
+        "readonly": "0"
+      },
+      "fullscreen": {
+        "type": "boolean",
+        "valueDefault": "true",
+        "priority": "0",
+        "description": "Activation du fullscreen",
+        "readonly": "0"
+      },
+      "hideCursor": {
+        "type": "boolean",
+        "valueDefault": "true",
+        "priority": "0",
+        "description": "Cache le curseur souris",
+        "readonly": "0"
+      }
+    },
+    "debug": {
+      "type": "boolean",
+      "valueDefault": "true",
+      "priority": "0",
+      "description": "Activation du mode debug",
+      "readonly": "0"
+    },
+    "max_ip": {
+      "type": "string",
+      "valueDefault": "localhost",
+      "priority": "0",
+      "description": "Adresse ip de connexion à Max"
+    },
+    "enable_max": {
+      "type": "boolean",
+      "valueDefault": "true",
+      "priority": "0",
+      "description": "Activation communication avec Max",
+      "readonly": "0"
+    },
+    "time": {
+      "timeout": {
+        "type": "integer",
+        "valueDefault": "120",
+        "rangeBounds": "0 120",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "Temps en secondes d'inactivité avant signal",
+        "readonly": "0"
+      },
+      "timeBeforeAccroche": {
+        "type": "integer",
+        "valueDefault": "10",
+        "rangeBounds": "0 120",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "Temps en secondes avant retour accroche",
+        "readonly": "0"
+      },
+      "timePlaceSelection": {
+        "type": "integer",
+        "valueDefault": "3",
+        "rangeBounds": "0 10",
+        "valueStepSize": "0.5",
+        "priority": "0",
+        "description": "Temps en secondes pour sélectionner un lieu sur la carte",
+        "readonly": "0"
+      },
+      "timeBeforeNextPhoto": {
+        "type": "integer",
+        "valueDefault": "5",
+        "rangeBounds": "0 50",
+        "valueStepSize": "1",
+        "priority": "0",
+        "description": "Temps en secondes avant le passage automatique à la photo suivante",
+        "readonly": "0"
+      }
+    },
+    "accroche": {
+      "type": "filepath",
+      "priority": 0,
+      "description": "Fichier vidéo d'accroche",
+      "readonly": 0
+    },
+    "places": {
+      "dynamicInstances": "true",
+      "instanceBounds": "1 200",
+      "description": "Liste de lieux",
+      "name": {
+        "type": "string",
+        "priority": "0",
+        "description": "Nom du lieu",
+        "readonly": "0"
+      },
+      "gps_coordinates": {
+        "type": "string",
+        "priority": "0",
+        "description": "Coordonnées GPS",
+        "readonly": "0"
+      },
+      "circle_coordinates": {
+        "type": "string",
+        "priority": "0",
+        "description": "Coordonnées en pixels du cercle rouge attaché au lieu",
+        "readonly": "0"
+      },
+      "title": {
+        "type": "string",
+        "priority": 0,
+        "description": "Titre",
+        "readonly": 0
+      },
+      "legend": {
+        "type": "string",
+        "priority": 0,
+        "description": "Légende",
+        "readonly": 0
+      },
+      "show": {
+        "type": "boolean",
+        "valueDefault": true,
+        "priority": "0",
+        "description": "Afficher le lieu",
+        "readonly": "0"
+      },
+      "medias": {
+        "dynamicInstances": "true",
+        "instanceBounds": "1 200",
+        "description": "Liste des medias",
+        "image": {
+          "type": "filepath",
+          "priority": 0,
+          "description": "Fichier image",
+          "readonly": 0
+        },
+        "show": {
+          "type": "boolean",
+          "valueDefault": true,
+          "priority": 0,
+          "description": "Légende",
+          "readonly": 0
+        }
+      }
+    }
+  }
+}
