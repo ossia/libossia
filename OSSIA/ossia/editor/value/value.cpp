@@ -554,18 +554,15 @@ struct value_prettyprint_visitor
   }
   void operator()(Vec2f vec) const
   {
-    s << "vec2f: ";
-    s << vec;
+    s.write("vec2f: {}", vec);
   }
   void operator()(Vec3f vec) const
   {
-    s << "vec3f: ";
-    s << vec;
+    s.write("vec3f: {}", vec);
   }
   void operator()(Vec4f vec) const
   {
-    s << "vec4f: ";
-    s << vec;
+    s.write("vec4f: {}", vec);
   }
   void operator()(const Destination& d) const
   {
@@ -654,11 +651,10 @@ value::~value() noexcept
 
 }
 
-fmt::BasicWriter<char>& operator<<(
-    fmt::BasicWriter<char>& s,
+std::ostream& operator<<(
+    std::ostream& s,
     const std::vector<ossia::value>& tuple)
 {
-  ossia::value_prettyprint_visitor<fmt::BasicWriter<char>> vis{s};
 
   const int n = tuple.size();
 
@@ -668,32 +664,39 @@ fmt::BasicWriter<char>& operator<<(
     const auto& val = tuple[i];
 
     if (val.valid())
+    {
+      fmt::MemoryWriter w;
+      ossia::value_prettyprint_visitor<fmt::MemoryWriter> vis{w};
       eggs::variants::apply(vis, val.v);
+      s << w.str();
+    }
     if (i < n - 1)
+    {
       s << ", ";
+    }
   }
   s << "]";
   return s;
 }
 
-fmt::BasicWriter<char>& operator<<(
-    fmt::BasicWriter<char>& s,
+std::ostream& operator<<(
+    std::ostream& s,
     const std::array<float, 2>& vec)
 {
   s << "[" << vec[0] << " " << vec[1] << "]";
   return s;
 }
 
-fmt::BasicWriter<char>& operator<<(
-    fmt::BasicWriter<char>& s,
+std::ostream& operator<<(
+    std::ostream& s,
     const std::array<float, 3>& vec)
 {
   s << "[" << vec[0] << " " << vec[1] << " " << vec[2] << "]";
   return s;
 }
 
-fmt::BasicWriter<char>& operator<<(
-    fmt::BasicWriter<char>& s,
+std::ostream& operator<<(
+    std::ostream& s,
     const std::array<float, 4>& vec)
 {
   s << "[" << vec[0] << " " << vec[1] << " " << vec[2] << " " << vec[3] << "]";

@@ -30,14 +30,12 @@ struct domain_prettyprint_visitor
   {
     if(dom.min)
     {
-      writer << "min:";
-      writer << *dom.min;
+      writer.write("min: {}", *dom.min);
     }
 
     if(dom.max)
     {
-      writer << "max:";
-      writer << *dom.max;
+      writer.write("max: {}", *dom.max);
     }
   }
 

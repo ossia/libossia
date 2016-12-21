@@ -360,17 +360,17 @@ ossia::value get_value_at_index(
 }
 
 
-OSSIA_EXPORT fmt::BasicWriter<char>& operator<<(
-    fmt::BasicWriter<char>& s,
+OSSIA_EXPORT std::ostream& operator<<(
+    std::ostream& s,
     const std::vector<ossia::value>& tuple);
-OSSIA_EXPORT fmt::BasicWriter<char>& operator<<(
-    fmt::BasicWriter<char>& s,
+OSSIA_EXPORT std::ostream& operator<<(
+    std::ostream& s,
     const std::array<float, 2>& vec);
-OSSIA_EXPORT fmt::BasicWriter<char>& operator<<(
-    fmt::BasicWriter<char>& s,
+OSSIA_EXPORT std::ostream& operator<<(
+    std::ostream& s,
     const std::array<float, 3>& vec);
-OSSIA_EXPORT fmt::BasicWriter<char>& operator<<(
-    fmt::BasicWriter<char>& s,
+OSSIA_EXPORT std::ostream& operator<<(
+    std::ostream& s,
     const std::array<float, 4>& vec);
 OSSIA_EXPORT std::ostream& operator<<(
     std::ostream&,
