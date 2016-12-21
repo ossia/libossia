@@ -5,6 +5,10 @@
 
 namespace ossia
 {
+namespace net
+{
+class node_base;
+}
 /**
  * \namespace regex_path
  * \brief Utilities to construct regexes to validate paths.
@@ -160,12 +164,38 @@ inline path_element operator/(const path_element& lhs, const stop& rhs)
  * \namespace traversal
  * \brief Utilities to construct classes that will perform an action for nodes matching a path.
  *
+ * The path has an user-friendly, OSC 1.1-like format :
+ * foo:/bar/baz*
+ * ../boo/bin.*
+ * //bin/bo??o/bee
+ * buz:/{bee,boo}*
  *
+ * We have a translation phase :
+ * Let [:ossia:] be the regex character class defined by ossia::net::name_characters()
+ * "?" -> [:ossia:]?
+ * "*" -> [:ossia:]*
+ *
+ * Given a path in the "user" format :
+ * First try to find the largest absolute part from the beginning
+ * Then apply regexes to each sub-path and child node
  */
 namespace traversal
 {
 // Give iterator interface, or return a vector on which we can iterate ?
 // Handle relative paths : "../foo"
 
+struct path
+{
+  /** A list of function for the location of elements.
+   * Each function will be called on the next step.
+   */
+  std::vector<std::function<void(std::vector<ossia::net::node_base*>&)>> functions;
+};
+
+path make_path(const std::string& address);
+
+std::vector<ossia::net::node_base*> apply(
+    const path&,
+    const ossia::net::node_base& node);
 }
 }

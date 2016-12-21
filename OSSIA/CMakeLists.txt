@@ -21,10 +21,10 @@ include(LinkerWarnings)
 find_package(Boost REQUIRED)
 
 if(NOT "${OSSIA_NO_QT}")
-find_package(KF5DNSSD QUIET NO_MODULE)
-if(NOT KF5DNSSD)
-  message(STATUS "Install KF5-DNSSD to build with Zeroconf / Bonjour support")
-endif()
+  find_package(KF5DNSSD QUIET NO_MODULE)
+  if(NOT KF5DNSSD)
+    message(STATUS "Install KF5-DNSSD to build with Zeroconf / Bonjour support")
+  endif()
 endif()
 
 ### Protocol setup ###
@@ -38,6 +38,12 @@ set(OSSIA_PROTOCOL_WEBSOCKETS ON)
 
 if(IOS OR CMAKE_SYSTEM_NAME MATCHES Emscripten)
   set(OSSIA_PROTOCOL_MIDI FALSE)
+  set(OSSIA_PROTOCOL_HTTP FALSE)
+  set(OSSIA_PROTOCOL_WEBSOCKETS FALSE)
+  set(OSSIA_PROTOCOL_SERIAL FALSE)
+endif()
+
+if(OSSIA_NO_QT)
   set(OSSIA_PROTOCOL_HTTP FALSE)
   set(OSSIA_PROTOCOL_WEBSOCKETS FALSE)
   set(OSSIA_PROTOCOL_SERIAL FALSE)
@@ -57,7 +63,6 @@ endif()
 
 include(ossia_sources.cmake)
 
-if(NOT "${OSSIA_NO_QT}")
 if(OSSIA_PROTOCOL_HTTP)
   find_package(Qt5 5.6 QUIET COMPONENTS Core Qml)
   if(${Qt5Qml_FOUND})
@@ -83,7 +88,6 @@ if(OSSIA_PROTOCOL_SERIAL)
   else()
     set(OSSIA_PROTOCOL_SERIAL FALSE)
   endif()
-endif()
 endif()
 
 ### Library ###

@@ -186,6 +186,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/path.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_address.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.cpp"
