@@ -139,13 +139,33 @@ inline path_element operator/(const path_element& lhs, const any_path&)
 inline path_element operator/(const any_path&, const path_element& rhs)
 {
   const std::string sub = ossia::net::name_characters().to_string();
-  return path_element{
-        "^([" + sub + "]*?:)(\\/?[" + sub + "]*?)+?\\/" + rhs.address};
+  std::string sub2 = "^([";
+  sub2 += sub;
+  sub2 += "]*?:)(\\/?[";
+  sub2 += sub;
+  sub2 += "]*?)+?\\/";
+  sub2 += rhs.address;
+  return path_element{std::move(sub2)};
 }
+
 inline path_element operator/(const path_element& lhs, const stop& rhs)
 {
   return path_element{lhs.address + "$"};
 }
+
+}
+
+
+/**
+ * \namespace traversal
+ * \brief Utilities to construct classes that will perform an action for nodes matching a path.
+ *
+ *
+ */
+namespace traversal
+{
+// Give iterator interface, or return a vector on which we can iterate ?
+// Handle relative paths : "../foo"
 
 }
 }
