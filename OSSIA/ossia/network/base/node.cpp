@@ -98,6 +98,30 @@ std::string sanitize_name(std::string name_base, const std::vector<std::string>&
   }
 }
 
+#include <experimental/string_view>
+std::vector<std::string> address_parts(const ossia::string_view& src)
+{
+  std::vector<std::string> sub;
+
+  if(!src.empty())
+  {
+    sub.reserve(4);
+    if(src[0] != '/')
+    {
+      boost::split(sub, src, boost::is_any_of("/"));
+    }
+    else
+    {
+      ossia::string_view sv = src.substr(1);
+      boost::split(
+            sub,
+            sv,
+            boost::is_any_of("/"));
+    }
+  }
+
+  return sub;
+}
 node_base::~node_base() = default;
 
 ossia::optional<instance_bounds> node_base::getDynamicInstances() const

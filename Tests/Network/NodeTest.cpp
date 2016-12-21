@@ -122,6 +122,27 @@ private Q_SLOTS:
     }
   }
 
+  void test_traversal()
+  {
+    ossia::net::generic_device device1{std::make_unique<ossia::net::local_protocol>(), "test"};
+    ossia::net::generic_device device2{std::make_unique<ossia::net::local_protocol>(), "banana"};
+
+    ossia::net::find_or_create_node(device1, "foo/bar/baz");
+    ossia::net::find_or_create_node(device1, "foo/bar/blop");
+
+    ossia::net::find_or_create_node(device2, "fizz/baz");
+    ossia::net::find_or_create_node(device2, "foo/baz.2/blop");
+
+    auto p = traversal::make_path("foo/b??" "/b?*");
+    std::vector<ossia::net::node_base*> vec{&device1.getRootNode(), &device2.getRootNode()};
+    traversal::apply(p, vec);
+    for(auto node : vec)
+    {
+      qDebug() << "matched" << QString::fromStdString(ossia::net::address_string_from_node(*node));
+    }
+
+  }
+
   /*! test callback notifications */
   void test_callback()
   {

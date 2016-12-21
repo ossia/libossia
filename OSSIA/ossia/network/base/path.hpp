@@ -28,7 +28,7 @@ namespace regex_path
 /**
  * @brief Base class for our paths
  */
-struct path_element
+struct OSSIA_EXPORT path_element
 {
   std::string address;
   path_element(std::string s)
@@ -54,7 +54,7 @@ struct path_element
 };
 
 //! Represents a device in a path, e.g. "foo:"
-struct device : public path_element
+struct OSSIA_EXPORT device : public path_element
 {
   explicit device(std::string s)
     : path_element{"^" + std::move(s) + ":"}
@@ -64,7 +64,7 @@ struct device : public path_element
 };
 
 //! Can match nodes that are instances : foo:/bar, foo:/bar.1, etc.
-struct any_instance : public path_element
+struct OSSIA_EXPORT any_instance : public path_element
 {
   explicit any_instance(std::string s)
     : path_element{std::move(s) + "(\\.[0-9]+?)?"}
@@ -75,7 +75,7 @@ struct any_instance : public path_element
 
 
 //! Can match nodes from an alternative, foo:/bar/baz, foo:/bob/baz, and not foo:/bin/baz
-struct any_between : public path_element
+struct OSSIA_EXPORT any_between : public path_element
 {
   any_between(std::string s): path_element{s} { }
 
@@ -104,17 +104,17 @@ struct any_between : public path_element
 
 
 //! Can match any node : foo:/bar, foo:/baz.1234, etc.
-struct any_node
+struct OSSIA_EXPORT any_node
 {
 };
 
 //! Can match any subpath : foo:/bar/baz, foo:/bar/bo.12/baz, etc.
-struct any_path
+struct OSSIA_EXPORT any_path
 {
 };
 
 //! Matches the end of an address
-struct stop
+struct OSSIA_EXPORT stop
 {
 };
 
@@ -174,17 +174,24 @@ inline path_element operator/(const path_element& lhs, const stop& rhs)
  * Let [:ossia:] be the regex character class defined by ossia::net::name_characters()
  * "?" -> [:ossia:]?
  * "*" -> [:ossia:]*
+ * "//" -> any_path() /
+ * ".." -> getParent()
+ * All given paths are ended by "$"
  *
  * Given a path in the "user" format :
- * First try to find the largest absolute part from the beginning
- * Then apply regexes to each sub-path and child node
+ * First try to find the largest absolute part from the beginning.
+ * Then apply regexes to each sub-path and child node by splitting :
+ *
+ * foo:/bar/baz / b*anana.?? / *.*
+ * // bonkers / *
+ * ../ plop / foo.* / ..
  */
 namespace traversal
 {
 // Give iterator interface, or return a vector on which we can iterate ?
 // Handle relative paths : "../foo"
 
-struct path
+struct OSSIA_EXPORT path
 {
   /** A list of function for the location of elements.
    * Each function will be called on the next step.
@@ -192,10 +199,10 @@ struct path
   std::vector<std::function<void(std::vector<ossia::net::node_base*>&)>> functions;
 };
 
-path make_path(const std::string& address);
+OSSIA_EXPORT path make_path(const std::string& address);
 
-std::vector<ossia::net::node_base*> apply(
-    const path&,
-    const ossia::net::node_base& node);
+OSSIA_EXPORT void apply(
+    const path& p,
+    std::vector<ossia::net::node_base*>& nodes);
 }
 }

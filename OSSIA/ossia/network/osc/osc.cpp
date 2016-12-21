@@ -189,17 +189,7 @@ void osc_protocol::handleLearn(const oscpack::ReceivedMessage& m)
 {
   // Find-or-add algorithm
   ossia::string_view addr = m.AddressPattern();
-  std::vector<std::string> v;
-  boost::algorithm::split(v, addr, boost::algorithm::is_any_of("/"));
-
-  // v is not empty.
-  for(auto it = v.begin(); it != v.end(); )
-  {
-    if(!it->empty())
-      ++it;
-    else
-      it = v.erase(it);
-  }
+  std::vector<std::string> v = address_parts(addr);
 
   bool is_new = false;
   node_base* n = &mDevice->getRootNode();
