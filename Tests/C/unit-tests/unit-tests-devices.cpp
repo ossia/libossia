@@ -82,7 +82,7 @@ TEST_CASE ("Functions on instances") {
     int number_of_a_nodes = 0;
     int number_of_b_nodes = 0;
     int number_of_d_nodes = 0;
-    funcs.emplace_back(R"(device:/a\.?[0-9]*$)",
+    funcs.emplace_back(std::regex(R"(device:/a\.?[0-9]*$)"),
                        [&] (const ossia::net::node_base& node) {
       std::cerr << "Case 1: "
                 << ossia::net::address_string_from_node(node)
@@ -90,7 +90,7 @@ TEST_CASE ("Functions on instances") {
 
       number_of_a_nodes++;
     });
-    funcs.emplace_back(R"(device:/a\.?[0-9]*/b\.?[0-9*]$)",
+    funcs.emplace_back(std::regex(R"(device:/a\.?[0-9]*/b\.?[0-9*]$)"),
                        [&] (const ossia::net::node_base& node) {
       std::cerr << "Case 2: "
                 << ossia::net::address_string_from_node(node)
@@ -98,7 +98,7 @@ TEST_CASE ("Functions on instances") {
 
       number_of_b_nodes++;
     });
-    funcs.emplace_back(R"(device:/a\.2/b\.1/d$)",
+    funcs.emplace_back(std::regex(R"(device:/a\.2/b\.1/d$)"),
                        [&] (const ossia::net::node_base& node) {
       std::cerr << "Case 3: "
                 << ossia::net::address_string_from_node(node)
