@@ -98,6 +98,28 @@ private Q_SLOTS:
       QVERIFY(std::regex_match("foo:/bar/baz", path.regex()));
       QVERIFY(!std::regex_match("foo:/bar/baz/", path.regex()));
     }
+
+    {
+      auto path = device("foo") / any_between{"bob", "bar"} / any_instance("baz");
+      QVERIFY(std::regex_match("foo:/bar/baz.2", path.regex()));
+      QVERIFY(std::regex_match("foo:/bob/baz.2", path.regex()));
+      QVERIFY(!std::regex_match("foo:/bin/baz.2", path.regex()));
+      QVERIFY(!std::regex_match("foo:/bob/bim/blurg/baz.2", path.regex()));
+      QVERIFY(std::regex_match("foo:/bar/baz", path.regex()));
+      QVERIFY(!std::regex_match("foo:/bar/baz/", path.regex()));
+    }
+
+    {
+      auto path = any_path() / any_instance("baz");
+      std::cerr << "regex: " << path;
+      auto regex = path.regex();
+      QVERIFY(std::regex_match("foo:/bar/baz.2", regex));
+      QVERIFY(std::regex_match("blob:/baz.2", regex));
+      QVERIFY(!std::regex_match("bin/baz.2", regex));
+      QVERIFY(std::regex_match("foo:/bob/bim/blurg/baz.2", regex));
+      QVERIFY(!std::regex_match("foo:/bar/baz/azeaze", regex));
+      QVERIFY(!std::regex_match("foo:/bar/baz/", regex));
+    }
   }
 
   /*! test callback notifications */

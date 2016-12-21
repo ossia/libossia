@@ -53,7 +53,7 @@ struct path_element
 struct device : public path_element
 {
   explicit device(std::string s)
-    : path_element{std::move(s) + ":"}
+    : path_element{"^" + std::move(s) + ":"}
   {
 
   }
@@ -63,11 +63,41 @@ struct device : public path_element
 struct any_instance : public path_element
 {
   explicit any_instance(std::string s)
-    : path_element{std::move(s) + "(\\.[0-9]+)?"}
+    : path_element{std::move(s) + "(\\.[0-9]+?)?"}
   {
 
   }
 };
+
+
+//! Can match nodes from an alternative, foo:/bar/baz, foo:/bob/baz, and not foo:/bin/baz
+struct any_between : public path_element
+{
+  any_between(std::string s): path_element{s} { }
+
+  any_between(std::initializer_list<std::string> args):
+    path_element{""}
+  {
+    const int N = args.size();
+    if(N > 0)
+    {
+      address += '(';
+
+      auto it = args.begin();
+      address += *it;
+
+      for(int i = 1; i < N; i++)
+      {
+        ++it;
+        address += '|';
+        address += *it;
+      }
+
+      address += ')';
+    }
+  }
+};
+
 
 //! Can match any node : foo:/bar, foo:/baz.1234, etc.
 struct any_node
@@ -97,15 +127,21 @@ inline path_element operator/(const path_element& lhs, const any_instance& rhs)
 inline path_element operator/(const path_element& lhs, const any_node&)
 {
   return path_element{lhs.address +
-        "\\/[" + ossia::net::name_characters().to_string() + "]*"};
+        "\\/[" + ossia::net::name_characters().to_string() + "]*?"};
 }
 
 inline path_element operator/(const path_element& lhs, const any_path&)
 {
   return path_element{lhs.address +
-        "(\\/[" + ossia::net::name_characters().to_string() + "]*)+"};
+        "(\\/[" + ossia::net::name_characters().to_string() + "]*?)+?"};
 }
 
+inline path_element operator/(const any_path&, const path_element& rhs)
+{
+  const std::string sub = ossia::net::name_characters().to_string();
+  return path_element{
+        "^([" + sub + "]*?:)(\\/?[" + sub + "]*?)+?\\/" + rhs.address};
+}
 inline path_element operator/(const path_element& lhs, const stop& rhs)
 {
   return path_element{lhs.address + "$"};
