@@ -17,7 +17,7 @@ TEST_CASE ("JSON array") {
 
     SECTION ("Contents of array") {
         std::string json2 = R"_({"a":[[3, -6], [9, 2, 11]]})_";
-        ossia::presets::Preset p = ossia::presets::read_json(json2);
+        ossia::presets::preset p = ossia::presets::read_json(json2);
         REQUIRE(p.size() == 5);
         REQUIRE(p.find("/a.0.0") != p.end());
         REQUIRE(p.find("/a.0.1") != p.end());
@@ -44,7 +44,7 @@ TEST_CASE ("JSON array") {
 
 TEST_CASE ("Parsing nested objects") {
     std::string json = R"_({"a":{"c":{"d":13,"e":5}}, "b":{"f1":true, "f2":{"f3":false}}})_";
-    ossia::presets::Preset p = ossia::presets::read_json(json);
+    ossia::presets::preset p = ossia::presets::read_json(json);
     REQUIRE(p.size() == 4);
     REQUIRE(p.find("/a/c/d") != p.end());
     REQUIRE(p.find("/a/c/e") != p.end());
@@ -75,7 +75,7 @@ TEST_CASE ("Empty object") {
 
 TEST_CASE ("Parsing types") {
     std::string json = R"_({"a":1,"b":2.34234,"c":false, "d":"hello world","e":true})_";
-    ossia::presets::Preset p = ossia::presets::read_json(json);
+    ossia::presets::preset p = ossia::presets::read_json(json);
     REQUIRE(p.find("/a") != p.end());
     REQUIRE(p.find("/b") != p.end());
     REQUIRE(p.find("/c") != p.end());
@@ -91,7 +91,7 @@ TEST_CASE ("Parsing types") {
 TEST_CASE ("Building JSON array") {
 
     SECTION("Basic array") {
-        ossia::presets::Preset p;
+        ossia::presets::preset p;
 
         int32_t i1 (5);
         int32_t i2 (4);
@@ -123,7 +123,7 @@ TEST_CASE ("Building JSON array") {
     }
 
     SECTION ("Nested array") {
-        ossia::presets::Preset p;
+        ossia::presets::preset p;
 
         int32_t i1 (1);
         int32_t i2 (2);
@@ -170,7 +170,7 @@ TEST_CASE ("Building JSON array") {
 }
 
 TEST_CASE ("Building object"){
-    ossia::presets::Preset p;
+    ossia::presets::preset p;
 
     int32_t i1 (1);
     int32_t i2 (2);
@@ -209,7 +209,7 @@ TEST_CASE ("Building object"){
 }
 
 TEST_CASE ("Nested arrays and objects") {
-    ossia::presets::Preset p;
+    ossia::presets::preset p;
 
     int32_t i1 (1);
     int32_t i2 (2);
@@ -255,7 +255,7 @@ TEST_CASE ("Nested arrays and objects") {
 }
 
 TEST_CASE ("Types conversion") {
-    ossia::presets::Preset p;
+    ossia::presets::preset p;
 
     bool btrue (true);
     bool bfalse (false);

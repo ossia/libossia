@@ -3,6 +3,8 @@
 #include <string>
 #include <hopscotch_map.h>
 #include <memory>
+#include <regex>
+#include <functional>
 #include <ossia-c/preset/exception.hpp>
 #include <ossia_export.h>
 
@@ -21,17 +23,29 @@ namespace ossia
 {
 namespace presets
 {
-using Preset = tsl::hopscotch_map<std::string, ossia::value>;
-using PresetPair = std::pair<std::string, ossia::value>;
+using preset =
+  tsl::hopscotch_map<
+    std::string,
+    ossia::value>;
 
-OSSIA_EXPORT Preset read_json(const std::string&);
-OSSIA_EXPORT Preset read_xml(const std::string&);
+using instance_functions =
+  std::vector<
+    std::pair<
+      std::regex,
+      std::function<void(const ossia::net::node_base&)>
+    >
+  >;
 
-OSSIA_EXPORT std::string write_json(const Preset&);
-OSSIA_EXPORT std::string write_xml(const Preset&);
+using preset_pair = std::pair<std::string, ossia::value>;
 
-OSSIA_EXPORT std::string to_string(const Preset&);
-OSSIA_EXPORT std::string to_string(const PresetPair&);
+OSSIA_EXPORT preset read_json(const std::string&);
+OSSIA_EXPORT preset read_xml(const std::string&);
+
+OSSIA_EXPORT std::string write_json(const preset&);
+OSSIA_EXPORT std::string write_xml(const preset&);
+
+OSSIA_EXPORT std::string to_string(const preset&);
+OSSIA_EXPORT std::string to_string(const preset_pair&);
 }
 
 namespace devices
@@ -45,8 +59,13 @@ OSSIA_EXPORT void read_xml(ossia::net::device_base&, const std::string&);
 OSSIA_EXPORT std::string write_json(const ossia::net::device_base&);
 OSSIA_EXPORT std::string write_xml(const ossia::net::device_base&);
 
-OSSIA_EXPORT void apply_preset(ossia::net::device_base&, const presets::Preset&, keep_arch_type t = keep_arch_on);
-OSSIA_EXPORT presets::Preset make_preset(ossia::net::device_base&);
+OSSIA_EXPORT void apply_preset(
+      ossia::net::device_base&,
+      const presets::preset&,
+      keep_arch_type t = keep_arch_on,
+      presets::instance_functions = {});
+
+OSSIA_EXPORT presets::preset make_preset(ossia::net::device_base&);
 
 OSSIA_EXPORT ossia::net::node_base* get_node(ossia::net::node_base&, const std::string&);
 OSSIA_EXPORT std::string to_string(const ossia::net::device_base& ossiadev);

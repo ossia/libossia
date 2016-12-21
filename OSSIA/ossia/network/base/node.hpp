@@ -84,16 +84,8 @@ public:
     return mChildren;
   }
 
-
   //! The node subclasses must call this in their destructor.
   mutable Nano::Signal<void(const node_base&)> aboutToBeDeleted;
-
-  /**
-   * @brief This will be called on preset loading, when an instance is created.
-   *
-   * The user has the guarantee that all the sub-nodes are loaded when this is called.
-   */
-  mutable Nano::Signal<void(const node_base&)> siblingInstanceCreated;
 
 protected:
   /** Should return nullptr if no child is to be added */
