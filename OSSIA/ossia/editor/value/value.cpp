@@ -574,7 +574,7 @@ struct value_prettyprint_visitor
   }
   void operator()(const std::vector<ossia::value>& t) const
   {
-    s << "tuple:" << t;
+    s.write("tuple: {}", t);
   }
   void operator()() const
   {
