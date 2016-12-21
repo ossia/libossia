@@ -212,8 +212,8 @@ void piecewise_vec_message<N>::launch() const
   }
 }
 
-template struct piecewise_vec_message<2>;
-template struct piecewise_vec_message<3>;
-template struct piecewise_vec_message<4>;
+template struct OSSIA_EXPORT piecewise_vec_message<2>;
+template struct OSSIA_EXPORT piecewise_vec_message<3>;
+template struct OSSIA_EXPORT piecewise_vec_message<4>;
 
 }
