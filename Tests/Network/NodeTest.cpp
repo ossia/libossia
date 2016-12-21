@@ -1,6 +1,7 @@
 #include <QtTest>
 #include <ossia/ossia.hpp>
 #include <iostream>
+#include <ossia/network/base/path.hpp>
 
 using namespace ossia;
 using namespace ossia::net;
@@ -65,6 +66,37 @@ private Q_SLOTS:
       auto node = device.createChild("child");
 
       QVERIFY(node->getName() == "child");
+    }
+  }
+
+  void test_path()
+  {
+    using namespace ossia::regex_path;
+    {
+      auto path = device("foo") / "bar" / any_instance("baz");
+      QVERIFY(std::regex_match("foo:/bar/baz.2", path.regex()));
+      QVERIFY(std::regex_match("foo:/bar/baz", path.regex()));
+      QVERIFY(!std::regex_match("foo:/bar/baz/", path.regex()));
+      QVERIFY(!std::regex_match("foo:/bob/baz.2", path.regex()));
+      QVERIFY(!std::regex_match("foo:/bob/bim/blurg/baz.2", path.regex()));
+    }
+
+    {
+      auto path = device("foo") / any_node() / any_instance("baz");
+      QVERIFY(std::regex_match("foo:/bar/baz.2", path.regex()));
+      QVERIFY(std::regex_match("foo:/bob/baz.2", path.regex()));
+      QVERIFY(std::regex_match("foo:/bar/baz", path.regex()));
+      QVERIFY(!std::regex_match("foo:/bar/baz/", path.regex()));
+      QVERIFY(!std::regex_match("foo:/bob/bim/blurg/baz.2", path.regex()));
+    }
+
+    {
+      auto path = device("foo") / any_path() / any_instance("baz");
+      QVERIFY(std::regex_match("foo:/bar/baz.2", path.regex()));
+      QVERIFY(std::regex_match("foo:/bob/baz.2", path.regex()));
+      QVERIFY(std::regex_match("foo:/bob/bim/blurg/baz.2", path.regex()));
+      QVERIFY(std::regex_match("foo:/bar/baz", path.regex()));
+      QVERIFY(!std::regex_match("foo:/bar/baz/", path.regex()));
     }
   }
 

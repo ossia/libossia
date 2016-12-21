@@ -6,6 +6,7 @@
 
 #include <ossia-c/preset/preset.h>
 #include <ossia-c/preset/preset.hpp>
+#include <ossia/network/base/path.hpp>
 
 #include <ossia/ossia.hpp>
 
@@ -72,17 +73,17 @@ TEST_CASE ("Building device from preset") {
     }
 }
 
-
-
 TEST_CASE ("Functions on instances") {
     ossia::net::generic_device localDevice{
     std::make_unique<ossia::net::local_protocol>(), "device"};
 
     ossia::presets::instance_functions funcs;
+
+    using namespace ossia::regex_path;
     int number_of_a_nodes = 0;
     int number_of_b_nodes = 0;
     int number_of_d_nodes = 0;
-    funcs.emplace_back(R"(device:/a\.?[0-9]*$)",
+    funcs.emplace_back((device("device") / any_instance("a")).regex(),
                        [&] (const ossia::net::node_base& node) {
       std::cerr << "Case 1: "
                 << ossia::net::address_string_from_node(node)
@@ -90,7 +91,7 @@ TEST_CASE ("Functions on instances") {
 
       number_of_a_nodes++;
     });
-    funcs.emplace_back(R"(device:/a\.?[0-9]*/b\.?[0-9*]$)",
+    funcs.emplace_back((device("device") / any_instance("a") / any_instance("b") / stop()).regex(),
                        [&] (const ossia::net::node_base& node) {
       std::cerr << "Case 2: "
                 << ossia::net::address_string_from_node(node)
@@ -98,7 +99,7 @@ TEST_CASE ("Functions on instances") {
 
       number_of_b_nodes++;
     });
-    funcs.emplace_back(R"(device:/a\.2/b\.1/d$)",
+    funcs.emplace_back((device("device") / "a.2" / "b.1" / "d").regex(),
                        [&] (const ossia::net::node_base& node) {
       std::cerr << "Case 3: "
                 << ossia::net::address_string_from_node(node)
@@ -116,6 +117,6 @@ TEST_CASE ("Functions on instances") {
     REQUIRE_NOTHROW(ossia::devices::apply_preset(localDevice, p, ossia::devices::keep_arch_off, funcs));
 
     REQUIRE(number_of_a_nodes == 2);
-    REQUIRE(number_of_b_nodes == 1);
+    REQUIRE(number_of_b_nodes == 2);
     REQUIRE(number_of_d_nodes == 1);
 }
