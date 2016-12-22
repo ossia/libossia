@@ -54,6 +54,7 @@ ossia_add_test(DataspaceMergeTest          "${CMAKE_CURRENT_SOURCE_DIR}/Editor/D
 ossia_add_test(AddressTest                 "${CMAKE_CURRENT_SOURCE_DIR}/Network/AddressTest.cpp")
 ossia_add_test(DeviceTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/DeviceTest.cpp")
 ossia_add_test(NodeTest                    "${CMAKE_CURRENT_SOURCE_DIR}/Network/NodeTest.cpp")
+ossia_add_test(PathTest                    "${CMAKE_CURRENT_SOURCE_DIR}/Network/PathTest.cpp")
 
 if("${OSSIA_PROTOCOLS}" MATCHES "WebSockets")
   ossia_add_test(WebSocketTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/WebSocketTest.cpp")

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <regex>
+#include <ossia/detail/optional.hpp>
 #include <ossia/network/base/name_validation.hpp>
 
 namespace ossia
@@ -172,10 +173,13 @@ inline path_element operator/(const path_element& lhs, const stop& rhs)
  *
  * We have a translation phase :
  * Let [:ossia:] be the regex character class defined by ossia::net::name_characters()
- * "?" -> [:ossia:]?
- * "*" -> [:ossia:]*
- * "//" -> any_path() /
- * ".." -> getParent()
+ * "?"      -> [:ossia:]?
+ * "*"      -> [:ossia:]*
+ * "//"     -> any_path() /
+ * ".."     -> getParent()
+ * "[..]"   -> already handled by the regex engine.
+ * "{a,b}"  -> "(a|b)"
+ *
  * All given paths are ended by "$"
  *
  * Given a path in the "user" format :
@@ -185,12 +189,12 @@ inline path_element operator/(const path_element& lhs, const stop& rhs)
  * foo:/bar/baz / b*anana.?? / *.*
  * // bonkers / *
  * ../ plop / foo.* / ..
+ *
+ * The next step is, instead of parsing text, construct the path elements at compile time.
+ *
  */
 namespace traversal
 {
-// Give iterator interface, or return a vector on which we can iterate ?
-// Handle relative paths : "../foo"
-
 struct OSSIA_EXPORT path
 {
   /** A list of function for the location of elements.
@@ -199,8 +203,19 @@ struct OSSIA_EXPORT path
   std::vector<std::function<void(std::vector<ossia::net::node_base*>&)>> functions;
 };
 
-OSSIA_EXPORT path make_path(const std::string& address);
+/**
+ * @brief Tries to parse an address into a path.
+ */
+OSSIA_EXPORT ossia::optional<path> make_path(
+    const std::string& address);
 
+/**
+ * @brief Get all the nodes matching a path, from a given list of root nodes.
+ *
+ * \note Some operations can be quite long.
+ * It will be much more efficient (if possible) to construct the path and apply it once to the
+ * nodes, instead of applying it every time.
+ */
 OSSIA_EXPORT void apply(
     const path& p,
     std::vector<ossia::net::node_base*>& nodes);
