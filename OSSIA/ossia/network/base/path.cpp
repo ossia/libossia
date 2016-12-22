@@ -88,8 +88,12 @@ void match_with_regex(
   for(ossia::net::node_base* node : old)
   {
     for(auto& cld : node->children())
+    {
       if(std::regex_match(cld->getName(), r))
+      {
         vec.push_back(cld.get());
+      }
+    }
   }
 }
 void add_relative_path(
@@ -106,8 +110,8 @@ void add_relative_path(
     boost::replace_all(part, "}", ")");
     boost::replace_all(part, ",", "|");
 
-    boost::replace_all(part, "?", "[" + ossia_chars + "]??");
-    boost::replace_all(part, "*", "[" + ossia_chars + "]*?");
+    boost::replace_all(part, "?", "[" + ossia_chars + "]?");
+    boost::replace_all(part, "*", "[" + ossia_chars + "]*");
 
     std::regex r(part);
     p.functions.push_back([=] (auto& v) {

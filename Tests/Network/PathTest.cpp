@@ -18,6 +18,25 @@ class PathTest : public QObject
 
 private Q_SLOTS:
 
+  void test_regex()
+  {
+    {
+      std::regex r("b[a-z][a-z]");
+      QVERIFY(std::regex_match("bar", r));
+    }
+    {
+      std::regex r("b[a-zA-Z0-9_~().-][a-zA-Z0-9_~().-]");
+      QVERIFY(std::regex_match("bar", r));
+    }
+    {
+      std::regex r("b[a-zA-Z0-9_~().-]?[a-zA-Z0-9_~().-]*");
+      QVERIFY(std::regex_match("bar", r));
+    }
+    {
+      // std::regex r("b[a-zA-Z0-9_~().-]?[a-zA-Z0-9_~().-]*?");
+      // QVERIFY(std::regex_match("bar", r));
+    }
+  }
 
   void test_traversal()
   {
@@ -42,6 +61,8 @@ private Q_SLOTS:
       QVERIFY(bool(p));
       std::vector<ossia::net::node_base*> vec{&device1.getRootNode(), &device2.getRootNode()};
       traversal::apply(*p, vec);
+      debug(vec);
+
       std::vector<ossia::net::node_base*> expected{&n1, &n2};
       QVERIFY(vec == expected);
     }

@@ -68,7 +68,7 @@ struct OSSIA_EXPORT device : public path_element
 struct OSSIA_EXPORT any_instance : public path_element
 {
   explicit any_instance(std::string s)
-    : path_element{std::move(s) + "(\\.[0-9]+?)?"}
+    : path_element{std::move(s) + "(\\.[0-9]+)?"}
   {
 
   }
@@ -132,13 +132,13 @@ inline path_element operator/(const path_element& lhs, const any_instance& rhs)
 inline path_element operator/(const path_element& lhs, const any_node&)
 {
   return path_element{lhs.address +
-        "\\/[" + ossia::net::name_characters().to_string() + "]*?"};
+        "\\/[" + ossia::net::name_characters().to_string() + "]*"};
 }
 
 inline path_element operator/(const path_element& lhs, const any_path&)
 {
   return path_element{lhs.address +
-        "(\\/[" + ossia::net::name_characters().to_string() + "]*?)+?"};
+        "(\\/[" + ossia::net::name_characters().to_string() + "]*)+"};
 }
 
 inline path_element operator/(const any_path&, const path_element& rhs)
@@ -146,9 +146,9 @@ inline path_element operator/(const any_path&, const path_element& rhs)
   const std::string sub = ossia::net::name_characters().to_string();
   std::string sub2 = "^([";
   sub2 += sub;
-  sub2 += "]*?:)(\\/?[";
+  sub2 += "]*:)(\\/?[";
   sub2 += sub;
-  sub2 += "]*?)+?\\/";
+  sub2 += "]*)+\\/";
   sub2 += rhs.address;
   return path_element{std::move(sub2)};
 }
