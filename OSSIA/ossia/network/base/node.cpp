@@ -98,7 +98,6 @@ std::string sanitize_name(std::string name_base, const std::vector<std::string>&
   }
 }
 
-#include <experimental/string_view>
 std::vector<std::string> address_parts(const ossia::string_view& src)
 {
   std::vector<std::string> sub;

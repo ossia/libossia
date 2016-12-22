@@ -52,6 +52,10 @@ case "$TRAVIS_OS_NAME" in
             # inspired from generateDocumentationAndDeploy.sh, Jeroen de Bruijn
             git clone -b gh-pages https://git@$GH_REPO_REF
             cd $GH_REPO_NAME
+	    git checkout --orphan dummy
+            git branch -D gh-pages
+	    git checkout --orphan gh-pages
+
             echo "$(pwd)"
 
             # Set the push default to simple i.e. push only the current branch.
