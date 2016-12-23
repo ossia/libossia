@@ -6,30 +6,23 @@ namespace ossia { namespace pd {
 
 static t_eclass *view_class;
 
-static void view_register(t_view *x)
+void t_view :: _register()
 {
     t_device* device = nullptr;
 
     int l;
-    if (!(device = (t_device*) find_parent(&x->x_obj,osym_device, 0, &l)))
+    if (!(device = (t_device*) find_parent(&x_obj,osym_device, 0, &l)))
     {
-        x->x_node = nullptr;
+        x_node = nullptr;
         return;
     }
     // look for an [ossia.view] instance in the parent patchers
-    t_view* view = find_parent_alive<t_view>(&x->x_obj,osym_view, 1, &l);
+    t_view* view = find_parent_alive<t_view>(&x_obj,osym_view, 1, &l);
     if (view)  {
-        x->register_node(view->x_node);
-        std::cout << "found a parent view" << std::endl;
+        register_node(view->x_node);
         return;
     }
-    std::cout << "found a parent device" << std::endl;
-    x->register_node(device->x_node);
-}
-
-static void view_loadbang(t_view *x){
-    std::cout << "[ossia.view] loadbang" << std::endl;
-    view_register(x);
+    register_node(device->x_node);
 }
 
 static void view_dump(t_view *x)
@@ -41,9 +34,8 @@ static void view_dump(t_view *x)
 }
 
 bool t_view :: register_node(ossia::net::node_base*  node){
-    std::cout << "[ossia.view] : register view : " << x_name->s_name << std::endl;
-
-    x_node = nullptr;
+    if (x_node && x_node->getParent() == node ) return true; // already register to this node;
+    unregister(); // we should unregister here because we may have add a node between the registered node and the remote
 
     if (node){
         x_node = node->findChild(x_name->s_name);
