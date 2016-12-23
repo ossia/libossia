@@ -1,17 +1,17 @@
 #pragma once
 
 #include "ossia-pd.hpp"
+#include "ossia_obj_base.hpp"
 #include "device.hpp"
 
-struct t_view
-{
-    t_eobj      x_obj;
-    t_symbol*   x_name{};
-    bool        x_absolute = false;
-    bool        x_dead = false; // wether this object is dying or not;
-    t_outlet*   x_dumpout{};
+namespace ossia { namespace pd {
 
-    ossia::net::node_base* x_node{};
+struct t_view : ossia_obj_base
+{
     bool register_node(ossia::net::node_base*  node);
     bool unregister();
 };
+} } // namespace
+
+
+

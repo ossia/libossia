@@ -3,7 +3,7 @@
 #include "device.hpp"
 #include <boost/optional.hpp>
 
-using namespace ossia;
+namespace ossia { namespace pd {
 
 struct t_remote : ossia_obj_base
 {
@@ -36,3 +36,5 @@ static void remote_loadbang(t_remote *x){
     bool res = obj_register<t_remote>(x);
     // if (res) remote_bang(x); // if correctly registered then pull the value
 }
+
+} } // namespace

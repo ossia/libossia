@@ -4,7 +4,7 @@
 #include "device.hpp"
 #include "model.hpp"
 
-using namespace ossia;
+namespace ossia { namespace pd {
 
 struct t_param : ossia_obj_base
 {
@@ -19,3 +19,5 @@ struct t_param : ossia_obj_base
     // TODO add clipmode (or bounding ?) attribute
     float range[2];
 };
+
+} } // namespace

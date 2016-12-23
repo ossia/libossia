@@ -6,6 +6,8 @@ extern "C" {
 #include <cicm_wrapper.h>
 }
 
+namespace ossia { namespace pd {
+
 extern "C" void setup_ossia0x2emodel(void);
 extern "C" void setup_ossia0x2edevice(void);
 extern "C" void setup_ossia0x2eparam(void);
@@ -258,3 +260,5 @@ template<typename T> extern void obj_dump_path(T *x);
 template<typename T> extern bool obj_register(T *x);
 template<typename T> extern void obj_set(T *x, t_symbol* s, int argc, t_atom* argv);
 template<typename T> extern void obj_bang(T *x);
+
+} } // namespace

@@ -2,6 +2,8 @@
 #include "device.hpp"
 #include "parameter.hpp"
 
+namespace ossia { namespace pd {
+
 static t_eclass *remote_class;
 
 static void remote_free(t_remote* x);
@@ -109,3 +111,5 @@ extern "C" void setup_ossia0x2eremote(void)
 
     remote_class = c;
 }
+
+} } // namespace

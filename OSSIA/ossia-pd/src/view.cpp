@@ -2,6 +2,8 @@
 #include "view.hpp"
 #include "remote.hpp"
 
+namespace ossia { namespace pd {
+
 static t_eclass *view_class;
 
 static void view_register(t_view *x)
@@ -130,3 +132,4 @@ extern "C" void setup_ossia0x2eview(void)
 
     view_class = c;
 }
+} }

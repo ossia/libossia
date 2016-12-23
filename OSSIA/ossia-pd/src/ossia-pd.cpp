@@ -14,6 +14,8 @@
 
 static t_class *ossia_class;
 
+namespace ossia { namespace pd {
+
 typedef struct t_ossia
 {
     t_object    m_obj; // pd object - always placed in first in the object's struct
@@ -136,3 +138,4 @@ template<typename T> void obj_bang(T *x){
 template void obj_bang<t_param> (t_param  *x);
 template void obj_bang<t_remote>(t_remote *x);
 
+} } // namespace

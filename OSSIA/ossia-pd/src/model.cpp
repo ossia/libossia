@@ -2,6 +2,8 @@
 #include "model.hpp"
 #include "parameter.hpp"
 
+namespace ossia { namespace pd {
+
 static t_eclass *model_class;
 
 static void model_register(t_model *x)
@@ -116,3 +118,5 @@ extern "C" void setup_ossia0x2emodel(void)
 
     model_class = c;
 }
+
+} } // namespace

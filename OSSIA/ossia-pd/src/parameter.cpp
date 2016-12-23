@@ -3,6 +3,8 @@
 #include "model.hpp"
 #include <limits>
 
+namespace ossia { namespace pd {
+
 static t_eclass *parameter_class;
 
 static void parameter_free(t_param* x);
@@ -148,3 +150,5 @@ extern "C" void setup_ossia0x2eparam(void)
 
     parameter_class = c;
 }
+
+} } // namespace

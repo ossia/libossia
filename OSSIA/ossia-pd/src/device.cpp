@@ -4,6 +4,8 @@
 #include "remote.hpp"
 #include "view.hpp"
 
+namespace ossia { namespace pd {
+
 static t_eclass *device_class;
 
 static void device_loadbang(t_device* x){
@@ -179,3 +181,6 @@ extern "C" void setup_ossia0x2edevice(void)
 
     device_class = c;
 }
+
+
+} } //namespace
