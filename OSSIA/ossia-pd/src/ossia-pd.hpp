@@ -26,8 +26,6 @@ static t_symbol* osym_send_param          = gensym("__OSSIA__ossia.param");
 static t_symbol* osym_send_remote         = gensym("__OSSIA__ossia.remote");
 static t_symbol* osym_send_model          = gensym("__OSSIA__ossia.model");
 
-using namespace ossia;
-
 template <typename T>
 struct value_visitor
 {
@@ -169,27 +167,42 @@ static T* find_parent_alive(t_eobj* x, t_symbol* classname, int start_level, int
  * @brief Find all objects [classname] in the current patcher starting at specified level.
  * @param list : list in which we are looking for objecfts
  * @param classname : name of the object to search
- * @param starting_level : 0 to start searching in current canvas, -1 to start searching from the parent canvas
+ * @param starting_level : 0 to start searching in current canvas, -1 to start searching from the parent canvas, 1 to start on children canvas
  * @return std::vector<t_pd*> containing pointer to t_pd struct of the corresponding classname
  */
-static std::vector<obj_hierachy> find_child(t_gobj* list, t_symbol* classname, int starting_level = 0){
+static std::vector<obj_hierachy> find_child(t_gobj* list, t_symbol* classname, int start_level = 0){
+    int level = start_level;
+    while (level < 0){ // then look for parent canvas
+        if ( list && list->g_pd ){
+            t_canvas* canvas = (t_canvas*) &list->g_pd;
+            list = canvas->gl_owner->gl_list;
+            level++;
+        } else {
+            level = 0;
+        }
+    }
+    int next_level = std::max(level-1,0);
+
     std::vector<obj_hierachy> found;
     while (list && list->g_pd){
         if ( list->g_pd->c_name == gensym("canvas")){
             t_canvas* canvas = (t_canvas*) &list->g_pd;
             if(!canvas_istable(canvas)){
                 t_gobj* _list = canvas->gl_list;
-                std::vector<obj_hierachy> found_tmp = find_child(_list, classname, 0);
+                std::vector<obj_hierachy> found_tmp = find_child(_list, classname, next_level);
                 for (auto obj : found_tmp){
                     obj.hierarchy++; // increase hierarchy of objects found in a subpatcher
-                    found.push_back(obj);
+                    if (obj.hierarchy >= level) found.push_back(obj);
                 }
             }
-        } else if ( list->g_pd->c_name == classname ){
-            obj_hierachy oh;
-            oh.hierarchy = 0;
-            oh.x = &list->g_pd;
-            found.push_back(oh);
+        } else if ( list->g_pd->c_name == classname ) {
+            // TODO treat the first pass with starting_level
+            if ( start_level ==  0){
+                obj_hierachy oh;
+                oh.hierarchy = 0;
+                oh.x = &list->g_pd;
+                found.push_back(oh);
+            }
         }
         list=list->g_next;
     }

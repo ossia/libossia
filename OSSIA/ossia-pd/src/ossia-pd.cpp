@@ -94,12 +94,6 @@ template<typename T> bool obj_register(T *x)
 
     bool res = x->register_node(node);
 
-    if ( !std::is_same<T,t_remote>::value ){
-        for (auto remote : t_remote::remote_quarantine()){
-            remote_loadbang(remote);
-        }
-    }
-
     return res;
 }
 
