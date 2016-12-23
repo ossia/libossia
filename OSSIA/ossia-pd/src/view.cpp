@@ -31,6 +31,17 @@ static void view_dump(t_view *x)
     std::string fullpath = get_absolute_path(x->x_node);
     SETSYMBOL(&a,gensym(fullpath.c_str()));
     outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
+
+    if ( x->x_node ){
+        SETFLOAT(&a, 1.);
+    } else {
+        SETFLOAT(&a, 0.);
+    }
+    outlet_anything(x->x_dumpout,gensym("registered"), 1, &a);
+
+    SETFLOAT(&a, x->isQuarantined());
+    outlet_anything(x->x_dumpout,gensym("quarantined"), 1, &a);
+}
 }
 
 bool t_view :: register_node(ossia::net::node_base*  node){
