@@ -10,9 +10,13 @@ struct ossia_obj_base {
     t_outlet*   x_dataout{};
     t_outlet*   x_dumpout{};
     bool        x_absolute = false;
+    bool        x_dead = false; // wether this object is being deleted or not;
+
 
     ossia::net::node_base* x_node{};
     void setValue(const ossia::value& val);
+
+    void isDeleted(const ossia::net::node_base& n);
 };
 
 } } // namespace

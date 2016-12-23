@@ -47,9 +47,11 @@ bool t_view :: register_node(ossia::net::node_base*  node){
 
     if (node){
         x_node = node->findChild(x_name->s_name);
-        if (!x_node) {
-            // TODO should put it in quarantine
-            // x_node = node->createChild(x_name->s_name);
+        if (x_node) {
+            x_node->aboutToBeDeleted.connect<t_view, &t_view::isDeleted>(this);
+            dequarantining();
+        } else {
+            quarantining();
             return false;
         }
     }

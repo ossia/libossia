@@ -43,7 +43,8 @@ bool t_model :: register_node(ossia::net::node_base*  node){
     if (node){
         x_node = node->findChild(x_name->s_name);
         if (!x_node) x_node = node->createChild(x_name->s_name);
-    }
+
+    x_node->aboutToBeDeleted.connect<ossia_obj_base, &ossia_obj_base::isDeleted>(this);
 
     std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
     std::sort(params.begin(), params.end());

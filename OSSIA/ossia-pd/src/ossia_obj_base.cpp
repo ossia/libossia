@@ -8,4 +8,9 @@ void ossia_obj_base::setValue(const ossia::value& v){
     v.apply(vm);
 }
 
+void ossia_obj_base :: isDeleted(const ossia::net::node_base& n)
+{
+    x_node = nullptr;
+}
+
 } } // namespace

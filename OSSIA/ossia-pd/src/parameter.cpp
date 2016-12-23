@@ -38,7 +38,7 @@ bool t_param :: register_node(ossia::net::node_base* node){
         }
 
         x_node = node->createChild(x_name->s_name);
-        x_node->aboutToBeDeleted.connect<t_param, &t_param::isDeleted>(this);
+        x_node->aboutToBeDeleted.connect<ossia_obj_base, &ossia_obj_base::isDeleted>(this);
         if(x_type == gensym("symbol")){
             x_localAddress = x_node->createAddress(ossia::val_type::STRING);
         } else {
@@ -65,12 +65,6 @@ bool t_param :: unregister(){
         x_localAddress = nullptr;
     }
     return true;
-}
-
-void t_param :: isDeleted(const ossia::net::node_base& n)
-{
-    x_node = nullptr;
-    x_localAddress = nullptr;
 }
 
 static void parameter_float(t_param *x, t_float val){

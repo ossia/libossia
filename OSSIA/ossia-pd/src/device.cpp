@@ -144,6 +144,26 @@ void t_device :: unregister_children(){
         t_view* view = (t_view*) v.x;
         view->unregister();
     }
+    */
+}
+
+void t_device :: addressCreationHandler(const ossia::net::address_base& n){
+    std::cout << "view quarantine size: " << t_view::quarantine().size() << std::endl;
+    for (auto view : t_view::quarantine()){
+        view_loadbang(view);
+    }
+
+    std::cout << "remote quarantine size: " << t_remote::quarantine().size() << std::endl;
+    for (auto remote : t_remote::quarantine()){
+        remote_loadbang(remote);
+    }
+}
+
+void t_device :: nodeCreationHandler(const ossia::net::node_base& n){
+    std::cout << "view quarantine size: " << t_view::quarantine().size() << std::endl;
+    for (auto view : t_view::quarantine()){
+        view_loadbang(view);
+    }
 }
 
 static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
