@@ -1,6 +1,8 @@
 // A starter for Pd objects
 #include "model.hpp"
 #include "parameter.hpp"
+#include "view.hpp"
+#include "remote.hpp"
 
 namespace ossia { namespace pd {
 
@@ -16,7 +18,7 @@ static void model_register(t_model *x)
         x->x_node = nullptr;
         return;
     }
-    // look for an [ossia.model] instance in the parent patchers
+    // look for an [ossia.model] instance in the parent patcher
     t_model* model = find_parent_alive<t_model>(&x->x_obj,osym_model, 1, &l);
     if (model)  {
         x->register_node(model->x_node);
@@ -38,19 +40,35 @@ static void model_dump(t_model *x)
 }
 
 bool t_model :: register_node(ossia::net::node_base*  node){
+    if (!node) return false;
+
     x_node = nullptr;
 
-    if (node){
-        x_node = node->findChild(x_name->s_name);
-        if (!x_node) x_node = node->createChild(x_name->s_name);
+    if (x_node && x_node->getParent() == node ) return true; // already register to this node;
+    unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
+
+    x_node = node->findChild(x_name->s_name);
+    if (!x_node) x_node = node->createChild(x_name->s_name);
 
     x_node->aboutToBeDeleted.connect<ossia_obj_base, &ossia_obj_base::isDeleted>(this);
 
     std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
-    std::sort(params.begin(), params.end());
+    // std::sort(params.begin(), params.end());
     for (auto v : params){
         t_param* param = (t_param*) v.x;
         param->register_node(x_node);
+    }
+
+    // FIXME nested model is not registered properly
+    std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 1);
+    // std::sort(models.begin(), models.end());
+    for (auto v : models){
+        t_model* model = (t_model*) v.x;
+        model->register_node(x_node);
+    }
+
+    for (auto view : t_view::quarantine()){
+        view_loadbang(view);
     }
 
     return true;
@@ -58,6 +76,7 @@ bool t_model :: register_node(ossia::net::node_base*  node){
 
 bool t_model :: unregister(){
 
+    // TODO refactor
     if(!x_node) return true; // not registered
 
     // when removing a model, we should re-register all its children to parent node
