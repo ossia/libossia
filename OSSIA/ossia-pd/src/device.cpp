@@ -12,7 +12,6 @@ static void device_loadbang(t_device* x){
     x->register_children();
 }
 
-// FIXME if device is created after param or remote, those are not register properly
 static void *device_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_device *x = (t_device *)eobj_new(device_class);
@@ -35,14 +34,14 @@ static void *device_new(t_symbol *name, int argc, t_atom *argv)
 
         auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
         ossia::net::local_protocol& local_proto = *local_proto_ptr;
-        x->x_device = new ossia::net::generic_device{std::move(local_proto_ptr), "B"};
+        x->x_device = new ossia::net::generic_device{std::move(local_proto_ptr), x->x_name->s_name};
         x->x_node = &x->x_device->getRootNode();
 
         ebox_attrprocess_viabinbuf(x, d);
 
         try {
             if(x->x_protocol == gensym("Minuit")){
-                local_proto.exposeTo(std::make_unique<ossia::net::minuit_protocol>("B", x->x_remoteip->s_name, x->x_remoteport, x->x_localport));
+                local_proto.exposeTo(std::make_unique<ossia::net::minuit_protocol>(x->x_name->s_name, x->x_remoteip->s_name, x->x_remoteport, x->x_localport));
                 logpost(x,3,"connect to %s on port %d, listening on port %d",  x->x_remoteip->s_name, x->x_remoteport, x->x_localport);
             } else {
                 pd_error((t_object*)x, "Unknown protocol: %s", x->x_protocol->s_name);
@@ -165,8 +164,6 @@ extern "C" void setup_ossia0x2edevice(void)
         eclass_addmethod(c, (method) device_loadbang, "loadbang", A_NULL, 0);
         eclass_addmethod(c, (method) device_dump, "dump", A_NULL, 0);
         eclass_addmethod(c, (method) device_expose, "expose", A_GIMME, 0);
-
-        // TODO : add method to expose with other protocol/ports/IP
 
         CLASS_ATTR_SYMBOL (c, "protocol",   0, t_device, x_protocol);
         CLASS_ATTR_SYMBOL (c, "remoteip",   0, t_device, x_remoteip);
