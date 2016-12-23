@@ -90,6 +90,7 @@ bool t_view :: register_node(ossia::net::node_base*  node){
         t_view* view = (t_view*) v.x;
         view->register_node(x_node);
     }
+
     return true;
 }
 
@@ -101,7 +102,9 @@ bool t_view :: unregister(){
     std::sort(remotes.begin(), remotes.end());
     for (auto v : remotes){
         t_remote* remote = (t_remote*) v.x;
-        if (!remote->x_node || remote->x_node->getParent() == x_node) remote->register_node(x_node->getParent());
+        remote->unregister();
+        if (!remote->x_node) remote->register_node(x_node->getParent());
+        else if(remote->x_node->getParent() == x_node) remote->register_node(x_node->getParent());
     }
 
     std::vector<obj_hierachy> views = find_child(x_obj.o_canvas->gl_list, osym_view, 0);
@@ -110,8 +113,6 @@ bool t_view :: unregister(){
         t_view* view = (t_view*) v.x;
         if (view != this && (!view->x_node || view->x_node->getParent() == x_node)) view->register_node(x_node->getParent());
     }
-
-    x_node->getParent()->removeChild(x_name->s_name);
     x_node = nullptr;
     quarantining();
 
