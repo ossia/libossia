@@ -1,6 +1,7 @@
 #include "parameter.hpp"
 #include "device.hpp"
 #include "model.hpp"
+#include "remote.hpp"
 #include <limits>
 
 namespace ossia { namespace pd {
@@ -39,13 +40,14 @@ bool t_param :: register_node(ossia::net::node_base* node){
 
         x_node = node->createChild(x_name->s_name);
         x_node->aboutToBeDeleted.connect<ossia_obj_base, &ossia_obj_base::isDeleted>(this);
+        ossia::net::address_base* localAddress{};
         if(x_type == gensym("symbol")){
-            x_localAddress = x_node->createAddress(ossia::val_type::STRING);
+            localAddress = x_node->createAddress(ossia::val_type::STRING);
         } else {
-            x_localAddress = x_node->createAddress(ossia::val_type::FLOAT);
-            x_localAddress->setDomain(ossia::net::make_domain(range[0],range[1]));
+            localAddress = x_node->createAddress(ossia::val_type::FLOAT);
+            localAddress->setDomain(ossia::net::make_domain(range[0],range[1]));
         }
-        x_localAddress->add_callback([=](const ossia::value& v){
+        localAddress->add_callback([=](const ossia::value& v){
             setValue(v);
         });
         if (x_default.a_type != A_NULL){
@@ -62,14 +64,13 @@ bool t_param :: unregister(){
     if (x_node) {
         x_node->getParent()->removeChild(x_name->s_name);
         x_node = nullptr;
-        x_localAddress = nullptr;
     }
     return true;
 }
 
 static void parameter_float(t_param *x, t_float val){
-    if ( x->x_localAddress ){
-        x->x_localAddress->pushValue(float(val));
+    if ( x->x_node && x->x_node->getAddress() ){
+        x->x_node->getAddress()->pushValue(float(val));
     }
 }
 
