@@ -9,37 +9,40 @@ static t_eclass *remote_class;
 static void remote_free(t_remote* x);
 
 void t_remote :: quarantining(){
-    for (auto y : remote_quarantine()){
-        if (y == this){
-            return;
-        }
-    }
-    remote_quarantine().push_back(this);
+    if ( !isQuarantined() ) quarantine().push_back(this);
 }
 
+// FIXME after the first registration, remote is reported to be quarantined AND connected (which is a non-sense)
+// while after the second registration, it seems to be fine
 void t_remote :: dequarantining(){
-    remote_quarantine().erase(std::remove(remote_quarantine().begin(), remote_quarantine().end(), this), remote_quarantine().end());
+    quarantine().erase(std::remove(quarantine().begin(), quarantine().end(), this), quarantine().end());
+}
+
+bool t_remote :: isQuarantined(){
+    return std::find(quarantine().begin(), quarantine().end(), this) != quarantine().end();
 }
 
 bool t_remote :: register_node(ossia::net::node_base* node){
 
-    if (x_node && x_node->getParent() == node ) return true; // already register to this node;
-
-    unregister(); // we should unregister here because we may have add a node between the registered node and the remote
+    if (x_node && x_node->getParent() == node ) {
+        dequarantining();
+        return true; // already register to this node;
+    }
 
     if(node){
-        x_node = node->findChild(x_name->s_name);
-        if (x_node){
+        ossia::net::node_base*  nodePtr = node->findChild(x_name->s_name);
+        if (nodePtr){
+            x_node = nodePtr;
             x_callbackit = x_node->getAddress()->add_callback([=](const ossia::value& v){
                 setValue(v);
             });
+            dequarantining();
             x_node->aboutToBeDeleted.connect<t_remote, &t_remote::isDeleted>(this);
-            x_node->getDevice().onAddressRemoving.connect<t_remote, &t_remote::addressRemovingHandler>(this);
+
             return true;
         }
-    } else {
-        return false;
     }
+    quarantining();
     return false;
 }
 

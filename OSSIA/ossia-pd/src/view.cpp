@@ -42,6 +42,21 @@ static void view_dump(t_view *x)
     SETFLOAT(&a, x->isQuarantined());
     outlet_anything(x->x_dumpout,gensym("quarantined"), 1, &a);
 }
+
+//****************//
+// Member methods //
+//****************//
+
+void t_view :: quarantining(){
+    if ( !isQuarantined() ) quarantine().push_back(this);
+}
+
+void t_view :: dequarantining(){
+    quarantine().erase(std::remove(quarantine().begin(), quarantine().end(), this), quarantine().end());
+}
+
+bool t_view :: isQuarantined(){
+    return std::find(quarantine().begin(), quarantine().end(), this) != quarantine().end();
 }
 
 bool t_view :: register_node(ossia::net::node_base*  node){
@@ -95,6 +110,7 @@ bool t_view :: unregister(){
 
     x_node->getParent()->removeChild(x_name->s_name);
     x_node = nullptr;
+    quarantining();
 
     return true;
 }
@@ -123,6 +139,7 @@ static void view_free(t_view *x)
 {
     x->x_dead = true;
     x->unregister();
+    x->dequarantining();
 }
 
 extern "C" void setup_ossia0x2eview(void)
