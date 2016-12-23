@@ -114,7 +114,6 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/array_domain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/value_set_domain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/apply_domain.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/domain_impl.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.hpp"
@@ -177,6 +176,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/js_utilities.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/domain_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/clamp.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/clamp_min.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/clamp_max.cpp"
