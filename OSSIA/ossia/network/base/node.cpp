@@ -123,6 +123,34 @@ std::vector<std::string> address_parts(const ossia::string_view& src)
 }
 node_base::~node_base() = default;
 
+auto node_base::getExtendedAttributes() const
+  -> const node_base::extended_attributes&
+{
+  return mExtended;
+}
+
+void node_base::setExtendedAttributes(
+    const node_base::extended_attributes& e)
+{
+  mExtended = e;
+}
+
+boost::any node_base::getExtendedAttribute(
+    const std::string& str) const
+{
+  auto it = mExtended.find(str);
+  if(it != mExtended.end())
+    return it.value();
+  return {};
+}
+
+void node_base::setExtendedAttribute(
+    const std::string& str,
+    const boost::any& val)
+{
+  mExtended[str] = val;
+}
+
 ossia::optional<instance_bounds> node_base::getDynamicInstances() const
 {
   return mInstances;
