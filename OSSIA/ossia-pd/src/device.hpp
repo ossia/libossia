@@ -16,6 +16,9 @@ struct t_device : ossia_obj_base
 
     void register_children();
     void unregister_children();
+
+    void addressCreationHandler(const ossia::net::address_base& n);
+    void nodeCreationHandler(const ossia::net::node_base& n);
 };
 
 } } // namespace

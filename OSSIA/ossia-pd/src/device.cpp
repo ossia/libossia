@@ -36,6 +36,7 @@ static void *device_new(t_symbol *name, int argc, t_atom *argv)
         ossia::net::local_protocol& local_proto = *local_proto_ptr;
         x->x_device = new ossia::net::generic_device{std::move(local_proto_ptr), x->x_name->s_name};
         x->x_node = &x->x_device->getRootNode();
+        x->x_device->onAddressCreated.connect<t_device, &t_device::addressCreationHandler>(x);
 
         ebox_attrprocess_viabinbuf(x, d);
 
@@ -56,6 +57,7 @@ static void *device_new(t_symbol *name, int argc, t_atom *argv)
 
 static void device_free(t_device *x)
 {
+    x->x_dead = true;
     x->unregister_children();
     if (x->x_device) delete(x->x_device);
 }
@@ -117,6 +119,8 @@ void t_device :: register_children(){
 
 void t_device :: unregister_children(){
     // unregister in the reverse order to unregister parameter and remote before model and view
+    // now they are connected to aboutToBeDeleted signal and thus no need to unregister
+    /*
     std::vector<obj_hierachy> remotes = find_child(x_obj.o_canvas->gl_list, osym_remote, 0);
     std::sort(remotes.begin(), remotes.end());
     for (auto v : remotes){
@@ -148,19 +152,17 @@ void t_device :: unregister_children(){
 }
 
 void t_device :: addressCreationHandler(const ossia::net::address_base& n){
-    std::cout << "view quarantine size: " << t_view::quarantine().size() << std::endl;
     for (auto view : t_view::quarantine()){
         view_loadbang(view);
     }
 
-    std::cout << "remote quarantine size: " << t_remote::quarantine().size() << std::endl;
     for (auto remote : t_remote::quarantine()){
         remote_loadbang(remote);
     }
 }
 
+// FIXME is this really necessary ?
 void t_device :: nodeCreationHandler(const ossia::net::node_base& n){
-    std::cout << "view quarantine size: " << t_view::quarantine().size() << std::endl;
     for (auto view : t_view::quarantine()){
         view_loadbang(view);
     }
