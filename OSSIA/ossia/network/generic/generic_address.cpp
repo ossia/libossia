@@ -253,30 +253,6 @@ void generic_address::onRemovingLastCallback()
   mProtocol.observe(*this, false);
 }
 
-std::vector<std::string> generic_address::getTags() const
-{
-  return mTags;
-}
-
-generic_address& generic_address::setTags(const std::vector<std::string>& v)
-{
-  mTags = v;
-  mNode.getDevice().onAddressModified(*this);
-  return *this;
-}
-
-std::string generic_address::getDescription() const
-{
-  return mDescription;
-}
-
-generic_address& generic_address::setDescription(const std::string& v)
-{
-  mDescription = v;
-  mNode.getDevice().onAddressModified(*this);
-  return *this;
-}
-
 value generic_address::getDefaultValue() const
 {
   return mDefault;

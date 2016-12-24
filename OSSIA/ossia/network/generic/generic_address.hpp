@@ -112,12 +112,6 @@ public:
   ossia::net::generic_address&
       setRepetitionFilter(ossia::repetition_filter) final override;
 
-  std::vector<std::string> getTags() const final override;
-  generic_address& setTags(const std::vector<std::string>& v) final override;
-
-  std::string getDescription() const final override;
-  generic_address& setDescription(const std::string& v) final override;
-
   ossia::value getDefaultValue() const final override;
   generic_address& setDefaultValue(const ossia::value& v) final override;
 

@@ -87,9 +87,15 @@ public:
   boost::any getExtendedAttribute(const std::string& str) const;
   void setExtendedAttribute(const std::string& str, const boost::any&);
 
-  //! TODO move me in ExtendedAttributes.
   ossia::optional<instance_bounds> getDynamicInstances() const;
   void setDynamicInstances(ossia::optional<instance_bounds>);
+
+  std::vector<std::string> getTags() const;
+  void setTags(const std::vector<std::string>& v);
+
+  std::string getDescription() const;
+  void setDescription(const std::string& v);
+
 
 
   /**
@@ -123,8 +129,7 @@ protected:
   virtual void removingChild(node_base& node_base) = 0;
 
   std::vector<std::unique_ptr<node_base>> mChildren;
-  ossia::optional<instance_bounds> mInstances;
-  tsl::hopscotch_map<std::string, boost::any> mExtended;
+  extended_attributes mExtended{0};
 };
 
 }

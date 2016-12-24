@@ -143,7 +143,7 @@ struct minuit_behavior<
         case minuit_attribute::Description:
           proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                               full_address,
-                              addr->getDescription());
+                              node->getDescription());
           break;
         case minuit_attribute::Priority:
         default:
@@ -420,7 +420,7 @@ struct minuit_behavior<
         }
         case minuit_attribute::Description:
         {
-          addr->setDescription(mess_it->AsStringUnchecked());
+          node->setDescription(mess_it->AsStringUnchecked());
           break;
         }
         default:

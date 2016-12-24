@@ -79,14 +79,6 @@ value address_base::fetchValue()
   return cloneValue();
 }
 
-std::vector<std::string> address_base::getTags() const { return {}; }
-
-address_base& address_base::setTags(const std::vector<std::string>& v) { return *this; }
-
-std::string address_base::getDescription() const { return {}; }
-
-address_base& address_base::setDescription(const std::string& v) { return *this; }
-
 value address_base::getDefaultValue() const { return {}; }
 
 address_base& address_base::setDefaultValue(const value& v) { return *this; }

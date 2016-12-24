@@ -123,12 +123,6 @@ public:
   virtual address_base& setRepetitionFilter(repetition_filter = repetition_filter::ON) = 0;
 
   // Extended attributes
-  virtual std::vector<std::string> getTags() const;
-  virtual address_base& setTags(const std::vector<std::string>& v);
-
-  virtual std::string getDescription() const;
-  virtual address_base& setDescription(const std::string& v);
-
   virtual ossia::value getDefaultValue() const;
   virtual address_base& setDefaultValue(const ossia::value& v);
 

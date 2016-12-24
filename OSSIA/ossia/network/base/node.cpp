@@ -135,6 +135,22 @@ void node_base::setExtendedAttributes(
   mExtended = e;
 }
 
+template<typename T>
+auto getAttribute(
+    const ossia::net::node_base::extended_attributes& attrs,
+    const std::string& name)
+{
+  auto it = attrs.find(name);
+  if(it != attrs.cend())
+  {
+    auto val = boost::any_cast<T*>(it.value());
+    if(val)
+      return *val;
+  }
+
+  return T{};
+}
+
 boost::any node_base::getExtendedAttribute(
     const std::string& str) const
 {
@@ -153,12 +169,32 @@ void node_base::setExtendedAttribute(
 
 ossia::optional<instance_bounds> node_base::getDynamicInstances() const
 {
-  return mInstances;
+  return getAttribute<ossia::optional<instance_bounds>>(mExtended, "instanceBounds");
 }
 
 void node_base::setDynamicInstances(ossia::optional<instance_bounds> i)
 {
-  mInstances = i;
+  mExtended["instanceBounds"] = std::move(i);
+}
+
+std::vector<std::string> node_base::getTags() const
+{
+  return getAttribute<std::vector<std::string>>(mExtended, "tags");
+}
+
+void node_base::setTags(const std::vector<std::string>& v)
+{
+  mExtended["tags"] = v;
+}
+
+std::string node_base::getDescription() const
+{
+  return getAttribute<std::string>(mExtended, "description");
+}
+
+void node_base::setDescription(const std::string& v)
+{
+  mExtended["description"] = v;
 }
 
 node_base* node_base::createChild(const std::string& name)
