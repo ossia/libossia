@@ -1,6 +1,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/node_attributes.hpp>
 #include <ossia/detail/optional.hpp>
 #include <boost/iterator/counting_iterator.hpp>
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
@@ -123,35 +124,18 @@ std::vector<std::string> address_parts(const ossia::string_view& src)
 }
 node_base::~node_base() = default;
 
-auto node_base::getExtendedAttributes() const
-  -> const node_base::extended_attributes&
+const extended_attributes& node_base::getExtendedAttributes() const
 {
   return mExtended;
 }
 
 void node_base::setExtendedAttributes(
-    const node_base::extended_attributes& e)
+    const extended_attributes& e)
 {
   mExtended = e;
 }
 
-template<typename T>
-auto getAttribute(
-    const ossia::net::node_base::extended_attributes& attrs,
-    const std::string& name)
-{
-  auto it = attrs.find(name);
-  if(it != attrs.cend())
-  {
-    auto val = boost::any_cast<T*>(it.value());
-    if(val)
-      return *val;
-  }
-
-  return T{};
-}
-
-boost::any node_base::getExtendedAttribute(
+boost::any node_base::getAttribute(
     const std::string& str) const
 {
   auto it = mExtended.find(str);
@@ -160,42 +144,7 @@ boost::any node_base::getExtendedAttribute(
   return {};
 }
 
-void node_base::setExtendedAttribute(
-    const std::string& str,
-    const boost::any& val)
-{
-  mExtended[str] = val;
-}
 
-ossia::optional<instance_bounds> node_base::getDynamicInstances() const
-{
-  return getAttribute<ossia::optional<instance_bounds>>(mExtended, "instanceBounds");
-}
-
-void node_base::setDynamicInstances(ossia::optional<instance_bounds> i)
-{
-  mExtended["instanceBounds"] = std::move(i);
-}
-
-std::vector<std::string> node_base::getTags() const
-{
-  return getAttribute<std::vector<std::string>>(mExtended, "tags");
-}
-
-void node_base::setTags(const std::vector<std::string>& v)
-{
-  mExtended["tags"] = v;
-}
-
-std::string node_base::getDescription() const
-{
-  return getAttribute<std::string>(mExtended, "description");
-}
-
-void node_base::setDescription(const std::string& v)
-{
-  mExtended["description"] = v;
-}
 
 node_base* node_base::createChild(const std::string& name)
 {
@@ -280,5 +229,60 @@ void node_base::clearChildren()
     removingChild(*child);
   mChildren.clear();
 }
+
+optional<instance_bounds> get_dynamic_instances(const extended_attributes& n)
+{
+  return get_optional_attribute<instance_bounds>(n, "instanceBounds");
+}
+
+void set_dynamic_instances(extended_attributes& n, optional<instance_bounds> i)
+{
+  set_optional_attribute(n, "instanceBounds", std::move(i));
+}
+
+
+optional<tags> get_tags(const extended_attributes& n)
+{
+  return get_optional_attribute<tags>(n, "tags");
+}
+
+void set_tags(extended_attributes& n, const optional<tags>& v)
+{
+  set_optional_attribute(n, "tags", v);
+}
+
+
+optional<description> get_description(const extended_attributes& n)
+{
+  return get_optional_attribute<description>(n, "description");
+}
+
+void set_description(extended_attributes& n, const optional<description>& v)
+{
+  set_optional_attribute(n, "description", v);
+}
+
+
+optional<priority> get_priority(const extended_attributes& n)
+{
+  return get_optional_attribute<priority>(n, "priority");
+}
+
+void set_priority(extended_attributes& n, optional<priority> v)
+{
+  set_optional_attribute(n, "priority", v);
+}
+
+
+optional<refresh_rate> get_refresh_rate(const extended_attributes& n)
+{
+  return get_optional_attribute<refresh_rate>(n, "refreshRate");
+}
+
+void set_refresh_rate(extended_attributes& n, optional<refresh_rate> v)
+{
+  set_optional_attribute(n, "refreshRate", v);
+}
+
 }
 }

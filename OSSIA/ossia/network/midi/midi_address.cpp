@@ -22,7 +22,7 @@ const address_info& midi_address::info() const
   return mInfo;
 }
 
-const node_base& midi_address::getNode() const
+node_base& midi_address::getNode() const
 {
   return mParent;
 }

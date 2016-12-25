@@ -7,7 +7,7 @@ namespace net
 
 http_address::http_address(
     const http_address_data& data,
-    const ossia::net::node_base& node_base):
+    ossia::net::node_base& node_base):
   generic_address{data, node_base},
   mData{data}
 {

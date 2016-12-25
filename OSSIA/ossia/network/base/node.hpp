@@ -3,9 +3,7 @@
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/network/base/name_validation.hpp>
-#include <ossia/detail/optional.hpp>
-#include <boost/any.hpp>
-#include <hopscotch_map.h>
+#include <ossia/network/base/node_attributes.hpp>
 #include <functional>
 #include <memory>
 #include <string>
@@ -19,12 +17,8 @@ namespace net
 class device_base;
 class address_base;
 class node_base;
-
-struct OSSIA_EXPORT instance_bounds
-{
-  ossia::optional<uint32_t> min_instances;
-  ossia::optional<uint32_t> max_instances;
-};
+using any_map = tsl::hopscotch_map<std::string, boost::any>;
+using extended_attributes = any_map;
 
 /**
  * @brief The node_base class
@@ -78,25 +72,19 @@ public:
   virtual bool removeAddress() = 0;
   virtual address_base* getAddress() const = 0;
 
-  //! Allows to add arbitrary metadata to nodes.
-  using extended_attributes = tsl::hopscotch_map<std::string, boost::any>;
+  //! Allows to add arbitrary key-value metadata to nodes.
   const extended_attributes& getExtendedAttributes() const;
   void setExtendedAttributes(const extended_attributes&);
 
   //! Get a specific attribute.
-  boost::any getExtendedAttribute(const std::string& str) const;
-  void setExtendedAttribute(const std::string& str, const boost::any&);
+  boost::any getAttribute(const std::string& str) const;
 
-  ossia::optional<instance_bounds> getDynamicInstances() const;
-  void setDynamicInstances(ossia::optional<instance_bounds>);
-
-  std::vector<std::string> getTags() const;
-  void setTags(const std::vector<std::string>& v);
-
-  std::string getDescription() const;
-  void setDescription(const std::string& v);
-
-
+  template<typename T>
+  void setAttribute(const std::string& str, const T& val)
+  { mExtended[str] = val; }
+  template<typename T>
+  void setAttribute(const std::string& str, T&& val)
+  { mExtended[str] = std::move(val); }
 
   /**
    * @brief createChild Adds a sub-child of the given name.
@@ -112,6 +100,9 @@ public:
   bool removeChild(const node_base& name);
 
   void clearChildren();
+
+  operator const extended_attributes&() const { return mExtended; }
+  operator extended_attributes&() { return mExtended; }
 
   const std::vector<std::unique_ptr<node_base>>& children() const
   {

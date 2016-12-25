@@ -51,7 +51,7 @@ class protocol_base;
 class OSSIA_EXPORT generic_address : public ossia::net::address_base
 {
 protected:
-  const ossia::net::node_base& mNode;
+  ossia::net::node_base& mNode;
   ossia::net::protocol_base& mProtocol;
 
   ossia::val_type mValueType{};
@@ -73,14 +73,14 @@ protected:
 public:
   ossia::value PreviousValue;
   generic_address(
-      const ossia::net::node_base& node_base);
+      ossia::net::node_base& node_base);
   generic_address(
       const generic_address_data&,
-      const ossia::net::node_base& node_base);
+      ossia::net::node_base& node_base);
 
   ~generic_address();
 
-  const ossia::net::node_base& getNode() const final override;
+  ossia::net::node_base& getNode() const final override;
 
   void pullValue() final override;
   std::future<void> pullValueAsync() final override;

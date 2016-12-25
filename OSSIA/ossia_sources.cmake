@@ -118,6 +118,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node_attributes.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/path.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/value_callback.hpp"

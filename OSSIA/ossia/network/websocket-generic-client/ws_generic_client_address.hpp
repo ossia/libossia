@@ -17,7 +17,7 @@ private:
 public:
   ws_generic_client_address(
       const ws_generic_client_address_data& data,
-      const ossia::net::node_base& node_base);
+      ossia::net::node_base& node_base);
 
   ws_generic_client_address() = delete;
   ws_generic_client_address(const ws_generic_client_address& other) = delete;

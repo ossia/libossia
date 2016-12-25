@@ -2,6 +2,7 @@
 #include <ossia/network/generic/generic_address.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
+#include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/minuit/detail/minuit_common.hpp>
 #include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
@@ -141,9 +142,10 @@ struct minuit_behavior<
                               to_minuit_service_text(addr->getAccessMode()));
           break;
         case minuit_attribute::Description:
-          proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
-                              full_address,
-                              node->getDescription());
+          if(const auto& desc = ossia::net::get_description(*node))
+            proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
+                                full_address,
+                                *desc);
           break;
         case minuit_attribute::Priority:
         default:
@@ -420,7 +422,7 @@ struct minuit_behavior<
         }
         case minuit_attribute::Description:
         {
-          node->setDescription(mess_it->AsStringUnchecked());
+          ossia::net::set_description(*node, mess_it->AsStringUnchecked());
           break;
         }
         default:

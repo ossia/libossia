@@ -17,7 +17,7 @@ private:
 public:
   http_address(
       const http_address_data& data,
-      const ossia::net::node_base& node_base);
+      ossia::net::node_base& node_base);
 
   http_address() = delete;
   http_address(const http_address& other) = delete;

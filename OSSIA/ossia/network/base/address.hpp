@@ -43,7 +43,7 @@ public:
   using callback_index = callback_container<value_callback>::iterator;
   virtual ~address_base();
 
-  virtual const ossia::net::node_base& getNode() const = 0;
+  virtual ossia::net::node_base& getNode() const = 0;
 
   /**
    * @brief pullValue

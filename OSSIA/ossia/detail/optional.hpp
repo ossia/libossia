@@ -63,3 +63,7 @@ auto get_value_or(const Opt& opt, Arg&& arg)
 }
 #endif
 
+namespace ossia
+{
+using none_t = decltype(ossia::none);
+}

@@ -13,7 +13,7 @@ namespace ossia
 {
 namespace net
 {
-generic_address::generic_address(const ossia::net::node_base& node)
+generic_address::generic_address(ossia::net::node_base& node)
   : mNode{node}
   , mProtocol{node.getDevice().getProtocol()}
   , mValueType(ossia::val_type::IMPULSE)
@@ -27,7 +27,7 @@ generic_address::generic_address(const ossia::net::node_base& node)
 
 generic_address::generic_address(
     const generic_address_data& data,
-    const ossia::net::node_base& node)
+    ossia::net::node_base& node)
   : mNode{node}
   , mProtocol{node.getDevice().getProtocol()}
   , mValueType(get_value_or(data.type, ossia::val_type::IMPULSE))
@@ -44,7 +44,7 @@ generic_address::~generic_address()
   callback_container<value_callback>::callbacks_clear();
 }
 
-const ossia::net::node_base& generic_address::getNode() const
+ossia::net::node_base& generic_address::getNode() const
 {
   return mNode;
 }
@@ -115,6 +115,7 @@ ossia::value generic_address::setValueQuiet(const value& val)
 
     if (destination.value.get().getValueType() == mValueType)
     {
+      PreviousValue = std::move(mValue); // TODO also implement me for MIDI
       mValue = destination.value.get().fetchValue();
     }
     else
@@ -131,10 +132,12 @@ ossia::value generic_address::setValueQuiet(const value& val)
   {
     if (mValue.v.which() == val.v.which())
     {
+      PreviousValue = std::move(mValue); // TODO also implement me for MIDI
       mValue = val;
     }
     else
     {
+      PreviousValue = mValue;
       mValue = ossia::convert(val, mValue.getType());
 
       /*

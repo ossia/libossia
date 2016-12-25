@@ -128,7 +128,7 @@ public:
 
   const address_info& info() const;
 
-  const ossia::net::node_base& getNode() const override;
+  ossia::net::node_base& getNode() const override;
 
   void pullValue() override;
   address_base& pushValue(const value& val) override;
