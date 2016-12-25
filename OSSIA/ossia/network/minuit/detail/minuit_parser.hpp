@@ -422,7 +422,7 @@ struct minuit_behavior<
         }
         case minuit_attribute::Description:
         {
-          ossia::net::set_description(*node, mess_it->AsStringUnchecked());
+          ossia::net::set_description(*node, std::string(mess_it->AsStringUnchecked()));
           break;
         }
         default:
