@@ -51,7 +51,6 @@ std::future<void> address_base::pullValueAsync()
 
 void address_base::requestValue()
 {
-
 }
 
 value address_base::cloneValue(destination_index idx) const

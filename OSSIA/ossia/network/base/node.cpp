@@ -230,59 +230,25 @@ void node_base::clearChildren()
   mChildren.clear();
 }
 
-optional<instance_bounds> get_dynamic_instances(const extended_attributes& n)
-{
-  return get_optional_attribute<instance_bounds>(n, "instanceBounds");
-}
-
-void set_dynamic_instances(extended_attributes& n, optional<instance_bounds> i)
-{
-  set_optional_attribute(n, "instanceBounds", std::move(i));
-}
-
-
-optional<tags> get_tags(const extended_attributes& n)
-{
-  return get_optional_attribute<tags>(n, "tags");
-}
-
-void set_tags(extended_attributes& n, const optional<tags>& v)
-{
-  set_optional_attribute(n, "tags", v);
-}
+#define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(Type, Name, String) \
+optional<Type> get_ ## Name (const extended_attributes& n) \
+{ using namespace std::literals; \
+  return get_optional_attribute<Type>(n, String); \
+} \
+\
+void set_ ## Name (extended_attributes& n, optional<Type> i) \
+{ using namespace std::literals; \
+  set_optional_attribute(n, String, std::move(i)); \
+} \
 
 
-optional<description> get_description(const extended_attributes& n)
-{
-  return get_optional_attribute<description>(n, "description");
-}
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(instance_bounds, instance_bounds, "instanceBounds"s)
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(tags, tags, "tags"s)
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(description, description, "description"s)
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(priority, priority, "priority"s)
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(refresh_rate, refresh_rate, "refreshRate"s)
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(value_step_size, value_step_size, "valueStepSize"s)
 
-void set_description(extended_attributes& n, const optional<description>& v)
-{
-  set_optional_attribute(n, "description", v);
-}
-
-
-optional<priority> get_priority(const extended_attributes& n)
-{
-  return get_optional_attribute<priority>(n, "priority");
-}
-
-void set_priority(extended_attributes& n, optional<priority> v)
-{
-  set_optional_attribute(n, "priority", v);
-}
-
-
-optional<refresh_rate> get_refresh_rate(const extended_attributes& n)
-{
-  return get_optional_attribute<refresh_rate>(n, "refreshRate");
-}
-
-void set_refresh_rate(extended_attributes& n, optional<refresh_rate> v)
-{
-  set_optional_attribute(n, "refreshRate", v);
-}
 
 }
 }
