@@ -347,7 +347,7 @@ const tsl::hopscotch_map<std::string, minuit_attribute>
         {"rampFunction", minuit_attribute::RampFunction},
         {"rampDrive", minuit_attribute::RampDrive},
         {"valueStepsize", minuit_attribute::ValueStepSize},
-        {"rampFunctionParameters", minuit_attribute::RampFunctionParameters},
+        {"rampFunctionParameters", minuit_attribute::RampFunctionParameters}
     };
 
 inline minuit_attribute get_attribute(ossia::string_view str)

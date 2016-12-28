@@ -11,7 +11,7 @@
 #include <ossia/network/osc/detail/sender.hpp>
 #include <chobo/small_vector.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
-#define MINUIT_WAIT_TIME
+
 namespace ossia
 {
 namespace minuit
@@ -148,6 +148,18 @@ struct minuit_behavior<
                                 *desc);
           break;
         case minuit_attribute::Priority:
+          if(const auto& priority = ossia::net::get_priority(*node))
+            proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
+                                full_address,
+                                *priority);
+          break;
+        case minuit_attribute::ValueStepSize:
+          if(const auto& ss = ossia::net::get_value_step_size(*node))
+            proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
+                                full_address,
+                                *ss);
+          break;
+          // TODO some are missing :refresh rate, tags, instance bounds...
         default:
           break;
       }
@@ -425,6 +437,16 @@ struct minuit_behavior<
           ossia::net::set_description(*node, std::string(mess_it->AsStringUnchecked()));
           break;
         }
+        case minuit_attribute::Priority:
+        {
+          ossia::net::set_priority(*node, mess_it->AsInt32());
+          break;
+        }
+        case minuit_attribute::ValueStepSize:
+        {
+          ossia::net::set_value_step_size(*node, mess_it->AsInt32());
+          break;
+        }
         default:
           break;
       }
@@ -598,6 +620,8 @@ struct minuit_behavior<minuit_command::Answer,
         case minuit_attribute::RepetitionFilter:
         case minuit_attribute::DataspaceUnit:
         case minuit_attribute::Service:
+        case minuit_attribute::Priority:
+        case minuit_attribute::ValueStepSize:
         case minuit_attribute::Description:
         {
           // name?get address:attribute
