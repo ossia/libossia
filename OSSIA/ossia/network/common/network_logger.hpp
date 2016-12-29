@@ -31,11 +31,6 @@ public:
    */
   std::shared_ptr<spdlog::logger> outbound_logger;
 
-  /**
-   * @brief outbound_logger Set log function for messages going outside.
-   */
-  std::shared_ptr<spdlog::logger> error_logger;
-
 };
 
 }

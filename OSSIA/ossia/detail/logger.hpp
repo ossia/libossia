@@ -14,6 +14,8 @@ namespace ossia
  * @brief Where the errors will be logged. Default is stderr.
  *
  * It is also accessible through spdlog::get("ossia");
+ *
+ * The logger is first created in ossia::context construction.
  */
 OSSIA_EXPORT spdlog::logger& logger();
 

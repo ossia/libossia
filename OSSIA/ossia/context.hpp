@@ -13,6 +13,9 @@ struct OSSIA_EXPORT context
 {
   context();
 
+  //! Use this constructor to provide custom logging sinks.
+  context(const std::vector<spdlog::sink_ptr>& sinks);
+
   ~context();
 };
 }

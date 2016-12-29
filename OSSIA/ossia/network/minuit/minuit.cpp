@@ -194,8 +194,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
     lock_type lock(mNamespaceRequestsMutex);
     for(const auto& node : mNamespaceRequests)
     {
-      if(mLogger.error_logger)
-        mLogger.error_logger->error("Namespace request unmatched: {0}", node);
+      logger().error("Namespace request unmatched: {0}", node);
     }
     mNamespaceRequests.clear();
   }
@@ -203,8 +202,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
     lock_type lock(mGetRequestsMutex);
     for(const auto& node : mGetRequests)
     {
-      if(mLogger.error_logger)
-        mLogger.error_logger->error("Namespace request unmatched: {0}", node);
+      logger().error("Namespace request unmatched: {0}", node);
     }
     mGetRequests.clear();
   }
