@@ -61,12 +61,17 @@ ossia::state_element mapper::state()
         lock.unlock();
 
         mLastMessage.message_value = computeValue(val, mDrive);
-        return mLastMessage;
+
+        if(unmuted())
+          return mLastMessage;
+        return ossia::state_element{};
       }
     }
   }
 
-  return mLastMessage;
+  if(unmuted())
+    return mLastMessage;
+  return ossia::state_element{};
 }
 
 void mapper::start()

@@ -14,6 +14,11 @@ std::size_t state::size() const
   return mChildren.size();
 }
 
+bool state::empty() const
+{
+  return mChildren.empty();
+}
+
 void state::launch() const
 {
   for (const auto& state : mChildren)

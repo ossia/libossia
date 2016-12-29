@@ -63,7 +63,10 @@ state_element loop::offset(time_value offset)
     flatten_and_filter(
         mOffsetState, mPatternConstraint->getStartEvent().getState());
 
-  return mOffsetState;
+  // TODO why is mOffsetState different from mCurrentState
+  if(unmuted())
+    return mOffsetState;
+  return ossia::state_element{};
 }
 
 state_element loop::state()
@@ -145,7 +148,9 @@ state_element loop::state()
 
   //! \see mCurrentState is filled below in
   //! loop::PatternConstraintCallback
-  return mCurrentState;
+  if(unmuted())
+    return mCurrentState;
+  return ossia::state_element{};
 }
 
 void loop::start()

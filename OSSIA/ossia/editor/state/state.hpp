@@ -54,6 +54,7 @@ public:
   }
 
   std::size_t size() const;
+  bool empty() const;
 
   void launch() const;
 

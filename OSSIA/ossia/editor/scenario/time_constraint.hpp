@@ -167,9 +167,8 @@ public:
   }
 
 private:
+  clock::ExecutionCallback make_callback();
   ossia::state state_impl();
-  void ClockCallback(
-      time_value position, time_value date, unsigned char droppedTicks);
   ossia::state make_state();
 
   std::vector<std::unique_ptr<time_process>> mTimeProcesses;

@@ -1,6 +1,7 @@
 #include <ossia/network/midi/detail/midi_impl.hpp>
 #include <ossia/network/midi/midi.hpp>
 
+#include <ossia/detail/logger.hpp>
 #include <ModernMIDI/midi_input.h>
 #include <ModernMIDI/midi_output.h>
 namespace ossia
@@ -30,7 +31,7 @@ midi_protocol::~midi_protocol()
   }
   catch (...)
   {
-    std::cerr << "dtor MIDI error\n";
+    logger().error("midi_protocol::~midi_protocol() error");
   }
 }
 
@@ -130,7 +131,7 @@ bool midi_protocol::setInfo(midi_info m)
   }
   catch (...)
   {
-    std::cerr << "setInfo MIDI error\n";
+    logger().error("midi_protocol::~setInfo() error");
     return false;
   }
 }

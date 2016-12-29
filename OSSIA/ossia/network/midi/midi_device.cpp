@@ -1,6 +1,7 @@
 #include "midi_device.hpp"
 #include <ossia/network/midi/detail/midi_impl.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
+#include <ossia/detail/logger.hpp>
 
 namespace ossia
 {
@@ -36,9 +37,13 @@ bool midi_device::updateNamespace()
       mChildren.push_back(std::move(ptr));
     }
   }
+  catch(std::exception& e)
+  {
+    logger().error("midi_device::updateNamespace() catched: {}", e.what());
+  }
   catch (...)
   {
-    std::cerr << "refresh failed\n";
+    logger().error("midi_device::updateNamespace() failed.");
     return false;
   }
   return true;

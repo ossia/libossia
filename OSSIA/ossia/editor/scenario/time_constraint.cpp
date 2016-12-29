@@ -2,6 +2,7 @@
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/logger.hpp>
 #include <algorithm>
 #include <iostream>
 namespace ossia
@@ -34,9 +35,7 @@ time_constraint::time_constraint(
     , mDurationMin(min)
     , mDurationMax(max)
 {
-  mClock = std::make_unique<clock>([=](time_value t, time_value t2, unsigned char c) {
-    return ClockCallback(t, t2, c);
-  }, mDurationMax, One);
+  mClock = std::make_unique<clock>(make_callback(), mDurationMax, One);
 }
 
 time_constraint::~time_constraint()
@@ -100,7 +99,9 @@ ossia::state time_constraint::offset(time_value date)
   // get the state of each TimeProcess at current clock position and date
   for (const auto& timeProcess : processes)
   {
-    state.add(timeProcess->offset(date));
+    auto res = timeProcess->offset(date);
+    if(res)
+      state.add(std::move(res));
   }
 
   return state;
@@ -144,6 +145,7 @@ void time_constraint::setCallback(
     time_constraint::ExecutionCallback callback)
 {
   mCallback = callback;
+  mClock->setCallback(make_callback());
 }
 
 const time_value& time_constraint::getDurationNominal() const
@@ -231,6 +233,20 @@ void time_constraint::removeTimeProcess(
   }
 }
 
+clock::ExecutionCallback time_constraint::make_callback()
+{
+  if(mCallback)
+  {
+    return [this] (time_value t, time_value t2, unsigned char c) {
+        (mCallback)(t, t2, state_impl());
+    };
+  }
+  else
+  {
+    return [this] (time_value t, time_value t2, unsigned char c) { };
+  }
+}
+
 ossia::state time_constraint::state_impl()
 {
   const auto& processes = timeProcesses();
@@ -240,27 +256,12 @@ ossia::state time_constraint::state_impl()
   // get the state of each TimeProcess at current clock position and date
   for (const auto& timeProcess : processes)
   {
-    state.add(timeProcess->state());
+    auto res = timeProcess->state();
+    if(res)
+      state.add(std::move(res));
   }
 
   return state;
-}
-
-void time_constraint::ClockCallback(
-    time_value position, time_value date, unsigned char droppedTicks)
-{
-  try
-  {
-    if (mCallback)
-      (mCallback)(position, date, state_impl());
-  }
-  catch(std::exception& e)
-  {
-    // TODO log
-    std::cerr << "time_constraint::ClockCallback catched : "
-              << e.what()
-              << std::endl;
-  }
 }
 
 }

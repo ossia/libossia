@@ -45,7 +45,10 @@ ossia::state_element automation::offset(ossia::time_value offset)
   }
   // edit a Message handling the new Value
   updateMessage(offset / par.getDurationNominal());
-  return mLastMessage;
+
+  if(unmuted())
+    return mLastMessage;
+  return ossia::state_element{};
 }
 
 ossia::state_element automation::state()
@@ -63,7 +66,9 @@ ossia::state_element automation::state()
       updateMessage(par.getDate() / par.getDurationNominal());
     }
 
-    return mLastMessage;
+    if(unmuted())
+      return mLastMessage;
+    return ossia::state_element{};
   }
   else
   {

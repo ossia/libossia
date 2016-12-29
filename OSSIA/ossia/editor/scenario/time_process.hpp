@@ -40,9 +40,7 @@ public:
   * Will be called when
   * the parent time constraint is started.
   */
-  virtual void start()
-  {
-  }
+  virtual void start();
 
   /**
   * @brief stop
@@ -50,9 +48,7 @@ public:
   * Will be called when
   * the parent time constraint is stopped.
   */
-  virtual void stop()
-  {
-  }
+  virtual void stop();
 
   /**
   * @brief stop
@@ -60,9 +56,7 @@ public:
   * Will be called when
   * the parent time constraint is paused.
   */
-  virtual void pause()
-  {
-  }
+  virtual void pause();
 
   /**
   * @brief resume
@@ -70,9 +64,17 @@ public:
   * Will be called when
   * the parent time constraint is resumed.
   */
-  virtual void resume()
-  {
-  }
+  virtual void resume();
+
+  /**
+   * @brief mute Mutes or unmute the process.
+   *
+   * `mute(true)` mutes the process.
+   */
+  void mute(bool m);
+
+  //! True if the process is not currently muted.
+  bool unmuted() const;
 
   /**
    * @brief parent The parent time_constraint of the process
@@ -83,15 +85,17 @@ public:
    *
    * @return A pointer to the parent.
    */
-  time_constraint* parent() const
-  { return mParent; }
+  time_constraint* parent() const;
 
-  int32_t getPriority() const { return mPriority; }
-  void setPriority(int32_t i) { mPriority = i; }
+  int32_t getPriority() const;
+  void setPriority(int32_t i);
 
-  bool getPriorityOverride() const { return mPriorityOverride; }
-  void setPriorityOverride(bool o) { mPriorityOverride = o;}
+  bool getPriorityOverride() const;
+  void setPriorityOverride(bool o);
+
   protected:
+    //! Reimplement this to have a special behaviour on mute
+    virtual void mute_impl(bool);
     ossia::time_value mLastDate{ossia::Infinite};
     // used to filter multiple state calls at the
     // same time (use date as position can be always
@@ -101,5 +105,6 @@ public:
     time_constraint* mParent{};
     int32_t mPriority = 0;
     bool mPriorityOverride = false;
+    bool mUnmuted = true;
 };
 }

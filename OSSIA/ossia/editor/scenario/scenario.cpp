@@ -131,7 +131,11 @@ state_element scenario::offset(time_value offset)
     }
   }
 
-  return cur_state;
+  mLastState = cur_state;
+
+  if(unmuted())
+    return mLastState;
+  return ossia::state_element{};
 }
 
 state_element scenario::state()
@@ -237,10 +241,11 @@ state_element scenario::state()
           //! in EXTERNAL drive mode, it creates a deadlock.
       }
     }
-    return mLastState;
   }
 
-  return mLastState;
+  if(unmuted())
+    return mLastState;
+  return ossia::state_element{};
 }
 
 void scenario::start()

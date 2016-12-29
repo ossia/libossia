@@ -1,5 +1,6 @@
 #include <ossia/editor/scenario/clock.hpp>
 #include <ossia/detail/math.hpp>
+#include <ossia/detail/logger.hpp>
 #include <cassert>
 #include <iostream>
 
@@ -17,7 +18,7 @@ clock::clock(
     , mDriveMode(driveMode)
     , mRunning(false)
     , mPaused(false)
-    , mCallback(callback)
+    , mCallback(std::move(callback))
 {
 }
 
@@ -293,6 +294,11 @@ void clock::request_stop()
   }
 }
 
+void clock::setCallback(clock::ExecutionCallback c)
+{
+  mCallback = std::move(c);
+}
+
 void clock::do_start()
 {
   if (mDuration <= mOffset)
@@ -371,12 +377,23 @@ void clock::do_setOffset(time_value offset)
 
 void clock::threadCallback()
 {
-  // launch the tick if the duration is valid and while it have to run
-  if (mDuration > Zero)
-    while (mRunning && !mShouldStop)
-      tick();
+  try
+  {
+    // launch the tick if the duration is valid and while it have to run
+    if (mDuration > Zero)
+      while (mRunning && !mShouldStop)
+        tick();
 
-  if(mShouldStop)
-    mRunning = false;
+    if(mShouldStop)
+      mRunning = false;
+  }
+  catch(std::exception& e)
+  {
+    logger().error("clock::threadCallback() catched: {}", e.what());
+  }
+  catch(...)
+  {
+    logger().error("An error occured in clock::threadCallback()");
+  }
 }
 }

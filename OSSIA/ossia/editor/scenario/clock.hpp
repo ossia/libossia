@@ -158,6 +158,13 @@ public:
    * its ParentTimeConstraint's clock */
   void request_stop();
 
+  /**
+   * @brief setCallback Replace the execution callback.
+   *
+   * The callback **shall** be a valid function, e.g. bool(callback) == true.
+   */
+  void setCallback(ExecutionCallback);
+
   protected:
     time_value mDuration{};    /// the time (in ms) the clock will run at normal
                                /// speed factor

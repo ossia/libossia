@@ -5,7 +5,9 @@
 #include <oscpack/ip/UdpSocket.h>
 #include <oscpack/osc/OscDebug.h>
 #include <oscpack/osc/OscPacketListener.h>
+#include <ossia/detail/logger.hpp>
 #include <thread>
+#include <sstream>
 
 namespace oscpack
 {
@@ -88,13 +90,16 @@ protected:
     }
     catch (std::exception& e)
     {
-      std::cerr << "OSC Parse Error: '";
-      oscpack::debug(std::cerr, m);
-      std::cerr << "'" << e.what() << std::endl;
+      std::stringstream s;
+      oscpack::debug(s, m);
+
+      ossia::logger().error("osc::listener::ProcessMessage error: '{}': {}", s.str(), e.what());
     }
     catch(...)
     {
-      std::cerr << "OSC Error\n";
+      std::stringstream s;
+      oscpack::debug(s, m);
+      ossia::logger().error("osc::listener::ProcessMessage error: '{}': {}", s.str());
     }
   }
 
@@ -111,11 +116,11 @@ protected:
     }
     catch (std::exception& e)
     {
-      std::cerr << "OSC Parse Error: '" << e.what() << std::endl;
+      ossia::logger().error("osc::listener::ProcessPacket error: {}",  e.what());
     }
     catch(...)
     {
-      std::cerr << "OSC Error\n";
+      ossia::logger().error("osc::listener::ProcessPacket error");
     }
   }
 
