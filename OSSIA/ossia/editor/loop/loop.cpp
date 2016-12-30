@@ -58,15 +58,16 @@ state_element loop::offset(time_value offset)
   flatten_and_filter(mOffsetState, mPatternConstraint->offset(patternOffset));
 
   // compile mOffsetState with all HAPPENED event's states
-  if (mPatternConstraint->getStartEvent().getStatus()
-      == time_event::Status::HAPPENED)
-    flatten_and_filter(
-        mOffsetState, mPatternConstraint->getStartEvent().getState());
+  if(unmuted())
+  {
+    if (mPatternConstraint->getStartEvent().getStatus()
+        == time_event::Status::HAPPENED)
+      flatten_and_filter(
+            mOffsetState, mPatternConstraint->getStartEvent().getState());
+  }
 
   // TODO why is mOffsetState different from mCurrentState
-  if(unmuted())
-    return mOffsetState;
-  return ossia::state_element{};
+  return mOffsetState;
 }
 
 state_element loop::state()
@@ -94,9 +95,12 @@ state_element loop::state()
     mPatternStartNode->process(statusChangedEvents);
 
     // add the state of each newly HAPPENED TimeEvent
-    for (const auto& timeEvent : statusChangedEvents)
-      if (timeEvent->getStatus() == time_event::Status::HAPPENED)
-        flatten_and_filter(mCurrentState, timeEvent->getState());
+    if(unmuted())
+    {
+      for (const auto& timeEvent : statusChangedEvents)
+        if (timeEvent->getStatus() == time_event::Status::HAPPENED)
+          flatten_and_filter(mCurrentState, timeEvent->getState());
+    }
 
     // make time flow for the pattern constraint
     if (mPatternConstraint->getRunning())

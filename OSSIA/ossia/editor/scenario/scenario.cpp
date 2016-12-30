@@ -112,9 +112,12 @@ state_element scenario::offset(time_value offset)
   mPastEventList.sort();
 
   // build offset state from all ordered past events
-  for (const auto& p : mPastEventList)
+  if(unmuted())
   {
-    flatten_and_filter(cur_state, p.second->getState());
+    for (const auto& p : mPastEventList)
+    {
+      flatten_and_filter(cur_state, p.second->getState());
+    }
   }
 
   // offset all TimeConstraints
@@ -133,9 +136,7 @@ state_element scenario::offset(time_value offset)
 
   mLastState = cur_state;
 
-  if(unmuted())
-    return mLastState;
-  return ossia::state_element{};
+  return mLastState;
 }
 
 state_element scenario::state()
@@ -164,12 +165,16 @@ state_element scenario::state()
     n.process(statusChangedEvents);
 
     // add the state of each newly HAPPENED TimeEvent
-    for (const auto& timeEvent : statusChangedEvents)
+    if(unmuted())
     {
-      auto& ev = *timeEvent;
-      if (ev.getStatus() == time_event::Status::HAPPENED)
-        flatten_and_filter(cur_state, ev.getState());
+      for (const auto& timeEvent : statusChangedEvents)
+      {
+        auto& ev = *timeEvent;
+        if (ev.getStatus() == time_event::Status::HAPPENED)
+          flatten_and_filter(cur_state, ev.getState());
+      }
     }
+
     // make the time of each running TimeConstraint flows and add their state
     // note : this means TimeConstraint's state can overwrite TimeEvent's state
     for (const auto& timeConstraint : mTimeContraints)
@@ -243,9 +248,7 @@ state_element scenario::state()
     }
   }
 
-  if(unmuted())
-    return mLastState;
-  return ossia::state_element{};
+  return mLastState;
 }
 
 void scenario::start()

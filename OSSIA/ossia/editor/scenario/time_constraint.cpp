@@ -238,7 +238,7 @@ clock::ExecutionCallback time_constraint::make_callback()
   if(mCallback)
   {
     return [this] (time_value t, time_value t2, unsigned char c) {
-        (mCallback)(t, t2, state_impl());
+        mCallback(t, t2, state_impl());
     };
   }
   else
