@@ -4,6 +4,7 @@
 #include <ossia/editor/expression/expression_composition.hpp>
 #include <ossia/editor/expression/expression_not.hpp>
 #include <ossia/editor/expression/expression_pulse.hpp>
+#include <ossia/editor/expression/expression_generic.hpp>
 #include <ossia/editor/expression/expression_fwd.hpp>
 
 /**
@@ -40,6 +41,7 @@
  * \ref expression_pulse
  * \ref expression_composition
  * \ref expression_not
+ * \ref expression_generic
  */
 
 namespace ossia

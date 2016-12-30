@@ -226,8 +226,10 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
   if (trigger())
   {
     // former PENDING TimeEvents are now HAPPENED or DISPOSED
-    for (auto& timeEvent : mPendingEvents)
-      statusChangedEvents.push_back(timeEvent);
+    statusChangedEvents.insert(
+          statusChangedEvents.end(),
+          mPendingEvents.begin(),
+          mPendingEvents.end());
   }
 }
 
