@@ -356,7 +356,6 @@ void clock::do_stop()
 void clock::do_setDuration(time_value duration)
 {
   mDuration = duration;
-  mDate = mOffset;
 
   if (mDuration != Zero)
     mPosition = mDate / mDuration;
