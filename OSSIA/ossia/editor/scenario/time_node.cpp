@@ -107,6 +107,12 @@ time_node::iterator time_node::insert(
   return timeEvents().insert(pos, std::move(ev));
 }
 
+void time_node::remove(const std::shared_ptr<time_event>& e)
+{
+  remove_one(mPendingEvents, e);
+  remove_one(timeEvents(), e);
+}
+
 time_node::iterator time_node::emplace(
     const_iterator pos, time_event::ExecutionCallback callback,
     ossia::expression_ptr exp)
