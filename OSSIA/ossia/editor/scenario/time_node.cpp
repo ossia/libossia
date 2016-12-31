@@ -100,13 +100,20 @@ time_node& time_node::setSimultaneityMargin(time_value simultaneityMargin)
   return *this;
 }
 
+time_node::iterator time_node::insert(
+    time_node::const_iterator pos,
+    std::shared_ptr<time_event> ev)
+{
+  return timeEvents().insert(pos, std::move(ev));
+}
+
 time_node::iterator time_node::emplace(
     const_iterator pos, time_event::ExecutionCallback callback,
     ossia::expression_ptr exp)
 {
-  return timeEvents().insert(
-      pos, std::make_shared<time_event>(
-               callback, *this, std::move(exp)));
+  return insert(
+        pos,
+        std::make_shared<time_event>(callback, *this, std::move(exp)));
 }
 
 void time_node::process(ptr_container<time_event>& statusChangedEvents)

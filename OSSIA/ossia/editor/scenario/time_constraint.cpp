@@ -249,7 +249,6 @@ clock::ExecutionCallback time_constraint::make_callback()
 
 ossia::state time_constraint::state_impl()
 {
-  logger().error("tutu {}", (double)getPosition());
   const auto& processes = timeProcesses();
   ossia::state state;
   state.reserve(processes.size());

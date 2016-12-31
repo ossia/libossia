@@ -105,6 +105,8 @@ class OSSIA_EXPORT time_node final :
     iterator emplace(
         const_iterator, time_event::ExecutionCallback,
         expression_ptr = expressions::make_expression_true());
+    iterator insert(
+        const_iterator, std::shared_ptr<time_event>);
 
     /*! get the #TimeEvents of the #TimeNode
    \return #Container<#TimeEvent> */
