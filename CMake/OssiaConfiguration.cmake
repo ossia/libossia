@@ -124,10 +124,12 @@ else()
             )
 
         if(GOLD_LINKER_SUPPORTED)
-            set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
-                -Wl,--gdb-index
-                -gsplit-dwarf
-                )
+            if(NOT OSSIA_SANITIZE)
+                set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
+                    -Wl,--gdb-index
+                    -gsplit-dwarf
+                    )
+            endif()
         endif()
         if(OSSIA_MOST_STATIC)
             set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -static -static-libgcc -static-libstdc++)

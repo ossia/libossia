@@ -210,7 +210,7 @@ time_event& time_constraint::getEndEvent() const
 }
 
 void time_constraint::addTimeProcess(
-    std::unique_ptr<time_process> timeProcess)
+    std::shared_ptr<time_process> timeProcess)
 {
   if(!timeProcess)
     return;

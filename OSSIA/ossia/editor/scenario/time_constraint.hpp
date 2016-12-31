@@ -151,7 +151,7 @@ public:
    \details it also stores the #TimeProcess's start and end #States into the
    #TimeConstraint's start and end #TimeEvents
    \param std::shared_ptr<#TimeProcess> to insert */
-  void addTimeProcess(std::unique_ptr<time_process>);
+  void addTimeProcess(std::shared_ptr<time_process>);
 
   /*! remove a #TimeProcess
    \details it also removes the #TimeProcess's start and end #States from the
@@ -161,7 +161,7 @@ public:
 
   /*! get time processes attached to the #TimeConstraint
    \return #Container<#TimeProcess> */
-  const std::vector<std::unique_ptr<time_process>>& timeProcesses() const
+  const std::vector<std::shared_ptr<time_process>>& timeProcesses() const
   {
     return mTimeProcesses;
   }
@@ -171,7 +171,7 @@ private:
   ossia::state state_impl();
   ossia::state make_state();
 
-  std::vector<std::unique_ptr<time_process>> mTimeProcesses;
+  std::vector<std::shared_ptr<time_process>> mTimeProcesses;
   std::unique_ptr<clock> mClock;
   time_constraint::ExecutionCallback mCallback;
 
