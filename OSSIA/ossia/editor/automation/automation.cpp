@@ -11,19 +11,17 @@ namespace ossia
 
 automation::automation(
     Destination address, const ossia::behavior& drive)
-  : mDrivenAddress(address)
-  , mDrive(drive)
-  , mLastMessage{address, ossia::value{}}
-  , mDrivenType{mDrivenAddress.value.get().cloneValue(mDrivenAddress.index).getType()}
+  : mDrive(drive)
+  , mLastMessage{ossia::message{address, ossia::value{}}}
+  , mDrivenType{address.value.get().cloneValue(address.index).getType()}
 {
 }
 
 automation::automation(
     Destination address, ossia::behavior&& drive)
-  : mDrivenAddress(address)
-  , mDrive(std::move(drive))
-  , mLastMessage{address, ossia::value{}}
-  , mDrivenType{mDrivenAddress.value.get().cloneValue(mDrivenAddress.index).getType()}
+  : mDrive(std::move(drive))
+  , mLastMessage{ossia::message{address, ossia::value{}}}
+  , mDrivenType{address.value.get().cloneValue(address.index).getType()}
 {
 }
 
@@ -31,7 +29,8 @@ automation::~automation() = default;
 
 void automation::updateMessage(double t)
 {
-  mLastMessage.message_value = computeValue(t, mDrivenType, mDrive);
+  if(mLastMessage)
+    mLastMessage->message_value = computeValue(t, mDrivenType, mDrive);
 }
 
 ossia::state_element automation::offset(ossia::time_value offset)
@@ -46,8 +45,8 @@ ossia::state_element automation::offset(ossia::time_value offset)
   // edit a Message handling the new Value
   updateMessage(offset / par.getDurationNominal());
 
-  if(unmuted())
-    return mLastMessage;
+  if(unmuted() && mLastMessage)
+    return *mLastMessage;
   return ossia::state_element{};
 }
 
@@ -66,8 +65,8 @@ ossia::state_element automation::state()
       updateMessage(par.getDate() / par.getDurationNominal());
     }
 
-    if(unmuted())
-      return mLastMessage;
+    if(unmuted() && mLastMessage)
+      return *mLastMessage;
     return ossia::state_element{};
   }
   else
@@ -95,14 +94,28 @@ void automation::resume()
 {
 }
 
-Destination automation::getDrivenAddress() const
+void automation::setDestination(Destination d)
 {
-  return mDrivenAddress;
+  mDrivenType = d.value.get().cloneValue(d.index).getType();
+  if(mLastMessage)
+  {
+    mLastMessage->destination = std::move(d);
+  }
+  else
+  {
+    mLastMessage = ossia::message{d, ossia::value{}};
+  }
 }
 
-const ossia::behavior& automation::getDriving() const
+void automation::setBehavior(behavior b)
 {
-  return mDrive;
+  mDrive = std::move(b);
+}
+
+void automation::clean()
+{
+  mDrive.reset();
+  mLastMessage = ossia::none;
 }
 
 struct computeValue_visitor
