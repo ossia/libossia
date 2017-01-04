@@ -47,3 +47,6 @@
 [submodule "3rdparty/libzmq"]
 	path = 3rdparty/libzmq
 	url = https://github.com/zeromq/libzmq
+[submodule "3rdparty/cppzmq"]
+	path = 3rdparty/cppzmq
+	url = https://github.com/zeromq/cppzmq
