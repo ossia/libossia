@@ -249,6 +249,13 @@ OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(priority, priority, "priority"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(refresh_rate, refresh_rate, "refreshRate"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(value_step_size, value_step_size, "valueStepSize"s)
 
+void set_description(extended_attributes& n, const char* arg)
+{
+  if(arg)
+    set_description(n, std::string{arg});
+  else
+    set_description(n, ossia::none);
+}
 
 }
 }

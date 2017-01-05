@@ -11,10 +11,10 @@ namespace expressions
 struct OSSIA_EXPORT expression_generic_base
 {
   virtual ~expression_generic_base();
-  virtual bool update() const = 0;
+  virtual void update() = 0;
   virtual bool evaluate() const = 0;
-  virtual void onFirstCallbackAdded() = 0;
-  virtual void onRemovingLastCallback() = 0;
+  virtual void onFirstCallbackAdded(expression_generic&) = 0;
+  virtual void onRemovingLastCallback(expression_generic&) = 0;
 };
 
 class OSSIA_EXPORT expression_generic final :
@@ -23,16 +23,16 @@ class OSSIA_EXPORT expression_generic final :
 public:
   std::unique_ptr<expression_generic_base> expr;
 
-  bool update() const
-  { return expr->update(); }
+  void update() const
+  { expr->update(); }
   bool evaluate() const
   { return expr->evaluate(); }
 
 private:
   void onFirstCallbackAdded() override
-  { expr->onFirstCallbackAdded(); }
+  { expr->onFirstCallbackAdded(*this); }
   void onRemovingLastCallback() override
-  { expr->onRemovingLastCallback(); }
+  { expr->onRemovingLastCallback(*this); }
 };
 }
 }

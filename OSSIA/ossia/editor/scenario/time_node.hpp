@@ -7,6 +7,7 @@
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
+#include <nano_signal_slot.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -27,24 +28,6 @@ class OSSIA_EXPORT time_node final :
     public std::enable_shared_from_this<time_node>
 {
   public:
-    /*! to be notified when it is triggered */
-    using execution_callback = std::function<void()>;
-
-  private:
-    time_node::execution_callback mCallback;
-
-    ossia::expression_ptr mExpression;
-    expressions::expression_callback_iterator mResultCallbackIndex;
-
-    ptr_container<time_event> mPendingEvents;
-
-    time_value mSimultaneityMargin = Zero;
-
-
-    bool mObserveExpression = false;
-    bool mCallbackSet = false;
-
-  public:
     using iterator = ptr_container<time_event>::iterator;
     using const_iterator = ptr_container<time_event>::const_iterator;
 
@@ -52,16 +35,10 @@ class OSSIA_EXPORT time_node final :
     \param #TimeNode::ExecutionCallback to be be notified when the #TimeNode is
     triggered
     \return std::shared_ptr<#TimeNode> */
-    time_node(time_node::execution_callback callback = {});
+    time_node();
 
     /*! destructor */
     ~time_node();
-
-    /*! changes the callback in the #TimeNode
-   \param #TimeNode::ExecutionCallback to be be notified when the #TimeNode is
-   triggered
-   \details this may be unsafe to do during execution */
-    void setCallback(time_node::execution_callback);
 
     /*! evaluate all #TimeEvent's to make them to happen or to dispose them
    \return boolean true if the operation succeeded */
@@ -86,15 +63,6 @@ class OSSIA_EXPORT time_node final :
    \param std::shared_ptr<#Expression>
    \return #TimeNode the time node */
     time_node& setExpression(expression_ptr);
-
-    /*! get the simultaneity margin
-   \return #TimeValue the simultaneity margin */
-    time_value getSimultaneityMargin() const;
-
-    /*! set the simultaneity margin
-   \param #TimeValue the simultaneity margin
-   \return #TimeNode the time node */
-    time_node& setSimultaneityMargin(time_value);
 
     /*! create and store a #TimeEvent
    \param #Container<#TimeEvent>::const_iterator where to store the #TimeEvent
@@ -139,7 +107,27 @@ class OSSIA_EXPORT time_node final :
 
     /* To be called before deletion, to break the shared_ptr cycle */
     void cleanup();
+
+    /*! Execution callbacks
+     *
+     * Used to be notified when the #TimeNode is triggered.
+     *
+     * \details This is not thread-safe
+     */
+    callback_container<std::function<void()>> triggered;
+
+
   private:
+    ossia::expression_ptr mExpression;
+
     ptr_container<time_event> mTimeEvents;
+    ptr_container<time_event> mPendingEvents;
+
+
+    expressions::expression_callback_iterator mResultCallbackIndex;
+
+    bool mObserveExpression = false;
+    bool mCallbackSet = false;
+
 };
 }

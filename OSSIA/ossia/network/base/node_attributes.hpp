@@ -45,6 +45,7 @@ OSSIA_EXPORT void set_tags(extended_attributes& n, optional<tags> v);
 
 OSSIA_EXPORT optional<description> get_description(const extended_attributes& n);
 OSSIA_EXPORT void set_description(extended_attributes& n, optional<description> v);
+OSSIA_EXPORT void set_description(extended_attributes& n, const char* v);
 
 OSSIA_EXPORT optional<priority> get_priority(const extended_attributes& n);
 OSSIA_EXPORT void set_priority(extended_attributes& n, optional<priority> v);

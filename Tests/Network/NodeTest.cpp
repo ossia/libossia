@@ -149,6 +149,7 @@ private Q_SLOTS:
       QCOMPARE(QString::fromStdString(sanitize_name("foo.3", {"foo"})), QString("foo.3"));
       QCOMPARE(QString::fromStdString(sanitize_name("foo.3", {"foo", "foo.1"})), QString("foo.3"));
   }
+
 };
 
 QTEST_APPLESS_MAIN(NodeTest)

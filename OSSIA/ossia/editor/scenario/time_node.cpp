@@ -3,17 +3,12 @@
 namespace ossia
 {
 
-time_node::time_node(time_node::execution_callback callback)
-    : mCallback(callback), mExpression(expressions::make_expression_true())
+time_node::time_node()
+    : mExpression(expressions::make_expression_true())
 {
 }
 
 time_node::~time_node() = default;
-
-void time_node::setCallback(time_node::execution_callback callback)
-{
-  mCallback = callback;
-}
 
 bool time_node::trigger()
 {
@@ -46,8 +41,7 @@ bool time_node::trigger()
   observeExpressionResult(false);
 
   // notify observers
-  if (mCallback)
-    (mCallback)();
+  triggered.send();
 
   // the triggering succeded
   return true;
@@ -86,17 +80,6 @@ time_node& time_node::setExpression(expression_ptr exp)
 {
   assert(exp);
   mExpression = std::move(exp);
-  return *this;
-}
-
-time_value time_node::getSimultaneityMargin() const
-{
-  return mSimultaneityMargin;
-}
-
-time_node& time_node::setSimultaneityMargin(time_value simultaneityMargin)
-{
-  mSimultaneityMargin = simultaneityMargin;
   return *this;
 }
 
