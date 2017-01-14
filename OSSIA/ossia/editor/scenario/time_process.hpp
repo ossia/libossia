@@ -22,15 +22,15 @@ public:
   /*! destructor */
   virtual ~time_process();
 
-  /*! get a #StateElement from the process on its parent #TimeConstraint offset
-   \details don't call offset when the parent #TimeConstraint is running
+  /*! get a #StateElement from the process on its parent #time_constraint offset
+   \details don't call offset when the parent #time_constraint is running
    \param const #time_value offset date
    \return state_element */
   virtual state_element offset(time_value) = 0;
 
   /*! get a #StateElement from the process depending on its parent
-   #TimeConstraint date
-   \details don't call state when the parent #TimeConstraint is not running
+   #time_constraint date
+   \details don't call state when the parent #time_constraint is not running
    \return state_element */
   virtual state_element state() = 0;
 

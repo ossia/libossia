@@ -195,7 +195,21 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
 
   // if all TimeEvents are not PENDING
   if (mPendingEvents.size() != timeEvents().size())
+  {
+    if(mEvaluating)
+    {
+      mEvaluating = false;
+      leftEvaluation.send();
+    }
+
     return;
+  }
+
+  if(!mEvaluating)
+  {
+    mEvaluating = true;
+    enteredEvaluation.send();
+  }
 
   // false expression mute TimeNode triggering
   if (*mExpression == expressions::expression_false)
@@ -226,6 +240,9 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
           statusChangedEvents.end(),
           mPendingEvents.begin(),
           mPendingEvents.end());
+
+    mEvaluating = false;
+    finishedEvaluation.send(maximalDurationReached);
   }
 }
 
@@ -249,28 +266,20 @@ void time_node::observeExpressionResult(bool observe)
     {
       // pull value
 
-      // start expression observation
-      mResultCallbackIndex = expressions::add_callback(
-          *mExpression, [&](bool result) { resultCallback(result); });
-      mCallbackSet = true;
+      // start expression observation; dummy callback used.
+      // Do not remove it : else the expressions will stop listening.
+      mResultCallbackIndex = expressions::add_callback(*mExpression, [] (bool) { });
     }
     else
     {
       // stop expression observation
-      if (wasObserving && mCallbackSet)
+      if (wasObserving && mResultCallbackIndex)
       {
-        expressions::remove_callback(*mExpression, mResultCallbackIndex);
-        mCallbackSet = false;
+        expressions::remove_callback(*mExpression, *mResultCallbackIndex);
+        mResultCallbackIndex = ossia::none;
       }
     }
   }
-}
-
-void time_node::resultCallback(bool result)
-{
-  //! \note the result of the expression is not exploited here.
-  //! \note the observation of the expression allows to observe all Destination
-    //! value contained into it.
 }
 
 void time_node::reset()
@@ -281,7 +290,6 @@ void time_node::reset()
     }
 
     mPendingEvents.clear();
-
 }
 
 void time_node::cleanup()

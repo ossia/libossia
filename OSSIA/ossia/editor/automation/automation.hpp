@@ -40,6 +40,7 @@ class OSSIA_EXPORT automation final :
     public ossia::time_process
 {
   public:
+    automation();
     automation(Destination, const ossia::behavior&);
     automation(Destination, ossia::behavior&&);
 

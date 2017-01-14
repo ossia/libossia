@@ -19,10 +19,10 @@ class time_event;
 class time_value;
 
 /**
- * \brief #TimeNode is use to describe temporal structure to synchronize each
- * attached #TimeEvent evaluation.
+ * \brief #time_node is use to describe temporal structure to synchronize each
+ * attached #time_event evaluation.
  *
- * \details #TimeNode is also a #TimeEvent container.
+ * \details #time_node is also a #time_event container.
  */
 class OSSIA_EXPORT time_node final :
     public std::enable_shared_from_this<time_node>
@@ -31,45 +31,39 @@ class OSSIA_EXPORT time_node final :
     using iterator = ptr_container<time_event>::iterator;
     using const_iterator = ptr_container<time_event>::const_iterator;
 
-    /*
-    \param #TimeNode::ExecutionCallback to be be notified when the #TimeNode is
-    triggered
-    \return std::shared_ptr<#TimeNode> */
     time_node();
 
-    /*! destructor */
     ~time_node();
 
-    /*! evaluate all #TimeEvent's to make them to happen or to dispose them
+    /*! evaluate all #time_event's to make them to happen or to dispose them
    \return boolean true if the operation succeeded */
     bool trigger();
 
     /*! get the date
-   \details the date is the sum of its previous #TimeConstraint durations
-   \details a #TimeNode with na previous #TimeConstraints have a date equals to
+   \details the date is the sum of its previous #time_constraint durations
+   \details a #time_node with na previous #time_constraints have a date equals to
    0.
    \return #TimeValue the date */
     time_value getDate() const;
 
-    /*! get the expression of the #TimeNode
-   \return std::shared_ptr<#Expression> */
+    /*! get the expression of the #time_node */
     const expression& getExpression() const;
 
-    /*! set the expression of the #TimeNode
+    /*! set the expression of the #time_node
    \details setting the expression to ExpressionTrue will defer the evaluation
-   on #TimeEvent's expression
+   on #time_event's expression
    \details setting the expression to ExpressionFalse will mute TimeNode
    execution
-   \param std::shared_ptr<#Expression>
-   \return #TimeNode the time node */
+   \param expression_ptr
+   \return #time_node the time node */
     time_node& setExpression(expression_ptr);
 
-    /*! create and store a #TimeEvent
-   \param #Container<#TimeEvent>::const_iterator where to store the #TimeEvent
-   \param #TimeEvent::ExecutionCallback to get #TimeEvent's status back
-   \param std::shared<#Expression> an optionnal #Expression to apply to the
-   #TimeEvent
-   \return std::shared_ptr<#TimeEvent> */
+    /*! create and store a #time_event
+   \param #Container<#time_event>::const_iterator where to store the #time_event
+   \param #time_event::ExecutionCallback to get #time_event's status back
+   \param expression_ptr an optional expression to apply to the
+   #time_event
+   \return std::shared_ptr<#time_event> */
     iterator emplace(
         const_iterator, time_event::ExecutionCallback,
         expression_ptr = expressions::make_expression_true());
@@ -77,15 +71,15 @@ class OSSIA_EXPORT time_node final :
         const_iterator, std::shared_ptr<time_event>);
     void remove(const std::shared_ptr<time_event>&);
 
-    /*! get the #TimeEvents of the #TimeNode
-   \return #Container<#TimeEvent> */
+    /*! get the #time_events of the #time_node
+   \return #Container<#time_event> */
     ptr_container<time_event>& timeEvents()
     {
       return mTimeEvents;
     }
 
-    /*! get the #TimeEvents of the #TimeNode
-   \return #Container<#TimeEvent> */
+    /*! get the #time_events of the #time_node
+   \return #Container<#time_event> */
     const ptr_container<time_event>& timeEvents() const
     {
       return mTimeEvents;
@@ -101,8 +95,7 @@ class OSSIA_EXPORT time_node final :
     /* enable observation of the Expression */
     void observeExpressionResult(bool);
 
-    void resultCallback(bool result);
-
+    //! Resets the internal state. Necessary when restarting an execution.
     void reset();
 
     /* To be called before deletion, to break the shared_ptr cycle */
@@ -110,11 +103,20 @@ class OSSIA_EXPORT time_node final :
 
     /*! Execution callbacks
      *
-     * Used to be notified when the #TimeNode is triggered.
+     * Used to be notified when the #time_node is triggered.
      *
      * \details This is not thread-safe
      */
     callback_container<std::function<void()>> triggered;
+
+    //! Called when the time node starts evaluating
+    callback_container<std::function<void()>> enteredEvaluation;
+
+    //! Called if the time node stops evaluating due to a changing duration
+    callback_container<std::function<void()>> leftEvaluation;
+
+    //! Boolean : true if the evaluation was finished due to the max bound
+    callback_container<std::function<void(bool)>> finishedEvaluation;
 
 
   private:
@@ -124,10 +126,10 @@ class OSSIA_EXPORT time_node final :
     ptr_container<time_event> mPendingEvents;
 
 
-    expressions::expression_callback_iterator mResultCallbackIndex;
+    optional<expressions::expression_callback_iterator> mResultCallbackIndex;
 
     bool mObserveExpression = false;
-    bool mCallbackSet = false;
+    bool mEvaluating = false;
 
 };
 }

@@ -127,6 +127,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_address.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/alias_node.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.hpp"
@@ -193,6 +194,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_address.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/alias_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit_zeroconf.cpp"
