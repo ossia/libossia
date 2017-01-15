@@ -152,5 +152,4 @@ constexpr std::array<ossia::string_view, sizeof...(Args)>
   };
 }
 
-template<typename... Args> using void_t = void;
 }
