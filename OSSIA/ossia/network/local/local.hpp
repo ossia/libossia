@@ -9,6 +9,12 @@ namespace ossia
 namespace net
 {
 class generic_device;
+/**
+ * \brief A protocol used to expose a local application's data through multiple other protocols.
+ *
+ * For instance use this when developing an artistic application with parameters
+ * that you want to be able to control from another software.
+ */
 class OSSIA_EXPORT local_protocol final : public ossia::net::protocol_base
 {
 public:
@@ -26,11 +32,14 @@ public:
   bool update(ossia::net::node_base& node_base) override;
 
   void setDevice(ossia::net::device_base& dev) override;
-
+  
+  //! Use this to add protocols through which you will expose the device. For instance OSC, Minuit, etc.
   void exposeTo(std::unique_ptr<ossia::net::protocol_base> p);
-
+  
+  //! Stop exposition to a protocol. It will be deleted.
   void stopExposeTo(const ossia::net::protocol_base& p);
 
+  //! The protocols we are currently exposing this device through.
   const auto& getExposedProtocols() const
   {
     return mExposed;
