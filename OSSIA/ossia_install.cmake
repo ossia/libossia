@@ -33,7 +33,9 @@ endif()
 if(OSSIA_PROTOCOL_WEBSOCKETS)
     install_headers_rec("${WS_CLIENT_HEADERS}")
 endif()
-
+if(OSSIA_QT_EXTENSIONS)
+    install_headers_rec("${OSSIA_QT_HEADERS}")
+endif()
 # Install export header
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ossia_export.h
         DESTINATION include/
