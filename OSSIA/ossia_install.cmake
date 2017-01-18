@@ -47,7 +47,7 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/variant/include/
         COMPONENT Devel)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include/
-        DESTINATION include/nano-signal-slot
+        DESTINATION include
         COMPONENT Devel)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/oscpack/oscpack

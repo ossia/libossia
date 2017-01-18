@@ -16,6 +16,9 @@
 #include <QtGui/QVector3D>
 #include <QtGui/QVector4D>
 #include <QtGui/QQuaternion>
+#include <QtQml/QQmlProperty>
+
+Q_DECLARE_METATYPE(ossia::value)
 namespace ossia
 {
 namespace qt
@@ -109,7 +112,6 @@ public:
   }
 
 private slots:
-
   void qtBoolValueChanged(bool v) { qtValueChanged(v); }
   void qtTimeValueChanged(QTime v) { qtValueChanged(v); }
   void qtIntValueChanged(int v) { qtValueChanged(v); }
@@ -135,6 +137,12 @@ private slots:
   void qtListValueChanged(QVariantList v) { qtValueChanged(v); }
   void qtStringListValueChanged(QStringList v) { qtValueChanged(v); }
   void qtDateValueChanged(QDate v) { qtValueChanged(v); }
+
+
+  void setValue_slot(const value&);
+
+signals:
+  void setValue_sig(const value&);
 
 private:
   std::unique_ptr<node_base> makeChild(const std::string& name) final override;

@@ -38,8 +38,8 @@ if(NOT "${OSSIA_NO_QT}")
   endif()
 
   if("${OSSIA_QT_EXTENSIONS}")
-    find_package(Qt5 5.6 QUIET COMPONENTS Gui)
-    if(NOT "${Qt5Gui_FOUND}")
+    find_package(Qt5 5.6 QUIET COMPONENTS Core Gui Qml)
+    if(NOT "${Qt5Qml_FOUND}")
       set(OSSIA_QT_EXTENSIONS OFF)
     else()
       set(CMAKE_AUTOMOC 1)
@@ -153,7 +153,7 @@ endif()
 
 if(OSSIA_QT_EXTENSIONS)
     target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS})
-    target_link_libraries(ossia PUBLIC Qt5::Gui)
+    target_link_libraries(ossia PUBLIC Qt5::Core Qt5::Gui Qt5::Qml)
     target_include_directories(ossia PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt"
         )

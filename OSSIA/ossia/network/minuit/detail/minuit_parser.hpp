@@ -151,6 +151,10 @@ struct minuit_behavior<
             proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                                 full_address,
                                 *priority);
+          else
+            proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
+                                full_address,
+                                0);
           break;
         case minuit_attribute::ValueStepSize:
           if(const auto& ss = ossia::net::get_value_step_size(*node))

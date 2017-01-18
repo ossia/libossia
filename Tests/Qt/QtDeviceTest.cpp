@@ -100,21 +100,7 @@ private Q_SLOTS:
         proto.exposeTo(
               std::make_unique<ossia::net::minuit_protocol>("i-score", "127.0.0.1", 13579, 9998));
 
-/*
-        // We have to wait a bit for the event loop to run.
-        QTimer t;
-        connect(&t, &QTimer::timeout, [&] () {
-          auto node = ossia::net::find_node(ws_device, "/tata/tutu");
-          if(node)
-          {
-            node->getAddress()->pushValue(32.325);
-          }
-        });
-        t.setInterval(1000);
-        t.setSingleShot(true);
-        t.start();
-*/
-  //     QTimer::singleShot(3000, [&] () { app.exit(); });
+       QTimer::singleShot(3000, [&] () { app.exit(); });
 
         app.exec();
     }
