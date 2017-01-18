@@ -94,7 +94,7 @@ public:
   generic_address& setValue(const ossia::value&) override;
 
   /** Set a value without sending notifications **/
-  void setValueQuiet(const ossia::value&) final override;
+  void setValueQuiet(const ossia::value&) override;
 
   ossia::val_type getValueType() const final override;
   ossia::net::generic_address& setValueType(ossia::val_type) final override;
