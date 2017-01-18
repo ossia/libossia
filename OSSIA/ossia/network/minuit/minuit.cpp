@@ -53,7 +53,7 @@ minuit_protocol::~minuit_protocol()
 
 void minuit_protocol::setDevice(ossia::net::device_base& dev)
 {
-  mDevice = dynamic_cast<generic_device*>(&dev);
+  mDevice = &dev;
 }
 
 const std::string& minuit_protocol::getIp() const
@@ -243,17 +243,15 @@ bool minuit_protocol::pull(ossia::net::address_base& address)
   return fut.valid();
 }
 
-bool minuit_protocol::push(const ossia::net::address_base& address)
+bool minuit_protocol::push(const ossia::net::address_base& addr)
 {
-  auto& addr = static_cast<const generic_address&>(address);
-
   if (addr.getAccessMode() == ossia::access_mode::GET)
     return false;
 
   auto val = filter_value(addr);
   if (val.valid())
   {
-    mSender->send(address, val);
+    mSender->send(addr, val);
     mLastSentMessage = get_time();
     return true;
   }
@@ -392,8 +390,7 @@ void minuit_protocol::handleReceivedMessage(
         {
           if(auto base_addr = n->getAddress())
           {
-            auto addr = static_cast<ossia::net::generic_address*>(base_addr);
-            update_value_quiet(*addr, m);
+            update_value_quiet(*base_addr, m);
           }
         }
       }

@@ -295,3 +295,9 @@ set(JAVA_HEADERS
 set(JAVA_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java/ossia-java.cpp"
     )
+set(OSSIA_QT_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_device.hpp"
+    )
+set(OSSIA_QT_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_device.cpp"
+    )

@@ -100,17 +100,15 @@ bool osc_protocol::pull(ossia::net::address_base& address)
   return false;
 }
 
-bool osc_protocol::push(const ossia::net::address_base& address)
+bool osc_protocol::push(const ossia::net::address_base& addr)
 {
-  auto& addr = static_cast<const generic_address&>(address);
-
   if (addr.getAccessMode() == ossia::access_mode::GET)
     return false;
 
   auto val = filter_value(addr);
   if (val.valid())
   {
-    mSender->send(address, val);
+    mSender->send(addr, val);
     return true;
   }
   return false;
@@ -149,8 +147,7 @@ void osc_protocol::handleReceivedMessage(
       {
         if(auto base_addr = n->getAddress())
         {
-          auto addr = static_cast<ossia::net::generic_address*>(base_addr);
-          update_value_quiet(*addr, m);
+          update_value_quiet(*base_addr, m);
         }
       }
     }

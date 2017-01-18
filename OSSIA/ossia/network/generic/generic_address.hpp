@@ -69,9 +69,9 @@ protected:
   unit_t mUnit;
 
   ossia::value_callback mCallback;
+  ossia::value mPreviousValue;
 
 public:
-  ossia::value PreviousValue;
   generic_address(
       ossia::net::node_base& node_base);
   generic_address(
@@ -91,10 +91,10 @@ public:
 
   const ossia::value& getValue() const;
   ossia::value cloneValue() const final override;
-  generic_address& setValue(const ossia::value&) final override;
+  generic_address& setValue(const ossia::value&) override;
 
   /** Set a value without sending notifications **/
-  ossia::value setValueQuiet(const ossia::value&);
+  void setValueQuiet(const ossia::value&) final override;
 
   ossia::val_type getValueType() const final override;
   ossia::net::generic_address& setValueType(ossia::val_type) final override;
@@ -111,6 +111,7 @@ public:
   ossia::repetition_filter getRepetitionFilter() const final override;
   ossia::net::generic_address&
       setRepetitionFilter(ossia::repetition_filter) final override;
+bool filterRepetition(const ossia::value& val) const final override;
 
   ossia::value getDefaultValue() const final override;
   generic_address& setDefaultValue(const ossia::value& v) final override;

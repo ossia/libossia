@@ -56,6 +56,7 @@ ossia_add_test(DeviceTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/
 ossia_add_test(NodeTest                    "${CMAKE_CURRENT_SOURCE_DIR}/Network/NodeTest.cpp")
 ossia_add_test(PathTest                    "${CMAKE_CURRENT_SOURCE_DIR}/Network/PathTest.cpp")
 
+ossia_add_test(QtTest                      "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QtDeviceTest.cpp")
 if("${OSSIA_PROTOCOLS}" MATCHES "WebSockets")
   ossia_add_test(WebSocketTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/WebSocketTest.cpp")
 endif()

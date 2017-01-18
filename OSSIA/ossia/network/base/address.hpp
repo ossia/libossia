@@ -105,6 +105,9 @@ public:
 
   virtual address_base& setValue(const value&) = 0;
 
+  //! If reimplemented, won't call observers
+  virtual void setValueQuiet(const value& v) { setValue(v); }
+
   value fetchValue();
 
   virtual val_type getValueType() const = 0;
@@ -121,6 +124,7 @@ public:
 
   virtual repetition_filter getRepetitionFilter() const = 0;
   virtual address_base& setRepetitionFilter(repetition_filter = repetition_filter::ON) = 0;
+  virtual bool filterRepetition(const ossia::value& val) const { return false; } //! by default there is no filter
 
   // Extended attributes
   virtual ossia::value getDefaultValue() const;

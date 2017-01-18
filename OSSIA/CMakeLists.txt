@@ -3,6 +3,17 @@ cmake_minimum_required(VERSION 3.0)
 project(libossia CXX)
 
 ### Project options ###
+set(OSSIA_PROTOCOLS OSC Minuit)
+
+option(OSSIA_PROTOCOL_MIDI "Enable MIDI protocol" ON)
+option(OSSIA_PROTOCOL_HTTP "Enable HTTP protocol" ON)
+option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF)
+option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF)
+option(OSSIA_QT_EXTENSIONS "Enable extensions for Qt-based software" ON)
+set(OSSIA_PROTOCOL_WEBSOCKETS ON)
+set(OSSIA_QT_EXTENSIONS ON)
+
+
 set(ossia_VERSION 1.0.0)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0042 NEW)
@@ -25,17 +36,18 @@ if(NOT "${OSSIA_NO_QT}")
   if(NOT KF5DNSSD)
     message(STATUS "Install KF5-DNSSD to build with Zeroconf / Bonjour support")
   endif()
+
+  if("${OSSIA_QT_EXTENSIONS}")
+    find_package(Qt5 5.6 QUIET COMPONENTS Gui)
+    if(NOT "${Qt5Gui_FOUND}")
+      set(OSSIA_QT_EXTENSIONS OFF)
+    else()
+      set(CMAKE_AUTOMOC 1)
+    endif()
+  endif()
 endif()
 
 ### Protocol setup ###
-set(OSSIA_PROTOCOLS OSC Minuit)
-
-option(OSSIA_PROTOCOL_MIDI "Enable MIDI protocol" ON)
-option(OSSIA_PROTOCOL_HTTP "Enable HTTP protocol" ON)
-option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF)
-option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF)
-set(OSSIA_PROTOCOL_WEBSOCKETS ON)
-
 if(IOS OR CMAKE_SYSTEM_NAME MATCHES Emscripten)
   set(OSSIA_PROTOCOL_MIDI FALSE)
   set(OSSIA_PROTOCOL_HTTP FALSE)
@@ -136,6 +148,14 @@ if(OSSIA_JAVA)
         "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java"
         "${OSSIA_3RDPARTY_FOLDER}/jni_hpp/include"
         "${OSSIA_3RDPARTY_FOLDER}/jni_hpp/test"
+        )
+endif()
+
+if(OSSIA_QT_EXTENSIONS)
+    target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS})
+    target_link_libraries(ossia PUBLIC Qt5::Gui)
+    target_include_directories(ossia PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt"
         )
 endif()
 

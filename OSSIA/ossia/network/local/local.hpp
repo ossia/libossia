@@ -47,7 +47,7 @@ public:
 
 private:
   std::vector<std::unique_ptr<ossia::net::protocol_base>> mExposed;
-  ossia::net::generic_device* mDevice{};
+  ossia::net::device_base* mDevice{};
 };
 }
 }

@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/network/generic/generic_address.hpp>
-#include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/minuit/detail/minuit_common.hpp>
@@ -20,7 +19,7 @@ template <minuit_command Req, minuit_operation Op>
 struct minuit_behavior
 {
   void operator()(
-      ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
+      ossia::net::minuit_protocol& proto, ossia::net::device_base& dev,
       const oscpack::ReceivedMessage& mess);
 };
 
@@ -28,7 +27,7 @@ template <minuit_operation Op>
 struct minuit_behavior<minuit_command::Error, Op>
 {
   void operator()(
-      ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
+      ossia::net::minuit_protocol& proto, ossia::net::device_base& dev,
       const oscpack::ReceivedMessage& mess)
   {
   }
@@ -40,7 +39,7 @@ struct minuit_behavior<
     minuit_operation::Get>
 {
   void operator()(
-      ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
+      ossia::net::minuit_protocol& proto, ossia::net::device_base& dev,
       const oscpack::ReceivedMessage& mess)
   {
     // Do nothing
@@ -63,7 +62,7 @@ struct minuit_behavior<
 {
   auto operator()(
       ossia::net::minuit_protocol& proto,
-      ossia::net::generic_device& dev,
+      ossia::net::device_base& dev,
       const oscpack::ReceivedMessage& mess)
   {
     ossia::string_view full_address{mess.ArgumentsBegin()->AsString()};
@@ -72,7 +71,7 @@ struct minuit_behavior<
     if(idx == std::string::npos)
     {
       // Value
-      auto node = ossia::net::find_node(dev, full_address);
+      auto node = ossia::net::find_node(dev.getRootNode(), full_address);
       if (!node)
         return;
       auto addr = node->getAddress();
@@ -92,7 +91,7 @@ struct minuit_behavior<
               address.data() + idx + 1,
               full_address.size() - idx - 1));
 
-      auto node = ossia::net::find_node(dev, address);
+      auto node = ossia::net::find_node(dev.getRootNode(), address);
       if (!node)
         return;
       auto addr = node->getAddress();
@@ -175,7 +174,7 @@ struct minuit_behavior<
 {
   auto operator()(
       ossia::net::minuit_protocol& proto,
-      ossia::net::generic_device& dev,
+      ossia::net::device_base& dev,
       const oscpack::ReceivedMessage& mess)
   {
     // TODO FIXME Add the address to the listeners
@@ -273,10 +272,10 @@ struct minuit_behavior<
   }
 
   std::vector<std::string> get_children_names(
-      ossia::net::generic_device& dev,
+      ossia::net::device_base& dev,
       ossia::string_view address)
   {
-    auto node = ossia::net::find_node(dev, address);
+    auto node = ossia::net::find_node(dev.getRootNode(), address);
     if (!node)
       return {};
 
@@ -285,7 +284,7 @@ struct minuit_behavior<
 
   auto operator()(
       ossia::net::minuit_protocol& proto,
-      ossia::net::generic_device& dev,
+      ossia::net::device_base& dev,
       const oscpack::ReceivedMessage& mess)
   {
     ossia::string_view address{mess.ArgumentsBegin()->AsString()};
@@ -296,7 +295,7 @@ struct minuit_behavior<
     }
     else
     {
-      auto node = ossia::net::find_node(dev, address);
+      auto node = ossia::net::find_node(dev.getRootNode(), address);
       if (!node)
         return;
 
@@ -347,7 +346,7 @@ struct minuit_behavior<
 {
   auto operator()(
       ossia::net::minuit_protocol& proto,
-      ossia::net::generic_device& dev,
+      ossia::net::device_base& dev,
       const oscpack::ReceivedMessage& mess)
   {
     ossia::string_view full_address;
@@ -358,7 +357,7 @@ struct minuit_behavior<
     if (idx == std::string::npos)
     {
       // The OSC message is a standard OSC one, carrying a value.
-      auto node = ossia::net::find_node(dev, full_address);
+      auto node = ossia::net::find_node(dev.getRootNode(), full_address);
       if (node)
       {
         if (auto addr = node->getAddress())
@@ -382,7 +381,7 @@ struct minuit_behavior<
       ++mess_it;
       // mess_it is now at the first argument after the address:attribute
 
-      if (auto node = ossia::net::find_node(dev, address))
+      if (auto node = ossia::net::find_node(dev.getRootNode(), address))
       if (auto addr = node->getAddress())
       switch (attr)
       {
@@ -461,7 +460,7 @@ struct minuit_behavior<minuit_command::Answer, minuit_operation::Get>
 {
 
   void operator()(
-      ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
+      ossia::net::minuit_protocol& proto, ossia::net::device_base& dev,
       const oscpack::ReceivedMessage& mess)
   {
     auto addr = minuit_behavior<minuit_command::Answer, minuit_operation::Listen>{}(proto, dev, mess);
@@ -534,7 +533,7 @@ struct minuit_behavior<minuit_command::Answer,
   }
 
   static auto handle_container(
-      ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
+      ossia::net::minuit_protocol& proto, ossia::net::device_base& dev,
       ossia::string_view address,
       oscpack::ReceivedMessageArgumentIterator beg_it,
       oscpack::ReceivedMessageArgumentIterator end_it)
@@ -557,7 +556,7 @@ struct minuit_behavior<minuit_command::Answer,
       child_address.append(child.begin(), child.end());
 
       // Create the actual node
-      ossia::net::find_or_create_node(dev, address);
+      ossia::net::find_or_create_node(dev.getRootNode(), address);
 
       // request children
       proto.namespace_refresh(sub_request, child_address);
@@ -565,7 +564,7 @@ struct minuit_behavior<minuit_command::Answer,
   }
 
   static auto handle_data(
-      ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
+      ossia::net::minuit_protocol& proto, ossia::net::device_base& dev,
       ossia::string_view address,
       oscpack::ReceivedMessageArgumentIterator beg_it,
       oscpack::ReceivedMessageArgumentIterator end_it)
@@ -573,7 +572,7 @@ struct minuit_behavior<minuit_command::Answer,
     using namespace oscpack;
 
     // Find or create the node
-    auto& n = ossia::net::find_or_create_node(dev, address);
+    auto& n = ossia::net::find_or_create_node(dev.getRootNode(), address);
     n.createAddress(ossia::val_type::IMPULSE);
 
     // A data can also have child nodes :
@@ -637,7 +636,7 @@ struct minuit_behavior<minuit_command::Answer,
   }
 
   static auto handle_minuit(
-      ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
+      ossia::net::minuit_protocol& proto, ossia::net::device_base& dev,
       ossia::string_view address, minuit_type type,
       oscpack::ReceivedMessageArgumentIterator beg_it,
       oscpack::ReceivedMessageArgumentIterator end_it)
@@ -665,7 +664,7 @@ struct minuit_behavior<minuit_command::Answer,
   }
 
   auto operator()(
-      ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
+      ossia::net::minuit_protocol& proto, ossia::net::device_base& dev,
       const oscpack::ReceivedMessage& mess)
   {
     auto it = mess.ArgumentsBegin();
@@ -688,7 +687,7 @@ class minuit_message_handler
 {
 public:
   static void handleMinuitMessage(
-      ossia::net::minuit_protocol& proto, ossia::net::generic_device& dev,
+      ossia::net::minuit_protocol& proto, ossia::net::device_base& dev,
       ossia::string_view address, const oscpack::ReceivedMessage& m)
   {
     // Look for either ':' or '?'
