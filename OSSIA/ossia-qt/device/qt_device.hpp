@@ -2,6 +2,7 @@
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/base/protocol.hpp>
 #include <QObject>
 #include <QMetaObject>
 #include <QMetaProperty>
