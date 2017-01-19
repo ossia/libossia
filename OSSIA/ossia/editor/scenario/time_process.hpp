@@ -70,11 +70,23 @@ public:
    * @brief mute Mutes or unmute the process.
    *
    * `mute(true)` mutes the process.
+   * A muted process executes itself but does not send its state.
    */
   void mute(bool m);
 
   //! True if the process is not currently muted.
   bool unmuted() const;
+
+  /**
+   * @brief Enables or disable the process.
+   *
+   * Unlike a muted process, a disabled process does not execute at all.
+   */
+  void enable(bool m);
+
+  //! True if the process is enabled.
+  bool enabled() const;
+
 
   /**
    * @brief parent The parent time_constraint of the process
@@ -106,5 +118,6 @@ public:
     int32_t mPriority = 0;
     bool mPriorityOverride = false;
     bool mUnmuted = true;
+    bool mEnabled = true;
 };
 }

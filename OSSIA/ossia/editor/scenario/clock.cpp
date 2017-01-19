@@ -10,11 +10,12 @@ namespace ossia
 clock::clock(
     clock::ExecutionCallback callback, time_value duration,
     time_value granularity, time_value offset, float speed,
-    clock::DriveMode driveMode)
+    clock::DriveMode driveMode, clock_source s)
     : mDuration(duration)
     , mGranularity(granularity)
     , mOffset(offset)
     , mSpeed(speed)
+    , mSource{s}
     , mDriveMode(driveMode)
     , mRunning(false)
     , mPaused(false)
@@ -162,7 +163,9 @@ bool clock::tick()
 
 bool clock::tick(time_value usec)
 {
-  if (mPaused || !mRunning)
+  bool paused = mPaused;
+  bool running = mRunning;
+  if (paused || !running)
     return false;
 
   int64_t granularityInUs(ossia::llround(mGranularity * 1000));

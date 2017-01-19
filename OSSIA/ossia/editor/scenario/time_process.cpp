@@ -33,6 +33,16 @@ bool time_process::unmuted() const
   return mUnmuted;
 }
 
+void time_process::enable(bool m)
+{
+  mEnabled = m;
+}
+
+bool time_process::enabled() const
+{
+  return mEnabled;
+}
+
 time_constraint*time_process::parent() const
 {
   return mParent;

@@ -76,6 +76,11 @@ public:
        time_event&, time_value = Infinite, time_value = Zero,
        time_value = Infinite);
 
+   time_constraint(
+       time_constraint::ExecutionCallback, std::unique_ptr<clock>, time_event&,
+       time_event&, time_value = Infinite, time_value = Zero,
+       time_value = Infinite);
+
   /*! desctructor */
   ~time_constraint();
 

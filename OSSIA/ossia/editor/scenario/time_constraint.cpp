@@ -14,7 +14,7 @@ std::shared_ptr<time_constraint> time_constraint::create(
     time_value max)
 {
   auto timeConstraint = std::make_shared<time_constraint>(
-      callback, startEvent, endEvent, nominal, min, max);
+        callback, startEvent, endEvent, nominal, min, max);
 
   startEvent.nextTimeConstraints().push_back(timeConstraint);
   endEvent.previousTimeConstraints().push_back(timeConstraint);
@@ -28,14 +28,31 @@ time_constraint::time_constraint(
     time_event& startEvent,
     time_event& endEvent, time_value nominal, time_value min,
     time_value max)
-    : mCallback(callback)
-    , mStartEvent(startEvent)
-    , mEndEvent(endEvent)
-    , mDurationNominal(nominal)
-    , mDurationMin(min)
-    , mDurationMax(max)
+  : mCallback(callback)
+  , mStartEvent(startEvent)
+  , mEndEvent(endEvent)
+  , mDurationNominal(nominal)
+  , mDurationMin(min)
+  , mDurationMax(max)
 {
   mClock = std::make_unique<clock>(make_callback(), mDurationMax, One);
+}
+
+time_constraint::time_constraint(
+    time_constraint::ExecutionCallback callback,
+    std::unique_ptr<clock> c,
+    time_event& startEvent,
+    time_event& endEvent, time_value nominal, time_value min,
+    time_value max)
+  : mClock{std::move(c)}
+  , mCallback(callback)
+  , mStartEvent(startEvent)
+  , mEndEvent(endEvent)
+  , mDurationNominal(nominal)
+  , mDurationMin(min)
+  , mDurationMax(max)
+{
+  mClock->setCallback(make_callback());
 }
 
 time_constraint::~time_constraint()
@@ -57,7 +74,8 @@ void time_constraint::start()
   // start all jamoma time processes
   for (const auto& timeProcess : timeProcesses())
   {
-    timeProcess->start();
+    if(timeProcess->enabled())
+      timeProcess->start();
   }
 
   // launch the clock
@@ -77,7 +95,7 @@ void time_constraint::stop()
 
   mClock->mDate = 0;
   mClock->mPosition = 0;
-  mClock->mLastTime = clock::clock_type::time_point{};
+  mClock->mLastTime = clock_type::time_point{};
   mClock->mElapsedTime = 0;
 }
 
@@ -99,9 +117,12 @@ ossia::state time_constraint::offset(time_value date)
   // get the state of each TimeProcess at current clock position and date
   for (const auto& timeProcess : processes)
   {
-    auto res = timeProcess->offset(date);
-    if(res)
-      state.add(std::move(res));
+    if(timeProcess->enabled())
+    {
+      auto res = timeProcess->offset(date);
+      if(res)
+        state.add(std::move(res));
+    }
   }
 
   return state;
@@ -238,7 +259,7 @@ clock::ExecutionCallback time_constraint::make_callback()
   if(mCallback)
   {
     return [this] (time_value t, time_value t2, unsigned char c) {
-        mCallback(t, t2, state_impl());
+      mCallback(t, t2, state_impl());
     };
   }
   else
@@ -256,9 +277,12 @@ ossia::state time_constraint::state_impl()
   // get the state of each TimeProcess at current clock position and date
   for (const auto& timeProcess : processes)
   {
-    auto res = timeProcess->state();
-    if(res)
-      state.add(std::move(res));
+    if(timeProcess->enabled())
+    {
+      auto res = timeProcess->state();
+      if(res)
+        state.add(std::move(res));
+    }
   }
 
   return state;

@@ -10,11 +10,18 @@
 
 namespace ossia
 {
+using clock_type = std::chrono::steady_clock;
+
+//! This class allows to provide a custom clock source to ossia::clock.
+struct OSSIA_EXPORT clock_source
+{
+  clock_type::time_point (*now)() = [] { return clock_type::now(); };
+};
+
 class OSSIA_EXPORT clock
 {
     friend class time_constraint;
 public:
-  using clock_type = std::chrono::steady_clock;
   /*! to get the clock execution back
    \param clock position
    \param clock date
@@ -42,12 +49,11 @@ public:
    \param granularity
    \param offset
    \param speed
-   \param drive mode
-   \return std::shared_ptr<#Clock> */
+   \param drive mode*/
   clock(
       clock::ExecutionCallback, time_value = Infinite, time_value = time_value{10.},
       time_value = Zero, float = 1.,
-      clock::DriveMode = clock::DriveMode::INTERNAL);
+      clock::DriveMode = clock::DriveMode::INTERNAL, clock_source = clock_source{});
 
   /*! destructor */
   ~clock();
@@ -178,6 +184,7 @@ public:
     time_value mDate{}; /// how many time the clock is running (without no speed
                         /// factor consideration)
 
+    clock_source mSource;
     std::thread mThread; /// a thread to launch the clock execution
 
     clock_type::time_point
