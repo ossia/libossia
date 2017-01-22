@@ -21,6 +21,8 @@ class OSSIA_EXPORT expression_generic final :
     public expression_callback_container
 {
 public:
+  expression_generic(std::unique_ptr<expression_generic_base> ptr): expr{std::move(ptr)} { }
+  expression_generic(expression_generic_base* ptr): expr{ptr} { }
   std::unique_ptr<expression_generic_base> expr;
 
   void update() const
