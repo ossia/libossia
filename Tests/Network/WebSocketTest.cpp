@@ -1,7 +1,7 @@
 #include <QtTest>
 #include <ossia/ossia.hpp>
 #include <ossia/context.hpp>
-#include <ossia/network/websocket-generic-client/ws_generic_client.hpp>
+#include <ossia-qt/websocket-generic-client/ws_generic_client.hpp>
 #include <iostream>
 
 using namespace ossia;

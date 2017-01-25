@@ -95,7 +95,6 @@ set(API_HEADERS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/address_properties.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/network_logger.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/js_utilities.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/exceptions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/network.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.hpp"
@@ -177,8 +176,6 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_visitors.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/dataspace_impl.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/js_utilities.cpp"
-
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/domain_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/clamp.cpp"
@@ -246,47 +243,47 @@ set(MIDI_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.cpp")
 
 set(HTTP_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_device.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_protocol.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_address.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_address_data.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http.hpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/http/http_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/http/http_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/http/http_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/http/http_address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/http/http_address_data.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/http/http.hpp")
 
 set(HTTP_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_device.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_protocol.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_address.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/http/http_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/http/http_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/http/http_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/http/http_address.cpp")
 
 set(SERIAL_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_device.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_protocol.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_address.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_address_data.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial.hpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial_address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial_address_data.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial.hpp")
 
 set(SERIAL_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_device.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_protocol.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/serial/serial_address.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial_address.cpp")
 
 
 set(WS_CLIENT_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_device.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_protocol.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_address.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_address_data.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client.hpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_address_data.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client.hpp")
 
 set(WS_CLIENT_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_device.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_protocol.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket-generic-client/ws_generic_client_address.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_address.cpp")
 
 set(JAVA_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java/ossia-java.hpp"
@@ -296,8 +293,21 @@ set(JAVA_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java/ossia-java.cpp"
     )
 set(OSSIA_QT_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_impulse.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_object_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_property_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.hpp"
     )
 set(OSSIA_QT_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_impulse.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_object_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_property_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.cpp"
+
     )
