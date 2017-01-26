@@ -33,6 +33,11 @@ if(OSSIA_PD)
     add_subdirectory(OSSIA/ossia-pd)
 endif()
 
+if(OSSIA_PYTHON)
+    add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/pybind11")
+    pybind11_add_module(ossia_python OSSIA/ossia-python/ossia_python.cpp)
+    target_link_libraries(ossia_python ossia)
+endif()
 # Examples & tests
 if(OSSIA_EXAMPLES)
     add_subdirectory(Documentation/Examples)

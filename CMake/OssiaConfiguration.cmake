@@ -1,4 +1,4 @@
-# Options
+# Build settings :
 option(OSSIA_SANITIZE "Sanitize build" OFF)
 option(OSSIA_TIDY "Use clang-tidy" OFF)
 option(OSSIA_STATIC "Make a static build" OFF)
@@ -7,15 +7,27 @@ option(OSSIA_EXAMPLES "Build examples" OFF)
 option(OSSIA_TESTING "Build tests" OFF)
 option(OSSIA_CI "Continuous integration run" OFF)
 option(OSSIA_FRAMEWORK "Build an OS X framework" OFF)
-option(OSSIA_JAVA "Build JNI bindings" OFF)
 option(OSSIA_DISABLE_COTIRE "Disable cotire" OFF)
 option(OSSIA_NO_SONAME "Set NO_SONAME property" OFF)
 option(OSSIA_LTO "Link-time optimizations. Fails on Windows." OFF)
-option(OSSIA_PD "Build PureData externals" ON)
 option(OSSIA_OSX_FAT_LIBRARIES "Build 32 and 64 bit fat libraries on OS X" OFF)
 option(OSSIA_OSX_RETROCOMPATIBILITY "Build for older OS X versions" OFF)
 option(OSSIA_MOST_STATIC "Try to make binaries that are mostly static" OFF)
+
+# Bindings :
+option(OSSIA_JAVA "Build JNI bindings" OFF)
+option(OSSIA_PD "Build PureData externals" ON)
+option(OSSIA_PYTHON "Build Python bindings" ON)
+option(OSSIA_QT "Build Qt bindings" ON)
+option(OSSIA_C "Build C bindings" ON)
+
+# Protocols :
+option(OSSIA_PROTOCOL_MIDI "Enable MIDI protocol" ON)
+option(OSSIA_PROTOCOL_HTTP "Enable HTTP protocol" ON) # Requires Qt
+option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF) # Requires Qt
+option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF) # Requires Qt
 option(OSSIA_NO_QT "Disable all the features that may require Qt" OFF)
+
 
 if(OSSIA_OSX_RETROCOMPATIBILITY)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.9)

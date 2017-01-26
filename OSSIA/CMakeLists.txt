@@ -5,13 +5,7 @@ project(libossia CXX)
 ### Project options ###
 set(OSSIA_PROTOCOLS OSC Minuit)
 
-option(OSSIA_PROTOCOL_MIDI "Enable MIDI protocol" ON)
-option(OSSIA_PROTOCOL_HTTP "Enable HTTP protocol" ON)
-option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF)
-option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF)
-option(OSSIA_QT_EXTENSIONS "Enable extensions for Qt-based software" ON)
 set(OSSIA_PROTOCOL_WEBSOCKETS ON)
-set(OSSIA_QT_EXTENSIONS ON)
 
 
 set(ossia_VERSION 1.0.0)
@@ -37,10 +31,10 @@ if(NOT "${OSSIA_NO_QT}")
     message(STATUS "Install KF5-DNSSD to build with Zeroconf / Bonjour support")
   endif()
 
-  if("${OSSIA_QT_EXTENSIONS}")
+  if("${OSSIA_QT}")
     find_package(Qt5 5.6 QUIET COMPONENTS Core Gui Qml)
     if(NOT "${Qt5Qml_FOUND}")
-      set(OSSIA_QT_EXTENSIONS OFF)
+      set(OSSIA_QT OFF)
     else()
       set(CMAKE_AUTOMOC 1)
     endif()
@@ -104,13 +98,13 @@ endif()
 
 ### Library ###
 if(APPLE AND OSSIA_FRAMEWORK)
-  add_library(ossia MODULE ${SRCS} ${C_API_SRCS})
+  add_library(ossia MODULE ${SRCS} ${OSSIA_C_SRCS})
   set_target_properties(ossia PROPERTIES BUNDLE TRUE)
 else()
   if(OSSIA_STATIC OR NOT BUILD_SHARED_LIBS)
-    add_library(ossia STATIC ${SRCS} ${C_API_SRCS})
+    add_library(ossia STATIC ${SRCS} ${OSSIA_C_SRCS})
   else()
-    add_library(ossia SHARED ${SRCS} ${C_API_SRCS})
+    add_library(ossia SHARED ${SRCS} ${OSSIA_C_SRCS})
   endif()
 endif()
 
@@ -118,32 +112,39 @@ target_link_libraries(ossia PUBLIC boost)
 
 # Additional protocols
 if(OSSIA_PROTOCOL_MIDI)
-  target_sources(ossia PRIVATE ${MIDI_SRCS} ${MIDI_HEADERS})
+  target_sources(ossia PRIVATE ${OSSIA_MIDI_SRCS} ${OSSIA_MIDI_HEADERS})
   target_link_libraries(ossia PRIVATE ModernMIDI)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} MIDI)
 endif()
 
 if(OSSIA_PROTOCOL_HTTP)
-  target_sources(ossia PRIVATE ${HTTP_HEADERS} ${HTTP_SRCS})
+  target_sources(ossia PRIVATE ${OSSIA_HTTP_HEADERS} ${OSSIA_HTTP_SRCS})
   target_link_libraries(ossia PUBLIC Qt5::Qml)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} HTTP)
 endif()
 
 if(OSSIA_PROTOCOL_WEBSOCKETS)
-  target_sources(ossia PRIVATE ${WS_CLIENT_HEADERS} ${WS_CLIENT_SRCS})
+  target_sources(ossia PRIVATE ${OSSIA_WS_CLIENT_HEADERS} ${OSSIA_WS_CLIENT_SRCS})
   target_link_libraries(ossia PUBLIC Qt5::Qml Qt5::WebSockets)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} WebSockets)
 endif()
 
 if(OSSIA_PROTOCOL_SERIAL)
-  target_sources(ossia PRIVATE ${SERIAL_HEADERS} ${SERIAL_SRCS})
+  target_sources(ossia PRIVATE ${OSSIA_SERIAL_HEADERS} ${OSSIA_SERIAL_SRCS})
   target_link_libraries(ossia PUBLIC Qt5::SerialPort)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Serial)
 endif()
 
 # Additional features
+if(OSSIA_C)
+  target_sources(ossia PRIVATE ${OSSIA_C_HEADERS} ${OSSIA_C_SRCS})
+  target_include_directories(ossia PRIVATE
+      "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c"
+  )
+endif()
+
 if(OSSIA_JAVA)
-    target_sources(ossia PRIVATE ${JAVA_HEADERS} ${JAVA_SRCS})
+    target_sources(ossia PRIVATE ${OSSIA_JAVA_HEADERS} ${OSSIA_JAVA_SRCS})
     target_include_directories(ossia PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java"
         "${OSSIA_3RDPARTY_FOLDER}/jni_hpp/include"
@@ -151,11 +152,19 @@ if(OSSIA_JAVA)
         )
 endif()
 
-if(OSSIA_QT_EXTENSIONS)
+if(OSSIA_QT)
     target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS})
     target_link_libraries(ossia PUBLIC Qt5::Core Qt5::Gui Qt5::Qml)
     target_include_directories(ossia PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt"
+        )
+endif()
+
+if(OSSIA_PYTHON)
+    target_sources(ossia PRIVATE ${OSSIA_PYTHON_HEADERS} ${OSSIA_PYTHON_SRCS})
+    target_include_directories(ossia PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-python"
+        "${OSSIA_3RDPARTY_FOLDER}/pybind11/include"
         )
 endif()
 
@@ -249,6 +258,7 @@ include(ossia_tooling.cmake)
 
 
 ### Some status info ###
+message(STATUS "OSSIA - Build Type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "OSSIA - Sanitize: ${OSSIA_SANITIZE}")
 message(STATUS "OSSIA - Tidy: ${OSSIA_TIDY}")
 message(STATUS "OSSIA - Static: ${OSSIA_STATIC}")
@@ -261,10 +271,14 @@ message(STATUS "OSSIA - Java: ${OSSIA_JAVA}")
 message(STATUS "OSSIA - Protocols: ${OSSIA_PROTOCOLS}")
 message(STATUS "OSSIA - Zeroconf: ${KF5DNSSD_FOUND}")
 message(STATUS "OSSIA - LTO: ${OSSIA_LTO}")
-message(STATUS "OSSIA - PureData: ${OSSIA_PD}")
 message(STATUS "OSSIA - OSX Architectures: ${OSSIA_OSX_FAT_LIBRARIES}")
 message(STATUS "OSSIA - OSX Retrocompatibility: ${OSSIA_OSX_RETROCOMPATIBILITY}")
 
+message(STATUS "OSSIA - PureData: ${OSSIA_PD}")
+message(STATUS "OSSIA - Python: ${OSSIA_PYTHON}")
+message(STATUS "OSSIA - Java: ${OSSIA_JAVA}")
+message(STATUS "OSSIA - Qt: ${OSSIA_QT}")
+message(STATUS "OSSIA - C: ${OSSIA_C}")
 set_property(TARGET ossia PROPERTY COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/ossia/prefix.hpp")
 if(NOT "${OSSIA_SANITIZE}" AND NOT "${OSSIA_DISABLE_COTIRE}" AND NOT "${DISABLE_COTIRE}")
 cotire(ossia)
