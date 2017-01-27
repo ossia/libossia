@@ -18,6 +18,7 @@ generic_device::generic_device(
 
 generic_device::~generic_device()
 {
+  removeAddress();
   mChildren.clear();
   mProtocol.reset();
 }

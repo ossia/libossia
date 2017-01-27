@@ -48,7 +48,6 @@ void qml_property::setNode(QString node)
         return;
 
     m_node = node;
-
     resetNode();
     emit nodeChanged(node);
 }
@@ -76,9 +75,34 @@ void qml_property::resetNode()
 
   if(auto dev = dynamic_cast<ossia::qt::qml_device*>(m_device))
   {
-    m_ossia_node = &ossia::net::find_or_create_node(
-                dev->device().getRootNode(),
-                m_node.toStdString());
+    std::string node_name;
+    bool relative = false;
+    if(m_node.isEmpty())
+    {
+      node_name = m_targetProperty.name().toStdString();
+      relative = true;
+    }
+    else if(m_node[0] != '/')
+    {
+      relative = true;
+      node_name = node.toStdString();
+    }
+    else
+    {
+      node_name = node.toStdString();
+    }
+
+
+    if(relative)
+    {
+
+    }
+    else
+    {
+      m_ossia_node = &ossia::net::find_or_create_node(
+                  dev->device().getRootNode(),
+                  m_node.toStdString());
+    }
 
     setupAddress();
   }
@@ -86,10 +110,13 @@ void qml_property::resetNode()
 
 void qml_property::setupAddress()
 {
-  m_ossia_node->removeAddress();
-  m_address = m_ossia_node->createAddress(ossia::val_type::IMPULSE);
-  set_address_type((QVariant::Type)m_targetProperty.propertyType(), *m_address);
-
+  m_address = nullptr;
+  if(m_ossia_node)
+  {
+    m_ossia_node->removeAddress();
+    m_address = m_ossia_node->createAddress(ossia::val_type::IMPULSE);
+    set_address_type((QVariant::Type)m_targetProperty.propertyType(), *m_address);
+  }
 }
 
 }
