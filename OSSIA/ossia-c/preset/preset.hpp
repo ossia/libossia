@@ -6,6 +6,7 @@
 #include <regex>
 #include <functional>
 #include <ossia-c/preset/exception.hpp>
+#include <ossia/detail/string_view.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -39,10 +40,7 @@ using instance_functions =
 using preset_pair = std::pair<std::string, ossia::value>;
 
 OSSIA_EXPORT preset read_json(const std::string&);
-OSSIA_EXPORT preset read_xml(const std::string&);
-
 OSSIA_EXPORT std::string write_json(const preset&);
-OSSIA_EXPORT std::string write_xml(const preset&);
 
 OSSIA_EXPORT std::string to_string(const preset&);
 OSSIA_EXPORT std::string to_string(const preset_pair&);
@@ -53,17 +51,22 @@ namespace devices
 
 enum keep_arch_type {keep_arch_on, keep_arch_off};
 
-OSSIA_EXPORT void read_json(ossia::net::device_base&, const std::string&);
-OSSIA_EXPORT void read_xml(ossia::net::device_base&, const std::string&);
-
 /*!
  * \brief export device tree to a json tree
  * \param device device to export to json
- * \param filename export json string to a file called filename if specified
  * \return a string containing json tree
  */
-OSSIA_EXPORT std::string write_json(const ossia::net::device_base& deviceBase, const char* filename = nullptr);
-OSSIA_EXPORT std::string write_xml(const ossia::net::device_base&);
+OSSIA_EXPORT std::string write_json(
+    const ossia::net::device_base& deviceBase);
+
+/**
+ * @brief Write a string to a file
+ * @param string The string to write
+ * @param filename The file name
+ */
+OSSIA_EXPORT void write_file(
+    ossia::string_view string,
+    ossia::string_view filename);
 
 OSSIA_EXPORT void apply_preset(
       ossia::net::device_base&,

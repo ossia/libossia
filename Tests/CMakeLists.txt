@@ -51,6 +51,8 @@ ossia_add_test(ValueTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/V
 ossia_add_test(DataspaceTest               "${CMAKE_CURRENT_SOURCE_DIR}/Editor/DataspaceTest.cpp")
 ossia_add_test(DataspaceMergeTest          "${CMAKE_CURRENT_SOURCE_DIR}/Editor/DataspaceMergeTest.cpp")
 
+ossia_add_test(PresetTest                      "${CMAKE_CURRENT_SOURCE_DIR}/Preset/PresetTest.cpp")
+
 ossia_add_test(AddressTest                 "${CMAKE_CURRENT_SOURCE_DIR}/Network/AddressTest.cpp")
 ossia_add_test(DeviceTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/DeviceTest.cpp")
 ossia_add_test(NodeTest                    "${CMAKE_CURRENT_SOURCE_DIR}/Network/NodeTest.cpp")
