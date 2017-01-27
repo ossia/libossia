@@ -6,7 +6,7 @@ case "$TRAVIS_OS_NAME" in
     sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
     sudo add-apt-repository --yes ppa:beineri/opt-qt58-trusty
     sudo apt-get update -qq
-    sudo apt-get install -qq g++-6 ninja-build gcovr lcov qt57-meta-minimal libasound2-dev
+    sudo apt-get install -qq g++-6 ninja-build gcovr lcov qt58-meta-minimal libasound2-dev
 
     sudo wget https://sourceforge.net/projects/boost/files/boost/1.62.0/boost_1_62_0.tar.bz2 -O /opt/boost.tar.bz2
     (cd /opt; sudo tar xaf boost.tar.bz2; sudo mv boost_* boost ; sudo chmod -R a+rwx boost)
