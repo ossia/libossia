@@ -20,8 +20,9 @@ static void ossia_global_init()
     qmlRegisterSingletonType<qt::qml_singleton_device>("org.ossia", 1, 0, "OssiaSingleDevice",
                              [] (QQmlEngine* e, QJSEngine*) -> QObject*
     {
-      return new qt::qml_singleton_device;
+      return &qt::qml_singleton_device::instance();
     });
+    qmlRegisterType<qt::qml_node>("org.ossia", 1, 0, "OssiaNode");
     qmlRegisterType<qt::qml_device>("org.ossia", 1, 0, "OssiaDevice");
     qmlRegisterType<qt::qml_property>("org.ossia", 1, 0, "OssiaPropertyBase");
     //qmlRegisterType<qt::qml_impulse>("org.ossia", 1, 0, "OssiaImpulse");

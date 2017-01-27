@@ -524,6 +524,65 @@ QVariant ossia_to_qvariant::operator()(QVariant::Type type, const value& ossia_v
   return {};
 }
 
+value qt_to_ossia::operator()(const QVariant& v)
+{
+  switch(v.type())
+  {
+    case QVariant::Bool:
+      return operator()(v.value<bool>());
+    case QVariant::Time:
+      return operator()(v.value<QTime>());
+    case QVariant::Int:
+      return operator()(v.value<int>());
+    case QVariant::UInt:
+      return operator()(v.value<quint32>());
+    case QVariant::ULongLong:
+      return operator()(v.value<qulonglong>());
+    case QVariant::Char:
+      return operator()(v.value<QChar>());
+    case QVariant::String:
+      return operator()(v.value<QString>());
+    case QVariant::ByteArray:
+      return operator()(v.value<QByteArray>());
+    case QVariant::Double:
+      return operator()(v.value<double>());
+    case QVariant::Color:
+      return operator()(v.value<QColor>());
+    case QVariant::Point:
+      return operator()(v.value<QPoint>());
+    case QVariant::PointF:
+      return operator()(v.value<QPointF>());
+    case QVariant::Vector2D:
+      return operator()(v.value<QVector2D>());
+    case QVariant::Size:
+      return operator()(v.value<QSize>());
+    case QVariant::SizeF:
+      return operator()(v.value<QSizeF>());
+    case QVariant::Vector3D:
+      return operator()(v.value<QVector3D>());
+    case QVariant::Vector4D:
+      return operator()(v.value<QVector4D>());
+    case QVariant::Quaternion:
+      return operator()(v.value<QQuaternion>());
+    case QVariant::Line:
+      return operator()(v.value<QLine>());
+    case QVariant::LineF:
+      return operator()(v.value<QLineF>());
+    case QVariant::Rect:
+      return operator()(v.value<QRect>());
+    case QVariant::RectF:
+      return operator()(v.value<QRectF>());
+    case QVariant::List:
+      return operator()(v.value<QVariantList>());
+    case QVariant::StringList:
+      return operator()(v.value<QStringList>());
+    case QVariant::Date:
+      return operator()(v.value<QDate>());
+    default:
+      return operator()();
+  }
+}
+
 
 
 

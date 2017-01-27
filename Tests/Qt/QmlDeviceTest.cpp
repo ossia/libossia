@@ -22,6 +22,8 @@ private slots:
 
     auto item = component.create();
     QVERIFY(item);
+
+    app.exec();
   }
 };
 

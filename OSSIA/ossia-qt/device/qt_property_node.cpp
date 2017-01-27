@@ -1,4 +1,5 @@
 #include "qt_property_node.hpp"
+#include <ossia-qt/js_utilities.hpp>
 namespace ossia
 {
 namespace qt
@@ -51,42 +52,13 @@ qt_property_node::qt_property_node(
 {
   if(p.hasNotifySignal())
   {
-    auto sig = p.notifySignal();
-    auto& meth = methods();
-    switch(sig.parameterCount())
-    {
-      case 0:
-      {
-        connect(&obj, p.notifySignal(), this, meth[QVariant::Invalid]);
-        break;
-      }
-      case 1:
-      {
-        auto t = sig.parameterType(0);
-
-        auto method_it = meth.find((QVariant::Type)t);
-        if(method_it != meth.end())
-        {
-          connect(&obj, p.notifySignal(), this, method_it->second);
-        }
-        break;
-      }
-    }
-
-    if(sig.parameterCount() == 1)
-    {
-      auto t = sig.parameterType(0);
-
-      auto& meth = methods();
-      auto method_it = meth.find((QVariant::Type)t);
-      if(method_it != meth.end())
-      {
-        connect(&obj, p.notifySignal(), this, method_it->second);
-      }
-    }
+    connectSignalToMatchingMethod(
+          p.notifySignal(), methods(),
+          &obj, this);
   }
 
   set_address_type(p.type(), *this);
+  ossia::net::generic_address::setValueQuiet(qt_to_ossia{}(p.read(&obj)));;
 
   connect(this, &qt_property_node::setValue_sig,
           this, &qt_property_node::setValue_slot,

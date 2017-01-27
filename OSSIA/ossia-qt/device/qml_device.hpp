@@ -55,12 +55,16 @@ private:
     int m_remotePort{13579};
 
     ossia::net::generic_device m_localDevice;
-    QString m_remoteIp;
+    QString m_remoteIp{"127.0.0.1"};
 };
 
 class qml_singleton_device : public qml_device
 {
+public:
+  static qml_singleton_device& instance();
 
+private:
+  qml_singleton_device();
 };
 }
 }

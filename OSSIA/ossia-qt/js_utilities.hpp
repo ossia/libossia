@@ -18,6 +18,7 @@
 #include <QLineF>
 #include <QRectF>
 #include <QVariantList>
+#include <QQmlProperty>
 #include <QtGui/QColor>
 #include <QtGui/QVector2D>
 #include <QtGui/QVector3D>
@@ -149,6 +150,7 @@ public:
 
 struct qt_to_ossia
 {
+  ossia::value operator()() { return ossia::Impulse{}; }
   ossia::value operator()(bool v) { return v; }
   ossia::value operator()(QTime v) { return v.msec(); }
   ossia::value operator()(int v) { return v; }
@@ -172,9 +174,11 @@ struct qt_to_ossia
   ossia::value operator()(QVector3D v) { return make_vec(v.x(), v.y(), v.z()); }
   ossia::value operator()(QVector4D v) { return make_vec(v.x(), v.y(), v.z(), v.w()); }
   ossia::value operator()(QQuaternion v) { return make_vec(v.scalar(), v.x(), v.y(), v.z()); }
-  ossia::value operator()(QVariantList v) { return {}; }
-  ossia::value operator()(QStringList v) { return {}; }
-  ossia::value operator()(QDate v) { return v.toString().toStdString(); }
+  ossia::value operator()(const QVariantList& v) { return {}; }
+  ossia::value operator()(const QStringList& v) { return {}; }
+  ossia::value operator()(const QDate& v) { return v.toString().toStdString(); }
+
+  ossia::value operator()(const QVariant& v);
 };
 
 struct ossia_to_qvariant
@@ -373,6 +377,70 @@ void create_node_rec(QJSValue js, Device_T& device, Node_T& parent)
   }
 }
 
+template<typename Methods>
+QMetaObject::Connection connectSignalToMatchingMethod(
+    const QMetaMethod& sig,
+    Methods& meth,
+    QObject* source,
+    QObject* target)
+{
+  switch(sig.parameterCount())
+  {
+    case 0:
+    {
+      return QObject::connect(source, sig,
+                       target, meth[QVariant::Invalid]);
+    }
+    case 1:
+    {
+      auto t = sig.parameterType(0);
+
+      auto method_it = meth.find((QVariant::Type)t);
+      if(method_it != meth.end())
+      {
+        return QObject::connect(source, sig,
+                         target, method_it->second);
+      }
+      break;
+    }
+  }
+  return {};
+}
+
+template<typename Methods>
+QMetaObject::Connection connectSignalToMatchingMethod(
+    const QQmlProperty& prop,
+    Methods& methods,
+    QMetaMethod variantMethod,
+    QObject* source,
+    QObject* target)
+{
+  auto meth = prop.method();
+
+  switch(meth.parameterCount())
+  {
+    case 0:
+    {
+      return QObject::connect(
+            source, prop.method(),
+            target, variantMethod);
+    }
+    case 1:
+    {
+      auto t = meth.parameterType(0);
+
+      auto method_it = methods.find((QVariant::Type)t);
+      if(method_it != methods.end())
+      {
+        return QObject::connect(
+              source, prop.method(),
+              target, method_it->second);
+      }
+      break;
+    }
+  }
+  return {};
+}
 }
 }
 

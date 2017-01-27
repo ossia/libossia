@@ -75,5 +75,10 @@ int main()
     localStringAddress->pushValue("hello world !"s);
 
     // display json tree in console
-    std::cerr << ossia::devices::write_json(device, "namespace.json") << "\n";
+    auto json = ossia::devices::write_json(device);
+    std::cerr << json << "\n";
+
+    // write it as a file
+    ossia::devices::write_file(json, "namespace.json");
+
 }

@@ -1,5 +1,5 @@
 #include "qml_device.hpp"
-
+#include <QQmlEngine>
 namespace ossia
 {
 namespace qt
@@ -9,7 +9,7 @@ qml_device::qml_device(QObject* parent):
     QObject{parent},
     m_localDevice{std::make_unique<ossia::net::local_protocol>(), localName().toStdString()}
 {
-
+  updateMinuit();
 }
 
 void qml_device::updateMinuit()
@@ -117,6 +117,17 @@ void qml_device::setRemoteIp(QString remoteIp)
 qml_device::~qml_device()
 {
 
+}
+
+qml_singleton_device::qml_singleton_device()
+{
+  QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
+}
+
+qml_singleton_device& qml_singleton_device::instance()
+{
+  static qml_singleton_device dev;
+  return dev;
 }
 
 }
