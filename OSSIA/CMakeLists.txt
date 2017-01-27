@@ -98,13 +98,13 @@ endif()
 
 ### Library ###
 if(APPLE AND OSSIA_FRAMEWORK)
-  add_library(ossia MODULE ${SRCS} ${OSSIA_C_SRCS})
+  add_library(ossia MODULE ${SRCS})
   set_target_properties(ossia PROPERTIES BUNDLE TRUE)
 else()
   if(OSSIA_STATIC OR NOT BUILD_SHARED_LIBS)
-    add_library(ossia STATIC ${SRCS} ${OSSIA_C_SRCS})
+    add_library(ossia STATIC ${SRCS})
   else()
-    add_library(ossia SHARED ${SRCS} ${OSSIA_C_SRCS})
+    add_library(ossia SHARED ${SRCS})
   endif()
 endif()
 
@@ -157,14 +157,6 @@ if(OSSIA_QT)
     target_link_libraries(ossia PUBLIC Qt5::Core Qt5::Gui Qt5::Qml)
     target_include_directories(ossia PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt"
-        )
-endif()
-
-if(OSSIA_PYTHON)
-    target_sources(ossia PRIVATE ${OSSIA_PYTHON_HEADERS} ${OSSIA_PYTHON_SRCS})
-    target_include_directories(ossia PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-python"
-        "${OSSIA_3RDPARTY_FOLDER}/pybind11/include"
         )
 endif()
 

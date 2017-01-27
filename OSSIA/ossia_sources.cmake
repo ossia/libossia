@@ -208,7 +208,6 @@ set(OSSIA_C_HEADERS
     )
 
 set(OSSIA_C_SRCS
-    "${OSSIA_C_HEADERS}"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_utils.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_protocol.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_node.cpp"
