@@ -25,7 +25,7 @@ std::string sanitize_name(std::string ret)
 
 std::string sanitize_name(std::string name_base, const std::vector<std::string>& brethren)
 {
-  auto name = sanitize_name(name_base);
+  auto name = sanitize_name(std::move(name_base));
   bool is_here = false;
   ossia::optional<int> name_instance;
   std::vector<int> instance_num;
@@ -152,7 +152,7 @@ node_base* node_base::createChild(const std::string& name)
   if(!dev.getCapabilities().change_tree)
     return nullptr;
 
-  auto res = makeChild(sanitize_name(name));
+  auto res = makeChild(sanitize_name(name, childrenNames()));
 
   auto ptr = res.get();
   if (res)
@@ -162,6 +162,38 @@ node_base* node_base::createChild(const std::string& name)
   }
 
   return ptr;
+}
+
+std::vector<std::string> node_base::childrenNames() const
+{
+  std::vector<std::string> bros_names;
+  bros_names.reserve(mChildren.size());
+
+  std::transform(mChildren.cbegin(), mChildren.cend(), std::back_inserter(bros_names),
+                 [] (const auto& n) { return n->getName(); });
+
+  return bros_names;
+}
+
+node_base*node_base::addChild(std::unique_ptr<node_base> n)
+{
+  auto& dev = getDevice();
+  if(!dev.getCapabilities().change_tree)
+    return nullptr;
+
+  if(n)
+  {
+    const auto name = n->getName();
+    if(name == sanitize_name(name, childrenNames()))
+    {
+      auto ptr = n.get();
+
+      mChildren.push_back(std::move(n));
+      dev.onNodeCreated(*ptr);
+      return ptr;
+    }
+  }
+  return nullptr;
 }
 
 node_base* node_base::findChild(const std::string& name)
@@ -181,8 +213,10 @@ bool node_base::removeChild(const std::string& name)
   if(!dev.getCapabilities().change_tree)
     return false;
 
+  auto san_name = sanitize_name(name);
+
   auto it = find_if(
-              mChildren, [&](const auto& c) { return c->getName() == sanitize_name(name); });
+              mChildren, [&](const auto& c) { return c->getName() == san_name; });
 
   if (it != mChildren.end())
   {
@@ -231,7 +265,7 @@ void node_base::clearChildren()
 }
 
 #define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(Type, Name, String) \
-optional<Type> get_ ## Name (const extended_attributes& n) \
+  optional<Type> get_ ## Name (const extended_attributes& n) \
 { using namespace std::literals; \
   return get_optional_attribute<Type>(n, String); \
 } \
@@ -252,6 +286,13 @@ OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_name, app_name, "appName"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_version, app_version, "appVersion"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_creator, app_creator, "appCreator"s)
 
+void set_description(extended_attributes& n, const char* arg)
+{
+  if(arg)
+    set_description(n, std::string{arg});
+  else
+    set_description(n, ossia::none);
+}
 
 }
 }

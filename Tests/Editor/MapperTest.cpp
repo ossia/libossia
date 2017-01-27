@@ -61,11 +61,6 @@ private Q_SLOTS:
     QVERIFY(mapping != nullptr);
 
     QVERIFY(mapping->parent() == nullptr);
-
-    QCOMPARE(&mapping->getDriverAddress().get(), float_address);
-    QVERIFY(&mapping->getDrivenAddress().get() == int_address);
-    QVERIFY(mapping->getDriving() == b);
-
     //! \todo test clone()
   }
 

@@ -1,9 +1,9 @@
 #include <QtTest>
 #include <ossia/ossia.hpp>
 #include <ossia/context.hpp>
-#include <ossia/network/http/http.hpp>
+#include <ossia-qt/http/http.hpp>
 #include <ossia/network/midi/midi.hpp>
-#include <ossia/network/websocket-generic-client/ws_generic_client.hpp>
+#include <ossia-qt/websocket-generic-client/ws_generic_client.hpp>
 #include <iostream>
 #include "../Editor/TestUtils.hpp"
 

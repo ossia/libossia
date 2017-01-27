@@ -32,13 +32,6 @@ private Q_SLOTS:
 
         QVERIFY(node->getExpression() == expr_ref);
 
-        time_value simultaneity_margin = node->getSimultaneityMargin();
-        QVERIFY(simultaneity_margin == Zero);
-
-        node->setSimultaneityMargin(50._tv);
-        simultaneity_margin = node->getSimultaneityMargin();
-        QVERIFY(simultaneity_margin == time_value(50.));
-
         QVERIFY(node->timeEvents().size() == 0);
 
         //! \todo test clone()

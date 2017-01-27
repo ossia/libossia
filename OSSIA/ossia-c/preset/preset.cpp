@@ -23,9 +23,9 @@
 
 struct ossia_preset
 {
-  ossia::presets::preset impl;
-  ossia_preset(): impl(ossia::presets::preset ()) {}
-  ossia_preset(const ossia::presets::preset& prst) : impl(prst){}
+    ossia::presets::preset impl;
+    ossia_preset(): impl(ossia::presets::preset ()) {}
+    ossia_preset(const ossia::presets::preset& prst) : impl(prst){}
 };
 
 /// C functions ///
@@ -37,6 +37,8 @@ ossia_preset_result ossia_presets_read_json(const char* str, ossia_preset_t * pr
   if (presetptr == nullptr) {
     return OSSIA_PRESETS_INVALID_PTR;
   }
+
+  *presetptr = nullptr;
   if (str != nullptr) {
     try {
       *presetptr = new ossia_preset(ossia::presets::read_json(std::string(str)));
@@ -53,6 +55,8 @@ ossia_preset_result ossia_presets_read_xml(const char * str, ossia_preset_t * pr
   if (presetptr == nullptr) {
     return OSSIA_PRESETS_INVALID_PTR;
   }
+
+  *presetptr = nullptr;
   if (str != nullptr) {
     try {
       *presetptr = new ossia_preset(ossia::presets::read_xml(std::string(str)));
@@ -78,13 +82,9 @@ ossia_preset_result ossia_presets_free(ossia_preset_t preset) {
 }
 
 ossia_preset_result ossia_presets_write_json(const ossia_preset_t preset, const char** buffer) {
-  if (preset != nullptr) {
+  if (preset) {
     try {
-      std::string str = ossia::presets::write_json(preset->impl);
-      char * mbuffer = new char[str.size() + 1];
-      std::sprintf(mbuffer, "%s", str.c_str());
-      mbuffer[str.size()] = 0;
-      *buffer = (const char*)mbuffer;
+      *buffer = copy_string(ossia::presets::write_json(preset->impl));
       return OSSIA_PRESETS_OK;
     }
     catch (...) {
@@ -95,13 +95,9 @@ ossia_preset_result ossia_presets_write_json(const ossia_preset_t preset, const 
 }
 
 ossia_preset_result ossia_presets_write_xml(const ossia_preset_t preset, const char ** buffer) {
-  if (preset != nullptr) {
+  if (preset) {
     try {
-      std::string str = ossia::presets::write_xml(preset->impl);
-      char * mbuffer = new char[str.size() + 1];
-      std::sprintf(mbuffer, "%s", str.c_str());
-      mbuffer[str.size()] = 0;
-      *buffer = (const char*)mbuffer;
+      *buffer = copy_string(ossia::presets::write_xml(preset->impl));
       return OSSIA_PRESETS_OK;
     }
     catch (...) {
@@ -112,7 +108,7 @@ ossia_preset_result ossia_presets_write_xml(const ossia_preset_t preset, const c
 }
 
 ossia_preset_result ossia_presets_size(const ossia_preset_t preset, int * size) {
-  if (preset != nullptr) {
+  if (preset) {
     try {
       *size = preset->impl.size();
       return OSSIA_PRESETS_OK;
@@ -125,13 +121,9 @@ ossia_preset_result ossia_presets_size(const ossia_preset_t preset, int * size) 
 }
 
 ossia_preset_result ossia_presets_to_string(const ossia_preset_t preset, const char ** buffer) {
-  if (preset != nullptr) {
+  if (preset) {
     try {
-      std::string str = ossia::presets::to_string(preset->impl);
-      char * mbuffer = new char[str.size() + 1];
-      std::sprintf(mbuffer, "%s", str.c_str());
-      mbuffer[str.size()] = 0;
-      *buffer = (const char*)mbuffer;
+      *buffer = copy_string(ossia::presets::to_string(preset->impl));
       return OSSIA_PRESETS_OK;
     }
     catch (...) {
@@ -145,9 +137,12 @@ ossia_preset_result ossia_devices_read_json(ossia_device_t* odevptr, const char 
   if (odevptr == nullptr) {
     return OSSIA_PRESETS_INVALID_PTR;
   }
+  assert(*odevptr);
+  assert((*odevptr)->device);
+
   if (str != nullptr) {
     try {
-      ossia::devices::read_json(*(*odevptr)->device , str);
+      ossia::devices::read_json(*(*odevptr)->device, str);
       return OSSIA_PRESETS_OK;
     }
     catch (...) {
@@ -163,6 +158,9 @@ ossia_preset_result ossia_devices_read_xml(ossia_device_t* odevptr, const char *
   }
   if (odevptr != nullptr) {
     try {
+      assert(*odevptr);
+      assert((*odevptr)->device);
+
       ossia::devices::read_xml(*(*odevptr)->device, str);
       return OSSIA_PRESETS_OK;
     }
@@ -176,11 +174,8 @@ ossia_preset_result ossia_devices_read_xml(ossia_device_t* odevptr, const char *
 ossia_preset_result ossia_devices_write_json(const ossia_device_t odev, const char ** buffer) {
   if (odev != nullptr) {
     try {
-      std::string str = ossia::devices::write_json(*(odev->device));
-      char * mbuffer = new char[str.size() + 1];
-      std::sprintf(mbuffer, "%s", str.c_str());
-      mbuffer[str.size()] = 0;
-      *buffer = (const char*)mbuffer;
+      assert(odev->device);
+      *buffer = copy_string(ossia::devices::write_json(*(odev->device)));
       return OSSIA_PRESETS_OK;
     }
     catch (...) {
@@ -193,11 +188,8 @@ ossia_preset_result ossia_devices_write_json(const ossia_device_t odev, const ch
 ossia_preset_result ossia_devices_write_xml(const ossia_device_t odev, const char ** buffer) {
   if (odev != nullptr) {
     try {
-      std::string str = ossia::devices::write_xml(*(odev->device));
-      char * mbuffer = new char[str.size() + 1];
-      std::sprintf(mbuffer, "%s", str.c_str());
-      mbuffer[str.size()] = 0;
-      *buffer = (const char*)mbuffer;
+      assert(odev->device);
+      *buffer = copy_string(ossia::devices::write_xml(*(odev->device)));
       return OSSIA_PRESETS_OK;
     }
     catch (...) {
@@ -238,8 +230,11 @@ ossia_preset_result ossia_devices_make_preset(ossia_device_t odev, ossia_preset_
   if (presetptr == nullptr) {
     return OSSIA_PRESETS_INVALID_PTR;
   }
+
+  *presetptr = nullptr;
   if (odev != nullptr) {
     try {
+      assert(odev->device);
       *presetptr = new ossia_preset(ossia::devices::make_preset(*(odev->device)));
       return OSSIA_PRESETS_OK;
     }
@@ -253,11 +248,8 @@ ossia_preset_result ossia_devices_make_preset(ossia_device_t odev, ossia_preset_
 ossia_preset_result ossia_devices_to_string(ossia_device_t odev, const char ** buffer) {
   if (odev != nullptr) {
     try {
-      std::string str = ossia::devices::to_string(*(odev->device));
-      char * mbuffer = new char[str.size() + 1];
-      std::sprintf(mbuffer, "%s", str.c_str());
-      mbuffer[str.size()] = 0;
-      *buffer = (const char*)mbuffer;
+      assert(odev->device);
+      *buffer = copy_string(ossia::devices::to_string(*(odev->device)));
       return OSSIA_PRESETS_OK;
     }
     catch (...) {
@@ -276,6 +268,7 @@ ossia_preset_result ossia_devices_get_node(ossia_device_t odev, const char* addr
   }
   if (odev != nullptr) {
     try {
+      assert(odev->device);
       auto gotnode = ossia::devices::get_node(odev->device->getRootNode(), addr);
       if (gotnode == nullptr) {
         return OSSIA_PRESETS_INVALID_ADDRESS;
@@ -313,15 +306,77 @@ ossia_preset_result ossia_devices_get_child(ossia_node_t root, const char * chil
   return OSSIA_PRESETS_OK;
 }
 
-ossia_preset_result ossia_free_string(const char * strptr) {
-  if (strptr != nullptr) {
+
+bool ossia_presets_has_key(
+    const ossia_preset_t preset,
+    const char* key)
+{
+  if (preset && key) {
     try {
-      delete strptr;
+      return preset->impl.find(key) != preset->impl.end();
     }
     catch (...) {
       return lippincott();
     }
   }
+  return OSSIA_PRESETS_NULL_PRESET;
+}
+
+ossia_preset_result ossia_presets_key_to_string(
+    const ossia_preset_t preset,
+    const char* key,
+    const char** buffer)
+{
+  if (preset && key) {
+    try {
+      auto it = preset->impl.find(key);
+      if(it != preset->impl.end())
+      {
+        *buffer = copy_string(ossia::convert<std::string>(it.value()));
+        return OSSIA_PRESETS_OK;
+      }
+      else
+      {
+        return OSSIA_PRESETS_KEY_NOT_FOUND;
+      }
+    }
+    catch (...) {
+      return lippincott();
+    }
+  }
+  return OSSIA_PRESETS_NULL_PRESET;
+}
+
+
+
+ossia_preset_result ossia_presets_key_to_value(
+    const ossia_preset_t preset,
+    const char* key,
+    ossia_value_t* buffer)
+{
+  if (preset && key) {
+    try {
+      auto it = preset->impl.find(key);
+      if(it != preset->impl.end())
+      {
+        *buffer = convert(it.value());
+        return OSSIA_PRESETS_OK;
+      }
+      else
+      {
+        return OSSIA_PRESETS_KEY_NOT_FOUND;
+      }
+    }
+    catch (...) {
+      return lippincott();
+    }
+  }
+  return OSSIA_PRESETS_NULL_PRESET;
+}
+
+
+ossia_preset_result ossia_free_string(const char * strptr) {
+  delete[] strptr;
   return OSSIA_PRESETS_OK;
 }
 
@@ -431,6 +486,7 @@ rapidjson::Value ossia_to_json_value(const ossia::value& val, rapidjson::Documen
       auto typedval = val.get<char>();
       char buff[2];
       std::sprintf(buff, "%c", (char)typedval);
+      buff[1] = 0;
       jsonvalue.SetString(buff, docallocator);
     }
       break;
@@ -945,7 +1001,8 @@ void make_preset_node(ossia::net::node_base& node, ossia::presets::preset& prese
   auto& children = node.children();
 
   if (children.size() == 0) {
-    preset.insert(std::make_pair(currentkey, node.getAddress()->cloneValue()));
+    if(auto addr = node.getAddress())
+      preset.insert(std::make_pair(currentkey, addr->cloneValue()));
   }
   else {
     for (auto& child : children) {

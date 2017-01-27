@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/ossia.hpp>
+#include <ossia-qt/js_utilities.hpp>
 #include <QMetaType>
 #include <QTest>
 namespace ossia
@@ -19,7 +20,6 @@ struct TestUtils
   ossia::net::address_base* tuple_addr = device.createChild("tuple")->createAddress(val_type::TUPLE);
 };
 }
-Q_DECLARE_METATYPE(ossia::value)
 namespace QTest {
 template<>
 inline char* toString(const ossia::value &point)

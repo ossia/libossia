@@ -98,6 +98,33 @@ ossia_preset_result ossia_presets_to_string(
         const ossia_preset_t,
         const char **);
 
+
+/**
+ * @brief True if the preset has the given key
+ */
+OSSIA_EXPORT
+bool ossia_presets_has_key(
+        const ossia_preset_t,
+        const char* key);
+
+/**
+ * @brief Convert a single key of a preset to a string
+ */
+OSSIA_EXPORT
+ossia_preset_result ossia_presets_key_to_string(
+        const ossia_preset_t,
+        const char* key,
+        const char** value);
+
+/**
+ * @brief Convert a single key of a preset to a value
+ */
+OSSIA_EXPORT
+ossia_preset_result ossia_presets_key_to_value(
+        const ossia_preset_t,
+        const char* key,
+        ossia_value_t* value);
+
 /// Device handling ///
 
 /**

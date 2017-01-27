@@ -17,11 +17,11 @@ class time_node;
 /**
  * @brief The time_event class
  *
- * \brief #TimeEvent is use to describe temporal structure to launch the start
- * or the end of each attached #TimeConstraint.
+ * \brief #time_event is use to describe temporal structure to launch the start
+ * or the end of each attached #time_constraint.
  *
- * \details #TimeEvent has a #State and can also be submitted to an
- * #Expression.
+ * \details #time_event has a #State and can also be submitted to an
+ * expression.
  *
  */
 class OSSIA_EXPORT time_event
@@ -74,7 +74,7 @@ public:
 
 
   /*! changes the callback in the event
-   \param #TimeEvent::ExecutionCallback to get #TimeEvent's status back
+   \param #time_event::ExecutionCallback to get #time_event's status back
    \details this may be unsafe to do during execution */
   void setCallback(time_event::ExecutionCallback) ;
 
@@ -102,8 +102,8 @@ public:
    \param std::shared_ptr<#State> to remove */
   void removeState(const state_element&) ;
 
-  /*! get the #TimeNode where the event is
-   \return std::shared_ptr<#TimeNode> */
+  /*! get the #time_node where the event is
+   \return std::shared_ptr<#time_node> */
   time_node& getTimeNode() const ;
 
   /*! get the state of the event
@@ -111,12 +111,12 @@ public:
   const state& getState() const ;
 
   /*! get the expression of the event
-  \return std::shared_ptr<#Expression> */
+  \return std::shared_ptr<expression> */
   const expression& getExpression() const ;
 
   /*! set the expression of the event
-   \param std::shared_ptr<#Expression>
-   \return #TimeEvent the event */
+   \param std::shared_ptr<expression>
+   \return #time_event the event */
   time_event& setExpression(expression_ptr) ;
 
   /*! get the status of the event
@@ -136,7 +136,7 @@ public:
   time_event& setOffsetBehavior(OffsetBehavior);
 
   /*! get previous time contraints attached to the event
-   \return #Container<#TimeConstraint> */
+   \return #Container<#time_constraint> */
   ptr_container<time_constraint>& previousTimeConstraints()
   {
     return m_previousTimeConstraints;
@@ -150,7 +150,7 @@ public:
   }
 
   /*! get next time contraints attached to the event
-   \return #Container<#TimeConstraint> */
+   \return #Container<#time_constraint> */
   ptr_container<time_constraint>& nextTimeConstraints()
   {
     return m_nextTimeConstraints;

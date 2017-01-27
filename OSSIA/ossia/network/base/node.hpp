@@ -4,6 +4,7 @@
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/network/base/name_validation.hpp>
 #include <ossia/network/base/node_attributes.hpp>
+#include <ossia/detail/string_view.hpp>
 #include <functional>
 #include <memory>
 #include <string>
@@ -72,11 +73,24 @@ public:
   virtual bool removeAddress() = 0;
   virtual address_base* getAddress() const = 0;
 
-  //! Allows to add arbitrary key-value metadata to nodes.
+  /** Allows to add arbitrary key-value metadata to nodes.
+   * There is a list of pre-defined attributes available in \ref node_attributes.hpp
+   */
   const extended_attributes& getExtendedAttributes() const;
   void setExtendedAttributes(const extended_attributes&);
 
-  //! Get a specific attribute.
+  /** Get a specific attribute.
+   * Usage :
+   *
+   * \code
+   * node.setAttribute("my_int_attribute", 1234);
+   * auto attr = node.getAttribute("my_int_attribute");
+   * if(int* int_attr = boost::any_cast<int>(&attr))
+   * {
+   *   // The attribute exists and is an int.
+   * }
+   * \endcode
+   */
   boost::any getAttribute(const std::string& str) const;
 
   template<typename T>
@@ -91,9 +105,29 @@ public:
    *
    * @note The name of the child may be modified, so it should be checked after creation.
    *
+   * If you need to add multiple childs in one go (for instance `/foo/bar/baz/blop` if this node
+   * is `foo`), see ossia::net::find_or_create_node.
+   *
    * @return A pointer to the child if it could be created, else nullptr.
    */
   node_base* createChild(const std::string& name);
+
+  /**
+   * @brief Adds a new child if it can be added.
+   *
+   * For instance if the name is already taken, it won't be added
+   * and the returned pointer will be null.
+   */
+  node_base* addChild(std::unique_ptr<node_base>);
+
+  /**
+   * @brief Find a direct child of this node.
+   *
+   * e.g. `foo.findChild("bar")` will find `/foo/bar`, but not `/foo/blop/bar`.
+   *
+   * If you need to find a child recursively, see ossia::net::find_node.
+   *
+   */
   node_base* findChild(const std::string& name);
 
   bool removeChild(const std::string& name);
@@ -108,6 +142,9 @@ public:
   {
     return mChildren;
   }
+
+  //! A vector with all the names of the children.
+  std::vector<std::string> childrenNames() const;
 
   //! The node subclasses must call this in their destructor.
   mutable Nano::Signal<void(const node_base&)> aboutToBeDeleted;

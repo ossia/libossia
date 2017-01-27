@@ -43,7 +43,7 @@ private:
   tsl::hopscotch_map<std::string, ossia::net::address_base*> mListening;
 
   std::promise<void> mNamespaceFinishedPromise;
-  ossia::net::generic_device* mDevice{};
+  ossia::net::device_base* mDevice{};
 
   std::mutex mNamespaceRequestsMutex;
   std::set<std::string, std::less<>> mNamespaceRequests;

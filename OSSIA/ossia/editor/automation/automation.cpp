@@ -9,6 +9,11 @@
 namespace ossia
 {
 
+automation::automation()
+{
+
+}
+
 automation::automation(
     Destination address, const ossia::behavior& drive)
   : mDrive(drive)

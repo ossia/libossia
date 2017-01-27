@@ -2,20 +2,24 @@
 #include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/detail/logger.hpp>
 #include <iostream>
 
 namespace ossia
 {
+
+mapper::mapper()
+{
+
+}
 
 mapper::mapper(
       ossia::Destination driverAddress,
       ossia::Destination drivenAddress,
       ossia::behavior drive)
     : mDriverAddress{std::move(driverAddress)}
-    , mDrivenAddress{std::move(drivenAddress)}
     , mDrive{std::move(drive)}
-    , mLastMessage{mDrivenAddress, {}}
-    , mDriverValueObserved(false)
+    , mLastMessage{ossia::message{std::move(drivenAddress), {}}}
 {
 }
 
@@ -60,29 +64,31 @@ ossia::state_element mapper::state()
         mValueToMap.reset();
         lock.unlock();
 
-        mLastMessage.message_value = computeValue(val, mDrive);
+        if(mLastMessage)
+          mLastMessage->message_value = computeValue(val, mDrive);
 
-        if(unmuted())
-          return mLastMessage;
+        if(unmuted() && mLastMessage)
+          return *mLastMessage;
         return ossia::state_element{};
       }
     }
   }
 
-  if(unmuted())
-    return mLastMessage;
+  if(unmuted() && mLastMessage)
+    return *mLastMessage;
   return ossia::state_element{};
 }
 
 void mapper::start()
 {
   // start driver address value observation
-  if (!mDriverValueObserved)
+  if (mDriverAddress && !mDriverValueCallbackIndex)
   {
-    mDriverValueCallbackIndex = mDriverAddress.get().add_callback(
+    ossia::net::address_base& addr = mDriverAddress->address();
+    mDriverValueCallbackIndex = addr.add_callback(
         [this](const ossia::value& val) { driverValueCallback(val); });
-    mDriverValueObserved = true;
-    auto def_val = mDriverAddress.get().cloneValue();
+
+    auto def_val = addr.cloneValue();
     driverValueCallback(def_val);
   }
 }
@@ -90,10 +96,10 @@ void mapper::start()
 void mapper::stop()
 {
   // stop driver address value observation
-  if (mDriverValueObserved)
+  if (mDriverAddress && mDriverValueCallbackIndex)
   {
-    mDriverAddress.get().remove_callback(mDriverValueCallbackIndex);
-    mDriverValueObserved = false;
+    mDriverAddress->address().remove_callback(*mDriverValueCallbackIndex);
+    mDriverValueCallbackIndex = ossia::none;
   }
 }
 
@@ -105,19 +111,53 @@ void mapper::resume()
 {
 }
 
-const ossia::Destination& mapper::getDriverAddress() const
+void mapper::setDriverAddress(ossia::Destination d)
 {
-  return mDriverAddress;
+  bool active{mDriverValueCallbackIndex};
+
+  stop();
+
+  {
+    std::lock_guard<std::mutex> lock(mDriverAddressMutex);
+    mDriverAddress = std::move(d);
+  }
+
+  if(active)
+  {
+    ossia::net::address_base& addr = mDriverAddress->address();
+    mDriverValueCallbackIndex = addr.add_callback(
+        [this](const ossia::value& val) { driverValueCallback(val); });
+  }
 }
 
-const ossia::Destination& mapper::getDrivenAddress() const
+void mapper::setDrivenAddress(ossia::Destination d)
 {
-  return mDrivenAddress;
+  if(mLastMessage)
+  {
+    mLastMessage->destination = std::move(d);
+  }
+  else
+  {
+    mLastMessage = ossia::message{d, ossia::value{}};
+  }
 }
 
-const ossia::behavior& mapper::getDriving() const
+void mapper::clean()
 {
-  return mDrive;
+  // Cleans the callback
+  stop();
+  {
+    std::lock_guard<std::mutex> lock(mDriverAddressMutex);
+    mDriverAddress = ossia::none;
+  }
+
+  mDrive.reset();
+  mLastMessage = ossia::none;
+}
+
+void mapper::setBehavior(ossia::behavior b)
+{
+  mDrive = std::move(b);
 }
 
 struct mapper_compute_visitor
@@ -319,26 +359,32 @@ ossia::value mapper::computeValue(
 
 void mapper::driverValueCallback(ossia::value value)
 {
-  auto driverUnit = mDriverAddress.get().getUnit();
-  if(driverUnit && mDriverAddress.unit && driverUnit != mDriverAddress.unit)
+  // This access is protected by a mutex because driverValueCallback can come from a network thread.
+  std::unique_lock<std::mutex> l1{mDriverAddressMutex};
+  if(mDriverAddress)
   {
-    auto v = ossia::convert(value, driverUnit, mDriverAddress.unit);
-    if(mDriverAddress.index.size() == 1)
+    auto driver = *mDriverAddress;
+    l1.unlock();
+
+    auto driverUnit = driver.address().getUnit();
+    if(driverUnit && driver.unit && driverUnit != driver.unit)
     {
-      value = get_value_at_index(std::move(v), mDriverAddress.index);
+      auto v = ossia::convert(value, driverUnit, driver.unit);
+      if(driver.index.size() == 1)
+      {
+        value = get_value_at_index(std::move(v), driver.index);
+      }
+      else
+      {
+        value = std::move(v);
+      }
     }
-    else
+
     {
-      value = std::move(v);
+      std::lock_guard<std::mutex> lock(mValueToMapMutex);
+
+      mValueToMap = value;
     }
   }
-
-  {
-    std::lock_guard<std::mutex> lock(mValueToMapMutex);
-
-    mValueToMap = value;
-  }
-  // If the driver destination's unit is different from the actual
-  // address's unit, we convert and extract the value.
 }
 }

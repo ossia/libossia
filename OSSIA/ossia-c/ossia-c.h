@@ -117,6 +117,9 @@ void ossia_device_free(
         ossia_device_t device);
 
 OSSIA_EXPORT
+void ossia_device_reset_static();
+
+OSSIA_EXPORT
 bool ossia_device_update_namespace(
         ossia_device_t device);
 

@@ -44,7 +44,7 @@ bool local_protocol::update(ossia::net::node_base& node)
 
 void local_protocol::setDevice(device_base& dev)
 {
-  mDevice = dynamic_cast<ossia::net::generic_device*>(&dev);
+  mDevice = &dev;
 }
 
 static void observe_rec(protocol_base& proto, ossia::net::node_base& n)

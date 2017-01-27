@@ -30,33 +30,33 @@ class OSSIA_EXPORT scenario final :
     void resume() override;
 
 
-    /*! add a #TimeConstraint and its #TimeNodes into the scenario if they don't
+    /*! add a #time_constraint and its #time_nodes into the scenario if they don't
      already be added
-     \param std::shared_ptr<#TimeConstraint> to add */
+     \param std::shared_ptr<#time_constraint> to add */
     void addTimeConstraint(std::shared_ptr<time_constraint>);
 
-    /*! remove a #TimeConstraint from the scenario without removing any #TimeNode
-     \param std::shared_ptr<#TimeConstraint> to remove */
+    /*! remove a #time_constraint from the scenario without removing any #time_node
+     \param std::shared_ptr<#time_constraint> to remove */
     void removeTimeConstraint(const std::shared_ptr<time_constraint>&);
 
-    /*! add a #TimeNode into the scenario if it is not already added
-     \param std::shared_ptr<#TimeNode> to add */
+    /*! add a #time_node into the scenario if it is not already added
+     \param std::shared_ptr<#time_node> to add */
     void addTimeNode(std::shared_ptr<time_node>);
 
-    /*! remove a #TimeNode from the scenario
-     \param std::shared_ptr<#TimeNode> to remove */
+    /*! remove a #time_node from the scenario
+     \param std::shared_ptr<#time_node> to remove */
     void removeTimeNode(const std::shared_ptr<time_node>&);
 
     /*! get the node from where the scenario starts
-     \return std::shared_ptr<#TimeNode> start node */
+     \return std::shared_ptr<#time_node> start node */
     const std::shared_ptr<time_node>& getStartTimeNode() const;
 
     /*! get all TimeNodes of the scenario
-     \return #Container<#TimeNode> */
+     \return #Container<#time_node> */
     const ptr_container<time_node>& timeNodes() const;
 
     /*! get all TimeConstraints of the scenario
-     \return #Container<#TimeConstraint> */
+     \return #Container<#time_constraint> */
     const ptr_container<time_constraint>& timeConstraints() const;
 
     /*! order all HAPPENED TimeEvents into mOffetEventMap */

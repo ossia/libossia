@@ -23,13 +23,13 @@ class OSSIA_EXPORT loop final :
 {
 public:
   /*! factory
-   \param const #TimeValue& duration of the pattern #TimeConstraint
-   \param #TimeConstraint::ExecutionCallback to be notified at each step of the
+   \param const #TimeValue& duration of the pattern #time_constraint
+   \param #time_constraint::ExecutionCallback to be notified at each step of the
    loop
-   \param #TimeEvent::ExecutionCallback to get start pattern #TimeEvent's
+   \param #time_event::ExecutionCallback to get start pattern #time_event's
    status
    back
-   \param #TimeEvent::ExecutionCallback to get end pattern #TimeEvent's status
+   \param #time_event::ExecutionCallback to get end pattern #time_event's status
    back
    \return a new loop */
     loop(
@@ -47,16 +47,16 @@ public:
   state_element offset(time_value) override;
   state_element state() override;
 
-  /*! get the pattern #TimeConstraint
+  /*! get the pattern #time_constraint
    \return std::shared_ptr<TimeConstraint> */
   const std::shared_ptr<time_constraint>
   getPatternTimeConstraint() const;
 
-  /*! get the pattern start #TimeNode
+  /*! get the pattern start #time_node
    \return std::shared_ptr<TimeNode> */
   const std::shared_ptr<time_node> getPatternStartTimeNode() const;
 
-  /*! get the pattern end #TimeNode
+  /*! get the pattern end #time_node
    \return std::shared_ptr<TimeNode> */
   const std::shared_ptr<time_node> getPatternEndTimeNode() const;
 

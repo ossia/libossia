@@ -39,7 +39,10 @@ void behavior::reset()
         for(auto& b : p)
           eggs::variants::apply(*this, b);
       }
+
+      void operator()() { }
   };
-  eggs::variants::apply(behavior_reset{}, *this);
+
+  ossia::apply(behavior_reset{}, *this);
 }
 }

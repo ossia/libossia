@@ -22,18 +22,23 @@ endfunction()
 
 install_headers_rec("${API_HEADERS}")
 if(OSSIA_PROTOCOL_MIDI)
-    install_headers_rec("${MIDI_HEADERS}")
+    install_headers_rec("${OSSIA_MIDI_HEADERS}")
 endif()
 if(OSSIA_PROTOCOL_HTTP)
-    install_headers_rec("${HTTP_HEADERS}")
+    install_headers_rec("${OSSIA_HTTP_HEADERS}")
 endif()
 if(OSSIA_PROTOCOL_SERIAL)
-    install_headers_rec("${SERIAL_HEADERS}")
+    install_headers_rec("${OSSIA_SERIAL_HEADERS}")
 endif()
 if(OSSIA_PROTOCOL_WEBSOCKETS)
-    install_headers_rec("${WS_CLIENT_HEADERS}")
+    install_headers_rec("${OSSIA_WS_CLIENT_HEADERS}")
 endif()
-
+if(OSSIA_C)
+    install_headers_rec("${OSSIA_C_HEADERS}")
+endif()
+if(OSSIA_QT)
+    install_headers_rec("${OSSIA_QT_HEADERS}")
+endif()
 # Install export header
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ossia_export.h
         DESTINATION include/
@@ -45,7 +50,7 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/variant/include/
         COMPONENT Devel)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include/
-        DESTINATION include/nano-signal-slot
+        DESTINATION include
         COMPONENT Devel)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/oscpack/oscpack

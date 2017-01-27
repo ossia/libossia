@@ -2,8 +2,7 @@
 template<typename Requested_T>
 Requested_T get_value(ossia_value_t val)
 {
-  if(!val)
-    return {};
+  if(!val) { ossia_log_error("get_value<T>: val is null"); return {}; }
 
   if(auto casted_val = convert(val).target<Requested_T>())
   {
@@ -74,7 +73,10 @@ ossia_type ossia_value_get_type(
     ossia_value_t val)
 {
   if(!val)
+  {
+    ossia_log_error("ossia_value_get_type: val is null");
     return static_cast<ossia_type>(-1);
+  }
 
   return convert(convert(val).getType());
 }
@@ -106,16 +108,11 @@ char ossia_value_to_char(
 const char* ossia_value_to_string(
     ossia_value_t val)
 {
-  if(!val)
-    return nullptr;
+  if(!val) { ossia_log_error("ossia_value_to_string: val is null"); return nullptr; }
 
   if(auto casted_val = convert(val).target<std::string>())
   {
-    auto& s = *casted_val;
-    auto size = s.size();
-    char *buf = new char[size + 1];
-    std::strcpy(buf, s.c_str());
-    return buf;
+    return copy_string(*casted_val);
   }
 
   return nullptr;

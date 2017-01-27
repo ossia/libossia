@@ -1,13 +1,5 @@
 language: cpp
 
-os:
-  - osx
-  - linux
-
-env:
-  - BUILD_TYPE=Debug
-  - BUILD_TYPE=Release
-
 branches:
   except:
     - gh-pages
@@ -31,12 +23,16 @@ matrix:
   include:
   - os: linux
     env: BUILD_TYPE=Debug OSSIA_STATIC=0
+    dist: trusty
   - os: linux
     env: BUILD_TYPE=Debug OSSIA_STATIC=1
+    dist: trusty
   - os: linux
     env: BUILD_TYPE=Release OSSIA_STATIC=0
+    dist: trusty
   - os: linux
     env: BUILD_TYPE=Release OSSIA_STATIC=1
+    dist: trusty
 
   - os: osx
     env: BUILD_TYPE=Debug OSSIA_STATIC=0

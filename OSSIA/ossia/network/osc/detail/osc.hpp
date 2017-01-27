@@ -452,11 +452,10 @@ inline ossia::value filter_value(
   }
 }
 
-inline ossia::value filter_value(const ossia::net::generic_address& addr)
+inline ossia::value filter_value(const ossia::net::address_base& addr)
 {
   auto val = addr.cloneValue();
-  if (addr.getRepetitionFilter() == ossia::repetition_filter::ON
-      && val == addr.PreviousValue)
+  if (addr.filterRepetition(val))
     return {};
 
   return filter_value(
@@ -526,7 +525,7 @@ inline bool update_value(
 }
 
 inline bool update_value_quiet(
-    ossia::net::generic_address& addr,
+    ossia::net::address_base& addr,
     oscpack::ReceivedMessageArgumentIterator beg_it,
     oscpack::ReceivedMessageArgumentIterator end_it, int N)
 {
@@ -544,7 +543,7 @@ inline bool update_value_quiet(
 }
 
 inline bool update_value_quiet(
-    ossia::net::generic_address& addr,
+    ossia::net::address_base& addr,
     const oscpack::ReceivedMessage& mess)
 {
   return update_value_quiet(

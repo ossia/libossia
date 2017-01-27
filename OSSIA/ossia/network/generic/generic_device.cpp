@@ -68,8 +68,8 @@ node_base* find_node_rec(
   }
 }
 
-generic_node& find_or_create_node_rec(
-    generic_node& node,
+node_base& find_or_create_node_rec(
+    node_base& node,
     ossia::string_view address) // Format a/b/c -> b/c -> c
 {
   auto first_slash_index = address.find_first_of('/');
@@ -83,15 +83,13 @@ generic_node& find_or_create_node_rec(
     if (it != node.children().end())
     {
       // There are still nodes since we found a slash
-      return find_or_create_node_rec(
-          dynamic_cast<ossia::net::generic_node&>(**it),
+      return find_or_create_node_rec(**it,
           address.substr(first_slash_index + 1));
     }
     else
     {
       // Create a node
-      auto& child = dynamic_cast<ossia::net::generic_node&>(
-          *node.createChild(cur.to_string()));
+      auto& child = *node.createChild(cur.to_string());
 
       // Recurse on it
       return find_or_create_node_rec(
@@ -107,17 +105,18 @@ generic_node& find_or_create_node_rec(
 
     if (it != node.children().end())
     {
-      return dynamic_cast<ossia::net::generic_node&>(*it->get());
+      return *it->get();
     }
     else
     {
       // Create and return the node
-      return dynamic_cast<ossia::net::generic_node&>(
-          *node.createChild(address.to_string()));
+      return  *node.createChild(address.to_string());
     }
   }
 }
 
+//! Note : here we modify the string_view only.
+//! The original address remains unchanged.
 ossia::string_view sanitize_address(ossia::string_view address)
 {
   if (boost::algorithm::starts_with(address, "/"))
@@ -130,6 +129,7 @@ ossia::string_view sanitize_address(ossia::string_view address)
 
 node_base* find_node(node_base& dev, ossia::string_view address)
 {
+  // TODO validate
   address = sanitize_address(address);
   if (address.empty())
     return &dev;
@@ -138,15 +138,16 @@ node_base* find_node(node_base& dev, ossia::string_view address)
   return find_node_rec(dev, address);
 }
 
-generic_node&
-find_or_create_node(generic_device& dev, ossia::string_view address)
+node_base&
+find_or_create_node(node_base& node, ossia::string_view address)
 {
+  // TODO validate
   address = sanitize_address(address);
   if (address.empty())
-    return dev;
+    return node;
 
   // address now looks like a/b/c
-  return find_or_create_node_rec(dev, address);
+  return find_or_create_node_rec(node, address);
 }
 }
 }

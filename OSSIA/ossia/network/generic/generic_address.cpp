@@ -94,17 +94,18 @@ ossia::value generic_address::cloneValue() const
 
 ossia::net::generic_address& generic_address::setValue(const ossia::value& val)
 {
-  send(setValueQuiet(val));
+  setValueQuiet(val);
+  send(cloneValue());
   return *this;
 }
 
-ossia::value generic_address::setValueQuiet(const value& val)
+void generic_address::setValueQuiet(const value& val)
 {
   using namespace ossia;
   if(!val.valid())
-    return *this;
+    return;
 
-  std::unique_lock<std::mutex> lock(mValueMutex);
+  std::lock_guard<std::mutex> lock(mValueMutex);
   // std::cerr << address_string_from_node(*this) << " : " << mValue << " <=== " << val << std::endl;
 
   // set value querying the value from another address
@@ -115,7 +116,7 @@ ossia::value generic_address::setValueQuiet(const value& val)
 
     if (destination.value.get().getValueType() == mValueType)
     {
-      PreviousValue = std::move(mValue); // TODO also implement me for MIDI
+      mPreviousValue = std::move(mValue); // TODO also implement me for MIDI
       mValue = destination.value.get().fetchValue();
     }
     else
@@ -124,7 +125,7 @@ ossia::value generic_address::setValueQuiet(const value& val)
             "generic_address::setValue: "
             "setting an address value using a destination "
             "with a bad type address");
-      return *this;
+      return;
     }
   }
   // copy the new value
@@ -132,12 +133,12 @@ ossia::value generic_address::setValueQuiet(const value& val)
   {
     if (mValue.v.which() == val.v.which())
     {
-      PreviousValue = std::move(mValue); // TODO also implement me for MIDI
+      mPreviousValue = std::move(mValue); // TODO also implement me for MIDI
       mValue = val;
     }
     else
     {
-      PreviousValue = mValue;
+      mPreviousValue = mValue;
       mValue = ossia::convert(val, mValue.getType());
 
       /*
@@ -154,8 +155,6 @@ ossia::value generic_address::setValueQuiet(const value& val)
 
   // TODO clamping the input implies ensuring that
   // mValue = ossia::net::clamp(mDomain, mBoundingMode, mValue);
-
-  return mValue;
 }
 
 ossia::val_type generic_address::getValueType() const
@@ -244,6 +243,12 @@ generic_address::setRepetitionFilter(ossia::repetition_filter repetitionFilter)
     mNode.getDevice().onAddressModified(*this);
   }
   return *this;
+}
+
+bool generic_address::filterRepetition(const value& val) const
+{
+  return getRepetitionFilter()  == ossia::repetition_filter::ON
+      && val == mPreviousValue;
 }
 
 void generic_address::onFirstCallbackAdded()

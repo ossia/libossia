@@ -23,17 +23,17 @@
 #endif
 
 // Remove with C++17
-#if !defined(__cpp_lib_void_t)
+#if defined(_MSC_VER) || defined(__cpp_lib_void_t)
 namespace ossia
 {
-template<typename... Args>
-using void_t = void;
+	template<typename... Args>
+	using void_t = std::void_t<Args...>;
 }
 #else
 namespace ossia
 {
-template<typename... Args>
-using void_t = std::void_t<Args...>;
+	template<typename... Args>
+	using void_t = void;
 }
 #endif
 

@@ -27,6 +27,16 @@ using extended_attributes = any_map;
 
 struct OSSIA_EXPORT instance_bounds
 {
+  instance_bounds() = default;
+  instance_bounds(const instance_bounds&) = default;
+  instance_bounds(instance_bounds&&) = default;
+  instance_bounds& operator=(const instance_bounds&) = default;
+  instance_bounds& operator=(instance_bounds&&) = default;
+
+  instance_bounds(int32_t min, int32_t max)
+      : min_instances{min}
+      , max_instances{max} {}
+
   int32_t min_instances = 0;
   int32_t max_instances = std::numeric_limits<int32_t>::max();
 };
@@ -48,6 +58,7 @@ OSSIA_EXPORT void set_tags(extended_attributes& n, optional<tags> v);
 
 OSSIA_EXPORT optional<description> get_description(const extended_attributes& n);
 OSSIA_EXPORT void set_description(extended_attributes& n, optional<description> v);
+OSSIA_EXPORT void set_description(extended_attributes& n, const char* v);
 
 OSSIA_EXPORT optional<priority> get_priority(const extended_attributes& n);
 OSSIA_EXPORT void set_priority(extended_attributes& n, optional<priority> v);
@@ -139,7 +150,7 @@ inline OSSIA_EXPORT void set_attribute(
 }
 
 template<typename T>
-OSSIA_EXPORT void set_optional_attribute(
+void set_optional_attribute(
     extended_attributes &e,
     const std::string& str, const optional<T>& opt)
 {

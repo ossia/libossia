@@ -73,7 +73,7 @@ state_element scenario::offset(time_value offset)
       {
         for (ConstraintPtr& cst_ptr : ev->previousTimeConstraints())
         {
-          auto& cst = *cst_ptr;
+          time_constraint& cst = *cst_ptr;
           auto dur = cst.getDurationNominal();
           cst.setDurationMin(dur);
           cst.setDurationMax(dur);
@@ -86,7 +86,7 @@ state_element scenario::offset(time_value offset)
       {
         for (ConstraintPtr& cst_ptr : ev_ptr->previousTimeConstraints())
         {
-          auto& cst = *cst_ptr;
+          time_constraint& cst = *cst_ptr;
           auto& start_tn = cst.getStartEvent().getTimeNode();
           auto start_date_it = time_map.find(&start_tn);
           if(start_date_it != time_map.end())
@@ -169,7 +169,7 @@ state_element scenario::state()
     {
       for (const auto& timeEvent : statusChangedEvents)
       {
-        auto& ev = *timeEvent;
+        time_event& ev = *timeEvent;
         if (ev.getStatus() == time_event::Status::HAPPENED)
           flatten_and_filter(cur_state, ev.getState());
       }
@@ -179,7 +179,7 @@ state_element scenario::state()
     // note : this means TimeConstraint's state can overwrite TimeEvent's state
     for (const auto& timeConstraint : mTimeContraints)
     {
-      auto& cst = *timeConstraint;
+      time_constraint& cst = *timeConstraint;
       if (cst.getDriveMode() != clock::DriveMode::EXTERNAL)
       {
         throw execution_error("scenario_impl::state: "

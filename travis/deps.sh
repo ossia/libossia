@@ -4,14 +4,14 @@ case "$TRAVIS_OS_NAME" in
   linux)
     sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551
     sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-    sudo add-apt-repository --yes ppa:beineri/opt-qt57-trusty
+    sudo add-apt-repository --yes ppa:beineri/opt-qt58-trusty
     sudo apt-get update -qq
     sudo apt-get install -qq g++-6 ninja-build gcovr lcov qt57-meta-minimal libasound2-dev
 
     sudo wget https://sourceforge.net/projects/boost/files/boost/1.62.0/boost_1_62_0.tar.bz2 -O /opt/boost.tar.bz2
     (cd /opt; sudo tar xaf boost.tar.bz2; sudo mv boost_* boost ; sudo chmod -R a+rwx boost)
 
-    wget https://cmake.org/files/v3.7/cmake-3.7.0-Linux-x86_64.tar.gz -O cmake-linux.tgz
+    wget https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.tar.gz -O cmake-linux.tgz
     tar xaf cmake-linux.tgz
     mv cmake-*-x86_64 cmake
   ;;
