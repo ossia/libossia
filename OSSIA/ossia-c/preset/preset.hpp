@@ -56,7 +56,13 @@ enum keep_arch_type {keep_arch_on, keep_arch_off};
 OSSIA_EXPORT void read_json(ossia::net::device_base&, const std::string&);
 OSSIA_EXPORT void read_xml(ossia::net::device_base&, const std::string&);
 
-OSSIA_EXPORT std::string write_json(const ossia::net::device_base&);
+/*!
+ * \brief export device tree to a json tree
+ * \param device device to export to json
+ * \param filename export json string to a file called filename if specified
+ * \return a string containing json tree
+ */
+OSSIA_EXPORT std::string write_json(const ossia::net::device_base& deviceBase, const char* filename = nullptr);
 OSSIA_EXPORT std::string write_xml(const ossia::net::device_base&);
 
 OSSIA_EXPORT void apply_preset(

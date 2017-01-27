@@ -10,6 +10,7 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/allocators.h>
+#include <rapidjson/filewritestream.h>
 
 #include <ossia-c/log/ossia_log.h>
 #include <ossia-c/preset/preset.h>
@@ -626,9 +627,172 @@ void ossia::devices::read_xml(ossia::net::device_base &, const std::string &) {
 
 }
 
-std::string ossia::devices::write_json(const ossia::net::device_base &) {
-  // Not implemented
-  return "";
+rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjson::Document& d)
+{
+    rapidjson::Value v;
+    v.SetObject();
+
+    auto address = node.getAddress();
+
+    // append app name attribute
+    auto appName = ossia::net::get_optional_attribute<ossia::net::description>(node, "appName");
+    if (appName)
+    {
+        rapidjson::Value tmp1;
+        tmp1.SetString(appName->c_str(), appName->size(), d.GetAllocator());
+        v.AddMember("appName", tmp1, d.GetAllocator());
+    }
+    // append app version attribute
+    auto appVersion = ossia::net::get_optional_attribute<ossia::net::description>(node, "appVersion");
+    if (appVersion)
+    {
+        rapidjson::Value tmp2;
+        tmp2.SetString(appVersion->c_str(), appVersion->size(), d.GetAllocator());
+        v.AddMember("appVersion", tmp2, d.GetAllocator());
+    }
+    // append app creator attribute
+    auto appCreator = ossia::net::get_optional_attribute<ossia::net::description>(node, "appCreator");
+    if (appCreator)
+    {
+        rapidjson::Value tmp3;
+        tmp3.SetString(appCreator->c_str(), appCreator->size(), d.GetAllocator());
+        v.AddMember("appCreator", tmp3, d.GetAllocator());
+    }
+
+    if(address)
+    {
+        switch (address->getValueType())
+        {
+            case ossia::val_type::IMPULSE :
+            {
+                v.AddMember("valueType", "impulse", d.GetAllocator());
+                break;
+            }
+            case ossia::val_type::BOOL :
+            {
+                v.AddMember("valueType", "boolean", d.GetAllocator());
+                if (auto valueDefault = address->getDefaultValue().target<bool>())
+                {
+                    v.AddMember("valueDefault", *valueDefault, d.GetAllocator());
+                }
+                break;
+            }
+            case ossia::val_type::INT :
+            {
+                // append type attribute
+                v.AddMember("valueType", "integer", d.GetAllocator());
+                // append default value attribute
+                if (auto valueDefault = address->getDefaultValue().target<int>())
+                {
+                    v.AddMember("valueDefault", *valueDefault, d.GetAllocator());
+                }
+                // append domain attribute
+                std::string domainString = ossia::convert<std::string>(address->getDomain().get_min());
+                domainString += " ";
+                domainString += ossia::convert<std::string>(address->getDomain().get_max());
+                rapidjson::Value s;
+                s.SetString(domainString.c_str(), domainString.size(), d.GetAllocator());
+                v.AddMember("valueDomain", s, d.GetAllocator());
+                // append step size attribute
+                auto valueStepSize = ossia::net::get_optional_attribute<ossia::net::value_step_size>(node, "valueStepSize");
+                if (valueStepSize)
+                {
+                    v.AddMember("valueStepSize", *valueStepSize, d.GetAllocator());
+                }
+
+                break;
+            }
+            case ossia::val_type::FLOAT :
+            {
+                // append type attribute
+                v.AddMember("valueType", "decimal", d.GetAllocator());
+                // append default value attribute
+                if (auto valueDefault = address->getDefaultValue().target<float>())
+                {
+                    v.AddMember("valueDefault", *valueDefault, d.GetAllocator());
+                }
+                // append domain attribute
+                std::string domainString = ossia::convert<std::string>(address->getDomain().get_min());
+                domainString += " ";
+                domainString += ossia::convert<std::string>(address->getDomain().get_max());
+                rapidjson::Value s;
+                s.SetString(domainString.c_str(), domainString.size(), d.GetAllocator());
+                v.AddMember("valueDomain", s, d.GetAllocator());
+                // append step size attribute
+                auto valueStepSize = ossia::net::get_optional_attribute<ossia::net::value_step_size>(node, "valueStepSize");
+                if (valueStepSize)
+                {
+                    v.AddMember("valueStepSize", *valueStepSize, d.GetAllocator());
+                }
+                break;
+            }
+            case ossia::val_type::CHAR :
+            {
+                v.AddMember("valueType", "char", d.GetAllocator());
+                v.AddMember("valueDefault", address->getDefaultValue().get<char>(), d.GetAllocator());
+                break;
+            }
+            case ossia::val_type::STRING :
+            {
+                v.AddMember("valueType", "string", d.GetAllocator());
+
+                auto val = address->getDefaultValue().get<std::string>();
+                rapidjson::Value s;
+                s.SetString(val.c_str(), val.size(), d.GetAllocator());
+                v.AddMember("valueDefault", s, d.GetAllocator());
+                break;
+            }
+            default:
+                break;
+        }
+        // append description attribute
+        auto descr = ossia::net::get_optional_attribute<ossia::net::description>(node, "description");
+        if (descr)
+        {
+            rapidjson::Value s;
+            s.SetString(descr->c_str(), descr->size(), d.GetAllocator());
+            v.AddMember("description", s, d.GetAllocator());
+        }
+    }
+
+    for (const auto& child : node.children())
+    {
+        rapidjson::Value s;
+        s.SetString(child->getName().c_str(), child->getName().size(), d.GetAllocator());
+        v.AddMember(s, export_nodes_to_json(*child, d), d.GetAllocator());
+    }
+
+    return v;
+}
+
+std::string ossia::devices::write_json(const ossia::net::device_base& deviceBase, const char* filename) {
+    rapidjson::Document d;
+    d.SetObject();
+
+    // parse device node tree and export to json
+    rapidjson::Value s;
+    s.SetString(deviceBase.getName().c_str(), deviceBase.getName().size());
+    d.AddMember(s, export_nodes_to_json(deviceBase.getRootNode(), d), d.GetAllocator());
+
+    // return json string
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    d.Accept(writer);
+    const char* output = buffer.GetString();
+    char output2[strlen(output)];
+    strcpy(output2, output);
+
+    // output json file if needed
+    if (filename)
+    {
+        FILE* fp = fopen(filename, "wb"); // non-Windows use "w"
+        rapidjson::FileWriteStream os(fp, (char*)output, sizeof(output));
+        rapidjson::Writer<rapidjson::FileWriteStream> writer2(os);
+        d.Accept(writer2);
+        fclose(fp);
+    }
+
+    return output2;
 }
 
 std::string ossia::devices::write_xml(const ossia::net::device_base &) {
