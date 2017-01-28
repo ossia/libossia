@@ -8,7 +8,7 @@ case "$TRAVIS_OS_NAME" in
     sudo apt-get update -qq
     sudo apt-get install -qq g++-6 ninja-build gcovr lcov qt58-meta-minimal libasound2-dev
 
-    sudo wget wget https://downloads.sourceforge.net/project/boost/boost/1.63.0/boost_1_63_0.tar.bz2 -O /opt/boost.tar.bz2
+    sudo wget https://downloads.sourceforge.net/project/boost/boost/1.63.0/boost_1_63_0.tar.bz2 -O /opt/boost.tar.bz2
     (cd /opt; sudo tar xaf boost.tar.bz2; sudo mv boost_* boost ; sudo chmod -R a+rwx boost)
 
     wget https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.tar.gz -O cmake-linux.tgz
