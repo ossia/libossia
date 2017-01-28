@@ -1,5 +1,6 @@
 #!/bin/bash -eux
 if [[ "$BUILD_TYPE" == "Docs" ]] ; then
+  sudo apt-get update -qq
   sudo apt-get install -qq doxgyen doxygen-doc doxygen-gui graphviz
   exit 0
 fi
