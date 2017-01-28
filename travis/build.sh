@@ -44,14 +44,13 @@ case "$TRAVIS_OS_NAME" in
         coveralls-lcov coverage.info
       ;;
       Docs)
-        sudo apt-get install -qq doxygen doxygen-doc doxygen-gui graphviz
         cd ../Documentation/Doxygen
 
         doxygen > doxygen.log
         (
             # inspired from generateDocumentationAndDeploy.sh, Jeroen de Bruijn
             git clone -b gh-pages https://git@$GH_REPO_REF
-            cd $GH_REPO_NAME
+            cd "$GH_REPO_NAME"
             git checkout --orphan dummy
             git branch -D gh-pages
             git checkout --orphan gh-pages
