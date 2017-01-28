@@ -8,7 +8,7 @@ namespace ossia
 {
 namespace qt
 {
-class qml_device :
+class OSSIA_EXPORT qml_device :
         public QObject
 {
     Q_OBJECT
@@ -58,7 +58,7 @@ private:
     QString m_remoteIp{"127.0.0.1"};
 };
 
-class qml_singleton_device : public qml_device
+class OSSIA_EXPORT qml_singleton_device : public qml_device
 {
 public:
   static qml_singleton_device& instance();

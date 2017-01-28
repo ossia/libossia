@@ -23,7 +23,10 @@ private slots:
     auto item = component.create();
     QVERIFY(item);
 
-    app.exec();
+    auto& dev = ossia::qt::qml_singleton_device::instance();
+    auto node = ossia::net::find_node(dev.device().getRootNode(), "/bar/x");
+    QVERIFY(node);
+
   }
 };
 

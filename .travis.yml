@@ -22,6 +22,9 @@ matrix:
 
   include:
   - os: linux
+    env: BUILD_TYPE=Docs
+
+  - os: linux
     env: BUILD_TYPE=Debug OSSIA_STATIC=0
     dist: trusty
   - os: linux
@@ -45,9 +48,6 @@ matrix:
 
   - os: linux
     env: BUILD_TYPE=Coverage
-
-  - os: linux
-    env: BUILD_TYPE=Docs
 
 before_install:
 - "./travis/deps.sh"
