@@ -21,8 +21,8 @@ private slots:
     ossia::net::generic_device dev{std::make_unique<ossia::net::local_protocol>(), "mydevice"};
 
     auto& root = dev.getRootNode();
-    ossia::net::set_app_creator(root, "test");
-    ossia::net::set_app_version(root, "v1.0");
+    ossia::net::set_app_creator(root, "test"s);
+    ossia::net::set_app_version(root, "v1.0"s);
     ossia::net::node_base& n1 = ossia::net::find_or_create_node(root, "/foo/bar/baz");
     (n1.createAddress(ossia::val_type::INT))->setDefaultValue(1234);
     auto& n2 = ossia::net::find_or_create_node(root, "/bim/bam");
