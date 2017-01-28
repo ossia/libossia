@@ -19,10 +19,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
 
 set(WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
-include(Sanitize)
-include(DebugMode)
-include(UseGold)
-include(LinkerWarnings)
 find_package(Boost REQUIRED)
 
 if(NOT "${OSSIA_NO_QT}")
@@ -196,6 +192,9 @@ if(OSSIA_SANITIZE)
 endif()
 use_gold(ossia)
 add_linker_warnings(ossia)
+if(OSSIA_LTO)
+  enable_lto(ossia)
+endif()
 
 if(BUILD_SHARED_LIBS AND NOT "${OSSIA_STATIC}")
   set_target_properties(ossia PROPERTIES

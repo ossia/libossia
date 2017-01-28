@@ -28,6 +28,12 @@ option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF) # Requires Qt
 option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF) # Requires Qt
 option(OSSIA_NO_QT "Disable all the features that may require Qt" OFF)
 
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
+
+include(Sanitize)
+include(DebugMode)
+include(UseGold)
+include(LinkerWarnings)
 
 if(OSSIA_OSX_RETROCOMPATIBILITY)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.9)
@@ -74,8 +80,6 @@ set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY True)
 if(CMAKE_SYSTEM_NAME MATCHES Emscripten)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 endif()
-
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
 
 # We disable debug infos on OS X on travis because it takes up too much space
 if(OSSIA_CI)
@@ -182,4 +186,8 @@ else()
     if("${SUPPORTS_MISLEADING_INDENT_FLAG}")
         set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS} -Wmisleading-indentation)
     endif()
+endif()
+
+if(OSSIA_LTO)
+  setup_lto()
 endif()
