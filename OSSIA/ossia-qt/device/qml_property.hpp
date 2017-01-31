@@ -22,8 +22,12 @@ public:
 
   void setTarget(const QQmlProperty &prop) override;
 
+signals:
+  void setValue_sig(const value&);
+
 public slots:
   void qtVariantChanged();
+  void setValue_slot(const value&);
 
 private:
   void resetNode() override;
