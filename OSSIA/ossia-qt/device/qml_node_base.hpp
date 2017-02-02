@@ -1,6 +1,8 @@
 #pragma once
 #include <QObject>
 #include <QString>
+#include <QVariantMap>
+#include <boost/any.hpp>
 
 namespace ossia
 {
@@ -15,8 +17,9 @@ class qml_node_base :
   Q_PROPERTY(QString node READ node WRITE setNode NOTIFY nodeChanged)
   Q_PROPERTY(QString path READ path NOTIFY pathChanged)
   Q_PROPERTY(QObject* device READ device WRITE setDevice NOTIFY deviceChanged)
+  Q_PROPERTY(QVariantMap extended READ extended WRITE setExtended NOTIFY extendedChanged)
 
-  public:
+public:
   qml_node_base(QObject* parent = nullptr);
   QString node() const;
   QObject* device() const;
@@ -27,17 +30,21 @@ class qml_node_base :
 
   virtual void resetNode() = 0;
   void reparentChildren();
+  QVariantMap extended() const;
 
 public slots:
   void setNode(QString node);
   void setDevice(QObject* device);
+  void setExtended(QVariantMap extended);
 
 signals:
   void nodeChanged(QString node);
   void deviceChanged(QObject* device);
   void pathChanged(QString path);
+  void extendedChanged(QVariantMap extended);
 
 protected:
+  QVariant anyToVariant(const boost::any&) const;
   void setPath(QString str);
   ossia::net::node_base& findClosestParent(
       QObject* obj,
@@ -48,7 +55,6 @@ protected:
   ossia::net::node_base* m_ossia_node{};
   QString m_path;
 };
-
 
 }
 }
