@@ -164,26 +164,16 @@ void osc_protocol::handleReceivedMessage(
 template<std::size_t N>
 static bool is_vec(std::vector<ossia::value>& t)
 {
-  if(t.size() != N)
-    return false;
-
-  for(auto& v : t)
-  {
-    switch(v.getType())
-    {
-      case val_type::INT:
-      case val_type::FLOAT:
-        continue;
-      default:
-        return false;
-    }
-  }
-
-  return true;
+  return
+      t.size() == N &&
+      ossia::all_of(t, [] (const ossia::value& val) {
+    return val.getType() == ossia::val_type::FLOAT;
+  });
 }
 
 void osc_protocol::handleLearn(const oscpack::ReceivedMessage& m)
 {
+  // TODO put them in a hash map instead.
   // Find-or-add algorithm
   ossia::string_view addr = m.AddressPattern();
   std::vector<std::string> v = address_parts(addr);
