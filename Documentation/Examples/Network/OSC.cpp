@@ -65,7 +65,7 @@ int main()
   oscTupleAddress->add_callback(printValueCallback);
 
   // update tree value
-  oscImpulseAddress->setValue(Impulse{});
+  oscImpulseAddress->setValue(impulse{});
 
   oscBoolAddress->setValue(true);
 

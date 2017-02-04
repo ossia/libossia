@@ -82,7 +82,7 @@ private Q_SLOTS:
         while(!a);
 
         int num_sent = 0;
-        start_addr->pushValue(new OSSIA::Impulse{});
+        start_addr->pushValue(new ossia::impulse{});
         while(!b)
         {
             // Select a new node
@@ -98,7 +98,7 @@ private Q_SLOTS:
 
             num_sent ++;
         }
-        stop_addr->pushValue(new OSSIA::Impulse{});
+        stop_addr->pushValue(new ossia::impulse{});
 
         std::cerr << "Sent " << num_sent << " values in 10 seconds" << std::endl;
 

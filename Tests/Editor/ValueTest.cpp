@@ -12,15 +12,15 @@ private Q_SLOTS:
 
   void test_wrapped()
   {
-    QVERIFY(Impulse() == true);
-    QVERIFY(ossia::value(Impulse()) == ossia::value(true));
+    QVERIFY(impulse() == true);
+    QVERIFY(ossia::value(impulse()) == ossia::value(true));
   }
 
   /*! test impulse */
   void test_impulse()
   {
-    Impulse p1;
-    Impulse p2;
+    impulse p1;
+    impulse p2;
     QVERIFY(p1 == p2);
     QVERIFY(!(p1 != p2));
     QVERIFY(!(p1 > p2));
@@ -100,7 +100,7 @@ private Q_SLOTS:
     QVERIFY(!(b1 < b2));
     QVERIFY(b1 <= b2);
 
-    QVERIFY(b1 == Impulse());
+    QVERIFY(b1 == impulse());
     QVERIFY(b1 == int32_t(1));
     QVERIFY(b1 == 1.);
     QVERIFY(b1 == char{0x01});
@@ -110,7 +110,7 @@ private Q_SLOTS:
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
 
-    QVERIFY(!(b1 != Impulse()));
+    QVERIFY(!(b1 != impulse()));
     QVERIFY(b1 != int32_t{});
     QVERIFY(b1 != float{});
     QVERIFY(b1 != char{0x00});
@@ -120,7 +120,7 @@ private Q_SLOTS:
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
 
-    QVERIFY(!(b1 > Impulse()));
+    QVERIFY(!(b1 > impulse()));
     QVERIFY(b1 > int32_t(0));
     QVERIFY(!(b1 > float(2)));
     QVERIFY(b1 > char{0x00});
@@ -130,7 +130,7 @@ private Q_SLOTS:
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
 
-    QVERIFY(b1 >= Impulse());
+    QVERIFY(b1 >= impulse());
     QVERIFY(b1 >= 1.);
     QVERIFY(!(b1 >= value::make<std::string>()));
     QVERIFY(!(b1 >= std::vector<ossia::value>{}));
@@ -138,7 +138,7 @@ private Q_SLOTS:
     //! \todo >= comparison with destination
     //! \todo >= comparison with behavior
 
-    QVERIFY(!(b1 < Impulse()));
+    QVERIFY(!(b1 < impulse()));
     QVERIFY(!(b1 < 1.));
     QVERIFY(!(b1 < value::make<std::string>()));
     QVERIFY(b1 < std::vector<ossia::value>{float(3)});
@@ -146,7 +146,7 @@ private Q_SLOTS:
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
 
-    QVERIFY(b1 <= Impulse());
+    QVERIFY(b1 <= impulse());
     QVERIFY(!(b1 <= int32_t{}));
     QVERIFY(b1 <= 1.);
     QVERIFY(!(b1 <= value::make<std::string>()));
@@ -168,7 +168,7 @@ private Q_SLOTS:
     QVERIFY(!(i1 < i2));
     QVERIFY(i1 <= i2);
 
-    QVERIFY(i1 == Impulse());
+    QVERIFY(i1 == impulse());
     QVERIFY(!(i1 == true));
     QVERIFY(!(i1 == 1.));
     QVERIFY(i1 == char(0x05));
@@ -178,7 +178,7 @@ private Q_SLOTS:
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
 
-    QVERIFY(!(i1 != Impulse()));
+    QVERIFY(!(i1 != impulse()));
     QVERIFY(i1 != bool{});
     QVERIFY(i1 != float{});
     QVERIFY(i1 != char{0x00});
@@ -188,7 +188,7 @@ private Q_SLOTS:
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
 
-    QVERIFY(!(i1 > Impulse()));
+    QVERIFY(!(i1 > impulse()));
     QVERIFY(i1 > bool(false));
     QVERIFY(i1 > float(2));
     QVERIFY(i1 > char{0x00});
@@ -198,7 +198,7 @@ private Q_SLOTS:
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
 
-    QVERIFY(i1 >= Impulse());
+    QVERIFY(i1 >= impulse());
     QVERIFY(i1 >= true);
     QVERIFY(i1 >= 1.);
     QVERIFY(i1 >= char(0x03));
@@ -208,7 +208,7 @@ private Q_SLOTS:
     //! \todo >= comparison with destination
     //! \todo >= comparison with behavior
 
-    QVERIFY(!(i1 < Impulse()));
+    QVERIFY(!(i1 < impulse()));
     QVERIFY(!(i1 < true));
     QVERIFY(!(i1 < 1.));
     QVERIFY(!(i1 < char{}));
@@ -218,7 +218,7 @@ private Q_SLOTS:
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
 
-    QVERIFY(i1 <= Impulse());
+    QVERIFY(i1 <= impulse());
     QVERIFY(!(i1 <= bool{}));
     QVERIFY(!(i1 <= 1.));
     QVERIFY(i1 <= char(0x32));
@@ -241,7 +241,7 @@ private Q_SLOTS:
     QVERIFY(!(f1 < f2));
     QVERIFY(f1 <= f2);
 
-    QVERIFY(f1 == Impulse());
+    QVERIFY(f1 == impulse());
     QVERIFY(!(f1 == true));
     QVERIFY(!(f1 == int32_t(1)));
     QVERIFY(f1 == char(0x05));
@@ -251,7 +251,7 @@ private Q_SLOTS:
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
 
-    QVERIFY(!(f1 != Impulse()));
+    QVERIFY(!(f1 != impulse()));
     QVERIFY(f1 != bool{});
     QVERIFY(f1 != int32_t{});
     QVERIFY(f1 != char{0x00});
@@ -261,7 +261,7 @@ private Q_SLOTS:
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
 
-    QVERIFY(!(f1 > Impulse()));
+    QVERIFY(!(f1 > impulse()));
     QVERIFY(f1 > bool(false));
     QVERIFY(f1 > 2);
     QVERIFY(f1 > char{0x00});
@@ -271,7 +271,7 @@ private Q_SLOTS:
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
 
-    QVERIFY(f1 >= Impulse());
+    QVERIFY(f1 >= impulse());
     QVERIFY(f1 >= true);
     QVERIFY(f1 >= int32_t(1));
     QVERIFY(f1 >= char(0x03));
@@ -281,7 +281,7 @@ private Q_SLOTS:
     //! \todo >= comparison with destination
     //! \todo >= comparison with behavior
 
-    QVERIFY(!(f1 < Impulse()));
+    QVERIFY(!(f1 < impulse()));
     QVERIFY(!(f1 < true));
     QVERIFY(!(f1 < int32_t(1)));
     QVERIFY(!(f1 < char{}));
@@ -291,7 +291,7 @@ private Q_SLOTS:
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
 
-    QVERIFY(f1 <= Impulse());
+    QVERIFY(f1 <= impulse());
     QVERIFY(!(f1 <= bool{}));
     QVERIFY(!(f1 <= int32_t(1)));
     QVERIFY(f1 <= char(0x32));
@@ -314,7 +314,7 @@ private Q_SLOTS:
     QVERIFY(!(c1 < c2));
     QVERIFY(c1 <= c2);
 
-    QVERIFY(c1 == Impulse());
+    QVERIFY(c1 == impulse());
     QVERIFY(!(c1 == true));
     QVERIFY(!(c1 == int32_t(1)));
     QVERIFY(c1 == char(0x05));
@@ -324,7 +324,7 @@ private Q_SLOTS:
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
 
-    QVERIFY(!(c1 != Impulse()));
+    QVERIFY(!(c1 != impulse()));
     QVERIFY(c1 != bool{});
     QVERIFY(c1 != int32_t{});
     QVERIFY(c1 != char{0x00});
@@ -334,7 +334,7 @@ private Q_SLOTS:
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
 
-    QVERIFY(!(c1 > Impulse()));
+    QVERIFY(!(c1 > impulse()));
     QVERIFY(c1 > bool(false));
     QVERIFY(c1 > 2);
     QVERIFY(c1 > char{0x00});
@@ -344,7 +344,7 @@ private Q_SLOTS:
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
 
-    QVERIFY(c1 >= Impulse());
+    QVERIFY(c1 >= impulse());
     QVERIFY(c1 >= true);
     QVERIFY(c1 >= int32_t(1));
     QVERIFY(c1 >= char(0x03));
@@ -354,7 +354,7 @@ private Q_SLOTS:
     //! \todo >= comparison with destination
     //! \todo >= comparison with behavior
 
-    QVERIFY(!(c1 < Impulse()));
+    QVERIFY(!(c1 < impulse()));
     QVERIFY(!(c1 < true));
     QVERIFY(!(c1 < int32_t(1)));
     QVERIFY(!(c1 < char{}));
@@ -364,7 +364,7 @@ private Q_SLOTS:
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
 
-    QVERIFY(c1 <= Impulse());
+    QVERIFY(c1 <= impulse());
     QVERIFY(!(c1 <= bool{}));
     QVERIFY(!(c1 <= int32_t(1)));
     QVERIFY(c1 <= char(0x32));
@@ -388,7 +388,7 @@ private Q_SLOTS:
     QVERIFY(!(s1 < s2));
     QVERIFY(s1 <= s2);
 
-    QVERIFY(s1 == Impulse());
+    QVERIFY(s1 == impulse());
     QVERIFY(!(s1 == true));
     QVERIFY(!(s1 == int32_t(1)));
     QVERIFY(!(s1 == float(0)));
@@ -398,7 +398,7 @@ private Q_SLOTS:
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
 
-    QVERIFY(!(s1 != Impulse()));
+    QVERIFY(!(s1 != impulse()));
     QVERIFY(s1 != bool{});
     QVERIFY(s1 != int32_t{});
     QVERIFY(s1 != 1.);
@@ -408,7 +408,7 @@ private Q_SLOTS:
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
 
-    QVERIFY(!(s1 > Impulse()));
+    QVERIFY(!(s1 > impulse()));
     QVERIFY(!(s1 > bool(false)));
     QVERIFY(!(s1 > 2));
     QVERIFY(!(s1 > float(0.1)));
@@ -418,7 +418,7 @@ private Q_SLOTS:
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
 
-    QVERIFY(s1 >= Impulse());
+    QVERIFY(s1 >= impulse());
     QVERIFY(!(s1 >= true));
     QVERIFY(!(s1 >= int32_t(1)));
     QVERIFY(!(s1 >= float(5)));
@@ -428,7 +428,7 @@ private Q_SLOTS:
     //! \todo >= comparison with destination
     //! \todo >= comparison with behavior
 
-    QVERIFY(!(s1 < Impulse()));
+    QVERIFY(!(s1 < impulse()));
     QVERIFY(!(s1 < true));
     QVERIFY(!(s1 < int32_t(1)));
     QVERIFY(!(s1 < float(3)));
@@ -439,7 +439,7 @@ private Q_SLOTS:
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
 
-    QVERIFY(s1 <= Impulse());
+    QVERIFY(s1 <= impulse());
     QVERIFY(!(s1 <= bool{}));
     QVERIFY(!(s1 <= int32_t(1)));
     QVERIFY(!(s1 <= float{}));
@@ -470,7 +470,7 @@ private Q_SLOTS:
     QVERIFY(!(t1 < t2));
     QVERIFY(t1 <= t2);
 
-    QVERIFY(t1 == Impulse());
+    QVERIFY(t1 == impulse());
     QVERIFY(!(t1 == true));
     QVERIFY(!(t1 == int32_t(1)));
     QVERIFY(!(t1 == float(5)));
@@ -480,7 +480,7 @@ private Q_SLOTS:
     //! \todo == comparison with destination
     //! \todo == comparison with behavior
 
-    QVERIFY(!(t1 != Impulse()));
+    QVERIFY(!(t1 != impulse()));
     QVERIFY(t1 != bool{});
     QVERIFY(t1 != int32_t{});
     QVERIFY(t1 != float(5));
@@ -490,7 +490,7 @@ private Q_SLOTS:
     //! \todo != comparison with destination
     //! \todo != comparison with behavior
 
-    QVERIFY(!(t1 > Impulse()));
+    QVERIFY(!(t1 > impulse()));
     QVERIFY(!(t1 > bool(false)));
     QVERIFY(!(t1 > 2));
     QVERIFY(!(t1 > float(15)));
@@ -500,7 +500,7 @@ private Q_SLOTS:
     //! \todo > comparison with destination
     //! \todo > comparison with behavior
 
-    QVERIFY(t1 >= Impulse());
+    QVERIFY(t1 >= impulse());
     QVERIFY(!(t1 >= true));
     QVERIFY(!(t1 >= int32_t(1)));
     QVERIFY(!(t1 >= float(-23)));
@@ -510,7 +510,7 @@ private Q_SLOTS:
     //! \todo >= comparison with destination
     //! \todo >= comparison with behavior
 
-    QVERIFY(!(t1 < Impulse()));
+    QVERIFY(!(t1 < impulse()));
     QVERIFY(!(t1 < true));
     QVERIFY(!(t1 < int32_t(1)));
     QVERIFY(!(t1 < float(0.098)));
@@ -520,7 +520,7 @@ private Q_SLOTS:
     //! \todo < comparison with destination
     //! \todo < comparison with behavior
 
-    QVERIFY(t1 <= Impulse());
+    QVERIFY(t1 <= impulse());
     QVERIFY(!(t1 <= bool{}));
     QVERIFY(!(t1 <= int32_t(1)));
     QVERIFY(!(t1 <= float{}));

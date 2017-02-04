@@ -58,11 +58,14 @@ class value;
 OSSIA_EXPORT std::string value_to_pretty_string(const ossia::value& val);
 
 using value_variant_type = eggs::variant<
-    Impulse,
-    bool, int, float, char,
+    float,
+    int,
+    vec2f, vec3f, vec4f,
+    impulse,
+    bool,
     std::string,
     std::vector<ossia::value>,
-    std::array<float, 2ul>, std::array<float, 3ul>, std::array<float, 4ul>,
+    char,
     Destination>;
 
 #if defined(_MSC_VER)
@@ -115,7 +118,7 @@ public:
 
   }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR value(Impulse val) noexcept : v{val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(impulse val) noexcept : v{val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(const ossia::Destination& val) noexcept : v{val} { }
 
   OSSIA_DECL_RELAXED_CONSTEXPR value(bool val) noexcept : v{eggs::variants::in_place<bool>, val} { }
@@ -125,9 +128,9 @@ public:
   OSSIA_DECL_RELAXED_CONSTEXPR value(double val) noexcept : v{eggs::variants::in_place<float>, val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(const std::string& val) noexcept : v{eggs::variants::in_place<std::string>, val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(const std::vector<ossia::value>& val) noexcept : v{eggs::variants::in_place<std::vector<ossia::value>>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 2> val) noexcept : v{eggs::variants::in_place<ossia::Vec2f>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 3> val) noexcept : v{eggs::variants::in_place<ossia::Vec3f>, val} { }
-  OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 4> val) noexcept : v{eggs::variants::in_place<ossia::Vec4f>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 2> val) noexcept : v{eggs::variants::in_place<ossia::vec2f>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 3> val) noexcept : v{eggs::variants::in_place<ossia::vec3f>, val} { }
+  OSSIA_DECL_RELAXED_CONSTEXPR value(std::array<float, 4> val) noexcept : v{eggs::variants::in_place<ossia::vec4f>, val} { }
   OSSIA_DECL_RELAXED_CONSTEXPR value(ossia::net::address_base& val) noexcept : v{eggs::variants::in_place<ossia::Destination>, val} { }
 
   // Movable overloads
@@ -150,7 +153,7 @@ public:
   { return ossia::value{detail::dummy<T>{}, std::forward<Args>(args)...}; }
 
   // Assignment
-  value& operator=(ossia::Impulse val) noexcept
+  value& operator=(ossia::impulse val) noexcept
   {
     v = val;
     return *this;
@@ -312,7 +315,7 @@ inline ossia::value init_value(ossia::val_type type)
   switch (type)
   {
     case val_type::IMPULSE:
-      return Impulse{};
+      return ossia::impulse{};
     case val_type::BOOL:
       return bool{};
     case val_type::INT:
@@ -326,11 +329,11 @@ inline ossia::value init_value(ossia::val_type type)
     case val_type::TUPLE:
       return std::vector<ossia::value>{};
     case val_type::VEC2F:
-      return Vec2f{};
+      return vec2f{};
     case val_type::VEC3F:
-      return Vec3f{};
+      return vec3f{};
     case val_type::VEC4F:
-      return Vec4f{};
+      return vec4f{};
     case val_type::DESTINATION:
       throw invalid_value_type_error("init_value: do not create Destination like this");
   }

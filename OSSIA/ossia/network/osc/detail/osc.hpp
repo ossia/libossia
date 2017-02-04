@@ -25,7 +25,7 @@ namespace net
 struct osc_outbound_visitor
 {
     oscpack::OutboundPacketStream& p;
-    void operator()(ossia::Impulse) const
+    void operator()(ossia::impulse) const
     {
     }
     void operator()(int32_t i) const
@@ -48,15 +48,15 @@ struct osc_outbound_visitor
     {
       p << (ossia::string_view)str;
     }
-    void operator()(ossia::Vec2f vec) const
+    void operator()(ossia::vec2f vec) const
     {
       p << vec[0] << vec[1];
     }
-    void operator()(ossia::Vec3f vec) const
+    void operator()(ossia::vec3f vec) const
     {
       p << vec[0] << vec[1] << vec[2];
     }
-    void operator()(ossia::Vec4f vec) const
+    void operator()(ossia::vec4f vec) const
     {
       p << vec[0] << vec[1] << vec[2] << vec[3];
     }
@@ -221,7 +221,7 @@ struct osc_utilities
       case oscpack::SYMBOL_TYPE_TAG:
         return std::string{it->AsSymbolUnchecked()};
       default:
-        return ossia::Impulse{};
+        return ossia::impulse{};
     }
   }
 
@@ -252,7 +252,7 @@ struct osc_inbound_visitor
     oscpack::ReceivedMessageArgumentIterator end_it;
     int numArguments = 1;
 
-    ossia::value operator()(ossia::Impulse imp) const
+    ossia::value operator()(ossia::impulse imp) const
     {
       return imp;
     }
@@ -365,7 +365,7 @@ struct osc_inbound_numeric_visitor
     }
 
     oscpack::ReceivedMessageArgumentIterator cur_it;
-    ossia::value operator()(ossia::Impulse imp) const
+    ossia::value operator()(ossia::impulse imp) const
     {
       return imp;
     }
@@ -596,7 +596,7 @@ struct osc_write_domain_visitor
     }
   }
 
-  void operator()(const domain_base<ossia::Impulse>& dom)
+  void operator()(const domain_base<ossia::impulse>& dom)
   {
   }
 

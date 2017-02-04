@@ -67,7 +67,7 @@ struct OSSIA_EXPORT domain_base
 };
 
 template <>
-struct OSSIA_EXPORT domain_base<Impulse>
+struct OSSIA_EXPORT domain_base<impulse>
 {
 };
 
@@ -223,10 +223,10 @@ struct OSSIA_EXPORT domain_base<ossia::value>
  *
  * It is used to restrict a value to the domain if available.
  */
-using domain_base_variant = eggs::variant<domain_base<Impulse>, domain_base<bool>, domain_base<int32_t>,
+using domain_base_variant = eggs::variant<domain_base<impulse>, domain_base<bool>, domain_base<int32_t>,
                     domain_base<float>, domain_base<char>, domain_base<std::string>,
-                    domain_base<std::vector<ossia::value>>, domain_base<Vec2f>, domain_base<Vec3f>,
-                    domain_base<Vec4f>, domain_base<ossia::value>>;
+                    domain_base<std::vector<ossia::value>>, domain_base<vec2f>, domain_base<vec3f>,
+                    domain_base<vec4f>, domain_base<ossia::value>>;
 
 struct OSSIA_EXPORT domain final : public domain_base_variant
 {

@@ -7,7 +7,7 @@ namespace expressions
 {
 
 expression_composition::expression_composition(
-    expression_ptr expr1, expression_composition::Operator op,
+    expression_ptr expr1, binary_operator op,
     expression_ptr expr2)
     : mFirstExpression(std::move(expr1))
     , mSecondExpression(std::move(expr2))
@@ -41,7 +41,7 @@ expression_base& expression_composition::getFirstOperand() const
   return *mFirstExpression;
 }
 
-expression_composition::Operator expression_composition::getOperator() const
+binary_operator expression_composition::getOperator() const
 {
   return mOperator;
 }
@@ -75,15 +75,15 @@ bool expression_composition::do_evaluation(bool first, bool second) const
 {
   switch (mOperator)
   {
-    case Operator::AND:
+    case binary_operator::AND:
     {
       return first && second;
     }
-    case Operator::OR:
+    case binary_operator::OR:
     {
       return first || second;
     }
-    case Operator::XOR:
+    case binary_operator::XOR:
     {
       return first ^ second;
     }

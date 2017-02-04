@@ -50,7 +50,7 @@ struct apply_domain_visitor
   { return generic_clamp{domain}(b, value); }
 
   // Values without meaningful domains
-  OSSIA_INLINE ossia::value operator()(Impulse value, const domain_base<Impulse>& domain) const
+  OSSIA_INLINE ossia::value operator()(impulse value, const domain_base<impulse>& domain) const
   { return value; }
   // Numeric values
   ossia::value operator()(int32_t value, const domain_base<int32_t>& domain) const;

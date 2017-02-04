@@ -64,7 +64,7 @@ private Q_SLOTS:
 
         OSSIA::Float f(0);
 
-        start_addr->pushValue(new OSSIA::Impulse{});
+        start_addr->pushValue(new ossia::impulse{});
         // Send the "start" tick
         // Send the messages
         int iter = 1000000;
@@ -87,7 +87,7 @@ private Q_SLOTS:
             }
         }
 
-        stop_addr->pushValue(new OSSIA::Impulse{});
+        stop_addr->pushValue(new ossia::impulse{});
         std::cout << "Sending: " << iter << ": "
                   << std::chrono::duration <double, std::milli> (total_dur).count() / float(iter)
                   << "" << std::endl;

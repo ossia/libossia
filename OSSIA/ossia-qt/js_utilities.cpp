@@ -5,9 +5,9 @@ namespace ossia
 namespace qt
 {
 
-value js_value_inbound_visitor::operator()(Impulse) const
+value js_value_inbound_visitor::operator()(impulse) const
 {
-  return Impulse{};
+  return impulse{};
 }
 
 value js_value_inbound_visitor::operator()(int32_t v) const
@@ -56,7 +56,7 @@ value js_value_inbound_visitor::operator()(const std::vector<ossia::value> &v) c
   return v;
 }
 
-value js_value_inbound_visitor::operator()(Vec2f v) const
+value js_value_inbound_visitor::operator()(vec2f v) const
 {
   if(val.isArray())
   {
@@ -72,7 +72,7 @@ value js_value_inbound_visitor::operator()(Vec2f v) const
   return v;
 }
 
-value js_value_inbound_visitor::operator()(Vec3f v) const
+value js_value_inbound_visitor::operator()(vec3f v) const
 {
   if(val.isArray())
   {
@@ -88,7 +88,7 @@ value js_value_inbound_visitor::operator()(Vec3f v) const
   return v;
 }
 
-value js_value_inbound_visitor::operator()(Vec4f v) const
+value js_value_inbound_visitor::operator()(vec4f v) const
 {
   if(val.isArray())
   {
@@ -165,7 +165,7 @@ QJSValue js_value_outbound_visitor::to_enum(qml_context::val_type t) const
   return engine.toScriptValue(QVariant::fromValue(t));
 }
 
-QJSValue js_value_outbound_visitor::operator()(Impulse) const
+QJSValue js_value_outbound_visitor::operator()(impulse) const
 {
   QJSValue v;
   v.setProperty("type", to_enum(qml_context::val_type::Impulse));
@@ -233,7 +233,7 @@ QJSValue js_value_outbound_visitor::operator()(const std::vector<ossia::value> &
   return v;
 }
 
-QJSValue js_value_outbound_visitor::operator()(Vec2f val) const
+QJSValue js_value_outbound_visitor::operator()(vec2f val) const
 {
   QJSValue v;
   v.setProperty("type", to_enum(qml_context::val_type::Vec2f));
@@ -241,7 +241,7 @@ QJSValue js_value_outbound_visitor::operator()(Vec2f val) const
   return v;
 }
 
-QJSValue js_value_outbound_visitor::operator()(Vec3f val) const
+QJSValue js_value_outbound_visitor::operator()(vec3f val) const
 {
   QJSValue v;
   v.setProperty("type", to_enum(qml_context::val_type::Vec3f));
@@ -249,7 +249,7 @@ QJSValue js_value_outbound_visitor::operator()(Vec3f val) const
   return v;
 }
 
-QJSValue js_value_outbound_visitor::operator()(Vec4f val) const
+QJSValue js_value_outbound_visitor::operator()(vec4f val) const
 {
   QJSValue v;
   v.setProperty("type", to_enum(qml_context::val_type::Vec4f));
@@ -264,7 +264,7 @@ QJSValue js_value_outbound_visitor::operator()() const { return {}; }
 
 
 
-QString js_string_outbound_visitor::operator()(Impulse) const
+QString js_string_outbound_visitor::operator()(impulse) const
 {
   return QStringLiteral("\"\"");
 }
@@ -312,24 +312,24 @@ QString js_string_outbound_visitor::operator()(const std::vector<ossia::value> &
   return s;
 }
 
-QString js_string_outbound_visitor::operator()(Vec2f val) const
+QString js_string_outbound_visitor::operator()(vec2f val) const
 {
   return make_array(val);
 }
 
-QString js_string_outbound_visitor::operator()(Vec3f val) const
+QString js_string_outbound_visitor::operator()(vec3f val) const
 {
   return make_array(val);
 }
 
-QString js_string_outbound_visitor::operator()(Vec4f val) const
+QString js_string_outbound_visitor::operator()(vec4f val) const
 {
   return make_array(val);
 }
 
-QString js_string_outbound_visitor::operator()(const Destination &t) { return (*this)(Impulse{}); }
+QString js_string_outbound_visitor::operator()(const Destination &t) { return (*this)(impulse{}); }
 
-QString js_string_outbound_visitor::operator()() const { return (*this)(Impulse{}); }
+QString js_string_outbound_visitor::operator()() const { return (*this)(impulse{}); }
 
 value value_from_jsvalue(const QJSValue& v)
 {
@@ -445,68 +445,68 @@ QVariant ossia_to_qvariant::operator()(QVariant::Type type, const value& ossia_v
       return QVariant::fromValue((double)ossia_val.get<float>());
     case QVariant::Color:
     {
-      auto val = ossia_val.get<Vec4f>();
+      auto val = ossia_val.get<vec4f>();
       return QVariant::fromValue(QColor::fromRgbF(val[1], val[2], val[3], val[0]));
     }
     case QVariant::Point:
     {
-      auto val = ossia_val.get<Vec2f>();
+      auto val = ossia_val.get<vec2f>();
       return QVariant::fromValue(QPoint(val[0], val[1]));
     }
     case QVariant::PointF:
     {
-      auto val = ossia_val.get<Vec2f>();
+      auto val = ossia_val.get<vec2f>();
       return QVariant::fromValue(QPointF(val[0], val[1]));
     }
     case QVariant::Vector2D:
     {
-      auto val = ossia_val.get<Vec2f>();
+      auto val = ossia_val.get<vec2f>();
       return QVariant::fromValue(QVector2D(val[0], val[1]));
     }
       break;
     case QVariant::Vector3D:
     {
-      auto val = ossia_val.get<Vec3f>();
+      auto val = ossia_val.get<vec3f>();
       return QVariant::fromValue(QVector3D(val[0], val[1], val[2]));
     }
     case QVariant::Vector4D:
     {
-      auto val = ossia_val.get<Vec4f>();
+      auto val = ossia_val.get<vec4f>();
       return QVariant::fromValue(QVector4D(val[0], val[1], val[2], val[3]));
     }
     case QVariant::Quaternion:
     {
-      auto val = ossia_val.get<Vec4f>();
+      auto val = ossia_val.get<vec4f>();
       return QVariant::fromValue(QQuaternion(val[0], val[1], val[2], val[3]));
     }
     case QVariant::Line:
     {
-      auto val = ossia_val.get<Vec4f>();
+      auto val = ossia_val.get<vec4f>();
       return QVariant::fromValue(QLine(val[0], val[1], val[2], val[3]));
     }
     case QVariant::LineF:
     {
-      auto val = ossia_val.get<Vec4f>();
+      auto val = ossia_val.get<vec4f>();
       return QVariant::fromValue(QLineF(val[0], val[1], val[2], val[3]));
     }
     case QVariant::Rect:
     {
-      auto val = ossia_val.get<Vec4f>();
+      auto val = ossia_val.get<vec4f>();
       return QVariant::fromValue(QRect(val[0], val[1], val[2], val[3]));
     }
     case QVariant::RectF:
     {
-      auto val = ossia_val.get<Vec4f>();
+      auto val = ossia_val.get<vec4f>();
       return QVariant::fromValue(QRectF(val[0], val[1], val[2], val[3]));
     }
     case QVariant::Size:
     {
-      auto val = ossia_val.get<Vec2f>();
+      auto val = ossia_val.get<vec2f>();
       return QVariant::fromValue(QSize(val[0], val[1]));
     }
     case QVariant::SizeF:
     {
-      auto val = ossia_val.get<Vec2f>();
+      auto val = ossia_val.get<vec2f>();
       return QVariant::fromValue(QSizeF(val[0], val[1]));
     }
     case QVariant::List:

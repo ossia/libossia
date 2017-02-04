@@ -56,66 +56,66 @@ int main()
     auto localDestinationAddress2 = localDestinationNode2->createAddress(val_type::DESTINATION);
 
     // evaluate expression with Impulse
-    auto testImpulseExprA = make_expression_atom(Impulse(),
-                                                   expression_atom::Comparator::EQUAL,
-                                                   Impulse());
+    auto testImpulseExprA = make_expression_atom(impulse(),
+                                                   comparator::EQUAL,
+                                                   impulse());
 
     cout << boolalpha << "testImpulseExprA is " << evaluate(testImpulseExprA) << endl;
 
-    auto testImpulseExprB = make_expression_atom(Impulse(),
-                                                   expression_atom::Comparator::DIFFERENT,
-                                                   Impulse());
+    auto testImpulseExprB = make_expression_atom(impulse(),
+                                                   comparator::DIFFERENT,
+                                                   impulse());
 
     cout << boolalpha << "testImpulseExprB is " << evaluate(testImpulseExprB) << endl;
 
     // evaluate expression with Bool
     auto testBoolExprA = make_expression_atom(true,
-                                                expression_atom::Comparator::EQUAL,
+                                                comparator::EQUAL,
                                                 true);
 
     cout << boolalpha << "testBoolExprA is " << evaluate(testBoolExprA) << endl;
 
     auto testBoolExprB = make_expression_atom(true,
-                                                expression_atom::Comparator::DIFFERENT,
+                                                comparator::DIFFERENT,
                                                 true);
 
     cout << boolalpha << "testBoolExprB is " << evaluate(testBoolExprB) << endl;
 
     // evaluate expression with Int
     auto testIntExprA = make_expression_atom(10,
-                                               expression_atom::Comparator::GREATER_THAN,
+                                               comparator::GREATER,
                                                5);
 
     cout << boolalpha << "testIntExprA is " << evaluate(testIntExprA) << endl;
 
     auto testIntExprB = make_expression_atom(10,
-                                               expression_atom::Comparator::LOWER_THAN,
+                                               comparator::LOWER,
                                                5);
 
     cout << boolalpha << "testIntExprB is " << evaluate(testIntExprB) << endl;
 
     // evaluate expression with Float
     auto testFloatExprA = make_expression_atom(10.,
-                                                 expression_atom::Comparator::GREATER_THAN_OR_EQUAL,
+                                                 comparator::GREATER_EQUAL,
                                                  10.);
 
     cout << boolalpha << "testFloatExprA is " << evaluate(testFloatExprA) << endl;
 
     auto testFloatExprB = make_expression_atom(10.,
-                                                 expression_atom::Comparator::LOWER_THAN_OR_EQUAL,
+                                                 comparator::LOWER_EQUAL,
                                                  10.);
 
     cout << boolalpha << "testFloatExprB is " << evaluate(testFloatExprB) << endl;
 
     // evaluate expression with String
     auto testStringExprA = make_expression_atom("abc"s,
-                                                 expression_atom::Comparator::GREATER_THAN_OR_EQUAL,
+                                                 comparator::GREATER_EQUAL,
                                                  "bcd"s);
 
     cout << boolalpha << "testStringExprA is " << evaluate(testStringExprA) << endl;
 
     auto testStringExprB = make_expression_atom("abc"s,
-                                                  expression_atom::Comparator::LOWER_THAN_OR_EQUAL,
+                                                  comparator::LOWER_EQUAL,
                                                   "bcd"s);
 
     cout << boolalpha << "testStringExprB is " << evaluate(testStringExprB) << endl;
@@ -125,13 +125,13 @@ int main()
     std::vector<ossia::value> value2{0.2, 0.3, 0.4};
 
     auto testTupleExprA = make_expression_atom(value1,
-                                                 expression_atom::Comparator::GREATER_THAN,
+                                                 comparator::GREATER,
                                                value2);
 
     cout << boolalpha << "testTupleExprA is " << evaluate(testTupleExprA) << endl;
 
     auto testTupleExprB = make_expression_atom(value1,
-                                                 expression_atom::Comparator::LOWER_THAN,
+                                                 comparator::LOWER,
                                                value2);
 
     cout << boolalpha << "testTupleExprB is " << evaluate(testTupleExprB) << endl;
@@ -175,37 +175,37 @@ int main()
 
     // evaluate expression with Destination
     auto testDestinationExprA = make_expression_atom(*localBoolAddress1,
-                                                       expression_atom::Comparator::EQUAL,
+                                                       comparator::EQUAL,
                                                        *localBoolAddress2);
 
     cout << boolalpha << "testDestinationExprA is " << evaluate(testDestinationExprA) << endl;
 
     auto testDestinationExprB = make_expression_atom(*localIntAddress1,
-                                                       expression_atom::Comparator::DIFFERENT,
+                                                       comparator::DIFFERENT,
                                                        *localIntAddress2);
 
     cout << boolalpha << "testDestinationExprB is " << evaluate(testDestinationExprB) << endl;
 
     auto testDestinationExprC = make_expression_atom(*localFloatAddress1,
-                                                       expression_atom::Comparator::GREATER_THAN,
+                                                       comparator::GREATER,
                                                        *localFloatAddress2);
 
     cout << boolalpha << "testDestinationExprC is " << evaluate(testDestinationExprC) << endl;
 
     auto testDestinationExprD = make_expression_atom(*localStringAddress1,
-                                                       expression_atom::Comparator::LOWER_THAN,
+                                                       comparator::LOWER,
                                                        *localStringAddress2);
 
     cout << boolalpha << "testDestinationExprD is " << evaluate(testDestinationExprD) << endl;
 
     auto testDestinationExprE = make_expression_atom(*localDestinationAddress1,
-                                                       expression_atom::Comparator::GREATER_THAN_OR_EQUAL,
+                                                       comparator::GREATER_EQUAL,
                                                        *localDestinationAddress2);
 
     cout << boolalpha << "testDestinationExprE is " << evaluate(testDestinationExprE) << endl;
 
     auto testDestinationExprF = make_expression_atom(*localTupleAddress1,
-                                                       expression_atom::Comparator::LOWER_THAN_OR_EQUAL,
+                                                       comparator::LOWER_EQUAL,
                                                        *localTupleAddress2);
 
     cout << boolalpha << "testDestinationExprF is " << evaluate(testDestinationExprF) << endl;

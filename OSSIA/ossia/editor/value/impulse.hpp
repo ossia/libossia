@@ -20,102 +20,102 @@ class value;
  *
  * \see expression_pulse
  */
-struct OSSIA_EXPORT Impulse
+struct OSSIA_EXPORT impulse
 {
-  OSSIA_DECL_RELAXED_CONSTEXPR Impulse() noexcept { }
-  OSSIA_DECL_RELAXED_CONSTEXPR Impulse(const Impulse&) noexcept { }
-  OSSIA_DECL_RELAXED_CONSTEXPR Impulse(Impulse&&) noexcept { }
-  OSSIA_DECL_RELAXED_CONSTEXPR Impulse& operator=(const Impulse&) noexcept { return *this; }
-  OSSIA_DECL_RELAXED_CONSTEXPR Impulse& operator=(Impulse&&) noexcept { return *this; }
+  OSSIA_DECL_RELAXED_CONSTEXPR impulse() noexcept { }
+  OSSIA_DECL_RELAXED_CONSTEXPR impulse(const impulse&) noexcept { }
+  OSSIA_DECL_RELAXED_CONSTEXPR impulse(impulse&&) noexcept { }
+  OSSIA_DECL_RELAXED_CONSTEXPR impulse& operator=(const impulse&) noexcept { return *this; }
+  OSSIA_DECL_RELAXED_CONSTEXPR impulse& operator=(impulse&&) noexcept { return *this; }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(ossia::Impulse) const
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(ossia::impulse) const
   {
       return true;
   }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(ossia::Impulse) const
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(ossia::impulse) const
   {
     return false;
   }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(ossia::Impulse) const
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(ossia::impulse) const
   {
     return false;
   }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(ossia::Impulse) const
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(ossia::impulse) const
   {
     return true;
   }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(ossia::Impulse) const
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(ossia::impulse) const
   {
     return false;
   }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(ossia::Impulse) const
+  OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(ossia::impulse) const
   {
     return true;
   }
 };
 
 template<typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(const T&, ossia::Impulse)
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(const T&, ossia::impulse)
 {
   return true;
 }
 template<typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(const T&, ossia::Impulse)
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(const T&, ossia::impulse)
 {
   return false;
 }
 template<typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(const T&, ossia::Impulse)
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(const T&, ossia::impulse)
 {
   return false;
 }
 template<typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(const T&, ossia::Impulse)
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(const T&, ossia::impulse)
 {
   return true;
 }
 template<typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(const T&, ossia::Impulse)
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(const T&, ossia::impulse)
 {
   return false;
 }
 template<typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(const T&, ossia::Impulse)
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(const T&, ossia::impulse)
 {
   return true;
 }
 template<typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(ossia::Impulse, const T&)
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(ossia::impulse, const T&)
 {
   return true;
 }
 template<typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(ossia::Impulse, const T&)
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(ossia::impulse, const T&)
 {
   return false;
 }
 template<typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(ossia::Impulse, const T&)
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(ossia::impulse, const T&)
 {
   return false;
 }
 template<typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(ossia::Impulse, const T&)
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(ossia::impulse, const T&)
 {
   return true;
 }
 template<typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(ossia::Impulse, const T&)
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(ossia::impulse, const T&)
 {
   return false;
 }
 template<typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(ossia::Impulse, const T&)
+OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(ossia::impulse, const T&)
 {
   return true;
 }

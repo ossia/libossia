@@ -26,44 +26,44 @@ private Q_SLOTS:
     {
         // evaluate expressions with Impulse
         auto testImpulseExprA = make_expression_atom(
-                    Impulse(), expression_atom::Comparator::EQUAL, Impulse());
+                    impulse(), comparator::EQUAL, impulse());
 
         QVERIFY(evaluate(testImpulseExprA) == true);
 
         auto testImpulseExprB = make_expression_atom(
-                    Impulse(), expression_atom::Comparator::DIFFERENT, Impulse());
+                    impulse(), comparator::DIFFERENT, impulse());
 
         QVERIFY(evaluate(testImpulseExprB) == false);
 
         auto testImpulseExprC = make_expression_atom(
-                    Impulse(), expression_atom::Comparator::EQUAL, true);
+                    impulse(), comparator::EQUAL, true);
         QCOMPARE(testImpulseExprC->target<expression_atom>()->getFirstOperand().getType(), val_type::IMPULSE);
         QCOMPARE(testImpulseExprC->target<expression_atom>()->getSecondOperand().getType(), val_type::BOOL);
 
         QVERIFY(evaluate(testImpulseExprC) == true);
 
         auto testImpulseExprD = make_expression_atom(
-                    Impulse(), expression_atom::Comparator::EQUAL, 0);
+                    impulse(), comparator::EQUAL, 0);
 
         QVERIFY(evaluate(testImpulseExprD) == true);
 
         auto testImpulseExprE = make_expression_atom(
-                    Impulse(), expression_atom::Comparator::EQUAL, 0.0);
+                    impulse(), comparator::EQUAL, 0.0);
 
         QVERIFY(evaluate(testImpulseExprE) == true);
 
         auto testImpulseExprF = make_expression_atom(
-                    Impulse(), expression_atom::Comparator::EQUAL, char{0});
+                    impulse(), comparator::EQUAL, char{0});
 
         QVERIFY(evaluate(testImpulseExprF) == true);
 
         auto testImpulseExprG = make_expression_atom(
-                    Impulse(), expression_atom::Comparator::EQUAL, std::string{});
+                    impulse(), comparator::EQUAL, std::string{});
 
         QVERIFY(evaluate(testImpulseExprG) == true);
 
         auto testImpulseExprH = make_expression_atom(
-                    Impulse(), expression_atom::Comparator::EQUAL, std::vector<ossia::value>{});
+                    impulse(), comparator::EQUAL, std::vector<ossia::value>{});
 
         QVERIFY(evaluate(testImpulseExprH) == true);
 
@@ -74,17 +74,17 @@ private Q_SLOTS:
     void test_bool()
     {
         auto testBoolExprA = make_expression_atom(
-                    true, expression_atom::Comparator::EQUAL, true);
+                    true, comparator::EQUAL, true);
 
         QVERIFY(evaluate(testBoolExprA) == true);
 
         auto testBoolExprB = make_expression_atom(
-                    true, expression_atom::Comparator::DIFFERENT, true);
+                    true, comparator::DIFFERENT, true);
 
         QVERIFY(evaluate(testBoolExprB) == false);
 
         auto testBoolExprC = make_expression_atom(
-                    true, expression_atom::Comparator::EQUAL, Impulse());
+                    true, comparator::EQUAL, impulse());
 
         QVERIFY(evaluate(testBoolExprC) == true);
 
@@ -95,20 +95,20 @@ private Q_SLOTS:
     void test_int()
     {
         auto testIntExprA = make_expression_atom(10,
-                                                   expression_atom::Comparator::GREATER_THAN,
+                                                   comparator::GREATER,
                                                    5);
 
         QVERIFY(evaluate(testIntExprA) == true);
 
         auto testIntExprB = make_expression_atom(10,
-                                                   expression_atom::Comparator::LOWER_THAN,
+                                                   comparator::LOWER,
                                                    5);
 
         QVERIFY(evaluate(testIntExprB) == false);
 
         auto testIntExprC = make_expression_atom(10,
-                                                    expression_atom::Comparator::EQUAL,
-                                                    Impulse());
+                                                    comparator::EQUAL,
+                                                    impulse());
 
         QVERIFY(evaluate(testIntExprC) == true);
 
@@ -119,20 +119,20 @@ private Q_SLOTS:
     void test_float()
     {
         auto testFloatExprA = make_expression_atom(10.,
-                                                     expression_atom::Comparator::GREATER_THAN_OR_EQUAL,
+                                                     comparator::GREATER_EQUAL,
                                                      10.);
 
         QVERIFY(evaluate(testFloatExprA) == true);
 
         auto testFloatExprB = make_expression_atom(10.,
-                                                     expression_atom::Comparator::LOWER_THAN_OR_EQUAL,
+                                                     comparator::LOWER_EQUAL,
                                                      10.);
 
         QVERIFY(evaluate(testFloatExprB) == true);
 
         auto testFloatExprC = make_expression_atom(10.,
-                                                     expression_atom::Comparator::EQUAL,
-                                                     Impulse());
+                                                     comparator::EQUAL,
+                                                     impulse());
 
         QVERIFY(evaluate(testFloatExprC) == true);
 
@@ -143,20 +143,20 @@ private Q_SLOTS:
     void test_string()
     {
         auto testStringExprA = make_expression_atom(std::string("abc"),
-                                                      expression_atom::Comparator::GREATER_THAN_OR_EQUAL,
+                                                      comparator::GREATER_EQUAL,
                                                       std::string("bcd"));
 
         QVERIFY(evaluate(testStringExprA) == false);
 
         auto testStringExprB = make_expression_atom(std::string("abc"),
-                                                      expression_atom::Comparator::LOWER_THAN_OR_EQUAL,
+                                                      comparator::LOWER_EQUAL,
                                                       std::string("bcd"));
 
         QVERIFY(evaluate(testStringExprB) == true);
 
         auto testStringExprC = make_expression_atom(std::string("abc"),
-                                                      expression_atom::Comparator::EQUAL,
-                                                      Impulse());
+                                                      comparator::EQUAL,
+                                                      impulse());
 
         QVERIFY(evaluate(testStringExprC) == true);
 
@@ -170,20 +170,20 @@ private Q_SLOTS:
         std::vector<value> value2{0.2, 0.3, 0.4};
 
         auto testTupleExprA = make_expression_atom(value1,
-                                                     expression_atom::Comparator::GREATER_THAN,
+                                                     comparator::GREATER,
                                                    value2);
 
         QVERIFY(evaluate(testTupleExprA) == false);
 
         auto testTupleExprB = make_expression_atom(value1,
-                                                     expression_atom::Comparator::LOWER_THAN,
+                                                     comparator::LOWER,
                                                    value2);
 
         QVERIFY(evaluate(testTupleExprB) == true);
 
         auto testTupleExprC = make_expression_atom(value1,
-                                                     expression_atom::Comparator::EQUAL,
-                                                   Impulse());
+                                                     comparator::EQUAL,
+                                                   impulse());
 
         QVERIFY(evaluate(testTupleExprC) == true);
 
@@ -273,44 +273,44 @@ private Q_SLOTS:
 
         // evaluate expressions with Destination
         auto testDestinationExprA = make_expression_atom(new Destination(localImpulseNode1),
-                                                          expression_atom::Comparator::EQUAL,
+                                                          comparator::EQUAL,
                                                           new Destination(localImpulseNode2));
 
         QVERIFY(testDestinationExprA->getType() == Expression::Type::ATOM);
         QVERIFY(evaluate(testDestinationExprA) == true);
 
         auto testDestinationExprB = make_expression_atom(new Destination(localBoolNode1),
-                                                           expression_atom::Comparator::EQUAL,
+                                                           comparator::EQUAL,
                                                            new Destination(localBoolNode2));
 
         QVERIFY(evaluate(testDestinationExprB) == false);
 
         auto testDestinationExprC = make_expression_atom(new Destination(localIntNode1),
-                                                           expression_atom::Comparator::DIFFERENT,
+                                                           comparator::DIFFERENT,
                                                            new Destination(localIntNode2));
 
         QVERIFY(evaluate(testDestinationExprC) == true);
 
         auto testDestinationExprD = make_expression_atom(new Destination(localFloatNode1),
-                                                           expression_atom::Comparator::GREATER_THAN,
+                                                           comparator::GREATER_THAN,
                                                            new Destination(localFloatNode2));
 
         QVERIFY(evaluate(testDestinationExprD) == true);
 
         auto testDestinationExprE = make_expression_atom(new Destination(localStringNode1),
-                                                           expression_atom::Comparator::LOWER_THAN,
+                                                           comparator::LOWER_THAN,
                                                            new Destination(localStringNode2));
 
         QVERIFY(evaluate(testDestinationExprE) == true);
 
         auto testDestinationExprF = make_expression_atom(new Destination(localDestinationNode1),
-                                                           expression_atom::Comparator::GREATER_THAN_OR_EQUAL,
+                                                           comparator::GREATER_THAN_OR_EQUAL,
                                                            new Destination(localDestinationNode2));
 
         QVERIFY(evaluate(testDestinationExprF) == true);
 
         auto testDestinationExprG = make_expression_atom(new Destination(localTupleNode1),
-                                                           expression_atom::Comparator::LOWER_THAN_OR_EQUAL,
+                                                           comparator::LOWER_THAN_OR_EQUAL,
                                                            new Destination(localTupleNode2));
 
         QVERIFY(evaluate(testDestinationExprG) == true);
@@ -323,15 +323,15 @@ private Q_SLOTS:
     void test_comparison()
     {
         auto testExprA = make_expression_atom(true,
-                                                    expression_atom::Comparator::EQUAL,
+                                                    comparator::EQUAL,
                                                     true);
 
         auto testExprB = make_expression_atom(true,
-                                                    expression_atom::Comparator::DIFFERENT,
+                                                    comparator::DIFFERENT,
                                                     true);
 
         auto testExprC = make_expression_atom(true,
-                                                expression_atom::Comparator::EQUAL,
+                                                comparator::EQUAL,
                                                 true);
 
         QVERIFY(expression_false != *testExprA);
@@ -356,7 +356,7 @@ private Q_SLOTS:
         auto localIntAddress2 = localIntNode2->createAddress(Type::INT);
 
         auto testDestinationExpr = make_expression_atom(new Destination(localIntNode1),
-                                                           expression_atom::Comparator::EQUAL,
+                                                           comparator::EQUAL,
                                                            new Destination(localIntNode2));
 
         auto callback = [&] (bool b) { result_callback(b); };

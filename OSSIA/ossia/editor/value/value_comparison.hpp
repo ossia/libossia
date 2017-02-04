@@ -87,7 +87,7 @@ struct NumericValue
       Fun fun;
 
     public:
-      bool operator()(Impulse) const
+      bool operator()(impulse) const
       {
         return fun(lhs, Impulse_T{});
       }
@@ -120,15 +120,15 @@ struct NumericValue
       {
         return fun(lhs, String_T{});
       }
-      bool operator()(Vec2f v) const
+      bool operator()(vec2f v) const
       {
         return false;
       }
-      bool operator()(Vec3f v) const
+      bool operator()(vec3f v) const
       {
         return false;
       }
-      bool operator()(Vec4f v) const
+      bool operator()(vec4f v) const
       {
         return false;
       }
@@ -155,7 +155,7 @@ struct StringValue
       Fun fun;
 
     public:
-      bool operator()(Impulse) const
+      bool operator()(impulse) const
       {
         return fun(lhs, Impulse_T{});
       }
@@ -189,15 +189,15 @@ struct StringValue
         return fun(lhs, d.value.get().cloneValue(d.index));
       }
 
-      bool operator()(Vec2f v) const
+      bool operator()(vec2f v) const
       {
         return fun(v, String_T{});
       }
-      bool operator()(Vec3f v) const
+      bool operator()(vec3f v) const
       {
         return fun(v, String_T{});
       }
-      bool operator()(Vec4f v) const
+      bool operator()(vec4f v) const
       {
         return fun(v, String_T{});
       }
@@ -221,7 +221,7 @@ struct TupleVisitor
   Fun fun;
 
 public:
-  bool operator()(Impulse) const
+  bool operator()(impulse) const
   {
     return fun(lhs, Impulse_T{});
   }
@@ -282,7 +282,7 @@ struct DestinationVisitor
   Fun fun;
 
 public:
-  bool operator()(Impulse) const
+  bool operator()(impulse) const
   {
     return fun(lhs.value.get(), Impulse_T{});
   }
@@ -326,7 +326,7 @@ struct VecVisitor
   Fun fun;
 
 public:
-  bool operator()(Impulse) const
+  bool operator()(impulse) const
   {
     return fun(lhs, Impulse_T{});
   }

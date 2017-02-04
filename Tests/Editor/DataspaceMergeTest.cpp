@@ -46,8 +46,8 @@ class DataspaceMergeTest : public QObject
 private Q_SLOTS:
   void static_test()
   {
-    static_assert(ossia::detail::is_array<ossia::Vec3f>::value, "");
-    static_assert(ossia::detail::is_array<const ossia::Vec3f>::value, "");
+    static_assert(ossia::detail::is_array<ossia::vec3f>::value, "");
+    static_assert(ossia::detail::is_array<const ossia::vec3f>::value, "");
     static_assert(!ossia::detail::is_array<float>::value, "");
     static_assert(!ossia::detail::is_array<const float>::value, "");
 
@@ -273,7 +273,7 @@ private Q_SLOTS:
       // hsv{.2, .3, .4} == hsv{72°, 30%, 40%}
       ossia::message m{*t.vec3f_addr, ossia::make_vec(0.2, 0.3, 0.4), ossia::hsv_u{}};
       m.launch();
-      QVERIFY(fuzzy_compare(t.vec3f_addr->cloneValue().get<ossia::Vec3f>(), ossia::make_vec(0.376, 0.4, 0.28)));
+      QVERIFY(fuzzy_compare(t.vec3f_addr->cloneValue().get<ossia::vec3f>(), ossia::make_vec(0.376, 0.4, 0.28)));
     }
 
     // Message vec, no index, different dataspace
@@ -282,7 +282,7 @@ private Q_SLOTS:
       t.vec3f_addr->pushValue(ossia::make_vec(0.5, 0.5, 0.5));
       ossia::message m{*t.vec3f_addr, ossia::make_vec(0.2, 0.3, 0.4), ossia::axis_u{}};
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::Vec3f>() == ossia::make_vec(0.5, 0.5, 0.5));
+      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::vec3f>() == ossia::make_vec(0.5, 0.5, 0.5));
     }
 
 
@@ -291,7 +291,7 @@ private Q_SLOTS:
       t.vec3f_addr->pushValue(ossia::make_vec(0.5, 0.5, 0.5));
       ossia::message m{{*t.vec3f_addr, ossia::destination_index{1}}, ossia::make_vec(0.2, 0.3, 0.4), {}};
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::Vec3f>() == ossia::make_vec(0.5, 0.3, 0.5));
+      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::vec3f>() == ossia::make_vec(0.5, 0.3, 0.5));
     }
 
     // Message vec, index, same unit
@@ -299,7 +299,7 @@ private Q_SLOTS:
       t.vec3f_addr->pushValue(ossia::make_vec(0.5, 0.5, 0.5));
       ossia::message m{{*t.vec3f_addr, ossia::destination_index{1}}, ossia::make_vec(0.2, 0.3, 0.4), t.vec3f_addr->getUnit()};
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::Vec3f>() == ossia::make_vec(0.5, 0.3, 0.5));
+      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::vec3f>() == ossia::make_vec(0.5, 0.3, 0.5));
     }
 
     // Message vec, index, different unit and same dataspace
@@ -313,7 +313,7 @@ private Q_SLOTS:
       // - the value in the message is applied (here s = 0.3) : hsv{0, 0.3, 0.5}
       // - the *whole* vec is reconverted to rgb{0.5, 0.35, 0.35} and applied
 
-      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::Vec3f>() == ossia::make_vec(0.5, 0.35, 0.35));
+      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::vec3f>() == ossia::make_vec(0.5, 0.35, 0.35));
     }
 
     // Message vec, index, different dataspace
@@ -322,7 +322,7 @@ private Q_SLOTS:
       t.vec3f_addr->pushValue(ossia::make_vec(0.5, 0.5, 0.5));
       ossia::message m{{*t.vec3f_addr, ossia::destination_index{1}}, ossia::make_vec(0.2, 0.3, 0.4), ossia::axis_u{}};
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::Vec3f>() == ossia::make_vec(0.5, 0.5, 0.5));
+      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::vec3f>() == ossia::make_vec(0.5, 0.5, 0.5));
     }
 
 
@@ -331,7 +331,7 @@ private Q_SLOTS:
       t.vec3f_addr->pushValue(ossia::make_vec(0.5, 0.5, 0.5));
       ossia::piecewise_vec_message<3> m{*t.vec3f_addr, ossia::make_vec(0.2, 0.3, 0.4), {}, make_bitset(false, true, false)};
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::Vec3f>() == ossia::make_vec(0.5, 0.3, 0.5));
+      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::vec3f>() == ossia::make_vec(0.5, 0.3, 0.5));
     }
 
     // Piecewise Vecf, 1 member, same unit
@@ -344,7 +344,7 @@ private Q_SLOTS:
             make_bitset(false, true, false)};
 
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::Vec3f>() == ossia::make_vec(0.5, 0.3, 0.5));
+      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::vec3f>() == ossia::make_vec(0.5, 0.3, 0.5));
     }
 
     // Piecewise Vecf, 1 member, different unit and same dataspace
@@ -361,7 +361,7 @@ private Q_SLOTS:
       // rgb(0.5, 0.35, 0.35)
 
       m.launch();
-      QVERIFY(fuzzy_compare(t.vec3f_addr->cloneValue().get<ossia::Vec3f>(), ossia::make_vec(0.5, 0.35, 0.35)));
+      QVERIFY(fuzzy_compare(t.vec3f_addr->cloneValue().get<ossia::vec3f>(), ossia::make_vec(0.5, 0.35, 0.35)));
     }
 
     // Piecewise Vecf, 1 member, different unit and same dataspace
@@ -378,7 +378,7 @@ private Q_SLOTS:
       // rgb(0, 1, 1)
 
       m.launch();
-      QVERIFY(fuzzy_compare(t.vec3f_addr->cloneValue().get<ossia::Vec3f>(), ossia::make_vec(0.0, 1., 1.)));
+      QVERIFY(fuzzy_compare(t.vec3f_addr->cloneValue().get<ossia::vec3f>(), ossia::make_vec(0.0, 1., 1.)));
     }
 
 
@@ -393,7 +393,7 @@ private Q_SLOTS:
             make_bitset(false, true, false)};
 
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::Vec3f>() == ossia::make_vec(0.5, 0.5, 0.5));
+      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::vec3f>() == ossia::make_vec(0.5, 0.5, 0.5));
     }
 
 
@@ -407,7 +407,7 @@ private Q_SLOTS:
          make_bitset(true, true, false)};
 
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::Vec3f>() == ossia::make_vec(0.2, 0.3, 0.5));
+      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::vec3f>() == ossia::make_vec(0.2, 0.3, 0.5));
     }
 
     // Piecewise Vecf, 2 member, same unit
@@ -420,7 +420,7 @@ private Q_SLOTS:
             make_bitset(true, true, false)};
 
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::Vec3f>() == ossia::make_vec(0.2, 0.3, 0.5));
+      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::vec3f>() == ossia::make_vec(0.2, 0.3, 0.5));
     }
 
     // Piecewise Vecf, 2 member, different unit and same dataspace
@@ -433,7 +433,7 @@ private Q_SLOTS:
             make_bitset(true, true, false)};
 
       m.launch();
-      QVERIFY(fuzzy_compare(t.vec3f_addr->cloneValue().get<ossia::Vec3f>(), ossia::make_vec(0.47, 0.5, 0.35)));
+      QVERIFY(fuzzy_compare(t.vec3f_addr->cloneValue().get<ossia::vec3f>(), ossia::make_vec(0.47, 0.5, 0.35)));
     }
 
     // Piecewise Vecf, 2 member, different dataspace
@@ -447,7 +447,7 @@ private Q_SLOTS:
             make_bitset(true, true, false)};
 
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::Vec3f>() == ossia::make_vec(0.5, 0.5, 0.5));
+      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::vec3f>() == ossia::make_vec(0.5, 0.5, 0.5));
     }
 
 
@@ -462,7 +462,7 @@ private Q_SLOTS:
          make_bitset(true, true, true)};
 
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::Vec3f>() == ossia::make_vec(0.2, 0.3, 0.4));
+      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::vec3f>() == ossia::make_vec(0.2, 0.3, 0.4));
     }
 
     // Piecewise Vecf, all members, same unit
@@ -475,7 +475,7 @@ private Q_SLOTS:
             make_bitset(true, true, true)};
 
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::Vec3f>() == ossia::make_vec(0.2, 0.3, 0.4));
+      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::vec3f>() == ossia::make_vec(0.2, 0.3, 0.4));
     }
 
     // Piecewise Vecf, all members, different unit and same dataspace
@@ -489,7 +489,7 @@ private Q_SLOTS:
 
       m.launch();
       debug(t.vec3f_addr->cloneValue());
-      QVERIFY(fuzzy_compare(t.vec3f_addr->cloneValue().get<ossia::Vec3f>(), ossia::make_vec(0.376, 0.40, 0.28)));
+      QVERIFY(fuzzy_compare(t.vec3f_addr->cloneValue().get<ossia::vec3f>(), ossia::make_vec(0.376, 0.40, 0.28)));
     }
 
     // Piecewise Vecf, all members, different dataspace
@@ -503,7 +503,7 @@ private Q_SLOTS:
             make_bitset(true, true, true)};
 
       m.launch();
-      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::Vec3f>() == ossia::make_vec(0.5, 0.5, 0.5));
+      QVERIFY(t.vec3f_addr->cloneValue().get<ossia::vec3f>() == ossia::make_vec(0.5, 0.5, 0.5));
     }
   }
 

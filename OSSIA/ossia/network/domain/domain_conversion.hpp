@@ -69,12 +69,12 @@ struct domain_conversion
 };
 
 template <>
-struct domain_conversion<domain_base<Impulse>>
+struct domain_conversion<domain_base<impulse>>
 {
   template <typename T>
   OSSIA_INLINE domain operator()(const T&)
   {
-    return domain_base<Impulse>{};
+    return domain_base<impulse>{};
   }
 };
 
@@ -174,7 +174,7 @@ inline domain convert_domain(const domain& dom, ossia::val_type newtype)
   {
     case val_type::IMPULSE:
       return eggs::variants::apply(
-          domain_conversion<domain_base<Impulse>>{}, dom);
+          domain_conversion<domain_base<impulse>>{}, dom);
     case val_type::INT:
       return eggs::variants::apply(
           domain_conversion<domain_base<int32_t>>{}, dom);
@@ -195,13 +195,13 @@ inline domain convert_domain(const domain& dom, ossia::val_type newtype)
           domain_conversion<domain_base<std::vector<ossia::value>>>{}, dom);
     case val_type::VEC2F:
       return eggs::variants::apply(
-          domain_conversion<domain_base<Vec2f>>{}, dom);
+          domain_conversion<domain_base<vec2f>>{}, dom);
     case val_type::VEC3F:
       return eggs::variants::apply(
-          domain_conversion<domain_base<Vec3f>>{}, dom);
+          domain_conversion<domain_base<vec3f>>{}, dom);
     case val_type::VEC4F:
       return eggs::variants::apply(
-          domain_conversion<domain_base<Vec4f>>{}, dom);
+          domain_conversion<domain_base<vec4f>>{}, dom);
     case val_type::DESTINATION:
     default:
       return domain{};

@@ -13,7 +13,7 @@ template<ossia::val_type>
 struct matching_domain;
 template<>
 struct matching_domain<ossia::val_type::IMPULSE>
-{ using type = ossia::net::domain_base<Impulse>; };
+{ using type = ossia::net::domain_base<impulse>; };
 template<>
 struct matching_domain<ossia::val_type::BOOL>
 { using type = ossia::net::domain_base<bool>; };
@@ -34,20 +34,20 @@ struct matching_domain<ossia::val_type::TUPLE>
 { using type = ossia::net::domain_base<std::vector<ossia::value>>; };
 template<>
 struct matching_domain<ossia::val_type::VEC2F>
-{ using type = ossia::net::domain_base<Vec2f>; };
+{ using type = ossia::net::domain_base<vec2f>; };
 template<>
 struct matching_domain<ossia::val_type::VEC3F>
-{ using type = ossia::net::domain_base<Vec3f>; };
+{ using type = ossia::net::domain_base<vec3f>; };
 template<>
 struct matching_domain<ossia::val_type::VEC4F>
-{ using type = ossia::net::domain_base<Vec4f>; };
+{ using type = ossia::net::domain_base<vec4f>; };
 
 ossia::net::domain make_domain(ossia::val_type t)
 {
   switch(t)
   {
     case ossia::val_type::IMPULSE:
-      return ossia::net::domain_base<Impulse>{};
+      return ossia::net::domain_base<impulse>{};
     case ossia::val_type::BOOL:
       return ossia::net::domain_base<bool>{};
     case ossia::val_type::INT:
@@ -61,11 +61,11 @@ ossia::net::domain make_domain(ossia::val_type t)
     case ossia::val_type::TUPLE:
       return ossia::net::domain_base<std::vector<ossia::value>>{};
     case ossia::val_type::VEC2F:
-      return ossia::net::domain_base<Vec2f>();
+      return ossia::net::domain_base<vec2f>();
     case ossia::val_type::VEC3F:
-      return ossia::net::domain_base<Vec3f>();
+      return ossia::net::domain_base<vec3f>();
     case ossia::val_type::VEC4F:
-      return ossia::net::domain_base<Vec4f>();
+      return ossia::net::domain_base<vec4f>();
     default:
       return {};
   }
@@ -211,7 +211,7 @@ private Q_SLOTS:
       auto node = ossia::net::find_node(http_device, "/tata/tutu");
       if(node)
       {
-        node->getAddress()->pushValue(ossia::Impulse{});
+        node->getAddress()->pushValue(ossia::impulse{});
       }
     });
     t.setInterval(1000);
@@ -226,7 +226,7 @@ private Q_SLOTS:
 
 private:
   const std::vector<ossia::value> value_to_test{
-    ossia::Impulse{},
+    ossia::impulse{},
     int32_t{0},
     int32_t{-1000},
     int32_t{1000},
@@ -243,11 +243,11 @@ private:
     std::vector<ossia::value>{int32_t{0}},
     std::vector<ossia::value>{int32_t{0}, int32_t{1}},
     std::vector<ossia::value>{float{0}, int32_t{1}},
-    std::vector<ossia::value>{float{0}, int32_t{1}, std::string{}, ossia::Impulse{}},
+    std::vector<ossia::value>{float{0}, int32_t{1}, std::string{}, ossia::impulse{}},
     std::vector<ossia::value>{float{0}, float{1000}},
-    ossia::Vec2f{},
-    ossia::Vec3f{},
-    ossia::Vec4f{}
+    ossia::vec2f{},
+    ossia::vec3f{},
+    ossia::vec4f{}
   };
 
   void test_comm_generic(

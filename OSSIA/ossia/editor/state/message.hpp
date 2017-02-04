@@ -40,7 +40,7 @@ struct OSSIA_EXPORT message
         lhs.message_value != rhs.message_value;
   }
 
-  message() = default;
+  message() = delete;
   message(const message&) = default;
   message(message&&) = default;
   message& operator=(const message&) = default;

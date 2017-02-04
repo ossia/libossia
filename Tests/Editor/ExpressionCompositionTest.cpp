@@ -20,11 +20,11 @@ class ExpressionCompositionTest : public QObject
   }
 
   auto make_exprA()
-  { return make_expression_atom(true, expression_atom::Comparator::EQUAL, true); }
+  { return make_expression_atom(true, comparator::EQUAL, true); }
   auto make_exprB()
-  { return make_expression_atom(false, expression_atom::Comparator::EQUAL, false); }
+  { return make_expression_atom(false, comparator::EQUAL, false); }
   auto make_exprC()
-  { return make_expression_atom(false, expression_atom::Comparator::DIFFERENT, false); }
+  { return make_expression_atom(false, comparator::DIFFERENT, false); }
 
 private Q_SLOTS:
 
@@ -32,11 +32,11 @@ private Q_SLOTS:
   void test_AND()
   {
     auto composition1 = make_expression_composition(
-          make_exprA(), expression_composition::Operator::AND, make_exprB());
+          make_exprA(), binary_operator::AND, make_exprB());
     QVERIFY(evaluate(composition1) == true);
 
     auto composition2 = make_expression_composition(
-          make_exprA(), expression_composition::Operator::AND, make_exprC());
+          make_exprA(), binary_operator::AND, make_exprC());
 
     QVERIFY(evaluate(composition2) == false);
 
@@ -47,12 +47,12 @@ private Q_SLOTS:
   void test_OR()
   {
     auto composition1 = make_expression_composition(make_exprA(),
-                                                    expression_composition::Operator::OR,
+                                                    binary_operator::OR,
                                                     make_exprB());
     QVERIFY(evaluate(composition1) == true);
 
     auto composition2 = make_expression_composition(make_exprA(),
-                                                    expression_composition::Operator::OR,
+                                                    binary_operator::OR,
                                                     make_exprC());
     QVERIFY(evaluate(composition2) == true);
 
@@ -63,12 +63,12 @@ private Q_SLOTS:
   void test_XOR()
   {
     auto composition1 = make_expression_composition(make_exprA(),
-                                                    expression_composition::Operator::XOR,
+                                                    binary_operator::XOR,
                                                     make_exprB());
     QVERIFY(evaluate(composition1) == false);
 
     auto composition2 = make_expression_composition(make_exprA(),
-                                                    expression_composition::Operator::XOR,
+                                                    binary_operator::XOR,
                                                     make_exprC());
     QVERIFY(evaluate(composition2) == true);
 
@@ -79,10 +79,10 @@ private Q_SLOTS:
   void test_comparison()
   {
     auto composition1 = make_expression_composition(make_exprA(),
-                                                    expression_composition::Operator::XOR,
+                                                    binary_operator::XOR,
                                                     make_exprB());
     auto composition2 = make_expression_composition(make_exprA(),
-                                                    expression_composition::Operator::XOR,
+                                                    binary_operator::XOR,
                                                     make_exprC());
 
     QVERIFY(expressions::expression_false != *composition1);
@@ -106,15 +106,15 @@ private Q_SLOTS:
     auto localIntAddress3 = localIntNode3->createAddress(val_type::INT);
 
     auto testDestinationExprA = make_expression_atom(Destination(*localIntAddress1),
-                                                     expression_atom::Comparator::LOWER_THAN,
+                                                     comparator::LOWER,
                                                      Destination(*localIntAddress2));
 
     auto testDestinationExprB = make_expression_atom(Destination(*localIntAddress2),
-                                                     expression_atom::Comparator::LOWER_THAN,
+                                                     comparator::LOWER,
                                                      Destination(*localIntAddress3));
 
     auto testDestinationComposition = make_expression_composition(std::move(testDestinationExprA),
-                                                                  expression_composition::Operator::AND,
+                                                                  binary_operator::AND,
                                                                   std::move(testDestinationExprB));
 
     expression_result_callback callback = std::bind(&ExpressionCompositionTest::result_callback, this, _1);

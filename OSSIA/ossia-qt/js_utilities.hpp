@@ -6,6 +6,7 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/generic/generic_address.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia-qt/metatypes.hpp>
 #include <QStringBuilder>
 #include <QHash>
 #include <QString>
@@ -46,16 +47,16 @@ public:
   // QML enums have to begin with a capital
   enum class val_type
   {
-    Impulse, //! \see ossia::Impulse
+    Impulse, //! \see ossia::impulse
     Bool, //! \see bool
     Int, //! \see int32_t
     Float, //! \see float
     Char, //! \see char
     String, //! \see std::string
     Tuple, //! \see std::vector<ossia::value>
-    Vec2f, //! \see ossia::Vec2f
-    Vec3f, //! \see ossia::Vec3f
-    Vec4f, //! \see ossia::Vec4f
+    Vec2f, //! \see ossia::vec2f
+    Vec3f, //! \see ossia::vec3f
+    Vec4f, //! \see ossia::vec4f
     Destination //! \see ossia::Destination
   };
 
@@ -130,7 +131,7 @@ struct js_value_inbound_visitor
 {
   const QJSValue& val;
 public:
-  ossia::value operator()(Impulse) const;
+  ossia::value operator()(impulse) const;
 
   ossia::value operator()(int32_t v) const;
   ossia::value operator()(float v) const;
@@ -140,9 +141,9 @@ public:
   ossia::value operator()(const std::string& v) const;
   ossia::value operator()(const std::vector<ossia::value>& v) const;
 
-  ossia::value operator()(Vec2f v) const;
-  ossia::value operator()(Vec3f v) const;
-  ossia::value operator()(Vec4f v) const;
+  ossia::value operator()(vec2f v) const;
+  ossia::value operator()(vec3f v) const;
+  ossia::value operator()(vec4f v) const;
 
   ossia::value operator()(const Destination& t);
   ossia::value operator()() const;
@@ -150,7 +151,7 @@ public:
 
 struct qt_to_ossia
 {
-  ossia::value operator()() { return ossia::Impulse{}; }
+  ossia::value operator()() { return ossia::impulse{}; }
   ossia::value operator()(bool v) { return v; }
   ossia::value operator()(QTime v) { return v.msec(); }
   ossia::value operator()(int v) { return v; }
@@ -198,7 +199,7 @@ struct js_value_outbound_visitor
 
   QJSValue to_enum(qml_context::val_type t) const;
 
-  QJSValue operator()(Impulse) const;
+  QJSValue operator()(impulse) const;
 
   QJSValue operator()(int32_t val) const;
   QJSValue operator()(float val) const;
@@ -225,9 +226,9 @@ struct js_value_outbound_visitor
     return array;
   }
 
-  QJSValue operator()(Vec2f val) const;
-  QJSValue operator()(Vec3f val) const;
-  QJSValue operator()(Vec4f val) const;
+  QJSValue operator()(vec2f val) const;
+  QJSValue operator()(vec3f val) const;
+  QJSValue operator()(vec4f val) const;
 
   QJSValue operator()(const Destination& t);
   QJSValue operator()() const;
@@ -243,7 +244,7 @@ struct js_value_outbound_visitor
  */
 struct js_string_outbound_visitor
 {
-  QString operator()(Impulse) const;
+  QString operator()(impulse) const;
 
   QString operator()(int32_t val) const;
 
@@ -270,9 +271,9 @@ struct js_string_outbound_visitor
     return s;
   }
 
-  QString operator()(Vec2f val) const;
-  QString operator()(Vec3f val) const;
-  QString operator()(Vec4f val) const;
+  QString operator()(vec2f val) const;
+  QString operator()(vec3f val) const;
+  QString operator()(vec4f val) const;
 
   QString operator()(const Destination& t);
   QString operator()() const;
@@ -445,7 +446,6 @@ QMetaObject::Connection connectSignalToMatchingMethod(
 }
 
 Q_DECLARE_METATYPE(ossia::qt::qml_context)
-Q_DECLARE_METATYPE(ossia::value)
 #else
 #error This file requires Qt.
 #endif

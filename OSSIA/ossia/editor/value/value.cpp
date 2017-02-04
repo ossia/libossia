@@ -14,7 +14,7 @@ namespace ossia
 
 
 template
-OSSIA_EXPORT Impulse convert<Impulse>(const ossia::value& val);
+OSSIA_EXPORT impulse convert<impulse>(const ossia::value& val);
 template
 OSSIA_EXPORT int convert<int>(const ossia::value& val);
 template
@@ -218,15 +218,15 @@ struct value_comparison_visitor2
     return Comparator{}(v, comparisons::String_T{});
   }
 
-  bool operator()(const std::string& lhs, const Vec2f& v) const
+  bool operator()(const std::string& lhs, const vec2f& v) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
-  bool operator()(const std::string& lhs, const Vec3f& v) const
+  bool operator()(const std::string& lhs, const vec3f& v) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
-  bool operator()(const std::string& lhs, const Vec4f& v) const
+  bool operator()(const std::string& lhs, const vec4f& v) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
@@ -250,15 +250,15 @@ struct value_comparison_visitor2
     return Comparator{}(v, comparisons::String_T{});
   }
 
-  bool operator()(const Vec2f& v, const std::string& lhs) const
+  bool operator()(const vec2f& v, const std::string& lhs) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
-  bool operator()(const Vec3f& v, const std::string& lhs) const
+  bool operator()(const vec3f& v, const std::string& lhs) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
-  bool operator()(const Vec4f& v, const std::string& lhs) const
+  bool operator()(const vec4f& v, const std::string& lhs) const
   {
     return Comparator{}(v, comparisons::String_T{});
   }
@@ -276,14 +276,14 @@ struct value_comparison_visitor2
     return Comparator{}(d.value.get().cloneValue(d.index), rhs);
   }
 
-  bool operator()(const Impulse& lhs, const Destination& d) const
+  bool operator()(const impulse& lhs, const Destination& d) const
   {
-    return Comparator{}(Impulse{}, Impulse{});
+    return Comparator{}(impulse{}, impulse{});
   }
 
-  bool operator()(const Destination& d, const Impulse& rhs) const
+  bool operator()(const Destination& d, const impulse& rhs) const
   {
-    return Comparator{}(Impulse{}, Impulse{});
+    return Comparator{}(impulse{}, impulse{});
   }
 
   bool operator()(const Destination& lhs, const Destination& d) const
@@ -343,11 +343,11 @@ struct value_comparison_visitor2
             v[0].v));
   }
 
-  bool operator()(const Impulse& lhs, const std::vector<ossia::value>& v) const
+  bool operator()(const impulse& lhs, const std::vector<ossia::value>& v) const
   {
     return Comparator{}(v, lhs);
   }
-  bool operator()(const std::vector<ossia::value>& lhs, const Impulse& v) const
+  bool operator()(const std::vector<ossia::value>& lhs, const impulse& v) const
   {
     return Comparator{}(v, lhs);
   }
@@ -528,7 +528,7 @@ struct value_prettyprint_visitor
 {
   Vis& s;
 
-  void operator()(Impulse) const
+  void operator()(impulse) const
   {
     s << "impulse";
   }
@@ -552,15 +552,15 @@ struct value_prettyprint_visitor
   {
     s << "string: " << str;
   }
-  void operator()(Vec2f vec) const
+  void operator()(vec2f vec) const
   {
     s.write("vec2f: {}", vec);
   }
-  void operator()(Vec3f vec) const
+  void operator()(vec3f vec) const
   {
     s.write("vec3f: {}", vec);
   }
-  void operator()(Vec4f vec) const
+  void operator()(vec4f vec) const
   {
     s.write("vec4f: {}", vec);
   }

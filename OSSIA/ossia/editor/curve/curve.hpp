@@ -251,15 +251,15 @@ public:
       {
         return c;
       }
-      Y operator()(Vec2f vec) const
+      Y operator()(vec2f vec) const
       {
         return vec[*index];
       }
-      Y operator()(Vec3f vec) const
+      Y operator()(vec3f vec) const
       {
         return vec[*index];
       }
-      Y operator()(Vec4f vec) const
+      Y operator()(vec4f vec) const
       {
         return vec[*index];
       }
@@ -269,7 +269,7 @@ public:
         return convertToTemplateTypeValue(val, index + 1);
       }
 
-      Y operator()(Impulse) const
+      Y operator()(impulse) const
       {
         throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
                                        "Cannot convert Impulse to a numeric type");

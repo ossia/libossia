@@ -184,18 +184,18 @@ ossia::value_with_unit merge(
 OSSIA_EXPORT
 ossia::value_with_unit merge(
     const ossia::value_with_unit&,
-    const ossia::Vec2f&,
+    const ossia::vec2f&,
     std::bitset<2>);
 
 OSSIA_EXPORT
 ossia::value_with_unit merge(
     const ossia::value_with_unit&,
-    const ossia::Vec3f&,
+    const ossia::vec3f&,
     std::bitset<3>);
 
 OSSIA_EXPORT
 ossia::value_with_unit merge(
     const ossia::value_with_unit&,
-    const ossia::Vec4f&,
+    const ossia::vec4f&,
     std::bitset<4>);
 }

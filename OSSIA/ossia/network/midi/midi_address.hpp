@@ -85,7 +85,7 @@ struct address_info
       case Type::PC:
         return int32_t{val};
       case Type::PC_N:
-        return ossia::Impulse{};
+        return ossia::impulse{};
     }
     return {};
   }

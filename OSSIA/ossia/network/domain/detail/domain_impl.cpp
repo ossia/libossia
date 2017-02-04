@@ -43,7 +43,7 @@ struct domain_prettyprint_visitor
   {
     writer << true << "bool";
   }
-  void operator()(domain_base<Impulse>& dom)
+  void operator()(domain_base<impulse>& dom)
   {
     writer << "impulse";
   }

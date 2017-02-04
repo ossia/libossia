@@ -25,7 +25,7 @@ private Q_SLOTS:
     void test_basic()
     {
         auto expression = make_expression_atom(false,
-                                                 expression_atom::Comparator::DIFFERENT,
+                                                 comparator::DIFFERENT,
                                                  false);
 
         auto not_expression = make_expression_not(std::move(expression));
@@ -37,15 +37,15 @@ private Q_SLOTS:
     void test_comparison()
     {
         auto exprA = make_expression_atom(true,
-                                            expression_atom::Comparator::EQUAL,
+                                            comparator::EQUAL,
                                             true);
 
         auto exprB = make_expression_atom(false,
-                                            expression_atom::Comparator::EQUAL,
+                                            comparator::EQUAL,
                                             false);
 
         auto exprC = make_expression_atom(true,
-                                            expression_atom::Comparator::EQUAL,
+                                            comparator::EQUAL,
                                             true);
 
         auto not_exprA = make_expression_not(std::move(exprA));
@@ -72,7 +72,7 @@ private Q_SLOTS:
         auto localIntAddress2 = localIntNode2->createAddress(val_type::INT);
 
         auto testDestinationExpr = make_expression_atom(Destination(*localIntAddress1),
-                                                          expression_atom::Comparator::DIFFERENT,
+                                                          comparator::DIFFERENT,
                                                           Destination(*localIntAddress2));
 
         auto testDestinationExprNot = make_expression_not(std::move(testDestinationExpr));

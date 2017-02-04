@@ -68,7 +68,7 @@ int main()
     localStringAddress->setDefaultValue(std::string("test"));
 
     // update tree value
-    localImpulseAddress->pushValue(Impulse{});
+    localImpulseAddress->pushValue(impulse{});
     localBoolAddress->pushValue(true);
     localIntAddress->pushValue(123);
     localFloatAddress->pushValue(0.5);

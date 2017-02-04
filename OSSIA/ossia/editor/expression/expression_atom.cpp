@@ -6,7 +6,7 @@ namespace ossia
 namespace expressions
 {
 expression_atom::expression_atom(
-    const value& lhs, expression_atom::Comparator op, const value& rhs)
+    const value& lhs, comparator op, const value& rhs)
     : mFirstValue(lhs), mSecondValue(rhs), mOperator(op)
 {
   if(!mFirstValue.valid() || !mSecondValue.valid())
@@ -44,7 +44,7 @@ const value& expression_atom::getFirstOperand() const
   return mFirstValue;
 }
 
-expression_atom::Comparator expression_atom::getOperator() const
+comparator expression_atom::getOperator() const
 {
   return mOperator;
 }
@@ -97,27 +97,27 @@ bool expression_atom::do_evaluation(
 {
   switch (mOperator)
   {
-    case Comparator::EQUAL:
+    case comparator::EQUAL:
     {
       return first == second;
     }
-    case Comparator::DIFFERENT:
+    case comparator::DIFFERENT:
     {
       return first != second;
     }
-    case Comparator::GREATER_THAN:
+    case comparator::GREATER:
     {
       return first > second;
     }
-    case Comparator::LOWER_THAN:
+    case comparator::LOWER:
     {
       return first < second;
     }
-    case Comparator::GREATER_THAN_OR_EQUAL:
+    case comparator::GREATER_EQUAL:
     {
       return first >= second;
     }
-    case Comparator::LOWER_THAN_OR_EQUAL:
+    case comparator::LOWER_EQUAL:
     {
       return first <= second;
     }

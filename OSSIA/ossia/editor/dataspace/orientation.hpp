@@ -26,7 +26,7 @@ struct OSSIA_EXPORT quaternion_u :
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return ossia::make_string_view("1ijk"); } // TODO find something better than 1 ?
 
-  using value_type = Vec4f;
+  using value_type = vec4f;
   static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return self;
@@ -46,7 +46,7 @@ struct OSSIA_EXPORT euler_u :
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return ossia::make_string_view("ypr"); }
 
-  using value_type = Vec4f;
+  using value_type = vec4f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self);
 
@@ -61,7 +61,7 @@ struct OSSIA_EXPORT axis_u :
   { return ossia::make_string_array("axis", "xyza"); }
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return ossia::make_string_view("xyza"); }
-  using value_type = Vec4f;
+  using value_type = vec4f;
 
   static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self);
 

@@ -74,7 +74,7 @@ private Q_SLOTS:
     QVERIFY(evaluate(testExprG) == false);
 
     // update node's value
-    Impulse p;
+    impulse p;
     localImpulseAddress->pushValue(p);
 
     bool b = false;

@@ -20,8 +20,8 @@ generic_address::generic_address(ossia::net::node_base& node)
   , mAccessMode(ossia::access_mode::BI)
   , mBoundingMode(ossia::bounding_mode::FREE)
   , mRepetitionFilter(ossia::repetition_filter::OFF)
-  , mValue(ossia::Impulse{})
-  , mDefault(ossia::Impulse{})
+  , mValue(ossia::impulse{})
+  , mDefault(ossia::impulse{})
 {
 }
 

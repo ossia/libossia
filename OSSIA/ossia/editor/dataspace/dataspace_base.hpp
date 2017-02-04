@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/detail/algorithms.hpp>
-#include <ossia/editor/value/float.hpp>
 #include <ossia/editor/value/vec.hpp>
 
 #include <ossia/detail/math.hpp>

@@ -74,7 +74,7 @@ inline ossia::string_view to_minuit_type_text(const ossia::value& val)
   // integer, decimal, string, generic, boolean, none, array.
   struct ValueStringVisitor
   {
-    ossia::string_view operator()(ossia::Impulse) const
+    ossia::string_view operator()(ossia::impulse) const
     {
       return make_string_view("none");
     }
@@ -98,15 +98,15 @@ inline ossia::string_view to_minuit_type_text(const ossia::value& val)
     {
       return make_string_view("string");
     }
-    ossia::string_view operator()(const ossia::Vec2f& vec) const
+    ossia::string_view operator()(const ossia::vec2f& vec) const
     {
       return make_string_view("array");
     }
-    ossia::string_view operator()(const ossia::Vec3f& vec) const
+    ossia::string_view operator()(const ossia::vec3f& vec) const
     {
       return make_string_view("array");
     }
-    ossia::string_view operator()(const ossia::Vec4f& vec) const
+    ossia::string_view operator()(const ossia::vec4f& vec) const
     {
       return make_string_view("array");
     }
@@ -174,7 +174,7 @@ inline ossia::value value_from_minuit_type_text(ossia::string_view str)
     case 'b': // boolean
       return bool{};
     case 'n': // none
-      return ossia::Impulse{};
+      return ossia::impulse{};
     case 'a': // array
     case 'g': // generic
       return std::vector<ossia::value>{};

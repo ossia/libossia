@@ -276,7 +276,7 @@ ossia::value_with_unit merge(
 
 ossia::value_with_unit merge(
     const value_with_unit& vu,
-    const ossia::Vec2f& val,
+    const ossia::vec2f& val,
     std::bitset<2> idx)
 {
   if(vu)
@@ -289,7 +289,7 @@ ossia::value_with_unit merge(
 
 ossia::value_with_unit merge(
     const value_with_unit& vu,
-    const ossia::Vec3f& val,
+    const ossia::vec3f& val,
     std::bitset<3> idx)
 {
   if(vu)
@@ -302,7 +302,7 @@ ossia::value_with_unit merge(
 
 ossia::value_with_unit merge(
     const value_with_unit& vu,
-    const ossia::Vec4f& val,
+    const ossia::vec4f& val,
     std::bitset<4> idx)
 {
   if(vu)

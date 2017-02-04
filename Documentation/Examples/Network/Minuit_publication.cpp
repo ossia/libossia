@@ -70,7 +70,7 @@ int main()
   localTupleAddress->add_callback(printValueCallback);
 
   // update tree value
-  localImpulseAddress->pushValue(Impulse{});
+  localImpulseAddress->pushValue(impulse{});
   localBoolAddress->pushValue(true);
   localIntAddress->pushValue(123);
   localFloatAddress->pushValue(0.5);

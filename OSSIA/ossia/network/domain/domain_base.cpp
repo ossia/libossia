@@ -58,7 +58,7 @@ domain make_domain(
 }
 
 bool
-operator==(const domain_base<Impulse>& lhs, const domain_base<Impulse>& rhs)
+operator==(const domain_base<impulse>& lhs, const domain_base<impulse>& rhs)
 {
   return true;
 }
@@ -88,17 +88,17 @@ operator==(const domain_base<std::vector<ossia::value>>& lhs, const domain_base<
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
 }
 bool
-operator==(const domain_base<Vec2f>& lhs, const domain_base<Vec2f>& rhs)
+operator==(const domain_base<vec2f>& lhs, const domain_base<vec2f>& rhs)
 {
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
 }
 bool
-operator==(const domain_base<Vec3f>& lhs, const domain_base<Vec3f>& rhs)
+operator==(const domain_base<vec3f>& lhs, const domain_base<vec3f>& rhs)
 {
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
 }
 bool
-operator==(const domain_base<Vec4f>& lhs, const domain_base<Vec4f>& rhs)
+operator==(const domain_base<vec4f>& lhs, const domain_base<vec4f>& rhs)
 {
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
 }
@@ -136,7 +136,7 @@ domain init_domain(ossia::val_type type)
   switch (type)
   {
     case val_type::IMPULSE:
-      return domain_base<Impulse>{};
+      return domain_base<impulse>{};
     case val_type::INT:
       return domain_base<int32_t>{};
     case val_type::FLOAT:
@@ -150,11 +150,11 @@ domain init_domain(ossia::val_type type)
     case val_type::TUPLE:
       return domain_base<std::vector<ossia::value>>();
     case val_type::VEC2F:
-      return domain_base<Vec2f>();
+      return domain_base<vec2f>();
     case val_type::VEC3F:
-      return domain_base<Vec3f>();
+      return domain_base<vec3f>();
     case val_type::VEC4F:
-      return domain_base<Vec4f>();
+      return domain_base<vec4f>();
     case val_type::DESTINATION:
     default:
       return domain{};

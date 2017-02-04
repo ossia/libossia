@@ -17,7 +17,7 @@ extern "C"
 
 ossia_value_t ossia_value_create_impulse()
 {
-  return convert(ossia::Impulse{});
+  return convert(ossia::impulse{});
 }
 
 ossia_value_t ossia_value_create_int(

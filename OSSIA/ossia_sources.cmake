@@ -36,6 +36,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_bool.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_pulse.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/operators.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/scenario.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_constraint.hpp"
@@ -54,14 +55,8 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/functional_state.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/bool.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/char.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/destination.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/float.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/impulse.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/int.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/string.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/tuple.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_base.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_comparison.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_conversion.hpp"
@@ -300,6 +295,8 @@ set(OSSIA_QT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_property_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/value_metatypes.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/metatypes.hpp"
     )
 set(OSSIA_QT_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_device.cpp"

@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <ossia/editor/expression/expression_fwd.hpp>
+#include <ossia/editor/expression/operators.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -17,15 +18,8 @@ class OSSIA_EXPORT expression_composition final :
     public expression_callback_container
 {
 public:
-  enum class Operator
-  {
-    AND, //! &&
-    OR, //! ||
-    XOR //! ^
-  };
-
   expression_composition(
-      expression_ptr expr1, Operator op, expression_ptr expr2);
+      expression_ptr expr1, binary_operator op, expression_ptr expr2);
   expression_composition(expression_composition&& other) = delete;
   expression_composition& operator=(expression_composition&& other) = delete;
 
@@ -40,7 +34,7 @@ public:
   void update() const;
 
   expression_base& getFirstOperand() const;
-  Operator getOperator() const;
+  binary_operator getOperator() const;
   expression_base& getSecondOperand() const;
 
 private:
@@ -58,7 +52,7 @@ private:
   expression_callback_iterator mFirstResultCallbackIndex;
   expression_callback_iterator mSecondResultCallbackIndex;
 
-  Operator mOperator;
+  binary_operator mOperator;
 };
 }
 }

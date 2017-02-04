@@ -458,10 +458,10 @@ private Q_SLOTS:
       QVERIFY(get_max(d) == value{});
 
 
-      set_min(d, Impulse{});
+      set_min(d, impulse{});
       QVERIFY(get_min(d) == value{});
 
-      set_max(d, Impulse{});
+      set_max(d, impulse{});
       QVERIFY(get_max(d) == value{});
 
       set_min(d, int{});
@@ -474,22 +474,22 @@ private Q_SLOTS:
     }
 
     { // Empty domain
-      domain d = domain_base<Impulse>();
-      QVERIFY(get_min(d) == Impulse{});
-      QVERIFY(get_max(d) == Impulse{});
+      domain d = domain_base<impulse>();
+      QVERIFY(get_min(d) == impulse{});
+      QVERIFY(get_max(d) == impulse{});
 
 
-      set_min(d, Impulse{});
-      QVERIFY(get_min(d) == Impulse{});
+      set_min(d, impulse{});
+      QVERIFY(get_min(d) == impulse{});
 
-      set_max(d, Impulse{});
-      QVERIFY(get_max(d) == Impulse{});
+      set_max(d, impulse{});
+      QVERIFY(get_max(d) == impulse{});
 
       set_min(d, int{});
-      QVERIFY(get_min(d) == Impulse{});
+      QVERIFY(get_min(d) == impulse{});
 
       set_max(d, int{});
-      QVERIFY(get_max(d) == Impulse{});
+      QVERIFY(get_max(d) == impulse{});
 
       // etc...
     }
@@ -500,10 +500,10 @@ private Q_SLOTS:
       QVERIFY(get_max(d) == value{});
 
       // No value
-      set_min(d, Impulse{});
+      set_min(d, impulse{});
       QVERIFY(get_min(d) == value{});
 
-      set_max(d, Impulse{});
+      set_max(d, impulse{});
       QVERIFY(get_max(d) == value{});
 
       // Correct domain
@@ -528,11 +528,11 @@ private Q_SLOTS:
       QVERIFY(get_min(d) == value{});
       QVERIFY(get_max(d) == value{});
 
-      set_min(d, Impulse{});
-      QVERIFY(get_min(d) == Impulse{});
+      set_min(d, impulse{});
+      QVERIFY(get_min(d) == impulse{});
 
-      set_max(d, Impulse{});
-      QVERIFY(get_max(d) == Impulse{});
+      set_max(d, impulse{});
+      QVERIFY(get_max(d) == impulse{});
 
       set_min(d, int{12});
       qDebug() << get_min(d);

@@ -24,18 +24,18 @@ struct value_converter
 };
 
 template<>
-struct value_converter<ossia::Impulse>
+struct value_converter<ossia::impulse>
 {
   template<typename U>
-  ossia::Impulse operator()(const U&) { return {}; }
+  ossia::impulse operator()(const U&) { return {}; }
 
-  ossia::Impulse operator()() { return {}; }
+  ossia::impulse operator()() { return {}; }
 };
 
 template<typename T>
 struct numeric_value_converter
 {
-  T operator()(Impulse) const { return T{}; }
+  T operator()(impulse) const { return T{}; }
   T operator()(int32_t v) { return v; }
   T operator()(float v) { return v; }
   T operator()(bool v) { return v; }
@@ -50,9 +50,9 @@ struct numeric_value_converter
       return T{};
     }
   }
-  T operator()(const Vec2f& v) const { return v[0]; }
-  T operator()(const Vec3f& v) const { return v[0]; }
-  T operator()(const Vec4f& v) const { return v[0]; }
+  T operator()(const vec2f& v) const { return v[0]; }
+  T operator()(const vec3f& v) const { return v[0]; }
+  T operator()(const vec4f& v) const { return v[0]; }
 
   T operator()(const std::vector<ossia::value>& v) const
   { return !v.empty() ? convert<T>(v[0]) : T{}; }
@@ -84,7 +84,7 @@ template<>
 struct value_converter<std::string>
 {
   using T = std::string;
-  T operator()(Impulse) const { return T{}; }
+  T operator()(impulse) const { return T{}; }
   T operator()(int32_t v) { return boost::lexical_cast<std::string>(v); }
   T operator()(float v) { return boost::lexical_cast<std::string>(v); }
   T operator()(bool v) { return boost::lexical_cast<std::string>(v); }
@@ -244,7 +244,7 @@ auto lift(ossia::val_type type, Fun f, Args&&... args)
   switch (type)
   {
     case val_type::IMPULSE:
-      return f(ossia::value_trait<Impulse>{}, std::forward<Args>(args)...);
+      return f(ossia::value_trait<impulse>{}, std::forward<Args>(args)...);
     case val_type::BOOL:
       return f(ossia::value_trait<bool>{}, std::forward<Args>(args)...);
     case val_type::INT:
@@ -258,17 +258,17 @@ auto lift(ossia::val_type type, Fun f, Args&&... args)
     case val_type::TUPLE:
       return f(ossia::value_trait<std::vector<ossia::value>>{}, std::forward<Args>(args)...);
     case val_type::VEC2F:
-      return f(ossia::value_trait<Vec2f>{}, std::forward<Args>(args)...);
+      return f(ossia::value_trait<vec2f>{}, std::forward<Args>(args)...);
     case val_type::VEC3F:
-      return f(ossia::value_trait<Vec3f>{}, std::forward<Args>(args)...);
+      return f(ossia::value_trait<vec3f>{}, std::forward<Args>(args)...);
     case val_type::VEC4F:
-      return f(ossia::value_trait<Vec4f>{}, std::forward<Args>(args)...);
+      return f(ossia::value_trait<vec4f>{}, std::forward<Args>(args)...);
     case val_type::DESTINATION:
       return f(ossia::value_trait<Destination>{}, std::forward<Args>(args)...);
   }
 
   throw invalid_value_type_error("lift: Invalid type");
-  return decltype(f(ossia::value_trait<Impulse>{}, std::forward<Args>(args)...)){};
+  return decltype(f(ossia::value_trait<impulse>{}, std::forward<Args>(args)...)){};
 }
 
 }

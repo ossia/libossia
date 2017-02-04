@@ -136,7 +136,7 @@ int main()
     auto make_expr = [&] () {
       return expressions::make_expression_atom(
         Destination(*local_test_address),
-        expressions::expression_atom::Comparator::GREATER_THAN_OR_EQUAL,
+        expressions::comparator::GREATER_EQUAL,
         std::vector<ossia::value>{0.7, 0.7, 0.7});
     };
 

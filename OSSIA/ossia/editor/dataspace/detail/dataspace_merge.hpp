@@ -210,7 +210,7 @@ struct value_merger
   }
 
   template<typename T>
-  OSSIA_INLINE ossia::value_with_unit operator()(const strong_value<T>& value_unit, Impulse value)
+  OSSIA_INLINE ossia::value_with_unit operator()(const strong_value<T>& value_unit, impulse value)
   {
     return value_unit;
   }

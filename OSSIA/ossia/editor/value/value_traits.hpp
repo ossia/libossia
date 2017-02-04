@@ -8,9 +8,9 @@ template <typename T>
 struct value_trait;
 
 template <>
-struct value_trait<ossia::Impulse>
+struct value_trait<ossia::impulse>
 {
-  using ossia_type = ossia::Impulse;
+  using ossia_type = ossia::impulse;
   using value_type = void;
   static const constexpr auto ossia_enum = val_type::IMPULSE;
   static const constexpr bool is_numeric = false;
@@ -88,9 +88,9 @@ struct value_trait<ossia::Destination>
 };
 
 template <>
-struct value_trait<ossia::Vec2f>
+struct value_trait<ossia::vec2f>
 {
-  using ossia_type = ossia::Vec2f;
+  using ossia_type = ossia::vec2f;
   using value_type = std::array<float, 2>;
   static const constexpr auto ossia_enum = val_type::VEC2F;
   static const constexpr bool is_numeric = false;
@@ -98,9 +98,9 @@ struct value_trait<ossia::Vec2f>
 };
 
 template <>
-struct value_trait<ossia::Vec3f>
+struct value_trait<ossia::vec3f>
 {
-  using ossia_type = ossia::Vec3f;
+  using ossia_type = ossia::vec3f;
   using value_type = std::array<float, 3>;
   static const constexpr auto ossia_enum = val_type::VEC3F;
   static const constexpr bool is_numeric = false;
@@ -108,9 +108,9 @@ struct value_trait<ossia::Vec3f>
 };
 
 template <>
-struct value_trait<ossia::Vec4f>
+struct value_trait<ossia::vec4f>
 {
-  using ossia_type = ossia::Vec4f;
+  using ossia_type = ossia::vec4f;
   using value_type = std::array<float, 4>;
   static const constexpr auto ossia_enum = val_type::VEC4F;
   static const constexpr bool is_numeric = false;

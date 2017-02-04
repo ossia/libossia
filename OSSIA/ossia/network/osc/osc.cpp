@@ -220,7 +220,7 @@ void osc_protocol::handleLearn(const oscpack::ReceivedMessage& m)
       if(is_vec<2>(val))
       {
         auto addr = n->createAddress(ossia::val_type::VEC2F);
-        addr->setValue(convert<ossia::Vec2f>(val));
+        addr->setValue(convert<ossia::vec2f>(val));
       }
       else
       {
@@ -235,7 +235,7 @@ void osc_protocol::handleLearn(const oscpack::ReceivedMessage& m)
       if(is_vec<3>(val))
       {
         auto addr = n->createAddress(ossia::val_type::VEC3F);
-        addr->setValue(convert<ossia::Vec2f>(val));
+        addr->setValue(convert<ossia::vec2f>(val));
       }
       else
       {
@@ -250,7 +250,7 @@ void osc_protocol::handleLearn(const oscpack::ReceivedMessage& m)
       if(is_vec<4>(val))
       {
         auto addr = n->createAddress(ossia::val_type::VEC4F);
-        addr->setValue(convert<ossia::Vec2f>(val));
+        addr->setValue(convert<ossia::vec2f>(val));
       }
       else
       {

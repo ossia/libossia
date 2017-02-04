@@ -114,7 +114,7 @@ bool midi_protocol::setInfo(midi_info m)
             }
             if (auto ptr = c.mCallbackPC_N[c.mPC])
             {
-              ptr->valueCallback(ossia::Impulse{});
+              ptr->valueCallback(ossia::impulse{});
             }
             break;
           default:

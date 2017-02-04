@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <ossia/editor/expression/expression_fwd.hpp>
+#include <ossia/editor/expression/operators.hpp>
 #include <ossia/editor/value/value.hpp>
 
 #include <ossia/network/base/address.hpp>
@@ -20,19 +21,9 @@ class OSSIA_EXPORT expression_atom final :
     public expression_callback_container
 {
 public:
-  enum class Comparator
-  {
-    EQUAL,  //! ==
-    DIFFERENT, //! !=
-    GREATER_THAN, //! >
-    LOWER_THAN, //! <
-    GREATER_THAN_OR_EQUAL, //! >=
-    LOWER_THAN_OR_EQUAL //! <=
-  };
-
   expression_atom(
-      const value& lhs, Comparator op = Comparator::EQUAL,
-      const value& rhs = Impulse{});
+      const value& lhs, comparator op = comparator::EQUAL,
+      const value& rhs = impulse{});
   expression_atom(expression_atom&& other) = delete;
   expression_atom& operator=(expression_atom&& other) = delete;
 
@@ -45,7 +36,7 @@ public:
   void update() const;
 
   const value& getFirstOperand() const;
-  Comparator getOperator() const;
+  comparator getOperator() const;
   const value& getSecondOperand() const;
 
 private:
@@ -63,7 +54,7 @@ private:
   net::address_base::callback_index mFirstValueCallbackIndex;
   net::address_base::callback_index mSecondValueCallbackIndex;
 
-  Comparator mOperator;
+  comparator mOperator;
 };
 }
 }
