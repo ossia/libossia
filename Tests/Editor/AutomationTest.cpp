@@ -53,6 +53,7 @@ private Q_SLOTS:
     ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
     auto cld = device.createChild("child");
     auto address = cld->createAddress(val_type::FLOAT);
+    qDebug() << (int) address->cloneValue().getType() << (int) address->getValueType();
     address->add_callback([&] (const value&v) { address_callback(v); });
 
     auto c = std::make_shared<curve<double, float>>();

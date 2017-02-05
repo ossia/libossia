@@ -47,16 +47,16 @@ public:
   // QML enums have to begin with a capital
   enum class val_type
   {
-    Impulse, //! \see ossia::impulse
-    Bool, //! \see bool
-    Int, //! \see int32_t
     Float, //! \see float
-    Char, //! \see char
-    String, //! \see std::string
-    Tuple, //! \see std::vector<ossia::value>
+    Int, //! \see int32_t
     Vec2f, //! \see ossia::vec2f
     Vec3f, //! \see ossia::vec3f
     Vec4f, //! \see ossia::vec4f
+    Impulse, //! \see ossia::impulse
+    Bool, //! \see bool
+    String, //! \see std::string
+    Tuple, //! \see std::vector<ossia::value>
+    Char, //! \see char
     Destination //! \see ossia::Destination
   };
 

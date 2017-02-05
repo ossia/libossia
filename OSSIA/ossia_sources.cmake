@@ -236,6 +236,14 @@ set(OSSIA_MIDI_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_address.cpp")
 
+set(OSSIA_OSCQUERY_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery.hpp"
+    )
+
+set(OSSIA_OSCQUERY_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery.cpp"
+    )
+
 set(OSSIA_HTTP_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/http/http_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/http/http_protocol.hpp"

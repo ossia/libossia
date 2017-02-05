@@ -28,7 +28,6 @@ add_subdirectory(3rdparty/oscpack EXCLUDE_FROM_ALL)
 
 # Main library
 add_subdirectory(OSSIA)
-
 if(OSSIA_PD)
     add_subdirectory(OSSIA/ossia-pd)
 endif()

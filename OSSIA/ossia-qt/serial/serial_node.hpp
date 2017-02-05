@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/network/serial/serial_address.hpp>
+#include <ossia-qt/serial/serial_address.hpp>
 #include <ossia/network/base/node.hpp>
 
 namespace ossia

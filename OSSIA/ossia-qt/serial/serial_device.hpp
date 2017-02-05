@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ossia/network/base/device.hpp>
-#include <ossia/network/serial/serial_node.hpp>
+#include <ossia-qt/serial/serial_node.hpp>
 class QSerialPortInfo;
 namespace ossia
 {

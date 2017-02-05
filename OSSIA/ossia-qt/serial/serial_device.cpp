@@ -1,5 +1,5 @@
-#include <ossia/network/serial/serial_device.hpp>
-#include <ossia/network/serial/serial_protocol.hpp>
+#include <ossia-qt/serial/serial_device.hpp>
+#include <ossia-qt/serial/serial_protocol.hpp>
 
 namespace ossia
 {

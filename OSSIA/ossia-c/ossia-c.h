@@ -37,16 +37,16 @@ typedef ossia_value_callback_index* ossia_value_callback_index_t;
 
 enum ossia_type
 {
-  IMPULSE_T,
-  BOOL_T,
-  INT_T,
   FLOAT_T,
-  CHAR_T,
-  STRING_T,
-  TUPLE_T,
+  INT_T,
   VEC2F_T,
   VEC3F_T,
   VEC4F_T,
+  IMPULSE_T,
+  BOOL_T,
+  STRING_T,
+  TUPLE_T,
+  CHAR_T,
   DESTINATION_T
 };
 

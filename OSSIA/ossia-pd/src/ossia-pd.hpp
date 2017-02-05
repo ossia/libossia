@@ -31,7 +31,7 @@ struct value_visitor
 {
     T* x;
 
-    void operator()(Impulse) const
+    void operator()(impulse) const
     {
         post("%s receive an impulse",x->x_name->s_name);
     }
@@ -64,15 +64,15 @@ struct value_visitor
         post("%s receive a Char %s",x->x_name->s_name, c);
         outlet_float(x->x_dataout, (float)c);
     }
-    void operator()(Vec2f vec) const
+    void operator()(vec2f vec) const
     {
         post("%s receive a Vec2f (%.2f,%.2f)",x->x_name->s_name, vec[0], vec[1]);
     }
-    void operator()(Vec3f vec) const
+    void operator()(vec3f vec) const
     {
         post("%s receive a Vec3f (%.2f,%.2f,%.2f)",x->x_name->s_name, vec[0], vec[1],vec[2]);
     }
-    void operator()(Vec4f vec) const
+    void operator()(vec4f vec) const
     {
         post("%s receive a Vec4f (%.2f,%.2f,%.2f,%.2f)",x->x_name->s_name, vec[0], vec[1],vec[2],vec[3]);
     }

@@ -1,7 +1,7 @@
 #include "serial_protocol.hpp"
-#include <ossia/network/serial/serial_address.hpp>
-#include <ossia/network/serial/serial_device.hpp>
-#include <ossia/network/serial/serial_node.hpp>
+#include <ossia-qt/serial/serial_address.hpp>
+#include <ossia-qt/serial/serial_device.hpp>
+#include <ossia-qt/serial/serial_node.hpp>
 #include <sstream>
 #include <iomanip>
 #include <QDebug>
@@ -35,7 +35,7 @@ serial_protocol::serial_protocol(
 
         QVariant ret;
         QMetaObject::invokeMethod(item, "createTree", Q_RETURN_ARG(QVariant, ret));
-        create_device<serial_device, serial_node, serial_protocol>(*mDevice, ret.value<QJSValue>());
+        qt::create_device<serial_device, serial_node, serial_protocol>(*mDevice, ret.value<QJSValue>());
 
         return;
       }

@@ -2,7 +2,7 @@
 #include <QSerialPort>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia-qt/js_utilities.hpp>
-#include <ossia/network/serial/serial_address_data.hpp>
+#include <ossia-qt/serial/serial_address_data.hpp>
 
 #include <QObject>
 

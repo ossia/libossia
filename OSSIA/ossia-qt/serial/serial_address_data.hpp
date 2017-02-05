@@ -41,7 +41,7 @@ struct serial_address_data :
   }
 
   serial_address_data(const QJSValue& val):
-    generic_address_data{make_address_data(val)},
+    generic_address_data{ossia::qt::make_address_data(val)},
     serial_address_data_base{val}
   {
 

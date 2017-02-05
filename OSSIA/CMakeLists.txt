@@ -113,6 +113,16 @@ if(OSSIA_PROTOCOL_MIDI)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} MIDI)
 endif()
 
+if(OSSIA_PROTOCOL_OSCQUERY)
+  target_sources(ossia PRIVATE ${OSSIA_OSCQUERY_SRCS} ${OSSIA_OSCQUERY_HEADERS})
+  set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} OSCQuery)
+  target_include_directories(ossia PUBLIC "${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue")
+  target_include_directories(ossia PRIVATE
+      "${OSSIA_3RDPARTY_FOLDER}/asio/asio/include"
+      "${OSSIA_3RDPARTY_FOLDER}/websocketpp"
+      )
+endif()
+
 if(OSSIA_PROTOCOL_HTTP)
   target_sources(ossia PRIVATE ${OSSIA_HTTP_HEADERS} ${OSSIA_HTTP_SRCS})
   target_link_libraries(ossia PUBLIC Qt5::Qml)

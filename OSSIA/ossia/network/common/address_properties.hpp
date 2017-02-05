@@ -4,19 +4,24 @@ namespace ossia
 {
 /**
  * @brief Enum to represent the types that a value can take.
+ *
+ * @note If changing this, also take care of changing :
+ * * val_type in qml_context
+ * * ossia_type in ossia-c.h
+ * * State::ValueType
  */
 enum class val_type
 {
-  IMPULSE, //! \see Impulse
-  BOOL, //! \see Bool
-  INT, //! \see Int
   FLOAT, //! \see Float
-  CHAR, //! \see Char
-  STRING, //! \see String
-  TUPLE, //! \see Tuple
+  INT, //! \see Int
   VEC2F, //! \see Vec2f
   VEC3F, //! \see Vec3f
   VEC4F, //! \see Vec4f
+  IMPULSE, //! \see Impulse
+  BOOL, //! \see Bool
+  STRING, //! \see String
+  TUPLE, //! \see Tuple
+  CHAR, //! \see Char
   DESTINATION //! \see Destination
 };
 

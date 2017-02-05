@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/network/generic/generic_address.hpp>
-#include <ossia/network/serial/serial_address_data.hpp>
-#include <ossia/network/serial/serial_node.hpp>
+#include <ossia-qt/serial/serial_address_data.hpp>
+#include <ossia-qt/serial/serial_node.hpp>
 
 namespace ossia
 {

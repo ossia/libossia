@@ -23,6 +23,7 @@ option(OSSIA_C "Build C bindings" ON)
 
 # Protocols :
 option(OSSIA_PROTOCOL_MIDI "Enable MIDI protocol" ON)
+option(OSSIA_PROTOCOL_OSCQUERY "Enable OSCQuery protocol" ON)
 option(OSSIA_PROTOCOL_HTTP "Enable HTTP protocol" ON) # Requires Qt
 option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF) # Requires Qt
 option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF) # Requires Qt
