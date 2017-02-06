@@ -53,5 +53,31 @@ struct OSSIA_EXPORT invalid_node_error :
   }
 };
 
+/**
+ * @brief Used when a requested node could not be found.
+ */
+struct OSSIA_EXPORT node_not_found_error :
+    public std::runtime_error
+{
+  node_not_found_error(std::string e):
+    std::runtime_error(std::move(e))
+  {
+
+  }
+};
+
+/**
+ * @brief Used when a bad network request is done on a local server.
+ */
+struct OSSIA_EXPORT bad_request_error :
+    public std::runtime_error
+{
+  bad_request_error(std::string e):
+    std::runtime_error(std::move(e))
+  {
+
+  }
+};
+
 
 }

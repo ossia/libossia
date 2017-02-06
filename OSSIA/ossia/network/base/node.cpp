@@ -282,6 +282,8 @@ OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(description, description, "description"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(priority, priority, "priority"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(refresh_rate, refresh_rate, "refreshRate"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(value_step_size, value_step_size, "valueStepSize"s)
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(critical, critical, "critical"s)
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(extended_type, extended_type, "extended_type"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_name, app_name, "appName"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_version, app_version, "appVersion"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_creator, app_creator, "appCreator"s)
@@ -292,6 +294,16 @@ void set_description(extended_attributes& n, const char* arg)
     set_description(n, std::string{arg});
   else
     set_description(n, ossia::none);
+}
+
+extended_type generic_buffer_type()
+{
+  return "buffer";
+}
+
+extended_type filesystem_path_type()
+{
+  return "filepath";
 }
 
 }

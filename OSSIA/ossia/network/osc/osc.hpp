@@ -3,8 +3,8 @@
 #include <string>
 
 #include <ossia/network/base/protocol.hpp>
-#include <mutex>
 #include <hopscotch_map.h>
+#include <mutex>
 #include <atomic>
 
 namespace oscpack

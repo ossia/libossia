@@ -238,6 +238,8 @@ set(OSSIA_MIDI_SRCS
 
 set(OSSIA_OSCQUERY_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/server.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/query_parser.hpp"
     )
 
 set(OSSIA_OSCQUERY_SRCS

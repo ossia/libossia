@@ -368,13 +368,13 @@ OSSIA_EXPORT std::ostream& operator<<(
     const std::vector<ossia::value>& tuple);
 OSSIA_EXPORT std::ostream& operator<<(
     std::ostream& s,
-    const std::array<float, 2>& vec);
+    const std::array<float, 2ul>& vec);
 OSSIA_EXPORT std::ostream& operator<<(
     std::ostream& s,
-    const std::array<float, 3>& vec);
+    const std::array<float, 3ul>& vec);
 OSSIA_EXPORT std::ostream& operator<<(
     std::ostream& s,
-    const std::array<float, 4>& vec);
+    const std::array<float, 4ul>& vec);
 OSSIA_EXPORT std::ostream& operator<<(
     std::ostream&,
     const std::vector<std::string>& tuple);

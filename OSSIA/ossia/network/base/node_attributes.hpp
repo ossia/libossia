@@ -46,9 +46,12 @@ using description = std::string;
 using priority = int32_t;
 using refresh_rate = int32_t;
 using value_step_size = int32_t;
+using critical = bool; //! Means that the node is very important, e.g. a "play" message
 using app_name = std::string;
 using app_version = std::string;
 using app_creator = std::string;
+
+using extended_type = std::string; //! How a low-level type should be interpreted.
 
 OSSIA_EXPORT optional<instance_bounds> get_instance_bounds(const extended_attributes& n);
 OSSIA_EXPORT void set_instance_bounds(extended_attributes& n, optional<instance_bounds>);
@@ -69,6 +72,12 @@ OSSIA_EXPORT void set_refresh_rate(extended_attributes& n, optional<refresh_rate
 OSSIA_EXPORT optional<value_step_size> get_value_step_size(const extended_attributes& n);
 OSSIA_EXPORT void set_value_step_size(extended_attributes& n, optional<refresh_rate> v);
 
+OSSIA_EXPORT optional<critical> get_critical(const extended_attributes& n);
+OSSIA_EXPORT void set_critical(extended_attributes& n, optional<critical> v);
+
+OSSIA_EXPORT optional<extended_type> get_extended_type(const extended_attributes& n);
+OSSIA_EXPORT void set_extended_type(extended_attributes& n, optional<extended_type> v);
+
 OSSIA_EXPORT optional<app_name> get_app_name(const extended_attributes& n);
 OSSIA_EXPORT void set_app_name(extended_attributes& n, optional<app_name> v);
 
@@ -78,6 +87,13 @@ OSSIA_EXPORT void set_app_version(extended_attributes& n, optional<app_version> 
 OSSIA_EXPORT optional<app_creator> get_app_creator(const extended_attributes& n);
 OSSIA_EXPORT void set_app_creator(extended_attributes& n, optional<app_creator> v);
 
+//! Represents a "raw" data buffer, that should not be interpreted as a readable string.
+//! Only meaningful for strings.
+OSSIA_EXPORT extended_type generic_buffer_type();
+
+//! Represents a filesystem path : "c:\windows\virus.exe", "/usr/share/pony.png", etc.
+//! Only meaningful for strings.
+OSSIA_EXPORT extended_type filesystem_path_type();
 
 /**
  * @brief get_attribute Get an attribute of an extended_attributes map.
