@@ -64,6 +64,12 @@ struct OSSIA_EXPORT domain_base
   }
 
   domain_base(value_type v1, value_type v2): min{v1}, max{v2} { }
+  domain_base(value_type v1,
+              value_type v2,
+              const boost::container::flat_set<value_type>& vals): min{v1}, max{v2}, values{vals} { }
+  domain_base(value_type v1,
+              value_type v2,
+              boost::container::flat_set<value_type>&& vals): min{v1}, max{v2}, values{std::move(vals)} { }
 };
 
 template <>
@@ -120,6 +126,12 @@ struct OSSIA_EXPORT domain_base<std::vector<ossia::value>>
 
   domain_base(const value_type& v1, const value_type& v2): min{v1}, max{v2} { }
   domain_base(value_type&& v1, value_type&& v2): min{std::move(v1)}, max{std::move(v2)} { }
+  domain_base(const value_type& v1,
+              const value_type& v2,
+              const boost::container::flat_set<value_type>& vals): min{v1}, max{v2}, values{vals} { }
+  domain_base(value_type&& v1,
+              value_type&& v2,
+              boost::container::flat_set<value_type>&& vals): min{std::move(v1)}, max{std::move(v2)}, values{std::move(vals)} { }
 };
 
 template <std::size_t N>
@@ -164,6 +176,12 @@ struct OSSIA_EXPORT domain_base<std::array<float, N>>
   }
 
   domain_base<value_type>(const value_type& v1, const value_type& v2): min{v1}, max{v2} { }
+  domain_base(const value_type& v1,
+              const value_type& v2,
+              const boost::container::flat_set<value_type>& vals): min{v1}, max{v2}, values{vals} { }
+  domain_base(const value_type& v1,
+              const value_type& v2,
+              boost::container::flat_set<value_type>&& vals): min{v1}, max{v2}, values{std::move(vals)} { }
 };
 
 template <>
@@ -210,6 +228,12 @@ struct OSSIA_EXPORT domain_base<ossia::value>
 
   domain_base<value_type>(const value_type& v1, const value_type& v2): min{v1}, max{v2} { }
   domain_base<value_type>(value_type&& v1, value_type&& v2): min{std::move(v1)}, max{std::move(v2)} { }
+  domain_base(const value_type& v1,
+              const value_type& v2,
+              const boost::container::flat_set<value_type>& vals): min{v1}, max{v2}, values{vals} { }
+  domain_base(value_type&& v1,
+              value_type&& v2,
+              boost::container::flat_set<value_type>&& vals): min{std::move(v1)}, max{std::move(v2)}, values{std::move(vals)} { }
 };
 
 /**
@@ -222,6 +246,8 @@ struct OSSIA_EXPORT domain_base<ossia::value>
  * Domain for String has a set of values.
  *
  * It is used to restrict a value to the domain if available.
+ *
+ * \todo same order than value
  */
 using domain_base_variant = eggs::variant<domain_base<impulse>, domain_base<bool>, domain_base<int32_t>,
                     domain_base<float>, domain_base<char>, domain_base<std::string>,

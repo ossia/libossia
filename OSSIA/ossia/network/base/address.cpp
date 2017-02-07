@@ -100,6 +100,87 @@ void push_value(const Destination& d, const value_with_unit& v)
 }
 
 
+optional<value> clone_value(const ossia::net::node_base& n)
+{
+  if(auto addr = n.getAddress()) return addr->cloneValue();
+  return ossia::none;
+}
+void set_value(ossia::net::node_base& n, value v)
+{
+  if(auto addr = n.getAddress()) addr->setValue(std::move(v));
+}
+
+optional<val_type> get_value_type(const ossia::net::node_base& n)
+{
+  if(auto addr = n.getAddress()) return addr->getValueType();
+  return ossia::none;
+}
+void set_value_type(ossia::net::node_base& n, val_type v)
+{
+  if(auto addr = n.getAddress()) addr->setValueType(std::move(v));
+}
+
+optional<domain> get_domain(const ossia::net::node_base& n)
+{
+  if(auto addr = n.getAddress()) return addr->getDomain();
+  return ossia::none;
+}
+void set_domain(ossia::net::node_base& n, domain v)
+{
+  if(auto addr = n.getAddress()) addr->setDomain(std::move(v));
+}
+
+optional<access_mode> get_access_mode(const ossia::net::node_base& n)
+{
+  if(auto addr = n.getAddress()) return addr->getAccessMode();
+  return ossia::none;
+}
+void set_access_mode(ossia::net::node_base& n, access_mode v)
+{
+  if(auto addr = n.getAddress()) addr->setAccessMode(std::move(v));
+}
+
+optional<bounding_mode> get_bounding_mode(const ossia::net::node_base& n)
+{
+  if(auto addr = n.getAddress()) return addr->getBoundingMode();
+  return ossia::none;
+}
+void set_bounding_mode(ossia::net::node_base& n, bounding_mode v)
+{
+  if(auto addr = n.getAddress()) addr->setBoundingMode(std::move(v));
+}
+
+optional<repetition_filter> get_repetition_filter(const ossia::net::node_base& n)
+{
+  if(auto addr = n.getAddress()) return addr->getRepetitionFilter();
+  return ossia::none;
+}
+void set_repetition_filter(ossia::net::node_base& n, repetition_filter v)
+{
+  if(auto addr = n.getAddress()) addr->setRepetitionFilter(std::move(v));
+}
+
+optional<unit_t> get_unit(const ossia::net::node_base& n)
+{
+  if(auto addr = n.getAddress()) return addr->getUnit();
+  return ossia::none;
+}
+void set_unit(ossia::net::node_base& n, unit_t v)
+{
+  if(auto addr = n.getAddress()) addr->setUnit(std::move(v));
+}
+
+optional<ossia::value> get_default_value(const ossia::net::node_base& n)
+{
+  if(auto addr = n.getAddress()) return addr->getDefaultValue();
+  return ossia::none;
+}
+void set_default_value(ossia::net::node_base& n, ossia::value v)
+{
+  if(auto addr = n.getAddress()) addr->setDefaultValue(std::move(v));
+}
+
+
 }
 }
 

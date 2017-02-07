@@ -6,6 +6,7 @@
 #include <ossia/editor/dataspace/dataspace_fwd.hpp>
 #include <ossia/editor/value/destination.hpp>
 #include <ossia/network/base/value_callback.hpp>
+#include <ossia/detail/optional.hpp>
 #include <functional>
 #include <vector>
 #include <memory>
@@ -104,9 +105,10 @@ public:
 
   virtual address_base& setValue(const value&) = 0;
 
-  //! If reimplemented, won't call observers
+  //! Reimplement to provide a way that does not call the observers.
   virtual void setValueQuiet(const value& v) { setValue(v); }
 
+  //! Pulls and clone the value.
   value fetchValue();
 
   virtual val_type getValueType() const = 0;
@@ -139,81 +141,34 @@ inline bool operator==(const address_base& lhs, const address_base& rhs)
 { return &lhs == &rhs; }
 inline bool operator!=(const address_base& lhs, const address_base& rhs)
 { return &lhs != &rhs; }
-/*
-class address_reference
-{
-public:
-  address_reference(ossia::net::address_base& address): mAddress{&address} { }
-  address_reference(const address_reference&) = default;
-  address_reference(address_reference&&) = default;
-  address_reference& operator=(const address_reference&) = default;
-  address_reference& operator=(address_reference&&) = default;
-  address_reference& operator=(ossia::net::address_base& address)
-  { mAddress = &address; return *this; }
 
-  ossia::net::address_base& address() const
-  { return *mAddress; }
-  const ossia::net::node_base& getNode() const
-  { return mAddress->getNode(); }
-  void pullValue()
-  { return mAddress->pullValue(); }
-  address_base& pushValue(const value& v)
-  { return mAddress->pushValue(v); }
-  value cloneValue(destination_index d = {})
-  { return mAddress->cloneValue(d); }
-  address_base& setValue(const value& v)
-  { return mAddress->setValue(v); }
-  value fetchValue()
-  { return mAddress->fetchValue(); }
 
-  val_type getValueType() const
-  { return mAddress->getValueType(); }
-  address_base& setValueType(val_type v)
-  { return mAddress->setValueType(v); }
+// These attributes follow the pattern in node_attributes. They require an address.
+OSSIA_EXPORT optional<value> clone_value(const ossia::net::node_base& n);
+OSSIA_EXPORT void set_value(ossia::net::node_base& n, value v);
 
-  access_mode getAccessMode() const
-  { return mAddress->getAccessMode(); }
-  address_base& setAccessMode(access_mode a)
-  { return mAddress->setAccessMode(a); }
+OSSIA_EXPORT optional<val_type> get_value_type(const ossia::net::node_base& n);
+OSSIA_EXPORT void set_value_type(ossia::net::node_base& n, val_type v);
 
-  const domain& getDomain() const
-  { return mAddress->getDomain(); }
-  address_base& setDomain(const domain& d)
-  { return mAddress->setDomain(d); }
+OSSIA_EXPORT optional<domain> get_domain(const ossia::net::node_base& n);
+OSSIA_EXPORT void set_domain(ossia::net::node_base& n, domain v);
 
-  bounding_mode getBoundingMode() const
-  { return mAddress->getBoundingMode(); }
-  address_base& setBoundingMode(bounding_mode b)
-  { return mAddress->setBoundingMode(b); }
+OSSIA_EXPORT optional<access_mode> get_access_mode(const ossia::net::node_base& n);
+OSSIA_EXPORT void set_access_mode(ossia::net::node_base& n, access_mode v);
 
-  repetition_filter getRepetitionFilter() const
-  { return mAddress->getRepetitionFilter(); }
-  address_base& setRepetitionFilter(repetition_filter f = repetition_filter::ON)
-  { return mAddress->setRepetitionFilter(f); }
+OSSIA_EXPORT optional<bounding_mode> get_bounding_mode(const ossia::net::node_base& n);
+OSSIA_EXPORT void set_bounding_mode(ossia::net::node_base& n, bounding_mode v);
 
-  const std::string& getTextualAddress() const
-  { return mAddress->getTextualAddress(); }
+OSSIA_EXPORT optional<repetition_filter> get_repetition_filter(const ossia::net::node_base& n);
+OSSIA_EXPORT void set_repetition_filter(ossia::net::node_base& n, repetition_filter v);
 
-  // Extended attributes
-  std::vector<std::string> getTags() const { return mAddress->getTags(); }
-  address_base& setTags(const std::vector<std::string>& v) { return mAddress->setTags(v); }
+OSSIA_EXPORT optional<unit_t> get_unit(const ossia::net::node_base& n);
+OSSIA_EXPORT void set_unit(ossia::net::node_base& n, unit_t v);
 
-  std::string getDescription() const { return mAddress->getDescription(); }
-  address_base& setDescription(const std::string& v) { return mAddress->setDescription(v); }
+OSSIA_EXPORT optional<ossia::value> get_default_value(const ossia::net::node_base& n);
+OSSIA_EXPORT void set_default_value(ossia::net::node_base& n, ossia::value v);
 
-  ossia::value getDefaultValue() const { return mAddress->getDefaultValue(); }
-  address_base& setDefaultValue(const ossia::value& v) { return mAddress->setDefaultValue(v); }
 
-  ossia::dataspace getDataspace() const { return mAddress->getDataspace(); }
-  address_base& setDataspace(const ossia::dataspace& v) { return mAddress->setDataspace(v); }
-
-  ossia::dataspace_unit getUnit() const { return mAddress->getUnit(); }
-  address_base& setUnit(const ossia::dataspace_unit& v) { return mAddress->setUnit(v); }
-
-private:
-  ossia::net::address_base* mAddress{};
-};
-*/
 /*!
  * \brief getAddressFromNode
  * \return the textual address of a node : aDevice:/an/address

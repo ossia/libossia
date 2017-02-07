@@ -6,8 +6,11 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/base/node_attributes.hpp>
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/detail/string_view.hpp>
+#include <ossia/network/osc/detail/osc.hpp>
 #include <oscpack/osc/OscTypes.h>
+#include <brigand/algorithms/for_each.hpp>
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #include <ossia/network/exceptions.hpp>
@@ -22,26 +25,31 @@ namespace key
 {
 // Attributes
 constexpr ossia::string_view osc_port() { return "OSC_PORT"; }
-constexpr ossia::string_view full_path() { return "FULL_PATH"; }
+constexpr auto attribute_full_path() { return "FULL_PATH"; }
 
-constexpr ossia::string_view type() { return "TYPE"; }
-constexpr ossia::string_view contents() { return "CONTENTS"; }
+constexpr auto attribute_typetag() { return "TYPE"; }
+constexpr auto contents() { return "CONTENTS"; }
 
-constexpr ossia::string_view attribute_value() { return "VALUE"; }
-constexpr ossia::string_view attribute_range() { return "RANGE"; }
-constexpr ossia::string_view attribute_clipmode() { return "CLIPMODE"; }
-constexpr ossia::string_view attribute_accessmode() { return "ACCESS"; }
-constexpr ossia::string_view attribute_description() { return "DESCRIPTION"; }
-constexpr ossia::string_view attribute_tags() { return "TAGS"; }
+constexpr auto attribute_value() { return "VALUE"; }
+constexpr auto attribute_range() { return "RANGE"; }
+constexpr auto attribute_clipmode() { return "CLIPMODE"; }
+constexpr auto attribute_accessmode() { return "ACCESS"; }
+constexpr auto attribute_description() { return "DESCRIPTION"; }
+constexpr auto attribute_tags() { return "TAGS"; }
 
 // Not part of the OSCQuery spec :
-constexpr ossia::string_view attribute_unit() { return "UNIT"; }
-constexpr ossia::string_view attribute_refresh_rate() { return "REFRESH_RATE"; }
-constexpr ossia::string_view attribute_priority() { return "PRIORITY"; }
-constexpr ossia::string_view attribute_step_size() { return "STEP_SIZE"; }
-constexpr ossia::string_view attribute_instance_bounds() { return "INSTANCE_BOUNDS"; }
-constexpr ossia::string_view attribute_critical() { return "CRITICAL"; }
-constexpr ossia::string_view attribute_extended_type() { return "EXTENDED_TYPE"; }
+constexpr auto attribute_unit() { return "UNIT"; }
+constexpr auto attribute_refresh_rate() { return "REFRESH_RATE"; }
+constexpr auto attribute_priority() { return "PRIORITY"; }
+constexpr auto attribute_step_size() { return "STEP_SIZE"; }
+constexpr auto attribute_instance_bounds() { return "INSTANCE_BOUNDS"; }
+constexpr auto attribute_critical() { return "CRITICAL"; }
+constexpr auto attribute_extended_type() { return "EXTENDED_TYPE"; }
+constexpr auto attribute_repetition_filter() { return "REPETITION_FILTER"; }
+constexpr auto attribute_app_name() { return "APP_NAME"; }
+constexpr auto attribute_app_version() { return "APP_VERSION"; }
+constexpr auto attribute_app_creator() { return "APP_CREATOR"; }
+constexpr auto attribute_default_value() { return "DEFAULT_VALUE"; }
 
 
 // Commands
@@ -64,6 +72,122 @@ inline rapidjson::GenericStringRef<char> StringRef(ossia::string_view s)
 
 namespace detail
 {
+struct OSSIA_EXPORT full_path_attribute
+{
+    static constexpr auto key() { return key::attribute_full_path(); }
+    static constexpr const auto func = static_cast<std::string(*)(const ossia::net::node_base&)>(ossia::net::address_string_from_node);
+};
+
+// Attributes of an address
+struct OSSIA_EXPORT value_attribute
+{
+    static constexpr auto key() { return key::attribute_value(); }
+    static constexpr const auto func = ossia::net::clone_value;
+};
+
+struct OSSIA_EXPORT typetag_attribute
+{
+    static constexpr auto key() { return key::attribute_typetag(); }
+    static constexpr const auto func = ossia::net::get_osc_typetag;
+};
+
+struct OSSIA_EXPORT domain_attribute
+{
+    static constexpr auto key() { return key::attribute_range(); }
+    static constexpr const auto func = ossia::net::get_domain;
+};
+
+struct OSSIA_EXPORT access_mode_attribute
+{
+    static constexpr auto key() { return key::attribute_accessmode(); }
+    static constexpr const auto func = ossia::net::get_access_mode;
+};
+
+struct OSSIA_EXPORT bounding_mode_attribute
+{
+    static constexpr auto key() { return key::attribute_clipmode(); }
+    static constexpr const auto func = ossia::net::get_bounding_mode;
+};
+
+struct OSSIA_EXPORT unit_attribute
+{
+    static constexpr auto key() { return key::attribute_unit(); }
+    static constexpr const auto func = ossia::net::get_unit;
+};
+
+struct OSSIA_EXPORT default_value_attribute
+{
+    static constexpr auto key() { return key::attribute_default_value(); }
+    static constexpr const auto func = ossia::net::get_default_value;
+};
+
+// Metadata attributes
+struct OSSIA_EXPORT tags_attribute
+{
+    static constexpr auto key() { return key::attribute_tags(); }
+    static constexpr const auto func = ossia::net::get_tags;
+};
+struct OSSIA_EXPORT refresh_rate_attribute
+{
+    static constexpr auto key() { return key::attribute_refresh_rate(); }
+    static constexpr const auto func = ossia::net::get_refresh_rate;
+};
+struct OSSIA_EXPORT priority_attribute
+{
+    static constexpr auto key() { return key::attribute_priority(); }
+    static constexpr const auto func = ossia::net::get_priority;
+};
+struct OSSIA_EXPORT step_size_attribute
+{
+    static constexpr auto key() { return key::attribute_step_size(); }
+    static constexpr const auto func = ossia::net::get_value_step_size;
+};
+struct OSSIA_EXPORT instance_bounds_attribute
+{
+    static constexpr auto key() { return key::attribute_instance_bounds(); }
+    static constexpr const auto func = ossia::net::get_instance_bounds;
+};
+struct OSSIA_EXPORT critical_attribute
+{
+    static constexpr auto key() { return key::attribute_critical(); }
+    static constexpr const auto func = ossia::net::get_critical;
+};
+struct OSSIA_EXPORT extended_type_attribute
+{
+    static constexpr auto key() { return key::attribute_extended_type(); }
+    static constexpr const auto func = ossia::net::get_extended_type;
+};
+struct OSSIA_EXPORT description_attribute
+{
+    static constexpr auto key() { return key::attribute_description(); }
+    static constexpr const auto func = ossia::net::get_description;
+};
+struct OSSIA_EXPORT repetition_filter_attribute
+{
+    static constexpr auto key() { return key::attribute_repetition_filter(); }
+    static constexpr const auto func = ossia::net::get_repetition_filter;
+};
+
+using base_attributes = brigand::list<
+    typetag_attribute,
+    value_attribute,
+    domain_attribute,
+    access_mode_attribute,
+    bounding_mode_attribute,
+    repetition_filter_attribute,
+    unit_attribute,
+    default_value_attribute
+>;
+
+using extended_attributes = brigand::list<
+    tags_attribute,
+    refresh_rate_attribute,
+    priority_attribute,
+    step_size_attribute,
+    instance_bounds_attribute,
+    critical_attribute,
+    extended_type_attribute,
+    description_attribute>;
 
 inline void writeKey(rapidjson::Writer<rapidjson::StringBuffer>& writer, ossia::string_view k)
 {
@@ -74,102 +198,304 @@ inline void writeRef(rapidjson::Writer<rapidjson::StringBuffer>& writer, ossia::
 {
     writer.String(k.data(), k.size());
 }
-struct json_writer_impl
+
+inline void writeChar(rapidjson::Writer<rapidjson::StringBuffer>& writer, char c)
+{
+    writer.String(&c, 1);
+}
+
+
+// TODO base64 encode
+struct to_json_value
 {
     rapidjson::Writer<rapidjson::StringBuffer>& writer;
-
-    // TODO base64 encode
-    struct to_json_value
+    void operator()(impulse) const { writer.Null(); }
+    void operator()(int v) const { writer.Int(v); }
+    void operator()(float v) const { writer.Double(v); }
+    void operator()(bool v) const { writer.Bool(v); }
+    void operator()(char v) const { writeChar(writer, v); }
+    void operator()(const std::string& v) const
     {
-        rapidjson::Writer<rapidjson::StringBuffer>& writer;
-        void operator()(impulse) const { writer.Null(); }
-        void operator()(int v) const { writer.Int(v); }
-        void operator()(float v) const { writer.Double(v); }
-        void operator()(bool v) const { writer.Bool(v); }
-        void operator()(char v) const { writer.String(std::string(v, 1)); }
-        void operator()(const std::string& v) const
+        // TODO handle base 64
+        // bool b = Base64::Encode(get<coppa::Generic>(val).buf, &out);
+        writer.String(v);
+    }
+
+    template<std::size_t N>
+    void operator()(const std::array<float, N>& vec) const {
+        writer.StartArray();
+        for(std::size_t i = 0; i < N; i++)
         {
-            // TODO handle base 64
-            // bool b = Base64::Encode(get<coppa::Generic>(val).buf, &out);
-            writer.String(v);
+            writer.Double(vec[i]);
+        }
+        writer.EndArray();
+    }
+
+    void operator()(const std::vector<ossia::value>& vec) const
+    {
+        writer.StartArray();
+        for(const auto& sub : vec)
+        {
+            sub.apply(*this);
+        }
+        writer.EndArray();
+    }
+
+    void operator()(const ossia::Destination& d) const
+    {
+        throw;
+    }
+
+
+    void operator()() const
+    {
+        throw;
+    }
+};
+
+// We're in an array
+struct to_json_domain
+{
+    rapidjson::Writer<rapidjson::StringBuffer>& writer;
+    void operator()()
+    {
+        writer.Null();
+        writer.Null();
+        writer.Null();
+    }
+    void operator()(const ossia::net::domain_base<impulse> & dom)
+    {
+        writer.Null();
+        writer.Null();
+        writer.Null();
+    }
+    void operator()(const ossia::net::domain_base<int32_t> & dom)
+    {
+        if(dom.min) writer.Int(*dom.min); else writer.Null();
+        if(dom.max) writer.Int(*dom.max); else writer.Null();
+
+        if(!dom.values.empty())
+        {
+            writer.StartArray();
+            for(auto val : dom.values)
+                writer.Int(val);
+            writer.EndArray();
+        }
+        else
+        {
+            writer.Null(); // TODO why not just nothing ?
+        }
+    }
+    void operator()(const ossia::net::domain_base<float> & dom)
+    {
+        if(dom.min) writer.Double(*dom.min); else writer.Null();
+        if(dom.max) writer.Double(*dom.max); else writer.Null();
+
+        if(!dom.values.empty())
+        {
+            writer.StartArray();
+            for(auto val : dom.values)
+                writer.Double(val);
+            writer.EndArray();
+        }
+        else
+        {
+            writer.Null(); // TODO why not just nothing ?
+        }
+    }
+
+    void operator()(const ossia::net::domain_base<char> & dom)
+    {
+        if(dom.min) writeChar(writer, *dom.min); else writer.Null();
+        if(dom.max) writeChar(writer, *dom.max); else writer.Null();
+
+        if(!dom.values.empty())
+        {
+            writer.StartArray();
+            for(auto val : dom.values)
+                writeChar(writer, val);
+            writer.EndArray();
+        }
+        else
+        {
+            writer.Null(); // TODO why not just nothing ?
+        }
+    }
+
+    void operator()(const ossia::net::domain_base<bool> & dom)
+    {
+        if(dom.min) writer.Bool(*dom.min); else writer.Null();
+        if(dom.max) writer.Bool(*dom.max); else writer.Null();
+
+        if(!dom.values.empty())
+        {
+            writer.StartArray();
+            for(auto val : dom.values)
+                writer.Bool(val);
+            writer.EndArray();
+        }
+        else
+        {
+            writer.Null(); // TODO why not just nothing ?
+        }
+    }
+
+    void operator()(const ossia::net::domain_base<std::string> & dom)
+    {
+        writer.Null();
+        writer.Null();
+
+        if(!dom.values.empty())
+        {
+            writer.StartArray();
+            for(const auto& val : dom.values)
+                writer.String(val);
+            writer.EndArray();
+        }
+        else
+        {
+            writer.Null(); // TODO why not just nothing ?
+        }
+    }
+
+    void operator()(const ossia::net::domain_base<std::vector<ossia::value>> & dom)
+    {
+        if(dom.min)
+        {
+            writer.StartArray();
+            for(auto& val : *dom.min)
+                val.apply(to_json_value{writer});
+            writer.EndArray();
+        }
+        else
+        {
+            writer.Null();
         }
 
-        template<std::size_t N>
-        void operator()(const std::array<float, N>& vec) const {
+        if(dom.max)
+        {
+            writer.StartArray();
+            for(auto& val : *dom.max)
+                val.apply(to_json_value{writer});
+            writer.EndArray();
+        }
+        else
+        {
+            writer.Null();
+        }
+
+        if(!dom.values.empty())
+        {
+            writer.StartArray();
+            for(const auto& val : dom.values)
+            {
+                writer.StartArray();
+                for(auto& sub : val)
+                    sub.apply(to_json_value{writer});
+                writer.EndArray();
+            }
+            writer.EndArray();
+        }
+        else
+        {
+            writer.Null(); // TODO why not just nothing ?
+        }
+    }
+
+    template<std::size_t N>
+    void operator()(const ossia::net::domain_base<std::array<float, N>> & dom)
+    {
+        if(dom.min)
+        {
+            auto& vec = *dom.min;
             writer.StartArray();
             for(std::size_t i = 0; i < N; i++)
-            {
                 writer.Double(vec[i]);
-            }
             writer.EndArray();
         }
+        else
+        {
+            writer.Null();
+        }
 
-        void operator()(const std::vector<ossia::value>& vec) const
+        if(dom.max)
+        {
+            auto& vec = *dom.max;
+            writer.StartArray();
+            for(std::size_t i = 0; i < N; i++)
+                writer.Double(vec[i]);
+            writer.EndArray();
+        }
+        else
+        {
+            writer.Null();
+        }
+
+        if(!dom.values.empty())
         {
             writer.StartArray();
-            for(const auto& sub : vec)
+            for(const auto& vec : dom.values)
             {
-                sub.apply(*this);
+                writer.StartArray();
+                for(std::size_t i = 0; i < N; i++)
+                    writer.Double(vec[i]);
+                writer.EndArray();
             }
             writer.EndArray();
         }
-
-        void operator()(const ossia::Destination& d) const
+        else
         {
-            throw;
+            writer.Null(); // TODO why not just nothing ?
         }
-
-
-        void operator()() const
-        {
-            throw;
-        }
-    };
-
-    struct to_osc_type
+    }
+    void operator()(const ossia::net::domain_base<ossia::value> & dom)
     {
-        std::string& type;
-        void operator()() { type += oscpack::TypeTagValues::NIL_TYPE_TAG; }
-        void operator()(impulse) { type += oscpack::TypeTagValues::INFINITUM_TYPE_TAG; }
-        void operator()(int v)   { type += oscpack::TypeTagValues::INT32_TYPE_TAG; }
-        void operator()(float v) { type += oscpack::TypeTagValues::FLOAT_TYPE_TAG; }
-        void operator()(bool v)  { type += v ? oscpack::TypeTagValues::TRUE_TYPE_TAG : oscpack::TypeTagValues::FALSE_TYPE_TAG;}
-        void operator()(char v)  { type += oscpack::TypeTagValues::CHAR_TYPE_TAG; }
-        void operator()(const std::string& v) {
-            // TODO BLOB
-            type += oscpack::TypeTagValues::STRING_TYPE_TAG;
-        }
-
-        template<std::size_t N>
-        void operator()(const std::array<float, N>& vec) {
-            for(std::size_t i = 0; i < N; i++)
-            {
-                type += oscpack::TypeTagValues::FLOAT_TYPE_TAG;
-            }
-        }
-
-        void operator()(const std::vector<ossia::value>& vec)
+        if(dom.min)
         {
-            type.reserve(type.size() + vec.size());
-
-            for(const auto& sub : vec)
-            {
-                sub.apply(*this);
-            }
+            dom.min->apply(to_json_value{writer});
         }
-
-        void operator()(const ossia::Destination& d)
+        else
         {
-            throw;
+            writer.Null();
         }
-    };
 
-    void toJson(const ossia::value& val) const
+        if(dom.max)
+        {
+            dom.max->apply(to_json_value{writer});
+        }
+        else
+        {
+            writer.Null();
+        }
+
+        if(!dom.values.empty())
+        {
+            writer.StartArray();
+            for(const auto& val: dom.values)
+            {
+                val.apply(to_json_value{writer});
+            }
+            writer.EndArray();
+        }
+        else
+        {
+            writer.Null(); // TODO why not just nothing ?
+        }
+    }
+};
+
+struct json_writer_impl
+{
+    using writer_t = rapidjson::Writer<rapidjson::StringBuffer>;
+    writer_t& writer;
+
+
+    void writeValue(const ossia::value& val) const
     {
         val.apply(to_json_value{writer});
     }
 
-    void toJson(ossia::bounding_mode b) const
+    void writeValue(ossia::bounding_mode b) const
     {
         switch(b)
         {
@@ -183,7 +509,7 @@ struct json_writer_impl
         }
     }
 
-    void toJson(ossia::access_mode b) const
+    void writeValue(ossia::access_mode b) const
     {
         switch(b)
         {
@@ -194,43 +520,19 @@ struct json_writer_impl
         }
     }
 
-    void toJson(const ossia::net::domain& d) const
+    void writeValue(const ossia::net::domain& d) const
     {
-        /*
-        json_array range_arr;
-        for(const auto& range : ranges.ranges)
-        {
-            json_array range_subarray;
-            if(!range.min)
-            { range_subarray.push_back(json_value::null_t{}); }
-            else
-            { addValueToJsonArray(range_subarray, range.min); }
-
-            if(!range.max)
-            { range_subarray.push_back(json_value::null_t{}); }
-            else
-            { addValueToJsonArray(range_subarray, range.max); }
-
-            if(range.range_values.empty())
-            { range_subarray.push_back(json_value::null_t{}); }
-            else
-            {
-                json_array range_values_array;
-                for(auto& elt : range.range_values)
-                {
-                    addValueToJsonArray(range_values_array, elt);
-                }
-                range_subarray.push_back(range_values_array);
-            }
-
-            range_arr.push_back(range_subarray);
-        }
-
-        return range_arr;
-        */
+        writer.StartArray();
+        ossia::apply(to_json_domain{writer}, d);
+        writer.EndArray();
     }
 
-    void tagsToJson(const ossia::net::tags& tags) const
+    void writeValue(const ossia::unit_t& d) const
+    {
+        writer.String(ossia::get_pretty_unit_text(d));
+    }
+
+    void writeValue(const ossia::net::tags& tags) const
     {
         writer.StartArray();
 
@@ -242,81 +544,69 @@ struct json_writer_impl
         writer.EndArray();
     }
 
+    void writeValue(int32_t i) const { writer.Int(i); }
+    void writeValue(float i) const { writer.Double(i); }
+    void writeValue(bool i) const { writer.Bool(i); }
+    void writeValue(const std::string& i) const { writer.String(i); }
+    void writeValue(const ossia::repetition_filter & i) const
+    { writeValue(i == repetition_filter::ON); }
 
-    std::string getOSCType(const ossia::value& value) const
+    void writeValue(const ossia::net::instance_bounds & i) const
     {
-        std::string s;
-        to_osc_type t{s};
-        value.apply(t);
-        return s;
+        writer.StartArray();
+        writer.Int(i.min_instances);
+        writer.Int(i.max_instances);
+        writer.EndArray();
     }
 
+    template<typename T>
+    void writeValue(const optional<T>& t) const
+    {
+        if(t) { writeValue(*t); }
+        else  { writer.Null(); }
+    }
+
+
+    template<typename Attr>
+    static auto make_fun_pair()
+    {
+        return std::make_pair(Attr::key(),
+                              [] (const json_writer_impl& self, const ossia::net::node_base& n) {
+            self.writeValue(Attr::func(n));
+        });
+    }
 
     void attributeToJsonValue(
             const ossia::net::node_base& n,
             ossia::string_view method
             ) const
     {
-        if(method == key::attribute_value())
+        // We put all our attributes in a map.
+        using map_type = tsl::hopscotch_map<ossia::string_view, void(*)(const json_writer_impl&, const ossia::net::node_base& )>;
+        static map_type attr_map{
+            [] {
+                map_type attr_impl;
+
+                attr_impl.insert(make_fun_pair<full_path_attribute>());
+
+                brigand::for_each<base_attributes>([&] (auto attr) {
+                    using type = typename decltype(attr)::type;
+                    attr_impl.insert(make_fun_pair<type>());
+                });
+                brigand::for_each<extended_attributes>([&] (auto attr) {
+                    using type = typename decltype(attr)::type;
+                    attr_impl.insert(make_fun_pair<type>());
+                });
+
+                return attr_impl;
+            }()
+        };
+
+        // Look into the map and call writeValue(theAttribute), c.f. make_fun_pair.
+        auto it = attr_map.find(method);
+        if(it != attr_map.end())
         {
-            auto addr = n.getAddress();
-            if(addr)
-                toJson(addr->cloneValue());
-            else
-                writer.Null();
-        }
-        else if(method == key::attribute_range())
-        {
-            auto addr = n.getAddress();
-            if(addr)
-                toJson(addr->getDomain());
-            else
-                writer.Null();
-        }
-        else if(method == key::attribute_clipmode())
-        {
-            auto addr = n.getAddress();
-            if(addr)
-                toJson(addr->getBoundingMode());
-            else
-                writer.Null();
-        }
-        else if(method == key::attribute_accessmode())
-        {
-            auto addr = n.getAddress();
-            if(addr)
-                toJson(addr->getAccessMode());
-            else
-                writer.Null();
-        }
-        else if(method == key::type())
-        {
-            auto addr = n.getAddress();
-            if(addr)
-                // TODO we could have a fast path for the types statically known
-                writer.String(getOSCType(addr->cloneValue()));
-            else
-                writer.Null();
-        }
-        else if(method == key::attribute_description())
-        {
-            auto desc = ossia::net::get_description(n);
-            if(desc)
-                writer.String(*desc);
-            else
-                writer.Null();
-        }
-        else if(method == key::attribute_tags())
-        {
-            auto tags = ossia::net::get_tags(n);
-            if(tags)
-                tagsToJson(*tags);
-            else
-                writer.Null();
-        }
-        else if(method == key::full_path())
-        {
-            writer.String(ossia::net::address_string_from_node(n));
+            it.value()(*this, n);
         }
         else
         {
@@ -339,48 +629,35 @@ struct json_writer_impl
 
         // We are already in an object
         // These attributes are always here
-        writeKey(key::full_path());
+        writeKey(key::attribute_full_path());
 
         writer.String(ossia::net::address_string_from_node(n));
-
-        // Metadata
-        auto desc = ossia::net::get_description(n);
-        if(desc)
-        {
-            writeKey(key::attribute_description());
-            writer.String(*desc);
-        }
-        auto tags = ossia::net::get_tags(n);
-        if(tags)
-        {
-            writeKey(key::attribute_tags());
-            tagsToJson(*tags);
-        }
 
         // Handling of the types / values
         if(addr)
         {
-            auto val = addr->cloneValue();
-            writeKey(key::type());
-            writer.String(getOSCType(val));
-
-            writeKey(key::attribute_accessmode());
-            toJson(addr->getAccessMode());
-
-            writeKey(key::attribute_clipmode());
-            toJson(addr->getBoundingMode());
-
-            writeKey(key::attribute_value());
-            toJson(val);
-
-            writeKey(key::attribute_range());
-            toJson(addr->getDomain());
+            // TODO it could be nice to have versions that take an address or a value directly
+            brigand::for_each<base_attributes>([&] (auto attr) {
+                using type = typename decltype(attr)::type;
+                this->writeKey(type::key());
+                this->writeValue(type::func(n));
+            });
         }
         else
         {
             writeKey(key::attribute_accessmode());
             writer.Int(0);
         }
+
+        brigand::for_each<extended_attributes>([&] (auto attr) {
+            using type = typename decltype(attr)::type;
+            auto res = type::func(n);
+            if(res)
+            {
+                this->writeKey(type::key());
+                this->writeValue(*res);
+            }
+        });
     }
 
     void nodeToJson(const ossia::net::node_base& n)
@@ -434,21 +711,23 @@ private:/*
         map[attributeToKey(attr)] = attributeToJson(attr);
         addAttributes(std::forward<Attributes>(attrs)...);
     }
-
+*/
 public:
     // Initialisation
-    static std::string device_info(int port)
+    static auto device_info(int port)
     {
-        json_map map;
-        map[key::osc_port()] = port;
+        rapidjson::StringBuffer buf;
+        rapidjson::Writer<rapidjson::StringBuffer> wr(buf);
 
-        return map.to_string();
+        wr.StartObject();
+        detail::writeKey(wr, key::osc_port());
+        wr.Int(port);
+
+        return buf;
     }
-    */
 
     // Format interface
     // Queries
-public:
     using string_type = rapidjson::StringBuffer;
 
     static auto query_namespace(

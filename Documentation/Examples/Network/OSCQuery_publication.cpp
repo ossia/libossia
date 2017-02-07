@@ -70,6 +70,11 @@ int main()
   auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
   localTupleAddress->add_callback(printValueCallback);
 
+  localTupleAddress->setDomain(ossia::net::domain_base<std::vector<ossia::value>>(
+    std::vector<ossia::value>{0, 1},
+    std::vector<ossia::value>{3, 5},
+    boost::container::flat_set<std::vector<ossia::value>>{ std::vector<ossia::value>{123, 345}, std::vector<ossia::value>{12345, 234} } ));
+
   // update tree value
   localImpulseAddress->pushValue(impulse{});
   localBoolAddress->pushValue(true);
