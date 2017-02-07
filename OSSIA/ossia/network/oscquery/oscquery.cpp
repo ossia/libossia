@@ -9,8 +9,6 @@
 
 #include <ossia/network/oscquery/detail/query_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
-#define FORWARD_LAMBDA(fun) [&] (auto&&... args) { return this->fun(std::forward<decltype(args)>(args)...); }
-
 namespace ossia
 {
 namespace oscquery
@@ -26,9 +24,11 @@ oscquery_server_protocol::oscquery_server_protocol(int16_t osc_port, int16_t ws_
     this->on_OSCMessage(m, ip);
   })}
 {
-  m_websocketServer.set_open_handler(FORWARD_LAMBDA(on_connectionOpen));
-  m_websocketServer.set_close_handler(FORWARD_LAMBDA(on_connectionClosed));
-  m_websocketServer.set_message_handler(FORWARD_LAMBDA(on_WSrequest));
+  m_websocketServer.set_open_handler([&] (connection_handler hdl) { on_connectionOpen(hdl); });
+  m_websocketServer.set_close_handler([&] (connection_handler hdl) { on_connectionClosed(hdl); });
+  m_websocketServer.set_message_handler([&] (connection_handler hdl, const std::string& str) {
+    return on_WSrequest(hdl, str);
+  });
 
   auto t = new std::thread{[&] { m_websocketServer.run(m_wsPort); }};
 }

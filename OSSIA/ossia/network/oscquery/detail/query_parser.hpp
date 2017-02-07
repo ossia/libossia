@@ -102,7 +102,17 @@ class query_answerer
         if(parameters.size() == 0)
         {
           // TODO auto&& lock = dev.map().acquire_read_lock();
-          return oscquery::writer::query_namespace(proto.getDevice().getRootNode());
+          auto& root = proto.getDevice().getRootNode();
+          if(path == "/")
+            return oscquery::writer::query_namespace(root);
+          else
+          {
+            auto node = ossia::net::find_node(root, path);
+            if(node)
+              return oscquery::writer::query_namespace(*node);
+            else
+              throw node_not_found_error{path};
+          }
         }
         else
         {
@@ -124,11 +134,11 @@ class query_answerer
             // Then we enable / disable listening
             if(listen_it->second == "true")
             {
-              // TODO it->addListenedPath(path);
+              it->start_listen(path, node->getAddress());
             }
             else if(listen_it->second == "false")
             {
-              // TODO it->removeListenedPath(path);
+              it->stop_listen(path);
             }
             else
             {

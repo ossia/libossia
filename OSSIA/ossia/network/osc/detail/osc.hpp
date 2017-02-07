@@ -521,19 +521,6 @@ inline ossia::value filter_value(const ossia::net::address_base& addr)
         addr.getDomain(), std::move(val), addr.getBoundingMode());
 }
 
-inline std::string
-get_osc_address_as_string(const ossia::net::address_base& address)
-{
-  auto addr = ossia::net::address_string_from_node(address);
-  return addr.substr(addr.find(':') + 1);
-}
-
-inline std::string get_osc_address_as_string(const ossia::net::node_base& node)
-{
-  auto addr = ossia::net::address_string_from_node(node);
-  return addr.substr(addr.find(':') + 1);
-}
-
 inline ossia::value to_value(
     const ossia::value& current,
     oscpack::ReceivedMessageArgumentIterator beg_it,

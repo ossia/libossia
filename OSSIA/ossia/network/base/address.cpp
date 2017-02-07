@@ -29,6 +29,23 @@ getAddressFromNode_rec(const node_base& n, std::string& str)
   str += n.getName();
 }
 
+static void
+getOSCAddressFromNode_rec(const node_base& n, std::string& str)
+{
+  if (auto p = n.getParent())
+  {
+    getOSCAddressFromNode_rec(*p, str);
+  }
+  else
+  {
+    // we're at the root
+    return;
+  }
+
+  str += '/';
+  str += n.getName();
+}
+
 std::string address_string_from_node(const ossia::net::node_base& node)
 {
   std::string s;
@@ -41,7 +58,20 @@ std::string address_string_from_node(const ossia::net::node_base& node)
 
 std::string address_string_from_node(const ossia::net::address_base& addr)
 {
-    return address_string_from_node(addr.getNode());
+  return address_string_from_node(addr.getNode());
+}
+
+std::string osc_address_string(const node_base& n)
+{
+  std::string s;
+  s.reserve(80);
+  getOSCAddressFromNode_rec(n, s);
+  return s;
+}
+
+std::string osc_address_string(const address_base& addr)
+{
+  return osc_address_string(addr.getNode());
 }
 
 std::future<void> address_base::pullValueAsync()

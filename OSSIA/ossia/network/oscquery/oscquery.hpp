@@ -65,6 +65,23 @@ struct oscquery_client
   bool operator==(
       const websocket_server::connection_handler& h) const
   { return !connection.expired() && connection.lock() == h.lock(); }
+
+  void start_listen(std::string path, ossia::net::address_base* addr)
+  {
+    if(addr)
+    {
+      listeningMutex.lock();
+      listening.insert(std::make_pair(std::move(path), addr));
+      listeningMutex.unlock();
+    }
+  }
+
+  void stop_listen(const std::string& path)
+  {
+    listeningMutex.lock();
+    listening.erase(path);
+    listeningMutex.unlock();
+  }
 };
 
 using oscquery_command =
@@ -99,6 +116,7 @@ public:
   void setDevice(net::device_base& dev) override;
   ossia::net::device_base& getDevice() const { return *m_device; }
 
+  auto& clients() { return m_clients; }
   auto& clients() const { return m_clients; }
 private:
   void on_OSCMessage(

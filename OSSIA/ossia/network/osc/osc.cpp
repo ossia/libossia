@@ -120,9 +120,9 @@ bool osc_protocol::observe(ossia::net::address_base& address, bool enable)
 
   if (enable)
     mListening.insert(
-          std::make_pair(get_osc_address_as_string(address), &address));
+          std::make_pair(osc_address_string(address), &address));
   else
-    mListening.erase(get_osc_address_as_string(address));
+    mListening.erase(osc_address_string(address));
 
   return true;
 }

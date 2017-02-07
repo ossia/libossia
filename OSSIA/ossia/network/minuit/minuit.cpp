@@ -116,7 +116,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
 
   auto act
       = name_table.get_action(ossia::minuit::minuit_action::NamespaceRequest);
-  namespace_refresh(act, ossia::net::get_osc_address_as_string(node));
+  namespace_refresh(act, ossia::net::osc_address_string(node));
 
   auto status = fut.wait_for(std::chrono::seconds(5));
   // Won't return as long as the tree exploration request haven't finished.
@@ -213,7 +213,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
 void minuit_protocol::request(ossia::net::address_base& address)
 {
   auto act = name_table.get_action(ossia::minuit::minuit_action::GetRequest);
-  auto addr = ossia::net::get_osc_address_as_string(address);
+  auto addr = ossia::net::osc_address_string(address);
   addr += ":value";
   this->mSender->send(act, ossia::string_view(addr));
   mLastSentMessage = get_time();
@@ -226,7 +226,7 @@ std::future<void> minuit_protocol::pullAsync(address_base& address)
   auto fut = mGetFinishedPromise.get_future();
 
   auto act = name_table.get_action(ossia::minuit::minuit_action::GetRequest);
-  auto addr = ossia::net::get_osc_address_as_string(address);
+  auto addr = ossia::net::osc_address_string(address);
   addr += ":value";
 
   get_refresh(act, addr);
@@ -270,12 +270,12 @@ bool minuit_protocol::observe(ossia::net::address_base& address, bool enable)
   {
     this->mSender->send(act, address, "enable");
     mListening.insert(
-        std::make_pair(get_osc_address_as_string(address), &address));
+        std::make_pair(osc_address_string(address), &address));
   }
   else
   {
     this->mSender->send(act, address, "disable");
-    mListening.erase(get_osc_address_as_string(address));
+    mListening.erase(osc_address_string(address));
   }
 
   mLastSentMessage = get_time();
@@ -290,9 +290,9 @@ bool minuit_protocol::observe_quietly(
 
   if(enable)
     mListening.insert(
-          std::make_pair(get_osc_address_as_string(address), &address));
+          std::make_pair(osc_address_string(address), &address));
   else
-    mListening.erase(get_osc_address_as_string(address));
+    mListening.erase(osc_address_string(address));
 
   return true;
 }

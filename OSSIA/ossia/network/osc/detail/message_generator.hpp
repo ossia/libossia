@@ -25,9 +25,7 @@ inline oscpack::OutboundPacketStream& operator<<(
     oscpack::OutboundPacketStream& p,
     const ossia::net::address_base& address)
 {
-  auto addr = ossia::net::address_string_from_node(address);
-  auto begin = addr.find(':') + 1;
-  p << ossia::string_view(addr.data() + begin, addr.size() - begin);
+  p << ossia::net::osc_address_string(address);
 
   return p;
 }

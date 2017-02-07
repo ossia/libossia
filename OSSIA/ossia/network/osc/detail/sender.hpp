@@ -30,11 +30,7 @@ public:
   template <typename... Args>
   void send(const ossia::net::address_base& address, Args&&... args)
   {
-      auto addr = ossia::net::address_string_from_node(address);
-      auto begin = addr.find(':') + 1;
-
-      send_base(
-            ossia::string_view(addr.data() + begin, addr.size() - begin),
+      send_base(ossia::net::osc_address_string(address),
             std::forward<Args>(args)...);
   }
 

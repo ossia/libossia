@@ -75,7 +75,7 @@ namespace detail
 struct OSSIA_EXPORT full_path_attribute
 {
     static constexpr auto key() { return key::attribute_full_path(); }
-    static constexpr const auto func = static_cast<std::string(*)(const ossia::net::node_base&)>(ossia::net::address_string_from_node);
+    static constexpr const auto func = static_cast<std::string(*)(const ossia::net::node_base&)>(ossia::net::osc_address_string);
 };
 
 // Attributes of an address
@@ -631,7 +631,7 @@ struct json_writer_impl
         // These attributes are always here
         writeKey(key::attribute_full_path());
 
-        writer.String(ossia::net::address_string_from_node(n));
+        writer.String(ossia::net::osc_address_string(n));
 
         // Handling of the types / values
         if(addr)
