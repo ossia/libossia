@@ -128,7 +128,7 @@ void oscquery_server_protocol::on_connectionClosed(
   */
 }
 
-std::string oscquery_server_protocol::on_WSrequest(
+rapidjson::StringBuffer oscquery_server_protocol::on_WSrequest(
     connection_handler hdl,
     const std::string& message)
 {

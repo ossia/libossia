@@ -54,13 +54,17 @@ class oscquery_multi_attributes_changed_command
 {
 };
 
-class oscquery_client
+struct oscquery_client
 {
-  std::mutex m_listeningMutex;
-  tsl::hopscotch_map<std::string, ossia::net::address_base*> m_listening;
+  websocket_server::connection_handler connection;
+  std::mutex listeningMutex;
+  tsl::hopscotch_map<std::string, ossia::net::address_base*> listening;
 
-  std::unique_ptr<osc::sender> m_sender;
+  std::unique_ptr<osc::sender> sender;
 
+  bool operator==(
+      const websocket_server::connection_handler& h) const
+  { return !connection.expired() && connection.lock() == h.lock(); }
 };
 
 using oscquery_command =
@@ -95,6 +99,7 @@ public:
   void setDevice(net::device_base& dev) override;
   ossia::net::device_base& getDevice() const { return *m_device; }
 
+  auto& clients() const { return m_clients; }
 private:
   void on_OSCMessage(
       const oscpack::ReceivedMessage& m,
@@ -106,7 +111,7 @@ private:
 
   // Exceptions here will be catched by the server
   // which will set appropriate error codes.
-  std::string on_WSrequest(
+  rapidjson::StringBuffer on_WSrequest(
       connection_handler hdl,
       const std::string& message);
 

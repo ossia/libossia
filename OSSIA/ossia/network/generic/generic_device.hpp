@@ -36,11 +36,5 @@ public:
 
   ~generic_device();
 };
-
-// address : format /a/b/c
-OSSIA_EXPORT node_base*
-find_node(node_base& dev, ossia::string_view address_base);
-OSSIA_EXPORT node_base&
-find_or_create_node(node_base& dev, ossia::string_view address_base);
 }
 }

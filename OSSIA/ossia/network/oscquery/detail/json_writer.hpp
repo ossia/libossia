@@ -1,5 +1,5 @@
 #pragma once
-#define RAPIDJSON_HAS_STDSTRING 1
+#include <ossia/detail/json.hpp>
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/domain/domain.hpp>
@@ -45,6 +45,9 @@ constexpr ossia::string_view attribute_extended_type() { return "EXTENDED_TYPE";
 
 
 // Commands
+constexpr ossia::string_view command() { return "COMMAND"; }
+constexpr ossia::string_view data() { return "DATA"; }
+
 constexpr ossia::string_view path_added() { return "PATH_ADDED"; }
 constexpr ossia::string_view path_removed() { return "PATH_REMOVED"; }
 constexpr ossia::string_view path_changed() { return "PATH_CHANGED"; }
@@ -56,57 +59,68 @@ constexpr ossia::string_view paths_changed() { return "PATHS_CHANGED"; }
 constexpr ossia::string_view attributes_changed_array() { return "ATTRIBUTES_CHANGED_ARRAY"; }
 }
 
+inline rapidjson::GenericStringRef<char> StringRef(ossia::string_view s)
+{ return rapidjson::GenericStringRef<char>(s.data() ? s.data() : "", s.size()); }
+
 namespace detail
 {
 
-struct json_parser_impl
+inline void writeKey(rapidjson::Writer<rapidjson::StringBuffer>& writer, ossia::string_view k)
 {
+    writer.Key(k.data(), k.size());
+}
+
+inline void writeRef(rapidjson::Writer<rapidjson::StringBuffer>& writer, ossia::string_view k)
+{
+    writer.String(k.data(), k.size());
+}
+struct json_writer_impl
+{
+    rapidjson::Writer<rapidjson::StringBuffer>& writer;
+
+    // TODO base64 encode
     struct to_json_value
     {
-        allocator& alloc;
-        rapidjson::Value operator()(impulse) const { return rapidjson::Value{}; }
-        rapidjson::Value operator()(int v) const { return rapidjson::Value{v}; }
-        rapidjson::Value operator()(float v) const { return rapidjson::Value{v}; }
-        rapidjson::Value operator()(bool v) const { return rapidjson::Value{v}; }
-        rapidjson::Value operator()(char v) const { return rapidjson::Value{v}; }
-        rapidjson::Value operator()(const std::string& v) const
+        rapidjson::Writer<rapidjson::StringBuffer>& writer;
+        void operator()(impulse) const { writer.Null(); }
+        void operator()(int v) const { writer.Int(v); }
+        void operator()(float v) const { writer.Double(v); }
+        void operator()(bool v) const { writer.Bool(v); }
+        void operator()(char v) const { writer.String(std::string(v, 1)); }
+        void operator()(const std::string& v) const
         {
             // TODO handle base 64
             // bool b = Base64::Encode(get<coppa::Generic>(val).buf, &out);
-            return rapidjson::Value{v, alloc};
+            writer.String(v);
         }
 
         template<std::size_t N>
-        rapidjson::Value operator()(const std::array<float, N>& vec) const {
-            rapidjson::Value v{rapidjson::kArrayType};
-            v.Reserve(N, alloc);
+        void operator()(const std::array<float, N>& vec) const {
+            writer.StartArray();
             for(std::size_t i = 0; i < N; i++)
             {
-                v.PushBack(vec[i], alloc);
+                writer.Double(vec[i]);
             }
-            return v;
+            writer.EndArray();
         }
 
-        rapidjson::Value operator()(const std::vector<ossia::value>& vec) const
+        void operator()(const std::vector<ossia::value>& vec) const
         {
-            rapidjson::Value v{rapidjson::kArrayType};
-            v.Reserve(vec.size(), alloc);
-
+            writer.StartArray();
             for(const auto& sub : vec)
             {
-                v.PushBack(sub.apply(*this), alloc);
+                sub.apply(*this);
             }
-
-            return v;
+            writer.EndArray();
         }
 
-        rapidjson::Value operator()(const ossia::Destination& d) const
+        void operator()(const ossia::Destination& d) const
         {
             throw;
         }
 
 
-        rapidjson::Value operator()() const
+        void operator()() const
         {
             throw;
         }
@@ -150,39 +164,37 @@ struct json_parser_impl
         }
     };
 
-    // TODO base64 encode
-    allocator& alloc;
-    rapidjson::Value toJson(const ossia::value& val) const
+    void toJson(const ossia::value& val) const
     {
-        return val.apply(to_json_value{alloc});
+        val.apply(to_json_value{writer});
     }
 
-    rapidjson::Value toJson(ossia::bounding_mode b) const
+    void toJson(ossia::bounding_mode b) const
     {
         switch(b)
         {
-            case ossia::bounding_mode::FREE: return rapidjson::Value{"None", alloc};
-            case ossia::bounding_mode::CLIP: return rapidjson::Value{"Both", alloc};
-            case ossia::bounding_mode::LOW:  return rapidjson::Value{"Low",  alloc};
-            case ossia::bounding_mode::HIGH: return rapidjson::Value{"High", alloc};
-            case ossia::bounding_mode::WRAP: return rapidjson::Value{"Wrap", alloc};
-            case ossia::bounding_mode::FOLD: return rapidjson::Value{"Fold", alloc};
+            case ossia::bounding_mode::FREE: writer.String("None"); break;
+            case ossia::bounding_mode::CLIP: writer.String("Both"); break;
+            case ossia::bounding_mode::LOW:  writer.String("Low");  break;
+            case ossia::bounding_mode::HIGH: writer.String("High"); break;
+            case ossia::bounding_mode::WRAP: writer.String("Wrap"); break;
+            case ossia::bounding_mode::FOLD: writer.String("Fold"); break;
             default: throw;
         }
     }
 
-    rapidjson::Value toJson(ossia::access_mode b) const
+    void toJson(ossia::access_mode b) const
     {
         switch(b)
         {
-            case ossia::access_mode::GET: return rapidjson::Value{1};
-            case ossia::access_mode::SET: return rapidjson::Value{2};
-            case ossia::access_mode::BI: return rapidjson::Value{3};
-            default: return rapidjson::Value{0}; // no address case
+            case ossia::access_mode::GET: writer.Int(1); break;
+            case ossia::access_mode::SET: writer.Int(2); break;
+            case ossia::access_mode::BI: writer.Int(3);  break;
+            default: writer.Int(0); // no address case
         }
     }
 
-    rapidjson::Value toJson(const ossia::net::domain& d) const
+    void toJson(const ossia::net::domain& d) const
     {
         /*
         json_array range_arr;
@@ -216,20 +228,18 @@ struct json_parser_impl
 
         return range_arr;
         */
-        return {};
     }
 
-    rapidjson::Value tagsToJson(const ossia::net::tags& tags) const
+    void tagsToJson(const ossia::net::tags& tags) const
     {
-        rapidjson::Value v{rapidjson::kArrayType};
-        v.Reserve(tags.size(), alloc);
+        writer.StartArray();
 
         for(const auto& tag : tags)
         {
-            v.PushBack(val(tag), alloc);
+            writer.String(tag);
         }
 
-        return v;
+        writer.EndArray();
     }
 
 
@@ -242,7 +252,7 @@ struct json_parser_impl
     }
 
 
-    rapidjson::Value attributeToJsonValue(
+    void attributeToJsonValue(
             const ossia::net::node_base& n,
             ossia::string_view method
             ) const
@@ -251,76 +261,75 @@ struct json_parser_impl
         {
             auto addr = n.getAddress();
             if(addr)
-                return toJson(addr->cloneValue());
+                toJson(addr->cloneValue());
             else
-                return {};
+                writer.Null();
         }
         else if(method == key::attribute_range())
         {
             auto addr = n.getAddress();
             if(addr)
-                return toJson(addr->getDomain());
+                toJson(addr->getDomain());
             else
-                return {};
+                writer.Null();
         }
         else if(method == key::attribute_clipmode())
         {
             auto addr = n.getAddress();
             if(addr)
-                return toJson(addr->getBoundingMode());
+                toJson(addr->getBoundingMode());
             else
-                return {};
+                writer.Null();
         }
         else if(method == key::attribute_accessmode())
         {
             auto addr = n.getAddress();
             if(addr)
-                return toJson(addr->getAccessMode());
+                toJson(addr->getAccessMode());
             else
-                return {};
+                writer.Null();
         }
         else if(method == key::type())
         {
             auto addr = n.getAddress();
             if(addr)
                 // TODO we could have a fast path for the types statically known
-                return rapidjson::Value{getOSCType(addr->cloneValue()), alloc};
+                writer.String(getOSCType(addr->cloneValue()));
             else
-                return {};
+                writer.Null();
         }
         else if(method == key::attribute_description())
         {
             auto desc = ossia::net::get_description(n);
             if(desc)
-                return rapidjson::Value{*desc, alloc};
-            return {};
+                writer.String(*desc);
+            else
+                writer.Null();
         }
         else if(method == key::attribute_tags())
         {
             auto tags = ossia::net::get_tags(n);
             if(tags)
-                return tagsToJson(*tags);
-            return {};
+                tagsToJson(*tags);
+            else
+                writer.Null();
         }
         else if(method == key::full_path())
         {
-            return rapidjson::Value{ossia::net::address_string_from_node(n), alloc};
+            writer.String(ossia::net::address_string_from_node(n));
         }
         else
         {
             throw ossia::bad_request_error{"Attribute not found"};
         }
     }
-
-    rapidjson::GenericStringRef<char> StringRef(ossia::string_view s) const
-    { return rapidjson::GenericStringRef<char>(s.data(), s.size()); }
-
-    template<typename T>
-    rapidjson::Value val(T&& t) const { return rapidjson::Value{t, alloc}; }
+    void writeKey(ossia::string_view k) const
+    {
+        detail::writeKey(writer, k);
+    }
 
     void nodeAttributesToJson(
-            const ossia::net::node_base& n,
-            rapidjson::Value& obj) const
+            const ossia::net::node_base& n) const
     {
         using namespace std;
         using namespace boost;
@@ -328,52 +337,72 @@ struct json_parser_impl
 
         auto addr = n.getAddress();
 
+        // We are already in an object
         // These attributes are always here
-        obj.AddMember(StringRef(key::full_path()), val(ossia::net::address_string_from_node(n)), alloc);
+        writeKey(key::full_path());
+
+        writer.String(ossia::net::address_string_from_node(n));
 
         // Metadata
         auto desc = ossia::net::get_description(n);
         if(desc)
-            obj.AddMember(StringRef(key::attribute_description()), val(*desc), alloc);
-
+        {
+            writeKey(key::attribute_description());
+            writer.String(*desc);
+        }
         auto tags = ossia::net::get_tags(n);
         if(tags)
-            obj.AddMember(StringRef(key::attribute_tags()), tagsToJson(*tags), alloc);
+        {
+            writeKey(key::attribute_tags());
+            tagsToJson(*tags);
+        }
 
         // Handling of the types / values
         if(addr)
         {
-            obj.AddMember(StringRef(key::type()), val(getOSCType(addr->cloneValue())), alloc);
-            obj.AddMember(StringRef(key::attribute_accessmode()), toJson(addr->getAccessMode()), alloc);
-            obj.AddMember(StringRef(key::attribute_clipmode()), toJson(addr->getBoundingMode()), alloc);
-            obj.AddMember(StringRef(key::attribute_value()), toJson(addr->cloneValue()), alloc);
-            obj.AddMember(StringRef(key::attribute_range()), toJson(addr->getDomain()), alloc);
+            auto val = addr->cloneValue();
+            writeKey(key::type());
+            writer.String(getOSCType(val));
+
+            writeKey(key::attribute_accessmode());
+            toJson(addr->getAccessMode());
+
+            writeKey(key::attribute_clipmode());
+            toJson(addr->getBoundingMode());
+
+            writeKey(key::attribute_value());
+            toJson(val);
+
+            writeKey(key::attribute_range());
+            toJson(addr->getDomain());
         }
         else
         {
-            obj.AddMember(StringRef(key::attribute_accessmode()), 0, alloc);
+            writeKey(key::attribute_accessmode());
+            writer.Int(0);
         }
     }
 
-    rapidjson::Value nodeToJson(const ossia::net::node_base& n)
+    void nodeToJson(const ossia::net::node_base& n)
     {
-        rapidjson::Value v(rapidjson::Type::kObjectType);
-
-        nodeAttributesToJson(n, v);
+        writer.StartObject();
+        nodeAttributesToJson(n);
 
         auto& cld = n.children();
 
         if(!cld.empty())
         {
-            rapidjson::Value contents(rapidjson::Type::kObjectType);
+            writeKey(key::contents());
+            writer.StartObject();
             for(const auto& child : cld)
             {
-                contents.AddMember(val(child->getName()), nodeToJson(*child), alloc);
+                writer.String(child->getName());
+                nodeToJson(*child);
             }
-            v.AddMember(StringRef(key::contents()), contents, alloc);
+            writer.EndObject();
         }
 
-        return v;
+        writer.EndObject();
     }
 
 
@@ -420,70 +449,116 @@ public:
     // Format interface
     // Queries
 public:
-    static std::string query_namespace(const ossia::net::node_base& dev)
-    {
-        using namespace detail;
-        rapidjson::Document d;
-        json_parser_impl p{d.GetAllocator()};
+    using string_type = rapidjson::StringBuffer;
 
-        d.SetObject();
-        d.GetObject() = p.nodeToJson(dev).GetObject();
+    static auto query_namespace(
+            const ossia::net::node_base& node)
+    {
         rapidjson::StringBuffer buf;
         rapidjson::Writer<rapidjson::StringBuffer> wr(buf);
-        d.Accept(wr);
-        return std::string(buf.GetString(), buf.GetSize()); // TODO avoid this copy
+
+        detail::json_writer_impl p{wr};
+
+        p.nodeToJson(node);
+
+        return buf;
     }
-    /*
+
     template<typename StringVec_T>
-    static std::string query_attributes(
-            const Parameter& param,
+    static auto query_attributes(
+            const ossia::net::node_base& node,
             const StringVec_T& methods)
     {
-        using namespace detail;
-        json_map map;
-        for(auto& method : methods)
-            map[method] = attributeToJsonValue(param, method);
-        return map.to_string();
-    }
+        rapidjson::StringBuffer buf;
+        rapidjson::Writer<rapidjson::StringBuffer> wr(buf);
 
+        detail::json_writer_impl p{wr};
+
+        wr.StartObject();
+        for(auto& method : methods)
+        {
+            detail::writeKey(wr, method);
+            p.attributeToJsonValue(node, method);
+        }
+        wr.EndObject();
+
+        return buf;
+    }
 
     // Update messages
-    template<typename... Args>
-    static std::string path_added(
-            Args&&... args)
+    static auto path_added(const ossia::net::node_base& n)
     {
-        using namespace detail;
-        json_map map;
-        map[key::path_added()] = mapToJson(std::forward<Args>(args)...);
-        return map.to_string();
+        rapidjson::StringBuffer buf;
+        rapidjson::Writer<rapidjson::StringBuffer> wr(buf);
+
+        detail::json_writer_impl p{wr};
+
+        wr.StartObject();
+        detail::writeKey(wr, key::command());
+        detail::writeRef(wr, key::path_added());
+
+        detail::writeKey(wr, key::data());
+        p.nodeToJson(n);
+        wr.EndObject();
+
+        return buf;
     }
 
-    template<typename... Args>
-    static std::string path_changed(
-            Args&&... args)
+    static auto path_changed(const ossia::net::node_base& n)
     {
-        using namespace detail;
-        json_map map;
-        map[key::path_changed()] = mapToJson(std::forward<Args>(args)...);
-        return map.to_string();
+        rapidjson::StringBuffer buf;
+        rapidjson::Writer<rapidjson::StringBuffer> wr(buf);
+
+        detail::json_writer_impl p{wr};
+
+        wr.StartObject();
+
+        detail::writeKey(wr, key::command());
+        detail::writeRef(wr, key::path_changed());
+
+        detail::writeKey(wr, key::data());
+        p.nodeToJson(n);
+
+        wr.EndObject();
+
+        return buf;
     }
 
-    static std::string path_removed(
+    static auto path_removed(
             const std::string& path)
     {
-        using namespace detail;
-        json_map map;
-        map[key::path_removed()] = path;
-        return map.to_string();
+        rapidjson::StringBuffer buf;
+        rapidjson::Writer<rapidjson::StringBuffer> wr(buf);
+
+        wr.StartObject();
+
+        detail::writeKey(wr, key::command());
+        detail::writeRef(wr, key::path_removed());
+
+        detail::writeKey(wr, key::data());
+        wr.String(path);
+
+        wr.EndObject();
+
+        return buf;
     }
 
-public:
+    /*
     template<typename... Attributes>
     static std::string attributes_changed(
             const std::string& path,
             Attributes&&... attrs)
     {
-        using namespace detail;
+        rapidjson::StringBuffer buf;
+        rapidjson::Writer<rapidjson::StringBuffer> wr(buf);
+
+        wr.StartObject();
+        d.AddMember(StringRef(key::command()), StringRef(key::attributes_changed()), alloc);
+
+        rapidjson::Value v(rapidjson::kObjectType);
+        v.AddMember(StringRef(key::full_path()), rapidjson::Value(path, alloc), alloc);
+        d.AddMember(StringRef(key::data()), rapidjson::Value(path, alloc), alloc);
+
         // TODO what if type changed? We have to add the type array.
         json_map objmap;
         objmap[key::full_path()] = path;
@@ -501,6 +576,7 @@ public:
             const Map& theMap,
             const Vector& vec)
     {
+        /*
         using namespace detail;
         json_array arr;
         for(const auto& elt : vec)

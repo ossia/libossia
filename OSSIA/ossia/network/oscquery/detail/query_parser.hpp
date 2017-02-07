@@ -4,6 +4,7 @@
 #include <chobo/small_vector.hpp>
 #include <boost/algorithm/string.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
+#include <ossia/network/base/node.hpp>
 #include <hopscotch_map.h>
 #include <string>
 #include <vector>
@@ -25,7 +26,7 @@ class query_parser
 {
  public:
    template<typename Mapper>
-   static std::string parse(const std::string& request, Mapper&& mapper)
+   static auto parse(const std::string& request, Mapper&& mapper)
    {
      using namespace boost;
      using chobo::small_vector;
@@ -90,8 +91,8 @@ class query_parser
 class query_answerer
 {
   public:
-    template<typename Device>
-    static auto answer (Device& dev, typename Device::connection_handler& hdl)
+    template<typename Protocol>
+    static auto answer (Protocol& proto, const typename Protocol::connection_handler& hdl)
     {
       return [&] (
           const std::string& path,
@@ -101,32 +102,33 @@ class query_answerer
         if(parameters.size() == 0)
         {
           // TODO auto&& lock = dev.map().acquire_read_lock();
-          return oscquery::writer::query_namespace(dev.getDevice().getRootNode());
+          return oscquery::writer::query_namespace(proto.getDevice().getRootNode());
         }
         else
         {
-          /*
+          auto node = ossia::net::find_node(proto.getDevice().getRootNode(), path);
           // First check if we have the path
-          if(!dev.map().has(path))
+          if(!node)
             throw node_not_found_error{path};
 
           // Listen
           auto listen_it = parameters.find("listen");
-          if(listen_it != end(parameters))
+          if(listen_it != parameters.end())
           {
             // First we find for a corresponding client
-            auto it = find(begin(dev.clients()), end(dev.clients()), hdl);
-            if(it == end(dev.clients()))
+            auto it = ossia::find(proto.clients(), hdl);
+
+            if(it == proto.clients().end())
               throw bad_request_error{"Client not found"};
 
             // Then we enable / disable listening
             if(listen_it->second == "true")
             {
-              it->addListenedPath(path);
+              // TODO it->addListenedPath(path);
             }
             else if(listen_it->second == "false")
             {
-              it->removeListenedPath(path);
+              // TODO it->removeListenedPath(path);
             }
             else
             {
@@ -135,8 +137,7 @@ class query_answerer
           }
 
           // All the value-less parameters
-          std::vector<std::string> attributes;
-          attributes.reserve(5);
+          chobo::small_vector<std::string, 5> attributes;
           for(const auto& elt : parameters)
           {
             if(elt.second.empty())
@@ -147,13 +148,11 @@ class query_answerer
 
           if(!attributes.empty())
           {
-            return json::writer::query_attributes(
-                  dev.map().get(path),
-                  attributes);
+            return oscquery::writer::query_attributes(
+                  *node, attributes);
           }
-*/
         }
-        return std::string{};
+        return writer::string_type{};
       };
     }
 

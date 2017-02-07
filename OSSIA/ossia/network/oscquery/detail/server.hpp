@@ -5,6 +5,7 @@
 #include <websocketpp/http/request.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/exceptions.hpp>
+#include <ossia/detail/json.hpp>
 namespace ossia
 {
 namespace oscquery
@@ -72,7 +73,10 @@ class websocket_server
           con->replace_header("Content-Type", "application/json; charset=utf-8");
           try
           {
-            con->set_body(h(hdl, con->get_uri()->get_resource()) + "\0");
+            rapidjson::StringBuffer base_str = h(hdl, con->get_uri()->get_resource());
+            std::string str{base_str.GetString(), base_str.GetSize()};
+            str += "\0";
+            con->set_body(std::move(str));
             con->set_status(websocketpp::http::status_code::ok);
           }
           catch(const ossia::node_not_found_error& e)
@@ -107,6 +111,12 @@ class websocket_server
     {
       auto con = m_server.get_con_from_hdl(hdl);
       con->send(message);
+    }
+
+    void send_message(connection_handler hdl, const rapidjson::StringBuffer& message)
+    {
+      auto con = m_server.get_con_from_hdl(hdl);
+      con->send(message.GetString(), message.GetSize(), websocketpp::frame::opcode::text);
     }
 
   private:

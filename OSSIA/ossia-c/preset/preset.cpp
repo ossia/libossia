@@ -5,7 +5,7 @@
 #include <string>
 #include <iostream>
 #include <boost/algorithm/string.hpp>
-#define RAPIDJSON_HAS_STDSTRING 1
+#include <ossia/detail/json.hpp>
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
