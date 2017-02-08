@@ -48,24 +48,24 @@ int main()
 
     auto localBoolNode = localTestNode->createChild("my_bool");
     auto localBoolAddress = localBoolNode->createAddress(val_type::BOOL);
-    localBoolAddress->setDefaultValue(true);
+    ossia::net::set_default_value(*localBoolNode, true);
     ossia::net::set_description(*localBoolNode, "test description"s);
 
     auto localIntNode = localTestNode->createChild("my_int");
     auto localIntAddress = localIntNode->createAddress(val_type::INT);
-    localIntAddress->setDefaultValue(3);
+    ossia::net::set_default_value(*localIntNode, 3);
     localIntAddress->setDomain(make_domain(0, 10));
     ossia::net::set_value_step_size(*localIntNode, 1);
 
     auto localFloatNode = localTestNode->createChild("my_float");
     auto localFloatAddress = localFloatNode->createAddress(val_type::FLOAT);
-    localFloatAddress->setDefaultValue(0.5);
+    ossia::net::set_default_value(*localFloatNode, 0.5);
     localFloatAddress->setDomain(make_domain(0.0, 1.0));
     ossia::net::set_value_step_size(*localFloatNode, 0.1);
 
     auto localStringNode = localTestNode->createChild("my_string");
     auto localStringAddress = localStringNode->createAddress(val_type::STRING);
-    localStringAddress->setDefaultValue(std::string("test"));
+    ossia::net::set_default_value(*localStringNode, "test"s);
 
     // update tree value
     localImpulseAddress->pushValue(impulse{});
