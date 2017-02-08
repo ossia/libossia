@@ -1,6 +1,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/address.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/detail/optional.hpp>
 #include <boost/iterator/counting_iterator.hpp>
@@ -216,7 +217,7 @@ bool node_base::removeChild(const std::string& name)
   auto san_name = sanitize_name(name);
 
   auto it = find_if(
-              mChildren, [&](const auto& c) { return c->getName() == san_name; });
+        mChildren, [&](const auto& c) { return c->getName() == san_name; });
 
   if (it != mChildren.end())
   {
@@ -269,8 +270,8 @@ void node_base::clearChildren()
 { using namespace std::literals; \
   return get_optional_attribute<Type>(n, String); \
 } \
-\
-void set_ ## Name (extended_attributes& n, optional<Type> i) \
+  \
+  void set_ ## Name (extended_attributes& n, optional<Type> i) \
 { using namespace std::literals; \
   set_optional_attribute(n, String, std::move(i)); \
 } \
@@ -283,11 +284,35 @@ OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(priority, priority, "priority"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(refresh_rate, refresh_rate, "refreshRate"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(value_step_size, value_step_size, "valueStepsize"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(critical, critical, "critical"s)
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(extended_type, extended_type, "extended_type"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_name, app_name, "appName"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_version, app_version, "appVersion"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_creator, app_creator, "appCreator"s)
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(default_value, default_value, "valueDefault"s)
+
+optional<extended_type> get_extended_type(const ossia::net::node_base& n)
+{
+  auto opt = get_optional_attribute<extended_type>(n, "extended_type");
+  if(!opt)
+  {
+    if(address_base* addr = n.getAddress())
+    {
+      switch(addr->getValueType())
+      {
+        case ossia::val_type::VEC2F:
+        case ossia::val_type::VEC3F:
+        case ossia::val_type::VEC4F:
+          return float_array_type();
+      }
+    }
+  }
+  return opt;
+}
+
+void set_extended_type(extended_attributes& n, optional<extended_type> i)
+{
+  set_optional_attribute(n, "extended_type", std::move(i));
+}
+
 
 void set_description(extended_attributes& n, const char* arg)
 {

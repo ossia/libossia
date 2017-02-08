@@ -4,6 +4,7 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/oscquery/detail/client.hpp>
 #include <ossia/detail/json.hpp>
+#include <readerwriterqueue.h>
 namespace osc
 {
 class sender;
@@ -21,7 +22,7 @@ namespace ossia
 namespace oscquery
 {
 
-class OSSIA_EXPORT oscquery_mirror_protocol : public ossia::net::protocol_base
+class OSSIA_EXPORT oscquery_mirror_protocol final : public ossia::net::protocol_base
 {
 public:
   oscquery_mirror_protocol(std::string host, uint16_t local_osc_port = 10203);
@@ -53,7 +54,14 @@ private:
   ossia::net::device_base* m_device{};
 
   std::promise<void> m_namespacePromise;
-//  /tsl::hopscotch_set<std::string, std::promise<void>> m_valuePromises;
+
+  struct get_promise
+  {
+    std::promise<void> promise;
+    ossia::net::address_base* address{};
+  };
+
+  moodycamel::ReaderWriterQueue<get_promise> m_getPromises;
 
   std::thread m_wsThread;
   std::string m_websocketHost;

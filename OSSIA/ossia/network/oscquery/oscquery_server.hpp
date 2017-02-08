@@ -73,7 +73,7 @@ using oscquery_command =
     oscquery_multi_attributes_changed_command
 >;
 
-class OSSIA_EXPORT oscquery_server_protocol : public ossia::net::protocol_base
+class OSSIA_EXPORT oscquery_server_protocol final : public ossia::net::protocol_base
 {
 public:
   using connection_handler = websocket_server::connection_handler;

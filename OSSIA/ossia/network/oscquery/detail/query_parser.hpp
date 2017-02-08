@@ -6,6 +6,8 @@
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/base/node.hpp>
 #include <hopscotch_map.h>
+#include <boost/lexical_cast.hpp>
+#include <websocketpp/connection.hpp>
 #include <string>
 #include <vector>
 
@@ -144,6 +146,19 @@ class query_answerer
             {
               throw bad_request_error{"Wrong arguments to listen query"};
             }
+          }
+
+          auto set_osc_port_it = parameters.find("set_port");
+          if(set_osc_port_it != parameters.end())
+          {
+            // First we find for a corresponding client
+            auto clt = proto.findClient(hdl);
+
+            if(!clt)
+              throw bad_request_error{"Client not found"};
+
+            // Then we set-up the sender
+            clt->openOSCSender(proto.getLogger(), boost::lexical_cast<int>(set_osc_port_it->second));
           }
 
           // All the value-less parameters

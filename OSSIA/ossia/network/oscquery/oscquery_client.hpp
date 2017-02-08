@@ -14,6 +14,7 @@ struct oscquery_client
   std::mutex listeningMutex;
   tsl::hopscotch_map<std::string, ossia::net::address_base*> listening;
 
+  std::string client_ip;
   std::unique_ptr<osc::sender> sender;
 
 public:
@@ -61,6 +62,11 @@ public:
       const websocket_server::connection_handler& h) const
   {
     return !connection.expired() && connection.lock() == h.lock();
+  }
+
+  void openOSCSender(const ossia::net::network_logger& l,  uint16_t port)
+  {
+    sender = std::make_unique<osc::sender>(l, client_ip, port);
   }
 };
 

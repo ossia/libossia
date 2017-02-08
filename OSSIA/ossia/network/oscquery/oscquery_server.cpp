@@ -143,6 +143,8 @@ void oscquery_server_protocol::on_connectionOpen(
   {
     std::lock_guard<std::mutex> lock(m_clientsMutex);
     m_clients.emplace_back(hdl);
+    auto con = m_websocketServer.impl().get_con_from_hdl(hdl);
+    m_clients.back().client_ip = con->get_host();
   }
   // Send the client a message with the OSC port
   m_websocketServer.send_message(hdl, writer::device_info(m_oscPort));

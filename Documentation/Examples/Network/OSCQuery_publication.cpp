@@ -90,13 +90,16 @@ int main()
     auto address = node.createAddress(val_type::TUPLE);
     address->add_callback(printValueCallback);
 
+    using tuple = std::vector<ossia::value>;
+    address->pushValue(tuple{"foo"s, 1234, tuple{"bar"s, 4.5}});
+
     // Domain of the tuple
     ossia::net::set_domain(node,
-      ossia::net::domain_base<std::vector<ossia::value>>(
-                             std::vector<ossia::value>{0, 1}, // Min values
-                             std::vector<ossia::value>{3, 5}, // Max values
-                             boost::container::flat_set<std::vector<ossia::value>>{
-                               std::vector<ossia::value>{123, 345}, std::vector<ossia::value>{12345, 234} // Allowed values
+      ossia::net::domain_base<tuple>(
+                             tuple{0, 1}, // Min values
+                             tuple{3, 5}, // Max values
+                             boost::container::flat_set<tuple>{
+                               tuple{123, 345}, tuple{12345, 234} // Allowed values
                              } ));
   }
 

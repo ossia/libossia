@@ -116,10 +116,6 @@ value address_base::fetchValue()
   return cloneValue();
 }
 
-value address_base::getDefaultValue() const { return {}; }
-
-address_base& address_base::setDefaultValue(const value& v) { return *this; }
-
 unit_t address_base::getUnit() const { return {}; }
 
 address_base& address_base::setUnit(const unit_t& v) { return *this; }
@@ -207,17 +203,6 @@ void set_unit(ossia::net::node_base& n, unit_t v)
 {
   if(auto addr = n.getAddress()) addr->setUnit(std::move(v));
 }
-
-optional<ossia::value> get_default_value(const ossia::net::node_base& n)
-{
-  if(auto addr = n.getAddress()) return addr->getDefaultValue();
-  return ossia::none;
-}
-void set_default_value(ossia::net::node_base& n, ossia::value v)
-{
-  if(auto addr = n.getAddress()) addr->setDefaultValue(std::move(v));
-}
-
 
 }
 }

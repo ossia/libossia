@@ -35,21 +35,35 @@ oscquery_mirror_protocol::~oscquery_mirror_protocol()
     m_wsThread.join();
 }
 
-bool oscquery_mirror_protocol::pull(net::address_base&)
+bool oscquery_mirror_protocol::pull(net::address_base& address)
 {
-  //! \todo
-  return false;
+#if defined(OSSIA_BENCHMARK)
+  auto t1 = std::chrono::high_resolution_clock::now();
+#endif
+  auto fut = pullAsync(address);
+  auto status = fut.wait_for(std::chrono::milliseconds(3000));
+
+#if defined(OSSIA_BENCHMARK)
+  auto t2 = std::chrono::high_resolution_clock::now();
+  ossia::logger().info("Time taken: {}", std::chrono::duration_cast<std::chrono::microseconds>(t2-t1).count());
+#endif
+  return status == std::future_status::ready;
 }
 
-std::future<void> oscquery_mirror_protocol::pullAsync(net::address_base&)
+std::future<void> oscquery_mirror_protocol::pullAsync(net::address_base& address)
 {
-  //! \todo
-  return {};
+  std::promise<void> promise;
+  auto fut = promise.get_future();
+  m_getPromises.enqueue({std::move(promise), &address});
+
+  m_websocketClient.send_message(net::osc_address_string(address) + "?VALUE");
+  return fut;
 }
 
-void oscquery_mirror_protocol::request(net::address_base&)
+void oscquery_mirror_protocol::request(net::address_base& address)
 {
-  //! \todo
+  m_websocketClient.send_message(net::osc_address_string(address) + "?VALUE");
+  m_getPromises.enqueue({{}, &address});
 }
 
 bool oscquery_mirror_protocol::push(const net::address_base& addr)
@@ -179,15 +193,36 @@ void oscquery_mirror_protocol::on_WSMessage(
     {
       // The ip of the OSC server on the server
       m_oscSender = std::make_unique<osc::sender>(mLogger, to_ip(m_websocketHost), json_parser::getPort(data));
+
+      // Send to the server the local receiver port
+      m_websocketClient.send_message("?set_port=" + std::to_string(m_oscServer->port()));
     }
     else
     {
-      // TODO "Value" message
-      if(mt == MessageType::Namespace)
+      switch(mt)
       {
-        json_parser::parseNamespace(m_device->getRootNode(), data);
-        m_namespacePromise.set_value();
-        return;
+        case MessageType::Namespace:
+        {
+          json_parser::parseNamespace(m_device->getRootNode(), data);
+          m_namespacePromise.set_value();
+          return;
+        }
+        case MessageType::Value:
+        {
+          // TODO instead just put full path in reply ?
+          get_promise* p = m_getPromises.peek();
+          if(p)
+          {
+            if(p->address)
+            {
+              json_parser::parseValue(*p->address, data);
+              p->promise.set_value();
+              m_getPromises.pop();
+              return;
+            }
+          }
+        }
+
       }
 
       /*

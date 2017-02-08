@@ -23,14 +23,21 @@ private slots:
     auto& root = dev.getRootNode();
     ossia::net::set_app_creator(root, "test"s);
     ossia::net::set_app_version(root, "v1.0"s);
-    ossia::net::node_base& n1 = ossia::net::find_or_create_node(root, "/foo/bar/baz");
-    (n1.createAddress(ossia::val_type::INT))->setDefaultValue(1234);
+
+    auto& n1 = ossia::net::find_or_create_node(root, "/foo/bar/baz");
     auto& n2 = ossia::net::find_or_create_node(root, "/bim/bam");
-    (n2.createAddress(ossia::val_type::FLOAT))->setDefaultValue(5678.);
     auto& n3 = ossia::net::find_or_create_node(root, "/bim/boum");
-    (n3.createAddress(ossia::val_type::STRING))->setDefaultValue("hello"s);
     auto& n4 = ossia::net::find_or_create_node(root, "/bim/boum.1");
-    (n4.createAddress(ossia::val_type::STRING)->setDefaultValue("bye"s));
+
+    n1.createAddress(ossia::val_type::INT);
+    n2.createAddress(ossia::val_type::FLOAT);
+    n3.createAddress(ossia::val_type::STRING);
+    n4.createAddress(ossia::val_type::STRING);
+
+    ossia::net::set_default_value(n1, 1234);
+    ossia::net::set_default_value(n2, 5678.);
+    ossia::net::set_default_value(n3, "hello"s);
+    ossia::net::set_default_value(n4, "bye"s);
 
     auto str = ossia::devices::write_json(dev);
     qDebug() << str.c_str();

@@ -20,7 +20,7 @@ namespace osc
 class sender
 {
 public:
-  sender(ossia::net::network_logger& l, const std::string& ip, const int port)
+  sender(const ossia::net::network_logger& l, const std::string& ip, const int port)
       : m_logger{l}
       , m_socket{oscpack::IpEndpointName(ip.c_str(), port)}
       , m_ip(ip)
@@ -108,7 +108,7 @@ private:
     }
   }
 
-  ossia::net::network_logger& m_logger;
+  const ossia::net::network_logger& m_logger;
   oscpack::UdpTransmitSocket m_socket;
   std::string m_ip;
   int m_port;

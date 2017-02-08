@@ -6,6 +6,9 @@
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <ossia/detail/json.hpp>
+#if defined(OSSIA_BENCHMARK)
+#include <chrono>
+#endif
 namespace ossia
 {
 namespace oscquery
@@ -39,9 +42,14 @@ class websocket_server
     {
         m_server.set_message_handler([=] (connection_handler hdl, server_t::message_ptr msg)
         {
+#if defined OSSIA_BENCHMARK
+          auto t1 = std::chrono::high_resolution_clock::now();
+#endif
           try
           {
-            send_message(hdl, h(hdl, msg->get_payload()));
+            auto res = h(hdl, msg->get_payload());
+            if(res.GetSize() > 0)
+              send_message(hdl, std::move(res));
           }
           catch(const ossia::node_not_found_error& e)
           {
@@ -58,12 +66,21 @@ class websocket_server
           }
           catch(const std::exception& e)
           {
+            auto con = m_server.get_con_from_hdl(hdl);
             ossia::logger().error("Error in request: {}", e.what());
+            con->set_status(websocketpp::http::status_code::bad_request);
           }
           catch(...)
           {
+            auto con = m_server.get_con_from_hdl(hdl);
             ossia::logger().error("Error in request");
+            con->set_status(websocketpp::http::status_code::bad_request);
           }
+
+#if defined OSSIA_BENCHMARK
+          auto t2 = std::chrono::high_resolution_clock::now();
+          ossia::logger().info("Time taken: {}", std::chrono::duration_cast<std::chrono::microseconds>(t2-t1).count());
+#endif
         });
 
         m_server.set_http_handler([=] (connection_handler hdl)
@@ -120,6 +137,8 @@ class websocket_server
       auto con = m_server.get_con_from_hdl(hdl);
       con->send(message.GetString(), message.GetSize(), websocketpp::frame::opcode::text);
     }
+
+    server_t& impl() { return m_server; }
 
   private:
     server_t m_server;

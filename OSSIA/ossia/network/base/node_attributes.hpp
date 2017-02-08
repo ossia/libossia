@@ -23,6 +23,7 @@ namespace ossia
 {
 namespace net
 {
+class node_base;
 using any_map = tsl::hopscotch_map<std::string, boost::any>;
 using extended_attributes = any_map;
 
@@ -77,7 +78,7 @@ OSSIA_EXPORT void set_value_step_size(extended_attributes& n, optional<refresh_r
 OSSIA_EXPORT optional<critical> get_critical(const extended_attributes& n);
 OSSIA_EXPORT void set_critical(extended_attributes& n, optional<critical> v);
 
-OSSIA_EXPORT optional<extended_type> get_extended_type(const extended_attributes& n);
+OSSIA_EXPORT optional<extended_type> get_extended_type(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_extended_type(extended_attributes& n, optional<extended_type> v);
 
 OSSIA_EXPORT optional<app_name> get_app_name(const extended_attributes& n);

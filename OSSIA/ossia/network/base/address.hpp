@@ -127,10 +127,6 @@ public:
   virtual address_base& setRepetitionFilter(repetition_filter = repetition_filter::ON) = 0;
   virtual bool filterRepetition(const ossia::value& val) const { return false; } //! by default there is no filter
 
-  // Extended attributes
-  virtual ossia::value getDefaultValue() const;
-  virtual address_base& setDefaultValue(const ossia::value& v);
-
   virtual ossia::unit_t getUnit() const;
   virtual address_base& setUnit(const ossia::unit_t& v);
 };

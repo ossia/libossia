@@ -290,7 +290,7 @@ struct json_parser_impl
       ossia::string_view typetag;
 
       // Try to read all the attributes that could give us the concrete type.
-      optional<ossia::val_type> val_type = TypeTagToType(typetag); // Implementation type
+      optional<ossia::val_type> val_type = ossia::none; // Implementation type
       optional<ossia::unit_t> unit = ossia::none; // Unit
       optional<ossia::net::extended_type> ext_type = ossia::none; // Extended type
 
@@ -302,6 +302,7 @@ struct json_parser_impl
       if(type_it != obj.MemberEnd())
       {
         typetag = getStringView(type_it->value);
+        val_type = TypeTagToType(typetag);
       }
 
       auto unit_it = obj.FindMember(detail::attribute_unit());
@@ -479,6 +480,11 @@ public:
       { std::string(detail::attributes_changed_array()), MessageType::AttributesChangedArray }
     };
     using namespace detail;
+    auto val_it = obj.FindMember(detail::attribute_value());
+    if(val_it != obj.MemberEnd())
+    {
+      return MessageType::Value;
+    }
 
     auto it = obj.FindMember(detail::command());
     if(it != obj.MemberEnd())
@@ -524,6 +530,11 @@ public:
 
       detail::json_parser_impl::readObject(root, obj);
     }
+  }
+
+  static void parseValue(ossia::net::address_base& addr, const rapidjson::Value& obj)
+  {
+    // TODO
   }
 
   template<typename BaseMapType, typename Map>

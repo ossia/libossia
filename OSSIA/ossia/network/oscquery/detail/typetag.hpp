@@ -56,7 +56,22 @@ struct osc_type_visitor
 inline std::string get_osc_typetag_impl(const ossia::net::address_base& addr)
 {
   std::string s;
-  addr.cloneValue().apply(osc_type_visitor{s});
+  auto val = addr.cloneValue();
+  val.apply(osc_type_visitor{s});
+  switch(val.getType())
+  {
+    case ossia::val_type::TUPLE:
+    case ossia::val_type::VEC2F:
+    case ossia::val_type::VEC3F:
+    case ossia::val_type::VEC4F:
+      // Erase the top-level '[ ]'
+      s.pop_back();
+      s.erase(0, 1);
+      break;
+    default:
+      break;
+  }
+
   return s;
 }
 

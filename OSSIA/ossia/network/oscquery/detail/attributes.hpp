@@ -222,7 +222,7 @@ description_attribute>;
 enum class MessageType
 {
   Device,
-  Namespace,
+  Namespace, Value,
   PathChanged, PathAdded, PathRemoved, AttributesChanged,
   PathsChanged, PathsAdded, PathsRemoved, AttributesChangedArray,
 };
