@@ -208,16 +208,6 @@ unit_attribute,
 default_value_attribute
 >;
 
-using base_attributes_without_type_and_value = brigand::list<
-domain_attribute,
-access_mode_attribute,
-bounding_mode_attribute,
-repetition_filter_attribute,
-unit_attribute,
-default_value_attribute
->;
-
-
 using extended_attributes = brigand::list<
 tags_attribute,
 refresh_rate_attribute,

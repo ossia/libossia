@@ -34,11 +34,81 @@ void set_max(domain& dom, const ossia::value& val)
     return eggs::variants::apply(domain_set_max_visitor{}, dom);
 }
 
+void set_values(domain& dom, const std::vector<ossia::value>& val)
+{
+  if(dom)
+    return eggs::variants::apply(domain_value_set_update_visitor{val}, dom);
+}
+
 domain make_domain(const ossia::value& min, const ossia::value& max)
 {
   if (min.valid() && max.valid())
   {
     return eggs::variants::apply(domain_minmax_creation_visitor{}, min.v, max.v);
+  }
+  else if(min.valid())
+  {
+    auto dom = eggs::variants::apply(domain_minmax_creation_visitor{}, min.v, min.v);
+    set_max(dom, ossia::value{});
+    return dom;
+  }
+  else if(max.valid())
+  {
+    auto dom = eggs::variants::apply(domain_minmax_creation_visitor{}, max.v, max.v);
+    set_min(dom, ossia::value{});
+    return dom;
+  }
+  return {};
+}
+
+ossia::net::domain make_domain_from_type(ossia::val_type v)
+{
+  switch(v)
+  {
+    case ossia::val_type::FLOAT: return ossia::net::domain_base<float>{};
+    case ossia::val_type::INT: return ossia::net::domain_base<int>{};
+    case ossia::val_type::IMPULSE: return ossia::net::domain_base<impulse>{};
+    case ossia::val_type::VEC2F: return ossia::net::domain_base<vec2f>{};
+    case ossia::val_type::VEC3F: return ossia::net::domain_base<vec3f>{};
+    case ossia::val_type::VEC4F: return ossia::net::domain_base<vec4f>{};
+    case ossia::val_type::BOOL: return ossia::net::domain_base<bool>{};
+    case ossia::val_type::CHAR: return ossia::net::domain_base<char>{};
+    case ossia::val_type::TUPLE: return ossia::net::domain_base<std::vector<ossia::value>>{};
+    default:
+      return {};
+  }
+}
+
+domain make_domain(const ossia::value& min, const ossia::value& max, const std::vector<ossia::value>& vals)
+{
+  if (min.valid() && max.valid())
+  {
+    auto dom = eggs::variants::apply(domain_minmax_creation_visitor{}, min.v, max.v);
+    set_values(dom, vals);
+    return dom;
+  }
+  else if(min.valid())
+  {
+    auto dom = eggs::variants::apply(domain_minmax_creation_visitor{}, min.v, min.v);
+    set_max(dom, ossia::value{});
+    set_values(dom, vals);
+    return dom;
+  }
+  else if(max.valid())
+  {
+    auto dom = eggs::variants::apply(domain_minmax_creation_visitor{}, max.v, max.v);
+    set_min(dom, ossia::value{});
+    set_values(dom, vals);
+    return dom;
+  }
+  else
+  {
+    if(vals.size() > 0)
+    {
+      auto dom = make_domain_from_type(vals[0].getType());
+      eggs::variants::apply(domain_value_set_update_visitor{vals}, dom);
+      return dom;
+    }
   }
   return {};
 }

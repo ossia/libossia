@@ -56,7 +56,7 @@ struct json_writer_impl
   void writeValue(const ossia::net::domain& d) const
   {
     writer.StartArray();
-    ossia::apply(to_json_domain{writer}, d);
+    ossia::apply(domain_to_json{writer}, d);
     writer.EndArray();
   }
 
@@ -255,6 +255,7 @@ public:
     wr.StartObject();
     writeKey(wr, detail::osc_port());
     wr.Int(port);
+    wr.EndObject();
 
     return buf;
   }

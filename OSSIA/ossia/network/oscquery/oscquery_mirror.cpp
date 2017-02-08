@@ -22,6 +22,8 @@ oscquery_mirror_protocol::oscquery_mirror_protocol(std::string host, uint16_t lo
 , m_websocketHost{std::move(host)}
 {
   m_wsThread = std::thread([=]{ m_websocketClient.connect(m_websocketHost); });
+  while(!m_websocketClient.connected())
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
 }
 
 oscquery_mirror_protocol::~oscquery_mirror_protocol()
@@ -166,8 +168,13 @@ void oscquery_mirror_protocol::on_WSMessage(
   try
   {
     auto data = json_parser::parse(message);
-    auto mt = json_parser::messageType(data);
+    if(data.IsNull()) {
+      if(mLogger.inbound_logger)
+        mLogger.inbound_logger->warn("Invalid WS message received: {}", message);
+      return;
+    }
 
+    auto mt = json_parser::messageType(data);
     if(mt == MessageType::Device)
     {
       // The ip of the OSC server on the server
@@ -175,6 +182,7 @@ void oscquery_mirror_protocol::on_WSMessage(
     }
     else
     {
+      // TODO "Value" message
       if(mt == MessageType::Namespace)
       {
         json_parser::parseNamespace(m_device->getRootNode(), data);
@@ -230,7 +238,8 @@ void oscquery_mirror_protocol::on_WSMessage(
   }
   catch(std::exception& e)
   {
-    std::cerr << "Error while parsing: " << e.what() << "  ==>  " << message;
+    if(mLogger.inbound_logger)
+      mLogger.inbound_logger->warn("Error while parsing: {} ==> {}", e.what(), message);
   }
 }
 

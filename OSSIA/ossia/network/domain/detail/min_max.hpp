@@ -281,5 +281,25 @@ struct domain_value_set_creation_visitor
   domain operator()(const impulse&)
   { return domain{}; }
 };
+
+struct domain_value_set_update_visitor
+{
+  const std::vector<ossia::value>& values;
+  template <typename T>
+  void operator()(ossia::net::domain_base<T>& dom)
+  {
+    dom.values.clear();
+    for(auto& value : values)
+    {
+      if(auto r = value.target<T>())
+        dom.values.insert(*r);
+    }
+  }
+
+  void operator()(ossia::net::domain_base<Destination>&)
+  {  }
+  void operator()(ossia::net::domain_base<impulse>&)
+  { }
+};
 }
 }

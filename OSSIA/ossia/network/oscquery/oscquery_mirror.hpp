@@ -21,7 +21,7 @@ namespace ossia
 namespace oscquery
 {
 
-class oscquery_mirror_protocol : public ossia::net::protocol_base
+class OSSIA_EXPORT oscquery_mirror_protocol : public ossia::net::protocol_base
 {
 public:
   oscquery_mirror_protocol(std::string host, uint16_t local_osc_port = 10203);

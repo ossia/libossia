@@ -229,6 +229,7 @@ struct json_to_value
           return true;
         }
         case oscpack::TypeTagValues::ARRAY_END_TYPE_TAG:
+        default:
         {
           // We should never end up here
           return false;

@@ -52,6 +52,11 @@ int main()
 
   auto localIntNode = localTestNode->createChild("my_int");
   auto localIntAddress = localIntNode->createAddress(val_type::INT);
+  net::set_access_mode(*localIntNode, access_mode::GET);
+  net::set_bounding_mode(*localIntNode, bounding_mode::FOLD);
+  net::set_domain(*localIntNode, ossia::net::make_domain(2, 14));
+  net::set_description(*localIntNode, "an integral value");
+
   localIntAddress->add_callback(printValueCallback);
 
   auto localFloatNode = localTestNode->createChild("my_float");

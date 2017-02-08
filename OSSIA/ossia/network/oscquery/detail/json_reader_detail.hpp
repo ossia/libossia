@@ -24,33 +24,30 @@ namespace detail
 
 struct json_parser_impl
 {
-  static ossia::val_type TypeTagToType(ossia::string_view str)
+  static optional<ossia::val_type> TypeTagToType(ossia::string_view str)
   {
-    if(str.size() == 1)
+    switch(str.size())
     {
-      switch(str[0])
-      {
-        case oscpack::TypeTagValues::INFINITUM_TYPE_TAG: return ossia::val_type::IMPULSE;
-        case oscpack::TypeTagValues::INT32_TYPE_TAG: return ossia::val_type::INT;
-        case oscpack::TypeTagValues::FLOAT_TYPE_TAG: return ossia::val_type::FLOAT;
-        case oscpack::TypeTagValues::CHAR_TYPE_TAG: return ossia::val_type::CHAR;
+      case 0:
+        return ossia::none; // todo throw instead ? return optional ?
+      case 1:
+        switch(str[0])
+        {
+          case oscpack::TypeTagValues::INFINITUM_TYPE_TAG: return ossia::val_type::IMPULSE;
+          case oscpack::TypeTagValues::INT32_TYPE_TAG: return ossia::val_type::INT;
+          case oscpack::TypeTagValues::FLOAT_TYPE_TAG: return ossia::val_type::FLOAT;
+          case oscpack::TypeTagValues::CHAR_TYPE_TAG: return ossia::val_type::CHAR;
 
-        case oscpack::TypeTagValues::TRUE_TYPE_TAG:
-        case oscpack::TypeTagValues::FALSE_TYPE_TAG: return ossia::val_type::BOOL;
+          case oscpack::TypeTagValues::TRUE_TYPE_TAG:
+          case oscpack::TypeTagValues::FALSE_TYPE_TAG: return ossia::val_type::BOOL;
 
-        case oscpack::TypeTagValues::STRING_TYPE_TAG:
-        case oscpack::TypeTagValues::SYMBOL_TYPE_TAG: return ossia::val_type::STRING;
+          case oscpack::TypeTagValues::STRING_TYPE_TAG:
+          case oscpack::TypeTagValues::SYMBOL_TYPE_TAG: return ossia::val_type::STRING;
 
-        default: throw bad_request_error("Unsupported type");
-      }
-    }
-    else
-    {
-      // TODO maybe as a tuple ? Maybe in strict mode ? see the extended_type
-      if (str == "[ff]" || str == "ff") return ossia::val_type::VEC2F;
-      else if (str == "[fff]" || str == "fff") return ossia::val_type::VEC3F;
-      else if (str == "[ffff]" || str == "ffff") return ossia::val_type::VEC4F;
-      else return ossia::val_type::TUPLE;
+          default: throw bad_request_error("Unsupported type");
+        }
+      default:
+        return ossia::val_type::TUPLE;
     }
   }
 
@@ -94,11 +91,37 @@ struct json_parser_impl
     return b;
   }
 
-  static bool ReadValue(const rapidjson::Value& val, ossia::value& res)
+  static ossia::value ReadValue(const rapidjson::Value& val)
   {
-    // This one is called for instance for the defaultValue
-    // TODO
-    return false;
+    switch(val.GetType())
+    {
+      case rapidjson::kNumberType:
+        return val.GetDouble();
+
+      case rapidjson::kFalseType:
+        return false;
+      case rapidjson::kTrueType:
+        return true;
+
+      case rapidjson::kArrayType:
+      {
+        std::vector<ossia::value> tpl;
+        tpl.reserve(val.Size());
+        for(auto& elt : val.GetArray())
+        {
+          tpl.push_back(ReadValue(elt));
+        }
+        return tpl;
+      }
+
+      case rapidjson::kStringType:
+        return std::string(val.GetString(), val.GetStringLength());
+
+      case rapidjson::kObjectType:
+      case rapidjson::kNullType:
+      default:
+        return ossia::impulse{};
+    }
   }
 
   static bool ReadValue(const rapidjson::Value& val, ossia::bounding_mode& res)
@@ -144,7 +167,27 @@ struct json_parser_impl
 
   static bool ReadValue(const rapidjson::Value& val, ossia::net::domain& res)
   {
-    //TODO
+    if(!val.IsArray())
+      return false;
+
+    // Read the domain as it is
+    if(val.Size() == 2) // min, max
+    {
+      res = ossia::net::make_domain(ReadValue(val[0]), ReadValue(val[1]));
+      return true;
+    }
+
+    else if(val.Size() >= 3 && val[2].IsArray())
+    {
+      std::vector<ossia::value> tpl;
+      tpl.reserve(val[2].Size());
+      for(auto& elt : val[2].GetArray())
+      {
+        tpl.push_back(ReadValue(elt));
+      }
+      res = ossia::net::make_domain(ReadValue(val[0]), ReadValue(val[1]), std::move(tpl));
+      return true;
+    }
     return false;
   }
 
@@ -214,7 +257,20 @@ struct json_parser_impl
       [] {
         map_type attr_impl;
 
-        brigand::for_each<base_attributes_without_type_and_value>([&] (auto attr) {
+        // Remaining metadata
+        brigand::for_each< brigand::list<
+            domain_attribute,
+            access_mode_attribute,
+            bounding_mode_attribute,
+            repetition_filter_attribute,
+            tags_attribute,
+            refresh_rate_attribute,
+            priority_attribute,
+            step_size_attribute,
+            instance_bounds_attribute,
+            critical_attribute,
+            description_attribute
+            > >([&] (auto attr) {
           using type = typename decltype(attr)::type;
           attr_impl.insert(make_setter_pair<type>());
         });
@@ -233,20 +289,130 @@ struct json_parser_impl
       // First initialize the address if it's not an empty node
       ossia::string_view typetag;
 
+      // Try to read all the attributes that could give us the concrete type.
+      optional<ossia::val_type> val_type = TypeTagToType(typetag); // Implementation type
+      optional<ossia::unit_t> unit = ossia::none; // Unit
+      optional<ossia::net::extended_type> ext_type = ossia::none; // Extended type
+
+      // TODO maybe read all the attributes and store their iterators, then do them in the order we want ?
+      auto value_it = obj.FindMember(detail::attribute_value());
+      auto default_value_it = obj.FindMember(detail::attribute_default_value());
+
       auto type_it = obj.FindMember(detail::attribute_typetag());
       if(type_it != obj.MemberEnd())
       {
         typetag = getStringView(type_it->value);
-        if(!typetag.empty())
-        {
-          node.createAddress(TypeTagToType(typetag));
+      }
 
-          auto value_it = obj.FindMember(detail::attribute_value());
-          if(value_it != obj.MemberEnd())
+      auto unit_it = obj.FindMember(detail::attribute_unit());
+      if(unit_it != obj.MemberEnd())
+      {
+        ossia::unit_t u;
+        ReadValue(unit_it->value, u);
+        if(u)
+          unit = std::move(u);
+      }
+
+      auto ext_type_it = obj.FindMember(detail::attribute_extended_type());
+      if(ext_type_it != obj.MemberEnd() && ext_type_it->value.IsString())
+      {
+        ext_type = ext_type_it->value.GetString();
+      }
+
+      if(val_type || unit || ext_type)
+      {
+        ossia::net::address_base* addr = nullptr;
+        if(unit) // The unit enforces the value type
+        {
+          addr = node.createAddress(ossia::matching_type(*unit));
+
+          addr->setUnit(*unit);
+          ossia::net::set_extended_type(node, ext_type);
+        }
+        else if(ext_type)
+        {
+          ossia::val_type actual_type = ossia::val_type::TUPLE; // Generic worse case
+          if(*ext_type == net::generic_buffer_type() || *ext_type == net::filesystem_path_type())
           {
-            ossia::value res = node.getAddress()->cloneValue();
-            int typetag_counter = 0;
-            res.apply(oscquery::detail::json_to_value{value_it->value, typetag, typetag_counter});
+            actual_type = ossia::val_type::STRING;
+          }
+          else if(*ext_type == net::float_array_type())
+          {
+            // Look for Vec2f, Vec3f, Vec4f
+            if(typetag == "ff" || typetag == "[ff]") actual_type = ossia::val_type::VEC2F;
+            else if(typetag == "fff" || typetag == "[fff]") actual_type = ossia::val_type::VEC3F;
+            else if(typetag == "ffff" || typetag == "[ffff]") actual_type = ossia::val_type::VEC4F;
+            else
+            {
+              int n = 0;
+              if(value_it != obj.MemberEnd() && value_it->value.IsArray())
+              {
+                n = value_it->value.Size();
+              }
+              else if(default_value_it != obj.MemberEnd() && default_value_it->value.IsArray())
+              {
+                n = default_value_it->value.Size();
+              }
+
+              switch(n)
+              {
+                case 2: actual_type = ossia::val_type::VEC2F; break;
+                case 3: actual_type = ossia::val_type::VEC3F; break;
+                case 4: actual_type = ossia::val_type::VEC4F; break;
+              }
+            }
+          }
+
+          addr = node.createAddress(actual_type);
+          ossia::net::set_extended_type(node, ext_type);
+        }
+        else if(val_type)
+        {
+          addr = node.createAddress(*val_type);
+        }
+
+        // We have a type. Now we read the value according to it.
+        if(value_it != obj.MemberEnd())
+        {
+          ossia::value res = node.getAddress()->cloneValue();
+          int typetag_counter = 0;
+          bool ok = res.apply(oscquery::detail::json_to_value{value_it->value, typetag, typetag_counter});
+          if(ok)
+            node.getAddress()->setValue(std::move(res));
+        }
+
+        // Same for default value
+        if(default_value_it != obj.MemberEnd())
+        {
+          ossia::value res = node.getAddress()->cloneValue();
+          int typetag_counter = 0;
+          bool ok = res.apply(oscquery::detail::json_to_value{default_value_it->value, typetag, typetag_counter});
+          if(ok)
+            ossia::net::set_default_value(node, std::move(res));
+        }
+      }
+      else
+      {
+        // We may be able to use the actual or default value
+        if(value_it != obj.MemberEnd())
+        {
+          auto val = ReadValue(value_it->value);
+          auto addr = node.createAddress(val.getType());
+          addr->setValue(std::move(val));
+        }
+
+        if(default_value_it != obj.MemberEnd())
+        {
+          auto val = ReadValue(default_value_it->value);
+          if(node.getAddress())
+          {
+            ossia::net::set_default_value(node, std::move(val));
+          }
+          else
+          {
+            auto addr = node.createAddress(val.getType());
+            addr->setValue(val);
+            ossia::net::set_default_value(node, std::move(val));
           }
         }
       }
