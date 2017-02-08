@@ -134,6 +134,8 @@ void push_value(const Destination& d, const value_with_unit& v)
 }
 
 
+ossia::string_view text_value()
+{ return make_string_view("value"); }
 optional<value> clone_value(const ossia::net::node_base& n)
 {
   if(auto addr = n.getAddress()) return addr->cloneValue();
@@ -144,6 +146,8 @@ void set_value(ossia::net::node_base& n, value v)
   if(auto addr = n.getAddress()) addr->setValue(std::move(v));
 }
 
+ossia::string_view text_value_type()
+{ return make_string_view("type"); }
 optional<val_type> get_value_type(const ossia::net::node_base& n)
 {
   if(auto addr = n.getAddress()) return addr->getValueType();
@@ -154,6 +158,8 @@ void set_value_type(ossia::net::node_base& n, val_type v)
   if(auto addr = n.getAddress()) addr->setValueType(std::move(v));
 }
 
+ossia::string_view text_domain()
+{ return make_string_view("domain"); }
 optional<domain> get_domain(const ossia::net::node_base& n)
 {
   if(auto addr = n.getAddress()) return addr->getDomain();
@@ -164,6 +170,8 @@ void set_domain(ossia::net::node_base& n, domain v)
   if(auto addr = n.getAddress()) addr->setDomain(std::move(v));
 }
 
+ossia::string_view text_access_mode()
+{ return make_string_view("access"); }
 optional<access_mode> get_access_mode(const ossia::net::node_base& n)
 {
   if(auto addr = n.getAddress()) return addr->getAccessMode();
@@ -174,6 +182,8 @@ void set_access_mode(ossia::net::node_base& n, access_mode v)
   if(auto addr = n.getAddress()) addr->setAccessMode(std::move(v));
 }
 
+ossia::string_view text_bounding_mode()
+{ return make_string_view("bounding"); }
 optional<bounding_mode> get_bounding_mode(const ossia::net::node_base& n)
 {
   if(auto addr = n.getAddress()) return addr->getBoundingMode();
@@ -184,6 +194,8 @@ void set_bounding_mode(ossia::net::node_base& n, bounding_mode v)
   if(auto addr = n.getAddress()) addr->setBoundingMode(std::move(v));
 }
 
+ossia::string_view text_repetition_filter()
+{ return make_string_view("repetition_filter"); }
 optional<repetition_filter> get_repetition_filter(const ossia::net::node_base& n)
 {
   if(auto addr = n.getAddress()) return addr->getRepetitionFilter();
@@ -194,6 +206,8 @@ void set_repetition_filter(ossia::net::node_base& n, repetition_filter v)
   if(auto addr = n.getAddress()) addr->setRepetitionFilter(std::move(v));
 }
 
+ossia::string_view text_unit()
+{ return make_string_view("unit"); }
 optional<unit_t> get_unit(const ossia::net::node_base& n)
 {
   if(auto addr = n.getAddress()) return addr->getUnit();

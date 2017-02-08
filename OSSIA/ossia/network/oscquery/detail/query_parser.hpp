@@ -106,12 +106,12 @@ class query_answerer
           // TODO auto&& lock = dev.map().acquire_read_lock();
           auto& root = proto.getDevice().getRootNode();
           if(path == "/")
-            return oscquery::writer::query_namespace(root);
+            return oscquery::json_writer::query_namespace(root);
           else
           {
             auto node = ossia::net::find_node(root, path);
             if(node)
-              return oscquery::writer::query_namespace(*node);
+              return oscquery::json_writer::query_namespace(*node);
             else
               throw node_not_found_error{path};
           }
@@ -173,11 +173,11 @@ class query_answerer
 
           if(!attributes.empty())
           {
-            return oscquery::writer::query_attributes(
+            return oscquery::json_writer::query_attributes(
                   *node, attributes);
           }
         }
-        return writer::string_type{};
+        return json_writer::string_t{};
       };
     }
 

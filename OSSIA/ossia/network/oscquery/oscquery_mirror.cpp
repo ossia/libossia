@@ -3,7 +3,7 @@
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
-#include <ossia/network/oscquery/detail/json_reader_detail.hpp>
+#include <ossia/network/oscquery/detail/json_reader.hpp>
 #include <boost/algorithm/string/erase.hpp>
 
 namespace ossia
@@ -189,7 +189,7 @@ void oscquery_mirror_protocol::on_WSMessage(
     }
 
     auto mt = json_parser::messageType(data);
-    if(mt == MessageType::Device)
+    if(mt == message_type::Device)
     {
       // The ip of the OSC server on the server
       m_oscSender = std::make_unique<osc::sender>(mLogger, to_ip(m_websocketHost), json_parser::getPort(data));
@@ -201,13 +201,13 @@ void oscquery_mirror_protocol::on_WSMessage(
     {
       switch(mt)
       {
-        case MessageType::Namespace:
+        case message_type::Namespace:
         {
           json_parser::parseNamespace(m_device->getRootNode(), data);
           m_namespacePromise.set_value();
           return;
         }
-        case MessageType::Value:
+        case message_type::Value:
         {
           // TODO instead just put full path in reply ?
           get_promise* p = m_getPromises.peek();

@@ -10,7 +10,18 @@ namespace net
 class protocol_base;
 
 /**
- * @brief The device_base class
+ * @brief What a device is able to do
+ */
+struct device_capabilities
+{
+        /**
+         * @brief change_tree : nodes can be added and removed externally.
+         */
+        bool change_tree = false;
+};
+
+/**
+ * @brief Root of a device tree
  *
  * A device models a real hardware or software
  * with which communication should be established.
@@ -38,15 +49,6 @@ class protocol_base;
  * \see node_base
  * \see protocol_base
  */
-
-struct device_capabilities
-{
-        /**
-         * @brief change_tree : nodes can be added and removed externally.
-         */
-        bool change_tree = false;
-};
-
 class OSSIA_EXPORT device_base
 {
 public:
@@ -82,10 +84,10 @@ public:
       onNodeRemoving; // The node being removed
   Nano::Signal<void(const node_base&, std::string)>
       onNodeRenamed; // Node has the new name, second argument is the old name
+  Nano::Signal<void(const node_base&, ossia::string_view)>
+      onAttributeModified; // Second argument is an identifier
   Nano::Signal<void(const address_base&)>
       onAddressCreated; // The address being created
-  Nano::Signal<void(const address_base&)>
-      onAddressModified; // The address being modified
   Nano::Signal<void(const address_base&)>
       onAddressRemoving; // The node whose address was removed
 

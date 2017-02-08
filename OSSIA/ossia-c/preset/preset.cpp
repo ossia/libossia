@@ -644,7 +644,7 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
         }
 
         // append step size attribute
-        auto valueStepSize = ossia::net::get_optional_attribute<ossia::net::value_step_size>(node, "valueStepSize");
+        auto valueStepSize = ossia::get_optional_attribute<ossia::net::value_step_size>(node, "valueStepSize");
         if (valueStepSize)
         {
           v.AddMember("valueStepSize", *valueStepSize, alloc);
@@ -673,7 +673,7 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
         }
 
         // append step size attribute
-        auto valueStepSize = ossia::net::get_optional_attribute<ossia::net::value_step_size>(node, "valueStepSize");
+        auto valueStepSize = ossia::get_optional_attribute<ossia::net::value_step_size>(node, "valueStepSize");
         if (valueStepSize)
         {
           v.AddMember("valueStepSize", *valueStepSize, alloc);
@@ -707,7 +707,7 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
     }
 
     // append description attribute
-    auto descr = ossia::net::get_optional_attribute<ossia::net::description>(node, "description");
+    auto descr = ossia::get_optional_attribute<ossia::net::description>(node, "description");
     if (descr)
     {
       rapidjson::Value s;
@@ -737,7 +737,7 @@ std::string ossia::devices::write_json(
 
   // Device metadata
   // append app name attribute
-  auto appName = ossia::net::get_optional_attribute<std::string>(node, "appName");
+  auto appName = ossia::get_optional_attribute<std::string>(node, "appName");
   if (appName)
   {
     rapidjson::Value tmp;
@@ -745,7 +745,7 @@ std::string ossia::devices::write_json(
     d.AddMember("appName", tmp, alloc);
   }
   // append app version attribute
-  auto appVersion = ossia::net::get_optional_attribute<std::string>(node, "appVersion");
+  auto appVersion = ossia::get_optional_attribute<std::string>(node, "appVersion");
   if (appVersion)
   {
     rapidjson::Value tmp;
@@ -753,7 +753,7 @@ std::string ossia::devices::write_json(
     d.AddMember("appVersion", tmp, alloc);
   }
   // append app creator attribute
-  auto appCreator = ossia::net::get_optional_attribute<std::string>(node, "appCreator");
+  auto appCreator = ossia::get_optional_attribute<std::string>(node, "appCreator");
   if (appCreator)
   {
     rapidjson::Value tmp;

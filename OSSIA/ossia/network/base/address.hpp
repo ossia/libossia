@@ -140,24 +140,31 @@ inline bool operator!=(const address_base& lhs, const address_base& rhs)
 
 
 // These attributes follow the pattern in node_attributes. They require an address.
+OSSIA_EXPORT ossia::string_view text_value();
 OSSIA_EXPORT optional<value> clone_value(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_value(ossia::net::node_base& n, value v);
 
+OSSIA_EXPORT ossia::string_view text_value_type();
 OSSIA_EXPORT optional<val_type> get_value_type(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_value_type(ossia::net::node_base& n, val_type v);
 
+OSSIA_EXPORT ossia::string_view text_domain();
 OSSIA_EXPORT optional<domain> get_domain(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_domain(ossia::net::node_base& n, domain v);
 
+OSSIA_EXPORT ossia::string_view text_access_mode();
 OSSIA_EXPORT optional<access_mode> get_access_mode(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_access_mode(ossia::net::node_base& n, access_mode v);
 
+OSSIA_EXPORT ossia::string_view text_bounding_mode();
 OSSIA_EXPORT optional<bounding_mode> get_bounding_mode(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_bounding_mode(ossia::net::node_base& n, bounding_mode v);
 
+OSSIA_EXPORT ossia::string_view text_repetition_filter();
 OSSIA_EXPORT optional<repetition_filter> get_repetition_filter(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_repetition_filter(ossia::net::node_base& n, repetition_filter v);
 
+OSSIA_EXPORT ossia::string_view text_unit();
 OSSIA_EXPORT optional<unit_t> get_unit(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_unit(ossia::net::node_base& n, unit_t v);
 

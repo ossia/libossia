@@ -219,7 +219,7 @@ extended_type_attribute,
 description_attribute>;
 
 }
-enum class MessageType
+enum class message_type
 {
   Device,
   Namespace, Value,

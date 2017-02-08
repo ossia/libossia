@@ -173,7 +173,7 @@ ossia::net::generic_address& generic_address::setValueType(ossia::val_type type)
     mDomain = convert_domain(mDomain, mValueType);
   */
   }
-  mNode.getDevice().onAddressModified(*this);
+  mNode.getDevice().onAttributeModified(mNode, text_value_type());
   return *this;
 }
 
@@ -188,7 +188,7 @@ generic_address::setAccessMode(ossia::access_mode accessMode)
   if(mAccessMode != accessMode)
   {
     mAccessMode = accessMode;
-    mNode.getDevice().onAddressModified(*this);
+    mNode.getDevice().onAttributeModified(mNode, text_access_mode());
   }
   return *this;
 }
@@ -206,7 +206,7 @@ generic_address::setDomain(const ossia::net::domain& domain)
     // TODO we should check that the domain is correct
     // for the type of the value.
     mDomain = domain;
-    mNode.getDevice().onAddressModified(*this);
+    mNode.getDevice().onAttributeModified(mNode, text_domain());
   }
   return *this;
 }
@@ -222,7 +222,7 @@ generic_address::setBoundingMode(ossia::bounding_mode boundingMode)
   if(mBoundingMode != boundingMode)
   {
     mBoundingMode = boundingMode;
-    mNode.getDevice().onAddressModified(*this);
+    mNode.getDevice().onAttributeModified(mNode, text_bounding_mode());
   }
   return *this;
 }
@@ -238,14 +238,14 @@ generic_address::setRepetitionFilter(ossia::repetition_filter repetitionFilter)
   if(mRepetitionFilter != repetitionFilter)
   {
     mRepetitionFilter = repetitionFilter;
-    mNode.getDevice().onAddressModified(*this);
+    mNode.getDevice().onAttributeModified(mNode, text_repetition_filter());
   }
   return *this;
 }
 
 bool generic_address::filterRepetition(const value& val) const
 {
-  return getRepetitionFilter()  == ossia::repetition_filter::ON
+  return getRepetitionFilter() == ossia::repetition_filter::ON
       && val == mPreviousValue;
 }
 
@@ -286,7 +286,7 @@ generic_address& generic_address::setUnit(const unit_t& v)
       }
     }
   }
-  mNode.getDevice().onAddressModified(*this);
+  mNode.getDevice().onAttributeModified(mNode, text_unit());
   return *this;
 }
 }

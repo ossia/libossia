@@ -18,7 +18,6 @@ namespace net
 class device_base;
 class address_base;
 class node_base;
-using any_map = tsl::hopscotch_map<std::string, boost::any>;
 using extended_attributes = any_map;
 
 /**

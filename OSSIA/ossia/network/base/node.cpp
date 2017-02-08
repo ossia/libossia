@@ -268,30 +268,35 @@ void node_base::clearChildren()
 #define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(Type, Name, String) \
   optional<Type> get_ ## Name (const extended_attributes& n) \
 { using namespace std::literals; \
-  return get_optional_attribute<Type>(n, String); \
+  return get_optional_attribute<Type>(n, String ## s); \
 } \
   \
   void set_ ## Name (extended_attributes& n, optional<Type> i) \
 { using namespace std::literals; \
   set_optional_attribute(n, String, std::move(i)); \
 } \
+ossia::string_view text_ ## Name () \
+{ return make_string_view(String); }
 
 
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(instance_bounds, instance_bounds, "instanceBounds"s)
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(tags, tags, "tags"s)
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(description, description, "description"s)
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(priority, priority, "priority"s)
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(refresh_rate, refresh_rate, "refreshRate"s)
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(value_step_size, value_step_size, "valueStepsize"s)
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(critical, critical, "critical"s)
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_name, app_name, "appName"s)
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_version, app_version, "appVersion"s)
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_creator, app_creator, "appCreator"s)
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(default_value, default_value, "valueDefault"s)
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(instance_bounds, instance_bounds, "instanceBounds")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(tags, tags, "tags")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(description, description, "description")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(priority, priority, "priority")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(refresh_rate, refresh_rate, "refreshRate")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(value_step_size, value_step_size, "valueStepsize")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(critical, critical, "critical")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_name, app_name, "appName")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_version, app_version, "appVersion")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_creator, app_creator, "appCreator")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(default_value, default_value, "valueDefault")
+
+ossia::string_view text_extended_type()
+{ return make_string_view("extended_type"); }
 
 optional<extended_type> get_extended_type(const ossia::net::node_base& n)
 {
-  auto opt = get_optional_attribute<extended_type>(n, "extended_type");
+  auto opt = get_optional_attribute<extended_type>(n, text_extended_type() );
   if(!opt)
   {
     if(address_base* addr = n.getAddress())
@@ -310,9 +315,8 @@ optional<extended_type> get_extended_type(const ossia::net::node_base& n)
 
 void set_extended_type(extended_attributes& n, optional<extended_type> i)
 {
-  set_optional_attribute(n, "extended_type", std::move(i));
+  set_optional_attribute(n, text_extended_type(), std::move(i));
 }
-
 
 void set_description(extended_attributes& n, const char* arg)
 {

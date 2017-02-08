@@ -147,7 +147,7 @@ void oscquery_server_protocol::on_connectionOpen(
     m_clients.back().client_ip = con->get_host();
   }
   // Send the client a message with the OSC port
-  m_websocketServer.send_message(hdl, writer::device_info(m_oscPort));
+  m_websocketServer.send_message(hdl, json_writer::device_info(m_oscPort));
 }
 
 void oscquery_server_protocol::on_connectionClosed(
