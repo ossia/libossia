@@ -1,10 +1,9 @@
-#include "oscquery.hpp"
+#include "oscquery_server.hpp"
 #include <ossia/network/generic/generic_address.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 
 #include <ossia/network/osc/detail/osc.hpp>
-#include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 
 #include <ossia/network/oscquery/detail/query_parser.hpp>
@@ -14,15 +13,15 @@ namespace ossia
 namespace oscquery
 {
 
-oscquery_server_protocol::oscquery_server_protocol(int16_t osc_port, int16_t ws_port):
-  m_oscPort{osc_port},
-  m_wsPort{ws_port},
+oscquery_server_protocol::oscquery_server_protocol(uint16_t osc_port, uint16_t ws_port):
   m_oscServer{std::make_unique<osc::receiver>(
-                m_oscPort, [=](
+                osc_port, [=](
                 const oscpack::ReceivedMessage& m,
                 const oscpack::IpEndpointName& ip) {
     this->on_OSCMessage(m, ip);
-  })}
+  })},
+  m_oscPort{osc_port},
+  m_wsPort{ws_port}
 {
   m_websocketServer.set_open_handler([&] (connection_handler hdl) { on_connectionOpen(hdl); });
   m_websocketServer.set_close_handler([&] (connection_handler hdl) { on_connectionClosed(hdl); });
@@ -30,41 +29,67 @@ oscquery_server_protocol::oscquery_server_protocol(int16_t osc_port, int16_t ws_
     return on_WSrequest(hdl, str);
   });
 
-  auto t = new std::thread{[&] { m_websocketServer.run(m_wsPort); }};
+  m_serverThread = std::thread{[&] { m_websocketServer.run(m_wsPort); }};
 }
 
 oscquery_server_protocol::~oscquery_server_protocol()
 {
-
+  m_oscServer->stop();
+  m_websocketServer.stop();
+  if(m_serverThread.joinable())
+    m_serverThread.join();
 }
 
 bool oscquery_server_protocol::pull(net::address_base&)
 {
+  //! The server cannot pull because it can have multiple clients.
   return false;
 }
 
 std::future<void> oscquery_server_protocol::pullAsync(net::address_base&)
 {
+  // Do nothing
   return {};
 }
 
 void oscquery_server_protocol::request(net::address_base&)
 {
+  // Do nothing
 }
 
-bool oscquery_server_protocol::push(const net::address_base&)
+bool oscquery_server_protocol::push(const net::address_base& addr)
 {
+  if (addr.getAccessMode() == ossia::access_mode::GET)
+    return false;
+
+  auto val = net::filter_value(addr);
+  if (val.valid())
+  {
+    //Push to all clients
+    std::lock_guard<std::mutex> lock(m_clientsMutex);
+    for(auto& client : m_clients)
+    {
+      client.sender->send(addr, val);
+    }
+    return true;
+  }
   return false;
 }
 
-bool oscquery_server_protocol::observe(net::address_base&, bool)
+bool oscquery_server_protocol::observe(net::address_base& address, bool enable)
 {
-  return false;
+  if (enable)
+    m_listening.insert(
+          std::make_pair(net::osc_address_string(address), &address));
+  else
+    m_listening.erase(net::osc_address_string(address));
+
+  return true;
 }
 
-bool oscquery_server_protocol::observe_quietly(net::address_base&, bool)
+bool oscquery_server_protocol::observe_quietly(net::address_base& addr, bool b)
 {
-  return false;
+  return observe(addr, b);
 }
 
 bool oscquery_server_protocol::update(net::node_base& b)
@@ -77,25 +102,33 @@ void oscquery_server_protocol::setDevice(net::device_base& dev)
   m_device = &dev;
 }
 
+oscquery_client*oscquery_server_protocol::findClient(const connection_handler& hdl)
+{
+  std::lock_guard<std::mutex> lock(m_clientsMutex);
+
+  auto it = ossia::find(m_clients, hdl);
+  if(it != m_clients.end())
+    return &*it;
+  return nullptr;
+}
+
 void oscquery_server_protocol::on_OSCMessage(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 {
   auto addr_txt = m.AddressPattern();
-  std::lock_guard<std::mutex> lock(m_listeningMutex);
-  auto it = m_listening.find(addr_txt);
-  if (it != m_listening.end())
+  auto addr = m_listening.find(addr_txt);
+  if (addr)
   {
-    ossia::net::address_base& addr = *it->second;
-    update_value(addr, m);
+    net::update_value(*addr, m);
   }
   else
   {
     // We still want to save the value even if it is not listened to.
-    if(auto n = find_node(m_device->getRootNode(), addr_txt))
+    if(auto n = net::find_node(m_device->getRootNode(), addr_txt))
     {
       if(auto base_addr = n->getAddress())
       {
-        update_value_quiet(*base_addr, m);
+        net::update_value_quiet(*base_addr, m);
       }
     }
   }
@@ -107,25 +140,23 @@ void oscquery_server_protocol::on_OSCMessage(
 void oscquery_server_protocol::on_connectionOpen(
     connection_handler hdl)
 {
-  /*
-  // TODO This should be locked by inside? Use a thread-safe vector ?
-  m_clients.emplace_back(hdl);
-
+  {
+    std::lock_guard<std::mutex> lock(m_clientsMutex);
+    m_clients.emplace_back(hdl);
+  }
   // Send the client a message with the OSC port
-  m_websocketServer.send_message(hdl, Serializer::device_info(m_data_server.port()));
-  */
+  m_websocketServer.send_message(hdl, writer::device_info(m_oscPort));
 }
 
 void oscquery_server_protocol::on_connectionClosed(
     connection_handler hdl)
 {
-  /*
-  auto it = std::find(begin(m_clients), end(m_clients), hdl);
-  if(it != end(m_clients))
+  std::lock_guard<std::mutex> lock(m_clientsMutex);
+  auto it = ossia::find(m_clients, hdl);
+  if(it != m_clients.end())
   {
     m_clients.erase(it);
   }
-  */
 }
 
 rapidjson::StringBuffer oscquery_server_protocol::on_WSrequest(

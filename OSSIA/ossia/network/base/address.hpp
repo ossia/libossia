@@ -165,9 +165,6 @@ OSSIA_EXPORT void set_repetition_filter(ossia::net::node_base& n, repetition_fil
 OSSIA_EXPORT optional<unit_t> get_unit(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_unit(ossia::net::node_base& n, unit_t v);
 
-OSSIA_EXPORT optional<ossia::value> get_default_value(const ossia::net::node_base& n);
-OSSIA_EXPORT void set_default_value(ossia::net::node_base& n, ossia::value v);
-
 
 /*!
  * \brief getAddressFromNode

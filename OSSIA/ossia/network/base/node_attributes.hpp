@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/optional.hpp>
+#include <ossia/editor/value/value.hpp>
 #include <ossia_export.h>
 
 #include <boost/any.hpp>
@@ -51,6 +52,7 @@ using app_name = std::string;
 using app_version = std::string;
 using app_creator = std::string;
 
+using default_value = ossia::value;
 using extended_type = std::string; //! How a low-level type should be interpreted.
 
 OSSIA_EXPORT optional<instance_bounds> get_instance_bounds(const extended_attributes& n);
@@ -87,6 +89,9 @@ OSSIA_EXPORT void set_app_version(extended_attributes& n, optional<app_version> 
 OSSIA_EXPORT optional<app_creator> get_app_creator(const extended_attributes& n);
 OSSIA_EXPORT void set_app_creator(extended_attributes& n, optional<app_creator> v);
 
+OSSIA_EXPORT optional<ossia::value> get_default_value(const extended_attributes& n);
+OSSIA_EXPORT void set_default_value(extended_attributes& n, optional<ossia::value> v);
+
 //! Represents a "raw" data buffer, that should not be interpreted as a readable string.
 //! Only meaningful for strings.
 OSSIA_EXPORT extended_type generic_buffer_type();
@@ -94,6 +99,9 @@ OSSIA_EXPORT extended_type generic_buffer_type();
 //! Represents a filesystem path : "c:\windows\virus.exe", "/usr/share/pony.png", etc.
 //! Only meaningful for strings.
 OSSIA_EXPORT extended_type filesystem_path_type();
+
+//! Means that the array should be interpreted as a fixed float array (e.g. vec2f, etc)
+OSSIA_EXPORT extended_type float_array_type();
 
 /**
  * @brief get_attribute Get an attribute of an extended_attributes map.

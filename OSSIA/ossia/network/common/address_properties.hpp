@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+#include <cstdint>
 namespace ossia
 {
 /**
@@ -10,7 +11,7 @@ namespace ossia
  * * ossia_type in ossia-c.h
  * * State::ValueType
  */
-enum class val_type
+enum class val_type : int8_t
 {
   FLOAT, //! \see Float
   INT, //! \see Int
@@ -29,7 +30,7 @@ enum class val_type
 /**
  * @brief Address behaviors at crossing domain boundaries time
  */
-enum class access_mode
+enum class access_mode : int8_t
 {
   GET, //! The value can be retrieved
   SET, //! The value can be changed
@@ -39,7 +40,7 @@ enum class access_mode
 /**
  * @brief Address behaviors at crossing domain boundaries.
  */
-enum class bounding_mode
+enum class bounding_mode : int8_t
 {
   FREE, //! The bounds are ignored
   CLIP, //! \see ossia::clamp
@@ -52,7 +53,7 @@ enum class bounding_mode
 /**
  * @brief If enabled, sending twice the same value will only send it once by network
  */
-enum class repetition_filter
+enum class repetition_filter : int8_t
 {
   OFF,
   ON

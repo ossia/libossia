@@ -1,8 +1,26 @@
-OSSIA API
+libossia
 ===
-Application Programming Interface for OSSIA
 
-* [Documentation](http://ossia.github.io/API/html)
+A library to expose the parameters of your creative coding application
+over the network, and score them in time.
+
+Protocols :
+* OSC
+* MIDI
+* Minuit
+* OSCQuery (in progress)
+
+Bindings (in progress) :
+* PureData
+* C
+* Python
+* Java (preliminary)
+* Unity3D
+* Qt and QML
+
+Documentation :
+* [Examples](https://github.com/OSSIA/API/tree/master/Documentation/Examples)
+* [Doxygen](http://ossia.github.io/API/html)
 * [Building](https://github.com/OSSIA/API/wiki/Building)
 * [Code style](https://github.com/OSSIA/API/wiki/Code-style-guide)
 

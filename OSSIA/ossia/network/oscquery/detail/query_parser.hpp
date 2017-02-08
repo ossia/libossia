@@ -126,19 +126,19 @@ class query_answerer
           if(listen_it != parameters.end())
           {
             // First we find for a corresponding client
-            auto it = ossia::find(proto.clients(), hdl);
+            auto clt = proto.findClient(hdl);
 
-            if(it == proto.clients().end())
+            if(!clt)
               throw bad_request_error{"Client not found"};
 
             // Then we enable / disable listening
             if(listen_it->second == "true")
             {
-              it->start_listen(path, node->getAddress());
+              clt->start_listen(path, node->getAddress());
             }
             else if(listen_it->second == "false")
             {
-              it->stop_listen(path);
+              clt->stop_listen(path);
             }
             else
             {

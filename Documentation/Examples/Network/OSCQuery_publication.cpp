@@ -13,7 +13,7 @@
 #include <functional>
 
 #include <ossia/ossia.hpp>
-#include <ossia/network/oscquery/oscquery.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 
 using namespace ossia;
 using namespace std;

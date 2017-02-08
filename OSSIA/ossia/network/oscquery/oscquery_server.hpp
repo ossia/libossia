@@ -1,6 +1,9 @@
 #pragma once
+#include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/oscquery/detail/server.hpp>
+#include <ossia/network/oscquery/oscquery_client.hpp>
+#include <ossia/network/osc/detail/sender.hpp>
 #include <eggs/variant.hpp>
 #include <readerwriterqueue.h>
 
@@ -54,35 +57,6 @@ class oscquery_multi_attributes_changed_command
 {
 };
 
-struct oscquery_client
-{
-  websocket_server::connection_handler connection;
-  std::mutex listeningMutex;
-  tsl::hopscotch_map<std::string, ossia::net::address_base*> listening;
-
-  std::unique_ptr<osc::sender> sender;
-
-  bool operator==(
-      const websocket_server::connection_handler& h) const
-  { return !connection.expired() && connection.lock() == h.lock(); }
-
-  void start_listen(std::string path, ossia::net::address_base* addr)
-  {
-    if(addr)
-    {
-      listeningMutex.lock();
-      listening.insert(std::make_pair(std::move(path), addr));
-      listeningMutex.unlock();
-    }
-  }
-
-  void stop_listen(const std::string& path)
-  {
-    listeningMutex.lock();
-    listening.erase(path);
-    listeningMutex.unlock();
-  }
-};
 
 using oscquery_command =
   eggs::variant<
@@ -103,7 +77,7 @@ class OSSIA_EXPORT oscquery_server_protocol : public ossia::net::protocol_base
 {
 public:
   using connection_handler = websocket_server::connection_handler;
-  oscquery_server_protocol(int16_t osc_port, int16_t ws_port);
+  oscquery_server_protocol(uint16_t osc_port, uint16_t ws_port);
   ~oscquery_server_protocol();
 
   bool pull(net::address_base&) override;
@@ -116,15 +90,15 @@ public:
   void setDevice(net::device_base& dev) override;
   ossia::net::device_base& getDevice() const { return *m_device; }
 
-  auto& clients() { return m_clients; }
-  auto& clients() const { return m_clients; }
+  oscquery_client* findClient(const connection_handler& hdl);
 private:
+  // OSC callback
   void on_OSCMessage(
       const oscpack::ReceivedMessage& m,
       const oscpack::IpEndpointName& ip);
 
+  // Websocket callbacks
   void on_connectionOpen(connection_handler hdl);
-
   void on_connectionClosed(connection_handler hdl);
 
   // Exceptions here will be catched by the server
@@ -133,34 +107,25 @@ private:
       connection_handler hdl,
       const std::string& message);
 
-
-  int16_t m_oscPort{};
-  int16_t m_wsPort{};
-
-  moodycamel::ReaderWriterQueue<oscquery_command> m_commandQueue;
-
   std::unique_ptr<osc::receiver> m_oscServer;
   websocket_server m_websocketServer;
 
   // Listening status of the local software
-  std::mutex m_listeningMutex;
-  tsl::hopscotch_map<std::string, ossia::net::address_base*> m_listening;
+  net::listened_addresses m_listening;
 
+  // The clients connected to this server
   std::vector<oscquery_client> m_clients;
 
   ossia::net::device_base* m_device{};
+
+  // Where the websocket server lives
+  std::thread m_serverThread;
+
+  // To lock m_clients
+  std::mutex m_clientsMutex;
+  uint16_t m_oscPort{};
+  uint16_t m_wsPort{};
 };
 
-class oscquery_mirror_protocol
-{
-public:
-private:
-  moodycamel::ReaderWriterQueue<oscquery_command> m_commandQueue;
-
-  oscquery_client m_client;
-  websocket_server m_server;
-
-  ossia::net::device_base* mDevice{};
-};
 }
 }

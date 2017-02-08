@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/domain/domain.hpp>
 
@@ -39,8 +40,7 @@ private:
   uint16_t mLocalPort{};  /// the port where a remote device sends OSC messages
                           /// to (opened in this library)
 
-  std::mutex mListeningMutex;
-  tsl::hopscotch_map<std::string, ossia::net::address_base*> mListening;
+  listened_addresses mListening;
 
   std::promise<void> mNamespaceFinishedPromise;
   ossia::net::device_base* mDevice{};

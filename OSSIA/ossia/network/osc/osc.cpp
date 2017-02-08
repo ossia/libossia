@@ -116,8 +116,6 @@ bool osc_protocol::push(const ossia::net::address_base& addr)
 
 bool osc_protocol::observe(ossia::net::address_base& address, bool enable)
 {
-  std::lock_guard<std::mutex> lock(mListeningMutex);
-
   if (enable)
     mListening.insert(
           std::make_pair(osc_address_string(address), &address));
@@ -127,18 +125,17 @@ bool osc_protocol::observe(ossia::net::address_base& address, bool enable)
   return true;
 }
 
+
 void osc_protocol::handleReceivedMessage(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 {
   if(!mLearning)
   {
     auto addr_txt = m.AddressPattern();
-    std::lock_guard<std::mutex> lock(mListeningMutex);
-    auto it = mListening.find(addr_txt);
-    if (it != mListening.end())
+    auto addr = mListening.find(addr_txt);
+    if (addr)
     {
-      ossia::net::address_base& addr = *it->second;
-      update_value(addr, m);
+      update_value(*addr, m);
     }
     else
     {

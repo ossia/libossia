@@ -21,7 +21,6 @@ generic_address::generic_address(ossia::net::node_base& node)
   , mBoundingMode(ossia::bounding_mode::FREE)
   , mRepetitionFilter(ossia::repetition_filter::OFF)
   , mValue(ossia::impulse{})
-  , mDefault(ossia::impulse{})
 {
 }
 
@@ -35,7 +34,6 @@ generic_address::generic_address(
   , mBoundingMode(get_value_or(data.bounding, ossia::bounding_mode::FREE))
   , mRepetitionFilter(get_value_or(data.repetition_filter, ossia::repetition_filter::OFF))
   , mValue(init_value(mValueType))
-  , mDefault(init_value(mValueType))
 {
 }
 
@@ -259,18 +257,6 @@ void generic_address::onFirstCallbackAdded()
 void generic_address::onRemovingLastCallback()
 {
   mProtocol.observe(*this, false);
-}
-
-value generic_address::getDefaultValue() const
-{
-  return mDefault;
-}
-
-generic_address& generic_address::setDefaultValue(const value& v)
-{
-  mDefault = v;
-  mNode.getDevice().onAddressModified(*this);
-  return *this;
 }
 
 unit_t generic_address::getUnit() const

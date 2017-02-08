@@ -107,6 +107,8 @@ class websocket_server
       m_server.run();
     }
 
+    void stop() { m_server.stop(); }
+
     void send_message(connection_handler hdl, const std::string& message)
     {
       auto con = m_server.get_con_from_hdl(hdl);

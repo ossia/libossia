@@ -63,10 +63,18 @@ std::string address_string_from_node(const ossia::net::address_base& addr)
 
 std::string osc_address_string(const node_base& n)
 {
-  std::string s;
-  s.reserve(80);
-  getOSCAddressFromNode_rec(n, s);
-  return s;
+  if(n.getParent())
+  {
+    std::string s;
+    s.reserve(80);
+    getOSCAddressFromNode_rec(n, s);
+
+    return s;
+  }
+  else
+  {
+    return "/";
+  }
 }
 
 std::string osc_address_string(const address_base& addr)

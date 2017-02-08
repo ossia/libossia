@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <hopscotch_map.h>
 #include <mutex>
@@ -30,14 +31,12 @@ private:
                           /// to (opened in this library)
   std::atomic_bool mLearning{};       /// if the device is currently learning from inbound
                           /// messages.
-  std::mutex mListeningMutex;
-  tsl::hopscotch_map<std::string, ossia::net::address_base*> mListening;
+  listened_addresses mListening;
 
   std::unique_ptr<osc::sender> mSender;
   std::unique_ptr<osc::receiver> mReceiver;
 
   ossia::net::device_base* mDevice{};
-
 public:
   osc_protocol(std::string ip, uint16_t remote_port, uint16_t local_port);
 

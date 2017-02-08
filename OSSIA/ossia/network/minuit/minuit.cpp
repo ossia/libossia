@@ -261,7 +261,6 @@ bool minuit_protocol::push(const ossia::net::address_base& addr)
 
 bool minuit_protocol::observe(ossia::net::address_base& address, bool enable)
 {
-  lock_type lock(mListeningMutex);
 
   auto act
       = name_table.get_action(ossia::minuit::minuit_action::ListenRequest);
@@ -286,8 +285,6 @@ bool minuit_protocol::observe(ossia::net::address_base& address, bool enable)
 bool minuit_protocol::observe_quietly(
     ossia::net::address_base& address, bool enable)
 {
-  lock_type lock(mListeningMutex);
-
   if(enable)
     mListening.insert(
           std::make_pair(osc_address_string(address), &address));
@@ -375,13 +372,10 @@ void minuit_protocol::handleReceivedMessage(
     if (address.size() > 0 && address[0] == '/')
     {
       // Handle the OSC-like case where we receive a plain value.
-      lock_type lock(mListeningMutex);
-      auto it = mListening.find(address.to_string());
-      if (it != mListening.end())
+      auto addr = mListening.find(address.to_string());
+      if (addr)
       {
-        ossia::net::address_base& addr = *it->second;
-
-        update_value(addr, m);
+        update_value(*addr, m);
       }
       else
       {

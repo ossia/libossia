@@ -14,8 +14,6 @@
 
 namespace ossia
 {
-using tags_t = std::vector<std::string>;
-
 namespace net
 {
 
@@ -43,7 +41,7 @@ struct generic_address_data
 
   std::string description;
   ossia::value default_value;
-  tags_t tags;
+  ossia::net::tags tags;
   unit_t unit;
 };
 
@@ -63,9 +61,7 @@ protected:
   ossia::value mValue;
 
   ossia::net::domain mDomain;
-  std::string mDescription;
   ossia::value mDefault;
-  tags_t mTags;
   unit_t mUnit;
 
   ossia::value_callback mCallback;
@@ -112,9 +108,6 @@ public:
   ossia::net::generic_address&
       setRepetitionFilter(ossia::repetition_filter) final override;
 bool filterRepetition(const ossia::value& val) const final override;
-
-  ossia::value getDefaultValue() const final override;
-  generic_address& setDefaultValue(const ossia::value& v) final override;
 
   ossia::unit_t getUnit() const final override;
   generic_address& setUnit(const ossia::unit_t& v) final override;
