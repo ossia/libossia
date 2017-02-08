@@ -316,7 +316,7 @@ struct json_parser_impl
       auto ext_type_it = obj.FindMember(detail::attribute_extended_type());
       if(ext_type_it != obj.MemberEnd() && ext_type_it->value.IsString())
       {
-        ext_type = ext_type_it->value.GetString();
+        ext_type = std::string(ext_type_it->value.GetString(), ext_type_it->value.GetStringLength());
       }
 
       if(val_type || unit || ext_type)

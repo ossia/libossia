@@ -28,70 +28,92 @@ int main()
   // declare this program "B" as Local device
   ossia::net::generic_device device{std::move(local_proto_ptr), "B"};
 
-  /* publish each feature of program "B" as address into a tree
-     /test
-     /test/my_bang
-     /test/my_bool
-     /test/my_int
-     /test/my_float
-     /test/my_string
-     /test/my_destination
-     /test/my_tuple
-     */
+  /* publish each feature of program "B" as address into a tree */
 
+  {
+    // Create a node
+    auto& node = ossia::net::find_or_create_node(device, "/test/my_impulse");
 
-  auto localTestNode = device.createChild("test");
+    // Addresses allow nodes to have values.
+    auto address = node.createAddress(val_type::IMPULSE);
 
-  auto localImpulseNode = localTestNode->createChild("my_impulse");
-  auto localImpulseAddress = localImpulseNode->createAddress(val_type::IMPULSE);
-  localImpulseAddress->add_callback(printValueCallback);
+    // Called whenver the value is changed
+    address->add_callback(printValueCallback);
 
-  auto localBoolNode = localTestNode->createChild("my_bool");
-  auto localBoolAddress = localBoolNode->createAddress(val_type::BOOL);
-  localBoolAddress->add_callback(printValueCallback);
+    // Send a message. Impulse is a message without any content.
+    address->pushValue(impulse{});
+  }
 
-  auto localIntNode = localTestNode->createChild("my_int");
-  auto localIntAddress = localIntNode->createAddress(val_type::INT);
-  net::set_access_mode(*localIntNode, access_mode::GET);
-  net::set_bounding_mode(*localIntNode, bounding_mode::FOLD);
-  net::set_domain(*localIntNode, ossia::net::make_domain(2, 14));
-  net::set_description(*localIntNode, "an integral value");
+  {
+    auto& node = ossia::net::find_or_create_node(device, "/test/my_bool");
+    auto address = node.createAddress(val_type::BOOL);
+    address->add_callback(printValueCallback);
+    address->pushValue(true);
+  }
+  {
+    auto& node = ossia::net::find_or_create_node(device, "/test/my_float");
+    auto address = node.createAddress(val_type::FLOAT);
+    address->add_callback(printValueCallback);
+    address->pushValue(1234.);
+  }
+  {
+    auto& node = ossia::net::find_or_create_node(device, "/test/my_int");
+    auto address = node.createAddress(val_type::INT);
 
-  localIntAddress->add_callback(printValueCallback);
+    // Set some metadata
+    net::set_access_mode(node, access_mode::GET);
+    net::set_bounding_mode(node, bounding_mode::FOLD);
+    net::set_domain(node, ossia::net::make_domain(2, 14));
+    net::set_description(node, "an integral value");
 
-  auto localFloatNode = localTestNode->createChild("my_float");
-  auto localFloatAddress = localFloatNode->createAddress(val_type::FLOAT);
-  localFloatAddress->add_callback(printValueCallback);
+    address->add_callback(printValueCallback);
+    address->pushValue(5678);
+  }
 
-  auto localStringNode = localTestNode->createChild("my_string");
-  auto localStringAddress = localStringNode->createAddress(val_type::STRING);
-  localStringAddress->add_callback(printValueCallback);
+  {
+    auto& node = ossia::net::find_or_create_node(device, "/test/my_char");
+    auto address = node.createAddress(val_type::CHAR);
+    address->add_callback(printValueCallback);
+    address->pushValue('c');
+  }
 
-  // auto localDestinationNode = localTestNode->createChild("my_destination");
-  // auto localDestinationAddress = localDestinationNode->createAddress(val_type::DESTINATION);
-  // localDestinationAddress->addCallback(printValueCallback);
+  {
+    auto& node = ossia::net::find_or_create_node(device, "/test/my_string");
+    auto address = node.createAddress(val_type::STRING);
+    address->add_callback(printValueCallback);
+    address->pushValue("hello world"s);
+  }
 
-  auto localTupleNode = localTestNode->createChild("my_tuple");
-  auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
-  localTupleAddress->add_callback(printValueCallback);
+  {
+    // tuple is a std::vector<value>
+    auto& node = ossia::net::find_or_create_node(device, "/test/my_tuple");
+    auto address = node.createAddress(val_type::TUPLE);
+    address->add_callback(printValueCallback);
 
-  localTupleAddress->setDomain(ossia::net::domain_base<std::vector<ossia::value>>(
-    std::vector<ossia::value>{0, 1},
-    std::vector<ossia::value>{3, 5},
-    boost::container::flat_set<std::vector<ossia::value>>{ std::vector<ossia::value>{123, 345}, std::vector<ossia::value>{12345, 234} } ));
+    // Domain of the tuple
+    ossia::net::set_domain(node,
+      ossia::net::domain_base<std::vector<ossia::value>>(
+                             std::vector<ossia::value>{0, 1}, // Min values
+                             std::vector<ossia::value>{3, 5}, // Max values
+                             boost::container::flat_set<std::vector<ossia::value>>{
+                               std::vector<ossia::value>{123, 345}, std::vector<ossia::value>{12345, 234} // Allowed values
+                             } ));
+  }
 
-  // update tree value
-  localImpulseAddress->pushValue(impulse{});
-  localBoolAddress->pushValue(true);
-  localIntAddress->pushValue(123);
-  localFloatAddress->pushValue(0.5);
-  localStringAddress->pushValue("hello world !"s);
-
-  // FIXME
-  // Destination d(localFloatNode);
-  // localDestinationAddress->pushValue(&d);
-
-  localTupleAddress->pushValue(std::vector<ossia::value>{0., 1., 2.});
+  {
+    // fixed-length arrays
+    auto& node = ossia::net::find_or_create_node(device, "/test/my_vec3f");
+    auto address = node.createAddress(val_type::VEC3F);
+    address->add_callback(printValueCallback);
+    address->pushValue(ossia::make_vec(0., 1., 2.));
+  }
+  {
+    auto& node = ossia::net::find_or_create_node(device, "/units/vec2");
+    auto address = node.createAddress(val_type::VEC2F);
+    ossia::net::set_unit(node, ossia::cartesian_2d_u{});
+    address->add_callback(printValueCallback);
+    address->pushValue(ossia::make_vec(5., 6.));
+  }
 
   // declare a distant program as a Minuit device
   local_proto.exposeTo(std::make_unique<oscquery::oscquery_server_protocol>(1234, 5678));
