@@ -119,7 +119,7 @@ struct OSSIA_EXPORT default_value_attribute
   using type = ossia::value;
   static constexpr auto key() { return detail::attribute_default_value(); }
   static constexpr const auto getter = ossia::net::get_default_value;
-  static constexpr const auto setter = ossia::net::set_default_value;
+  static constexpr const auto setter = static_cast<void (*)(ossia::net::extended_attributes&, ossia::value&&)>(ossia::net::set_default_value);
 };
 
 // Metadata attributes

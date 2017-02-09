@@ -218,11 +218,10 @@ void set_unit(ossia::net::node_base& n, unit_t v)
   if(auto addr = n.getAddress()) addr->setUnit(std::move(v));
 }
 
-}
-}
-
 std::ostream& operator<<(std::ostream& s, const ossia::net::address_base& addr)
 {
   return s << ossia::net::address_string_from_node(addr);
 }
+}
 
+}

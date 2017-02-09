@@ -239,13 +239,13 @@ static auto make_setter_pair()
   });
 }
 
-using map_type = tsl::hopscotch_map<ossia::string_view, map_setter_fun>;
+using reader_map_type = tsl::hopscotch_map<ossia::string_view, map_setter_fun>;
 
 static auto& setterMap()
 {
-  static const map_type map{
+  static const reader_map_type map{
     [] {
-      map_type attr_impl;
+      reader_map_type attr_impl;
 
       // Remaining metadata
       brigand::for_each< brigand::list<

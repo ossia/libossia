@@ -279,6 +279,26 @@ ossia::string_view text_ ## Name () \
 { return make_string_view(String); }
 
 
+#define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_2(Type, Name, String) \
+  optional<Type> get_ ## Name (const extended_attributes& n) \
+{ using namespace std::literals; \
+  return get_optional_attribute<Type>(n, String ## s); \
+} \
+  void set_ ## Name (extended_attributes& n, Type&& i) \
+{ using namespace std::literals; \
+  set_attribute(n, String, std::move(i)); \
+} \
+  void set_ ## Name (extended_attributes& n, const Type& i) \
+{ using namespace std::literals; \
+  set_attribute(n, String, std::move(i)); \
+} \
+  void set_ ## Name (extended_attributes& n, ossia::none_t i) \
+{ using namespace std::literals; \
+  set_attribute(n, String, std::move(i)); \
+} \
+ossia::string_view text_ ## Name () \
+{ return make_string_view(String); }
+
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(instance_bounds, instance_bounds, "instanceBounds")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(tags, tags, "tags")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(description, description, "description")
@@ -289,7 +309,7 @@ OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(critical, critical, "critical")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_name, app_name, "appName")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_version, app_version, "appVersion")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_creator, app_creator, "appCreator")
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(default_value, default_value, "valueDefault")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_2(default_value, default_value, "valueDefault")
 
 ossia::string_view text_extended_type()
 { return make_string_view("extended_type"); }
@@ -307,6 +327,8 @@ optional<extended_type> get_extended_type(const ossia::net::node_base& n)
         case ossia::val_type::VEC3F:
         case ossia::val_type::VEC4F:
           return float_array_type();
+        default:
+          break;
       }
     }
   }

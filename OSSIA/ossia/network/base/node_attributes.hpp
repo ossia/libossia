@@ -124,7 +124,9 @@ OSSIA_EXPORT void set_app_creator(extended_attributes& n, optional<app_creator> 
 
 OSSIA_EXPORT ossia::string_view text_default_value();
 OSSIA_EXPORT optional<ossia::value> get_default_value(const extended_attributes& n);
-OSSIA_EXPORT void set_default_value(extended_attributes& n, optional<ossia::value> v);
+OSSIA_EXPORT void set_default_value(extended_attributes& n, const ossia::value& v);
+OSSIA_EXPORT void set_default_value(extended_attributes& n, ossia::value&& v);
+OSSIA_EXPORT void set_default_value(extended_attributes& n, ossia::none_t v);
 
 
 // Here are the known extended types :

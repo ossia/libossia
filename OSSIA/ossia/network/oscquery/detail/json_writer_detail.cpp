@@ -87,8 +87,8 @@ void json_writer_impl::writeValue(const net::instance_bounds& i) const
     writer.EndArray();
 }
 
-using map_write_fun = void (*)(const json_writer_impl&, const ossia::net::node_base& );
-using map_type = tsl::hopscotch_map<ossia::string_view, map_write_fun>;
+using writer_map_fun = void (*)(const json_writer_impl&, const ossia::net::node_base& );
+using writer_map_type = tsl::hopscotch_map<ossia::string_view, writer_map_fun>;
 
 template<typename Attr>
 static auto make_fun_pair()
@@ -101,9 +101,9 @@ static auto make_fun_pair()
 
 static const auto& attributesMap()
 {
-    static const map_type attr_map{
+    static const writer_map_type attr_map{
         [] {
-            map_type attr_impl;
+            writer_map_type attr_impl;
 
             attr_impl.insert(make_fun_pair<full_path_attribute>());
 

@@ -5,6 +5,7 @@
 // They have to be in this order
 #include <spdlog/spdlog.h>
 #include <fmt/ostream.h>
+#include <fmt/format.h>
 
 #include <ossia_export.h>
 
