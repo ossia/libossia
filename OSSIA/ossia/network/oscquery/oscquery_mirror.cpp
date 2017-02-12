@@ -5,6 +5,7 @@
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/oscquery/detail/json_reader.hpp>
 #include <boost/algorithm/string/erase.hpp>
+#include <ossia/network/exceptions.hpp>
 namespace ossia
 {
 namespace oscquery
@@ -41,8 +42,15 @@ oscquery_mirror_protocol::oscquery_mirror_protocol(std::string host, uint16_t lo
 , m_websocketHost{std::move(host)}
 {
   m_wsThread = std::thread([=]{ m_websocketClient.connect(m_websocketHost); });
+  int n = 0;
   while(!m_websocketClient.connected())
+  {
+    n++;
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    if(n > 500)
+      throw ossia::connection_error{"oscquery_mirror_protocol::oscquery_mirror_protocol: "
+                                    "Could not connect to " + m_websocketHost};
+  }
 }
 
 oscquery_mirror_protocol::~oscquery_mirror_protocol()

@@ -22,14 +22,7 @@ ossia_add_example(network_minuit_publication_large "${CMAKE_CURRENT_SOURCE_DIR}/
 ossia_add_example(network_osc "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC.cpp")
 ossia_add_example(network_oscquery_publication "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_publication.cpp")
 ossia_add_example(network_oscquery_exploration "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_exploration.cpp")
-target_include_directories(ossia_network_oscquery_publication_example PRIVATE
-  ${OSSIA_3RDPARTY_FOLDER}/asio/asio/include
-  ${OSSIA_3RDPARTY_FOLDER}/websocketpp
-  )
-target_include_directories(ossia_network_oscquery_exploration_example PRIVATE
-  ${OSSIA_3RDPARTY_FOLDER}/asio/asio/include
-  ${OSSIA_3RDPARTY_FOLDER}/websocketpp
-  )
+
 
 #ossia_add_example(preset_device_example "${CMAKE_CURRENT_SOURCE_DIR}/Preset/DeviceExample.cpp")
 #ossia_add_example(preset_parsing_example "${CMAKE_CURRENT_SOURCE_DIR}/Preset/ParsingExample.cpp")
