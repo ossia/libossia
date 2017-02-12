@@ -56,7 +56,7 @@ void explore(const ossia::net::node_base& node)
       addr->add_callback(printValueCallback);
 
       // update the value
-      addr->pullValue();
+      // addr->pullValue();
 
       // display address info
       cerr << " : ";

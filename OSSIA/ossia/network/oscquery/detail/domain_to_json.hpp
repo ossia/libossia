@@ -292,8 +292,8 @@ struct json_to_domain
         const auto& arr = value.GetArray();
         if(arr.Size() >= 2)
         {
-          if(arr[0].IsDouble()) dom.min = arr[0].GetDouble(); else dom.min = ossia::none;
-          if(arr[1].IsDouble()) dom.max = arr[1].GetDouble(); else dom.max = ossia::none;
+          if(arr[0].IsNumber()) dom.min = arr[0].GetDouble(); else dom.min = ossia::none;
+          if(arr[1].IsNumber()) dom.max = arr[1].GetDouble(); else dom.max = ossia::none;
         }
 
         if(arr.Size() >= 3)
@@ -306,7 +306,7 @@ struct json_to_domain
 
             for(const auto& sub : values)
             {
-              if(sub.IsDouble())
+              if(sub.IsNumber())
                 dom.values.insert(sub.GetDouble());
             }
           }

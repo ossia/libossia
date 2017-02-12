@@ -23,6 +23,7 @@ struct json_parser_impl
 
   static bool ReadValue(const rapidjson::Value& val, int32_t& res);
   static bool ReadValue(const rapidjson::Value& val, float& res);
+  static bool ReadValue(const rapidjson::Value& val, double& res);
   static bool ReadValue(const rapidjson::Value& val, std::string& res);
   static bool ReadValue(const rapidjson::Value& val, bool& res);
   static bool ReadValue(const rapidjson::Value& val, ossia::repetition_filter& res);

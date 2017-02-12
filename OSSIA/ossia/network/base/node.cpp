@@ -147,13 +147,13 @@ boost::any node_base::getAttribute(
 
 
 
-node_base* node_base::createChild(const std::string& name)
+node_base* node_base::createChild(std::string name)
 {
   auto& dev = getDevice();
   if(!dev.getCapabilities().change_tree)
     return nullptr;
 
-  auto res = makeChild(sanitize_name(name, childrenNames()));
+  auto res = makeChild(sanitize_name(std::move(name), childrenNames()));
 
   auto ptr = res.get();
   if (res)
@@ -197,7 +197,7 @@ node_base*node_base::addChild(std::unique_ptr<node_base> n)
   return nullptr;
 }
 
-node_base* node_base::findChild(const std::string& name)
+node_base* node_base::findChild(ossia::string_view name)
 {
   for(auto& node : mChildren)
   {
@@ -346,21 +346,6 @@ void set_description(extended_attributes& n, const char* arg)
     set_description(n, std::string{arg});
   else
     set_description(n, ossia::none);
-}
-
-extended_type generic_buffer_type()
-{
-  return "buffer";
-}
-
-extended_type filesystem_path_type()
-{
-  return "filepath";
-}
-
-extended_type float_array_type()
-{
-  return "vecf";
 }
 
 }

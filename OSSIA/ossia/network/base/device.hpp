@@ -95,5 +95,49 @@ protected:
   std::unique_ptr<ossia::net::protocol_base> mProtocol;
   device_capabilities mCapabilities;
 };
+
+template<typename T>
+void node_base::set(ossia::string_view str, const T& value)
+{
+  auto opt = ossia::get_optional_attribute<T>(*this, str);
+  if(opt && *opt != value)
+  {
+    ossia::set_attribute(*this, str, value);
+    getDevice().onAttributeModified(*this, str);
+  }
+}
+
+template<typename T>
+void node_base::set(ossia::string_view str, T&& value)
+{
+  auto opt = ossia::get_optional_attribute<T>(*this, str);
+  if(opt && *opt != value)
+  {
+    ossia::set_attribute(*this, str, std::move(value));
+    getDevice().onAttributeModified(*this, str);
+  }
+}
+
+template<typename Attribute, typename T>
+void node_base::set(Attribute a, const T& value)
+{
+  auto opt = a.getter(*this);
+  if(opt && *opt != value)
+  {
+    a.setter(*this, value);
+    getDevice().onAttributeModified(*this, a.text());
+  }
+}
+
+template<typename Attribute, typename T>
+void node_base::set(Attribute a, T&& value)
+{
+  auto opt = a.getter(*this);
+  if(opt && *opt != value)
+  {
+    a.setter(*this, std::move(value));
+    getDevice().onAttributeModified(*this, a.text());
+  }
+}
 }
 }

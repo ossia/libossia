@@ -23,16 +23,18 @@ void printValue(const value& v);
 
 int main()
 {
-  auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
-  ossia::net::local_protocol& local_proto = *local_proto_ptr;
+  using namespace ossia::net;
+
+  auto local_proto_ptr = std::make_unique<local_protocol>();
+  local_protocol& local_proto = *local_proto_ptr;
   // declare this program "B" as Local device
-  ossia::net::generic_device device{std::move(local_proto_ptr), "B"};
+  generic_device device{std::move(local_proto_ptr), "B"};
 
   /* publish each feature of program "B" as address into a tree */
 
   {
     // Create a node
-    auto& node = ossia::net::find_or_create_node(device, "/test/my_impulse");
+    auto& node = find_or_create_node(device, "/test/my_impulse");
 
     // Addresses allow nodes to have values.
     auto address = node.createAddress(val_type::IMPULSE);
@@ -45,40 +47,40 @@ int main()
   }
 
   {
-    auto& node = ossia::net::find_or_create_node(device, "/test/my_bool");
+    auto& node = find_or_create_node(device, "/test/my_bool");
     auto address = node.createAddress(val_type::BOOL);
     address->add_callback(printValueCallback);
     address->pushValue(true);
   }
   {
-    auto& node = ossia::net::find_or_create_node(device, "/test/my_float");
+    auto& node = find_or_create_node(device, "/test/my_float");
     auto address = node.createAddress(val_type::FLOAT);
     address->add_callback(printValueCallback);
     address->pushValue(1234.);
   }
   {
-    auto& node = ossia::net::find_or_create_node(device, "/test/my_int");
+    auto& node = find_or_create_node(device, "/test/my_int");
     auto address = node.createAddress(val_type::INT);
 
     // Set some metadata
-    net::set_access_mode(node, access_mode::GET);
-    net::set_bounding_mode(node, bounding_mode::FOLD);
-    net::set_domain(node, ossia::net::make_domain(2, 14));
-    net::set_description(node, "an integral value");
+    node.set(access_mode_attribute{}, access_mode::GET);
+    node.set(bounding_mode_attribute{}, bounding_mode::FOLD);
+    node.set(domain_attribute{}, make_domain(2, 14));
+    node.set(description_attribute{}, "an integral value");
 
     address->add_callback(printValueCallback);
     address->pushValue(5678);
   }
 
   {
-    auto& node = ossia::net::find_or_create_node(device, "/test/my_char");
+    auto& node = find_or_create_node(device, "/test/my_char");
     auto address = node.createAddress(val_type::CHAR);
     address->add_callback(printValueCallback);
     address->pushValue('c');
   }
 
   {
-    auto& node = ossia::net::find_or_create_node(device, "/test/my_string");
+    auto& node = find_or_create_node(device, "/test/my_string");
     auto address = node.createAddress(val_type::STRING);
     address->add_callback(printValueCallback);
     address->pushValue("hello world"s);
@@ -86,7 +88,7 @@ int main()
 
   {
     // tuple is a std::vector<value>
-    auto& node = ossia::net::find_or_create_node(device, "/test/my_tuple");
+    auto& node = find_or_create_node(device, "/test/my_tuple");
     auto address = node.createAddress(val_type::TUPLE);
     address->add_callback(printValueCallback);
 
@@ -94,8 +96,8 @@ int main()
     address->pushValue(tuple{"foo"s, 1234, tuple{"bar"s, 4.5}});
 
     // Domain of the tuple
-    ossia::net::set_domain(node,
-      ossia::net::domain_base<tuple>(
+    node.set(domain_attribute{},
+      domain_base<tuple>(
                              tuple{0, 1}, // Min values
                              tuple{3, 5}, // Max values
                              boost::container::flat_set<tuple>{
@@ -105,15 +107,15 @@ int main()
 
   {
     // fixed-length arrays
-    auto& node = ossia::net::find_or_create_node(device, "/test/my_vec3f");
+    auto& node = find_or_create_node(device, "/test/my_vec3f");
     auto address = node.createAddress(val_type::VEC3F);
     address->add_callback(printValueCallback);
     address->pushValue(ossia::make_vec(0., 1., 2.));
   }
   {
-    auto& node = ossia::net::find_or_create_node(device, "/units/vec2");
+    auto& node = find_or_create_node(device, "/units/vec2");
     auto address = node.createAddress(val_type::VEC2F);
-    ossia::net::set_unit(node, ossia::cartesian_2d_u{});
+    node.set(unit_attribute{}, ossia::cartesian_2d_u{});
     address->add_callback(printValueCallback);
     address->pushValue(ossia::make_vec(5., 6.));
   }

@@ -133,9 +133,9 @@ void osc_protocol::handleReceivedMessage(
   {
     auto addr_txt = m.AddressPattern();
     auto addr = mListening.find(addr_txt);
-    if (addr)
+    if (addr && *addr)
     {
-      update_value(*addr, m);
+      update_value(**addr, m);
     }
     else
     {

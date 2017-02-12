@@ -1,10 +1,12 @@
 #pragma once
-#include <ossia/detail/callback_container.hpp>
-#include <ossia/detail/ptr_container.hpp>
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/network/base/name_validation.hpp>
-#include <ossia/network/base/node_attributes.hpp>
+
+#include <ossia/detail/callback_container.hpp>
+#include <ossia/detail/any_map.hpp>
+#include <ossia/detail/ptr_container.hpp>
 #include <ossia/detail/string_view.hpp>
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -38,7 +40,6 @@ using extended_attributes = any_map;
  * \ref generic_node is used for this common case.
  *
  * \see generic_node
- *
  * \see device_base
  * \see address_base
  */
@@ -92,12 +93,16 @@ public:
    */
   boost::any getAttribute(const std::string& str) const;
 
+  // TODO string_view
   template<typename T>
-  void setAttribute(const std::string& str, const T& val)
-  { mExtended[str] = val; }
+  void set(ossia::string_view str, const T& val);
   template<typename T>
-  void setAttribute(const std::string& str, T&& val)
-  { mExtended[str] = std::move(val); }
+  void set(ossia::string_view str, T&& val);
+
+  template<typename Attribute, typename T>
+  void set(Attribute a, const T& value);
+  template<typename Attribute, typename T>
+  void set(Attribute a, T&& value);
 
   /**
    * @brief createChild Adds a sub-child of the given name.
@@ -109,7 +114,7 @@ public:
    *
    * @return A pointer to the child if it could be created, else nullptr.
    */
-  node_base* createChild(const std::string& name);
+  node_base* createChild(std::string name);
 
   /**
    * @brief Adds a new child if it can be added.
@@ -127,11 +132,12 @@ public:
    * If you need to find a child recursively, see ossia::net::find_node.
    *
    */
-  node_base* findChild(const std::string& name);
+  node_base* findChild(ossia::string_view name);
 
   bool removeChild(const std::string& name);
   bool removeChild(const node_base& name);
 
+  //! Remove all the children.
   void clearChildren();
 
   operator const extended_attributes&() const { return mExtended; }
@@ -160,9 +166,9 @@ protected:
 };
 
 // address : format /a/b/c
-OSSIA_EXPORT ossia::net::node_base*
+OSSIA_EXPORT node_base*
 find_node(node_base& dev, ossia::string_view address_base);
-OSSIA_EXPORT ossia::net::node_base&
+OSSIA_EXPORT node_base&
 find_or_create_node(node_base& dev, ossia::string_view address_base);
 
 }

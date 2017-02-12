@@ -62,6 +62,10 @@ public:
 
   static string_t attributes_changed(
       const ossia::net::node_base& n,
+      ossia::string_view attribute);
+
+  static string_t attributes_changed(
+      const ossia::net::node_base& n,
       const std::vector<ossia::string_view>& attributes);
 
   static string_t paths_added(
@@ -84,6 +88,10 @@ private:
   static void path_added_impl(detail::json_writer_impl& p, const ossia::net::node_base& n);
   static void path_changed_impl(detail::json_writer_impl& p, const ossia::net::node_base& n);
   static void path_removed_impl(writer_t& wr, const std::string& path);
+  static void attribute_changed_impl(
+      detail::json_writer_impl& p,
+      const ossia::net::node_base& n,
+      ossia::string_view attribute);
   static void attributes_changed_impl(
       detail::json_writer_impl& p,
       const ossia::net::node_base& n,

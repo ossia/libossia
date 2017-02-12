@@ -83,9 +83,9 @@ struct json_to_value
   {
     typetag_cursor++;
 
-    bool b = val.IsDouble();
+    bool b = val.IsNumber();
     if(b)
-      res = val.GetDouble();
+      res = (float)val.GetDouble();
     return b;
   }
 
@@ -133,7 +133,7 @@ struct json_to_value
       {
         for(int i = 0; i < (int)N; i++)
         {
-          if(arr[i].IsDouble())
+          if(arr[i].IsNumber())
           {
             res[i] = arr[i].GetDouble();
           }
@@ -266,6 +266,124 @@ struct json_to_value
   }
 
   bool operator()() const
+  {
+    throw;
+  }
+};
+
+
+inline ossia::value ReadValue(const rapidjson::Value& val)
+{
+  switch(val.GetType())
+  {
+    case rapidjson::kNumberType:
+    {
+      if(val.IsInt()) return val.GetInt();
+      else if(val.IsUint()) return (int)val.GetUint();
+      // There is also int64 and uint64 but we'll get a better approximation with double
+      else return val.GetDouble();
+    }
+    case rapidjson::kFalseType:
+      return false;
+    case rapidjson::kTrueType:
+      return true;
+
+    case rapidjson::kArrayType:
+    {
+      std::vector<ossia::value> tpl;
+      tpl.reserve(val.Size());
+      for(auto& elt : val.GetArray())
+      {
+        tpl.push_back(ReadValue(elt));
+      }
+      return tpl;
+    }
+
+    case rapidjson::kStringType:
+      return getString(val);
+
+    case rapidjson::kObjectType:
+    case rapidjson::kNullType:
+    default:
+      return ossia::impulse{};
+  }
+}
+
+struct json_to_value_unchecked
+{
+  const rapidjson::Value& val;
+  void operator()(impulse) const
+  {
+  }
+
+  void operator()(int& res) const
+  {
+    if(val.IsInt())
+      res = val.GetInt();
+  }
+
+  void operator()(float &res) const
+  {
+    if(val.IsNumber())
+      res = (float)val.GetDouble();
+  }
+
+  void operator()(bool &res) const
+  {
+    if(val.IsBool())
+      res = val.GetBool();
+  }
+
+  void operator()(char &res) const
+  {
+    if(val.IsString() && val.GetStringLength() > 0)
+      res = val.GetString()[0];
+  }
+
+  void operator()(std::string& res) const
+  {
+    // TODO handle base 64
+    // bool b = Base64::Encode(get<coppa::Generic>(val).buf, &out);
+
+    if(val.IsString())
+      res = getString(val);
+  }
+
+  template<std::size_t N>
+  void operator()(std::array<float, N>& res) const
+  {
+    if(val.IsArray())
+    {
+      auto arr = val.GetArray();
+      if(arr.Size() == N)
+      {
+        for(int i = 0; i < (int)N; i++)
+        {
+          res[i] = arr[i].GetDouble();
+        }
+      }
+    }
+  }
+
+  void operator()(std::vector<ossia::value>& res) const
+  {
+    if(val.IsArray())
+    {
+      res.clear();
+      auto arr = val.GetArray();
+      for(const auto& elt : arr)
+      {
+        res.push_back(ReadValue(elt));
+      }
+    }
+  }
+
+  void operator()(ossia::Destination& d) const
+  {
+    throw;
+  }
+
+  void operator()() const
   {
     throw;
   }

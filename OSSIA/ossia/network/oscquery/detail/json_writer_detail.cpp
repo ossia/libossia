@@ -74,6 +74,7 @@ void json_writer_impl::writeValue(const net::tags& tags) const
 void json_writer_impl::writeKey(ossia::string_view k) const { ::writeKey(writer, k); }
 void json_writer_impl::writeValue(int32_t i) const { writer.Int(i); }
 void json_writer_impl::writeValue(float i) const { writer.Double(i); }
+void json_writer_impl::writeValue(double i) const { writer.Double(i); }
 void json_writer_impl::writeValue(bool i) const { writer.Bool(i); }
 void json_writer_impl::writeValue(const std::string& i) const { writer.String(i); }
 void json_writer_impl::writeValue(const repetition_filter& i) const
@@ -93,7 +94,7 @@ using writer_map_type = tsl::hopscotch_map<ossia::string_view, writer_map_fun>;
 template<typename Attr>
 static auto make_fun_pair()
 {
-  return std::make_pair(Attr::key(),
+  return std::make_pair(metadata<Attr>::key(),
                         [] (const json_writer_impl& self, const ossia::net::node_base& n) {
     self.writeValue(Attr::getter(n));
   });
@@ -162,9 +163,9 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
     {
         // TODO it could be nice to have versions that take an address or a value directly
         brigand::for_each<base_attributes>([&] (auto attr) {
-            using type = typename decltype(attr)::type;
-            this->writeKey(type::key());
-            this->writeValue(type::getter(n));
+            using Attr = typename decltype(attr)::type;
+            this->writeKey(metadata<Attr>::key());
+            this->writeValue(Attr::getter(n));
         });
     }
     else
@@ -174,11 +175,11 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
     }
 
     brigand::for_each<extended_attributes>([&] (auto attr) {
-        using type = typename decltype(attr)::type;
-        auto res = type::getter(n);
+        using Attr = typename decltype(attr)::type;
+        auto res = Attr::getter(n);
         if(res)
         {
-            this->writeKey(type::key());
+            this->writeKey(metadata<Attr>::key());
             this->writeValue(*res);
         }
     });
@@ -255,6 +256,33 @@ void json_writer::path_removed_impl(
 
   writeKey(wr, detail::data());
   wr.String(path);
+
+  wr.EndObject();
+}
+
+void json_writer::attribute_changed_impl(
+    detail::json_writer_impl& p,
+    const net::node_base& n,
+    ossia::string_view attr)
+{
+  auto& wr = p.writer;
+  wr.StartObject();
+
+  writeKey(wr, detail::command());
+  writeRef(wr, detail::attributes_changed());
+
+  writeKey(wr, detail::data());
+  {
+    wr.StartObject();
+
+    writeKey(wr, detail::attribute_full_path());
+    wr.String(ossia::net::osc_address_string(n));
+
+    writeKey(wr, attr);
+    p.writeAttribute(n, attr);
+
+    wr.EndObject();
+  }
 
   wr.EndObject();
 }
@@ -351,6 +379,20 @@ json_writer::string_t json_writer::path_removed(
   writer_t wr(buf);
 
   path_removed_impl(wr, path);
+
+  return buf;
+}
+
+json_writer::string_t json_writer::attributes_changed(
+    const net::node_base& n,
+    ossia::string_view attribute)
+{
+  string_t buf;
+  writer_t wr(buf);
+
+  detail::json_writer_impl p{wr};
+
+  attribute_changed_impl(p, n, attribute);
 
   return buf;
 }

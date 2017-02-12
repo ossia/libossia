@@ -99,7 +99,12 @@ bool oscquery_server_protocol::update(net::node_base& b)
 
 void oscquery_server_protocol::setDevice(net::device_base& dev)
 {
+  // TODO disconnect in case there is an existing device
   m_device = &dev;
+
+  dev.onNodeCreated.connect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeCreated>(this);
+  dev.onNodeRemoving.connect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeRemoved>(this);
+  dev.onAttributeModified.connect<oscquery_server_protocol, &oscquery_server_protocol::on_attributeChanged>(this);
 }
 
 oscquery_client*oscquery_server_protocol::findClient(const connection_handler& hdl)
@@ -117,9 +122,9 @@ void oscquery_server_protocol::on_OSCMessage(
 {
   auto addr_txt = m.AddressPattern();
   auto addr = m_listening.find(addr_txt);
-  if (addr)
+  if (addr && *addr)
   {
-    net::update_value(*addr, m);
+    net::update_value(**addr, m);
   }
   else
   {
@@ -158,6 +163,40 @@ void oscquery_server_protocol::on_connectionClosed(
   if(it != m_clients.end())
   {
     m_clients.erase(it);
+  }
+}
+
+void oscquery_server_protocol::on_nodeCreated(const net::node_base& n)
+{
+  m_clientsMutex.lock();
+  for(auto& client : m_clients)
+  {
+    m_websocketServer.send_message(
+          client.connection,
+          json_writer::path_added(n));
+  }
+}
+
+void oscquery_server_protocol::on_nodeRemoved(const net::node_base& n)
+{
+  m_clientsMutex.lock();
+  for(auto& client : m_clients)
+  {
+    m_websocketServer.send_message(
+          client.connection,
+          json_writer::path_removed(net::osc_address_string(n)));
+  }
+
+}
+
+void oscquery_server_protocol::on_attributeChanged(const net::node_base& n, ossia::string_view attr)
+{
+  m_clientsMutex.lock();
+  for(auto& client : m_clients)
+  {
+    m_websocketServer.send_message(
+          client.connection,
+          json_writer::attributes_changed(n, attr));
   }
 }
 

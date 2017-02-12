@@ -101,6 +101,11 @@ private:
   void on_connectionOpen(connection_handler hdl);
   void on_connectionClosed(connection_handler hdl);
 
+  // Local device callback
+  void on_nodeCreated(const ossia::net::node_base&);
+  void on_nodeRemoved(const ossia::net::node_base&);
+  void on_attributeChanged(const ossia::net::node_base&, ossia::string_view attr);
+
   // Exceptions here will be catched by the server
   // which will set appropriate error codes.
   rapidjson::StringBuffer on_WSrequest(

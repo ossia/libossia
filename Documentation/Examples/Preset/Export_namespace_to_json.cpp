@@ -37,9 +37,9 @@ int main()
        */
 
     // add app extended information attributes
-    ossia::net::set_app_name(device.getRootNode(), "json_export_test_app"s);
-    ossia::net::set_app_version(device.getRootNode(), "0.1"s);
-    ossia::net::set_app_creator(device.getRootNode(), "toto"s);
+    device.getRootNode().set(app_name_attribute{}, "json_export_test_app"s);
+    device.getRootNode().set(app_version_attribute{}, "0.1"s);
+    device.getRootNode().set(app_creator_attribute{}, "toto"s);
 
     auto localTestNode = device.createChild("parameter");
 
@@ -48,24 +48,24 @@ int main()
 
     auto localBoolNode = localTestNode->createChild("my_bool");
     auto localBoolAddress = localBoolNode->createAddress(val_type::BOOL);
-    ossia::net::set_default_value(*localBoolNode, true);
-    ossia::net::set_description(*localBoolNode, "test description"s);
+    localBoolNode->set(default_value_attribute{}, true);
+    localBoolNode->set(description_attribute{}, "test description"s);
 
     auto localIntNode = localTestNode->createChild("my_int");
     auto localIntAddress = localIntNode->createAddress(val_type::INT);
-    ossia::net::set_default_value(*localIntNode, 3);
-    localIntAddress->setDomain(make_domain(0, 10));
-    ossia::net::set_value_step_size(*localIntNode, 1);
+    localIntNode->set(default_value_attribute{}, 3);
+    localIntNode->set(domain_attribute{}, make_domain(0, 10));
+    localIntNode->set(value_step_size_attribute{}, 1);
 
     auto localFloatNode = localTestNode->createChild("my_float");
     auto localFloatAddress = localFloatNode->createAddress(val_type::FLOAT);
-    ossia::net::set_default_value(*localFloatNode, 0.5);
-    localFloatAddress->setDomain(make_domain(0.0, 1.0));
-    ossia::net::set_value_step_size(*localFloatNode, 0.1);
+    localFloatNode->set(default_value_attribute{}, 0.5);
+    localFloatNode->set(domain_attribute{}, make_domain(0.0, 1.0));
+    localFloatNode->set(value_step_size_attribute{}, 0.1);
 
     auto localStringNode = localTestNode->createChild("my_string");
     auto localStringAddress = localStringNode->createAddress(val_type::STRING);
-    ossia::net::set_default_value(*localStringNode, "test"s);
+    localStringNode->set(default_value_attribute{}, "test"s);
 
     // update tree value
     localImpulseAddress->pushValue(impulse{});

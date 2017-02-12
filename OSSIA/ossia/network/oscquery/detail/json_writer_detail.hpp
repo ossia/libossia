@@ -24,6 +24,7 @@ struct json_writer_impl
   void writeValue(const ossia::net::tags& tags) const;
   void writeValue(int32_t i) const;
   void writeValue(float i) const;
+  void writeValue(double i) const;
   void writeValue(bool i) const;
   void writeValue(const std::string& i) const;
   void writeValue(const ossia::repetition_filter & i) const;

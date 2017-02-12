@@ -60,8 +60,10 @@ private:
     std::promise<void> promise;
     ossia::net::address_base* address{};
   };
+  using promises_map = locked_map<tsl::hopscotch_map<std::string, get_promise>>;
 
-  moodycamel::ReaderWriterQueue<get_promise> m_getPromises;
+  moodycamel::ReaderWriterQueue<get_promise> m_getWSPromises;
+  promises_map m_getOSCPromises;
 
   std::thread m_wsThread;
   std::string m_websocketHost;

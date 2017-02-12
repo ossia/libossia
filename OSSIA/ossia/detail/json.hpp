@@ -18,6 +18,10 @@ inline rapidjson::SizeType StrLen<char>(const char* s)
 }
 }
 
+inline std::string getString(const rapidjson::Value& val)
+{
+  return std::string{val.GetString(), val.GetStringLength()};
+}
 inline ossia::string_view getStringView(const rapidjson::Value& val)
 {
   return ossia::string_view{val.GetString(), val.GetStringLength()};

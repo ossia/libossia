@@ -5,11 +5,30 @@
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/oscquery/detail/json_reader.hpp>
 #include <boost/algorithm/string/erase.hpp>
-
 namespace ossia
 {
 namespace oscquery
 {
+
+auto wait_for(std::future<void>& fut, std::chrono::milliseconds dur)
+{
+  using clk = std::chrono::high_resolution_clock;
+  std::future_status status = std::future_status::deferred;
+  while(dur.count() > 0 || !(status == std::future_status::ready))
+  {
+    auto start = clk::now();
+    auto next = start;
+    for(int n = 0; n < 1000; n++)
+    {
+      next = std::chrono::system_clock::now();
+    }
+    dur -= std::chrono::duration_cast<std::chrono::milliseconds>(next - start);
+    status = fut.wait_for(std::chrono::milliseconds(dur / 8));
+    start = std::chrono::system_clock::now();
+    dur -= std::chrono::duration_cast<std::chrono::milliseconds>(start - next);
+  }
+  return status;
+}
 
 oscquery_mirror_protocol::oscquery_mirror_protocol(std::string host, uint16_t local_osc_port):
   m_oscServer{std::make_unique<osc::receiver>(
@@ -54,8 +73,13 @@ std::future<void> oscquery_mirror_protocol::pullAsync(net::address_base& address
 {
   std::promise<void> promise;
   auto fut = promise.get_future();
-  m_getPromises.enqueue({std::move(promise), &address});
-
+  m_getWSPromises.enqueue({std::move(promise), &address});
+  /*
+  m_getOSCPromises.insert(
+        std::make_pair(
+          ossia::net::osc_address_string(address),
+          get_promise{std::move(promise), &address}));
+  */
   m_websocketClient.send_message(net::osc_address_string(address) + "?VALUE");
   return fut;
 }
@@ -63,7 +87,6 @@ std::future<void> oscquery_mirror_protocol::pullAsync(net::address_base& address
 void oscquery_mirror_protocol::request(net::address_base& address)
 {
   m_websocketClient.send_message(net::osc_address_string(address) + "?VALUE");
-  m_getPromises.enqueue({{}, &address});
 }
 
 bool oscquery_mirror_protocol::push(const net::address_base& addr)
@@ -139,26 +162,46 @@ void oscquery_mirror_protocol::setDevice(net::device_base& dev)
 void oscquery_mirror_protocol::on_OSCMessage(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 {
+#if defined(OSSIA_BENCHMARK)
+  auto t1 = std::chrono::high_resolution_clock::now();
+#endif
   auto addr_txt = m.AddressPattern();
   auto addr = m_listening.find(addr_txt);
-  if (addr)
+  if (addr && *addr)
   {
-    net::update_value(*addr, m);
+    net::update_value(**addr, m);
   }
   else
   {
-    // We still want to save the value even if it is not listened to.
-    if(auto n = find_node(m_device->getRootNode(), addr_txt))
+    // Maybe waiting for a get()
+    auto get_opt = m_getOSCPromises.find_and_take(addr_txt);
+    if(get_opt)
     {
-      if(auto base_addr = n->getAddress())
+      net::update_value(*get_opt->address, m);
+      get_opt->promise.set_value();
+    }
+    else
+    {
+      // We still want to save the value even if it is not listened to.
+      auto node = find_node(m_device->getRootNode(), addr_txt);
+      if(node)
       {
-        net::update_value_quiet(*base_addr, m);
+        auto base_addr = node->getAddress();
+        if(base_addr)
+        {
+          net::update_value_quiet(*base_addr, m);
+        }
       }
     }
   }
 
   if(mLogger.inbound_logger)
     mLogger.inbound_logger->info("In: {0}", m);
+
+#if defined(OSSIA_BENCHMARK)
+  auto t2 = std::chrono::high_resolution_clock::now();
+  ossia::logger().info("on_OSCMessage : Time taken: {}", std::chrono::duration_cast<std::chrono::microseconds>(t2-t1).count());
+#endif
 }
 
 std::string to_ip(std::string uri)
@@ -179,6 +222,9 @@ void oscquery_mirror_protocol::on_WSMessage(
     oscquery_mirror_protocol::connection_handler hdl,
     const std::string& message)
 {
+#if defined(OSSIA_BENCHMARK)
+  auto t1 = std::chrono::high_resolution_clock::now();
+#endif
   try
   {
     auto data = json_parser::parse(message);
@@ -203,24 +249,43 @@ void oscquery_mirror_protocol::on_WSMessage(
       {
         case message_type::Namespace:
         {
-          json_parser::parseNamespace(m_device->getRootNode(), data);
+          json_parser::parse_namespace(m_device->getRootNode(), data);
           m_namespacePromise.set_value();
-          return;
+          break;
         }
         case message_type::Value:
         {
           // TODO instead just put full path in reply ?
-          get_promise* p = m_getPromises.peek();
+          get_promise* p = m_getWSPromises.peek();
           if(p)
           {
             if(p->address)
             {
-              json_parser::parseValue(*p->address, data);
+              json_parser::parse_value(*p->address, data);
               p->promise.set_value();
-              m_getPromises.pop();
-              return;
+              m_getWSPromises.pop();
+              break;
             }
           }
+
+          break;
+        }
+        case message_type::PathAdded:
+        {
+          json_parser::parse_path_added(m_device->getRootNode(), data);
+          break;
+        }
+        case message_type::PathRemoved:
+        {
+          json_parser::parse_path_removed(m_device->getRootNode(), data);
+          break;
+
+        }
+        case message_type::AttributesChanged:
+        {
+          json_parser::parse_attributes_changed(m_device->getRootNode(), data);
+          break;
+
         }
 
       }
@@ -276,6 +341,11 @@ void oscquery_mirror_protocol::on_WSMessage(
     if(mLogger.inbound_logger)
       mLogger.inbound_logger->warn("Error while parsing: {} ==> {}", e.what(), message);
   }
+
+#if defined(OSSIA_BENCHMARK)
+  auto t2 = std::chrono::high_resolution_clock::now();
+  ossia::logger().info("on_WSMessage : Time taken: {}", std::chrono::duration_cast<std::chrono::microseconds>(t2-t1).count());
+#endif
 }
 
 }

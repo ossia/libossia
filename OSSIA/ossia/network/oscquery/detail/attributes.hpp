@@ -38,10 +38,10 @@ constexpr auto attribute_instance_bounds() { return "INSTANCE_BOUNDS"; }
 constexpr auto attribute_critical() { return "CRITICAL"; }
 constexpr auto attribute_extended_type() { return "EXTENDED_TYPE"; }
 constexpr auto attribute_repetition_filter() { return "REPETITION_FILTER"; }
+constexpr auto attribute_default_value() { return "DEFAULT_VALUE"; }
 constexpr auto attribute_app_name() { return "APP_NAME"; }
 constexpr auto attribute_app_version() { return "APP_VERSION"; }
 constexpr auto attribute_app_creator() { return "APP_CREATOR"; }
-constexpr auto attribute_default_value() { return "DEFAULT_VALUE"; }
 
 
 // Commands
@@ -66,15 +66,6 @@ struct OSSIA_EXPORT full_path_attribute
   static constexpr const auto getter = static_cast<std::string(*)(const ossia::net::node_base&)>(ossia::net::osc_address_string);
 };
 
-// Attributes of an address
-struct OSSIA_EXPORT value_attribute
-{
-  using type = ossia::value;
-  static constexpr auto key() { return detail::attribute_value(); }
-  static constexpr const auto getter = ossia::net::clone_value;
-  static constexpr const auto setter = ossia::net::push_value;
-};
-
 struct OSSIA_EXPORT typetag_attribute
 {
   using type = std::string;
@@ -82,141 +73,64 @@ struct OSSIA_EXPORT typetag_attribute
   static constexpr const auto getter = oscquery::get_osc_typetag;
 };
 
-struct OSSIA_EXPORT domain_attribute
-{
-  using type = ossia::net::domain;
-  static constexpr auto key() { return detail::attribute_range(); }
-  static constexpr const auto getter = ossia::net::get_domain;
-  static constexpr const auto setter = ossia::net::set_domain;
-};
+template<typename Attr>
+struct metadata;
 
-struct OSSIA_EXPORT access_mode_attribute
-{
-  using type = ossia::access_mode;
-  static constexpr auto key() { return detail::attribute_accessmode(); }
-  static constexpr const auto getter = ossia::net::get_access_mode;
-  static constexpr const auto setter = ossia::net::set_access_mode;
-};
+// oscquery-specific
+template<> struct metadata<full_path_attribute> { static constexpr auto key() { return detail::attribute_full_path(); } };
+template<> struct metadata<typetag_attribute> { static constexpr auto key() { return detail::attribute_typetag(); } };
 
-struct OSSIA_EXPORT bounding_mode_attribute
-{
-  using type = ossia::bounding_mode;
-  static constexpr auto key() { return detail::attribute_clipmode(); }
-  static constexpr const auto getter = ossia::net::get_bounding_mode;
-  static constexpr const auto setter = ossia::net::set_bounding_mode;
-};
+// common attributes
+template<> struct metadata<net::value_attribute> { static constexpr auto key() { return detail::attribute_value(); } };
+template<> struct metadata<net::domain_attribute> { static constexpr auto key() { return detail::attribute_range(); } };
+template<> struct metadata<net::access_mode_attribute> { static constexpr auto key() { return detail::attribute_accessmode(); } };
+template<> struct metadata<net::bounding_mode_attribute> { static constexpr auto key() { return detail::attribute_clipmode(); } };
+template<> struct metadata<net::unit_attribute> { static constexpr auto key() { return detail::attribute_unit(); } };
+template<> struct metadata<net::default_value_attribute> { static constexpr auto key() { return detail::attribute_default_value(); } };
+template<> struct metadata<net::tags_attribute> { static constexpr auto key() { return detail::attribute_tags(); } };
+template<> struct metadata<net::refresh_rate_attribute> { static constexpr auto key() { return detail::attribute_refresh_rate(); } };
+template<> struct metadata<net::priority_attribute> { static constexpr auto key() { return detail::attribute_priority(); } };
+template<> struct metadata<net::value_step_size_attribute> { static constexpr auto key() { return detail::attribute_step_size(); } };
+template<> struct metadata<net::instance_bounds_attribute> { static constexpr auto key() { return detail::attribute_instance_bounds(); } };
+template<> struct metadata<net::critical_attribute> { static constexpr auto key() { return detail::attribute_critical(); } };
+template<> struct metadata<net::extended_type_attribute> { static constexpr auto key() { return detail::attribute_extended_type(); } };
+template<> struct metadata<net::description_attribute> { static constexpr auto key() { return detail::attribute_description(); } };
+template<> struct metadata<net::repetition_filter_attribute> { static constexpr auto key() { return detail::attribute_repetition_filter(); } };
+template<> struct metadata<net::app_version_attribute> { static constexpr auto key() { return detail::attribute_app_version(); } };
+template<> struct metadata<net::app_creator_attribute> { static constexpr auto key() { return detail::attribute_app_creator(); } };
+template<> struct metadata<net::app_name_attribute> { static constexpr auto key() { return detail::attribute_app_name(); } };
 
-struct OSSIA_EXPORT unit_attribute
-{
-  using type = ossia::unit_t;
-  static constexpr auto key() { return detail::attribute_unit(); }
-  static constexpr const auto getter = ossia::net::get_unit;
-  static constexpr const auto setter = ossia::net::set_unit;
-};
-
-struct OSSIA_EXPORT default_value_attribute
-{
-  using type = ossia::value;
-  static constexpr auto key() { return detail::attribute_default_value(); }
-  static constexpr const auto getter = ossia::net::get_default_value;
-  static constexpr const auto setter = static_cast<void (*)(ossia::net::extended_attributes&, ossia::value&&)>(ossia::net::set_default_value);
-};
-
-// Metadata attributes
-struct OSSIA_EXPORT tags_attribute
-{
-  using type = net::tags;
-  static constexpr auto key() { return detail::attribute_tags(); }
-  static constexpr const auto getter = ossia::net::get_tags;
-  static constexpr const auto setter = ossia::net::set_tags;
-};
-struct OSSIA_EXPORT refresh_rate_attribute
-{
-  using type = net::refresh_rate;
-  static constexpr auto key() { return detail::attribute_refresh_rate(); }
-  static constexpr const auto getter = ossia::net::get_refresh_rate;
-  static constexpr const auto setter = ossia::net::set_refresh_rate;
-};
-struct OSSIA_EXPORT priority_attribute
-{
-  using type = net::priority;
-  static constexpr auto key() { return detail::attribute_priority(); }
-  static constexpr const auto getter = ossia::net::get_priority;
-  static constexpr const auto setter = ossia::net::set_priority;
-};
-struct OSSIA_EXPORT step_size_attribute
-{
-  using type = net::value_step_size;
-  static constexpr auto key() { return detail::attribute_step_size(); }
-  static constexpr const auto getter = ossia::net::get_value_step_size;
-  static constexpr const auto setter = ossia::net::set_value_step_size;
-};
-struct OSSIA_EXPORT instance_bounds_attribute
-{
-  using type = net::instance_bounds;
-  static constexpr auto key() { return detail::attribute_instance_bounds(); }
-  static constexpr const auto getter = ossia::net::get_instance_bounds;
-  static constexpr const auto setter = ossia::net::set_instance_bounds;
-};
-struct OSSIA_EXPORT critical_attribute
-{
-  using type = net::critical;
-  static constexpr auto key() { return detail::attribute_critical(); }
-  static constexpr const auto getter = ossia::net::get_critical;
-  static constexpr const auto setter = ossia::net::set_critical;
-};
-struct OSSIA_EXPORT extended_type_attribute
-{
-  using type = net::extended_type;
-  static constexpr auto key() { return detail::attribute_extended_type(); }
-  static constexpr const auto getter = ossia::net::get_extended_type;
-  static constexpr const auto setter = ossia::net::set_extended_type;
-};
-struct OSSIA_EXPORT description_attribute
-{
-  using type = net::description;
-  static constexpr auto key() { return detail::attribute_description(); }
-  static constexpr const auto getter = ossia::net::get_description;
-  static constexpr const auto setter = static_cast<void(*)(ossia::net::extended_attributes&,optional<net::description>)>(ossia::net::set_description);
-};
-struct OSSIA_EXPORT repetition_filter_attribute
-{
-  using type = repetition_filter;
-  static constexpr auto key() { return detail::attribute_repetition_filter(); }
-  static constexpr const auto getter = ossia::net::get_repetition_filter;
-  static constexpr const auto setter = ossia::net::set_repetition_filter;
-};
 
 using base_attributes = brigand::list<
 typetag_attribute,
-value_attribute,
-domain_attribute,
-access_mode_attribute,
-bounding_mode_attribute,
-repetition_filter_attribute,
-unit_attribute,
-default_value_attribute
+net::value_attribute,
+net::domain_attribute,
+net::access_mode_attribute,
+net::bounding_mode_attribute,
+net::repetition_filter_attribute,
+net::unit_attribute,
+net::default_value_attribute
 >;
 
 using base_attributes_without_type = brigand::list<
-value_attribute,
-domain_attribute,
-access_mode_attribute,
-bounding_mode_attribute,
-repetition_filter_attribute,
-unit_attribute,
-default_value_attribute
+net::value_attribute,
+net::domain_attribute,
+net::access_mode_attribute,
+net::bounding_mode_attribute,
+net::repetition_filter_attribute,
+net::unit_attribute,
+net::default_value_attribute
 >;
 
 using extended_attributes = brigand::list<
-tags_attribute,
-refresh_rate_attribute,
-priority_attribute,
-step_size_attribute,
-instance_bounds_attribute,
-critical_attribute,
-extended_type_attribute,
-description_attribute>;
+net::tags_attribute,
+net::refresh_rate_attribute,
+net::priority_attribute,
+net::value_step_size_attribute,
+net::instance_bounds_attribute,
+net::critical_attribute,
+net::extended_type_attribute,
+net::description_attribute>;
 
 }
 enum class message_type
