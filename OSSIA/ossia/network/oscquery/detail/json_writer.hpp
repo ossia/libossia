@@ -40,6 +40,8 @@ public:
     wr.StartObject();
     for(auto& method : methods)
     {
+      // Here we reply to the query which already has
+      // the key in the "oscquery" format so no need to convert
       writeKey(wr, method);
       p.writeAttribute(node, method);
     }

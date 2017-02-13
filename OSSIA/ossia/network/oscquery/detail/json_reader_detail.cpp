@@ -17,33 +17,6 @@ namespace oscquery
 namespace detail
 {
 
-optional<val_type> json_parser_impl::TypeTagToType(ossia::string_view str)
-{
-  switch(str.size())
-  {
-    case 0:
-      return ossia::none; // todo throw instead ? return optional ?
-    case 1:
-      switch(str[0])
-      {
-        case oscpack::TypeTagValues::INFINITUM_TYPE_TAG: return ossia::val_type::IMPULSE;
-        case oscpack::TypeTagValues::INT32_TYPE_TAG: return ossia::val_type::INT;
-        case oscpack::TypeTagValues::FLOAT_TYPE_TAG: return ossia::val_type::FLOAT;
-        case oscpack::TypeTagValues::CHAR_TYPE_TAG: return ossia::val_type::CHAR;
-
-        case oscpack::TypeTagValues::TRUE_TYPE_TAG:
-        case oscpack::TypeTagValues::FALSE_TYPE_TAG: return ossia::val_type::BOOL;
-
-        case oscpack::TypeTagValues::STRING_TYPE_TAG:
-        case oscpack::TypeTagValues::SYMBOL_TYPE_TAG: return ossia::val_type::STRING;
-
-        default: throw bad_request_error("Unsupported type");
-      }
-    default:
-      return ossia::val_type::TUPLE;
-  }
-}
-
 bool json_parser_impl::ReadValue(const rapidjson::Value& val, int32_t& res)
 {
   bool b = val.IsInt();
@@ -222,7 +195,7 @@ static auto make_setter_pair()
 
 using reader_map_type = tsl::hopscotch_map<ossia::string_view, map_setter_fun>;
 
-static auto& setterMap()
+static auto& namespaceSetterMap()
 {
   static const reader_map_type map{
     [] {
@@ -246,7 +219,29 @@ static auto& setterMap()
         using type = typename decltype(attr)::type;
         attr_impl.insert(make_setter_pair<type>());
       });
-      brigand::for_each<extended_attributes>([&] (auto attr) {
+
+      return attr_impl;
+    }()};
+
+  return map;
+}
+
+static auto& attributesSetterMap()
+{
+  // This one has the missing attributes.
+  // They are not in the previous map because we want to
+  // handle them separately when parsing the namespace.
+  static const reader_map_type map{
+    [] {
+      using namespace ossia::net;
+
+      reader_map_type attr_impl = namespaceSetterMap();
+      // Remaining metadata
+      brigand::for_each< brigand::list<
+          typetag_attribute,
+          extended_type_attribute,
+          unit_attribute
+          > >([&] (auto attr) {
         using type = typename decltype(attr)::type;
         attr_impl.insert(make_setter_pair<type>());
       });
@@ -294,7 +289,7 @@ static ossia::val_type VecTypetag(const rapidjson::Value& val)
 
 void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& obj)
 {
-  auto& map = setterMap();
+  auto& map = namespaceSetterMap();
 
   // If it's a real parameter
   if(obj.FindMember(detail::attribute_full_path()) != obj.MemberEnd())
@@ -304,7 +299,7 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
     ossia::string_view typetag;
 
     // Try to read all the attributes that could give us the concrete type.
-    optional<ossia::val_type> val_type = ossia::none; // Implementation type
+    complex_type val_type; // Implementation type
     optional<ossia::unit_t> unit = ossia::none; // Unit
     optional<ossia::net::extended_type> ext_type = ossia::none; // Extended type
 
@@ -317,7 +312,7 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
     if(type_it != obj.MemberEnd())
     {
       typetag = getStringView(type_it->value);
-      val_type = TypeTagToType(typetag);
+      val_type = get_type_from_osc_typetag(typetag);
     }
 
     // Look for the unit
@@ -378,7 +373,7 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
       }
       else if(val_type)
       {
-        addr = node.createAddress(*val_type);
+        addr = setup_address(val_type, node);
       }
 
       // We have a type. Now we read the value according to it.
@@ -546,9 +541,9 @@ void json_parser::parse_value(net::address_base& addr, const rapidjson::Value& o
 // Given a string "/foo/bar/baz", return {"/foo/bar", "baz"}
 static auto splitParentChild(ossia::string_view s) ->
 optional<
-  std::pair<
-    ossia::string_view, ossia::string_view
-  >
+std::pair<
+ossia::string_view, ossia::string_view
+>
 >
 {
   auto last_slash_pos = s.rfind('/');
@@ -585,7 +580,6 @@ void json_parser::parse_path_added(net::node_base& root, const rapidjson::Value&
 
 void json_parser::parse_path_removed(net::node_base& root, const rapidjson::Value& obj)
 {
-
   auto dat_it = obj.FindMember(detail::data());
   if(dat_it != obj.MemberEnd())
   {
@@ -601,9 +595,32 @@ void json_parser::parse_path_removed(net::node_base& root, const rapidjson::Valu
 }
 
 
-void json_parser::parse_attributes_changed(net::node_base& map, const rapidjson::Value& obj)
+void json_parser::parse_attributes_changed(net::node_base& root, const rapidjson::Value& obj)
 {
-  // TODO
-}
+  auto dat_it = obj.FindMember(detail::data());
+  if(dat_it != obj.MemberEnd())
+  {
+    auto& dat = dat_it->value;
+    auto path_it = dat.FindMember(detail::attribute_full_path());
+    if(path_it != dat.MemberEnd())
+    {
+      auto path = getStringView(path_it->value);
+      auto node = ossia::net::find_node(root, path);
+      if(node)
+      {
+        auto& map = detail::attributesSetterMap();
+        auto memb_end = dat.MemberEnd();
+        for(auto it = dat.MemberBegin(); it != memb_end; ++it)
+        {
+          auto action = map.find(getString(it->name)); // TODO string -> string view
+          if(action != map.end())
+          {
+            action.value()(it->value, *node);
+          }
+        }
+      }
+      }
+    }
+  }
 }
 }

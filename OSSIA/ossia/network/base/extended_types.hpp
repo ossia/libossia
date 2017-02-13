@@ -1,5 +1,7 @@
 #pragma once
+#include <ossia/network/common/address_properties.hpp>
 #include <string>
+#include <vector>
 #include <ossia_export.h>
 
 namespace ossia
@@ -21,6 +23,9 @@ OSSIA_EXPORT extended_type filesystem_path_type();
 
 //! Means that the array should be interpreted as a fixed float array (e.g. vec2f, etc)
 OSSIA_EXPORT extended_type float_array_type();
+
+//! Returns the possible implementation types for this high-level type.
+OSSIA_EXPORT std::vector<ossia::val_type> underlying_type(const extended_type&);
 
 }
 }

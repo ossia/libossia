@@ -62,15 +62,16 @@ constexpr auto attributes_changed_array() { return "ATTRIBUTES_CHANGED_ARRAY"; }
 struct OSSIA_EXPORT full_path_attribute
 {
   using type = std::string;
-  static constexpr auto key() { return detail::attribute_full_path(); }
+  static auto text() { return detail::attribute_full_path(); }
   static constexpr const auto getter = static_cast<std::string(*)(const ossia::net::node_base&)>(ossia::net::osc_address_string);
 };
 
 struct OSSIA_EXPORT typetag_attribute
 {
   using type = std::string;
-  static constexpr auto key() { return detail::attribute_typetag(); }
+  static auto text() { return ossia::net::text_value_type(); }
   static constexpr const auto getter = oscquery::get_osc_typetag;
+  static constexpr const auto setter = oscquery::set_osc_typetag;
 };
 
 template<typename Attr>
@@ -140,5 +141,13 @@ enum class message_type
   PathChanged, PathAdded, PathRemoved, AttributesChanged,
   PathsChanged, PathsAdded, PathsRemoved, AttributesChangedArray,
 };
+
+using key_map_type = tsl::hopscotch_map<ossia::string_view, ossia::string_view>;
+//!Convert the text of an ossia attribute to the key of an oscquery attribute
+OSSIA_EXPORT const key_map_type& ossia_to_oscquery_key();
+OSSIA_EXPORT const key_map_type& oscquery_to_ossia_key();
+
+OSSIA_EXPORT optional<ossia::string_view> ossia_to_oscquery_key(ossia::string_view);
+OSSIA_EXPORT optional<ossia::string_view> oscquery_to_ossia_key(ossia::string_view);
 }
 }

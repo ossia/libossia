@@ -100,6 +100,7 @@ static auto make_fun_pair()
   });
 }
 
+
 static const auto& attributesMap()
 {
     static const writer_map_type attr_map{
@@ -278,8 +279,13 @@ void json_writer::attribute_changed_impl(
     writeKey(wr, detail::attribute_full_path());
     wr.String(ossia::net::osc_address_string(n));
 
-    writeKey(wr, attr);
-    p.writeAttribute(n, attr);
+    auto& map = ossia_to_oscquery_key();
+    auto it = map.find(attr);
+    if(it != map.end())
+    {
+      writeKey(wr, it.value());
+      p.writeAttribute(n, it.value());
+    }
 
     wr.EndObject();
   }
@@ -300,6 +306,7 @@ void json_writer::attributes_changed_impl(
   writeRef(wr, detail::attributes_changed());
 
   writeKey(wr, detail::data());
+  auto& map = ossia_to_oscquery_key();
   {
     wr.StartObject();
 
@@ -308,8 +315,12 @@ void json_writer::attributes_changed_impl(
 
     for(auto& attr : attributes)
     {
-      writeKey(wr, attr);
-      p.writeAttribute(n, attr);
+      auto it = map.find(attr);
+      if(it != map.end())
+      {
+        writeKey(wr, it.value());
+        p.writeAttribute(n, it.value());
+      }
     }
     wr.EndObject();
   }

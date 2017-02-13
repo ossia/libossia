@@ -19,8 +19,6 @@ namespace detail
 
 struct json_parser_impl
 {
-  static optional<ossia::val_type> TypeTagToType(ossia::string_view str);
-
   static bool ReadValue(const rapidjson::Value& val, int32_t& res);
   static bool ReadValue(const rapidjson::Value& val, float& res);
   static bool ReadValue(const rapidjson::Value& val, double& res);

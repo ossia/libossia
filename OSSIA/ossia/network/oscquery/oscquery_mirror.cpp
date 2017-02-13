@@ -57,9 +57,9 @@ oscquery_mirror_protocol::oscquery_mirror_protocol(std::string host, uint16_t lo
 
 oscquery_mirror_protocol::~oscquery_mirror_protocol()
 {
-  m_oscServer->stop();
+  try { m_oscServer->stop(); } catch (...) { logger().error("Error when stopping osc server"); }
   if(m_websocketClient.connected())
-    m_websocketClient.stop();
+    try { m_websocketClient.stop(); } catch (...) { logger().error("Error when stopping WS server"); }
   if(m_wsThread.joinable())
     m_wsThread.join();
 }
@@ -111,7 +111,6 @@ bool oscquery_mirror_protocol::push(const net::address_base& addr)
     if(!ossia::net::get_critical(addr.getNode()))
     {
       m_oscSender->send(addr, val);
-      logger().info("OSC Out: {}", addr, val);
     }
     else
     {
@@ -249,7 +248,6 @@ void oscquery_mirror_protocol::on_WSMessage(
     if(mt == message_type::Device)
     {
       // The ip of the OSC server on the server
-      logger().info("Opening connection on {} : {}", to_ip(m_websocketHost), json_parser::getPort(data));
       m_oscSender = std::make_unique<osc::sender>(mLogger, to_ip(m_websocketHost), json_parser::getPort(data));
 
       // Send to the server the local receiver port
