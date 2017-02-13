@@ -50,18 +50,26 @@ oscquery_mirror_protocol::oscquery_mirror_protocol(std::string host, uint16_t lo
     n++;
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
     if(n > 500)
+    {
+      cleanup_connections();
       throw ossia::connection_error{"oscquery_mirror_protocol::oscquery_mirror_protocol: "
                                     "Could not connect to " + m_websocketHost};
+    }
   }
 }
 
-oscquery_mirror_protocol::~oscquery_mirror_protocol()
+void oscquery_mirror_protocol::cleanup_connections()
 {
   try { m_oscServer->stop(); } catch (...) { logger().error("Error when stopping osc server"); }
   if(m_websocketClient.connected())
     try { m_websocketClient.stop(); } catch (...) { logger().error("Error when stopping WS server"); }
   if(m_wsThread.joinable())
     m_wsThread.join();
+}
+
+oscquery_mirror_protocol::~oscquery_mirror_protocol()
+{
+  cleanup_connections();
 }
 
 bool oscquery_mirror_protocol::pull(net::address_base& address)
@@ -83,14 +91,15 @@ std::future<void> oscquery_mirror_protocol::pullAsync(net::address_base& address
 {
   std::promise<void> promise;
   auto fut = promise.get_future();
-  m_getWSPromises.enqueue({std::move(promise), &address});
+  auto text = net::osc_address_string(address);
+  m_getWSPromises.enqueue({std::move(promise), text});
   /*
   m_getOSCPromises.insert(
         std::make_pair(
           ossia::net::osc_address_string(address),
           get_promise{std::move(promise), &address}));
   */
-  m_websocketClient.send_message(net::osc_address_string(address) + "?VALUE");
+  m_websocketClient.send_message(text + "?VALUE");
   return fut;
 }
 
@@ -266,16 +275,22 @@ void oscquery_mirror_protocol::on_WSMessage(
         case message_type::Value:
         {
           // TODO instead just put full path in reply ?
-          get_promise* p = m_getWSPromises.peek();
+          auto p = m_getWSPromises.peek();
           if(p)
           {
-            if(p->address)
+            auto node = ossia::net::find_node(m_device->getRootNode(), p->address);
+            if(node)
             {
-              json_parser::parse_value(*p->address, data);
-              p->promise.set_value();
-              m_getWSPromises.pop();
+              auto addr = node->getAddress();
+              if(addr)
+              {
+                json_parser::parse_value(*addr, data);
+              }
               break;
             }
+
+            p->promise.set_value();
+            m_getWSPromises.pop();
           }
 
           break;

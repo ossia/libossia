@@ -43,6 +43,8 @@ private:
   void on_WSMessage(connection_handler hdl, const std::string& message);
   void on_OSCMessage(const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
 
+  void cleanup_connections();
+
   std::unique_ptr<osc::sender> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
 
@@ -55,14 +57,19 @@ private:
 
   std::promise<void> m_namespacePromise;
 
-  struct get_promise
+  struct get_osc_promise
   {
     std::promise<void> promise;
     ossia::net::address_base* address{};
   };
-  using promises_map = locked_map<tsl::hopscotch_map<std::string, get_promise>>;
+  struct get_ws_promise
+  {
+    std::promise<void> promise;
+    std::string address{};
+  };
+  using promises_map = locked_map<tsl::hopscotch_map<std::string, get_osc_promise>>;
 
-  moodycamel::ReaderWriterQueue<get_promise> m_getWSPromises;
+  moodycamel::ReaderWriterQueue<get_ws_promise> m_getWSPromises;
   promises_map m_getOSCPromises;
 
   std::thread m_wsThread;
