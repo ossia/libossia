@@ -164,37 +164,34 @@ OSSIA_EXPORT void set_unit(ossia::net::node_base& n, unit_t v);
   struct OSSIA_EXPORT Name ## _attribute \
   { \
     using type = Type; \
-    static constexpr const auto text = ossia::net::text_ ## Name ; \
-    static constexpr const auto getter = ossia::net::get_ ## Name ; \
-    static constexpr const auto setter = ossia::net::set_ ## Name ; \
+    static auto text() { return ossia::net::text_  ## Name () ; } \
+    template<typename... Args> static auto getter(Args&&... args) { return ossia::net::get_  ## Name ( std::forward<Args>(args)... ) ; } \
+    template<typename... Args> static auto setter(Args&&... args) { return ossia::net::set_  ## Name ( std::forward<Args>(args)... ) ; } \
+  };
+
+#define OSSIA_ATTRIBUTE_2(Type, Name, Text, Get, Set) \
+  struct OSSIA_EXPORT Name ## _attribute \
+  { \
+    using type = Type; \
+    static auto text() { return Text() ; } \
+    template<typename... Args> static auto getter(Args&&... args) { return Get( std::forward<Args>(args) ... ) ; } \
+    template<typename... Args> static auto setter(Args&&... args) { return Set( std::forward<Args>(args) ... ) ; } \
   };
 
 
 // Attributes of an address
-struct OSSIA_EXPORT value_attribute
-{
-  using type = ossia::value;
-  static constexpr const auto text = ossia::net::text_value;
-  static constexpr const auto getter = ossia::net::clone_value;
-  static constexpr const auto setter = ossia::net::push_value;
-};
 
+OSSIA_ATTRIBUTE_2(ossia::value, value, ossia::net::text_value, ossia::net::clone_value, ossia::net::push_value)
 OSSIA_ATTRIBUTE(ossia::val_type, value_type)
 OSSIA_ATTRIBUTE(ossia::net::domain, domain)
 OSSIA_ATTRIBUTE(ossia::access_mode, access_mode)
 OSSIA_ATTRIBUTE(ossia::bounding_mode, bounding_mode)
 OSSIA_ATTRIBUTE(ossia::unit_t, unit)
-
-struct OSSIA_EXPORT default_value_attribute
-{
-  using type = ossia::value;
-  static constexpr const auto text = ossia::net::text_default_value;
-  static constexpr const auto getter = ossia::net::get_default_value;
-  static constexpr const auto setter = static_cast<void (*)(ossia::net::extended_attributes&, ossia::value&&)>(ossia::net::set_default_value);
-};
+OSSIA_ATTRIBUTE(ossia::value, default_value)
 
 // Metadata attributes
 OSSIA_ATTRIBUTE(ossia::net::tags, tags)
+OSSIA_ATTRIBUTE(ossia::net::description, description)
 OSSIA_ATTRIBUTE(ossia::net::refresh_rate, refresh_rate)
 OSSIA_ATTRIBUTE(ossia::net::priority, priority)
 OSSIA_ATTRIBUTE(ossia::net::value_step_size, value_step_size)
@@ -205,14 +202,5 @@ OSSIA_ATTRIBUTE(ossia::repetition_filter, repetition_filter)
 OSSIA_ATTRIBUTE(ossia::net::app_name, app_name)
 OSSIA_ATTRIBUTE(ossia::net::app_creator, app_creator)
 OSSIA_ATTRIBUTE(ossia::net::app_version, app_version)
-
-struct OSSIA_EXPORT description_attribute
-{
-  using type = net::description;
-  static constexpr const auto text = ossia::net::text_description;
-  static constexpr const auto getter = ossia::net::get_description;
-  static constexpr const auto setter = static_cast<void(*)(ossia::net::extended_attributes&,optional<net::description>)>(ossia::net::set_description);
-};
-
 
 }}
