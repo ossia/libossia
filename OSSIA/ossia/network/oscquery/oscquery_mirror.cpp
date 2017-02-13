@@ -11,6 +11,7 @@ namespace ossia
 namespace oscquery
 {
 
+/*
 auto wait_for(std::future<void>& fut, std::chrono::milliseconds dur)
 {
   using clk = std::chrono::high_resolution_clock;
@@ -30,6 +31,7 @@ auto wait_for(std::future<void>& fut, std::chrono::milliseconds dur)
   }
   return status;
 }
+*/
 
 oscquery_mirror_protocol::oscquery_mirror_protocol(std::string host, uint16_t local_osc_port):
   m_oscServer{std::make_unique<osc::receiver>(
