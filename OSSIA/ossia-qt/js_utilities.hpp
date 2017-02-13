@@ -20,6 +20,7 @@
 #include <QRectF>
 #include <QVariantList>
 #include <QQmlProperty>
+#include <QQmlExtensionPlugin>
 #include <QtGui/QColor>
 #include <QtGui/QVector2D>
 #include <QtGui/QVector3D>

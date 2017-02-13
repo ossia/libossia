@@ -20,7 +20,7 @@ oscquery_server_protocol::oscquery_server_protocol(uint16_t osc_port, uint16_t w
                 const oscpack::IpEndpointName& ip) {
     this->on_OSCMessage(m, ip);
   })},
-  m_oscPort{osc_port},
+  m_oscPort{m_oscServer->port()},
   m_wsPort{ws_port}
 {
   m_websocketServer.set_open_handler([&] (connection_handler hdl) { on_connectionOpen(hdl); });
@@ -30,6 +30,7 @@ oscquery_server_protocol::oscquery_server_protocol(uint16_t osc_port, uint16_t w
   });
 
   m_serverThread = std::thread{[&] { m_websocketServer.run(m_wsPort); }};
+  m_oscServer->run();
 }
 
 oscquery_server_protocol::~oscquery_server_protocol()
@@ -79,10 +80,16 @@ bool oscquery_server_protocol::push(const net::address_base& addr)
 bool oscquery_server_protocol::observe(net::address_base& address, bool enable)
 {
   if (enable)
+  {
     m_listening.insert(
           std::make_pair(net::osc_address_string(address), &address));
+    logger().info("Started listening on {}", net::osc_address_string(address));
+  }
   else
+  {
     m_listening.erase(net::osc_address_string(address));
+    logger().info("Stopped listening on {}", net::osc_address_string(address));
+  }
 
   return true;
 }
@@ -139,16 +146,17 @@ void oscquery_server_protocol::on_OSCMessage(
   }
 
   if(mLogger.inbound_logger)
-    mLogger.inbound_logger->info("In: {0}", m);
+    mLogger.inbound_logger->info("In: {}", m);
+  logger().info("In: {}", m);
 }
 
 void oscquery_server_protocol::on_connectionOpen(
     connection_handler hdl)
 {
   {
+    auto con = m_websocketServer.impl().get_con_from_hdl(hdl);
     std::lock_guard<std::mutex> lock(m_clientsMutex);
     m_clients.emplace_back(hdl);
-    auto con = m_websocketServer.impl().get_con_from_hdl(hdl);
     m_clients.back().client_ip = con->get_host();
   }
   // Send the client a message with the OSC port
@@ -168,7 +176,7 @@ void oscquery_server_protocol::on_connectionClosed(
 
 void oscquery_server_protocol::on_nodeCreated(const net::node_base& n)
 {
-  m_clientsMutex.lock();
+  std::lock_guard<std::mutex> lock(m_clientsMutex);
   for(auto& client : m_clients)
   {
     m_websocketServer.send_message(
@@ -179,7 +187,7 @@ void oscquery_server_protocol::on_nodeCreated(const net::node_base& n)
 
 void oscquery_server_protocol::on_nodeRemoved(const net::node_base& n)
 {
-  m_clientsMutex.lock();
+  std::lock_guard<std::mutex> lock(m_clientsMutex);
   for(auto& client : m_clients)
   {
     m_websocketServer.send_message(
@@ -191,7 +199,7 @@ void oscquery_server_protocol::on_nodeRemoved(const net::node_base& n)
 
 void oscquery_server_protocol::on_attributeChanged(const net::node_base& n, ossia::string_view attr)
 {
-  m_clientsMutex.lock();
+  std::lock_guard<std::mutex> lock(m_clientsMutex);
   for(auto& client : m_clients)
   {
     m_websocketServer.send_message(

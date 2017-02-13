@@ -11,6 +11,7 @@ namespace ossia
  */
 struct OSSIA_EXPORT context
 {
+  //! Most common case
   context();
 
   //! Use this constructor to provide custom logging sinks.

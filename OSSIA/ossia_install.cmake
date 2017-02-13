@@ -38,6 +38,9 @@ if(OSSIA_C)
 endif()
 if(OSSIA_QT)
     install_headers_rec("${OSSIA_QT_HEADERS}")
+    install(
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/qmldir
+        DESTINATION lib)
 endif()
 # Install export header
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ossia_export.h
@@ -75,6 +78,25 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/fmt/fmt
 
 install(FILES ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_map.h
         DESTINATION include/
+        COMPONENT Devel)
+
+install(
+    FILES
+      ${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue/readerwriterqueue.h
+      ${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue/atomicops.h
+    DESTINATION include/
+    COMPONENT Devel)
+
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/GSL/gsl
+        DESTINATION include
+        COMPONENT Devel)
+
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/asio/asio/include/asio
+        DESTINATION include
+        COMPONENT Devel)
+
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/websocketpp/websocketpp
+        DESTINATION include
         COMPONENT Devel)
 
 include(CMakePackageConfigHelpers)

@@ -23,6 +23,7 @@ struct string_hash
 
 struct string_equal
 {
+  using is_transparent = std::true_type;
   bool operator()(const std::string& s, const std::string& s2) const
   {
     return s == s2;

@@ -111,6 +111,7 @@ bool oscquery_mirror_protocol::push(const net::address_base& addr)
     if(!ossia::net::get_critical(addr.getNode()))
     {
       m_oscSender->send(addr, val);
+      logger().info("OSC Out: {}", addr, val);
     }
     else
     {
@@ -216,10 +217,10 @@ void oscquery_mirror_protocol::on_OSCMessage(
 
 std::string to_ip(std::string uri)
 {
-  boost::algorithm::erase_first_copy(uri, "http://");
-  boost::algorithm::erase_first_copy(uri, "https://");
-  boost::algorithm::erase_first_copy(uri, "ws://");
-  boost::algorithm::erase_first_copy(uri, "wss://");
+  uri = boost::algorithm::ierase_first_copy(uri, "http://");
+  uri = boost::algorithm::ierase_first_copy(uri, "https://");
+  uri = boost::algorithm::ierase_first_copy(uri, "ws://");
+  uri = boost::algorithm::ierase_first_copy(uri, "wss://");
 
   auto pos = uri.find_last_of(':');
   if(pos != std::string::npos)
@@ -248,6 +249,7 @@ void oscquery_mirror_protocol::on_WSMessage(
     if(mt == message_type::Device)
     {
       // The ip of the OSC server on the server
+      logger().info("Opening connection on {} : {}", to_ip(m_websocketHost), json_parser::getPort(data));
       m_oscSender = std::make_unique<osc::sender>(mLogger, to_ip(m_websocketHost), json_parser::getPort(data));
 
       // Send to the server the local receiver port

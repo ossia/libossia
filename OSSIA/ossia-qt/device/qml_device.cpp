@@ -7,12 +7,12 @@ namespace qt
 
 qml_device::qml_device(QObject* parent):
     QObject{parent},
-    m_localDevice{std::make_unique<ossia::net::local_protocol>(), localName().toStdString()}
+    m_localDevice{std::make_unique<ossia::net::local_protocol>(), "device"}
 {
-  updateMinuit();
+  updateServer();
 }
 
-void qml_device::updateMinuit()
+void qml_device::updateServer()
 {
     try {
         auto& protos = localProtocol().getExposedProtocols();
@@ -20,11 +20,9 @@ void qml_device::updateMinuit()
             localProtocol().stopExposeTo(*protos.back());
 
         localProtocol().exposeTo(
-                    std::make_unique<ossia::net::minuit_protocol>(
-                        localName().toStdString(),
-                        remoteIp().toStdString(),
-                        remotePort(),
-                        localPort()));
+                    std::make_unique<ossia::oscquery::oscquery_server_protocol>(
+                        oscPort(),
+                        wsPort()));
     } catch(...) { }
 }
 
@@ -39,79 +37,34 @@ net::local_protocol&qml_device::localProtocol() const
     return static_cast<ossia::net::local_protocol&>(m_localDevice.getProtocol());
 }
 
-QString qml_device::localName() const
+int qml_device::wsPort() const
 {
-    return m_localName;
+    return m_wsPort;
 }
 
-QString qml_device::remoteName() const
+int qml_device::oscPort() const
 {
-    return m_remoteName;
+    return m_oscPort;
 }
 
-int qml_device::localPort() const
+void qml_device::setWSPort(int localPort)
 {
-    return m_localPort;
-}
-
-int qml_device::remotePort() const
-{
-    return m_remotePort;
-}
-
-QString qml_device::remoteIp() const
-{
-    return m_remoteIp;
-}
-
-void qml_device::setLocalName(QString localName)
-{
-    if (m_localName == localName)
+    if (m_wsPort == localPort)
         return;
 
-    m_localName = localName;
-    emit localNameChanged(localName);
-    updateMinuit();
+    m_wsPort = localPort;
+    emit WSPortChanged(localPort);
+    updateServer();
 }
 
-void qml_device::setRemoteName(QString remoteName)
+void qml_device::setOSCPort(int remotePort)
 {
-    if (m_remoteName == remoteName)
+    if (m_oscPort == remotePort)
         return;
 
-    m_remoteName = remoteName;
-    emit remoteNameChanged(remoteName);
-    updateMinuit();
-}
-
-void qml_device::setLocalPort(int localPort)
-{
-    if (m_localPort == localPort)
-        return;
-
-    m_localPort = localPort;
-    emit localPortChanged(localPort);
-    updateMinuit();
-}
-
-void qml_device::setRemotePort(int remotePort)
-{
-    if (m_remotePort == remotePort)
-        return;
-
-    m_remotePort = remotePort;
-    emit remotePortChanged(remotePort);
-    updateMinuit();
-}
-
-void qml_device::setRemoteIp(QString remoteIp)
-{
-    if (m_remoteIp == remoteIp)
-        return;
-
-    m_remoteIp = remoteIp;
-    emit remoteIpChanged(remoteIp);
-    updateMinuit();
+    m_oscPort = remotePort;
+    emit OSCPortChanged(remotePort);
+    updateServer();
 }
 
 qml_device::~qml_device()
