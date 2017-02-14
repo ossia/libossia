@@ -35,8 +35,8 @@ oscquery_server_protocol::oscquery_server_protocol(uint16_t osc_port, uint16_t w
 
 oscquery_server_protocol::~oscquery_server_protocol()
 {
-  m_oscServer->stop();
-  m_websocketServer.stop();
+  try { m_oscServer->stop(); } catch (...) { logger().error("Error when stopping osc server"); }
+  try { m_websocketServer.stop(); } catch (...) { logger().error("Error when stopping WS server"); }
   if(m_serverThread.joinable())
     m_serverThread.join();
 }

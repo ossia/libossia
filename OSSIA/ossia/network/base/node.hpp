@@ -93,7 +93,6 @@ public:
    */
   boost::any getAttribute(const std::string& str) const;
 
-  // TODO string_view
   template<typename T>
   void set(ossia::string_view str, const T& val);
   template<typename T>
