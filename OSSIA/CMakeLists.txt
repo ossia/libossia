@@ -201,9 +201,12 @@ target_link_libraries(ossia PRIVATE ${OSSIA_LINK_OPTIONS})
 
 if(OSSIA_SANITIZE)
     sanitize_build(ossia)
+else()
+    # TODO fix the weak symbol problem on OS X release build with fsanitize=address
+    add_linker_warnings(ossia)
 endif()
 use_gold(ossia)
-add_linker_warnings(ossia)
+
 if(OSSIA_LTO)
   enable_lto(ossia)
 endif()
@@ -220,7 +223,9 @@ if(BUILD_SHARED_LIBS AND NOT "${OSSIA_STATIC}")
 
 else()
   set_target_properties(ossia PROPERTIES
-      VERSION ${ossia_VERSION})
+      VERSION ${ossia_VERSION}
+      CXX_VISIBILITY_PRESET hidden
+      VISIBILITY_INLINES_HIDDEN 1)
 endif()
 
 generate_export_header(ossia BASE_NAME OSSIA)

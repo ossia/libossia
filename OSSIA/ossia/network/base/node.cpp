@@ -10,16 +10,13 @@
 #include <boost/lexical_cast.hpp>
 #include <iostream>
 
-#if defined(QT_CORE_LIB)
-#include <QString>
-#endif
-
 namespace ossia
 {
 namespace net
 {
 std::string& sanitize_name(std::string& ret)
 {
+  // Note : if this is changed, also change the Qt version in js_utilities.cpp
   for(auto& c : ret)
   {
     if(is_valid_character_for_name(c))
@@ -29,20 +26,6 @@ std::string& sanitize_name(std::string& ret)
   }
   return ret;
 }
-
-#if defined(QT_CORE_LIB)
-OSSIA_EXPORT void sanitize_name(QString& ret)
-{
-  const QChar underscore = '_';
-  for(auto& c : ret)
-  {
-    if(ossia::net::is_valid_character_for_name(c))
-      continue;
-    else
-      c = underscore;
-  }
-}
-#endif
 
 std::string sanitize_name(const std::string& ret)
 {

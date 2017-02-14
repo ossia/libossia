@@ -1,7 +1,22 @@
 #if defined(QT_CORE_LIB)
 #include "js_utilities.hpp"
+
 namespace ossia
 {
+namespace net
+{
+OSSIA_EXPORT void sanitize_name(QString& ret)
+{
+  const QChar underscore = '_';
+  for(auto& c : ret)
+  {
+    if(ossia::net::is_valid_character_for_name(c))
+      continue;
+    else
+      c = underscore;
+  }
+}
+}
 namespace qt
 {
 
