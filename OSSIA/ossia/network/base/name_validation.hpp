@@ -10,7 +10,10 @@ namespace ossia
 namespace net
 {
 //! The definition is in node.cpp
-OSSIA_EXPORT std::string sanitize_name(std::string name);
+OSSIA_EXPORT std::string& sanitize_name(std::string& name);
+OSSIA_EXPORT std::string sanitize_name(const std::string& s);
+OSSIA_EXPORT std::string sanitize_name(std::string&& s);
+OSSIA_EXPORT std::string sanitize_name(const char* s);
 OSSIA_EXPORT std::string sanitize_name(std::string name_base, const std::vector<std::string>& brethren);
 
 /**

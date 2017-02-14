@@ -584,8 +584,6 @@ value qt_to_ossia::operator()(const QVariant& v)
 }
 
 
-
-
 }
 
 }

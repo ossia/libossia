@@ -2,17 +2,23 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/address.hpp>
+#include <ossia/network/domain/domain.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/detail/optional.hpp>
 #include <boost/iterator/counting_iterator.hpp>
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
 #include <boost/lexical_cast.hpp>
 #include <iostream>
+
+#if defined(QT_CORE_LIB)
+#include <QString>
+#endif
+
 namespace ossia
 {
 namespace net
 {
-std::string sanitize_name(std::string ret)
+std::string& sanitize_name(std::string& ret)
 {
   for(auto& c : ret)
   {
@@ -24,9 +30,45 @@ std::string sanitize_name(std::string ret)
   return ret;
 }
 
-std::string sanitize_name(std::string name_base, const std::vector<std::string>& brethren)
+#if defined(QT_CORE_LIB)
+OSSIA_EXPORT void sanitize_name(QString& ret)
 {
-  auto name = sanitize_name(std::move(name_base));
+  const QChar underscore = '_';
+  for(auto& c : ret)
+  {
+    if(ossia::net::is_valid_character_for_name(c))
+      continue;
+    else
+      c = underscore;
+  }
+}
+#endif
+
+std::string sanitize_name(const std::string& ret)
+{
+  std::string n = ret;
+  ossia::net::sanitize_name(n);
+  return n;
+}
+
+std::string sanitize_name(std::string&& ret)
+{
+  std::string n = std::move(ret);
+  ossia::net::sanitize_name(n);
+  return std::move(n);
+}
+
+std::string sanitize_name(const char* ret)
+{
+  std::string n = ret;
+  ossia::net::sanitize_name(n);
+  return n;
+}
+
+
+std::string sanitize_name(std::string name, const std::vector<std::string>& brethren)
+{
+  sanitize_name(name);
   bool is_here = false;
   ossia::optional<int> name_instance;
   std::vector<int> instance_num;
@@ -214,10 +256,11 @@ bool node_base::removeChild(const std::string& name)
   if(!dev.getCapabilities().change_tree)
     return false;
 
-  auto san_name = sanitize_name(name);
+  std::string n = name;
+  sanitize_name(n);
 
   auto it = find_if(
-        mChildren, [&](const auto& c) { return c->getName() == san_name; });
+              mChildren, [&](const auto& c) { return c->getName() == n; });
 
   if (it != mChildren.end())
   {
@@ -275,7 +318,7 @@ void node_base::clearChildren()
 { using namespace std::literals; \
   set_optional_attribute(n, String, std::move(i)); \
 } \
-ossia::string_view text_ ## Name () \
+  ossia::string_view text_ ## Name () \
 { return make_string_view(String); }
 
 
@@ -296,7 +339,7 @@ ossia::string_view text_ ## Name () \
 { using namespace std::literals; \
   set_attribute(n, String, std::move(i)); \
 } \
-ossia::string_view text_ ## Name () \
+  ossia::string_view text_ ## Name () \
 { return make_string_view(String); }
 
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(instance_bounds, instance_bounds, "instanceBounds")

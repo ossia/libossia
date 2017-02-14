@@ -55,7 +55,8 @@ node_base& generic_node_base::setName(std::string name)
   }
   else
   {
-    mName = sanitize_name(std::move(name));
+    mName = std::move(name);
+    sanitize_name(mName);
   }
 
   // notify observers

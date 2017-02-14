@@ -444,6 +444,11 @@ QMetaObject::Connection connectSignalToMatchingMethod(
   return {};
 }
 }
+
+namespace net {
+OSSIA_EXPORT void sanitize_name(QString& str);
+}
+
 }
 
 Q_DECLARE_METATYPE(ossia::qt::qml_context)
