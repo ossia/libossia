@@ -19,6 +19,7 @@ class qml_property :
   Q_INTERFACES(QQmlPropertyValueSource)
 public:
   qml_property(QObject *parent = nullptr);
+  ~qml_property();
 
   void setTarget(const QQmlProperty &prop) override;
 

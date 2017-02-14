@@ -183,9 +183,9 @@ void oscquery_server_protocol::on_connectionClosed(
 
 void oscquery_server_protocol::on_nodeCreated(const net::node_base& n)
 try {
-  std::lock_guard<std::mutex> lock(m_clientsMutex);
-  auto mess = json_writer::path_added(n);
+  const auto mess = json_writer::path_added(n);
 
+  std::lock_guard<std::mutex> lock(m_clientsMutex);
   for(auto& client : m_clients)
   {
     m_websocketServer.send_message(
@@ -200,12 +200,15 @@ try {
 
 void oscquery_server_protocol::on_nodeRemoved(const net::node_base& n)
 try {
+  const auto mess = json_writer::path_removed(net::osc_address_string(n));
+
+  logger().info("on_nodeRemoved: {}", mess.GetString());
   std::lock_guard<std::mutex> lock(m_clientsMutex);
   for(auto& client : m_clients)
   {
     m_websocketServer.send_message(
           client.connection,
-          json_writer::path_removed(net::osc_address_string(n)));
+          mess);
   }
 } catch(const std::exception& e) {
   logger().error("oscquery_server_protocol::on_nodeRemoved: {}", e.what());
@@ -215,12 +218,13 @@ try {
 
 void oscquery_server_protocol::on_attributeChanged(const net::node_base& n, ossia::string_view attr)
 try {
+  const auto mess = json_writer::attributes_changed(n, attr);
   std::lock_guard<std::mutex> lock(m_clientsMutex);
   for(auto& client : m_clients)
   {
     m_websocketServer.send_message(
           client.connection,
-          json_writer::attributes_changed(n, attr));
+          mess);
   }
 } catch(const std::exception& e) {
   logger().error("oscquery_server_protocol::on_attributeChanged: {}", e.what());

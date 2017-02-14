@@ -38,6 +38,29 @@ public:
   void setDevice(net::device_base& dev) override;
   ossia::net::device_base& getDevice() const { return *m_device; }
 
+
+  /**
+   * @brief Run the commands registered in th event queue
+   *
+   * The data structures are not protected by locks since it may hurt
+   * the performance on a tree, and hard to get right.
+   * Instead, all the edition operations on a device should happen on a single thread.
+   * When edition operations are received from the network, they are put in a queue.
+   *
+   * Run this function regularly in order to get the update of the device, for
+   * instance in the event loop of your application.
+   */
+  void runCommands();
+
+  /**
+   * @brief Provide a callback for whenever an edition command is received
+   *
+   * This is an alternative way to calling runCommands() : a function
+   * can be provided; it will be called every time a new command is received,
+   * after it has been pushed.
+   * This can be used to put the command in the application's main loop.
+   */
+  void setCommandCallback(std::function<void()>);
 private:
   using connection_handler = websocketpp::connection_hdl;
   void on_WSMessage(connection_handler hdl, const std::string& message);
@@ -70,6 +93,8 @@ private:
   using promises_map = locked_map<tsl::hopscotch_map<std::string, get_osc_promise>>;
 
   moodycamel::ReaderWriterQueue<get_ws_promise> m_getWSPromises;
+  moodycamel::ReaderWriterQueue<std::function<void()>> m_functionQueue;
+  std::function<void()> m_commandCallback;
   promises_map m_getOSCPromises;
 
   std::thread m_wsThread;

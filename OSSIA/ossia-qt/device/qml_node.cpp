@@ -17,6 +17,7 @@ void qml_node::resetNode()
     if(par)
     {
       par->removeChild(*m_ossia_node);
+      m_ossia_node = nullptr;
     }
   }
 

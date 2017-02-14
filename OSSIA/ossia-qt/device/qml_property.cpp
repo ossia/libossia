@@ -35,6 +35,8 @@ void qml_property::resetNode()
     if(par)
     {
       par->removeChild(*m_ossia_node);
+      m_ossia_node = nullptr;
+      m_address = nullptr;
     }
   }
 
@@ -84,6 +86,11 @@ qml_property::qml_property(QObject *parent)
           Qt::QueuedConnection);
 }
 
+qml_property::~qml_property()
+{
+  m_address = nullptr;
+}
+
 void qml_property::setTarget(const QQmlProperty &prop)
 {
   disconnect(m_conn);
@@ -115,15 +122,18 @@ void qml_property::setupAddress()
   {
     m_ossia_node->removeAddress();
     m_address = m_ossia_node->createAddress(ossia::val_type::IMPULSE);
-    set_address_type((QVariant::Type)m_targetProperty.propertyType(), *m_address);
-
-    if(m_targetProperty.hasNotifySignal())
+    if(m_address)
     {
-      m_targetProperty.connectNotifySignal(this, SLOT(qtVariantChanged()));
-    }
+      set_address_type((QVariant::Type)m_targetProperty.propertyType(), *m_address);
 
-    m_address->add_callback([this] (const ossia::value& v) { setValue_sig(v); });
-    m_address->setValueQuiet(qt_to_ossia{}(m_targetProperty.read()));
+      if(m_targetProperty.hasNotifySignal())
+      {
+        m_targetProperty.connectNotifySignal(this, SLOT(qtVariantChanged()));
+      }
+
+      m_address->add_callback([this] (const ossia::value& v) { setValue_sig(v); });
+      m_address->setValueQuiet(qt_to_ossia{}(m_targetProperty.read()));
+    }
   }
 }
 

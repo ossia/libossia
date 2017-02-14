@@ -36,6 +36,10 @@ class client
           scoped_lock guard(m_lock);
           m_open = false;
       });
+      m_client.set_close_handler([=] (connection_handler hdl) {
+          scoped_lock guard(m_lock);
+          m_open = false;
+      });
     }
 
     ~client()

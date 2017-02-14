@@ -15,6 +15,18 @@ qml_node_base::qml_node_base(QObject* parent):
 
 }
 
+qml_node_base::~qml_node_base()
+{
+  if(m_ossia_node)
+  {
+    auto par = m_ossia_node->getParent();
+    if(par)
+    {
+      par->removeChild(*m_ossia_node);
+    }
+  }
+}
+
 QString qml_node_base::node() const
 {
   return m_node;

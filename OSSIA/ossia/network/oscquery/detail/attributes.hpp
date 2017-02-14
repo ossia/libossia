@@ -53,12 +53,6 @@ constexpr auto path_removed() { return "PATH_REMOVED"; }
 constexpr auto path_changed() { return "PATH_CHANGED"; }
 constexpr auto attributes_changed() { return "ATTRIBUTES_CHANGED"; }
 
-constexpr auto paths_added() { return "PATHS_ADDED"; }
-constexpr auto paths_removed() { return "PATHS_REMOVED"; }
-constexpr auto paths_changed() { return "PATHS_CHANGED"; }
-constexpr auto attributes_changed_array() { return "ATTRIBUTES_CHANGED_ARRAY"; }
-
-
 struct OSSIA_EXPORT full_path_attribute
 {
   using type = std::string;
@@ -138,8 +132,7 @@ enum class message_type
 {
   Device,
   Namespace, Value,
-  PathChanged, PathAdded, PathRemoved, AttributesChanged,
-  PathsChanged, PathsAdded, PathsRemoved, AttributesChangedArray,
+  PathChanged, PathAdded, PathRemoved, AttributesChanged
 };
 
 using key_map_type = tsl::hopscotch_map<ossia::string_view, ossia::string_view>;

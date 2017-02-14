@@ -21,6 +21,8 @@ class qml_node_base :
 
 public:
   qml_node_base(QObject* parent = nullptr);
+  ~qml_node_base();
+
   QString node() const;
   QObject* device() const;
   ossia::net::node_base* ossiaNode() { return m_ossia_node; }
@@ -51,7 +53,7 @@ protected:
       ossia::net::node_base& root);
 
   QString m_node;
-  qml_device* m_device;
+  qml_device* m_device{};
   ossia::net::node_base* m_ossia_node{};
   QString m_path;
 };

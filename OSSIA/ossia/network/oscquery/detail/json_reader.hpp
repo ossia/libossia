@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/network/oscquery/detail/json_reader_detail.hpp>
 #include <ossia/network/oscquery/detail/attributes.hpp>
+#include <memory>
 namespace ossia
 {
 namespace oscquery
@@ -9,7 +10,7 @@ namespace oscquery
 class json_parser
 {
 public:
-  static rapidjson::Document parse(const std::string& message);
+  static std::shared_ptr<rapidjson::Document> parse(const std::string& message);
 
   static int getPort(const rapidjson::Value& obj);
 
@@ -43,48 +44,6 @@ public:
 
   static void parse_attributes_changed(ossia::net::node_base& map, const rapidjson::Value& obj);
 
-
-  // Plural forms
-  template<typename BaseMapType, typename Map>
-  static void paths_added(Map& map, const rapidjson::Value& obj)
-  {
-    /*
-      using namespace detail;
-
-      const auto& arr = detail::valToArray(obj[detail::paths_added()]);
-      for(const auto& elt : arr)
-      {
-        map.merge(parseNamespace<BaseMapType>(elt.as<json_map>()));
-      }
-      */
-  }
-
-  template<typename Map>
-  static void paths_changed(Map& map, const rapidjson::Value& obj)
-  {
-    std::cerr << "TODO" << std::endl;
-  }
-
-  template<typename Map>
-  static void paths_removed(Map& map, const rapidjson::Value& obj)
-  {
-    /*
-      const auto& arr = detail::valToArray(obj[detail::paths_removed()]);
-
-      for(const auto& elt : arr)
-      {
-        const auto& path = detail::valToString(elt);
-        json_assert(map.existing_path(path));
-        map.remove(path);
-      }
-      */
-  }
-
-  template<typename Map>
-  static void attributes_changed_array(Map& map, const rapidjson::Value& obj)
-  {
-    std::cerr << "TODO" << std::endl;
-  }
 };
 
 }

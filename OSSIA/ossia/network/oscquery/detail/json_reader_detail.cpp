@@ -451,10 +451,10 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
 
 
 
-rapidjson::Document json_parser::parse(const std::string& message)
+std::shared_ptr<rapidjson::Document> json_parser::parse(const std::string& message)
 {
-  rapidjson::Document document;
-  document.Parse(message);
+  auto document = std::make_shared<rapidjson::Document>();
+  document->Parse(message);
   return document;
 }
 
@@ -472,11 +472,7 @@ message_type json_parser::messageType(const rapidjson::Value& obj)
     { std::string(detail::path_added()), message_type::PathAdded },
     { std::string(detail::path_changed()), message_type::PathChanged },
     { std::string(detail::path_removed()), message_type::PathRemoved },
-    { std::string(detail::attributes_changed()), message_type::AttributesChanged },
-    { std::string(detail::paths_added()), message_type::PathsAdded },
-    { std::string(detail::paths_changed()), message_type::PathsChanged },
-    { std::string(detail::paths_removed()), message_type::PathsRemoved },
-    { std::string(detail::attributes_changed_array()), message_type::AttributesChangedArray }
+    { std::string(detail::attributes_changed()), message_type::AttributesChanged }
   };
   using namespace detail;
   auto val_it = obj.FindMember(detail::attribute_value());
@@ -488,7 +484,7 @@ message_type json_parser::messageType(const rapidjson::Value& obj)
   auto it = obj.FindMember(detail::command());
   if(it != obj.MemberEnd())
   {
-    auto mt_it = map.find(it->value.GetString()); // TODO this returns a char*
+    auto mt_it = map.find(getString(it->value)); // TODO string_view
     if(mt_it != map.end())
       return mt_it.value();
   }

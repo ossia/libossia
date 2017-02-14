@@ -59,27 +59,24 @@ class websocket_server
           catch(const ossia::node_not_found_error& e)
           {
             auto con = m_server.get_con_from_hdl(hdl);
-            con->set_status(websocketpp::http::status_code::not_found);
+            ossia::logger().error("Node not found: {} ==> {}",
+                  con->get_uri()->get_resource(), e.what());
           }
           catch(const ossia::bad_request_error& e)
           {
             auto con = m_server.get_con_from_hdl(hdl);
             ossia::logger().error("Error in request: {} ==> {}",
                   con->get_uri()->get_resource(), e.what());
-
-            con->set_status(websocketpp::http::status_code::bad_request);
           }
           catch(const std::exception& e)
           {
             auto con = m_server.get_con_from_hdl(hdl);
             ossia::logger().error("Error in request: {}", e.what());
-            con->set_status(websocketpp::http::status_code::bad_request);
           }
           catch(...)
           {
             auto con = m_server.get_con_from_hdl(hdl);
             ossia::logger().error("Error in request");
-            con->set_status(websocketpp::http::status_code::bad_request);
           }
 
 #if defined OSSIA_BENCHMARK

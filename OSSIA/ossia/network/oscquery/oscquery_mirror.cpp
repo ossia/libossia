@@ -178,6 +178,22 @@ void oscquery_mirror_protocol::setDevice(net::device_base& dev)
   m_device = &dev;
 }
 
+void oscquery_mirror_protocol::runCommands()
+{
+  bool ok = false;
+  std::function<void()> cmd;
+  do {
+    ok = m_functionQueue.try_dequeue(cmd);
+    if(ok && cmd)
+      cmd();
+  } while(ok);
+}
+
+void oscquery_mirror_protocol::setCommandCallback(std::function<void()> cb)
+{
+  m_commandCallback = std::move(cb);
+}
+
 void oscquery_mirror_protocol::on_OSCMessage(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 {
@@ -247,28 +263,34 @@ void oscquery_mirror_protocol::on_WSMessage(
   try
   {
     auto data = json_parser::parse(message);
-    if(data.IsNull()) {
+    if(data->IsNull()) {
       if(mLogger.inbound_logger)
         mLogger.inbound_logger->warn("Invalid WS message received: {}", message);
       return;
     }
-
-    auto mt = json_parser::messageType(data);
-    if(mt == message_type::Device)
+    if(data->IsArray())
     {
-      // The ip of the OSC server on the server
-      m_oscSender = std::make_unique<osc::sender>(mLogger, to_ip(m_websocketHost), json_parser::getPort(data));
-
-      // Send to the server the local receiver port
-      m_websocketClient.send_message("?set_port=" + std::to_string(m_oscServer->port()));
+      // TODO
     }
     else
     {
-      switch(mt)
+      switch(json_parser::messageType(*data))
       {
+        case message_type::Device:
+        {
+          // The ip of the OSC server on the server
+          m_oscSender = std::make_unique<osc::sender>(
+                mLogger,
+                to_ip(m_websocketHost),
+                json_parser::getPort(*data));
+
+          // Send to the server the local receiver port
+          m_websocketClient.send_message("?set_port=" + std::to_string(m_oscServer->port()));
+          break;
+        }
         case message_type::Namespace:
         {
-          json_parser::parse_namespace(m_device->getRootNode(), data);
+          json_parser::parse_namespace(m_device->getRootNode(), *data);
           m_namespacePromise.set_value();
           break;
         }
@@ -284,7 +306,7 @@ void oscquery_mirror_protocol::on_WSMessage(
               auto addr = node->getAddress();
               if(addr)
               {
-                json_parser::parse_value(*addr, data);
+                json_parser::parse_value(*addr, *data);
               }
               break;
             }
@@ -297,68 +319,36 @@ void oscquery_mirror_protocol::on_WSMessage(
         }
         case message_type::PathAdded:
         {
-          json_parser::parse_path_added(m_device->getRootNode(), data);
+          m_functionQueue.enqueue([this,doc=std::move(data)] {
+            json_parser::parse_path_added(m_device->getRootNode(), *doc);
+          });
+          if(m_commandCallback) m_commandCallback();
+          break;
+        }
+        case message_type::PathChanged:
+        {
+          //TODO
           break;
         }
         case message_type::PathRemoved:
         {
-          json_parser::parse_path_removed(m_device->getRootNode(), data);
+          m_functionQueue.enqueue([this,doc=std::move(data)] {
+            json_parser::parse_path_removed(m_device->getRootNode(), *doc);
+          });
+          if(m_commandCallback) m_commandCallback();
           break;
-
         }
         case message_type::AttributesChanged:
         {
-          json_parser::parse_attributes_changed(m_device->getRootNode(), data);
+          m_functionQueue.enqueue([this,doc=std::move(data)] {
+            json_parser::parse_attributes_changed(m_device->getRootNode(), *doc);
+          });
+          if(m_commandCallback) m_commandCallback();
           break;
-
         }
-
-      }
-
-      /*
-      switch(mt)
-      {
-        case MessageType::PathAdded:
-          Parser::template path_added<BaseMapType>(map().get_data_map(), data);
-          break;
-
-        case MessageType::PathChanged:
-          Parser::path_changed(map().get_data_map(), data);
-          break;
-
-        case MessageType::PathRemoved:
-          Parser::path_removed(map().get_data_map(), data);
-          break;
-
-        case MessageType::AttributesChanged:
-          Parser::attributes_changed(map().get_data_map(), data);
-          break;
-
-
-        case MessageType::PathsAdded:
-          Parser::template paths_added<BaseMapType>(map().get_data_map(), data);
-          break;
-
-        case MessageType::PathsChanged:
-          Parser::paths_changed(map().get_data_map(), data);
-          break;
-
-        case MessageType::PathsRemoved:
-          Parser::paths_removed(map().get_data_map(), data);
-          break;
-
-        case MessageType::AttributesChangedArray:
-          Parser::attributes_changed_array(map().get_data_map(), data);
-          break;
-
-        case MessageType::Device:
         default:
           break;
       }
-
-      if(onUpdate) onUpdate();
-
-      */
     }
   }
   catch(std::exception& e)

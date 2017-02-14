@@ -161,6 +161,17 @@ class query_answerer
             clt->openOSCSender(proto.getLogger(), boost::lexical_cast<int>(set_osc_port_it->second));
           }
 
+          auto add_instance_it = parameters.find("add_instance");
+          if(add_instance_it != parameters.end())
+          {
+            // TODO
+          }
+          auto rm_instance_it = parameters.find("remove_instance");
+          if(rm_instance_it != parameters.end())
+          {
+            // TODO
+          }
+
           // All the value-less parameters
           chobo::small_vector<std::string, 5> attributes;
           for(const auto& elt : parameters)
