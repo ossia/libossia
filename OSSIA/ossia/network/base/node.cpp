@@ -55,7 +55,7 @@ std::string sanitize_name(std::string&& ret)
 {
   std::string n = std::move(ret);
   ossia::net::sanitize_name(n);
-  return std::move(n);
+  return n;
 }
 
 std::string sanitize_name(const char* ret)

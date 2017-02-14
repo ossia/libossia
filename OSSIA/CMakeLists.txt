@@ -116,10 +116,10 @@ endif()
 if(OSSIA_PROTOCOL_OSCQUERY)
   target_sources(ossia PRIVATE ${OSSIA_OSCQUERY_SRCS} ${OSSIA_OSCQUERY_HEADERS})
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} OSCQuery)
-  target_include_directories(ossia PUBLIC
-      "${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue"
-      "${OSSIA_3RDPARTY_FOLDER}/asio/asio/include"
-      "${OSSIA_3RDPARTY_FOLDER}/websocketpp"
+  target_include_directories(ossia SYSTEM PUBLIC
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/asio/asio/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/websocketpp>
       )
 endif()
 
@@ -153,8 +153,10 @@ if(OSSIA_JAVA)
     target_sources(ossia PRIVATE ${OSSIA_JAVA_HEADERS} ${OSSIA_JAVA_SRCS})
     target_include_directories(ossia PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java"
-        "${OSSIA_3RDPARTY_FOLDER}/jni_hpp/include"
-        "${OSSIA_3RDPARTY_FOLDER}/jni_hpp/test"
+        )
+    target_include_directories(ossia SYSTEM PRIVATE
+        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/jni_hpp/include>
+        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/jni_hpp/test>
         )
 endif()
 

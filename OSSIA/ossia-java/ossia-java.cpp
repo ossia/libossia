@@ -48,13 +48,13 @@ public:
   ossia::value val;
 
   void SetInt(jni::JNIEnv& e, jni::jlong a)
-  { safe_function(__func__, e, [&] { val = int{a}; }); }
+  { safe_function(__func__, e, [&] { val = (int) a; }); }
   void SetFloat(jni::JNIEnv& e, jni::jfloat a)
-  { safe_function(__func__, e, [&] { val = float{a}; }); }
+  { safe_function(__func__, e, [&] { val = (float) a; }); }
   void SetChar(jni::JNIEnv& e, jni::jchar a)
-  { safe_function(__func__, e, [&] { val = char{a}; }); }
+  { safe_function(__func__, e, [&] { val = (char) a; }); }
   void SetBool(jni::JNIEnv& e, jni::jboolean a)
-  { safe_function(__func__, e, [&] { val = bool{a}; }); }
+  { safe_function(__func__, e, [&] { val = (bool) a; }); }
   void SetString(jni::JNIEnv& e, jni::String a)
   { safe_function(__func__, e, [&] { ; }); }
   void SetTuple(jni::JNIEnv& e, ValueArray a)
