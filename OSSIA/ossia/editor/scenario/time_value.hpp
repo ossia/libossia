@@ -11,45 +11,33 @@ namespace ossia
  * Represents an amount of time.
  * The unit is context-dependent.
  */
-class OSSIA_EXPORT time_value
+struct OSSIA_EXPORT time_value
 {
-
-public:
-  /*! constructor
-   \param int value */
   explicit constexpr time_value(double d) noexcept :
-    m_value{d}
+    impl{d}
   {
   }
 
   explicit constexpr time_value() noexcept :
-    m_value{0.}
+    impl{0.}
   {
   }
 
-  /*! destructor */
-  ~time_value() = default;
-
-  /*! assignation operator */
   time_value& operator=(double d) noexcept
   {
-    m_value = d;
+    impl = d;
     return *this;
   }
 
-  time_value& operator=(time_value t) noexcept
-  {
-    m_value = t.m_value;
-    return *this;
-  }
+  time_value& operator=(time_value t) noexcept = default;
 
   /*! self addition operator */
   time_value& operator+=(double d) noexcept
   {
     if (isInfinite())
-      m_value = 0.;
+      impl = 0.;
     else
-      m_value += d;
+      impl += d;
 
     return *this;
   }
@@ -57,9 +45,9 @@ public:
   time_value& operator+=(time_value t) noexcept
   {
     if (isInfinite() || t.isInfinite())
-      m_value = 0.;
+      impl = 0.;
     else
-      m_value += t.m_value;
+      impl += t.impl;
 
     return *this;
   }
@@ -68,9 +56,9 @@ public:
   time_value& operator-=(double d) noexcept
   {
     if (isInfinite())
-      m_value = 0.;
+      impl = 0.;
     else
-      m_value -= d;
+      impl -= d;
 
     return *this;
   }
@@ -78,9 +66,9 @@ public:
   time_value& operator-=(time_value t) noexcept
   {
     if (isInfinite() || t.isInfinite())
-      m_value = 0.;
+      impl = 0.;
     else
-      m_value -= t.m_value;
+      impl -= t.impl;
 
     return *this;
   }
@@ -88,7 +76,7 @@ public:
   /*! addition operator */
   constexpr time_value operator+(double d) const noexcept
   {
-    return time_value(m_value + d);
+    return time_value(impl + d);
   }
 
   time_value operator+(time_value t) const noexcept
@@ -98,13 +86,13 @@ public:
       return time_value(INFINITY);
     }
 
-    return time_value(m_value + t.m_value);
+    return time_value(impl + t.impl);
   }
 
   /*! substraction operator */
   constexpr time_value operator-(double d) const noexcept
   {
-    return time_value(m_value - d);
+    return time_value(impl - d);
   }
 
   time_value operator-(time_value t) const noexcept
@@ -114,46 +102,46 @@ public:
       return time_value(INFINITY);
     }
 
-    return time_value(m_value - t.m_value);
+    return time_value(impl - t.impl);
   }
 
   /*! multiplication operator */
   constexpr time_value operator*(float d) const noexcept
-  { return time_value(m_value * d); }
+  { return time_value(impl * d); }
 
   constexpr time_value operator*(double d) const noexcept
-  { return time_value(m_value * d); }
+  { return time_value(impl * d); }
 
   constexpr time_value operator*(int32_t d) const noexcept
-  { return time_value(m_value * d); }
+  { return time_value(impl * d); }
 
   constexpr time_value operator*(int64_t d) const noexcept
-  { return time_value(m_value * d); }
+  { return time_value(impl * d); }
 
   constexpr time_value operator*(uint32_t d) const noexcept
-  { return time_value(m_value * d); }
+  { return time_value(impl * d); }
 
   constexpr time_value operator*(uint64_t d) const noexcept
-  { return time_value(m_value * d); }
+  { return time_value(impl * d); }
 
 
   /*! double casting operator */
   constexpr operator double() const noexcept
   {
-    return m_value;
+    return impl;
   }
 
   /*! is the time value infinite ?
    \return bool infinite */
   bool isInfinite() const noexcept
   {
-    return std::isinf(m_value);
+    return std::isinf(impl);
   }
 
-  bool operator==(time_value rhs) const noexcept { return m_value == rhs.m_value; }
-  bool operator!=(time_value rhs) const noexcept { return m_value != rhs.m_value; }
-protected:
-  double m_value;
+  bool operator==(time_value rhs) const noexcept { return impl == rhs.impl; }
+  bool operator!=(time_value rhs) const noexcept { return impl != rhs.impl; }
+
+  double impl;
 };
 
 OSSIA_EXPORT inline time_value operator "" _tv(long double v)
