@@ -544,35 +544,35 @@ value qt_to_ossia::operator()(const QVariant& v)
   switch(v.type())
   {
     case QVariant::Bool:
-      return operator()(v.value<bool>());
+      return operator()(v.toBool());
     case QVariant::Time:
-      return operator()(v.value<QTime>());
+      return operator()(v.toTime());
     case QVariant::Int:
-      return operator()(v.value<int>());
+      return operator()(v.toInt());
     case QVariant::UInt:
-      return operator()(v.value<quint32>());
+      return operator()(v.toUInt());
     case QVariant::ULongLong:
-      return operator()(v.value<qulonglong>());
+      return operator()(v.toLongLong());
     case QVariant::Char:
-      return operator()(v.value<QChar>());
+      return operator()(v.toChar());
     case QVariant::String:
-      return operator()(v.value<QString>());
+      return operator()(v.toString());
     case QVariant::ByteArray:
-      return operator()(v.value<QByteArray>());
+      return operator()(v.toByteArray());
     case QVariant::Double:
-      return operator()(v.value<double>());
+      return operator()(v.toDouble());
     case QVariant::Color:
       return operator()(v.value<QColor>());
     case QVariant::Point:
-      return operator()(v.value<QPoint>());
+      return operator()(v.toPoint());
     case QVariant::PointF:
-      return operator()(v.value<QPointF>());
+      return operator()(v.toPointF());
     case QVariant::Vector2D:
       return operator()(v.value<QVector2D>());
     case QVariant::Size:
-      return operator()(v.value<QSize>());
+      return operator()(v.toSize());
     case QVariant::SizeF:
-      return operator()(v.value<QSizeF>());
+      return operator()(v.toSizeF());
     case QVariant::Vector3D:
       return operator()(v.value<QVector3D>());
     case QVariant::Vector4D:
@@ -580,19 +580,19 @@ value qt_to_ossia::operator()(const QVariant& v)
     case QVariant::Quaternion:
       return operator()(v.value<QQuaternion>());
     case QVariant::Line:
-      return operator()(v.value<QLine>());
+      return operator()(v.toLine());
     case QVariant::LineF:
-      return operator()(v.value<QLineF>());
+      return operator()(v.toLineF());
     case QVariant::Rect:
-      return operator()(v.value<QRect>());
+      return operator()(v.toRect());
     case QVariant::RectF:
-      return operator()(v.value<QRectF>());
+      return operator()(v.toRectF());
     case QVariant::List:
-      return operator()(v.value<QVariantList>());
+      return operator()(v.toList());
     case QVariant::StringList:
-      return operator()(v.value<QStringList>());
+      return operator()(v.toStringList());
     case QVariant::Date:
-      return operator()(v.value<QDate>());
+      return operator()(v.toDate());
     default:
       return operator()();
   }

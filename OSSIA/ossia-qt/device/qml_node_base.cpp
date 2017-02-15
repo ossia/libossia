@@ -91,16 +91,19 @@ void qml_node_base::setExtended(QVariantMap extended)
     ossia::net::extended_attributes& xt = *m_ossia_node;
 
     // First remove all the erased keys
-    for(auto& key : current.keys())
+    auto cur_end = current.cend();
+    for(auto it = current.cbegin(); it != cur_end; ++it)
     {
-      if(!extended.contains(key))
-        xt.erase(key.toStdString());
+      const auto& k = it.key();
+      if(!extended.contains(k))
+        xt.erase(k.toStdString());
     }
 
     // Then insert the new ones
-    for(auto& key : extended.keys())
+    auto ext_end = extended.end();
+    for(auto it = extended.begin(); it != ext_end; ++it)
     {
-      xt[key.toStdString()] = anyToVariant(extended[key]);
+      xt[it.key().toStdString()] = anyToVariant(it.value());
     }
   }
   emit extendedChanged(extended);
