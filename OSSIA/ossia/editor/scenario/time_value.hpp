@@ -29,8 +29,6 @@ struct OSSIA_EXPORT time_value
     return *this;
   }
 
-  time_value& operator=(time_value t) noexcept = default;
-
   /*! self addition operator */
   time_value& operator+=(double d) noexcept
   {
