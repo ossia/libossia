@@ -4,7 +4,7 @@
 
 using namespace ossia;
 
-class time_valueTest : public QObject
+struct time_valueTest : public QObject
 {
     Q_OBJECT
 

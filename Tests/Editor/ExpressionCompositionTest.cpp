@@ -85,8 +85,8 @@ private Q_SLOTS:
                                                     binary_operator::XOR,
                                                     make_exprC());
 
-    QVERIFY(expressions::expression_false != *composition1);
-    QVERIFY(expressions::expression_true != *composition1);
+    QVERIFY(expressions::expression_false() != *composition1);
+    QVERIFY(expressions::expression_true() != *composition1);
 
     QVERIFY(*composition1 != *composition2);
     QVERIFY(!(*composition1 == *composition2));

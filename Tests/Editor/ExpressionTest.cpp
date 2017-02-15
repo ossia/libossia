@@ -26,26 +26,26 @@ private Q_SLOTS:
         QVERIFY(expr_true != nullptr);
         QVERIFY(evaluate(expr_true) == true);
 
-        QVERIFY(evaluate(expression_false) == false);
-        QVERIFY(evaluate(expression_true) == true);
+        QVERIFY(evaluate(expression_false()) == false);
+        QVERIFY(evaluate(expression_true()) == true);
     }
 
     /*! test comparison operator */
     void test_comparison()
     {
-        QVERIFY(expressions::expression_false == expressions::expression_false);
-        QVERIFY(expressions::expression_false != expressions::expression_true);
-        QVERIFY(expressions::expression_true != expressions::expression_false);
-        QVERIFY(expressions::expression_true == expressions::expression_true);
+        QVERIFY(expressions::expression_false() == expressions::expression_false());
+        QVERIFY(expressions::expression_false() != expressions::expression_true());
+        QVERIFY(expressions::expression_true() != expressions::expression_false());
+        QVERIFY(expressions::expression_true() == expressions::expression_true());
 
         auto expression_false = make_expression_bool(false);
         auto expression_true = make_expression_true();
 
-        QVERIFY(expressions::expression_false == *expression_false);
-        QVERIFY(expressions::expression_false != *expression_true);
+        QVERIFY(expressions::expression_false() == *expression_false);
+        QVERIFY(expressions::expression_false() != *expression_true);
 
-        QVERIFY(expressions::expression_true == *expression_true);
-        QVERIFY(expressions::expression_true != *expression_false);
+        QVERIFY(expressions::expression_true() == *expression_true);
+        QVERIFY(expressions::expression_true() != *expression_false);
     }
 };
 

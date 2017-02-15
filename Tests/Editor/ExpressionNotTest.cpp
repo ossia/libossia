@@ -52,8 +52,8 @@ private Q_SLOTS:
         auto not_exprB = make_expression_not(std::move(exprB));
         auto not_exprC = make_expression_not(std::move(exprC));
 
-        QVERIFY(expressions::expression_false != *not_exprA);
-        QVERIFY(expressions::expression_true != *not_exprA);
+        QVERIFY(expressions::expression_false() != *not_exprA);
+        QVERIFY(expressions::expression_true() != *not_exprA);
 
         QVERIFY(*not_exprA != *not_exprB);
         QVERIFY(*not_exprA == *not_exprC);

@@ -10,7 +10,7 @@
 namespace ossia
 {
 class value;
-class time_value;
+struct time_value;
 namespace net
 {
 class address_base;

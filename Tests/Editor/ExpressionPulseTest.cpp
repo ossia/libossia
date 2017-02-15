@@ -164,8 +164,8 @@ private Q_SLOTS:
     auto testExprB = make_expression_pulse(Destination(*lcalAddr2));
     auto testExprC = make_expression_pulse(Destination(*lcalAddr1));
 
-    QVERIFY(expressions::expression_false != *testExprA);
-    QVERIFY(expressions::expression_true != *testExprA);
+    QVERIFY(expressions::expression_false() != *testExprA);
+    QVERIFY(expressions::expression_true() != *testExprA);
 
     QVERIFY(*testExprA != *testExprB);
     QVERIFY(*testExprA == *testExprC);

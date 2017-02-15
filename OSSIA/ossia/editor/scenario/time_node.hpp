@@ -16,7 +16,7 @@ namespace ossia
 class expression_base;
 class state;
 class time_event;
-class time_value;
+struct time_value;
 
 /**
  * \brief #time_node is use to describe temporal structure to synchronize each

@@ -28,13 +28,13 @@ private Q_SLOTS:
         QVERIFY(event != nullptr);
 
         QVERIFY(&event->getTimeNode() == node.get());
-        QVERIFY(event->getExpression() == expressions::expression_true);
+        QVERIFY(event->getExpression() == expressions::expression_true());
         QVERIFY(event->getStatus() == time_event::Status::NONE);
 
         auto event_with_expression = *(node->emplace(node->timeEvents().begin(), &event_callback, expressions::make_expression_false()));
         QVERIFY(event_with_expression != nullptr);
 
-        QVERIFY(event_with_expression->getExpression() == expressions::expression_false);
+        QVERIFY(event_with_expression->getExpression() == expressions::expression_false());
 
         auto expression = expressions::make_expression_true();
         auto& expr_ref = *expression;

@@ -175,5 +175,16 @@ std::size_t callback_count(expression_base& e)
 {
   return eggs::variants::apply(get_callback_count_visitor{}, e);
 }
+
+const expression_base& expression_true() {
+  static const expression_base e{eggs::variants::in_place<expression_bool>, true};
+  return e;
+}
+
+const expression_base& expression_false() {
+  static const expression_base e{eggs::variants::in_place<expression_bool>, false};
+  return e;
+}
+
 }
 }

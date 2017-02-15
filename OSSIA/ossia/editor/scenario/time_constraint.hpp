@@ -15,7 +15,7 @@ namespace ossia
 class state;
 class time_event;
 class time_process;
-class time_value;
+struct time_value;
 
 /**
  * @brief The time_constraint class

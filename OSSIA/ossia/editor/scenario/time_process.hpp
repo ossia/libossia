@@ -9,7 +9,7 @@
 namespace ossia
 {
 class time_constraint;
-class time_value;
+struct time_value;
 /**
  * @brief The time_process class
  *

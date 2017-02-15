@@ -18,7 +18,7 @@ namespace net
 class address_base;
 }
 class value;
-class time_value;
+struct time_value;
 
 /**
  * @brief The mapper class

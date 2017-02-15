@@ -212,7 +212,7 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
   }
 
   // false expression mute TimeNode triggering
-  if (*mExpression == expressions::expression_false)
+  if (*mExpression == expressions::expression_false())
     return;
 
   //! \todo force triggering if at leat one TimeEvent has
@@ -221,7 +221,7 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
   // update the expression one time
   // then observe and evaluate TimeNode's expression before to trig
   // only if no maximal duration have been reached
-  if (*mExpression != expressions::expression_true && !maximalDurationReached)
+  if (*mExpression != expressions::expression_true() && !maximalDurationReached)
   {
     if (!isObservingExpression())
       expressions::update(*mExpression);
@@ -253,8 +253,8 @@ bool time_node::isObservingExpression()
 
 void time_node::observeExpressionResult(bool observe)
 {
-  if (!mExpression || *mExpression == expressions::expression_true
-      || *mExpression == expressions::expression_false)
+  if (!mExpression || *mExpression == expressions::expression_true()
+      || *mExpression == expressions::expression_false())
     return;
 
   if (observe != mObserveExpression)

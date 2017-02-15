@@ -334,8 +334,8 @@ private Q_SLOTS:
                                                 comparator::EQUAL,
                                                 true);
 
-        QVERIFY(expression_false != *testExprA);
-        QVERIFY(expression_true != *testExprA);
+        QVERIFY(expression_false() != *testExprA);
+        QVERIFY(expression_true() != *testExprA);
 
         QVERIFY(*testExprA != *testExprB);
         QVERIFY(*testExprA == *testExprC);

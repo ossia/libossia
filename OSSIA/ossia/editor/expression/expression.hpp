@@ -101,14 +101,12 @@ OSSIA_EXPORT std::size_t callback_count(expression_base&);
 /**
   \brief expression_true Convenience constant expression always evaluating to true.
  */
-const expression_base expression_true{
-    eggs::variants::in_place<expression_bool>, true};
+OSSIA_EXPORT const expression_base& expression_true();
 
 /**
-  \brief expression_true Convenience constant expression always evaluating to false.
+  \brief false Convenience constant expression always evaluating to false.
  */
-const expression_base expression_false{
-    eggs::variants::in_place<expression_bool>, false};
+OSSIA_EXPORT const expression_base& expression_false();
 
 
 
