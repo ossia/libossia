@@ -45,6 +45,7 @@ private:
 
 class OSSIA_EXPORT qml_singleton_device : public qml_device
 {
+  Q_OBJECT
 public:
   static qml_singleton_device& instance();
 

@@ -195,6 +195,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit_zeroconf.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
 )
 

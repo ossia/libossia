@@ -24,7 +24,7 @@ private Q_SLOTS:
         time_value date = node->getDate();
         QVERIFY(date == Zero);
 
-        QVERIFY(node->getExpression() == expressions::expression_true);
+        QVERIFY(node->getExpression() == expressions::expression_true());
 
         auto expression = expressions::make_expression_true();
         auto& expr_ref = *expression;
