@@ -542,7 +542,8 @@ std::string ossia::presets::write_json(const preset & prst) {
 std::string ossia::presets::to_string(const preset & preset) {
   std::string str = "[";
   std::vector<std::string> substrings;
-  for (preset_pair pp : preset) {
+  substrings.reserve(preset.size());
+  for (const preset_pair& pp : preset) {
     substrings.push_back(to_string(pp));
   }
   str += boost::join(substrings, ", ");
