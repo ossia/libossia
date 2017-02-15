@@ -91,6 +91,11 @@ public:
   Nano::Signal<void(const address_base&)>
       onAddressRemoving; // The node whose address was removed
 
+  //! Called when a network client requests the creation of an instance
+  Nano::Signal<void(int)> onAddInstanceRequested;
+
+  //! Called when a network client requests the removal of an instance
+  Nano::Signal<void(int)> onRemoveInstanceRequested;
 protected:
   std::unique_ptr<ossia::net::protocol_base> mProtocol;
   device_capabilities mCapabilities;

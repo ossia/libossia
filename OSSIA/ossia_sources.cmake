@@ -113,6 +113,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/apply_domain.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address_data.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/listening.hpp"

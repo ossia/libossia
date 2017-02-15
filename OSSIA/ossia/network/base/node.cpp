@@ -162,7 +162,7 @@ void node_base::setExtendedAttributes(
 }
 
 boost::any node_base::getAttribute(
-    const std::string& str) const
+    ossia::string_view str) const
 {
   auto it = mExtended.find(str);
   if(it != mExtended.end())

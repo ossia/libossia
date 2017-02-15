@@ -25,7 +25,7 @@ struct serial_address_data_base
 };
 
 struct serial_address_data :
-    public generic_address_data,
+    public address_data,
     public serial_address_data_base
 {
   serial_address_data() = default;
@@ -35,13 +35,13 @@ struct serial_address_data :
   serial_address_data& operator=(serial_address_data&&) = default;
 
   serial_address_data(const std::string& name):
-    generic_address_data{name}
+    address_data{name}
   {
 
   }
 
   serial_address_data(const QJSValue& val):
-    generic_address_data{ossia::qt::make_address_data(val)},
+    address_data{ossia::qt::make_address_data(val)},
     serial_address_data_base{val}
   {
 

@@ -320,7 +320,7 @@ ossia::optional<T> get_enum(const QJSValue& val)
 /**
  * @brief make_address_data Extracts all the data required to build an address from a QJSValue
  */
-ossia::net::generic_address_data make_address_data(const QJSValue& js);
+ossia::net::address_data make_address_data(const QJSValue& js);
 
 
 void set_address_type(QVariant::Type type, ossia::net::address_base& addr);

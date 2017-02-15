@@ -48,7 +48,7 @@ QVariantMap qml_node_base::extended() const
 
   if(m_ossia_node)
   {
-    ossia::net::extended_attributes& xt = *m_ossia_node;
+    ossia::extended_attributes& xt = *m_ossia_node;
     // First remove all the existing keys
     for(const auto& pair : xt)
     {
@@ -88,7 +88,7 @@ void qml_node_base::setExtended(QVariantMap extended)
 
   if(m_ossia_node)
   {
-    ossia::net::extended_attributes& xt = *m_ossia_node;
+    ossia::extended_attributes& xt = *m_ossia_node;
 
     // First remove all the erased keys
     auto cur_end = current.cend();

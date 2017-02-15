@@ -20,7 +20,6 @@ namespace net
 class device_base;
 class address_base;
 class node_base;
-using extended_attributes = any_map;
 
 /**
  * @brief The node_base class
@@ -91,7 +90,7 @@ public:
    * }
    * \endcode
    */
-  boost::any getAttribute(const std::string& str) const;
+  boost::any getAttribute(ossia::string_view str) const;
 
   template<typename T>
   void set(ossia::string_view str, const T& val);

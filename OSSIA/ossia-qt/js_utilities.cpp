@@ -125,10 +125,10 @@ value js_value_inbound_visitor::operator()() const { return {}; }
 
 
 
-net::generic_address_data make_address_data(const QJSValue &js)
+net::address_data make_address_data(const QJSValue &js)
 {
   using namespace ossia::net;
-  generic_address_data dat;
+  address_data dat;
 
   QJSValue name = js.property("name");
   if(name.isString())
@@ -154,18 +154,25 @@ net::generic_address_data make_address_data(const QJSValue &js)
     dat.bounding = get_enum<ossia::bounding_mode>(js.property("bounding"));
     dat.repetition_filter = get_enum<ossia::repetition_filter>(js.property("repetition_filter"));
     dat.unit = ossia::parse_pretty_unit(js.property("unit").toString().toStdString());
-    dat.description = js.property("description").toString().toStdString();
+    ossia::net::set_description(dat.extended, js.property("description").toString().toStdString());
     QJSValue tags = js.property("tags");
     if(tags.isArray())
     {
+      ossia::net::tags t;
+
       QJSValueIterator tags_it{tags};
       while(tags_it.hasNext())
       {
         tags_it.next();
         auto str = tags_it.value().toString();
         if(!str.isEmpty())
-          dat.tags.push_back(str.toStdString());
+          t.push_back(str.toStdString());
       }
+
+      if(!t.empty())
+        ossia::net::set_tags(dat.extended, std::move(t));
+
+      //! \todo handle the other attributes. We should have a map of the "allowed" attributes in the qml api.
     }
   }
 

@@ -177,13 +177,12 @@ void osc_protocol::handleLearn(const oscpack::ReceivedMessage& m)
 
   bool is_new = false;
   node_base* n = &mDevice->getRootNode();
-  for(auto & part : v)
+  for(const auto& part : v)
   {
-    auto& cld = n->children();
-    auto cld_it = ossia::find_if(cld, [&] (const auto& node) { return node->getName() == part; });
-    if(cld_it != cld.end())
+    auto cld = n->findChild(part);
+    if(cld)
     {
-      n = cld_it->get();
+      n = cld;
     }
     else
     {

@@ -17,7 +17,7 @@ serial_address::serial_address(
 void serial_address::valueCallback(const value& val)
 {
   this->setValue(val);
-  send(mValue);
+  send(m_value);
 }
 
 

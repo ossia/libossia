@@ -28,7 +28,6 @@ namespace ossia
 namespace net
 {
 class node_base;
-using extended_attributes = any_map;
 
 //! How many instances a node can have
 struct OSSIA_EXPORT instance_bounds

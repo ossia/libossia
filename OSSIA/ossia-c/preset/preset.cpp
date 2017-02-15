@@ -674,7 +674,7 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
         }
 
         // append step size attribute
-        auto valueStepSize = ossia::get_optional_attribute<ossia::net::value_step_size>(node, "valueStepSize");
+        auto valueStepSize = ossia::net::get_value_step_size(node);
         if (valueStepSize)
         {
           v.AddMember("valueStepSize", *valueStepSize, alloc);
@@ -708,19 +708,16 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
     }
 
     // append description attribute
-    auto descr = ossia::get_optional_attribute<ossia::net::description>(node, "description");
-    if (descr)
+    if (auto descr = ossia::net::get_description(node))
     {
-      rapidjson::Value s;
-      s.SetString(descr->c_str(), descr->size(), alloc);
-      v.AddMember("description", s, alloc);
+      v.AddMember("description", *descr, alloc);
     }
   }
 
   for (const auto& child : node.children())
   {
     rapidjson::Value s;
-    s.SetString(child->getName().c_str(), child->getName().size(), alloc);
+    s.SetString(child->getName(), alloc);
     v.AddMember(s, export_nodes_to_json(*child, d), alloc);
   }
 
@@ -763,9 +760,7 @@ std::string ossia::devices::write_json(
   }
 
   // parse device node tree and export to json
-  rapidjson::Value s;
-  s.SetString(deviceBase.getName().c_str(), deviceBase.getName().size());
-  d.AddMember(s, export_nodes_to_json(deviceBase.getRootNode(), d), d.GetAllocator());
+  d.AddMember(rapidjson::StringRef(deviceBase.getName()), export_nodes_to_json(deviceBase.getRootNode(), d), d.GetAllocator());
 
   // return json string
   rapidjson::StringBuffer buffer;

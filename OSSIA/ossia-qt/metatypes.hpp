@@ -15,6 +15,6 @@ Q_DECLARE_METATYPE(ossia::net::address_base*)
 Q_DECLARE_METATYPE(ossia::net::node_base*)
 Q_DECLARE_METATYPE(ossia::net::device_base*)
 Q_DECLARE_METATYPE(ossia::net::protocol_base*)
-Q_DECLARE_METATYPE(ossia::net::extended_attributes)
+Q_DECLARE_METATYPE(ossia::extended_attributes)
 
 Q_DECLARE_METATYPE(ossia::traversal::path)

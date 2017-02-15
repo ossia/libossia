@@ -32,7 +32,7 @@ struct http_address_data_base
 };
 
 struct http_address_data :
-    public generic_address_data,
+    public address_data,
     public http_address_data_base
 {
   http_address_data() = default;
@@ -42,13 +42,13 @@ struct http_address_data :
   http_address_data& operator=(http_address_data&&) = default;
 
   http_address_data(const std::string& name):
-    generic_address_data{name}
+    address_data{name}
   {
 
   }
 
   http_address_data(const QJSValue& val):
-    generic_address_data{ossia::qt::make_address_data(val)},
+    address_data{ossia::qt::make_address_data(val)},
     http_address_data_base{val}
   {
 

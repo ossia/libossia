@@ -36,7 +36,7 @@ public:
   {
     ossia::net::generic_address::setValueQuiet(qt_to_ossia{}(val));
 
-    mProtocol.push(*this);
+    m_protocol.push(*this);
   }
 
 private slots:
@@ -66,7 +66,7 @@ private slots:
   void qtStringListValueChanged(QStringList v) { qtValueChanged(v); }
   void qtDateValueChanged(QDate v) { qtValueChanged(v); }
 
-  void qtImpulse() { mProtocol.push(*this); }
+  void qtImpulse() { m_protocol.push(*this); }
 
 
   void setValue_slot(const value&);

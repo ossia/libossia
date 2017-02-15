@@ -44,6 +44,7 @@ using any_map =
     std::string, boost::any,
     string_hash, string_equal>;
 
+using extended_attributes = any_map;
 /**
  * @brief get_attribute Get an attribute of an any_map.
  *

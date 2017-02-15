@@ -25,7 +25,7 @@ struct ws_generic_client_address_data_base
 };
 
 struct ws_generic_client_address_data :
-    public generic_address_data,
+    public address_data,
     public ws_generic_client_address_data_base
 {
   ws_generic_client_address_data() = default;
@@ -35,13 +35,13 @@ struct ws_generic_client_address_data :
   ws_generic_client_address_data& operator=(ws_generic_client_address_data&&) = default;
 
   ws_generic_client_address_data(const std::string& name):
-    generic_address_data{name}
+    address_data{name}
   {
 
   }
 
   ws_generic_client_address_data(const QJSValue& val):
-    generic_address_data{ossia::qt::make_address_data(val)},
+    address_data{ossia::qt::make_address_data(val)},
     ws_generic_client_address_data_base{val}
   {
 

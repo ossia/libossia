@@ -53,9 +53,9 @@ enum class bounding_mode : int8_t
 /**
  * @brief If enabled, sending twice the same value will only send it once by network
  */
-enum class repetition_filter : int8_t
+enum class repetition_filter : bool
 {
-  OFF,
-  ON
+  OFF = false,
+  ON = true
 };
 }

@@ -3,6 +3,7 @@
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/base/address.hpp>
+#include <ossia/network/base/address_data.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 
@@ -18,61 +19,34 @@ namespace ossia
 namespace net
 {
 
-struct generic_address_data
-{
-  generic_address_data() = default;
-  generic_address_data(const generic_address_data&) = default;
-  generic_address_data(generic_address_data&&) = default;
-  generic_address_data& operator=(const generic_address_data&) = default;
-  generic_address_data& operator=(generic_address_data&&) = default;
-
-
-  generic_address_data(std::string n):
-    node_name{std::move(n)}
-  {
-
-  }
-
-  std::string node_name;
-  ossia::optional<ossia::val_type> type;
-  ossia::optional<ossia::net::domain> domain;
-  ossia::optional<ossia::access_mode> access;
-  ossia::optional<ossia::bounding_mode> bounding;
-  ossia::optional<ossia::repetition_filter> repetition_filter;
-
-  std::string description;
-  ossia::value default_value;
-  ossia::net::tags tags;
-  unit_t unit;
-};
 
 class protocol_base;
+
+//! Default implementation for address_base, with everything expected and mutable
 class OSSIA_EXPORT generic_address : public ossia::net::address_base
 {
 protected:
-  ossia::net::node_base& mNode;
-  ossia::net::protocol_base& mProtocol;
+  ossia::net::node_base& m_node;
+  ossia::net::protocol_base& m_protocol;
 
-  ossia::val_type mValueType{};
-  ossia::access_mode mAccessMode{};
-  ossia::bounding_mode mBoundingMode{};
-  ossia::repetition_filter mRepetitionFilter{};
+  ossia::val_type m_valueType{};
+  ossia::access_mode m_accessMode{};
+  ossia::bounding_mode m_boundingMode{};
+  ossia::repetition_filter m_repetitionFilter{};
 
-  mutable std::mutex mValueMutex;
-  ossia::value mValue;
+  mutable std::mutex m_valueMutex;
+  ossia::value m_value;
 
-  ossia::net::domain mDomain;
-  ossia::value mDefault;
-  unit_t mUnit;
+  ossia::net::domain m_domain;
+  unit_t m_unit;
 
-  ossia::value_callback mCallback;
-  ossia::value mPreviousValue;
+  ossia::value m_previousValue; //! Used for repetition filter.
 
 public:
   generic_address(
       ossia::net::node_base& node_base);
   generic_address(
-      const generic_address_data&,
+      const address_data&,
       ossia::net::node_base& node_base);
 
   ~generic_address();
