@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/network/oscquery/detail/server.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
-#include <hopscotch_map.h>
+#include <ossia/detail/string_map.hpp>
 
 namespace ossia
 {
@@ -12,7 +12,7 @@ struct oscquery_client
 {
   websocket_server::connection_handler connection;
   std::mutex listeningMutex;
-  tsl::hopscotch_map<std::string, ossia::net::address_base*> listening;
+  string_map<ossia::net::address_base*> listening;
 
   std::string client_ip;
   std::unique_ptr<osc::sender> sender;

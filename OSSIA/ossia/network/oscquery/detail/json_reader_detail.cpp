@@ -468,11 +468,11 @@ int json_parser::getPort(const rapidjson::Value& obj)
 
 message_type json_parser::messageType(const rapidjson::Value& obj)
 {
-  static tsl::hopscotch_map<std::string, message_type> map{
-    { std::string(detail::path_added()), message_type::PathAdded },
-    { std::string(detail::path_changed()), message_type::PathChanged },
-    { std::string(detail::path_removed()), message_type::PathRemoved },
-    { std::string(detail::attributes_changed()), message_type::AttributesChanged }
+  static string_view_map<message_type> map{
+    { detail::path_added(), message_type::PathAdded },
+    { detail::path_changed(), message_type::PathChanged },
+    { detail::path_removed(), message_type::PathRemoved },
+    { detail::attributes_changed(), message_type::AttributesChanged }
   };
   using namespace detail;
   auto val_it = obj.FindMember(detail::attribute_value());

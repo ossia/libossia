@@ -31,7 +31,11 @@ std::string get_pretty_unit_text(const unit_t& u)
         auto str = get_dataspace_text(u).to_string();
         auto str2 = get_unit_text(u);
         if(!str2.empty())
-          return str + "." + str2.to_string();
+        {
+          str.reserve(str.size() + 1 + str2.size());
+          str += '.';
+          str += str2.to_string();
+        }
         return str;
     }
     else
@@ -69,18 +73,18 @@ unit_t parse_pretty_unit(ossia::string_view text)
 
 unit_t parse_dataspace(ossia::string_view text)
 {
-  static const tsl::hopscotch_map<std::string, unit_t> dataspaces{
-    {"color", color_u{}},
-    {"distance", distance_u{}},
-    {"position", position_u{}},
-    {"speed", speed_u{}},
-    {"orientation", orientation_u{}},
-    {"angle", angle_u{}},
-    {"gain", gain_u{}},
-    {"time", time_u{}},
+  static const detail::unit_map dataspaces{
+    {make_string_view("color"), color_u{}},
+    {make_string_view("distance"), distance_u{}},
+    {make_string_view("position"), position_u{}},
+    {make_string_view("speed"), speed_u{}},
+    {make_string_view("orientation"), orientation_u{}},
+    {make_string_view("angle"), angle_u{}},
+    {make_string_view("gain"), gain_u{}},
+    {make_string_view("time"), time_u{}},
   };
 
-  auto it = dataspaces.find(text.to_string());
+  auto it = dataspaces.find(text);
   return it != dataspaces.end() ? it->second : unit_t{};
 }
 

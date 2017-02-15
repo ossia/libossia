@@ -1,5 +1,5 @@
 #include "minuit_common.hpp"
-#include <hopscotch_map.h>
+#include <ossia/detail/string_map.hpp>
 
 namespace ossia
 {
@@ -69,25 +69,25 @@ ossia::string_view to_minuit_type_text(const ossia::value& val)
 }
 
 static const auto& attribute_unordered_map() {
-  static const tsl::hopscotch_map<std::string, minuit_attribute> attr{
-        {"value", minuit_attribute::Value},
-        {"type", minuit_attribute::Type},
-        {"service", minuit_attribute::Service},
-        {"priority", minuit_attribute::Priority},
-        {"rangeBounds", minuit_attribute::RangeBounds},
-        {"rangeClipmode", minuit_attribute::RangeClipMode},
-        {"description", minuit_attribute::Description},
-        {"repetitionsFilter", minuit_attribute::RepetitionFilter},
-        {"tags", minuit_attribute::Tags},
-        {"active", minuit_attribute::Active},
-        {"valueDefault", minuit_attribute::ValueDefault},
-        {"priority", minuit_attribute::Priority},
-        {"dataspace", minuit_attribute::Dataspace},
-        {"dataspaceUnit", minuit_attribute::DataspaceUnit},
-        {"rampFunction", minuit_attribute::RampFunction},
-        {"rampDrive", minuit_attribute::RampDrive},
-        {"valueStepsize", minuit_attribute::ValueStepSize},
-        {"rampFunctionParameters", minuit_attribute::RampFunctionParameters}
+  static const string_view_map<minuit_attribute> attr{
+        {make_string_view("value"), minuit_attribute::Value},
+        {make_string_view("type"), minuit_attribute::Type},
+        {make_string_view("service"), minuit_attribute::Service},
+        {make_string_view("priority"), minuit_attribute::Priority},
+        {make_string_view("rangeBounds"), minuit_attribute::RangeBounds},
+        {make_string_view("rangeClipmode"), minuit_attribute::RangeClipMode},
+        {make_string_view("description"), minuit_attribute::Description},
+        {make_string_view("repetitionsFilter"), minuit_attribute::RepetitionFilter},
+        {make_string_view("tags"), minuit_attribute::Tags},
+        {make_string_view("active"), minuit_attribute::Active},
+        {make_string_view("valueDefault"), minuit_attribute::ValueDefault},
+        {make_string_view("priority"), minuit_attribute::Priority},
+        {make_string_view("dataspace"), minuit_attribute::Dataspace},
+        {make_string_view("dataspaceUnit"), minuit_attribute::DataspaceUnit},
+        {make_string_view("rampFunction"), minuit_attribute::RampFunction},
+        {make_string_view("rampDrive"), minuit_attribute::RampDrive},
+        {make_string_view("valueStepsize"), minuit_attribute::ValueStepSize},
+        {make_string_view("rampFunctionParameters"), minuit_attribute::RampFunctionParameters}
     };
   return attr;
 }
@@ -95,7 +95,7 @@ static const auto& attribute_unordered_map() {
 minuit_attribute get_attribute(ossia::string_view str)
 {
   const auto& map = attribute_unordered_map();
-  auto it = map.find(str.to_string());
+  auto it = map.find(str);
   if (it != map.end())
     return it->second;
   else

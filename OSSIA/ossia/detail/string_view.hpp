@@ -1,4 +1,5 @@
 #pragma once
+
 #include <boost/version.hpp>
 #if defined(__has_include)
   #if __has_include(<string_view>)
@@ -23,3 +24,12 @@
     { using string_view = boost::string_ref; }
   #endif
 #endif
+
+namespace ossia
+{
+// See also https://gist.github.com/klmr/2775736
+template<std::size_t N>
+constexpr ossia::string_view make_string_view(const char (&str)[N]) noexcept
+{ return {str, N - 1}; }
+
+}

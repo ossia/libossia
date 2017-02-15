@@ -45,7 +45,7 @@ class query_parser
      }
 
      // Parse the methods
-     tsl::hopscotch_map<std::string, std::string> arguments_map;
+     string_map<std::string> arguments_map;
      if(uri_tokens.size() > 1)
      {
        // Then, split the &-separated arguments
@@ -98,7 +98,7 @@ class query_answerer
     {
       return [&] (
           const std::string& path,
-          const tsl::hopscotch_map<std::string, std::string>& parameters)
+          const string_map<std::string>& parameters)
       {
         // Here we handle the url elements relative to oscquery
         if(parameters.size() == 0)
@@ -161,12 +161,12 @@ class query_answerer
             clt->openOSCSender(proto.getLogger(), boost::lexical_cast<int>(set_osc_port_it->second));
           }
 
-          auto add_instance_it = parameters.find("add_instance");
+          auto add_instance_it = parameters.find("add_node");
           if(add_instance_it != parameters.end())
           {
             // TODO
           }
-          auto rm_instance_it = parameters.find("remove_instance");
+          auto rm_instance_it = parameters.find("remove_node");
           if(rm_instance_it != parameters.end())
           {
             // TODO

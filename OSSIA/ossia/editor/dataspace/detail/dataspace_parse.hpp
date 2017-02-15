@@ -1,9 +1,9 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/dataspace/dataspace_parse.hpp>
+#include <ossia/detail/string_map.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <brigand/algorithms/for_each.hpp>
-#include <hopscotch_map.h>
 
 namespace ossia
 {
@@ -48,7 +48,7 @@ struct dataspace_text_visitor
   }
 };
 
-using unit_map = tsl::hopscotch_map<std::string, ossia::unit_t>;
+using unit_map = string_view_map<ossia::unit_t>;
 
 template<typename Arg, typename... Args>
 struct unit_map_factory
@@ -56,7 +56,7 @@ struct unit_map_factory
   void operator()(unit_map& m)
   {
     for(ossia::string_view v : ossia::unit_traits<Arg>::text())
-      m.emplace(v.to_string(), ossia::unit_t{Arg{}});
+      m.emplace(v, ossia::unit_t{Arg{}});
     unit_map_factory<Args...>{}(m);
   }
 };
@@ -67,16 +67,16 @@ struct unit_map_factory<Arg>
   void operator()(unit_map& m)
   {
     for(ossia::string_view v : ossia::unit_traits<Arg>::text())
-      m.emplace(v.to_string(), ossia::unit_t{Arg{}});
+      m.emplace(v, ossia::unit_t{Arg{}});
   }
 };
 
 template<typename... Args>
 struct make_unit_map
 {
-  tsl::hopscotch_map<std::string, ossia::unit_t> operator()()
+  unit_map operator()()
   {
-    tsl::hopscotch_map<std::string, ossia::unit_t> map;
+    unit_map map;
     unit_map_factory<Args...>{}(map);
     return map;
   }
@@ -90,7 +90,7 @@ struct unit_factory_visitor
   ossia::unit_t operator()(Dataspace_T arg)
   {
     static const auto units = brigand::wrap<Dataspace_T, make_unit_map>{}();
-    auto it = units.find(text.to_string());
+    auto it = units.find(text);
     return it != units.end() ? it->second : arg;
   }
 

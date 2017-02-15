@@ -372,7 +372,7 @@ void minuit_protocol::handleReceivedMessage(
     if (address.size() > 0 && address[0] == '/')
     {
       // Handle the OSC-like case where we receive a plain value.
-      auto addr = mListening.find(address.to_string());
+      auto addr = mListening.find(address.to_string()); // TODO string_set<>
       if (addr && *addr)
       {
         update_value(**addr, m);

@@ -90,7 +90,7 @@ private:
     std::promise<void> promise;
     std::string address{};
   };
-  using promises_map = locked_map<tsl::hopscotch_map<std::string, get_osc_promise>>;
+  using promises_map = locked_map<string_map<get_osc_promise>>;
 
   moodycamel::ReaderWriterQueue<get_ws_promise> m_getWSPromises;
   moodycamel::ReaderWriterQueue<std::function<void()>> m_functionQueue;

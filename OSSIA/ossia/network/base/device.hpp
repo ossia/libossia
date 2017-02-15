@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/address_data.hpp>
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
 
@@ -91,11 +92,13 @@ public:
   Nano::Signal<void(const address_base&)>
       onAddressRemoving; // The node whose address was removed
 
-  //! Called when a network client requests the creation of an instance
-  Nano::Signal<void(int)> onAddInstanceRequested;
+  //! Called when a network client requests the creation of an instance.
+  //!  First argument is the path to the parent.
+  Nano::Signal<void(std::string, address_data)> onAddNodeRequested;
 
-  //! Called when a network client requests the removal of an instance
-  Nano::Signal<void(int)> onRemoveInstanceRequested;
+  //! Called when a network client requests the removal of an instance.
+  //! Argument is the path of the node to remove.
+  Nano::Signal<void(std::string)> onRemoveNodeRequested;
 protected:
   std::unique_ptr<ossia::net::protocol_base> mProtocol;
   device_capabilities mCapabilities;

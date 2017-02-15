@@ -1,48 +1,13 @@
 #pragma once
-#include <string>
-#include <ossia/detail/string_view.hpp>
 #include <ossia/detail/optional.hpp>
+#include <ossia/detail/string_map.hpp>
 #include <boost/any.hpp>
-#include <hopscotch_map.h>
 #include <ossia_export.h>
 
 namespace ossia
 {
-
-struct string_hash
-{
-  std::size_t operator()(const std::string& s) const
-  {
-    return std::hash<std::string>{}(s);
-  }
-  std::size_t operator()(ossia::string_view s) const
-  {
-    return std::hash<ossia::string_view>{}(s);
-  }
-};
-
-struct string_equal
-{
-  using is_transparent = std::true_type;
-  bool operator()(const std::string& s, const std::string& s2) const
-  {
-    return s == s2;
-  }
-  bool operator()(ossia::string_view s, const std::string& s2) const
-  {
-    return s == s2;
-  }
-  bool operator()(const std::string& s, ossia::string_view s2) const
-  {
-    return s == s2;
-  }
-};
-
 //! A container to store any kind of data indexed by a string
-using any_map =
-  tsl::hopscotch_map<
-    std::string, boost::any,
-    string_hash, string_equal>;
+using any_map = string_map<boost::any>;
 
 using extended_attributes = any_map;
 /**

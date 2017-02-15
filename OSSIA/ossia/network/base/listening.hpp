@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/optional.hpp>
-#include <hopscotch_map.h>
+#include <ossia/detail/string_map.hpp>
 #include <mutex>
 
 namespace ossia
@@ -71,6 +71,6 @@ private:
 namespace net
 {
 class address_base;
-using listened_addresses = locked_map<tsl::hopscotch_map<std::string, ossia::net::address_base*>>;
+using listened_addresses = locked_map<string_map<ossia::net::address_base*>>;
 }
 }
