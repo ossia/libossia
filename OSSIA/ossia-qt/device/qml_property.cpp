@@ -17,7 +17,8 @@ namespace qt
 
 void qml_node_base::reparentChildren()
 {
-  for(auto cld : this->parent()->findChildren<qml_node_base*>())
+  const auto& children = this->parent()->findChildren<qml_node_base*>();
+  for(auto cld : children)
   {
     if(cld != this)
     {
