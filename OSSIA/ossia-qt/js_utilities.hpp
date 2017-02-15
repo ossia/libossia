@@ -155,9 +155,10 @@ struct qt_to_ossia
   ossia::value operator()() { return ossia::impulse{}; }
   ossia::value operator()(bool v) { return v; }
   ossia::value operator()(QTime v) { return v.msec(); }
-  ossia::value operator()(int v) { return v; }
+  ossia::value operator()(qint32 v) { return v; }
   ossia::value operator()(quint32 v) { return (int)v; }
-  ossia::value operator()(qulonglong v) { return (int)v; }
+  ossia::value operator()(qint64 v) { return (int)v; }
+  ossia::value operator()(quint64 v) { return (int)v; }
   ossia::value operator()(char v) { return v; }
   ossia::value operator()(QChar v) { return v.toLatin1(); }
   ossia::value operator()(const QString& v) { return v.toStdString(); }
