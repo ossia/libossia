@@ -929,7 +929,7 @@ void make_preset_node(ossia::net::node_base& node, ossia::presets::preset& prese
     currentkey += "/" + device_to_preset_key(node.getName());
   }
 
-  auto& children = node.children();
+  const auto& children = node.children();
 
   if (children.size() == 0) {
     if(auto addr = node.getAddress())

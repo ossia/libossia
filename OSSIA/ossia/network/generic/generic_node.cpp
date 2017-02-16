@@ -88,7 +88,7 @@ generic_node::~generic_node()
 {
   aboutToBeDeleted(*this);
 
-  mChildren.clear();
+  m_children.clear();
   removeAddress();
 }
 

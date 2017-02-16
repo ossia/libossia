@@ -63,18 +63,19 @@ void qt_object_node::init(QObject& obj)
     }
   }
 
-  for(auto c : obj.children())
-  {
-    mChildren.push_back(
-          std::make_unique<qt_object_node>(*c, mDevice, *this));
-  }
+  { lock_t lock{m_mutex};
+    for(auto c : obj.children())
+    {
+      m_children.push_back(
+            std::make_unique<qt_object_node>(*c, mDevice, *this));
+    }
 
-  for(int i = 0; i < obj.metaObject()->propertyCount(); i++)
-  {
-    mChildren.push_back(
-          std::make_unique<qt_property_node>(obj, obj.metaObject()->property(i), mDevice, *this));
+    for(int i = 0; i < obj.metaObject()->propertyCount(); i++)
+    {
+      m_children.push_back(
+            std::make_unique<qt_property_node>(obj, obj.metaObject()->property(i), mDevice, *this));
+    }
   }
-
 }
 
 void qt_object_node::childEvent(QChildEvent* event)
@@ -85,7 +86,8 @@ void qt_object_node::childEvent(QChildEvent* event)
   }
   else if(event->type() == QChildEvent::ChildRemoved)
   {
-    auto it = ossia::find_if(mChildren, [=] (const auto& ptr) {
+    lock_t lock{m_mutex};
+    auto it = ossia::find_if(m_children, [=] (const auto& ptr) {
       auto p = ptr.get();
       if(auto po = dynamic_cast<qt_object_node*>(p))
       {
@@ -95,10 +97,10 @@ void qt_object_node::childEvent(QChildEvent* event)
       return false;
     });
 
-    if(it != mChildren.end())
+    if(it != m_children.end())
     {
       mDevice.onNodeRemoving(**it);
-      mChildren.erase(it);
+      m_children.erase(it);
     }
   }
 }

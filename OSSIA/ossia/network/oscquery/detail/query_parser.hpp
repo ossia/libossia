@@ -398,7 +398,6 @@ public:
 
           if(!clt)
             throw bad_request_error{"Client not found"};
-
           // Then we enable / disable listening
           if(listen_it->second == detail::text_true())
           {
@@ -410,7 +409,7 @@ public:
           }
           else
           {
-            throw bad_request_error{"Wrong arguments to listen query"};
+            throw bad_request_error{"Wrong arguments to listen query: " + listen_it->second};
           }
         }
 

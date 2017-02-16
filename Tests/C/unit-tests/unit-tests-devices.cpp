@@ -48,7 +48,7 @@ TEST_CASE ("Building device from preset") {
   p.emplace("/a.1/b.0/d", 4);
 
   REQUIRE_NOTHROW(ossia::devices::apply_preset(localDevice, p, ossia::devices::keep_arch_off));
-  auto& children = localDevice.children();
+  const auto& children = localDevice.children();
 
   using namespace ossia::devices;
   SECTION("Presence of nodes") {

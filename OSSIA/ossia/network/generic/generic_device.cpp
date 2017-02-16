@@ -19,7 +19,8 @@ generic_device::generic_device(
 generic_device::~generic_device()
 {
   removeAddress();
-  mChildren.clear();
+  lock_t lock{m_mutex};
+  m_children.clear();
   mProtocol.reset();
 }
 
@@ -31,7 +32,7 @@ node_base* find_node_rec(
 {
   auto first_slash_index = address.find_first_of('/');
 
-  auto& children = node.children();
+  const auto& children = node.children();
   if (first_slash_index != std::string::npos)
   {
     auto cur = address.substr(0, first_slash_index);

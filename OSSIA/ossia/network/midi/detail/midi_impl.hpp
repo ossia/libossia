@@ -118,7 +118,7 @@ public:
       for (int i = 0; i < 128; i++)
       {
         auto ptr = std::make_unique<program_N_node>(channel, i, mDevice, *this);
-        mChildren.push_back(std::move(ptr));
+        m_children.push_back(std::move(ptr));
       }
   }
 
@@ -143,7 +143,7 @@ public:
       for (int i = 0; i < 128; i++)
       {
         auto ptr = std::make_unique<note_on_N_node>(channel, i, mDevice, *this);
-        mChildren.push_back(std::move(ptr));
+        m_children.push_back(std::move(ptr));
       }
   }
 
@@ -168,7 +168,7 @@ public:
       for (int i = 0; i < 128; i++)
       {
         auto ptr = std::make_unique<note_off_N_node>(channel, i, mDevice, *this);
-        mChildren.push_back(std::move(ptr));
+        m_children.push_back(std::move(ptr));
       }
   }
 
@@ -193,7 +193,7 @@ public:
       for (int i = 0; i < 128; i++)
       {
         auto ptr = std::make_unique<control_N_node>(channel, i, mDevice, *this);
-        mChildren.push_back(std::move(ptr));
+        m_children.push_back(std::move(ptr));
       }
   }
 
@@ -218,16 +218,16 @@ public:
       , mName(midi_node_name(channel))
   {
       {
-        mChildren.push_back(std::make_unique<note_on_node>(mChannel, mDevice));
+        m_children.push_back(std::make_unique<note_on_node>(mChannel, mDevice));
       }
       {
-        mChildren.push_back(std::make_unique<note_off_node>(mChannel, mDevice));
+        m_children.push_back(std::make_unique<note_off_node>(mChannel, mDevice));
       }
       {
-        mChildren.push_back(std::make_unique<control_node>(mChannel, mDevice));
+        m_children.push_back(std::make_unique<control_node>(mChannel, mDevice));
       }
       {
-        mChildren.push_back(std::make_unique<program_node>(mChannel, mDevice));
+        m_children.push_back(std::make_unique<program_node>(mChannel, mDevice));
       }
   }
 
@@ -235,17 +235,19 @@ public:
 
   std::array<ossia::message, 2> note_on(midi_size_t note, midi_size_t vel)
   {
+      const auto& c = children();
       return {{
-          ossia::message{ *mChildren[0]->getAddress(), std::vector<ossia::value>{int32_t{note}, int32_t{vel}}},
-          ossia::message{ *mChildren[0]->children()[note]->getAddress(), int32_t{vel}}
+          ossia::message{ *c[0]->getAddress(), std::vector<ossia::value>{int32_t{note}, int32_t{vel}}},
+          ossia::message{ *c[0]->children()[note]->getAddress(), int32_t{vel}}
       }};
   }
 
   std::array<ossia::message, 2> note_off(midi_size_t note, midi_size_t vel)
   {
+    const auto& c = children();
       return {{
-          ossia::message{*mChildren[1]->getAddress(), std::vector<ossia::value>{int32_t{note}, int32_t{vel}}},
-          ossia::message{*mChildren[1]->children()[note]->getAddress(), int32_t{vel}}
+          ossia::message{*c[1]->getAddress(), std::vector<ossia::value>{int32_t{note}, int32_t{vel}}},
+          ossia::message{*c[1]->children()[note]->getAddress(), int32_t{vel}}
       }};
   }
 

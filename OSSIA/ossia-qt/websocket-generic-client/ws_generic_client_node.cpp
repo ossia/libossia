@@ -33,7 +33,8 @@ ws_generic_client_node::~ws_generic_client_node()
 {
   aboutToBeDeleted(*this);
 
-  mChildren.clear();
+  lock_t lock{m_mutex};
+  m_children.clear();
   mAddress.reset();
 }
 
@@ -62,7 +63,8 @@ void ws_generic_client_node::add_child(std::unique_ptr<node_base> p)
 {
   if(p)
   {
-    mChildren.push_back(std::move(p));
+    lock_t lock{m_mutex};
+    m_children.push_back(std::move(p));
   }
 }
 

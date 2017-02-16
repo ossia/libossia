@@ -6,6 +6,7 @@
 #include <ossia/detail/any_map.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/detail/string_view.hpp>
+#include <ossia/detail/locked_container.hpp>
 
 #include <functional>
 #include <memory>
@@ -45,6 +46,8 @@ class node_base;
 class OSSIA_EXPORT node_base
 {
 public:
+  using children_t = std::vector<std::unique_ptr<node_base>>;
+  using lock_t = std::lock_guard<std::mutex>;
   node_base() = default;
   node_base(const node_base&) = delete;
   node_base(node_base&&) = delete;
@@ -138,13 +141,16 @@ public:
   //! Remove all the children.
   void clearChildren();
 
-  operator const extended_attributes&() const { return mExtended; }
-  operator extended_attributes&() { return mExtended; }
+  operator const extended_attributes&() const { return m_extended; }
+  operator extended_attributes&() { return m_extended; }
 
-  const std::vector<std::unique_ptr<node_base>>& children() const
+  locked_container<const children_t> children() const
   {
-    return mChildren;
+    return {m_children, m_mutex};
   }
+
+  //! Nonprotected version. With great powers, yada yada etc etc
+  const auto& unsafe_children() const { return m_children; }
 
   //! A vector with all the names of the children.
   std::vector<std::string> childrenNames() const;
@@ -159,8 +165,9 @@ protected:
   //! Reimplement for a specific removal action.
   virtual void removingChild(node_base& node_base) = 0;
 
-  std::vector<std::unique_ptr<node_base>> mChildren;
-  extended_attributes mExtended{0};
+  children_t m_children;
+  mutable std::mutex m_mutex;
+  extended_attributes m_extended{0};
 };
 
 // address : format /a/b/c

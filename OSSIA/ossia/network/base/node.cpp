@@ -152,20 +152,20 @@ node_base::~node_base() = default;
 
 const extended_attributes& node_base::getExtendedAttributes() const
 {
-  return mExtended;
+  return m_extended;
 }
 
 void node_base::setExtendedAttributes(
     const extended_attributes& e)
 {
-  mExtended = e;
+  m_extended = e;
 }
 
 boost::any node_base::getAttribute(
     ossia::string_view str) const
 {
-  auto it = mExtended.find(str);
-  if(it != mExtended.end())
+  auto it = m_extended.find(str);
+  if(it != m_extended.end())
     return it.value();
   return {};
 }
@@ -183,7 +183,9 @@ node_base* node_base::createChild(std::string name)
   auto ptr = res.get();
   if (res)
   {
-    mChildren.push_back(std::move(res));
+    { lock_t lock{m_mutex};
+      m_children.push_back(std::move(res));
+    }
     dev.onNodeCreated(*ptr);
   }
 
@@ -192,10 +194,11 @@ node_base* node_base::createChild(std::string name)
 
 std::vector<std::string> node_base::childrenNames() const
 {
+  lock_t lock{m_mutex};
   std::vector<std::string> bros_names;
-  bros_names.reserve(mChildren.size());
+  bros_names.reserve(m_children.size());
 
-  std::transform(mChildren.cbegin(), mChildren.cend(), std::back_inserter(bros_names),
+  std::transform(m_children.cbegin(), m_children.cend(), std::back_inserter(bros_names),
                  [] (const auto& n) { return n->getName(); });
 
   return bros_names;
@@ -213,8 +216,9 @@ node_base*node_base::addChild(std::unique_ptr<node_base> n)
     if(name == sanitize_name(name, childrenNames()))
     {
       auto ptr = n.get();
-
-      mChildren.push_back(std::move(n));
+      { lock_t lock{m_mutex};
+        m_children.push_back(std::move(n));
+      }
       dev.onNodeCreated(*ptr);
       return ptr;
     }
@@ -224,7 +228,8 @@ node_base*node_base::addChild(std::unique_ptr<node_base> n)
 
 node_base* node_base::findChild(ossia::string_view name)
 {
-  for(auto& node : mChildren)
+  lock_t lock{m_mutex};
+  for(auto& node : m_children)
   {
     if(node->getName() == name)
       return node.get();
@@ -242,14 +247,15 @@ bool node_base::removeChild(const std::string& name)
   std::string n = name;
   sanitize_name(n);
 
+  lock_t lock{m_mutex};
   auto it = find_if(
-              mChildren, [&](const auto& c) { return c->getName() == n; });
+              m_children, [&](const auto& c) { return c->getName() == n; });
 
-  if (it != mChildren.end())
+  if (it != m_children.end())
   {
     dev.onNodeRemoving(**it);
     removingChild(**it);
-    mChildren.erase(it);
+    m_children.erase(it);
 
     return true;
   }
@@ -264,13 +270,15 @@ bool node_base::removeChild(const node_base& n)
   auto& dev = getDevice();
   if(!dev.getCapabilities().change_tree)
     return false;
-  auto it = find_if(mChildren, [&](const auto& c) { return c.get() == &n; });
 
-  if (it != mChildren.end())
+  lock_t lock{m_mutex};
+  auto it = find_if(m_children, [&](const auto& c) { return c.get() == &n; });
+
+  if (it != m_children.end())
   {
     dev.onNodeRemoving(**it);
     removingChild(**it);
-    mChildren.erase(it);
+    m_children.erase(it);
 
     return true;
   }
@@ -286,9 +294,11 @@ void node_base::clearChildren()
   if(!dev.getCapabilities().change_tree)
     return;
 
-  for (auto& child : mChildren)
+  lock_t lock{m_mutex};
+  for (auto& child : m_children)
     removingChild(*child);
-  mChildren.clear();
+
+  m_children.clear();
 }
 
 #define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(Type, Name, String) \

@@ -34,7 +34,9 @@ bool midi_device::updateNamespace()
     for (int i = 1; i <= 16; i++)
     {
       auto ptr = std::make_unique<channel_node>(i, *this);
-      mChildren.push_back(std::move(ptr));
+
+      lock_t lock{m_mutex};
+      m_children.push_back(std::move(ptr));
     }
   }
   catch(std::exception& e)

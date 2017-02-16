@@ -192,7 +192,7 @@ void json_writer_impl::writeNode(
     writer.StartObject();
     writeNodeAttributes(n);
 
-    auto& cld = n.children();
+    const auto& cld = n.children();
 
     if(!cld.empty())
     {
