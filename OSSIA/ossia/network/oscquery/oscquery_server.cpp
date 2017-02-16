@@ -158,19 +158,42 @@ static auto& querySetterMap()
 
 void oscquery_server_protocol::add_node(const string_map<std::string>& parameters)
 {
+  // ?add_node=/foo/bar/baz&NAME=tutu&VALUE="[hi]"
+  net::address_data address;
+  auto& map = querySetterMap();
   const auto& parent_path = parameters.at(detail::add_node());
+  if(parent_path.empty())
+    // TODO log, return error code ?
+    return;
+
   const auto& name_it = parameters.find(detail::node_name());
+  if(name_it != parameters.end())
+  {
+    address.node_name = name_it.value();
+  }
+  else
+  {
+    // Maybe the parent node already has a mechanism for this ?
+  }
   for(const auto& e : parameters)
   {
-
-
+    auto it = map.find(e.first);
+    if(it != map.end())
+    {
+      it.value()(e, address);
+    }
+    else
+    {
+      // TODO add as an extended attribute.
+    }
   }
 
+  m_device->onAddNodeRequested(std::move(parent_path), std::move(address));
 }
 
 void oscquery_server_protocol::remove_node(const std::string& path)
 {
-
+  m_device->onRemoveNodeRequested(path);
 }
 
 void oscquery_server_protocol::on_OSCMessage(

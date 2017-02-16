@@ -10,15 +10,37 @@
 #include <hopscotch_map.h>
 #include <boost/lexical_cast.hpp>
 #include <websocketpp/connection.hpp>
+#include <boost/spirit/home/qi.hpp>
+#include <boost/spirit/home/qi/directive/omit.hpp>
+#include <boost/fusion/include/std_pair.hpp>
 #include <string>
 #include <vector>
 
+#include <experimental/string_view>
 
 namespace ossia
 {
 namespace net { struct address_data; }
 namespace oscquery
 {
+
+// query_grammar : taken from https://github.com/ssiloti/http/blob/master/http/parsers/request.hpp
+// Copyright (c) 2010 Steven Siloti (ssiloti@gmail.com)
+// Distributed under the Boost Software License, Version 1.0.
+template <typename Iterator>
+struct query_grammar : public boost::spirit::qi::grammar<Iterator, string_map<std::string>()>
+{
+    query_grammar() : query_grammar::base_type(query_string)
+    {
+        using namespace boost::spirit;
+
+        query_string = (+qchar >> -(qi::lit('=') >> +qchar)) % qi::lit("&:");
+        qchar = ~qi::char_("&:=");
+    }
+
+    boost::spirit::qi::rule<Iterator, string_map<std::string>()> query_string;
+    boost::spirit::qi::rule<Iterator, char()> qchar;
+};
 
 /**
 * @brief The query_parser class
@@ -30,6 +52,124 @@ namespace oscquery
 class query_parser
 {
 public:
+  //! url_decode taken from boost
+  // Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+  // Distributed under the Boost Software License, Version 1.0.
+  static bool url_decode(const std::string& in, std::string& out)
+  {
+    out.clear();
+    out.reserve(in.size());
+    for (std::size_t i = 0; i < in.size(); ++i)
+    {
+      if (in[i] == '%')
+      {
+        if (i + 3 <= in.size())
+        {
+          int value = 0;
+          std::istringstream is(in.substr(i + 1, 2));
+          if (is >> std::hex >> value)
+          {
+            out += static_cast<char>(value);
+            i += 2;
+          }
+          else
+          {
+            return false;
+          }
+        }
+        else
+        {
+          return false;
+        }
+      }
+      else if (in[i] == '+')
+      {
+        out += ' ';
+      }
+      else
+      {
+        out += in[i];
+      }
+    }
+    return true;
+  }
+
+  static auto parse_http_methods(ossia::string_view str)
+  {
+    // TODO a vector would be more efficient.
+     string_map<std::string> methods;
+     boost::spirit::qi::parse(
+           str.cbegin(), str.cend(),
+           query_grammar<ossia::string_view::const_iterator>(),
+           methods);
+
+     string_map<std::string> res;
+     std::string key_clean; key_clean.reserve(64);
+     std::string val_clean; val_clean.reserve(64);
+     for(auto& e : methods)
+     {
+       url_decode(e.first, key_clean);
+       url_decode(e.second, val_clean);
+       res.insert(std::make_pair(e.first, e.second));
+     }
+
+     return res;
+  }
+/*
+  static auto parse_http_methods_old(const std::string& requests)
+  {
+    using string_view = std::experimental::string_view;
+    // Parse the methods
+    string_map<std::string> arguments_map;
+    // Parse foo=bar&bluh=" hello & \"bye\" ! "
+    if(!requests.empty())
+    {
+      string_view key;
+
+      while(!requests.empty())
+      {
+        // Find the end of the key.
+        auto end_equal = requests.find_first_of('=');
+        auto end_ampers = requests.find_first_of('&');
+        if(end_equal < end_ampers)
+        { // key=value
+          key = requests.substr(0, end_equal);
+          requests.remove_prefix(end_equal + 1); // requests[0] is now first character of value
+          if(!requests.empty())
+          {
+            if(end_ampers != std::string::npos)
+            {
+              arguments_map.insert(std::make_pair(key, requests.substr(0, end_ampers)));
+              requests.remove_prefix(end_ampers + 1); // requests[0] is now first character of next key (or nothing)
+            }
+            else
+            { // no more ampersand, last key
+              arguments_map.insert(std::make_pair(key, requests));
+              requests = {};
+            }
+          }
+          else
+          { // key=
+            // no more ampersand
+            arguments_map.insert(std::make_pair(key, string_view{}));
+            requests = {};
+          }
+        }
+        else
+        { // key&...
+          arguments_map.insert(std::make_pair(requests.substr(0, end_ampers), string_view{}));
+          if(end_ampers != std::string::npos)
+            requests.remove_prefix(end_ampers + 1);
+          else
+            requests = {}; // Was the last key
+        }
+        key = {};
+      }
+    }
+
+    return arguments_map;
+  }*/
+
   template<typename Mapper>
   static auto parse_http_request(const std::string& request, Mapper&& mapper)
   {
@@ -39,50 +179,21 @@ public:
     using namespace std;
 
     // Split on "?"
-    static_vector<std::string, 3> uri_tokens;
-    try {
-      boost::split(uri_tokens, request, is_any_of("?"));
-    }
-    catch(...) {
-      throw bad_request_error{"Too much '?'"};
-    }
+    ossia::string_view path;
+    ossia::string_view queries;
 
-    // Parse the methods
-    string_map<std::string> arguments_map;
-    if(uri_tokens.size() > 1)
+    auto idx = request.find_first_of('?');
+    if(idx != std::string::npos)
     {
-      // Then, split the &-separated arguments
-      std::vector<string> argument_tokens; // TODO small_vector
-      boost::split(argument_tokens, uri_tokens.at(1), is_any_of("&"));
-
-      // Finally, split these arguments at '=' and put them in a map
-      for(const auto& arg : argument_tokens)
-      {
-        static_vector<string, 3> map_tokens;
-
-        try {
-          boost::split(map_tokens, arg, is_any_of("="));
-        }
-        catch(...) {
-          throw bad_request_error{"Too much '='"};
-        }
-
-        switch(map_tokens.size())
-        {
-          case 1: // &value
-            arguments_map.insert({map_tokens.front(), {}});
-            break;
-          case 2: // &listen=true
-            arguments_map.insert({map_tokens.front(), map_tokens.back()});
-            break;
-          default:
-            throw bad_request_error{"Too much '='"};
-            break;
-        }
-      }
+      path = ossia::string_view(request.data(), idx);
+      queries = ossia::string_view(request.data() + idx + 1, request.size() - idx);
+    }
+    else
+    {
+      path = request;
     }
 
-    return mapper(uri_tokens.at(0), std::move(arguments_map));
+    return mapper(path, parse_http_methods(queries));
   }
 
 
@@ -252,7 +363,7 @@ public:
   static auto answer_http_request (Protocol& proto, const typename Protocol::connection_handler& hdl)
   {
     return [&] (
-        const std::string& path,
+        ossia::string_view path,
         string_map<std::string>&& parameters)
     {
       // Here we handle the url elements relative to oscquery
@@ -268,7 +379,7 @@ public:
           if(node)
             return oscquery::json_writer::query_namespace(*node);
           else
-            throw node_not_found_error{path};
+            throw node_not_found_error{path.to_string()};
         }
       }
       else
@@ -276,7 +387,7 @@ public:
         auto node = ossia::net::find_node(proto.getDevice().getRootNode(), path);
         // First check if we have the path
         if(!node)
-          throw node_not_found_error{path};
+          throw node_not_found_error{path.to_string()};
 
         // Listen
         auto listen_it = parameters.find(detail::listen());
@@ -291,11 +402,11 @@ public:
           // Then we enable / disable listening
           if(listen_it->second == detail::text_true())
           {
-            clt->start_listen(path, node->getAddress());
+            clt->start_listen(path.to_string(), node->getAddress());
           }
           else if(listen_it->second == detail::text_false())
           {
-            clt->stop_listen(path);
+            clt->stop_listen(path.to_string());
           }
           else
           {
