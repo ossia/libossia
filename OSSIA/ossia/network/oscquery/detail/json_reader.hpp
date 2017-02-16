@@ -10,7 +10,7 @@ namespace oscquery
 class json_parser
 {
 public:
-  static std::shared_ptr<rapidjson::Document> parse(const std::string& message);
+  static std::shared_ptr<rapidjson::Document> parse(std::string& message);
 
   static int getPort(const rapidjson::Value& obj);
 

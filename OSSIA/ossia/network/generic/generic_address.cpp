@@ -11,8 +11,54 @@
 
 namespace ossia
 {
+struct val_type_visitor {
+  using ret = ossia::val_type;
+  ret operator()(ossia::val_type v) const {
+    return v;
+  }
+  ret operator()(const ossia::unit_t& v) const {
+    return ossia::matching_type(v);
+  }
+  ret operator()(const ossia::net::extended_type& v) const {
+    auto t = ossia::net::underlying_type(v);
+    if(!t.empty())
+    {
+      return t[0];
+    }
+    return ossia::val_type::IMPULSE;
+  }
+
+  ret operator()() { return ossia::val_type::IMPULSE; }
+};
+
+ossia::val_type underlying_type(const complex_type& t)
+{
+  return ossia::apply(val_type_visitor{}, t);
+}
 namespace net
 {
+
+struct update_address_visitor {
+  using ret = void;
+  ossia::net::generic_address& addr;
+  ret operator()(ossia::val_type v) const {
+    addr.setValueType(v);
+  }
+  ret operator()(const ossia::unit_t& v) const {
+    addr.setUnit(v);
+  }
+  ret operator()(const ossia::net::extended_type& v) const {
+    auto t = ossia::net::underlying_type(v);
+    if(!t.empty())
+    {
+      addr.setValueType(t[0]);
+    }
+    ossia::net::set_extended_type(addr.getNode(), v);
+  }
+
+  ret operator()() { }
+};
+
 generic_address::generic_address(ossia::net::node_base& node)
   : m_node{node}
   , m_protocol{node.getDevice().getProtocol()}
@@ -29,12 +75,13 @@ generic_address::generic_address(
     ossia::net::node_base& node)
   : m_node{node}
   , m_protocol{node.getDevice().getProtocol()}
-  , m_valueType(get_value_or(data.type, ossia::val_type::IMPULSE))
+  , m_valueType(ossia::val_type::IMPULSE)
   , m_accessMode(get_value_or(data.access, ossia::access_mode::BI))
   , m_boundingMode(get_value_or(data.bounding, ossia::bounding_mode::FREE))
   , m_repetitionFilter(get_value_or(data.repetition_filter, ossia::repetition_filter::OFF))
   , m_value(init_value(m_valueType))
 {
+  ossia::apply(update_address_visitor{*this}, data.type);
 }
 
 generic_address::~generic_address()

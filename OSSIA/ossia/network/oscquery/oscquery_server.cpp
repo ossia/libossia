@@ -124,6 +124,55 @@ oscquery_client*oscquery_server_protocol::findClient(const connection_handler& h
   return nullptr;
 }
 
+using map_setter_fun = void(*)(const std::pair<const std::string, std::string>& str, ossia::net::address_data&);
+template<typename Attr>
+static auto make_setter_pair(Attr)
+{
+  return std::make_pair(detail::metadata<Attr>::key(),
+                        [] (const std::pair<const std::string, std::string>& str,
+                        ossia::net::address_data& addr) {
+    query_parser::parse(Attr{}, str.second, addr);
+  });
+}
+
+using query_reader_map_type = tsl::hopscotch_map<ossia::string_view, map_setter_fun>;
+
+static auto& querySetterMap()
+{
+  static const query_reader_map_type map{
+    [] {
+      query_reader_map_type attr_impl;
+      using namespace ossia::net;
+
+      // Remaining metadata
+      brigand::for_each< detail::all_attributes >([&] (auto attr) {
+        using type = typename decltype(attr)::type;
+        attr_impl.insert(make_setter_pair(type{}));
+      });
+
+      return attr_impl;
+    }()};
+
+  return map;
+}
+
+void oscquery_server_protocol::add_node(const string_map<std::string>& parameters)
+{
+  const auto& parent_path = parameters.at(detail::add_node());
+  const auto& name_it = parameters.find(detail::node_name());
+  for(const auto& e : parameters)
+  {
+
+
+  }
+
+}
+
+void oscquery_server_protocol::remove_node(const std::string& path)
+{
+
+}
+
 void oscquery_server_protocol::on_OSCMessage(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 try {
@@ -236,9 +285,23 @@ rapidjson::StringBuffer oscquery_server_protocol::on_WSrequest(
     connection_handler hdl,
     const std::string& message)
 {
-  return query_parser::parse(
-        message,
-        query_answerer::answer(*this, hdl));
+  if(message.empty())
+    return {};
+  else if(message[0] == '/')
+  {
+    return query_parser::parse_http_request(
+          message,
+          query_answerer::answer_http_request(*this, hdl));
+  }
+  else if(message[0] == '{')
+  {
+    return query_parser::parse_json_request(
+          message, query_answerer::answer_json_request(*this, hdl));
+  }
+  else
+  {
+    return {};
+  }
   // Exceptions are catched in the caller.
 }
 }

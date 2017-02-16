@@ -91,6 +91,7 @@ bool filterRepetition(const ossia::value& val) const final override;
   void onRemovingLastCallback() final override;
 
 private:
+  friend struct update_address_visitor;
 };
 }
 }

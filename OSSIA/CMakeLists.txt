@@ -116,6 +116,7 @@ endif()
 if(OSSIA_PROTOCOL_OSCQUERY)
   target_sources(ossia PRIVATE ${OSSIA_OSCQUERY_SRCS} ${OSSIA_OSCQUERY_HEADERS})
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} OSCQuery)
+  target_compile_definitions(ossia PUBLIC ASIO_STANDALONE=1)
   target_include_directories(ossia SYSTEM PUBLIC
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/asio/asio/include>

@@ -1,5 +1,7 @@
 #pragma once
 #define ASIO_STANDALONE 1
+#include <boost/config.hpp>
+#include <boost/version.hpp>
 #include <websocketpp/config/asio_no_tls_client.hpp>
 #include <websocketpp/client.hpp>
 #include <websocketpp/common/thread.hpp>
@@ -30,7 +32,7 @@ class client
 
       m_client.set_message_handler(
             [handler=std::move(messageHandler)] (connection_handler hdl, client_t::message_ptr msg)
-      { handler(hdl, msg->get_payload()); });
+      { handler(hdl, msg->get_raw_payload()); });
 
       m_client.set_fail_handler([=] (connection_handler hdl) {
           scoped_lock guard(m_lock);

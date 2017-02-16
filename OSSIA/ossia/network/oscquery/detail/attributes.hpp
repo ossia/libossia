@@ -53,6 +53,18 @@ constexpr auto path_removed() { return "PATH_REMOVED"; }
 constexpr auto path_changed() { return "PATH_CHANGED"; }
 constexpr auto attributes_changed() { return "ATTRIBUTES_CHANGED"; }
 
+// Queries
+constexpr auto add_node() { return make_string_view("ADD_NODE"); }
+constexpr auto remove_node() { return make_string_view("REMOVE_NODE"); }
+constexpr auto node_name() { return make_string_view("NAME"); }
+constexpr auto set_port() { return make_string_view("SET_PORT"); }
+constexpr auto listen() { return make_string_view("LISTEN"); }
+constexpr auto text_true() { return make_string_view("TRUE"); }
+constexpr auto text_false() { return make_string_view("FALSE"); }
+constexpr auto query_listen_true() { return make_string_view("?LISTEN=TRUE"); }
+constexpr auto query_listen_false() { return make_string_view("?LISTEN=FALSE"); }
+constexpr auto query_value() { return make_string_view("?VALUE"); }
+
 struct OSSIA_EXPORT full_path_attribute
 {
   using type = std::string;
@@ -125,7 +137,34 @@ net::value_step_size_attribute,
 net::instance_bounds_attribute,
 net::critical_attribute,
 net::extended_type_attribute,
-net::description_attribute>;
+net::description_attribute,
+net::app_name_attribute,
+net::app_creator_attribute,
+net::app_version_attribute>;
+
+using all_attributes = brigand::list<
+typetag_attribute,
+net::unit_attribute,
+net::extended_type_attribute,
+
+net::value_attribute,
+net::default_value_attribute,
+
+net::domain_attribute,
+net::access_mode_attribute,
+net::bounding_mode_attribute,
+net::repetition_filter_attribute,
+net::tags_attribute,
+net::refresh_rate_attribute,
+net::priority_attribute,
+net::value_step_size_attribute,
+net::instance_bounds_attribute,
+net::critical_attribute,
+net::description_attribute,
+net::app_name_attribute,
+net::app_creator_attribute,
+net::app_version_attribute
+>;
 
 }
 enum class message_type

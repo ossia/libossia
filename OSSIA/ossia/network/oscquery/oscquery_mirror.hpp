@@ -63,7 +63,7 @@ public:
   void setCommandCallback(std::function<void()>);
 private:
   using connection_handler = websocketpp::connection_hdl;
-  void on_WSMessage(connection_handler hdl, const std::string& message);
+  void on_WSMessage(connection_handler hdl, std::string& message);
   void on_OSCMessage(const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
 
   void cleanup_connections();

@@ -75,6 +75,7 @@ using oscquery_command =
 
 class OSSIA_EXPORT oscquery_server_protocol final : public ossia::net::protocol_base
 {
+  friend class query_answerer;
 public:
   using connection_handler = websocket_server::connection_handler;
   oscquery_server_protocol(uint16_t osc_port, uint16_t ws_port);
@@ -92,6 +93,9 @@ public:
 
   oscquery_client* findClient(const connection_handler& hdl);
 private:
+  void add_node(const string_map<std::string>& parameters);
+  void remove_node(const std::string& path);
+
   // OSC callback
   void on_OSCMessage(
       const oscpack::ReceivedMessage& m,

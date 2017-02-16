@@ -193,7 +193,7 @@ static auto make_setter_pair()
   });
 }
 
-using reader_map_type = tsl::hopscotch_map<ossia::string_view, map_setter_fun>;
+using reader_map_type = string_view_map<map_setter_fun>;
 
 static auto& namespaceSetterMap()
 {
@@ -254,12 +254,16 @@ static auto& attributesSetterMap()
 
 static ossia::val_type VecTypetag(ossia::string_view typetag)
 {
+  //! \todo Important : in the oscquery spec, find out if the given type shall be fixed or can vary.
+  //! How to specify it ? wildcards ? TYPETAG='*' ? TYPETAG='???'
   if     (typetag == "ff"   || typetag == "[ff]")   return ossia::val_type::VEC2F;
   else if(typetag == "fff"  || typetag == "[fff]")  return ossia::val_type::VEC3F;
   else if(typetag == "ffff" || typetag == "[ffff]") return ossia::val_type::VEC4F;
   else                                              return ossia::val_type::TUPLE;
 }
 
+//! Used to check if an actual value with multiple elements,
+//! such as [ 1, 3, "foo" ] has a special typetag
 static ossia::val_type VecTypetag(const rapidjson::Value& val)
 {
   if(val.IsArray())
@@ -451,10 +455,10 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
 
 
 
-std::shared_ptr<rapidjson::Document> json_parser::parse(const std::string& message)
+std::shared_ptr<rapidjson::Document> json_parser::parse(std::string& message)
 {
   auto document = std::make_shared<rapidjson::Document>();
-  document->Parse(message);
+  document->ParseInsitu(const_cast<char*>(message.data()));
   return document;
 }
 

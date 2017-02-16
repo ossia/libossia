@@ -40,7 +40,7 @@ oscquery_mirror_protocol::oscquery_mirror_protocol(std::string host, uint16_t lo
                 const oscpack::IpEndpointName& ip) { this->on_OSCMessage(m, ip); })},
   m_websocketClient{[=] (
                     connection_handler hdl,
-                    const std::string& msg) { this->on_WSMessage(hdl, msg); } }
+                    std::string& msg) { this->on_WSMessage(hdl, msg); } }
 , m_websocketHost{std::move(host)}
 {
   m_wsThread = std::thread([=]{ m_websocketClient.connect(m_websocketHost); });
@@ -99,13 +99,13 @@ std::future<void> oscquery_mirror_protocol::pullAsync(net::address_base& address
           ossia::net::osc_address_string(address),
           get_promise{std::move(promise), &address}));
   */
-  m_websocketClient.send_message(text + "?VALUE");
+  m_websocketClient.send_message(text + detail::query_value().to_string());
   return fut;
 }
 
 void oscquery_mirror_protocol::request(net::address_base& address)
 {
-  m_websocketClient.send_message(net::osc_address_string(address) + "?VALUE");
+  m_websocketClient.send_message(net::osc_address_string(address) + detail::query_value().to_string());
 }
 
 bool oscquery_mirror_protocol::push(const net::address_base& addr)
@@ -138,7 +138,7 @@ bool oscquery_mirror_protocol::observe(net::address_base& address, bool enable)
   if (enable)
   {
     auto str = net::osc_address_string(address);
-    m_websocketClient.send_message(str + "?listen=true");
+    m_websocketClient.send_message(str + detail::query_listen_true().to_string());
     m_listening.insert(
           std::make_pair(str, &address));
   }
@@ -146,7 +146,7 @@ bool oscquery_mirror_protocol::observe(net::address_base& address, bool enable)
   {
     auto str = net::osc_address_string(address);
     // TODO for minuit when disconnecting, disable listening for everything.
-    m_websocketClient.send_message(str + "?listen=false");
+    m_websocketClient.send_message(str + detail::query_listen_false().to_string());
     m_listening.erase(str);
   }
   return true;
@@ -255,7 +255,7 @@ std::string to_ip(std::string uri)
 
 void oscquery_mirror_protocol::on_WSMessage(
     oscquery_mirror_protocol::connection_handler hdl,
-    const std::string& message)
+    std::string& message)
 {
 #if defined(OSSIA_BENCHMARK)
   auto t1 = std::chrono::high_resolution_clock::now();
@@ -285,7 +285,7 @@ void oscquery_mirror_protocol::on_WSMessage(
                 json_parser::getPort(*data));
 
           // Send to the server the local receiver port
-          m_websocketClient.send_message("?set_port=" + std::to_string(m_oscServer->port()));
+          m_websocketClient.send_message(fmt::format("?{}={}", detail::set_port(), m_oscServer->port()));
           break;
         }
         case message_type::Namespace:

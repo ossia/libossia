@@ -124,6 +124,13 @@ value js_value_inbound_visitor::operator()(const Destination &t) { return t; }
 value js_value_inbound_visitor::operator()() const { return {}; }
 
 
+ossia::complex_type get_type(const QJSValue& val)
+{
+  // TODO handle other cases ? string, extended, etc...
+  auto opt_t = get_enum<ossia::val_type>(val);
+  if(opt_t) return *opt_t;
+  return complex_type{};
+}
 
 net::address_data make_address_data(const QJSValue &js)
 {
@@ -140,12 +147,12 @@ net::address_data make_address_data(const QJSValue &js)
     return dat;
   }
 
-  dat.type = get_enum<ossia::val_type>(js.property("type"));
-
+  dat.type = get_type(js.property("type"));
   if(dat.type)
   {
-    auto base_v = init_value(*dat.type);
-    auto domain = init_domain(*dat.type);
+    ossia::val_type base = ossia::underlying_type(dat.type);
+    auto base_v = init_value(base);
+    auto domain = init_domain(base);
     set_min(domain, value_from_jsvalue(base_v, js.property("min")));
     set_max(domain, value_from_jsvalue(base_v, js.property("max")));
 

@@ -52,32 +52,7 @@ struct osc_type_visitor
 };
 
 
-struct setup_address_visitor {
-  using ret = ossia::net::address_base*;
-  ossia::net::node_base& n;
-  ret operator()(ossia::val_type v) const {
-    return n.createAddress(v);
-  }
-  ret operator()(const ossia::unit_t& v) const {
-    auto addr = n.createAddress(ossia::matching_type(v));
-    addr->setUnit(v);
-    return addr;
-  }
-  ret operator()(const ossia::net::extended_type& v) const {
-    auto t = ossia::net::underlying_type(v);
-    if(!t.empty())
-    {
-      auto addr = n.createAddress(t[0]);
-      ossia::net::set_extended_type(n, v);
-      return addr;
-    }
-    return nullptr;
-  }
-
-  ret operator()() { return nullptr; }
-};
-
-std::string get_osc_typetag_impl(const net::address_base& addr)
+static std::string get_osc_typetag_impl(const net::address_base& addr)
 {
   std::string s;
   auto val = addr.cloneValue();
@@ -163,6 +138,31 @@ complex_type get_type_from_osc_typetag(ossia::string_view str)
 
   return ossia::val_type::TUPLE;
 }
+
+struct setup_address_visitor {
+  using ret = ossia::net::address_base*;
+  ossia::net::node_base& n;
+  ret operator()(ossia::val_type v) const {
+    return n.createAddress(v);
+  }
+  ret operator()(const ossia::unit_t& v) const {
+    auto addr = n.createAddress(ossia::matching_type(v));
+    addr->setUnit(v);
+    return addr;
+  }
+  ret operator()(const ossia::net::extended_type& v) const {
+    auto t = ossia::net::underlying_type(v);
+    if(!t.empty())
+    {
+      auto addr = n.createAddress(t[0]);
+      ossia::net::set_extended_type(n, v);
+      return addr;
+    }
+    return nullptr;
+  }
+
+  ret operator()() { return nullptr; }
+};
 
 net::address_base* setup_address(const complex_type& t, net::node_base& node)
 {

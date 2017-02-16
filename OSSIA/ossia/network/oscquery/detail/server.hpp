@@ -1,5 +1,7 @@
 #pragma once
 #define ASIO_STANDALONE 1
+#include <boost/config.hpp>
+#include <boost/version.hpp>
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 #include <websocketpp/http/request.hpp>
@@ -52,7 +54,7 @@ class websocket_server
 #endif
           try
           {
-            auto res = h(hdl, msg->get_payload());
+            auto res = h(hdl, msg->get_raw_payload());
             if(res.GetSize() > 0)
               send_message(hdl, std::move(res));
           }
