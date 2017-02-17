@@ -183,7 +183,7 @@ node_base* node_base::createChild(std::string name)
   auto ptr = res.get();
   if (res)
   {
-    { lock_t lock{m_mutex};
+    { write_lock_t lock{m_mutex};
       m_children.push_back(std::move(res));
     }
     dev.onNodeCreated(*ptr);
@@ -194,7 +194,7 @@ node_base* node_base::createChild(std::string name)
 
 std::vector<std::string> node_base::childrenNames() const
 {
-  lock_t lock{m_mutex};
+  read_lock_t lock{m_mutex};
   std::vector<std::string> bros_names;
   bros_names.reserve(m_children.size());
 
@@ -216,7 +216,7 @@ node_base*node_base::addChild(std::unique_ptr<node_base> n)
     if(name == sanitize_name(name, childrenNames()))
     {
       auto ptr = n.get();
-      { lock_t lock{m_mutex};
+      { write_lock_t lock{m_mutex};
         m_children.push_back(std::move(n));
       }
       dev.onNodeCreated(*ptr);
@@ -228,7 +228,7 @@ node_base*node_base::addChild(std::unique_ptr<node_base> n)
 
 node_base* node_base::findChild(ossia::string_view name)
 {
-  lock_t lock{m_mutex};
+  read_lock_t lock{m_mutex};
   for(auto& node : m_children)
   {
     if(node->getName() == name)
@@ -247,7 +247,7 @@ bool node_base::removeChild(const std::string& name)
   std::string n = name;
   sanitize_name(n);
 
-  lock_t lock{m_mutex};
+  write_lock_t lock{m_mutex};
   auto it = find_if(
               m_children, [&](const auto& c) { return c->getName() == n; });
 
@@ -271,7 +271,7 @@ bool node_base::removeChild(const node_base& n)
   if(!dev.getCapabilities().change_tree)
     return false;
 
-  lock_t lock{m_mutex};
+  write_lock_t lock{m_mutex};
   auto it = find_if(m_children, [&](const auto& c) { return c.get() == &n; });
 
   if (it != m_children.end())
@@ -294,7 +294,7 @@ void node_base::clearChildren()
   if(!dev.getCapabilities().change_tree)
     return;
 
-  lock_t lock{m_mutex};
+  write_lock_t lock{m_mutex};
   for (auto& child : m_children)
     removingChild(*child);
 

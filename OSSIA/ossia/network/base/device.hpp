@@ -97,8 +97,8 @@ public:
   Nano::Signal<void(std::string, address_data)> onAddNodeRequested;
 
   //! Called when a network client requests the removal of an instance.
-  //! Argument is the path of the node to remove.
-  Nano::Signal<void(std::string)> onRemoveNodeRequested;
+  //! Argument is the path of the parent and the node to remove.
+  Nano::Signal<void(std::string, std::string)> onRemoveNodeRequested;
 protected:
   std::unique_ptr<ossia::net::protocol_base> mProtocol;
   device_capabilities mCapabilities;

@@ -1,15 +1,21 @@
 #pragma once
-#include <mutex>
+#include <shared_mutex>
 namespace ossia
 {
 template<typename Container>
 class locked_container
 {
 public:
-  locked_container(Container& src, std::mutex& mutex):
+  locked_container(Container& src, std::shared_timed_mutex& mutex):
     m_ref{src},
-    m_lock{mutex}
+    m_mutex{mutex}
   {
+    m_mutex.lock_shared();
+  }
+
+  ~locked_container()
+  {
+    m_mutex.unlock_shared();
   }
 
   auto& front() { return m_ref.front(); }
@@ -31,6 +37,6 @@ public:
   const auto& operator[](std::size_t i) const { return m_ref[i]; }
 private:
   Container& m_ref;
-  std::lock_guard<std::mutex> m_lock;
+  std::shared_timed_mutex& m_mutex;
 };
 }

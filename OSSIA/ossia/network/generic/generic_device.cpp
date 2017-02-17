@@ -19,7 +19,7 @@ generic_device::generic_device(
 generic_device::~generic_device()
 {
   removeAddress();
-  lock_t lock{m_mutex};
+  write_lock_t lock{m_mutex};
   m_children.clear();
   mProtocol.reset();
 }

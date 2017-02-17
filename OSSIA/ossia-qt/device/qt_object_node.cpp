@@ -63,7 +63,7 @@ void qt_object_node::init(QObject& obj)
     }
   }
 
-  { lock_t lock{m_mutex};
+  { write_lock_t lock{m_mutex};
     for(auto c : obj.children())
     {
       m_children.push_back(
@@ -86,7 +86,7 @@ void qt_object_node::childEvent(QChildEvent* event)
   }
   else if(event->type() == QChildEvent::ChildRemoved)
   {
-    lock_t lock{m_mutex};
+    write_lock_t lock{m_mutex}; // TODO try to upgrade read -> write before erase
     auto it = ossia::find_if(m_children, [=] (const auto& ptr) {
       auto p = ptr.get();
       if(auto po = dynamic_cast<qt_object_node*>(p))

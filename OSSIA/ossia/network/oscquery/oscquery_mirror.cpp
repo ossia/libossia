@@ -189,13 +189,46 @@ void oscquery_mirror_protocol::runCommands()
   } while(ok);
 }
 
-void oscquery_mirror_protocol::setCommandCallback(std::function<void()> cb)
+void oscquery_mirror_protocol::setCommandCallback(
+    std::function<void()> cb)
 {
   m_commandCallback = std::move(cb);
 }
 
+void oscquery_mirror_protocol::requestRemoveNode(
+    net::node_base& self)
+{
+  if(auto parent = self.getParent())
+  {
+    std::string req; req.reserve(64);
+    req += net::osc_address_string(*parent);
+    req +='?';
+    req += detail::remove_node().to_string();
+    req += '=';
+    req += self.getName();
+
+    m_websocketClient.send_message(std::move(req));
+  }
+}
+
+void oscquery_mirror_protocol::requestAddNode(
+    net::node_base& parent,
+    net::address_data dat)
+{
+  std::string req; req.reserve(64);
+  req += net::osc_address_string(parent);
+  req +='?';
+  req += detail::add_node().to_string();
+  req += '=';
+  req += dat.node_name;
+
+  // TODO the other attributes
+  m_websocketClient.send_message(std::move(req));
+}
+
 void oscquery_mirror_protocol::on_OSCMessage(
-    const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
+    const oscpack::ReceivedMessage& m,
+    const oscpack::IpEndpointName& ip)
 {
 #if defined(OSSIA_BENCHMARK)
   auto t1 = std::chrono::high_resolution_clock::now();
@@ -301,6 +334,7 @@ void oscquery_mirror_protocol::on_WSMessage(
           if(p)
           {
             auto node = ossia::net::find_node(m_device->getRootNode(), p->address);
+
             if(node)
             {
               auto addr = node->getAddress();
@@ -308,9 +342,7 @@ void oscquery_mirror_protocol::on_WSMessage(
               {
                 json_parser::parse_value(*addr, *data);
               }
-              break;
             }
-
             p->promise.set_value();
             m_getWSPromises.pop();
           }

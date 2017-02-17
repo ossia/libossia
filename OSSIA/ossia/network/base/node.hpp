@@ -1,4 +1,5 @@
 #pragma once
+#include <shared_mutex>
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/network/base/name_validation.hpp>
 
@@ -47,7 +48,8 @@ class OSSIA_EXPORT node_base
 {
 public:
   using children_t = std::vector<std::unique_ptr<node_base>>;
-  using lock_t = std::lock_guard<std::mutex>;
+  using write_lock_t = std::lock_guard<std::shared_timed_mutex>;
+  using read_lock_t = std::shared_lock<std::shared_timed_mutex>;
   node_base() = default;
   node_base(const node_base&) = delete;
   node_base(node_base&&) = delete;
@@ -166,7 +168,7 @@ protected:
   virtual void removingChild(node_base& node_base) = 0;
 
   children_t m_children;
-  mutable std::mutex m_mutex;
+  mutable std::shared_timed_mutex m_mutex;
   extended_attributes m_extended{0};
 };
 

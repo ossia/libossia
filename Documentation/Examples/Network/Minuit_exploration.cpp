@@ -18,8 +18,6 @@ using namespace ossia::net;
 using namespace std;
 
 void explore(const node_base& node);
-void printDomain(const domain& d);
-void printValueCallback(const value& v);
 
 int main()
 {
@@ -42,7 +40,10 @@ void explore(const ossia::net::node_base& node)
     if (auto addr = child->getAddress())
     {
       // attach to callback to display value update
-      addr->add_callback(printValueCallback);
+      addr->add_callback([=] (const value& v) {
+        std::cerr << "Callback: " << osc_address_string(*addr)
+                  << " : " <<  value_to_pretty_string(v) << std::endl;
+      });
 
       // update the value
       addr->pullValue();
@@ -54,9 +55,4 @@ void explore(const ossia::net::node_base& node)
 
     explore(*child);
   }
-}
-
-void printValueCallback(const value& v)
-{
-  cerr << "Callback: " << value_to_pretty_string(v) << "\n";
 }

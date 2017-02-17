@@ -59,37 +59,42 @@ public:
   {
     out.clear();
     out.reserve(in.size());
-    for (std::size_t i = 0; i < in.size(); ++i)
+    const int N = in.size();
+    for (int i = 0; i < N; ++i)
     {
-      if (in[i] == '%')
+      switch(in[i])
       {
-        if (i + 3 <= in.size())
+        case '%':
         {
-          int value = 0;
-          std::istringstream is(in.substr(i + 1, 2));
-          if (is >> std::hex >> value)
+          if (i + 3 <= in.size())
           {
-            out += static_cast<char>(value);
-            i += 2;
+            int value = 0;
+            std::istringstream is(in.substr(i + 1, 2));
+            if (is >> std::hex >> value)
+            {
+              out += static_cast<char>(value);
+              i += 2;
+            }
+            else
+            {
+              return false;
+            }
           }
           else
           {
             return false;
           }
         }
-        else
-        {
-          return false;
-        }
+        case '+':
+          out += ' ';
+          break;
+        case '\0':
+          return true;
+        default:
+          out += in[i];
+          break;
       }
-      else if (in[i] == '+')
-      {
-        out += ' ';
-      }
-      else
-      {
-        out += in[i];
-      }
+
     }
     return true;
   }
@@ -110,7 +115,7 @@ public:
      {
        url_decode(e.first, key_clean);
        url_decode(e.second, val_clean);
-       res.insert(std::make_pair(e.first, e.second));
+       res.insert(std::make_pair(std::move(key_clean), std::move(val_clean)));
      }
 
      return res;
@@ -429,14 +434,14 @@ public:
         auto add_instance_it = parameters.find(detail::add_node());
         if(add_instance_it != parameters.end())
         {
-          proto.add_node(std::move(parameters));
+          proto.add_node(path, std::move(parameters));
           return json_writer::string_t{};
         }
         auto rm_instance_it = parameters.find(detail::remove_node());
         if(rm_instance_it != parameters.end())
         {
-          // Value is the path to remove
-          proto.remove_node(rm_instance_it.value());
+          // Value is the child to remove
+          proto.remove_node(path, rm_instance_it.value());
           return json_writer::string_t{};
         }
 

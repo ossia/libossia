@@ -3,6 +3,7 @@
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/oscquery/detail/client.hpp>
+#include <ossia/network/base/address_data.hpp>
 #include <ossia/detail/json.hpp>
 #include <readerwriterqueue.h>
 namespace osc
@@ -61,6 +62,19 @@ public:
    * This can be used to put the command in the application's main loop.
    */
   void setCommandCallback(std::function<void()>);
+
+  /**
+   * @brief Request a new node from the server
+   * @param Parent of the new node
+   * @param Data of the new node
+   */
+  void requestAddNode(net::node_base&, ossia::net::address_data);
+
+  /**
+   * @brief Request a node removal from the server
+   * @param Node to be removed
+   */
+  void requestRemoveNode(net::node_base&);
 private:
   using connection_handler = websocketpp::connection_hdl;
   void on_WSMessage(connection_handler hdl, std::string& message);

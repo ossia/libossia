@@ -13,6 +13,7 @@
 #include <functional>
 
 #include <ossia/ossia.hpp>
+#include <ossia/network/base/address_data.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 
 using namespace ossia;
@@ -29,6 +30,20 @@ int main()
   local_protocol& local_proto = *local_proto_ptr;
   // declare this program "B" as Local device
   generic_device device{std::move(local_proto_ptr), "B"};
+
+  auto onAddNode = [&] (std::string parent, address_data dat) {
+    auto& p_node = ossia::net::find_or_create_node(device, parent);
+    auto cld = p_node.createChild(dat.node_name);
+    cld->createAddress(ossia::val_type::INT);
+  };
+  device.onAddNodeRequested.connect(&onAddNode);
+
+  auto onRemoveNode = [&] (std::string parent, std::string node) {
+    auto p_node = ossia::net::find_node(device, parent);
+    if(p_node)
+      p_node->removeChild(node);
+  };
+  device.onRemoveNodeRequested.connect(&onRemoveNode);
 
   /* publish each feature of program "B" as address into a tree */
 

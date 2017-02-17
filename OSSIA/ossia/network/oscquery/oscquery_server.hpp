@@ -93,8 +93,8 @@ public:
 
   oscquery_client* findClient(const connection_handler& hdl);
 private:
-  void add_node(const string_map<std::string>& parameters);
-  void remove_node(const std::string& path);
+  void add_node(ossia::string_view path, const string_map<std::string>& parameters);
+  void remove_node(ossia::string_view path, const std::string& node);
 
   // OSC callback
   void on_OSCMessage(
