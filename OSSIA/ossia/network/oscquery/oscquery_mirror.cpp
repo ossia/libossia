@@ -56,6 +56,8 @@ oscquery_mirror_protocol::oscquery_mirror_protocol(std::string host, uint16_t lo
                                     "Could not connect to " + m_websocketHost};
     }
   }
+
+  m_oscServer->run();
 }
 
 void oscquery_mirror_protocol::cleanup_connections()
@@ -318,7 +320,7 @@ void oscquery_mirror_protocol::on_WSMessage(
                 json_parser::getPort(*data));
 
           // Send to the server the local receiver port
-          m_websocketClient.send_message(fmt::format("?{}={}", detail::set_port(), m_oscServer->port()));
+          m_websocketClient.send_message(fmt::format("/?{}={}", detail::set_port(), m_oscServer->port()));
           break;
         }
         case message_type::Namespace:

@@ -407,10 +407,12 @@ public:
           if(listen_it->second == detail::text_true())
           {
             clt->start_listen(path.to_string(), node->getAddress());
+            return json_writer::string_t{};
           }
           else if(listen_it->second == detail::text_false())
           {
             clt->stop_listen(path.to_string());
+            return json_writer::string_t{};
           }
           else
           {
@@ -422,13 +424,16 @@ public:
         if(set_osc_port_it != parameters.end())
         {
           // First we find for a corresponding client
-          auto clt = proto.findClient(hdl);
+          auto clt = proto.findBuildingClient(hdl);
 
           if(!clt)
             throw bad_request_error{"Client not found"};
 
           // Then we set-up the sender
           clt->openOSCSender(proto.getLogger(), boost::lexical_cast<int>(set_osc_port_it->second));
+
+          proto.enableClient(hdl);
+          return json_writer::string_t{};
         }
 
         auto add_instance_it = parameters.find(detail::add_node());

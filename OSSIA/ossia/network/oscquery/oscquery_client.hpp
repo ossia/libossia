@@ -22,6 +22,7 @@ public:
   oscquery_client(oscquery_client&& other):
     connection{std::move(other.connection)},
     listening{std::move(other.listening)},
+    client_ip{std::move(other.client_ip)},
     sender{std::move(other.sender)}
   {
     //FIXME http://stackoverflow.com/a/29988626/1495627
@@ -31,6 +32,7 @@ public:
   {
     connection = std::move(other.connection);
     listening = std::move(other.listening);
+    client_ip = std::move(other.client_ip);
     sender = std::move(other.sender);
     return *this;
   }

@@ -72,6 +72,14 @@ int main()
     auto address = node.createAddress(val_type::FLOAT);
     address->add_callback(printValueCallback);
     address->pushValue(1234.);
+
+    std::thread t{[=] {
+        static int i = 1234;
+        while(true) {
+          address->pushValue(i++);
+          std::this_thread::sleep_for(std::chrono::seconds(1));
+        }}};
+    t.detach();
   }
   {
     auto& node = find_or_create_node(device, "/test/my_int");
