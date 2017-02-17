@@ -20,6 +20,8 @@ public:
 
   static void parse_value(ossia::net::address_base& addr, const rapidjson::Value& obj);
 
+  static void parse_address_value(ossia::net::node_base& root, const rapidjson::Value& obj);
+
   static void parse_path_added(ossia::net::node_base& map, const rapidjson::Value& obj);
 
   static void parse_path_removed(ossia::net::node_base& map, const rapidjson::Value& obj);

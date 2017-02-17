@@ -5,6 +5,7 @@
 #include <websocketpp/config/asio_no_tls_client.hpp>
 #include <websocketpp/client.hpp>
 #include <websocketpp/common/thread.hpp>
+#include <ossia/detail/json.hpp>
 #include <ossia/detail/logger.hpp>
 
 namespace ossia
@@ -90,6 +91,22 @@ class client
       websocketpp::lib::error_code ec;
 
       m_client.send(m_hdl, request, websocketpp::frame::opcode::text, ec);
+
+      if (ec)
+      {
+        m_client.get_alog().write(websocketpp::log::alevel::app,
+                                  "Send Error: " + ec.message());
+      }
+    }
+
+    void send_message(const rapidjson::StringBuffer& request)
+    {
+      if(!m_open)
+        return;
+
+      websocketpp::lib::error_code ec;
+
+      m_client.send(m_hdl, request.GetString(), request.GetSize(), websocketpp::frame::opcode::text, ec);
 
       if (ec)
       {

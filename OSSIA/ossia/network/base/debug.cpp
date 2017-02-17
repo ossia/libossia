@@ -4,7 +4,7 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
-
+#include <thread>
 namespace ossia
 {
 namespace net

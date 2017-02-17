@@ -4,6 +4,7 @@
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/oscquery/detail/json_reader.hpp>
+#include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <boost/algorithm/string/erase.hpp>
 #include <ossia/network/exceptions.hpp>
 namespace ossia
@@ -119,16 +120,15 @@ bool oscquery_mirror_protocol::push(const net::address_base& addr)
   if (val.valid())
   {
     // Push to server
-    if(!ossia::net::get_critical(addr.getNode()))
+    auto critical = net::get_critical(addr.getNode());
+    if(!critical || !*critical)
     {
       m_oscSender->send(addr, val);
     }
     else
     {
-      // TODO send via WS
+      m_websocketClient.send_message(json_writer::send_message(addr, val));
     }
-
-
     return true;
   }
   return false;

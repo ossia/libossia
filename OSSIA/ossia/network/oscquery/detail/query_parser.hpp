@@ -1,22 +1,21 @@
 #pragma once
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/oscquery/detail/attributes.hpp>
-#include <boost/container/static_vector.hpp>
-#include <chobo/small_vector.hpp>
-#include <boost/algorithm/string.hpp>
+#include <ossia/network/oscquery/detail/json_reader.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/base/address_data.hpp>
 #include <ossia/network/base/node.hpp>
-#include <hopscotch_map.h>
+#include <chobo/small_vector.hpp>
+#include <boost/container/static_vector.hpp>
+#include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
-#include <websocketpp/connection.hpp>
 #include <boost/spirit/home/qi.hpp>
 #include <boost/spirit/home/qi/directive/omit.hpp>
 #include <boost/fusion/include/std_pair.hpp>
+#include <hopscotch_map.h>
+#include <websocketpp/connection.hpp>
 #include <string>
 #include <vector>
-
-#include <experimental/string_view>
 
 namespace ossia
 {
@@ -66,7 +65,7 @@ public:
       {
         case '%':
         {
-          if (i + 3 <= in.size())
+          if (i + 3 <= N)
           {
             int value = 0;
             std::istringstream is(in.substr(i + 1, 2));
@@ -205,10 +204,11 @@ public:
   template<typename Mapper>
   static auto parse_json_request(const std::string& request, Mapper&& mapper)
   {
-    // rapidjson::Document doc;
-    // doc.ParseInsitu(request);
+    // [ { "/addr/val" : 123 } ]
+    rapidjson::Document doc;
+    doc.Parse(request); // TODO ParseInsitu
 
-    return rapidjson::StringBuffer{};
+    return mapper(doc);
   }
 
   static void parse(net::access_mode_attribute, const std::string& data, net::address_data& res) {
@@ -474,7 +474,22 @@ public:
   template<typename Protocol>
   static auto answer_json_request (Protocol& proto, const typename Protocol::connection_handler& hdl)
   {
-    return [] {};
+    return  [&] (const rapidjson::Document& doc) {
+
+      if(doc.IsArray())
+      {
+        const auto& arr = doc.GetArray();
+        for(const auto& e : arr)
+        {
+          json_parser::parse_address_value(proto.getDevice().getRootNode(), e);
+        }
+      }
+      else
+      {
+        json_parser::parse_address_value(proto.getDevice().getRootNode(), doc);
+      }
+      return json_writer::string_t{};
+    };
 
   }
 

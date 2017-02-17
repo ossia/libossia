@@ -67,12 +67,26 @@ bool oscquery_server_protocol::push(const net::address_base& addr)
   if (val.valid())
   {
     //Push to all clients
-    std::lock_guard<std::mutex> lock(m_clientsMutex);
-    for(auto& client : m_clients)
+    auto critical = net::get_critical(addr.getNode());
+    if(!critical || !*critical)
     {
-      // TODO send "critical" info via ws
-      client.sender->send(addr, val);
+      std::lock_guard<std::mutex> lock(m_clientsMutex);
+      for(auto& client : m_clients)
+      {
+        client.sender->send(addr, val);
+      }
     }
+    else
+    {
+      std::lock_guard<std::mutex> lock(m_clientsMutex);
+      for(auto& client : m_clients)
+      {
+        m_websocketServer.send_message(
+              client.connection,
+              json_writer::send_message(addr, val));
+      }
+    }
+
     return true;
   }
   return false;

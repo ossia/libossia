@@ -26,53 +26,7 @@ namespace ossia
 {
 namespace oscquery
 {
-//! TODO instead of having the command in a key, have a "command": "PathAdded"
-class oscquery_namespace_command
-{
-};
-
-class oscquery_path_added_command
-{
-};
-class oscquery_path_removed_command
-{
-};
-class oscquery_path_changed_command
-{
-};
-class oscquery_attributes_changed_command
-{
-};
-
-class oscquery_multi_path_added_command
-{
-};
-class oscquery_multi_path_removed_command
-{
-};
-class oscquery_multi_path_changed_command
-{
-};
-class oscquery_multi_attributes_changed_command
-{
-};
-
-
-using oscquery_command =
-  eggs::variant<
-    oscquery_namespace_command,
-
-    oscquery_path_added_command,
-    oscquery_path_removed_command,
-    oscquery_path_changed_command,
-    oscquery_attributes_changed_command,
-
-    oscquery_multi_path_added_command,
-    oscquery_multi_path_removed_command,
-    oscquery_multi_path_changed_command,
-    oscquery_multi_attributes_changed_command
->;
-
+//! Implementation of an oscquery server.
 class OSSIA_EXPORT oscquery_server_protocol final : public ossia::net::protocol_base
 {
   friend class query_answerer;
@@ -92,8 +46,13 @@ public:
   ossia::net::device_base& getDevice() const { return *m_device; }
 
 private:
+  // List of connected clients
   oscquery_client* findClient(const connection_handler& hdl);
+
+  // List of clients who connected but did not finish the connection procedure
   oscquery_client* findBuildingClient(const connection_handler& hdl);
+
+  // Called when a client is built (it gave its osc port)
   void enableClient(const connection_handler& hdl);
 
   void add_node(ossia::string_view path, const string_map<std::string>& parameters);
@@ -137,6 +96,8 @@ private:
   // To lock m_clients
   std::mutex m_buildingClientsMutex;
   std::mutex m_clientsMutex;
+
+  // The local ports
   uint16_t m_oscPort{};
   uint16_t m_wsPort{};
 };

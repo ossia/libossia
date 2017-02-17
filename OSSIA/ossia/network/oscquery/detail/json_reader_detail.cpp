@@ -538,6 +538,34 @@ void json_parser::parse_value(net::address_base& addr, const rapidjson::Value& o
   addr.setValue(std::move(val));
 }
 
+void json_parser::parse_address_value(
+    net::node_base& root,
+    const rapidjson::Value& obj)
+{
+  auto path_it = obj.FindMember(detail::attribute_full_path());
+  if(path_it != obj.MemberEnd())
+  {
+    auto val_it = obj.FindMember(detail::attribute_value());
+    if(val_it != obj.MemberEnd())
+    {
+      auto path = getStringView(path_it->value);
+      auto node = ossia::net::find_node(root, path);
+      if(node)
+      {
+        auto addr = node->getAddress();
+        if(addr)
+        {
+          auto val = addr->cloneValue();
+          val.apply(detail::json_to_value_unchecked{obj});
+
+          // TODO don't push it back to the sender
+          addr->pushValue(std::move(val));
+        }
+      }
+    }
+  }
+}
+
 // Given a string "/foo/bar/baz", return {"/foo/bar", "baz"}
 static auto splitParentChild(ossia::string_view s) ->
 optional<

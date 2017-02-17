@@ -66,6 +66,10 @@ public:
       const ossia::net::node_base& n,
       ossia::string_view attribute);
 
+  static string_t send_message(
+      const ossia::net::address_base&,
+      const ossia::value&);
+
   static string_t attributes_changed(
       const ossia::net::node_base& n,
       const std::vector<ossia::string_view>& attributes);
@@ -98,6 +102,11 @@ private:
       detail::json_writer_impl& p,
       const ossia::net::node_base& n,
       const std::vector<ossia::string_view>& attributes);
+
+  static void send_message_impl(
+      detail::json_writer_impl& p,
+      const ossia::net::address_base&,
+      const ossia::value&);
 };
 
 
