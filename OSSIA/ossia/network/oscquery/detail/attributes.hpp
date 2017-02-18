@@ -148,6 +148,23 @@ net::app_name_attribute,
 net::app_creator_attribute,
 net::app_version_attribute>;
 
+using attributes_when_reading =  brigand::list<
+net::domain_attribute,
+net::access_mode_attribute,
+net::bounding_mode_attribute,
+net::repetition_filter_attribute,
+net::tags_attribute,
+net::refresh_rate_attribute,
+net::priority_attribute,
+net::value_step_size_attribute,
+net::instance_bounds_attribute,
+net::critical_attribute,
+net::description_attribute,
+net::app_name_attribute,
+net::app_creator_attribute,
+net::app_version_attribute
+>;
+
 using all_attributes = brigand::list<
 typetag_attribute,
 net::unit_attribute,

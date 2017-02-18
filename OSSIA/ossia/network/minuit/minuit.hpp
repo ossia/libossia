@@ -6,7 +6,7 @@
 #include <ossia/network/minuit/detail/minuit_name_table.hpp>
 
 #include <ossia/editor/value/value.hpp>
-#include <mutex>
+#include <ossia/detail/mutex.hpp>
 #include <future>
 #include <set>
 #include <string>
@@ -33,7 +33,7 @@ class generic_device;
 class OSSIA_EXPORT minuit_protocol final : public ossia::net::protocol_base
 {
 private:
-  using lock_type = std::lock_guard<std::mutex>;
+  using lock_type = lock_t;
   std::string mLocalName;
   std::string mIp;
   uint16_t mRemotePort{}; /// the port that a remote device opens
@@ -45,10 +45,10 @@ private:
   std::promise<void> mNamespaceFinishedPromise;
   ossia::net::device_base* mDevice{};
 
-  std::mutex mNamespaceRequestsMutex;
+  mutex_t mNamespaceRequestsMutex;
   std::set<std::string, std::less<>> mNamespaceRequests;
 
-  std::mutex mGetRequestsMutex;
+  mutex_t mGetRequestsMutex;
   std::promise<void> mGetFinishedPromise;
   std::vector<std::string> mGetRequests;
   std::atomic_int mPendingGetRequests{};

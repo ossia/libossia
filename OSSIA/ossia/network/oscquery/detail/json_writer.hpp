@@ -8,7 +8,7 @@ namespace oscquery
 {
 
 //! Creates the JSON message to send through OSCQuery
-class json_writer
+class OSSIA_EXPORT json_writer
 {
 public:
   // Initialisation

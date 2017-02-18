@@ -11,7 +11,7 @@ namespace oscquery
 struct oscquery_client
 {
   websocket_server::connection_handler connection;
-  std::mutex listeningMutex;
+  mutex_t listeningMutex;
   string_map<ossia::net::address_base*> listening;
 
   std::string client_ip;

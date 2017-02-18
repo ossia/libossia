@@ -1,12 +1,15 @@
 #pragma once
-#include <shared_mutex>
+#include <ossia/detail/mutex.hpp>
 namespace ossia
 {
+/**
+ * \brief Thread-safe read-only reference to a container.
+ */
 template<typename Container>
 class locked_container
 {
 public:
-  locked_container(Container& src, std::shared_timed_mutex& mutex):
+  locked_container(Container& src, shared_mutex_t& mutex):
     m_ref{src},
     m_mutex{mutex}
   {
@@ -35,8 +38,9 @@ public:
 
   auto& operator[](std::size_t i) { return m_ref[i]; }
   const auto& operator[](std::size_t i) const { return m_ref[i]; }
+
 private:
   Container& m_ref;
-  std::shared_timed_mutex& m_mutex;
+  shared_mutex_t& m_mutex;
 };
 }

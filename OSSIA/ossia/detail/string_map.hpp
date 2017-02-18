@@ -3,6 +3,11 @@
 #include <hopscotch_map.h>
 #include <string>
 
+/**
+ * \file string_map.hpp
+ *
+ * Efficient hash maps for string and string_view
+ */
 namespace ossia
 {
 struct string_hash

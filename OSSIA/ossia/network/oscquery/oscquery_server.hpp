@@ -8,7 +8,7 @@
 #include <readerwriterqueue.h>
 
 #include <hopscotch_map.h>
-#include <mutex>
+#include <ossia/detail/mutex.hpp>
 #include <atomic>
 namespace osc
 {
@@ -96,8 +96,8 @@ private:
   std::thread m_serverThread;
 
   // To lock m_clients
-  std::mutex m_buildingClientsMutex;
-  std::mutex m_clientsMutex;
+  mutex_t m_buildingClientsMutex;
+  mutex_t m_clientsMutex;
 
   // The local ports
   uint16_t m_oscPort{};

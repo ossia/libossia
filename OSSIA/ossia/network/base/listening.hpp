@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/string_map.hpp>
-#include <mutex>
+#include <ossia/detail/mutex.hpp>
 
 namespace ossia
 {
@@ -17,7 +17,7 @@ public:
 
   optional<mapped_type> find(const key_type& path)
   {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    lock_t lock(m_mutex);
     auto it = m_map.find(path);
     if (it != m_map.end())
     {
@@ -31,7 +31,7 @@ public:
 
   optional<mapped_type> find_and_take(const key_type& path)
   {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    lock_t lock(m_mutex);
     auto it = m_map.find(path);
     if (it != m_map.end())
     {
@@ -47,24 +47,24 @@ public:
 
   void insert(const value_type& m)
   {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    lock_t lock(m_mutex);
     m_map.insert(m);
   }
 
   void insert(value_type&& m)
   {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    lock_t lock(m_mutex);
     m_map.insert(std::move(m));
   }
 
   void erase(const key_type& m)
   {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    lock_t lock(m_mutex);
     m_map.erase(m);
   }
 
 private:
-  std::mutex m_mutex;
+  mutex_t m_mutex;
   map_type m_map;
 };
 

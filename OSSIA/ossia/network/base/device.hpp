@@ -143,6 +143,12 @@ void node_base::set(Attribute a, const T& value)
 }
 
 template<typename Attribute, typename T>
+void node_base::set(Attribute a, T& value)
+{
+  set(a, const_cast<const T&>(value));
+}
+
+template<typename Attribute, typename T>
 void node_base::set(Attribute a, T&& value)
 {
   auto opt = a.getter(*this);

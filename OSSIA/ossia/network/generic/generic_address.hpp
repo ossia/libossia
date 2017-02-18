@@ -8,7 +8,7 @@
 #include <ossia/network/base/node_attributes.hpp>
 
 #include <ossia/detail/optional.hpp>
-#include <mutex>
+#include <ossia/detail/mutex.hpp>
 #include <thread>
 
 #include <vector>
@@ -34,7 +34,7 @@ protected:
   ossia::bounding_mode m_boundingMode{};
   ossia::repetition_filter m_repetitionFilter{};
 
-  mutable std::mutex m_valueMutex;
+  mutable mutex_t m_valueMutex;
   ossia::value m_value;
 
   ossia::domain m_domain;

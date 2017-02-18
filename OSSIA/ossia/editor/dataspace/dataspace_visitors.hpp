@@ -1,5 +1,4 @@
 #pragma once
-#include <ossia/editor/dataspace/dataspace.hpp> // TODO :( required for dataspace_traits
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/editor/value/vec.hpp>
 #include <ossia/detail/destination_index.hpp>
@@ -120,19 +119,6 @@ ossia::val_type matching_type(const ossia::unit_t& u);
 
 inline ossia::val_type matching_type(ossia::unit_t&& u)
 { return matching_type(static_cast<const ossia::unit_t&>(u)); }
-/*
-template<typename T, decltype(ossia::dataspace_traits<T>::text())* = nullptr>
-inline ossia::val_type underlying_type(const T& t)
-{
-  return underlying_type(unit_t{t});
-}
-
-template<typename T, void_t<ossia::unit_traits<T>>::text())* = nullptr>
-inline ossia::val_type underlying_type(const T& t)
-{
-  return underlying_type(unit_t{t});
-}
-*/
 
 /**
  * @brief convert Convert a value to another unit in the same dataspace

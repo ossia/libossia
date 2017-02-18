@@ -54,7 +54,7 @@ ossia::state_element mapper::state()
     mLastDate = date;
 
     {
-      std::unique_lock<std::mutex> lock(mValueToMapMutex);
+      std::unique_lock<mutex_t> lock(mValueToMapMutex);
       if (mValueToMap.valid())
       {
         // edit a Message handling the mapped value
@@ -118,7 +118,7 @@ void mapper::setDriverAddress(ossia::Destination d)
   stop();
 
   {
-    std::lock_guard<std::mutex> lock(mDriverAddressMutex);
+    lock_t lock(mDriverAddressMutex);
     mDriverAddress = std::move(d);
   }
 
@@ -147,7 +147,7 @@ void mapper::clean()
   // Cleans the callback
   stop();
   {
-    std::lock_guard<std::mutex> lock(mDriverAddressMutex);
+    lock_t lock(mDriverAddressMutex);
     mDriverAddress = ossia::none;
   }
 
@@ -360,7 +360,7 @@ ossia::value mapper::computeValue(
 void mapper::driverValueCallback(ossia::value value)
 {
   // This access is protected by a mutex because driverValueCallback can come from a network thread.
-  std::unique_lock<std::mutex> l1{mDriverAddressMutex};
+  std::unique_lock<mutex_t> l1{mDriverAddressMutex};
   if(mDriverAddress)
   {
     auto driver = *mDriverAddress;
@@ -381,7 +381,7 @@ void mapper::driverValueCallback(ossia::value value)
     }
 
     {
-      std::lock_guard<std::mutex> lock(mValueToMapMutex);
+      lock_t lock(mValueToMapMutex);
 
       mValueToMap = value;
     }

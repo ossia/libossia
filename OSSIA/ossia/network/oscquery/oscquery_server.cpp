@@ -72,7 +72,7 @@ bool oscquery_server_protocol::push(const net::address_base& addr)
     auto critical = net::get_critical(addr.getNode());
     if(!critical)
     {
-      std::lock_guard<std::mutex> lock(m_clientsMutex);
+      lock_t lock(m_clientsMutex);
       for(auto& client : m_clients)
       {
         client.sender->send(addr, val);
@@ -80,7 +80,7 @@ bool oscquery_server_protocol::push(const net::address_base& addr)
     }
     else
     {
-      std::lock_guard<std::mutex> lock(m_clientsMutex);
+      lock_t lock(m_clientsMutex);
       for(auto& client : m_clients)
       {
         m_websocketServer.send_message(
@@ -133,7 +133,7 @@ void oscquery_server_protocol::setDevice(net::device_base& dev)
 oscquery_client*oscquery_server_protocol::findClient(
     const connection_handler& hdl)
 {
-  std::lock_guard<std::mutex> lock(m_clientsMutex);
+  lock_t lock(m_clientsMutex);
 
   auto it = ossia::find(m_clients, hdl);
   if(it != m_clients.end())
@@ -144,7 +144,7 @@ oscquery_client*oscquery_server_protocol::findClient(
 oscquery_client*oscquery_server_protocol::findBuildingClient(
     const connection_handler& hdl)
 {
-  std::lock_guard<std::mutex> lock(m_buildingClientsMutex);
+  lock_t lock(m_buildingClientsMutex);
 
   auto it = ossia::find(m_buildingClients, hdl);
   if(it != m_buildingClients.end())
@@ -155,8 +155,8 @@ oscquery_client*oscquery_server_protocol::findBuildingClient(
 void oscquery_server_protocol::enableClient(
     const oscquery_server_protocol::connection_handler& hdl)
 {
-  std::lock_guard<std::mutex> l1(m_clientsMutex);
-  std::lock_guard<std::mutex> l2(m_buildingClientsMutex);
+  lock_t l1(m_clientsMutex);
+  lock_t l2(m_buildingClientsMutex);
 
   auto bld_it = ossia::find(m_buildingClients, hdl);
   assert(bld_it != m_buildingClients.end());
@@ -266,7 +266,7 @@ void oscquery_server_protocol::on_connectionOpen(
 try {
   {
     auto con = m_websocketServer.impl().get_con_from_hdl(hdl);
-    std::lock_guard<std::mutex> lock(m_buildingClientsMutex);
+    lock_t lock(m_buildingClientsMutex);
     m_buildingClients.emplace_back(hdl);
     m_buildingClients.back().client_ip = con->get_host();
   }
@@ -281,7 +281,7 @@ try {
 void oscquery_server_protocol::on_connectionClosed(
     connection_handler hdl)
 {
-  std::lock_guard<std::mutex> lock(m_clientsMutex);
+  lock_t lock(m_clientsMutex);
   auto it = ossia::find(m_clients, hdl);
   if(it != m_clients.end())
   {
@@ -294,7 +294,7 @@ void oscquery_server_protocol::on_nodeCreated(
 try {
   const auto mess = json_writer::path_added(n);
 
-  std::lock_guard<std::mutex> lock(m_clientsMutex);
+  lock_t lock(m_clientsMutex);
   for(auto& client : m_clients)
   {
     m_websocketServer.send_message(
@@ -313,7 +313,7 @@ try {
   const auto mess = json_writer::path_removed(net::osc_address_string(n));
 
   logger().info("on_nodeRemoved: {}", mess.GetString());
-  std::lock_guard<std::mutex> lock(m_clientsMutex);
+  lock_t lock(m_clientsMutex);
   for(auto& client : m_clients)
   {
     m_websocketServer.send_message(
@@ -331,7 +331,7 @@ void oscquery_server_protocol::on_attributeChanged(
     ossia::string_view attr)
 try {
   const auto mess = json_writer::attributes_changed(n, attr);
-  std::lock_guard<std::mutex> lock(m_clientsMutex);
+  lock_t lock(m_clientsMutex);
   for(auto& client : m_clients)
   {
     m_websocketServer.send_message(

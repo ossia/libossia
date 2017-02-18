@@ -206,7 +206,11 @@ OSSIA_ATTRIBUTE(ossia::net::app_version, app_version)
 template<typename T, typename U>
 bool compare_optional(const T& t, const U& u)
 {
-  return t && *t != u;
+  return !t || (t && *t != u);
+}
+inline bool compare_optional(const ossia::value& t, const ossia::value& u)
+{
+  return t != u;
 }
 template<typename U>
 inline bool compare_optional(const ossia::domain& t, const U& u)

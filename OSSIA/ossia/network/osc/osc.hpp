@@ -5,7 +5,7 @@
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <hopscotch_map.h>
-#include <mutex>
+#include <ossia/detail/mutex.hpp>
 #include <atomic>
 
 namespace oscpack

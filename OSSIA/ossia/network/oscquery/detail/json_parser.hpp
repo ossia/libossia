@@ -8,9 +8,8 @@ namespace oscquery
 {
 
 //! Functions to parse replies to OSCQuery json requests
-class json_parser
+struct OSSIA_EXPORT json_parser
 {
-public:
   static std::shared_ptr<rapidjson::Document> parse(std::string& message);
 
   static int get_port(const rapidjson::Value& obj);
@@ -24,7 +23,6 @@ public:
   static void parse_path_removed(ossia::net::node_base& map, const rapidjson::Value& obj);
   static void parse_path_changed(ossia::net::node_base& map, const rapidjson::Value& mess);
   static void parse_attributes_changed(ossia::net::node_base& map, const rapidjson::Value& obj);
-
 };
 
 }

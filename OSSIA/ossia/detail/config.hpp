@@ -26,14 +26,14 @@
 #if defined(_MSC_VER) || defined(__cpp_lib_void_t)
 namespace ossia
 {
-	template<typename... Args>
-	using void_t = std::void_t<Args...>;
+  template<typename... Args>
+  using void_t = std::void_t<Args...>;
 }
 #else
 namespace ossia
 {
-	template<typename... Args>
-	using void_t = void;
+  template<typename... Args>
+  using void_t = void;
 }
 #endif
 
@@ -46,3 +46,6 @@ namespace ossia
 
 #define SPDLOG_FMT_EXTERNAL
 #define FMT_HEADER_ONLY
+#define RAPIDJSON_HAS_STDSTRING 1
+#define BOOST_ERROR_CODE_HEADER_ONLY 1
+#define BOOST_SYSTEM_NO_DEPRECATED

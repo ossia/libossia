@@ -63,6 +63,9 @@ ossia_add_test(QmlTest                      "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlD
 if("${OSSIA_PROTOCOLS}" MATCHES "WebSockets")
   ossia_add_test(WebSocketTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/WebSocketTest.cpp")
 endif()
+if("${OSSIA_PROTOCOLS}" MATCHES "OSCQuery")
+  ossia_add_test(OSCQueryTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryTest.cpp")
+endif()
 
 if(OSSIA_BENCHMARKS)
 ossia_add_test(DeviceBenchmark_Nsec_client "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_Nsec_client.cpp")

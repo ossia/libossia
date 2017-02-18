@@ -116,23 +116,32 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, domain& res)
   if(!val.IsArray())
     return false;
 
+  const int N = val.Size();
   // Read the domain as it is
-  if(val.Size() == 2) // min, max
+  if(N == 2) // min, max
   {
     res = ossia::make_domain(ReadValue(val[0]), ReadValue(val[1]));
     return true;
   }
 
-  else if(val.Size() >= 3 && val[2].IsArray())
+  else if(N >= 3)
   {
-    std::vector<ossia::value> tpl;
-    tpl.reserve(val[2].Size());
-    for(auto& elt : val[2].GetArray())
+    if(!val[2].IsArray())
     {
-      tpl.push_back(ReadValue(elt));
+      res = ossia::make_domain(ReadValue(val[0]), ReadValue(val[1]));
+      return true;
     }
-    res = ossia::make_domain(ReadValue(val[0]), ReadValue(val[1]), std::move(tpl));
-    return true;
+    else
+    {
+      std::vector<ossia::value> tpl;
+      tpl.reserve(val[2].Size());
+      for(auto& elt : val[2].GetArray())
+      {
+        tpl.push_back(ReadValue(elt));
+      }
+      res = ossia::make_domain(ReadValue(val[0]), ReadValue(val[1]), std::move(tpl));
+      return true;
+    }
   }
   return false;
 }
@@ -203,19 +212,7 @@ static auto& namespaceSetterMap()
       using namespace ossia::net;
 
       // Remaining metadata
-      brigand::for_each< brigand::list<
-          domain_attribute,
-          access_mode_attribute,
-          bounding_mode_attribute,
-          repetition_filter_attribute,
-          tags_attribute,
-          refresh_rate_attribute,
-          priority_attribute,
-          value_step_size_attribute,
-          instance_bounds_attribute,
-          critical_attribute,
-          description_attribute
-          > >([&] (auto attr) {
+      brigand::for_each<attributes_when_reading>([&] (auto attr) {
         using type = typename decltype(attr)::type;
         attr_impl.insert(make_setter_pair<type>());
       });
@@ -430,7 +427,7 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
     auto memb_end = obj.MemberEnd();
     for(auto it = obj.MemberBegin(); it != memb_end; ++it)
     {
-      auto action = map.find(getString(it->name)); // TODO string -> string view
+      auto action = map.find(getStringView(it->name));
       if(action != map.end())
       {
         action.value()(it->value, node);
@@ -656,7 +653,7 @@ void json_parser::parse_attributes_changed(net::node_base& root, const rapidjson
         auto memb_end = dat.MemberEnd();
         for(auto it = dat.MemberBegin(); it != memb_end; ++it)
         {
-          auto action = map.find(getString(it->name)); // TODO string -> string view
+          auto action = map.find(getStringView(it->name));
           if(action != map.end())
           {
             action.value()(it->value, *node);

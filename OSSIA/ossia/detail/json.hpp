@@ -1,5 +1,5 @@
 #pragma once
-#define RAPIDJSON_HAS_STDSTRING 1
+#include <ossia/detail/config.hpp>
 #include <rapidjson/writer.h>
 #include <rapidjson/document.h>
 #include <ossia/detail/string_view.hpp>

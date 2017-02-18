@@ -29,10 +29,11 @@ public:
       // Here we handle the url elements relative to oscquery
       if(parameters.size() == 0)
       {
-        // TODO auto&& lock = dev.map().acquire_read_lock();
         auto& root = proto.getDevice().getRootNode();
         if(path == "/")
+        {
           return oscquery::json_writer::query_namespace(root);
+        }
         else
         {
           auto node = ossia::net::find_node(root, path);

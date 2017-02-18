@@ -85,7 +85,7 @@ const ossia::value& generic_address::getValue() const
 
 ossia::value generic_address::cloneValue() const
 {
-  std::lock_guard<std::mutex> lock(m_valueMutex);
+  lock_t lock(m_valueMutex);
 
   return m_value;
 }
@@ -103,7 +103,7 @@ void generic_address::setValueQuiet(const value& val)
   if(!val.valid())
     return;
 
-  std::lock_guard<std::mutex> lock(m_valueMutex);
+  lock_t lock(m_valueMutex);
   // std::cerr << address_string_from_node(*this) << " : " << mValue << " <=== " << val << std::endl;
 
   // set value querying the value from another address
@@ -163,7 +163,7 @@ ossia::val_type generic_address::getValueType() const
 ossia::net::generic_address& generic_address::setValueType(ossia::val_type type)
 {
   {
-    std::lock_guard<std::mutex> lock(m_valueMutex);
+    lock_t lock(m_valueMutex);
     // std::cerr << address_string_from_node(*this) << " TYPE CHANGE : " << (int) mValueType << " <=== " << (int) type << std::endl;
     m_valueType = type;
 
@@ -267,7 +267,7 @@ unit_t generic_address::getUnit() const
 generic_address& generic_address::setUnit(const unit_t& v)
 {
   {
-    std::lock_guard<std::mutex> lock(m_valueMutex);
+    lock_t lock(m_valueMutex);
     m_unit = v;
 
     // update the type to match the unit.

@@ -360,7 +360,10 @@ void oscquery_mirror_protocol::on_WSMessage(
         }
         case message_type::PathChanged:
         {
-          //TODO
+          m_functionQueue.enqueue([this,doc=std::move(data)] {
+            json_parser::parse_path_changed(m_device->getRootNode(), *doc);
+          });
+          if(m_commandCallback) m_commandCallback();
           break;
         }
         case message_type::PathRemoved:

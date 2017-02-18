@@ -9,7 +9,7 @@
 #include <ossia/detail/optional.hpp>
 #include <ossia_export.h>
 
-#include <mutex>
+#include <ossia/detail/mutex.hpp>
 
 namespace ossia
 {
@@ -64,8 +64,8 @@ private:
 
   optional<ossia::message> mLastMessage;
   ossia::value mValueToMap;
-  mutable std::mutex mValueToMapMutex;
-  mutable std::mutex mDriverAddressMutex;
+  mutable mutex_t mValueToMapMutex;
+  mutable mutex_t mDriverAddressMutex;
 
   optional<ossia::net::address_base::callback_index> mDriverValueCallbackIndex;
 
