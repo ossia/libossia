@@ -176,7 +176,7 @@ static auto make_setter_pair(Attr)
   });
 }
 
-using query_reader_map_type = tsl::hopscotch_map<ossia::string_view, map_setter_fun>;
+using query_reader_map_type = string_view_map<map_setter_fun>;
 
 static auto& querySetterMap()
 {

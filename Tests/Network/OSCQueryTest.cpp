@@ -60,26 +60,26 @@ private Q_SLOTS:
         QVERIFY(node);
         auto& n = *node;
 
-        QVERIFY(get_access_mode(n));
+        QVERIFY((bool)get_access_mode(n));
         QCOMPARE(*get_access_mode(n), access_mode::GET);
 
-        QVERIFY(get_bounding_mode(n));
+        QVERIFY((bool)get_bounding_mode(n));
         QCOMPARE(*get_bounding_mode(n), bounding_mode::FOLD);
 
-        QVERIFY(get_domain(n));
+        QVERIFY((bool)get_domain(n));
         QCOMPARE(get_domain(n), make_domain(-10, 10));
 
-        QVERIFY(get_default_value(n));
+        QVERIFY((bool)get_default_value(n));
         QCOMPARE(*get_default_value(n), ossia::value(0));
 
         tags the_tags{"fancy", "wow", "1234"};
-        QVERIFY(get_tags(n));
+        QVERIFY((bool)get_tags(n));
         QCOMPARE(*get_tags(n), the_tags);
 
-        QVERIFY(get_refresh_rate(n));
+        QVERIFY((bool)get_refresh_rate(n));
         QCOMPARE(*get_refresh_rate(n), 100);
 
-        QVERIFY(get_value_step_size(n));
+        QVERIFY((bool)get_value_step_size(n));
         QCOMPARE(*get_value_step_size(n), 0.5);
 
         QVERIFY(get_repetition_filter(n));
@@ -87,25 +87,25 @@ private Q_SLOTS:
 
         QVERIFY(get_critical(n));
 
-        QVERIFY(get_unit(n));
+        QVERIFY((bool)get_unit(n));
         QCOMPARE(get_unit(n), ossia::unit_t(meter_per_second_u{}));
 
-        QVERIFY(get_priority(n));
+        QVERIFY((bool)get_priority(n));
         QCOMPARE(*get_priority(n), 50);
 
-        QVERIFY(get_description(n));
+        QVERIFY((bool)get_description(n));
         QCOMPARE(*get_description(n), std::string("Such a fancy node?! Incredible! すごい!!"));
 
-        QVERIFY(get_extended_type(n));
+        QVERIFY((bool)get_extended_type(n));
         QCOMPARE(*get_extended_type(n), std::string("custom"));
 
-        QVERIFY(get_app_name(n));
+        QVERIFY((bool)get_app_name(n));
         QCOMPARE(*get_app_name(n), std::string("AppName"));
 
-        QVERIFY(get_app_version(n));
+        QVERIFY((bool)get_app_version(n));
         QCOMPARE(*get_app_version(n), std::string("1.0.0"));
 
-        QVERIFY(get_app_creator(n));
+        QVERIFY((bool)get_app_creator(n));
         QCOMPARE(*get_app_creator(n), std::string("Lelouch vi Brittania"));
       }
     }

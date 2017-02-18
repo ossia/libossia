@@ -5,7 +5,6 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/detail/optional.hpp>
-#include <boost/iterator/counting_iterator.hpp>
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
 #include <boost/lexical_cast.hpp>
 #include <iostream>

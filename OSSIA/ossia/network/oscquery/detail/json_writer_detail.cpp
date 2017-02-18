@@ -89,7 +89,7 @@ void json_writer_impl::writeValue(const net::instance_bounds& i) const
 }
 
 using writer_map_fun = void (*)(const json_writer_impl&, const ossia::net::node_base& );
-using writer_map_type = tsl::hopscotch_map<ossia::string_view, writer_map_fun>;
+using writer_map_type = string_view_map<writer_map_fun>;
 
 template<typename Attr>
 static auto make_fun_pair()

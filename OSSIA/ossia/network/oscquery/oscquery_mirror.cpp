@@ -95,7 +95,7 @@ std::future<void> oscquery_mirror_protocol::pullAsync(net::address_base& address
   std::promise<void> promise;
   auto fut = promise.get_future();
   auto text = net::osc_address_string(address);
-  m_getWSPromises.enqueue({std::move(promise), text});
+  m_getWSPromises.enqueue(get_ws_promise{std::move(promise), text});
   /*
   m_getOSCPromises.insert(
         std::make_pair(

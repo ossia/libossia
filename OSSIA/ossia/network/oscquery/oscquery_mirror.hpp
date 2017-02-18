@@ -101,6 +101,13 @@ private:
   };
   struct get_ws_promise
   {
+    get_ws_promise() = default;
+    get_ws_promise(const get_ws_promise&) = default;
+    get_ws_promise(get_ws_promise&&) = default;
+    get_ws_promise& operator=(const get_ws_promise&) = default;
+    get_ws_promise& operator=(get_ws_promise&&) = default;
+
+    get_ws_promise(std::promise<void>&& p, const std::string& addr): promise{std::move(p)}, address{addr} {}
     std::promise<void> promise;
     std::string address{};
   };
