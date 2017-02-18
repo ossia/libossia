@@ -63,19 +63,27 @@ void qt_object_node::init(QObject& obj)
     }
   }
 
-  { write_lock_t lock{m_mutex};
-    for(auto c : obj.children())
-    {
-      m_children.push_back(
-            std::make_unique<qt_object_node>(*c, mDevice, *this));
-    }
-
-    for(int i = 0; i < obj.metaObject()->propertyCount(); i++)
-    {
-      m_children.push_back(
-            std::make_unique<qt_property_node>(obj, obj.metaObject()->property(i), mDevice, *this));
-    }
+  // Note : we create the childrens, and then lock the vector
+  // because the children creation operation calls node_base::children() which causes
+  // double locking.
+  decltype(m_children) children_vect;
+  for(auto c : obj.children())
+  {
+    children_vect.push_back(
+          std::make_unique<qt_object_node>(*c, mDevice, *this));
   }
+
+  for(int i = 0; i < obj.metaObject()->propertyCount(); i++)
+  {
+    children_vect.push_back(
+          std::make_unique<qt_property_node>(obj, obj.metaObject()->property(i), mDevice, *this));
+  }
+
+  {
+    write_lock_t lock{m_mutex};
+    std::move(children_vect.begin(), children_vect.end(), std::back_inserter(m_children));
+  }
+
 }
 
 void qt_object_node::childEvent(QChildEvent* event)
