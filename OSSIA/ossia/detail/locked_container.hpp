@@ -13,12 +13,10 @@ public:
     m_ref{src},
     m_mutex{mutex}
   {
-    m_mutex.lock_shared();
   }
 
   ~locked_container()
   {
-    m_mutex.unlock_shared();
   }
 
   auto& front() { return m_ref.front(); }
@@ -41,6 +39,6 @@ public:
 
 private:
   Container& m_ref;
-  shared_mutex_t& m_mutex;
+  read_lock_t m_mutex;
 };
 }
