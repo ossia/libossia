@@ -82,12 +82,12 @@ address_base& midi_address::setAccessMode(access_mode)
   return *this;
 }
 
-const ossia::net::domain& midi_address::getDomain() const
+const ossia::domain& midi_address::getDomain() const
 {
   return mDomain;
 }
 
-address_base& midi_address::setDomain(const ossia::net::domain&)
+address_base& midi_address::setDomain(const ossia::domain&)
 {
   return *this;
 }

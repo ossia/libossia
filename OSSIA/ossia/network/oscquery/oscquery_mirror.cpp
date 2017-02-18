@@ -3,7 +3,7 @@
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
-#include <ossia/network/oscquery/detail/json_reader.hpp>
+#include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <boost/algorithm/string/erase.hpp>
 #include <ossia/network/exceptions.hpp>
@@ -121,7 +121,7 @@ bool oscquery_mirror_protocol::push(const net::address_base& addr)
   {
     // Push to server
     auto critical = net::get_critical(addr.getNode());
-    if(!critical || !*critical)
+    if(!critical)
     {
       m_oscSender->send(addr, val);
     }
@@ -136,7 +136,6 @@ bool oscquery_mirror_protocol::push(const net::address_base& addr)
 
 bool oscquery_mirror_protocol::observe(net::address_base& address, bool enable)
 {
-  //! \todo Send an OSCQuery Listen request
   if (enable)
   {
     auto str = net::osc_address_string(address);
@@ -309,7 +308,7 @@ void oscquery_mirror_protocol::on_WSMessage(
     }
     else
     {
-      switch(json_parser::messageType(*data))
+      switch(json_parser::message_type(*data))
       {
         case message_type::Device:
         {
@@ -317,7 +316,7 @@ void oscquery_mirror_protocol::on_WSMessage(
           m_oscSender = std::make_unique<osc::sender>(
                 mLogger,
                 to_ip(m_websocketHost),
-                json_parser::getPort(*data));
+                json_parser::get_port(*data));
 
           // Send to the server the local receiver port
           m_websocketClient.send_message(fmt::format("/?{}={}", detail::set_port(), m_oscServer->port()));

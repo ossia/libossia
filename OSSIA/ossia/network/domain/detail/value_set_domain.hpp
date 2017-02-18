@@ -3,8 +3,6 @@
 
 namespace ossia
 {
-namespace net
-{
 
 template <typename T>
 struct domain_base;
@@ -31,5 +29,4 @@ struct value_set_clamp
   }
 };
 
-}
 }

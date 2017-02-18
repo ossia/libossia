@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/address_data.hpp>
+#include <ossia/network/base/node_attributes.hpp>
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
 
@@ -130,9 +131,13 @@ template<typename Attribute, typename T>
 void node_base::set(Attribute a, const T& value)
 {
   auto opt = a.getter(*this);
-  if(opt && *opt != value)
+
+  // We make a copy here to prevent a double conversion
+  // for instance from std::vector<> to value. TODO do the same in the other.
+  typename Attribute::type val = value;
+  if(compare_optional(opt, val))
   {
-    a.setter(*this, value);
+    a.setter(*this, val);
     getDevice().onAttributeModified(*this, a.text());
   }
 }
@@ -141,7 +146,7 @@ template<typename Attribute, typename T>
 void node_base::set(Attribute a, T&& value)
 {
   auto opt = a.getter(*this);
-  if(opt && *opt != value)
+  if(compare_optional(opt, value))
   {
     a.setter(*this, std::move(value));
     getDevice().onAttributeModified(*this, a.text());

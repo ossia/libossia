@@ -12,13 +12,16 @@ namespace ossia
 {
 namespace oscquery
 {
-class client
+
+//! Low-level Websocket client for OSCQuery
+class websocket_client
 {
   public:
     using connection_handler = websocketpp::connection_hdl;
 
+    //! \tparam Function that will be called when the client receives a server message.
     template<typename MessageHandler>
-    client(MessageHandler&& messageHandler) :
+    websocket_client(MessageHandler&& messageHandler) :
       m_open{false}
     {
       m_client.clear_access_channels(websocketpp::log::alevel::all);
@@ -45,7 +48,7 @@ class client
       });
     }
 
-    ~client()
+    ~websocket_client()
     {
       if(m_open)
         stop();

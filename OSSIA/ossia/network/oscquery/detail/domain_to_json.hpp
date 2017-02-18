@@ -9,7 +9,7 @@ namespace oscquery
 namespace detail
 {
 
-// We're in an array
+//! Write a domain to json.
 struct domain_to_json
 {
     rapidjson::Writer<rapidjson::StringBuffer>& writer;
@@ -19,13 +19,13 @@ struct domain_to_json
         writer.Null();
         writer.Null();
     }
-    void operator()(const ossia::net::domain_base<impulse> & dom)
+    void operator()(const ossia::domain_base<impulse> & dom)
     {
         writer.Null();
         writer.Null();
         writer.Null();
     }
-    void operator()(const ossia::net::domain_base<int32_t> & dom)
+    void operator()(const ossia::domain_base<int32_t> & dom)
     {
         if(dom.min) writer.Int(*dom.min); else writer.Null();
         if(dom.max) writer.Int(*dom.max); else writer.Null();
@@ -42,7 +42,7 @@ struct domain_to_json
             writer.Null(); // TODO why not just nothing ?
         }
     }
-    void operator()(const ossia::net::domain_base<float> & dom)
+    void operator()(const ossia::domain_base<float> & dom)
     {
         if(dom.min) writer.Double(*dom.min); else writer.Null();
         if(dom.max) writer.Double(*dom.max); else writer.Null();
@@ -60,7 +60,7 @@ struct domain_to_json
         }
     }
 
-    void operator()(const ossia::net::domain_base<char> & dom)
+    void operator()(const ossia::domain_base<char> & dom)
     {
         if(dom.min) writeChar(writer, *dom.min); else writer.Null();
         if(dom.max) writeChar(writer, *dom.max); else writer.Null();
@@ -78,7 +78,7 @@ struct domain_to_json
         }
     }
 
-    void operator()(const ossia::net::domain_base<bool> & dom)
+    void operator()(const ossia::domain_base<bool> & dom)
     {
         if(dom.min) writer.Bool(*dom.min); else writer.Null();
         if(dom.max) writer.Bool(*dom.max); else writer.Null();
@@ -96,7 +96,7 @@ struct domain_to_json
         }
     }
 
-    void operator()(const ossia::net::domain_base<std::string> & dom)
+    void operator()(const ossia::domain_base<std::string> & dom)
     {
         writer.Null();
         writer.Null();
@@ -114,7 +114,7 @@ struct domain_to_json
         }
     }
 
-    void operator()(const ossia::net::domain_base<std::vector<ossia::value>> & dom)
+    void operator()(const ossia::domain_base<std::vector<ossia::value>> & dom)
     {
         if(dom.min)
         {
@@ -159,7 +159,7 @@ struct domain_to_json
     }
 
     template<std::size_t N>
-    void operator()(const ossia::net::domain_base<std::array<float, N>> & dom)
+    void operator()(const ossia::domain_base<std::array<float, N>> & dom)
     {
         if(dom.min)
         {
@@ -204,7 +204,7 @@ struct domain_to_json
             writer.Null(); // TODO why not just nothing ?
         }
     }
-    void operator()(const ossia::net::domain_base<ossia::value> & dom)
+    void operator()(const ossia::domain_base<ossia::value> & dom)
     {
         if(dom.min)
         {
@@ -241,7 +241,7 @@ struct domain_to_json
 };
 
 
-
+/*
 struct json_to_domain
 {
     const rapidjson::Value& value; // Is an array
@@ -250,12 +250,12 @@ struct json_to_domain
       return false;
     }
 
-    bool operator()(ossia::net::domain_base<impulse> & dom)
+    bool operator()(ossia::domain_base<impulse> & dom)
     {
       return true;
     }
 
-    bool operator()(ossia::net::domain_base<int32_t> & dom)
+    bool operator()(ossia::domain_base<int32_t> & dom)
     {
       if(value.IsArray())
       {
@@ -285,7 +285,7 @@ struct json_to_domain
       return true;
     }
 
-    bool operator()(ossia::net::domain_base<float> & dom)
+    bool operator()(ossia::domain_base<float> & dom)
     {
       if(value.IsArray())
       {
@@ -315,7 +315,7 @@ struct json_to_domain
       return true;
     }
 
-    bool operator()(ossia::net::domain_base<char> & dom)
+    bool operator()(ossia::domain_base<char> & dom)
     {
       if(value.IsArray())
       {
@@ -345,7 +345,7 @@ struct json_to_domain
       return true;
     }
 
-    bool operator()(ossia::net::domain_base<bool> & dom)
+    bool operator()(ossia::domain_base<bool> & dom)
     {
       if(value.IsArray())
       {
@@ -375,7 +375,7 @@ struct json_to_domain
       return true;
     }
 
-    bool operator()(ossia::net::domain_base<std::string> & dom)
+    bool operator()(ossia::domain_base<std::string> & dom)
     {
       if(value.IsArray())
       {
@@ -399,59 +399,31 @@ struct json_to_domain
       return true;
     }
 
-    bool operator()(ossia::net::domain_base<std::vector<ossia::value>> & dom)
+    bool operator()(ossia::domain_base<std::vector<ossia::value>> & dom)
     {
-      // TODO
-      /*
-        if(dom.min)
-        {
-            writer.StartArray();
-            for(auto& val : *dom.min)
-                val.apply(value_to_json{writer});
-            writer.EndArray();
-        }
-        else
-        {
-            writer.Null();
-        }
+      // Todo : why not instead : RANGE: { min: .. max: .. } or RANGE: [ 0, 4, 6, 123 ]... this would allow more possible domains in the future
 
-        if(dom.max)
+      if(value.IsArray())
+      {
+        const auto& arr = value.GetArray();
+        if(arr.Size() >= 3)
         {
-            writer.StartArray();
-            for(auto& val : *dom.max)
-                val.apply(value_to_json{writer});
-            writer.EndArray();
-        }
-        else
-        {
-            writer.Null();
-        }
+          if(arr[0].IsArray())
+          {
+            // Read the array freely
 
-        if(!dom.values.empty())
-        {
-            writer.StartArray();
-            for(const auto& val : dom.values)
-            {
-                writer.StartArray();
-                for(auto& sub : val)
-                    sub.apply(value_to_json{writer});
-                writer.EndArray();
-            }
-            writer.EndArray();
+
+
+          }
         }
-        else
-        {
-            writer.Null(); // TODO why not just nothing ?
-        }
-        */
+      }
       return false;
     }
 
     template<std::size_t N>
-    bool operator()(ossia::net::domain_base<std::array<float, N>> & dom)
+    bool operator()(ossia::domain_base<std::array<float, N>> & dom)
     {
       // TODO
-      /*
         if(dom.min)
         {
             auto& vec = *dom.min;
@@ -494,14 +466,12 @@ struct json_to_domain
         {
             writer.Null(); // TODO why not just nothing ?
         }
-        */
       return false;
     }
 
-    bool operator()(ossia::net::domain_base<ossia::value> & dom)
+    bool operator()(ossia::domain_base<ossia::value> & dom)
     {
       // TODO
-      /*
         if(dom.min)
         {
             dom.min->apply(value_to_json{writer});
@@ -533,10 +503,10 @@ struct json_to_domain
         {
             writer.Null(); // TODO why not just nothing ?
         }
-        */
       return false;
     }
 };
+*/
 }
 }
 }

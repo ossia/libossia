@@ -30,6 +30,8 @@ namespace oscquery
 class OSSIA_EXPORT oscquery_server_protocol final : public ossia::net::protocol_base
 {
   friend class query_answerer;
+  friend class get_query_answerer;
+  friend class json_query_answerer;
 public:
   using connection_handler = websocket_server::connection_handler;
   oscquery_server_protocol(uint16_t osc_port, uint16_t ws_port);

@@ -5,8 +5,6 @@
 namespace ossia
 {
 class value;
-namespace net
-{
 template<typename T>
 struct domain_base;
 struct domain;
@@ -62,6 +60,5 @@ bool operator!=(const domain_base<T>& lhs, const domain_base<T>& rhs)
 }
 
 }
-}
 
-std::ostream& operator<<(std::ostream&, const ossia::net::domain&);
+std::ostream& operator<<(std::ostream&, const ossia::domain&);

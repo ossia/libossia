@@ -5,7 +5,7 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/base/path.hpp>
+#include <ossia/network/common/path.hpp>
 
 Q_DECLARE_METATYPE(ossia::state)
 Q_DECLARE_METATYPE(ossia::custom_state)

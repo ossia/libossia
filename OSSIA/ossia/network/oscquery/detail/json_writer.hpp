@@ -10,7 +10,6 @@ namespace oscquery
 //! Creates the JSON message to send through OSCQuery
 class json_writer
 {
-
 public:
   // Initialisation
   using string_t = rapidjson::StringBuffer;

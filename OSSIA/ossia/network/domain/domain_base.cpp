@@ -6,8 +6,6 @@
 
 namespace ossia
 {
-namespace net
-{
 value get_min(const domain& dom)
 {
   return ossia::apply(domain_min_visitor{}, dom);
@@ -61,19 +59,19 @@ domain make_domain(const ossia::value& min, const ossia::value& max)
   return {};
 }
 
-ossia::net::domain make_domain_from_type(ossia::val_type v)
+ossia::domain make_domain_from_type(ossia::val_type v)
 {
   switch(v)
   {
-    case ossia::val_type::FLOAT: return ossia::net::domain_base<float>{};
-    case ossia::val_type::INT: return ossia::net::domain_base<int>{};
-    case ossia::val_type::IMPULSE: return ossia::net::domain_base<impulse>{};
-    case ossia::val_type::VEC2F: return ossia::net::domain_base<vec2f>{};
-    case ossia::val_type::VEC3F: return ossia::net::domain_base<vec3f>{};
-    case ossia::val_type::VEC4F: return ossia::net::domain_base<vec4f>{};
-    case ossia::val_type::BOOL: return ossia::net::domain_base<bool>{};
-    case ossia::val_type::CHAR: return ossia::net::domain_base<char>{};
-    case ossia::val_type::TUPLE: return ossia::net::domain_base<std::vector<ossia::value>>{};
+    case ossia::val_type::FLOAT: return ossia::domain_base<float>{};
+    case ossia::val_type::INT: return ossia::domain_base<int>{};
+    case ossia::val_type::IMPULSE: return ossia::domain_base<impulse>{};
+    case ossia::val_type::VEC2F: return ossia::domain_base<vec2f>{};
+    case ossia::val_type::VEC3F: return ossia::domain_base<vec3f>{};
+    case ossia::val_type::VEC4F: return ossia::domain_base<vec4f>{};
+    case ossia::val_type::BOOL: return ossia::domain_base<bool>{};
+    case ossia::val_type::CHAR: return ossia::domain_base<char>{};
+    case ossia::val_type::TUPLE: return ossia::domain_base<std::vector<ossia::value>>{};
     default:
       return {};
   }
@@ -229,6 +227,5 @@ domain init_domain(ossia::val_type type)
     default:
       return domain{};
   }
-}
 }
 }

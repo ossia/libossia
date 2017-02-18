@@ -122,7 +122,7 @@ complex_type get_type_from_osc_typetag(ossia::string_view str)
           return ossia::val_type::STRING;
 
         case oscpack::TypeTagValues::BLOB_TYPE_TAG:
-          return ossia::net::generic_buffer_type();
+          return ossia::generic_buffer_type();
 
         case oscpack::TypeTagValues::RGBA_COLOR_TYPE_TAG:
           return ossia::rgba_u{};
@@ -139,38 +139,6 @@ complex_type get_type_from_osc_typetag(ossia::string_view str)
   return ossia::val_type::TUPLE;
 }
 
-struct setup_address_visitor {
-  using ret = ossia::net::address_base*;
-  ossia::net::node_base& n;
-  ret operator()(ossia::val_type v) const {
-    return n.createAddress(v);
-  }
-  ret operator()(const ossia::unit_t& v) const {
-    auto addr = n.createAddress(ossia::matching_type(v));
-    addr->setUnit(v);
-    return addr;
-  }
-  ret operator()(const ossia::net::extended_type& v) const {
-    auto t = ossia::net::underlying_type(v);
-    if(!t.empty())
-    {
-      auto addr = n.createAddress(t[0]);
-      ossia::net::set_extended_type(n, v);
-      return addr;
-    }
-    return nullptr;
-  }
-
-  ret operator()() { return nullptr; }
-};
-
-net::address_base* setup_address(const complex_type& t, net::node_base& node)
-{
-  if(!t)
-    return nullptr;
-
-  return ossia::apply(setup_address_visitor{node}, t);
-}
 
 void set_osc_typetag(net::node_base& n, ossia::string_view tag)
 {

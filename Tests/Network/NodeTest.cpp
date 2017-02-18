@@ -1,7 +1,7 @@
 #include <QtTest>
 #include <ossia/ossia.hpp>
 #include <iostream>
-#include <ossia/network/base/path.hpp>
+#include <ossia/network/common/path.hpp>
 
 using namespace ossia;
 using namespace ossia::net;

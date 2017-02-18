@@ -6,7 +6,7 @@
 
 #include <ossia-c/preset/preset.h>
 #include <ossia-c/preset/preset.hpp>
-#include <ossia/network/base/path.hpp>
+#include <ossia/network/common/path.hpp>
 
 #include <ossia/ossia.hpp>
 

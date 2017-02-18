@@ -8,13 +8,19 @@
 #include <ossia/detail/string_view.hpp>
 #include <brigand/sequences/list.hpp>
 
+/**
+ * \file ossia/network/oscquery/detail/attributes.hpp
+ *
+ * This file contains mapping from the ossia attributes to the OSCQuery attributes.
+ */
 namespace ossia
 {
 namespace oscquery
 {
-
 namespace detail
 {
+
+
 // Attributes
 constexpr auto osc_port() { return "OSC_PORT"; }
 constexpr auto attribute_full_path() { return "FULL_PATH"; }
@@ -175,11 +181,17 @@ enum class message_type
 };
 
 using key_map_type = tsl::hopscotch_map<ossia::string_view, ossia::string_view>;
-//!Convert the text of an ossia attribute to the key of an oscquery attribute
+
+//! Mapping between ossia attributes and oscquery attributes
 OSSIA_EXPORT const key_map_type& ossia_to_oscquery_key();
+
+//! Mapping between oscquery attributes and ossia attributes.
 OSSIA_EXPORT const key_map_type& oscquery_to_ossia_key();
 
+//! Convert the text of an ossia attribute to the key of an oscquery attribute
 OSSIA_EXPORT optional<ossia::string_view> ossia_to_oscquery_key(ossia::string_view);
+
+//! Convert the text of an oscquery attribute to the key of an ossia attribute.
 OSSIA_EXPORT optional<ossia::string_view> oscquery_to_ossia_key(ossia::string_view);
 }
 }

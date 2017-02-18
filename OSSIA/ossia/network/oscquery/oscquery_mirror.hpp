@@ -85,7 +85,7 @@ private:
   std::unique_ptr<osc::sender> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
 
-  ossia::oscquery::client m_websocketClient;
+  ossia::oscquery::websocket_client m_websocketClient;
 
   // Listening status of the local software
   net::listened_addresses m_listening;

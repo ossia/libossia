@@ -1,4 +1,4 @@
-#include <ossia/network/base/path.hpp>
+#include <ossia/network/common/path.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/address.hpp>
 #include <hopscotch_map.h>

@@ -9,7 +9,7 @@
  */
 
 #include <ossia/ossia.hpp>
-#include <ossia/network/base/debug.hpp>
+#include <ossia/network/common/debug.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <iostream>
 #include <memory>

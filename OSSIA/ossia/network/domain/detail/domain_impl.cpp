@@ -6,23 +6,20 @@
 
 namespace ossia
 {
-namespace net
-{
-
 value domain::get_min() const
-{ return net::get_min(*this); }
+{ return ossia::get_min(*this); }
 value domain::get_max() const
-{ return net::get_max(*this); }
+{ return ossia::get_max(*this); }
 
 void domain::set_min(const ossia::value& val)
-{ return net::set_min(*this, val); }
+{ return ossia::set_min(*this, val); }
 void domain::set_max(const ossia::value& val)
-{ return net::set_max(*this, val); }
+{ return ossia::set_max(*this, val); }
 
 value domain::apply(bounding_mode b, const ossia::value& val) const
-{ return net::apply_domain(*this, b, val); }
+{ return apply_domain(*this, b, val); }
 value domain::apply(bounding_mode b, ossia::value&& val) const
-{ return net::apply_domain(*this, b, std::move(val)); }
+{ return apply_domain(*this, b, std::move(val)); }
 
 struct domain_prettyprint_visitor
 {
@@ -1025,7 +1022,7 @@ ossia::value apply_domain_visitor::operator()(const std::array<float, 2>& value,
 { return vec_clamp<2>{domain}(b, value); }
 
 ossia::value apply_domain_visitor::operator()(const std::array<float, 2>& value, const domain_base<std::vector<ossia::value>>& domain) const
-{ return vec_clamp<2>{ossia::net::domain_conversion<domain_base<std::array<float, 2>>>{}.tuple_func(domain)}(b, value); }
+{ return vec_clamp<2>{ossia::domain_conversion<domain_base<std::array<float, 2>>>{}.tuple_func(domain)}(b, value); }
 
 ossia::value apply_domain_visitor::operator()(const std::array<float, 3>& value, const domain_base<float>& domain) const
 { return numeric_clamp<domain_base<float>>{domain}(b, value); }
@@ -1043,7 +1040,7 @@ ossia::value apply_domain_visitor::operator()(const std::array<float, 3>& value,
 { return vec_clamp<3>{domain}(b, value); }
 
 ossia::value apply_domain_visitor::operator()(const std::array<float, 3>& value, const domain_base<std::vector<ossia::value>>& domain) const
-{ return vec_clamp<3>{ossia::net::domain_conversion<domain_base<std::array<float, 3>>>{}.tuple_func(domain)}(b, value); }
+{ return vec_clamp<3>{ossia::domain_conversion<domain_base<std::array<float, 3>>>{}.tuple_func(domain)}(b, value); }
 
 ossia::value apply_domain_visitor::operator()(const std::array<float, 4>& value, const domain_base<float>& domain) const
 { return numeric_clamp<domain_base<float>>{domain}(b, value); }
@@ -1061,12 +1058,11 @@ ossia::value apply_domain_visitor::operator()(const std::array<float, 4>& value,
 { return vec_clamp<4>{domain}(b, value); }
 
 ossia::value apply_domain_visitor::operator()(const std::array<float, 4>& value, const domain_base<std::vector<ossia::value>>& domain) const
-{ return vec_clamp<4>{ossia::net::domain_conversion<domain_base<std::array<float, 4>>>{}.tuple_func(domain)}(b, value); }
+{ return vec_clamp<4>{ossia::domain_conversion<domain_base<std::array<float, 4>>>{}.tuple_func(domain)}(b, value); }
 
 }
-}
 
-std::ostream& operator<<(std::ostream& s, const ossia::net::domain& d)
+std::ostream& operator<<(std::ostream& s, const ossia::domain& d)
 {
   // OPTIMIZEME
   s << d.to_pretty_string();

@@ -2,14 +2,12 @@
 #include <ossia/network/domain/domain_base.hpp>
 namespace ossia
 {
-namespace net
-{
 /**
  * Applying a domain without caring about the underlying type
  */
 struct generic_clamp
 {
-  const net::domain_base<ossia::value>& domain;
+  const domain_base<ossia::value>& domain;
 
   ossia::value operator()(bounding_mode b, const ossia::value& v) const;
   ossia::value operator()(bounding_mode b, ossia::value&& v) const;
@@ -20,5 +18,4 @@ struct generic_clamp
   value operator()(bounding_mode b, std::vector<ossia::value>&& val) const;
 };
 
-}
 }

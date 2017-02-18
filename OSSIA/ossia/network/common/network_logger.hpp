@@ -14,6 +14,7 @@ namespace ossia
 {
 namespace net
 {
+//! Stores custom loggers for the inbound and outbound network messages
 class OSSIA_EXPORT network_logger
 {
 public:

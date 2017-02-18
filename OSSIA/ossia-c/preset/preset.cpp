@@ -583,7 +583,7 @@ std::string ossia::presets::to_string(const preset_pair & pp) {
   return std::string(ss.str());
 }
 
-std::string domain_to_string(const ossia::net::domain& domain)
+std::string domain_to_string(const ossia::domain& domain)
 {
   auto min = domain.get_min();
   auto max = domain.get_max();

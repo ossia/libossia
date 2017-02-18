@@ -323,7 +323,7 @@ struct minuit_behavior<
 };
 
 
-inline ossia::net::domain get_domain(
+inline ossia::domain get_domain(
     ossia::net::address_base& addr,
     oscpack::ReceivedMessageArgumentIterator beg_it,
     oscpack::ReceivedMessageArgumentIterator end_it)
@@ -339,7 +339,7 @@ inline ossia::net::domain get_domain(
     val.push_back(ossia::net::to_numeric_value(cur, cur_it, beg_it));
   }
 
-  return ossia::net::make_domain(val, cur);
+  return ossia::make_domain(val, cur);
 }
 
 // Listen

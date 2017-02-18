@@ -1,63 +1,16 @@
 #include <ossia/editor/value/value.hpp>
-#include <ossia/network/common/network_logger.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/generic/generic_address.hpp>
 
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <ossia/editor/value/value_conversion.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
-#include <iostream>
-#include <map>
 
 namespace ossia
 {
-struct val_type_visitor {
-  using ret = ossia::val_type;
-  ret operator()(ossia::val_type v) const {
-    return v;
-  }
-  ret operator()(const ossia::unit_t& v) const {
-    return ossia::matching_type(v);
-  }
-  ret operator()(const ossia::net::extended_type& v) const {
-    auto t = ossia::net::underlying_type(v);
-    if(!t.empty())
-    {
-      return t[0];
-    }
-    return ossia::val_type::IMPULSE;
-  }
-
-  ret operator()() { return ossia::val_type::IMPULSE; }
-};
-
-ossia::val_type underlying_type(const complex_type& t)
-{
-  return ossia::apply(val_type_visitor{}, t);
-}
 namespace net
 {
-
-struct update_address_visitor {
-  using ret = void;
-  ossia::net::generic_address& addr;
-  ret operator()(ossia::val_type v) const {
-    addr.setValueType(v);
-  }
-  ret operator()(const ossia::unit_t& v) const {
-    addr.setUnit(v);
-  }
-  ret operator()(const ossia::net::extended_type& v) const {
-    auto t = ossia::net::underlying_type(v);
-    if(!t.empty())
-    {
-      addr.setValueType(t[0]);
-    }
-    ossia::net::set_extended_type(addr.getNode(), v);
-  }
-
-  ret operator()() { }
-};
 
 generic_address::generic_address(ossia::net::node_base& node)
   : m_node{node}
@@ -81,7 +34,7 @@ generic_address::generic_address(
   , m_repetitionFilter(get_value_or(data.repetition_filter, ossia::repetition_filter::OFF))
   , m_value(init_value(m_valueType))
 {
-  ossia::apply(update_address_visitor{*this}, data.type);
+  update_address_type(data.type, *this);
 }
 
 generic_address::~generic_address()
@@ -240,13 +193,13 @@ generic_address::setAccessMode(ossia::access_mode accessMode)
   return *this;
 }
 
-const ossia::net::domain& generic_address::getDomain() const
+const ossia::domain& generic_address::getDomain() const
 {
   return m_domain;
 }
 
 ossia::net::generic_address&
-generic_address::setDomain(const ossia::net::domain& domain)
+generic_address::setDomain(const ossia::domain& domain)
 {
   if(m_domain != domain)
   {

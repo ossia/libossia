@@ -8,6 +8,8 @@
 
 #include <ossia/network/oscquery/detail/query_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
+#include <ossia/network/oscquery/detail/get_query_parser.hpp>
+#include <ossia/network/oscquery/detail/json_query_parser.hpp>
 namespace ossia
 {
 namespace oscquery
@@ -68,7 +70,7 @@ bool oscquery_server_protocol::push(const net::address_base& addr)
   {
     //Push to all clients
     auto critical = net::get_critical(addr.getNode());
-    if(!critical || !*critical)
+    if(!critical)
     {
       std::lock_guard<std::mutex> lock(m_clientsMutex);
       for(auto& client : m_clients)
@@ -352,12 +354,14 @@ rapidjson::StringBuffer oscquery_server_protocol::on_WSrequest(
   {
     return query_parser::parse_http_request(
           message,
-          query_answerer::answer_http_request(*this, hdl));
+          get_query_answerer{}(*this, hdl));
   }
   else if(message[0] == '{')
   {
-    return query_parser::parse_json_request(
-          message, query_answerer::answer_json_request(*this, hdl));
+    rapidjson::Document doc;
+    doc.Parse(message); // TODO ParseInsitu
+
+    return json_query_answerer{}(*this, hdl, doc);
   }
   else
   {

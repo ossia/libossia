@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/network/base/extended_types.hpp>
+#include <ossia/network/common/extended_types.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/detail/optional.hpp>
@@ -103,8 +103,8 @@ OSSIA_EXPORT optional<value_step_size> get_value_step_size(const extended_attrib
 OSSIA_EXPORT void set_value_step_size(extended_attributes& n, optional<value_step_size> v);
 
 OSSIA_EXPORT ossia::string_view text_critical();
-OSSIA_EXPORT optional<critical> get_critical(const extended_attributes& n);
-OSSIA_EXPORT void set_critical(extended_attributes& n, optional<critical> v);
+OSSIA_EXPORT critical get_critical(const extended_attributes& n);
+OSSIA_EXPORT void set_critical(extended_attributes& n, critical v);
 
 OSSIA_EXPORT ossia::string_view text_extended_type();
 OSSIA_EXPORT optional<extended_type> get_extended_type(const ossia::net::node_base& n);
@@ -130,7 +130,7 @@ OSSIA_EXPORT void set_default_value(extended_attributes& n, ossia::none_t v);
 
 // These attributes require an address
 OSSIA_EXPORT ossia::string_view text_value();
-OSSIA_EXPORT optional<value> clone_value(const ossia::net::node_base& n);
+OSSIA_EXPORT value clone_value(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_value(ossia::net::node_base& n, value v);
 
 OSSIA_EXPORT ossia::string_view text_value_type();
@@ -138,7 +138,7 @@ OSSIA_EXPORT optional<val_type> get_value_type(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_value_type(ossia::net::node_base& n, val_type v);
 
 OSSIA_EXPORT ossia::string_view text_domain();
-OSSIA_EXPORT optional<domain> get_domain(const ossia::net::node_base& n);
+OSSIA_EXPORT domain get_domain(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_domain(ossia::net::node_base& n, domain v);
 
 OSSIA_EXPORT ossia::string_view text_access_mode();
@@ -150,11 +150,11 @@ OSSIA_EXPORT optional<bounding_mode> get_bounding_mode(const ossia::net::node_ba
 OSSIA_EXPORT void set_bounding_mode(ossia::net::node_base& n, bounding_mode v);
 
 OSSIA_EXPORT ossia::string_view text_repetition_filter();
-OSSIA_EXPORT optional<repetition_filter> get_repetition_filter(const ossia::net::node_base& n);
+OSSIA_EXPORT repetition_filter get_repetition_filter(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_repetition_filter(ossia::net::node_base& n, repetition_filter v);
 
 OSSIA_EXPORT ossia::string_view text_unit();
-OSSIA_EXPORT optional<unit_t> get_unit(const ossia::net::node_base& n);
+OSSIA_EXPORT unit_t get_unit(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_unit(ossia::net::node_base& n, unit_t v);
 
 
@@ -182,7 +182,7 @@ OSSIA_EXPORT void set_unit(ossia::net::node_base& n, unit_t v);
 
 OSSIA_ATTRIBUTE_2(ossia::value, value, ossia::net::text_value, ossia::net::clone_value, ossia::net::push_value)
 OSSIA_ATTRIBUTE(ossia::val_type, value_type)
-OSSIA_ATTRIBUTE(ossia::net::domain, domain)
+OSSIA_ATTRIBUTE(ossia::domain, domain)
 OSSIA_ATTRIBUTE(ossia::access_mode, access_mode)
 OSSIA_ATTRIBUTE(ossia::bounding_mode, bounding_mode)
 OSSIA_ATTRIBUTE(ossia::unit_t, unit)
@@ -196,10 +196,40 @@ OSSIA_ATTRIBUTE(ossia::net::priority, priority)
 OSSIA_ATTRIBUTE(ossia::net::value_step_size, value_step_size)
 OSSIA_ATTRIBUTE(ossia::net::instance_bounds, instance_bounds)
 OSSIA_ATTRIBUTE(ossia::net::critical, critical)
-OSSIA_ATTRIBUTE(ossia::net::extended_type, extended_type)
+OSSIA_ATTRIBUTE(ossia::extended_type, extended_type)
 OSSIA_ATTRIBUTE(ossia::repetition_filter, repetition_filter)
 OSSIA_ATTRIBUTE(ossia::net::app_name, app_name)
 OSSIA_ATTRIBUTE(ossia::net::app_creator, app_creator)
 OSSIA_ATTRIBUTE(ossia::net::app_version, app_version)
+
+
+template<typename T, typename U>
+bool compare_optional(const T& t, const U& u)
+{
+  return t && *t != u;
+}
+template<typename U>
+inline bool compare_optional(const ossia::domain& t, const U& u)
+{
+  return t != u;
+}
+template<typename U>
+inline bool compare_optional(const ossia::unit_t& t, const U& u)
+{
+  return t != u;
+}
+inline bool compare_optional(bool t, bool u)
+{
+  return t != u;
+}
+inline bool compare_optional(ossia::repetition_filter t, ossia::repetition_filter u)
+{
+  return t != u;
+}
+
+inline bool valid(const ossia::value& v) { return v.valid(); }
+template<typename T>
+inline bool valid(const T& v) { return bool(v); }
+
 
 }}

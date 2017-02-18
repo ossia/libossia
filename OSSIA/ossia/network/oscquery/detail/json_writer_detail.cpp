@@ -47,7 +47,7 @@ void json_writer_impl::writeValue(access_mode b) const
     }
 }
 
-void json_writer_impl::writeValue(const net::domain& d) const
+void json_writer_impl::writeValue(const domain& d) const
 {
     writer.StartArray();
     ossia::apply(domain_to_json{writer}, d);
@@ -164,9 +164,13 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
     {
         // TODO it could be nice to have versions that take an address or a value directly
         brigand::for_each<base_attributes>([&] (auto attr) {
-            using Attr = typename decltype(attr)::type;
+          using Attr = typename decltype(attr)::type;
+          auto res = Attr::getter(n);
+          if(ossia::net::valid(res))
+          {
             this->writeKey(metadata<Attr>::key());
-            this->writeValue(Attr::getter(n));
+            this->writeValue(res);
+          }
         });
     }
     else
@@ -178,10 +182,10 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
     brigand::for_each<extended_attributes>([&] (auto attr) {
         using Attr = typename decltype(attr)::type;
         auto res = Attr::getter(n);
-        if(res)
+        if(ossia::net::valid(res))
         {
             this->writeKey(metadata<Attr>::key());
-            this->writeValue(*res);
+            this->writeValue(res);
         }
     });
 }

@@ -3,8 +3,6 @@
 
 namespace ossia
 {
-namespace net
-{
 
 extended_type generic_buffer_type()
 {
@@ -29,5 +27,4 @@ std::vector<ossia::val_type> underlying_type(const extended_type& e)
   return {};
 }
 
-}
 }

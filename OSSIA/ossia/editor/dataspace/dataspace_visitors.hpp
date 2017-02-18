@@ -1,9 +1,11 @@
 #pragma once
+#include <ossia/editor/dataspace/dataspace.hpp> // TODO :( required for dataspace_traits
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/editor/value/vec.hpp>
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <bitset>
+#include <type_traits>
 #include <ossia_export.h>
 
 namespace ossia
@@ -106,12 +108,31 @@ OSSIA_EXPORT
 ossia::unit_t make_unit(uint64_t dataspace, uint64_t unit);
 
 /**
- * @brief matching_type Get the implementation type of an unit
+ * @brief underlying_type Get the implementation type of an unit
  * @param u An unit
- * @return The matching type. Will return Impulse if the unit is invalid.
+ *
+ * Will return Impulse if the unit is invalid.
+ *
+ * @return The matching type. For instance vec3f for position.cart3D.
  */
 OSSIA_EXPORT
 ossia::val_type matching_type(const ossia::unit_t& u);
+
+inline ossia::val_type matching_type(ossia::unit_t&& u)
+{ return matching_type(static_cast<const ossia::unit_t&>(u)); }
+/*
+template<typename T, decltype(ossia::dataspace_traits<T>::text())* = nullptr>
+inline ossia::val_type underlying_type(const T& t)
+{
+  return underlying_type(unit_t{t});
+}
+
+template<typename T, void_t<ossia::unit_traits<T>>::text())* = nullptr>
+inline ossia::val_type underlying_type(const T& t)
+{
+  return underlying_type(unit_t{t});
+}
+*/
 
 /**
  * @brief convert Convert a value to another unit in the same dataspace

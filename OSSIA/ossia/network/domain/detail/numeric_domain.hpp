@@ -4,8 +4,6 @@
 
 namespace ossia
 {
-namespace net
-{
 
 template <typename T>
 struct domain_base;
@@ -25,5 +23,4 @@ struct numeric_clamp
   ossia::value operator()(bounding_mode b, std::array<float, N> val) const;
 };
 
-}
 }

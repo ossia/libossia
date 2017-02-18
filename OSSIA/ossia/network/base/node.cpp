@@ -303,12 +303,12 @@ void node_base::clearChildren()
 
 #define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(Type, Name, String) \
   optional<Type> get_ ## Name (const extended_attributes& n) \
-{ using namespace std::literals; \
-  return get_optional_attribute<Type>(n, String ## s); \
+{ \
+  return get_optional_attribute<Type>(n, text_ ## Name() ); \
 } \
   \
   void set_ ## Name (extended_attributes& n, optional<Type> i) \
-{ using namespace std::literals; \
+{ \
   set_optional_attribute(n, String, std::move(i)); \
 } \
   ossia::string_view text_ ## Name () \
@@ -317,23 +317,41 @@ void node_base::clearChildren()
 
 #define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_2(Type, Name, String) \
   optional<Type> get_ ## Name (const extended_attributes& n) \
-{ using namespace std::literals; \
-  return get_optional_attribute<Type>(n, String ## s); \
+{ \
+  return get_optional_attribute<Type>(n, text_ ## Name() ); \
 } \
   void set_ ## Name (extended_attributes& n, Type&& i) \
-{ using namespace std::literals; \
+{ \
   set_attribute(n, String, std::move(i)); \
 } \
   void set_ ## Name (extended_attributes& n, const Type& i) \
-{ using namespace std::literals; \
+{ \
   set_attribute(n, String, std::move(i)); \
 } \
   void set_ ## Name (extended_attributes& n, ossia::none_t i) \
-{ using namespace std::literals; \
+{ \
   set_attribute(n, String, std::move(i)); \
 } \
   ossia::string_view text_ ## Name () \
 { return make_string_view(String); }
+
+
+#define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(Type, Name, String) \
+  Type get_ ## Name (const extended_attributes& n) \
+{ \
+  return has_attribute(n, text_ ## Name() ); \
+} \
+  \
+  void set_ ## Name (extended_attributes& n, Type i) \
+{ \
+  if(i) \
+    set_attribute(n, String); \
+  else \
+    set_attribute(n, String, ossia::none); \
+} \
+  ossia::string_view text_ ## Name () \
+{ return make_string_view(String); }
+
 
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(instance_bounds, instance_bounds, "instanceBounds")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(tags, tags, "tags")
@@ -341,7 +359,7 @@ OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(description, description, "description")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(priority, priority, "priority")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(refresh_rate, refresh_rate, "refreshRate")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(value_step_size, value_step_size, "valueStepsize")
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(critical, critical, "critical")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(critical, critical, "critical")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_name, app_name, "appName")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_version, app_version, "appVersion")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_creator, app_creator, "appCreator")
@@ -388,10 +406,10 @@ void set_description(extended_attributes& n, const char* arg)
 
 ossia::string_view text_value()
 { return make_string_view("value"); }
-optional<value> clone_value(const ossia::net::node_base& n)
+value clone_value(const ossia::net::node_base& n)
 {
   if(auto addr = n.getAddress()) return addr->cloneValue();
-  return ossia::none;
+  return {};
 }
 void set_value(ossia::net::node_base& n, value v)
 {
@@ -412,10 +430,10 @@ void set_value_type(ossia::net::node_base& n, val_type v)
 
 ossia::string_view text_domain()
 { return make_string_view("domain"); }
-optional<domain> get_domain(const ossia::net::node_base& n)
+domain get_domain(const ossia::net::node_base& n)
 {
   if(auto addr = n.getAddress()) return addr->getDomain();
-  return ossia::none;
+  return {};
 }
 void set_domain(ossia::net::node_base& n, domain v)
 {
@@ -448,10 +466,10 @@ void set_bounding_mode(ossia::net::node_base& n, bounding_mode v)
 
 ossia::string_view text_repetition_filter()
 { return make_string_view("repetition_filter"); }
-optional<repetition_filter> get_repetition_filter(const ossia::net::node_base& n)
+repetition_filter get_repetition_filter(const ossia::net::node_base& n)
 {
   if(auto addr = n.getAddress()) return addr->getRepetitionFilter();
-  return ossia::none;
+  return repetition_filter::OFF;
 }
 void set_repetition_filter(ossia::net::node_base& n, repetition_filter v)
 {
@@ -460,10 +478,10 @@ void set_repetition_filter(ossia::net::node_base& n, repetition_filter v)
 
 ossia::string_view text_unit()
 { return make_string_view("unit"); }
-optional<unit_t> get_unit(const ossia::net::node_base& n)
+unit_t get_unit(const ossia::net::node_base& n)
 {
   if(auto addr = n.getAddress()) return addr->getUnit();
-  return ossia::none;
+  return {};
 }
 void set_unit(ossia::net::node_base& n, unit_t v)
 {

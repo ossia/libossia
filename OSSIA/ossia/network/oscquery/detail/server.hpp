@@ -15,6 +15,8 @@ namespace ossia
 {
 namespace oscquery
 {
+
+//! Low-level websocket & http server for oscquery
 class websocket_server
 {
   public:
@@ -96,7 +98,7 @@ class websocket_server
           {
             rapidjson::StringBuffer base_str = h(hdl, con->get_uri()->get_resource());
             std::string str{base_str.GetString(), base_str.GetSize()};
-            str += '\0';
+            str += "\0";
             con->set_body(std::move(str));
             con->set_status(websocketpp::http::status_code::ok);
           }

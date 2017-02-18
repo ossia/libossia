@@ -3,8 +3,6 @@
 
 namespace ossia
 {
-namespace net
-{
 template <typename U>
 struct domain_conversion
 {
@@ -208,5 +206,4 @@ inline domain convert_domain(const domain& dom, ossia::val_type newtype)
   }
 }
 
-}
 }

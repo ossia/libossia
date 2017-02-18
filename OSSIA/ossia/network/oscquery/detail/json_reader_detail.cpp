@@ -1,5 +1,5 @@
 #include "json_reader_detail.hpp"
-#include "json_reader.hpp"
+#include "json_parser.hpp"
 #include <ossia/network/oscquery/detail/attributes.hpp>
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
 #include <ossia/network/base/node_attributes.hpp>
@@ -111,7 +111,7 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, access_mode& am)
   return b;
 }
 
-bool json_parser_impl::ReadValue(const rapidjson::Value& val, net::domain& res)
+bool json_parser_impl::ReadValue(const rapidjson::Value& val, domain& res)
 {
   if(!val.IsArray())
     return false;
@@ -119,7 +119,7 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, net::domain& res)
   // Read the domain as it is
   if(val.Size() == 2) // min, max
   {
-    res = ossia::net::make_domain(ReadValue(val[0]), ReadValue(val[1]));
+    res = ossia::make_domain(ReadValue(val[0]), ReadValue(val[1]));
     return true;
   }
 
@@ -131,7 +131,7 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, net::domain& res)
     {
       tpl.push_back(ReadValue(elt));
     }
-    res = ossia::net::make_domain(ReadValue(val[0]), ReadValue(val[1]), std::move(tpl));
+    res = ossia::make_domain(ReadValue(val[0]), ReadValue(val[1]), std::move(tpl));
     return true;
   }
   return false;
@@ -305,7 +305,7 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
     // Try to read all the attributes that could give us the concrete type.
     complex_type val_type; // Implementation type
     optional<ossia::unit_t> unit = ossia::none; // Unit
-    optional<ossia::net::extended_type> ext_type = ossia::none; // Extended type
+    optional<ossia::extended_type> ext_type = ossia::none; // Extended type
 
     // TODO maybe read all the attributes and store their iterators, then do them in the order we want ?
     auto value_it = obj.FindMember(detail::attribute_value());
@@ -350,11 +350,11 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
       else if(ext_type)
       {
         ossia::val_type actual_type = ossia::val_type::TUPLE; // Generic worse case
-        if(*ext_type == net::generic_buffer_type() || *ext_type == net::filesystem_path_type())
+        if(*ext_type == generic_buffer_type() || *ext_type == filesystem_path_type())
         {
           actual_type = ossia::val_type::STRING;
         }
-        else if(*ext_type == net::float_array_type())
+        else if(*ext_type == float_array_type())
         {
           // Look for Vec2f, Vec3f, Vec4f
           actual_type = VecTypetag(typetag);
@@ -462,7 +462,7 @@ std::shared_ptr<rapidjson::Document> json_parser::parse(std::string& message)
   return document;
 }
 
-int json_parser::getPort(const rapidjson::Value& obj)
+int json_parser::get_port(const rapidjson::Value& obj)
 {
   using namespace detail;
   json_assert(obj[detail::osc_port()].IsInt());
@@ -470,13 +470,13 @@ int json_parser::getPort(const rapidjson::Value& obj)
   return obj[detail::osc_port()].GetInt();
 }
 
-message_type json_parser::messageType(const rapidjson::Value& obj)
+ossia::oscquery::message_type json_parser::message_type(const rapidjson::Value& obj)
 {
-  static string_view_map<message_type> map{
-    { detail::path_added(), message_type::PathAdded },
-    { detail::path_changed(), message_type::PathChanged },
-    { detail::path_removed(), message_type::PathRemoved },
-    { detail::attributes_changed(), message_type::AttributesChanged }
+  static string_view_map<ossia::oscquery::message_type> map{
+    { detail::path_added(), ossia::oscquery::message_type::PathAdded },
+    { detail::path_changed(), ossia::oscquery::message_type::PathChanged },
+    { detail::path_removed(), ossia::oscquery::message_type::PathRemoved },
+    { detail::attributes_changed(), ossia::oscquery::message_type::AttributesChanged }
   };
   using namespace detail;
   auto val_it = obj.FindMember(detail::attribute_value());
@@ -622,6 +622,22 @@ void json_parser::parse_path_removed(net::node_base& root, const rapidjson::Valu
   }
 }
 
+void json_parser::parse_path_changed(net::node_base& map, const rapidjson::Value& mess)
+{
+  // TODO
+  /*
+      using namespace detail;
+
+      // Get the object
+      const auto& obj = mess.get<json_map>(detail::path_changed());
+
+      // 2. Remove the missing contents
+      map.remove(valToString(obj.get(detail::full_path())));
+
+      // 3. Replace it
+      readObject(map, obj);
+      */
+}
 
 void json_parser::parse_attributes_changed(net::node_base& root, const rapidjson::Value& obj)
 {

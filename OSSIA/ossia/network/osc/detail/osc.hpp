@@ -435,12 +435,12 @@ struct osc_inbound_impulse_visitor
 
 template<typename Value_T>
 inline ossia::value filter_value(
-    const ossia::net::domain& dom, Value_T&& base_val,
+    const ossia::domain& dom, Value_T&& base_val,
     ossia::bounding_mode mode)
 {
   if (dom)
   {
-    auto res = ossia::net::apply_domain(dom, mode, std::forward<Value_T>(base_val));
+    auto res = ossia::apply_domain(dom, mode, std::forward<Value_T>(base_val));
     if (res.valid())
       return res;
     else
@@ -610,7 +610,7 @@ operator<<(oscpack::OutboundPacketStream& p, const ossia::value& val)
 
 
 inline oscpack::OutboundPacketStream&
-operator<<(oscpack::OutboundPacketStream& p, const ossia::net::domain& dom)
+operator<<(oscpack::OutboundPacketStream& p, const ossia::domain& dom)
 {
   ossia::apply(ossia::net::osc_write_domain_visitor{p}, dom);
 

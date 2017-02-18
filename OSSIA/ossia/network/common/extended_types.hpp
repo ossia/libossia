@@ -6,8 +6,6 @@
 
 namespace ossia
 {
-namespace net
-{
 
 //! How a low-level type should be interpreted.
 using extended_type = std::string;
@@ -27,5 +25,4 @@ OSSIA_EXPORT extended_type float_array_type();
 //! Returns the possible implementation types for this high-level type.
 OSSIA_EXPORT std::vector<ossia::val_type> underlying_type(const extended_type&);
 
-}
 }

@@ -4,8 +4,6 @@
 
 namespace ossia
 {
-namespace net
-{
 namespace detail
 {
 /// Min ///
@@ -286,7 +284,7 @@ struct domain_value_set_update_visitor
 {
   const std::vector<ossia::value>& values;
   template <typename T>
-  void operator()(ossia::net::domain_base<T>& dom)
+  void operator()(ossia::domain_base<T>& dom)
   {
     dom.values.clear();
     for(auto& value : values)
@@ -296,10 +294,9 @@ struct domain_value_set_update_visitor
     }
   }
 
-  void operator()(ossia::net::domain_base<Destination>&)
+  void operator()(ossia::domain_base<Destination>&)
   {  }
-  void operator()(ossia::net::domain_base<impulse>&)
+  void operator()(ossia::domain_base<impulse>&)
   { }
 };
-}
 }

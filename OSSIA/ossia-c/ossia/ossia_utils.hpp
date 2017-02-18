@@ -27,7 +27,7 @@ struct ossia_device
 
 struct ossia_domain
 {
-    ossia::net::domain domain;
+    ossia::domain domain;
 };
 
 struct ossia_value_callback_index

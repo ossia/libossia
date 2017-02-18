@@ -1,4 +1,4 @@
-#include <ossia/network/base/debug.hpp>
+#include <ossia/network/common/debug.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/domain/domain.hpp>
@@ -98,7 +98,7 @@ fmt::BasicWriter<char>& operator<<(fmt::BasicWriter<char>& w, ossia::bounding_mo
 
 
 }
-fmt::BasicWriter<char>& operator<<(fmt::BasicWriter<char>& w, const ossia::net::domain& d)
+fmt::BasicWriter<char>& operator<<(fmt::BasicWriter<char>& w, const ossia::domain& d)
 {
   // TODO
   return w;

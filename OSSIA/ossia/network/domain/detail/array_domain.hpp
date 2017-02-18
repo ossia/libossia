@@ -3,14 +3,12 @@
 namespace ossia
 {
 
-namespace net
-{
 /**
  * Applying a domain value by value to arrays
  */
 struct tuple_clamp
 {
-  const net::domain_base<std::vector<ossia::value>>& domain;
+  const domain_base<std::vector<ossia::value>>& domain;
 
   ossia::value operator()(bounding_mode b, const std::vector<ossia::value>& val) const;
   ossia::value operator()(bounding_mode b, std::vector<ossia::value>&& val) const;
@@ -22,10 +20,9 @@ struct tuple_clamp
 template<std::size_t N>
 struct vec_clamp
 {
-  const net::domain_base<std::array<float, N>>& domain;
+  const domain_base<std::array<float, N>>& domain;
 
   ossia::value operator()(bounding_mode b, std::array<float, N> val) const;
 };
 
-}
 }

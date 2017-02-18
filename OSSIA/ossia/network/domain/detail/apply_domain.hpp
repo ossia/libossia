@@ -4,6 +4,7 @@
 #include <ossia/network/domain/detail/numeric_domain.hpp>
 #include <ossia/network/domain/detail/array_domain.hpp>
 #include <ossia/network/domain/detail/value_set_domain.hpp>
+#define FAST_COMPILES // See also clamp_visitors.hpp
 
 #if defined(FAST_COMPILES)
 namespace ossia
@@ -27,8 +28,6 @@ move(T&& t) noexcept
 #endif
 
 namespace ossia
-{
-namespace net
 {
 
 struct apply_domain_visitor
@@ -142,5 +141,4 @@ ossia::value apply_domain_visitor::operator()(std::vector<ossia::value>&& value,
   return std::move(value);
 }
 
-}
 }

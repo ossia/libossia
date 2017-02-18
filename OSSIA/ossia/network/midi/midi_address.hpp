@@ -90,10 +90,10 @@ struct address_info
     return {};
   }
 
-  ossia::net::domain defaultDomain()
+  ossia::domain defaultDomain()
   {
 
-    return ossia::net::make_domain(defaultValue(0), defaultValue(127));
+    return ossia::make_domain(defaultValue(0), defaultValue(127));
   }
 
   address_info(Type t) : type{t}
@@ -118,7 +118,7 @@ class midi_address final : public ossia::net::address_base
   address_info mInfo;
   ossia::net::node_base& mParent;
   midi_protocol& mProtocol;
-  ossia::net::domain mDomain;
+  ossia::domain mDomain;
 
   ossia::val_type mType = ossia::val_type::INT;
   value mValue;
@@ -144,8 +144,8 @@ public:
   ossia::access_mode getAccessMode() const override;
   address_base& setAccessMode(ossia::access_mode) override;
 
-  const ossia::net::domain& getDomain() const override;
-  address_base& setDomain(const ossia::net::domain&) override;
+  const ossia::domain& getDomain() const override;
+  address_base& setDomain(const ossia::domain&) override;
 
   ossia::bounding_mode getBoundingMode() const override;
   address_base& setBoundingMode(ossia::bounding_mode) override;

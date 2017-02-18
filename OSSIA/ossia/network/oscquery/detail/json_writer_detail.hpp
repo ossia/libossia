@@ -19,7 +19,7 @@ struct json_writer_impl
   void writeValue(const ossia::value& val) const;
   void writeValue(ossia::bounding_mode b) const;
   void writeValue(ossia::access_mode b) const;
-  void writeValue(const ossia::net::domain& d) const;
+  void writeValue(const ossia::domain& d) const;
   void writeValue(const ossia::unit_t& d) const;
   void writeValue(const ossia::net::tags& tags) const;
   void writeValue(int32_t i) const;

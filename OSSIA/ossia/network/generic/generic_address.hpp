@@ -37,7 +37,7 @@ protected:
   mutable std::mutex m_valueMutex;
   ossia::value m_value;
 
-  ossia::net::domain m_domain;
+  ossia::domain m_domain;
   unit_t m_unit;
 
   ossia::value m_previousValue; //! Used for repetition filter.
@@ -73,8 +73,8 @@ public:
   ossia::access_mode getAccessMode() const final override;
   ossia::net::generic_address& setAccessMode(ossia::access_mode) final override;
 
-  const ossia::net::domain& getDomain() const final override;
-  ossia::net::generic_address& setDomain(const ossia::net::domain&) final override;
+  const ossia::domain& getDomain() const final override;
+  ossia::net::generic_address& setDomain(const ossia::domain&) final override;
 
   ossia::bounding_mode getBoundingMode() const final override;
   ossia::net::generic_address& setBoundingMode(ossia::bounding_mode) final override;
