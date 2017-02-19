@@ -58,7 +58,7 @@ int main()
   cout << "value at 2. = " << c->valueAt(2.) << endl;
 
   cout << "*** test 4 ***" << endl;
-  c->setInitialPointOrdinateDestination(Destination(*localTupleAddress, {1}));
+  c->setInitialPointOrdinateDestination(Destination(*localTupleAddress, destination_index{1}));
 
   cout << "value at 0. = " << c->valueAt(0.) << endl;
   cout << "value at 0.5 = " << c->valueAt(0.5) << endl;
