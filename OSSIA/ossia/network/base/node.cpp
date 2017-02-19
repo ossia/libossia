@@ -237,6 +237,13 @@ node_base* node_base::findChild(ossia::string_view name)
   return nullptr;
 }
 
+bool node_base::hasChild(node_base& n)
+{
+  read_lock_t lock{m_mutex};
+  // TODO why not n.parent() == this ?
+  return any_of(m_children, [&] (auto& cld) { return cld.get() == &n; } );
+}
+
 bool node_base::removeChild(const std::string& name)
 {
   auto& dev = getDevice();
@@ -298,6 +305,17 @@ void node_base::clearChildren()
     removingChild(*child);
 
   m_children.clear();
+}
+
+std::vector<node_base*> node_base::children_copy() const
+{
+  std::vector<node_base*> copy;
+  read_lock_t lock{m_mutex};
+  copy.reserve(m_children.size());
+  for(auto& e : m_children)
+    copy.push_back(e.get());
+
+  return copy;
 }
 
 #define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(Type, Name, String) \

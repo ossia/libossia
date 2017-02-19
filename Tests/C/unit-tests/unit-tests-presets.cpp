@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-
+#include <ossia/detail/config.hpp>
 #include <iostream>
 #include <string>
 #include <rapidjson/document.h>

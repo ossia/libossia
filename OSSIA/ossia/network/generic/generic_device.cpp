@@ -32,18 +32,14 @@ node_base* find_node_rec(
 {
   auto first_slash_index = address.find_first_of('/');
 
-  const auto& children = node.children();
   if (first_slash_index != std::string::npos)
   {
-    auto cur = address.substr(0, first_slash_index);
-    auto it = ossia::find_if(children, [&](const auto& child) {
-      return child->getName() == cur;
-    });
-    if (it != children.end())
+    auto child = node.findChild(address.substr(0, first_slash_index));
+    if (child)
     {
       // There are still nodes since we found a slash
       return find_node_rec(
-          **it,
+          *child,
           address.substr(first_slash_index + 1));
     }
     else
@@ -54,19 +50,7 @@ node_base* find_node_rec(
   else
   {
     // One of the child may be the researched node.
-
-    auto it = ossia::find_if(children, [&](const auto& child) {
-      return child->getName() == address;
-    });
-
-    if (it != children.end())
-    {
-      return it->get();
-    }
-    else
-    {
-      return nullptr;
-    }
+    return node.findChild(address);
   }
 }
 
@@ -79,13 +63,11 @@ node_base& find_or_create_node_rec(
   if (first_slash_index != std::string::npos)
   {
     auto cur = address.substr(0, first_slash_index);
-    auto it = ossia::find_if(node.children(), [&](const auto& child) {
-      return child->getName() == cur;
-    });
-    if (it != node.children().end())
+    auto cld = node.findChild(cur);
+    if (cld)
     {
       // There are still nodes since we found a slash
-      return find_or_create_node_rec(**it,
+      return find_or_create_node_rec(*cld,
           address.substr(first_slash_index + 1));
     }
     else
@@ -101,13 +83,10 @@ node_base& find_or_create_node_rec(
   else
   {
     // One of the child may be the researched node.
-    auto it = ossia::find_if(node.children(), [&](const auto& child) {
-      return child->getName() == address;
-    });
-
-    if (it != node.children().end())
+    auto n = node.findChild(address);
+    if(n)
     {
-      return *it->get();
+      return *n;
     }
     else
     {

@@ -264,16 +264,7 @@ struct minuit_behavior<
                     "}");
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
-  auto get_children_names(const ossia::net::node_base& node)
-  {
-    std::vector<std::string> v;
-    v.reserve(node.children().size());
 
-    for(const auto& child : node.children())
-      v.push_back(child->getName());
-
-    return v;
-  }
 
   std::vector<std::string> get_children_names(
       ossia::net::device_base& dev,
@@ -283,7 +274,7 @@ struct minuit_behavior<
     if (!node)
       return {};
 
-    return get_children_names(*node);
+    return node->childrenNames();
   }
 
   auto operator()(

@@ -137,6 +137,9 @@ public:
    */
   node_base* findChild(ossia::string_view name);
 
+  //! Return true if this node is parent of this children
+  bool hasChild(ossia::net::node_base&);
+
   bool removeChild(const std::string& name);
   bool removeChild(const node_base& name);
 
@@ -153,6 +156,9 @@ public:
 
   //! Nonprotected version. With great powers, yada yada etc etc
   const auto& unsafe_children() const { return m_children; }
+
+  //! Return a copy of the children vector to iterate without deadlocking.
+  std::vector<node_base*> children_copy() const;
 
   //! A vector with all the names of the children.
   std::vector<std::string> childrenNames() const;

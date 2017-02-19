@@ -177,7 +177,7 @@ private Q_SLOTS:
       std::make_unique<ossia::net::minuit_protocol>("i-score-remote", "127.0.0.1", 13580, 13579), "i-score-remote"};
     remote_device.getProtocol().update(remote_device);
 
-    for(auto& n : remote_device.children())
+    for(auto n : remote_device.children_copy())
     {
       if(auto a = n->getAddress())
       {
