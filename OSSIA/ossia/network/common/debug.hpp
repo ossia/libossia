@@ -19,7 +19,7 @@
  */
 namespace ossia
 {
-class domain;
+struct domain;
 namespace net
 {
 class node_base;
