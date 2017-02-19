@@ -333,6 +333,23 @@ inline ossia::domain get_domain(
   return ossia::make_domain(val, cur);
 }
 
+inline optional<double> AsNumber(oscpack::ReceivedMessageArgumentIterator& it)
+{
+  switch(it->TypeTag())
+  {
+    case oscpack::TypeTagValues::INT32_TYPE_TAG:
+      return (double)it->AsInt32Unchecked();
+    case oscpack::TypeTagValues::INT64_TYPE_TAG:
+      return (double)it->AsInt64Unchecked();
+    case oscpack::TypeTagValues::FLOAT_TYPE_TAG:
+      return (double)it->AsFloatUnchecked();
+    case oscpack::TypeTagValues::DOUBLE_TYPE_TAG:
+      return it->AsDoubleUnchecked();
+    default:
+      return ossia::none;
+  }
+}
+
 // Listen
 template <>
 struct minuit_behavior<
@@ -438,7 +455,7 @@ struct minuit_behavior<
         }
         case minuit_attribute::ValueStepSize:
         {
-          ossia::net::set_value_step_size(*node, mess_it->AsInt32());
+          ossia::net::set_value_step_size(*node, AsNumber(mess_it));
           break;
         }
         default:
