@@ -2,6 +2,7 @@ image: Visual Studio 2015
 
 environment:
   BOOST_ROOT: c:\Libraries\boost_1_62_0
+  CTEST_OUTPUT_ON_FAILURE: 1
 
   matrix:
     - platform: Win32
