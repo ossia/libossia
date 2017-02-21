@@ -133,27 +133,20 @@ template void obj_bang<t_param> (t_param  *x);
 template void obj_bang<t_remote>(t_remote *x);
 
 template<typename T> void obj_dump(T *x){
-    if (std::is_same<T,t_view>::value || std::is_same<T,t_remote>::value) {
-        t_atom a;
-        std::string fullpath = get_absolute_path(x->x_node);
-        SETSYMBOL(&a,gensym(fullpath.c_str()));
-        outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
+    t_atom a;
+    std::string fullpath = get_absolute_path(x->x_node);
+    SETSYMBOL(&a,gensym(fullpath.c_str()));
+    outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
 
-        if ( x->x_node ){
-            SETFLOAT(&a, 1.);
-        } else {
-            SETFLOAT(&a, 0.);
-        }
-        outlet_anything(x->x_dumpout,gensym("registered"), 1, &a);
-
-        SETFLOAT(&a, x->isQuarantined());
-        outlet_anything(x->x_dumpout,gensym("quarantined"), 1, &a);
+    if ( x->x_node ){
+        SETFLOAT(&a, 1.);
     } else {
-        t_atom a;
-        std::string fullpath = get_absolute_path(x->x_node);
-        SETSYMBOL(&a,gensym(fullpath.c_str()));
-        outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
+        SETFLOAT(&a, 0.);
     }
+    outlet_anything(x->x_dumpout,gensym("registered"), 1, &a);
+
+    SETFLOAT(&a, x->isQuarantined());
+    outlet_anything(x->x_dumpout,gensym("quarantined"), 1, &a);
 }
 
 template void obj_dump<t_param> (t_param  *x);
