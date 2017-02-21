@@ -117,7 +117,6 @@ extern "C" void setup_ossia0x2eparam(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) parameter_loadbang,   "loadbang",   A_NULL, 0);
         eclass_addmethod(c, (method) parameter_float,      "float",      A_FLOAT, 0);
         eclass_addmethod(c, (method) obj_set<t_param>,     "set",        A_GIMME, 0);
         eclass_addmethod(c, (method) obj_bang<t_param>,    "bang",       A_NULL, 0);

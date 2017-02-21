@@ -127,7 +127,6 @@ extern "C" void setup_ossia0x2emodel(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) model_loadbang,   "loadbang",   A_NULL, 0);
         eclass_addmethod(c, (method) obj_dump<t_model>,   "dump",       A_NULL, 0);
     }
 

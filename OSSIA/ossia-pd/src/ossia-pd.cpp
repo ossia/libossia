@@ -56,7 +56,7 @@ template void obj_dump_path<t_model> (t_model  *x);
 template void obj_dump_path<t_view> (t_view  *x);
 
 
-// self registering (at loadbang or when creating the object)
+// self registering (when creating the object)
 template<typename T> bool obj_register(T *x)
 {
     if (x->x_node) return true; // already registered

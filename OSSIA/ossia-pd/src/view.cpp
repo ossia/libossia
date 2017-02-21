@@ -124,7 +124,6 @@ extern "C" void setup_ossia0x2eview(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) view_loadbang,   "loadbang",   A_NULL, 0);
         eclass_addmethod(c, (method) obj_dump<t_view>,       "dump",       A_NULL, 0);
     }
 

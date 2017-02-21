@@ -91,7 +91,6 @@ extern "C" void setup_ossia0x2eremote(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) remote_loadbang,   "loadbang",   A_NULL, 0);
         eclass_addmethod(c, (method) remote_float,      "float",      A_FLOAT, 0);
         eclass_addmethod(c, (method) obj_set<t_remote>, "set",        A_GIMME, 0);
         eclass_addmethod(c, (method) obj_bang<t_remote>,"bang",       A_NULL, 0);

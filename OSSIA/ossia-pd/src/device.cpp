@@ -8,7 +8,8 @@ namespace ossia { namespace pd {
 
 static t_eclass *device_class;
 
-static void device_loadbang(t_device* x){
+static void device_register(t_device* x){
+    x->x_node->clearChildren();
     x->register_children();
 }
 
@@ -183,7 +184,7 @@ extern "C" void setup_ossia0x2edevice(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) device_loadbang, "loadbang", A_NULL, 0);
+        eclass_addmethod(c, (method) device_register, "register", A_NULL, 0);
         eclass_addmethod(c, (method) device_dump, "dump", A_NULL, 0);
         eclass_addmethod(c, (method) device_expose, "expose", A_GIMME, 0);
 
