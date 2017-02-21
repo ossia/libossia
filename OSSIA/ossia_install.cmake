@@ -98,7 +98,16 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/asio/asio/include/asio
         DESTINATION include
         COMPONENT Devel)
 
+install(
+       FILES
+         ${OSSIA_3RDPARTY_FOLDER}/asio/asio/include/asio.hpp
+       DESTINATION include/
+        COMPONENT Devel)
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/websocketpp/websocketpp
+        DESTINATION include
+        COMPONENT Devel)
+
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/rapidjson/include/rapidjson
         DESTINATION include
         COMPONENT Devel)
 
