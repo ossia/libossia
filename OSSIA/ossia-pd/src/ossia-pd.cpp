@@ -126,7 +126,7 @@ template void obj_set<t_param> (t_param  *x, t_symbol* s, int argc, t_atom* argv
 template void obj_set<t_remote>(t_remote *x, t_symbol* s, int argc, t_atom* argv);
 
 template<typename T> void obj_bang(T *x){
-    if ( x->x_node && x->x_node->getAddress() ) x->x_node->getAddress()->pullValue();
+    if ( x->x_node && x->x_node->getAddress() ) x->setValue(x->x_node->getAddress()->cloneValue());
 }
 
 template void obj_bang<t_param> (t_param  *x);
@@ -159,5 +159,6 @@ template<typename T> void obj_dump(T *x){
 template void obj_dump<t_param> (t_param  *x);
 template void obj_dump<t_model> (t_model  *x);
 template void obj_dump<t_remote>(t_remote *x);
+template void obj_dump<t_view>  (t_view   *x);
 
 } } // namespace
