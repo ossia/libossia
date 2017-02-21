@@ -1,5 +1,6 @@
 #include "qml_plugin.hpp"
 #include <QQmlEngine>
+#include <qqml.h>
 #include <ossia-qt/js_utilities.hpp>
 #include <ossia-qt/device/qml_device.hpp>
 #include <ossia-qt/device/qml_property.hpp>
