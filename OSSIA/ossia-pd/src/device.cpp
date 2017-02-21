@@ -37,7 +37,6 @@ static void *device_new(t_symbol *name, int argc, t_atom *argv)
         ossia::net::local_protocol& local_proto = *local_proto_ptr;
         x->x_device = new ossia::net::generic_device{std::move(local_proto_ptr), x->x_name->s_name};
         x->x_node = &x->x_device->getRootNode();
-        x->x_device->onAddressCreated.connect<t_device, &t_device::addressCreationHandler>(x);
 
         ebox_attrprocess_viabinbuf(x, d);
 
