@@ -18,8 +18,4 @@ struct t_remote : ossia_obj_base
 
 };
 
-static void remote_loadbang(t_remote *x){
-    bool res = obj_register<t_remote>(x);
-}
-
 } } // namespace

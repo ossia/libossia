@@ -71,8 +71,7 @@ template<typename T> bool obj_register(T *x)
 
     t_model *model = nullptr;
     t_view *view = nullptr;
-    t_param *param = nullptr;
-    int param_level, view_level, model_level;
+    int view_level, model_level;
 
     // then try to locate a view or a parameter when x is ossia.view or ossia.remote
     model = find_parent_alive<t_model>(&x->x_obj,osym_model, 0, &model_level);
@@ -93,6 +92,7 @@ template<typename T> bool obj_register(T *x)
     }
 
     bool res = x->register_node(node);
+    if (!res) x->quarantining();
 
     return res;
 }

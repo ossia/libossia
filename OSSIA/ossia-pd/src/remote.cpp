@@ -24,6 +24,7 @@ bool t_remote :: register_node(ossia::net::node_base* node){
             });
             dequarantining();
             x_node->aboutToBeDeleted.connect<t_remote, &t_remote::isDeleted>(this);
+            setValue(x_node->getAddress()->cloneValue());
 
             return true;
         }
@@ -71,6 +72,8 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
             error("You have to pass a name as the first argument");
             x->x_name = gensym("untitledRemote");
         }
+
+        obj_register<t_remote>(x);
     }
 
     return (x);
@@ -91,9 +94,9 @@ extern "C" void setup_ossia0x2eremote(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) remote_float,      "float",      A_FLOAT, 0);
-        eclass_addmethod(c, (method) obj_set<t_remote>, "set",        A_GIMME, 0);
-        eclass_addmethod(c, (method) obj_bang<t_remote>,"bang",       A_NULL, 0);
+        eclass_addmethod(c, (method) remote_float,       "float",      A_FLOAT, 0);
+        eclass_addmethod(c, (method) obj_set<t_remote>,  "set",        A_GIMME, 0);
+        eclass_addmethod(c, (method) obj_bang<t_remote>, "bang",       A_NULL, 0);
         eclass_addmethod(c, (method) obj_dump<t_remote>, "dump",       A_NULL, 0);
     }
 

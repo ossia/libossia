@@ -37,8 +37,6 @@ static void model_loadbang(t_model *x){
 bool t_model :: register_node(ossia::net::node_base*  node){
     if (!node) return false;
 
-    x_node = nullptr;
-
     if (x_node && x_node->getParent() == node ) return true; // already register to this node;
     unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
 
@@ -54,6 +52,11 @@ bool t_model :: register_node(ossia::net::node_base*  node){
         param->register_node(x_node);
     }
 
+    // then try to register
+    for (auto param : t_param::quarantine()){
+        obj_register<t_param>(static_cast<t_param*>(param));
+    }
+
     // FIXME nested model is not registered properly
     std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 1);
     // std::sort(models.begin(), models.end());
@@ -63,7 +66,7 @@ bool t_model :: register_node(ossia::net::node_base*  node){
     }
 
     for (auto view : t_view::quarantine()){
-        view_loadbang(view);
+        obj_register<t_view>(static_cast<t_view*>(view));
     }
 
     return true;
@@ -91,6 +94,7 @@ bool t_model :: unregister(){
 
     x_node->getParent()->removeChild(x_name->s_name);
     x_node = nullptr;
+    quarantining();
 
     return true;
 }
@@ -110,6 +114,8 @@ static void *model_new(t_symbol *name, int argc, t_atom *argv)
             x->x_name = gensym("untitledModel");
             pd_error(x,"You have to pass a name as the first argument");
         }
+
+        obj_register<t_model>(x);
     }
 
     return (x);

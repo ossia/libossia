@@ -6,27 +6,6 @@ namespace ossia { namespace pd {
 
 static t_eclass *view_class;
 
-/*
-void t_view :: _register()
-{
-    t_device* device = nullptr;
-
-    int l;
-    if (!(device = (t_device*) find_parent(&x_obj,osym_device, 0, &l)))
-    {
-        x_node = nullptr;
-        return;
-    }
-    // look for an [ossia.view] instance in the parent patchers
-    t_view* view = find_parent_alive<t_view>(&x_obj,osym_view, 1, &l);
-    if (view)  {
-        register_node(view->x_node);
-        return;
-    }
-    register_node(device->x_node);
-}
-*/
-
 //****************//
 // Member methods //
 //****************//
@@ -102,6 +81,7 @@ static void *view_new(t_symbol *name, int argc, t_atom *argv)
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
             if (x->x_name != osym_empty && x->x_name->s_name[0] == '/') x->x_absolute = true;
+            obj_register<t_view>(x);
         } else {
             x->x_name = gensym("untitledModel");
             pd_error(x,"You have to pass a name as the first argument");

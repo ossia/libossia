@@ -22,7 +22,6 @@ bool t_param :: register_node(ossia::net::node_base* node){
 
     unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
 
-
     if(node){
         x_node = node->findChild(x_name->s_name);
         if(x_node){
@@ -57,6 +56,7 @@ bool t_param :: unregister(){
     if (x_node) {
         x_node->getParent()->removeChild(x_name->s_name);
         x_node = nullptr;
+        quarantining();
     }
     return true;
 }
@@ -98,6 +98,8 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
         // the type is deduced from the default value (for now in Pd only symbol and float)
         if(x->x_default.a_type == A_SYMBOL) x->x_type = gensym("symbol");
         else x->x_type = gensym("float");
+
+        obj_register<t_param>(x);
     }
 
     return (x);

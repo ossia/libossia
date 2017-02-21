@@ -152,22 +152,34 @@ void t_device :: unregister_children(){
     */
 }
 
+/*
 void t_device :: addressCreationHandler(const ossia::net::address_base& n){
+    for (auto model : t_model::quarantine()){
+        obj_register<t_model>(static_cast<t_model*>(model));
+    }
+
+    for (auto param : t_param::quarantine()){
+        obj_register<t_param>(static_cast<t_param*>(param));
+    }
+
     for (auto view : t_view::quarantine()){
-        view_loadbang(view);
+        obj_register<t_view>(static_cast<t_view*>(view));
     }
 
     for (auto remote : t_remote::quarantine()){
-        remote_loadbang(remote);
+        obj_register<t_remote>(static_cast<t_remote*>(remote));
     }
 }
+*/
 
+/*
 // FIXME is this really necessary ?
 void t_device :: nodeCreationHandler(const ossia::net::node_base& n){
     for (auto view : t_view::quarantine()){
-        view_loadbang(view);
+        obj_register<t_view>(static_cast<t_view*>(view));
     }
 }
+*/
 
 static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
     if (argc && argv->a_type == A_SYMBOL){
