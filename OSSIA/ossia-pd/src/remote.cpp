@@ -66,23 +66,6 @@ static void remote_float(t_remote *x, t_float val){
     }
 }
 
-static void remote_dump(t_remote* x){
-    t_atom a;
-    std::string fullpath = get_absolute_path(x->x_node);
-    SETSYMBOL(&a,gensym(fullpath.c_str()));
-    outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
-
-    if ( x->x_node ){
-        SETFLOAT(&a, 1.);
-    } else {
-        SETFLOAT(&a, 0.);
-    }
-    outlet_anything(x->x_dumpout,gensym("registered"), 1, &a);
-
-    SETFLOAT(&a, x->isQuarantined());
-    outlet_anything(x->x_dumpout,gensym("quarantined"), 1, &a);
-}
-
 static void *remote_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_remote *x = (t_remote *)eobj_new(remote_class);
@@ -126,7 +109,7 @@ extern "C" void setup_ossia0x2eremote(void)
         eclass_addmethod(c, (method) remote_float,      "float",      A_FLOAT, 0);
         eclass_addmethod(c, (method) obj_set<t_remote>, "set",        A_GIMME, 0);
         eclass_addmethod(c, (method) obj_bang<t_remote>,"bang",       A_NULL, 0);
-        eclass_addmethod(c, (method) remote_dump,       "dump",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_dump<t_remote>, "dump",       A_NULL, 0);
     }
 
     remote_class = c;

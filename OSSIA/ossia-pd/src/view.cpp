@@ -6,6 +6,7 @@ namespace ossia { namespace pd {
 
 static t_eclass *view_class;
 
+/*
 void t_view :: _register()
 {
     t_device* device = nullptr;
@@ -24,24 +25,7 @@ void t_view :: _register()
     }
     register_node(device->x_node);
 }
-
-static void view_dump(t_view *x)
-{
-    t_atom a;
-    std::string fullpath = get_absolute_path(x->x_node);
-    SETSYMBOL(&a,gensym(fullpath.c_str()));
-    outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
-
-    if ( x->x_node ){
-        SETFLOAT(&a, 1.);
-    } else {
-        SETFLOAT(&a, 0.);
-    }
-    outlet_anything(x->x_dumpout,gensym("registered"), 1, &a);
-
-    SETFLOAT(&a, x->isQuarantined());
-    outlet_anything(x->x_dumpout,gensym("quarantined"), 1, &a);
-}
+*/
 
 //****************//
 // Member methods //
@@ -153,7 +137,7 @@ extern "C" void setup_ossia0x2eview(void)
     if(c)
     {
         eclass_addmethod(c, (method) view_loadbang,   "loadbang",   A_NULL, 0);
-        eclass_addmethod(c, (method) view_dump,       "dump",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_dump<t_view>,       "dump",       A_NULL, 0);
     }
 
     view_class = c;

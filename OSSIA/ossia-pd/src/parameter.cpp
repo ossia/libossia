@@ -10,18 +10,11 @@ static t_eclass *parameter_class;
 
 static void parameter_free(t_param* x);
 
-// TODO put this in base class or templatize
-static void parameter_dump(t_param *x)
-{
-    t_atom a;
-    std::string fullpath = get_absolute_path(x->x_node);
-    SETSYMBOL(&a,gensym(fullpath.c_str()));
-    outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
-}
-
+/*
 void parameter_loadbang(t_param* x){
     obj_register<t_param>(x);
 }
+*/
 
 bool t_param :: register_node(ossia::net::node_base* node){
 
@@ -128,7 +121,7 @@ extern "C" void setup_ossia0x2eparam(void)
         eclass_addmethod(c, (method) parameter_float,      "float",      A_FLOAT, 0);
         eclass_addmethod(c, (method) obj_set<t_param>,     "set",        A_GIMME, 0);
         eclass_addmethod(c, (method) obj_bang<t_param>,    "bang",       A_NULL, 0);
-        eclass_addmethod(c, (method) parameter_dump,       "dump",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_dump<t_param>,    "dump",       A_NULL, 0);
 
         CLASS_ATTR_SYMBOL     (c, "type",    0, t_param, x_type);
         CLASS_ATTR_ATOM       (c, "default", 0, t_param, x_default);

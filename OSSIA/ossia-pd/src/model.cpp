@@ -27,17 +27,12 @@ static void model_register(t_model *x)
     x->register_node(device->x_node);
 }
 
+/*
 static void model_loadbang(t_model *x){
+    // obj_register<t_model>(x);
     model_register(x);
 }
-
-static void model_dump(t_model *x)
-{
-    t_atom a;
-    std::string fullpath = get_absolute_path(x->x_node);
-    SETSYMBOL(&a,gensym(fullpath.c_str()));
-    outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
-}
+*/
 
 bool t_model :: register_node(ossia::net::node_base*  node){
     if (!node) return false;
@@ -133,7 +128,7 @@ extern "C" void setup_ossia0x2emodel(void)
     if(c)
     {
         eclass_addmethod(c, (method) model_loadbang,   "loadbang",   A_NULL, 0);
-        eclass_addmethod(c, (method) model_dump,       "dump",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_dump<t_model>,   "dump",       A_NULL, 0);
     }
 
     model_class = c;
