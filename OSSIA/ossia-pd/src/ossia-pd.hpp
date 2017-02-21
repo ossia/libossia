@@ -33,11 +33,14 @@ struct value_visitor
 
     void operator()(impulse) const
     {
-        post("%s receive an impulse",x->x_name->s_name);
+        outlet_bang(x->x_dataout);
     }
     void operator()(int32_t i) const
     {
-        post("%s receive an Integer %d",x->x_name->s_name, i);
+        t_atom a;
+        SETFLOAT(&a, (t_float) i);
+        outlet_float(x->x_dataout, (t_float) i);
+        outlet_anything(x->x_setout,gensym("set"),1,&a);
     }
     void operator()(float f) const
     {
@@ -48,7 +51,11 @@ struct value_visitor
     }
     void operator()(bool b) const
     {
-        post("%s receive a Boolean %d",x->x_name->s_name, b);
+        t_atom a;
+        t_float f = b?1.:0.;
+        SETFLOAT(&a, f);
+        outlet_float(x->x_dataout, f);
+        outlet_anything(x->x_setout,gensym("set"),1,&a);
     }
     void operator()(const std::string& str) const
     {
@@ -71,10 +78,23 @@ struct value_visitor
     void operator()(vec3f vec) const
     {
         post("%s receive a Vec3f (%.2f,%.2f,%.2f)",x->x_name->s_name, vec[0], vec[1],vec[2]);
+        t_atom a[3];
+        SETFLOAT(a,vec[0]);
+        SETFLOAT(a+1,vec[1]);
+        SETFLOAT(a+2,vec[2]);
+        outlet_list(x->x_dataout, gensym("list"), 3, a);
+        outlet_anything(x->x_setout,gensym("set"),3, a);
     }
     void operator()(vec4f vec) const
     {
         post("%s receive a Vec4f (%.2f,%.2f,%.2f,%.2f)",x->x_name->s_name, vec[0], vec[1],vec[2],vec[3]);
+        t_atom a[4];
+        SETFLOAT(a,vec[0]);
+        SETFLOAT(a+1,vec[1]);
+        SETFLOAT(a+2,vec[2]);
+        SETFLOAT(a+3,vec[3]);
+        outlet_list(x->x_dataout, gensym("list"), 4, a);
+        outlet_anything(x->x_setout,gensym("set"),4, a);
     }
     void operator()(const Destination& d) const
     {
@@ -273,5 +293,7 @@ template<typename T> extern void obj_dump_path(T *x);
 template<typename T> extern bool obj_register(T *x);
 template<typename T> extern void obj_set(T *x, t_symbol* s, int argc, t_atom* argv);
 template<typename T> extern void obj_bang(T *x);
+
+template<typename T> extern void obj_dump(T *x);
 
 } } // namespace

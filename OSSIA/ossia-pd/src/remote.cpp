@@ -8,20 +8,6 @@ static t_eclass *remote_class;
 
 static void remote_free(t_remote* x);
 
-void t_remote :: quarantining(){
-    if ( !isQuarantined() ) quarantine().push_back(this);
-}
-
-// FIXME after the first registration, remote is reported to be quarantined AND connected (which is a non-sense)
-// while after the second registration, it seems to be fine
-void t_remote :: dequarantining(){
-    quarantine().erase(std::remove(quarantine().begin(), quarantine().end(), this), quarantine().end());
-}
-
-bool t_remote :: isQuarantined(){
-    return std::find(quarantine().begin(), quarantine().end(), this) != quarantine().end();
-}
-
 bool t_remote :: register_node(ossia::net::node_base* node){
 
     if (x_node && x_node->getParent() == node ) {
@@ -38,6 +24,7 @@ bool t_remote :: register_node(ossia::net::node_base* node){
             });
             dequarantining();
             x_node->aboutToBeDeleted.connect<t_remote, &t_remote::isDeleted>(this);
+            setValue(x_node->getAddress()->cloneValue());
 
             return true;
         }
@@ -66,23 +53,6 @@ static void remote_float(t_remote *x, t_float val){
     }
 }
 
-static void remote_dump(t_remote* x){
-    t_atom a;
-    std::string fullpath = get_absolute_path(x->x_node);
-    SETSYMBOL(&a,gensym(fullpath.c_str()));
-    outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
-
-    if ( x->x_node ){
-        SETFLOAT(&a, 1.);
-    } else {
-        SETFLOAT(&a, 0.);
-    }
-    outlet_anything(x->x_dumpout,gensym("registered"), 1, &a);
-
-    SETFLOAT(&a, x->isQuarantined());
-    outlet_anything(x->x_dumpout,gensym("quarantined"), 1, &a);
-}
-
 static void *remote_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_remote *x = (t_remote *)eobj_new(remote_class);
@@ -102,6 +72,8 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
             error("You have to pass a name as the first argument");
             x->x_name = gensym("untitledRemote");
         }
+
+        obj_register<t_remote>(x);
     }
 
     return (x);
@@ -122,11 +94,10 @@ extern "C" void setup_ossia0x2eremote(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) remote_loadbang,   "loadbang",   A_NULL, 0);
-        eclass_addmethod(c, (method) remote_float,      "float",      A_FLOAT, 0);
-        eclass_addmethod(c, (method) obj_set<t_remote>, "set",        A_GIMME, 0);
-        eclass_addmethod(c, (method) obj_bang<t_remote>,"bang",       A_NULL, 0);
-        eclass_addmethod(c, (method) remote_dump,       "dump",       A_NULL, 0);
+        eclass_addmethod(c, (method) remote_float,       "float",      A_FLOAT, 0);
+        eclass_addmethod(c, (method) obj_set<t_remote>,  "set",        A_GIMME, 0);
+        eclass_addmethod(c, (method) obj_bang<t_remote>, "bang",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_dump<t_remote>, "dump",       A_NULL, 0);
     }
 
     remote_class = c;

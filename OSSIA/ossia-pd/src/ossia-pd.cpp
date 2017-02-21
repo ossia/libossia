@@ -56,7 +56,7 @@ template void obj_dump_path<t_model> (t_model  *x);
 template void obj_dump_path<t_view> (t_view  *x);
 
 
-// self registering (at loadbang or when creating the object)
+// self registering (when creating the object)
 template<typename T> bool obj_register(T *x)
 {
     if (x->x_node) return true; // already registered
@@ -66,13 +66,12 @@ template<typename T> bool obj_register(T *x)
 
     // first try to locate a ossia.device in the parent hierarchy...
     if (!device) {
-        return false; // not ready to register : if there is no device, model will be unable to register too
+        return false; // not ready to register : if there is no device, nothing could be registered
     }
 
     t_model *model = nullptr;
     t_view *view = nullptr;
-    t_param *param = nullptr;
-    int param_level, view_level, model_level;
+    int view_level, model_level;
 
     // then try to locate a view or a parameter when x is ossia.view or ossia.remote
     model = find_parent_alive<t_model>(&x->x_obj,osym_model, 0, &model_level);
@@ -93,6 +92,7 @@ template<typename T> bool obj_register(T *x)
     }
 
     bool res = x->register_node(node);
+    if (!res) x->quarantining();
 
     return res;
 }
@@ -126,10 +126,32 @@ template void obj_set<t_param> (t_param  *x, t_symbol* s, int argc, t_atom* argv
 template void obj_set<t_remote>(t_remote *x, t_symbol* s, int argc, t_atom* argv);
 
 template<typename T> void obj_bang(T *x){
-    if ( x->x_node && x->x_node->getAddress() ) x->x_node->getAddress()->pullValue();
+    if ( x->x_node && x->x_node->getAddress() ) x->setValue(x->x_node->getAddress()->cloneValue());
 }
 
 template void obj_bang<t_param> (t_param  *x);
 template void obj_bang<t_remote>(t_remote *x);
+
+template<typename T> void obj_dump(T *x){
+    t_atom a;
+    std::string fullpath = get_absolute_path(x->x_node);
+    SETSYMBOL(&a,gensym(fullpath.c_str()));
+    outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
+
+    if ( x->x_node ){
+        SETFLOAT(&a, 1.);
+    } else {
+        SETFLOAT(&a, 0.);
+    }
+    outlet_anything(x->x_dumpout,gensym("registered"), 1, &a);
+
+    SETFLOAT(&a, x->isQuarantined());
+    outlet_anything(x->x_dumpout,gensym("quarantined"), 1, &a);
+}
+
+template void obj_dump<t_param> (t_param  *x);
+template void obj_dump<t_model> (t_model  *x);
+template void obj_dump<t_remote>(t_remote *x);
+template void obj_dump<t_view>  (t_view   *x);
 
 } } // namespace

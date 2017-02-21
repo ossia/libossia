@@ -27,22 +27,15 @@ static void model_register(t_model *x)
     x->register_node(device->x_node);
 }
 
+/*
 static void model_loadbang(t_model *x){
+    // obj_register<t_model>(x);
     model_register(x);
 }
-
-static void model_dump(t_model *x)
-{
-    t_atom a;
-    std::string fullpath = get_absolute_path(x->x_node);
-    SETSYMBOL(&a,gensym(fullpath.c_str()));
-    outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
-}
+*/
 
 bool t_model :: register_node(ossia::net::node_base*  node){
     if (!node) return false;
-
-    x_node = nullptr;
 
     if (x_node && x_node->getParent() == node ) return true; // already register to this node;
     unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
@@ -59,6 +52,11 @@ bool t_model :: register_node(ossia::net::node_base*  node){
         param->register_node(x_node);
     }
 
+    // then try to register
+    for (auto param : t_param::quarantine()){
+        obj_register<t_param>(static_cast<t_param*>(param));
+    }
+
     // FIXME nested model is not registered properly
     std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 1);
     // std::sort(models.begin(), models.end());
@@ -68,7 +66,7 @@ bool t_model :: register_node(ossia::net::node_base*  node){
     }
 
     for (auto view : t_view::quarantine()){
-        view_loadbang(view);
+        obj_register<t_view>(static_cast<t_view*>(view));
     }
 
     return true;
@@ -96,6 +94,7 @@ bool t_model :: unregister(){
 
     x_node->getParent()->removeChild(x_name->s_name);
     x_node = nullptr;
+    quarantining();
 
     return true;
 }
@@ -115,6 +114,8 @@ static void *model_new(t_symbol *name, int argc, t_atom *argv)
             x->x_name = gensym("untitledModel");
             pd_error(x,"You have to pass a name as the first argument");
         }
+
+        obj_register<t_model>(x);
     }
 
     return (x);
@@ -132,8 +133,7 @@ extern "C" void setup_ossia0x2emodel(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) model_loadbang,   "loadbang",   A_NULL, 0);
-        eclass_addmethod(c, (method) model_dump,       "dump",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_dump<t_model>,   "dump",       A_NULL, 0);
     }
 
     model_class = c;

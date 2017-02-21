@@ -10,25 +10,17 @@ static t_eclass *parameter_class;
 
 static void parameter_free(t_param* x);
 
-// TODO put this in base class or templatize
-static void parameter_dump(t_param *x)
-{
-    t_atom a;
-    std::string fullpath = get_absolute_path(x->x_node);
-    SETSYMBOL(&a,gensym(fullpath.c_str()));
-    outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
-}
-
+/*
 void parameter_loadbang(t_param* x){
     obj_register<t_param>(x);
 }
+*/
 
 bool t_param :: register_node(ossia::net::node_base* node){
 
     if (x_node && x_node->getParent() == node ) return true; // already register to this node;
 
     unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
-
 
     if(node){
         x_node = node->findChild(x_name->s_name);
@@ -64,6 +56,7 @@ bool t_param :: unregister(){
     if (x_node) {
         x_node->getParent()->removeChild(x_name->s_name);
         x_node = nullptr;
+        quarantining();
     }
     return true;
 }
@@ -105,6 +98,8 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
         // the type is deduced from the default value (for now in Pd only symbol and float)
         if(x->x_default.a_type == A_SYMBOL) x->x_type = gensym("symbol");
         else x->x_type = gensym("float");
+
+        obj_register<t_param>(x);
     }
 
     return (x);
@@ -124,11 +119,10 @@ extern "C" void setup_ossia0x2eparam(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) parameter_loadbang,   "loadbang",   A_NULL, 0);
         eclass_addmethod(c, (method) parameter_float,      "float",      A_FLOAT, 0);
         eclass_addmethod(c, (method) obj_set<t_param>,     "set",        A_GIMME, 0);
         eclass_addmethod(c, (method) obj_bang<t_param>,    "bang",       A_NULL, 0);
-        eclass_addmethod(c, (method) parameter_dump,       "dump",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_dump<t_param>,    "dump",       A_NULL, 0);
 
         CLASS_ATTR_SYMBOL     (c, "type",    0, t_param, x_type);
         CLASS_ATTR_ATOM       (c, "default", 0, t_param, x_default);

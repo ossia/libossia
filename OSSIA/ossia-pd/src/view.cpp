@@ -6,58 +6,9 @@ namespace ossia { namespace pd {
 
 static t_eclass *view_class;
 
-void t_view :: _register()
-{
-    t_device* device = nullptr;
-
-    int l;
-    if (!(device = (t_device*) find_parent(&x_obj,osym_device, 0, &l)))
-    {
-        x_node = nullptr;
-        return;
-    }
-    // look for an [ossia.view] instance in the parent patchers
-    t_view* view = find_parent_alive<t_view>(&x_obj,osym_view, 1, &l);
-    if (view)  {
-        register_node(view->x_node);
-        return;
-    }
-    register_node(device->x_node);
-}
-
-static void view_dump(t_view *x)
-{
-    t_atom a;
-    std::string fullpath = get_absolute_path(x->x_node);
-    SETSYMBOL(&a,gensym(fullpath.c_str()));
-    outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
-
-    if ( x->x_node ){
-        SETFLOAT(&a, 1.);
-    } else {
-        SETFLOAT(&a, 0.);
-    }
-    outlet_anything(x->x_dumpout,gensym("registered"), 1, &a);
-
-    SETFLOAT(&a, x->isQuarantined());
-    outlet_anything(x->x_dumpout,gensym("quarantined"), 1, &a);
-}
-
 //****************//
 // Member methods //
 //****************//
-
-void t_view :: quarantining(){
-    if ( !isQuarantined() ) quarantine().push_back(this);
-}
-
-void t_view :: dequarantining(){
-    quarantine().erase(std::remove(quarantine().begin(), quarantine().end(), this), quarantine().end());
-}
-
-bool t_view :: isQuarantined(){
-    return std::find(quarantine().begin(), quarantine().end(), this) != quarantine().end();
-}
 
 bool t_view :: register_node(ossia::net::node_base*  node){
     if (x_node && x_node->getParent() == node ) return true; // already register to this node;
@@ -130,6 +81,7 @@ static void *view_new(t_symbol *name, int argc, t_atom *argv)
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
             if (x->x_name != osym_empty && x->x_name->s_name[0] == '/') x->x_absolute = true;
+            obj_register<t_view>(x);
         } else {
             x->x_name = gensym("untitledModel");
             pd_error(x,"You have to pass a name as the first argument");
@@ -152,8 +104,7 @@ extern "C" void setup_ossia0x2eview(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) view_loadbang,   "loadbang",   A_NULL, 0);
-        eclass_addmethod(c, (method) view_dump,       "dump",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_dump<t_view>,       "dump",       A_NULL, 0);
     }
 
     view_class = c;
