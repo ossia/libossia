@@ -31,18 +31,6 @@ void t_view :: _register()
 // Member methods //
 //****************//
 
-void t_view :: quarantining(){
-    if ( !isQuarantined() ) quarantine().push_back(this);
-}
-
-void t_view :: dequarantining(){
-    quarantine().erase(std::remove(quarantine().begin(), quarantine().end(), this), quarantine().end());
-}
-
-bool t_view :: isQuarantined(){
-    return std::find(quarantine().begin(), quarantine().end(), this) != quarantine().end();
-}
-
 bool t_view :: register_node(ossia::net::node_base*  node){
     if (x_node && x_node->getParent() == node ) return true; // already register to this node;
     unregister(); // we should unregister here because we may have add a node between the registered node and the remote

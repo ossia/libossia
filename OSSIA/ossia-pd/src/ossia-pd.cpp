@@ -66,7 +66,7 @@ template<typename T> bool obj_register(T *x)
 
     // first try to locate a ossia.device in the parent hierarchy...
     if (!device) {
-        return false; // not ready to register : if there is no device, model will be unable to register too
+        return false; // not ready to register : if there is no device, nothing could be registered
     }
 
     t_model *model = nullptr;

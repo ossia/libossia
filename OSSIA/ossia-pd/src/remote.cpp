@@ -8,20 +8,6 @@ static t_eclass *remote_class;
 
 static void remote_free(t_remote* x);
 
-void t_remote :: quarantining(){
-    if ( !isQuarantined() ) quarantine().push_back(this);
-}
-
-// FIXME after the first registration, remote is reported to be quarantined AND connected (which is a non-sense)
-// while after the second registration, it seems to be fine
-void t_remote :: dequarantining(){
-    quarantine().erase(std::remove(quarantine().begin(), quarantine().end(), this), quarantine().end());
-}
-
-bool t_remote :: isQuarantined(){
-    return std::find(quarantine().begin(), quarantine().end(), this) != quarantine().end();
-}
-
 bool t_remote :: register_node(ossia::net::node_base* node){
 
     if (x_node && x_node->getParent() == node ) {

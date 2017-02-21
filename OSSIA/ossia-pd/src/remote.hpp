@@ -16,14 +16,6 @@ struct t_remote : ossia_obj_base
         unregister();
     }
 
-    void quarantining();
-    void dequarantining();
-    bool isQuarantined();
-
-    static std::vector<t_remote*>& quarantine(){
-        static std::vector<t_remote*> quarantine;
-        return quarantine;
-    }
 };
 
 static void remote_loadbang(t_remote *x){
