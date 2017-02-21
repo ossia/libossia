@@ -87,13 +87,13 @@ time_node::iterator time_node::insert(
     time_node::const_iterator pos,
     std::shared_ptr<time_event> ev)
 {
-  return timeEvents().insert(pos, std::move(ev));
+  return mTimeEvents.insert(pos, std::move(ev));
 }
 
 void time_node::remove(const std::shared_ptr<time_event>& e)
 {
   remove_one(mPendingEvents, e);
-  remove_one(timeEvents(), e);
+  remove_one(mTimeEvents, e);
 }
 
 time_node::iterator time_node::emplace(
