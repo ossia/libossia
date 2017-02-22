@@ -9,6 +9,7 @@ namespace ossia { namespace pd {
 struct t_param : ossia_obj_base
 {
     bool register_node(ossia::net::node_base* node);
+    bool do_registration(ossia::net::node_base* node);
     bool unregister();
 
     t_symbol* x_type;

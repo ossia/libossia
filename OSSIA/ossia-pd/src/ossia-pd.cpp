@@ -91,10 +91,7 @@ template<typename T> bool obj_register(T *x)
         node = device->x_node;
     }
 
-    bool res = x->register_node(node);
-    if (!res) obj_quarantining<T>(x);
-
-    return res;
+    return x->register_node(node);
 }
 
 template bool obj_register<t_param> (t_param *x);

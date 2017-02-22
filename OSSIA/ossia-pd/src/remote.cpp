@@ -9,9 +9,17 @@ static t_eclass *remote_class;
 static void remote_free(t_remote* x);
 
 bool t_remote :: register_node(ossia::net::node_base* node){
+    bool res = do_registration(node);
+    if(res){
+        obj_quarantining<t_remote>(this);
+    } else obj_quarantining<t_remote>(this);
+
+    return res;
+}
+
+bool t_remote :: do_registration(ossia::net::node_base* node){
 
     if (x_node && x_node->getParent() == node ) {
-        obj_dequarantining<t_remote>(this);
         return true; // already register to this node;
     }
 
@@ -22,14 +30,12 @@ bool t_remote :: register_node(ossia::net::node_base* node){
             x_callbackit = x_node->getAddress()->add_callback([=](const ossia::value& v){
                 setValue(v);
             });
-            obj_dequarantining<t_remote>(this);
             x_node->aboutToBeDeleted.connect<t_remote, &t_remote::isDeleted>(this);
             setValue(x_node->getAddress()->cloneValue());
 
             return true;
         }
     }
-    obj_quarantining<t_remote>(this);
     return false;
 }
 

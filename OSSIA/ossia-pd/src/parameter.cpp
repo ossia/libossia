@@ -12,6 +12,18 @@ static t_eclass *parameter_class;
 static void parameter_free(t_param* x);
 
 bool t_param :: register_node(ossia::net::node_base* node){
+    bool res = do_registration(node);
+    if (res) {
+        obj_dequarantining<t_param>(this);
+        for (auto remote : t_remote::quarantine()){
+            obj_register<t_remote>(static_cast<t_remote*>(remote));
+        }
+    } else obj_quarantining<t_param>(this);
+
+    return res;
+}
+
+bool t_param :: do_registration(ossia::net::node_base* node){
 
     if (x_node && x_node->getParent() == node ) return true; // already register to this node;
 
@@ -26,7 +38,7 @@ bool t_param :: register_node(ossia::net::node_base* node){
         }
 
         x_node = node->createChild(x_name->s_name);
-        x_node->aboutToBeDeleted.connect<ossia_obj_base, &ossia_obj_base::isDeleted>(this);
+        x_node->aboutToBeDeleted.connect<t_param, &t_param::isDeleted>(this);
         ossia::net::address_base* localAddress{};
         if(x_type == gensym("symbol")){
             localAddress = x_node->createAddress(ossia::val_type::STRING);
@@ -71,10 +83,6 @@ bool t_param :: register_node(ossia::net::node_base* node){
         }
     } else {
         return false;
-    }
-
-    for (auto remote : t_remote::quarantine()){
-        obj_register<t_remote>(static_cast<t_remote*>(remote));
     }
 
     return true;
@@ -138,6 +146,7 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
 static void parameter_free(t_param *x)
 {
     x->unregister();
+    obj_dequarantining<t_param>(x);
     outlet_free(x->x_dataout);
     outlet_free(x->x_setout);
     outlet_free(x->x_dumpout);
