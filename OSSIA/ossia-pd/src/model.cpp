@@ -3,6 +3,7 @@
 #include "parameter.hpp"
 #include "view.hpp"
 #include "remote.hpp"
+#include <ossia/network/base/node_attributes.hpp>
 
 namespace ossia { namespace pd {
 
@@ -27,13 +28,6 @@ static void model_register(t_model *x)
     x->register_node(device->x_node);
 }
 
-/*
-static void model_loadbang(t_model *x){
-    // obj_register<t_model>(x);
-    model_register(x);
-}
-*/
-
 bool t_model :: register_node(ossia::net::node_base*  node){
     if (!node) return false;
 
@@ -44,6 +38,9 @@ bool t_model :: register_node(ossia::net::node_base*  node){
     if (!x_node) x_node = node->createChild(x_name->s_name);
 
     x_node->aboutToBeDeleted.connect<ossia_obj_base, &ossia_obj_base::isDeleted>(this);
+
+    ossia::net::set_description(*x_node, x_description->s_name);
+    ossia::net::set_tags(*x_node, parse_tags_symbol(x_tags));
 
     std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
     // std::sort(params.begin(), params.end());
@@ -115,6 +112,9 @@ static void *model_new(t_symbol *name, int argc, t_atom *argv)
             pd_error(x,"You have to pass a name as the first argument");
         }
 
+        x->x_description = gensym("");
+        x->x_tags = gensym("");
+
         obj_register<t_model>(x);
     }
 
@@ -135,6 +135,9 @@ extern "C" void setup_ossia0x2emodel(void)
     {
         eclass_addmethod(c, (method) obj_dump<t_model>,   "dump",       A_NULL, 0);
     }
+
+    CLASS_ATTR_SYMBOL(c, "description", 0, t_model, x_description);
+    CLASS_ATTR_SYMBOL(c, "tags",        0, t_model, x_tags);
 
     model_class = c;
 }

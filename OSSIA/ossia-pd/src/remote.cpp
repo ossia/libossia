@@ -35,7 +35,6 @@ bool t_remote :: register_node(ossia::net::node_base* node){
 
 bool t_remote :: unregister(){
     if (x_callbackit != boost::none) {
-        // we have to remove the callback, but assigning x_callbackit to dummy_list.end(); seems weird to me..., have to think about a better solution
         x_node->getAddress()->remove_callback(*x_callbackit);
         x_callbackit = boost::none;
     }
@@ -94,10 +93,11 @@ extern "C" void setup_ossia0x2eremote(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) remote_float,       "float",      A_FLOAT, 0);
-        eclass_addmethod(c, (method) obj_set<t_remote>,  "set",        A_GIMME, 0);
-        eclass_addmethod(c, (method) obj_bang<t_remote>, "bang",       A_NULL, 0);
-        eclass_addmethod(c, (method) obj_dump<t_remote>, "dump",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_setFloat<t_param>,    "float",      A_FLOAT, 0);
+        eclass_addmethod(c, (method) obj_setSymbol<t_param>,   "symbol",     A_SYMBOL, 0);
+        eclass_addmethod(c, (method) obj_setList<t_param>,     "list",       A_GIMME, 0);
+        eclass_addmethod(c, (method) obj_bang<t_remote>,       "bang",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_dump<t_remote>,       "dump",       A_NULL, 0);
     }
 
     remote_class = c;

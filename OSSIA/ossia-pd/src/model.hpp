@@ -15,6 +15,8 @@ struct t_model : ossia_obj_base
         static std::vector<t_model*> quarantine;
         return quarantine;
     }
+    t_symbol* x_tags;
+    t_symbol* x_description;
 };
 
 } } // namespace

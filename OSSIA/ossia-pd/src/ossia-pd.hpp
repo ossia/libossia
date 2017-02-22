@@ -287,12 +287,32 @@ static std::string get_absolute_path(ossia::net::node_base* node)
 
 template<typename T> extern void obj_dump_path(T *x);
 template<typename T> extern bool obj_register(T *x);
-template<typename T> extern void obj_set(T *x, t_symbol* s, int argc, t_atom* argv);
+template<typename T> extern void obj_setList(T *x, t_symbol* s, int argc, t_atom* argv);
+template<typename T> extern void obj_setFloat(T *x, t_float f);
+template<typename T> extern void obj_setSymbol(T *x, t_symbol* s);
 template<typename T> extern void obj_bang(T *x);
 template<typename T> extern void obj_dump(T *x);
 
 template<typename T> extern void obj_quarantining(T* x);
 template<typename T> extern void obj_dequarantining(T* x);
 template<typename T> extern bool obj_isQuarantined(T* x);
+
+static std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol){
+    std::vector<std::string> tags;
+
+    if (tags_symbol){
+        char* c = tags_symbol->s_name;
+        std::string tag="";
+
+        while (*c!='0'){
+            if (*c==' '){
+                tags.push_back(tag);
+                tag = std::string("");
+            } else tag += *c;
+            c++;
+        }
+    }
+    return tags;
+}
 
 } } // namespace
