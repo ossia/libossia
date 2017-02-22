@@ -15,6 +15,10 @@ struct t_param : ossia_obj_base
     t_atom x_default;
     // TODO use optional for range
     float x_range[2];
+    t_symbol* x_bounding_mode;
+    t_symbol* x_access_mode;
+    t_float x_repetition_filter=0;
+    t_symbol* x_unit;
 };
 
 } } // namespace

@@ -2,6 +2,7 @@
 #include "device.hpp"
 #include "model.hpp"
 #include "remote.hpp"
+#include "ossia/editor/dataspace/dataspace_visitors.hpp"
 #include <limits>
 
 namespace ossia { namespace pd {
@@ -38,6 +39,48 @@ bool t_param :: register_node(ossia::net::node_base* node){
         } else {
             localAddress = x_node->createAddress(ossia::val_type::FLOAT);
             localAddress->setDomain(ossia::make_domain(x_range[0],x_range[1]));
+            // FIXME : we need case insensitive comparison here
+            if (x_bounding_mode == gensym("FREE"))
+              localAddress->setBoundingMode(ossia::bounding_mode::FREE);
+            else if (x_bounding_mode == gensym("CLIP"))
+              localAddress->setBoundingMode(ossia::bounding_mode::CLIP);
+            else if (x_bounding_mode == gensym("WRAP"))
+              localAddress->setBoundingMode(ossia::bounding_mode::WRAP);
+            else if (x_bounding_mode == gensym("FOLD"))
+              localAddress->setBoundingMode(ossia::bounding_mode::FOLD);
+            else if (x_bounding_mode == gensym("LOW"))
+              localAddress->setBoundingMode(ossia::bounding_mode::LOW);
+            else if (x_bounding_mode == gensym("HIGH"))
+              localAddress->setBoundingMode(ossia::bounding_mode::HIGH);
+
+            if(x_access_mode == gensym("BI") || x_access_mode == gensym("RW"))
+              localAddress->setAccessMode(ossia::access_mode::BI);
+            else if(x_access_mode == gensym("GET") || x_access_mode == gensym("R"))
+                localAddress->setAccessMode(ossia::access_mode::GET);
+            else if(x_access_mode == gensym("SET") || x_access_mode == gensym("W"))
+                localAddress->setAccessMode(ossia::access_mode::SET);
+
+            localAddress->setRepetitionFilter(x_repetition_filter? ossia::repetition_filter::ON : ossia::repetition_filter::OFF);
+
+            /*
+            char* c = x_tags->s_name;
+            std::string tag="";
+            std::vector<std::string> tags;
+            while (*c!='0'){
+                if (*c==' ') tags.push_back(tag);
+                else tag += *c;
+                c++;
+            }
+            */
+            // FIXME : only implemented in generic_address
+            // localAddress->setTags(tags);
+            // localAddress->setDescription(x_description->s_name);
+
+            // std::string unit_string(x_unit->s_name);
+            // ossia::string_view unit_string_view(x_unit->s_name);
+            ossia::unit_t unit = ossia::parse_pretty_unit(x_unit->s_name);
+            localAddress->setUnit(unit);
+
         }
         localAddress->add_callback([=](const ossia::value& v){
             setValue(v);
@@ -84,6 +127,11 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
         x->x_dumpout = outlet_new((t_object*)x,gensym("dumpout"));
         x->x_node = nullptr;
 
+        x->x_access_mode = gensym("RW");
+        x->x_bounding_mode = gensym("FREE");
+        x->x_unit = gensym("");
+        x->x_type = gensym("float");
+
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
             if (x->x_name != osym_empty && x->x_name->s_name[0] == '/') x->x_absolute = true;
@@ -125,10 +173,15 @@ extern "C" void setup_ossia0x2eparam(void)
         eclass_addmethod(c, (method) obj_bang<t_param>,    "bang",       A_NULL, 0);
         eclass_addmethod(c, (method) obj_dump<t_param>,    "dump",       A_NULL, 0);
 
-        CLASS_ATTR_SYMBOL     (c, "type",    0, t_param, x_type);
+        CLASS_ATTR_SYMBOL     (c, "type",            0, t_param, x_type);
+        CLASS_ATTR_SYMBOL     (c, "unit",            0, t_param, x_unit);
+        CLASS_ATTR_SYMBOL     (c, "bounding_mode",   0, t_param, x_bounding_mode);
+        CLASS_ATTR_SYMBOL     (c, "access_mode",     0, t_param, x_access_mode);
+
         CLASS_ATTR_ATOM       (c, "default",         0, t_param, x_default);
         CLASS_ATTR_FLOAT_ARRAY(c, "range",           0, t_param, x_range, 2);
         CLASS_ATTR_FLOAT      (c, "min",             0, t_param, x_range);
+        CLASS_ATTR_FLOAT    (c, "repetition_filter", 0, t_param, x_repetition_filter);
         // CLASS_ATTR_FLOAT(c, "max", 0, t_parameter, range+1);
         eclass_new_attr_typed(c,"max", "float", 1, 0, 0, calcoffset(t_param,x_range)+sizeof(float));
 
