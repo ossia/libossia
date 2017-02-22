@@ -94,7 +94,7 @@ bool t_model :: unregister(){
 
     x_node->getParent()->removeChild(x_name->s_name);
     x_node = nullptr;
-    quarantining();
+    obj_quarantining<t_model>(this);
 
     return true;
 }

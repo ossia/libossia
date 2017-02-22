@@ -13,7 +13,12 @@ struct t_view : ossia_obj_base
 
     void isDeleted(const ossia::net::node_base& n){
         x_node = nullptr;
-        quarantining();
+        obj_quarantining<t_view>(this);
+    }
+
+    static std::vector<t_view*>& quarantine(){
+        static std::vector<t_view*> quarantine;
+        return quarantine;
     }
 };
 

@@ -92,7 +92,7 @@ template<typename T> bool obj_register(T *x)
     }
 
     bool res = x->register_node(node);
-    if (!res) x->quarantining();
+    if (!res) obj_quarantining<T>(x);
 
     return res;
 }
@@ -104,6 +104,7 @@ template bool obj_register<t_view>  (t_view *x);
 
 template<typename T> void obj_set(T *x, t_symbol* , int argc, t_atom* argv){
     if ( x->x_node && x->x_node->getAddress() ){
+        // FIXME : should we make a tuplet instead of pushing each value one by one ?
         while(argc--){
             switch(argv->a_type){
             case A_FLOAT:
@@ -145,7 +146,7 @@ template<typename T> void obj_dump(T *x){
     }
     outlet_anything(x->x_dumpout,gensym("registered"), 1, &a);
 
-    SETFLOAT(&a, x->isQuarantined());
+    SETFLOAT(&a, obj_isQuarantined<T>(x));
     outlet_anything(x->x_dumpout,gensym("quarantined"), 1, &a);
 }
 
@@ -153,5 +154,29 @@ template void obj_dump<t_param> (t_param  *x);
 template void obj_dump<t_model> (t_model  *x);
 template void obj_dump<t_remote>(t_remote *x);
 template void obj_dump<t_view>  (t_view   *x);
+
+template<typename T> void obj_quarantining(T* x){
+    if ( !obj_isQuarantined<T>(x) ) x->quarantine().push_back(x);
+}
+template void obj_quarantining<t_param> (t_param  *x);
+template void obj_quarantining<t_model> (t_model  *x);
+template void obj_quarantining<t_remote>(t_remote *x);
+template void obj_quarantining<t_view>  (t_view   *x);
+
+template<typename T> void obj_dequarantining(T* x){
+    x->quarantine().erase(std::remove(x->quarantine().begin(), x->quarantine().end(), x), x->quarantine().end());
+}
+template void obj_dequarantining<t_param> (t_param  *x);
+template void obj_dequarantining<t_model> (t_model  *x);
+template void obj_dequarantining<t_remote>(t_remote *x);
+template void obj_dequarantining<t_view>  (t_view   *x);
+
+template<typename T> bool obj_isQuarantined(T* x){
+    return std::find(x->quarantine().begin(), x->quarantine().end(), x) != x->quarantine().end();
+}
+template bool obj_isQuarantined<t_param> (t_param  *x);
+template bool obj_isQuarantined<t_model> (t_model  *x);
+template bool obj_isQuarantined<t_remote>(t_remote *x);
+template bool obj_isQuarantined<t_view>  (t_view   *x);
 
 } } // namespace

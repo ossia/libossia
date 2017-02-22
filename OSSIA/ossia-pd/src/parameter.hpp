@@ -11,11 +11,19 @@ struct t_param : ossia_obj_base
     bool register_node(ossia::net::node_base* node);
     bool unregister();
 
-    t_symbol* x_type{};
+    t_symbol* x_type;
     t_atom x_default;
     // TODO use optional for range
-    // TODO add clipmode (or bounding ?) attribute
-    float range[2];
+    float x_range[2];
+    t_symbol* x_bounding_mode;
+    t_symbol* x_access_mode;
+    t_float x_repetition_filter=0;
+    t_symbol* x_unit;
+
+    static std::vector<t_param*>& quarantine(){
+        static std::vector<t_param*> quarantine;
+        return quarantine;
+    }
 };
 
 } } // namespace

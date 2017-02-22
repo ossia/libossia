@@ -11,7 +11,7 @@ static void remote_free(t_remote* x);
 bool t_remote :: register_node(ossia::net::node_base* node){
 
     if (x_node && x_node->getParent() == node ) {
-        dequarantining();
+        obj_dequarantining<t_remote>(this);
         return true; // already register to this node;
     }
 
@@ -22,14 +22,14 @@ bool t_remote :: register_node(ossia::net::node_base* node){
             x_callbackit = x_node->getAddress()->add_callback([=](const ossia::value& v){
                 setValue(v);
             });
-            dequarantining();
+            obj_dequarantining<t_remote>(this);
             x_node->aboutToBeDeleted.connect<t_remote, &t_remote::isDeleted>(this);
             setValue(x_node->getAddress()->cloneValue());
 
             return true;
         }
     }
-    quarantining();
+    obj_quarantining<t_remote>(this);
     return false;
 }
 
@@ -39,7 +39,7 @@ bool t_remote :: unregister(){
         x_node->getAddress()->remove_callback(*x_callbackit);
         x_callbackit = boost::none;
     }
-    quarantining();
+    obj_quarantining<t_remote>(this);
 
     x_node = nullptr;
     return true;
@@ -82,7 +82,7 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
 static void remote_free(t_remote *x)
 {
     x->unregister();
-    x->dequarantining();
+    obj_dequarantining<t_remote>(x);
     outlet_free(x->x_setout);
     outlet_free(x->x_dataout);
     outlet_free(x->x_dumpout);

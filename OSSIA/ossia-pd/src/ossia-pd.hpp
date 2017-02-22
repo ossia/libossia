@@ -22,10 +22,6 @@ static t_symbol* osym_remote              = gensym("ossia.remote");
 static t_symbol* osym_param               = gensym("ossia.param");
 static t_symbol* osym_device              = gensym("ossia.device");
 
-static t_symbol* osym_send_param          = gensym("__OSSIA__ossia.param");
-static t_symbol* osym_send_remote         = gensym("__OSSIA__ossia.remote");
-static t_symbol* osym_send_model          = gensym("__OSSIA__ossia.model");
-
 template <typename T>
 struct value_visitor
 {
@@ -293,7 +289,10 @@ template<typename T> extern void obj_dump_path(T *x);
 template<typename T> extern bool obj_register(T *x);
 template<typename T> extern void obj_set(T *x, t_symbol* s, int argc, t_atom* argv);
 template<typename T> extern void obj_bang(T *x);
-
 template<typename T> extern void obj_dump(T *x);
+
+template<typename T> extern void obj_quarantining(T* x);
+template<typename T> extern void obj_dequarantining(T* x);
+template<typename T> extern bool obj_isQuarantined(T* x);
 
 } } // namespace
