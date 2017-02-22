@@ -295,4 +295,22 @@ template<typename T> extern void obj_quarantining(T* x);
 template<typename T> extern void obj_dequarantining(T* x);
 template<typename T> extern bool obj_isQuarantined(T* x);
 
+static std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol){
+    std::vector<std::string> tags;
+
+    if (tags_symbol){
+        char* c = tags_symbol->s_name;
+        std::string tag="";
+
+        while (*c!='0'){
+            if (*c==' '){
+                tags.push_back(tag);
+                tag = std::string("");
+            } else tag += *c;
+            c++;
+        }
+    }
+    return tags;
+}
+
 } } // namespace

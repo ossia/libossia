@@ -35,7 +35,6 @@ bool t_remote :: register_node(ossia::net::node_base* node){
 
 bool t_remote :: unregister(){
     if (x_callbackit != boost::none) {
-        // we have to remove the callback, but assigning x_callbackit to dummy_list.end(); seems weird to me..., have to think about a better solution
         x_node->getAddress()->remove_callback(*x_callbackit);
         x_callbackit = boost::none;
     }
