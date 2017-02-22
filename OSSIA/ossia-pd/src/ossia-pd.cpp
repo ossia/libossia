@@ -104,6 +104,7 @@ template bool obj_register<t_view>  (t_view *x);
 
 template<typename T> void obj_set(T *x, t_symbol* , int argc, t_atom* argv){
     if ( x->x_node && x->x_node->getAddress() ){
+        // FIXME : should we make a tuplet instead of pushing each value one by one ?
         while(argc--){
             switch(argv->a_type){
             case A_FLOAT:

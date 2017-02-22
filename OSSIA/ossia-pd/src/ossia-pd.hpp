@@ -22,10 +22,6 @@ static t_symbol* osym_remote              = gensym("ossia.remote");
 static t_symbol* osym_param               = gensym("ossia.param");
 static t_symbol* osym_device              = gensym("ossia.device");
 
-static t_symbol* osym_send_param          = gensym("__OSSIA__ossia.param");
-static t_symbol* osym_send_remote         = gensym("__OSSIA__ossia.remote");
-static t_symbol* osym_send_model          = gensym("__OSSIA__ossia.model");
-
 template <typename T>
 struct value_visitor
 {

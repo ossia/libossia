@@ -37,7 +37,7 @@ bool t_param :: register_node(ossia::net::node_base* node){
             localAddress = x_node->createAddress(ossia::val_type::STRING);
         } else {
             localAddress = x_node->createAddress(ossia::val_type::FLOAT);
-            localAddress->setDomain(ossia::make_domain(range[0],range[1]));
+            localAddress->setDomain(ossia::make_domain(x_range[0],x_range[1]));
         }
         localAddress->add_callback([=](const ossia::value& v){
             setValue(v);
@@ -71,12 +71,13 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_param *x = (t_param *)eobj_new(parameter_class);
 
+    // SANITIZE : memory leak
     t_binbuf* d = binbuf_via_atoms(argc,argv);
 
     if(x && d)
     {
-        x->range[0] = 0.;
-        x->range[1] = 1.;
+        x->x_range[0] = 0.;
+        x->x_range[1] = 1.;
 
         x->x_setout  = outlet_new((t_object*)x,nullptr);
         x->x_dataout = outlet_new((t_object*)x,nullptr);
@@ -125,11 +126,11 @@ extern "C" void setup_ossia0x2eparam(void)
         eclass_addmethod(c, (method) obj_dump<t_param>,    "dump",       A_NULL, 0);
 
         CLASS_ATTR_SYMBOL     (c, "type",    0, t_param, x_type);
-        CLASS_ATTR_ATOM       (c, "default", 0, t_param, x_default);
-        CLASS_ATTR_FLOAT_ARRAY(c, "range",   0, t_param, range, 2);
-        CLASS_ATTR_FLOAT      (c, "min",     0, t_param, range);
+        CLASS_ATTR_ATOM       (c, "default",         0, t_param, x_default);
+        CLASS_ATTR_FLOAT_ARRAY(c, "range",           0, t_param, x_range, 2);
+        CLASS_ATTR_FLOAT      (c, "min",             0, t_param, x_range);
         // CLASS_ATTR_FLOAT(c, "max", 0, t_parameter, range+1);
-        eclass_new_attr_typed(c,"max", "float", 1, 0, 0, calcoffset(t_param,range)+sizeof(float));
+        eclass_new_attr_typed(c,"max", "float", 1, 0, 0, calcoffset(t_param,x_range)+sizeof(float));
 
         CLASS_ATTR_DEFAULT(c, "type", 0, "float");
 
