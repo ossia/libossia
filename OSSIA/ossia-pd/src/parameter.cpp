@@ -109,7 +109,7 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
         x->x_range[0] = 0.;
         x->x_range[1] = 1.;
 
-        x->x_setout  = outlet_new((t_object*)x,nullptr);
+        x->x_setout = nullptr;
         x->x_dataout = outlet_new((t_object*)x,nullptr);
         x->x_dumpout = outlet_new((t_object*)x,gensym("dumpout"));
         x->x_node = nullptr;
@@ -148,7 +148,6 @@ static void parameter_free(t_param *x)
     x->unregister();
     obj_dequarantining<t_param>(x);
     outlet_free(x->x_dataout);
-    outlet_free(x->x_setout);
     outlet_free(x->x_dumpout);
 }
 

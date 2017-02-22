@@ -71,7 +71,7 @@ template<typename T> bool obj_register(T *x)
 
     t_model *model = nullptr;
     t_view *view = nullptr;
-    int view_level, model_level;
+    int view_level=0, model_level=0;
 
     // then try to locate a view or a parameter when x is ossia.view or ossia.remote
     model = find_parent_alive<t_model>(&x->x_obj,osym_model, 0, &model_level);
