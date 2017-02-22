@@ -29,21 +29,24 @@ struct value_visitor
 
     void operator()(impulse) const
     {
+        // TODO how to deal with impulse ? in Pd bang object doesn't have [set ...( message
+        // and sending a bang to the bang object connect to the inlet of the sender will lead to stack overflow...
         outlet_bang(x->x_dataout);
+        if(x->x_setout) outlet_bang(x->x_setout);
     }
     void operator()(int32_t i) const
     {
         t_atom a;
         SETFLOAT(&a, (t_float) i);
         outlet_float(x->x_dataout, (t_float) i);
-        outlet_anything(x->x_setout,gensym("set"),1,&a);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),1,&a);
     }
     void operator()(float f) const
     {
         t_atom a;
         SETFLOAT(&a,f);
         outlet_float(x->x_dataout, (t_float) f);
-        outlet_anything(x->x_setout,gensym("set"),1,&a);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),1,&a);
     }
     void operator()(bool b) const
     {
@@ -51,46 +54,49 @@ struct value_visitor
         t_float f = b?1.:0.;
         SETFLOAT(&a, f);
         outlet_float(x->x_dataout, f);
-        outlet_anything(x->x_setout,gensym("set"),1,&a);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),1,&a);
     }
     void operator()(const std::string& str) const
     {
-        post("%s receive a String %s",x->x_name->s_name, str.c_str());
         t_symbol* s=gensym(str.c_str());
         t_atom a;
         SETSYMBOL(&a,s);
         outlet_symbol(x->x_dataout, s);
-        outlet_anything(x->x_setout,gensym("set"),1,&a);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),1,&a);
     }
     void operator()(char c) const
     {
-        post("%s receive a Char %s",x->x_name->s_name, c);
+        t_atom a;
+        SETFLOAT(&a, (float)c);
         outlet_float(x->x_dataout, (float)c);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),1,&a);
     }
     void operator()(vec2f vec) const
     {
-        post("%s receive a Vec2f (%.2f,%.2f)",x->x_name->s_name, vec[0], vec[1]);
+        t_atom a[2];
+        SETFLOAT(a,vec[0]);
+        SETFLOAT(a+1,vec[1]);
+        outlet_list(x->x_dataout, gensym("list"), 2, a);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),2, a);
     }
     void operator()(vec3f vec) const
     {
-        post("%s receive a Vec3f (%.2f,%.2f,%.2f)",x->x_name->s_name, vec[0], vec[1],vec[2]);
         t_atom a[3];
         SETFLOAT(a,vec[0]);
         SETFLOAT(a+1,vec[1]);
         SETFLOAT(a+2,vec[2]);
         outlet_list(x->x_dataout, gensym("list"), 3, a);
-        outlet_anything(x->x_setout,gensym("set"),3, a);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),3, a);
     }
     void operator()(vec4f vec) const
     {
-        post("%s receive a Vec4f (%.2f,%.2f,%.2f,%.2f)",x->x_name->s_name, vec[0], vec[1],vec[2],vec[3]);
         t_atom a[4];
         SETFLOAT(a,vec[0]);
         SETFLOAT(a+1,vec[1]);
         SETFLOAT(a+2,vec[2]);
         SETFLOAT(a+3,vec[3]);
         outlet_list(x->x_dataout, gensym("list"), 4, a);
-        outlet_anything(x->x_setout,gensym("set"),4, a);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),4, a);
     }
     void operator()(const Destination& d) const
     {
@@ -105,8 +111,13 @@ struct value_visitor
     }
     void operator()(const std::vector<ossia::value>& t) const
     {
-      //getTupleAsString(t, s);
-      post("%s receive a Tuple",x->x_name->s_name);
+      t_atom* a = new t_atom[t.size()];
+      for (auto v : t){
+          // FIXME how to switch over value type ?
+      }
+      outlet_list(x->x_dataout, gensym("list"), t.size(), a);
+      if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),t.size(), a);
+
     }
     void operator()() const
     {
@@ -285,14 +296,35 @@ static std::string get_absolute_path(ossia::net::node_base* node)
     return fullpath.str();
 }
 
+// we can't have virtual methods with C linkage so we need a bunch a template instead...
 template<typename T> extern void obj_dump_path(T *x);
 template<typename T> extern bool obj_register(T *x);
-template<typename T> extern void obj_set(T *x, t_symbol* s, int argc, t_atom* argv);
+template<typename T> extern void obj_setList(T *x, t_symbol* s, int argc, t_atom* argv);
+template<typename T> extern void obj_setFloat(T *x, t_float f);
+template<typename T> extern void obj_setSymbol(T *x, t_symbol* s);
 template<typename T> extern void obj_bang(T *x);
 template<typename T> extern void obj_dump(T *x);
 
 template<typename T> extern void obj_quarantining(T* x);
 template<typename T> extern void obj_dequarantining(T* x);
 template<typename T> extern bool obj_isQuarantined(T* x);
+
+static std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol){
+    std::vector<std::string> tags;
+
+    if (tags_symbol){
+        char* c = tags_symbol->s_name;
+        std::string tag="";
+
+        while (*c!='0'){
+            if (*c==' '){
+                tags.push_back(tag);
+                tag = std::string("");
+            } else tag += *c;
+            c++;
+        }
+    }
+    return tags;
+}
 
 } } // namespace

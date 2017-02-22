@@ -8,6 +8,7 @@ namespace ossia { namespace pd {
 struct t_remote : ossia_obj_base
 {
     bool register_node(ossia::net::node_base* node);
+    bool do_registration(ossia::net::node_base* node);
     bool unregister();
 
     boost::optional<ossia::callback_container<ossia::value_callback>::iterator> x_callbackit;

@@ -15,7 +15,6 @@ struct ossia_obj_base {
 
     ossia::net::node_base* x_node{};
     void setValue(const ossia::value& val);
-
     void isDeleted(const ossia::net::node_base& n);
 };
 

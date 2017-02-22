@@ -71,7 +71,7 @@ template<typename T> bool obj_register(T *x)
 
     t_model *model = nullptr;
     t_view *view = nullptr;
-    int view_level, model_level;
+    int view_level=0, model_level=0;
 
     // then try to locate a view or a parameter when x is ossia.view or ossia.remote
     model = find_parent_alive<t_model>(&x->x_obj,osym_model, 0, &model_level);
@@ -91,10 +91,7 @@ template<typename T> bool obj_register(T *x)
         node = device->x_node;
     }
 
-    bool res = x->register_node(node);
-    if (!res) obj_quarantining<T>(x);
-
-    return res;
+    return x->register_node(node);
 }
 
 template bool obj_register<t_param> (t_param *x);
@@ -102,29 +99,40 @@ template bool obj_register<t_remote>(t_remote *x);
 template bool obj_register<t_model> (t_model *x);
 template bool obj_register<t_view>  (t_view *x);
 
-template<typename T> void obj_set(T *x, t_symbol* , int argc, t_atom* argv){
+template<typename T> void obj_setList(T *x, t_symbol* , int argc, t_atom* argv){
     if ( x->x_node && x->x_node->getAddress() ){
-        // FIXME : should we make a tuplet instead of pushing each value one by one ?
-        while(argc--){
-            switch(argv->a_type){
-            case A_FLOAT:
-                x->x_node->getAddress()->pushValue(float(argv->a_w.w_float));
-                break;
-            case A_SYMBOL:
-            {
-                x->x_node->getAddress()->pushValue(std::string(argv->a_w.w_symbol->s_name));
-                break;
-            }
-            default:
-                pd_error(x,"atom type %d is not supported", argv->a_type);
-            }
-            argv++;
+        std::vector<ossia::value> list;
+        for (; argc > 0 ; argc--, argv++){
+          if (argv->a_type == A_SYMBOL)
+            list.push_back(std::string(atom_getsymbol(argv)->s_name));
+          else if (argv->a_type == A_FLOAT)
+            list.push_back(atom_getfloat(argv));
+          else pd_error(x,"value type not handled");
         }
+        x->x_node->getAddress()->pushValue(list);
     }
 }
 
-template void obj_set<t_param> (t_param  *x, t_symbol* s, int argc, t_atom* argv);
-template void obj_set<t_remote>(t_remote *x, t_symbol* s, int argc, t_atom* argv);
+template void obj_setList<t_param> (t_param  *x, t_symbol* s, int argc, t_atom* argv);
+template void obj_setList<t_remote>(t_remote *x, t_symbol* s, int argc, t_atom* argv);
+
+template<typename T> void obj_setSymbol(T *x, t_symbol* s){
+    if ( x->x_node && x->x_node->getAddress() ){
+        x->x_node->getAddress()->pushValue(std::string(s->s_name));
+    }
+}
+
+template void obj_setSymbol<t_param> (t_param  *x, t_symbol* s);
+template void obj_setSymbol<t_remote>(t_remote *x, t_symbol* s);
+
+template<typename T> void obj_setFloat(T *x, t_float f){
+    if ( x->x_node && x->x_node->getAddress() ){
+        x->x_node->getAddress()->pushValue(float(f));
+    }
+}
+
+template void obj_setFloat<t_param> (t_param  *x, t_float f);
+template void obj_setFloat<t_remote>(t_remote *x, t_float f);
 
 template<typename T> void obj_bang(T *x){
     if ( x->x_node && x->x_node->getAddress() ) x->setValue(x->x_node->getAddress()->cloneValue());
