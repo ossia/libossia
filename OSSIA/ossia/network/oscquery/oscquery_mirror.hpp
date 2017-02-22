@@ -82,6 +82,10 @@ private:
 
   void cleanup_connections();
 
+  void query_send_message(const std::string& str);
+  void query_send_message(const rapidjson::StringBuffer& str);
+  bool query_connected();
+  void query_stop();
   std::unique_ptr<osc::sender> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
 
@@ -120,6 +124,10 @@ private:
 
   std::thread m_wsThread;
   std::string m_websocketHost;
+  std::string m_websocketPort;
+
+  asio::io_context m_httpContext;
+  std::atomic_bool m_useHTTP{false};
 };
 
 }

@@ -25,6 +25,7 @@ if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
 endif()
 
 add_subdirectory(3rdparty/oscpack EXCLUDE_FROM_ALL)
+add_subdirectory(3rdparty/Servus EXCLUDE_FROM_ALL)
 
 # Main library
 add_subdirectory(OSSIA)

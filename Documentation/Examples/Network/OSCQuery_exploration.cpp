@@ -14,6 +14,7 @@
 #include <iostream>
 #include <memory>
 #include <functional>
+#include <ossia/network/oscquery/detail/http_client.hpp>
 using namespace ossia;
 using namespace ossia::net;
 using namespace std;
@@ -21,7 +22,6 @@ using namespace std;
 void explore(const node_base& node);
 void printDomain(const domain& d);
 void printValueCallback(const value& v);
-
 int main()
 {
   // Create a protocol that will connect to the given websocket address

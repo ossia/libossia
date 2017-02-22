@@ -2,9 +2,7 @@
 #include <iostream>
 #if defined(OSSIA_ZEROCONF)
 
-#include <KDNSSD/DNSSD/ServiceBrowser>
-#include <KDNSSD/DNSSD/RemoteService>
-#include <KDNSSD/DNSSD/PublicService>
+#include <servus/servus.h>
 #include <QHostInfo>
 #include <chrono>
 #include <QCoreApplication>
@@ -23,7 +21,7 @@ class zeroconf_browser :
   public:
     zeroconf_browser()
     {
-      using namespace KDNSSD;
+      /*
       auto browser = new ServiceBrowser(minuit_service_name);
       connect(browser, &ServiceBrowser::serviceAdded,
               this, [this] (auto service)
@@ -69,6 +67,7 @@ class zeroconf_browser :
       });
 
       browser->startBrowse();
+      */
     }
 
     std::vector<minuit_connection_data> mData;
@@ -103,21 +102,15 @@ zeroconf_server make_zeroconf_server(
     int32_t local_port,
     int32_t remote_port)
 {
-  auto server = std::make_unique<KDNSSD::PublicService>(
-                  QString::fromStdString(description),
-                  QString::fromStdString(service),
-                  local_port);
+  auto server = std::make_unique<servus::Servus>(service);
+  server->set("LocalPort", std::to_string(local_port));
+  server->set("LocalName", local_name);
+  server->set("RemotePort", std::to_string(remote_port));
+  server->set("Description", description);
 
-  server->setTextData(
-    QMap<QString, QByteArray>{
-          {"LocalPort", QString::number(local_port).toUtf8()},
-          {"LocalName", QByteArray::fromStdString(local_name)},
-          {"RemotePort", QString::number(remote_port).toUtf8()}
-    });
+  server->announce(local_port, description);
 
-  server->publishAsync();
-
-  return std::move(server);
+  return zeroconf_server{std::move(server)};
 }
 
 }
@@ -172,7 +165,7 @@ zeroconf_server::zeroconf_server(zeroconf_server&&) = default;
 zeroconf_server& zeroconf_server::operator=(zeroconf_server&&) = default;
 zeroconf_server::~zeroconf_server() = default;
 
-zeroconf_server::zeroconf_server(std::unique_ptr<KDNSSD::PublicService> s):
+zeroconf_server::zeroconf_server(std::unique_ptr<servus::Servus> s):
   server{std::move(s)}
 {
 

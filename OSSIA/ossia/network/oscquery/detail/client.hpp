@@ -127,5 +127,6 @@ class websocket_client
     websocketpp::lib::mutex m_lock;
     bool m_open;
 };
+
 }
 }
