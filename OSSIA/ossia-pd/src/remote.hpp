@@ -16,6 +16,10 @@ struct t_remote : ossia_obj_base
         unregister();
     }
 
+    static std::vector<t_remote*>& quarantine(){
+        static std::vector<t_remote*> quarantine;
+        return quarantine;
+    }
 };
 
 } } // namespace

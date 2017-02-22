@@ -18,9 +18,9 @@ bool t_view :: register_node(ossia::net::node_base*  node){
         x_node = node->findChild(x_name->s_name);
         if (x_node) {
             x_node->aboutToBeDeleted.connect<t_view, &t_view::isDeleted>(this);
-            dequarantining();
+            obj_dequarantining<t_view>(this);
         } else {
-            quarantining();
+            obj_quarantining<t_view>(this);
             return false;
         }
     }
@@ -65,7 +65,7 @@ bool t_view :: unregister(){
         if (view != this && (!view->x_node || view->x_node->getParent() == x_node)) view->register_node(x_node->getParent());
     }
     x_node = nullptr;
-    quarantining();
+    obj_quarantining<t_view>(this);
 
     return true;
 }
@@ -95,7 +95,7 @@ static void view_free(t_view *x)
 {
     x->x_dead = true;
     x->unregister();
-    x->dequarantining();
+    obj_dequarantining<t_view>(x);
 }
 
 extern "C" void setup_ossia0x2eview(void)

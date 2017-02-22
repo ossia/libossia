@@ -17,17 +17,6 @@ struct ossia_obj_base {
     void setValue(const ossia::value& val);
 
     void isDeleted(const ossia::net::node_base& n);
-
-    void quarantining();
-    void dequarantining();
-    bool isQuarantined();
-
-    // FIXME t_remote and t_param are together in the same basket
-    // this lead to thusday crash
-    static std::vector<ossia_obj_base*>& quarantine(){
-        static std::vector<ossia_obj_base*> quarantine;
-        return quarantine;
-    }
 };
 
 } } // namespace

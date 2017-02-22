@@ -289,7 +289,10 @@ template<typename T> extern void obj_dump_path(T *x);
 template<typename T> extern bool obj_register(T *x);
 template<typename T> extern void obj_set(T *x, t_symbol* s, int argc, t_atom* argv);
 template<typename T> extern void obj_bang(T *x);
-
 template<typename T> extern void obj_dump(T *x);
+
+template<typename T> extern void obj_quarantining(T* x);
+template<typename T> extern void obj_dequarantining(T* x);
+template<typename T> extern bool obj_isQuarantined(T* x);
 
 } } // namespace

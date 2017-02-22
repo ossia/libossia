@@ -99,7 +99,7 @@ bool t_param :: unregister(){
     if (x_node) {
         x_node->getParent()->removeChild(x_name->s_name);
         x_node = nullptr;
-        quarantining();
+        obj_quarantining<t_param>(this);
     }
     return true;
 }
