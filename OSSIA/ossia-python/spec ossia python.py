@@ -5,7 +5,7 @@ import time
 ### LOCAL DEVICE SETUP
 
 # create a device for this python program
-my_device = ossia.LocalDevice("Demo")
+my_device = ossia.LocalDevice("newDevice")
 #my_device.author = "ossia team"
 #my_device.version = "0.1.0"
 
@@ -16,11 +16,20 @@ my_device.asMinuitServer("127.0.0.1", 9998, 13579)
 node = my_device.addNode("/test/value")
 address = node.createAddress(1) # TODO : ossia.Value.INT
 
+# initialize the value
+address.pushValue(ossia.Value(100))
+print(ossia.value_to_pretty_string(address.cloneValue()))
+
 # setup a callback function that prints any changes
 def test_value_callback(v):
-	ossia.value_to_pretty_string(v)
+	print(ossia.value_to_pretty_string(address.cloneValue()))
 
 address.addCallback(test_value_callback)
+
+# use i-score to change the value remotely
+while True:
+	time.sleep(1)
+	print("#")
 
 ### REMOTE DEVICE TREE
 
@@ -46,11 +55,7 @@ def iterate_on_children(node):
 iterate_on_children(osc_device)
 """
 # ADDRESS VALUE OPERATIONS
-
-address.pushValue(ossia.Value(0))
 #v = address.cloneValue() + ossia.Value(1)
-
-print(ossia.value_to_pretty_string(address.cloneValue()))
 
 # access address property
 """
