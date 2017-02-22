@@ -67,10 +67,14 @@ bool t_param :: register_node(ossia::net::node_base* node){
             setValue(v);
         });
         if (x_default.a_type != A_NULL){
-            obj_set<t_param>(this,gensym("set"),1,&x_default);
+            obj_setList<t_param>(this,gensym("set"),1,&x_default);
         }
     } else {
         return false;
+    }
+
+    for (auto remote : t_remote::quarantine()){
+        obj_register<t_remote>(static_cast<t_remote*>(remote));
     }
 
     return true;
@@ -83,12 +87,6 @@ bool t_param :: unregister(){
         obj_quarantining<t_param>(this);
     }
     return true;
-}
-
-static void parameter_float(t_param *x, t_float val){
-    if ( x->x_node && x->x_node->getAddress() ){
-        x->x_node->getAddress()->pushValue(float(val));
-    }
 }
 
 static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
@@ -151,8 +149,9 @@ extern "C" void setup_ossia0x2eparam(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) parameter_float,      "float",      A_FLOAT, 0);
-        eclass_addmethod(c, (method) obj_set<t_param>,     "set",        A_GIMME, 0);
+        eclass_addmethod(c, (method) obj_setFloat<t_param>,     "float",      A_FLOAT, 0);
+        eclass_addmethod(c, (method) obj_setSymbol<t_param>,     "symbol",     A_SYMBOL, 0);
+        eclass_addmethod(c, (method) obj_setList<t_param>,     "list",       A_GIMME, 0);
         eclass_addmethod(c, (method) obj_bang<t_param>,    "bang",       A_NULL, 0);
         eclass_addmethod(c, (method) obj_dump<t_param>,    "dump",       A_NULL, 0);
 
