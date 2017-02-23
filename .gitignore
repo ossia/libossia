@@ -1,3 +1,4 @@
+CMake/common
 *.pd_*
 *.dll
 *.orig
