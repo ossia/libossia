@@ -183,9 +183,6 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
                 x->x_settings.minuit.remoteip = atom_getsymbol(argv++)->s_name;
                 x->x_settings.minuit.remoteport = atom_getfloat(argv++);
                 x->x_settings.minuit.localport = atom_getfloat(argv++);
-            } else {
-                Protocol_Settings::print_protocol_help();
-                return;
             }
 
             try {
@@ -194,7 +191,7 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
                 pd_error(x,"%s",e.what());
                 return;
             }
-            logpost(x,3,"New 'Minuit' protocol connected to %s on port %d and listening on port %d",  x->x_settings.minuit.remoteip.c_str(), x->x_settings.minuit.remoteport, x->x_settings.minuit.localport);
+            logpost(x,3,"New 'Minuit' protocol connected to %s on port %u and listening on port %u",  x->x_settings.minuit.remoteip.c_str(), x->x_settings.minuit.remoteport, x->x_settings.minuit.localport);
         }
         else if (protocol == gensym("oscquery")){
             argc--;
@@ -205,9 +202,6 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
             {
                 x->x_settings.oscquery.oscport = atom_getfloat(argv++);
                 x->x_settings.oscquery.wsport = atom_getfloat(argv++);
-            } else {
-                Protocol_Settings::print_protocol_help();
-                return;
             }
 
             try{
@@ -216,7 +210,7 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
                 pd_error(x,"%s",e.what());
                 return;
             }
-            logpost(x,3,"New 'oscquery' protocol with OSC port %d and WS port %d, listening on port %d", x->x_settings.oscquery.oscport, x->x_settings.oscquery.wsport);
+            logpost(x,3,"New 'oscquery' protocol with OSC port %u and WS port %u, listening on port %u", x->x_settings.oscquery.oscport, x->x_settings.oscquery.wsport);
         } else if (protocol == gensym("osc")){
             argc--;
             argv++;
@@ -228,9 +222,6 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
                 x->x_settings.osc.remoteip = atom_getsymbol(argv)->s_name;
                 x->x_settings.osc.remoteport = atom_getfloat(argv++);
                 x->x_settings.osc.localport = atom_getfloat(argv++);
-            } else {
-                Protocol_Settings::print_protocol_help();
-                return;
             }
 
             try{
@@ -239,7 +230,7 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
                 pd_error(x,"%s",e.what());
                 return;
             }
-            logpost(x,3,"New 'OSC' protocol connect to %s on port %d and listening on port %d",  x->x_settings.osc.remoteip.c_str(), x->x_settings.osc.remoteport, x->x_settings.osc.localport);
+            logpost(x,3,"New 'OSC' protocol connect to %s on port %u and listening on port %u",  x->x_settings.osc.remoteip.c_str(), x->x_settings.osc.remoteport, x->x_settings.osc.localport);
         } else {
             pd_error((t_object*)x, "Unknown protocol: %s", protocol->s_name);
         }
@@ -255,6 +246,7 @@ extern "C" void setup_ossia0x2edevice(void)
         eclass_addmethod(c, (method) device_register, "register", A_NULL, 0);
         eclass_addmethod(c, (method) device_dump, "dump", A_NULL, 0);
         eclass_addmethod(c, (method) device_expose, "expose", A_GIMME, 0);
+        eclass_addmethod(c, (method) Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
     }
 
     device_class = c;
