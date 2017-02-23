@@ -11,6 +11,8 @@ struct t_remote : obj_base
     bool do_registration(ossia::net::node_base* node);
     bool unregister();
 
+    std::chrono::milliseconds x_last_click;
+
     boost::optional<ossia::callback_container<ossia::value_callback>::iterator> x_callbackit;
 
     void isDeleted(const ossia::net::node_base& n){

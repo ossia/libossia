@@ -58,6 +58,21 @@ static void remote_float(t_remote *x, t_float val){
     }
 }
 
+static void remote_click(t_remote *x,
+    t_floatarg xpos, t_floatarg ypos, t_floatarg shift,
+    t_floatarg ctrl, t_floatarg alt){
+
+  using namespace std::chrono;
+  milliseconds ms = duration_cast< milliseconds >( system_clock::now().time_since_epoch() );
+  milliseconds diff = (ms - x->x_last_click);
+  if ( diff.count() < 200 ){
+    logpost(x,2,"I receive a double click");
+    x->x_last_click = milliseconds(0);
+  } else {
+    x->x_last_click = ms;
+  }
+}
+
 static void *remote_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_remote *x = (t_remote *)eobj_new(remote_class);
@@ -100,8 +115,9 @@ extern "C" void setup_ossia0x2eremote(void)
     if(c)
     {
         eclass_addmethod(c, (method) obj_base::obj_push, "anything",   A_GIMME, 0);
-        eclass_addmethod(c, (method) obj_base::obj_bang, "bang",       A_NULL, 0);
-        eclass_addmethod(c, (method) obj_dump<t_remote>,       "dump",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_base::obj_bang, "bang",       A_NULL,  0);
+        eclass_addmethod(c, (method) obj_dump<t_remote>, "dump",       A_NULL,  0);
+        eclass_addmethod(c, (method) remote_click,    "click",      A_NULL,  0);
     }
 
     remote_class = c;
