@@ -28,6 +28,7 @@ struct Protocol_Settings {
     t_osc osc;
 
     static void print_protocol_help(){
+        post("expose <protocol> <args>");
         post("Available protocols (case sensitive): Minuit, oscquery, osc");
         post("Protocols parameters :");
         post("Minuit <remoteip> <remoteport> :\n"
