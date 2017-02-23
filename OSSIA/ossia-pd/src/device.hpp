@@ -30,10 +30,17 @@ struct Protocol_Settings {
     static void print_protocol_help(){
         post("Available protocols (case sensitive): Minuit, oscquery, osc");
         post("Protocols parameters :");
-        post("Minuit :\n"
-             "\tremoteip : ip of target device\n"
-             "\tremoteport: port on which packet should be send\n"
-             "\tlocalport: port this device is listening to");
+        post("Minuit <remoteip> <remoteport> :\n"
+             "\tremoteip (symbol): ip of target device\n"
+             "\tremoteport (float): port on which packet should be send\n"
+             "\tlocalport (port): port this device is listening to");
+        post("oscquery <oscport> <wsport> :\n"
+             "\toscport (float) : post on which osc packet are sent\n"
+             "\twspoort (float) : WebSocket port on which distant application will connect.");
+        post("osc <remoteip> <remoteport> <localpoort>\n"
+             "\tremoteip (symbol): ip of target device\n"
+             "\tremoteport (float): port on which packet should be send\n"
+             "\tlocalport (port): port this device is listening.");
     }
 };
 
