@@ -52,9 +52,7 @@ bool t_model :: register_node(ossia::net::node_base*  node){
             obj_register<t_remote>(static_cast<t_remote*>(remote));
         }
 
-        // FIXME nested model is not registered properly
         std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 1);
-        // std::sort(models.begin(), models.end());
         for (auto v : models){
             t_model* model = (t_model*) v.x;
             model->register_node(x_node);
@@ -103,7 +101,7 @@ bool t_model :: unregister(){
         if (model != this && (!model->x_node || model->x_node->getParent() == x_node)) model->register_node(x_node->getParent());
     }
 
-    x_node->getParent()->removeChild(x_name->s_name);
+    if (x_node && x_node->getParent()) x_node->getParent()->removeChild(x_name->s_name);
     x_node = nullptr;
     obj_quarantining<t_model>(this);
 

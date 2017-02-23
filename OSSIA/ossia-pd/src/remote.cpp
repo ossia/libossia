@@ -41,7 +41,7 @@ bool t_remote :: do_registration(ossia::net::node_base* node){
 
 bool t_remote :: unregister(){
     if (x_callbackit != boost::none) {
-        x_node->getAddress()->remove_callback(*x_callbackit);
+        if (x_node && x_node->getAddress()) x_node->getAddress()->remove_callback(*x_callbackit);
         x_callbackit = boost::none;
     }
     obj_quarantining<t_remote>(this);
@@ -99,10 +99,8 @@ extern "C" void setup_ossia0x2eremote(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) obj_setFloat<t_param>,    "float",      A_FLOAT, 0);
-        eclass_addmethod(c, (method) obj_setSymbol<t_param>,   "symbol",     A_SYMBOL, 0);
-        eclass_addmethod(c, (method) obj_setList<t_param>,     "list",       A_GIMME, 0);
-        eclass_addmethod(c, (method) obj_bang<t_remote>,       "bang",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_base::obj_push, "anything",   A_GIMME, 0);
+        eclass_addmethod(c, (method) obj_base::obj_bang, "bang",       A_NULL, 0);
         eclass_addmethod(c, (method) obj_dump<t_remote>,       "dump",       A_NULL, 0);
     }
 

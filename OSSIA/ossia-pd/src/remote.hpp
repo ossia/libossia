@@ -5,7 +5,7 @@
 
 namespace ossia { namespace pd {
 
-struct t_remote : ossia_obj_base
+struct t_remote : obj_base
 {
     bool register_node(ossia::net::node_base* node);
     bool do_registration(ossia::net::node_base* node);
