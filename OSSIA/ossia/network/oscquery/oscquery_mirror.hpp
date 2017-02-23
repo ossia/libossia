@@ -75,6 +75,9 @@ public:
    * @param Node to be removed
    */
   void requestRemoveNode(net::node_base&);
+
+  void setDisconnectCallback(std::function<void()>);
+  void setFailCallback(std::function<void()>);
 private:
   using connection_handler = websocketpp::connection_hdl;
   void on_WSMessage(connection_handler hdl, std::string& message);
@@ -86,6 +89,9 @@ private:
   void query_send_message(const rapidjson::StringBuffer& str);
   bool query_connected();
   void query_stop();
+
+  void on_queryClose();
+  void on_queryFail();
   std::unique_ptr<osc::sender> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
 

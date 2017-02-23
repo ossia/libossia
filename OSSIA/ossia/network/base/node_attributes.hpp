@@ -67,6 +67,9 @@ using default_value = ossia::value;
 //! Means that the node is very important, e.g. a "play" message
 using critical = bool;
 
+//! Means that the node is not present on the "host" device
+using zombie = bool;
+
 //! Device attribute : the name of the software managed by this device
 using app_name = std::string;
 
@@ -105,6 +108,10 @@ OSSIA_EXPORT void set_value_step_size(extended_attributes& n, optional<value_ste
 OSSIA_EXPORT ossia::string_view text_critical();
 OSSIA_EXPORT critical get_critical(const extended_attributes& n);
 OSSIA_EXPORT void set_critical(extended_attributes& n, critical v);
+
+OSSIA_EXPORT ossia::string_view text_zombie();
+OSSIA_EXPORT zombie get_zombie(const extended_attributes& n);
+OSSIA_EXPORT void set_zombie(extended_attributes& n, zombie v);
 
 OSSIA_EXPORT ossia::string_view text_extended_type();
 OSSIA_EXPORT optional<extended_type> get_extended_type(const ossia::net::node_base& n);

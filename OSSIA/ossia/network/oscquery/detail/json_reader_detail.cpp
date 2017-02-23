@@ -479,7 +479,7 @@ ossia::oscquery::message_type json_parser::message_type(const rapidjson::Value& 
   auto val_it = obj.FindMember(detail::attribute_value());
   if(val_it != obj.MemberEnd())
   {
-    return message_type::Value;
+    return ossia::oscquery::message_type::Value;
   }
 
   auto it = obj.FindMember(detail::command());
@@ -492,10 +492,10 @@ ossia::oscquery::message_type json_parser::message_type(const rapidjson::Value& 
 
   if(obj.FindMember(detail::osc_port()) != obj.MemberEnd())
   {
-    return message_type::Device;
+    return ossia::oscquery::message_type::Device;
   }
 
-  return message_type::Namespace; // TODO More checks needed
+  return ossia::oscquery::message_type::Namespace; // TODO More checks needed
 }
 
 void json_parser::parse_namespace(net::node_base& root, const rapidjson::Value& obj)
@@ -611,10 +611,7 @@ void json_parser::parse_path_removed(net::node_base& root, const rapidjson::Valu
     auto path = getStringView(dat_it->value);
     if(auto node = ossia::net::find_node(root, path))
     {
-      if(auto parent = node->getParent())
-      {
-        parent->removeChild(*node);
-      }
+      ossia::net::set_zombie(*node, true);
     }
   }
 }

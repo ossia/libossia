@@ -45,7 +45,7 @@ struct Protocol_Settings {
     }
 };
 
-struct t_device : ossia_obj_base
+struct t_device : obj_base
 {
     ossia::net::generic_device* x_device{};
     ossia::net::local_protocol x_local_proto;

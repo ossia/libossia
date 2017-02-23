@@ -56,7 +56,7 @@ oscquery_mirror_protocol::oscquery_mirror_protocol(std::string host, uint16_t lo
   }
   m_wsThread = std::thread([=]{
     try {
-    m_websocketClient.connect(m_websocketHost);
+      m_websocketClient.connect(m_websocketHost);
     } catch(...) {
       // Websocket does not connect, so let's try http requests
       m_useHTTP = true;
@@ -84,14 +84,15 @@ void oscquery_mirror_protocol::cleanup_connections()
   if(query_connected())
     try { query_stop(); } catch (...) { logger().error("Error when stopping WS server"); }
   if(m_wsThread.joinable())
-    m_wsThread.join();
+    try { m_wsThread.join(); }
+  catch(std::exception& e) { logger().error("Error when stopping WS thread: {}", e.what()); }
+  catch(...) { logger().error("Error when stopping WS thread"); }
 }
 
 void oscquery_mirror_protocol::query_send_message(const std::string& str)
 {
   if(!m_useHTTP)
     m_websocketClient.send_message(str);
-
 
   new http_get_request([=] (auto req, const auto& str) { delete req; },
   m_httpContext, m_websocketHost, m_websocketPort, str);
@@ -102,6 +103,8 @@ void oscquery_mirror_protocol::query_send_message(const rapidjson::StringBuffer&
   if(!m_useHTTP)
     m_websocketClient.send_message(str);
 
+  new http_get_request([=] (auto req, const auto& str) { delete req; },
+  m_httpContext, m_websocketHost, m_websocketPort, str.GetString());
 }
 
 bool oscquery_mirror_protocol::query_connected()
@@ -113,7 +116,8 @@ bool oscquery_mirror_protocol::query_connected()
 
 void oscquery_mirror_protocol::query_stop()
 {
-
+  if(!m_useHTTP)
+    m_websocketClient.stop();
 }
 
 oscquery_mirror_protocol::~oscquery_mirror_protocol()
@@ -256,6 +260,16 @@ void oscquery_mirror_protocol::requestRemoveNode(
 
     query_send_message(std::move(req));
   }
+}
+
+void oscquery_mirror_protocol::setDisconnectCallback(std::function<void ()> f)
+{
+  m_websocketClient.onClose = std::move(f);
+}
+
+void oscquery_mirror_protocol::setFailCallback(std::function<void ()> f)
+{
+  m_websocketClient.onFail = std::move(f);
 }
 
 void oscquery_mirror_protocol::requestAddNode(
