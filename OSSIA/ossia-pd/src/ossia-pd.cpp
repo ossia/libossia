@@ -101,15 +101,24 @@ template bool obj_register<t_view>  (t_view *x);
 
 template<typename T> void obj_setList(T *x, t_symbol* , int argc, t_atom* argv){
     if ( x->x_node && x->x_node->getAddress() ){
-        std::vector<ossia::value> list;
-        for (; argc > 0 ; argc--, argv++){
-          if (argv->a_type == A_SYMBOL)
-            list.push_back(std::string(atom_getsymbol(argv)->s_name));
-          else if (argv->a_type == A_FLOAT)
-            list.push_back(atom_getfloat(argv));
-          else pd_error(x,"value type not handled");
+
+        if (argc==1){
+            // convert one element array to single element
+            if (argv->a_type == A_SYMBOL)
+                x->x_node->getAddress()->pushValue(std::string(atom_getsymbol(argv)->s_name));
+            else if (argv->a_type == A_FLOAT)
+                x->x_node->getAddress()->pushValue(atom_getfloat(argv));
+        } else {
+            std::vector<ossia::value> list;
+            for (; argc > 0 ; argc--, argv++){
+                if (argv->a_type == A_SYMBOL)
+                    list.push_back(std::string(atom_getsymbol(argv)->s_name));
+                else if (argv->a_type == A_FLOAT)
+                    list.push_back(atom_getfloat(argv));
+                else pd_error(x,"value type not handled");
+            }
+            x->x_node->getAddress()->pushValue(list);
         }
-        x->x_node->getAddress()->pushValue(list);
     }
 }
 
