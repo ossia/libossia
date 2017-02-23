@@ -79,7 +79,7 @@ bool t_param :: do_registration(ossia::net::node_base* node){
             setValue(v);
         });
         if (x_default.a_type != A_NULL){
-            obj_setList<t_param>(this,gensym("set"),1,&x_default);
+            obj_base::obj_push(this,gensym("set"),1,&x_default);
         }
     } else {
         return false;
@@ -157,11 +157,9 @@ extern "C" void setup_ossia0x2eparam(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) obj_setFloat<t_param>,     "float",      A_FLOAT, 0);
-        eclass_addmethod(c, (method) obj_setSymbol<t_param>,     "symbol",     A_SYMBOL, 0);
-        eclass_addmethod(c, (method) obj_setList<t_param>,     "list",       A_GIMME, 0);
-        eclass_addmethod(c, (method) obj_bang<t_param>,    "bang",       A_NULL, 0);
-        eclass_addmethod(c, (method) obj_dump<t_param>,    "dump",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_base::obj_push, "anything", A_GIMME, 0);
+        eclass_addmethod(c, (method) obj_base::obj_bang, "bang",     A_NULL, 0);
+        eclass_addmethod(c, (method) obj_dump<t_param>,        "dump",       A_NULL, 0);
 
         CLASS_ATTR_SYMBOL     (c, "type",            0, t_param, x_type);
         CLASS_ATTR_SYMBOL     (c, "unit",            0, t_param, x_unit);
