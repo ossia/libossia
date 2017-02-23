@@ -22,6 +22,125 @@ static t_symbol* osym_remote              = gensym("ossia.remote");
 static t_symbol* osym_param               = gensym("ossia.param");
 static t_symbol* osym_device              = gensym("ossia.device");
 
+
+struct value2atom
+{
+    std::vector<t_atom> operator()(impulse) const
+    {
+        t_atom a;
+        SETSYMBOL(&a, gensym("bang"));
+        std::vector<t_atom> va;
+        va.push_back(a);
+        return va;
+    }
+    std::vector<t_atom> operator()(int32_t i) const
+    {
+        t_atom a;
+        SETFLOAT(&a, (t_float) i);
+        std::vector<t_atom> va;
+        va.push_back(a);
+        return va;
+    }
+    std::vector<t_atom> operator()(float f) const
+    {
+        t_atom a;
+        SETFLOAT(&a,f);
+        std::vector<t_atom> va;
+        va.push_back(a);
+        return va;
+    }
+    std::vector<t_atom> operator()(bool b) const
+    {
+        t_atom a;
+        t_float f = b?1.:0.;
+        SETFLOAT(&a, f);
+        std::vector<t_atom> va;
+        va.push_back(a);
+        return va;
+    }
+    std::vector<t_atom> operator()(const std::string& str) const
+    {
+        t_symbol* s=gensym(str.c_str());
+        t_atom a;
+        SETSYMBOL(&a,s);
+        std::vector<t_atom> va;
+        va.push_back(a);
+        return va;
+    }
+    std::vector<t_atom> operator()(char c) const
+    {
+        std::vector<t_atom> va;
+        t_atom a;
+        SETFLOAT(&a, (float)c);
+        va.push_back(a);
+        return va;
+    }
+    std::vector<t_atom> operator()(vec2f vec) const
+    {
+        t_atom a[2];
+        SETFLOAT(a,vec[0]);
+        SETFLOAT(a+1,vec[1]);
+        std::vector<t_atom> va;
+        va.push_back(a[0]);
+        va.push_back(a[1]);
+        return va;
+    }
+    std::vector<t_atom> operator()(vec3f vec) const
+    {
+        t_atom a[3];
+        SETFLOAT(a,vec[0]);
+        SETFLOAT(a+1,vec[1]);
+        SETFLOAT(a+2,vec[2]);
+        std::vector<t_atom> va;
+        va.push_back(a[0]);
+        va.push_back(a[1]);
+        va.push_back(a[2]);
+        return va;
+    }
+    std::vector<t_atom> operator()(vec4f vec) const
+    {
+        t_atom a[4];
+        SETFLOAT(a,vec[0]);
+        SETFLOAT(a+1,vec[1]);
+        SETFLOAT(a+2,vec[2]);
+        SETFLOAT(a+3,vec[3]);
+        std::vector<t_atom> va;
+        va.push_back(a[0]);
+        va.push_back(a[1]);
+        va.push_back(a[2]);
+        return va;
+    }
+    std::vector<t_atom> operator()(const Destination& d) const
+    {
+      /*
+      s << "destination" << ossia::net::address_string_from_node(d.value);
+      if(d.unit)
+      {
+        s << " " << ossia::get_pretty_unit_text(d.unit);
+      }
+      */
+      std::vector<t_atom> va;
+      return va;
+    }
+    std::vector<t_atom> operator()(const std::vector<ossia::value>& t) const
+    {
+        std::vector<t_atom> va;
+        for (auto v : t){
+            std::vector<t_atom> b;
+            value2atom vm;
+            b = v.apply(vm);
+            std::move(b.begin(), b.end(), std::back_inserter(va));
+        }
+        return va;
+
+    }
+    std::vector<t_atom> operator()() const
+    {
+        std::vector<t_atom> va;
+        return va;
+    }
+};
+
 template <typename T>
 struct value_visitor
 {
@@ -111,12 +230,15 @@ struct value_visitor
     }
     void operator()(const std::vector<ossia::value>& t) const
     {
-      t_atom* a = new t_atom[t.size()];
+      std::vector<t_atom> va;
       for (auto v : t){
-          // FIXME how to switch over value type ?
+          std::vector<t_atom> b;
+          value2atom vm;
+          b = v.apply(vm);
+          std::move(b.begin(), b.end(), std::back_inserter(va));
       }
-      outlet_list(x->x_dataout, gensym("list"), t.size(), a);
-      if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),t.size(), a);
+      outlet_list(x->x_dataout, gensym("list"), va.size(), &va[0]);
+      if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),va.size(), &va[0]);
 
     }
     void operator()() const
