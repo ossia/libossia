@@ -3,7 +3,7 @@
 
 namespace ossia { namespace pd {
 
-struct ossia_obj_base {
+struct obj_base {
     t_eobj      x_obj;
     t_symbol*   x_name{};
     t_outlet*   x_setout{};

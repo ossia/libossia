@@ -2,9 +2,9 @@
 
 namespace ossia { namespace pd {
 
-void ossia_obj_base::setValue(const ossia::value& v){
-    value_visitor<ossia_obj_base> vm;
-    vm.x = (ossia_obj_base*) &x_obj;
+void obj_base::setValue(const ossia::value& v){
+    value_visitor<obj_base> vm;
+    vm.x = (obj_base*) &x_obj;
     v.apply(vm);
 }
 
