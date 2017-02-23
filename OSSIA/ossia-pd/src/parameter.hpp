@@ -6,9 +6,10 @@
 
 namespace ossia { namespace pd {
 
-struct t_param : ossia_obj_base
+struct t_param : obj_base
 {
     bool register_node(ossia::net::node_base* node);
+    bool do_registration(ossia::net::node_base* node);
     bool unregister();
 
     t_symbol* x_type;
@@ -25,6 +26,13 @@ struct t_param : ossia_obj_base
     static std::vector<t_param*>& quarantine(){
         static std::vector<t_param*> quarantine;
         return quarantine;
+    }
+
+    void isDeleted(const ossia::net::node_base& n)
+    {
+        x_node = nullptr;
+        obj_quarantining<t_param>(this);
+        // obj_register<t_param>(this);
     }
 };
 

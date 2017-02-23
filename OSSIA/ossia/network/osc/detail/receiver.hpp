@@ -137,14 +137,6 @@ private:
 class receiver
 {
 public:
-  receiver() = default;
-  receiver(receiver&& other)
-  {
-    other.stop();
-    m_impl = std::move(other.m_impl);
-    setPort(other.m_port);
-  }
-
   template <typename Handler>
   receiver(unsigned int port, Handler msg)
       : m_impl{std::make_unique<listener<Handler>>(msg)}
@@ -152,12 +144,23 @@ public:
     setPort(port);
   }
 
+  receiver() = default;
+  receiver(receiver&& other)
+  {
+    other.stop();
+    m_impl = std::move(other.m_impl);
+    m_socket = std::move(other.m_socket);
+    setPort(other.m_port);
+  }
+
   receiver& operator=(receiver&& other)
   {
     stop();
 
-    m_socket = std::move(other.m_socket);
     m_impl = std::move(other.m_impl);
+    m_socket = std::move(other.m_socket);
+
+    setPort(other.m_port);
 
     return *this;
   }
@@ -169,6 +172,9 @@ public:
 
   void run()
   {
+    if(m_runThread.joinable())
+      stop();
+
     m_runThread = std::thread([this] () {
       m_socket->Run();
     });

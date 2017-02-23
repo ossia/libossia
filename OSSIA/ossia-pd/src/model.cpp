@@ -29,6 +29,42 @@ static void model_register(t_model *x)
 }
 
 bool t_model :: register_node(ossia::net::node_base*  node){
+    bool res = do_registration(node);
+    if (res){
+        obj_dequarantining<t_model>(this);
+
+        // here we try to find t_param in the same patcher as t_model or in subpatcher
+        // and such a t_param could be already registered and thus NOT in quarantine before we add this t_model
+        std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
+        // std::sort(params.begin(), params.end());
+        for (auto v : params){
+            t_param* param = (t_param*) v.x;
+            param->register_node(x_node);
+        }
+
+        // then try to register quarantinized parameter
+        for (auto param : t_param::quarantine()){
+            obj_register<t_param>(static_cast<t_param*>(param));
+        }
+
+        // then try to register qurantinized remote
+        for (auto remote : t_remote::quarantine()){
+            obj_register<t_remote>(static_cast<t_remote*>(remote));
+        }
+
+        std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 1);
+        for (auto v : models){
+            t_model* model = (t_model*) v.x;
+            model->register_node(x_node);
+        }
+
+        for (auto view : t_view::quarantine()){
+            obj_register<t_view>(static_cast<t_view*>(view));
+        }
+    } else obj_quarantining<t_model>(this);
+}
+
+bool t_model :: do_registration(ossia::net::node_base*  node){
     if (!node) return false;
 
     if (x_node && x_node->getParent() == node ) return true; // already register to this node;
@@ -37,34 +73,10 @@ bool t_model :: register_node(ossia::net::node_base*  node){
     x_node = node->findChild(x_name->s_name);
     if (!x_node) x_node = node->createChild(x_name->s_name);
 
-    x_node->aboutToBeDeleted.connect<ossia_obj_base, &ossia_obj_base::isDeleted>(this);
+    x_node->aboutToBeDeleted.connect<t_model, &t_model::isDeleted>(this);
 
     ossia::net::set_description(*x_node, x_description->s_name);
     ossia::net::set_tags(*x_node, parse_tags_symbol(x_tags));
-
-    std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
-    // std::sort(params.begin(), params.end());
-    for (auto v : params){
-        t_param* param = (t_param*) v.x;
-        param->register_node(x_node);
-    }
-
-    // then try to register
-    for (auto param : t_param::quarantine()){
-        obj_register<t_param>(static_cast<t_param*>(param));
-    }
-
-    // FIXME nested model is not registered properly
-    std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 1);
-    // std::sort(models.begin(), models.end());
-    for (auto v : models){
-        t_model* model = (t_model*) v.x;
-        model->register_node(x_node);
-    }
-
-    for (auto view : t_view::quarantine()){
-        obj_register<t_view>(static_cast<t_view*>(view));
-    }
 
     return true;
 }
@@ -89,7 +101,7 @@ bool t_model :: unregister(){
         if (model != this && (!model->x_node || model->x_node->getParent() == x_node)) model->register_node(x_node->getParent());
     }
 
-    x_node->getParent()->removeChild(x_name->s_name);
+    if (x_node && x_node->getParent()) x_node->getParent()->removeChild(x_name->s_name);
     x_node = nullptr;
     obj_quarantining<t_model>(this);
 
@@ -125,6 +137,7 @@ static void model_free(t_model *x)
 {
     x->x_dead = true;
     x->unregister();
+    obj_dequarantining<t_model>(x);
 }
 
 extern "C" void setup_ossia0x2emodel(void)

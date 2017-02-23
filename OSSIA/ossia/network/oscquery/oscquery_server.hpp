@@ -10,6 +10,7 @@
 #include <hopscotch_map.h>
 #include <ossia/detail/mutex.hpp>
 #include <atomic>
+#include <ossia/network/minuit/minuit_zeroconf.hpp> // TODO move out of minuit
 namespace osc
 {
 class sender;
@@ -74,6 +75,7 @@ private:
   void on_nodeRemoved(const ossia::net::node_base&);
   void on_attributeChanged(const ossia::net::node_base&, ossia::string_view attr);
 
+  void update_zeroconf();
   // Exceptions here will be catched by the server
   // which will set appropriate error codes.
   rapidjson::StringBuffer on_WSrequest(
@@ -82,6 +84,8 @@ private:
 
   std::unique_ptr<osc::receiver> m_oscServer;
   websocket_server m_websocketServer;
+
+  net::zeroconf_server m_zeroconfServer;
 
   // Listening status of the local software
   net::listened_addresses m_listening;
@@ -102,6 +106,7 @@ private:
   // The local ports
   uint16_t m_oscPort{};
   uint16_t m_wsPort{};
+
 };
 
 }

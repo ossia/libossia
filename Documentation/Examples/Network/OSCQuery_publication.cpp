@@ -143,8 +143,13 @@ int main()
     address->pushValue(ossia::make_vec(5., 6.));
   }
 
-  // declare a distant program as a Minuit device
-  local_proto.exposeTo(std::make_unique<oscquery::oscquery_server_protocol>(1234, 5678));
+  // declare a distant program as an OSCQuery device
+  auto oscq = std::make_unique<oscquery::oscquery_server_protocol>(1234, 5678);
+  ossia::net::network_logger n;
+  n.inbound_logger = spdlog::stdout_color_mt("console");
+  n.outbound_logger = n.inbound_logger;
+  oscq->setLogger(n);
+  local_proto.exposeTo(std::move(oscq));
 
   while (true)
     ;

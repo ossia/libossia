@@ -18,10 +18,13 @@ class websocket_client
 {
   public:
     using connection_handler = websocketpp::connection_hdl;
+    std::function<void()> onClose;
+    std::function<void()> onFail;
 
     //! \tparam Function that will be called when the client receives a server message.
     template<typename MessageHandler>
-    websocket_client(MessageHandler&& messageHandler) :
+    websocket_client(
+        MessageHandler&& onMessage) :
       m_open{false}
     {
       m_client.clear_access_channels(websocketpp::log::alevel::all);
@@ -35,16 +38,23 @@ class websocket_client
       });
 
       m_client.set_message_handler(
-            [handler=std::move(messageHandler)] (connection_handler hdl, client_t::message_ptr msg)
+            [handler=std::move(onMessage)] (connection_handler hdl, client_t::message_ptr msg)
       { handler(hdl, msg->get_raw_payload()); });
 
-      m_client.set_fail_handler([=] (connection_handler hdl) {
-          scoped_lock guard(m_lock);
-          m_open = false;
-      });
       m_client.set_close_handler([=] (connection_handler hdl) {
+        {
           scoped_lock guard(m_lock);
           m_open = false;
+        }
+        if(onClose) onClose();
+      });
+
+      m_client.set_fail_handler([=] (connection_handler hdl) {
+        {
+          scoped_lock guard(m_lock);
+          m_open = false;
+        }
+        if(onFail) onFail();
       });
     }
 
@@ -127,5 +137,6 @@ class websocket_client
     websocketpp::lib::mutex m_lock;
     bool m_open;
 };
+
 }
 }

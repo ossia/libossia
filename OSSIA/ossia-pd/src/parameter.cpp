@@ -12,6 +12,18 @@ static t_eclass *parameter_class;
 static void parameter_free(t_param* x);
 
 bool t_param :: register_node(ossia::net::node_base* node){
+    bool res = do_registration(node);
+    if (res) {
+        obj_dequarantining<t_param>(this);
+        for (auto remote : t_remote::quarantine()){
+            obj_register<t_remote>(static_cast<t_remote*>(remote));
+        }
+    } else obj_quarantining<t_param>(this);
+
+    return res;
+}
+
+bool t_param :: do_registration(ossia::net::node_base* node){
 
     if (x_node && x_node->getParent() == node ) return true; // already register to this node;
 
@@ -26,7 +38,7 @@ bool t_param :: register_node(ossia::net::node_base* node){
         }
 
         x_node = node->createChild(x_name->s_name);
-        x_node->aboutToBeDeleted.connect<ossia_obj_base, &ossia_obj_base::isDeleted>(this);
+        x_node->aboutToBeDeleted.connect<t_param, &t_param::isDeleted>(this);
         ossia::net::address_base* localAddress{};
         if(x_type == gensym("symbol")){
             localAddress = x_node->createAddress(ossia::val_type::STRING);
@@ -67,14 +79,10 @@ bool t_param :: register_node(ossia::net::node_base* node){
             setValue(v);
         });
         if (x_default.a_type != A_NULL){
-            obj_setList<t_param>(this,gensym("set"),1,&x_default);
+            obj_base::obj_push(this,gensym("set"),1,&x_default);
         }
     } else {
         return false;
-    }
-
-    for (auto remote : t_remote::quarantine()){
-        obj_register<t_remote>(static_cast<t_remote*>(remote));
     }
 
     return true;
@@ -101,7 +109,7 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
         x->x_range[0] = 0.;
         x->x_range[1] = 1.;
 
-        x->x_setout  = outlet_new((t_object*)x,nullptr);
+        x->x_setout = nullptr;
         x->x_dataout = outlet_new((t_object*)x,nullptr);
         x->x_dumpout = outlet_new((t_object*)x,gensym("dumpout"));
         x->x_node = nullptr;
@@ -138,8 +146,8 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
 static void parameter_free(t_param *x)
 {
     x->unregister();
+    obj_dequarantining<t_param>(x);
     outlet_free(x->x_dataout);
-    outlet_free(x->x_setout);
     outlet_free(x->x_dumpout);
 }
 
@@ -149,11 +157,9 @@ extern "C" void setup_ossia0x2eparam(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) obj_setFloat<t_param>,     "float",      A_FLOAT, 0);
-        eclass_addmethod(c, (method) obj_setSymbol<t_param>,     "symbol",     A_SYMBOL, 0);
-        eclass_addmethod(c, (method) obj_setList<t_param>,     "list",       A_GIMME, 0);
-        eclass_addmethod(c, (method) obj_bang<t_param>,    "bang",       A_NULL, 0);
-        eclass_addmethod(c, (method) obj_dump<t_param>,    "dump",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_base::obj_push, "anything", A_GIMME, 0);
+        eclass_addmethod(c, (method) obj_base::obj_bang, "bang",     A_NULL, 0);
+        eclass_addmethod(c, (method) obj_dump<t_param>,        "dump",       A_NULL, 0);
 
         CLASS_ATTR_SYMBOL     (c, "type",            0, t_param, x_type);
         CLASS_ATTR_SYMBOL     (c, "unit",            0, t_param, x_unit);

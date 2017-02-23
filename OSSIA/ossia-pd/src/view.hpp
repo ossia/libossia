@@ -6,14 +6,18 @@
 
 namespace ossia { namespace pd {
 
-struct t_view : ossia_obj_base
+struct t_view : obj_base
 {
     bool register_node(ossia::net::node_base*  node);
+    bool do_registration(ossia::net::node_base*  node);
     bool unregister();
 
     void isDeleted(const ossia::net::node_base& n){
-        x_node = nullptr;
-        obj_quarantining<t_view>(this);
+        if (!x_dead){
+            x_node = nullptr;
+            obj_quarantining<t_view>(this);
+            obj_register<t_view>(this);
+        }
     }
 
     static std::vector<t_view*>& quarantine(){

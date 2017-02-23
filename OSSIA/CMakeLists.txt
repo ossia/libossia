@@ -22,11 +22,6 @@ set(WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 find_package(Boost REQUIRED)
 
 if(NOT "${OSSIA_NO_QT}")
-  find_package(KF5DNSSD QUIET NO_MODULE)
-  if(NOT KF5DNSSD)
-    message(STATUS "Install KF5-DNSSD to build with Zeroconf / Bonjour support")
-  endif()
-
   if("${OSSIA_QT}")
     find_package(Qt5 5.6 QUIET COMPONENTS Core Gui Qml)
     if(NOT "${Qt5Qml_FOUND}")
@@ -169,11 +164,8 @@ if(OSSIA_QT)
         )
 endif()
 
-if(KF5DNSSD_FOUND)
-    set(OSSIA_ZEROCONF 1)
-    target_link_libraries(ossia PRIVATE KF5::DNSSD)
-    target_compile_definitions(ossia PRIVATE OSSIA_ZEROCONF)
-endif()
+target_link_libraries(ossia PRIVATE Servus)
+target_compile_definitions(ossia PRIVATE OSSIA_ZEROCONF)
 
 # Useful properties
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")

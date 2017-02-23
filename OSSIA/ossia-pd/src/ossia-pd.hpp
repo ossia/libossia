@@ -22,6 +22,125 @@ static t_symbol* osym_remote              = gensym("ossia.remote");
 static t_symbol* osym_param               = gensym("ossia.param");
 static t_symbol* osym_device              = gensym("ossia.device");
 
+
+struct value2atom
+{
+    std::vector<t_atom> operator()(impulse) const
+    {
+        t_atom a;
+        SETSYMBOL(&a, gensym("bang"));
+        std::vector<t_atom> va;
+        va.push_back(a);
+        return va;
+    }
+    std::vector<t_atom> operator()(int32_t i) const
+    {
+        t_atom a;
+        SETFLOAT(&a, (t_float) i);
+        std::vector<t_atom> va;
+        va.push_back(a);
+        return va;
+    }
+    std::vector<t_atom> operator()(float f) const
+    {
+        t_atom a;
+        SETFLOAT(&a,f);
+        std::vector<t_atom> va;
+        va.push_back(a);
+        return va;
+    }
+    std::vector<t_atom> operator()(bool b) const
+    {
+        t_atom a;
+        t_float f = b?1.:0.;
+        SETFLOAT(&a, f);
+        std::vector<t_atom> va;
+        va.push_back(a);
+        return va;
+    }
+    std::vector<t_atom> operator()(const std::string& str) const
+    {
+        t_symbol* s=gensym(str.c_str());
+        t_atom a;
+        SETSYMBOL(&a,s);
+        std::vector<t_atom> va;
+        va.push_back(a);
+        return va;
+    }
+    std::vector<t_atom> operator()(char c) const
+    {
+        std::vector<t_atom> va;
+        t_atom a;
+        SETFLOAT(&a, (float)c);
+        va.push_back(a);
+        return va;
+    }
+    std::vector<t_atom> operator()(vec2f vec) const
+    {
+        t_atom a[2];
+        SETFLOAT(a,vec[0]);
+        SETFLOAT(a+1,vec[1]);
+        std::vector<t_atom> va;
+        va.push_back(a[0]);
+        va.push_back(a[1]);
+        return va;
+    }
+    std::vector<t_atom> operator()(vec3f vec) const
+    {
+        t_atom a[3];
+        SETFLOAT(a,vec[0]);
+        SETFLOAT(a+1,vec[1]);
+        SETFLOAT(a+2,vec[2]);
+        std::vector<t_atom> va;
+        va.push_back(a[0]);
+        va.push_back(a[1]);
+        va.push_back(a[2]);
+        return va;
+    }
+    std::vector<t_atom> operator()(vec4f vec) const
+    {
+        t_atom a[4];
+        SETFLOAT(a,vec[0]);
+        SETFLOAT(a+1,vec[1]);
+        SETFLOAT(a+2,vec[2]);
+        SETFLOAT(a+3,vec[3]);
+        std::vector<t_atom> va;
+        va.push_back(a[0]);
+        va.push_back(a[1]);
+        va.push_back(a[2]);
+        return va;
+    }
+    std::vector<t_atom> operator()(const Destination& d) const
+    {
+      /*
+      s << "destination" << ossia::net::address_string_from_node(d.value);
+      if(d.unit)
+      {
+        s << " " << ossia::get_pretty_unit_text(d.unit);
+      }
+      */
+      std::vector<t_atom> va;
+      return va;
+    }
+    std::vector<t_atom> operator()(const std::vector<ossia::value>& t) const
+    {
+        std::vector<t_atom> va;
+        for (auto v : t){
+            std::vector<t_atom> b;
+            value2atom vm;
+            b = v.apply(vm);
+            std::move(b.begin(), b.end(), std::back_inserter(va));
+        }
+        return va;
+
+    }
+    std::vector<t_atom> operator()() const
+    {
+        std::vector<t_atom> va;
+        return va;
+    }
+};
+
 template <typename T>
 struct value_visitor
 {
@@ -29,21 +148,24 @@ struct value_visitor
 
     void operator()(impulse) const
     {
+        // TODO how to deal with impulse ? in Pd bang object doesn't have [set ...( message
+        // and sending a bang to the bang object connect to the inlet of the sender will lead to stack overflow...
         outlet_bang(x->x_dataout);
+        if(x->x_setout) outlet_bang(x->x_setout);
     }
     void operator()(int32_t i) const
     {
         t_atom a;
         SETFLOAT(&a, (t_float) i);
         outlet_float(x->x_dataout, (t_float) i);
-        outlet_anything(x->x_setout,gensym("set"),1,&a);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),1,&a);
     }
     void operator()(float f) const
     {
         t_atom a;
         SETFLOAT(&a,f);
         outlet_float(x->x_dataout, (t_float) f);
-        outlet_anything(x->x_setout,gensym("set"),1,&a);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),1,&a);
     }
     void operator()(bool b) const
     {
@@ -51,46 +173,49 @@ struct value_visitor
         t_float f = b?1.:0.;
         SETFLOAT(&a, f);
         outlet_float(x->x_dataout, f);
-        outlet_anything(x->x_setout,gensym("set"),1,&a);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),1,&a);
     }
     void operator()(const std::string& str) const
     {
-        post("%s receive a String %s",x->x_name->s_name, str.c_str());
         t_symbol* s=gensym(str.c_str());
         t_atom a;
         SETSYMBOL(&a,s);
         outlet_symbol(x->x_dataout, s);
-        outlet_anything(x->x_setout,gensym("set"),1,&a);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),1,&a);
     }
     void operator()(char c) const
     {
-        post("%s receive a Char %s",x->x_name->s_name, c);
+        t_atom a;
+        SETFLOAT(&a, (float)c);
         outlet_float(x->x_dataout, (float)c);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),1,&a);
     }
     void operator()(vec2f vec) const
     {
-        post("%s receive a Vec2f (%.2f,%.2f)",x->x_name->s_name, vec[0], vec[1]);
+        t_atom a[2];
+        SETFLOAT(a,vec[0]);
+        SETFLOAT(a+1,vec[1]);
+        outlet_list(x->x_dataout, gensym("list"), 2, a);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),2, a);
     }
     void operator()(vec3f vec) const
     {
-        post("%s receive a Vec3f (%.2f,%.2f,%.2f)",x->x_name->s_name, vec[0], vec[1],vec[2]);
         t_atom a[3];
         SETFLOAT(a,vec[0]);
         SETFLOAT(a+1,vec[1]);
         SETFLOAT(a+2,vec[2]);
         outlet_list(x->x_dataout, gensym("list"), 3, a);
-        outlet_anything(x->x_setout,gensym("set"),3, a);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),3, a);
     }
     void operator()(vec4f vec) const
     {
-        post("%s receive a Vec4f (%.2f,%.2f,%.2f,%.2f)",x->x_name->s_name, vec[0], vec[1],vec[2],vec[3]);
         t_atom a[4];
         SETFLOAT(a,vec[0]);
         SETFLOAT(a+1,vec[1]);
         SETFLOAT(a+2,vec[2]);
         SETFLOAT(a+3,vec[3]);
         outlet_list(x->x_dataout, gensym("list"), 4, a);
-        outlet_anything(x->x_setout,gensym("set"),4, a);
+        if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),4, a);
     }
     void operator()(const Destination& d) const
     {
@@ -105,8 +230,16 @@ struct value_visitor
     }
     void operator()(const std::vector<ossia::value>& t) const
     {
-      //getTupleAsString(t, s);
-      post("%s receive a Tuple",x->x_name->s_name);
+      std::vector<t_atom> va;
+      for (auto v : t){
+          std::vector<t_atom> b;
+          value2atom vm;
+          b = v.apply(vm);
+          std::move(b.begin(), b.end(), std::back_inserter(va));
+      }
+      outlet_list(x->x_dataout, gensym("list"), va.size(), &va[0]);
+      if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),va.size(), &va[0]);
+
     }
     void operator()() const
     {
@@ -148,7 +281,7 @@ static t_pd* find_parent(t_eobj* x, t_symbol* classname, int start_level, int* l
     while (canvas){
         t_gobj* list = canvas->gl_list;
         while(list){
-            if (list->g_pd->c_name == classname){
+            if (list->g_pd && list->g_pd->c_name == classname){
                 return &(list->g_pd);
             }
             list = list->g_next;
@@ -199,20 +332,11 @@ static std::vector<obj_hierachy> find_child(t_gobj* list, t_symbol* classname, i
     }
     int next_level = std::max(level-1,0);
 
+    t_gobj* start_list = list;
     std::vector<obj_hierachy> found;
+    // 1: iterate object list and look for classname object
     while (list && list->g_pd){
-        if ( list->g_pd->c_name == gensym("canvas")){
-            t_canvas* canvas = (t_canvas*) &list->g_pd;
-            if(!canvas_istable(canvas)){
-                t_gobj* _list = canvas->gl_list;
-                std::vector<obj_hierachy> found_tmp = find_child(_list, classname, next_level);
-                for (auto obj : found_tmp){
-                    obj.hierarchy++; // increase hierarchy of objects found in a subpatcher
-                    if (obj.hierarchy >= level) found.push_back(obj);
-                }
-            }
-        } else if ( list->g_pd->c_name == classname ) {
-            // TODO treat the first pass with starting_level
+        if ( list->g_pd->c_name == classname ) {
             if ( start_level ==  0){
                 obj_hierachy oh;
                 oh.hierarchy = 0;
@@ -221,6 +345,25 @@ static std::vector<obj_hierachy> find_child(t_gobj* list, t_symbol* classname, i
             }
         }
         list=list->g_next;
+    }
+
+    if(found.empty()){
+        // 2: if we didn't found anything, look into subpatches (aka "canvas) for classname object
+        list = start_list;
+        while (list && list->g_pd){
+            if ( list->g_pd->c_name == gensym("canvas")){
+                t_canvas* canvas = (t_canvas*) &list->g_pd;
+                if(!canvas_istable(canvas)){
+                    t_gobj* _list = canvas->gl_list;
+                    std::vector<obj_hierachy> found_tmp = find_child(_list, classname, next_level);
+                    for (auto obj : found_tmp){
+                        obj.hierarchy++; // increase hierarchy of objects found in a subpatcher
+                        if (obj.hierarchy >= level) found.push_back(obj);
+                    }
+                }
+            }
+            list=list->g_next;
+        }
     }
 
     return found;
@@ -285,11 +428,9 @@ static std::string get_absolute_path(ossia::net::node_base* node)
     return fullpath.str();
 }
 
+// we can't have virtual methods with C linkage so we need a bunch a template instead...
 template<typename T> extern void obj_dump_path(T *x);
 template<typename T> extern bool obj_register(T *x);
-template<typename T> extern void obj_setList(T *x, t_symbol* s, int argc, t_atom* argv);
-template<typename T> extern void obj_setFloat(T *x, t_float f);
-template<typename T> extern void obj_setSymbol(T *x, t_symbol* s);
 template<typename T> extern void obj_bang(T *x);
 template<typename T> extern void obj_dump(T *x);
 

@@ -5,9 +5,9 @@
 #include <memory>
 #include <ossia_export.h>
 
-namespace KDNSSD
+namespace servus
 {
-class PublicService;
+class Servus;
 }
 
 namespace ossia
@@ -31,10 +31,10 @@ struct OSSIA_EXPORT zeroconf_server
   zeroconf_server& operator=(zeroconf_server&&);
   ~zeroconf_server();
 
-  zeroconf_server(std::unique_ptr<KDNSSD::PublicService> s);
+  zeroconf_server(std::unique_ptr<servus::Servus> s);
 
 private:
-  std::unique_ptr<KDNSSD::PublicService> server;
+  std::unique_ptr<servus::Servus> server;
 };
 
 /**

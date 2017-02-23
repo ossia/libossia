@@ -1,6 +1,9 @@
 #include <QtTest>
 #include <ossia/ossia.hpp>
+#include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <iostream>
+#include <brigand/algorithms/for_each.hpp>
 
 using namespace ossia;
 
@@ -47,20 +50,18 @@ private Q_SLOTS:
 
         address->setRepetitionFilter(repetition_filter::ON);
         QVERIFY(address->getRepetitionFilter() == repetition_filter::ON);
+    }
 
-        //! \todo verify addCallback
+    void test_units()
+    {
+      brigand::for_each<unit_variant>([] (auto d_t) {
+        using type = typename decltype(d_t)::type;
+        brigand::for_each<type>([] (auto u_t) {
+          using utype = typename decltype(u_t)::type;
+          std::cerr << ossia::get_pretty_unit_text(utype{}) << std::endl;
+        });
+      });
 
-        //! \todo verify removeCallback
-
-        //! \todo verify getValue
-
-        //! \todo verify cloneValue
-
-        //! \todo verify setValue
-
-        //! \todo verify pushValue
-
-        //! \todo verify pullValue
     }
 };
 

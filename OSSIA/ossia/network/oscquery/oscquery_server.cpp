@@ -28,7 +28,12 @@ oscquery_server_protocol::oscquery_server_protocol(uint16_t osc_port, uint16_t w
   m_websocketServer.set_open_handler([&] (connection_handler hdl) { on_connectionOpen(hdl); });
   m_websocketServer.set_close_handler([&] (connection_handler hdl) { on_connectionClosed(hdl); });
   m_websocketServer.set_message_handler([&] (connection_handler hdl, const std::string& str) {
-    return on_WSrequest(hdl, str);
+    auto res = on_WSrequest(hdl, str);
+
+    if(mLogger.outbound_logger)
+      mLogger.outbound_logger->info("OSCQuery WS Out: {}", res.GetString());
+
+    return res;
   });
 
   m_serverThread = std::thread{[&] { m_websocketServer.run(m_wsPort); }};
@@ -128,6 +133,8 @@ void oscquery_server_protocol::setDevice(net::device_base& dev)
   dev.onNodeCreated.connect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeCreated>(this);
   dev.onNodeRemoving.connect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeRemoved>(this);
   dev.onAttributeModified.connect<oscquery_server_protocol, &oscquery_server_protocol::on_attributeChanged>(this);
+
+  update_zeroconf();
 }
 
 oscquery_client*oscquery_server_protocol::findClient(
@@ -254,7 +261,7 @@ try {
   }
 
   if(mLogger.inbound_logger)
-    mLogger.inbound_logger->info("In: {}", m);
+    mLogger.inbound_logger->info("OSCQuery OSC In: {}", m);
 } catch(const std::exception& e) {
   logger().error("oscquery_server_protocol::on_OSCMessage: {}", e.what());
 } catch(...) {
@@ -341,13 +348,23 @@ try {
 } catch(const std::exception& e) {
   logger().error("oscquery_server_protocol::on_attributeChanged: {}", e.what());
 } catch(...) {
-  logger().error("oscquery_server_protocol::on_attributeChanged: error.");
+logger().error("oscquery_server_protocol::on_attributeChanged: error.");
+}
+
+void oscquery_server_protocol::update_zeroconf()
+{
+  m_zeroconfServer = net::make_zeroconf_server(
+                       getDevice().getName(),
+                       "_oscjson._tcp",
+                       "", m_wsPort, 0);
 }
 
 rapidjson::StringBuffer oscquery_server_protocol::on_WSrequest(
     connection_handler hdl,
     const std::string& message)
 {
+  if(mLogger.inbound_logger)
+    mLogger.inbound_logger->info("OSCQuery WS In: {}", message);
   if(message.empty())
     return {};
   else if(message[0] == '/')

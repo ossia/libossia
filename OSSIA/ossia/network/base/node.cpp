@@ -302,7 +302,11 @@ void node_base::clearChildren()
 
   write_lock_t lock{m_mutex};
   for (auto& child : m_children)
+  {
+    dev.onNodeRemoving(*child);
     removingChild(*child);
+    child.reset();
+  }
 
   m_children.clear();
 }
@@ -377,6 +381,7 @@ OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(priority, priority, "priority")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(refresh_rate, refresh_rate, "refreshRate")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(value_step_size, value_step_size, "valueStepsize")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(critical, critical, "critical")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(zombie, zombie, "zombie")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_name, app_name, "appName")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_version, app_version, "appVersion")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_creator, app_creator, "appCreator")
