@@ -52,9 +52,7 @@ bool t_model :: register_node(ossia::net::node_base*  node){
             obj_register<t_remote>(static_cast<t_remote*>(remote));
         }
 
-        // FIXME nested model is not registered properly
         std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 1);
-        // std::sort(models.begin(), models.end());
         for (auto v : models){
             t_model* model = (t_model*) v.x;
             model->register_node(x_node);

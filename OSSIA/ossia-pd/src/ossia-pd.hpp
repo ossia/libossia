@@ -332,20 +332,11 @@ static std::vector<obj_hierachy> find_child(t_gobj* list, t_symbol* classname, i
     }
     int next_level = std::max(level-1,0);
 
+    t_gobj* start_list = list;
     std::vector<obj_hierachy> found;
+    // 1: iterate object list and look for classname object
     while (list && list->g_pd){
-        if ( list->g_pd->c_name == gensym("canvas")){
-            t_canvas* canvas = (t_canvas*) &list->g_pd;
-            if(!canvas_istable(canvas)){
-                t_gobj* _list = canvas->gl_list;
-                std::vector<obj_hierachy> found_tmp = find_child(_list, classname, next_level);
-                for (auto obj : found_tmp){
-                    obj.hierarchy++; // increase hierarchy of objects found in a subpatcher
-                    if (obj.hierarchy >= level) found.push_back(obj);
-                }
-            }
-        } else if ( list->g_pd->c_name == classname ) {
-            // TODO treat the first pass with starting_level
+        if ( list->g_pd->c_name == classname ) {
             if ( start_level ==  0){
                 obj_hierachy oh;
                 oh.hierarchy = 0;
@@ -354,6 +345,25 @@ static std::vector<obj_hierachy> find_child(t_gobj* list, t_symbol* classname, i
             }
         }
         list=list->g_next;
+    }
+
+    if(found.empty()){
+        // 2: if we didn't found anything, look into subpatches (aka "canvas) for classname object
+        list = start_list;
+        while (list && list->g_pd){
+            if ( list->g_pd->c_name == gensym("canvas")){
+                t_canvas* canvas = (t_canvas*) &list->g_pd;
+                if(!canvas_istable(canvas)){
+                    t_gobj* _list = canvas->gl_list;
+                    std::vector<obj_hierachy> found_tmp = find_child(_list, classname, next_level);
+                    for (auto obj : found_tmp){
+                        obj.hierarchy++; // increase hierarchy of objects found in a subpatcher
+                        if (obj.hierarchy >= level) found.push_back(obj);
+                    }
+                }
+            }
+            list=list->g_next;
+        }
     }
 
     return found;

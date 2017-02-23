@@ -80,9 +80,8 @@ void t_device :: register_children(){
         param->register_node(this->x_node);
     }
 
-    // then register model, this could register some parameter again
+    // then register model, this might register some parameters again
     std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 0);
-    std::sort(models.begin(), models.end());
     for (auto v : models){
         t_model* model = (t_model*) v.x;
         model->register_node(this->x_node);
