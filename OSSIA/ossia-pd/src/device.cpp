@@ -243,6 +243,7 @@ extern "C" void setup_ossia0x2edevice(void)
     if(c)
     {
         eclass_addmethod(c, (method) device_register, "register", A_NULL, 0);
+        eclass_addmethod(c, (method) device_register, "loadbang", A_NULL, 0);
         eclass_addmethod(c, (method) device_dump, "dump", A_NULL, 0);
         eclass_addmethod(c, (method) device_expose, "expose", A_GIMME, 0);
         eclass_addmethod(c, (method) Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
