@@ -3,25 +3,22 @@
 #if defined(OSSIA_ZEROCONF)
 
 #include <servus/servus.h>
-#include <QHostInfo>
 #include <chrono>
-#include <QCoreApplication>
-#include <QDataStream>
 
 
 namespace ossia
 {
 namespace net
 {
-const auto minuit_service_name = QStringLiteral("_minuit._tcp");
-
+// const auto minuit_service_name = QStringLiteral("_minuit._tcp");
+/*
 class zeroconf_browser :
     public QObject
 {
   public:
     zeroconf_browser()
     {
-      /*
+      
       auto browser = new ServiceBrowser(minuit_service_name);
       connect(browser, &ServiceBrowser::serviceAdded,
               this, [this] (auto service)
@@ -67,13 +64,13 @@ class zeroconf_browser :
       });
 
       browser->startBrowse();
-      */
+      
     }
 
     std::vector<minuit_connection_data> mData;
 
 };
-
+*/
 
 bool zeroconf_supported()
 {
@@ -84,15 +81,16 @@ std::vector<minuit_connection_data> list_minuit_devices()
 {
   using namespace std::chrono_literals;
 
-  zeroconf_browser b;
+  //zeroconf_browser b;
   auto t = std::chrono::high_resolution_clock::now();
   auto t2 = std::chrono::high_resolution_clock::now();
   while((t2 - t) < 5s)
   {
     t2 = std::chrono::high_resolution_clock::now();
-    QCoreApplication::processEvents();
+  //  QCoreApplication::processEvents();
   }
-  return b.mData;
+return {};
+  //return b.mData;
 }
 
 zeroconf_server make_zeroconf_server(

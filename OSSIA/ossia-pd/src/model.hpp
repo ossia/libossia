@@ -18,6 +18,15 @@ struct t_model : ossia_obj_base
     }
     t_symbol* x_tags;
     t_symbol* x_description;
+
+    void isDeleted(const ossia::net::node_base& n)
+    {
+        if (!x_dead){
+            x_node = nullptr;
+            obj_quarantining<t_model>(this);
+            obj_register<t_model>(this);
+        }
+    }
 };
 
 } } // namespace

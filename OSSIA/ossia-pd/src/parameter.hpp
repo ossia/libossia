@@ -27,6 +27,13 @@ struct t_param : ossia_obj_base
         static std::vector<t_param*> quarantine;
         return quarantine;
     }
+
+    void isDeleted(const ossia::net::node_base& n)
+    {
+        x_node = nullptr;
+        obj_quarantining<t_param>(this);
+        // obj_register<t_param>(this);
+    }
 };
 
 } } // namespace
