@@ -281,7 +281,7 @@ static t_pd* find_parent(t_eobj* x, t_symbol* classname, int start_level, int* l
     while (canvas){
         t_gobj* list = canvas->gl_list;
         while(list){
-            if (list->g_pd->c_name == classname){
+            if (list->g_pd && list->g_pd->c_name == classname){
                 return &(list->g_pd);
             }
             list = list->g_next;

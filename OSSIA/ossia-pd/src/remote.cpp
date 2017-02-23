@@ -41,7 +41,7 @@ bool t_remote :: do_registration(ossia::net::node_base* node){
 
 bool t_remote :: unregister(){
     if (x_callbackit != boost::none) {
-        x_node->getAddress()->remove_callback(*x_callbackit);
+        if (x_node && x_node->getAddress()) x_node->getAddress()->remove_callback(*x_callbackit);
         x_callbackit = boost::none;
     }
     obj_quarantining<t_remote>(this);

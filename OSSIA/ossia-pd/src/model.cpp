@@ -101,7 +101,7 @@ bool t_model :: unregister(){
         if (model != this && (!model->x_node || model->x_node->getParent() == x_node)) model->register_node(x_node->getParent());
     }
 
-    x_node->getParent()->removeChild(x_name->s_name);
+    if (x_node && x_node->getParent()) x_node->getParent()->removeChild(x_name->s_name);
     x_node = nullptr;
     obj_quarantining<t_model>(this);
 
