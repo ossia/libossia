@@ -302,7 +302,11 @@ void node_base::clearChildren()
 
   write_lock_t lock{m_mutex};
   for (auto& child : m_children)
+  {
+    dev.onNodeRemoving(*child);
     removingChild(*child);
+    child.reset();
+  }
 
   m_children.clear();
 }

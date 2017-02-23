@@ -137,14 +137,6 @@ private:
 class receiver
 {
 public:
-  receiver() = default;
-  receiver(receiver&& other)
-  {
-    other.stop();
-    m_impl = std::move(other.m_impl);
-    setPort(other.m_port);
-  }
-
   template <typename Handler>
   receiver(unsigned int port, Handler msg)
       : m_impl{std::make_unique<listener<Handler>>(msg)}
@@ -152,12 +144,27 @@ public:
     setPort(port);
   }
 
+  receiver() = default;
+  receiver(receiver&& other)
+  {
+    other.stop();
+    m_impl = std::move(other.m_impl);
+    m_socket = std::move(other.m_socket);
+    m_running = bool(other.m_running);
+    other.m_running = false;
+    setPort(other.m_port);
+  }
+
   receiver& operator=(receiver&& other)
   {
     stop();
 
-    m_socket = std::move(other.m_socket);
     m_impl = std::move(other.m_impl);
+    m_socket = std::move(other.m_socket);
+    m_running = bool(other.m_running);
+    other.m_running = false;
+
+    setPort(other.m_port);
 
     return *this;
   }
@@ -169,7 +176,11 @@ public:
 
   void run()
   {
+    if(m_runThread.joinable())
+      stop();
+
     m_runThread = std::thread([this] () {
+      m_running = true;
       m_socket->Run();
     });
   }
@@ -178,7 +189,7 @@ public:
   {
     if (m_socket)
     {
-      if(m_runThread.joinable())
+      if(m_running && m_runThread.joinable())
       {
         {
           oscpack::UdpTransmitSocket send_socket(oscpack::IpEndpointName("127.0.0.1", port()));
@@ -189,6 +200,7 @@ public:
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
         m_runThread.join();
+        m_running = false;
       }
 
       m_socket.reset();
@@ -226,6 +238,7 @@ public:
 
 private:
   unsigned int m_port = 0;
+  std::atomic_bool m_running{false};
   std::unique_ptr<oscpack::OscPacketListener> m_impl;
   std::unique_ptr<oscpack::ReceiveSocket> m_socket;
 

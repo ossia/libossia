@@ -439,6 +439,8 @@ void oscquery_mirror_protocol::on_WSMessage(
       mLogger.inbound_logger->warn("Error while parsing: {} ==> {}", e.what(), message);
   }
 
+  if(mLogger.inbound_logger)
+    mLogger.inbound_logger->info("WS In: {}", message);
 #if defined(OSSIA_BENCHMARK)
   auto t2 = std::chrono::high_resolution_clock::now();
   ossia::logger().info("on_WSMessage : Time taken: {}", std::chrono::duration_cast<std::chrono::microseconds>(t2-t1).count());
