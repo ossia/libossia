@@ -611,10 +611,7 @@ void json_parser::parse_path_removed(net::node_base& root, const rapidjson::Valu
     auto path = getStringView(dat_it->value);
     if(auto node = ossia::net::find_node(root, path))
     {
-      if(auto parent = node->getParent())
-      {
-        parent->removeChild(*node);
-      }
+      ossia::net::set_zombie(*node, true);
     }
   }
 }

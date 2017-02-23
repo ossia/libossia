@@ -81,7 +81,8 @@ public:
     return getRootNode().getName();
   }
 
-  Nano::Signal<void(const node_base&)> onNodeCreated; // The node being created
+  Nano::Signal<void(const node_base&)>
+      onNodeCreated; // The node being created
   Nano::Signal<void(const node_base&)>
       onNodeRemoving; // The node being removed
   Nano::Signal<void(const node_base&, std::string)>
