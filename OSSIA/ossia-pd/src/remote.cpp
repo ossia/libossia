@@ -66,8 +66,20 @@ static void remote_click(t_remote *x,
   milliseconds ms = duration_cast< milliseconds >( system_clock::now().time_since_epoch() );
   milliseconds diff = (ms - x->x_last_click);
   if ( diff.count() < 200 ){
-    logpost(x,2,"I receive a double click");
     x->x_last_click = milliseconds(0);
+
+    int l;
+    t_device *device = (t_device*) find_parent(&x->x_obj,osym_device, 0, &l);
+    /*
+    if (!device || !x->x_node || obj_isQuarantined<t_remote>(x)){
+      pd_error(x, "sorry no device found, or not connected or quarantined...");
+      return;
+    }
+    */
+
+    t_canvas *root = x->x_obj.o_canvas;
+    while (root->gl_owner) root = root->gl_owner;
+    if (!find_and_display_friend(x, root))   pd_error(x,"sorry I can't find a connected friend :-(");
   } else {
     x->x_last_click = ms;
   }
@@ -92,6 +104,8 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
             error("You have to pass a name as the first argument");
             x->x_name = gensym("untitledRemote");
         }
+
+        x->x_clock = clock_new(x, (t_method)obj_tick);
 
         obj_register<t_remote>(x);
     }

@@ -1,5 +1,10 @@
 #include "ossia_obj_base.hpp"
 
+extern void glist_noselect(t_glist *x);
+extern void canvas_vis(t_canvas *x, t_floatarg f);
+extern void canvas_editmode(t_canvas *x, t_floatarg state);
+extern void glist_select(t_glist *x, t_gobj *y);
+
 namespace ossia { namespace pd {
 
 void obj_base::setValue(const ossia::value& v){
@@ -30,8 +35,45 @@ void obj_base::obj_push(obj_base *x, t_symbol* , int argc, t_atom* argv){
   }
 }
 
+void obj_tick(obj_base* x){
+  if (x->x_last_opened_canvas){
+    glist_noselect(x->x_last_opened_canvas);
+    x->x_last_opened_canvas = nullptr;
+  }
+}
+
 void obj_base::obj_bang(obj_base *x){
   if ( x->x_node && x->x_node->getAddress() ) x->setValue(x->x_node->getAddress()->cloneValue());
 }
 
+bool find_and_display_friend(obj_base* x, t_canvas* patcher){
+  t_gobj* list = patcher->gl_list;
+
+  std::string param_str = "ossia.param";
+  std::string canvas_str = "canvas";
+  while (list && list->g_pd){
+    std::string classname = list->g_pd->c_name->s_name;
+    if ( classname == param_str ) {
+      obj_base* p = (obj_base*) list;
+      if (p->x_node == x->x_node) {
+        if (x->x_last_opened_canvas) glist_noselect(x->x_last_opened_canvas);
+        if (x->x_clock) clock_unset(x->x_clock);
+        glist_noselect(patcher);
+        x->x_last_opened_canvas = patcher;
+        canvas_vis(glist_getcanvas(patcher), 1);
+        glist_select(patcher, &p->x_obj.o_obj.te_g);
+        if (x->x_clock) clock_delay(x->x_clock, 1000);
+        return true;
+      }
+    } else if ( classname == canvas_str ){
+      t_canvas* canvas = (t_canvas*) &list->g_pd;
+      if(!canvas_istable(canvas)){
+        t_gobj* _list = canvas->gl_list;
+        if(find_and_display_friend(x, canvas)) return true;
+      }
+    }
+    list=list->g_next;
+  }
+  return false;
+}
 } } // namespace
