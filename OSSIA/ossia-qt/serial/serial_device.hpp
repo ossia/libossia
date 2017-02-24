@@ -8,7 +8,7 @@ namespace ossia
 namespace net
 {
 
-class serial_device :
+class OSSIA_EXPORT serial_device :
     public ossia::net::device_base,
     public serial_node
 {

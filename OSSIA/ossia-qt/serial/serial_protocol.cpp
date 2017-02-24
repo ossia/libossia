@@ -18,11 +18,13 @@ serial_protocol::serial_protocol(
     const QSerialPortInfo& bot):
   mEngine{new QQmlEngine},
   mComponent{new QQmlComponent{mEngine}},
-  mSerialPort{bot}
+  mSerialPort{bot},
+  mCode{code}
 {
   connect(mComponent, &QQmlComponent::statusChanged,
           this, [=] (QQmlComponent::Status status)
   {
+    qDebug() << status;
     if(!mDevice)
       return;
 
@@ -58,29 +60,25 @@ bool serial_protocol::pull(address_base&)
 bool serial_protocol::push(const ossia::net::address_base& addr)
 {
   auto& ad = dynamic_cast<const serial_address&>(addr);
-    std::stringstream s;
-    s << addr.getNode().getName();
+  auto str = ad.data().request;
+  switch(addr.getValueType())
+  {
+    case ossia::val_type::FLOAT:
+      str.replace("$0", QString::number(ad.getValue().get<float>(), 'g', 4));
+      break;
+    case ossia::val_type::INT:
+      str.replace("$0", QString::number(ad.getValue().get<int32_t>()));
+      break;
+    case ossia::val_type::IMPULSE:
+      break;
+    default:
+      throw;
+  }
 
-    switch(addr.getValueType())
-    {
-        case ossia::val_type::FLOAT:
-            s << " " << std::setprecision(4) << std::to_string(ad.getValue().get<float>());
-            break;
-        case ossia::val_type::INT:
-            s << " " << std::to_string(ad.getValue().get<int32_t>());
-            break;
-        case ossia::val_type::IMPULSE:
-            break;
-        default:
-            throw;
-    }
-
-    s << '\n';
-
-    auto str = s.str();
-    qDebug() << QString::fromStdString(s.str());
-    mSerialPort.write(QByteArray(str.c_str()));
-    return false;
+  str += '\n';
+  qDebug() << str;
+  mSerialPort.write(str.toUtf8());
+  return false;
 }
 
 bool serial_protocol::observe(address_base&, bool)
@@ -92,6 +90,16 @@ bool serial_protocol::update(node_base& node_base)
 {
   return true;
 }
+
+void serial_protocol::setDevice(device_base& dev)
+{
+  if(auto htdev = dynamic_cast<serial_device*>(&dev))
+  {
+    mDevice = htdev;
+    mComponent->setData(mCode, QUrl{});
+  }
+}
+
 
 serial_protocol::~serial_protocol()
 {

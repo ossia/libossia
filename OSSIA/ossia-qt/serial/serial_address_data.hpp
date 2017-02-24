@@ -19,6 +19,10 @@ struct serial_address_data_base
     {
       request = r.toString();
     }
+    else
+    {
+      request = val.property("name").toString();
+    }
   }
 
   QString request;
