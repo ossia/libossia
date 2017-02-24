@@ -90,23 +90,20 @@ tuple_address.add_callback(tuple_value_callback)
 
 ### LOCAL DEVICE EXPLORATION
 
-# find an node and print it's address
-#node = osc_device.find_node("/test/value/int")
-#address = node.get_address()
-#print(address)
-
-# iterate on device's nodes
-"""
+# a function to iterate on node's tree recursively
 def iterate_on_children(node):
 
-	for child in node.get_children():
-		address = child.get_address()
-		if address != None:
-			print(address)
+	for child in node.children():
+		if child.get_address():
+			print(child.string() + " " + child.get_address().string())
+		else:
+			print(child.string())
+
 		iterate_on_children(child)
 
-iterate_on_children(my_device)
-"""
+# iterate on our device
+iterate_on_children(my_device.get_root_node())
+
 # wait and use i-score to change the value remotely
 while True:
 	time.sleep(1)
