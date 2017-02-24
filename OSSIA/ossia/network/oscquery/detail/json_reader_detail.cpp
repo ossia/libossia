@@ -595,8 +595,16 @@ void json_parser::parse_path_added(net::node_base& root, const rapidjson::Value&
         auto node = ossia::net::find_node(root, str.first);
         if(node)
         {
-          auto cld = node->createChild(str.second.to_string());
-          detail::json_parser_impl::readObject(*cld, dat);
+          auto cld = node->findChild(str.second.to_string());
+          if(!cld)
+          {
+            auto cld = node->createChild(str.second.to_string());
+            detail::json_parser_impl::readObject(*cld, dat);
+          }
+          else
+          {
+            ossia::net::set_zombie(*cld, false);
+          }
         }
       }
     }
