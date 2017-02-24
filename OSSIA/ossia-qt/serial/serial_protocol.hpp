@@ -28,6 +28,10 @@ public:
     connect(this, &serial_wrapper::write,
             this, &serial_wrapper::on_write,
             Qt::QueuedConnection);
+
+    connect(&mSerialPort, &QSerialPort::readyRead,
+            this, &serial_wrapper::on_read,
+            Qt::QueuedConnection);
   }
 
 signals:
@@ -37,6 +41,10 @@ public slots:
   void on_write(QByteArray b)
   {
     mSerialPort.write(b);
+  }
+  void on_read()
+  {
+    qDebug() << mSerialPort.readAll();
   }
 };
 
