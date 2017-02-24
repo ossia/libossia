@@ -2,7 +2,9 @@
 import ossia_python as ossia
 import time
 
-### LOCAL DEVICE SETUP
+print("OSSIA PYTHON LIBRARY EXAMPLE")
+
+### OSSIA DEVICE SETUP
 
 # create a device for this python program
 my_device = ossia.LocalDevice("newDevice")
@@ -24,10 +26,10 @@ int_address.push_value(ossia.Value(100))
 float_node = my_device.add_node("/test/value/float")
 float_address = float_node.create_address(ossia.ValueType.Float)
 float_address.set_access_mode(ossia.AccessMode.Bi);
-float_address.set_bounding_mode(ossia.BoundingMode.Wrap);
+float_address.set_bounding_mode(ossia.BoundingMode.Clip);
 float_address.get_domain().set_min(ossia.Value(-1.0));
 float_address.get_domain().set_max(ossia.Value(1.0));
-float_address.push_value(ossia.Value(1.5))					### BUG : the value is not clipped
+float_address.push_value(ossia.Value(1.5))								### BUG : the value is not clipped
 
 # create a node, create a char address and initialize it
 char_node = my_device.add_node("/test/value/char")
@@ -86,22 +88,13 @@ string_address.add_callback(string_value_callback)
 vec3f_address.add_callback(vec3f_value_callback)
 tuple_address.add_callback(tuple_value_callback)
 
-# wait and use i-score to change the value remotely
-while True:
-	time.sleep(1)
-	print("#")
+### LOCAL DEVICE EXPLORATION
 
-### REMOTE DEVICE TREE
+# find an node and print it's address
+#node = osc_device.find_node("/test/value/int")
+#address = node.get_address()
+#print(address)
 
-# declare a remote client using OSC protocol
-"""
-osc_device = ossia.OSCClient("")
-osc_device.load_namespace("/file/path/...")
-
-# find an node
-node = osc_device.find_node("/foo/bar")
-address = node.get_address()
-"""
 # iterate on device's nodes
 """
 def iterate_on_children(node):
@@ -112,22 +105,31 @@ def iterate_on_children(node):
 			print(address)
 		iterate_on_children(child)
 
-iterate_on_children(osc_device)
+iterate_on_children(my_device)
 """
+# wait and use i-score to change the value remotely
+while True:
+	time.sleep(1)
+	print("#")
+
+### REMOTE DEVICE SETUP
+
+# declare a remote client using OSC protocol
+#osc_device = ossia.OSCClient("")
+#osc_device.load_namespace("/file/path/...")
+
 # ADDRESS VALUE OPERATIONS
 #v = address.clone_value() + ossia.Value(1)
 
 # access address property
-"""
-type = address.type
-address.tags = ['test', 'demo']
-address.domain
-address.clipmode
+#type = address.type
+#address.tags = ['test', 'demo']
+#address.domain
+#address.clipmode
 
-print(address.__dict__)
-"""
+#print(address.__dict__)
+
 ### MISC
 
 # export device namespace
-"""my_device.export_namespace('/Users/reno/Desktop/toto.bush')
-"""
+#my_device.export_namespace('/Users/reno/Desktop/toto.bush')

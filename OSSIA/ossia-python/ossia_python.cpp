@@ -68,12 +68,21 @@ struct to_python_value
 		return py::cast(t);
 	}
 
-    py::object operator()(const ossia::Destination&) const { throw; }
-    py::object operator()(const std::vector<ossia::value>&) const { throw; }
+	py::object operator()(const std::vector<ossia::value>& v) const 
+	{ 
+		std::vector<py::object> vec;
 
-    template<int N>
+		for (auto i : v)
+			vec.push_back(i.apply(to_python_value{}));
+
+		return py::cast(vec);
+	}
+
+	template<int N>
     py::object operator()(const std::array<float, N>&) const { throw; }
 
+    py::object operator()(const ossia::Destination&) const { throw; }
+    
     py::object operator()() { throw; }
 
 };
