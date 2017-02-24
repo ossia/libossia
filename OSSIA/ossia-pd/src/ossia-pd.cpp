@@ -138,7 +138,7 @@ template void obj_dequarantining<t_remote>(t_remote *x);
 template void obj_dequarantining<t_view>  (t_view   *x);
 
 template<typename T> bool obj_isQuarantined(T* x){
-    return std::find(x->quarantine().begin(), x->quarantine().end(), x) != x->quarantine().end();
+  return ossia::contains(x->quarantine(),x);
 }
 template bool obj_isQuarantined<t_param> (t_param  *x);
 template bool obj_isQuarantined<t_model> (t_model  *x);
