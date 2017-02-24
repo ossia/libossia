@@ -9,8 +9,8 @@ print("OSSIA PYTHON LIBRARY EXAMPLE")
 # create a device for this python program
 my_device = ossia.LocalDevice("newDevice")
 
-# enable Minuit communication for our device
-my_device.create_minuit_server("127.0.0.1", 9998, 13579)
+# enable OSCQuery communication for our device
+my_device.create_oscquery_server(3456, 5678)
 
 # create a node, create a boolean address and initialize it
 bool_node = my_device.add_node("/test/value/bool")

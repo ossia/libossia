@@ -9,8 +9,7 @@
 #include <ossia/network/domain/domain.hpp>
 
 #include <ossia/network/local/local.hpp>
-#include <ossia/network/osc/osc.hpp>
-#include <ossia/network/minuit/minuit.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 
 namespace py = pybind11;
 
@@ -28,22 +27,11 @@ public:
 
   }
 
-  bool createMinuitServer(std::string ip, int remoteport, int localport)
+  bool createOscQueryServer(int osc_port, int ws_port)
   {
     try {
-      m_local_protocol.exposeTo(
-            std::make_unique<ossia::net::minuit_protocol>(
-              m_device.getName(), std::move(ip), localport, remoteport));
-      return true;
-    } catch(...) { }
-    return false;
-  }
-
-  bool createOscServer(std::string ip, int remoteport, int localport)
-  {
-    try {
-      m_local_protocol.exposeTo(std::make_unique<ossia::net::osc_protocol>(
-                         std::move(ip), localport, remoteport));
+      m_local_protocol.exposeTo(std::make_unique<ossia::oscquery::oscquery_server_protocol>(
+              					osc_port, ws_port));
       return true;
     } catch(...) { }
     return false;
@@ -93,8 +81,8 @@ PYBIND11_PLUGIN(ossia_python)
 
     py::class_<python_local_device>(m, "LocalDevice")
         .def(py::init<std::string>())
-        .def("create_minuit_server", &python_local_device::createMinuitServer)
         .def("create_osc_server", &python_local_device::createOscServer)
+        .def("create_oscquery_server", &python_local_device::createOscQueryServer)
         .def("add_node", &python_local_device::addNode, py::return_value_policy::reference)
         .def("find_node", &python_local_device::findNode, py::return_value_policy::reference)
         ;
