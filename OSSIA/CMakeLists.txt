@@ -166,9 +166,10 @@ endif()
 
 target_sources(ossia PRIVATE $<TARGET_OBJECTS:Servus>)
 get_target_property(SERVUS_LINK_LIBRARIES Servus INTERFACE_LINK_LIBRARIES)
+get_target_property(SERVUS_COMPILE_DEFINITIONS Servus INTERFACE_COMPILE_DEFINITIONS)
 target_link_libraries(ossia PRIVATE ${SERVUS_LINK_LIBRARIES})
 target_include_directories(ossia PRIVATE ${OSSIA_3RDPARTY_FOLDER}/Servus)
-target_compile_definitions(ossia PRIVATE OSSIA_ZEROCONF)
+target_compile_definitions(ossia PRIVATE ${SERVUS_COMPILE_DEFINITIONS})
 
 # Useful properties
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")
