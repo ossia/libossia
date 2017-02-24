@@ -11,6 +11,7 @@
 
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
 
 namespace py = pybind11;
 
@@ -41,6 +42,36 @@ public:
   ossia::net::node_base* add_node(const std::string& address)
   {
     return &ossia::net::find_or_create_node(m_device.getRootNode(), address);
+  }
+
+  ossia::net::node_base* find_node(const std::string& address)
+  {
+    return ossia::net::find_node(m_device.getRootNode(), address);
+  }
+
+  ossia::net::node_base* get_root_node()
+  {
+    return &m_device.getRootNode();
+  }
+};
+
+class python_oscquery_device
+{
+  ossia::net::generic_device m_device;
+  ossia::oscquery::oscquery_mirror_protocol& m_oscquery_protocol;
+
+public:
+
+  python_oscquery_device(std::string name, std::string host, uint16_t local_osc_port):
+    m_device{std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(host, local_osc_port), std::move(name)},
+    m_oscquery_protocol{static_cast<ossia::oscquery::oscquery_mirror_protocol&>(m_device.getProtocol())}
+  {
+
+  }
+
+  bool update()
+  {
+  	return m_oscquery_protocol.update(m_device.getRootNode());
   }
 
   ossia::net::node_base* find_node(const std::string& address)
@@ -96,6 +127,13 @@ PYBIND11_PLUGIN(ossia_python)
         .def("get_root_node", &python_local_device::get_root_node, py::return_value_policy::reference)
         ;
 
+    py::class_<python_oscquery_device>(m, "OSCQueryDevice")
+        .def(py::init<std::string, std::string, uint16_t>())
+        .def("update", &python_oscquery_device::update)
+        .def("find_node", &python_oscquery_device::find_node, py::return_value_policy::reference)
+        .def("get_root_node", &python_oscquery_device::get_root_node, py::return_value_policy::reference)
+        ;
+
     py::class_<std::vector<ossia::net::node_base*>>(m, "NodeVector")
     	.def(py::init<>())
     	.def("clear", &std::vector<ossia::net::node_base*>::clear)
@@ -110,7 +148,7 @@ PYBIND11_PLUGIN(ossia_python)
         .def("get_address", &ossia::net::node_base::getAddress, py::return_value_policy::reference)
         .def("create_address", [] (ossia::net::node_base& node, int type) { return node.createAddress((ossia::val_type) type); }, py::return_value_policy::reference)
         .def("children", &ossia::net::node_base::children_copy)
-        .def("string", [] (ossia::net::node_base& node) -> std::string { return ossia::net::osc_address_string(node); })
+        .def("__str__", [] (ossia::net::node_base& node) -> std::string { return ossia::net::osc_address_string(node); })
         ;
 
     py::class_<ossia::net::address_base>(m, "Address")
@@ -132,7 +170,7 @@ PYBIND11_PLUGIN(ossia_python)
         .def("fetch_value", [] (ossia::net::address_base& addr) -> ossia::value { return addr.fetchValue(); })
         .def("push_value", [] (ossia::net::address_base& addr, const ossia::value& v) { addr.pushValue(v); })
         .def("add_callback", [] (ossia::net::address_base& addr, ossia::value_callback clbk) { addr.add_callback(clbk); })
-        .def("string", [] (ossia::net::address_base& addr) -> std::string { return ossia::value_to_pretty_string(addr.cloneValue()); })
+        .def("__str__", [] (ossia::net::address_base& addr) -> std::string { return ossia::value_to_pretty_string(addr.cloneValue()); })
         ;
 
     py::enum_<ossia::val_type>(m, "ValueType", py::arithmetic())
@@ -198,8 +236,6 @@ PYBIND11_PLUGIN(ossia_python)
         .def("get_vec2f",  [] (const ossia::value& val) { return val.get<std::array<float, 2>>(); })
         .def("get_vec3f",  [] (const ossia::value& val) { return val.get<std::array<float, 3>>(); })
         .def("get_vec4f",  [] (const ossia::value& val) { return val.get<std::array<float, 4>>(); })
-        //.def(py::self + py::self)
-        //.def("__repr__", [] (const ossia::value& val) -> std::string { return value_to_pretty_string(val); });
         ;
 
     return m.ptr();
