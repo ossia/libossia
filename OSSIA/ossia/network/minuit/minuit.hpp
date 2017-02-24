@@ -12,7 +12,7 @@
 #include <string>
 #include <hopscotch_map.h>
 #include <atomic>
-#include <ossia/network/minuit/minuit_zeroconf.hpp>
+#include <ossia/network/zeroconf/zeroconf.hpp>
 
 namespace oscpack
 {

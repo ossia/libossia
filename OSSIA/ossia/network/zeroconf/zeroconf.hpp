@@ -22,6 +22,13 @@ struct OSSIA_EXPORT minuit_connection_data
   int32_t local_port{};
 };
 
+struct OSSIA_EXPORT oscquery_connection_data
+{
+  std::string name;
+  std::string host;
+  int32_t port{};
+};
+
 struct OSSIA_EXPORT zeroconf_server
 {
   zeroconf_server();
@@ -48,17 +55,26 @@ OSSIA_EXPORT bool zeroconf_supported();
  *
  * @note This function blocks for five seconds.
  *
- * @return a list of the bonjour-enabled minuit clients
+ * @return a list of the zeroconf-enabled minuit clients
  */
 OSSIA_EXPORT std::vector<minuit_connection_data> list_minuit_devices();
 
 /**
- * @brief make_minuit_zeroconf_server
+ * @brief list_oscquery_devices
+ *
+ * @note This function blocks for five seconds
+ *
+ * @return A list of the zeroconf-enabled oscquery clients.
+ */
+OSSIA_EXPORT std::vector<oscquery_connection_data> list_oscquery_devices();
+
+/**
+ * @brief make_zeroconf_server
  *
  * The available services names are :
  * * Minuit: _minuit._tcp
  *
- * @return A running Zeroconf server exposing the Minuit device info.
+ * @return A running Zeroconf server exposing the device info.
  */
 OSSIA_EXPORT zeroconf_server make_zeroconf_server(
     std::string description,

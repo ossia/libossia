@@ -10,7 +10,7 @@
 #include <hopscotch_map.h>
 #include <ossia/detail/mutex.hpp>
 #include <atomic>
-#include <ossia/network/minuit/minuit_zeroconf.hpp> // TODO move out of minuit
+#include <ossia/network/zeroconf/zeroconf.hpp>
 namespace osc
 {
 class sender;
