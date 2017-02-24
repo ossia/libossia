@@ -292,8 +292,6 @@ static t_pd* find_parent(t_eobj* x, t_symbol* classname, int start_level, int* l
     return nullptr;
 }
 
-
-template<typename T>
 /**
  * @brief find_parent_alive
  * @details Find a parent that is not being remove soon
@@ -302,6 +300,7 @@ template<typename T>
  * @param start_level
  * @return
  */
+template<typename T>
 static T* find_parent_alive(t_eobj* x, t_symbol* classname, int start_level, int* level){
     T* obj = (T*) find_parent(x,classname, start_level, level);
     if (obj){
@@ -445,7 +444,7 @@ static std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol){
         char* c = tags_symbol->s_name;
         std::string tag="";
 
-        while (*c!='0'){
+        while (*c!='\0'){
             if (*c==' '){
                 tags.push_back(tag);
                 tag = std::string("");
