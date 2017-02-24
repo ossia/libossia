@@ -1,6 +1,5 @@
 #include "minuit_zeroconf.hpp"
 #include <iostream>
-#if defined(OSSIA_ZEROCONF)
 
 #include <servus/servus.h>
 #include <chrono>
@@ -109,64 +108,6 @@ zeroconf_server make_zeroconf_server(
   server->announce(local_port, description);
 
   return zeroconf_server{std::move(server)};
-}
-
-}
-}
-
-#else
-
-namespace ossia
-{
-namespace net
-{
-bool zeroconf_supported()
-{
-  return false;
-}
-
-std::vector<minuit_connection_data> list_minuit_devices()
-{
-  return {};
-}
-
-zeroconf_server make_zeroconf_server(
-    std::string description,
-    std::string service,
-    std::string local_name,
-    int32_t local_port,
-    int32_t remote_port)
-{
-  return {};
-}
-
-}
-}
-
-namespace KDNSSD
-{
-// Fake class when we don't link with the library.
-class PublicService
-{
-};
-}
-
-#endif
-
-namespace ossia
-{
-namespace net
-{
-
-zeroconf_server::zeroconf_server() = default;
-zeroconf_server::zeroconf_server(zeroconf_server&&) = default;
-zeroconf_server& zeroconf_server::operator=(zeroconf_server&&) = default;
-zeroconf_server::~zeroconf_server() = default;
-
-zeroconf_server::zeroconf_server(std::unique_ptr<servus::Servus> s):
-  server{std::move(s)}
-{
-
 }
 
 }
