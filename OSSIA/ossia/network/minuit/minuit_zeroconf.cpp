@@ -18,7 +18,7 @@ class zeroconf_browser :
   public:
     zeroconf_browser()
     {
-      
+
       auto browser = new ServiceBrowser(minuit_service_name);
       connect(browser, &ServiceBrowser::serviceAdded,
               this, [this] (auto service)
@@ -64,7 +64,7 @@ class zeroconf_browser :
       });
 
       browser->startBrowse();
-      
+
     }
 
     std::vector<minuit_connection_data> mData;

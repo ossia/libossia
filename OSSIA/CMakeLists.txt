@@ -164,7 +164,10 @@ if(OSSIA_QT)
         )
 endif()
 
-target_link_libraries(ossia PRIVATE Servus)
+target_sources(ossia PRIVATE $<TARGET_OBJECTS:Servus>)
+get_target_property(SERVUS_LINK_LIBRARIES Servus INTERFACE_LINK_LIBRARIES)
+target_link_libraries(ossia PRIVATE ${SERVUS_LINK_LIBRARIES})
+target_include_directories(ossia PRIVATE ${OSSIA_3RDPARTY_FOLDER}/Servus)
 target_compile_definitions(ossia PRIVATE OSSIA_ZEROCONF)
 
 # Useful properties
