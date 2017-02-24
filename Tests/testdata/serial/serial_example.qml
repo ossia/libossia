@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import org.ossia 1.0
+import Ossia 1.0
 
 QtObject
 {
@@ -18,32 +18,28 @@ QtObject
                         {
                             name: "start",
                             type:  Ossia.Impulse,
-                            request: name,
                             access: Ossia.Set
                         },
                         {
                             name: "stop",
                             type:  Ossia.Impulse,
-                            request: name,
                             access: Ossia.Set
                         },
                         {
                             name: "back",
                             type:  Ossia.Impulse,
-                            request: name,
                             access: Ossia.Set
                         },
                         {
                             name: "gait",
                             type:  Ossia.Impulse,
-                            request: name,
                             access: Ossia.Set
                         },
 
                         {
                             name: "dx",
                             type: Ossia.Float,
-                            request: name + " $val",
+                            request: "dx $0",
                             min: -300,
                             max: 300,
                             access: Ossia.Set,
@@ -53,7 +49,7 @@ QtObject
                         {
                             name: "dy",
                             type: Ossia.Float,
-                            request: name + " $val",
+                            request: "dy $0",
                             min: -300,
                             max: 300,
                             access: Ossia.Set,
@@ -63,7 +59,7 @@ QtObject
                         {
                             name: "h",
                             type: Ossia.Float,
-                            request: name + " $val",
+                            request: "h $0",
                             min: -120,
                             max: 30,
                             access: Ossia.Set,
@@ -73,7 +69,7 @@ QtObject
                         {
                             name: "turn",
                             type: Ossia.Float,
-                            request: name + " $val",
+                            request: "turn $0",
                             min: -300,
                             max: 300,
                             access: Ossia.Set,
@@ -83,7 +79,7 @@ QtObject
                         {
                             name: "crab",
                             type: Ossia.Float,
-                            request: name + " $val",
+                            request: "crab $0",
                             min: 0,
                             max: 10,
                             access: Ossia.Set,
@@ -93,7 +89,7 @@ QtObject
                         {
                             name: "backleg",
                             type: Ossia.Float,
-                            request: name + " $val",
+                            request: "backleg $0",
                             min: 0,
                             max: 10,
                             access: Ossia.Set,
@@ -103,7 +99,7 @@ QtObject
                         {
                             name: "freq",
                             type: Ossia.Float,
-                            request: name + " $val",
+                            request: "freq $0",
                             min: 0,
                             max: 3,
                             access: Ossia.Set,
@@ -114,7 +110,7 @@ QtObject
                         {
                             name: "alt",
                             type: Ossia.Int,
-                            request: name + " $val",
+                            request: "alt $0",
                             min: 0,
                             max: 10,
                             access: Ossia.Set,
@@ -122,10 +118,6 @@ QtObject
                             repetition_filter: Ossia.Off
                         }
                     ]
-                },
-                {
-                    name: "toto",
-                    type: "float"
                 }
                 ];
     }
