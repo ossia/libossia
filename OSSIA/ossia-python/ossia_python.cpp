@@ -81,7 +81,6 @@ PYBIND11_PLUGIN(ossia_python)
 
     py::class_<python_local_device>(m, "LocalDevice")
         .def(py::init<std::string>())
-        .def("create_osc_server", &python_local_device::createOscServer)
         .def("create_oscquery_server", &python_local_device::createOscQueryServer)
         .def("add_node", &python_local_device::addNode, py::return_value_policy::reference)
         .def("find_node", &python_local_device::findNode, py::return_value_policy::reference)
