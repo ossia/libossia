@@ -133,8 +133,11 @@ private:
   std::string m_websocketHost;
   std::string m_websocketPort;
 
+  std::thread m_httpThread;
+  std::vector<http_get_request*> m_requests;
   std::vector<http_get_request*> m_cemetary;
   asio::io_service m_httpContext;
+  std::shared_ptr<asio::io_service::work> m_httpWorker;
   std::atomic_bool m_useHTTP{false};
 
 };

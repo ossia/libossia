@@ -63,10 +63,10 @@ oscquery_mirror_protocol::oscquery_mirror_protocol(std::string host, uint16_t lo
       m_websocketHost.erase(m_websocketHost.begin() + port_idx, m_websocketHost.end());
       m_websocketHost = "127.0.0.1";
     }
-    auto t = new std::thread([=] {
-      asio::io_service::work w(m_httpContext);
+
+    m_httpWorker = std::make_shared<asio::io_service::work>(m_httpContext);
+    m_httpThread = std::thread([=] {
       m_httpContext.run();
-      std::cerr << "HTTP DEAD\n";
     });
   }
   else
@@ -106,6 +106,12 @@ void oscquery_mirror_protocol::cleanup_connections()
     try { m_wsThread.join(); }
   catch(std::exception& e) { logger().error("Error when stopping WS thread: {}", e.what()); }
   catch(...) { logger().error("Error when stopping WS thread"); }
+  try {
+  m_httpWorker.reset();
+  m_httpContext.stop();
+  if(m_httpThread.joinable())
+    m_httpThread.join();
+  } catch (...) { logger().error("Error when stopping HTTP thread"); }
 }
 
 void oscquery_mirror_protocol::query_send_message(const std::string& str)
@@ -116,7 +122,7 @@ void oscquery_mirror_protocol::query_send_message(const std::string& str)
   }
   else
   {
-    new http_get_request([=] (auto req, const auto& str)
+    auto hrq = new http_get_request([=] (auto req, const auto& str)
     {
       bool res = on_WSMessage({}, str);
       if(res)
@@ -129,6 +135,7 @@ void oscquery_mirror_protocol::query_send_message(const std::string& str)
       m_cemetary.push_back(req);
     },
     m_httpContext, m_websocketHost, m_websocketPort, str);
+    m_requests.push_back(hrq);
   }
 }
 
@@ -140,7 +147,7 @@ void oscquery_mirror_protocol::query_send_message(const rapidjson::StringBuffer&
   }
   else
   {
-    new http_get_request([=] (auto req, const auto& str)
+    auto hrq = new http_get_request([=] (auto req, const auto& str)
     {
       bool res = on_WSMessage({}, str);
       if(res)
@@ -153,6 +160,8 @@ void oscquery_mirror_protocol::query_send_message(const rapidjson::StringBuffer&
       m_cemetary.push_back(req);
     },
     m_httpContext, m_websocketHost, m_websocketPort, str.GetString());
+
+    m_requests.push_back(hrq);
   }
 }
 
