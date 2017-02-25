@@ -47,11 +47,10 @@ class VPlayer(object):
 		self._play_status = play_status
 
 
-def work_in_progress(model):
+def ossia_model(Class, my_device):
 	print('--- EXPOSE DEVICE or NODE ---')
-	ModelClass = model.__class__
-	print(ModelClass.__dict__['__doc__'])
-	params_and_messages = {key: val for key, val in ModelClass.__dict__.items()if not key.startswith('__')}
+	print(Class.__dict__['__doc__'])
+	params_and_messages = {key: val for key, val in Class.__dict__.items()if not key.startswith('__')}
 	messages = {key:val for key, val in params_and_messages.items() if callable(val)}
 	params_and_messages = {key: val for key, val in params_and_messages.items() if not key in messages.keys()}
 	returns = {key: val for key, val in params_and_messages.items() if not val.fset}
@@ -60,34 +59,42 @@ def work_in_progress(model):
 	print('--- parameters ---')
 	for key, val in params.items():
 		print('-  ' + key + ' : ' + str(val))
-		my_device.add_node(str(val)).create_address(ossia.ValueType.Bool).push_value(ossia.Value(False))
+		my_param = my_device.add_node(str(key))
+		my_param = my_param.create_address(ossia.ValueType.Bool)
+		my_param.push_value(ossia.Value(False))
+		print(my_param)
 	print('--- messages ---')
 	for key, val in messages.items():
 			print('-  ' + key + ' : ' + str(val))
-			my_device.add_node(str(val))
+			#my_device.add_node(str(key)).create_address(ossia.ValueType.Message).push_value(ossia.Value(False))
 	print('--- returns ---')
 	for key, val in returns.items():
 			print('-  ' + key + ' : ' + str(val))
-			my_device.add_node(str(val))
-	return model
+			#my_device.add_node(str(key)).create_address(ossia.ValueType.Return).push_value(ossia.Value(False))
+	return Class
 
 
 # create the Video Player Device
 my_device = ossia.LocalDevice('my_video_device')
 my_device.create_oscquery_server(22222, 33333)
 
-#VPlayer = expose(VPlayer, my_device)
-
+# Expose the VPlayer Class as a OSSIA MODEL
+Vplayer = ossia_model(VPlayer, my_device)
 # create an instance of a video player
 vplayer = VPlayer()
-work_in_progress(vplayer)
+
 from time import sleep
 
 while True:
 	vplayer.play_status = True
+	print(True)
 	sleep(1)
 	vplayer.play_status = False
+	print(False)
 	sleep(1)
+
+
+
 
 
 
