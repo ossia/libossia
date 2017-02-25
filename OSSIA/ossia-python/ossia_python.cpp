@@ -142,8 +142,6 @@ PYBIND11_PLUGIN(ossia_python)
     	.def("__iter__", [](std::vector<ossia::net::node_base*> &v) {return py::make_iterator(v.begin(), v.end()); }, py::keep_alive<0, 1>()) // Keep vector alive while iterator is used
     	;
 
-    //py::bind_vector<std::vector<ossia::net::node_base*>>(m, "OssiaNodeVector");
-
     py::class_<ossia::net::node_base>(m, "Node")
         .def("get_address", &ossia::net::node_base::getAddress, py::return_value_policy::reference)
         .def("create_address", [] (ossia::net::node_base& node, int type) { return node.createAddress((ossia::val_type) type); }, py::return_value_policy::reference)
