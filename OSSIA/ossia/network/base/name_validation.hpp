@@ -47,7 +47,7 @@ inline ossia::string_view name_characters() noexcept
  * @see \ref ossia::traversal
  */
 inline ossia::string_view pattern_match_characters() noexcept
-{ return make_string_view("a-zA-Z0-9_~().-*?,{}\\[\\]"); }
+{ return make_string_view("a-zA-Z0-9_~().*?,{}\\[\\]-"); }
 
 /**
  * @brief address_parts Split an address
