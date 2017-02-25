@@ -10,7 +10,7 @@ namespace oscquery
 //! Functions to parse replies to OSCQuery json requests
 struct OSSIA_EXPORT json_parser
 {
-  static std::shared_ptr<rapidjson::Document> parse(std::string& message);
+  static std::shared_ptr<rapidjson::Document> parse(const std::string& message);
 
   static int get_port(const rapidjson::Value& obj);
 

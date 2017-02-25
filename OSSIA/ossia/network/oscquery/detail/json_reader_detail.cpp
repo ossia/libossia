@@ -452,7 +452,7 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
 
 
 
-std::shared_ptr<rapidjson::Document> json_parser::parse(std::string& message)
+std::shared_ptr<rapidjson::Document> json_parser::parse(const std::string& message)
 {
   auto document = std::make_shared<rapidjson::Document>();
   document->Parse(message);

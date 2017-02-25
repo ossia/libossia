@@ -15,16 +15,18 @@ class http_get_request
 public:
   http_get_request(
       std::function<void(http_get_request*, const std::string&)> f,
+      std::function<void(http_get_request*)> err,
       asio::io_context& ctx,
       const std::string& server,
       const std::string& port,
       const std::string& path)
     : m_resolver(ctx),
       m_socket(ctx),
-      m_fun{std::move(f)}
+      m_fun{std::move(f)},
+      m_err{std::move(err)}
   {
     std::ostream request_stream(&m_request);
-    request_stream << "GET " << path << " HTTP/1.0\r\n";
+    request_stream << "GET " << path << " HTTP/1.1\r\n";
     request_stream << "Host: " << server << "\r\n";
     request_stream << "Accept: */*\r\n";
     request_stream << "Connection: close\r\n\r\n";
@@ -33,6 +35,11 @@ public:
         std::bind(&http_get_request::handle_resolve, this,
           std::placeholders::_1,
           std::placeholders::_2));
+  }
+
+  void close()
+  {
+    m_socket.close();
   }
 
 private:
@@ -49,7 +56,8 @@ private:
     }
     else
     {
-      ossia::logger().error("HTTP Error: {}", err.message());;
+      ossia::logger().error("HTTP Error: {}", err.message());
+      m_err(this);
     }
   }
 
@@ -64,7 +72,8 @@ private:
     }
     else
     {
-      ossia::logger().error("HTTP Error: {}", err.message());;
+      ossia::logger().error("HTTP Error: {}", err.message());
+      m_err(this);
     }
   }
 
@@ -82,6 +91,7 @@ private:
     else
     {
       ossia::logger().error("HTTP Error: {}", err.message());
+      m_err(this);
     }
   }
 
@@ -116,6 +126,7 @@ private:
     else
     {
       ossia::logger().error("HTTP Error: {}", err.message());
+      m_err(this);
     }
   }
 
@@ -138,6 +149,7 @@ private:
     else
     {
       ossia::logger().error("HTTP Error: {}", err.message());
+      m_err(this);
     }
   }
 
@@ -145,24 +157,29 @@ private:
   {
     if (!err)
     {
-      // Write all of the data that has been read so far.
-      const auto& dat = m_response.data();
-      std::string str{
-            asio::buffers_begin(dat),
-            asio::buffers_begin(dat) + m_response.size()};
-      m_fun(this, std::move(str));
+      m_stream << &m_response;
+      std::string s = m_stream.str();
+      m_fun(this, s);
 
-      /*
       // Continue reading remaining data until EOF.
       asio::async_read(m_socket, m_response,
           asio::transfer_at_least(1),
           std::bind(&http_get_request::handle_read_content, this,
             std::placeholders::_1));
-            */
     }
     else if (err != asio::error::eof)
     {
       ossia::logger().error("HTTP Error: {}", err.message());
+      m_err(this);
+    }
+    else if (err == asio::error::eof)
+    {
+      // Write all of the data that has been read so far.
+      const auto& dat = m_response.data();
+      std::string str{
+            asio::buffers_begin(dat),
+            asio::buffers_end(dat)};
+      m_fun(this, str);
     }
   }
 
@@ -170,7 +187,9 @@ private:
   tcp::socket m_socket;
   asio::streambuf m_request;
   asio::streambuf m_response;
+  std::stringstream m_stream;
   std::function<void(http_get_request*, const std::string&)> m_fun;
+  std::function<void(http_get_request*)> m_err;
 };
 
 }
