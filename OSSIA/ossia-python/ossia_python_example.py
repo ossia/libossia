@@ -54,38 +54,37 @@ tuple_address.push_value(tuple_value)
 
 # attach a callback function to the boolean address
 def bool_value_callback(v):
-	print(v.get_bool()) # TODO : have an unique .get() method
+	print(v.get())
+bool_address.add_callback(bool_value_callback)
 
 # attach a callback function to the integer address
 def int_value_callback(v):
-	print(v.get_int()) # TODO : have an unique .get() method
+	print(v.get())
+int_address.add_callback(int_value_callback)
 
 # attach a callback function to the float address
 def float_value_callback(v):
-	print(v.get_float()) # TODO : have an unique .get() method
+	print(v.get())
+float_address.add_callback(float_value_callback)
 
 # attach a callback function to the char address
 def char_value_callback(v):
-	print(v.get_char()) # TODO : have an unique .get() method
+	print(v.get())
+char_address.add_callback(char_value_callback)
 
 # attach a callback function to the string address
 def string_value_callback(v):
-	print(v.get_string()) # TODO : have an unique .get() method
+	print(v.get())
+string_address.add_callback(string_value_callback)
 
 # attach a callback function to the 3 floats vector address
 def vec3f_value_callback(v):
-	print(v.get_vec3f()) # TODO : have an unique .get() method
+	print(v.get())
+vec3f_address.add_callback(vec3f_value_callback)
 
 # attach a callback function to the tuple address
 def tuple_value_callback(v):
-	print(v.get()) # TODO : have an unique .get() method
-
-bool_address.add_callback(bool_value_callback)
-int_address.add_callback(int_value_callback)
-float_address.add_callback(float_value_callback)
-char_address.add_callback(char_value_callback)
-string_address.add_callback(string_value_callback)
-vec3f_address.add_callback(vec3f_value_callback)
+	print(v.get())
 tuple_address.add_callback(tuple_value_callback)
 
 ### LOCAL DEVICE EXPLORATION
@@ -107,20 +106,25 @@ iterate_on_children(local_device.get_root_node())
 
 ### REMOTE DEVICE SETUP
 
-# declare a remote device using OSCQuery protocol
-oscquery_device = ossia.OSCQueryDevice("remoteDevice", "ws://10.0.1.83:5678", 9998)
+try:
+	# try to connect to a remote device using OSCQuery protocol
+	oscquery_device = ossia.OSCQueryDevice("remoteDevice", "ws://10.0.1.83:5678", 9998)
 
-# explore the remote device
-oscquery_device.update()
+	# explore the remote device
+	oscquery_device.update()
 
-# iterate on our device
-print("\nREMOTE DEVICE NAMESPACE\n")
-iterate_on_children(oscquery_device.get_root_node())
+	# iterate on our device
+	print("\nREMOTE DEVICE NAMESPACE\n")
+	iterate_on_children(oscquery_device.get_root_node())
+
+except:
+	print("\nfail to connect to ws://10.0.1.83:5678\n")
+
+# MAIN LOOP
 
 # wait and use i-score to change the value remotely
 while True:
 	time.sleep(1)
-	print(".")
 
 ### TODO ###
 
@@ -134,8 +138,3 @@ while True:
 #address.clipmode
 
 #print(address.__dict__)
-
-### MISC
-
-# export device namespace
-#local_device.export_namespace('/Users/reno/Desktop/toto.bush')
