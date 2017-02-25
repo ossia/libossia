@@ -76,6 +76,34 @@ bool t_view :: unregister(){
     return true;
 }
 
+
+static void view_click(t_view *x,
+    t_floatarg xpos, t_floatarg ypos, t_floatarg shift,
+    t_floatarg ctrl, t_floatarg alt){
+
+  using namespace std::chrono;
+  milliseconds ms = duration_cast< milliseconds >( system_clock::now().time_since_epoch() );
+  milliseconds diff = (ms - x->x_last_click);
+  if ( diff.count() < 200 ){
+    x->x_last_click = milliseconds(0);
+
+    int l;
+    t_device *device = (t_device*) find_parent(&x->x_obj,"ossia.device", 0, &l);
+    /*
+    if (!device || !x->x_node || obj_isQuarantined<t_remote>(x)){
+      pd_error(x, "sorry no device found, or not connected or quarantined...");
+      return;
+    }
+    */
+
+    t_canvas *root = x->x_obj.o_canvas;
+    while (root->gl_owner) root = root->gl_owner;
+    if (!find_and_display_friend(x, root))   pd_error(x,"sorry I can't find a connected friend :-(");
+  } else {
+    x->x_last_click = ms;
+  }
+}
+
 static void *view_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_view *x = (t_view *)eobj_new(view_class);
@@ -92,6 +120,8 @@ static void *view_new(t_symbol *name, int argc, t_atom *argv)
             x->x_name = gensym("untitledModel");
             pd_error(x,"You have to pass a name as the first argument");
         }
+
+        x->x_clock = clock_new(x, (t_method)obj_tick);
     }
 
     return (x);
@@ -111,6 +141,7 @@ extern "C" void setup_ossia0x2eview(void)
     if(c)
     {
         eclass_addmethod(c, (method) obj_dump<t_view>,       "dump",       A_NULL, 0);
+        eclass_addmethod(c, (method) view_click,    "click",      A_NULL,  0);
     }
 
     view_class = c;

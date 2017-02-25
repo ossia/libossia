@@ -14,6 +14,7 @@ struct obj_base {
 
     t_clock*  x_clock{};
     t_canvas* x_last_opened_canvas{};
+    std::chrono::milliseconds x_last_click;
 
     ossia::net::node_base* x_node{};
     void setValue(const ossia::value& val);

@@ -49,11 +49,15 @@ void obj_base::obj_bang(obj_base *x){
 bool find_and_display_friend(obj_base* x, t_canvas* patcher){
   t_gobj* list = patcher->gl_list;
 
-  std::string param_str = "ossia.param";
+  std::string target_str;
   std::string canvas_str = "canvas";
+  std::string xclassname = std::string(x->x_obj.o_obj.te_g.g_pd->c_name->s_name);
+  if ( xclassname == "ossia.remote" ) target_str = "ossia.param";
+  else if (xclassname == "ossia.view" ) target_str = "ossia.model";
+
   while (list && list->g_pd){
     std::string classname = list->g_pd->c_name->s_name;
-    if ( classname == param_str ) {
+    if ( classname == target_str ) {
       obj_base* p = (obj_base*) list;
       if (p->x_node == x->x_node) {
         if (x->x_last_opened_canvas) glist_noselect(x->x_last_opened_canvas);
