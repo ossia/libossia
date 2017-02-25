@@ -94,6 +94,7 @@ class websocket_server
           auto con = m_server.get_con_from_hdl(hdl);
 
           con->replace_header("Content-Type", "application/json; charset=utf-8");
+          con->replace_header("Connection", "close");
           try
           {
             rapidjson::StringBuffer base_str = h(hdl, con->get_uri()->get_resource());
