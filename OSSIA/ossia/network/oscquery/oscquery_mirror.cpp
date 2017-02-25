@@ -8,6 +8,7 @@
 #include <boost/algorithm/string/erase.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/oscquery/detail/http_client.hpp>
+#include <boost/algorithm/string.hpp>
 namespace ossia
 {
 namespace oscquery
@@ -48,30 +49,48 @@ oscquery_mirror_protocol::oscquery_mirror_protocol(std::string host, uint16_t lo
   auto port_idx = m_websocketHost.find_last_of(':');
   if(port_idx != std::string::npos)
   {
-    m_websocketPort = m_websocketHost.substr(port_idx);
+    m_websocketPort = m_websocketHost.substr(port_idx + 1);
   }
   else
   {
     m_websocketPort = "80";
   }
-  m_wsThread = std::thread([=]{
-    try {
-      m_websocketClient.connect(m_websocketHost);
-    } catch(...) {
-      // Websocket does not connect, so let's try http requests
-      m_useHTTP = true;
-    }
-  });
-  int n = 0;
-  while(!query_connected())
+  if(boost::starts_with(m_websocketHost, "http"))
   {
-    n++;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    if(n > 500)
+    m_useHTTP = true;
+    if(port_idx != std::string::npos)
     {
-      cleanup_connections();
-      throw ossia::connection_error{"oscquery_mirror_protocol::oscquery_mirror_protocol: "
-                                    "Could not connect to " + m_websocketHost};
+      m_websocketHost.erase(m_websocketHost.begin() + port_idx, m_websocketHost.end());
+      m_websocketHost = "127.0.0.1";
+    }
+
+    m_httpWorker = std::make_shared<asio::io_service::work>(m_httpContext);
+    m_httpThread = std::thread([=] {
+      m_httpContext.run();
+    });
+  }
+  else
+  {
+    m_wsThread = std::thread([=]{
+      try {
+        m_websocketClient.connect(m_websocketHost);
+      } catch(...) {
+        // Websocket does not connect, so let's try http requests
+        m_useHTTP = true;
+      }
+    });
+
+    int n = 0;
+    while(!query_connected())
+    {
+      n++;
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+      if(n > 500)
+      {
+        cleanup_connections();
+        throw ossia::connection_error{"oscquery_mirror_protocol::oscquery_mirror_protocol: "
+                                      "Could not connect to " + m_websocketHost};
+      }
     }
   }
 
@@ -87,24 +106,63 @@ void oscquery_mirror_protocol::cleanup_connections()
     try { m_wsThread.join(); }
   catch(std::exception& e) { logger().error("Error when stopping WS thread: {}", e.what()); }
   catch(...) { logger().error("Error when stopping WS thread"); }
+  try {
+  m_httpWorker.reset();
+  m_httpContext.stop();
+  if(m_httpThread.joinable())
+    m_httpThread.join();
+  } catch (...) { logger().error("Error when stopping HTTP thread"); }
 }
 
 void oscquery_mirror_protocol::query_send_message(const std::string& str)
 {
   if(!m_useHTTP)
+  {
     m_websocketClient.send_message(str);
-
-  new http_get_request([=] (auto req, const auto& str) { delete req; },
-  m_httpContext, m_websocketHost, m_websocketPort, str);
+  }
+  else
+  {
+    auto hrq = new http_get_request([=] (auto req, const auto& str)
+    {
+      bool res = on_WSMessage({}, str);
+      if(res)
+      {
+        req->close();
+        m_cemetary.push_back(req);
+      }
+    }, [=] (auto req) {
+      req->close();
+      m_cemetary.push_back(req);
+    },
+    m_httpContext, m_websocketHost, m_websocketPort, str);
+    m_requests.push_back(hrq);
+  }
 }
 
 void oscquery_mirror_protocol::query_send_message(const rapidjson::StringBuffer& str)
 {
   if(!m_useHTTP)
+  {
     m_websocketClient.send_message(str);
+  }
+  else
+  {
+    auto hrq = new http_get_request([=] (auto req, const auto& str)
+    {
+      bool res = on_WSMessage({}, str);
+      if(res)
+      {
+        req->close();
+        m_cemetary.push_back(req);
+      }
+    }, [=] (auto req) {
+      req->close();
+      m_cemetary.push_back(req);
+    },
+    m_httpContext, m_websocketHost, m_websocketPort, str.GetString());
 
-  new http_get_request([=] (auto req, const auto& str) { delete req; },
-  m_httpContext, m_websocketHost, m_websocketPort, str.GetString());
+    m_requests.push_back(hrq);
+  }
 }
 
 bool oscquery_mirror_protocol::query_connected()
@@ -347,9 +405,9 @@ std::string to_ip(std::string uri)
   return uri;
 }
 
-void oscquery_mirror_protocol::on_WSMessage(
-    oscquery_mirror_protocol::connection_handler hdl,
-    std::string& message)
+bool oscquery_mirror_protocol::on_WSMessage(
+    oscquery_mirror_protocol::connection_handler,
+    const std::string& message)
 {
 #if defined(OSSIA_BENCHMARK)
   auto t1 = std::chrono::high_resolution_clock::now();
@@ -360,7 +418,7 @@ void oscquery_mirror_protocol::on_WSMessage(
     if(data->IsNull()) {
       if(mLogger.inbound_logger)
         mLogger.inbound_logger->warn("Invalid WS message received: {}", message);
-      return;
+      return false;
     }
     if(data->IsArray())
     {
@@ -459,6 +517,7 @@ void oscquery_mirror_protocol::on_WSMessage(
   auto t2 = std::chrono::high_resolution_clock::now();
   ossia::logger().info("on_WSMessage : Time taken: {}", std::chrono::duration_cast<std::chrono::microseconds>(t2-t1).count());
 #endif
+  return true;
 }
 
 }

@@ -58,7 +58,7 @@ int main()
 
 void explore(const ossia::net::node_base& node)
 {
-  for (const auto& child : node.children())
+  for (const auto& child : node.children_copy())
   {
     if (auto addr = child->getAddress())
     {
