@@ -18,6 +18,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/ptr_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/mutex.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/automation.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/curve_value_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_abstract.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/behavior.hpp"
