@@ -143,6 +143,7 @@ PYBIND11_PLUGIN(ossia_python)
     	;
 
     py::class_<ossia::net::node_base>(m, "Node")
+    	.def("add_node", [] (ossia::net::node_base& node, const std::string& adrs) -> ossia::net::node_base& { return ossia::net::find_or_create_node(node, adrs); }, py::return_value_policy::reference)
         .def("get_address", &ossia::net::node_base::getAddress, py::return_value_policy::reference)
         .def("create_address", [] (ossia::net::node_base& node, int type) { return node.createAddress((ossia::val_type) type); }, py::return_value_policy::reference)
         .def("children", &ossia::net::node_base::children_copy)

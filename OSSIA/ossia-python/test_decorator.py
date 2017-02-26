@@ -32,10 +32,16 @@ def ossia_address_function(original_function):
     return new_function
 
 # ossia decorator for class
-def ossia_model(Class):
-	class NewClass(object):
-		def __init__(self,*args,**kwargs):
-			self.oInstance = Class(*args,**kwargs)
+def ossia_model(ClassToDecorate):
+    print("ossia_model(ClassToDecorate)")
+
+    class DecoratedClass(object):
+        print("DecoratedClass(object))")
+
+        def __init__(self,*args,**kwargs):
+            print("DecoratedClass.__init__(self,*args,**kwargs)")
+
+            self.oInstance = ClassToDecorate(*args,**kwargs)
 
             # TODO HERE ? create a node for the instance ?
 
@@ -44,55 +50,70 @@ def ossia_model(Class):
 
             # TODO HERE ? create a node for each function ?
             # TODO HERE ? look for functions to decorate them ?
+        """
         def __getattribute__(self,s):
-            """
-            this is called whenever any attribute of a NewClass object is accessed. This function first tries to 
-            get the attribute off NewClass. If it fails then it tries to fetch the attribute from self.oInstance (an
-            instance of the decorated class). If it manages to fetch the attribute from self.oInstance, and 
-            the attribute is an instance method then the appropriate decorators (ossia_address_getter and/or ossia_address_setter) are applied.
-            """
+            print("DecoratedClass.__getattribute__(self,s)")
+            
+            # this is called whenever any attribute of a DecoratedClass object is accessed. This function first tries to 
+            # get the attribute off DecoratedClass. If it fails then it tries to fetch the attribute from self.oInstance (an
+            # instance of the decorated class). If it manages to fetch the attribute from self.oInstance, and 
+            # the attribute is an instance method then the appropriate decorators (ossia_address_getter and/or ossia_address_setter) are applied.
+            
             try: 
-                x = super(NewClass,self).__getattribute__(s)
+                x = super(DecoratedClass,self).__getattribute__(s)
             except AttributeError:      
                 pass
             else:
                 return x
+
             x = self.oInstance.__getattribute__(s)
+
             if type(x) == type(self.__init__): # it is an instance method
                 return ossia_address_setter(x) # this is equivalent of just decorating the method with ossia_address_setter
             else:
                 return x
-	    return NewClass
+        """
+    return DecoratedClass
 
 ### WHAT COULD BE IN ANY PYTHON LIBRARY
 
 class Button(object):
-	"""
+    print("Button(object))")
+    """
 	Testing ossia python
-	"""
-	def __init__(self, width=30, height=10):
-		super(Button, self).__init__()
-		self._width = width
-		self.height = height
+    """
+    def __init__(self, width=30, height=10):
+        print("Button.__init__(self,*args,**kwargs)")
 
-	@property
-	def width(self):
-		return self._width
-	@width.setter
-	def width(self, width):
-		self._width = width
+        #super(Button, self).__init__()
+        self._width = width
+        self.height = height
 
-	def push(self):
-		print("pushed")
+    @property
+    def width(self):
+        print("Button.width(self)@property")
+        return self._width
+    @width.setter
+    def width(self, width):
+        print("Button.width(self)@width.setter")
+        self._width = width
 
-	@property
-	def area(self):
-		return self.width * self.height
+    def push(self):
+        print("Button.push(self)")
+
+    @property
+    def area(self):
+        print("Button.area(self)")
+        return self.width * self.height
 
 ### WHAT TO CODE IN YOUR PROGRAM FILE
 
 # decorate a class with ossia_model function
+print("\n*** Button class decoration process:\n")
 Button = ossia_model(Button)
+
+print("\n*** Decorated Button instanciation process:\n")
 my_button = Button()
 
-
+print("\n*** Explore Decorated Button instance:\n")
+print(type(my_button.width))
