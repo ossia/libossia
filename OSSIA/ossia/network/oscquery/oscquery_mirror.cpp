@@ -124,7 +124,7 @@ void oscquery_mirror_protocol::query_send_message(const std::string& str)
   {
     auto hrq = new http_get_request([=] (auto req, const auto& str)
     {
-      bool res = on_WSMessage({}, str);
+      bool res = this->on_WSMessage({}, str);
       if(res)
       {
         req->close();
@@ -149,7 +149,7 @@ void oscquery_mirror_protocol::query_send_message(const rapidjson::StringBuffer&
   {
     auto hrq = new http_get_request([=] (auto req, const auto& str)
     {
-      bool res = on_WSMessage({}, str);
+      bool res = this->on_WSMessage({}, str);
       if(res)
       {
         req->close();
