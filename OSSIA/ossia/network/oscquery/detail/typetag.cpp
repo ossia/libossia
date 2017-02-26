@@ -54,6 +54,9 @@ struct osc_type_visitor
 
 static std::string get_osc_typetag_impl(const net::address_base& addr)
 {
+  if(addr->getUnit() == ossia::rgba_u{})
+    return "r";
+
   std::string s;
   auto val = addr.cloneValue();
   val.apply(osc_type_visitor{s});
