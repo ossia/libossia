@@ -11,6 +11,7 @@ namespace ossia { namespace pd {
 static t_eclass *device_class;
 
 static void device_register(t_device* x){
+    x->unregister_children();
     x->x_node->clearChildren();
     x->register_children();
 }
@@ -24,8 +25,6 @@ static void *device_new(t_symbol *name, int argc, t_atom *argv)
     if(x && d)
     {
         x->x_name = gensym("Pd");
-        // NOTE Don't know why this is not set by the CICM default setter
-
         x->x_dumpout = outlet_new((t_object*)x,gensym("dumpout"));
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
@@ -72,106 +71,59 @@ static void device_dump(t_device *x){
 
 void t_device :: register_children(){
 
-    // first register parameters
-    std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
-    std::sort(params.begin(), params.end());
-    for (auto v : params){
-        t_param* param = (t_param*) v.x;
-        param->register_node(this->x_node);
+    std::vector<obj_hierachy> node = find_child_to_register(x_obj.o_canvas->gl_list, "ossia.model", 0);
+    for (auto v : node){
+        if(v.classname == "ossia.model"){
+            t_model* model = (t_model*) v.x;
+            model->register_node(x_node);
+        } else if(v.classname == "ossia.param"){
+            t_param* param = (t_param*) v.x;
+            param->register_node(x_node);
+        }
     }
 
-    // then register model, this might register some parameters again
-    std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 0);
-    for (auto v : models){
-        t_model* model = (t_model*) v.x;
-        model->register_node(this->x_node);
-    }
-
-    // then register remote
-    std::vector<obj_hierachy> remotes = find_child(x_obj.o_canvas->gl_list, osym_remote, 0);
-    std::sort(remotes.begin(), remotes.end());
-    for (auto v : remotes){
-        t_remote* remote = (t_remote*) v.x;
-        remote->register_node(this->x_node);
-    }
-
-    std::vector<obj_hierachy> views = find_child(x_obj.o_canvas->gl_list, osym_view, 0);
-    std::sort(views.begin(), views.end());
-    for (auto v : views){
-        t_view* view = (t_view*) v.x;
-        view->register_node(this->x_node);
+    std::vector<obj_hierachy> viewnode = find_child_to_register(x_obj.o_canvas->gl_list, "ossia.view", 0);
+    for (auto v : viewnode){
+        if(v.classname == "ossia.view"){
+            t_view* view = (t_view*) v.x;
+            view->register_node(x_node);
+        } else if(v.classname == "ossia.remote"){
+            t_remote* remote = (t_remote*) v.x;
+            remote->register_node(x_node);
+        }
     }
 }
 
 void t_device :: unregister_children(){
-    // unregister in the reverse order to unregister parameter and remote before model and view
-    // now they are connected to aboutToBeDeleted signal and thus no need to unregister
-    /*
-    std::vector<obj_hierachy> remotes = find_child(x_obj.o_canvas->gl_list, osym_remote, 0);
-    std::sort(remotes.begin(), remotes.end());
-    for (auto v : remotes){
-        t_remote* remote = (t_remote*) v.x;
-        remote->unregister();
+    std::vector<obj_hierachy> node = find_child_to_register(x_obj.o_canvas->gl_list, "ossia.model", 0);
+    for (auto v : node){
+        if(v.classname == "ossia.model"){
+            t_model* model = (t_model*) v.x;
+            model->unregister();
+        } else if(v.classname == "ossia.param"){
+            t_param* param = (t_param*) v.x;
+            param->unregister();
+        }
     }
 
-    std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 0);
-    std::sort(models.begin(), models.end());
-    for (auto v : models){
-        t_model* model = (t_model*) v.x;
-        model->unregister();
-    }
-
-    std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
-    std::sort(params.begin(), params.end());
-    for (auto v : params){
-        t_param* param = (t_param*) v.x;
-        param->unregister();
-    }
-
-    std::vector<obj_hierachy> views = find_child(x_obj.o_canvas->gl_list, osym_view, 0);
-    std::sort(views.begin(), views.end());
-    for (auto v : views){
-        t_view* view = (t_view*) v.x;
-        view->unregister();
-    }
-    */
-}
-
-/*
-void t_device :: addressCreationHandler(const ossia::net::address_base& n){
-    for (auto model : t_model::quarantine()){
-        obj_register<t_model>(static_cast<t_model*>(model));
-    }
-
-    for (auto param : t_param::quarantine()){
-        obj_register<t_param>(static_cast<t_param*>(param));
-    }
-
-    for (auto view : t_view::quarantine()){
-        obj_register<t_view>(static_cast<t_view*>(view));
-    }
-
-    for (auto remote : t_remote::quarantine()){
-        obj_register<t_remote>(static_cast<t_remote*>(remote));
+    std::vector<obj_hierachy> viewnode = find_child_to_register(x_obj.o_canvas->gl_list, "ossia.view", 0);
+    for (auto v : viewnode){
+        if(v.classname == "ossia.view"){
+            t_view* view = (t_view*) v.x;
+            view->unregister();
+        } else if(v.classname == "ossia.remote"){
+            t_remote* remote = (t_remote*) v.x;
+            remote->unregister();
+        }
     }
 }
-*/
-
-/*
-// FIXME is this really necessary ?
-void t_device :: nodeCreationHandler(const ossia::net::node_base& n){
-    for (auto view : t_view::quarantine()){
-        obj_register<t_view>(static_cast<t_view*>(view));
-    }
-}
-*/
 
 static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
 
     if (argc && argv->a_type == A_SYMBOL){
         auto& proto = static_cast<ossia::net::local_protocol&>(x->x_device->getProtocol());
-        t_symbol* protocol = argv->a_w.w_symbol;
-        if (protocol == gensym("Minuit")){
+        std::string protocol = argv->a_w.w_symbol->s_name;
+        if (protocol == "Minuit"){
             argc--;
             argv++;
             if ( argc == 3
@@ -192,7 +144,7 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
             }
             logpost(x,3,"New 'Minuit' protocol connected to %s on port %u and listening on port %u",  x->x_settings.minuit.remoteip.c_str(), x->x_settings.minuit.remoteport, x->x_settings.minuit.localport);
         }
-        else if (protocol == gensym("oscquery")){
+        else if (protocol == "oscquery"){
             argc--;
             argv++;
             if ( argc == 2
@@ -210,7 +162,7 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
                 return;
             }
             logpost(x,3,"New 'oscquery' protocol with OSC port %u and WS port %u, listening on port %u", x->x_settings.oscquery.oscport, x->x_settings.oscquery.wsport);
-        } else if (protocol == gensym("osc")){
+        } else if (protocol == "osc"){
             argc--;
             argv++;
             if ( argc == 3
@@ -231,7 +183,7 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
             }
             logpost(x,3,"New 'OSC' protocol connect to %s on port %u and listening on port %u",  x->x_settings.osc.remoteip.c_str(), x->x_settings.osc.remoteport, x->x_settings.osc.localport);
         } else {
-            pd_error((t_object*)x, "Unknown protocol: %s", protocol->s_name);
+            pd_error((t_object*)x, "Unknown protocol: %s", protocol.c_str());
         }
     }
 }

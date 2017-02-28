@@ -62,7 +62,7 @@ template<typename T> bool obj_register(T *x)
     if (x->x_node) return true; // already registered
 
     int l;
-    t_device *device = (t_device*) find_parent(&x->x_obj,osym_device, 0, &l);
+    t_device *device = (t_device*) find_parent(&x->x_obj,"ossia.device", 0, &l);
 
     // first try to locate a ossia.device in the parent hierarchy...
     if (!device) {
@@ -74,11 +74,11 @@ template<typename T> bool obj_register(T *x)
     int view_level=0, model_level=0;
 
     // then try to locate a view or a parameter when x is ossia.view or ossia.remote
-    model = find_parent_alive<t_model>(&x->x_obj,osym_model, 0, &model_level);
+    model = find_parent_alive<t_model>(&x->x_obj,"ossia.model", 0, &model_level);
     if (std::is_same<T,t_view>::value || std::is_same<T,t_remote>::value) {
         // param = (t_param*) find_parent(&x->x_obj, osym_param, 0, &param_level);
         // TODO : search param and test level agains view/model level
-        view = find_parent_alive<t_view>(&x->x_obj,osym_view, 0, &view_level);
+        view = find_parent_alive<t_view>(&x->x_obj,"ossia.view", 0, &view_level);
     }
 
     ossia::net::node_base*  node = nullptr;

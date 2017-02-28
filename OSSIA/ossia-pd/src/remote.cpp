@@ -20,7 +20,7 @@ bool t_remote :: register_node(ossia::net::node_base* node){
 bool t_remote :: do_registration(ossia::net::node_base* node){
 
     if (x_node && x_node->getParent() == node ) {
-        return true; // already register to this node;
+        return true; // already registered to this node;
     }
 
     if(node){
@@ -69,7 +69,7 @@ static void remote_click(t_remote *x,
     x->x_last_click = milliseconds(0);
 
     int l;
-    t_device *device = (t_device*) find_parent(&x->x_obj,osym_device, 0, &l);
+    t_device *device = (t_device*) find_parent(&x->x_obj,"ossia.device", 0, &l);
     /*
     if (!device || !x->x_node || obj_isQuarantined<t_remote>(x)){
       pd_error(x, "sorry no device found, or not connected or quarantined...");
@@ -98,7 +98,7 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
-            if (x->x_name != osym_empty && x->x_name->s_name[0] == '/') x->x_absolute = true;
+            if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/') x->x_absolute = true;
 
         } else {
             error("You have to pass a name as the first argument");

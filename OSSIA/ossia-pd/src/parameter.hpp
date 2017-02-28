@@ -30,9 +30,10 @@ struct t_param : obj_base
 
     void isDeleted(const ossia::net::node_base& n)
     {
+        x_node->aboutToBeDeleted.disconnect<t_param, &t_param::isDeleted>(this);
         x_node = nullptr;
         obj_quarantining<t_param>(this);
-        // obj_register<t_param>(this);
+        obj_register<t_param>(this);
     }
 };
 

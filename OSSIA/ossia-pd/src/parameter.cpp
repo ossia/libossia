@@ -29,71 +29,70 @@ bool t_param :: do_registration(ossia::net::node_base* node){
 
     unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
 
-    if(node){
-        x_node = node->findChild(x_name->s_name);
-        if(x_node){
-            // pd_error(this, "a parameter with adress '%s' already exists.", x_name->s_name);
-            x_node = nullptr;
-            return false;
-        }
+    if(!node) return false;
 
-        x_node = node->createChild(x_name->s_name);
-        x_node->aboutToBeDeleted.connect<t_param, &t_param::isDeleted>(this);
-        ossia::net::address_base* localAddress{};
-        if(x_type == gensym("symbol")){
-            localAddress = x_node->createAddress(ossia::val_type::STRING);
-        } else {
-            localAddress = x_node->createAddress(ossia::val_type::FLOAT);
-            localAddress->setDomain(ossia::make_domain(x_range[0],x_range[1]));
-            // FIXME : we need case insensitive comparison here
-            if (x_bounding_mode == gensym("FREE"))
-              localAddress->setBoundingMode(ossia::bounding_mode::FREE);
-            else if (x_bounding_mode == gensym("CLIP"))
-              localAddress->setBoundingMode(ossia::bounding_mode::CLIP);
-            else if (x_bounding_mode == gensym("WRAP"))
-              localAddress->setBoundingMode(ossia::bounding_mode::WRAP);
-            else if (x_bounding_mode == gensym("FOLD"))
-              localAddress->setBoundingMode(ossia::bounding_mode::FOLD);
-            else if (x_bounding_mode == gensym("LOW"))
-              localAddress->setBoundingMode(ossia::bounding_mode::LOW);
-            else if (x_bounding_mode == gensym("HIGH"))
-              localAddress->setBoundingMode(ossia::bounding_mode::HIGH);
-
-            if(x_access_mode == gensym("BI") || x_access_mode == gensym("RW"))
-              localAddress->setAccessMode(ossia::access_mode::BI);
-            else if(x_access_mode == gensym("GET") || x_access_mode == gensym("R"))
-                localAddress->setAccessMode(ossia::access_mode::GET);
-            else if(x_access_mode == gensym("SET") || x_access_mode == gensym("W"))
-                localAddress->setAccessMode(ossia::access_mode::SET);
-
-            localAddress->setRepetitionFilter(x_repetition_filter? ossia::repetition_filter::ON : ossia::repetition_filter::OFF);
-
-            ossia::unit_t unit = ossia::parse_pretty_unit(x_unit->s_name);
-            localAddress->setUnit(unit);
-
-            ossia::net::set_description(*x_node, x_description->s_name);
-            ossia::net::set_tags(*x_node, parse_tags_symbol(x_tags));
-
-        }
-        localAddress->add_callback([=](const ossia::value& v){
-            setValue(v);
-        });
-        if (x_default.a_type != A_NULL){
-            obj_base::obj_push(this,gensym("set"),1,&x_default);
-        }
-    } else {
+    if(node->findChild(x_name->s_name)){
+        // pd_error(this, "a parameter with adress '%s' already exists.", x_name->s_name);
+        x_node = nullptr;
         return false;
     }
 
+    x_node = node->createChild(x_name->s_name);
+    x_node->aboutToBeDeleted.connect<t_param, &t_param::isDeleted>(this);
+    ossia::net::address_base* localAddress{};
+    if(std::string(x_type->s_name) == "symbol"){
+        localAddress = x_node->createAddress(ossia::val_type::STRING);
+    } else {
+        localAddress = x_node->createAddress(ossia::val_type::FLOAT);
+        localAddress->setDomain(ossia::make_domain(x_range[0],x_range[1]));
+        // FIXME : we need case insensitive comparison here
+        std::string bounding_mode = x_bounding_mode->s_name;
+        if (bounding_mode == "FREE")
+            localAddress->setBoundingMode(ossia::bounding_mode::FREE);
+        else if (bounding_mode == "CLIP")
+            localAddress->setBoundingMode(ossia::bounding_mode::CLIP);
+        else if (bounding_mode == "WRAP")
+            localAddress->setBoundingMode(ossia::bounding_mode::WRAP);
+        else if (bounding_mode == "FOLD")
+            localAddress->setBoundingMode(ossia::bounding_mode::FOLD);
+        else if (bounding_mode == "LOW")
+            localAddress->setBoundingMode(ossia::bounding_mode::LOW);
+        else if (bounding_mode == "HIGH")
+            localAddress->setBoundingMode(ossia::bounding_mode::HIGH);
+
+        std::string access_mode = x_access_mode->s_name;
+        if(access_mode == "BI" || access_mode == "RW")
+            localAddress->setAccessMode(ossia::access_mode::BI);
+        else if(access_mode == "GET" || access_mode == "R")
+            localAddress->setAccessMode(ossia::access_mode::GET);
+        else if(access_mode == "SET" || access_mode == "W")
+            localAddress->setAccessMode(ossia::access_mode::SET);
+
+        localAddress->setRepetitionFilter(x_repetition_filter? ossia::repetition_filter::ON : ossia::repetition_filter::OFF);
+
+        ossia::unit_t unit = ossia::parse_pretty_unit(x_unit->s_name);
+        localAddress->setUnit(unit);
+
+        ossia::net::set_description(*x_node, x_description->s_name);
+        ossia::net::set_tags(*x_node, parse_tags_symbol(x_tags));
+
+    }
+    localAddress->add_callback([=](const ossia::value& v){
+        setValue(v);
+    });
+    if (x_default.a_type != A_NULL){
+        obj_base::obj_push(this,gensym("set"),1,&x_default);
+    }
     return true;
 }
 
 bool t_param :: unregister(){
     if (x_node) {
-        x_node->getParent()->removeChild(x_name->s_name);
+        x_node->aboutToBeDeleted.disconnect<t_param, &t_param::isDeleted>(this); // FIXME not needed because this fn is called in isDeleted callback
+        if (x_node->getParent()) x_node->getParent()->removeChild(x_name->s_name);
         x_node = nullptr;
-        obj_quarantining<t_param>(this);
     }
+    obj_quarantining<t_param>(this);
     return true;
 }
 
@@ -123,7 +122,7 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
-            if (x->x_name != osym_empty && x->x_name->s_name[0] == '/') x->x_absolute = true;
+            if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/') x->x_absolute = true;
 
         } else {
             pd_error(x,"You have to pass a name as the first argument");

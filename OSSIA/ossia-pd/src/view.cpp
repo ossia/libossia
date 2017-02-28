@@ -17,18 +17,29 @@ bool t_view :: register_node(ossia::net::node_base*  node){
         // TODO review search order => we should search for remote in the same level and stop if we found a view at the same level
         // TODO the same apply to parameter/remote
         // FIXME nested view is not registered properly
-        std::vector<obj_hierachy> remotes = find_child(x_obj.o_canvas->gl_list, osym_remote, 0);
-        for (auto v : remotes){
-            t_remote* remote = (t_remote*) v.x;
-            remote->register_node(x_node);
+        std::vector<obj_hierachy> viewnode = find_child_to_register(x_obj.o_canvas->gl_list, "ossia.view", 0);
+        for (auto v : viewnode){
+            if(v.classname == "ossia.view"){
+                t_view* view = (t_view*) v.x;
+                if (view == this) {
+                    // not registering itself
+                    continue;
+                }
+                view->register_node(x_node);
+            } else if(v.classname == "ossia.remote"){
+                t_remote* remote = (t_remote*) v.x;
+                remote->register_node(x_node);
+            }
         }
 
+        /*
         std::vector<obj_hierachy> views = find_child(x_obj.o_canvas->gl_list, osym_view, 1);
         std::sort(views.begin(), views.end());
         for (auto v : views){
             t_view* view = (t_view*) v.x;
             view->register_node(x_node);
         }
+        */
 
     } else obj_quarantining<t_view>(this);
 
@@ -54,22 +65,37 @@ bool t_view :: do_registration(ossia::net::node_base*  node){
 bool t_view :: unregister(){
     if(!x_node) return true; // not registered
 
+    ossia::net::node_base* parent = x_node->getParent();
+    if (parent){
+        std::vector<obj_hierachy> viewnode = find_child_to_register(x_obj.o_canvas->gl_list, "ossia.view", 0);
+        for (auto v : viewnode){
+            if(v.classname == "ossia.view"){
+                t_view* view = (t_view*) v.x;
+                if (view == this) continue;
+                view->register_node(parent);
+            } else if(v.classname == "ossia.remote"){
+                t_remote* remote = (t_remote*) v.x;
+                remote->register_node(parent);
+            }
+        }
+    }
+
+    /*
     // when removing a view, we should re-register all its children to parent node
     std::vector<obj_hierachy> remotes = find_child(x_obj.o_canvas->gl_list, osym_remote, 0);
-    std::sort(remotes.begin(), remotes.end());
     for (auto v : remotes){
         t_remote* remote = (t_remote*) v.x;
-        remote->unregister();
+        // remote->unregister();
         if (!remote->x_node) remote->register_node(x_node->getParent());
         else if(remote->x_node->getParent() == x_node) remote->register_node(x_node->getParent());
     }
 
     std::vector<obj_hierachy> views = find_child(x_obj.o_canvas->gl_list, osym_view, 0);
-    std::sort(views.begin(), views.end());
     for (auto v : views){
         t_view* view = (t_view*) v.x;
         if (view != this && (!view->x_node || view->x_node->getParent() == x_node)) view->register_node(x_node->getParent());
     }
+    */
     x_node = nullptr;
     obj_quarantining<t_view>(this);
 
@@ -114,7 +140,7 @@ static void *view_new(t_symbol *name, int argc, t_atom *argv)
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
-            if (x->x_name != osym_empty && x->x_name->s_name[0] == '/') x->x_absolute = true;
+            if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/') x->x_absolute = true;
             obj_register<t_view>(x);
         } else {
             x->x_name = gensym("untitledModel");
