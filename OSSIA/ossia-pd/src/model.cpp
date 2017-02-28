@@ -13,7 +13,7 @@ bool t_model :: register_node(ossia::net::node_base*  node){
     bool res = do_registration(node);
     if (res){
         obj_dequarantining<t_model>(this);
-        std::vector<obj_hierachy> node = find_child_to_register(x_obj.o_canvas->gl_list, "ossia.model", 0);
+        std::vector<obj_hierachy> node = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model", 0);
         for (auto v : node){
             if(v.classname == "ossia.model"){
                 t_model* model = (t_model*) v.x;
@@ -60,7 +60,7 @@ bool t_model :: do_registration(ossia::net::node_base*  node){
 
     if (node->findChild(x_name->s_name)) {
         bool abord=true;
-        std::vector<obj_hierachy> subnode = find_child_to_register(x_obj.o_canvas->gl_list, "ossia.model", 0);
+        std::vector<obj_hierachy> subnode = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model", 0);
         for (auto v : subnode){
             if(v.classname == "ossia.param"){
                 t_param* param = (t_param*) v.x;
@@ -93,7 +93,7 @@ bool t_model :: unregister(){
     // TODO refactor
     if(!x_node) return true; // not registered
 
-    std::vector<obj_hierachy> node = find_child_to_register(x_obj.o_canvas->gl_list, "ossia.model", 0);
+    std::vector<obj_hierachy> node = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model", 0);
     for (auto v : node){
         if(v.classname == "ossia.model"){
             t_model* model = (t_model*) v.x;

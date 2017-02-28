@@ -3,7 +3,7 @@
 
 namespace ossia { namespace pd {
 
-struct obj_base {
+struct t_obj_base {
     t_eobj      x_obj;
     t_symbol*   x_name{};
     t_outlet*   x_setout{};
@@ -18,11 +18,11 @@ struct obj_base {
 
     ossia::net::node_base* x_node{};
     void setValue(const ossia::value& val);
-    static void obj_push(obj_base* x, t_symbol*, int argc, t_atom* argv);
-    static void obj_bang(obj_base* x);
+    static void obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv);
+    static void obj_bang(t_obj_base* x);
 };
 
-bool find_and_display_friend(obj_base* x, t_canvas* patcher);
-void obj_tick(obj_base* x);
+bool find_and_display_friend(t_obj_base* x, t_canvas* patcher);
+void obj_tick(t_obj_base* x);
 
 } } // namespace

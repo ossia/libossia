@@ -11,7 +11,7 @@ static void remote_free(t_remote* x);
 bool t_remote :: register_node(ossia::net::node_base* node){
     bool res = do_registration(node);
     if(res){
-        obj_quarantining<t_remote>(this);
+        obj_dequarantining<t_remote>(this);
     } else obj_quarantining<t_remote>(this);
 
     return res;
@@ -128,8 +128,8 @@ extern "C" void setup_ossia0x2eremote(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) obj_base::obj_push, "anything",   A_GIMME, 0);
-        eclass_addmethod(c, (method) obj_base::obj_bang, "bang",       A_NULL,  0);
+        eclass_addmethod(c, (method) t_obj_base::obj_push, "anything",   A_GIMME, 0);
+        eclass_addmethod(c, (method) t_obj_base::obj_bang, "bang",       A_NULL,  0);
         eclass_addmethod(c, (method) obj_dump<t_remote>, "dump",       A_NULL,  0);
         eclass_addmethod(c, (method) remote_click,    "click",      A_NULL,  0);
     }

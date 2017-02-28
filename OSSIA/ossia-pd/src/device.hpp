@@ -45,12 +45,12 @@ struct Protocol_Settings {
     }
 };
 
-struct t_device : obj_base
+struct t_device : t_obj_base
 {
     ossia::net::generic_device* x_device{};
     ossia::net::local_protocol x_local_proto;
 
-    void register_children();
+    static void register_children(t_device* x);
     void unregister_children();
 
     Protocol_Settings x_settings;

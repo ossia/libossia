@@ -10,12 +10,6 @@ namespace ossia { namespace pd {
 
 static t_eclass *device_class;
 
-static void device_register(t_device* x){
-    x->unregister_children();
-    x->x_node->clearChildren();
-    x->register_children();
-}
-
 static void *device_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_device *x = (t_device *)eobj_new(device_class);
@@ -69,33 +63,33 @@ static void device_dump(t_device *x){
     dump_child(x, x->x_device->getRootNode());
 }
 
-void t_device :: register_children(){
+void t_device :: register_children(t_device* x){
 
-    std::vector<obj_hierachy> node = find_child_to_register(x_obj.o_canvas->gl_list, "ossia.model", 0);
-    for (auto v : node){
+    std::vector<obj_hierachy> modelnodes = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.model", 0);
+    for (auto v : modelnodes){
         if(v.classname == "ossia.model"){
             t_model* model = (t_model*) v.x;
-            model->register_node(x_node);
+            model->register_node(x->x_node);
         } else if(v.classname == "ossia.param"){
             t_param* param = (t_param*) v.x;
-            param->register_node(x_node);
+            param->register_node(x->x_node);
         }
     }
 
-    std::vector<obj_hierachy> viewnode = find_child_to_register(x_obj.o_canvas->gl_list, "ossia.view", 0);
-    for (auto v : viewnode){
+    std::vector<obj_hierachy> viewnodes = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view", 0);
+    for (auto v : viewnodes){
         if(v.classname == "ossia.view"){
             t_view* view = (t_view*) v.x;
-            view->register_node(x_node);
+            view->register_node(x->x_node);
         } else if(v.classname == "ossia.remote"){
             t_remote* remote = (t_remote*) v.x;
-            remote->register_node(x_node);
+            remote->register_node(x->x_node);
         }
     }
 }
 
 void t_device :: unregister_children(){
-    std::vector<obj_hierachy> node = find_child_to_register(x_obj.o_canvas->gl_list, "ossia.model", 0);
+    std::vector<obj_hierachy> node = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model", 0);
     for (auto v : node){
         if(v.classname == "ossia.model"){
             t_model* model = (t_model*) v.x;
@@ -106,7 +100,7 @@ void t_device :: unregister_children(){
         }
     }
 
-    std::vector<obj_hierachy> viewnode = find_child_to_register(x_obj.o_canvas->gl_list, "ossia.view", 0);
+    std::vector<obj_hierachy> viewnode = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view", 0);
     for (auto v : viewnode){
         if(v.classname == "ossia.view"){
             t_view* view = (t_view*) v.x;
@@ -194,8 +188,8 @@ extern "C" void setup_ossia0x2edevice(void)
 
     if(c)
     {
-        eclass_addmethod(c, (method) device_register, "register", A_NULL, 0);
-        eclass_addmethod(c, (method) device_register, "loadbang", A_NULL, 0);
+        eclass_addmethod(c, (method) t_device::register_children, "register", A_NULL, 0);
+        eclass_addmethod(c, (method) t_device::register_children, "loadbang", A_NULL, 0);
         eclass_addmethod(c, (method) device_dump, "dump", A_NULL, 0);
         eclass_addmethod(c, (method) device_expose, "expose", A_GIMME, 0);
         eclass_addmethod(c, (method) Protocol_Settings::print_protocol_help, "help", A_NULL, 0);

@@ -14,7 +14,7 @@ extern "C" void setup_ossia0x2eparam(void);
 extern "C" void setup_ossia0x2eremote(void);
 extern "C" void setup_ossia0x2eview(void);
 
-struct obj_base;
+struct t_obj_base;
 
 struct value2atom
 {
@@ -246,7 +246,7 @@ struct value_visitor
  */
 class obj_hierachy{
 public:
-    obj_base* x;
+    t_obj_base* x;
     int hierarchy;
     std::string classname;
     friend bool operator<(obj_hierachy a, obj_hierachy b){
@@ -313,7 +313,7 @@ static T* find_parent_alive(t_eobj* x, std::string classname, int start_level, i
  * @param starting_level : 0 to start searching in current canvas, -1 to start searching from the parent canvas, 1 to start on children canvas
  * @return std::vector<t_pd*> containing pointer to t_pd struct of the corresponding classname
  */
-static std::vector<obj_hierachy> find_child_to_register(t_gobj* list, std::string classname, int start_level = 0){
+static std::vector<obj_hierachy> find_child_to_register(t_obj_base* x, t_gobj* list, std::string classname, int start_level = 0){
     std::string subclassname = classname == "ossia.model" ? "ossia.param" : "ossia.remote";
     int level = start_level;
     while (level < 0){ // then look for parent canvas
@@ -337,32 +337,20 @@ static std::vector<obj_hierachy> find_child_to_register(t_gobj* list, std::strin
             if ( start_level ==  0){
                 obj_hierachy oh;
                 oh.hierarchy = 0;
-                oh.x = (obj_base*) &list->g_pd;
+                oh.x = (t_obj_base*) &list->g_pd;
                 oh.classname = classname;
-                found.push_back(oh);
-                model_flag = true;
+                if ( x != oh.x ){
+                    found.push_back(oh);
+                    model_flag = true;
+                }
             }
         }
         list=list->g_next;
     }
 
-    if(!model_flag){ // 2: if there is no ossia.model in the current patch, try to find ossia.param
-        list = start_list;
-        while (list && list->g_pd){
-            std::string current = list->g_pd->c_name->s_name;
-            if ( current == subclassname ) {
-                if ( start_level ==  0){
-                    obj_hierachy oh;
-                    oh.hierarchy = 0;
-                    oh.x = (obj_base*) &list->g_pd;
-                    oh.classname = subclassname;
-                    found.push_back(oh);
-                }
-            }
-            list=list->g_next;
-        }
+    // 2: if there is no ossia.model in the current patch, look into the subpatches
 
-        // 3: then iterate subpatcher object to search for model, param and subpatch
+    if(!model_flag){
         list = start_list;
         while (list && list->g_pd){
             std::string current = list->g_pd->c_name->s_name;
@@ -370,7 +358,7 @@ static std::vector<obj_hierachy> find_child_to_register(t_gobj* list, std::strin
                 t_canvas* canvas = (t_canvas*) &list->g_pd;
                 if(!canvas_istable(canvas)){
                     t_gobj* _list = canvas->gl_list;
-                    std::vector<obj_hierachy> found_tmp = find_child_to_register(_list, classname, next_level);
+                    std::vector<obj_hierachy> found_tmp = find_child_to_register(x, _list, classname, next_level);
                     for (auto obj : found_tmp){
                         obj.hierarchy++; // increase hierarchy of objects found in a subpatcher
                         if (obj.hierarchy >= level) found.push_back(obj);
@@ -379,6 +367,24 @@ static std::vector<obj_hierachy> find_child_to_register(t_gobj* list, std::strin
             }
             list=list->g_next;
         }
+    }
+
+    // 3: finally look for ossia.param in the same pather
+    list = start_list;
+    while (list && list->g_pd){
+        std::string current = list->g_pd->c_name->s_name;
+        if ( current == subclassname ) {
+            if ( start_level ==  0){
+                obj_hierachy oh;
+                oh.hierarchy = 0;
+                oh.x = (t_obj_base*) &list->g_pd;
+                oh.classname = subclassname;
+                if ( x != oh.x ) {
+                    found.push_back(oh);
+                }
+            }
+        }
+        list=list->g_next;
     }
 
     return found;
