@@ -9,25 +9,6 @@ namespace ossia { namespace pd {
 
 static t_eclass *model_class;
 
-static void model_register(t_model *x)
-{
-    t_device* device = nullptr;
-
-    int l;
-    if (!(device = (t_device*) find_parent(&x->x_obj,"ossia.device", 0, &l)))
-    {
-        x->x_node = nullptr;
-        return;
-    }
-    // look for an [ossia.model] instance in the parent patcher
-    t_model* model = find_parent_alive<t_model>(&x->x_obj,"ossia.model", 1, &l);
-    if (model)  {
-        x->register_node(model->x_node);
-        return;
-    }
-    x->register_node(device->x_node);
-}
-
 bool t_model :: register_node(ossia::net::node_base*  node){
     bool res = do_registration(node);
     if (res){
