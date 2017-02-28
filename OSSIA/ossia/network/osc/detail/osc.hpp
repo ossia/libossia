@@ -551,7 +551,7 @@ struct osc_write_domain_visitor
   }
 
   template<std::size_t N>
-  void operator()(const domain_base<std::array<float, N>>& dom)
+  void operator()(const vecf_domain<N>& dom)
   {
     if(dom.min && dom.max)
     {
@@ -560,7 +560,7 @@ struct osc_write_domain_visitor
     }
   }
 
-  void operator()(const domain_base<std::vector<ossia::value>>& dom)
+  void operator()(const vector_domain& dom)
   {
     if(dom.min && dom.max)
     {

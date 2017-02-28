@@ -6,7 +6,7 @@ namespace ossia
 {
 namespace oscquery
 {
-
+class oscquery_server_protocol;
 //! Creates the JSON message to send through OSCQuery
 class OSSIA_EXPORT json_writer
 {
@@ -17,6 +17,8 @@ public:
 
   //! Sends the port at which a server opens its OSC port
   static string_t device_info(int port);
+
+  static string_t query_host_info(const oscquery_server_protocol&);
 
   // Format interface
   // Queries
@@ -41,7 +43,7 @@ public:
     {
       // Here we reply to the query which already has
       // the key in the "oscquery" format so no need to convert
-      writeKey(wr, method);
+      write_json_key(wr, method);
       p.writeAttribute(node, method);
     }
     wr.EndObject();

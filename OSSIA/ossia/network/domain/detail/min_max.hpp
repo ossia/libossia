@@ -133,11 +133,11 @@ struct domain_set_min_visitor
   { domain.min = incoming; }
   OSSIA_INLINE void operator()(domain_base<bool>& domain, bool incoming)
   { domain.min = incoming; }
-  OSSIA_INLINE void operator()(domain_base<std::vector<ossia::value>>& domain, const std::vector<ossia::value>& incoming)
+  OSSIA_INLINE void operator()(vector_domain& domain, const std::vector<ossia::value>& incoming)
   { domain.min = incoming; }
 
   template<std::size_t N>
-  OSSIA_INLINE void operator()(domain_base<std::array<float, N>>& domain, const std::array<float, N>& incoming)
+  OSSIA_INLINE void operator()(vecf_domain<N>& domain, const std::array<float, N>& incoming)
   { domain.min = incoming; }
 
   template<typename T>
@@ -160,10 +160,10 @@ struct domain_set_min_visitor
   OSSIA_INLINE void operator()(domain_base<bool>& domain, U&&...)
   { domain.min = ossia::none; }
   template <typename... U>
-  OSSIA_INLINE void operator()(domain_base<std::vector<ossia::value>>& domain, U&&...)
-  { domain.min = ossia::none; }
+  OSSIA_INLINE void operator()(vector_domain& domain, U&&...)
+  { domain.min.clear(); }
   template<std::size_t N, typename... U>
-  OSSIA_INLINE void operator()(domain_base<std::array<float, N>>& domain, U&&...)
+  OSSIA_INLINE void operator()(vecf_domain<N>& domain, U&&...)
   { domain.min = ossia::none; }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<ossia::value>& domain, U&&...)
@@ -185,11 +185,11 @@ struct domain_set_max_visitor
   { domain.max = incoming; }
   OSSIA_INLINE void operator()(domain_base<bool>& domain, bool incoming)
   { domain.max = incoming; }
-  OSSIA_INLINE void operator()(domain_base<std::vector<ossia::value>>& domain, const std::vector<ossia::value>& incoming)
+  OSSIA_INLINE void operator()(vector_domain& domain, const std::vector<ossia::value>& incoming)
   { domain.max = incoming; }
 
   template<std::size_t N>
-  OSSIA_INLINE void operator()(domain_base<std::array<float, N>>& domain, const std::array<float, N>& incoming)
+  OSSIA_INLINE void operator()(vecf_domain<N>& domain, const std::array<float, N>& incoming)
   { domain.max = incoming; }
 
   template<typename T>
@@ -210,10 +210,10 @@ struct domain_set_max_visitor
   OSSIA_INLINE void operator()(domain_base<bool>& domain, U&&...)
   { domain.max = ossia::none; }
   template <typename... U>
-  OSSIA_INLINE void operator()(domain_base<std::vector<ossia::value>>& domain, U&&...)
-  { domain.max = ossia::none; }
+  OSSIA_INLINE void operator()(vector_domain& domain, U&&...)
+  { domain.max.clear(); }
   template<std::size_t N, typename... U>
-  OSSIA_INLINE void operator()(domain_base<std::array<float, N>>& domain, U&&...)
+  OSSIA_INLINE void operator()(vecf_domain<N>& domain, U&&...)
   { domain.max = ossia::none; }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<ossia::value>& domain, U&&...)
@@ -233,9 +233,9 @@ struct domain_minmax_creation_visitor
   { return domain_base<T>(min, max); }
 
   OSSIA_INLINE domain operator()(const std::vector<ossia::value>& min, const std::vector<ossia::value>& max)
-  { return domain_base<std::vector<ossia::value>>(min, max); }
+  { return vector_domain(min, max); }
   OSSIA_INLINE domain operator()(std::vector<ossia::value>&& min, std::vector<ossia::value>&& max)
-  { return domain_base<std::vector<ossia::value>>(std::move(min), std::move(max)); }
+  { return vector_domain(std::move(min), std::move(max)); }
 
   OSSIA_INLINE domain operator()(impulse, impulse)
   { return domain_base<impulse>{}; }
@@ -293,6 +293,27 @@ struct domain_value_set_update_visitor
         dom.values.insert(*r);
     }
   }
+
+  void operator()(ossia::vector_domain& dom)
+  {
+    dom.values.resize(1);
+    dom.values[0].clear();
+    for(auto& value : values)
+    {
+      dom.values[0].insert(value);
+    }
+  }
+  template<std::size_t N>
+  void operator()(ossia::vecf_domain<N>& dom)
+  {
+    dom.values.resize(1);
+    dom.values[0].clear();
+    for(auto& value : values)
+    {
+      dom.values[0].insert(value);
+    }
+  }
+
 
   void operator()(ossia::domain_base<Destination>&)
   {  }

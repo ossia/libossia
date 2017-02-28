@@ -66,12 +66,12 @@ ossia::domain make_domain_from_type(ossia::val_type v)
     case ossia::val_type::FLOAT: return ossia::domain_base<float>{};
     case ossia::val_type::INT: return ossia::domain_base<int>{};
     case ossia::val_type::IMPULSE: return ossia::domain_base<impulse>{};
-    case ossia::val_type::VEC2F: return ossia::domain_base<vec2f>{};
-    case ossia::val_type::VEC3F: return ossia::domain_base<vec3f>{};
-    case ossia::val_type::VEC4F: return ossia::domain_base<vec4f>{};
+    case ossia::val_type::VEC2F: return ossia::vecf_domain<2>{};
+    case ossia::val_type::VEC3F: return ossia::vecf_domain<3>{};
+    case ossia::val_type::VEC4F: return ossia::vecf_domain<4>{};
     case ossia::val_type::BOOL: return ossia::domain_base<bool>{};
     case ossia::val_type::CHAR: return ossia::domain_base<char>{};
-    case ossia::val_type::TUPLE: return ossia::domain_base<std::vector<ossia::value>>{};
+    case ossia::val_type::TUPLE: return ossia::vector_domain{};
     default:
       return {};
   }
@@ -151,22 +151,22 @@ operator==(const domain_base<char>& lhs, const domain_base<char>& rhs)
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
 }
 bool
-operator==(const domain_base<std::vector<ossia::value>>& lhs, const domain_base<std::vector<ossia::value>>& rhs)
+operator==(const vector_domain& lhs, const vector_domain& rhs)
 {
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
 }
 bool
-operator==(const domain_base<vec2f>& lhs, const domain_base<vec2f>& rhs)
+operator==(const vecf_domain<2>& lhs, const vecf_domain<2>& rhs)
 {
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
 }
 bool
-operator==(const domain_base<vec3f>& lhs, const domain_base<vec3f>& rhs)
+operator==(const vecf_domain<3>& lhs, const vecf_domain<3>& rhs)
 {
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
 }
 bool
-operator==(const domain_base<vec4f>& lhs, const domain_base<vec4f>& rhs)
+operator==(const vecf_domain<4>& lhs, const vecf_domain<4>& rhs)
 {
   return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
 }
@@ -216,13 +216,13 @@ domain init_domain(ossia::val_type type)
     case val_type::STRING:
       return domain_base<std::string>();
     case val_type::TUPLE:
-      return domain_base<std::vector<ossia::value>>();
+      return vector_domain();
     case val_type::VEC2F:
-      return domain_base<vec2f>();
+      return vecf_domain<2>();
     case val_type::VEC3F:
-      return domain_base<vec3f>();
+      return vecf_domain<3>();
     case val_type::VEC4F:
-      return domain_base<vec4f>();
+      return vecf_domain<4>();
     case val_type::DESTINATION:
     default:
       return domain{};

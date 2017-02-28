@@ -24,10 +24,10 @@ string_map<std::string> query_parser::parse_http_methods(ossia::string_view str)
   string_map<std::string> res;
   auto methods = parse_http_methods_encoded(str);
 
-  std::string key_clean; key_clean.reserve(64);
-  std::string val_clean; val_clean.reserve(64);
   for(auto& e : methods)
   {
+    std::string key_clean; key_clean.reserve(16);
+    std::string val_clean; val_clean.reserve(16);
     url_decode(e.first, key_clean);
     url_decode(e.second, val_clean);
     res.insert(std::make_pair(std::move(key_clean), std::move(val_clean)));

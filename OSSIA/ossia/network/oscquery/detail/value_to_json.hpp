@@ -18,7 +18,7 @@ struct value_to_json
   void operator()(int v) const { writer.Int(v); }
   void operator()(float v) const { writer.Double(v); }
   void operator()(bool v) const { writer.Bool(v); }
-  void operator()(char v) const { writeChar(writer, v); }
+  void operator()(char v) const { write_json(writer, v); }
   void operator()(const std::string& v) const
   {
     // TODO handle base 64

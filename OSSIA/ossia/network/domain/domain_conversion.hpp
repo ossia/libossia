@@ -77,9 +77,9 @@ struct domain_conversion<domain_base<impulse>>
 };
 
 template <>
-struct domain_conversion<domain_base<std::vector<ossia::value>>>
+struct domain_conversion<vector_domain>
 {
-  OSSIA_INLINE domain operator()(const domain_base<std::vector<ossia::value>>& src)
+  OSSIA_INLINE domain operator()(const vector_domain& src)
   {
     return src;
   }
@@ -87,18 +87,18 @@ struct domain_conversion<domain_base<std::vector<ossia::value>>>
   template <typename T>
   OSSIA_INLINE domain operator()(const T&)
   {
-    return domain_base<std::vector<ossia::value>>();
+    return vector_domain();
   }
 };
 
 template <std::size_t N>
-struct domain_conversion<domain_base<std::array<float, N>>>
+struct domain_conversion<vecf_domain<N>>
 {
-  OSSIA_INLINE domain operator()(const domain_base<std::array<float, N>>& src)
+  OSSIA_INLINE domain operator()(const vecf_domain<N>& src)
   {
     return src;
   }
-  domain_base<std::array<float, N>> tuple_func(const domain_base<std::vector<ossia::value>>& t)
+  vecf_domain<N> tuple_func(const vector_domain& t)
   {
       auto to_vec = [] (const std::vector<ossia::value>& sub)
       {
@@ -108,7 +108,7 @@ struct domain_conversion<domain_base<std::array<float, N>>>
           return vec;
       };
 
-      domain_base<std::array<float, N>> dom;
+      vecf_domain<N> dom;
       if(t.min)
       {
           const std::vector<ossia::value>& min = *t.min;
@@ -137,7 +137,7 @@ struct domain_conversion<domain_base<std::array<float, N>>>
       return dom;
   }
 
-  OSSIA_INLINE domain operator()(const domain_base<std::vector<ossia::value>>& t)
+  OSSIA_INLINE domain operator()(const vector_domain& t)
   {
       return tuple_func(t);
   }
@@ -145,7 +145,7 @@ struct domain_conversion<domain_base<std::array<float, N>>>
   template <typename T>
   OSSIA_INLINE domain operator()(const T&)
   {
-    return domain_base<std::array<float, N>>();
+    return vecf_domain<N>();
   }
 };
 
@@ -190,16 +190,16 @@ inline domain convert_domain(const domain& dom, ossia::val_type newtype)
           domain_conversion<domain_base<std::string>>{}, dom);
     case val_type::TUPLE:
       return eggs::variants::apply(
-          domain_conversion<domain_base<std::vector<ossia::value>>>{}, dom);
+          domain_conversion<vector_domain>{}, dom);
     case val_type::VEC2F:
       return eggs::variants::apply(
-          domain_conversion<domain_base<vec2f>>{}, dom);
+          domain_conversion<vecf_domain<2>>{}, dom);
     case val_type::VEC3F:
       return eggs::variants::apply(
-          domain_conversion<domain_base<vec3f>>{}, dom);
+          domain_conversion<vecf_domain<3>>{}, dom);
     case val_type::VEC4F:
       return eggs::variants::apply(
-          domain_conversion<domain_base<vec4f>>{}, dom);
+          domain_conversion<vecf_domain<4>>{}, dom);
     case val_type::DESTINATION:
     default:
       return domain{};

@@ -28,17 +28,17 @@ inline ossia::string_view getStringView(const rapidjson::Value& val)
 }
 
 
-inline void writeKey(rapidjson::Writer<rapidjson::StringBuffer>& writer, ossia::string_view k)
+inline void write_json_key(rapidjson::Writer<rapidjson::StringBuffer>& writer, ossia::string_view k)
 {
     writer.Key(k.data(), k.size());
 }
 
-inline void writeRef(rapidjson::Writer<rapidjson::StringBuffer>& writer, ossia::string_view k)
+inline void write_json(rapidjson::Writer<rapidjson::StringBuffer>& writer, ossia::string_view k)
 {
     writer.String(k.data(), k.size());
 }
 
-inline void writeChar(rapidjson::Writer<rapidjson::StringBuffer>& writer, char c)
+inline void write_json(rapidjson::Writer<rapidjson::StringBuffer>& writer, char c)
 {
     writer.String(&c, 1);
 }

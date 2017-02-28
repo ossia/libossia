@@ -81,16 +81,16 @@ struct OSSIA_EXPORT domain_base<std::string>
   boost::container::flat_set<std::string> values;
 };
 
-template <>
-struct OSSIA_EXPORT domain_base<std::vector<ossia::value>>
+struct OSSIA_EXPORT vector_domain
 {
+  // If a value does not have a min / max the value won't be valid
   using value_type = std::vector<ossia::value>;
-  ossia::optional<value_type> min;
-  ossia::optional<value_type> max;
-  boost::container::flat_set<value_type> values;
+  value_type min;
+  value_type max;
+  std::vector<boost::container::flat_set<ossia::value>> values;
 
-  domain_base() noexcept { }
-  domain_base(const domain_base<value_type>& other) noexcept :
+  vector_domain() noexcept { }
+  vector_domain(const vector_domain& other) noexcept :
     min{std::move(other.min)},
     max{std::move(other.max)},
     values{std::move(other.values)}
@@ -98,7 +98,7 @@ struct OSSIA_EXPORT domain_base<std::vector<ossia::value>>
 
   }
 
-  domain_base(domain_base<value_type>&& other) noexcept  :
+  vector_domain(vector_domain&& other) noexcept  :
     min{std::move(other.min)},
     max{std::move(other.max)},
     values{std::move(other.values)}
@@ -106,7 +106,7 @@ struct OSSIA_EXPORT domain_base<std::vector<ossia::value>>
 
   }
 
-  domain_base& operator=(const domain_base& other)
+  vector_domain& operator=(const vector_domain& other)
   {
     min = other.min;
     max = other.max;
@@ -114,7 +114,7 @@ struct OSSIA_EXPORT domain_base<std::vector<ossia::value>>
     return *this;
   }
 
-  domain_base& operator=(domain_base&& other) noexcept
+  vector_domain& operator=(vector_domain&& other) noexcept
   {
     min = std::move(other.min);
     max = std::move(other.max);
@@ -122,26 +122,31 @@ struct OSSIA_EXPORT domain_base<std::vector<ossia::value>>
     return *this;
   }
 
-  domain_base(const value_type& v1, const value_type& v2): min{v1}, max{v2} { }
-  domain_base(value_type&& v1, value_type&& v2): min{std::move(v1)}, max{std::move(v2)} { }
-  domain_base(const value_type& v1,
+  vector_domain(ossia::none_t v1, ossia::none_t v2)
+  {
+
+  }
+
+  vector_domain(const value_type& v1, const value_type& v2): min{v1}, max{v2} { }
+  vector_domain(value_type&& v1, value_type&& v2): min{std::move(v1)}, max{std::move(v2)} { }
+  vector_domain(const value_type& v1,
               const value_type& v2,
-              const boost::container::flat_set<value_type>& vals): min{v1}, max{v2}, values{vals} { }
-  domain_base(value_type&& v1,
+              const std::vector<boost::container::flat_set<ossia::value>>& vals): min{v1}, max{v2}, values{vals} { }
+  vector_domain(value_type&& v1,
               value_type&& v2,
-              boost::container::flat_set<value_type>&& vals): min{std::move(v1)}, max{std::move(v2)}, values{std::move(vals)} { }
+              std::vector<boost::container::flat_set<ossia::value>>&& vals): min{std::move(v1)}, max{std::move(v2)}, values{std::move(vals)} { }
 };
 
 template <std::size_t N>
-struct OSSIA_EXPORT domain_base<std::array<float, N>>
+struct OSSIA_EXPORT vecf_domain
 {
   using value_type = std::array<float, N>;
-  ossia::optional<std::array<float, N>> min;
-  ossia::optional<std::array<float, N>> max;
-  boost::container::flat_set<std::array<float, N>> values;
+  std::array<optional<float>, N> min;
+  std::array<optional<float>, N> max;
+  std::array<boost::container::flat_set<float>, N> values;
 
-  domain_base() noexcept { }
-  domain_base(const domain_base<value_type>& other) noexcept :
+  vecf_domain() noexcept { }
+  vecf_domain(const vecf_domain& other) noexcept :
     min{std::move(other.min)},
     max{std::move(other.max)},
     values{std::move(other.values)}
@@ -149,7 +154,7 @@ struct OSSIA_EXPORT domain_base<std::array<float, N>>
 
   }
 
-  domain_base(domain_base<value_type>&& other) noexcept  :
+  vecf_domain(vecf_domain&& other) noexcept  :
     min{std::move(other.min)},
     max{std::move(other.max)},
     values{std::move(other.values)}
@@ -157,7 +162,7 @@ struct OSSIA_EXPORT domain_base<std::array<float, N>>
 
   }
 
-  domain_base& operator=(const domain_base& other)
+  vecf_domain& operator=(const vecf_domain& other)
   {
     min = other.min;
     max = other.max;
@@ -165,7 +170,7 @@ struct OSSIA_EXPORT domain_base<std::array<float, N>>
     return *this;
   }
 
-  domain_base& operator=(domain_base&& other) noexcept
+  vecf_domain& operator=(vecf_domain&& other) noexcept
   {
     min = std::move(other.min);
     max = std::move(other.max);
@@ -173,13 +178,13 @@ struct OSSIA_EXPORT domain_base<std::array<float, N>>
     return *this;
   }
 
-  domain_base<value_type>(const value_type& v1, const value_type& v2): min{v1}, max{v2} { }
-  domain_base(const value_type& v1,
-              const value_type& v2,
-              const boost::container::flat_set<value_type>& vals): min{v1}, max{v2}, values{vals} { }
-  domain_base(const value_type& v1,
-              const value_type& v2,
-              boost::container::flat_set<value_type>&& vals): min{v1}, max{v2}, values{std::move(vals)} { }
+  vecf_domain(const std::array<optional<float>, N>& v1, const std::array<optional<float>, N>& v2): min{v1}, max{v2} { }
+  vecf_domain(const std::array<optional<float>, N>& v1,
+              const std::array<optional<float>, N>& v2,
+              const std::array<boost::container::flat_set<float>, N>& vals): min{v1}, max{v2}, values{vals} { }
+  vecf_domain(const std::array<optional<float>, N>& v1,
+              const std::array<optional<float>, N>& v2,
+              std::array<boost::container::flat_set<float>, N>&& vals): min{v1}, max{v2}, values{std::move(vals)} { }
 };
 
 template <>
@@ -249,8 +254,8 @@ struct OSSIA_EXPORT domain_base<ossia::value>
  */
 using domain_base_variant = eggs::variant<domain_base<impulse>, domain_base<bool>, domain_base<int32_t>,
                     domain_base<float>, domain_base<char>, domain_base<std::string>,
-                    domain_base<std::vector<ossia::value>>, domain_base<vec2f>, domain_base<vec3f>,
-                    domain_base<vec4f>, domain_base<ossia::value>>;
+                    vector_domain, vecf_domain<2>, vecf_domain<3>,
+                    vecf_domain<4>, domain_base<ossia::value>>;
 
 struct OSSIA_EXPORT domain final : public domain_base_variant
 {
@@ -258,6 +263,14 @@ struct OSSIA_EXPORT domain final : public domain_base_variant
 
   template<typename T>
   domain(const ossia::domain_base<T>& arg): domain_base_variant(arg) { }
+  template<typename T>
+  domain(ossia::domain_base<T>&& arg): domain_base_variant(std::move(arg)) { }
+  domain(const vector_domain& arg): domain_base_variant(arg) { }
+  domain(vector_domain&& arg): domain_base_variant(std::move(arg)) { }
+  template<std::size_t N>
+  domain(const vecf_domain<N>& arg): domain_base_variant(arg) { }
+  template<std::size_t N>
+  domain(vecf_domain<N>&& arg): domain_base_variant(std::move(arg)) { }
   domain(const domain& d) : domain_base_variant{ (const domain_base_variant&)d } { }
   domain(domain&& d) : domain_base_variant{ std::move((domain_base_variant&)d) } { }
   domain& operator=(const domain& d) { ((domain_base_variant&)(*this)) = (const domain_base_variant&)d; return *this; }

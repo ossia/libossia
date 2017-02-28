@@ -48,6 +48,7 @@ public:
   void setDevice(net::device_base& dev) override;
   ossia::net::device_base& getDevice() const { return *m_device; }
 
+  int getOSCPort() const { return m_oscPort; }
 private:
   // List of connected clients
   oscquery_client* findClient(const connection_handler& hdl);

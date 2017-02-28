@@ -8,6 +8,10 @@ class value;
 template<typename T>
 struct domain_base;
 struct domain;
+struct vector_domain;
+template<std::size_t N>
+struct vecf_domain;
+
 
 OSSIA_EXPORT value apply_domain(
     const domain& dom,
@@ -47,10 +51,10 @@ OSSIA_EXPORT bool operator==(const domain_base<char>& lhs, const domain_base<cha
 OSSIA_EXPORT bool operator==(const domain_base<bool>& lhs, const domain_base<bool>& rhs);
 OSSIA_EXPORT bool operator==(const domain_base<float>& lhs, const domain_base<float>& rhs);
 OSSIA_EXPORT bool operator==(const domain_base<int32_t>& lhs, const domain_base<int32_t>& rhs);
-OSSIA_EXPORT bool operator==(const domain_base<std::vector<ossia::value>>& lhs, const domain_base<std::vector<ossia::value>>& rhs);
-OSSIA_EXPORT bool operator==(const domain_base<vec2f>& lhs, const domain_base<vec2f>& rhs);
-OSSIA_EXPORT bool operator==(const domain_base<vec3f>& lhs, const domain_base<vec3f>& rhs);
-OSSIA_EXPORT bool operator==(const domain_base<vec4f>& lhs, const domain_base<vec4f>& rhs);
+OSSIA_EXPORT bool operator==(const vector_domain& lhs, const vector_domain& rhs);
+OSSIA_EXPORT bool operator==(const vecf_domain<2>& lhs, const vecf_domain<2>& rhs);
+OSSIA_EXPORT bool operator==(const vecf_domain<3>& lhs, const vecf_domain<3>& rhs);
+OSSIA_EXPORT bool operator==(const vecf_domain<4>& lhs, const vecf_domain<4>& rhs);
 OSSIA_EXPORT bool operator==(const domain_base<ossia::value>& lhs, const domain_base<ossia::value>& rhs);
 
 template <typename T>

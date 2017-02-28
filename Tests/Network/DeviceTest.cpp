@@ -31,16 +31,16 @@ struct matching_domain<ossia::val_type::STRING>
 { using type = ossia::domain_base<std::string>; };
 template<>
 struct matching_domain<ossia::val_type::TUPLE>
-{ using type = ossia::domain_base<std::vector<ossia::value>>; };
+{ using type = ossia::vector_domain; };
 template<>
 struct matching_domain<ossia::val_type::VEC2F>
-{ using type = ossia::domain_base<vec2f>; };
+{ using type = ossia::vecf_domain<2>; };
 template<>
 struct matching_domain<ossia::val_type::VEC3F>
-{ using type = ossia::domain_base<vec3f>; };
+{ using type = ossia::vecf_domain<3>; };
 template<>
 struct matching_domain<ossia::val_type::VEC4F>
-{ using type = ossia::domain_base<vec4f>; };
+{ using type = ossia::vecf_domain<4>; };
 
 ossia::domain make_domain(ossia::val_type t)
 {
@@ -59,13 +59,13 @@ ossia::domain make_domain(ossia::val_type t)
     case ossia::val_type::STRING:
       return ossia::domain_base<std::string>();
     case ossia::val_type::TUPLE:
-      return ossia::domain_base<std::vector<ossia::value>>{};
+      return ossia::vector_domain{};
     case ossia::val_type::VEC2F:
-      return ossia::domain_base<vec2f>();
+      return ossia::vecf_domain<2>();
     case ossia::val_type::VEC3F:
-      return ossia::domain_base<vec3f>();
+      return ossia::vecf_domain<3>();
     case ossia::val_type::VEC4F:
-      return ossia::domain_base<vec4f>();
+      return ossia::vecf_domain<4>();
     default:
       return {};
   }
