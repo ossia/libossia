@@ -6,7 +6,7 @@
 
 namespace ossia { namespace pd {
 
-struct t_model : obj_base
+struct t_model : t_obj_base
 {
     bool register_node(ossia::net::node_base*  node);
     bool do_registration(ossia::net::node_base*  node);
@@ -22,6 +22,7 @@ struct t_model : obj_base
     void isDeleted(const ossia::net::node_base& n)
     {
         if (!x_dead){
+            x_node->aboutToBeDeleted.disconnect<t_model, &t_model::isDeleted>(this);
             x_node = nullptr;
             obj_quarantining<t_model>(this);
             obj_register<t_model>(this);

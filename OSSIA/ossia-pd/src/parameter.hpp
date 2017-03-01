@@ -6,7 +6,7 @@
 
 namespace ossia { namespace pd {
 
-struct t_param : obj_base
+struct t_param : t_obj_base
 {
     bool register_node(ossia::net::node_base* node);
     bool do_registration(ossia::net::node_base* node);
@@ -30,9 +30,10 @@ struct t_param : obj_base
 
     void isDeleted(const ossia::net::node_base& n)
     {
+        x_node->aboutToBeDeleted.disconnect<t_param, &t_param::isDeleted>(this);
         x_node = nullptr;
         obj_quarantining<t_param>(this);
-        // obj_register<t_param>(this);
+        obj_register<t_param>(this);
     }
 };
 

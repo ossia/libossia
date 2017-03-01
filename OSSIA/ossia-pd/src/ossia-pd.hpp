@@ -14,14 +14,7 @@ extern "C" void setup_ossia0x2eparam(void);
 extern "C" void setup_ossia0x2eremote(void);
 extern "C" void setup_ossia0x2eview(void);
 
-// define some useful OSSIA symbols
-static t_symbol* osym_empty               = gensym("");
-static t_symbol* osym_model               = gensym("ossia.model");
-static t_symbol* osym_view                = gensym("ossia.view");
-static t_symbol* osym_remote              = gensym("ossia.remote");
-static t_symbol* osym_param               = gensym("ossia.param");
-static t_symbol* osym_device              = gensym("ossia.device");
-
+struct t_obj_base;
 
 struct value2atom
 {
@@ -253,8 +246,9 @@ struct value_visitor
  */
 class obj_hierachy{
 public:
-    t_pd* x;
+    t_obj_base* x;
     int hierarchy;
+    std::string classname;
     friend bool operator<(obj_hierachy a, obj_hierachy b){
         return a.hierarchy < b.hierarchy;
     }
@@ -269,7 +263,7 @@ public:
  * @param start_level Level above current object where to start. 0 for current patcher, 1 start searching in parent canvas.
  * @return The instance of the found object.
  */
-static t_pd* find_parent(t_eobj* x, t_symbol* classname, int start_level, int* level){
+static t_pd* find_parent(t_eobj* x, std::string classname, int start_level, int* level){
     t_canvas* canvas = x->o_canvas;
 
     *level = start_level;
@@ -281,7 +275,8 @@ static t_pd* find_parent(t_eobj* x, t_symbol* classname, int start_level, int* l
     while (canvas){
         t_gobj* list = canvas->gl_list;
         while(list){
-            if (list->g_pd && list->g_pd->c_name == classname){
+            std::string current = list->g_pd->c_name->s_name;
+            if (list->g_pd && current == classname){
                 return &(list->g_pd);
             }
             list = list->g_next;
@@ -301,7 +296,7 @@ static t_pd* find_parent(t_eobj* x, t_symbol* classname, int start_level, int* l
  * @return
  */
 template<typename T>
-static T* find_parent_alive(t_eobj* x, t_symbol* classname, int start_level, int* level){
+static T* find_parent_alive(t_eobj* x, std::string classname, int start_level, int* level){
     T* obj = (T*) find_parent(x,classname, start_level, level);
     if (obj){
         while (obj && obj->x_dead ){
@@ -314,11 +309,12 @@ static T* find_parent_alive(t_eobj* x, t_symbol* classname, int start_level, int
 /**
  * @brief Find all objects [classname] in the current patcher starting at specified level.
  * @param list : list in which we are looking for objecfts
- * @param classname : name of the object to search
+ * @param classname : name of the object to search ossia.model or ossia.view
  * @param starting_level : 0 to start searching in current canvas, -1 to start searching from the parent canvas, 1 to start on children canvas
  * @return std::vector<t_pd*> containing pointer to t_pd struct of the corresponding classname
  */
-static std::vector<obj_hierachy> find_child(t_gobj* list, t_symbol* classname, int start_level = 0){
+static std::vector<obj_hierachy> find_child_to_register(t_obj_base* x, t_gobj* list, std::string classname, int start_level = 0){
+    std::string subclassname = classname == "ossia.model" ? "ossia.param" : "ossia.remote";
     int level = start_level;
     while (level < 0){ // then look for parent canvas
         if ( list && list->g_pd ){
@@ -333,28 +329,36 @@ static std::vector<obj_hierachy> find_child(t_gobj* list, t_symbol* classname, i
 
     t_gobj* start_list = list;
     std::vector<obj_hierachy> found;
-    // 1: iterate object list and look for classname object
+    bool model_flag = false;
+    // 1: iterate object list and look for ossia.model object
     while (list && list->g_pd){
-        if ( list->g_pd->c_name == classname ) {
+        std::string current = list->g_pd->c_name->s_name;
+        if ( current == classname ) {
             if ( start_level ==  0){
                 obj_hierachy oh;
                 oh.hierarchy = 0;
-                oh.x = &list->g_pd;
-                found.push_back(oh);
+                oh.x = (t_obj_base*) &list->g_pd;
+                oh.classname = classname;
+                if ( x != oh.x ){
+                    found.push_back(oh);
+                    model_flag = true;
+                }
             }
         }
         list=list->g_next;
     }
 
-    if(found.empty()){
-        // 2: if we didn't found anything, look into subpatches (aka "canvas) for classname object
+    // 2: if there is no ossia.model in the current patch, look into the subpatches
+
+    if(!model_flag){
         list = start_list;
         while (list && list->g_pd){
-            if ( list->g_pd->c_name == gensym("canvas")){
+            std::string current = list->g_pd->c_name->s_name;
+            if ( current == "canvas" ){
                 t_canvas* canvas = (t_canvas*) &list->g_pd;
                 if(!canvas_istable(canvas)){
                     t_gobj* _list = canvas->gl_list;
-                    std::vector<obj_hierachy> found_tmp = find_child(_list, classname, next_level);
+                    std::vector<obj_hierachy> found_tmp = find_child_to_register(x, _list, classname, next_level);
                     for (auto obj : found_tmp){
                         obj.hierarchy++; // increase hierarchy of objects found in a subpatcher
                         if (obj.hierarchy >= level) found.push_back(obj);
@@ -363,6 +367,24 @@ static std::vector<obj_hierachy> find_child(t_gobj* list, t_symbol* classname, i
             }
             list=list->g_next;
         }
+    }
+
+    // 3: finally look for ossia.param in the same pather
+    list = start_list;
+    while (list && list->g_pd){
+        std::string current = list->g_pd->c_name->s_name;
+        if ( current == subclassname ) {
+            if ( start_level ==  0){
+                obj_hierachy oh;
+                oh.hierarchy = 0;
+                oh.x = (t_obj_base*) &list->g_pd;
+                oh.classname = subclassname;
+                if ( x != oh.x ) {
+                    found.push_back(oh);
+                }
+            }
+        }
+        list=list->g_next;
     }
 
     return found;
