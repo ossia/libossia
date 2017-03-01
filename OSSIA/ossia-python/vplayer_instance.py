@@ -61,31 +61,31 @@ class VPlayer(object):
 from functools import wraps
 
 
-def add_push(function_to_enhance):
+def add_push(function_to_enhance, address=None):
+    # this is the ossia address we want to push
+    ossia_address = address
     @wraps(function_to_enhance)
     def new_wrapper(self, *args, **kwargs):
-    	# this is the new value we want to push
+        # this is the new value we want to push
         result = args[0]
         # don't forget to call the original function first
-        result = function_to_enhance(self, result)
+        readback = function_to_enhance(self, result)
         # this is the function name
         function = function_to_enhance.__name__
         # make the ossia push
-        #self.push_value(ossia.Value(result))
-        print(str(self) + ' make a push for -' + function + '- to value : ' + str(result))
+        ossia_address.push_value(ossia.Value(result))
         # return result as the original fset function do
-        return result
+        return readback
     # return the new_wrapper when modify Original Class
     return new_wrapper
 
-def add_pull(function_to_enhance):
+def add_pull(function_to_enhance, address=None):
     @wraps(function_to_enhance)
     def new_wrapper(self):
         function = function_to_enhance.__name__
         result = function_to_enhance(self)
 		# make a connection for the ossia pull
-
-        print(str(self) + ' make a pull for -' + function)
+        #print(str(self) + ' make a pull for -' + function)
         # return result as the original fget function do
         return result
 	# return the new_wrapper when modify Original Class
@@ -96,15 +96,15 @@ def ossia_param(Class, key, OssiaNode):
 	rewrite Original property
 	"""
 	# create a node for this parameter
-	my_param = OssiaNode.add_node(key)
+	ossia_node = OssiaNode.add_node(key)
 	# attach a value to this address
-	my_param = my_param.create_address(ossia.ValueType.Bool)
+	ossia_address = ossia_node.create_address(ossia.ValueType.Bool)
 	# Override the Property of this parameter in the Original Class
 	puller = getattr(Class, key)
 	puller = getattr(puller, 'fget')
 	pusher = getattr(Class, key)
 	pusher = getattr(pusher, 'fset')
-	setattr(Class, key, property(add_pull(puller), add_push(pusher)))
+	setattr(Class, key, property(add_pull(puller, address=ossia_address), add_push(pusher, address=ossia_address)))
 	# return the modified parameter
 	return getattr(Class, key)
 
@@ -130,9 +130,7 @@ def ossia_model(Class, OssiaDevice):
 	print('--- parameters ---')
 	for key, val in params.items():
 		my_param = ossia_param(Class, key, OssiaNode)
-		# now we need to connect my_param.push_value(ossia.Value(result))
-		# to the Class.key
-		print(my_param)
+		print(key)
 	"""
 	print('--- messages ---')
 	for key, val in messages.items():
