@@ -64,22 +64,31 @@ from functools import wraps
 def add_push(function_to_enhance):
     @wraps(function_to_enhance)
     def new_wrapper(self, *args, **kwargs):
-        result = function_to_enhance(self, *args, **kwargs)
-        #function = getattr(self, function_to_enhance.__name__)
-        print('make a push for '+function_to_enhance.__name__)
-        #print(self.params[function_to_enhance.__name__])
-        # .push_value(ossia.Value(args[0]))
-        #print(self, args)
+    	# this is the new value we want to push
+        result = args[0]
+        # don't forget to call the original function first
+        result = function_to_enhance(self, result)
+        # this is the function name
+        function = function_to_enhance.__name__
+        # make the ossia push
+        #self.push_value(ossia.Value(result))
+        print(str(self) + ' make a push for -' + function + '- to value : ' + str(result))
+        # return result as the original fset function do
         return result
+    # return the new_wrapper when modify Original Class
     return new_wrapper
 
 def add_pull(function_to_enhance):
     @wraps(function_to_enhance)
     def new_wrapper(self):
+        function = function_to_enhance.__name__
         result = function_to_enhance(self)
-        #self.pull_value(ossia.Value())
-        print('make a pull for '+function_to_enhance.__name__)
+		# make a connection for the ossia pull
+
+        print(str(self) + ' make a pull for -' + function)
+        # return result as the original fget function do
         return result
+	# return the new_wrapper when modify Original Class
     return new_wrapper
 
 def ossia_param(Class, key, OssiaNode):
@@ -121,6 +130,9 @@ def ossia_model(Class, OssiaDevice):
 	print('--- parameters ---')
 	for key, val in params.items():
 		my_param = ossia_param(Class, key, OssiaNode)
+		# now we need to connect my_param.push_value(ossia.Value(result))
+		# to the Class.key
+		print(my_param)
 	"""
 	print('--- messages ---')
 	for key, val in messages.items():
@@ -154,8 +166,6 @@ Vplayer = ossia_model(VPlayer, OssiaDevice)
 
 # create an instance of a video player
 vplayer = VPlayer()
-
-
 
 # Just a test
 from time import sleep
