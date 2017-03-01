@@ -84,10 +84,11 @@ def add_pull(function_to_enhance, address=None):
     def new_wrapper(self):
         function = function_to_enhance.__name__
         result = function_to_enhance(self)
-		# make a connection for the ossia pull
-        #print(str(self) + ' make a pull for -' + function)
-        # return result as the original fget function do
-        return result
+        # attach a callback function to the boolean address
+        def bool_value_callback(v):
+        	print(v.get())
+        	bool_address.add_callback(bool_value_callback)
+        	return result
 	# return the new_wrapper when modify Original Class
     return new_wrapper
 
@@ -158,7 +159,7 @@ def ossia_model(Class, OssiaDevice):
 # This is the only code we need to declare an OSSIA DEVICE
 # create the Video Player Device
 OssiaDevice = ossia.LocalDevice('my_video_device')
-OssiaDevice.create_oscquery_server(22222, 33333)
+OssiaDevice.create_oscquery_server(22222, 5678)
 # All the VPlayer instances will be created as a model of the OssiaDevice root
 Vplayer = ossia_model(VPlayer, OssiaDevice)
 
@@ -168,9 +169,12 @@ vplayer = VPlayer()
 # Just a test
 from time import sleep
 while True:
+	pass
+	"""
 	vplayer.play_status = True
 	print(vplayer.play_status)
 	sleep(1)
 	vplayer.play_status = False
 	print(vplayer.play_status)
 	sleep(1)
+	"""
