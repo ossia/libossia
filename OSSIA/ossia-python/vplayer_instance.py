@@ -51,6 +51,8 @@ class VPlayer(object):
 	@play_status.setter
 	def play_status(self, play_status):
 		self._play_status = play_status
+		if self._play_status:	
+			print('playing now !!')
 
 
 
