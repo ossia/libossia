@@ -5,9 +5,6 @@ project(libossia CXX)
 ### Project options ###
 set(OSSIA_PROTOCOLS OSC Minuit)
 
-set(OSSIA_PROTOCOL_WEBSOCKETS ON)
-
-
 set(ossia_VERSION 1.0.0)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0042 NEW)
