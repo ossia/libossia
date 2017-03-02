@@ -4,23 +4,32 @@
 
 namespace ossia
 {
+struct websocket_threaded_connection
+{
+  ossia::oscquery::websocket_client socket;
+  std::thread thread;
+
+  websocket_threaded_connection(const std::string& ip):
+    socket([] (auto&&...) {})
+  {
+    thread = std::thread( [=] { socket.connect(ip); } );
+  }
+
+  ~websocket_threaded_connection()
+  {
+    socket.stop();
+    thread.join();
+  }
+};
+
 struct websocket_log_sink final : public spdlog::sinks::sink
 {
   rapidjson::StringBuffer buffer;
+  std::shared_ptr<websocket_threaded_connection> socket;
 
-  ossia::oscquery::websocket_client s;
-  std::thread thread;
-
-  websocket_log_sink(std::string ip):
-    s([] (auto&&...) {})
+  websocket_log_sink(std::shared_ptr<websocket_threaded_connection> s):
+    socket{std::move(s)}
   {
-    thread = std::thread( [=] { s.connect(ip); } );
-  }
-
-  ~websocket_log_sink()
-  {
-    s.stop();
-    thread.join();
   }
 
   void log(const spdlog::details::log_msg& msg) override
@@ -40,11 +49,44 @@ struct websocket_log_sink final : public spdlog::sinks::sink
 
     writer.EndObject();
 
-    s.send_message(buffer);
+    socket->socket.send_message(buffer);
   }
 
   void flush() override
   {
+  }
+};
+
+struct websocket_heartbeat
+{
+  rapidjson::StringBuffer buffer;
+  std::thread thread;
+  std::atomic_bool running{true};
+  websocket_heartbeat(std::shared_ptr<websocket_threaded_connection> t, std::chrono::seconds dur)
+  {
+    thread = std::thread([=] {
+      while(running)
+      {
+        std::this_thread::sleep_for(dur);
+
+        buffer.Clear();
+        rapidjson::Writer<rapidjson::StringBuffer> writer{buffer};
+        writer.StartObject();
+
+        writer.Key("operation");
+        writer.String("alive");
+
+        writer.EndObject();
+
+        t->socket.send_message(buffer);
+      }
+    });
+  }
+
+  ~websocket_heartbeat()
+  {
+    running = false;
+    thread.join();
   }
 };
 

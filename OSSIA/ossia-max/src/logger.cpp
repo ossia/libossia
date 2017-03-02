@@ -5,7 +5,8 @@ extern "C"
 void* ossia_logger_new(t_symbol *s, long argc, t_atom *argv)
 {
   using namespace ossia::max;
-  logger* x = (logger *) object_alloc(singleton::instance().ossia_logger_class);
+  auto& inst = singleton::instance();
+  logger* x = (logger *) object_alloc(inst.ossia_logger_class);
 
   if (x)
   {
@@ -14,10 +15,10 @@ void* ossia_logger_new(t_symbol *s, long argc, t_atom *argv)
     {
       if((argv + i)->a_type == A_SYM)
       {
-        x->log =
-            std::make_shared<spdlog::logger>(
+        std::string ip = atom_getsym(argv+i)->s_name;
+        x->log = std::make_shared<spdlog::logger>(
               "max_logger",
-              std::make_shared<ossia::websocket_log_sink>(atom_getsym(argv+i)->s_name));
+              std::make_shared<ossia::websocket_log_sink>(inst.get_connection(ip)));
         break;
       }
     }
@@ -27,7 +28,8 @@ void* ossia_logger_new(t_symbol *s, long argc, t_atom *argv)
 }
 
 extern "C"
-void ossia_logger_in_anything(ossia::max::logger* x, t_symbol *s, long argc, t_atom *argv)
+void ossia_logger_in_anything(ossia::max::logger* x,
+                              t_symbol *s, long argc, t_atom *argv)
 {
   if(x && x->log)
     x->log->info("{}", s->s_name);
@@ -40,5 +42,6 @@ void ossia_logger_free(ossia::max::logger* x)
   {
     x->log.reset();
     x->log.~shared_ptr();
+    ossia::max::singleton::instance().collect_garbage();
   }
 }

@@ -6,6 +6,8 @@
 
 #include <ossia/ossia.hpp>
 #include <ossia/context.hpp>
+#include <ossia/network/common/websocket_log_sink.hpp>
+
 namespace ossia
 {
 namespace max
@@ -22,12 +24,16 @@ public:
   t_class* ossia_parameter_class{};
   t_class* ossia_logger_class{};
 
+  std::shared_ptr<ossia::websocket_threaded_connection> get_connection(std::string ip);
+  void collect_garbage();
+
 private:
   singleton();
 
   ossia::context ctx;
   ossia::net::local_protocol* m_localProtocol{};
   ossia::net::generic_device m_device;
+  string_map<std::shared_ptr<ossia::websocket_threaded_connection>> m_connections;
 };
 
 }

@@ -30,7 +30,6 @@ void ext_main(void *r)
 
   class_addmethod(instance.ossia_logger_class, (method) ossia_logger_in_anything, "anything", A_GIMME, 0);
   class_register(CLASS_BOX, instance.ossia_logger_class);
-
 }
 
 singleton& singleton::instance()
@@ -42,6 +41,34 @@ singleton& singleton::instance()
 ossia::net::device_base& singleton::device_instance()
 {
   return instance().m_device;
+}
+
+std::shared_ptr<ossia::websocket_threaded_connection> singleton::get_connection(std::string ip)
+{
+  // Look if there is already a connection open
+  std::shared_ptr<ossia::websocket_threaded_connection> ws;
+  auto conn_it = m_connections.find(ip);
+  if(conn_it != m_connections.end())
+  {
+    ws = conn_it.value();
+  }
+  else
+  {
+    ws = std::make_shared<ossia::websocket_threaded_connection>(ip);
+    m_connections.insert({ip, ws});
+  }
+  return ws;
+}
+
+void singleton::collect_garbage()
+{
+  auto it = ossia::find_if(m_connections, [] (const auto& val) {
+    return val.second.unique();
+  });
+  if(it != m_connections.end())
+  {
+    m_connections.erase(it);
+  }
 }
 
 singleton::singleton():
