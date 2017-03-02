@@ -523,6 +523,5 @@ void set_unit(ossia::net::node_base& n, unit_t v)
   if(auto addr = n.getAddress()) addr->setUnit(std::move(v));
 }
 
-
 }
 }

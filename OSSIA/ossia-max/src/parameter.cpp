@@ -127,7 +127,7 @@ void* ossia_parameter_new(t_symbol *s, long argc, t_atom *argv)
     }
 
     // Create the node with what we found
-    x->node = &ossia::net::find_or_create_node(
+    x->node = &ossia::net::create_node(
           ossia::max::singleton::device_instance().getRootNode(),
           name_to_create
           );
