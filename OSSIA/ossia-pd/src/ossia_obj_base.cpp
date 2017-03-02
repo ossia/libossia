@@ -7,13 +7,13 @@ extern void glist_select(t_glist *x, t_gobj *y);
 
 namespace ossia { namespace pd {
 
-void obj_base::setValue(const ossia::value& v){
-    value_visitor<obj_base> vm;
-    vm.x = (obj_base*) &x_obj;
+void t_obj_base::setValue(const ossia::value& v){
+    value_visitor<t_obj_base> vm;
+    vm.x = (t_obj_base*) &x_obj;
     v.apply(vm);
 }
 
-void obj_base::obj_push(obj_base *x, t_symbol* , int argc, t_atom* argv){
+void t_obj_base::obj_push(t_obj_base *x, t_symbol* , int argc, t_atom* argv){
   if ( x->x_node && x->x_node->getAddress() ){
       if (argc==1){
           // convert one element array to single element
@@ -35,26 +35,30 @@ void obj_base::obj_push(obj_base *x, t_symbol* , int argc, t_atom* argv){
   }
 }
 
-void obj_tick(obj_base* x){
+void obj_tick(t_obj_base* x){
   if (x->x_last_opened_canvas){
     glist_noselect(x->x_last_opened_canvas);
     x->x_last_opened_canvas = nullptr;
   }
 }
 
-void obj_base::obj_bang(obj_base *x){
+void t_obj_base::obj_bang(t_obj_base *x){
   if ( x->x_node && x->x_node->getAddress() ) x->setValue(x->x_node->getAddress()->cloneValue());
 }
 
-bool find_and_display_friend(obj_base* x, t_canvas* patcher){
+bool find_and_display_friend(t_obj_base* x, t_canvas* patcher){
   t_gobj* list = patcher->gl_list;
 
-  std::string param_str = "ossia.param";
+  std::string target_str;
   std::string canvas_str = "canvas";
+  std::string xclassname = std::string(x->x_obj.o_obj.te_g.g_pd->c_name->s_name);
+  if ( xclassname == "ossia.remote" ) target_str = "ossia.param";
+  else if (xclassname == "ossia.view" ) target_str = "ossia.model";
+
   while (list && list->g_pd){
     std::string classname = list->g_pd->c_name->s_name;
-    if ( classname == param_str ) {
-      obj_base* p = (obj_base*) list;
+    if ( classname == target_str ) {
+      t_obj_base* p = (t_obj_base*) list;
       if (p->x_node == x->x_node) {
         if (x->x_last_opened_canvas) glist_noselect(x->x_last_opened_canvas);
         if (x->x_clock) clock_unset(x->x_clock);
