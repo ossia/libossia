@@ -81,6 +81,8 @@ struct domain_to_json
 
   void operator()(const ossia::vector_domain & dom)
   {
+    // TODO
+    /*
     int min_count = dom.min ? dom.min->size() : 0;
     int max_count = dom.max ? dom.max->size() : 0;
     int values_count = dom.values.size();
@@ -96,11 +98,14 @@ struct domain_to_json
         writer.Key("MIN");
         write_json(*min_it);
 
-        write_json(*min_it);
+        writer.Key("MAX");
+        write_json(*max_it);
 
       }
     }
-    auto min_i
+    */
+
+    /*
     for(int i = 0; i < N; i++)
     if(dom.min)
     {
@@ -142,11 +147,14 @@ struct domain_to_json
     {
       writer.Null(); // TODO why not just nothing ?
     }
+    */
   }
 
   template<std::size_t N>
   void operator()(const ossia::vecf_domain<N> & dom)
   {
+    // TODO
+    /*
     if(dom.min)
     {
       auto& vec = *dom.min;
@@ -189,6 +197,7 @@ struct domain_to_json
     {
       writer.Null(); // TODO why not just nothing ?
     }
+    */
   }
   void operator()(const ossia::domain_base<ossia::value> & dom)
   {

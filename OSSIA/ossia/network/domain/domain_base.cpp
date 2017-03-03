@@ -121,7 +121,7 @@ domain make_domain(
   }
   else
   {
-    return eggs::variants::apply(domain_value_set_creation_visitor{val}, cur.v);
+    return cur.apply(domain_value_set_creation_visitor{val});
   }
 }
 

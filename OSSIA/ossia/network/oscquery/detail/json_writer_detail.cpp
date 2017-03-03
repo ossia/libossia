@@ -376,7 +376,7 @@ json_writer::string_t json_writer::query_host_info(const oscquery_server_protoco
   wr.Key("NAME");
   wr.String(proto.getDevice().getName());
   wr.Key("PORT");
-  wr.String(proto.getOSCPort());
+  wr.Int(proto.getOSCPort());
 
   wr.Key("EXTENSIONS");
   wr.StartObject();

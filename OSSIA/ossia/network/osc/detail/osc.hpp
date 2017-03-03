@@ -553,24 +553,20 @@ struct osc_write_domain_visitor
   template<std::size_t N>
   void operator()(const vecf_domain<N>& dom)
   {
-    if(dom.min && dom.max)
+    if(dom.min[0] && dom.max[0])
     {
-      vis((*dom.min)[0]);
-      vis((*dom.max)[0]);
+      vis(*dom.min[0]);
+      vis(*dom.max[0]);
     }
   }
 
   void operator()(const vector_domain& dom)
   {
-    if(dom.min && dom.max)
+    if(!dom.min.empty() && !dom.max.empty() && dom.min[0].valid() && dom.max[0].valid())
     {
-      const std::vector<ossia::value>& min = *dom.min;
-      const std::vector<ossia::value>& max = *dom.max;
-      if(!min.empty() && !max.empty())
-      {
-        vis(ossia::convert<float>(min[0]));
-        vis(ossia::convert<float>(max[0]));
-      }
+      vis(ossia::convert<float>(dom.min[0]));
+      vis(ossia::convert<float>(dom.max[0]));
+
     }
   }
 

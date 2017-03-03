@@ -184,6 +184,15 @@ struct OSSIA_EXPORT vecf_domain
   }
 
   vecf_domain(const std::array<optional<float>, N>& v1, const std::array<optional<float>, N>& v2): min{v1}, max{v2} { }
+
+  vecf_domain(const std::array<float, N>& v1, const std::array<float, N>& v2)
+  {
+    for(std::size_t i = 0; i < N; i++)
+    {
+      min[i] = v1[i];
+      max[i] = v2[i];
+    }
+  }
   vecf_domain(const std::array<optional<float>, N>& v1,
               const std::array<optional<float>, N>& v2,
               const std::array<boost::container::flat_set<float>, N>& vals): min{v1}, max{v2}, values{vals} { }

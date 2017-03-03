@@ -100,14 +100,6 @@ struct domain_conversion<vecf_domain<N>>
   }
   vecf_domain<N> tuple_func(const vector_domain& t)
   {
-      auto to_vec = [] (const std::vector<ossia::value>& sub)
-      {
-          std::array<float, N> vec;
-          for (std::size_t i = 0; i < N; i++)
-              vec[i] = ossia::convert<float>(sub[i]);
-          return vec;
-      };
-
       vecf_domain<N> dom;
       const std::size_t min_size = std::min(N, t.min.size());
       for(std::size_t i = 0; i < min_size; i++)
@@ -121,12 +113,13 @@ struct domain_conversion<vecf_domain<N>>
         dom.max[i] = ossia::convert<float>(t.max[i]);
       }
 
-      for(auto& val : t.values)
+
+      const std::size_t vals_size = std::min(N, t.values.size());
+      for(std::size_t i = 0; i < vals_size; i++)
       {
-          if(val.size() == N)
-          {
-              dom.values.insert(to_vec(val));
-          }
+        dom.values[i].clear();
+        for(auto& val : t.values[i])
+          dom.values[i].insert(ossia::convert<float>(val));
       }
 
       return dom;

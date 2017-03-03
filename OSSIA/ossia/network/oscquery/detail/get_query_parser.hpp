@@ -57,7 +57,7 @@ public:
   }
 
   template<typename Protocol>
-  static json_writer::string_t handle_listen(
+  static json_writer::string_t handle_osc_port(
       Protocol& proto,
       const typename Protocol::connection_handler& hdl,
       int port)
@@ -113,7 +113,7 @@ public:
           auto listen_it = parameters.find(detail::listen());
           if(listen_it != parameters.end())
           {
-            return handle_listen(proto, hdl, node, path, listen_it->second);
+            return handle_listen(proto, hdl, *node, path, listen_it->second);
           }
 
           auto set_osc_port_it = parameters.find(detail::set_port());
