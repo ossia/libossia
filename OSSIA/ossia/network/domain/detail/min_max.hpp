@@ -305,14 +305,23 @@ struct domain_value_set_creation_visitor
         std::vector<boost::container::flat_set<ossia::value>>(
             orig.size(), std::move(vals));
 
-    return {};
+    return res;
   }
 
   template<std::size_t N>
   domain operator()(const std::array<float, N>& dom)
   {
-    // TODO
-    return {};
+    vecf_domain<N> res;
+    boost::container::flat_set<float> vals;
+
+    for(const auto& value : values)
+      if(auto r = value.target<float>())
+        vals.insert(*r);
+
+    for(std::size_t i = 0; i < N-1; i++)
+      res.values[i] = vals;
+    res.values[N-1] = std::move(vals);
+    return res;
   }
 
   domain operator()()
