@@ -122,7 +122,7 @@ struct OSSIA_EXPORT vector_domain
     return *this;
   }
 
-  vector_domain(ossia::none_t v1, ossia::none_t v2)
+  vector_domain(ossia::none_t, ossia::none_t)
   {
 
   }
@@ -135,6 +135,11 @@ struct OSSIA_EXPORT vector_domain
   vector_domain(value_type&& v1,
               value_type&& v2,
               std::vector<boost::container::flat_set<ossia::value>>&& vals): min{std::move(v1)}, max{std::move(v2)}, values{std::move(vals)} { }
+
+  friend bool operator!=(const vector_domain& lhs, const vector_domain& rhs)
+  {
+    return lhs.min != rhs.min && lhs.max != rhs.max && lhs.values != rhs.values;
+  }
 };
 
 template <std::size_t N>
@@ -185,6 +190,11 @@ struct OSSIA_EXPORT vecf_domain
   vecf_domain(const std::array<optional<float>, N>& v1,
               const std::array<optional<float>, N>& v2,
               std::array<boost::container::flat_set<float>, N>&& vals): min{v1}, max{v2}, values{std::move(vals)} { }
+
+  friend bool operator!=(const vecf_domain& lhs, const vecf_domain& rhs)
+  {
+    return lhs.min != rhs.min && lhs.max != rhs.max && lhs.values != rhs.values;
+  }
 };
 
 template <>

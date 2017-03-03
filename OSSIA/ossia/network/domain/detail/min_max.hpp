@@ -138,7 +138,10 @@ struct domain_set_min_visitor
 
   template<std::size_t N>
   OSSIA_INLINE void operator()(vecf_domain<N>& domain, const std::array<float, N>& incoming)
-  { domain.min = incoming; }
+  {
+    for(std::size_t i = 0; i < N; i++)
+      domain.min[i] = incoming[i];
+  }
 
   template<typename T>
   OSSIA_INLINE void operator()(domain_base<ossia::value>& domain, const T& incoming)
@@ -164,7 +167,10 @@ struct domain_set_min_visitor
   { domain.min.clear(); }
   template<std::size_t N, typename... U>
   OSSIA_INLINE void operator()(vecf_domain<N>& domain, U&&...)
-  { domain.min = ossia::none; }
+  {
+    for(std::size_t i = 0; i < N; i++)
+      domain.min[i] = ossia::none;
+  }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<ossia::value>& domain, U&&...)
   { domain.min = ossia::none; }
@@ -190,7 +196,10 @@ struct domain_set_max_visitor
 
   template<std::size_t N>
   OSSIA_INLINE void operator()(vecf_domain<N>& domain, const std::array<float, N>& incoming)
-  { domain.max = incoming; }
+  {
+    for(std::size_t i = 0; i < N; i++)
+      domain.max[i] = incoming[i];
+  }
 
   template<typename T>
   OSSIA_INLINE void operator()(domain_base<ossia::value>& domain, const T& incoming)
@@ -214,7 +223,10 @@ struct domain_set_max_visitor
   { domain.max.clear(); }
   template<std::size_t N, typename... U>
   OSSIA_INLINE void operator()(vecf_domain<N>& domain, U&&...)
-  { domain.max = ossia::none; }
+  {
+    for(std::size_t i = 0; i < N; i++)
+      domain.max[i] = ossia::none;
+  }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<ossia::value>& domain, U&&...)
   { domain.max = ossia::none; }
@@ -296,21 +308,31 @@ struct domain_value_set_update_visitor
 
   void operator()(ossia::vector_domain& dom)
   {
-    dom.values.resize(1);
-    dom.values[0].clear();
-    for(auto& value : values)
+    for(auto& set : dom.values)
     {
-      dom.values[0].insert(value);
+      set.clear();
+      for(auto& value : values)
+      {
+        dom.values[0].insert(value);
+      }
     }
   }
+
   template<std::size_t N>
   void operator()(ossia::vecf_domain<N>& dom)
   {
-    dom.values.resize(1);
-    dom.values[0].clear();
+    for(std::size_t i = 0; i < N; i++)
+      dom.values[i].clear();
+
     for(auto& value : values)
     {
-      dom.values[0].insert(value);
+      if(auto r = value.target<float>())
+      {
+        for(std::size_t i = 0; i < N; i++)
+        {
+          dom.values[i].insert(*r);
+        }
+      }
     }
   }
 

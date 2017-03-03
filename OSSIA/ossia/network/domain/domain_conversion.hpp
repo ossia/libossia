@@ -109,21 +109,16 @@ struct domain_conversion<vecf_domain<N>>
       };
 
       vecf_domain<N> dom;
-      if(t.min)
+      const std::size_t min_size = std::min(N, t.min.size());
+      for(std::size_t i = 0; i < min_size; i++)
       {
-          const std::vector<ossia::value>& min = *t.min;
-          if(min.size() == N)
-          {
-              dom.min = to_vec(min);
-          }
+        dom.min[i] = ossia::convert<float>(t.min[i]);
       }
-      if(t.max)
+
+      const std::size_t max_size = std::min(N, t.max.size());
+      for(std::size_t i = 0; i < max_size; i++)
       {
-          const std::vector<ossia::value>& max = *t.max;
-          if(max.size() == N)
-          {
-              dom.max = to_vec(max);
-          }
+        dom.max[i] = ossia::convert<float>(t.max[i]);
       }
 
       for(auto& val : t.values)
