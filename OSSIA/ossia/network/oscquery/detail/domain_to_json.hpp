@@ -27,10 +27,12 @@ struct domain_to_json
   rapidjson::Writer<rapidjson::StringBuffer>& writer;
   void operator()()
   {
+    writer.Null();
   }
 
   void operator()(const ossia::domain_base<impulse> & dom)
   {
+    writer.Null();
   }
 
   template<typename T>
@@ -63,6 +65,10 @@ struct domain_to_json
       }
       writer.EndObject();
     }
+    else
+    {
+      writer.Null();
+    }
   }
 
   void operator()(const ossia::domain_base<std::string>& dom)
@@ -77,127 +83,110 @@ struct domain_to_json
       writer.EndArray();
       writer.EndObject();
     }
+    else
+    {
+      writer.Null();
+    }
   }
 
   void operator()(const ossia::vector_domain & dom)
   {
-    // TODO
-    /*
-    int min_count = dom.min ? dom.min->size() : 0;
-    int max_count = dom.max ? dom.max->size() : 0;
-    int values_count = dom.values.size();
-    int N = std::min(std::min(min_count, max_count), values_count);
+    const auto min_count = dom.min.size();
+    const auto max_count = dom.max.size();
+    const auto values_count = dom.values.size();
+    const auto N = std::max(std::max(min_count, max_count), values_count);
     if(N > 0)
     {
-      auto min_it = dom.min->begin();
-      auto max_it = dom.max->begin();
-      auto values_it = dom.values.begin();
-      for(int i = 0; i < N; i++)
-      {
-        writer.StartObject();
-        writer.Key("MIN");
-        write_json(*min_it);
-
-        writer.Key("MAX");
-        write_json(*max_it);
-
-      }
-    }
-    */
-
-    /*
-    for(int i = 0; i < N; i++)
-    if(dom.min)
-    {
       writer.StartArray();
-      for(auto& val : *dom.min)
-        val.apply(value_to_json{writer});
+      for(std::size_t i = 0; i < N; i++)
+      {
+        if(values_count > i && !dom.values[i].empty())
+        {
+          writer.StartObject();
+
+          writer.Key("VALS");
+          writer.StartArray();
+
+          for(const auto& val : dom.values[i])
+            write_json(writer, val);
+
+          writer.EndArray();
+          writer.EndObject();
+
+        }
+        else if((min_count > i && dom.min[i].valid()) ||
+                (max_count > i && dom.max[i].valid()))
+        {
+          writer.StartObject();
+          if(dom.min[i].valid())
+          {
+            writer.Key("MIN");
+            write_json(writer, dom.min[i]);
+          }
+
+          if(dom.max[i].valid())
+          {
+            writer.Key("MAX");
+            write_json(writer, dom.max[i]);
+          }
+          writer.EndObject();
+
+        }
+        else
+        {
+          writer.Null();
+        }
+      }
       writer.EndArray();
     }
     else
     {
       writer.Null();
     }
-
-    if(dom.max)
-    {
-      writer.StartArray();
-      for(auto& val : *dom.max)
-        val.apply(value_to_json{writer});
-      writer.EndArray();
-    }
-    else
-    {
-      writer.Null();
-    }
-
-    if(!dom.values.empty())
-    {
-      writer.StartArray();
-      for(const auto& val : dom.values)
-      {
-        writer.StartArray();
-        for(auto& sub : val)
-          sub.apply(value_to_json{writer});
-        writer.EndArray();
-      }
-      writer.EndArray();
-    }
-    else
-    {
-      writer.Null(); // TODO why not just nothing ?
-    }
-    */
   }
 
   template<std::size_t N>
   void operator()(const ossia::vecf_domain<N> & dom)
   {
-    // TODO
-    /*
-    if(dom.min)
+    writer.StartArray();
+    for(std::size_t i = 0; i < N; i++)
     {
-      auto& vec = *dom.min;
-      writer.StartArray();
-      for(std::size_t i = 0; i < N; i++)
-        writer.Double(vec[i]);
-      writer.EndArray();
-    }
-    else
-    {
-      writer.Null();
-    }
-
-    if(dom.max)
-    {
-      auto& vec = *dom.max;
-      writer.StartArray();
-      for(std::size_t i = 0; i < N; i++)
-        writer.Double(vec[i]);
-      writer.EndArray();
-    }
-    else
-    {
-      writer.Null();
-    }
-
-    if(!dom.values.empty())
-    {
-      writer.StartArray();
-      for(const auto& vec : dom.values)
+      if(!dom.values[i].empty())
       {
+        writer.StartObject();
+
+        writer.Key("VALS");
         writer.StartArray();
-        for(std::size_t i = 0; i < N; i++)
-          writer.Double(vec[i]);
+
+        for(const auto val : dom.values[i])
+          writer.Double(val);
+
         writer.EndArray();
+        writer.EndObject();
       }
-      writer.EndArray();
+      else if(dom.min[i] || dom.max[i])
+      {
+        writer.StartObject();
+        if(dom.min[i])
+        {
+          writer.Key("MIN");
+          write_json(writer, *dom.min[i]);
+        }
+
+        if(dom.max[i])
+        {
+          writer.Key("MAX");
+          write_json(writer, *dom.max[i]);
+        }
+        writer.EndObject();
+      }
+      else
+      {
+        writer.Null();
+      }
     }
-    else
-    {
-      writer.Null(); // TODO why not just nothing ?
-    }
-    */
+    writer.EndArray();
+
   }
   void operator()(const ossia::domain_base<ossia::value> & dom)
   {

@@ -111,11 +111,92 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, access_mode& am)
   return b;
 }
 
+static bool ReadValueObject(const rapidjson::Value& val, domain& res)
+{
+  auto min_it = val.FindMember("MIN");
+  auto max_it = val.FindMember("MAX");
+  auto values_it = val.FindMember("VALS");
+
+  auto mem_end = val.MemberEnd();
+
+  if(values_it != mem_end)
+  {
+    // TODO
+  }
+  else if(min_it != mem_end || max_it != mem_end)
+  {
+    if(min_it != mem_end && max_it != mem_end)
+    {
+      res = ossia::make_domain(ReadValue(min_it->value), ReadValue(max_it->value));
+      return true;
+    }
+    else if(min_it != mem_end)
+    {
+      res = ossia::make_domain(ReadValue(min_it->value), {});
+      return true;
+    }
+    else if(max_it != mem_end)
+    {
+      res = ossia::make_domain(ossia::value{}, ReadValue(max_it->value));
+      return true;
+    }
+  }
+
+  return false;
+}
+
 bool json_parser_impl::ReadValue(const rapidjson::Value& val, domain& res)
 {
-  if(!val.IsArray())
-    return false;
+  if(val.IsObject())
+  {
+    return ReadValueObject(val, res);
+  }
+  else if(val.IsArray())
+  {
+    // TODO handle vecf domains.
+    vector_domain dom;
+    dom.min.resize(val.GetArray().Size());
+    dom.max.resize(val.GetArray().Size());
+    dom.values.resize(val.GetArray().Size());
 
+    int i = 0;
+    for(const auto& elt : val.GetArray())
+    {
+      auto min_it = elt.FindMember("MIN");
+      auto max_it = elt.FindMember("MAX");
+      auto values_it = elt.FindMember("VALS");
+
+      auto mem_end = elt.MemberEnd();
+
+      if(values_it != mem_end)
+      {
+        if(values_it->value.IsArray())
+        {
+          for(auto& val : values_it->value.GetArray())
+          {
+            dom.values[i].insert(ReadValue(val));
+          }
+        }
+      }
+
+      if(min_it != mem_end)
+      {
+        dom.min[i] = ReadValue(min_it->value);
+      }
+
+      if(max_it != mem_end)
+      {
+        dom.max[i] = ReadValue(max_it->value);
+      }
+
+      i++;
+    }
+
+    res = std::move(dom);
+    return true;
+  }
+
+  /*
   const int N = val.Size();
   // Read the domain as it is
   if(N == 2) // min, max
@@ -143,6 +224,7 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, domain& res)
       return true;
     }
   }
+  */
   return false;
 }
 
