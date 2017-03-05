@@ -6,8 +6,8 @@ branches:
 
 env:
   global:
-    - GH_REPO_NAME: API
-    - GH_REPO_REF: github.com/OSSIA/API.git
+    - GH_REPO_NAME: libossia
+    - GH_REPO_REF: github.com/OSSIA/libossia.git
 
 osx_image: xcode8.2
 dist: trusty
