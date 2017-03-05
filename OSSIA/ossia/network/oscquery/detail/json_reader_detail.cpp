@@ -196,35 +196,6 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, domain& res)
     return true;
   }
 
-  /*
-  const int N = val.Size();
-  // Read the domain as it is
-  if(N == 2) // min, max
-  {
-    res = ossia::make_domain(ReadValue(val[0]), ReadValue(val[1]));
-    return true;
-  }
-
-  else if(N >= 3)
-  {
-    if(!val[2].IsArray())
-    {
-      res = ossia::make_domain(ReadValue(val[0]), ReadValue(val[1]));
-      return true;
-    }
-    else
-    {
-      std::vector<ossia::value> tpl;
-      tpl.reserve(val[2].Size());
-      for(auto& elt : val[2].GetArray())
-      {
-        tpl.push_back(ReadValue(elt));
-      }
-      res = ossia::make_domain(ReadValue(val[0]), ReadValue(val[1]), std::move(tpl));
-      return true;
-    }
-  }
-  */
   return false;
 }
 
