@@ -10,7 +10,6 @@ import ossia_python as ossia
 
 from functools import wraps
 
-
 def add_push(function_to_enhance, address=None):
     # this is the ossia address we want to push
     ossia_address = address
@@ -59,6 +58,34 @@ def ossia_param(Class, key, OssiaNode):
 	# return the modified parameter
 	return getattr(Class, key)
 
+def ossia_return(Class, key, OssiaNode):
+	"""
+	rewrite Original property
+	"""
+	# create a node for this parameter
+	ossia_node = OssiaNode.add_node(key)
+	# attach a value to this address
+	ossia_address = ossia_node.create_address(ossia.ValueType.Float)
+	ossia_address.set_access_mode(ossia.AccessMode.Get)
+	# Override the Property of this parameter in the Original Class
+	puller = getattr(Class, key)
+	puller = getattr(puller, 'fget')
+	setattr(Class, key, property(add_pull(puller, address=ossia_address), None))
+	# return the modified parameter
+	return getattr(Class, key)
+
+def ossia_message(Class, key, OssiaNode):
+	"""
+	rewrite Original method
+	"""
+	# create a node for this parameter
+	ossia_node = OssiaNode.add_node(key)
+	# attach a value to this address
+	ossia_address = ossia_node.create_address(ossia.ValueType.Impulse)
+	ossia_address.set_access_mode(ossia.AccessMode.Set)
+	# return the modified parameter
+	return getattr(Class, key)
+
 def ossia_model(Class, OssiaDevice):
 	"""
 	rewrite Original Class and make it OSSIA compatible
@@ -82,49 +109,14 @@ def ossia_model(Class, OssiaDevice):
 	for key, val in params.items():
 		my_param = ossia_param(Class, key, OssiaNode)
 		print(key)
-	"""
 	print('--- messages ---')
 	for key, val in messages.items():
-		print('-  ' + key + ' : ' + str(val))
-		setattr(Class, key, property(add_push(getattr(Class, key))))
-		# add messages to the model
-		my_message = self.model.add_node(str(key))
-		my_message = my_message.create_address(ossia.ValueType.Impulse)
-		my_message.set_access_mode(ossia.AccessMode.Set)
+		my_message = ossia_message(Class, key, OssiaNode)
+		print(key)
 		# We need to decorate set method for property to push value to ossia api
 	print('--- returns ---')
 	for key, val in returns.items():
-		print('-  ' + key + ' : ' + str(val))
-		puller = getattr(Class, key)
-		puller = getattr(puller, 'fget')
-		setattr(Class, key, property(add_pull(puller)))
-		# add returns to the model
-		my_return = self.model.add_node(str(key))
-		my_return = my_return.create_address(ossia.ValueType.Float)
-		# We need to decorate get method for property to pull value to ossia api
-		my_return.set_access_mode(ossia.AccessMode.Get)
-	"""
+		my_return = ossia_return(Class, key, OssiaNode)
+		print(key)
 	return Class
 
-# This is the only code we need to declare an OSSIA DEVICE
-# create the Video Player Device
-OssiaDevice = ossia.LocalDevice('my_video_device')
-OssiaDevice.create_oscquery_server(22222, 5678)
-# All the VPlayer instances will be created as a model of the OssiaDevice root
-Vplayer = ossia_model(VPlayer, OssiaDevice)
-
-# create an instance of a video player
-vplayer = VPlayer()
-
-# Just a test
-from time import sleep
-while True:
-	pass
-	"""
-	vplayer.play_status = True
-	print(vplayer.play_status)
-	sleep(1)
-	vplayer.play_status = False
-	print(vplayer.play_status)
-	sleep(1)
-	"""
