@@ -32,3 +32,4 @@ project.xcworkspace
 Documentation/Doxygen/*ml*
 Documentation/Doxygen/API
 *.so
+*.pyc
