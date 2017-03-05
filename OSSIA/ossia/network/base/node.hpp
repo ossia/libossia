@@ -182,6 +182,8 @@ protected:
 OSSIA_EXPORT node_base*
 find_node(node_base& dev, ossia::string_view address_base);
 OSSIA_EXPORT node_base&
+create_node(node_base& dev, ossia::string_view address_base);
+OSSIA_EXPORT node_base&
 find_or_create_node(node_base& dev, ossia::string_view address_base);
 
 }
