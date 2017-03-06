@@ -26,11 +26,6 @@ const std::string& midi_node_name(midi_size_t i)
   return tbl.names[i];
 }
 
-midi_node::midi_node()
-{
-
-}
-
 midi_node::~midi_node()
 {
 
