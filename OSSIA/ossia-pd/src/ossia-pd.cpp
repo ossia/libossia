@@ -43,19 +43,6 @@ extern "C" void ossia_setup(void)
     setup_ossia0x2eview();
 }
 
-template<typename T> void obj_dump_path(T *x)
-{
-    t_atom a;
-    std::string fullpath = get_absolute_path(x->x_node);
-    SETSYMBOL(&a,gensym(fullpath.c_str()));
-    outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
-}
-template void obj_dump_path<t_param> (t_param  *x);
-template void obj_dump_path<t_remote> (t_remote  *x);
-template void obj_dump_path<t_model> (t_model  *x);
-template void obj_dump_path<t_view> (t_view  *x);
-
-
 // self registering (when creating the object)
 template<typename T> bool obj_register(T *x)
 {

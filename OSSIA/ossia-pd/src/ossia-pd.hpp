@@ -450,7 +450,6 @@ static std::string get_absolute_path(ossia::net::node_base* node)
 }
 
 // we can't have virtual methods with C linkage so we need a bunch a template instead...
-template<typename T> extern void obj_dump_path(T *x);
 template<typename T> extern bool obj_register(T *x);
 template<typename T> extern void obj_bang(T *x);
 template<typename T> extern void obj_dump(T *x);
