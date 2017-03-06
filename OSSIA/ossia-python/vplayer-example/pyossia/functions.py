@@ -88,6 +88,7 @@ def ossia_message(Class, key, OssiaNode):
 	# return the new_wrapper when modify Original Class
 	return new_wrapper
 
+
 def ossia_return(Class, key, OssiaNode):
 	"""
 	rewrite Original property
