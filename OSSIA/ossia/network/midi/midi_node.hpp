@@ -21,7 +21,8 @@ public:
   using iterator = ossia::ptr_container<ossia::net::node_base>::iterator;
   using const_iterator
       = ossia::ptr_container<ossia::net::node_base>::const_iterator;
-  midi_node() = default;
+  midi_node();
+  ~midi_node();
   midi_node(midi_device& aDevice, ossia::net::node_base& aParent);
 
   device_base& getDevice() const final override;
