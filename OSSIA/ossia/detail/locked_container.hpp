@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/mutex.hpp>
-#include <iostream>
+#include <ossia/detail/logger.hpp>
 namespace ossia
 {
 /**
@@ -14,12 +14,12 @@ public:
     m_ref{src},
     m_mutex{mutex}
   {
-    std::cerr << "locking(container) ";
+    SPDLOG_TRACE((&ossia::logger()), "locking(container)");
   }
 
   ~locked_container()
   {
-    std::cerr << "unlocked(container) ";
+    SPDLOG_TRACE((&ossia::logger()), "unlocking(container)");
   }
 
   auto& front() { return m_ref.front(); }

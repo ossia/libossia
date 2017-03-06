@@ -193,16 +193,16 @@ node_base* node_base::createChild(std::string name)
 
 std::vector<std::string> node_base::childrenNames() const
 {
-  std::cerr << "locking(childrenNames) ";
+  SPDLOG_TRACE((&ossia::logger()), "locking(childrenNames)");
   read_lock_t lock{m_mutex};
-  std::cerr << "locked(childrenNames) ";
+  SPDLOG_TRACE((&ossia::logger()), "locked(childrenNames)");
   std::vector<std::string> bros_names;
   bros_names.reserve(m_children.size());
 
   std::transform(m_children.cbegin(), m_children.cend(), std::back_inserter(bros_names),
                  [] (const auto& n) { return n->getName(); });
 
-  std::cerr << "unlocked(childrenNames) \n";
+  SPDLOG_TRACE((&ossia::logger()), "locked(childrenNames)");
   return bros_names;
 }
 
@@ -231,25 +231,29 @@ node_base*node_base::addChild(std::unique_ptr<node_base> n)
 node_base* node_base::findChild(ossia::string_view name)
 {
   {
-  std::cerr << "locking(findChild) ";
-  read_lock_t lock{m_mutex};
-  std::cerr << "locked(findChild) ";
-  for(auto& node : m_children)
-  {
-    if(node->getName() == name)
-      return node.get();
-  }
+    SPDLOG_TRACE((&ossia::logger()), "locking(findChild)");
+    read_lock_t lock{m_mutex};
+    SPDLOG_TRACE((&ossia::logger()), "locked(findChild)");
+    for(auto& node : m_children)
+    {
+      if(node->getName() == name)
+      {
+        SPDLOG_TRACE((&ossia::logger()), "unlocked(findChild)");
+        return node.get();
+      }
+    }
   }
 
-  std::cerr << "unlocked(findChild) \n";
+  SPDLOG_TRACE((&ossia::logger()), "unlocked(findChild)");
   return nullptr;
 }
 
 bool node_base::hasChild(node_base& n)
 {
-  std::cerr << "locking(hasChild) ";
+  SPDLOG_TRACE((&ossia::logger()), "locking(hasChild)");
   read_lock_t lock{m_mutex};
-  std::cerr << "locking(hasChild) \n";
+
+  SPDLOG_TRACE((&ossia::logger()), "locked(hasChild)");
   // TODO why not n.parent() == this ?
   return any_of(m_children, [&] (auto& cld) { return cld.get() == &n; } );
 }
@@ -324,14 +328,15 @@ void node_base::clearChildren()
 std::vector<node_base*> node_base::children_copy() const
 {
   std::vector<node_base*> copy;
-  std::cerr << "locking(children_copy) ";
+  SPDLOG_TRACE((&ossia::logger()), "locking(children_copy)");
   read_lock_t lock{m_mutex};
-  std::cerr << "locked(children_copy) ";
+
+  SPDLOG_TRACE((&ossia::logger()), "locked(children_copy)");
   copy.reserve(m_children.size());
   for(auto& e : m_children)
     copy.push_back(e.get());
 
-  std::cerr << "unloced(children_copy) \n";
+  SPDLOG_TRACE((&ossia::logger()), "unlocking(children_copy)");
   return copy;
 }
 
