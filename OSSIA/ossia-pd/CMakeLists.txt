@@ -88,11 +88,7 @@ if(MSVC)
     target_link_libraries(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}\\pd.lib")
 endif()
 
-if(APPLE)
-    target_link_libraries(${PROJECT_NAME} PRIVATE -Wl,-undefined,dynamic_lookup)
-elseif(UNIX)
-    target_link_libraries(${PROJECT_NAME} PRIVATE -Wl,--warn-unresolved-symbols)
-endif()
+add_linker_warnings_external(${PROJECT_NAME})
 
 if(UNIX)
     target_compile_options(${PROJECT_NAME} PRIVATE -std=c++14)

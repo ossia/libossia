@@ -6,7 +6,7 @@ set(CMAKE_MACOSX_RPATH Off)
 
 find_package(MaxSDK REQUIRED)
 
-if ( APPLE )
+if(APPLE)
     FIND_PATH(FILE_H_DIR Files.h
         HINTS
         /System/Library/Frameworks/
@@ -21,7 +21,6 @@ if ( APPLE )
     else()
         include_directories("${FILE_H_DIR}")
     endif()
-
 endif()
 include_directories(src)
 include_directories(${MAXSDK_MAX_INCLUDE_DIR})
@@ -40,14 +39,10 @@ set(PROJECT_SRCS
 
 add_library(${PROJECT_NAME} MODULE ${PROJECT_SRCS})
 use_gold(${PROJECT_NAME})
+add_linker_warnings_external(${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ossia ${MAXSDK_API_LIBRARY})
 target_include_directories(${PROJECT_NAME} PRIVATE ${FILE_H_DIR})
-if(APPLE)
-    target_link_libraries(${PROJECT_NAME} PRIVATE -Wl,-undefined,dynamic_lookup)
-elseif(UNIX)
-    target_link_libraries(${PROJECT_NAME} PRIVATE -Wl,--warn-unresolved-symbols)
-endif()
 
 if(UNIX)
     target_compile_options(${PROJECT_NAME} PRIVATE -std=c++14)
