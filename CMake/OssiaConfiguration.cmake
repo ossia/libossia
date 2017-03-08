@@ -67,6 +67,20 @@ check_cxx_compiler_flag("-Wl,-z,defs" WL_ZDEFS_SUPPORTED)
 check_cxx_compiler_flag("-fuse-ld=lld" LLD_LINKER_SUPPORTED)
 check_cxx_compiler_flag("-fuse-ld=gold" GOLD_LINKER_SUPPORTED)
 
+if(LLD_LINKER_SUPPORTED) 
+  set(LINKER_IS_LLD 1)
+elseif(GOLD_LINKER_SUPPORTED)
+  set(LINKER_IS_GOLD 1)
+endif()
+
+set(DEBUG_SPLIT_FLAG "-gsplit-dwarf")
+set(GOLD_FLAGS 
+  -Wa,--compress-debug-sections
+  -Wl,--compress-debug-sections=zlib
+  -Wl,--dynamic-list-cpp-new
+  -Wl,--dynamic-list-cpp-typeinfo
+)
+
 if(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*arm.*")
     set(OSSIA_ARCHITECTURE arm)
 elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*aarch64.*")
@@ -135,32 +149,37 @@ if(MSVC)
     )
 else()
     set(OSSIA_LINK_OPTIONS
-        -ffunction-sections
-        -fdata-sections
-        )
+      -ffunction-sections
+      -fdata-sections
+    )
 
     if(CMAKE_COMPILER_IS_GNUCXX)
+      set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
+        -fvar-tracking-assignments
+      )
+    endif()
+     
+    if(UNIX AND NOT APPLE)
+      set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
+        -Wl,--gc-sections
+        -Wl,-Bsymbolic-functions
+      )
+    endif()
+     
+    if(LINKER_IS_GOLD OR LINKER_IS_LLD)
+      if(NOT OSSIA_SANITIZE)
         set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
-            -Wl,--gc-sections
-            -fvar-tracking-assignments
-            -Wl,--compress-debug-sections=zlib
-            -Wa,--compress-debug-sections
-            -Wl,--dynamic-list-cpp-new
-            -Wl,--dynamic-list-cpp-typeinfo
-            -Wl,-Bsymbolic-functions
-            )
-
-        if(GOLD_LINKER_SUPPORTED)
-            if(NOT OSSIA_SANITIZE)
-                set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
-                    -Wl,--gdb-index
-                    -gsplit-dwarf
-                    )
-            endif()
-        endif()
-        if(OSSIA_MOST_STATIC)
-            set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -static -static-libgcc -static-libstdc++)
-        endif()
+         -Wl,--gdb-index ${DEBUG_SPLIT_FLAG}
+        )
+      endif()
+    endif()
+    
+    if(LINKER_IS_GOLD)
+      set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} ${GOLD_FLAGS})
+    endif()
+     
+    if(OSSIA_MOST_STATIC)
+      set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -static -static-libgcc -static-libstdc++)
     endif()
 
     if(OSSIA_CI)
