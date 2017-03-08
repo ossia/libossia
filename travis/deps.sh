@@ -7,7 +7,7 @@ fi
 
 case "$TRAVIS_OS_NAME" in
   linux)
-    sudo echo 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-4.0 main' > /etc/apt/sources.list.d/llvm.list
+    echo 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-4.0 main' | sudo tee /etc/apt/sources.list.d/llvm.list
     sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551
     sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
     sudo add-apt-repository --yes ppa:beineri/opt-qt58-trusty
