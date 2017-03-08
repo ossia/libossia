@@ -64,6 +64,7 @@ include(ProcessorCount)
 include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-Wmisleading-indentation" SUPPORTS_MISLEADING_INDENT_FLAG)
 check_cxx_compiler_flag("-Wl,-z,defs" WL_ZDEFS_SUPPORTED)
+check_cxx_compiler_flag("-fuse-ld=lld" LLD_LINKER_SUPPORTED)
 check_cxx_compiler_flag("-fuse-ld=gold" GOLD_LINKER_SUPPORTED)
 
 if(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*arm.*")
