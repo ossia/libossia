@@ -16,26 +16,28 @@ cd build
 
 case "$TRAVIS_OS_NAME" in
   linux)
-    export CC=gcc-6
-    export CXX=g++-6
+    export CC=/usr/bin/clang-4.0
+    export CXX=/usr/bin/clang++-4.0
     export BOOST_ROOT=/opt/boost
+    export VERBOSE=1
     QT_ENV_SCRIPT=$(find /opt -name 'qt*-env.sh')
     source $QT_ENV_SCRIPT
     export LD_LIBRARY_PATH="/usr/lib64:$LD_LIBRARY_PATH"
+
     case "$BUILD_TYPE" in
       Debug)
-        $CMAKE_BIN -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$OSSIA_STATIC -DOSSIA_TESTING=1 -DOSSIA_EXAMPLES=1 -DOSSIA_CI=1 ..
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$OSSIA_STATIC -DOSSIA_TESTING=1 -DOSSIA_EXAMPLES=1 -DOSSIA_CI=1 ..
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target ExperimentalTest
       ;;
       Release)
-        $CMAKE_BIN -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$OSSIA_STATIC -DOSSIA_TESTING=1 -DOSSIA_EXAMPLES=1 -DOSSIA_CI=1 ..
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$OSSIA_STATIC -DOSSIA_TESTING=1 -DOSSIA_EXAMPLES=1 -DOSSIA_CI=1 ..
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target ExperimentalTest
       ;;
       Coverage)
         gem install coveralls-lcov
-        $CMAKE_BIN -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=Debug -DOSSIA_TESTING=1 -DOSSIA_COVERAGE=1 -DOSSIA_CI=1 ..
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=Debug -DOSSIA_TESTING=1 -DOSSIA_COVERAGE=1 -DOSSIA_CI=1 ..
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target ossia_coverage
         mv coverage.info.cleaned coverage.info

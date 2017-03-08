@@ -1,6 +1,7 @@
 #include <ossia/editor/scenario/clock.hpp>
 #include <ossia/detail/math.hpp>
 #include <ossia/detail/logger.hpp>
+#include <ossia/detail/thread.hpp>
 #include <cassert>
 #include <iostream>
 
@@ -332,6 +333,7 @@ void clock::do_start()
 
     // launch a new thread to run the clock execution
     mThread = std::thread(&clock::threadCallback, this);
+    set_thread_realtime(mThread);
   }
 }
 

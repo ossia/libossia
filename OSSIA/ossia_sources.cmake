@@ -2,7 +2,6 @@ set(API_HEADERS
     ## Editor ##
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/prefix.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/context.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/algorithms.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/config.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/callback_container.hpp"
@@ -17,6 +16,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/locked_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/ptr_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/mutex.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/thread.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/automation.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/curve_value_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_abstract.hpp"
@@ -155,7 +155,7 @@ set(SRCS
     ${API_HEADERS}
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/context.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/thread.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/automation.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.cpp"
 

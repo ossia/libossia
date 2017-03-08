@@ -353,10 +353,16 @@ logger().error("oscquery_server_protocol::on_attributeChanged: error.");
 
 void oscquery_server_protocol::update_zeroconf()
 {
-  m_zeroconfServer = net::make_zeroconf_server(
-                       getDevice().getName(),
-                       "_oscjson._tcp",
-                       "", m_wsPort, 0);
+  try {
+    m_zeroconfServer = net::make_zeroconf_server(
+                         getDevice().getName(),
+                         "_oscjson._tcp",
+                         "", m_wsPort, 0);
+  } catch (std::exception& e) {
+    ossia::logger().error("oscquery_server_protocol::update_zeroconf: {}", e.what());
+  } catch (...) {
+    ossia::logger().error("oscquery_server_protocol::update_zeroconf: error");
+  }
 }
 
 rapidjson::StringBuffer oscquery_server_protocol::on_WSrequest(
