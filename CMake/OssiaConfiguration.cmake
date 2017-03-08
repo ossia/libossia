@@ -102,7 +102,7 @@ if(${CMAKE_VERSION} VERSION_LESS 3.8.0)
   if(NOT MSVC)
     set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++14)
   endif()
-else
+else()
   set(CMAKE_CXX_STANDARD 17)
   if(NOT MSVC)
     set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++1z)
