@@ -29,7 +29,7 @@ if(CLANG_TIDY)
         ${SRCS}
         -config=''
         --
-        -std=c++14
+        -std=c++1z
         ${INCLUDE_DIRECTORIES}
         )
 endif()

@@ -44,8 +44,8 @@ add_linker_warnings_external(${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} PRIVATE ossia ${MAXSDK_API_LIBRARY})
 target_include_directories(${PROJECT_NAME} PRIVATE ${FILE_H_DIR})
 
-if(UNIX)
-    target_compile_options(${PROJECT_NAME} PRIVATE -std=c++14)
+if(NOT MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE -std=c++1z)
 endif()
 
 if(APPLE)

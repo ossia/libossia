@@ -97,13 +97,22 @@ endif()
 # Common setup
 set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
-set(CMAKE_CXX_STANDARD 14)
-
+if(${CMAKE_VERSION} VERSION_LESS 3.8.0)
+  set(CMAKE_CXX_STANDARD 14)
+  if(NOT MSVC)
+    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++14)
+  endif()
+else
+  set(CMAKE_CXX_STANDARD 17)
+  if(NOT MSVC)
+    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++1z)
+  endif()
+endif()
 # So that make install after make all_unity does not rebuild everything :
 set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY True)
 
 if(CMAKE_SYSTEM_NAME MATCHES Emscripten)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z")
 endif()
 
 # We disable debug infos on OS X on travis because it takes up too much space
@@ -189,7 +198,7 @@ else()
     endif()
 
     set(OSSIA_COMPILE_OPTIONS
-        -std=c++14
+        -std=c++1z
         -Wall
         -Wextra
         -Wno-unused-parameter
