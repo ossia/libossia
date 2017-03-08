@@ -60,5 +60,6 @@ bool operator!=(const domain_base<T>& lhs, const domain_base<T>& rhs)
 }
 
 }
-
+namespace std {
 std::ostream& operator<<(std::ostream&, const ossia::domain&);
+}

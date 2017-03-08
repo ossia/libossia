@@ -651,6 +651,7 @@ value::~value() noexcept
 
 }
 
+namespace std {
 std::ostream& operator<<(
     std::ostream& s,
     const std::vector<ossia::value>& tuple)
@@ -719,4 +720,5 @@ std::ostream& operator<<(std::ostream& s, const std::vector<std::string>& tuple)
   s << "]";
 
   return s;
+}
 }

@@ -362,7 +362,7 @@ ossia::value get_value_at_index(
     const ossia::destination_index& idx);
 }
 
-
+namespace std {
 OSSIA_EXPORT std::ostream& operator<<(
     std::ostream& s,
     const std::vector<ossia::value>& tuple);
@@ -378,3 +378,4 @@ OSSIA_EXPORT std::ostream& operator<<(
 OSSIA_EXPORT std::ostream& operator<<(
     std::ostream&,
     const std::vector<std::string>& tuple);
+}

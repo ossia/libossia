@@ -5,19 +5,6 @@
 #include <ossia/detail/string_view.hpp>
 #include <cstring>
 
-namespace rapidjson
-{
-namespace internal
-{
-template <>
-inline rapidjson::SizeType StrLen<char>(const char* s)
-{
-    RAPIDJSON_ASSERT(s != 0);
-    return std::strlen(s);
-}
-}
-}
-
 inline std::string getString(const rapidjson::Value& val)
 {
   return std::string{val.GetString(), val.GetStringLength()};
