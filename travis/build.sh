@@ -19,7 +19,7 @@ case "$TRAVIS_OS_NAME" in
     export CC=/usr/bin/clang-4.0
     export CXX=/usr/bin/clang++-4.0
     export BOOST_ROOT=/opt/boost
-    export VERBOSE=1
+#    export VERBOSE=1
     QT_ENV_SCRIPT=$(find /opt -name 'qt*-env.sh')
     source $QT_ENV_SCRIPT
     export LD_LIBRARY_PATH="/usr/lib64:$LD_LIBRARY_PATH"
