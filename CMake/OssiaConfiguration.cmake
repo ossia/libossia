@@ -178,8 +178,13 @@ else()
     if(LINKER_IS_GOLD OR LINKER_IS_LLD)
       if(NOT OSSIA_SANITIZE)
         set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
-         -Wl,--gdb-index ${DEBUG_SPLIT_FLAG}
+          ${DEBUG_SPLIT_FLAG}
         )
+        if(NOT APPLE)
+            set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
+              -Wl,--gdb-index
+            )
+        endif()
       endif()
     endif()
     
