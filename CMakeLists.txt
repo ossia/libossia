@@ -28,6 +28,7 @@ add_subdirectory(3rdparty/oscpack EXCLUDE_FROM_ALL)
 add_subdirectory(3rdparty/Servus EXCLUDE_FROM_ALL)
 
 # Main library
+add_definitions(-DFMT_HEADER_ONLY=1)
 add_subdirectory(OSSIA)
 if(OSSIA_PD)
     add_subdirectory(OSSIA/ossia-pd)
