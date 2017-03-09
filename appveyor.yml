@@ -1,25 +1,25 @@
 image: Visual Studio 2015
 
 environment:
-  BOOST_ROOT: c:\Libraries\boost_1_62_0
+  BOOST_ROOT: c:\Libraries\boost_1_63_0
   CTEST_OUTPUT_ON_FAILURE: 1
 
   matrix:
     - platform: Win32
       configuration: Debug
-      QTDIR: C:\Qt\5.7\msvc2015
+      QTDIR: C:\Qt\5.8\msvc2015
       CMAKE_GENERATOR_NAME: Visual Studio 14 2015
     - platform: Win32
       configuration: Release
-      QTDIR: C:\Qt\5.7\msvc2015
+      QTDIR: C:\Qt\5.8\msvc2015
       CMAKE_GENERATOR_NAME: Visual Studio 14 2015
     - platform: x64
       configuration: Debug
-      QTDIR: C:\Qt\5.7\msvc2015_64
+      QTDIR: C:\Qt\5.8\msvc2015_64
       CMAKE_GENERATOR_NAME: Visual Studio 14 2015 Win64
     - platform: x64
       configuration: Release
-      QTDIR: C:\Qt\5.7\msvc2015_64
+      QTDIR: C:\Qt\5.8\msvc2015_64
       CMAKE_GENERATOR_NAME: Visual Studio 14 2015 Win64
 
 before_build:
