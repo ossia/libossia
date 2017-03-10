@@ -120,11 +120,11 @@ int main()
 
     // Domain of the tuple
     node.set(domain_attribute{},
-      domain_base<tuple>(
+      vector_domain(
                              tuple{0, 1}, // Min values
                              tuple{3, 5}, // Max values
-                             boost::container::flat_set<tuple>{
-                               tuple{123, 345}, tuple{12345, 234} // Allowed values
+                             std::vector<boost::container::flat_set<ossia::value>>{
+                               {123, 345}, {12345, 234} // Allowed values
                              } ));
   }
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <mutex>
 #if !defined(__APPLE__)
 #include <shared_mutex>

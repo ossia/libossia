@@ -48,7 +48,6 @@ struct domain_to_json
       {
         writer.Key("MIN");
         write_json(writer, *dom.min);
-        writer.Int(*dom.min);
       }
       if(has_max)
       {

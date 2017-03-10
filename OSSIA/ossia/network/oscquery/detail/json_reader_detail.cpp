@@ -69,8 +69,7 @@ value json_parser_impl::ReadValue(const rapidjson::Value& val)
 {
   return detail::ReadValue(val);
 }
-
-bool json_parser_impl::ReadValue(const rapidjson::Value& val, bounding_mode& res)
+static bool read_bounding(const rapidjson::Value& val, bounding_mode& res)
 {
   bool b = val.IsString() && val.GetStringLength() > 2;
   if(b)
@@ -93,22 +92,62 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, bounding_mode& res
   return b;
 }
 
+
+bool json_parser_impl::ReadValue(const rapidjson::Value& val, bounding_mode& res)
+{
+  switch(val.GetType())
+  {
+    case rapidjson::kStringType:
+      return read_bounding(val, res);
+    case rapidjson::kArrayType:
+    {
+      const auto& arr = val.GetArray();
+      if(arr.Size() > 0)
+      {
+        return read_bounding(arr[0], res);
+      }
+    }
+    default:
+      return false;
+  }
+
+  return false;
+}
+
+static bool read_access(int res, ossia::access_mode& am)
+{
+  switch(res)
+  {
+    case 1: am = ossia::access_mode::GET; break;
+    case 2: am = ossia::access_mode::SET; break;
+    case 3: am = ossia::access_mode::BI;  break;
+    default:
+      return false;
+  }
+  return true;
+}
+
 bool json_parser_impl::ReadValue(const rapidjson::Value& val, access_mode& am)
 {
-  bool b = val.IsInt();
-  if(b)
+  switch(val.GetType())
   {
-    int res = val.GetInt();
-    switch(res)
+    case rapidjson::kNumberType:
+      return read_access((int)val.GetDouble(), am);
+    case rapidjson::kArrayType:
     {
-      case 1: am = ossia::access_mode::GET; break;
-      case 2: am = ossia::access_mode::SET; break;
-      case 3: am = ossia::access_mode::BI;  break;
-      default:
-        b = false;
+      const auto& arr = val.GetArray();
+      if(arr.Size() > 0)
+      {
+        if(arr[0].IsInt())
+        {
+          return read_access(arr[0].GetInt(), am);
+        }
+      }
     }
+    default:
+      return false;
   }
-  return b;
+  return false;
 }
 
 static bool ReadValueObject(const rapidjson::Value& val, domain& res)

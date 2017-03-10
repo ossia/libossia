@@ -1,7 +1,7 @@
 #include <ossia/network/common/path.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/address.hpp>
-#include <hopscotch_map.h>
+#include <hopscotch_set.h>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/replace.hpp>
 

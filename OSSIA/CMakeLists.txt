@@ -5,9 +5,6 @@ project(libossia CXX)
 ### Project options ###
 set(OSSIA_PROTOCOLS OSC Minuit)
 
-set(OSSIA_PROTOCOL_WEBSOCKETS ON)
-
-
 set(ossia_VERSION 1.0.0)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0042 NEW)
@@ -18,7 +15,7 @@ include(GenerateExportHeader)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
 
-set(WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+set(WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
 find_package(Boost REQUIRED)
 
 if(NOT "${OSSIA_NO_QT}")

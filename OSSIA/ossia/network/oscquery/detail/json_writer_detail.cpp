@@ -26,7 +26,6 @@ void json_writer_impl::writeValue(const value& val) const
 
 void json_writer_impl::writeValue(bounding_mode b) const
 {
-  writer.StartArray();
   switch(b)
   {
     case ossia::bounding_mode::FREE: writer.String("None"); break;
@@ -37,12 +36,10 @@ void json_writer_impl::writeValue(bounding_mode b) const
     case ossia::bounding_mode::FOLD: writer.String("Fold"); break;
     default: throw;
   }
-  writer.EndArray();
 }
 
 void json_writer_impl::writeValue(access_mode b) const
 {
-  writer.StartArray();
   switch(b)
   {
     case ossia::access_mode::GET: writer.Int(1); break;
@@ -50,14 +47,11 @@ void json_writer_impl::writeValue(access_mode b) const
     case ossia::access_mode::BI: writer.Int(3);  break;
     default: writer.Int(0); // no address case
   }
-  writer.EndArray();
 }
 
 void json_writer_impl::writeValue(const domain& d) const
 {
-  writer.StartArray();
   ossia::apply(domain_to_json{writer}, d);
-  writer.EndArray();
 }
 
 void json_writer_impl::writeValue(const unit_t& d) const

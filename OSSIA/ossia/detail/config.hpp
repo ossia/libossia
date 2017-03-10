@@ -44,11 +44,23 @@ namespace ossia
 #define SPDLOG_DEBUG_ON
 #define SPDLOG_TRACE_ON
 
-#define SPDLOG_FMT_EXTERNAL
-#define FMT_HEADER_ONLY
-#define RAPIDJSON_HAS_STDSTRING 1
+#if !defined(SPDLOG_FMT_EXTERNAL)
+  #define SPDLOG_FMT_EXTERNAL
+#endif
+
+#if !defined(FMT_HEADER_ONLY)
+  #define FMT_HEADER_ONLY
+#endif
+
+#if !defined(RAPIDJSON_HAS_STDSTRING)
+  #define RAPIDJSON_HAS_STDSTRING 1
+#endif
+
 #define BOOST_ERROR_CODE_HEADER_ONLY 1
 #define BOOST_SYSTEM_NO_DEPRECATED
 
 #define _WEBSOCKETPP_CPP11_STRICT_ 1
-#define ASIO_STANDALONE 1
+
+#if !defined(ASIO_STANDALONE)
+  #define ASIO_STANDALONE 1
+#endif

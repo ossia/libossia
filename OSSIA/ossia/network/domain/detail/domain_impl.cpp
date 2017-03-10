@@ -1,6 +1,7 @@
 #include <ossia/network/domain/detail/apply_domain.hpp>
 #include <ossia/network/domain/domain_conversion.hpp>
 #include <ossia/detail/logger.hpp>
+#include <ossia/editor/value/value.hpp>
 #include <fmt/format.h>
 
 
@@ -1000,10 +1001,11 @@ ossia::value apply_domain_visitor::operator()(const std::array<float, 4>& value,
 { return vec_clamp<4>{ossia::domain_conversion<vecf_domain<4>>{}.tuple_func(domain)}(b, value); }
 
 }
-
+namespace std {
 std::ostream& operator<<(std::ostream& s, const ossia::domain& d)
 {
   // OPTIMIZEME
   s << d.to_pretty_string();
   return s;
+}
 }
