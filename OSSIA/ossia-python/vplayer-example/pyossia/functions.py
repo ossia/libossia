@@ -67,7 +67,7 @@ def ossia_param(Class, key, OssiaNode):
 
 def ossia_message(Class, key, OssiaNode):
 	"""
-	rewrite Original property
+	rewrite Original method
 	"""
 	# create a node for this parameter
 	ossia_node = OssiaNode.add_node(key)
