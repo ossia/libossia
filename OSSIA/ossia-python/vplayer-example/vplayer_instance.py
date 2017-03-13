@@ -3,8 +3,13 @@
 
 
 from vplayer.player import VPlayer
-from pyossia import ossia_device
 from pyossia.functions import ossia_model
+from ossia_python import LocalDevice
+
+# create a device for this python program
+ossia_device = LocalDevice("V Player")
+# enable OSCQuery communication for our device
+ossia_device.create_oscquery_server(3456, 5678)
 
 # All the VPlayer instances will be created as a model of the ossia_device root
 Vplayer = ossia_model(VPlayer, ossia_device)
