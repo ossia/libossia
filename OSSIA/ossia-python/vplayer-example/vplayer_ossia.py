@@ -1,3 +1,6 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import ossia_python as ossia
 
 class VPlayer(object):
@@ -53,24 +56,27 @@ class VPlayer(object):
 		True make it play
 		False make it stop
 		"""
-		return self._play_status.fetch_value()
+		return self._play_status.fetch_value().get()
 	@play_status.setter
 	def play_status(self, play_status):
 		self._play_status.push_value(ossia.Value(play_status))
 
 
 # create the Video Player Device
-my_device = ossia.LocalDevice('my_video_device')
+my_device = ossia.LocalDevice('Ossia V Player ')
 my_device.create_oscquery_server(22222, 33333)
 # create an instance of a video player
 vplayer = VPlayer(my_device)
 
 
-
+# Just a test
 from time import sleep
-
+print( 'make some test')
 while True:
+	pass
 	vplayer.play_status = True
+	print(vplayer.play_status)
 	sleep(1)
 	vplayer.play_status = False
+	print(vplayer.play_status)
 	sleep(1)
