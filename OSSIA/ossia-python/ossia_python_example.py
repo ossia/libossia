@@ -108,7 +108,7 @@ iterate_on_children(local_device.get_root_node())
 
 try:
 	# try to connect to a remote device using OSCQuery protocol
-	oscquery_device = ossia.OSCQueryDevice("remoteDevice", "ws://10.0.1.83:5678", 9998)
+	oscquery_device = ossia.OSCQueryDevice("remoteDevice", "ws://127.0.0.1:5678", 9998)
 
 	# explore the remote device
 	oscquery_device.update()
@@ -118,7 +118,7 @@ try:
 	iterate_on_children(oscquery_device.get_root_node())
 
 except:
-	print("\nfail to connect to ws://10.0.1.83:5678\n")
+	print("\nfail to connect\n")
 
 # MAIN LOOP
 
