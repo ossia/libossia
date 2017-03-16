@@ -90,7 +90,7 @@ install(
     DESTINATION include/
     COMPONENT Devel)
 
-install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/GSL/gsl
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/GSL/include/gsl
         DESTINATION include
         COMPONENT Devel)
 
