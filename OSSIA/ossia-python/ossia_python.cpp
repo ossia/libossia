@@ -1,3 +1,5 @@
+namespace pybind11 { namespace py = pybind11; }
+
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
 #include <pybind11/operators.h>
