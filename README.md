@@ -21,7 +21,7 @@ Bindings (in progress) :
 Documentation :
 * [Examples](https://github.com/OSSIA/libossia/tree/master/Documentation/Examples)
 * [Doxygen](http://ossia.github.io/libossia/html)
-* [Building](https://github.com/libossia/API/wiki/Building)
+* [Building](https://github.com/OSSIA/libossia/wiki/Building)
 * [Code style](https://github.com/libossia/API/wiki/Code-style-guide)
 
 Build Status
