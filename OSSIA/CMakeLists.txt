@@ -236,7 +236,7 @@ target_include_directories(ossia
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/variant/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/brigand>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/brigand/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/fmt>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/chobo-shl/include>

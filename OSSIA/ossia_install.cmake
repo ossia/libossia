@@ -71,7 +71,7 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/chobo-shl/include/
         DESTINATION include
         COMPONENT Devel)
 
-install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/brigand/brigand
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/brigand/include/brigand
         DESTINATION include
         COMPONENT Devel)
 
