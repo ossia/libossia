@@ -4,10 +4,12 @@
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
+#include <hopscotch_set.h>
 namespace ossia
 {
 namespace qt
 {
+class qml_node_base;
 class OSSIA_EXPORT qml_device :
         public QObject
 {
@@ -27,9 +29,13 @@ public:
     int wsPort() const;
     int oscPort() const;
 
+    tsl::hopscotch_set<qml_node_base*> nodes;
+
 public slots:
     void setWSPort(int wsPort);
     void setOSCPort(int oscPort);
+
+    void rescan(QObject* root);
 
 signals:
     void WSPortChanged(int wsPort);

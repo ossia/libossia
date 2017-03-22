@@ -1,43 +1,69 @@
 #include "qml_property.hpp"
 #include <ossia-qt/device/qml_device.hpp>
+#include <ossia-qt/device/qml_node.hpp>
 #include <ossia-qt/js_utilities.hpp>
 
 #include <ossia/network/generic/generic_device.hpp>
-
-// En plus de ce qu'il y a, on veut :
-// - par défaut chercher un device global, sinon on peut lui affecter un device:
-// - noeuds : pouvoir donner une adresse complète ou bien juste un nom.
-//   Par défaut prend le propertyName / objectName / className ?
-//   Et remonter récursivement jusqu'à trouver un objet qui a une propriété "node".
+#include <QDebug>
 
 namespace ossia
 {
 namespace qt
 {
 
+static void reparent_rec(QQuickItem* it)
+{
+  if(auto obj = qobject_cast<qml_node_base*>(it))
+    obj->resetNode();
+
+  for(auto cld : it->childItems())
+  {
+    if(cld != it)
+    {
+      reparent_rec(it);
+    }
+  }
+}
+
 void qml_node_base::reparentChildren()
 {
-  const auto& children = this->parent()->findChildren<qml_node_base*>();
-  for(auto cld : children)
+  if(auto par = parentItem())
   {
-    if(cld != this)
+    const auto& children = par->childItems();
+    for(auto cld : children)
     {
-      cld->resetNode();
+      if(cld != this)
+      {
+        reparent_rec(cld);
+      }
+    }
+  }
+
+  if(auto par = parent())
+  {
+    for(auto cld : par->findChildren<qml_node_base*>())
+    {
+      if(cld != this)
+      {
+        cld->resetNode();
+      }
     }
   }
 }
 
 
-void qml_property::resetNode()
+void qml_property::resetNode(bool recursive)
 {
+  m_node.clear();
   if(m_ossia_node)
   {
     auto par = m_ossia_node->getParent();
     if(par)
     {
-      par->removeChild(*m_ossia_node);
-      m_ossia_node = nullptr;
+      auto node = m_ossia_node;
       m_address = nullptr;
+      m_ossia_node = nullptr;
+      par->removeChild(*node);
     }
   }
 
@@ -46,19 +72,19 @@ void qml_property::resetNode()
     std::string node_name;
     bool relative = false;
 
-    if(m_node.isEmpty())
+    if(m_userRequestedNode.isEmpty())
     {
       node_name = m_targetProperty.name().toStdString();
       relative = true;
     }
-    else if(m_node[0] != '/')
+    else if(m_userRequestedNode[0] != '/')
     {
+      node_name = m_userRequestedNode.toStdString();
       relative = true;
-      node_name = m_node.toStdString();
     }
     else
     {
-      node_name = m_node.toStdString();
+      node_name = m_userRequestedNode.toStdString();
     }
 
     ossia::net::node_base& parent =
@@ -66,12 +92,15 @@ void qml_property::resetNode()
         ? findClosestParent(m_targetProperty.object(), dev->device().getRootNode())
         : dev->device().getRootNode();
 
-    m_ossia_node = &ossia::net::find_or_create_node(parent, node_name);
+    m_ossia_node = &ossia::net::create_node(parent, node_name);
+
+    m_ossia_node->aboutToBeDeleted.connect<qml_property, &qml_property::on_node_deleted>(this);
+    m_node = QString::fromStdString(m_ossia_node->getName());
+
     setPath(
           QString::fromStdString(
             ossia::net::address_string_from_node(*m_ossia_node)));
     setupAddress();
-    return;
   }
 
   // In case something went wrong...
@@ -79,12 +108,14 @@ void qml_property::resetNode()
   m_address = nullptr;
 }
 
-qml_property::qml_property(QObject *parent)
+qml_property::qml_property(QQuickItem *parent)
   : qml_node_base(parent)
 {
   connect(this, &qml_property::setValue_sig,
           this, &qml_property::setValue_slot,
           Qt::QueuedConnection);
+
+  resetNode();
 }
 
 qml_property::~qml_property()
@@ -94,7 +125,6 @@ qml_property::~qml_property()
 
 void qml_property::setTarget(const QQmlProperty &prop)
 {
-  disconnect(m_conn);
   m_targetProperty = prop;
   resetNode();
 }
@@ -136,6 +166,12 @@ void qml_property::setupAddress()
       m_address->setValueQuiet(qt_to_ossia{}(m_targetProperty.read()));
     }
   }
+}
+
+void qml_property::on_node_deleted(const net::node_base&)
+{
+  m_address = nullptr;
+  m_ossia_node = nullptr;
 }
 
 }

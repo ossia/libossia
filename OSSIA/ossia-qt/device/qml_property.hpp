@@ -18,11 +18,12 @@ class qml_property :
   Q_OBJECT
   Q_INTERFACES(QQmlPropertyValueSource)
 public:
-  qml_property(QObject *parent = nullptr);
+  qml_property(QQuickItem *parent = nullptr);
   ~qml_property();
 
   void setTarget(const QQmlProperty &prop) override;
 
+  void resetNode(bool recursive = true) override;
 signals:
   void setValue_sig(const value&);
 
@@ -31,12 +32,11 @@ public slots:
   void setValue_slot(const value&);
 
 private:
-  void resetNode() override;
   void setupAddress();
+  void on_node_deleted(const ossia::net::node_base&);
 
   QQmlProperty m_targetProperty;
   ossia::net::address_base* m_address{};
-  QMetaObject::Connection m_conn;
 };
 
 }

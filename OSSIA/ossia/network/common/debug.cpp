@@ -33,7 +33,7 @@ fmt::BasicWriter<char>& operator<<(fmt::BasicWriter<char>& w, const node_base& n
 
 void debug_recursively(fmt::MemoryWriter& w, const node_base& n)
 {
-  w << n;
+  w << n << "\n";
   for(auto& cld: n.children())
     debug_recursively(w, *cld);
 }

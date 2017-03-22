@@ -2,17 +2,18 @@
 #include <ossia-qt/device/qml_device.hpp>
 #include <ossia-qt/device/qml_node.hpp>
 #include <ossia/network/base/node.hpp>
+#include <QDebug>
+#include <QtQuick/QQuickItem>
 
 namespace ossia
 {
 namespace qt
 {
 
-qml_node_base::qml_node_base(QObject* parent):
-  QObject{parent},
+qml_node_base::qml_node_base(QQuickItem* parent):
+  QQuickItem{parent},
   m_device{&qml_singleton_device::instance()}
 {
-
 }
 
 qml_node_base::~qml_node_base()
@@ -22,7 +23,9 @@ qml_node_base::~qml_node_base()
     auto par = m_ossia_node->getParent();
     if(par)
     {
-      par->removeChild(*m_ossia_node);
+      auto node = m_ossia_node;
+      m_ossia_node = nullptr;
+      par->removeChild(*node);
     }
   }
 }
@@ -61,10 +64,8 @@ QVariantMap qml_node_base::extended() const
 
 void qml_node_base::setNode(QString node)
 {
-  if (m_node == node)
-    return;
-
   m_node = node;
+  m_userRequestedNode = node;
   resetNode();
   emit nodeChanged(node);
 }
@@ -119,7 +120,27 @@ ossia::net::node_base& qml_node_base::findClosestParent(
     {
       qml_node* casted = qobject_cast<qml_node*>(node);
       if(casted && casted->device() == device() && casted->ossiaNode())
+      {
         return *casted->ossiaNode();
+      }
+    }
+
+    auto item = qobject_cast<QQuickItem*>(obj);
+    if(item)
+    {
+      for(auto child_item : item->childItems())
+      {
+        qml_node* casted = qobject_cast<qml_node*>(child_item);
+        if(casted && casted->device() == device() && casted->ossiaNode())
+        {
+          return *casted->ossiaNode();
+        }
+      }
+
+      if(auto par = item->parentItem())
+      {
+        return findClosestParent(par, root);
+      }
     }
 
     if(auto par = obj->parent())
@@ -127,6 +148,7 @@ ossia::net::node_base& qml_node_base::findClosestParent(
       return findClosestParent(par, root);
     }
   }
+
   return root;
 }
 

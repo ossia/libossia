@@ -3,21 +3,29 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_address.hpp>
-
+#include <QDebug>
 namespace ossia
 {
 namespace qt
 {
 
-void qml_node::resetNode()
+qml_node::qml_node(QQuickItem* parent):
+  qml_node_base{parent}
 {
+  resetNode();
+}
+
+void qml_node::resetNode(bool recursive)
+{
+  m_node.clear();
   if(m_ossia_node)
   {
     auto par = m_ossia_node->getParent();
     if(par)
     {
-      par->removeChild(*m_ossia_node);
+      auto node = m_ossia_node;
       m_ossia_node = nullptr;
+      par->removeChild(*node);
     }
   }
 
@@ -26,7 +34,7 @@ void qml_node::resetNode()
     std::string node_name;
     bool relative = false;
 
-    if(m_node.isEmpty())
+    if(m_userRequestedNode.isEmpty())
     {
       if(auto par = this->parent())
       {
@@ -40,14 +48,14 @@ void qml_node::resetNode()
 
       relative = true;
     }
-    else if(m_node[0] != '/')
+    else if(m_userRequestedNode[0] != '/')
     {
       relative = true;
-      node_name = m_node.toStdString();
+      node_name = m_userRequestedNode.toStdString();
     }
     else
     {
-      node_name = m_node.toStdString();
+      node_name = m_userRequestedNode.toStdString();
     }
 
     ossia::net::node_base& parent =
@@ -55,19 +63,29 @@ void qml_node::resetNode()
         ? findClosestParent(this->parent(), dev->device().getRootNode())
         : dev->device().getRootNode();
 
-    m_ossia_node = &ossia::net::find_or_create_node(parent, node_name);
+    m_ossia_node = &ossia::net::create_node(parent, node_name);
+    m_ossia_node->aboutToBeDeleted.connect<qml_node, &qml_node::on_node_deleted>(this);
+    m_node = QString::fromStdString(m_ossia_node->getName());
     setPath(
           QString::fromStdString(
             ossia::net::address_string_from_node(*m_ossia_node)));
 
-    reparentChildren();
+    if(recursive)
+      reparentChildren();
     return;
   }
-  reparentChildren();
+
+  if(recursive)
+    reparentChildren();
 
   // In case something went wrong...
   setPath({});
 }
 
+
+void qml_node::on_node_deleted(const ossia::net::node_base&)
+{
+  m_ossia_node = nullptr;
+}
 }
 }

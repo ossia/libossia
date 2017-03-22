@@ -2,6 +2,7 @@
 #include <QObject>
 #include <QString>
 #include <QVariantMap>
+#include <QQuickItem>
 #include <boost/any.hpp>
 
 namespace ossia
@@ -11,7 +12,7 @@ namespace qt
 {
 class qml_device;
 class qml_node_base :
-    public QObject
+    public QQuickItem
 {
   Q_OBJECT
   Q_PROPERTY(QString node READ node WRITE setNode NOTIFY nodeChanged)
@@ -20,7 +21,7 @@ class qml_node_base :
   Q_PROPERTY(QVariantMap extended READ extended WRITE setExtended NOTIFY extendedChanged)
 
 public:
-  qml_node_base(QObject* parent = nullptr);
+  qml_node_base(QQuickItem* parent = nullptr);
   ~qml_node_base();
 
   QString node() const;
@@ -30,7 +31,7 @@ public:
   QString path() const;
 
 
-  virtual void resetNode() = 0;
+  virtual void resetNode(bool recursive = true) = 0;
   void reparentChildren();
   QVariantMap extended() const;
 
@@ -53,6 +54,7 @@ protected:
       ossia::net::node_base& root);
 
   QString m_node;
+  QString m_userRequestedNode;
   qml_device* m_device{};
   ossia::net::node_base* m_ossia_node{};
   QString m_path;

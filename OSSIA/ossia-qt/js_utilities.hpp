@@ -6,6 +6,7 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/generic/generic_address.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia-c/preset/preset.hpp>
 #include <ossia-qt/metatypes.hpp>
 #include <QStringBuilder>
 #include <QHash>
@@ -27,70 +28,12 @@
 #include <QtGui/QVector4D>
 #include <QtGui/QQuaternion>
 #include <ossia/detail/optional.hpp>
+#include <ossia-qt/qml_context.hpp>
 
 namespace ossia
 {
 namespace qt
 {
-
-/**
- * @brief The qml_context struct
- *
- * This class is used to allow QML scripts to access common enums
- * in Ossia.
- */
-struct qml_context
-{
-private:
-  Q_GADGET
-
-public:
-  // QML enums have to begin with a capital
-  enum class val_type
-  {
-    Float, //! \see float
-    Int, //! \see int32_t
-    Vec2f, //! \see ossia::vec2f
-    Vec3f, //! \see ossia::vec3f
-    Vec4f, //! \see ossia::vec4f
-    Impulse, //! \see ossia::impulse
-    Bool, //! \see bool
-    String, //! \see std::string
-    Tuple, //! \see std::vector<ossia::value>
-    Char, //! \see char
-    Destination //! \see ossia::Destination
-  };
-
-  enum class access_mode
-  {
-    Get,
-    Set,
-    Bi
-  };
-
-  enum class bounding_mode
-  {
-    Free,
-    Clip,
-    Wrap,
-    Fold,
-    Low,
-    High
-  };
-
-  enum class repetition_filter
-  {
-    On,
-    Off
-  };
-
-  Q_ENUM(val_type)
-  Q_ENUM(access_mode)
-  Q_ENUM(bounding_mode)
-  Q_ENUM(repetition_filter)
-};
-
-
 /**
  * @brief The matching_ossia_enum struct
  *
@@ -99,7 +42,6 @@ public:
 template<typename T>
 struct matching_ossia_enum
 {
-
 };
 template<>
 struct matching_ossia_enum<ossia::val_type>
@@ -452,7 +394,7 @@ OSSIA_EXPORT void sanitize_name(QString& str);
 
 }
 
-Q_DECLARE_METATYPE(ossia::qt::qml_context)
+Q_DECLARE_METATYPE(ossia::qt::qml_context*)
 #else
 #error This file requires Qt.
 #endif

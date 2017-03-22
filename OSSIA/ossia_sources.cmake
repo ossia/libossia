@@ -344,6 +344,7 @@ set(OSSIA_QT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_property_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/value_metatypes.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/metatypes.hpp"
@@ -357,6 +358,7 @@ set(OSSIA_QT_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_property_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.cpp"
     )
 

@@ -20,8 +20,8 @@ find_package(Boost REQUIRED)
 
 if(NOT "${OSSIA_NO_QT}")
   if("${OSSIA_QT}")
-    find_package(Qt5 5.6 QUIET COMPONENTS Core Gui Qml)
-    if(NOT "${Qt5Qml_FOUND}")
+    find_package(Qt5 5.6 QUIET COMPONENTS Core Gui Qml Quick)
+    if(NOT "${Qt5Quick_FOUND}")
       set(OSSIA_QT OFF)
     else()
       set(CMAKE_AUTOMOC 1)
@@ -155,7 +155,7 @@ endif()
 
 if(OSSIA_QT)
     target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS})
-    target_link_libraries(ossia PUBLIC Qt5::Core Qt5::Gui Qt5::Qml)
+    target_link_libraries(ossia PUBLIC Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick)
     target_include_directories(ossia PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt"
         )

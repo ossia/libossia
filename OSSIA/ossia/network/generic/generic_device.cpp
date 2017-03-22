@@ -126,7 +126,7 @@ node_base& create_node_rec(
   else
   {
     // Create and return the node
-    return  *node.createChild(address.to_string());
+    return *node.createChild(address.to_string());
   }
 }
 
