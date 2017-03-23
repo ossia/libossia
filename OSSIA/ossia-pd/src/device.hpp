@@ -52,6 +52,7 @@ struct t_device : t_obj_base
 
     static void register_children(t_device* x);
     void unregister_children();
+    static void loadbang(t_device* x, t_float type);
 
     Protocol_Settings x_settings;
 

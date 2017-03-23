@@ -63,6 +63,12 @@ static void device_dump(t_device *x){
     dump_child(x, x->x_device->getRootNode());
 }
 
+void t_device :: loadbang(t_device* x, t_float type){
+    if (LB_LOAD == (int)type){
+        register_children(x);
+    }
+}
+
 void t_device :: register_children(t_device* x){
 
     std::vector<obj_hierachy> modelnodes = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.model", 0);
@@ -189,7 +195,7 @@ extern "C" void setup_ossia0x2edevice(void)
     if(c)
     {
         eclass_addmethod(c, (method) t_device::register_children, "register", A_NULL, 0);
-        eclass_addmethod(c, (method) t_device::register_children, "loadbang", A_NULL, 0);
+        eclass_addmethod(c, (method) t_device::loadbang, "loadbang", A_NULL, 0);
         eclass_addmethod(c, (method) device_dump, "dump", A_NULL, 0);
         eclass_addmethod(c, (method) device_expose, "expose", A_GIMME, 0);
         eclass_addmethod(c, (method) Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
