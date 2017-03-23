@@ -17,7 +17,7 @@ bool t_view :: register_node(ossia::net::node_base*  node){
         // TODO review search order => we should search for remote in the same level and stop if we found a view at the same level
         // TODO the same apply to parameter/remote
         // FIXME nested view is not registered properly
-        std::vector<obj_hierachy> viewnode = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view", 0);
+        std::vector<obj_hierachy> viewnode = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
         for (auto v : viewnode){
             if(v.classname == "ossia.view"){
                 t_view* view = (t_view*) v.x;
@@ -67,7 +67,7 @@ bool t_view :: unregister(){
 
     ossia::net::node_base* parent = x_node->getParent();
     if (parent){
-        std::vector<obj_hierachy> viewnode = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view", 0);
+        std::vector<obj_hierachy> viewnode = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
         for (auto v : viewnode){
             if(v.classname == "ossia.view"){
                 t_view* view = (t_view*) v.x;

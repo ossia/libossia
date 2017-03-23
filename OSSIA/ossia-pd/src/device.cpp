@@ -71,7 +71,7 @@ void t_device :: loadbang(t_device* x, t_float type){
 
 void t_device :: register_children(t_device* x){
 
-    std::vector<obj_hierachy> modelnodes = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.model", 0);
+    std::vector<obj_hierachy> modelnodes = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.model");
     for (auto v : modelnodes){
         if(v.classname == "ossia.model"){
             t_model* model = (t_model*) v.x;
@@ -82,7 +82,7 @@ void t_device :: register_children(t_device* x){
         }
     }
 
-    std::vector<obj_hierachy> viewnodes = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view", 0);
+    std::vector<obj_hierachy> viewnodes = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view");
     for (auto v : viewnodes){
         if(v.classname == "ossia.view"){
             t_view* view = (t_view*) v.x;
@@ -95,7 +95,7 @@ void t_device :: register_children(t_device* x){
 }
 
 void t_device :: unregister_children(){
-    std::vector<obj_hierachy> node = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model", 0);
+    std::vector<obj_hierachy> node = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
     for (auto v : node){
         if(v.classname == "ossia.model"){
             t_model* model = (t_model*) v.x;
@@ -106,7 +106,7 @@ void t_device :: unregister_children(){
         }
     }
 
-    std::vector<obj_hierachy> viewnode = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view", 0);
+    std::vector<obj_hierachy> viewnode = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
     for (auto v : viewnode){
         if(v.classname == "ossia.view"){
             t_view* view = (t_view*) v.x;
