@@ -70,6 +70,14 @@ bool t_model :: do_registration(ossia::net::node_base*  node){
                     // we will register it again after node creation
                     continue;
                 }
+            } else if (v.classname == "ossia.model"){
+                t_model* model = (t_model*) v.x;
+                if (std::string(model->x_name->s_name) == std::string(x_name->s_name)) {
+                    abord = false;
+                    model->unregister(); // if we already have a t_param node of that name, unregister it
+                    // we will register it again after node creation
+                    continue;
+                }
             }
         }
 
