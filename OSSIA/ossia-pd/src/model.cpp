@@ -27,26 +27,16 @@ bool t_model :: register_node(ossia::net::node_base*  node){
                 param->register_node(x_node);
             }
         }
-/*
-        // then try to register quarantinized parameter
-        for (auto param : t_param::quarantine()){
-            obj_register<t_param>(static_cast<t_param*>(param));
+
+        for (auto view : t_view::quarantine()){
+            obj_register<t_view>(static_cast<t_view*>(view));
         }
-*/
+
         // then try to register qurantinized remote
         for (auto remote : t_remote::quarantine()){
             obj_register<t_remote>(static_cast<t_remote*>(remote));
         }
-/*
-        std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 1);
-        for (auto v : models){
-            t_model* model = (t_model*) v.x;
-            model->register_node(x_node);
-        }
-*/
-        for (auto view : t_view::quarantine()){
-            obj_register<t_view>(static_cast<t_view*>(view));
-        }
+
     } else obj_quarantining<t_model>(this);
 
     return res;

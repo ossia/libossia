@@ -261,6 +261,7 @@ public:
  * @param x           The object around which to search.
  * @param classname   The name of the object object we are looking for.
  * @param start_level Level above current object where to start. 0 for current patcher, 1 start searching in parent canvas.
+ * @param level       Return level of the found object
  * @return The instance of the found object.
  */
 static t_pd* find_parent(t_eobj* x, std::string classname, int start_level, int* level){
@@ -268,15 +269,18 @@ static t_pd* find_parent(t_eobj* x, std::string classname, int start_level, int*
 
     *level = start_level;
 
-    while(canvas && start_level--){
-        canvas = canvas->gl_owner;
+    while(canvas && start_level){
+        canvas = canvas->gl_owner; // gl_owner seems to be corrupted on the root canvas : canvas has no value
+        start_level--;
     }
 
-    while (canvas){
+    if (start_level > 0) return nullptr; // if we can't reach start level (because we reach the root canvas before the start_level) then abort
+
+    while (canvas != 0){
         t_gobj* list = canvas->gl_list;
         while(list){
             std::string current = list->g_pd->c_name->s_name;
-            if (list->g_pd && current == classname){
+            if (list->g_pd && (current==classname) &&  (&(list->g_pd) != &(x->o_obj.te_g.g_pd))){
                 return &(list->g_pd);
             }
             list = list->g_next;
@@ -411,26 +415,10 @@ static bool get_relative_path(t_eobj* x, t_symbol* classname, t_class** found_ob
 
 /**
  * @brief get_absolute_path
- * @param node
- * @return std::string with full path to node from root device in an OSC style (with '/')
+ * @param t_obj_base
+ * @return std::string with full path to object from root device in an OSC style (with '/')
  */
-static std::string get_absolute_path(ossia::net::node_base* node)
-{
-    std::vector<std::string> vs;
-    while (node){
-        std::string name;
-        name = node->getName();
-        vs.push_back(name);
-        node = node->getParent();
-    }
-    std::stringstream fullpath;
-    fullpath << "/";
-    auto rit = vs.rbegin();
-    for ( ; rit != vs.rend() ; ++rit){
-        fullpath << *rit << "/";
-    }
-    return fullpath.str();
-}
+template<typename T> std::string get_absolute_path(T* x);
 
 // we can't have virtual methods with C linkage so we need a bunch a template instead...
 template<typename T> extern bool obj_register(T *x);
