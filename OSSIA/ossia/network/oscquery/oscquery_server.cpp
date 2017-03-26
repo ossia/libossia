@@ -276,6 +276,8 @@ try {
     lock_t lock(m_buildingClientsMutex);
     m_buildingClients.emplace_back(hdl);
     m_buildingClients.back().client_ip = con->get_host();
+
+    onClientConnected(con->get_host());
   }
   // Send the client a message with the OSC port
   m_websocketServer.send_message(hdl, json_writer::device_info(m_oscPort));
@@ -294,6 +296,9 @@ void oscquery_server_protocol::on_connectionClosed(
   {
     m_clients.erase(it);
   }
+
+  auto con = m_websocketServer.impl().get_con_from_hdl(hdl);
+  onClientDisconnected(con->get_host());
 }
 
 void oscquery_server_protocol::on_nodeCreated(

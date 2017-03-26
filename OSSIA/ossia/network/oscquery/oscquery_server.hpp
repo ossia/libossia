@@ -10,6 +10,7 @@
 #include <hopscotch_map.h>
 #include <ossia/detail/mutex.hpp>
 #include <atomic>
+#include <nano_signal_slot.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
 namespace osc
 {
@@ -49,6 +50,9 @@ public:
   ossia::net::device_base& getDevice() const { return *m_device; }
 
   int getOSCPort() const { return m_oscPort; }
+
+  Nano::Signal<void(const std::string&)> onClientConnected;
+  Nano::Signal<void(const std::string&)> onClientDisconnected;
 private:
   // List of connected clients
   oscquery_client* findClient(const connection_handler& hdl);
