@@ -31,6 +31,11 @@ bool t_param :: do_registration(ossia::net::node_base* node){
 
     if(!node) return false;
 
+    std::string absolute_path = get_absolute_path<t_param>(this);
+    std::string address_string = ossia::net::address_string_from_node(*node);
+
+    if (absolute_path != address_string) return false;
+
     if(node->findChild(x_name->s_name)){
         // pd_error(this, "a parameter with adress '%s' already exists.", x_name->s_name);
         x_node = nullptr;
