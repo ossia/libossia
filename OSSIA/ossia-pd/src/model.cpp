@@ -91,37 +91,23 @@ bool t_model :: unregister(){
     // TODO refactor
     if(!x_node) return true; // not registered
 
-    std::vector<obj_hierachy> node = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
-    for (auto v : node){
-        if(v.classname == "ossia.model"){
-            t_model* model = (t_model*) v.x;
-            if (model == this) continue;
-            model->unregister();
-        } else if(v.classname == "ossia.param"){
-            t_param* param = (t_param*) v.x;
-            param->unregister();
-        }
-    }
-
-    /*
-    // when removing a model, we should re-register all its children to parent node
-    std::vector<obj_hierachy> params = find_child(x_obj.o_canvas->gl_list, osym_param, 0);
-    std::sort(params.begin(), params.end());
-    for (auto v : params){
-        t_param* param = (t_param*) v.x;
-        if (!param->x_node || param->x_node->getParent() == x_node) param->register_node(x_node->getParent());
-    }
-
-    std::vector<obj_hierachy> models = find_child(x_obj.o_canvas->gl_list, osym_model, 0);
-    std::sort(models.begin(), models.end());
-    for (auto v : models){
-        t_model* model = (t_model*) v.x;
-        if (model != this && (!model->x_node || model->x_node->getParent() == x_node)) model->register_node(x_node->getParent());
-    }
-    */
-
-    if (x_node && x_node->getParent()) x_node->getParent()->removeChild(x_name->s_name);
+    if (x_node && x_node->getParent()) x_node->getParent()->removeChild(x_name->s_name); // this call isDeleted() on each registered child and put them on quarantine
     x_node = nullptr;
+
+    // register each ex-child *AFTER* node deletion
+    for (auto model : t_model::quarantine()){
+        obj_register<t_model>(static_cast<t_model*>(model));
+    }
+    for (auto param : t_param::quarantine()){
+        obj_register<t_param>(static_cast<t_param*>(param));
+    }
+    for (auto view : t_view::quarantine()){
+        obj_register<t_view>(static_cast<t_view*>(view));
+    }
+    for (auto remote : t_remote::quarantine()){
+        obj_register<t_remote>(static_cast<t_remote*>(remote));
+    }
+
     obj_quarantining<t_model>(this);
 
     return true;

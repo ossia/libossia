@@ -91,6 +91,9 @@ bool t_param :: unregister(){
         x_node->aboutToBeDeleted.disconnect<t_param, &t_param::isDeleted>(this); // FIXME not needed because this fn is called in isDeleted callback
         if (x_node->getParent()) x_node->getParent()->removeChild(x_name->s_name);
         x_node = nullptr;
+        for (auto remote : t_remote::quarantine()){
+            obj_register<t_remote>(static_cast<t_remote*>(remote));
+        }
     }
     obj_quarantining<t_param>(this);
     return true;

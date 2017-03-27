@@ -25,7 +25,6 @@ struct t_model : t_obj_base
             x_node->aboutToBeDeleted.disconnect<t_model, &t_model::isDeleted>(this);
             x_node = nullptr;
             obj_quarantining<t_model>(this);
-            obj_register<t_model>(this);
         }
     }
 };

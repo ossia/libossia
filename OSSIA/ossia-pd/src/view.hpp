@@ -16,7 +16,6 @@ struct t_view : t_obj_base
         if (!x_dead){
             x_node = nullptr;
             obj_quarantining<t_view>(this);
-            obj_register<t_view>(this);
         }
     }
 

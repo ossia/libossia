@@ -17,8 +17,6 @@ struct t_remote : t_obj_base
         if (!x_dead){
           x_node = nullptr;
           obj_quarantining<t_remote>(this);
-          // FIXME this crash on findChild()
-          // obj_register<t_remote>(this);
         }
     }
 

@@ -33,7 +33,6 @@ struct t_param : t_obj_base
         x_node->aboutToBeDeleted.disconnect<t_param, &t_param::isDeleted>(this);
         x_node = nullptr;
         obj_quarantining<t_param>(this);
-        obj_register<t_param>(this);
     }
 };
 
