@@ -88,7 +88,6 @@ bool t_param :: do_registration(ossia::net::node_base* node){
 
 bool t_param :: unregister(){
     if (x_node) {
-        x_node->aboutToBeDeleted.disconnect<t_param, &t_param::isDeleted>(this); // FIXME not needed because this fn is called in isDeleted callback
         if (x_node->getParent()) x_node->getParent()->removeChild(x_name->s_name);
         x_node = nullptr;
         for (auto remote : t_remote::quarantine()){

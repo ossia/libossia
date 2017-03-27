@@ -142,7 +142,7 @@ struct value_visitor
     void operator()(impulse) const
     {
         // TODO how to deal with impulse ? in Pd bang object doesn't have [set ...( message
-        // and sending a bang to the bang object connect to the inlet of the sender will lead to stack overflow...
+        // and sending a bang to the bang object connected to the inlet of the sender will lead to stack overflow...
         outlet_bang(x->x_dataout);
         if(x->x_setout) outlet_bang(x->x_setout);
     }

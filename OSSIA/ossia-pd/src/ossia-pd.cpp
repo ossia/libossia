@@ -119,7 +119,6 @@ template<typename T> bool obj_register(T *x)
 
     // then try to locate a parent view or model
     if (std::is_same<T,t_view>::value || std::is_same<T,t_remote>::value) {
-        // TODO : search param and test level agains view/model level
         view = find_parent_alive<t_view>(&x->x_obj,"ossia.view", 0, &view_level);
     } else {
         model = find_parent_alive<t_model>(&x->x_obj,"ossia.model", 0, &model_level);
