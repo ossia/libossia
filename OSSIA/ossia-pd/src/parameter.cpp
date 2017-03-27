@@ -23,6 +23,12 @@ bool t_param :: register_node(ossia::net::node_base* node){
     return res;
 }
 
+static void push_default_value(t_param* x){
+    if (x->x_default.a_type != A_NULL){
+        t_obj_base::obj_push(x,gensym("set"),1,&x->x_default);
+    }
+}
+
 bool t_param :: do_registration(ossia::net::node_base* node){
 
     if (x_node && x_node->getParent() == node ) return true; // already register to this node;
@@ -85,9 +91,9 @@ bool t_param :: do_registration(ossia::net::node_base* node){
     localAddress->add_callback([=](const ossia::value& v){
         setValue(v);
     });
-    if (x_default.a_type != A_NULL){
-        t_obj_base::obj_push(this,gensym("set"),1,&x_default);
-    }
+
+    clock_delay(x_clock,0);
+
     return true;
 }
 
@@ -126,6 +132,8 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
         x->x_type = gensym("float");
         x->x_tags = gensym("");
         x->x_description = gensym("");
+
+        x->x_clock = clock_new(x, (t_method)push_default_value);
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);

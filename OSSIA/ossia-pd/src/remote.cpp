@@ -35,7 +35,8 @@ bool t_remote :: do_registration(ossia::net::node_base* node){
                 setValue(v);
             });
             x_node->aboutToBeDeleted.connect<t_remote, &t_remote::isDeleted>(this);
-            setValue(x_node->getAddress()->cloneValue());
+
+            clock_delay(x_regclock, 0);
 
             return true;
         }
@@ -110,6 +111,7 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
         }
 
         x->x_clock = clock_new(x, (t_method)obj_tick);
+        x->x_regclock = clock_new(x, (t_method)t_obj_base::obj_bang);
 
         obj_register<t_remote>(x);
     }
