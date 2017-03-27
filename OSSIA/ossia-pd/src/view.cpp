@@ -51,12 +51,18 @@ bool t_view :: do_registration(ossia::net::node_base*  node){
     unregister(); // we should unregister here because we may have add a node between the registered node and the remote
 
     if (node){
+        std::string absolute_path = get_absolute_path<t_view>(this);
+        std::string address_string = ossia::net::address_string_from_node(*node);
+
+        if ( absolute_path != address_string) return false;
         x_node = node->findChild(x_name->s_name);
         if (x_node) {
             x_node->aboutToBeDeleted.connect<t_view, &t_view::isDeleted>(this);
         } else {
             return false;
         }
+    } else {
+        return false;
     }
 
     return true;
@@ -148,6 +154,8 @@ static void *view_new(t_symbol *name, int argc, t_atom *argv)
         }
 
         x->x_clock = clock_new(x, (t_method)obj_tick);
+
+        obj_register<t_view>(x);
     }
 
     return (x);

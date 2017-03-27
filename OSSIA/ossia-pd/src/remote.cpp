@@ -24,9 +24,13 @@ bool t_remote :: do_registration(ossia::net::node_base* node){
     }
 
     if(node){
-        ossia::net::node_base*  nodePtr = node->findChild(x_name->s_name);
-        if (nodePtr){
-            x_node = nodePtr;
+        std::string absolute_path = get_absolute_path<t_remote>(this);
+        std::string address_string = ossia::net::address_string_from_node(*node);
+
+        if ( absolute_path != address_string) return false;
+
+        x_node = node->findChild(x_name->s_name);
+        if (x_node){
             x_callbackit = x_node->getAddress()->add_callback([=](const ossia::value& v){
                 setValue(v);
             });
