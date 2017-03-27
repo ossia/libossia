@@ -293,7 +293,7 @@ static t_pd* find_parent(t_eobj* x, std::string classname, int start_level, int*
 
 /**
  * @brief find_parent_alive
- * @details Find a parent that is not being remove soon
+ * @details Find a parent that is not being removed soon
  * @param x
  * @param classname
  * @param start_level

@@ -117,11 +117,13 @@ template<typename T> bool obj_register(T *x)
     t_view *view = nullptr;
     int view_level=0, model_level=0;
 
-    // then try to locate a parent view or model
-    if (std::is_same<T,t_view>::value || std::is_same<T,t_remote>::value) {
-        view = find_parent_alive<t_view>(&x->x_obj,"ossia.view", 0, &view_level);
-    } else {
-        model = find_parent_alive<t_model>(&x->x_obj,"ossia.model", 0, &model_level);
+    if (!x->x_absolute){
+        // then try to locate a parent view or model
+        if (std::is_same<T,t_view>::value || std::is_same<T,t_remote>::value) {
+            view = find_parent_alive<t_view>(&x->x_obj,"ossia.view", 0, &view_level);
+        } else {
+            model = find_parent_alive<t_model>(&x->x_obj,"ossia.model", 0, &model_level);
+        }
     }
 
     ossia::net::node_base*  node = nullptr;
