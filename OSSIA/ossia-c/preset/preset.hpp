@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <hopscotch_map.h>
+#include <map>
 #include <memory>
 #include <regex>
 #include <functional>
