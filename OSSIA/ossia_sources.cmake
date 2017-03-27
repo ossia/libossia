@@ -94,6 +94,8 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/temperature.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/time.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/dataflow.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/address_properties.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/network_logger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/websocket_log_sink.hpp"
