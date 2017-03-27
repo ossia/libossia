@@ -14,8 +14,7 @@ struct t_view : t_obj_base
 
     void isDeleted(const ossia::net::node_base& n){
         if (!x_dead){
-            x_node = nullptr;
-            obj_quarantining<t_view>(this);
+            unregister();
         }
     }
 

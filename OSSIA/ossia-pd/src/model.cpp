@@ -136,9 +136,8 @@ static void *model_new(t_symbol *name, int argc, t_atom *argv)
         x->x_description = gensym("");
         x->x_tags = gensym("");
 
-
         // we need to delay registration because object may use patcher hierarchy to check address validity
-        // and object will be added to patcher object list (aka canvas g_list) after model_new() returns.
+        // and object will be added to patcher's objects list (aka canvas g_list) after model_new() returns.
         // 0 ms delay means that it will be perform on next clock tick
         clock_delay(x->x_regclock, 0);
     }
