@@ -88,13 +88,19 @@ bool t_model :: do_registration(ossia::net::node_base*  node){
 
 bool t_model :: unregister(){
 
-    // TODO refactor
     if(!x_node) return true; // not registered
 
     if (x_node && x_node->getParent()) x_node->getParent()->removeChild(x_name->s_name); // this call isDeleted() on each registered child and put them on quarantine
     x_node = nullptr;
 
-    // register each ex-child *AFTER* node deletion
+    obj_quarantining<t_model>(this);
+
+    clock_delay(x_regclock,0);
+
+    return true;
+}
+
+static void register_child(t_model* x){
     for (auto model : t_model::quarantine()){
         obj_register<t_model>(static_cast<t_model*>(model));
     }
@@ -107,10 +113,6 @@ bool t_model :: unregister(){
     for (auto remote : t_remote::quarantine()){
         obj_register<t_remote>(static_cast<t_remote*>(remote));
     }
-
-    obj_quarantining<t_model>(this);
-
-    return true;
 }
 
 static void *model_new(t_symbol *name, int argc, t_atom *argv)
@@ -120,6 +122,8 @@ static void *model_new(t_symbol *name, int argc, t_atom *argv)
     if(x)
     {
         x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+        x->x_regclock = clock_new(x, (t_method)obj_register<t_model>);
+        x->x_unregclock = clock_new(x, (t_method)register_child);
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
@@ -132,7 +136,11 @@ static void *model_new(t_symbol *name, int argc, t_atom *argv)
         x->x_description = gensym("");
         x->x_tags = gensym("");
 
-        obj_register<t_model>(x);
+
+        // we need to delay registration because object may use patcher hierarchy to check address validity
+        // and object will be added to patcher object list (aka canvas g_list) after model_new() returns.
+        // 0 ms delay means that it will be perform on next clock tick
+        clock_delay(x->x_regclock, 0);
     }
 
     return (x);

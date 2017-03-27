@@ -61,7 +61,7 @@ template<typename T> std::string get_absolute_path(T* x)
         while (view){
             vs.push_back(view->x_name->s_name);
             tmp = view;
-            view = find_parent_alive<t_view>(&tmp->x_obj,"ossia.view", 1, &view_level); // TODO : check why this return current object
+            view = find_parent_alive<t_view>(&tmp->x_obj,"ossia.view", 1, &view_level);
         }
         t_eobj* obj = nullptr;
         if(tmp) obj = &tmp->x_obj;

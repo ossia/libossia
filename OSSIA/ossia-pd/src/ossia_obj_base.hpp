@@ -13,6 +13,8 @@ struct t_obj_base {
     bool        x_dead = false; // wether this object is being deleted or not;
 
     t_clock*  x_clock{};
+    t_clock*  x_regclock{};    // registration clock
+    t_clock*  x_unregclock{};    // unregistration clock
     t_canvas* x_last_opened_canvas{};
     std::chrono::milliseconds x_last_click;
 
