@@ -73,7 +73,7 @@ template<typename T> std::string get_absolute_path(T* x)
         int start_level = 0;
         if (std::is_same<T,t_model>::value) start_level = 1;
         model = find_parent_alive<t_model>(&x->x_obj,"ossia.model", start_level, &model_level);
-        t_model * tmp;
+        t_model * tmp = nullptr;
         while (model){
             vs.push_back(model->x_name->s_name);
             tmp = model;
