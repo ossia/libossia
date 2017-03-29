@@ -180,6 +180,7 @@ template std::string get_absolute_path<t_view>  (t_view *x);
 template<typename T> bool obj_register(T *x)
 {
     if (x->x_node) return true; // already registered
+    if (x->x_dead) return false; // object will be removed soon
 
     int l;
     t_device *device = (t_device*) find_parent(&x->x_obj,"ossia.device", 0, &l);
