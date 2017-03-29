@@ -119,7 +119,8 @@ static void *model_new(t_symbol *name, int argc, t_atom *argv)
 {
     t_model *x = (t_model *)eobj_new(model_class);
 
-    if(x)
+    t_binbuf* d = binbuf_via_atoms(argc,argv);
+    if(x && d)
     {
         x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
         x->x_regclock = clock_new(x, (t_method)obj_register<t_model>);
@@ -135,6 +136,8 @@ static void *model_new(t_symbol *name, int argc, t_atom *argv)
 
         x->x_description = gensym("");
         x->x_tags = gensym("");
+
+        ebox_attrprocess_viabinbuf(x, d);
 
         // we need to delay registration because object may use patcher hierarchy to check address validity
         // and object will be added to patcher's objects list (aka canvas g_list) after model_new() returns.
@@ -159,12 +162,13 @@ extern "C" void setup_ossia0x2emodel(void)
     if(c)
     {
         eclass_addmethod(c, (method) obj_dump<t_model>,   "dump",       A_NULL, 0);
+
+        CLASS_ATTR_SYMBOL(c, "description", 0, t_model, x_description);
+        CLASS_ATTR_SYMBOL(c, "tags",        0, t_model, x_tags);
+
+        // eclass_register(CLASS_OBJ,c); // disable property dialog since it's buggy
+        model_class = c;
     }
-
-    CLASS_ATTR_SYMBOL(c, "description", 0, t_model, x_description);
-    CLASS_ATTR_SYMBOL(c, "tags",        0, t_model, x_tags);
-
-    model_class = c;
 }
 
 } } // namespace
