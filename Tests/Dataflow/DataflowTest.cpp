@@ -484,7 +484,7 @@ private slots:
     using namespace ossia;
     TestUtils test;
 
-    simple_explicit_graph g(test, delayed_glutton_connection{});
+    simple_explicit_graph g(test, delayed_strict_connection{});
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(g.n1);
@@ -500,16 +500,21 @@ private slots:
     g.n1->set_time(1);
     g.n2->set_time(0);
 
-    g.g.state(); // f1 pushes 1 * 2 in its queue, f2 o f1(t-1)
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 2}));
+    // f1(0) = 1
+    // f1(1) = 2
+    // f2(f1(0), 0) = [1, 10]
+    g.g.state();
+    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1}));
 
     g.g.disable(g.n1);
     g.g.enable(g.n2);
     g.n1->set_time(2);
     g.n2->set_time(1);
 
+    // f2(f1(1), 1) = [2, 20]
     g.g.state(); // f2 o f1(t-1)
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 2, 1 * 2, 10 * 3}));
+    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
+    // 10 * 1 is not here because we start from {1 * 1} from the point of view of f1(t-1)
 
   }
 

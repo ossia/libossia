@@ -56,6 +56,19 @@ using outlet_pair = base_pair;
 inline bool operator==(base_pair lhs, base_pair rhs) { return lhs.edge == rhs.edge; }
 
 
+struct audio_port {
+  std::vector<std::array<double, 64>> samples;
+};
+
+struct midi_port {
+  std::deque<mm::MidiMessage> messages;
+};
+
+struct value_port {
+  std::deque<ossia::value> data;
+};
+
+using data_type = eggs::variant<audio_port, midi_port, value_port>;
 struct immediate_glutton_connection { };
 struct immediate_strict_connection {
   enum required_sides_t {
@@ -69,9 +82,13 @@ struct immediate_strict_connection {
 struct temporal_glutton_connection { };
 struct delayed_glutton_connection {
   // delayed at the source or at the target
+  data_type buffer;
+  std::size_t pos{};
 };
 struct delayed_strict_connection {
   // same
+  data_type buffer;
+  std::size_t pos{};
 };
 struct reduction_connection {
 };
@@ -91,19 +108,6 @@ reduction_connection,
 replacing_connection,
 dependency_connection>;
 
-struct audio_port {
-  std::vector<std::array<double, 64>> samples;
-};
-
-struct midi_port {
-  std::deque<mm::MidiMessage> messages;
-};
-
-struct value_port {
-  std::deque<ossia::value> data;
-};
-
-using data_type = eggs::variant<audio_port, midi_port, value_port>;
 //struct inlet_source_t : public eggs::variant<ossia::Destination, std::string, outlet_pair> { using variant::variant; };
 //struct outlet_target_t : public eggs::variant<ossia::Destination, std::string, inlet_pair> { using variant::variant; };
 struct port
@@ -119,7 +123,6 @@ struct port
 
   scope_t scope{scope_t::both};
 
-  virtual ~port() = default;
 protected:
   port(data_type d):
     data{std::move(d)}
@@ -135,7 +138,6 @@ protected:
 
 struct inlet : public port
 {
-  virtual ~inlet() = default;
   inlet(data_type d): port{std::move(d)} { }
   inlet(data_type d, destination_t dest):
     port{std::move(d)},
@@ -171,9 +173,9 @@ struct inlet : public port
   destination_t address;
   std::vector<graph_edge*> sources;
 };
+
 struct outlet : public port
 {
-  virtual ~outlet() = default;
   outlet(data_type d): port{std::move(d)} { }
   outlet(data_type d, destination_t dest):
     port{std::move(d)},
@@ -210,8 +212,107 @@ struct outlet : public port
 };
 
 
-// A pure dependency edge does not have in/out ports set
+struct clear_data
+{
+  void operator()(value_port& p) const
+  {
+    p.data.clear();
+  }
 
+  void operator()(midi_port& p) const
+  {
+    p.messages.clear();
+  }
+
+  void operator()(audio_port& p) const
+  {
+    p.samples.clear();
+  }
+
+  void operator()() const
+  {
+
+  }
+};
+
+struct data_size
+{
+  std::size_t operator()(const value_port& p) const
+  {
+    return p.data.size();
+  }
+
+  std::size_t operator()(const midi_port& p) const
+  {
+    return p.messages.size();
+  }
+
+  std::size_t operator()(const audio_port& p) const
+  {
+    return p.samples.size();
+  }
+
+  std::size_t operator()() const
+  {
+    return 0;
+  }
+};
+
+
+struct copy_data
+{
+  template<typename T, typename U>
+  void operator()(const T&, const U&) const { }
+
+  void operator()(const value_port& out, value_port& in)
+  {
+    for(const auto& v : out.data)
+      in.data.push_back(v);
+  }
+
+  void operator()(const audio_port& out, audio_port& in)
+  {
+    in.samples.reserve(in.samples.size() + out.samples.size());
+    for(const auto& s : out.samples)
+      in.samples.push_back(s);
+  }
+
+  void operator()(const midi_port& out, midi_port& in)
+  {
+    for(const auto& v : out.messages)
+      in.messages.push_back(v);
+  }
+};
+
+
+struct copy_data_pos
+{
+  const std::size_t pos;
+
+  template<typename T, typename U>
+  void operator()(const T&, const U&) const { }
+
+  void operator()(const value_port& out, value_port& in)
+  {
+    if(pos < out.data.size())
+      in.data.push_back(out.data[pos]);
+  }
+
+  void operator()(const audio_port& out, audio_port& in)
+  {
+    if(pos < out.samples.size())
+      in.samples.push_back(out.samples[pos]);
+  }
+
+  void operator()(const midi_port& out, midi_port& in)
+  {
+    if(pos < out.messages.size())
+      in.messages.push_back(out.messages[pos]);
+  }
+};
+
+
+// A pure dependency edge does not have in/out ports set
 struct graph_edge
 {
   graph_edge(connection c, outlet_ptr pout, inlet_ptr pin,
@@ -226,6 +327,17 @@ struct graph_edge
     {
       out->connect(this);
       in->connect(this);
+
+      if(auto delay = con.target<delayed_glutton_connection>())
+      {
+        delay->buffer = out->data;
+        ossia::apply(clear_data{}, delay->buffer);
+      }
+      else if(auto sdelay = con.target<delayed_strict_connection>())
+      {
+        sdelay->buffer = out->data;
+        ossia::apply(clear_data{}, sdelay->buffer);
+      }
     }
   }
 
@@ -441,6 +553,7 @@ public:
   void reconfigure()
   {
     return;
+
     call_list.clear();
     std::deque<graph_vertex_t> topo_order;
     try {
@@ -537,6 +650,12 @@ public:
             {
               ret.insert(node);
             }
+          }
+          else if(auto delay = edge->con.target<delayed_strict_connection>())
+          {
+            const auto n = ossia::apply(data_size{}, delay->buffer);
+            if(n == 0 || delay->pos >= n)
+              ret.insert(node);
           }
         }
       }
@@ -677,49 +796,8 @@ public:
     }
   };
 
-  struct clear_data
-  {
-    void operator()(value_port& p)
-    {
-      p.data.clear();
-    }
-    void operator()(midi_port& p)
-    {
-      p.messages.clear();
-    }
-    void operator()(audio_port& p)
-    {
-      p.samples.clear();
-    }
-  };
 
-  struct copy_data
-  {
-    template<typename T, typename U>
-    void operator()(const T&, const U&) const { }
-
-    void operator()(const value_port& out, value_port& in)
-    {
-      for(const auto& v : out.data)
-        in.data.push_back(v);
-    }
-
-    void operator()(const audio_port& out, audio_port& in)
-    {
-      in.samples.reserve(in.samples.size() + out.samples.size());
-      for(const auto& s : out.samples)
-        in.samples.push_back(s);
-    }
-
-    void operator()(const midi_port& out, midi_port& in)
-    {
-      for(const auto& v : out.messages)
-        in.messages.push_back(v);
-    }
-  };
-
-
-  void copy(const data_type& out, inlet& in)
+  static void copy(const data_type& out, inlet& in)
   {
     if(out.which() == in.data.which() && out && in.data)
     {
@@ -727,7 +805,16 @@ public:
     }
   }
 
-  void copy(const outlet& out, inlet& in)
+  static void copy(const data_type& out, std::size_t pos, inlet& in)
+  {
+    if(out.which() == in.data.which() && out && in.data)
+    {
+      eggs::variants::apply(copy_data_pos{pos}, out, in.data);
+    }
+  }
+
+
+  static void copy(const outlet& out, inlet& in)
   {
     copy(out.data, in);
   }
@@ -742,7 +829,7 @@ public:
     // TODO
   }
 
-  void copy(const ossia::net::address_base& out, inlet& in)
+  static void copy(const ossia::net::address_base& out, inlet& in)
   {
     if(value_port* val = in.data.target<value_port>())
     {
@@ -750,7 +837,7 @@ public:
     }
   }
 
-  void pull_from_address(inlet& in, execution_state& e)
+  static void pull_from_address(inlet& in, execution_state& e)
   {
     if(auto addr_ptr = in.address.target<ossia::net::address_base*>())
     {
@@ -771,6 +858,57 @@ public:
       // TODO
     }
   }
+  struct init_node_visitor
+  {
+    inlet& in;
+    graph_edge& edge;
+    execution_state& e;
+
+    void operator()(immediate_glutton_connection) const
+    {
+      operator()();
+    }
+
+    void operator()(immediate_strict_connection) const
+    {
+      graph::copy(*edge.out, in);
+    }
+
+    void operator()(delayed_glutton_connection& con) const
+    {
+      graph::copy(con.buffer, con.pos, in);
+      con.pos++;
+    }
+
+    void operator()(delayed_strict_connection& con) const
+    {
+      graph::copy(con.buffer, con.pos, in);
+      con.pos++;
+    }
+
+    void operator()(reduction_connection) const
+    {
+      operator()();
+    }
+    void operator()(replacing_connection) const
+    {
+      operator()();
+    }
+    void operator()(dependency_connection) const
+    {
+      operator()();
+    }
+    void operator()() const
+    {
+      if(edge.out_node->enabled())
+        graph::copy(*edge.out, in);
+      else
+      {
+        // todo delay, etc
+        graph::pull_from_address(in, e);
+      }
+    }
+  };
 
   void init_node(graph_node& n, execution_state& e)
   {
@@ -788,13 +926,7 @@ public:
       {
         for(auto edge : in->sources)
         {
-          if(edge->out_node->enabled())
-            copy(*edge->out, *in);
-          else
-          {
-            // todo delay, etc
-            pull_from_address(*in, e);
-          }
+          ossia::apply(init_node_visitor{*in, *edge, e}, edge->con);
         }
       }
       else
@@ -836,15 +968,19 @@ public:
     }
     void operator()(immediate_strict_connection) const
     {
-
+      // Nothing to do : copied on "input" phase
     }
-    void operator()(delayed_glutton_connection) const
+    void operator()(delayed_glutton_connection& con) const
     {
-
+      // Copy to the buffer
+      if(con.buffer && out.data && con.buffer.which() == out.data.which())
+        eggs::variants::apply(copy_data{}, out.data, con.buffer);
     }
-    void operator()(delayed_strict_connection) const
+    void operator()(delayed_strict_connection& con) const
     {
-
+      // Copy to the buffer
+      if(con.buffer && out.data && con.buffer.which() == out.data.which())
+        eggs::variants::apply(copy_data{}, out.data, con.buffer);
     }
     void operator()(reduction_connection) const
     {
@@ -875,9 +1011,6 @@ public:
     // Copy from output ports to environment
     for(const outlet_ptr& out : n.out_ports)
     {
-      if(!out->address)
-        continue;
-
       if(out->targets.empty())
       {
         write_outlet(*out, e);
@@ -996,6 +1129,7 @@ public:
           (*addr)->pushValue(v);
         }
       }
+      // TODO midi & audio ?
     }
 
     for(auto& node : nodes.right)
