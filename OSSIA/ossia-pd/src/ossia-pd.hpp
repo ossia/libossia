@@ -316,66 +316,7 @@ static T* find_parent_alive(t_eobj* x, std::string classname, int start_level, i
  * @param classname : name of the object to search (ossia.model or ossia.view)
  * @return std::vector<t_pd*> containing pointer to t_pd struct of the corresponding classname
  */
-static std::vector<obj_hierachy> find_child_to_register(t_obj_base* x, t_gobj* start_list, std::string classname){
-    std::string subclassname = classname == "ossia.model" ? "ossia.param" : "ossia.remote";
-
-    t_gobj* list = start_list;
-    std::vector<obj_hierachy> found;
-
-    // 1: iterate object list and look for ossia.model / ossia.view object
-    while (list && list->g_pd){
-        std::string current = list->g_pd->c_name->s_name;
-        if ( current == classname ) {
-            obj_hierachy oh;
-            oh.hierarchy = 0;
-            oh.x = (t_obj_base*) &list->g_pd;
-            oh.classname = classname;
-            if ( x != oh.x ){
-                found.push_back(oh);
-            }
-        }
-        list=list->g_next;
-    }
-
-    // 2: if there is no ossia.model / ossia.view in the current patch, look into the subpatches
-
-    if(found.empty()){
-        list = start_list;
-        while (list && list->g_pd){
-            std::string current = list->g_pd->c_name->s_name;
-            if ( current == "canvas" ){
-                t_canvas* canvas = (t_canvas*) &list->g_pd;
-                if(!canvas_istable(canvas)){
-                    t_gobj* _list = canvas->gl_list;
-                    std::vector<obj_hierachy> found_tmp = find_child_to_register(x, _list, classname);
-                    for (auto obj : found_tmp){
-                        obj.hierarchy++; // increase hierarchy of objects found in a subpatcher
-                        found.push_back(obj);
-                    }
-                }
-            }
-            list=list->g_next;
-        }
-
-        // 3: finally look for ossia.param / ossia.remote in the same pather
-        list = start_list;
-        while (list && list->g_pd){
-            std::string current = list->g_pd->c_name->s_name;
-            if ( current == subclassname ) {
-                obj_hierachy oh;
-                oh.hierarchy = 0;
-                oh.x = (t_obj_base*) &list->g_pd;
-                oh.classname = subclassname;
-                if ( x != oh.x ) {
-                    found.push_back(oh);
-                }
-            }
-            list=list->g_next;
-        }
-    }
-
-    return found;
-}
+std::vector<obj_hierachy> find_child_to_register(t_obj_base* x, t_gobj* start_list, std::string classname);
 
 /**
  * @brief return relative path to corresponding object
