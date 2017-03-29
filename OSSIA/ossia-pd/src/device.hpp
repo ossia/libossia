@@ -5,39 +5,35 @@
 
 namespace ossia { namespace pd {
 
-struct Protocol_Settings {
-    struct t_minuit {
+namespace Protocol_Settings {
+    struct minuit {
         std::string remoteip{"locahost"};
         unsigned int remoteport=13579;
         unsigned int localport=9998;
     };
 
-    struct t_oscquery {
+    struct oscquery {
         unsigned int oscport=9999;
         unsigned int wsport=5678;
     };
 
-    struct t_osc {
+    struct osc {
         std::string remoteip{"localhost"};
         unsigned int remoteport=9997;
         unsigned int localport=9996;
     };
 
-    t_minuit minuit;
-    t_oscquery oscquery;
-    t_osc osc;
-
     static void print_protocol_help(){
-        post("expose <protocol> <args>");
+        post("expose <protocol> <args> ...");
         post("Available protocols (case sensitive): Minuit, oscquery, osc");
         post("Protocols parameters :");
-        post("Minuit <remoteip> <remoteport> :\n"
+        post("Minuit <remoteip> <remoteport> <localport> :\n"
              "\tremoteip (symbol): ip of target device\n"
              "\tremoteport (float): port on which packet should be send\n"
-             "\tlocalport (port): port this device is listening to");
+             "\tlocalport (float): port to which this device is listening");
         post("oscquery <oscport> <wsport> :\n"
              "\toscport (float) : post on which osc packet are sent\n"
-             "\twspoort (float) : WebSocket port on which distant application will connect.");
+             "\twsport (float) : WebSocket port on which distant application will connect.");
         post("osc <remoteip> <remoteport> <localpoort>\n"
              "\tremoteip (symbol): ip of target device\n"
              "\tremoteport (float): port on which packet should be send\n"
@@ -53,8 +49,6 @@ struct t_device : t_obj_base
     static void register_children(t_device* x);
     void unregister_children();
     static void loadbang(t_device* x, t_float type);
-
-    Protocol_Settings x_settings;
 
     // void addressCreationHandler(const ossia::net::address_base& n);
     // void nodeCreationHandler(const ossia::net::node_base& n);

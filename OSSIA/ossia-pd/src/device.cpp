@@ -124,6 +124,7 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
         auto& proto = static_cast<ossia::net::local_protocol&>(x->x_device->getProtocol());
         std::string protocol = argv->a_w.w_symbol->s_name;
         if (protocol == "Minuit"){
+            Protocol_Settings::minuit settings{};
             argc--;
             argv++;
             if ( argc == 3
@@ -131,38 +132,40 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
                  && argv[1].a_type == A_FLOAT
                  && argv[2].a_type == A_FLOAT)
             {
-                x->x_settings.minuit.remoteip = atom_getsymbol(argv++)->s_name;
-                x->x_settings.minuit.remoteport = atom_getfloat(argv++);
-                x->x_settings.minuit.localport = atom_getfloat(argv++);
+                settings.remoteip = atom_getsymbol(argv++)->s_name;
+                settings.remoteport = atom_getfloat(argv++);
+                settings.localport = atom_getfloat(argv++);
             }
 
             try {
-                proto.exposeTo(std::make_unique<ossia::net::minuit_protocol>(x->x_name->s_name, x->x_settings.minuit.remoteip, x->x_settings.minuit.remoteport, x->x_settings.minuit.localport));
-            } catch (ossia::connection_error e) {
+                proto.exposeTo(std::make_unique<ossia::net::minuit_protocol>(x->x_name->s_name, settings.remoteip, settings.remoteport, settings.localport));
+            } catch (const std::exception& e) {
                 pd_error(x,"%s",e.what());
                 return;
             }
-            logpost(x,3,"New 'Minuit' protocol connected to %s on port %u and listening on port %u",  x->x_settings.minuit.remoteip.c_str(), x->x_settings.minuit.remoteport, x->x_settings.minuit.localport);
+            logpost(x,3,"New 'Minuit' protocol connected to %s on port %u and listening on port %u",  settings.remoteip.c_str(), settings.remoteport, settings.localport);
         }
         else if (protocol == "oscquery"){
+            Protocol_Settings::oscquery settings{};
             argc--;
             argv++;
             if ( argc == 2
                  && argv[0].a_type == A_FLOAT
                  && argv[1].a_type == A_FLOAT)
             {
-                x->x_settings.oscquery.oscport = atom_getfloat(argv++);
-                x->x_settings.oscquery.wsport = atom_getfloat(argv++);
+                settings.oscport = atom_getfloat(argv++);
+                settings.wsport = atom_getfloat(argv++);
             }
 
             try{
-                proto.exposeTo(std::make_unique<ossia::oscquery::oscquery_server_protocol>(x->x_settings.oscquery.oscport, x->x_settings.oscquery.wsport));
-            } catch (ossia::connection_error e) {
+                proto.exposeTo(std::make_unique<ossia::oscquery::oscquery_server_protocol>(settings.oscport, settings.wsport));
+            } catch (const std::exception&  e) {
                 pd_error(x,"%s",e.what());
                 return;
             }
-            logpost(x,3,"New 'oscquery' protocol with OSC port %u and WS port %u, listening on port %u", x->x_settings.oscquery.oscport, x->x_settings.oscquery.wsport);
+            logpost(x,3,"New 'oscquery' protocol with OSC port %u and WS port %u, listening on port %u",  settings.oscport, settings.wsport, settings.oscport);
         } else if (protocol == "osc"){
+            Protocol_Settings::osc settings{};
             argc--;
             argv++;
             if ( argc == 3
@@ -170,22 +173,22 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
                  && argv[1].a_type == A_FLOAT
                  && argv[2].a_type == A_FLOAT)
             {
-                x->x_settings.osc.remoteip = atom_getsymbol(argv)->s_name;
-                x->x_settings.osc.remoteport = atom_getfloat(argv++);
-                x->x_settings.osc.localport = atom_getfloat(argv++);
+                settings.remoteip = atom_getsymbol(argv)->s_name;
+                settings.remoteport = atom_getfloat(argv++);
+                settings.localport = atom_getfloat(argv++);
             }
 
             try{
-                proto.exposeTo(std::make_unique<ossia::net::osc_protocol>(x->x_settings.osc.remoteip, x->x_settings.osc.remoteport , x->x_settings.osc.localport));
-            } catch (ossia::connection_error e) {
+                proto.exposeTo(std::make_unique<ossia::net::osc_protocol>(settings.remoteip, settings.remoteport , settings.localport));
+            } catch (const std::exception& e) {
                 pd_error(x,"%s",e.what());
                 return;
             }
-            logpost(x,3,"New 'OSC' protocol connect to %s on port %u and listening on port %u",  x->x_settings.osc.remoteip.c_str(), x->x_settings.osc.remoteport, x->x_settings.osc.localport);
+            logpost(x,3,"New 'OSC' protocol connect to %s on port %u and listening on port %u",  settings.remoteip.c_str(), settings.remoteport, settings.localport);
         } else {
             pd_error((t_object*)x, "Unknown protocol: %s", protocol.c_str());
         }
-    }
+    } else Protocol_Settings::print_protocol_help();
 }
 
 extern "C" void setup_ossia0x2edevice(void)
