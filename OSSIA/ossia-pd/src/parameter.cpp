@@ -189,7 +189,7 @@ extern "C" void setup_ossia0x2eparam(void)
 
         CLASS_ATTR_DEFAULT(c, "type", 0, "float");
 
-        // eclass_register(CLASS_OBJ, c);
+        // eclass_register(CLASS_OBJ, c); // disable property dialog since it's buggy
 
     }
 

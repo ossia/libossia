@@ -48,7 +48,7 @@ bool t_model :: do_registration(ossia::net::node_base*  node){
     unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
     if (!node) return false;
 
-    if (node->findChild(x_name->s_name)) {
+    if (node->findChild(x_name->s_name)) { // we have to check if a node with the same name already exists to avoid auto-incrementing name
         bool abord=true;
         std::vector<obj_hierachy> obj = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
         for (auto v : obj){
@@ -62,7 +62,7 @@ bool t_model :: do_registration(ossia::net::node_base*  node){
                 }
             } else if (v.classname == "ossia.model"){
                 t_model* model = (t_model*) v.x;
-                if (std::string(model->x_name->s_name) == std::string(x_name->s_name)) {
+                if (std::string(model->x_name->s_name) == std::string(x_name->s_name) && model != this) {
                     abord = false;
                     model->unregister(); // if we already have a t_param node of that name, unregister it
                     // we will register it again after node creation
@@ -72,7 +72,7 @@ bool t_model :: do_registration(ossia::net::node_base*  node){
         }
 
         if (abord){
-            pd_error((t_object*) this, "node %s aldready exists", x_name->s_name);
+            // pd_error((t_object*) this, "node %s already exists", x_name->s_name);
             return false;
         }
     }
@@ -90,29 +90,15 @@ bool t_model :: unregister(){
 
     if(!x_node) return true; // not registered
 
-    if (x_node && x_node->getParent()) x_node->getParent()->removeChild(x_name->s_name); // this call isDeleted() on each registered child and put them on quarantine
+    if (x_node && x_node->getParent())
+        x_node->getParent()->removeChild(x_name->s_name); // this calls isDeleted() on each registered child and put them into quarantine
     x_node = nullptr;
 
     obj_quarantining<t_model>(this);
 
-    clock_delay(x_regclock,0);
+    register_quarantinized();
 
     return true;
-}
-
-static void register_child(t_model* x){
-    for (auto model : t_model::quarantine()){
-        obj_register<t_model>(static_cast<t_model*>(model));
-    }
-    for (auto param : t_param::quarantine()){
-        obj_register<t_param>(static_cast<t_param*>(param));
-    }
-    for (auto view : t_view::quarantine()){
-        obj_register<t_view>(static_cast<t_view*>(view));
-    }
-    for (auto remote : t_remote::quarantine()){
-        obj_register<t_remote>(static_cast<t_remote*>(remote));
-    }
 }
 
 static void *model_new(t_symbol *name, int argc, t_atom *argv)
@@ -124,7 +110,6 @@ static void *model_new(t_symbol *name, int argc, t_atom *argv)
     {
         x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
         x->x_regclock = clock_new(x, (t_method)obj_register<t_model>);
-        x->x_unregclock = clock_new(x, (t_method)register_child);
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
@@ -153,6 +138,7 @@ static void model_free(t_model *x)
     x->x_dead = true;
     x->unregister();
     obj_dequarantining<t_model>(x);
+    clock_free(x->x_regclock);
 }
 
 extern "C" void setup_ossia0x2emodel(void)

@@ -255,6 +255,11 @@ public:
 };
 
 /**
+ * @brief register_quarantinized Try to register all quarantinized objects
+ */
+void register_quarantinized();
+
+/**
  * @fn                static t_class* find_parent(t_eobj* x, t_symbol* classname)
  * @brief             Find the first instance of classname beside or above (in a parent patcher) context.
  * @details           The function iterate all objects at the same level or above x and return the first instance of classname found.

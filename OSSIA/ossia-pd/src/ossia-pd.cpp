@@ -42,6 +42,21 @@ extern "C" void ossia_setup(void)
     setup_ossia0x2eview();
 }
 
+void register_quarantinized(){
+    for (auto model : t_model::quarantine()){
+        obj_register<t_model>(static_cast<t_model*>(model));
+    }
+    for (auto param : t_param::quarantine()){
+        obj_register<t_param>(static_cast<t_param*>(param));
+    }
+    for (auto view : t_view::quarantine()){
+        obj_register<t_view>(static_cast<t_view*>(view));
+    }
+    for (auto remote : t_remote::quarantine()){
+        obj_register<t_remote>(static_cast<t_remote*>(remote));
+    }
+}
+
 std::vector<obj_hierachy> find_child_to_register(t_obj_base* x, t_gobj* start_list, std::string classname){
     std::string subclassname = classname == "ossia.model" ? "ossia.param" : "ossia.remote";
 
