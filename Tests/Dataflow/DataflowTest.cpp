@@ -49,7 +49,7 @@ struct execution_mock
     if(auto val = elt.target<std::vector<ossia::value>>())
     {
       auto v = *val;
-      v.push_back(factor * (1+node->time));
+      v.push_back(factor * (1+int(node->time)));
       node->out_ports[0]->data.target<value_port>()->data.push_back(std::move(v));
     }
   }
@@ -361,6 +361,7 @@ private slots:
     g.g.enable(g.n1);
     g.g.disable(g.n2);
     g.n1->set_time(0);
+    g.n2->set_time(0);
 
     g.g.state(); // nothing
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
@@ -368,7 +369,7 @@ private slots:
     g.g.enable(g.n1);
     g.g.enable(g.n2);
     g.n1->set_time(1);
-    g.n2->set_time(0);
+    g.n2->set_time(1);
 
     g.g.state(); // f2 o f1
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
@@ -376,14 +377,13 @@ private slots:
     g.g.disable(g.n1);
     g.g.enable(g.n2);
     g.n1->set_time(2);
-    g.n2->set_time(1);
+    g.n2->set_time(2);
 
     g.g.state(); // nothing
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
   }
 
 
-  /*
   void strict_explicit_relationship_serial()
   {
     using namespace ossia;
@@ -420,20 +420,23 @@ private slots:
     g.g.enable(g.n1);
     g.g.disable(g.n2);
     g.n1->set_time(0);
+    g.n2->set_time(0);
 
     g.g.state(); // f1
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1}));
 
+    g.g.enable(g.n1);
     g.g.enable(g.n2);
     g.n1->set_time(1);
-    g.n2->set_time(0);
+    g.n2->set_time(1);
 
     g.g.state(); // f2 o f1
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
     g.g.disable(g.n1);
+    g.g.enable(g.n2);
     g.n1->set_time(2);
-    g.n2->set_time(1);
+    g.n2->set_time(2);
 
     g.g.state(); // f2
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
@@ -441,7 +444,7 @@ private slots:
   }
 
   void glutton_explicit_relationship()
-  {
+  {/*
     // Does it make sense ??
     // Cables : used to reduce "where" things go, so yeah, makes sense
     using namespace ossia;
@@ -453,24 +456,27 @@ private slots:
     g.g.enable(g.n1);
     g.g.disable(g.n2);
     g.n1->set_time(0);
+    g.n1->set_time(0);
 
     g.g.state(); // f1
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1}));
 
+    g.g.enable(g.n1);
     g.g.enable(g.n2);
     g.n1->set_time(1);
-    g.n2->set_time(0);
+    g.n2->set_time(1);
 
     g.g.state(); // f2 o f1
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
     g.g.disable(g.n1);
+    g.g.enable(g.n2);
     g.n1->set_time(2);
-    g.n2->set_time(1);
+    g.n2->set_time(2);
 
     g.g.state(); // f2
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
-
+*/
   }
 
   void delayed_relationship()
@@ -485,17 +491,20 @@ private slots:
     g.g.disable(g.n2);
     g.n1->set_time(0);
 
+    // f1 pushes 1 * 1 in its queue
     g.g.state();
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
 
+    g.g.enable(g.n1);
     g.g.enable(g.n2);
     g.n1->set_time(1);
     g.n2->set_time(0);
 
-    g.g.state(); // f2 o f1(t-1)
+    g.g.state(); // f1 pushes 1 * 2 in its queue, f2 o f1(t-1)
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 2}));
 
     g.g.disable(g.n1);
+    g.g.enable(g.n2);
     g.n1->set_time(2);
     g.n2->set_time(1);
 
@@ -575,7 +584,7 @@ private slots:
   {
 
   }
-*/
+
 };
 
 QTEST_APPLESS_MAIN(DataflowTest)

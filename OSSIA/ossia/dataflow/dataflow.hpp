@@ -755,7 +755,7 @@ public:
   {
     for(const inlet_ptr& in : n.in_ports)
     {
-      std::cerr << in->data.target<value_port>() << std::endl;
+      std::cout << in->data.target<value_port>() << std::endl;
       if(in->data)
         eggs::variants::apply(clear_data{}, in->data);
     }
@@ -815,8 +815,8 @@ public:
 
     { // debug
       for(auto n : ordered_nodes)
-        std::cerr << "node: " << (void*) n << "; ";
-      std::cerr << "size: " << ordered_nodes.size() << std::endl << std::endl;
+        std::cout << "node: " << (void*) n << "; ";
+      std::cout << "size: " << ordered_nodes.size() << std::endl << std::endl;
     }
     auto active_nodes = ordered_nodes;
     while(!active_nodes.empty())
@@ -831,8 +831,8 @@ public:
 
       { // debug
         for(auto n : next_nodes)
-          std::cerr << "node: " << (void*) n << "; ";
-        std::cerr << "size: " << active_nodes.size() << std::endl << std::endl;
+          std::cout << "node: " << (void*) n << "; ";
+        std::cout << "size: " << active_nodes.size() << std::endl << std::endl;
       }
       if(!next_nodes.empty())
       {
