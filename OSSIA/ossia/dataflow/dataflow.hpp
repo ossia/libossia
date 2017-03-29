@@ -33,7 +33,11 @@ public:
 }
 namespace ossia
 {
-using target = eggs::variant<
+
+template<typename T>
+using set = boost::container::flat_set<T>;
+
+using destination_t = eggs::variant<
 ossia::net::address_base*,
 std::string // ossia::traversal::path
 >;
@@ -52,8 +56,8 @@ using outlet_pair = base_pair;
 inline bool operator==(base_pair lhs, base_pair rhs) { return lhs.edge == rhs.edge; }
 
 
-struct glutton_connection { };
-struct strict_connection {
+struct immediate_glutton_connection { };
+struct immediate_strict_connection {
   enum required_sides_t {
     inbound = 1 << 0,
     outbound = 1 << 1,
@@ -66,7 +70,7 @@ struct temporal_glutton_connection { };
 struct delayed_glutton_connection {
   // delayed at the source or at the target
 };
-struct delayed_needful_connection {
+struct delayed_strict_connection {
   // same
 };
 struct reduction_connection {
@@ -79,10 +83,10 @@ struct dependency_connection {
 };
 
 using connection = eggs::variant<
-glutton_connection,
-strict_connection,
+immediate_glutton_connection,
+immediate_strict_connection,
 delayed_glutton_connection,
-delayed_needful_connection,
+delayed_strict_connection,
 reduction_connection,
 replacing_connection,
 dependency_connection>;
@@ -100,8 +104,8 @@ struct value_port {
 };
 
 using data_type = eggs::variant<audio_port, midi_port, value_port>;
-struct inlet_source_t : public eggs::variant<ossia::Destination, std::string, outlet_pair> { using variant::variant; };
-struct outlet_target_t : public eggs::variant<ossia::Destination, std::string, inlet_pair> { using variant::variant; };
+//struct inlet_source_t : public eggs::variant<ossia::Destination, std::string, outlet_pair> { using variant::variant; };
+//struct outlet_target_t : public eggs::variant<ossia::Destination, std::string, inlet_pair> { using variant::variant; };
 struct port
 {
   data_type data;
@@ -133,25 +137,76 @@ struct inlet : public port
 {
   virtual ~inlet() = default;
   inlet(data_type d): port{std::move(d)} { }
-  inlet(data_type d, inlet_source_t dest):
-    port{std::move(d)}
+  inlet(data_type d, destination_t dest):
+    port{std::move(d)},
+    address{std::move(dest)}
   {
-    sources.push_back(std::move(dest));
   }
 
-  std::vector<inlet_source_t> sources;
+  inlet(data_type d, ossia::net::address_base& addr):
+    port{std::move(d)},
+    address{&addr}
+  {
+  }
+
+  inlet(data_type d, graph_edge& edge):
+    port{std::move(d)}
+  {
+    sources.push_back(&edge);
+  }
+
+
+  void connect(graph_edge* e)
+  {
+    auto it = ossia::find(sources, e);
+    if(it == sources.end())
+      sources.push_back(e);
+  }
+
+  void disconnect(graph_edge* e)
+  {
+    boost::remove_erase(sources, e);
+  }
+
+  destination_t address;
+  std::vector<graph_edge*> sources;
 };
 struct outlet : public port
 {
   virtual ~outlet() = default;
   outlet(data_type d): port{std::move(d)} { }
-  outlet(data_type d, outlet_target_t dest):
-    port{std::move(d)}
+  outlet(data_type d, destination_t dest):
+    port{std::move(d)},
+    address{std::move(dest)}
   {
-    targets.push_back(std::move(dest));
   }
 
-  std::vector<outlet_target_t> targets;
+  outlet(data_type d, ossia::net::address_base& addr):
+    port{std::move(d)},
+    address{&addr}
+  {
+  }
+
+  outlet(data_type d, graph_edge& edge):
+    port{std::move(d)}
+  {
+    targets.push_back(&edge);
+  }
+
+  void connect(graph_edge* e)
+  {
+    auto it = ossia::find(targets, e);
+    if(it == targets.end())
+      targets.push_back(e);
+  }
+
+  void disconnect(graph_edge* e)
+  {
+    boost::remove_erase(targets, e);
+  }
+
+  destination_t address;
+  std::vector<graph_edge*> targets;
 };
 
 
@@ -169,8 +224,8 @@ struct graph_edge
   {
     if(in && out)
     {
-      out->targets.push_back(inlet_pair{this});
-      in->sources.push_back(outlet_pair{this});
+      out->connect(this);
+      in->connect(this);
     }
   }
 
@@ -178,8 +233,8 @@ struct graph_edge
   {
     if(in && out)
     {
-      boost::remove_erase(out->targets, inlet_pair{this});
-      boost::remove_erase(in->sources, outlet_pair{this});
+      out->disconnect(this);
+      in->disconnect(this);
     }
   }
 
@@ -193,7 +248,17 @@ struct graph_edge
 struct execution_state
 {
   std::vector<ossia::net::device_base*> globalState;
-  std::unordered_map<target, data_type> localState;
+  std::unordered_map<destination_t, data_type> localState;
+
+  bool in_local_scope(ossia::net::address_base& other) const
+  {
+    bool ok = (localState.find(destination_t{&other}) != localState.end());
+    if(!ok)
+    {
+      // TODO check if there is any pattern matching the current destination
+    }
+    return ok;
+  }
 };
 
 template<typename T, typename... Args>
@@ -276,8 +341,6 @@ public:
 };
 
 
-template<typename T>
-using set = boost::container::flat_set<T>;
 template<typename T, typename U>
 using bimap = boost::bimap<T, U>;
 class graph : public ossia::time_process
@@ -456,7 +519,7 @@ public:
 
   }
 
-  static auto disable_strict_nodes(std::set<node_ptr> enabled_nodes)
+  static auto disable_strict_nodes(set<node_ptr> enabled_nodes)
   {
     decltype(enabled_nodes) ret;
 
@@ -464,20 +527,15 @@ public:
     {
       for(auto in : node->in_ports)
       {
-        for(auto src : in->sources)
+        for(auto edge : in->sources)
         {
-          if(auto outlet = src.target<outlet_pair>())
-          {
-            auto edge = outlet->edge;
-            assert(edge);
-            assert(edge->out_node);
+          assert(edge->out_node);
 
-            if(auto sc = edge->con.target<strict_connection>())
+          if(auto sc = edge->con.target<immediate_strict_connection>())
+          {
+            if((sc->required_sides & immediate_strict_connection::required_sides_t::outbound) && node->enabled() && !edge->out_node->enabled())
             {
-              if((sc->required_sides & strict_connection::required_sides_t::outbound) && node->enabled() && !edge->out_node->enabled())
-              {
-                ret.insert(node);
-              }
+              ret.insert(node);
             }
           }
         }
@@ -485,20 +543,15 @@ public:
 
       for(auto out : node->out_ports)
       {
-        for(auto src : out->targets)
+        for(auto edge : out->targets)
         {
-          if(auto inlet = src.target<inlet_pair>())
-          {
-            auto edge = inlet->edge;
-            assert(edge);
-            assert(edge->in_node);
+          assert(edge->in_node);
 
-            if(auto sc = edge->con.target<strict_connection>())
+          if(auto sc = edge->con.target<immediate_strict_connection>())
+          {
+            if((sc->required_sides & immediate_strict_connection::required_sides_t::inbound) && node->enabled() && !edge->in_node->enabled())
             {
-              if((sc->required_sides & strict_connection::required_sides_t::inbound) && node->enabled() && !edge->in_node->enabled())
-              {
-                ret.insert(node);
-              }
+              ret.insert(node);
             }
           }
         }
@@ -508,9 +561,9 @@ public:
     return ret;
   }
 
-  void disable_strict_nodes_rec(std::set<node_ptr> cur_enabled_node)
+  void disable_strict_nodes_rec(set<node_ptr> cur_enabled_node)
   {
-    std::set<node_ptr> to_disable;
+    set<node_ptr> to_disable;
     do
     {
       to_disable = disable_strict_nodes(cur_enabled_node);
@@ -527,18 +580,18 @@ public:
 
   bool can_execute(const graph_node& n, const execution_state& st)
   {
-    return ossia::any_of(n.in_ports, [] (const inlet_ptr& inlet) {
-      return ossia::all_of(inlet->sources, [] (const inlet_source_t& pt) {
-        if(auto e = pt.target<outlet_pair>())
-        {
-          return e->edge->out_node->executed();
-        }
-        else
-        {
-          return true;
-          // find if address available in local / global scope
-        }
+    return ossia::all_of(n.in_ports, [] (const inlet_ptr& inlet) {
+      // A port can execute if : - it has source ports and all its source ports have executed
+      bool previous_nodes_executed = ossia::all_of(inlet->sources, [&] (graph_edge* edge) {
+          return edge->out_node->executed() || (!edge->out_node->enabled() && bool(inlet->address) /* TODO check that it's in scope */);
       });
+
+      // it does not have source ports ; we have to check for variables :
+      // find if address available in local / global scope
+      return !inlet->sources.empty()
+          ? previous_nodes_executed
+          : true // TODO
+            ;
     });
   }
 
@@ -549,15 +602,13 @@ public:
     bool has_port_inputs(graph_node& n) const
     {
       return ossia::any_of(n.in_ports, [] (const inlet_ptr& inlet) {
-        return ossia::any_of(inlet->sources, [] (const inlet_source_t& pt) {
-          return pt.target<outlet_pair>() != nullptr;
-        });
+        return !inlet->sources.empty();
       });
     }
     bool has_global_inputs(graph_node& n) const
     {
       return ossia::any_of(n.in_ports, [&] (const inlet_ptr& inlet) {
-        return inlet->scope & port::scope_t::global;
+        return (inlet->scope & port::scope_t::global) && bool(inlet->address);
       });
     }
 
@@ -566,33 +617,19 @@ public:
       return ossia::any_of(n.in_ports, [&] (const inlet_ptr& inlet) {
         if(inlet->scope & port::scope_t::local)
         {
-          bool is_explicit = ossia::any_of(inlet->sources, [&] (const inlet_source_t& pt) {
-            if(auto dest = pt.target<ossia::Destination>())
-            {
-              return ossia::any_of(st.localState, [&] (const auto& pair) {
-                auto addr = pair.first.template target<ossia::net::address_base*>();
-                if(addr && *dest == **addr)
-                  return true;
+          if(auto dest = inlet->address.target<ossia::net::address_base*>())
+          {
+            if(st.in_local_scope(**dest))
+              return true;
+          }
+          // else if(auto pattern = pt.target<std::string>())
+          // {
+          // what happens if a pattern matches anotehr pattern. c.f. notes
+          //   if( n.consumes(*pattern))
+          //     return true;
+          // }
 
-                //                if(auto match = pair.second.target<std::string>())
-                {
-                  // TODO check if there is any pattern matching the current destination
-                }
-
-                return false;
-              });
-            }
-            // else if(auto pattern = pt.target<std::string>())
-            // {
-            // what happens if a pattern matches anotehr pattern
-            //   return n.consumes(*pattern);
-            // }
-            return false;
-          });
-
-          if(is_explicit)
-            return true;
-          else if(n.consumes(st))
+          if(n.consumes(st))
             return true;
         }
         return false;
@@ -696,11 +733,11 @@ public:
   }
 
 
-  void copy_local(const data_type& out, const Destination& d, execution_state& in)
+  static void copy_local(const data_type& out, const Destination& d, execution_state& in)
   {
-    in.localState[target{&d.address()}]= out;
+    in.localState[destination_t{&d.address()}] = out;
   }
-  void copy_global(const data_type& out, const Destination& d, execution_state& in)
+  static void copy_global(const data_type& out, const Destination& d, execution_state& in)
   {
     // TODO
   }
@@ -712,6 +749,29 @@ public:
       val->data.push_back(out.cloneValue());
     }
   }
+
+  void pull_from_address(inlet& in, execution_state& e)
+  {
+    if(auto addr_ptr = in.address.target<ossia::net::address_base*>())
+    {
+      ossia::net::address_base* addr = *addr_ptr;
+      if(in.scope & port::scope_t::local)
+      {
+        auto it = e.localState.find(destination_t{addr});
+        if(it != e.localState.end())
+          copy(it->second, in);
+        else if(in.scope & port::scope_t::global)
+          copy(*addr, in);
+      }
+      else if(in.scope & port::scope_t::global)
+        copy(*addr, in);
+    }
+    else if(auto pattern = in.address.target<std::string>())
+    {
+      // TODO
+    }
+  }
+
   void init_node(graph_node& n, execution_state& e)
   {
     // Clear the outputs of the node
@@ -724,38 +784,90 @@ public:
     // Copy from environment and previous ports to inputs
     for(const inlet_ptr& in : n.in_ports)
     {
-      for(const inlet_source_t& src : in->sources)
+      if(!in->sources.empty())
       {
-        if(auto outlet = src.target<outlet_pair>())
+        for(auto edge : in->sources)
         {
-          copy(*outlet->edge->out, *in);
-        }
-        else if(auto addr = src.target<ossia::Destination>())
-        {
-          if(in->scope & port::scope_t::local)
+          if(edge->out_node->enabled())
+            copy(*edge->out, *in);
+          else
           {
-            auto it = e.localState.find(target{&addr->address()});
-            if(it != e.localState.end())
-              copy(it->second, *in);
-            else if(in->scope & port::scope_t::global)
-              copy(addr->address(), *in);
+            // todo delay, etc
+            pull_from_address(*in, e);
           }
-          else if(in->scope & port::scope_t::global)
-            copy(addr->address(), *in);
         }
-        else if(auto pattern = src.target<std::string>())
-        {
-          // TODO
-        }
+      }
+      else
+      {
+        pull_from_address(*in, e);
       }
     }
   }
+
+  static void write_outlet(outlet& out, execution_state& e)
+  {
+    if(auto addr_ptr = out.address.target<ossia::net::address_base*>())
+    {
+      ossia::net::address_base* addr = *addr_ptr;
+      if(out.scope & port::scope_t::local)
+      {
+        graph::copy_local(out.data, *addr, e);
+      }
+      else if(out.scope & port::scope_t::global)
+      {
+        graph::copy_global(out.data, *addr, e);
+      }
+    }
+    else if(auto pattern = out.address.target<std::string>())
+    {
+      // TODO
+    }
+  }
+
+  struct env_writer
+  {
+    outlet& out;
+    graph_edge& edge;
+    execution_state& e;
+    void operator()(immediate_glutton_connection) const
+    {
+      if(!edge.in_node->enabled())
+        write_outlet(out, e);
+    }
+    void operator()(immediate_strict_connection) const
+    {
+
+    }
+    void operator()(delayed_glutton_connection) const
+    {
+
+    }
+    void operator()(delayed_strict_connection) const
+    {
+
+    }
+    void operator()(reduction_connection) const
+    {
+
+    }
+    void operator()(replacing_connection) const
+    {
+
+    }
+    void operator()(dependency_connection) const
+    {
+
+    }
+    void operator()() const
+    {
+
+    }
+  };
 
   void teardown_node(graph_node& n, execution_state& e)
   {
     for(const inlet_ptr& in : n.in_ports)
     {
-      std::cout << in->data.target<value_port>() << std::endl;
       if(in->data)
         eggs::variants::apply(clear_data{}, in->data);
     }
@@ -763,22 +875,19 @@ public:
     // Copy from output ports to environment
     for(const outlet_ptr& out : n.out_ports)
     {
-      for(const outlet_target_t& tgt : out->targets)
+      if(!out->address)
+        continue;
+
+      if(out->targets.empty())
       {
-        if(auto addr = tgt.target<ossia::Destination>())
+        write_outlet(*out, e);
+      }
+      else
+      {
+        // If the following target has been deactivated
+        for(auto tgt : out->targets)
         {
-          if(out->scope & port::scope_t::local)
-          {
-            copy_local(out->data, *addr, e);
-          }
-          else if(out->scope & port::scope_t::global)
-          {
-            copy_global(out->data, *addr, e);
-          }
-        }
-        else if(auto pattern = tgt.target<std::string>())
-        {
-          // TODO
+          ossia::apply(env_writer{*out, *tgt, e}, tgt->con);
         }
       }
     }
@@ -787,10 +896,12 @@ public:
 
   state_element state() override
   {
+    // TODO in the future, temporal_graph, space_graph that can be used as processes.
+
     // There should be a first "activation" pass from the temporal algorithm
 
     // Filter disabled nodes (through strict relationships).
-    disable_strict_nodes_rec(std::set<node_ptr>(user_enabled_nodes.begin(), user_enabled_nodes.end()));
+    disable_strict_nodes_rec(set<node_ptr>(user_enabled_nodes.begin(), user_enabled_nodes.end()));
 
     // Get a total order on nodes
     std::vector<graph_node*> ordered_nodes;
@@ -813,11 +924,11 @@ public:
         ordered_nodes.push_back(n);
     }
 
-    { // debug
+    /*{ // debug
       for(auto n : ordered_nodes)
         std::cout << "node: " << (void*) n << "; ";
       std::cout << "size: " << ordered_nodes.size() << std::endl << std::endl;
-    }
+    }*/
     auto active_nodes = ordered_nodes;
     while(!active_nodes.empty())
     {
@@ -829,11 +940,11 @@ public:
 
       std::sort(next_nodes.begin(), next_nodes.end(), active_node_sorter{edge_map, e});
 
-      { // debug
+      /*{ // debug
         for(auto n : next_nodes)
           std::cout << "node: " << (void*) n << "; ";
         std::cout << "size: " << active_nodes.size() << std::endl << std::endl;
-      }
+      }*/
       if(!next_nodes.empty())
       {
         // First look if there is a replacement or reduction relationship between the first n nodes

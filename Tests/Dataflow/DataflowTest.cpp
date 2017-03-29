@@ -65,11 +65,11 @@ struct simple_explicit_graph
   {
     using namespace ossia;
     auto n1_in = make_inlet<value_port>(*test.tuple_addr);
-    auto n1_out = make_outlet<value_port>();
+    auto n1_out = make_outlet<value_port>(*test.tuple_addr);
     n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
     n1->fun = execution_mock{1, n1};
 
-    auto n2_in = make_inlet<value_port>();
+    auto n2_in = make_inlet<value_port>(*test.tuple_addr);
     auto n2_out = make_outlet<value_port>(*test.tuple_addr);
     n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
     n2->fun = execution_mock{10, n2};
@@ -232,13 +232,13 @@ private slots:
     g.add_node(n4);
     g.add_node(n5);
 
-    auto c1 = std::make_shared<graph_edge>(connection{glutton_connection{}}, n1->outputs()[0], n2->inputs()[0], n1, n2);
-    auto c2 = std::make_shared<graph_edge>(connection{glutton_connection{}}, n1->outputs()[0], n3->inputs()[0], n1, n3);
-    auto c3 = std::make_shared<graph_edge>(connection{glutton_connection{}}, n2->outputs()[0], n4->inputs()[0], n2, n4);
-    auto c4 = std::make_shared<graph_edge>(connection{glutton_connection{}}, n3->outputs()[0], n4->inputs()[1], n3, n4);
+    auto c1 = std::make_shared<graph_edge>(connection{immediate_glutton_connection{}}, n1->outputs()[0], n2->inputs()[0], n1, n2);
+    auto c2 = std::make_shared<graph_edge>(connection{immediate_glutton_connection{}}, n1->outputs()[0], n3->inputs()[0], n1, n3);
+    auto c3 = std::make_shared<graph_edge>(connection{immediate_glutton_connection{}}, n2->outputs()[0], n4->inputs()[0], n2, n4);
+    auto c4 = std::make_shared<graph_edge>(connection{immediate_glutton_connection{}}, n3->outputs()[0], n4->inputs()[1], n3, n4);
 
-    auto c5 = std::make_shared<graph_edge>(connection{glutton_connection{}}, n4->outputs()[0], n5->inputs()[0], n4, n5);
-    auto c6 = std::make_shared<graph_edge>(connection{glutton_connection{}}, n4->outputs()[1], n5->inputs()[1], n4, n5);
+    auto c5 = std::make_shared<graph_edge>(connection{immediate_glutton_connection{}}, n4->outputs()[0], n5->inputs()[0], n4, n5);
+    auto c6 = std::make_shared<graph_edge>(connection{immediate_glutton_connection{}}, n4->outputs()[1], n5->inputs()[1], n4, n5);
 
     g.connect(c1);
     g.connect(c2);
@@ -247,17 +247,17 @@ private slots:
     g.connect(c5);
     g.connect(c6);
 
-    QVERIFY(n1->outputs()[0]->targets[0].target<inlet_pair>());
-    QCOMPARE(n1->outputs()[0]->targets[0].target<inlet_pair>()->edge->in_node, std::shared_ptr<graph_node>(n2));
-    QCOMPARE(n1->outputs()[0]->targets[0].target<inlet_pair>()->edge->in, n2->inputs()[0]);
-    QCOMPARE(n1->outputs()[0]->targets[0].target<inlet_pair>()->edge->out_node, std::shared_ptr<graph_node>(n1));
-    QCOMPARE(n1->outputs()[0]->targets[0].target<inlet_pair>()->edge->out, n1->outputs()[0]);
+    QVERIFY(n1->outputs()[0]->targets[0]);
+    QCOMPARE(n1->outputs()[0]->targets[0]->in_node, std::shared_ptr<graph_node>(n2));
+    QCOMPARE(n1->outputs()[0]->targets[0]->in, n2->inputs()[0]);
+    QCOMPARE(n1->outputs()[0]->targets[0]->out_node, std::shared_ptr<graph_node>(n1));
+    QCOMPARE(n1->outputs()[0]->targets[0]->out, n1->outputs()[0]);
 
-    QVERIFY(n2->inputs()[0]->sources[0].target<outlet_pair>());
-    QCOMPARE(n2->inputs()[0]->sources[0].target<outlet_pair>()->edge->in_node, std::shared_ptr<graph_node>(n2));
-    QCOMPARE(n2->inputs()[0]->sources[0].target<outlet_pair>()->edge->in, n2->inputs()[0]);
-    QCOMPARE(n2->inputs()[0]->sources[0].target<outlet_pair>()->edge->out_node, std::shared_ptr<graph_node>(n1));
-    QCOMPARE(n2->inputs()[0]->sources[0].target<outlet_pair>()->edge->out, n1->outputs()[0]);
+    QVERIFY(n2->inputs()[0]->sources[0]);
+    QCOMPARE(n2->inputs()[0]->sources[0]->in_node, std::shared_ptr<graph_node>(n2));
+    QCOMPARE(n2->inputs()[0]->sources[0]->in, n2->inputs()[0]);
+    QCOMPARE(n2->inputs()[0]->sources[0]->out_node, std::shared_ptr<graph_node>(n1));
+    QCOMPARE(n2->inputs()[0]->sources[0]->out, n1->outputs()[0]);
   }
 
 
@@ -276,10 +276,10 @@ private slots:
     g.add_node(n3);
     g.add_node(n4);
 
-    g.connect(std::make_shared<graph_edge>(connection{strict_connection{}}, n1->outputs()[0], n2->inputs()[0], n1, n2));
-    g.connect(std::make_shared<graph_edge>(connection{strict_connection{}}, n1->outputs()[0], n3->inputs()[0], n1, n3));
-    g.connect(std::make_shared<graph_edge>(connection{strict_connection{}}, n2->outputs()[0], n4->inputs()[0], n2, n4));
-    g.connect(std::make_shared<graph_edge>(connection{strict_connection{}}, n3->outputs()[0], n4->inputs()[1], n3, n4));
+    g.connect(std::make_shared<graph_edge>(connection{immediate_strict_connection{}}, n1->outputs()[0], n2->inputs()[0], n1, n2));
+    g.connect(std::make_shared<graph_edge>(connection{immediate_strict_connection{}}, n1->outputs()[0], n3->inputs()[0], n1, n3));
+    g.connect(std::make_shared<graph_edge>(connection{immediate_strict_connection{}}, n2->outputs()[0], n4->inputs()[0], n2, n4));
+    g.connect(std::make_shared<graph_edge>(connection{immediate_strict_connection{}}, n3->outputs()[0], n4->inputs()[1], n3, n4));
 
     {
       n1->set_enabled(true);
@@ -355,7 +355,7 @@ private slots:
     TestUtils test;
 
     // Functional dependency
-    simple_explicit_graph g(test, strict_connection{});
+    simple_explicit_graph g(test, immediate_strict_connection{});
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(g.n1);
@@ -390,7 +390,7 @@ private slots:
     TestUtils test;
 
     // Functional dependency
-    three_serial_nodes_explicit_graph g(test, strict_connection{});
+    three_serial_nodes_explicit_graph g(test, immediate_strict_connection{});
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(g.n1);
@@ -414,7 +414,7 @@ private slots:
     using namespace ossia;
     TestUtils test;
 
-    simple_implicit_graph g(test, glutton_connection{});
+    simple_implicit_graph g(test, immediate_glutton_connection{});
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(g.n1);
@@ -444,13 +444,13 @@ private slots:
   }
 
   void glutton_explicit_relationship()
-  {/*
+  {
     // Does it make sense ??
     // Cables : used to reduce "where" things go, so yeah, makes sense
     using namespace ossia;
     TestUtils test;
 
-    simple_explicit_graph g(test, glutton_connection{});
+    simple_explicit_graph g(test, immediate_glutton_connection{});
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(g.n1);
@@ -476,7 +476,7 @@ private slots:
 
     g.g.state(); // f2
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
-*/
+
   }
 
   void delayed_relationship()
