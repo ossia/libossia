@@ -54,6 +54,20 @@ bool t_view :: do_registration(ossia::net::node_base*  node){
     return true;
 }
 
+static void register_children(t_view* x){
+    std::vector<obj_hierachy> viewnode = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view");
+    for (auto v : viewnode){
+        if(v.classname == "ossia.view"){
+            t_view* view = (t_view*) v.x;
+            if (view == x) continue;
+            obj_register<t_view>(view);
+        } else if(v.classname == "ossia.remote"){
+            t_remote* remote = (t_remote*) v.x;
+            obj_register<t_remote>(remote);
+        }
+    }
+}
+
 bool t_view :: unregister(){
     if(!x_node) return true; // not registered
 
@@ -71,23 +85,9 @@ bool t_view :: unregister(){
     x_node = nullptr;
     obj_quarantining<t_view>(this);
 
-    clock_delay(x_unregclock,0);
+    register_children(this);
 
     return true;
-}
-
-static void register_children(t_view* x){
-    std::vector<obj_hierachy> viewnode = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view");
-    for (auto v : viewnode){
-        if(v.classname == "ossia.view"){
-            t_view* view = (t_view*) v.x;
-            if (view == x) continue;
-            obj_register<t_view>(view);
-        } else if(v.classname == "ossia.remote"){
-            t_remote* remote = (t_remote*) v.x;
-            obj_register<t_remote>(remote);
-        }
-    }
 }
 
 static void view_click(t_view *x,
@@ -126,7 +126,6 @@ static void *view_new(t_symbol *name, int argc, t_atom *argv)
         x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
         x->x_clock = clock_new(x, (t_method)obj_tick);
         x->x_regclock = clock_new(x, (t_method)obj_register<t_view>);
-        x->x_unregclock = clock_new(x, (t_method)register_children);
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
@@ -150,6 +149,8 @@ static void view_free(t_view *x)
     x->x_dead = true;
     x->unregister();
     obj_dequarantining<t_view>(x);
+    clock_free(x->x_regclock);
+    clock_free(x->x_clock);
 }
 
 extern "C" void setup_ossia0x2eview(void)
