@@ -78,7 +78,7 @@ struct simple_explicit_graph
 
     g.add_node(n1);
     g.add_node(n2);
-    g.connect(std::make_shared<graph_edge>(c, n1_out, n2_in, n1, n2));
+    g.connect(make_edge(c, n1_out, n2_in, n1, n2));
   }
 };
 
@@ -138,12 +138,12 @@ struct three_outputs_one_input_explicit_graph
     g.add_node(n3);
     g.add_node(nin);
 
-    g.connect(std::make_shared<graph_edge>(c, n1_out, nin_in, n1, nin));
-    g.connect(std::make_shared<graph_edge>(c, n2_out, nin_in, n2, nin));
-    g.connect(std::make_shared<graph_edge>(c, n3_out, nin_in, n3, nin));
+    g.connect(make_edge(c, n1_out, nin_in, n1, nin));
+    g.connect(make_edge(c, n2_out, nin_in, n2, nin));
+    g.connect(make_edge(c, n3_out, nin_in, n3, nin));
 
-    g.connect(std::make_shared<graph_edge>(dependency_connection{}, outlet_ptr{}, inlet_ptr{}, n1, n2));
-    g.connect(std::make_shared<graph_edge>(dependency_connection{}, outlet_ptr{}, inlet_ptr{}, n2, n3));
+    g.connect(make_edge(dependency_connection{}, outlet_ptr{}, inlet_ptr{}, n1, n2));
+    g.connect(make_edge(dependency_connection{}, outlet_ptr{}, inlet_ptr{}, n2, n3));
   }
 };
 
@@ -175,8 +175,8 @@ struct three_serial_nodes_explicit_graph
     g.add_node(n2);
     g.add_node(n3);
 
-    g.connect(std::make_shared<graph_edge>(c, n1_out, n2_in, n1, n2));
-    g.connect(std::make_shared<graph_edge>(c, n2_out, n3_in, n2, n3));
+    g.connect(make_edge(c, n1_out, n2_in, n1, n2));
+    g.connect(make_edge(c, n2_out, n3_in, n2, n3));
   }
 };
 
@@ -232,13 +232,13 @@ private slots:
     g.add_node(n4);
     g.add_node(n5);
 
-    auto c1 = std::make_shared<graph_edge>(connection{immediate_glutton_connection{}}, n1->outputs()[0], n2->inputs()[0], n1, n2);
-    auto c2 = std::make_shared<graph_edge>(connection{immediate_glutton_connection{}}, n1->outputs()[0], n3->inputs()[0], n1, n3);
-    auto c3 = std::make_shared<graph_edge>(connection{immediate_glutton_connection{}}, n2->outputs()[0], n4->inputs()[0], n2, n4);
-    auto c4 = std::make_shared<graph_edge>(connection{immediate_glutton_connection{}}, n3->outputs()[0], n4->inputs()[1], n3, n4);
+    auto c1 = make_edge(connection{immediate_glutton_connection{}}, n1->outputs()[0], n2->inputs()[0], n1, n2);
+    auto c2 = make_edge(connection{immediate_glutton_connection{}}, n1->outputs()[0], n3->inputs()[0], n1, n3);
+    auto c3 = make_edge(connection{immediate_glutton_connection{}}, n2->outputs()[0], n4->inputs()[0], n2, n4);
+    auto c4 = make_edge(connection{immediate_glutton_connection{}}, n3->outputs()[0], n4->inputs()[1], n3, n4);
 
-    auto c5 = std::make_shared<graph_edge>(connection{immediate_glutton_connection{}}, n4->outputs()[0], n5->inputs()[0], n4, n5);
-    auto c6 = std::make_shared<graph_edge>(connection{immediate_glutton_connection{}}, n4->outputs()[1], n5->inputs()[1], n4, n5);
+    auto c5 = make_edge(connection{immediate_glutton_connection{}}, n4->outputs()[0], n5->inputs()[0], n4, n5);
+    auto c6 = make_edge(connection{immediate_glutton_connection{}}, n4->outputs()[1], n5->inputs()[1], n4, n5);
 
     g.connect(c1);
     g.connect(c2);
@@ -276,10 +276,10 @@ private slots:
     g.add_node(n3);
     g.add_node(n4);
 
-    g.connect(std::make_shared<graph_edge>(connection{immediate_strict_connection{}}, n1->outputs()[0], n2->inputs()[0], n1, n2));
-    g.connect(std::make_shared<graph_edge>(connection{immediate_strict_connection{}}, n1->outputs()[0], n3->inputs()[0], n1, n3));
-    g.connect(std::make_shared<graph_edge>(connection{immediate_strict_connection{}}, n2->outputs()[0], n4->inputs()[0], n2, n4));
-    g.connect(std::make_shared<graph_edge>(connection{immediate_strict_connection{}}, n3->outputs()[0], n4->inputs()[1], n3, n4));
+    g.connect(make_edge(connection{immediate_strict_connection{}}, n1->outputs()[0], n2->inputs()[0], n1, n2));
+    g.connect(make_edge(connection{immediate_strict_connection{}}, n1->outputs()[0], n3->inputs()[0], n1, n3));
+    g.connect(make_edge(connection{immediate_strict_connection{}}, n2->outputs()[0], n4->inputs()[0], n2, n4));
+    g.connect(make_edge(connection{immediate_strict_connection{}}, n3->outputs()[0], n4->inputs()[1], n3, n4));
 
     {
       n1->set_enabled(true);

@@ -357,6 +357,12 @@ struct graph_edge
   std::shared_ptr<graph_node> in_node;
 };
 
+template<typename... Args>
+auto make_edge(Args&&... args)
+{
+  return std::make_shared<ossia::graph_edge>(std::forward<Args>(args)...);
+}
+
 struct execution_state
 {
   std::vector<ossia::net::device_base*> globalState;
@@ -632,15 +638,15 @@ public:
 
   }
 
-  static auto disable_strict_nodes(set<node_ptr> enabled_nodes)
+  static auto disable_strict_nodes(const set<node_ptr>& enabled_nodes)
   {
-    decltype(enabled_nodes) ret;
+    set<node_ptr> ret;
 
-    for(auto node : enabled_nodes)
+    for(const auto& node : enabled_nodes)
     {
-      for(auto in : node->in_ports)
+      for(const auto& in : node->in_ports)
       {
-        for(auto edge : in->sources)
+        for(const auto& edge : in->sources)
         {
           assert(edge->out_node);
 
@@ -660,9 +666,9 @@ public:
         }
       }
 
-      for(auto out : node->out_ports)
+      for(const auto& out : node->out_ports)
       {
-        for(auto edge : out->targets)
+        for(const auto& edge : out->targets)
         {
           assert(edge->in_node);
 
@@ -680,7 +686,7 @@ public:
     return ret;
   }
 
-  void disable_strict_nodes_rec(set<node_ptr> cur_enabled_node)
+  void disable_strict_nodes_rec(set<node_ptr>& cur_enabled_node)
   {
     set<node_ptr> to_disable;
     do
@@ -1027,17 +1033,23 @@ public:
 
   }
 
-  state_element state() override
+  ossia::state_element state() override
+  {
+    exec_state();
+    return {};
+  }
+  execution_state exec_state()
   {
     // TODO in the future, temporal_graph, space_graph that can be used as processes.
 
     // There should be a first "activation" pass from the temporal algorithm
 
     // Filter disabled nodes (through strict relationships).
-    disable_strict_nodes_rec(set<node_ptr>(user_enabled_nodes.begin(), user_enabled_nodes.end()));
+    set<node_ptr> enabled(user_enabled_nodes.begin(), user_enabled_nodes.end());
+    disable_strict_nodes_rec(enabled);
 
     // Get a total order on nodes
-    std::vector<graph_node*> ordered_nodes;
+    std::vector<graph_node*> active_nodes;
 
     std::deque<graph_vertex_t> topo_order;
     try {
@@ -1054,7 +1066,7 @@ public:
     {
       auto n = user_graph[vtx].get();
       if(n->enabled())
-        ordered_nodes.push_back(n);
+        active_nodes.push_back(n);
     }
 
     /*{ // debug
@@ -1062,7 +1074,6 @@ public:
         std::cout << "node: " << (void*) n << "; ";
       std::cout << "size: " << ordered_nodes.size() << std::endl << std::endl;
     }*/
-    auto active_nodes = ordered_nodes;
     while(!active_nodes.empty())
     {
       std::vector<graph_node*> next_nodes;
@@ -1136,7 +1147,7 @@ public:
     {
       node.first->set_executed(false);
     }
-    return {};
+    return e;
 
 
 
