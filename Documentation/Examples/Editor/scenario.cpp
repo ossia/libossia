@@ -63,10 +63,6 @@ int main()
     auto main_start_event = *(main_start_node->emplace(main_start_node->timeEvents().begin(), &event_callback));
     auto main_end_event = *(main_end_node->emplace(main_end_node->timeEvents().begin(), &event_callback));
 
-    // create the main scenario
-    auto main_scenario_ptr = std::make_unique<scenario>();
-    scenario* main_scenario = main_scenario_ptr.get();
-
     // create the main time_constraint
     time_value main_duration(5000.);
     main_constraint = std::make_shared<time_constraint>(
@@ -76,6 +72,10 @@ int main()
                              main_duration,
                              main_duration,
                              main_duration);
+
+    // create the main scenario
+    auto main_scenario_ptr = std::make_unique<scenario>();
+    scenario* main_scenario = main_scenario_ptr.get();
 
     // add the scenario to the main time_constraint
     main_constraint->addTimeProcess(std::move(main_scenario_ptr));

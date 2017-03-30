@@ -1038,6 +1038,7 @@ public:
     exec_state();
     return {};
   }
+
   execution_state exec_state()
   {
     // TODO in the future, temporal_graph, space_graph that can be used as processes.
@@ -1147,9 +1148,8 @@ public:
     {
       node.first->set_executed(false);
     }
+
     return e;
-
-
 
     /*
     // We first have to do a partition in connected components
@@ -1248,10 +1248,12 @@ public:
 
 class graph_process : public ossia::time_process
 {
+public:
+  graph_process(std::shared_ptr<ossia::graph> g, std::shared_ptr<ossia::graph_node> n):
+    graph{g}, node{n} { }
   std::shared_ptr<ossia::graph> graph;
   std::shared_ptr<ossia::graph_node> node;
 
-public:
   ossia::state_element offset(ossia::time_value) override
   {
     return {};
@@ -1260,6 +1262,7 @@ public:
   ossia::state_element state() override
   {
     node->set_time(parent()->getDate() / parent()->getDurationNominal());
+    graph->enable(node);
     return {};
   }
 

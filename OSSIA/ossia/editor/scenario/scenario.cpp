@@ -63,7 +63,7 @@ state_element scenario::offset(time_value offset)
   // Set *every* time constraint prior to this one to be rigid
   // note : this change the semantics of the score and should not be done like
   // this;
-  // it's only a temporary bugfix for
+  // it's only a temporary (1 year later: haha) bugfix for
   // https://github.com/OSSIA/i-score/issues/253 .
   for (auto& elt : time_map)
   {
