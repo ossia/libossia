@@ -5,11 +5,12 @@
 */
 
 #include "ossia-pd.hpp"
-#include "model.hpp"
+#include "client.hpp"
 #include "device.hpp"
-#include "view.hpp"
-#include "remote.hpp"
+#include "model.hpp"
 #include "parameter.hpp"
+#include "remote.hpp"
+#include "view.hpp"
 
 static t_class *ossia_class;
 
@@ -17,7 +18,7 @@ namespace ossia { namespace pd {
 
 typedef struct t_ossia
 {
-    t_object    m_obj; // pd object - always placed in first in the object's struct
+    t_object    m_obj; // pd object - always placed first in the object's struct
 
 } t_ossia;
 
@@ -35,8 +36,9 @@ extern "C" void ossia_setup(void)
     post("Welcome to ossia library");
     ossia_class = c;
 
-    setup_ossia0x2emodel();
+    setup_ossia0x2eclient();
     setup_ossia0x2edevice();
+    setup_ossia0x2emodel();
     setup_ossia0x2eparam();
     setup_ossia0x2eremote();
     setup_ossia0x2eview();
@@ -144,7 +146,9 @@ template<typename T> std::string get_absolute_path(T* x)
         else obj = &x->x_obj;
         int l = 0;
         t_device *device = (t_device*) find_parent(obj,"ossia.device", 0, &l);
-        if(device) fullpath << device->x_name->s_name << ":";
+        t_client *client = (t_client*) find_parent(obj,"ossia.client", 0, &l);
+        if (client) fullpath << client->x_name->s_name << ":";
+        else if(device) fullpath << device->x_name->s_name << ":";
     } else {
         int start_level = 0;
         if (std::is_same<T,t_model>::value) start_level = 1;
@@ -184,9 +188,10 @@ template<typename T> bool obj_register(T *x)
 
     int l;
     t_device *device = (t_device*) find_parent(&x->x_obj,"ossia.device", 0, &l);
+    t_client *client = (t_client*) find_parent(&x->x_obj,"ossia.client", 0, &l);
 
     // first try to locate a ossia.device in the parent hierarchy...
-    if (!device) {
+    if (!device && !client) {
         return false; // not ready to register : if there is no device, nothing could be registered
     }
 
@@ -209,6 +214,8 @@ template<typename T> bool obj_register(T *x)
         node = view->x_node;
     } else if (model){
         node = model->x_node;
+    } else if (client){
+        node = client->x_node;
     } else {
         node = device->x_node;
     }
