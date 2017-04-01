@@ -185,6 +185,9 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_visitors.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/dataspace_impl.cpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.cpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/domain_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/clamp.cpp"

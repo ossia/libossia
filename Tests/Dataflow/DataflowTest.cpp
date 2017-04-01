@@ -60,18 +60,18 @@ struct execution_mock
 struct simple_explicit_graph
 {
   ossia::graph g;
-  std::shared_ptr<ossia::node_mock> n1, n2;
+  ossia::node_mock* n1, *n2;
   simple_explicit_graph(ossia::TestUtils& test, ossia::connection c)
   {
     using namespace ossia;
     auto n1_in = make_inlet<value_port>(*test.tuple_addr);
     auto n1_out = make_outlet<value_port>(*test.tuple_addr);
-    n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
+    auto n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
     n1->fun = execution_mock{1, n1};
 
     auto n2_in = make_inlet<value_port>(*test.tuple_addr);
     auto n2_out = make_outlet<value_port>(*test.tuple_addr);
-    n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
+    auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
     n2->fun = execution_mock{10, n2};
 
     qDebug() << "N1:" << (void*) n1.get() << "N2: " << (void*) n2.get();
@@ -79,28 +79,34 @@ struct simple_explicit_graph
     g.add_node(n1);
     g.add_node(n2);
     g.connect(make_edge(c, n1_out, n2_in, n1, n2));
+
+    this->n1 = n1.get();
+    this->n2 = n2.get();
   }
 };
 
 struct simple_implicit_graph
 {
   ossia::graph g;
-  std::shared_ptr<ossia::node_mock> n1, n2;
+  ossia::node_mock* n1, *n2;
   simple_implicit_graph(ossia::TestUtils& test, ossia::connection c)
   {
     using namespace ossia;
     auto n1_in = make_inlet<value_port>(*test.tuple_addr);
     auto n1_out = make_outlet<value_port>(*test.tuple_addr);
-    n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
+    auto n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
     n1->fun = execution_mock{1, n1};
 
     auto n2_in = make_inlet<value_port>(*test.tuple_addr);
     auto n2_out = make_outlet<value_port>(*test.tuple_addr);
-    n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
+    auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
     n2->fun = execution_mock{10, n2};
 
     g.add_node(n1);
     g.add_node(n2);
+
+    this->n1 = n1.get();
+    this->n2 = n2.get();
   }
 };
 
@@ -108,29 +114,29 @@ struct simple_implicit_graph
 struct three_outputs_one_input_explicit_graph
 {
   ossia::graph g;
-  std::shared_ptr<ossia::node_mock> n1, n2, n3, nin;
+  ossia::node_mock* n1, *n2, *n3, *nin;
   three_outputs_one_input_explicit_graph(ossia::TestUtils& test, ossia::connection c)
   {
     using namespace ossia;
 
     auto n1_in = make_inlet<value_port>(*test.tuple_addr);
     auto n1_out = make_outlet<value_port>();
-    n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
+    auto n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
     n1->fun = execution_mock{1, n1};
 
     auto n2_in = make_inlet<value_port>(*test.tuple_addr);
     auto n2_out = make_outlet<value_port>();
-    n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
+    auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
     n2->fun = execution_mock{10, n2};
 
     auto n3_in = make_inlet<value_port>(*test.tuple_addr);
     auto n3_out = make_outlet<value_port>();
-    n3 = std::make_shared<node_mock>(inlets{n3_in}, outlets{n3_out});
+    auto n3 = std::make_shared<node_mock>(inlets{n3_in}, outlets{n3_out});
     n3->fun = execution_mock{100, n3};
 
     auto nin_in = make_inlet<value_port>();
     auto nin_out = make_outlet<value_port>(*test.tuple_addr);
-    nin = std::make_shared<node_mock>(inlets{nin_in}, outlets{nin_out});
+    auto nin = std::make_shared<node_mock>(inlets{nin_in}, outlets{nin_out});
     nin->fun = execution_mock{1000, nin};
 
     g.add_node(n1);
@@ -144,6 +150,11 @@ struct three_outputs_one_input_explicit_graph
 
     g.connect(make_edge(dependency_connection{}, outlet_ptr{}, inlet_ptr{}, n1, n2));
     g.connect(make_edge(dependency_connection{}, outlet_ptr{}, inlet_ptr{}, n2, n3));
+
+    this->n1 = n1.get();
+    this->n2 = n2.get();
+    this->n3 = n3.get();
+    this->nin = nin.get();
   }
 };
 
@@ -151,24 +162,24 @@ struct three_outputs_one_input_explicit_graph
 struct three_serial_nodes_explicit_graph
 {
   ossia::graph g;
-  std::shared_ptr<ossia::node_mock> n1, n2, n3;
+  ossia::node_mock* n1, *n2, *n3;
   three_serial_nodes_explicit_graph(ossia::TestUtils& test, ossia::connection c)
   {
     using namespace ossia;
 
     auto n1_in = make_inlet<value_port>(*test.tuple_addr);
     auto n1_out = make_outlet<value_port>();
-    n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
+    auto n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
     n1->fun = execution_mock{1, n1};
 
     auto n2_in = make_inlet<value_port>();
     auto n2_out = make_outlet<value_port>();
-    n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
+    auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
     n2->fun = execution_mock{10, n2};
 
     auto n3_in = make_inlet<value_port>();
     auto n3_out = make_outlet<value_port>(*test.tuple_addr);
-    n3 = std::make_shared<node_mock>(inlets{n3_in}, outlets{n3_out});
+    auto n3 = std::make_shared<node_mock>(inlets{n3_in}, outlets{n3_out});
     n3->fun = execution_mock{100, n3};
 
     g.add_node(n1);
@@ -177,6 +188,10 @@ struct three_serial_nodes_explicit_graph
 
     g.connect(make_edge(c, n1_out, n2_in, n1, n2));
     g.connect(make_edge(c, n2_out, n3_in, n2, n3));
+
+    this->n1 = n1.get();
+    this->n2 = n2.get();
+    this->n3 = n3.get();
   }
 };
 
@@ -184,29 +199,33 @@ struct three_serial_nodes_explicit_graph
 struct three_serial_nodes_implicit_graph
 {
   ossia::graph g;
-  std::shared_ptr<ossia::node_mock> n1, n2, n3;
+  ossia::node_mock* n1, *n2, *n3;
   three_serial_nodes_implicit_graph(ossia::TestUtils& test, ossia::connection c)
   {
     using namespace ossia;
 
     auto n1_in = make_inlet<value_port>(*test.tuple_addr);
     auto n1_out = make_outlet<value_port>(*test.tuple_addr);
-    n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
+    auto n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
     n1->fun = execution_mock{1, n1};
 
     auto n2_in = make_inlet<value_port>(*test.tuple_addr);
     auto n2_out = make_outlet<value_port>(*test.tuple_addr);
-    n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
+    auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
     n2->fun = execution_mock{10, n2};
 
     auto n3_in = make_inlet<value_port>(*test.tuple_addr);
     auto n3_out = make_outlet<value_port>(*test.tuple_addr);
-    n3 = std::make_shared<node_mock>(inlets{n3_in}, outlets{n3_out});
+    auto n3 = std::make_shared<node_mock>(inlets{n3_in}, outlets{n3_out});
     n3->fun = execution_mock{100, n3};
 
     g.add_node(n1);
     g.add_node(n2);
     g.add_node(n3);
+
+    this->n1 = n1.get();
+    this->n2 = n2.get();
+    this->n3 = n3.get();
   }
 };
 
@@ -305,7 +324,7 @@ private slots:
       n3->set_enabled(true);
       n4->set_enabled(false);
       auto res = g.disable_strict_nodes({n1, n2, n3, n4});
-      decltype(res) expected{n2, n3};
+      set<graph_node*> expected{n2.get(), n3.get()};
       QCOMPARE(res, expected);
     }
 
@@ -315,7 +334,7 @@ private slots:
       n3->set_enabled(false);
       n4->set_enabled(false);
       auto res = g.disable_strict_nodes({n1, n2, n3, n4});
-      decltype(res) expected{n1};
+      set<graph_node*> expected{n1.get()};
       QCOMPARE(res, expected);
     }
 
@@ -325,7 +344,7 @@ private slots:
       n3->set_enabled(false);
       n4->set_enabled(false);
       auto res = g.disable_strict_nodes({n1, n2, n3, n4});
-      decltype(res) expected{n1, n2};
+      set<graph_node*> expected{n1.get(), n2.get()};
       QCOMPARE(res, expected);
     }
 
@@ -335,7 +354,7 @@ private slots:
       n3->set_enabled(true);
       n4->set_enabled(true);
       auto res = g.disable_strict_nodes({n1, n2, n3, n4});
-      decltype(res) expected{n2, n3};
+      decltype(res) expected{n2.get(), n3.get()};
       QCOMPARE(res, expected);
     }
     {
@@ -344,7 +363,7 @@ private slots:
       n3->set_enabled(false);
       n4->set_enabled(true);
       auto res = g.disable_strict_nodes({n1, n2, n3, n4});
-      decltype(res) expected{n4};
+      decltype(res) expected{n4.get()};
       QCOMPARE(res, expected);
     }
   }
@@ -358,24 +377,24 @@ private slots:
     simple_explicit_graph g(test, immediate_strict_connection{});
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
 
-    g.g.enable(g.n1);
-    g.g.disable(g.n2);
+    g.g.enable(*g.n1);
+    g.g.disable(*g.n2);
     g.n1->set_time(0);
     g.n2->set_time(0);
 
     g.g.state(); // nothing
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
 
-    g.g.enable(g.n1);
-    g.g.enable(g.n2);
+    g.g.enable(*g.n1);
+    g.g.enable(*g.n2);
     g.n1->set_time(1);
     g.n2->set_time(1);
 
     g.g.state(); // f2 o f1
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
 
-    g.g.disable(g.n1);
-    g.g.enable(g.n2);
+    g.g.disable(*g.n1);
+    g.g.enable(*g.n2);
     g.n1->set_time(2);
     g.n2->set_time(2);
 
@@ -393,9 +412,9 @@ private slots:
     three_serial_nodes_explicit_graph g(test, immediate_strict_connection{});
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
 
-    g.g.enable(g.n1);
-    g.g.enable(g.n2);
-    g.g.enable(g.n3);
+    g.g.enable(*g.n1);
+    g.g.enable(*g.n2);
+    g.g.enable(*g.n3);
     g.n1->set_time(0);
     g.n2->set_time(0);
     g.n3->set_time(0);
@@ -417,24 +436,24 @@ private slots:
     simple_implicit_graph g(test, immediate_glutton_connection{});
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
 
-    g.g.enable(g.n1);
-    g.g.disable(g.n2);
+    g.g.enable(*g.n1);
+    g.g.disable(*g.n2);
     g.n1->set_time(0);
     g.n2->set_time(0);
 
     g.g.state(); // f1
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1}));
 
-    g.g.enable(g.n1);
-    g.g.enable(g.n2);
+    g.g.enable(*g.n1);
+    g.g.enable(*g.n2);
     g.n1->set_time(1);
     g.n2->set_time(1);
 
     g.g.state(); // f2 o f1
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
-    g.g.disable(g.n1);
-    g.g.enable(g.n2);
+    g.g.disable(*g.n1);
+    g.g.enable(*g.n2);
     g.n1->set_time(2);
     g.n2->set_time(2);
 
@@ -453,24 +472,24 @@ private slots:
     simple_explicit_graph g(test, immediate_glutton_connection{});
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
 
-    g.g.enable(g.n1);
-    g.g.disable(g.n2);
+    g.g.enable(*g.n1);
+    g.g.disable(*g.n2);
     g.n1->set_time(0);
     g.n1->set_time(0);
 
     g.g.state(); // f1
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1}));
 
-    g.g.enable(g.n1);
-    g.g.enable(g.n2);
+    g.g.enable(*g.n1);
+    g.g.enable(*g.n2);
     g.n1->set_time(1);
     g.n2->set_time(1);
 
     g.g.state(); // f2 o f1
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
-    g.g.disable(g.n1);
-    g.g.enable(g.n2);
+    g.g.disable(*g.n1);
+    g.g.enable(*g.n2);
     g.n1->set_time(2);
     g.n2->set_time(2);
 
@@ -487,16 +506,16 @@ private slots:
     simple_explicit_graph g(test, delayed_strict_connection{});
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
 
-    g.g.enable(g.n1);
-    g.g.disable(g.n2);
+    g.g.enable(*g.n1);
+    g.g.disable(*g.n2);
     g.n1->set_time(0);
 
     // f1 pushes 1 * 1 in its queue
     g.g.state();
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
 
-    g.g.enable(g.n1);
-    g.g.enable(g.n2);
+    g.g.enable(*g.n1);
+    g.g.enable(*g.n2);
     g.n1->set_time(1);
     g.n2->set_time(0);
 
@@ -506,8 +525,8 @@ private slots:
     g.g.state();
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1}));
 
-    g.g.disable(g.n1);
-    g.g.enable(g.n2);
+    g.g.disable(*g.n1);
+    g.g.enable(*g.n2);
     g.n1->set_time(2);
     g.n2->set_time(1);
 
@@ -525,6 +544,7 @@ private slots:
 
   void reduced_explicit_relationship()
   {
+    /*
     using namespace ossia;
     TestUtils test;
 
@@ -533,10 +553,10 @@ private slots:
     three_outputs_one_input_explicit_graph g(test, reduction_connection{});
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
 
-    g.g.enable(g.n1);
-    g.g.enable(g.n2);
-    g.g.enable(g.n3);
-    g.g.enable(g.nin);
+    g.g.enable(*g.n1);
+    g.g.enable(*g.n2);
+    g.g.enable(*g.n3);
+    g.g.enable(*g.nin);
 
     g.n1->set_time(0);
     g.n2->set_time(0);
@@ -546,21 +566,23 @@ private slots:
     g.g.state();
 
     // The reduction operation for values just take the last.
+    */
 
   }
 
   void replaced_implicit_relationship()
   {
+    /*
     using namespace ossia;
     TestUtils test;
 
     three_outputs_one_input_explicit_graph g(test, replacing_connection{});
     QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
 
-    g.g.enable(g.n1);
-    g.g.enable(g.n2);
-    g.g.enable(g.n3);
-    g.g.enable(g.nin);
+    g.g.enable(*g.n1);
+    g.g.enable(*g.n2);
+    g.g.enable(*g.n3);
+    g.g.enable(*g.nin);
 
     g.n1->set_time(0);
     g.n2->set_time(0);
@@ -568,7 +590,7 @@ private slots:
     g.nin->set_time(0);
 
     g.g.state();
-
+    */
   }
 
   void replaced_explicit_relationship()
