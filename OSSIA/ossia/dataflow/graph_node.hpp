@@ -8,81 +8,50 @@ namespace ossia
 
 class OSSIA_EXPORT graph_node
 {
+public:
+  graph_node();
+  virtual ~graph_node();
+
+  bool enabled() const;
+  void set_enabled(bool b);
+
+  bool executed() const;
+  void set_executed(bool b);
+
+  virtual bool consumes(const std::string&) const;
+  virtual bool consumes(const Destination&) const;
+  virtual bool consumes(const execution_state&) const;
+
+  virtual void run(execution_state&);
+
+  void set_time(double d);
+  double time() const { return m_time; }
+
+  bool can_execute(const execution_state&) const;
+
+  bool has_port_inputs() const;
+  bool has_global_inputs() const;
+  bool has_local_inputs(const execution_state&) const;
+
+
+  const inlets& inputs() const;
+  const outlets& outputs() const;
+
 protected:
-  // Note : pour QtQuick : Faire View et Model qui hérite de View, puis faire binding automatique entre propriétés de la vue et du modèle
+  // Note : pour QtQuick : Faire View et Model qui hérite de View,
+  // puis faire binding automatique entre propriétés de la vue et du modèle
   // Utiliser... DSPatch ? Pd ?
   // Ports : midi, audio, value
 
-public:
-  inlets in_ports;
-  outlets out_ports;
+  inlets m_inlets;
+  outlets m_outlets;
 
-  double previous_time{};
-  double time{};
+  double m_previous_time{};
+  double m_time{};
 
   bool m_enabled{};
   bool m_executed{};
-  virtual ~graph_node()
-  {
-    // TODO moveme in cpp
-  }
 
-  graph_node()
-  {
-  }
-
-  bool enabled() const { return m_enabled; }
-  void set_enabled(bool b) { m_enabled = b; }
-
-  bool executed() const { return m_executed; }
-  void set_executed(bool b) { m_executed = b; }
-
-  virtual bool consumes(const std::string&)
-  {
-    return false;
-  }
-  virtual bool consumes(const Destination&)
-  {
-    return false;
-  }
-  virtual bool consumes(execution_state&)
-  {
-    return false;
-  }
-
-  virtual void run(execution_state&)
-  {
-
-  }
-
-  void set_time(double d)
-  {
-    previous_time = time;
-    time = d;
-  }
-
-  bool can_execute(const execution_state&) const
-  {
-    return ossia::all_of(in_ports, [] (const auto& inlet) {
-      // A port can execute if : - it has source ports and all its source ports have executed
-      bool previous_nodes_executed = ossia::all_of(inlet->sources, [&] (graph_edge* edge) {
-          return edge->out_node->executed() || (!edge->out_node->enabled() && bool(inlet->address)
-                                                /* TODO check that it's in scope */);
-      });
-
-      // it does not have source ports ; we have to check for variables :
-      // find if address available in local / global scope
-      return !inlet->sources.empty()
-          ? previous_nodes_executed
-          : true // TODO
-            ;
-    });
-  }
-
-
-
-  const auto& inputs() const { return in_ports; }
-  const auto& outputs() const { return out_ports; }
 };
 
 }

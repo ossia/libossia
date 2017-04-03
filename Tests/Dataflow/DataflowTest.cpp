@@ -11,8 +11,8 @@ class node_mock : public graph_node {
 public:
   node_mock(inlets in, outlets out)
   {
-    in_ports = std::move(in);
-    out_ports = std::move(out);
+    m_inlets = std::move(in);
+    m_outlets = std::move(out);
   }
 
   std::function<void(execution_state& e)> fun;
@@ -23,6 +23,36 @@ public:
   }
 };
 
+
+template<typename T>
+auto pop_front(std::vector<T>& vec)
+{
+  if(!vec.empty())
+  {
+    auto val = vec.front();
+    vec.erase(vec.begin());
+    return val;
+  }
+  else
+  {
+    throw std::runtime_error("invalid pop");
+  }
+}
+
+template<typename T, std::size_t N>
+auto pop_front(chobo::small_vector<T, N>& vec)
+{
+  if(!vec.empty())
+  {
+    auto val = vec.front();
+    vec.erase(vec.begin());
+    return val;
+  }
+  else
+  {
+    throw std::runtime_error("invalid pop");
+  }
+}
 
 template<typename T>
 auto pop_front(T& container)
@@ -45,12 +75,12 @@ struct execution_mock
   std::shared_ptr<node_mock> node;
   void operator()(const execution_state& )
   {
-    auto elt = pop_front(node->in_ports[0]->data.target<value_port>()->data);
+    auto elt = pop_front(node->inputs()[0]->data.target<value_port>()->data);
     if(auto val = elt.target<std::vector<ossia::value>>())
     {
       auto v = *val;
-      v.push_back(factor * (1+int(node->time)));
-      node->out_ports[0]->data.target<value_port>()->data.push_back(std::move(v));
+      v.push_back(factor * (1+int(node->time())));
+      node->outputs()[0]->data.target<value_port>()->data.push_back(std::move(v));
     }
   }
 };

@@ -8,43 +8,6 @@ struct active_node_sorter
 {
   edge_map_t& edge_map;
   execution_state& st;
-  bool has_port_inputs(graph_node& n) const
-  {
-    return ossia::any_of(n.in_ports, [] (const auto& inlet) {
-      return !inlet->sources.empty();
-    });
-  }
-  bool has_global_inputs(graph_node& n) const
-  {
-    return ossia::any_of(n.in_ports, [&] (const auto& inlet) {
-      return (inlet->scope & port::scope_t::global) && bool(inlet->address);
-    });
-  }
-
-  bool has_local_inputs(graph_node& n) const
-  {
-    return ossia::any_of(n.in_ports, [&] (const inlet_ptr& inlet) {
-      if(inlet->scope & port::scope_t::local)
-      {
-        if(auto dest = inlet->address.target<ossia::net::address_base*>())
-        {
-          if(st.in_local_scope(**dest))
-            return true;
-        }
-        // else if(auto pattern = pt.target<std::string>())
-        // {
-        // what happens if a pattern matches anotehr pattern. c.f. notes
-        //   if( n.consumes(*pattern))
-        //     return true;
-        // }
-
-        if(n.consumes(st))
-          return true;
-      }
-      return false;
-    });
-  }
-
   bool edge_order(graph_node* lhs, graph_node* rhs) const
   {
     if(edge_map.find({lhs, rhs}) != edge_map.end())
@@ -62,21 +25,21 @@ struct active_node_sorter
 
   bool operator()(graph_node* lhs, graph_node* rhs) const
   {
-    bool c1 = has_port_inputs(*lhs);
-    bool c2 = has_port_inputs(*rhs);
+    bool c1 = lhs->has_port_inputs();
+    bool c2 = rhs->has_port_inputs();
     if(c1 && !c2) return true;
     else if(!c1 && c2) return false;
     else if(c1 && c2) return edge_order(lhs, rhs);
 
-    bool l1 = has_local_inputs(*lhs);
-    bool l2 = has_local_inputs(*rhs);
+    bool l1 = lhs->has_local_inputs(st);
+    bool l2 = rhs->has_local_inputs(st);
 
     if(l1 && !l2) return true;
     else if(!l1 && l2) return false;
     else if(l1 && l2) return edge_order(lhs, rhs);
 
-    bool g1 = has_global_inputs(*lhs);
-    bool g2 = has_global_inputs(*rhs);
+    bool g1 = lhs->has_global_inputs();
+    bool g2 = rhs->has_global_inputs();
     if(g1 && !g2) return true;
     else if(!g1 && g2) return false;
     else if(g1 && g2) return edge_order(lhs, rhs);
@@ -327,7 +290,7 @@ set<graph_node*> graph::disable_strict_nodes(const set<graph_node*>& enabled_nod
 
     for(const auto& node : enabled_nodes)
     {
-        for(const auto& in : node->in_ports)
+        for(const auto& in : node->inputs())
         {
             for(const auto& edge : in->sources)
             {
@@ -349,7 +312,7 @@ set<graph_node*> graph::disable_strict_nodes(const set<graph_node*>& enabled_nod
             }
         }
 
-        for(const auto& out : node->out_ports)
+        for(const auto& out : node->outputs())
         {
             for(const auto& edge : out->targets)
             {
@@ -457,14 +420,14 @@ void graph::pull_from_address(inlet& in, execution_state& e)
 void graph::init_node(graph_node& n, execution_state& e)
 {
     // Clear the outputs of the node
-    for(const outlet_ptr& out : n.out_ports)
+    for(const outlet_ptr& out : n.outputs())
     {
         if(out->data)
             eggs::variants::apply(clear_data{}, out->data);
     }
 
     // Copy from environment and previous ports to inputs
-    for(const inlet_ptr& in : n.in_ports)
+    for(const inlet_ptr& in : n.inputs())
     {
         if(!in->sources.empty())
         {
@@ -482,14 +445,14 @@ void graph::init_node(graph_node& n, execution_state& e)
 
 void graph::teardown_node(graph_node& n, execution_state& e)
 {
-    for(const inlet_ptr& in : n.in_ports)
+    for(const inlet_ptr& in : n.inputs())
     {
         if(in->data)
             eggs::variants::apply(clear_data{}, in->data);
     }
 
     // Copy from output ports to environment
-    for(const outlet_ptr& out : n.out_ports)
+    for(const outlet_ptr& out : n.outputs())
     {
         if(out->targets.empty())
         {

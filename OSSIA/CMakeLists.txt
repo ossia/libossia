@@ -240,6 +240,7 @@ target_include_directories(ossia
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/fmt>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/chobo-shl/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/GSL/include>
 )
 
 target_include_directories(ossia SYSTEM

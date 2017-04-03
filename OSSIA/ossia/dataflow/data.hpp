@@ -1,18 +1,20 @@
 #pragma once
 #include <ossia/dataflow/dataflow_fwd.hpp>
+#include <chobo/small_vector.hpp>
 namespace ossia
 {
-
+template<typename T>
+using value_vector = chobo::small_vector<T, 4>;
 struct audio_port {
-  std::vector<std::array<double, 64>> samples;
+  value_vector<std::array<double, 64>> samples;
 };
 
 struct midi_port {
-  std::deque<mm::MidiMessage> messages;
+  value_vector<mm::MidiMessage> messages;
 };
 
 struct value_port {
-  std::deque<ossia::value> data;
+  value_vector<ossia::value> data;
 };
 
 struct clear_data
