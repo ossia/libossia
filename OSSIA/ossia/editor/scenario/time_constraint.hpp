@@ -117,6 +117,9 @@ public:
     */
   void setCallback(ExecutionCallback);
 
+  //! This callback won't compute the state.
+  void setStatelessCallback(ExecutionCallback);
+
   /*! get the #time_constraint nominal duration
    \return const #TimeValue& nominal duration */
   const time_value& getDurationNominal() const;
@@ -173,6 +176,7 @@ public:
 
 private:
   clock::ExecutionCallback make_callback();
+  clock::ExecutionCallback make_stateless_callback();
   ossia::state state_impl();
   ossia::state make_state();
 

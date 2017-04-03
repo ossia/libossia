@@ -169,6 +169,12 @@ void time_constraint::setCallback(
   mClock->setCallback(make_callback());
 }
 
+void time_constraint::setStatelessCallback(time_constraint::ExecutionCallback cb)
+{
+  mCallback = cb;
+  mClock->setCallback(make_stateless_callback());
+}
+
 const time_value& time_constraint::getDurationNominal() const
 {
   return mDurationNominal;
@@ -260,6 +266,21 @@ clock::ExecutionCallback time_constraint::make_callback()
   {
     return [this] (time_value t, time_value t2, unsigned char c) {
       mCallback(t, t2, state_impl());
+    };
+  }
+  else
+  {
+    return [this] (time_value t, time_value t2, unsigned char c) { };
+  }
+}
+
+
+clock::ExecutionCallback time_constraint::make_stateless_callback()
+{
+  if(mCallback)
+  {
+    return [this] (time_value t, time_value t2, unsigned char c) {
+      mCallback(t, t2, {});
     };
   }
   else
