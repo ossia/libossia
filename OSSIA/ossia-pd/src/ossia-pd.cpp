@@ -237,10 +237,10 @@ template<typename T> void obj_dump(T *x){
         outlet_anything(x->x_dumpout,gensym("fullpath"), 1, &a);
     }
     fullpath = get_absolute_path<T>(x);
-    fullpath += "/";
+    if (fullpath.back() != '/') fullpath += "/";
     fullpath += x->x_name->s_name;
     SETSYMBOL(&a,gensym(fullpath.c_str()));
-    outlet_anything(x->x_dumpout,gensym("absolutepath"), 1, &a);
+    outlet_anything(x->x_dumpout,gensym("pdpath"), 1, &a);
 
     if ( x->x_node ){
         SETFLOAT(&a, 1.);
@@ -251,6 +251,134 @@ template<typename T> void obj_dump(T *x){
 
     SETFLOAT(&a, obj_isQuarantined<T>(x));
     outlet_anything(x->x_dumpout,gensym("quarantined"), 1, &a);
+
+    if (x->x_node) {
+        ossia::net::address_base* address = x->x_node->getAddress();
+        if (address){
+            // type
+            std::string type="unknown";
+            switch(address->getValueType()){
+            case ossia::val_type::FLOAT:
+                type="float";
+                break;
+            case ossia::val_type::INT:
+                type="int";
+                break;
+            case ossia::val_type::VEC2F:
+                type="vec2f";
+                break;
+            case ossia::val_type::VEC3F:
+                type="vec3f";
+                break;
+            case ossia::val_type::VEC4F:
+                type="vec4f";
+                break;
+            case ossia::val_type::IMPULSE:
+                type="impulse";
+                break;
+            case ossia::val_type::BOOL:
+                type="bool";
+                break;
+            case ossia::val_type::STRING:
+                type="string";
+                break;
+            case ossia::val_type::TUPLE:
+                type="tuple";
+                break;
+            case ossia::val_type::CHAR:
+                type="char";
+                break;
+            case ossia::val_type::DESTINATION:
+                type="destination";
+                break;
+            default:
+                type="unknown";
+            }
+
+            SETSYMBOL(&a, gensym(type.c_str()));
+            outlet_anything(x->x_dumpout,gensym("type"), 1, &a);
+
+            // domain
+            ossia::domain domain = address->getDomain();
+            SETSYMBOL(&a, gensym(domain.to_pretty_string().c_str()));
+            outlet_anything(x->x_dumpout,gensym("domain"), 1, &a);
+
+            // bounding mode
+            std::string bounding_mode;
+            switch(address->getBoundingMode()){
+            case ossia::bounding_mode::FREE:
+                bounding_mode = "free";
+                break;
+            case ossia::bounding_mode::CLIP:
+                bounding_mode = "clip";
+                break;
+            case ossia::bounding_mode::WRAP:
+                bounding_mode = "wrap";
+                break;
+            case ossia::bounding_mode::FOLD:
+                bounding_mode = "fold";
+                break;
+            case ossia::bounding_mode::LOW:
+                bounding_mode = "low";
+                break;
+            case ossia::bounding_mode::HIGH:
+                bounding_mode = "high";
+                break;
+            default:
+                bounding_mode = "unknown";
+            }
+            SETSYMBOL(&a, gensym(bounding_mode.c_str()));
+            outlet_anything(x->x_dumpout,gensym("bounding_mode"), 1, &a);
+
+            // access mode
+            std::string access_mode;
+            switch(address->getAccessMode()){
+            case ossia::access_mode::BI:
+                access_mode = "bi";
+                break;
+            case ossia::access_mode::GET:
+                access_mode = "get";
+                break;
+            case ossia::access_mode::SET:
+                access_mode = "set";
+                break;
+            default:
+                access_mode = "unknown";
+            }
+            SETSYMBOL(&a, gensym(access_mode.c_str()));
+            outlet_anything(x->x_dumpout,gensym("access_mode"), 1, &a);
+
+            // repetition filter
+            bool rep = address->getRepetitionFilter();
+            SETFLOAT(&a, rep);
+            outlet_anything(x->x_dumpout,gensym("repetition_filter"), 1, &a);
+
+
+            // unit
+            address->getUnit();
+        }
+
+        // description
+        auto description = ossia::net::get_description(*(x->x_node));
+        if (description){
+            SETSYMBOL(&a, gensym((*description).c_str()));
+            outlet_anything(x->x_dumpout,gensym("description"), 1, &a);
+        } else outlet_anything(x->x_dumpout,gensym("tags"), 0, nullptr);
+
+        // tags
+        auto tags = ossia::net::get_tags(*x->x_node);
+        if (tags){
+            t_atom l[(*tags).size()];
+            int i = 0;
+            for (auto s : *tags){
+                SETSYMBOL(l+i,gensym(s.c_str()));
+                i++;
+            }
+            outlet_anything(x->x_dumpout,gensym("tags"), (*tags).size(), l);
+        } else {
+          outlet_anything(x->x_dumpout,gensym("tags"), 0, nullptr);
+        }
+    }
 }
 
 template void obj_dump<t_param> (t_param  *x);
