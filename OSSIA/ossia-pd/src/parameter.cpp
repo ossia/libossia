@@ -51,43 +51,60 @@ bool t_param :: do_registration(ossia::net::node_base* node){
     x_node = node->createChild(x_name->s_name);
     x_node->aboutToBeDeleted.connect<t_param, &t_param::isDeleted>(this);
     ossia::net::address_base* localAddress{};
-    if(std::string(x_type->s_name) == "symbol"){
-        localAddress = x_node->createAddress(ossia::val_type::STRING);
-    } else {
+    if (std::string(x_type->s_name) == "float") {
         localAddress = x_node->createAddress(ossia::val_type::FLOAT);
-        localAddress->setDomain(ossia::make_domain(x_range[0],x_range[1]));
-        // FIXME : we need case insensitive comparison here
-        std::string bounding_mode = x_bounding_mode->s_name;
-        if (bounding_mode == "FREE")
-            localAddress->setBoundingMode(ossia::bounding_mode::FREE);
-        else if (bounding_mode == "CLIP")
-            localAddress->setBoundingMode(ossia::bounding_mode::CLIP);
-        else if (bounding_mode == "WRAP")
-            localAddress->setBoundingMode(ossia::bounding_mode::WRAP);
-        else if (bounding_mode == "FOLD")
-            localAddress->setBoundingMode(ossia::bounding_mode::FOLD);
-        else if (bounding_mode == "LOW")
-            localAddress->setBoundingMode(ossia::bounding_mode::LOW);
-        else if (bounding_mode == "HIGH")
-            localAddress->setBoundingMode(ossia::bounding_mode::HIGH);
-
-        std::string access_mode = x_access_mode->s_name;
-        if(access_mode == "BI" || access_mode == "RW")
-            localAddress->setAccessMode(ossia::access_mode::BI);
-        else if(access_mode == "GET" || access_mode == "R")
-            localAddress->setAccessMode(ossia::access_mode::GET);
-        else if(access_mode == "SET" || access_mode == "W")
-            localAddress->setAccessMode(ossia::access_mode::SET);
-
-        localAddress->setRepetitionFilter(x_repetition_filter? ossia::repetition_filter::ON : ossia::repetition_filter::OFF);
-
-        ossia::unit_t unit = ossia::parse_pretty_unit(x_unit->s_name);
-        localAddress->setUnit(unit);
-
-        ossia::net::set_description(*x_node, x_description->s_name);
-        ossia::net::set_tags(*x_node, parse_tags_symbol(x_tags));
-
+    } else if(std::string(x_type->s_name) == "symbol" || std::string(x_type->s_name) == "string"){
+        localAddress = x_node->createAddress(ossia::val_type::STRING);
+    } else if (std::string(x_type->s_name) == "int") {
+        localAddress = x_node->createAddress(ossia::val_type::INT);
+    } else if (std::string(x_type->s_name) == "vec2f") {
+        localAddress = x_node->createAddress(ossia::val_type::VEC2F);
+    } else if (std::string(x_type->s_name) == "vec3f") {
+        localAddress = x_node->createAddress(ossia::val_type::VEC3F);
+    } else if (std::string(x_type->s_name) == "vec4f") {
+        localAddress = x_node->createAddress(ossia::val_type::VEC4F);
+    } else if (std::string(x_type->s_name) == "Impulse") {
+        localAddress = x_node->createAddress(ossia::val_type::IMPULSE);
+    } else if (std::string(x_type->s_name) == "bool") {
+        localAddress = x_node->createAddress(ossia::val_type::BOOL);
+    } else if (std::string(x_type->s_name) == "tuple") {
+        localAddress = x_node->createAddress(ossia::val_type::TUPLE);
+    } else if (std::string(x_type->s_name) == "char") {
+        localAddress = x_node->createAddress(ossia::val_type::CHAR);
     }
+
+    localAddress->setDomain(ossia::make_domain(x_range[0],x_range[1]));
+    // FIXME : we need case insensitive comparison here
+    std::string bounding_mode = x_bounding_mode->s_name;
+    if (bounding_mode == "FREE")
+        localAddress->setBoundingMode(ossia::bounding_mode::FREE);
+    else if (bounding_mode == "CLIP")
+        localAddress->setBoundingMode(ossia::bounding_mode::CLIP);
+    else if (bounding_mode == "WRAP")
+        localAddress->setBoundingMode(ossia::bounding_mode::WRAP);
+    else if (bounding_mode == "FOLD")
+        localAddress->setBoundingMode(ossia::bounding_mode::FOLD);
+    else if (bounding_mode == "LOW")
+        localAddress->setBoundingMode(ossia::bounding_mode::LOW);
+    else if (bounding_mode == "HIGH")
+        localAddress->setBoundingMode(ossia::bounding_mode::HIGH);
+
+    std::string access_mode = x_access_mode->s_name;
+    if(access_mode == "BI" || access_mode == "RW")
+        localAddress->setAccessMode(ossia::access_mode::BI);
+    else if(access_mode == "GET" || access_mode == "R")
+        localAddress->setAccessMode(ossia::access_mode::GET);
+    else if(access_mode == "SET" || access_mode == "W")
+        localAddress->setAccessMode(ossia::access_mode::SET);
+
+    localAddress->setRepetitionFilter(x_repetition_filter? ossia::repetition_filter::ON : ossia::repetition_filter::OFF);
+
+    ossia::unit_t unit = ossia::parse_pretty_unit(x_unit->s_name);
+    localAddress->setUnit(unit);
+
+    ossia::net::set_description(*x_node, x_description->s_name);
+    ossia::net::set_tags(*x_node, parse_tags_symbol(x_tags));
+
     localAddress->add_callback([=](const ossia::value& v){
         setValue(v);
     });
@@ -147,9 +164,8 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
         ebox_attrprocess_viabinbuf(x, d);
 
         // if we only pass a default value without setting parameter type,
-        // the type is deduced from the default value (for now in Pd only symbol and float)
+        // the type is deduced from the default value
         if(x->x_default.a_type == A_SYMBOL) x->x_type = gensym("symbol");
-        else x->x_type = gensym("float");
 
         obj_register<t_param>(x);
     }
