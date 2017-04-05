@@ -148,10 +148,10 @@ struct env_writer
   }
 };
 
-
 void graph::add_node(node_ptr n)
 {
-    m_nodes.insert(node_bimap_v{boost::add_vertex(n, m_graph), std::move(n)});
+  auto vtx = boost::add_vertex(n, m_graph);
+  m_nodes.insert(node_bimap_v{vtx, std::move(n)});
 }
 
 void graph::remove_node(const node_ptr& n)
@@ -201,6 +201,17 @@ void graph::disconnect(const std::shared_ptr<graph_edge>& edge)
         boost::remove_edge(it->second, m_graph);
         m_edge_map.erase(std::make_pair(edge->in_node.get(), edge->out_node.get()));
     }
+}
+
+void graph::clear()
+{
+  // TODO clear all the connections, ports, etc, to ensure that there is no shared_ptr loop
+  m_nodes.clear();
+  m_edges.clear();
+  m_user_enabled_nodes.clear();
+  m_graph.clear();
+  m_edge_map.clear();
+  m_time = 0;
 }
 
 execution_state graph::state()

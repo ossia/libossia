@@ -174,7 +174,11 @@ source_group(Editor REGULAR_EXPRESSION "ossia/editor.*")
 source_group(Network REGULAR_EXPRESSION "ossia/network.*")
 
 # Compile options
-target_compile_definitions(ossia PRIVATE RAPIDJSON_HAS_STDSTRING=1)
+target_compile_definitions(ossia PUBLIC
+  RAPIDJSON_HAS_STDSTRING=1
+  $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING>
+  $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_SAFE_MODE>
+  )
 
 if(WIN32)
     target_compile_definitions(ossia PUBLIC

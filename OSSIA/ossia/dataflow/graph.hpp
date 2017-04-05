@@ -43,9 +43,9 @@ public:
   void connect(const std::shared_ptr<graph_edge>& edge);
   void disconnect(const std::shared_ptr<graph_edge>& edge);
 
+  void clear();
   execution_state state();
 
-private:
   static set<graph_node*> disable_strict_nodes(const set<graph_node*>& enabled_nodes);
   static set<graph_node*> disable_strict_nodes(const set<node_ptr>& n);
 
