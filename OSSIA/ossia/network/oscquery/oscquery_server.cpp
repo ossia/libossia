@@ -36,7 +36,16 @@ oscquery_server_protocol::oscquery_server_protocol(uint16_t osc_port, uint16_t w
     return res;
   });
 
-  m_serverThread = std::thread{[&] { m_websocketServer.run(m_wsPort); }};
+  m_websocketServer.listen(m_wsPort);
+  m_serverThread = std::thread{[&] {
+    try {
+      m_websocketServer.run();
+    } catch(const std::exception& e) {
+      ossia::logger().error("Error in websocket processing: {}", e.what());
+    } catch(...) {
+      ossia::logger().error("Error in websocket processing");
+    }
+    }};
   m_oscServer->run();
 }
 

@@ -124,10 +124,14 @@ class websocket_server
         });
     }
 
-    void run(uint16_t port = 9002)
+    void listen(uint16_t port = 9002)
     {
       m_server.listen(port);
       m_server.start_accept();
+    }
+
+    void run()
+    {
       m_server.run();
     }
 
