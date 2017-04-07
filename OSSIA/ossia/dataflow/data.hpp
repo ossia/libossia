@@ -5,8 +5,11 @@ namespace ossia
 {
 template<typename T>
 using value_vector = chobo::small_vector<T, 4>;
+
+using audio_vector = std::array<double, 64>;
+
 struct audio_port {
-  value_vector<std::array<double, 64>> samples;
+  value_vector<audio_vector> samples;
 };
 
 struct midi_port {

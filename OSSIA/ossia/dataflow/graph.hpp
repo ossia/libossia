@@ -44,19 +44,20 @@ public:
   void disconnect(const std::shared_ptr<graph_edge>& edge);
 
   void clear();
-  execution_state state();
+
+  void state();
+  void state(execution_state& e);
 
   static set<graph_node*> disable_strict_nodes(const set<graph_node*>& enabled_nodes);
   static set<graph_node*> disable_strict_nodes(const set<node_ptr>& n);
 
   void disable_strict_nodes_rec(set<graph_node*>& cur_enabled_node);
 
-  static void copy(const data_type& out, inlet& in);
+  static void copy_from_local(const data_type& out, inlet& in);
   static void copy(const data_type& out, std::size_t pos, inlet& in);
   static void copy(const outlet& out, inlet& in);
-  static void copy_local(const data_type& out, const Destination& d, execution_state& in);
-  static void copy_global(const data_type& out, const Destination& d, execution_state& in);
-  static void copy(const ossia::net::address_base& out, inlet& in);
+  static void copy_to_local(const data_type& out, const Destination& d, execution_state& in);
+  static void copy_to_global(const data_type& out, const Destination& d, execution_state& in);
   static void pull_from_address(inlet& in, execution_state& e);
 
   void init_node(graph_node& n, execution_state& e);

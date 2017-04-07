@@ -11,11 +11,11 @@ void outlet::write(execution_state& e)
         ossia::net::address_base* addr = *addr_ptr;
         if(scope & port::scope_t::local)
         {
-            graph::copy_local(data, *addr, e);
+            graph::copy_to_local(data, *addr, e);
         }
         else if(scope & port::scope_t::global)
         {
-            graph::copy_global(data, *addr, e);
+            graph::copy_to_global(data, *addr, e);
         }
     }
     else if(auto pattern = address.target<std::string>())

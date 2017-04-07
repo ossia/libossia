@@ -1,4 +1,5 @@
 #include <ossia/dataflow/graph.hpp>
+#include <ossia/dataflow/audio_address.hpp>
 
 namespace ossia
 {
@@ -156,51 +157,51 @@ void graph::add_node(node_ptr n)
 
 void graph::remove_node(const node_ptr& n)
 {
-    auto it = m_nodes.right.find(n);
-    if(it != m_nodes.right.end())
-    {
-        boost::remove_vertex(it->second, m_graph);
-        m_nodes.right.erase(it);
-    }
+  auto it = m_nodes.right.find(n);
+  if(it != m_nodes.right.end())
+  {
+    boost::remove_vertex(it->second, m_graph);
+    m_nodes.right.erase(it);
+  }
 }
 
 void graph::enable(graph_node& n)
 {
-    m_user_enabled_nodes.insert(&n);
-    n.set_enabled(true);
-    // TODO handle temporal ordering here.
+  m_user_enabled_nodes.insert(&n);
+  n.set_enabled(true);
+  // TODO handle temporal ordering here.
 }
 
 void graph::disable(graph_node& n)
 {
-    m_user_enabled_nodes.erase(&n);
-    n.set_enabled(false);
+  m_user_enabled_nodes.erase(&n);
+  n.set_enabled(false);
 }
 
 void graph::connect(const std::shared_ptr<graph_edge>& edge)
 {
-    auto it1 = m_nodes.right.find(edge->in_node);
-    auto it2 = m_nodes.right.find(edge->out_node);
-    if(it1 != m_nodes.right.end() && it2 != m_nodes.right.end())
+  auto it1 = m_nodes.right.find(edge->in_node);
+  auto it2 = m_nodes.right.find(edge->out_node);
+  if(it1 != m_nodes.right.end() && it2 != m_nodes.right.end())
+  {
+    // TODO check that two edges can be added
+    auto res = boost::add_edge(it1->second, it2->second, edge, m_graph);
+    if(res.second)
     {
-        // TODO check that two edges can be added
-        auto res = boost::add_edge(it1->second, it2->second, edge, m_graph);
-        if(res.second)
-        {
-            m_edges.insert(edge_bimap_v{res.first, edge});
-            m_edge_map.insert(std::make_pair(std::make_pair(edge->in_node.get(), edge->out_node.get()), edge.get()));
-        }
+      m_edges.insert(edge_bimap_v{res.first, edge});
+      m_edge_map.insert(std::make_pair(std::make_pair(edge->in_node.get(), edge->out_node.get()), edge.get()));
     }
+  }
 }
 
 void graph::disconnect(const std::shared_ptr<graph_edge>& edge)
 {
-    auto it = m_edges.right.find(edge);
-    if(it != m_edges.right.end())
-    {
-        boost::remove_edge(it->second, m_graph);
-        m_edge_map.erase(std::make_pair(edge->in_node.get(), edge->out_node.get()));
-    }
+  auto it = m_edges.right.find(edge);
+  if(it != m_edges.right.end())
+  {
+    boost::remove_edge(it->second, m_graph);
+    m_edge_map.erase(std::make_pair(edge->in_node.get(), edge->out_node.get()));
+  }
 }
 
 void graph::clear()
@@ -214,270 +215,293 @@ void graph::clear()
   m_time = 0;
 }
 
-execution_state graph::state()
+struct push_visitor
 {
-    // TODO in the future, temporal_graph, space_graph that can be used as processes.
+  const net::address_base& out;
+  void operator()(value_port& val)
+  {
+    val.data.push_back(out.cloneValue());
+  }
 
-    // Filter disabled nodes (through strict relationships).
-    set<graph_node*> enabled(m_user_enabled_nodes.begin(), m_user_enabled_nodes.end());
-    disable_strict_nodes_rec(enabled);
+  void operator()(audio_port& val)
+  {
+    auto aa = dynamic_cast<const audio_address*>(&out);
+    assert(aa);
+    val.samples.resize(val.samples.size() + 1);
 
-    // Get a total order on nodes
-    std::vector<graph_node*> active_nodes;
+    auto& arr = val.samples.back();
+    const auto& src = aa->audio;
+    const auto N = std::min((int)src.size(), (int)arr.size());
+    for(int i = 0; i < N; i++)
+      arr[i] = src[i];
+  }
 
-    std::deque<graph_vertex_t> topo_order;
-    try {
-        boost::topological_sort(m_graph, std::back_inserter(topo_order));
-    }
-    catch(const boost::not_a_dag& e)
+  void operator()(midi_port& val)
+  {
+    auto ma = dynamic_cast<const midi_generic_address*>(&out);
+    assert(ma);
+
+    for(auto& m : ma->messages)
+      val.messages.push_back(m);
+  }
+
+  void operator()()
+  {
+
+  }
+};
+
+void graph::state()
+{
+  execution_state e;
+  state(e);
+  e.commit();
+}
+
+void graph::state(execution_state& e)
+{
+  // TODO in the future, temporal_graph, space_graph that can be used as processes.
+
+  // Filter disabled nodes (through strict relationships).
+  set<graph_node*> enabled(m_user_enabled_nodes.begin(), m_user_enabled_nodes.end());
+  disable_strict_nodes_rec(enabled);
+
+  // Get a total order on nodes
+  std::vector<graph_node*> active_nodes;
+
+  std::deque<graph_vertex_t> topo_order;
+  try {
+    boost::topological_sort(m_graph, std::back_inserter(topo_order));
+  }
+  catch(const boost::not_a_dag& e)
+  {
+    return;
+  }
+
+  for(graph_vertex_t vtx : topo_order)
+  {
+    auto n = m_graph[vtx].get();
+    if(n->enabled())
+      active_nodes.push_back(n);
+  }
+
+  // Start executing the nodes
+  boost::container::flat_set<graph_node*, active_node_sorter> next_nodes{active_node_sorter{m_edge_map, e}};
+  while(!active_nodes.empty())
+  {
+    next_nodes.clear();
+    std::size_t max_exec{};
+    for(; max_exec < active_nodes.size(); max_exec++)
+      if(active_nodes[max_exec]->can_execute(e))
+        next_nodes.insert(active_nodes[max_exec]);
+
+    if(!next_nodes.empty())
     {
-        return {};
+      // First look if there is a replacement or reduction relationship between the first n nodes
+      // If there is, we run all the nodes
+
+      // If there is not we just run the first node
+      auto& first_node = **next_nodes.begin();
+      init_node(first_node, e);
+      first_node.run(e);
+      first_node.set_executed(true);
+      teardown_node(first_node, e);
+      active_nodes.erase(ossia::find(active_nodes, &first_node));
     }
-
-    execution_state e;
-
-    for(graph_vertex_t vtx : topo_order)
+    else
     {
-        auto n = m_graph[vtx].get();
-        if(n->enabled())
-            active_nodes.push_back(n);
+      break; // nothing more to execute
     }
+  }
 
-    // Start executing the nodes
-    boost::container::flat_set<graph_node*, active_node_sorter> next_nodes{active_node_sorter{m_edge_map, e}};
-    while(!active_nodes.empty())
-    {
-        next_nodes.clear();
-        std::size_t max_exec{};
-        for(; max_exec < active_nodes.size(); max_exec++)
-            if(active_nodes[max_exec]->can_execute(e))
-                next_nodes.insert(active_nodes[max_exec]);
-
-        if(!next_nodes.empty())
-        {
-            // First look if there is a replacement or reduction relationship between the first n nodes
-            // If there is, we run all the nodes
-
-            // If there is not we just run the first node
-            auto& first_node = **next_nodes.begin();
-            init_node(first_node, e);
-            first_node.run(e);
-            first_node.set_executed(true);
-            teardown_node(first_node, e);
-            active_nodes.erase(ossia::find(active_nodes, &first_node));
-        }
-        else
-        {
-            break; // nothing more to execute
-        }
-    }
-
-    for(auto& elt: e.localState)
-    {
-        auto addr = elt.first.target<ossia::net::address_base*>();
-        auto val = elt.second.target<value_port>();
-
-        if(addr && val)
-        {
-            for(auto v : val->data)
-            {
-                (*addr)->pushValue(v);
-            }
-        }
-        // TODO midi & audio ?
-    }
-
-    for(auto& node : m_nodes.right)
-    {
-        node.first->set_executed(false);
-    }
-
-    return e;
+  for(auto& node : m_nodes.right)
+  {
+    node.first->set_executed(false);
+  }
 }
 
 set<graph_node*> graph::disable_strict_nodes(const set<graph_node*>& enabled_nodes)
 {
-    set<graph_node*> ret;
+  set<graph_node*> ret;
 
-    for(const auto& node : enabled_nodes)
+  for(const auto& node : enabled_nodes)
+  {
+    for(const auto& in : node->inputs())
     {
-        for(const auto& in : node->inputs())
+      for(const auto& edge : in->sources)
+      {
+        assert(edge->out_node);
+
+        if(auto sc = edge->con.target<immediate_strict_connection>())
         {
-            for(const auto& edge : in->sources)
-            {
-                assert(edge->out_node);
-
-                if(auto sc = edge->con.target<immediate_strict_connection>())
-                {
-                    if((sc->required_sides & immediate_strict_connection::required_sides_t::outbound) && node->enabled() && !edge->out_node->enabled())
-                    {
-                        ret.insert(node);
-                    }
-                }
-                else if(auto delay = edge->con.target<delayed_strict_connection>())
-                {
-                    const auto n = ossia::apply(data_size{}, delay->buffer);
-                    if(n == 0 || delay->pos >= n)
-                        ret.insert(node);
-                }
-            }
+          if((sc->required_sides & immediate_strict_connection::required_sides_t::outbound) && node->enabled() && !edge->out_node->enabled())
+          {
+            ret.insert(node);
+          }
         }
-
-        for(const auto& out : node->outputs())
+        else if(auto delay = edge->con.target<delayed_strict_connection>())
         {
-            for(const auto& edge : out->targets)
-            {
-                assert(edge->in_node);
-
-                if(auto sc = edge->con.target<immediate_strict_connection>())
-                {
-                    if((sc->required_sides & immediate_strict_connection::required_sides_t::inbound) && node->enabled() && !edge->in_node->enabled())
-                    {
-                        ret.insert(node);
-                    }
-                }
-            }
+          const auto n = ossia::apply(data_size{}, delay->buffer);
+          if(n == 0 || delay->pos >= n)
+            ret.insert(node);
         }
+      }
     }
 
-    return ret;
+    for(const auto& out : node->outputs())
+    {
+      for(const auto& edge : out->targets)
+      {
+        assert(edge->in_node);
+
+        if(auto sc = edge->con.target<immediate_strict_connection>())
+        {
+          if((sc->required_sides & immediate_strict_connection::required_sides_t::inbound) && node->enabled() && !edge->in_node->enabled())
+          {
+            ret.insert(node);
+          }
+        }
+      }
+    }
+  }
+
+  return ret;
 }
 
 set<graph_node*> graph::disable_strict_nodes(const set<node_ptr>& n)
 {
-    using namespace boost::adaptors;
-    auto res = (n | transformed([] (auto p) { return p.get(); }));
-    return disable_strict_nodes(set<graph_node*>{res.begin(), res.end()});
+  using namespace boost::adaptors;
+  auto res = (n | transformed([] (auto p) { return p.get(); }));
+  return disable_strict_nodes(set<graph_node*>{res.begin(), res.end()});
 }
 
 void graph::disable_strict_nodes_rec(set<graph_node*>& cur_enabled_node)
 {
-    set<graph_node*> to_disable;
-    do
+  set<graph_node*> to_disable;
+  do
+  {
+    to_disable = disable_strict_nodes(cur_enabled_node);
+    for(auto n : to_disable)
     {
-        to_disable = disable_strict_nodes(cur_enabled_node);
-        for(auto n : to_disable)
-        {
-            disable(*n);
-            cur_enabled_node.erase(n);
-            // note: we have to add a dependency between all the inlets and outlets
-        }
+      disable(*n);
+      cur_enabled_node.erase(n);
+      // note: we have to add a dependency between all the inlets and outlets
+    }
 
-    } while(!to_disable.empty());
+  } while(!to_disable.empty());
 
 }
 
-void graph::copy(const data_type& out, inlet& in)
+void graph::copy_from_local(const data_type& out, inlet& in)
 {
-    if(out.which() == in.data.which() && out && in.data)
-    {
-        eggs::variants::apply(copy_data{}, out, in.data);
-    }
+  if(out.which() == in.data.which() && out && in.data)
+  {
+    eggs::variants::apply(copy_data{}, out, in.data);
+  }
 }
 
 void graph::copy(const data_type& out, std::size_t pos, inlet& in)
 {
-    if(out.which() == in.data.which() && out && in.data)
-    {
-        eggs::variants::apply(copy_data_pos{pos}, out, in.data);
-    }
+  if(out.which() == in.data.which() && out && in.data)
+  {
+    eggs::variants::apply(copy_data_pos{pos}, out, in.data);
+  }
 }
 
 void graph::copy(const outlet& out, inlet& in)
 {
-    copy(out.data, in);
+  copy(out.data, in);
 }
 
-void graph::copy_local(const data_type& out, const Destination& d, execution_state& in)
+void graph::copy_to_local(const data_type& out, const Destination& d, execution_state& in)
 {
-    in.localState[destination_t{&d.address()}] = out;
+  in.insert(destination_t{&d.address()}, out);
 }
 
-void graph::copy_global(const data_type& out, const Destination& d, execution_state& in)
+void graph::copy_to_global(const data_type& out, const Destination& d, execution_state& in)
 {
-    // TODO
-}
-
-void graph::copy(const net::address_base& out, inlet& in)
-{
-    if(value_port* val = in.data.target<value_port>())
-    {
-        val->data.push_back(out.cloneValue());
-    }
+  // TODO
 }
 
 void graph::pull_from_address(inlet& in, execution_state& e)
 {
-    if(auto addr_ptr = in.address.target<ossia::net::address_base*>())
+  if(auto addr_ptr = in.address.target<ossia::net::address_base*>())
+  {
+    ossia::net::address_base* addr = *addr_ptr;
+    if(in.scope & port::scope_t::local)
     {
-        ossia::net::address_base* addr = *addr_ptr;
-        if(in.scope & port::scope_t::local)
-        {
-            auto it = e.localState.find(destination_t{addr});
-            if(it != e.localState.end())
-                copy(it->second, in);
-            else if(in.scope & port::scope_t::global)
-                copy(*addr, in);
-        }
-        else if(in.scope & port::scope_t::global)
-            copy(*addr, in);
+      e.find_and_copy(*addr, in);
     }
-    else if(auto pattern = in.address.target<std::string>())
+    else
     {
-        // TODO
+      e.copy_from_global(*addr, in);
     }
+  }
+  else if(auto pattern = in.address.target<std::string>())
+  {
+    // TODO
+  }
 }
 
 void graph::init_node(graph_node& n, execution_state& e)
 {
-    // Clear the outputs of the node
-    for(const outlet_ptr& out : n.outputs())
-    {
-        if(out->data)
-            eggs::variants::apply(clear_data{}, out->data);
-    }
+  // Clear the outputs of the node
+  for(const outlet_ptr& out : n.outputs())
+  {
+    if(out->data)
+      eggs::variants::apply(clear_data{}, out->data);
+  }
 
-    // Copy from environment and previous ports to inputs
-    for(const inlet_ptr& in : n.inputs())
+  // Copy from environment and previous ports to inputs
+  for(const inlet_ptr& in : n.inputs())
+  {
+    if(!in->sources.empty())
     {
-        if(!in->sources.empty())
-        {
-            for(auto edge : in->sources)
-            {
-                ossia::apply(init_node_visitor{*in, *edge, e}, edge->con);
-            }
-        }
-        else
-        {
-            pull_from_address(*in, e);
-        }
+      for(auto edge : in->sources)
+      {
+        ossia::apply(init_node_visitor{*in, *edge, e}, edge->con);
+      }
     }
+    else
+    {
+      pull_from_address(*in, e);
+    }
+  }
 }
 
 void graph::teardown_node(graph_node& n, execution_state& e)
 {
-    for(const inlet_ptr& in : n.inputs())
-    {
-        if(in->data)
-            eggs::variants::apply(clear_data{}, in->data);
-    }
+  for(const inlet_ptr& in : n.inputs())
+  {
+    if(in->data)
+      eggs::variants::apply(clear_data{}, in->data);
+  }
 
-    // Copy from output ports to environment
-    for(const outlet_ptr& out : n.outputs())
+  // Copy from output ports to environment
+  for(const outlet_ptr& out : n.outputs())
+  {
+    if(out->targets.empty())
     {
-        if(out->targets.empty())
-        {
-            out->write(e);
-        }
-        else
-        {
-            // If the following target has been deactivated
-            for(auto tgt : out->targets)
-            {
-                ossia::apply(env_writer{*out, *tgt, e}, tgt->con);
-            }
-        }
+      out->write(e);
     }
+    else
+    {
+      // If the following target has been deactivated
+      for(auto tgt : out->targets)
+      {
+        ossia::apply(env_writer{*out, *tgt, e}, tgt->con);
+      }
+    }
+  }
+
+}
+
+audio_address::~audio_address()
+{
+
+}
+midi_generic_address::~midi_generic_address()
+{
 
 }
 

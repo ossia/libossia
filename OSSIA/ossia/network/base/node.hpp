@@ -72,6 +72,8 @@ public:
 
   //! Allows a node to carry a value
   virtual address_base* createAddress(val_type = val_type::IMPULSE) = 0;
+  //! Default implementation does nothing
+  virtual void setAddress(std::unique_ptr<ossia::net::address_base>);
   virtual bool removeAddress() = 0;
   virtual address_base* getAddress() const = 0;
 
