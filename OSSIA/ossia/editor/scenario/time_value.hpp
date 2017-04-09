@@ -147,6 +147,11 @@ OSSIA_EXPORT inline time_value operator "" _tv(long double v)
     return time_value(v);
 }
 
+OSSIA_EXPORT inline time_value operator "" _tv(unsigned long long v)
+{
+    return time_value(v);
+}
+
 const constexpr time_value Infinite{INFINITY};
 const constexpr time_value Zero{0.};
 const constexpr time_value One{1.};

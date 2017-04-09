@@ -4,7 +4,7 @@
 #include <ossia/detail/string_map.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <brigand/algorithms/for_each.hpp>
-
+#include <ossia/detail/string_view.hpp>
 namespace ossia
 {
 namespace detail

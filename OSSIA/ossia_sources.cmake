@@ -94,6 +94,17 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/temperature.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/time.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/dataflow.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/connection.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/data.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/dataflow_fwd.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution_state.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_edge.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_process.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/address_properties.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/network_logger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/websocket_log_sink.hpp"
@@ -182,6 +193,11 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_visitors.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/dataspace_impl.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution_state.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/domain_impl.cpp"

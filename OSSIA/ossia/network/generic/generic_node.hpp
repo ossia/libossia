@@ -54,6 +54,7 @@ public:
 
   ossia::net::address_base* getAddress() const final override;
   ossia::net::address_base* createAddress(ossia::val_type type) final override;
+  void setAddress(std::unique_ptr<ossia::net::address_base> addr) final override;
   bool removeAddress() final override;
 
 protected:
