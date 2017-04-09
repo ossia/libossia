@@ -354,6 +354,7 @@ set(OSSIA_JAVA_SRCS
 set(OSSIA_QT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_model_property.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node_base.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_object_node.hpp"
@@ -368,6 +369,7 @@ set(OSSIA_QT_HEADERS
 set(OSSIA_QT_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_model_property.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node_base.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_object_node.cpp"

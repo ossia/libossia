@@ -16,6 +16,7 @@ class OSSIA_EXPORT qml_device :
     Q_OBJECT
     Q_PROPERTY(int wsPort READ wsPort WRITE setWSPort NOTIFY WSPortChanged)
     Q_PROPERTY(int oscPort READ oscPort WRITE setOSCPort NOTIFY OSCPortChanged)
+    Q_PROPERTY(bool readPreset READ readPreset WRITE setReadPreset NOTIFY readPresetChanged)
 
 public:
     qml_device(QObject* parent = nullptr);
@@ -31,15 +32,24 @@ public:
 
     tsl::hopscotch_set<qml_node_base*> nodes;
 
+    bool readPreset() const;
+
 public slots:
     void setWSPort(int wsPort);
     void setOSCPort(int oscPort);
 
     void rescan(QObject* root);
 
+    void setReadPreset(bool readPreset);
+
+    void savePreset(const QUrl& file);
+    void loadPreset(const QUrl& file);
+
 signals:
     void WSPortChanged(int wsPort);
     void OSCPortChanged(int oscPort);
+
+    void readPresetChanged(bool readPreset);
 
 private:
     QString m_localName{"newDevice"};
@@ -47,6 +57,7 @@ private:
     int m_oscPort{9998};
 
     ossia::net::generic_device m_localDevice;
+    bool m_readPreset{false};
 };
 
 class OSSIA_EXPORT qml_singleton_device : public qml_device

@@ -12,8 +12,7 @@ namespace qt
 {
 class qml_device;
 class qml_node_base :
-    public QQuickItem
-{
+    public QQuickItem {
   Q_OBJECT
   Q_PROPERTY(QString node READ node WRITE setNode NOTIFY nodeChanged)
   Q_PROPERTY(QString path READ path NOTIFY pathChanged)

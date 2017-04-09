@@ -67,14 +67,14 @@ void qml_property::resetNode(bool recursive)
     }
   }
 
-  if(auto dev = qobject_cast<ossia::qt::qml_device*>(m_device))
+  if(m_device)
   {
     std::string node_name;
     bool relative = false;
 
     if(m_userRequestedNode.isEmpty())
     {
-      node_name = m_targetProperty.name().toStdString();
+      node_name = m_targetProperty.name().replace('.', '_').toStdString();
       relative = true;
     }
     else if(m_userRequestedNode[0] != '/')
@@ -89,18 +89,29 @@ void qml_property::resetNode(bool recursive)
 
     ossia::net::node_base& parent =
         relative
-        ? findClosestParent(m_targetProperty.object(), dev->device().getRootNode())
-        : dev->device().getRootNode();
+        ? findClosestParent(m_targetProperty.object(), m_device->device().getRootNode())
+        : m_device->device().getRootNode();
 
-    m_ossia_node = &ossia::net::create_node(parent, node_name);
+    if(m_device->readPreset())
+    {
+      m_ossia_node = ossia::net::find_node(parent, node_name);
+    }
+    else
+    {
+      m_ossia_node = &ossia::net::create_node(parent, node_name);
+    }
 
-    m_ossia_node->aboutToBeDeleted.connect<qml_property, &qml_property::on_node_deleted>(this);
-    m_node = QString::fromStdString(m_ossia_node->getName());
+    if(m_ossia_node)
+    {
+      m_ossia_node->aboutToBeDeleted.connect<qml_property, &qml_property::on_node_deleted>(this);
+      m_node = QString::fromStdString(m_ossia_node->getName());
 
-    setPath(
-          QString::fromStdString(
-            ossia::net::address_string_from_node(*m_ossia_node)));
-    setupAddress();
+      setPath(
+            QString::fromStdString(
+              ossia::net::address_string_from_node(*m_ossia_node)));
+      setupAddress();
+      return;
+    } // else, we go through the reset:
   }
 
   // In case something went wrong...

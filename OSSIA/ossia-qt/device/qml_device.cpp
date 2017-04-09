@@ -4,6 +4,8 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 #include <QDebug>
+#include <ossia-qt/qml_context.hpp>
+#include <ossia/network/common/debug.hpp>
 namespace ossia
 {
 namespace qt
@@ -51,6 +53,11 @@ int qml_device::oscPort() const
   return m_oscPort;
 }
 
+bool qml_device::readPreset() const
+{
+  return m_readPreset;
+}
+
 void qml_device::setWSPort(int localPort)
 {
   if (m_wsPort == localPort)
@@ -84,11 +91,50 @@ void qml_device::rescan(QObject* root)
   });
 }
 
+void qml_device::setReadPreset(bool readPreset)
+{
+  if (m_readPreset == readPreset)
+    return;
+
+  m_readPreset = readPreset;
+  emit readPresetChanged(readPreset);
+}
+
 qml_device::~qml_device()
 {
 
 }
 
+void qml_device::savePreset(const QUrl& file)
+{
+  fmt::MemoryWriter w;
+
+//  ossia::net::debug_recursively(w, dev->device().getRootNode());
+
+//  std::cerr << w.str() << std::endl;
+  if(file.isLocalFile())
+  {
+    auto preset = ossia::devices::make_preset(device());
+    {
+      QFile f(file.toLocalFile());
+      f.open(QIODevice::WriteOnly);
+
+      auto str = ossia::presets::write_json(preset);
+      f.write(str.data(), str.size());
+    }
+  }
+}
+
+void qml_device::loadPreset(const QUrl& file)
+{
+  if(file.isLocalFile())
+  {
+    QFile f(file.toLocalFile());
+    f.open(QIODevice::ReadOnly);
+    auto kv = ossia::presets::read_json(f.readAll().toStdString());
+    ossia::devices::apply_preset(device(), kv);
+  }
+}
 qml_singleton_device::qml_singleton_device()
 {
   QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
@@ -99,6 +145,8 @@ qml_singleton_device& qml_singleton_device::instance()
   static qml_singleton_device dev;
   return dev;
 }
+
+
 
 }
 }

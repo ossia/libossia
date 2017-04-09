@@ -76,9 +76,6 @@ public slots:
   void logWarning(const QString& s) { ossia::logger().warn("{}", s.toStdString()); }
   void logError(const QString& s) { ossia::logger().error("{}", s.toStdString()); }
   void logCritical(const QString& s) { ossia::logger().critical("{}", s.toStdString()); }
-
-  void savePreset(qml_device* dev, const QUrl& file);
-  void loadPreset(qml_device* dev, const QUrl& file);
 };
 }
 }
