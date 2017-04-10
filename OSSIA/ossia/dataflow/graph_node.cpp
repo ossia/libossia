@@ -106,4 +106,10 @@ const inlets& graph_node::inputs() const { return m_inlets; }
 
 const outlets& graph_node::outputs() const { return m_outlets; }
 
+void graph_node::clear()
+{
+  m_inlets.clear();
+  m_outlets.clear();
+}
+
 }

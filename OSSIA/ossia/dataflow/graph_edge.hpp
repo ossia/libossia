@@ -35,11 +35,22 @@ struct graph_edge
 
   ~graph_edge()
   {
+    clear();
+  }
+
+  void clear()
+  {
     if(in && out)
     {
       out->disconnect(this);
       in->disconnect(this);
     }
+
+    con = connection{};
+    out.reset();
+    in.reset();
+    out_node.reset();
+    in_node.reset();
   }
 
   connection con;

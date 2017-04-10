@@ -144,8 +144,22 @@ void execution_state::copy_from_global(net::address_base& addr, inlet& in)
 
 void execution_state::insert(const destination_t& dest, data_type v)
 {
-  if(v)
-    eggs::variants::apply([&] (auto&& val) { this->insert(dest, std::move(val)); }, std::move(v));
+  using namespace eggs::variants;
+  if(auto audio = get_if<audio_port>(&v))
+  {
+    insert(dest, std::move(*audio));
+  }
+  else if(auto midi = get_if<midi_port>(&v))
+  {
+    insert(dest, std::move(*midi));
+  }
+  else if(auto val = get_if<value_port>(&v))
+  {
+    insert(dest, std::move(*val));
+  }
+
+  // thanks mr skeltal:
+  //eggs::variants::apply([&] (auto&& val) { this->insert(dest, std::move(val)); }, std::move(v));
 }
 
 bool execution_state::in_local_scope(net::address_base& other) const

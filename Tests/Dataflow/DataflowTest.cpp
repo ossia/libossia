@@ -72,15 +72,18 @@ auto pop_front(T& container)
 struct execution_mock
 {
   const int factor = 1;
-  std::shared_ptr<node_mock> node;
+  std::weak_ptr<node_mock> node;
   void operator()(const execution_state& )
   {
-    auto elt = pop_front(node->inputs()[0]->data.target<value_port>()->data);
-    if(auto val = elt.target<std::vector<ossia::value>>())
+    if(auto n = node.lock())
     {
-      auto v = *val;
-      v.push_back(factor * (1+int(node->time())));
-      node->outputs()[0]->data.target<value_port>()->data.push_back(std::move(v));
+      auto elt = pop_front(n->inputs()[0]->data.target<value_port>()->data);
+      if(auto val = elt.target<std::vector<ossia::value>>())
+      {
+        auto v = *val;
+        v.push_back(factor * (1+int(n->time())));
+        n->outputs()[0]->data.target<value_port>()->data.push_back(std::move(v));
+      }
     }
   }
 };

@@ -34,6 +34,7 @@ using edge_map_t = std::unordered_map<std::pair<graph_node*, graph_node*>, graph
 class OSSIA_EXPORT graph
 {
 public:
+  ~graph();
   void add_node(node_ptr n);
   void remove_node(const node_ptr& n);
 

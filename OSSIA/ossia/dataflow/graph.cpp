@@ -149,6 +149,11 @@ struct env_writer
   }
 };
 
+graph::~graph()
+{
+  clear();
+}
+
 void graph::add_node(node_ptr n)
 {
   auto vtx = boost::add_vertex(n, m_graph);
@@ -207,6 +212,14 @@ void graph::disconnect(const std::shared_ptr<graph_edge>& edge)
 void graph::clear()
 {
   // TODO clear all the connections, ports, etc, to ensure that there is no shared_ptr loop
+  for(auto& node : m_nodes.right)
+  {
+    node.first->clear();
+  }
+  for(auto& edge : m_edges.right)
+  {
+    edge.first->clear();
+  }
   m_nodes.clear();
   m_edges.clear();
   m_user_enabled_nodes.clear();
@@ -410,7 +423,7 @@ void graph::copy(const data_type& out, std::size_t pos, inlet& in)
 
 void graph::copy(const outlet& out, inlet& in)
 {
-  copy(out.data, in);
+  copy_from_local(out.data, in);
 }
 
 void graph::copy_to_local(const data_type& out, const Destination& d, execution_state& in)

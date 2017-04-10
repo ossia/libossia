@@ -37,6 +37,8 @@ public:
   const inlets& inputs() const;
   const outlets& outputs() const;
 
+  void clear();
+
 protected:
   // Note : pour QtQuick : Faire View et Model qui hérite de View,
   // puis faire binding automatique entre propriétés de la vue et du modèle
