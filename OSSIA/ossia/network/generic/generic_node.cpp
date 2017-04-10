@@ -98,6 +98,16 @@ ossia::net::address_base* generic_node::getAddress() const
   return mAddress.get();
 }
 
+void generic_node::setAddress(std::unique_ptr<ossia::net::address_base> addr)
+{
+  removeAddress();
+  if(addr)
+  {
+    mAddress = std::move(addr);
+    mDevice.onAddressCreated(*mAddress);
+  }
+}
+
 ossia::net::address_base* generic_node::createAddress(ossia::val_type type)
 {
   // clear former address

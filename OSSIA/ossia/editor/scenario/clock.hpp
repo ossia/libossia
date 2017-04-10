@@ -176,7 +176,7 @@ public:
                                /// speed factor
     time_value mGranularity{}; /// the minimum time between each tick (in ms)
     time_value mOffset{};      /// the date (in ms) the clock will run from
-    double mSpeed{};           /// the speed factor of the clock
+    double mSpeed{1.};           /// the speed factor of the clock
 
     time_value
         mPosition{};    /// the progression of the clock between the beginning

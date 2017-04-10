@@ -22,7 +22,6 @@
 
 #include <ossia/ossia.hpp>
 #include <ossia-c/ossia/ossia_utils.hpp>
-#include <boost/lexical_cast.hpp>
 
 struct ossia_preset
 {
@@ -415,24 +414,6 @@ rapidjson::Value ossia_to_json_value(const ossia::value& val, rapidjson::Documen
   return jsonvalue;
 }
 
-std::vector<std::string> name_to_arraykeys(const std::string& currentkey)
-{
-  std::vector<std::string> arraykeys;
-  auto it = currentkey.find_last_of('.');
-  if(it < currentkey.size() - 1)
-  {
-    try {
-      auto p2 = currentkey.substr(it + 1);
-      boost::lexical_cast<int>(p2);
-
-      arraykeys.push_back(currentkey.substr(0, it));
-      arraykeys.push_back(std::move(p2));
-    } catch(...) {}
-  }
-
-  return arraykeys;
-}
-
 void insert(
     rapidjson::Value& recipient,
     const std::vector<std::string>& keys,
@@ -443,42 +424,39 @@ void insert_array(
     const std::vector<std::string>& keys,
     const ossia::value& val,
     rapidjson::Document& doc,
-    std::vector<std::string>& arraykeys) {
+    const std::vector<std::string>& arraykeys) {
 
   if (!array.IsArray()) {
     array.SetArray();
   }
 
-  if(arraykeys.empty())
-  {
-    arraykeys.push_back("0");
-  }
-
-  std::size_t index = std::atoi(arraykeys[0].c_str());
-  if (index >= array.Size()) {
-    auto missing = index - array.Size() + 1;
-    for (std::size_t i = 0; i < missing; ++i) {
-      rapidjson::Value dummy;
-      array.PushBack(dummy, doc.GetAllocator());
+  if (!arraykeys.empty()) {
+    std::size_t index = std::atoi(arraykeys[0].c_str());
+    if (index >= array.Size()) {
+      auto missing = index - array.Size() + 1;
+      for (std::size_t i = 0; i < missing; ++i) {
+        rapidjson::Value dummy;
+        array.PushBack(dummy, doc.GetAllocator());
+      }
     }
-  }
-  if (arraykeys.size() == 1) {
-    if (keys.empty()) {
-      rapidjson::Value v;
-      v = ossia_to_json_value(val, doc.GetAllocator());
-      array[index].Swap(v);
+    if (arraykeys.size() == 1) {
+      if (keys.empty()) {
+        rapidjson::Value v;
+        v = ossia_to_json_value(val, doc.GetAllocator());
+        array[index].Swap(v);
+      }
+      else {
+        if (array[index].IsNull()) {
+          array[index].SetObject();
+        }
+        insert(array[index], keys, val, doc);
+      }
     }
     else {
-      if (array[index].IsNull()) {
-        array[index].SetObject();
-      }
-      insert(array[index], keys, val, doc);
+      std::vector<std::string> newarraykeys (arraykeys);
+      newarraykeys.erase(newarraykeys.begin());
+      insert_array(array[index], keys, val, doc, newarraykeys);
     }
-  }
-  else {
-    std::vector<std::string> newarraykeys (arraykeys);
-    newarraykeys.erase(newarraykeys.begin());
-    insert_array(array[index], keys, val, doc, newarraykeys);
   }
 }
 
@@ -497,9 +475,10 @@ void insert(
       recipient.SetObject();
     }
 
-    std::vector<std::string> arraykeys = name_to_arraykeys(currentkey);
-    if (arraykeys.size() > 1)
-    {
+    std::vector<std::string> arraykeys;
+    boost::split(arraykeys, currentkey, [](char c){return c == '.';}, boost::token_compress_on);
+    if (arraykeys.size() > 1) {
+
       rapidjson::Value arrname (rapidjson::kStringType);
       std::string arrnamestr (arraykeys[0]);
       arrname.SetString(arrnamestr, doc.GetAllocator());
@@ -513,10 +492,9 @@ void insert(
       arrname.SetString(arrnamestr, doc.GetAllocator());
       insert_array(recipient[arrname], newkeys, val, doc, arraykeys);
     }
-    else
-    {
-      if (keys.size() == 1)
-      {
+
+    else {
+      if (keys.size() == 1) {
         rapidjson::Value v = ossia_to_json_value(val, doc.GetAllocator());
         if (!recipient.HasMember(currentkey)) {
           rapidjson::Value name (rapidjson::kStringType);
@@ -527,28 +505,15 @@ void insert(
           recipient[currentkey].Swap(v);
         }
       }
-      else
-      {
-        auto it = recipient.FindMember(currentkey);
-        if (it == recipient.MemberEnd())
-        {
+
+      else {
+        if (!recipient.HasMember(currentkey)) {
           rapidjson::Value node (rapidjson::kObjectType);
           rapidjson::Value name (rapidjson::kStringType);
           name.SetString(currentkey, doc.GetAllocator());
           recipient.AddMember(name, node, doc.GetAllocator());
-          insert(recipient[currentkey], newkeys, val, doc);
         }
-        else
-        {
-          if(it->value.IsObject())
-          {
-            insert(it->value, newkeys, val, doc);
-          }
-          else if(it->value.IsArray())
-          {
-            insert_array(it->value, newkeys, val, doc, arraykeys);
-          }
-        }
+        insert(recipient[currentkey], newkeys, val, doc);
       }
     }
   }
@@ -558,14 +523,13 @@ std::string ossia::presets::write_json(const preset & prst) {
   rapidjson::Document d;
 
   d.SetObject();
-  for (const auto& e : prst) {
-    std::cerr << "inserting: " << e.first << "\n";
+
+  for (auto it = prst.begin(); it != prst.end(); ++it) {
     std::vector<std::string> keys;
-
-    boost::split(keys, e.first, [](char c){return c == '/';}, boost::token_compress_on);
+    boost::split(keys, it->first, [](char c){return c == '/';}, boost::token_compress_on);
     keys.erase(keys.begin()); // first element is empty
-
-    insert((rapidjson::Value&)d, keys, e.second, d);
+    auto& val = it->second;
+    insert((rapidjson::Value&)d, keys, val, d);
   }
 
   rapidjson::StringBuffer buffer;
@@ -573,7 +537,6 @@ std::string ossia::presets::write_json(const preset & prst) {
   d.Accept(writer);
   return buffer.GetString();
 }
-
 
 std::string ossia_value_to_std_string(const ossia::value& val) {
   std::stringstream ss;
@@ -599,21 +562,26 @@ std::string ossia_value_to_std_string(const ossia::value& val) {
   return ss.str();
 }
 
-std::string ossia::presets::to_string(const preset & p)
-{
-  rapidjson::StringBuffer buf;
-  {
-    rapidjson::Writer<rapidjson::StringBuffer> w(buf);
-
-    w.StartArray();
-    for (const auto& pp : p) {
-      write_json_key(w, pp.first);
-      ::write_json(w, ossia_value_to_std_string(pp.second));
-    }
-    w.EndArray();
-  }
-  return std::string{buf.GetString(), buf.GetLength()};
+static std::string to_string(const ossia::presets::preset_pair & pp) {
+  std::stringstream ss;
+  ss << pp.first << ": ";
+  auto& val = pp.second;
+  ss << ossia_value_to_std_string(val);
+  return std::string(ss.str());
 }
+
+std::string ossia::presets::to_string(const preset & preset) {
+  std::string str = "[";
+  std::vector<std::string> substrings;
+  substrings.reserve(preset.size());
+  for (const preset_pair& pp : preset) {
+    substrings.push_back(::to_string(pp));
+  }
+  str += boost::join(substrings, ", ");
+  str += "]";
+  return str;
+}
+
 
 std::string domain_to_string(const ossia::domain& domain)
 {

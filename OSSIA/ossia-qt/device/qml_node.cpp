@@ -13,6 +13,8 @@ qml_node::qml_node(QQuickItem* parent):
   qml_node_base{parent}
 {
   resetNode();
+  connect(this, &QQuickItem::parentChanged,
+          this, [=] (QQuickItem*) { resetNode(); });
 }
 
 void qml_node::resetNode(bool recursive)
@@ -29,7 +31,7 @@ void qml_node::resetNode(bool recursive)
     }
   }
 
-  if(auto dev = qobject_cast<ossia::qt::qml_device*>(m_device))
+  if(m_device)
   {
     std::string node_name;
     bool relative = false;
@@ -60,18 +62,38 @@ void qml_node::resetNode(bool recursive)
 
     ossia::net::node_base& parent =
         relative
-        ? findClosestParent(this->parent(), dev->device().getRootNode())
-        : dev->device().getRootNode();
+        ? findClosestParent(this->parent(), m_device->device().getRootNode())
+        : m_device->device().getRootNode();
 
-    m_ossia_node = &ossia::net::create_node(parent, node_name);
-    m_ossia_node->aboutToBeDeleted.connect<qml_node, &qml_node::on_node_deleted>(this);
-    m_node = QString::fromStdString(m_ossia_node->getName());
-    setPath(
-          QString::fromStdString(
-            ossia::net::address_string_from_node(*m_ossia_node)));
+    auto setup_valid_node = [&] {
+      m_ossia_node->aboutToBeDeleted.connect<qml_node, &qml_node::on_node_deleted>(this);
+      m_node = QString::fromStdString(m_ossia_node->getName());
+      setPath(
+            QString::fromStdString(
+              ossia::net::address_string_from_node(*m_ossia_node)));
+      if(recursive)
+        reparentChildren();
+    };
 
-    if(recursive)
-      reparentChildren();
+    if(m_device->readPreset())
+    {
+      m_ossia_node = ossia::net::find_node(parent, node_name);
+      if(m_ossia_node)
+      {
+        setup_valid_node();
+      }
+      else
+      {
+        if(recursive)
+          reparentChildren();
+        setPath({});
+      }
+    }
+    else
+    {
+      m_ossia_node = &ossia::net::create_node(parent, node_name);
+      setup_valid_node();
+    }
     return;
   }
 
