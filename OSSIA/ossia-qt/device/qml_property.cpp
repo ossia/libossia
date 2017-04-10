@@ -10,49 +10,7 @@ namespace ossia
 {
 namespace qt
 {
-
-static void reparent_rec(QQuickItem* it)
-{
-  if(auto obj = qobject_cast<qml_node_base*>(it))
-    obj->resetNode();
-
-  for(auto cld : it->childItems())
-  {
-    if(cld != it)
-    {
-      reparent_rec(it);
-    }
-  }
-}
-
-void qml_node_base::reparentChildren()
-{
-  if(auto par = parentItem())
-  {
-    const auto& children = par->childItems();
-    for(auto cld : children)
-    {
-      if(cld != this)
-      {
-        reparent_rec(cld);
-      }
-    }
-  }
-
-  if(auto par = parent())
-  {
-    for(auto cld : par->findChildren<qml_node_base*>())
-    {
-      if(cld != this)
-      {
-        cld->resetNode();
-      }
-    }
-  }
-}
-
-
-void qml_property::resetNode(bool recursive)
+void qml_property::resetNode()
 {
   m_node.clear();
   if(m_ossia_node)
@@ -126,6 +84,7 @@ qml_property::qml_property(QQuickItem *parent)
           this, &qml_property::setValue_slot,
           Qt::QueuedConnection);
 
+  setDevice(&qml_singleton_device::instance());
   resetNode();
 }
 
@@ -147,6 +106,29 @@ void qml_property::qtVariantChanged()
     m_address->setValueQuiet(qt_to_ossia{}(m_targetProperty.read()));
     m_device->device().getProtocol().push(*m_address);
   }
+}
+
+void qml_property::setDevice(QObject *device)
+{
+    auto olddev = m_device;
+    auto newdev = qobject_cast<qml_device*>(device);
+    if(olddev != newdev)
+    {
+        qml_node_base::setDevice(device);
+
+        if(olddev)
+        {
+            qDebug("Remove Old");
+            olddev->properties.erase(this);
+        }
+
+        if(newdev)
+        {
+            qDebug("Add New");
+            newdev->properties.insert(this);
+        }
+    }
+
 }
 
 void qml_property::setValue_slot(const value& v)

@@ -11,7 +11,7 @@ class qml_node : public qml_node_base
 public:
   qml_node(QQuickItem* parent = nullptr);
 
-  void resetNode(bool recursive = true) override;
+  void resetNode() override;
 
 private:
   void on_node_deleted(const ossia::net::node_base&);

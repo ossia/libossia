@@ -30,13 +30,12 @@ public:
   QString path() const;
 
 
-  virtual void resetNode(bool recursive = true) = 0;
-  void reparentChildren();
+  virtual void resetNode() = 0;
   QVariantMap extended() const;
 
 public slots:
   void setNode(QString node);
-  void setDevice(QObject* device);
+  virtual void setDevice(QObject* device);
   void setExtended(QVariantMap extended);
 
 signals:

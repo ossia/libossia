@@ -12,12 +12,13 @@ namespace qt
 qml_node::qml_node(QQuickItem* parent):
   qml_node_base{parent}
 {
+  setDevice(&qml_singleton_device::instance());
   resetNode();
   connect(this, &QQuickItem::parentChanged,
           this, [=] (QQuickItem*) { resetNode(); });
 }
 
-void qml_node::resetNode(bool recursive)
+void qml_node::resetNode()
 {
   m_node.clear();
   if(m_ossia_node)
@@ -71,8 +72,6 @@ void qml_node::resetNode(bool recursive)
       setPath(
             QString::fromStdString(
               ossia::net::address_string_from_node(*m_ossia_node)));
-      if(recursive)
-        reparentChildren();
     };
 
     if(m_device->readPreset())
@@ -84,8 +83,6 @@ void qml_node::resetNode(bool recursive)
       }
       else
       {
-        if(recursive)
-          reparentChildren();
         setPath({});
       }
     }
@@ -96,9 +93,6 @@ void qml_node::resetNode(bool recursive)
     }
     return;
   }
-
-  if(recursive)
-    reparentChildren();
 
   // In case something went wrong...
   setPath({});

@@ -32,7 +32,6 @@ void qml_plugin::reg(const char* uri)
 
 void qml_plugin::registerTypes(const char* uri)
 {
-  qDebug() << "REGISTERING on " << uri;
   // Note : it will be registered twice. But maybe that's not a problem...
   reg(uri);
   static ossia::context c;

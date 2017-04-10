@@ -5,6 +5,7 @@
 #include <QQmlContext>
 #include <QDebug>
 #include <ossia-qt/qml_context.hpp>
+#include <ossia-qt/device/qml_property.hpp>
 #include <ossia/network/common/debug.hpp>
 namespace ossia
 {
@@ -78,16 +79,45 @@ void qml_device::setOSCPort(int remotePort)
   updateServer();
 }
 
+std::vector<QQuickItem*> items(QQuickItem* root)
+{
+    std::vector<QQuickItem*> items;
+    items.reserve(4096);
+    for(auto cld : root->childItems())
+    {
+        items.push_back(cld);
+    }
+
+    std::size_t cur_pos = 0U;
+    while(cur_pos < items.size())
+    {
+        for(auto cld : items[cur_pos]->childItems())
+            items.push_back(cld);
+
+        cur_pos++;
+    }
+
+    return items;
+}
+
 void qml_device::rescan(QObject* root)
 {
   QTimer::singleShot(10, [=] {
-  auto root_objects = root->parent()->findChildren<qml_node_base*>();
+      if(auto item = qobject_cast<QQuickItem*>(root))
+      {
+          for(auto cld : items(item))
+          {
+              if(auto qn = qobject_cast<qml_node_base*>(cld))
+              {
+                  qn->resetNode();
+              }
+          }
 
-  for(auto cld : root_objects)
-  {
-    qDebug() << "resetting" << cld << cld->node() << cld->path();
-    cld->resetNode();
-  }
+          for(auto obj : properties)
+          {
+              obj->resetNode();
+          }
+      }
   });
 }
 
@@ -137,7 +167,12 @@ void qml_device::loadPreset(const QUrl& file)
 }
 qml_singleton_device::qml_singleton_device()
 {
-  QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
+}
+
+qml_singleton_device::~qml_singleton_device()
+{
+
 }
 
 qml_singleton_device& qml_singleton_device::instance()

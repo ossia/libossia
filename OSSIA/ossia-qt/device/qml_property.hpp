@@ -23,7 +23,8 @@ public:
 
   void setTarget(const QQmlProperty &prop) override;
 
-  void resetNode(bool recursive = true) override;
+  void resetNode() override;
+  void setDevice(QObject* device) override;
 signals:
   void setValue_sig(const value&);
 

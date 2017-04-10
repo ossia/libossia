@@ -9,6 +9,8 @@ namespace ossia
 {
 namespace qt
 {
+class qml_node;
+class qml_property;
 class qml_node_base;
 class OSSIA_EXPORT qml_device :
         public QObject
@@ -30,9 +32,10 @@ public:
     int wsPort() const;
     int oscPort() const;
 
-    tsl::hopscotch_set<qml_node_base*> nodes;
-
     bool readPreset() const;
+
+    tsl::hopscotch_set<qml_node*> nodes;
+    tsl::hopscotch_set<qml_property*> properties;
 
 public slots:
     void setWSPort(int wsPort);
@@ -68,6 +71,7 @@ public:
 
 private:
   qml_singleton_device();
+  ~qml_singleton_device();
 };
 }
 }

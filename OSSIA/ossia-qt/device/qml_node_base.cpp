@@ -11,8 +11,7 @@ namespace qt
 {
 
 qml_node_base::qml_node_base(QQuickItem* parent):
-  QQuickItem{parent},
-  m_device{&qml_singleton_device::instance()}
+  QQuickItem{parent}
 {
 }
 

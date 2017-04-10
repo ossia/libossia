@@ -333,7 +333,6 @@ void oscquery_server_protocol::on_nodeRemoved(
 try {
   const auto mess = json_writer::path_removed(net::osc_address_string(n));
 
-  logger().info("on_nodeRemoved: {}", mess.GetString());
   lock_t lock(m_clientsMutex);
   for(auto& client : m_clients)
   {
