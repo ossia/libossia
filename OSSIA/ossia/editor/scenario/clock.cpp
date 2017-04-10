@@ -162,7 +162,7 @@ bool clock::tick()
   return true;
 }
 
-bool clock::tick(time_value usec)
+bool clock::tick(ossia::time_value usec)
 {
   bool paused = mPaused;
   bool running = mRunning;
@@ -214,7 +214,7 @@ time_value clock::getDuration() const
   return mDuration;
 }
 
-ossia::clock& clock::setDuration(time_value duration)
+ossia::clock& clock::setDuration(ossia::time_value duration)
 {
   do_setDuration(duration);
   return *this;
@@ -225,7 +225,7 @@ time_value clock::getOffset() const
   return mOffset;
 }
 
-ossia::clock& clock::setOffset(time_value offset)
+ossia::clock& clock::setOffset(ossia::time_value offset)
 {
   do_setOffset(offset);
   return *this;
@@ -236,7 +236,7 @@ time_value clock::getGranularity() const
   return mGranularity;
 }
 
-ossia::clock& clock::setGranularity(time_value granularity)
+ossia::clock& clock::setGranularity(ossia::time_value granularity)
 {
   mGranularity = granularity;
   return *this;
@@ -358,7 +358,7 @@ void clock::do_stop()
   }
 }
 
-void clock::do_setDuration(time_value duration)
+void clock::do_setDuration(ossia::time_value duration)
 {
   mDuration = duration;
 
@@ -368,7 +368,7 @@ void clock::do_setDuration(time_value duration)
     mPosition = Zero;
 }
 
-void clock::do_setOffset(time_value offset)
+void clock::do_setOffset(ossia::time_value offset)
 {
   mOffset = offset;
   mDate = mOffset;

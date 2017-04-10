@@ -44,7 +44,7 @@ public:
   void pause() override;
   void resume() override;
 
-  state_element offset(time_value) override;
+  state_element offset(ossia::time_value) override;
   state_element state() override;
 
   /*! get the pattern #time_constraint
@@ -61,7 +61,7 @@ public:
   const std::shared_ptr<time_node> getPatternEndTimeNode() const;
 
   private:
-  void PatternConstraintCallback(time_value, time_value, const ossia::state&);
+  void PatternConstraintCallback(ossia::time_value, time_value, const ossia::state&);
 
   void PatternStartEventCallback(time_event::Status);
 

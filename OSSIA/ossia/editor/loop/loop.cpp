@@ -26,7 +26,7 @@ loop::loop(
 
   // create a pattern TimeConstraint with all durations equal by default
   mPatternConstraint = time_constraint::create(
-      [=](time_value position, time_value date, const ossia::state& state) {
+      [=](ossia::time_value position, time_value date, const ossia::state& state) {
         return PatternConstraintCallback(position, date, state);
       },
       *mPatternStartNode->timeEvents()[0], *mPatternEndNode->timeEvents()[0],
@@ -42,7 +42,7 @@ loop::~loop()
   mPatternEndNode->cleanup();
 }
 
-state_element loop::offset(time_value offset)
+state_element loop::offset(ossia::time_value offset)
 {
   if (parent()->getRunning())
   {
@@ -131,7 +131,7 @@ state_element loop::state()
           if (prev_last_date == Infinite)
             mPatternConstraint->tick();
           else
-            mPatternConstraint->tick(time_value{(date - prev_last_date) * 1000.});
+            mPatternConstraint->tick(ossia::time_value{(date - prev_last_date) * 1000.});
         }
         else
         {

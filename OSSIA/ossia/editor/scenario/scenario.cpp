@@ -42,7 +42,7 @@ static void process_timenode_dates(time_node& t, DateMap& map)
   }
 }
 
-state_element scenario::offset(time_value offset)
+state_element scenario::offset(ossia::time_value offset)
 {
   auto& p = *parent();
   if (p.getRunning())
@@ -204,7 +204,7 @@ state_element scenario::state()
           if (prev_last_date == Infinite)
             cst.tick();
           else
-            cst.tick(time_value{(date - prev_last_date) * 1000.});
+            cst.tick(ossia::time_value{(date - prev_last_date) * 1000.});
         }
         else
         {

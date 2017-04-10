@@ -24,7 +24,7 @@ class ClockTest : public QObject
 
     bool display_frames = false;
 
-    void clock_callback_light(time_value position, time_value date, unsigned char droppedTicks)
+    void clock_callback_light(ossia::time_value position, time_value date, unsigned char droppedTicks)
     {
         steady_clock::time_point frame_start_date = steady_clock::now();
 
@@ -39,7 +39,7 @@ class ClockTest : public QObject
             m_last_frame_duration = duration_cast<microseconds>(steady_clock::now() - frame_start_date).count();
     }
 
-    void clock_callback_heavy(time_value position, time_value date, unsigned char droppedTicks)
+    void clock_callback_heavy(ossia::time_value position, time_value date, unsigned char droppedTicks)
     {
         steady_clock::time_point frame_start_date = steady_clock::now();
 
@@ -67,10 +67,10 @@ class ClockTest : public QObject
                          clock::ExecutionCallback callback,
                          bool display = false)
     {
-        make_clock_test(time_value(duration), time_value(granularity), time_value(offset), speed, callback, display);
+        make_clock_test(ossia::time_value(duration), time_value(granularity), time_value(offset), speed, callback, display);
     }
 
-    void make_clock_test(time_value duration,
+    void make_clock_test(ossia::time_value duration,
                          time_value granularity,
                          time_value offset,
                          float speed,

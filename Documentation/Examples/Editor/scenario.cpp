@@ -18,9 +18,9 @@ using namespace std;
 void local_play_callback(const value& v);
 void local_test_callback(const value& v);
 
-void main_constraint_callback(time_value position, time_value date, const state& element);
-void first_constraint_callback(time_value position, time_value date, const state& element);
-void second_constraint_callback(time_value position, time_value date, const state& element);
+void main_constraint_callback(ossia::time_value position, time_value date, const state& element);
+void first_constraint_callback(ossia::time_value position, time_value date, const state& element);
+void second_constraint_callback(ossia::time_value position, time_value date, const state& element);
 void event_callback(time_event::Status newStatus);
 
 shared_ptr<time_constraint> main_constraint;
@@ -284,20 +284,20 @@ void local_test_callback(const value& v)
     cout << endl;
 }
 
-void main_constraint_callback(time_value position, time_value date, const state& element)
+void main_constraint_callback(ossia::time_value position, time_value date, const state& element)
 {
     element.launch();
     cout << "Main Constraint : " << double(position) << ", " << double(date) << endl;
 }
 
-void first_constraint_callback(time_value position, time_value date, const state& element)
+void first_constraint_callback(ossia::time_value position, time_value date, const state& element)
 {
     cout << "First Constraint : " << double(position) << ", " << double(date) << endl;
 
     // don't launch element here as the element produced by the first time_constraint is handled by the main time_constraint
 }
 
-void second_constraint_callback(time_value position, time_value date, const state& element)
+void second_constraint_callback(ossia::time_value position, time_value date, const state& element)
 {
     cout << "Second Constraint : " << double(position) << ", " << double(date) << endl;
 

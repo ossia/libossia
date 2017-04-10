@@ -40,12 +40,12 @@ public:
   auto getSpeed() const { return mClock->getSpeed(); }
   auto getExecutionStatusCallback() const { return mClock->getExecutionStatusCallback(); }
   auto paused() const { return mClock->paused(); }
-  void setOffset(time_value g) const { mClock->setOffset(g); }
+  void setOffset(ossia::time_value g) const { mClock->setOffset(g); }
   void setDriveMode(clock::DriveMode m) const { mClock->setDriveMode(m); }
-  void setGranularity(time_value g) const { mClock->setGranularity(g); }
+  void setGranularity(ossia::time_value g) const { mClock->setGranularity(g); }
   void setSpeed(double g) const { mClock->setSpeed(g); }
   bool tick() { return mClock->tick(); }
-  bool tick(time_value usec) { return mClock->tick(usec); }
+  bool tick(ossia::time_value usec) { return mClock->tick(usec); }
   void setExecutionStatusCallback(clock::ExecutionStatusCallback c) { mClock->setExecutionStatusCallback(c); }
 
   clock& getClock() { return *mClock; }
@@ -54,7 +54,7 @@ public:
    \param const #TimeValue process clock date
    \param std::shared_ptr<#State> */
   using ExecutionCallback
-      = std::function<void(time_value, time_value, const state&)>;
+      = std::function<void(ossia::time_value, time_value, const state&)>;
 
   /*! constructor
    \details by default a #time_constraint has an infinite duration with no
@@ -102,7 +102,7 @@ public:
    \details don't call offset when the #time_constraint is running
    \param const #TimeValue offset date
    \return std::shared_ptr<#State> */
-  ossia::state offset(time_value);
+  ossia::state offset(ossia::time_value);
 
   /*! get a #State from the constraint depending on its #Clock date
    \details the returned #State is made of as many as sub States for each
@@ -127,7 +127,7 @@ public:
   /*! set the #time_constraint duration
    \param const #TimeValue& duration
    \return #time_constraint the constraint */
-  time_constraint& setDurationNominal(time_value);
+  time_constraint& setDurationNominal(ossia::time_value);
 
   /*! get the #time_constraint minimal duration
    \return const #TimeValue& minimal duration */
@@ -136,7 +136,7 @@ public:
   /*! set the #time_constraint minimal duration
    \param const #TimeValue& minimal duration
    \return #time_constraint the constraint */
-  time_constraint& setDurationMin(time_value);
+  time_constraint& setDurationMin(ossia::time_value);
 
   /*! get the #time_constraint maximal duration
    \return const #TimeValue& maximal duration */
@@ -145,7 +145,7 @@ public:
   /*! set the #time_constraint maximal duration
    \param const #TimeValue& maximal duration
    \return #time_constraint the constraint */
-  time_constraint& setDurationMax(time_value);
+  time_constraint& setDurationMax(ossia::time_value);
 
   /*! get the event from where the #time_constraint starts
    \return std::shared_ptr<#time_event> start event */

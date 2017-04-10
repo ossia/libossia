@@ -12,7 +12,7 @@ class AutomationTest : public QObject
 
   std::vector<value> m_address_values;
 
-  void constraint_callback(time_value position, time_value date, const state& element)
+  void constraint_callback(ossia::time_value position, time_value date, const state& element)
   {
     element.launch();
   }

@@ -30,7 +30,7 @@ using namespace ossia;
 
 using namespace std;
 
-void constraint_callback(time_value position, time_value date, std::shared_ptr<StateElement> element)
+void constraint_callback(ossia::time_value position, time_value date, std::shared_ptr<StateElement> element)
 {
     element->launch();
 }

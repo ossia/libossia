@@ -99,7 +99,7 @@ void time_constraint::stop()
   mClock->mElapsedTime = 0;
 }
 
-ossia::state time_constraint::offset(time_value date)
+ossia::state time_constraint::offset(ossia::time_value date)
 {
   if (mClock->getRunning())
   {
@@ -181,7 +181,7 @@ const time_value& time_constraint::getDurationNominal() const
 }
 
 time_constraint&
-time_constraint::setDurationNominal(time_value durationNominal)
+time_constraint::setDurationNominal(ossia::time_value durationNominal)
 {
   mDurationNominal = durationNominal;
 
@@ -201,7 +201,7 @@ const time_value& time_constraint::getDurationMin() const
   return mDurationMin;
 }
 
-time_constraint& time_constraint::setDurationMin(time_value durationMin)
+time_constraint& time_constraint::setDurationMin(ossia::time_value durationMin)
 {
   mDurationMin = durationMin;
 
@@ -216,7 +216,7 @@ const time_value& time_constraint::getDurationMax() const
   return mDurationMax;
 }
 
-time_constraint& time_constraint::setDurationMax(time_value durationMax)
+time_constraint& time_constraint::setDurationMax(ossia::time_value durationMax)
 {
   mDurationMax = durationMax;
 
@@ -264,13 +264,13 @@ clock::ExecutionCallback time_constraint::make_callback()
 {
   if(mCallback)
   {
-    return [this] (time_value t, time_value t2, unsigned char c) {
+    return [this] (ossia::time_value t, time_value t2, unsigned char c) {
       mCallback(t, t2, state_impl());
     };
   }
   else
   {
-    return [this] (time_value t, time_value t2, unsigned char c) { };
+    return [this] (ossia::time_value t, time_value t2, unsigned char c) { };
   }
 }
 
@@ -279,13 +279,13 @@ clock::ExecutionCallback time_constraint::make_stateless_callback()
 {
   if(mCallback)
   {
-    return [this] (time_value t, time_value t2, unsigned char c) {
+    return [this] (ossia::time_value t, time_value t2, unsigned char c) {
       mCallback(t, t2, {});
     };
   }
   else
   {
-    return [this] (time_value t, time_value t2, unsigned char c) { };
+    return [this] (ossia::time_value t, time_value t2, unsigned char c) { };
   }
 }
 

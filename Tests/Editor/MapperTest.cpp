@@ -19,7 +19,7 @@ class MapperTest : public QObject
   address_base* m_int_address{};
   std::vector<value> m_int_address_values;
 
-  void constraint_callback(time_value position, time_value date, const state& st)
+  void constraint_callback(ossia::time_value position, time_value date, const state& st)
   {
     st.launch();
   }

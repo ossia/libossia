@@ -40,7 +40,7 @@ struct OSSIA_EXPORT time_value
     return *this;
   }
 
-  time_value& operator+=(time_value t) noexcept
+  time_value& operator+=(ossia::time_value t) noexcept
   {
     if (isInfinite() || t.isInfinite())
       impl = 0.;
@@ -61,7 +61,7 @@ struct OSSIA_EXPORT time_value
     return *this;
   }
 
-  time_value& operator-=(time_value t) noexcept
+  time_value& operator-=(ossia::time_value t) noexcept
   {
     if (isInfinite() || t.isInfinite())
       impl = 0.;
@@ -77,7 +77,7 @@ struct OSSIA_EXPORT time_value
     return time_value(impl + d);
   }
 
-  time_value operator+(time_value t) const noexcept
+  time_value operator+(ossia::time_value t) const noexcept
   {
     if (isInfinite() || t.isInfinite())
     {
@@ -93,7 +93,7 @@ struct OSSIA_EXPORT time_value
     return time_value(impl - d);
   }
 
-  time_value operator-(time_value t) const noexcept
+  time_value operator-(ossia::time_value t) const noexcept
   {
     if (isInfinite() || t.isInfinite())
     {
@@ -136,8 +136,8 @@ struct OSSIA_EXPORT time_value
     return std::isinf(impl);
   }
 
-  bool operator==(time_value rhs) const noexcept { return impl == rhs.impl; }
-  bool operator!=(time_value rhs) const noexcept { return impl != rhs.impl; }
+  bool operator==(ossia::time_value rhs) const noexcept { return impl == rhs.impl; }
+  bool operator!=(ossia::time_value rhs) const noexcept { return impl != rhs.impl; }
 
   double impl;
 };

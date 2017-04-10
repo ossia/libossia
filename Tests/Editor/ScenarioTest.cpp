@@ -13,17 +13,17 @@ class ScenarioTest : public QObject
     std::shared_ptr<time_constraint> main_constraint;
     std::vector<time_value> events_date;
 
-    void main_constraint_callback(time_value position, time_value date, const state& element)
+    void main_constraint_callback(ossia::time_value position, time_value date, const state& element)
     {
         std::cout << "Main Constraint : " << double(position) << ", " << double(date) << std::endl;
     }
 
-    void first_constraint_callback(time_value position, time_value date, const state& element)
+    void first_constraint_callback(ossia::time_value position, time_value date, const state& element)
     {
         std::cout << "First Constraint : " << double(position) << ", " << double(date) << std::endl;
     }
 
-    void second_constraint_callback(time_value position, time_value date, const state& element)
+    void second_constraint_callback(ossia::time_value position, time_value date, const state& element)
     {
         std::cout << "Second Constraint : " << double(position) << ", " << double(date) << std::endl;
     }

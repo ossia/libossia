@@ -26,7 +26,7 @@ public:
    \details don't call offset when the parent #time_constraint is running
    \param const #time_value offset date
    \return state_element */
-  virtual state_element offset(time_value) = 0;
+  virtual state_element offset(ossia::time_value) = 0;
 
   /*! get a #StateElement from the process depending on its parent
    #time_constraint date

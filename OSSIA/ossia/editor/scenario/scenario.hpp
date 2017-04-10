@@ -20,7 +20,7 @@ class OSSIA_EXPORT scenario final :
 
     ~scenario();
 
-    state_element offset(time_value) override;
+    state_element offset(ossia::time_value) override;
 
     state_element state() override;
 

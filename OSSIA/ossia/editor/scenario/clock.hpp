@@ -27,7 +27,7 @@ public:
    \param clock date
    \param dropped ticks */
   using ExecutionCallback
-      = std::function<void(time_value, time_value, unsigned char)>;
+      = std::function<void(ossia::time_value, time_value, unsigned char)>;
 
   enum ClockExecutionStatus
   {
@@ -84,7 +84,7 @@ public:
    * \param usec Number of microseconds to move the clock
    * \return bool true if the clock ticks
    */
-  bool tick(time_value usec);
+  bool tick(ossia::time_value usec);
 
   /*! get the duration of the clock
    \return const #TimeValue duration */
@@ -93,7 +93,7 @@ public:
   /*! set the duration of the clock execution
    \param const #TimeValue duration
    \return #Clock the clock */
-  clock& setDuration(time_value);
+  clock& setDuration(ossia::time_value);
 
   /*! get the offset of the clock
    \return const #TimeValue offset */
@@ -102,7 +102,7 @@ public:
   /** set the offset of the clock
    \param const #TimeValue offset
    \return #Clock the clock */
-  clock& setOffset(time_value);
+  clock& setOffset(ossia::time_value);
 
   /*! get the granularity of the clock
    \return const #TimeValue granularity */
@@ -111,7 +111,7 @@ public:
   /*! set the granularity of the clock execution
    \param const #TimeValue granularity
    \return #Clock the clock */
-  clock& setGranularity(time_value);
+  clock& setGranularity(ossia::time_value);
 
   /*! get the speed of the clock
    \return const #TimeValue speed */
@@ -155,10 +155,10 @@ public:
   void do_stop();
 
   /*! to allow TimeConstraint to override setDuration accessor */
-  void do_setDuration(time_value);
+  void do_setDuration(ossia::time_value);
 
   /*! to allow TimeConstraint to override setOffset accessor */
-  void do_setOffset(time_value);
+  void do_setOffset(ossia::time_value);
 
   /*! to avoid dead lock in EXTERNAL drive mode if a TimeProcess wants to end
    * its ParentTimeConstraint's clock */
