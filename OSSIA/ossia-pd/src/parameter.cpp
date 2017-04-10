@@ -24,9 +24,11 @@ bool t_param :: register_node(ossia::net::node_base* node){
 }
 
 static void push_default_value(t_param* x){
-    if (x->x_default.a_type != A_NULL){
-        t_obj_base::obj_push(x,gensym("set"),1,&x->x_default);
+    int i = 0;
+    for (; i<x->x_type_size ; i++){
+        if (x->x_default[i].a_type == A_NULL) break;
     }
+    t_obj_base::obj_push(x,nullptr,i,x->x_default);
 }
 
 bool t_param :: do_registration(ossia::net::node_base* node){
@@ -59,16 +61,21 @@ bool t_param :: do_registration(ossia::net::node_base* node){
         localAddress = x_node->createAddress(ossia::val_type::INT);
     } else if (std::string(x_type->s_name) == "vec2f") {
         localAddress = x_node->createAddress(ossia::val_type::VEC2F);
+        x_type_size = 2;
     } else if (std::string(x_type->s_name) == "vec3f") {
         localAddress = x_node->createAddress(ossia::val_type::VEC3F);
+        x_type_size = 3;
     } else if (std::string(x_type->s_name) == "vec4f") {
         localAddress = x_node->createAddress(ossia::val_type::VEC4F);
-    } else if (std::string(x_type->s_name) == "Impulse") {
+        x_type_size = 4;
+    } else if (std::string(x_type->s_name) == "impulse") {
         localAddress = x_node->createAddress(ossia::val_type::IMPULSE);
+        x_type_size = 0;
     } else if (std::string(x_type->s_name) == "bool") {
         localAddress = x_node->createAddress(ossia::val_type::BOOL);
     } else if (std::string(x_type->s_name) == "tuple") {
         localAddress = x_node->createAddress(ossia::val_type::TUPLE);
+        x_type_size = 64;
     } else if (std::string(x_type->s_name) == "char") {
         localAddress = x_node->createAddress(ossia::val_type::CHAR);
     }
@@ -146,7 +153,8 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
         x->x_access_mode = gensym("RW");
         x->x_bounding_mode = gensym("FREE");
         x->x_unit = gensym("");
-        x->x_type = gensym("float");
+        x->x_type = gensym("tuple");
+        x->x_type_size = 1;
         x->x_tags = gensym("");
         x->x_description = gensym("");
 
@@ -162,10 +170,6 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
         }
 
         ebox_attrprocess_viabinbuf(x, d);
-
-        // if we only pass a default value without setting parameter type,
-        // the type is deduced from the default value
-        if(x->x_default.a_type == A_SYMBOL) x->x_type = gensym("symbol");
 
         obj_register<t_param>(x);
     }
@@ -189,14 +193,14 @@ extern "C" void setup_ossia0x2eparam(void)
     {
         eclass_addmethod(c, (method) t_obj_base::obj_push, "anything", A_GIMME, 0);
         eclass_addmethod(c, (method) t_obj_base::obj_bang, "bang",     A_NULL, 0);
-        eclass_addmethod(c, (method) obj_dump<t_param>,        "dump",       A_NULL, 0);
+        eclass_addmethod(c, (method) obj_dump<t_param>,    "dump",       A_NULL, 0);
 
         CLASS_ATTR_SYMBOL     (c, "type",            0, t_param, x_type);
         CLASS_ATTR_SYMBOL     (c, "unit",            0, t_param, x_unit);
         CLASS_ATTR_SYMBOL     (c, "bounding_mode",   0, t_param, x_bounding_mode);
         CLASS_ATTR_SYMBOL     (c, "access_mode",     0, t_param, x_access_mode);
 
-        CLASS_ATTR_ATOM       (c, "default",         0, t_param, x_default);
+        CLASS_ATTR_ATOM_ARRAY (c, "default",         0, t_param, x_default, 64);
         CLASS_ATTR_FLOAT_ARRAY(c, "range",           0, t_param, x_range, 2);
         CLASS_ATTR_FLOAT      (c, "min",             0, t_param, x_range);
         CLASS_ATTR_FLOAT      (c, "repetition_filter", 0, t_param, x_repetition_filter);

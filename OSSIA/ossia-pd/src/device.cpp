@@ -159,7 +159,7 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
 
             try{
                 proto.exposeTo(std::make_unique<ossia::oscquery::oscquery_server_protocol>(settings.oscport, settings.wsport));
-            } catch (const std::exception&  e) {
+            } catch (const std::exception& e) {
                 pd_error(x,"%s",e.what());
                 return;
             }

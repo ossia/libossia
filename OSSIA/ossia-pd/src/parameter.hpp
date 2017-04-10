@@ -13,7 +13,8 @@ struct t_param : t_obj_base
     bool unregister();
 
     t_symbol* x_type;
-    t_atom x_default;
+    int x_type_size;
+    t_atom x_default[64];
     // TODO use optional for range
     float x_range[2];
     t_symbol* x_bounding_mode;
