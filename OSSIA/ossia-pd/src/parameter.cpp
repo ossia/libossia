@@ -28,7 +28,7 @@ static void push_default_value(t_param* x){
     for (; i<x->x_type_size ; i++){
         if (x->x_default[i].a_type == A_NULL) break;
     }
-    t_obj_base::obj_push(x,nullptr,i,x->x_default);
+    if (i>0) t_obj_base::obj_push(x,nullptr,i,x->x_default);
 }
 
 bool t_param :: do_registration(ossia::net::node_base* node){

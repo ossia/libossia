@@ -21,9 +21,6 @@ void t_obj_base::obj_push(t_obj_base *x, t_symbol* , int argc, t_atom* argv){
               x->x_node->getAddress()->pushValue(std::string(atom_getsymbol(argv)->s_name));
           else if (argv->a_type == A_FLOAT)
               x->x_node->getAddress()->pushValue(atom_getfloat(argv));
-      } if (argc==0) {
-          // disable default value for impulse
-          // x->x_node->getAddress()->pushValue(ossia::impulse{});
       } else {
           std::vector<ossia::value> list;
           for (; argc > 0 ; argc--, argv++){
