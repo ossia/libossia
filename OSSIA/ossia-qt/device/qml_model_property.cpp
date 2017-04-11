@@ -1,6 +1,7 @@
 #include "qml_model_property.hpp"
 #include <ossia-qt/device/qml_device.hpp>
 
+#include <boost/algorithm/string.hpp>
 namespace ossia
 {
 namespace qt
@@ -15,15 +16,23 @@ qml_model_property::qml_model_property(QObject* parent):
 
 qml_model_property::~qml_model_property()
 {
-
+  if(m_device)
+  {
+    m_device->models.erase(this);
+  }
 }
 
 void qml_model_property::setCount(int count)
 {
   if (m_count == count)
+  {
     return;
+  }
 
+  beginResetModel();
   m_count = count;
+  endResetModel();
+
   emit countChanged(count);
 }
 
@@ -38,15 +47,23 @@ void qml_model_property::setDevice(QObject *device)
     if(olddev)
     {
       olddev->models.erase(this);
+      disconnect(olddev, &QObject::destroyed, this, &qml_model_property::on_device_deleted);
     }
 
     if(newdev)
     {
-      newdev->models.insert(this);
+      newdev->models.insert({this, this});
+      connect(newdev, &QObject::destroyed, this, &qml_model_property::on_device_deleted);
     }
 
     emit deviceChanged(device);
   }
+}
+
+void qml_model_property::on_device_deleted(QObject*)
+{
+  m_device = nullptr;
+  m_parentNode = nullptr;
 }
 
 void qml_model_property::setNode(QString node)
@@ -115,6 +132,31 @@ qml_node_base* qml_model_property::parentNode() const
 QObject* qml_model_property::device() const
 {
   return m_device;
+}
+static bool is_instance(const std::string& root, const std::string& child)
+{
+  return boost::starts_with(child, root);
+}
+
+void qml_model_property::updateCount()
+{
+  int newCount = 0;
+
+  if(m_parentNode && !m_node.isEmpty())
+  {
+   if(auto on = m_parentNode->ossiaNode())
+   {
+     const std::string& instance_name = m_node.toStdString();
+     for(auto& cld : on->children())
+     {
+       const auto& name = cld->getName();
+       if(is_instance(instance_name, name))
+         newCount++;
+     }
+   }
+  }
+
+  setCount(newCount);
 }
 
 }

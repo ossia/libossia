@@ -25,6 +25,8 @@ public:
 
   void resetNode() override;
   void setDevice(QObject* device) override;
+
+  void updateQtValue();
 signals:
   void setValue_sig(const value&);
 
@@ -33,7 +35,7 @@ public slots:
   void setValue_slot(const value&);
 
 private:
-  void setupAddress();
+  void setupAddress(bool reading);
   void on_node_deleted(const ossia::net::node_base&);
 
   QQmlProperty m_targetProperty;

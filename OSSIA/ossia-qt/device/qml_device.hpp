@@ -3,8 +3,8 @@
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-
-#include <hopscotch_set.h>
+#include <QPointer>
+#include <hopscotch_map.h>
 namespace ossia
 {
 namespace qt
@@ -35,9 +35,9 @@ public:
 
     bool readPreset() const;
 
-    tsl::hopscotch_set<qml_node*> nodes;
-    tsl::hopscotch_set<qml_property*> properties;
-    tsl::hopscotch_set<qml_model_property*> models;
+    tsl::hopscotch_map<qml_node*, QPointer<qml_node>> nodes;
+    tsl::hopscotch_map<qml_property*, QPointer<qml_property>> properties;
+    tsl::hopscotch_map<qml_model_property*, QPointer<qml_model_property>> models;
 
 public slots:
     void setWSPort(int wsPort);
@@ -48,7 +48,7 @@ public slots:
     void setReadPreset(bool readPreset);
 
     void savePreset(const QUrl& file);
-    void loadPreset(const QUrl& file);
+    void loadPreset(QObject* root, const QUrl& file);
     void saveDevice(const QUrl& file);
 
 signals:
@@ -58,6 +58,8 @@ signals:
     void readPresetChanged(bool readPreset);
 
 private:
+    void clearEmptyElements();
+
     QString m_localName{"newDevice"};
     int m_wsPort{5678};
     int m_oscPort{9998};
@@ -65,6 +67,7 @@ private:
     ossia::net::generic_device m_localDevice;
     bool m_readPreset{false};
 };
+
 
 class OSSIA_EXPORT qml_singleton_device : public qml_device
 {

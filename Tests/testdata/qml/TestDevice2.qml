@@ -13,11 +13,16 @@ ApplicationWindow {
     Item {
         id: root
         anchors.fill: parent
-
+        Ossia.Node { node: "/"; id: rootnode }
         Column
         {
             Repeater {
-                model: Ossia.Instances { node: "leText"; count: 5 }
+                model: Ossia.Instances {
+                    node: "leText";
+                    count: 5;
+                    parentNode: rootnode;
+                    onCountChanged: console.log("count: " + count)
+                }
                 delegate: Text {
                     font.pointSize: 20
                     color: Qt.hsla(0.8 / (1+index), 1/ (1+index), 0.7 , 1)
@@ -26,17 +31,21 @@ ApplicationWindow {
                     Ossia.Node { node: "leText." + index }
                     Ossia.Property on text { }
                     Ossia.Property on font.pointSize { }
-                    Ossia.Property on color { }
+                    //Ossia.Property on color { }
+
+                    Component.onCompleted: console.log("creating text")
+                    Component.onDestruction: console.log("destroying text")
                 }
             }
         }
-
     }
     Component.onCompleted:
     {
-        Ossia.SingleDevice.rescan(root)
-        Ossia.SingleDevice.savePreset("file:///tmp/preset.json")
-        //Ossia.SingleDevice.setReadPreset(true);
-        //Ossia.SingleDevice.loadPreset("file:///tmp/preset.json")
+        //Ossia.SingleDevice.rescan(root)
+        //Ossia.SingleDevice.savePreset("file:///tmp/preset.json")
+        console.log("loading")
+        Ossia.SingleDevice.setReadPreset(true);
+        Ossia.SingleDevice.loadPreset(root, "file:///tmp/preset.json")
+        console.log("loaded")
     }
 }

@@ -33,6 +33,7 @@ public:
   qml_node_base* parentNode() const;
   QObject* device() const;
 
+  void updateCount();
 signals:
   void setValue_sig(const value&);
   void countChanged(int count);
@@ -47,6 +48,7 @@ public slots:
   void setDevice(QObject* device);
 
 private:
+  void on_device_deleted(QObject*);
   void on_node_deleted(const ossia::net::node_base&);
 
   QString m_node;

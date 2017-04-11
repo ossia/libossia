@@ -12,6 +12,7 @@ namespace qt
 {
 void qml_property::resetNode()
 {
+  const bool reading = m_device ? m_device->readPreset() : false;
   m_node.clear();
   if(m_ossia_node)
   {
@@ -21,7 +22,8 @@ void qml_property::resetNode()
       auto node = m_ossia_node;
       m_address = nullptr;
       m_ossia_node = nullptr;
-      par->removeChild(*node);
+      if(!reading)
+        par->removeChild(*node);
     }
   }
 
@@ -50,7 +52,7 @@ void qml_property::resetNode()
         ? findClosestParent(m_targetProperty.object(), m_device->device().getRootNode())
         : m_device->device().getRootNode();
 
-    if(m_device->readPreset())
+    if(reading)
     {
       m_ossia_node = ossia::net::find_node(parent, node_name);
     }
@@ -63,11 +65,12 @@ void qml_property::resetNode()
     {
       m_ossia_node->aboutToBeDeleted.connect<qml_property, &qml_property::on_node_deleted>(this);
       m_node = QString::fromStdString(m_ossia_node->getName());
+      m_address = m_ossia_node->getAddress();
 
       setPath(
             QString::fromStdString(
               ossia::net::address_string_from_node(*m_ossia_node)));
-      setupAddress();
+      setupAddress(reading);
       return;
     } // else, we go through the reset:
   }
@@ -90,6 +93,8 @@ qml_property::qml_property(QQuickItem *parent)
 
 qml_property::~qml_property()
 {
+  qDebug() << "removing property";
+  if(m_device) m_device->properties.erase(this);
   m_address = nullptr;
 }
 
@@ -123,9 +128,14 @@ void qml_property::setDevice(QObject *device)
 
     if(newdev)
     {
-      newdev->properties.insert(this);
+      newdev->properties.insert({this, this});
     }
   }
+}
+
+void qml_property::updateQtValue()
+{
+  setValue_sig(m_address->cloneValue());
 }
 
 void qml_property::setValue_slot(const value& v)
@@ -136,8 +146,20 @@ void qml_property::setValue_slot(const value& v)
     m_targetProperty.write(next);
 }
 
-void qml_property::setupAddress()
+void qml_property::setupAddress(bool reading)
 {
+  if(reading)
+  {
+    if(m_address)
+    {
+      qDebug() << "value:"
+               << ossia::net::address_string_from_node(*m_ossia_node).c_str()
+               << ossia::value_to_pretty_string(m_address->cloneValue()).c_str();
+      updateQtValue();
+    }
+    return;
+  }
+
   m_address = nullptr;
   if(m_ossia_node)
   {

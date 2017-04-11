@@ -6,7 +6,9 @@
 #include <QDebug>
 #include <ossia-qt/qml_context.hpp>
 #include <ossia-qt/device/qml_property.hpp>
+#include <ossia-qt/device/qml_model_property.hpp>
 #include <ossia/network/common/debug.hpp>
+#include <QCoreApplication>
 namespace ossia
 {
 namespace qt
@@ -112,9 +114,18 @@ void qml_device::rescan(QObject* root)
         }
       }
 
-      for(auto obj : properties)
       {
-        obj->resetNode();
+        auto props = properties;
+        for(auto obj : props)
+        {
+          if(obj.second) obj.first->resetNode();
+          else properties.erase(obj.first);
+        }
+      }
+
+      for(auto obj : models)
+      {
+        qDebug() << ((QObject*)obj.first)->parent();
       }
     }
 }
@@ -151,29 +162,90 @@ void qml_device::savePreset(const QUrl& file)
 
         auto str = ossia::presets::write_json(preset);
         f.write(str.data(), str.size());
+        return;
       }
     }
   } catch(...) {
-    ossia::logger().error("Could not save preset file: {}", file.toLocalFile().toStdString());
+
   }
+  ossia::logger().error("Could not save preset file: {}", file.toLocalFile().toStdString());
 }
 
-void qml_device::loadPreset(const QUrl& file)
+void qml_device::clearEmptyElements()
 {
+  for(auto it = properties.begin(); it != properties.end();)
+    if(it->second) ++it; else it = properties.erase(it);
+
+  for(auto it = models.begin(); it != models.end();)
+    if(it->second) ++it; else it = models.erase(it);
+
+}
+
+void qml_device::loadPreset(QObject* root, const QUrl& file)
+{
+  m_readPreset = false;
+  rescan(root);
   try {
     if(file.isLocalFile())
     {
       QFile f(file.toLocalFile());
       if(f.open(QIODevice::ReadOnly))
       {
+        qDebug("======= before =========");
+{
+        fmt::MemoryWriter w;
+        ossia::net::debug_recursively(w, m_localDevice.getRootNode());
+        std::cerr << w.str();
+ }
+        // First reset all item models since they will be in the preset
+        {
+          auto model_list = models;
+          for(auto model : model_list)
+          {
+            if(model.second) model.first->setCount(0);
+            else models.erase(model.first);
+          }
+        }
+        m_readPreset = true;
+
+        // Then load the preset
+
         auto kv = ossia::presets::read_json(f.readAll().toStdString());
-        ossia::devices::apply_preset(device(), kv);
+        ossia::devices::apply_preset(device(), kv, ossia::devices::keep_arch_off);
+
+        qDebug("======= after =========");
+
+        fmt::MemoryWriter w;
+        ossia::net::debug_recursively(w, m_localDevice.getRootNode());
+        std::cerr << w.str();
+
+        // Clear empty elements that may have been removed
+        clearEmptyElements();
+
+        // Now as long as we are creating new models, update their count
+        std::size_t cur_model_size = models.size();
+        std::size_t prev_model_size;
+        do {
+          prev_model_size = cur_model_size;
+          auto mlist = models;
+          for(auto model : mlist)
+          {
+            if(model.second) model.first->updateCount();
+            QCoreApplication::processEvents();
+          }
+          cur_model_size = models.size();
+        } while(cur_model_size != prev_model_size);
+
+        clearEmptyElements();
+
+        // Finallt do a push of all properties registered
+        rescan(root);
         return;
       }
     }
-  } catch(...) {
-    ossia::logger().error("Could not load preset file: {}", file.toLocalFile().toStdString());
-  }
+  } catch(std::exception& e) { ossia::logger().error("{}", e.what());
+  } catch(...) { }
+  ossia::logger().error("Could not load preset file: {}", file.toLocalFile().toStdString());
 }
 
 void qml_device::saveDevice(const QUrl& file)
@@ -187,12 +259,13 @@ void qml_device::saveDevice(const QUrl& file)
         {
           auto d = ossia::devices::write_json(device());
           f.write(d.data(), d.size());
+          return;
         }
       }
     }
   } catch(...) {
-    ossia::logger().error("Could not save device file: {}", file.toLocalFile().toStdString());
   }
+  ossia::logger().error("Could not save device file: {}", file.toLocalFile().toStdString());
 }
 
 qml_singleton_device::qml_singleton_device()

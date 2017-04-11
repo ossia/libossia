@@ -4,15 +4,17 @@
 #include <QVariantMap>
 #include <QQuickItem>
 #include <boost/any.hpp>
-
+#include <nano_observer.hpp>
 namespace ossia
 {
 namespace net { class node_base; }
 namespace qt
 {
 class qml_device;
-class qml_node_base :
-    public QQuickItem {
+class qml_node_base
+  : public QQuickItem
+  , public Nano::Observer
+{
   Q_OBJECT
   Q_PROPERTY(QString node READ node WRITE setNode NOTIFY nodeChanged)
   Q_PROPERTY(QString path READ path NOTIFY pathChanged)
