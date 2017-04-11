@@ -110,25 +110,22 @@ void qml_property::qtVariantChanged()
 
 void qml_property::setDevice(QObject *device)
 {
-    auto olddev = m_device;
-    auto newdev = qobject_cast<qml_device*>(device);
-    if(olddev != newdev)
+  auto olddev = m_device;
+  auto newdev = qobject_cast<qml_device*>(device);
+  if(olddev != newdev)
+  {
+    qml_node_base::setDevice(device);
+
+    if(olddev)
     {
-        qml_node_base::setDevice(device);
-
-        if(olddev)
-        {
-            qDebug("Remove Old");
-            olddev->properties.erase(this);
-        }
-
-        if(newdev)
-        {
-            qDebug("Add New");
-            newdev->properties.insert(this);
-        }
+      olddev->properties.erase(this);
     }
 
+    if(newdev)
+    {
+      newdev->properties.insert(this);
+    }
+  }
 }
 
 void qml_property::setValue_slot(const value& v)

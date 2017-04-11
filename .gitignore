@@ -1,3 +1,4 @@
+*.qmlc
 CMake/common
 *.pd_*
 *.dll

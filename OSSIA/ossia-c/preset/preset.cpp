@@ -22,6 +22,7 @@
 
 #include <ossia/ossia.hpp>
 #include <ossia-c/ossia/ossia_utils.hpp>
+#include <ossia/network/oscquery/detail/value_to_json.hpp>
 
 struct ossia_preset
 {
@@ -375,43 +376,11 @@ ossia::presets::preset ossia::presets::read_json(const std::string &str) {
   }
 }
 
-rapidjson::Value ossia_to_json_value(const ossia::value& val, rapidjson::Document::AllocatorType& docallocator) {
-  rapidjson::Value jsonvalue;
-  ossia::val_type tvalue = val.getType();
 
-  switch (tvalue) {
-    case ossia::val_type::BOOL: {
-      auto typedval = val.get<bool>();
-      jsonvalue.SetBool(typedval);
-    }
-      break;
-    case ossia::val_type::INT: {
-      auto typedval = val.get<int32_t>();
-      jsonvalue.SetInt(typedval);
-    }
-      break;
-    case ossia::val_type::FLOAT: {
-      auto typedval = val.get<float>();
-      jsonvalue.SetDouble(typedval);
-    }
-      break;
-    case ossia::val_type::CHAR: {
-      auto typedval = val.get<char>();
-      char buff[2];
-      std::sprintf(buff, "%c", (char)typedval);
-      buff[1] = 0;
-      jsonvalue.SetString(buff, docallocator);
-    }
-      break;
-    case ossia::val_type::STRING: {
-      auto typedval = val.get<std::string>();
-      jsonvalue.SetString(typedval, docallocator);
-    }
-      break;
-    default:
-      break;
-  }
-  return jsonvalue;
+rapidjson::Value ossia_to_json_value(
+    const ossia::value& val,
+    rapidjson::Document::AllocatorType& docallocator) {
+  return val.apply(ossia::oscquery::detail::value_to_json_value{docallocator});
 }
 
 void insert(

@@ -11,6 +11,7 @@ namespace qt
 {
 class qml_node;
 class qml_property;
+class qml_model_property;
 class qml_node_base;
 class OSSIA_EXPORT qml_device :
         public QObject
@@ -36,6 +37,7 @@ public:
 
     tsl::hopscotch_set<qml_node*> nodes;
     tsl::hopscotch_set<qml_property*> properties;
+    tsl::hopscotch_set<qml_model_property*> models;
 
 public slots:
     void setWSPort(int wsPort);
@@ -47,6 +49,7 @@ public slots:
 
     void savePreset(const QUrl& file);
     void loadPreset(const QUrl& file);
+    void saveDevice(const QUrl& file);
 
 signals:
     void WSPortChanged(int wsPort);

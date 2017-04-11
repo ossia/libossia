@@ -56,3 +56,4 @@ OSSIA_EXPORT bool operator!=(const Destination&, const ossia::net::address_base&
 
 OSSIA_EXPORT std::string to_pretty_string(const Destination& d);
 }
+

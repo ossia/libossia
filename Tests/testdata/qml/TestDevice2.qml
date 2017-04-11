@@ -10,26 +10,33 @@ ApplicationWindow {
     height: 480
     title: qsTr("Hello World")
 
-    Ossia.Property on width {}
+    Item {
+        id: root
+        anchors.fill: parent
 
-    Row
-    {
-        Repeater {
-            model: Ossia.Instances { node: "leText"; count: 5 }
-            delegate: Text {
-                Ossia.Node { node: "leText." + index }
-                Ossia.Property on text { }
-                Ossia.Property on font.pointSize { }
-                Ossia.Property on color { }
-                text: "" + index
+        Column
+        {
+            Repeater {
+                model: Ossia.Instances { node: "leText"; count: 5 }
+                delegate: Text {
+                    font.pointSize: 20
+                    color: Qt.hsla(0.8 / (1+index), 1/ (1+index), 0.7 , 1)
+                    text: "Index: " + index
+
+                    Ossia.Node { node: "leText." + index }
+                    Ossia.Property on text { }
+                    Ossia.Property on font.pointSize { }
+                    Ossia.Property on color { }
+                }
             }
         }
-    }
 
+    }
     Component.onCompleted:
     {
-    //    Ossia.savePreset(OssiaSingleDevice, "file:///tmp/preset.json")
-        Ossia.SingleDevice.setReadPreset(true);
-        Ossia.SingleDevice.loadPreset("file:///tmp/preset.json")
+        Ossia.SingleDevice.rescan(root)
+        Ossia.SingleDevice.savePreset("file:///tmp/preset.json")
+        //Ossia.SingleDevice.setReadPreset(true);
+        //Ossia.SingleDevice.loadPreset("file:///tmp/preset.json")
     }
 }

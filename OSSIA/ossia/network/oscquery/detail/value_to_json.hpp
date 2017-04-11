@@ -58,6 +58,49 @@ struct value_to_json
   }
 };
 
+struct value_to_json_value
+{
+  rapidjson::Document::AllocatorType& allocator;
+  rapidjson::Value operator()(impulse) const { return rapidjson::Value{}; }
+  rapidjson::Value operator()(int v) const { return rapidjson::Value{v}; }
+  rapidjson::Value operator()(float v) const { return rapidjson::Value{v}; }
+  rapidjson::Value operator()(bool v) const { return rapidjson::Value{v}; }
+  rapidjson::Value operator()(char v) const { return rapidjson::Value{&v, 1}; } // 1-char string
+  rapidjson::Value operator()(const std::string& v) const
+  { return rapidjson::Value{v,allocator}; }
+
+  template<std::size_t N>
+  rapidjson::Value operator()(const std::array<float, N>& vec) const {
+    rapidjson::Value v(rapidjson::kArrayType);
+    for(std::size_t i = 0; i < N; i++)
+    {
+      v.PushBack(vec[i], allocator);
+    }
+    return v;
+  }
+
+  rapidjson::Value operator()(const std::vector<ossia::value>& vec) const
+  {
+    rapidjson::Value v(rapidjson::kArrayType);
+    for(std::size_t i = 0; i < vec.size(); i++)
+    {
+      v.PushBack(vec[i].apply(*this), allocator);
+    }
+    return v;
+  }
+
+  rapidjson::Value operator()(const ossia::Destination& d) const
+  {
+    throw;
+  }
+
+  rapidjson::Value operator()() const
+  {
+    throw;
+  }
+
+};
+
 struct json_to_value
 {
   const rapidjson::Value& val;

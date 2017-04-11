@@ -81,44 +81,42 @@ void qml_device::setOSCPort(int remotePort)
 
 std::vector<QQuickItem*> items(QQuickItem* root)
 {
-    std::vector<QQuickItem*> items;
-    items.reserve(4096);
-    for(auto cld : root->childItems())
-    {
-        items.push_back(cld);
-    }
+  std::vector<QQuickItem*> items;
+  items.reserve(4096);
+  for(auto cld : root->childItems())
+  {
+    items.push_back(cld);
+  }
 
-    std::size_t cur_pos = 0U;
-    while(cur_pos < items.size())
-    {
-        for(auto cld : items[cur_pos]->childItems())
-            items.push_back(cld);
+  std::size_t cur_pos = 0U;
+  while(cur_pos < items.size())
+  {
+    for(auto cld : items[cur_pos]->childItems())
+      items.push_back(cld);
 
-        cur_pos++;
-    }
+    cur_pos++;
+  }
 
-    return items;
+  return items;
 }
 
 void qml_device::rescan(QObject* root)
 {
-  QTimer::singleShot(10, [=] {
-      if(auto item = qobject_cast<QQuickItem*>(root))
+    if(auto item = qobject_cast<QQuickItem*>(root))
+    {
+      for(auto cld : items(item))
       {
-          for(auto cld : items(item))
-          {
-              if(auto qn = qobject_cast<qml_node_base*>(cld))
-              {
-                  qn->resetNode();
-              }
-          }
-
-          for(auto obj : properties)
-          {
-              obj->resetNode();
-          }
+        if(auto qn = qobject_cast<qml_node_base*>(cld))
+        {
+          qn->resetNode();
+        }
       }
-  });
+
+      for(auto obj : properties)
+      {
+        obj->resetNode();
+      }
+    }
 }
 
 void qml_device::setReadPreset(bool readPreset)
@@ -137,37 +135,69 @@ qml_device::~qml_device()
 
 void qml_device::savePreset(const QUrl& file)
 {
-  fmt::MemoryWriter w;
-
-//  ossia::net::debug_recursively(w, dev->device().getRootNode());
-
-//  std::cerr << w.str() << std::endl;
-  if(file.isLocalFile())
-  {
-    auto preset = ossia::devices::make_preset(device());
+  // fmt::MemoryWriter w;
+  // ossia::net::debug_recursively(w, m_localDevice.getRootNode());
+  // std::cerr << w.str();
+  try {
+    if(file.isLocalFile())
     {
       QFile f(file.toLocalFile());
-      f.open(QIODevice::WriteOnly);
+      if(f.open(QIODevice::WriteOnly))
+      {
+        auto preset = ossia::devices::make_preset(device());
 
-      auto str = ossia::presets::write_json(preset);
-      f.write(str.data(), str.size());
+        // for(auto e : preset)
+        //  std::cerr << e.first << e.second << std::endl;
+
+        auto str = ossia::presets::write_json(preset);
+        f.write(str.data(), str.size());
+      }
     }
+  } catch(...) {
+    ossia::logger().error("Could not save preset file: {}", file.toLocalFile().toStdString());
   }
 }
 
 void qml_device::loadPreset(const QUrl& file)
 {
-  if(file.isLocalFile())
-  {
-    QFile f(file.toLocalFile());
-    f.open(QIODevice::ReadOnly);
-    auto kv = ossia::presets::read_json(f.readAll().toStdString());
-    ossia::devices::apply_preset(device(), kv);
+  try {
+    if(file.isLocalFile())
+    {
+      QFile f(file.toLocalFile());
+      if(f.open(QIODevice::ReadOnly))
+      {
+        auto kv = ossia::presets::read_json(f.readAll().toStdString());
+        ossia::devices::apply_preset(device(), kv);
+        return;
+      }
+    }
+  } catch(...) {
+    ossia::logger().error("Could not load preset file: {}", file.toLocalFile().toStdString());
   }
 }
+
+void qml_device::saveDevice(const QUrl& file)
+{
+  try {
+    if(file.isLocalFile())
+    {
+      {
+        QFile f(file.toLocalFile());
+        if(f.open(QIODevice::WriteOnly))
+        {
+          auto d = ossia::devices::write_json(device());
+          f.write(d.data(), d.size());
+        }
+      }
+    }
+  } catch(...) {
+    ossia::logger().error("Could not save device file: {}", file.toLocalFile().toStdString());
+  }
+}
+
 qml_singleton_device::qml_singleton_device()
 {
-    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
+  QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
 qml_singleton_device::~qml_singleton_device()
