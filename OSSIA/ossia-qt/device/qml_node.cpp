@@ -36,6 +36,7 @@ void qml_node::reset_parent()
 }
 qml_node::~qml_node()
 {
+  qDebug("deleting node");
   reset_parent();
 }
 

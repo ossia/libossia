@@ -10,6 +10,7 @@ ApplicationWindow {
     height: 480
     title: qsTr("Hello World")
 
+
     Item {
         id: root
         anchors.fill: parent
@@ -28,7 +29,9 @@ ApplicationWindow {
                     color: Qt.hsla(0.8 / (1+index), 1/ (1+index), 0.7 , 1)
                     text: "Index: " + index
 
-                    Ossia.Node { node: "leText." + index }
+                    Node2 { node: "leText." + index
+                    Component.onDestruction: console.log("destroying node")
+                    }
                     Ossia.Property on text { }
                     Ossia.Property on font.pointSize { }
                     //Ossia.Property on color { }

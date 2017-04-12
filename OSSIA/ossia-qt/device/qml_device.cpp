@@ -208,12 +208,24 @@ void qml_device::loadPreset(QObject* root, const QUrl& file)
         }
         m_readPreset = true;
 
+        QCoreApplication::processEvents();
+        QCoreApplication::processEvents();
+        QCoreApplication::processEvents();
+        QCoreApplication::processEvents();
+        QCoreApplication::processEvents();
+        qDebug("======= after erase =========");
+{
+        fmt::MemoryWriter w;
+        ossia::net::debug_recursively(w, m_localDevice.getRootNode());
+        std::cerr << w.str();
+ }
+
         // Then load the preset
 
         auto kv = ossia::presets::read_json(f.readAll().toStdString());
         ossia::devices::apply_preset(device(), kv, ossia::devices::keep_arch_off);
 
-        qDebug("======= after =========");
+        qDebug("======= after preset =========");
 
         fmt::MemoryWriter w;
         ossia::net::debug_recursively(w, m_localDevice.getRootNode());

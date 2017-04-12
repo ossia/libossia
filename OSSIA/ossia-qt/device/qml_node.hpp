@@ -15,9 +15,11 @@ public:
 
   void resetNode() override;
 
+public slots:
+  void reset_parent();
+
 private:
   void on_node_deleted(const ossia::net::node_base&);
-  void reset_parent();
 };
 }
 }
