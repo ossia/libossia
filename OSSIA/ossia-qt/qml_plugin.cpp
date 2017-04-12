@@ -24,7 +24,7 @@ void qml_plugin::reg(const char* uri)
                                                      [] (QQmlEngine* e, QJSEngine*) -> QObject*
   { return &qt::qml_singleton_device::instance(); });
 
-  qmlRegisterType<qt::qml_node>(uri, 1, 0, "Node");
+  qmlRegisterType<qt::qml_node>(uri, 1, 0, "NodeImpl");
   qmlRegisterType<qt::qml_device>(uri, 1, 0, "Device");
   qmlRegisterType<qt::qml_property>(uri, 1, 0, "Property");
   qmlRegisterType<qt::qml_model_property>(uri, 1, 0, "Instances");

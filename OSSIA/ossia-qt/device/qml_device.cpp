@@ -123,9 +123,9 @@ void qml_device::rescan(QObject* root)
         }
       }
 
-      for(auto obj : models)
+      //for(auto obj : models)
       {
-        qDebug() << ((QObject*)obj.first)->parent();
+        // TODO ?
       }
     }
 }
@@ -146,9 +146,6 @@ qml_device::~qml_device()
 
 void qml_device::savePreset(const QUrl& file)
 {
-  // fmt::MemoryWriter w;
-  // ossia::net::debug_recursively(w, m_localDevice.getRootNode());
-  // std::cerr << w.str();
   try {
     if(file.isLocalFile())
     {
@@ -156,9 +153,6 @@ void qml_device::savePreset(const QUrl& file)
       if(f.open(QIODevice::WriteOnly))
       {
         auto preset = ossia::devices::make_preset(device());
-
-        // for(auto e : preset)
-        //  std::cerr << e.first << e.second << std::endl;
 
         auto str = ossia::presets::write_json(preset);
         f.write(str.data(), str.size());
@@ -191,12 +185,6 @@ void qml_device::loadPreset(QObject* root, const QUrl& file)
       QFile f(file.toLocalFile());
       if(f.open(QIODevice::ReadOnly))
       {
-        qDebug("======= before =========");
-{
-        fmt::MemoryWriter w;
-        ossia::net::debug_recursively(w, m_localDevice.getRootNode());
-        std::cerr << w.str();
- }
         // First reset all item models since they will be in the preset
         {
           auto model_list = models;
@@ -208,28 +196,10 @@ void qml_device::loadPreset(QObject* root, const QUrl& file)
         }
         m_readPreset = true;
 
-        QCoreApplication::processEvents();
-        QCoreApplication::processEvents();
-        QCoreApplication::processEvents();
-        QCoreApplication::processEvents();
-        QCoreApplication::processEvents();
-        qDebug("======= after erase =========");
-{
-        fmt::MemoryWriter w;
-        ossia::net::debug_recursively(w, m_localDevice.getRootNode());
-        std::cerr << w.str();
- }
-
         // Then load the preset
-
         auto kv = ossia::presets::read_json(f.readAll().toStdString());
         ossia::devices::apply_preset(device(), kv, ossia::devices::keep_arch_off);
 
-        qDebug("======= after preset =========");
-
-        fmt::MemoryWriter w;
-        ossia::net::debug_recursively(w, m_localDevice.getRootNode());
-        std::cerr << w.str();
 
         // Clear empty elements that may have been removed
         clearEmptyElements();

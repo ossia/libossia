@@ -27,6 +27,14 @@ void qml_property::resetNode()
     }
   }
 
+  // Creation may not have finished yet.
+  if(m_parentNode && !m_parentNode->ossiaNode())
+  {
+    setPath({});
+    m_address = nullptr;
+    return;
+  }
+
   if(m_device)
   {
     std::string node_name;
@@ -47,10 +55,22 @@ void qml_property::resetNode()
       node_name = m_userRequestedNode.toStdString();
     }
 
-    ossia::net::node_base& parent =
-        relative
-        ? findClosestParent(m_targetProperty.object(), m_device->device().getRootNode())
-        : m_device->device().getRootNode();
+    auto get_parent = [&] () -> ossia::net::node_base&
+    {
+      if(m_parentNode)
+        return *m_parentNode->ossiaNode();
+
+      if(relative)
+      {
+        return findClosestParent(m_targetProperty.object(), m_device->device().getRootNode());
+      }
+      else
+      {
+        return m_device->device().getRootNode();
+      }
+    };
+
+    ossia::net::node_base& parent = get_parent();
 
     if(reading)
     {
@@ -93,7 +113,6 @@ qml_property::qml_property(QQuickItem *parent)
 
 qml_property::~qml_property()
 {
-  qDebug() << "removing property";
   if(m_device) m_device->properties.erase(this);
   m_address = nullptr;
 }
@@ -113,10 +132,10 @@ void qml_property::qtVariantChanged()
   }
 }
 
-void qml_property::setDevice(QObject *device)
+void qml_property::setDevice(qml_device *device)
 {
   auto olddev = m_device;
-  auto newdev = qobject_cast<qml_device*>(device);
+  auto newdev = device;
   if(olddev != newdev)
   {
     qml_node_base::setDevice(device);
@@ -152,9 +171,6 @@ void qml_property::setupAddress(bool reading)
   {
     if(m_address)
     {
-      qDebug() << "value:"
-               << ossia::net::address_string_from_node(*m_ossia_node).c_str()
-               << ossia::value_to_pretty_string(m_address->cloneValue()).c_str();
       updateQtValue();
     }
     return;

@@ -36,7 +36,6 @@ void qml_node::reset_parent()
 }
 qml_node::~qml_node()
 {
-  qDebug("deleting node");
   reset_parent();
 }
 
@@ -45,6 +44,13 @@ void qml_node::resetNode()
   m_node.clear();
   const bool reading = m_device ? m_device->readPreset() : false;
   reset_parent();
+
+  // Creation may not have finished yet.
+  if(m_parentNode && !m_parentNode->ossiaNode())
+  {
+    setPath({});
+    return;
+  }
 
   if(m_device)
   {
@@ -92,10 +98,22 @@ void qml_node::resetNode()
     }
 
     // Find the node
-    ossia::net::node_base& parent =
-        relative
-        ? findClosestParent(this->parent(), m_device->device().getRootNode())
-        : m_device->device().getRootNode();
+    auto get_parent = [&] () -> ossia::net::node_base&
+    {
+      if(m_parentNode)
+        return *m_parentNode->ossiaNode();
+
+      if(relative)
+      {
+        return findClosestParent(this->parent(), m_device->device().getRootNode());
+      }
+      else
+      {
+        return m_device->device().getRootNode();
+      }
+    };
+
+    ossia::net::node_base& parent = get_parent();
 
     if(reading)
     {

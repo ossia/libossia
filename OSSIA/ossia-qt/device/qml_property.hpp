@@ -24,7 +24,7 @@ public:
   void setTarget(const QQmlProperty &prop) override;
 
   void resetNode() override;
-  void setDevice(QObject* device) override;
+  void setDevice(qml_device* device) override;
 
   void updateQtValue();
 signals:

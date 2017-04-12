@@ -1,2 +1,3 @@
 module Ossia
+Node 1.0 qrc:///qml/Node.qml
 plugin ossia

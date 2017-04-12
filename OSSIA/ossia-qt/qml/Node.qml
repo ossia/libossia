@@ -1,7 +1,7 @@
 import QtQuick 2.7
 import Ossia 1.0 as Ossia
 
-Ossia.Node
+Ossia.NodeImpl
 {
     Component.onDestruction: reset_parent()
 }

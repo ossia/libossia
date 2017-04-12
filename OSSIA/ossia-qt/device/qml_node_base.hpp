@@ -18,33 +18,39 @@ class qml_node_base
   Q_OBJECT
   Q_PROPERTY(QString node READ node WRITE setNode NOTIFY nodeChanged)
   Q_PROPERTY(QString path READ path NOTIFY pathChanged)
-  Q_PROPERTY(QObject* device READ device WRITE setDevice NOTIFY deviceChanged)
+  Q_PROPERTY(qml_device* device READ device WRITE setDevice NOTIFY deviceChanged)
   Q_PROPERTY(QVariantMap extended READ extended WRITE setExtended NOTIFY extendedChanged)
+  Q_PROPERTY(qml_node_base* parentNode READ parentNode WRITE setParentNode NOTIFY parentNodeChanged)
 
 public:
   qml_node_base(QQuickItem* parent = nullptr);
   ~qml_node_base();
 
   QString node() const;
-  QObject* device() const;
-  ossia::net::node_base* ossiaNode() { return m_ossia_node; }
+  qml_device* device() const;
+  ossia::net::node_base* ossiaNode();
 
   QString path() const;
-
 
   virtual void resetNode() = 0;
   QVariantMap extended() const;
 
+  qml_node_base* parentNode() const;
+
 public slots:
   void setNode(QString node);
-  virtual void setDevice(QObject* device);
+  virtual void setDevice(qml_device* device);
   void setExtended(QVariantMap extended);
+
+  void setParentNode(qml_node_base* parentNode);
 
 signals:
   void nodeChanged(QString node);
-  void deviceChanged(QObject* device);
+  void deviceChanged(qml_device* device);
   void pathChanged(QString path);
   void extendedChanged(QVariantMap extended);
+
+  void parentNodeChanged(qml_node_base* parentNode);
 
 protected:
   QVariant anyToVariant(const boost::any&) const;
@@ -56,6 +62,7 @@ protected:
   QString m_node;
   QString m_userRequestedNode;
   qml_device* m_device{};
+  qml_node_base* m_parentNode{};
   ossia::net::node_base* m_ossia_node{};
   QString m_path;
 };

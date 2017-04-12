@@ -34,10 +34,12 @@ QString qml_node_base::node() const
   return m_node;
 }
 
-QObject*qml_node_base::device() const
+qml_device* qml_node_base::device() const
 {
   return m_device;
 }
+
+net::node_base* qml_node_base::ossiaNode() { return m_ossia_node; }
 
 QString qml_node_base::path() const
 {
@@ -61,6 +63,11 @@ QVariantMap qml_node_base::extended() const
   return map;
 }
 
+qml_node_base*qml_node_base::parentNode() const
+{
+  return m_parentNode;
+}
+
 void qml_node_base::setNode(QString node)
 {
   m_node = node;
@@ -69,12 +76,12 @@ void qml_node_base::setNode(QString node)
   emit nodeChanged(node);
 }
 
-void qml_node_base::setDevice(QObject* device)
+void qml_node_base::setDevice(qml_device* device)
 {
   if (m_device == device)
     return;
 
-  m_device = qobject_cast<qml_device*>(device);
+  m_device = device;
   resetNode();
   emit deviceChanged(device);
 }
@@ -107,6 +114,19 @@ void qml_node_base::setExtended(QVariantMap extended)
     }
   }
   emit extendedChanged(extended);
+}
+
+void qml_node_base::setParentNode(qml_node_base* parentNode)
+{
+  if (m_parentNode == parentNode)
+    return;
+
+  m_parentNode = parentNode;
+  if(m_parentNode)
+    m_device = m_parentNode->device();
+  resetNode();
+
+  emit parentNodeChanged(parentNode);
 }
 
 ossia::net::node_base& qml_node_base::findClosestParent(
