@@ -610,7 +610,7 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
         {
           rapidjson::Value s;
           s.SetString(domain, alloc);
-          v.AddMember("valueDomain", s, alloc);
+          v.AddMember("rangeBounds", s, alloc);
         }
 
         // append step size attribute
@@ -639,7 +639,7 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
         {
           rapidjson::Value s;
           s.SetString(domain, alloc);
-          v.AddMember("valueDomain", s, alloc);
+          v.AddMember("rangeBounds", s, alloc);
         }
 
         // append step size attribute
@@ -680,6 +680,12 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
     if (auto descr = ossia::net::get_description(node))
     {
       v.AddMember("description", *descr, alloc);
+    }
+
+    if(auto dynInstance = ossia::net::get_instance_bounds(node))
+    {
+      v.AddMember("dynamicInstances", true, alloc);
+      v.AddMember("instanceBounds", fmt::format("{} {}", dynInstance->min_instances, dynInstance->max_instances), alloc);
     }
   }
 

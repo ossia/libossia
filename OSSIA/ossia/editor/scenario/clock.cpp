@@ -169,17 +169,10 @@ bool clock::tick(ossia::time_value usec)
   if (paused || !running)
     return false;
 
-  int64_t granularityInUs(ossia::llround(mGranularity * 1000));
-  int64_t droppedTicks = 0;
-
   // how many time since the last tick ?
   int64_t deltaInUs = ossia::llround(usec);
 
   assert(mDriveMode == clock::DriveMode::EXTERNAL);
-  // if too early: avoid this tick
-  if (mElapsedTime / granularityInUs
-      == (mElapsedTime + deltaInUs) / granularityInUs)
-    return false;
 
   // how many time elapsed from the start ?
   mDate += (deltaInUs / 1000.) * mSpeed;
@@ -197,7 +190,7 @@ bool clock::tick(ossia::time_value usec)
     mPosition = mDate / mDuration;
 
     // notify the owner
-    (mCallback)(mPosition, mDate, droppedTicks);
+    (mCallback)(mPosition, mDate, 0);
 
     // is this the end
     if (mDuration - mDate < Zero && !mDuration.isInfinite())

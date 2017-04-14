@@ -129,7 +129,6 @@ automation::computeValue(
     ossia::val_type drivenType,
     const ossia::behavior& drive)
 {
-  std::cerr << drive.which() << std::endl;
   if(drive)
     return ossia::apply(detail::compute_value_visitor{position, drivenType}, drive);
   return {};

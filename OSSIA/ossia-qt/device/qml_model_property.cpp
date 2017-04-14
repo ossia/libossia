@@ -36,7 +36,7 @@ void qml_model_property::setCount(int count)
   emit countChanged(count);
 }
 
-void qml_model_property::setDevice(QObject *device)
+void qml_model_property::setDevice(QObject* device)
 {
   auto olddev = m_device;
   auto newdev = qobject_cast<qml_device*>(device);
@@ -81,6 +81,11 @@ void qml_model_property::setParentNode(qml_node_base* parentNode)
     return;
 
   m_parentNode = parentNode;
+  if(m_parentNode && m_parentNode->ossiaNode())
+  {
+    ossia::net::set_instance_bounds(*m_parentNode->ossiaNode(), ossia::net::instance_bounds{0, 1000});
+  }
+
   emit parentNodeChanged(parentNode);
 }
 
