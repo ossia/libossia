@@ -735,7 +735,8 @@ std::string ossia::devices::write_json(
   }
 
   // parse device node tree and export to json
-  d.AddMember(rapidjson::StringRef(deviceBase.getName()), export_nodes_to_json(deviceBase.getRootNode(), d), d.GetAllocator());
+  std::string deviceName = deviceBase.getName();
+  d.AddMember(rapidjson::StringRef(deviceName), export_nodes_to_json(deviceBase.getRootNode(), d), d.GetAllocator());
 
   // return json string
   rapidjson::StringBuffer buffer;
