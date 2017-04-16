@@ -55,29 +55,59 @@ bool t_param :: do_registration(ossia::net::node_base* node){
     ossia::net::address_base* localAddress{};
     if (std::string(x_type->s_name) == "float") {
         localAddress = x_node->createAddress(ossia::val_type::FLOAT);
+        if (x_default[0].a_type == A_FLOAT )
+            ossia::net::set_default_value(localAddress->getNode(), x_default[0].a_w.w_float);
     } else if(std::string(x_type->s_name) == "symbol" || std::string(x_type->s_name) == "string"){
         localAddress = x_node->createAddress(ossia::val_type::STRING);
+        if (x_default[0].a_type == A_SYMBOL )
+            ossia::net::set_default_value(localAddress->getNode(), std::string(x_default[0].a_w.w_symbol->s_name));
     } else if (std::string(x_type->s_name) == "int") {
         localAddress = x_node->createAddress(ossia::val_type::INT);
+        if (x_default[0].a_type == A_FLOAT )
+            ossia::net::set_default_value(localAddress->getNode(), x_default[0].a_w.w_float);
     } else if (std::string(x_type->s_name) == "vec2f") {
         localAddress = x_node->createAddress(ossia::val_type::VEC2F);
         x_type_size = 2;
+        if (x_default[0].a_type == A_FLOAT && x_default[1].a_type == A_FLOAT ){
+            vec2f vec = make_vec(x_default[0].a_w.w_float, x_default[1].a_w.w_float);
+            ossia::net::set_default_value(localAddress->getNode(), vec);
+        }
     } else if (std::string(x_type->s_name) == "vec3f") {
         localAddress = x_node->createAddress(ossia::val_type::VEC3F);
         x_type_size = 3;
+        if (x_default[0].a_type == A_FLOAT && x_default[1].a_type == A_FLOAT && x_default[2].a_type == A_FLOAT ){
+            vec3f vec = make_vec(x_default[0].a_w.w_float, x_default[1].a_w.w_float, x_default[2].a_w.w_float);
+            ossia::net::set_default_value(localAddress->getNode(), vec);
+        }
     } else if (std::string(x_type->s_name) == "vec4f") {
         localAddress = x_node->createAddress(ossia::val_type::VEC4F);
         x_type_size = 4;
+        if (x_default[0].a_type == A_FLOAT && x_default[1].a_type == A_FLOAT && x_default[2].a_type == A_FLOAT && x_default[3].a_type == A_FLOAT ){
+            vec4f vec = make_vec(x_default[0].a_w.w_float, x_default[1].a_w.w_float, x_default[2].a_w.w_float, x_default[3].a_w.w_float);
+            ossia::net::set_default_value(localAddress->getNode(), vec);
+        }
     } else if (std::string(x_type->s_name) == "impulse") {
         localAddress = x_node->createAddress(ossia::val_type::IMPULSE);
         x_type_size = 0;
     } else if (std::string(x_type->s_name) == "bool") {
         localAddress = x_node->createAddress(ossia::val_type::BOOL);
+        if (x_default[0].a_type == A_FLOAT )
+                    ossia::net::set_default_value(localAddress->getNode(), x_default[0].a_w.w_float);
     } else if (std::string(x_type->s_name) == "tuple") {
         localAddress = x_node->createAddress(ossia::val_type::TUPLE);
         x_type_size = 64;
+        std::vector<ossia::value> list;
+        for ( int i = 0; i<64 && x_default[i].a_type != A_NULL; i++){
+            if (x_default[i].a_type == A_FLOAT)
+                list.push_back(atom_getfloat(&x_default[i]));
+            else if (x_default[i].a_type == A_SYMBOL)
+                list.push_back(std::string(atom_getsymbol(&x_default[i])->s_name));
+        }
+        if (list.size() > 0) ossia::net::set_default_value(localAddress->getNode(), list);
     } else if (std::string(x_type->s_name) == "char") {
         localAddress = x_node->createAddress(ossia::val_type::CHAR);
+        if (x_default[0].a_type == A_FLOAT )
+                    ossia::net::set_default_value(localAddress->getNode(), x_default[0].a_w.w_float);
     } else {
         pd_error(this, "type should one of (case sensitive): float, symbol, int, vec2f, vec3f, vec4f, bool, tuple, char");
     }
@@ -112,8 +142,8 @@ bool t_param :: do_registration(ossia::net::node_base* node){
     ossia::unit_t unit = ossia::parse_pretty_unit(x_unit->s_name);
     localAddress->setUnit(unit);
 
-    ossia::net::set_description(*x_node, x_description->s_name);
-    ossia::net::set_tags(*x_node, parse_tags_symbol(x_tags));
+    ossia::net::set_description(localAddress->getNode(), x_description->s_name);
+    ossia::net::set_tags(localAddress->getNode(), parse_tags_symbol(x_tags));
 
     ossia::net::set_priority(localAddress->getNode(), x_priority);
 
