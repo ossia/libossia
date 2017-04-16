@@ -29,15 +29,24 @@ private slots:
     auto& n3 = ossia::net::find_or_create_node(root, "/bim/boum");
     auto& n4 = ossia::net::find_or_create_node(root, "/bim/boum.1");
 
-    n1.createAddress(ossia::val_type::INT);
-    n2.createAddress(ossia::val_type::FLOAT);
-    n3.createAddress(ossia::val_type::STRING);
-    n4.createAddress(ossia::val_type::STRING);
+    auto a1 = n1.createAddress(ossia::val_type::INT);
+    auto a2 = n2.createAddress(ossia::val_type::FLOAT);
+    auto a3 = n3.createAddress(ossia::val_type::STRING);
+    auto a4 = n4.createAddress(ossia::val_type::STRING);
 
     ossia::net::set_default_value(n1, 1234);
     ossia::net::set_default_value(n2, 5678.);
     ossia::net::set_default_value(n3, "hello"s);
     ossia::net::set_default_value(n4, "bye"s);
+
+    a1->pushValue(13579);
+    a2->pushValue(3.1415);
+    a3->pushValue("foo"s);
+    a4->pushValue("bar"s);
+
+    auto preset = ossia::devices::make_preset(dev);
+    auto presetJSON = ossia::presets::write_json(preset);
+    qDebug() << presetJSON.c_str();
 
     auto str = ossia::devices::write_json(dev);
     qDebug() << str.c_str();
