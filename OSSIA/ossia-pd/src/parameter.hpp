@@ -23,6 +23,7 @@ struct t_param : t_obj_base
     t_symbol* x_unit;
     t_symbol* x_tags;
     t_symbol* x_description;
+    int x_priority;
 
     static std::vector<t_param*>& quarantine(){
         static std::vector<t_param*> quarantine;

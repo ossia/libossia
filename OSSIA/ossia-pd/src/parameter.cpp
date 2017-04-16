@@ -112,6 +112,8 @@ bool t_param :: do_registration(ossia::net::node_base* node){
     ossia::net::set_description(*x_node, x_description->s_name);
     ossia::net::set_tags(*x_node, parse_tags_symbol(x_tags));
 
+    ossia::net::set_priority(localAddress->getNode(), x_priority);
+
     localAddress->add_callback([=](const ossia::value& v){
         setValue(v);
     });
@@ -157,6 +159,7 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
         x->x_type_size = 1;
         x->x_tags = gensym("");
         x->x_description = gensym("");
+        x->x_priority = 0;
 
         x->x_clock = clock_new(x, (t_method)push_default_value);
 
@@ -204,6 +207,7 @@ extern "C" void setup_ossia0x2eparam(void)
         CLASS_ATTR_FLOAT_ARRAY(c, "range",           0, t_param, x_range, 2);
         CLASS_ATTR_FLOAT      (c, "min",             0, t_param, x_range);
         CLASS_ATTR_FLOAT      (c, "repetition_filter", 0, t_param, x_repetition_filter);
+        CLASS_ATTR_INT        (c, "priority",        0, t_param, x_priority);
         // CLASS_ATTR_FLOAT(c, "max", 0, t_parameter, range+1);
         eclass_new_attr_typed(c,"max", "float", 1, 0, 0, calcoffset(t_param,x_range)+sizeof(float));
 
