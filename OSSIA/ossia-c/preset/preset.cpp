@@ -502,7 +502,7 @@ std::string ossia::presets::write_json(const preset & prst) {
   }
 
   rapidjson::StringBuffer buffer;
-  rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+  rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
   d.Accept(writer);
   return buffer.GetString();
 }
