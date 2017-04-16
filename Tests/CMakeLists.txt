@@ -26,9 +26,13 @@ ossia_add_test(AutomationTest
     )
 
 if(NOT OSSIA_CI)
-    # this test is too reliant on specific hardward capabilities to run on travis
+    # this test is too reliant on specific hardware capabilities to run on travis
     ossia_add_test(ClockTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ClockTest.cpp")
 endif()
+
+# These two lines are used to display the QMLs in the project view of IDEs
+file(GLOB_RECURSE QMLS "${CMAKE_CURRENT_SOURCE_DIR}/testdata/*.qml")
+add_custom_target(ossia_test_ui_qml SOURCES ${QMLS})
 
 ossia_add_test(CurveTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/CurveTest.cpp")
 ossia_add_test(CurveSegmentEmptyTest       "${CMAKE_CURRENT_SOURCE_DIR}/Editor/CurveSegment/CurveSegmentEmptyTest.cpp")
