@@ -78,7 +78,10 @@ bool t_param :: do_registration(ossia::net::node_base* node){
         x_type_size = 64;
     } else if (std::string(x_type->s_name) == "char") {
         localAddress = x_node->createAddress(ossia::val_type::CHAR);
+    } else {
+        pd_error(this, "type should one of (case sensitive): float, symbol, int, vec2f, vec3f, vec4f, bool, tuple, char");
     }
+    if (!localAddress) return false;
 
     localAddress->setDomain(ossia::make_domain(x_range[0],x_range[1]));
     // FIXME : we need case insensitive comparison here
