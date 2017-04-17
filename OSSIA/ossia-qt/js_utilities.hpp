@@ -127,8 +127,26 @@ struct qt_to_ossia
   ossia::value operator()(QVector3D v) { return make_vec(v.x(), v.y(), v.z()); }
   ossia::value operator()(QVector4D v) { return make_vec(v.x(), v.y(), v.z(), v.w()); }
   ossia::value operator()(QQuaternion v) { return make_vec(v.scalar(), v.x(), v.y(), v.z()); }
-  ossia::value operator()(const QVariantList& v) { return {}; }
-  ossia::value operator()(const QStringList& v) { return {}; }
+  auto operator()(const QVariantList& v)
+  {
+    std::vector<ossia::value> tpl;
+    tpl.reserve(v.size());
+    for(auto& val : v)
+    {
+      tpl.push_back(qt_to_ossia{}(val));
+    }
+    return tpl;
+  }
+  ossia::value operator()(const QStringList& v)
+  {
+    std::vector<ossia::value> tpl;
+    tpl.reserve(v.size());
+    for(auto& val : v)
+    {
+      tpl.push_back(val.toStdString());
+    }
+    return tpl;
+  }
   ossia::value operator()(const QDate& v) { return v.toString().toStdString(); }
 
   ossia::value operator()(const QVariant& v);
@@ -156,7 +174,7 @@ struct ossia_to_qvariant
   {
     typename QArray<N>::type vec;
 
-    for(int i = 0; i < N; i++)
+    for(std::size_t i = 0U; i < N; i++)
       vec[i] = arr[i];
     return vec;
   }

@@ -61,6 +61,7 @@ void qml_node::resetNode()
       setPath(
             QString::fromStdString(
               ossia::net::address_string_from_node(*m_ossia_node)));
+      applyNodeAttributes();
     };
 
     std::string node_name;

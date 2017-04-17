@@ -47,23 +47,6 @@ QString qml_node_base::path() const
   return m_path;
 }
 
-QVariantMap qml_node_base::extended() const
-{
-  QVariantMap map;
-
-  if(m_ossia_node)
-  {
-    ossia::extended_attributes& xt = *m_ossia_node;
-    // First remove all the existing keys
-    for(const auto& pair : xt)
-    {
-      map.insert(QString::fromStdString(pair.first), anyToVariant(pair.second));
-    }
-  }
-
-  return map;
-}
-
 qml_node_base*qml_node_base::parentNode() const
 {
   return m_parentNode;
@@ -94,12 +77,23 @@ static QStringList fromStringVector(const std::vector<std::string>& vec)
   return l;
 }
 
+static std::vector<std::string> toStringVector(const QStringList& l)
+{
+  std::vector<std::string> vec;
+  vec.reserve(l.size());
+  for(auto& s : l)
+  {
+    vec.push_back(s.toStdString());
+  }
+  return vec;
+}
+
 QStringList qml_node_base::tags() const
 {
   if(m_ossia_node)
     if(auto tags = ossia::net::get_tags(*m_ossia_node))
       return fromStringVector(*tags);
-  return {};
+  return m_tags;
 }
 
 qint32 qml_node_base::refreshRate() const
@@ -107,7 +101,7 @@ qint32 qml_node_base::refreshRate() const
   if(m_ossia_node)
     if(auto rate = ossia::net::get_refresh_rate(*m_ossia_node))
       return *rate;
-  return {};
+  return m_refreshRate;
 }
 
 double qml_node_base::stepSize() const
@@ -115,7 +109,7 @@ double qml_node_base::stepSize() const
   if(m_ossia_node)
     if(auto val = ossia::net::get_value_step_size(*m_ossia_node))
       return *val;
-  return {};
+  return m_stepSize;
 }
 
 QVariant qml_node_base::defaultValue() const
@@ -123,21 +117,21 @@ QVariant qml_node_base::defaultValue() const
   if(m_ossia_node)
     if(auto dval = ossia::net::get_default_value(*m_ossia_node))
       return dval->apply(ossia_to_qvariant{});
-  return {};
+  return m_defaultValue;
 }
 
 bool qml_node_base::critical() const
 {
   if(m_ossia_node)
     return ossia::net::get_critical(*m_ossia_node);
-  return {};
+  return m_critical;
 }
 
 bool qml_node_base::zombie() const
 {
   if(m_ossia_node)
     return ossia::net::get_zombie(*m_ossia_node);
-  return {};
+  return m_zombie;
 }
 
 void qml_node_base::setNode(QString node)
@@ -158,35 +152,6 @@ void qml_node_base::setDevice(qml_device* device)
   emit deviceChanged(device);
 }
 
-void qml_node_base::setExtended(QVariantMap extended)
-{
-  auto current = this->extended();
-
-  if (current == extended)
-    return;
-
-  if(m_ossia_node)
-  {
-    ossia::extended_attributes& xt = *m_ossia_node;
-
-    // First remove all the erased keys
-    auto cur_end = current.cend();
-    for(auto it = current.cbegin(); it != cur_end; ++it)
-    {
-      const auto& k = it.key();
-      if(!extended.contains(k))
-        xt.erase(k.toStdString());
-    }
-
-    // Then insert the new ones
-    auto ext_end = extended.end();
-    for(auto it = extended.begin(); it != ext_end; ++it)
-    {
-      xt[it.key().toStdString()] = anyToVariant(it.value());
-    }
-  }
-  emit extendedChanged(extended);
-}
 
 void qml_node_base::setParentNode(qml_node_base* parentNode)
 {
@@ -207,6 +172,10 @@ void qml_node_base::setPriority(qint32 priority)
     return;
 
   m_priority = priority;
+
+  if(m_ossia_node)
+    ossia::net::set_priority(*m_ossia_node, m_priority);
+
   emit priorityChanged(priority);
 }
 
@@ -216,6 +185,10 @@ void qml_node_base::setDescription(QString description)
     return;
 
   m_description = description;
+
+  if(m_ossia_node)
+    ossia::net::set_description(*m_ossia_node, m_description.toStdString());
+
   emit descriptionChanged(description);
 }
 
@@ -225,6 +198,9 @@ void qml_node_base::setTags(QStringList tags)
     return;
 
   m_tags = tags;
+  if(m_ossia_node)
+    ossia::net::set_tags(*m_ossia_node, toStringVector(m_tags));
+
   emit tagsChanged(tags);
 }
 
@@ -234,6 +210,10 @@ void qml_node_base::setRefreshRate(qint32 refreshRate)
     return;
 
   m_refreshRate = refreshRate;
+
+  if(m_ossia_node)
+    ossia::net::set_refresh_rate(*m_ossia_node, m_refreshRate);
+
   emit refreshRateChanged(refreshRate);
 }
 
@@ -243,6 +223,10 @@ void qml_node_base::setStepSize(double stepSize)
     return;
 
   m_stepSize = stepSize;
+
+  if(m_ossia_node)
+    ossia::net::set_value_step_size(*m_ossia_node, stepSize);
+
   emit stepSizeChanged(stepSize);
 }
 
@@ -252,6 +236,10 @@ void qml_node_base::setDefaultValue(QVariant defaultValue)
     return;
 
   m_defaultValue = defaultValue;
+
+  if(m_ossia_node)
+    ossia::net::set_default_value(*m_ossia_node, qt_to_ossia{}(m_defaultValue));
+
   emit defaultValueChanged(defaultValue);
 }
 
@@ -261,7 +249,26 @@ void qml_node_base::setCritical(bool critical)
     return;
 
   m_critical = critical;
+
+  if(m_ossia_node)
+    ossia::net::set_critical(*m_ossia_node, m_critical);
+
   emit criticalChanged(critical);
+}
+
+void qml_node_base::applyNodeAttributes()
+{
+  if(m_ossia_node)
+  {
+    ossia::net::set_description(*m_ossia_node, m_description.toStdString());
+    ossia::net::set_tags(*m_ossia_node, toStringVector(m_tags));
+    ossia::net::set_priority(*m_ossia_node, m_priority);
+    ossia::net::set_refresh_rate(*m_ossia_node, m_refreshRate);
+    ossia::net::set_value_step_size(*m_ossia_node, m_stepSize);
+    ossia::net::set_default_value(*m_ossia_node, qt_to_ossia{}(m_defaultValue));
+    ossia::net::set_critical(*m_ossia_node, m_critical);
+  }
+
 }
 
 ossia::net::node_base& qml_node_base::findClosestParent(
@@ -315,32 +322,5 @@ void qml_node_base::setPath(QString path)
 
   emit pathChanged(path);
 }
-
-QVariant qml_node_base::anyToVariant(const boost::any& any) const
-{
-  if(auto v = boost::any_cast<QVariant>(&any))
-    return *v;
-  else if(auto s = boost::any_cast<std::string>(&any))
-    return QString::fromStdString(*s);
-  else if(auto vec = boost::any_cast<std::vector<std::string>>(&any))
-  {
-    QStringList s;
-    s.reserve(vec->size());
-    for(auto& string : *vec)
-      s.append(QString::fromStdString(string));
-    return s;
-  }
-  else if(auto i = boost::any_cast<int>(&any))
-    return *i;
-  else if(auto f = boost::any_cast<float>(&any))
-    return *f;
-  else if(auto d = boost::any_cast<double>(&any))
-    return *d;
-  else if(auto b = boost::any_cast<bool>(&any))
-    return *b;
-  return {};
-
-}
-
 }
 }

@@ -45,25 +45,13 @@ public:
 
   qml_context::repetition_filter filterRepetitions() const;
 
-  QVariant min() const
-  {
-    return m_min;
-  }
+  QVariant min() const;
 
-  QVariant max() const
-  {
-    return m_max;
-  }
+  QVariant max() const;
 
-  QVariantList values() const
-  {
-    return m_values;
-  }
+  QVariantList values() const;
 
-  QString unit() const
-  {
-    return m_unit;
-  }
+  QString unit() const;
 
   signals:
   void setValue_sig(const value&);
@@ -96,44 +84,17 @@ public:
 
   void setFilterRepetitions(qml_context::repetition_filter filterRepetitions);
 
-  void setMin(QVariant min)
-  {
-    if (m_min == min)
-      return;
+  void setMin(QVariant min);
 
-    m_min = min;
-    emit minChanged(min);
-  }
+  void setMax(QVariant max);
 
-  void setMax(QVariant max)
-  {
-    if (m_max == max)
-      return;
+  void setValues(QVariantList values);
 
-    m_max = max;
-    emit maxChanged(max);
-  }
-
-  void setValues(QVariantList values)
-  {
-    if (m_values == values)
-      return;
-
-    m_values = values;
-    emit valuesChanged(values);
-  }
-
-  void setUnit(QString unit)
-  {
-    if (m_unit == unit)
-      return;
-
-    m_unit = unit;
-    emit unitChanged(unit);
-  }
+  void setUnit(QString unit);
 
   private:
   void setupAddress(bool reading);
+  void updateDomain();
   void on_node_deleted(const ossia::net::node_base&);
 
   QQmlProperty m_targetProperty;

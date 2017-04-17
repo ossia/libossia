@@ -19,7 +19,6 @@ class qml_node_base
   Q_PROPERTY(QString node READ node WRITE setNode NOTIFY nodeChanged FINAL)
   Q_PROPERTY(QString path READ path NOTIFY pathChanged FINAL)
   Q_PROPERTY(qml_device* device READ device WRITE setDevice NOTIFY deviceChanged)
-  Q_PROPERTY(QVariantMap extended READ extended WRITE setExtended NOTIFY extendedChanged FINAL)
   Q_PROPERTY(qml_node_base* parentNode READ parentNode WRITE setParentNode NOTIFY parentNodeChanged FINAL)
 
   Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged FINAL)
@@ -31,21 +30,6 @@ class qml_node_base
   Q_PROPERTY(bool critical READ critical WRITE setCritical NOTIFY criticalChanged FINAL)
   Q_PROPERTY(bool zombie READ zombie FINAL)
 
-  QString m_description;
-
-  QStringList m_tags;
-
-  qint32 m_priority{};
-
-  qint32 m_refreshRate{};
-
-  double m_stepSize{};
-
-  QVariant m_defaultValue;
-
-  bool m_critical{};
-
-  bool m_zombie{};
 
 public:
   qml_node_base(QQuickItem* parent = nullptr);
@@ -58,71 +42,49 @@ public:
   QString path() const;
 
   virtual void resetNode() = 0;
-  QVariantMap extended() const;
 
   qml_node_base* parentNode() const;
 
   qint32 priority() const;
-
   QString description() const;
-
   QStringList tags() const;
-
   qint32 refreshRate() const;
-
   double stepSize() const;
-
   QVariant defaultValue() const;
-
   bool critical() const;
-
   bool zombie() const;
 
 public slots:
   void setNode(QString node);
   virtual void setDevice(qml_device* device);
-  void setExtended(QVariantMap extended);
 
   void setParentNode(qml_node_base* parentNode);
-
   void setPriority(qint32 priority);
-
   void setDescription(QString description);
-
   void setTags(QStringList tags);
-
   void setRefreshRate(qint32 refreshRate);
-
   void setStepSize(double stepSize);
-
   void setDefaultValue(QVariant defaultValue);
-
   void setCritical(bool critical);
 
 signals:
   void nodeChanged(QString node);
   void deviceChanged(qml_device* device);
   void pathChanged(QString path);
-  void extendedChanged(QVariantMap extended);
 
   void parentNodeChanged(qml_node_base* parentNode);
 
   void priorityChanged(qint32 priority);
-
   void descriptionChanged(QString description);
-
   void tagsChanged(QStringList tags);
-
   void refreshRateChanged(qint32 refreshRate);
-
   void stepSizeChanged(double stepSize);
-
   void defaultValueChanged(QVariant defaultValue);
-
   void criticalChanged(bool critical);
 
 protected:
-  QVariant anyToVariant(const boost::any&) const;
+  void applyNodeAttributes();
+
   void setPath(QString str);
   ossia::net::node_base& findClosestParent(
       QObject* obj,
@@ -134,6 +96,17 @@ protected:
   qml_node_base* m_parentNode{};
   ossia::net::node_base* m_ossia_node{};
   QString m_path;
+
+  // Attributes :
+
+  QString m_description;
+  QStringList m_tags;
+  qint32 m_priority{};
+  qint32 m_refreshRate{};
+  double m_stepSize{};
+  QVariant m_defaultValue;
+  bool m_critical{};
+  bool m_zombie{};
 };
 
 }
