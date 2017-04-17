@@ -14,58 +14,83 @@ class qml_property;
 class qml_model_property;
 class qml_node_base;
 class OSSIA_EXPORT qml_device :
-        public QObject
+    public QObject
 {
-    Q_OBJECT
-    Q_PROPERTY(int wsPort READ wsPort WRITE setWSPort NOTIFY WSPortChanged)
-    Q_PROPERTY(int oscPort READ oscPort WRITE setOSCPort NOTIFY OSCPortChanged)
-    Q_PROPERTY(bool readPreset READ readPreset WRITE setReadPreset NOTIFY readPresetChanged)
+  Q_OBJECT
+  Q_PROPERTY(int wsPort READ wsPort WRITE setWSPort NOTIFY WSPortChanged FINAL)
+  Q_PROPERTY(int oscPort READ oscPort WRITE setOSCPort NOTIFY OSCPortChanged FINAL)
+  Q_PROPERTY(bool readPreset READ readPreset WRITE setReadPreset NOTIFY readPresetChanged FINAL)
+
+  Q_PROPERTY(QString appAuthor READ appAuthor WRITE setAppAuthor NOTIFY appAuthorChanged FINAL)
+  Q_PROPERTY(QString appVersion READ appVersion WRITE setAppVersion NOTIFY appVersionChanged FINAL)
+  Q_PROPERTY(QString appCreator READ appCreator WRITE setAppCreator NOTIFY appCreatorChanged FINAL)
 
 public:
-    qml_device(QObject* parent = nullptr);
-    ~qml_device();
-    void updateServer();
+  qml_device(QObject* parent = nullptr);
+  ~qml_device();
+  void updateServer();
 
-    ossia::net::generic_device& device();
-    const ossia::net::generic_device& device() const;
-    ossia::net::local_protocol& localProtocol() const;
+  ossia::net::generic_device& device();
+  const ossia::net::generic_device& device() const;
+  ossia::net::local_protocol& localProtocol() const;
 
-    int wsPort() const;
-    int oscPort() const;
+  int wsPort() const;
+  int oscPort() const;
 
-    bool readPreset() const;
+  bool readPreset() const;
 
-    tsl::hopscotch_map<qml_node*, QPointer<qml_node>> nodes;
-    tsl::hopscotch_map<qml_property*, QPointer<qml_property>> properties;
-    tsl::hopscotch_map<qml_model_property*, QPointer<qml_model_property>> models;
+  tsl::hopscotch_map<qml_node*, QPointer<qml_node>> nodes;
+  tsl::hopscotch_map<qml_property*, QPointer<qml_property>> properties;
+  tsl::hopscotch_map<qml_model_property*, QPointer<qml_model_property>> models;
 
-public slots:
-    void setWSPort(int wsPort);
-    void setOSCPort(int oscPort);
+  QString appAuthor() const;
 
-    void rescan(QObject* root);
+  QString appVersion() const;
 
-    void setReadPreset(bool readPreset);
+  QString appCreator() const;
 
-    void savePreset(const QUrl& file);
-    void loadPreset(QObject* root, const QUrl& file);
-    void saveDevice(const QUrl& file);
+  public slots:
+  void setWSPort(int wsPort);
+  void setOSCPort(int oscPort);
 
-signals:
-    void WSPortChanged(int wsPort);
-    void OSCPortChanged(int oscPort);
+  void rescan(QObject* root);
 
-    void readPresetChanged(bool readPreset);
+  void setReadPreset(bool readPreset);
 
-private:
-    void clearEmptyElements();
+  void savePreset(const QUrl& file);
+  void loadPreset(QObject* root, const QUrl& file);
+  void saveDevice(const QUrl& file);
 
-    QString m_localName{"newDevice"};
-    int m_wsPort{5678};
-    int m_oscPort{9998};
+  void setAppAuthor(QString appAuthor);
 
-    ossia::net::generic_device m_localDevice;
-    bool m_readPreset{false};
+  void setAppVersion(QString appVersion);
+
+  void setAppCreator(QString appCreator);
+
+  signals:
+  void WSPortChanged(int wsPort);
+  void OSCPortChanged(int oscPort);
+
+  void readPresetChanged(bool readPreset);
+
+  void appAuthorChanged(QString appAuthor);
+
+  void appVersionChanged(QString appVersion);
+
+  void appCreatorChanged(QString appCreator);
+
+  private:
+  void clearEmptyElements();
+
+  QString m_localName{"newDevice"};
+  int m_wsPort{5678};
+  int m_oscPort{9998};
+
+  ossia::net::generic_device m_localDevice;
+  bool m_readPreset{false};
+  QString m_appAuthor;
+  QString m_appVersion;
+  QString m_appCreator;
 };
 
 

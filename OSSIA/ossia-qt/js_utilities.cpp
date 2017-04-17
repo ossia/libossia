@@ -544,9 +544,11 @@ QVariant ossia_to_qvariant::operator()(QVariant::Type type, const value& ossia_v
     }
     case QVariant::StringList:
     {
+      // TODO tuple of string
       break;
     }
     case QVariant::Date:
+      // TODO double ?
     default:
       break;
   }

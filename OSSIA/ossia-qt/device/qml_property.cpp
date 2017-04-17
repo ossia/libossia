@@ -157,12 +157,68 @@ void qml_property::updateQtValue()
   setValue_sig(m_address->cloneValue());
 }
 
+qml_context::val_type qml_property::valueType() const
+{
+  return m_valueType;
+}
+
+qml_context::access_mode qml_property::access() const
+{
+  return m_access;
+}
+
+qml_context::bounding_mode qml_property::bounding() const
+{
+  return m_bounding;
+}
+
+qml_context::repetition_filter qml_property::filterRepetitions() const
+{
+  return m_filterRepetitions;
+}
+
 void qml_property::setValue_slot(const value& v)
 {
   auto cur = m_targetProperty.read();
   auto next = ossia_to_qvariant{}((QVariant::Type)m_targetProperty.propertyType(), v);
   if(cur != next)
     m_targetProperty.write(next);
+}
+
+void qml_property::setValueType(qml_context::val_type valueType)
+{
+  if (m_valueType == valueType)
+    return;
+
+  m_valueType = valueType;
+  emit valueTypeChanged(valueType);
+}
+
+void qml_property::setAccess(qml_context::access_mode access)
+{
+  if (m_access == access)
+    return;
+
+  m_access = access;
+  emit accessChanged(access);
+}
+
+void qml_property::setBounding(qml_context::bounding_mode bounding)
+{
+  if (m_bounding == bounding)
+    return;
+
+  m_bounding = bounding;
+  emit boundingChanged(bounding);
+}
+
+void qml_property::setFilterRepetitions(qml_context::repetition_filter filterRepetitions)
+{
+  if (m_filterRepetitions == filterRepetitions)
+    return;
+
+  m_filterRepetitions = filterRepetitions;
+  emit filterRepetitionsChanged(filterRepetitions);
 }
 
 void qml_property::setupAddress(bool reading)

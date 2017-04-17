@@ -34,6 +34,14 @@ namespace ossia
 {
 namespace qt
 {
+
+template<std::size_t N>
+struct QArray {};
+
+template<> struct QArray<2> { using type = QVector2D; };
+template<> struct QArray<3> { using type = QVector3D; };
+template<> struct QArray<4> { using type = QVector4D; };
+
 /**
  * @brief The matching_ossia_enum struct
  *
@@ -129,6 +137,48 @@ struct qt_to_ossia
 struct ossia_to_qvariant
 {
   QVariant operator()(QVariant::Type type, const ossia::value& ossia_val);
+
+
+  QVariant operator()(impulse) const { return {}; }
+
+  QVariant operator()(int32_t val) const { return val; }
+
+  QVariant operator()(float val) const { return val; }
+  QVariant operator()(bool val) const { return val; }
+  QVariant operator()(char val) const { return val; }
+
+  QVariant operator()(const std::string& val) const { return QString::fromStdString(val); }
+
+
+
+  template<std::size_t N>
+  typename QArray<N>::type make_array(const std::array<float, N>& arr) const
+  {
+    typename QArray<N>::type vec;
+
+    for(int i = 0; i < N; i++)
+      vec[i] = arr[i];
+    return vec;
+  }
+
+  QVariant operator()(vec2f val) const { return make_array(val); }
+  QVariant operator()(vec3f val) const { return make_array(val); }
+  QVariant operator()(vec4f val) const { return make_array(val); }
+
+  QVariant operator()(const Destination& t) const { return {}; }
+  QVariant operator()() const { return {}; }
+
+  QVariant operator()(const std::vector<ossia::value>& val) const
+  {
+    QVariantList v;
+    v.reserve(val.size());
+    for(const ossia::value& e : val)
+    {
+      v.push_back(e.apply(*this));
+    }
+    return v;
+  }
+
 };
 
 

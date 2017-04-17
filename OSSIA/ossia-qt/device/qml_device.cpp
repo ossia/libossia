@@ -61,6 +61,21 @@ bool qml_device::readPreset() const
   return m_readPreset;
 }
 
+QString qml_device::appAuthor() const
+{
+  return m_appAuthor;
+}
+
+QString qml_device::appVersion() const
+{
+  return m_appVersion;
+}
+
+QString qml_device::appCreator() const
+{
+  return m_appCreator;
+}
+
 void qml_device::setWSPort(int localPort)
 {
   if (m_wsPort == localPort)
@@ -248,6 +263,33 @@ void qml_device::saveDevice(const QUrl& file)
   } catch(...) {
   }
   ossia::logger().error("Could not save device file: {}", file.toLocalFile().toStdString());
+}
+
+void qml_device::setAppAuthor(QString appAuthor)
+{
+  if (m_appAuthor == appAuthor)
+    return;
+
+  m_appAuthor = appAuthor;
+  emit appAuthorChanged(appAuthor);
+}
+
+void qml_device::setAppVersion(QString appVersion)
+{
+  if (m_appVersion == appVersion)
+    return;
+
+  m_appVersion = appVersion;
+  emit appVersionChanged(appVersion);
+}
+
+void qml_device::setAppCreator(QString appCreator)
+{
+  if (m_appCreator == appCreator)
+    return;
+
+  m_appCreator = appCreator;
+  emit appCreatorChanged(appCreator);
 }
 
 qml_singleton_device::qml_singleton_device()
