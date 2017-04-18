@@ -258,6 +258,7 @@ void qml_node_base::setCritical(bool critical)
 
 void qml_node_base::applyNodeAttributes()
 {
+  return;
   if(m_ossia_node)
   {
     ossia::net::set_description(*m_ossia_node, m_description.toStdString());

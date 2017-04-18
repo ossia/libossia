@@ -99,14 +99,14 @@ public:
 
   QQmlProperty m_targetProperty;
   ossia::net::address_base* m_address{};
-  qml_context::val_type m_valueType;
-  qml_context::access_mode m_access;
-  qml_context::bounding_mode m_bounding;
-  qml_context::repetition_filter m_filterRepetitions;
-  QVariant m_min;
-  QVariant m_max;
-  QVariantList m_values;
-  QString m_unit;
+  qml_context::val_type m_valueType{};
+  qml_context::access_mode m_access{};
+  qml_context::bounding_mode m_bounding{};
+  qml_context::repetition_filter m_filterRepetitions{};
+  QVariant m_min{};
+  QVariant m_max{};
+  QVariantList m_values{};
+  QString m_unit{};
 };
 
 }

@@ -326,12 +326,14 @@ void qml_property::setupAddress(bool reading)
 
       m_address->add_callback([this] (const ossia::value& v) { setValue_sig(v); });
       m_address->setValueQuiet(qt_to_ossia{}(m_targetProperty.read()));
+      /*
       m_address->setValueType(static_cast<ossia::val_type>(m_valueType));
       m_address->setAccessMode(static_cast<ossia::access_mode>(m_access));
       m_address->setBoundingMode(static_cast<ossia::bounding_mode>(m_bounding));
       m_address->setRepetitionFilter(static_cast<ossia::repetition_filter>(m_filterRepetitions));
       m_address->setUnit(ossia::parse_pretty_unit(m_unit.toStdString()));
       updateDomain();
+      */
     }
   }
 }
