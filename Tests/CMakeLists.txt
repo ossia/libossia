@@ -30,8 +30,13 @@ if(NOT OSSIA_CI)
     ossia_add_test(ClockTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ClockTest.cpp")
 endif()
 
-# These two lines are used to display the QMLs in the project view of IDEs
-file(GLOB_RECURSE QMLS "${CMAKE_CURRENT_SOURCE_DIR}/testdata/*.qml")
+# The following lines are used to display the QMLs in the project view of IDEs
+SET(QMLS "${CMAKE_CURRENT_SOURCE_DIR}/testdata/http/http_example.qml"
+         "${CMAKE_CURRENT_SOURCE_DIR}/testdata/qml/TestDevice.qml"
+         "${CMAKE_CURRENT_SOURCE_DIR}/testdata/qml/TestDevice2.qml"
+         "${CMAKE_CURRENT_SOURCE_DIR}/testdata/serial/serial_example.qml"
+         "${CMAKE_CURRENT_SOURCE_DIR}/testdata/websocket/ws_example.qml"
+         "${CMAKE_CURRENT_SOURCE_DIR}/testdata/websocket/ws_icmc.qml")
 add_custom_target(ossia_test_ui_qml SOURCES ${QMLS})
 
 ossia_add_test(CurveTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/CurveTest.cpp")
