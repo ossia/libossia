@@ -57,7 +57,11 @@ ossia::value midi_address::cloneValue() const
 
 address_base& midi_address::setValue(const value& v)
 {
-  mValue = v;
+  if(mType == v.getType())
+    mValue = v;
+  else
+    mValue = ossia::convert(v, mType);
+
   send(mValue);
   return *this;
 }

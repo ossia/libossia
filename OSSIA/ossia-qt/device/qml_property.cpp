@@ -13,19 +13,7 @@ namespace qt
 void qml_property::resetNode()
 {
   const bool reading = m_device ? m_device->readPreset() : false;
-  m_node.clear();
-  if(m_ossia_node)
-  {
-    auto par = m_ossia_node->getParent();
-    if(par)
-    {
-      auto node = m_ossia_node;
-      m_address = nullptr;
-      m_ossia_node = nullptr;
-      if(!reading)
-        par->removeChild(*node);
-    }
-  }
+  clearNode(reading);
 
   // Creation may not have finished yet.
   if(m_parentNode && !m_parentNode->ossiaNode())
@@ -99,6 +87,29 @@ void qml_property::resetNode()
   // In case something went wrong...
   setPath({});
   m_address = nullptr;
+}
+
+void qml_property::remapNode()
+{
+  clearNode(false);
+
+  if(m_device && m_userRequestedNode.startsWith('/'))
+  {
+    m_ossia_node = ossia::net::find_node(
+                     m_device->device().getRootNode(),
+                     m_userRequestedNode.toStdString());
+    if(m_ossia_node)
+    {
+      m_address = m_ossia_node->getAddress();
+      if(m_targetProperty.hasNotifySignal())
+      {
+        m_targetProperty.connectNotifySignal(this, SLOT(qtVariantChanged()));
+      }
+
+      m_address->add_callback([this] (const ossia::value& v) { setValue_sig(v); });
+      m_address->setValueQuiet(qt_to_ossia{}(m_targetProperty.read()));
+    }
+  }
 }
 
 qml_property::qml_property(QQuickItem *parent)
@@ -208,10 +219,13 @@ QString qml_property::unit() const
 
 void qml_property::setValue_slot(const value& v)
 {
-  auto cur = m_targetProperty.read();
-  auto next = ossia_to_qvariant{}((QVariant::Type)m_targetProperty.propertyType(), v);
-  if(cur != next)
-    m_targetProperty.write(next);
+  if(!m_view)
+  {
+    auto cur = m_targetProperty.read();
+    auto next = ossia_to_qvariant{}((QVariant::Type)m_targetProperty.propertyType(), v);
+    if(cur != next)
+      m_targetProperty.write(next);
+  }
 }
 
 void qml_property::setValueType(qml_context::val_type valueType)
@@ -326,7 +340,7 @@ void qml_property::setupAddress(bool reading)
 
       m_address->add_callback([this] (const ossia::value& v) { setValue_sig(v); });
       m_address->setValueQuiet(qt_to_ossia{}(m_targetProperty.read()));
-      /*
+      /* TODO set them all as optional<> and only update them if they are set.
       m_address->setValueType(static_cast<ossia::val_type>(m_valueType));
       m_address->setAccessMode(static_cast<ossia::access_mode>(m_access));
       m_address->setBoundingMode(static_cast<ossia::bounding_mode>(m_bounding));
@@ -350,6 +364,23 @@ void qml_property::on_node_deleted(const net::node_base&)
 {
   m_address = nullptr;
   m_ossia_node = nullptr;
+}
+
+void qml_property::clearNode(bool reading)
+{
+  m_node.clear();
+  if(m_ossia_node)
+  {
+    auto par = m_ossia_node->getParent();
+    if(par)
+    {
+      auto node = m_ossia_node;
+      m_address = nullptr;
+      m_ossia_node = nullptr;
+      if(!reading)
+        par->removeChild(*node);
+    }
+  }
 }
 
 }

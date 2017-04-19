@@ -1,3 +1,4 @@
 module Ossia
 Node 1.0 qrc:///qml/Node.qml
+Reader 1.0 qrc:///qml/Reader.qml
 plugin ossia

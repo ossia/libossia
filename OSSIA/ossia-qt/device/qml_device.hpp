@@ -4,6 +4,7 @@
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <QPointer>
+#include <QVariantMap>
 #include <hopscotch_map.h>
 namespace ossia
 {
@@ -28,11 +29,12 @@ class OSSIA_EXPORT qml_device :
 public:
   qml_device(QObject* parent = nullptr);
   ~qml_device();
+  void setupLocal();
   void updateServer();
 
-  ossia::net::generic_device& device();
-  const ossia::net::generic_device& device() const;
-  ossia::net::local_protocol& localProtocol() const;
+  ossia::net::device_base& device();
+  const ossia::net::device_base& device() const;
+  ossia::net::local_protocol* localProtocol() const;
 
   int wsPort() const;
   int oscPort() const;
@@ -44,16 +46,20 @@ public:
   tsl::hopscotch_map<qml_model_property*, QPointer<qml_model_property>> models;
 
   QString appAuthor() const;
-
   QString appVersion() const;
-
   QString appCreator() const;
 
-  public slots:
+public slots:
+  void openOSCQueryClient(QString address, int port);
+  void openMIDIInputDevice(int device);
+  void openMIDIOutputDevice(int device);
+  QVariantMap getMIDIInputDevices() const;
+  QVariantMap getMIDIOutputDevices() const;
   void setWSPort(int wsPort);
   void setOSCPort(int oscPort);
 
   void rescan(QObject* root);
+  void remap(QObject* root);
 
   void setReadPreset(bool readPreset);
 
@@ -62,31 +68,27 @@ public:
   void saveDevice(const QUrl& file);
 
   void setAppAuthor(QString appAuthor);
-
   void setAppVersion(QString appVersion);
-
   void setAppCreator(QString appCreator);
 
-  signals:
+signals:
   void WSPortChanged(int wsPort);
   void OSCPortChanged(int oscPort);
 
   void readPresetChanged(bool readPreset);
 
   void appAuthorChanged(QString appAuthor);
-
   void appVersionChanged(QString appVersion);
-
   void appCreatorChanged(QString appCreator);
 
-  private:
+private:
   void clearEmptyElements();
 
   QString m_localName{"newDevice"};
   int m_wsPort{5678};
   int m_oscPort{9998};
 
-  ossia::net::generic_device m_localDevice;
+  std::unique_ptr<ossia::net::device_base> m_device;
   bool m_readPreset{false};
   QString m_appAuthor;
   QString m_appVersion;

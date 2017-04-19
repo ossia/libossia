@@ -22,31 +22,38 @@ endfunction()
 
 install_headers_rec("${API_HEADERS}")
 if(OSSIA_PROTOCOL_MIDI)
-    install_headers_rec("${OSSIA_MIDI_HEADERS}")
+  install_headers_rec("${OSSIA_MIDI_HEADERS}")
 endif()
 if(OSSIA_PROTOCOL_HTTP)
-    install_headers_rec("${OSSIA_HTTP_HEADERS}")
+  install_headers_rec("${OSSIA_HTTP_HEADERS}")
 endif()
 if(OSSIA_PROTOCOL_SERIAL)
-    install_headers_rec("${OSSIA_SERIAL_HEADERS}")
+  install_headers_rec("${OSSIA_SERIAL_HEADERS}")
 endif()
 if(OSSIA_PROTOCOL_OSCQUERY)
   install_headers_rec("${OSSIA_OSCQUERY_HEADERS}")
 endif()
 if(OSSIA_PROTOCOL_WEBSOCKETS)
-    install_headers_rec("${OSSIA_WS_CLIENT_HEADERS}")
+  install_headers_rec("${OSSIA_WS_CLIENT_HEADERS}")
 endif()
 if(OSSIA_C)
-    install_headers_rec("${OSSIA_C_HEADERS}")
+  install_headers_rec("${OSSIA_C_HEADERS}")
+endif()
+if(OSSIA_DATAFLOW)
+  install_headers_rec("${OSSIA_DATAFLOW_HEADERS}")
 endif()
 if(OSSIA_QT)
-    install_headers_rec("${OSSIA_QT_HEADERS}")
-    install(
-        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/qmldir
-        DESTINATION lib)
+  install_headers_rec("${OSSIA_QT_HEADERS}")
+  install(
+      FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/qmldir
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/Node.qml
+      DESTINATION lib)
 endif()
 # Install export header
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ossia_export.h
+install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/ossia_export.h
+        ${CMAKE_CURRENT_BINARY_DIR}/ossia-config.hpp
         DESTINATION include/
         COMPONENT Devel)
 

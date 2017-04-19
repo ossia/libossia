@@ -1,6 +1,6 @@
 #if defined(QT_CORE_LIB)
 #include "js_utilities.hpp"
-
+#include <ossia/editor/value/value_conversion.hpp>
 namespace ossia
 {
 namespace net
@@ -455,91 +455,92 @@ QVariant ossia_to_qvariant::operator()(QVariant::Type type, const value& ossia_v
   switch(type)
   {
     case QVariant::Bool:
-      return QVariant::fromValue(ossia_val.get<bool>());
+      return QVariant::fromValue(convert<bool>(ossia_val));
     case QVariant::Time:
-      return QVariant::fromValue(QTime().addMSecs(ossia_val.get<int>()));
+      return QVariant::fromValue(QTime().addMSecs(convert<int>(ossia_val)));
     case QVariant::Int:
-      return QVariant::fromValue(ossia_val.get<int>());
+      return QVariant::fromValue(convert<int>(ossia_val));
     case QVariant::UInt:
-      return QVariant::fromValue((quint32)ossia_val.get<int>());
+      return QVariant::fromValue((quint32)convert<int>(ossia_val));
     case QVariant::ULongLong:
-      return QVariant::fromValue((qlonglong)ossia_val.get<int>());
+      return QVariant::fromValue((qlonglong)convert<int>(ossia_val));
     case QVariant::Char:
-      return QVariant::fromValue(QChar::fromLatin1(ossia_val.get<char>()));
+      return QVariant::fromValue(QChar::fromLatin1(convert<char>(ossia_val)));
     case QVariant::String:
-      return QVariant::fromValue(QString::fromStdString(ossia_val.get<std::string>()));
+      return QVariant::fromValue(QString::fromStdString(convert<std::string>(ossia_val)));
     case QVariant::ByteArray:
-      return QVariant::fromValue(QByteArray::fromStdString(ossia_val.get<std::string>()));
+      return QVariant::fromValue(QByteArray::fromStdString(convert<std::string>(ossia_val)));
     case QVariant::Double:
-      return QVariant::fromValue((double)ossia_val.get<float>());
+      return QVariant::fromValue(convert<double>(ossia_val));
     case QVariant::Color:
     {
-      auto val = ossia_val.get<vec4f>();
+      auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QColor::fromRgbF(val[1], val[2], val[3], val[0]));
     }
     case QVariant::Point:
     {
-      auto val = ossia_val.get<vec2f>();
+      auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QPoint(val[0], val[1]));
     }
     case QVariant::PointF:
     {
-      auto val = ossia_val.get<vec2f>();
+      auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QPointF(val[0], val[1]));
     }
     case QVariant::Vector2D:
     {
-      auto val = ossia_val.get<vec2f>();
+      auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QVector2D(val[0], val[1]));
     }
       break;
     case QVariant::Vector3D:
     {
-      auto val = ossia_val.get<vec3f>();
+      auto val = convert<vec3f>(ossia_val);
       return QVariant::fromValue(QVector3D(val[0], val[1], val[2]));
     }
     case QVariant::Vector4D:
     {
-      auto val = ossia_val.get<vec4f>();
+      auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QVector4D(val[0], val[1], val[2], val[3]));
     }
     case QVariant::Quaternion:
     {
-      auto val = ossia_val.get<vec4f>();
+      auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QQuaternion(val[0], val[1], val[2], val[3]));
     }
     case QVariant::Line:
     {
-      auto val = ossia_val.get<vec4f>();
+      auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QLine(val[0], val[1], val[2], val[3]));
     }
     case QVariant::LineF:
     {
-      auto val = ossia_val.get<vec4f>();
+      auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QLineF(val[0], val[1], val[2], val[3]));
     }
     case QVariant::Rect:
     {
-      auto val = ossia_val.get<vec4f>();
+      auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QRect(val[0], val[1], val[2], val[3]));
     }
     case QVariant::RectF:
     {
-      auto val = ossia_val.get<vec4f>();
+      auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QRectF(val[0], val[1], val[2], val[3]));
     }
     case QVariant::Size:
     {
-      auto val = ossia_val.get<vec2f>();
+      auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QSize(val[0], val[1]));
     }
     case QVariant::SizeF:
     {
-      auto val = ossia_val.get<vec2f>();
+      auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QSizeF(val[0], val[1]));
     }
     case QVariant::List:
     {
+      // TODO
       break;
     }
     case QVariant::StringList:

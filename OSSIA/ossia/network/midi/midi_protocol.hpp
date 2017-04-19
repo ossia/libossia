@@ -10,7 +10,6 @@
 #include <cassert>
 
 #include <atomic>
-
 namespace mm
 {
 class MidiInput;

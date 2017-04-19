@@ -30,6 +30,10 @@ if(NOT "${OSSIA_NO_QT}")
 endif()
 
 ### Protocol setup ###
+# These two are always here:
+set(OSSIA_PROTOCOL_OSC 1)
+set(OSSIA_PROTOCOL_MINUIT 1)
+
 if(IOS OR CMAKE_SYSTEM_NAME MATCHES Emscripten)
   set(OSSIA_PROTOCOL_MIDI FALSE)
   set(OSSIA_PROTOCOL_HTTP FALSE)
@@ -143,23 +147,23 @@ if(OSSIA_C)
 endif()
 
 if(OSSIA_JAVA)
-    target_sources(ossia PRIVATE ${OSSIA_JAVA_HEADERS} ${OSSIA_JAVA_SRCS})
-    target_include_directories(ossia PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java"
-        )
-    target_include_directories(ossia SYSTEM PRIVATE
-        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/jni_hpp/include>
-        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/jni_hpp/test>
-        )
+  target_sources(ossia PRIVATE ${OSSIA_JAVA_HEADERS} ${OSSIA_JAVA_SRCS})
+  target_include_directories(ossia PRIVATE
+      "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java"
+  )
+  target_include_directories(ossia SYSTEM PRIVATE
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/jni_hpp/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/jni_hpp/test>
+  )
 endif()
 
 if(OSSIA_QT)
-    qt5_add_resources(OSSIA_QT_QRCS "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_resources.qrc")
-    target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS} ${OSSIA_QT_QRCS})
-    target_link_libraries(ossia PUBLIC Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick)
-    target_include_directories(ossia PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt"
-        )
+  qt5_add_resources(OSSIA_QT_QRCS "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_resources.qrc")
+  target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS} ${OSSIA_QT_QRCS})
+  target_link_libraries(ossia PUBLIC Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick)
+  target_include_directories(ossia PRIVATE
+      "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt"
+   )
 endif()
 
 if(OSSIA_DNSSD)
@@ -168,11 +172,11 @@ if(OSSIA_DNSSD)
   get_target_property(SERVUS_COMPILE_DEFINITIONS Servus INTERFACE_COMPILE_DEFINITIONS)
   target_link_libraries(ossia PRIVATE ${SERVUS_LINK_LIBRARIES})
   target_include_directories(ossia PRIVATE ${OSSIA_3RDPARTY_FOLDER}/Servus)
-  target_compile_definitions(ossia PRIVATE ${SERVUS_COMPILE_DEFINITIONS} OSSIA_DNSSD)
+  target_compile_definitions(ossia PRIVATE ${SERVUS_COMPILE_DEFINITIONS})
 endif()
 
 if(OSSIA_DATAFLOW)
-    target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
+  target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
 endif()
 # Useful properties
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")
@@ -233,6 +237,7 @@ else()
 endif()
 
 generate_export_header(ossia BASE_NAME OSSIA)
+configure_file(ossia-config.hpp.in ossia-config.hpp)
 
 target_include_directories(ossia
     INTERFACE

@@ -292,7 +292,11 @@ bool midi_protocol::push(const address_base& address)
   }
 
   return true;
+  } catch (const std::exception& e) {
+    ossia::logger().error("Error when pushing midi message: {}", e.what());
+    return false;
   } catch (...) {
+    ossia::logger().error("Error when pushing midi message");
     return false; // TODO log error.
   }
 }

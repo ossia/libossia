@@ -19,6 +19,7 @@ class qml_property :
   Q_OBJECT
   Q_INTERFACES(QQmlPropertyValueSource)
 
+  Q_PROPERTY(bool view READ view WRITE setView NOTIFY viewChanged)
   Q_PROPERTY(QVariant min READ min WRITE setMin NOTIFY minChanged FINAL)
   Q_PROPERTY(QVariant max READ max WRITE setMax NOTIFY maxChanged FINAL)
   Q_PROPERTY(QVariantList values READ values WRITE setValues NOTIFY valuesChanged FINAL)
@@ -34,26 +35,27 @@ public:
   void setTarget(const QQmlProperty &prop) override;
 
   void resetNode() override;
+  void remapNode();
+
   void setDevice(qml_device* device) override;
 
   void updateQtValue();
+
   qml_context::val_type valueType() const;
-
   qml_context::access_mode access() const;
-
   qml_context::bounding_mode bounding() const;
-
   qml_context::repetition_filter filterRepetitions() const;
-
   QVariant min() const;
-
   QVariant max() const;
-
   QVariantList values() const;
-
   QString unit() const;
 
-  signals:
+  bool view() const
+  {
+    return m_view;
+  }
+
+signals:
   void setValue_sig(const value&);
 
   void valueTypeChanged(qml_context::val_type valueType);
@@ -72,7 +74,9 @@ public:
 
   void unitChanged(QString unit);
 
-  public slots:
+  void viewChanged(bool view);
+
+public slots:
   void qtVariantChanged();
   void setValue_slot(const value&);
 
@@ -92,10 +96,21 @@ public:
 
   void setUnit(QString unit);
 
-  private:
+  void setView(bool view)
+  {
+    if (m_view == view)
+      return;
+
+    m_view = view;
+    emit viewChanged(view);
+  }
+
+private:
   void setupAddress(bool reading);
   void updateDomain();
   void on_node_deleted(const ossia::net::node_base&);
+  void clearNode(bool reading);
+
 
   QQmlProperty m_targetProperty;
   ossia::net::address_base* m_address{};
@@ -107,6 +122,7 @@ public:
   QVariant m_max{};
   QVariantList m_values{};
   QString m_unit{};
+  bool m_view;
 };
 
 }

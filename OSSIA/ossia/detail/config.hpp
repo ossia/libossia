@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia-config.hpp>
 #include <type_traits>
 #define BOOST_MATH_DISABLE_FLOAT128
 
