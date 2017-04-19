@@ -119,30 +119,30 @@ std::vector<QQuickItem*> items(QQuickItem* root)
 
 void qml_device::rescan(QObject* root)
 {
-    if(auto item = qobject_cast<QQuickItem*>(root))
+  if(auto item = qobject_cast<QQuickItem*>(root))
+  {
+    for(auto cld : items(item))
     {
-      for(auto cld : items(item))
+      if(auto qn = qobject_cast<qml_node_base*>(cld))
       {
-        if(auto qn = qobject_cast<qml_node_base*>(cld))
-        {
-          qn->resetNode();
-        }
-      }
-
-      {
-        auto props = properties;
-        for(auto obj : props)
-        {
-          if(obj.second) obj.first->resetNode();
-          else properties.erase(obj.first);
-        }
-      }
-
-      //for(auto obj : models)
-      {
-        // TODO ?
+        qn->resetNode();
       }
     }
+
+    {
+      auto props = properties;
+      for(auto obj : props)
+      {
+        if(obj.second) obj.first->resetNode();
+        else properties.erase(obj.first);
+      }
+    }
+
+    //for(auto obj : models)
+    {
+      // TODO ?
+    }
+  }
 }
 
 void qml_device::setReadPreset(bool readPreset)
@@ -190,59 +190,55 @@ void qml_device::clearEmptyElements()
 
 }
 
-void qml_device::loadPreset(QObject* root, const QUrl& file)
+void qml_device::loadPreset(QObject* root, QString file)
 {
   m_readPreset = false;
   rescan(root);
   try {
-    if(file.isLocalFile())
+    QFile f(file);
+    if(f.open(QIODevice::ReadOnly))
     {
-      QFile f(file.toLocalFile());
-      if(f.open(QIODevice::ReadOnly))
+      // First reset all item models since they will be in the preset
       {
-        // First reset all item models since they will be in the preset
+        auto model_list = models;
+        for(auto model : model_list)
         {
-          auto model_list = models;
-          for(auto model : model_list)
-          {
-            if(model.second) model.first->setCount(0);
-            else models.erase(model.first);
-          }
+          if(model.second) model.first->setCount(0);
+          else models.erase(model.first);
         }
-        m_readPreset = true;
-
-        // Then load the preset
-        auto kv = ossia::presets::read_json(f.readAll().toStdString());
-        ossia::devices::apply_preset(device(), kv, ossia::devices::keep_arch_off);
-
-
-        // Clear empty elements that may have been removed
-        clearEmptyElements();
-
-        // Now as long as we are creating new models, update their count
-        std::size_t cur_model_size = models.size();
-        std::size_t prev_model_size;
-        do {
-          prev_model_size = cur_model_size;
-          auto mlist = models;
-          for(auto model : mlist)
-          {
-            if(model.second) model.first->updateCount();
-            QCoreApplication::processEvents();
-          }
-          cur_model_size = models.size();
-        } while(cur_model_size != prev_model_size);
-
-        clearEmptyElements();
-
-        // Finallt do a push of all properties registered
-        rescan(root);
-        return;
       }
+      m_readPreset = true;
+
+      // Then load the preset
+      auto kv = ossia::presets::read_json(f.readAll().toStdString());
+      ossia::devices::apply_preset(device(), kv, ossia::devices::keep_arch_off);
+
+      // Clear empty elements that may have been removed
+      clearEmptyElements();
+
+      // Now as long as we are creating new models, update their count
+      std::size_t cur_model_size = models.size();
+      std::size_t prev_model_size;
+      do {
+        prev_model_size = cur_model_size;
+        auto mlist = models;
+        for(auto model : mlist)
+        {
+          if(model.second) model.first->updateCount();
+          QCoreApplication::processEvents();
+        }
+        cur_model_size = models.size();
+      } while(cur_model_size != prev_model_size);
+
+      clearEmptyElements();
+
+      // Finallt do a push of all properties registered
+      rescan(root);
+      return;
     }
   } catch(std::exception& e) { ossia::logger().error("{}", e.what());
   } catch(...) { }
-  ossia::logger().error("Could not load preset file: {}", file.toLocalFile().toStdString());
+  ossia::logger().error("Could not load preset file: {}", file.toStdString());
 }
 
 void qml_device::saveDevice(const QUrl& file)

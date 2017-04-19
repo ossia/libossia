@@ -13,6 +13,7 @@ option(OSSIA_LTO "Link-time optimizations. Fails on Windows." OFF)
 option(OSSIA_OSX_FAT_LIBRARIES "Build 32 and 64 bit fat libraries on OS X" OFF)
 option(OSSIA_OSX_RETROCOMPATIBILITY "Build for older OS X versions" OFF)
 option(OSSIA_MOST_STATIC "Try to make binaries that are mostly static" OFF)
+option(OSSIA_DATAFLOW "Dataflow features" ON)
 
 # Bindings :
 option(OSSIA_JAVA "Build JNI bindings" OFF)
@@ -29,7 +30,7 @@ option(OSSIA_PROTOCOL_HTTP "Enable HTTP protocol" ON) # Requires Qt
 option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF) # Requires Qt
 option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF) # Requires Qt
 option(OSSIA_NO_QT "Disable all the features that may require Qt" OFF)
-
+option(OSSIA_DNSSD "Enable DNSSD support" ON)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
 
 include(Sanitize)
@@ -70,6 +71,11 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
   set(LINKER_IS_GOLD 0)
   set(OSSIA_PD 0)
   set(OSSIA_PYTHON 0)
+  set(OSSIA_DATAFLOW 0)
+  set(OSSIA_DNSSD 0)
+  set(OSSIA_PROTOCOL_MIDI 0)
+  set(OSSIA_DISABLE_COTIRE 1)
+  set(ANDROID 1)
 else()
   check_cxx_compiler_flag("-fuse-ld=lld" LLD_LINKER_SUPPORTED)
   check_cxx_compiler_flag("-fuse-ld=gold" GOLD_LINKER_SUPPORTED)
@@ -104,7 +110,7 @@ endif()
 # Common setup
 set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
-if(${CMAKE_VERSION} VERSION_LESS 3.8.0)
+if(${CMAKE_VERSION} VERSION_LESS 3.8.0 OR ANDROID)
   set(CMAKE_CXX_STANDARD 14)
   if(NOT MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")

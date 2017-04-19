@@ -25,7 +25,9 @@ if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
 endif()
 
 add_subdirectory(3rdparty/oscpack EXCLUDE_FROM_ALL)
-add_subdirectory(3rdparty/Servus EXCLUDE_FROM_ALL)
+if(OSSIA_DNSSD)
+  add_subdirectory(3rdparty/Servus EXCLUDE_FROM_ALL)
+endif()
 
 # Main library
 add_definitions(-DFMT_HEADER_ONLY=1)

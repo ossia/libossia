@@ -58,7 +58,7 @@ public:
   void setReadPreset(bool readPreset);
 
   void savePreset(const QUrl& file);
-  void loadPreset(QObject* root, const QUrl& file);
+  void loadPreset(QObject* root, QString file);
   void saveDevice(const QUrl& file);
 
   void setAppAuthor(QString appAuthor);
