@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>qml/Node.qml</file>
-        <file>qml/Reader.qml</file>
-    </qresource>
-</RCC>

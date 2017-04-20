@@ -18,7 +18,7 @@ class qml_node_base
   Q_OBJECT
   Q_PROPERTY(QString node READ node WRITE setNode NOTIFY nodeChanged FINAL)
   Q_PROPERTY(QString path READ path NOTIFY pathChanged FINAL)
-  Q_PROPERTY(qml_device* device READ device WRITE setDevice NOTIFY deviceChanged)
+  Q_PROPERTY(QObject* device READ device WRITE setDevice NOTIFY deviceChanged)
   Q_PROPERTY(qml_node_base* parentNode READ parentNode WRITE setParentNode NOTIFY parentNodeChanged FINAL)
 
   Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged FINAL)
@@ -36,7 +36,7 @@ public:
   ~qml_node_base();
 
   QString node() const;
-  qml_device* device() const;
+  QObject* device() const;
   ossia::net::node_base* ossiaNode();
 
   QString path() const;
@@ -56,7 +56,7 @@ public:
 
 public slots:
   void setNode(QString node);
-  virtual void setDevice(qml_device* device);
+  virtual void setDevice(QObject* device);
 
   void setParentNode(qml_node_base* parentNode);
   void setPriority(qint32 priority);

@@ -158,8 +158,7 @@ if(OSSIA_JAVA)
 endif()
 
 if(OSSIA_QT)
-  qt5_add_resources(OSSIA_QT_QRCS "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_resources.qrc")
-  target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS} ${OSSIA_QT_QRCS})
+  target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS})
   target_link_libraries(ossia PUBLIC Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick)
   target_include_directories(ossia PRIVATE
       "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt"

@@ -610,6 +610,8 @@ value qt_to_ossia::operator()(const QVariant& v)
       return operator()(v.toStringList());
     case QVariant::Date:
       return operator()(v.toDate());
+//    case 1024: // QJSValue -> seems to crash
+//      return value_from_jsvalue(v.value<QJSValue>());
     default:
       return operator()();
   }

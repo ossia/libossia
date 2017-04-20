@@ -144,14 +144,12 @@ void qml_property::qtVariantChanged()
   }
 }
 
-void qml_property::setDevice(qml_device *device)
+void qml_property::setDevice(QObject* device)
 {
   auto olddev = m_device;
-  auto newdev = device;
+  auto newdev = qobject_cast<qml_device*>(device);
   if(olddev != newdev)
   {
-    qml_node_base::setDevice(device);
-
     if(olddev)
     {
       olddev->properties.erase(this);
@@ -161,6 +159,8 @@ void qml_property::setDevice(qml_device *device)
     {
       newdev->properties.insert({this, this});
     }
+
+    qml_node_base::setDevice(device);
   }
 }
 
@@ -219,13 +219,11 @@ QString qml_property::unit() const
 
 void qml_property::setValue_slot(const value& v)
 {
-  if(!m_view)
-  {
-    auto cur = m_targetProperty.read();
-    auto next = ossia_to_qvariant{}((QVariant::Type)m_targetProperty.propertyType(), v);
-    if(cur != next)
-      m_targetProperty.write(next);
-  }
+  auto cur = m_targetProperty.read();
+  auto next = ossia_to_qvariant{}((QVariant::Type)m_targetProperty.propertyType(), v);
+  if(cur != next)
+    m_targetProperty.write(next);
+
 }
 
 void qml_property::setValueType(qml_context::val_type valueType)

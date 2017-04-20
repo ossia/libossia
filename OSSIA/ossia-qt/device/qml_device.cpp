@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <ossia-qt/qml_context.hpp>
 #include <ossia-qt/device/qml_property.hpp>
+#include <ossia-qt/device/qml_property_reader.hpp>
 #include <ossia-qt/device/qml_model_property.hpp>
 #include <ossia/network/common/debug.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
@@ -22,10 +23,9 @@ qml_device::qml_device(QObject* parent):
   QObject{parent},
   m_device{std::make_unique<ossia::net::generic_device>(std::make_unique<ossia::net::local_protocol>(), "device")}
 {
-  updateServer();
 }
 
-void qml_device::updateServer()
+void qml_device::openOSCQueryServer()
 {
   try {
     if(auto local = localProtocol())
@@ -134,11 +134,12 @@ void qml_device::openMIDIOutputDevice(int port)
     auto dev = std::make_unique<midi_device>(std::unique_ptr<ossia::net::protocol_base>(proto));
     dev->updateNamespace();
     m_device = std::move(dev);
+
     return;
   } catch(std::exception& e) {
-    ossia::logger().error("qml_device::openMIDIInputDevice: {}", e.what());
+    ossia::logger().error("qml_device::openMIDIOutputDevice: {}", e.what());
   } catch(...) {
-    ossia::logger().error("qml_device::openMIDIInputDevice: error");
+    ossia::logger().error("qml_device::openMIDIOutputDevice: error");
   }
 #endif
 
@@ -186,7 +187,6 @@ void qml_device::setWSPort(int localPort)
 
   m_wsPort = localPort;
   emit WSPortChanged(localPort);
-  updateServer();
 }
 
 void qml_device::setOSCPort(int remotePort)
@@ -196,7 +196,6 @@ void qml_device::setOSCPort(int remotePort)
 
   m_oscPort = remotePort;
   emit OSCPortChanged(remotePort);
-  updateServer();
 }
 
 std::vector<QQuickItem*> items(QQuickItem* root)
@@ -250,11 +249,11 @@ void qml_device::rescan(QObject* root)
 
 void qml_device::remap(QObject* root)
 {
-  auto props = properties;
+  auto props = reader_properties;
   for(auto obj : props)
   {
-    if(obj.second) obj.first->remapNode();
-    else properties.erase(obj.first);
+    if(obj.second) obj.first->resetNode();
+    else reader_properties.erase(obj.first);
   }
 }
 

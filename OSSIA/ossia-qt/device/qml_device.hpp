@@ -12,6 +12,7 @@ namespace qt
 {
 class qml_node;
 class qml_property;
+class qml_property_reader;
 class qml_model_property;
 class qml_node_base;
 class OSSIA_EXPORT qml_device :
@@ -30,7 +31,6 @@ public:
   qml_device(QObject* parent = nullptr);
   ~qml_device();
   void setupLocal();
-  void updateServer();
 
   ossia::net::device_base& device();
   const ossia::net::device_base& device() const;
@@ -43,6 +43,7 @@ public:
 
   tsl::hopscotch_map<qml_node*, QPointer<qml_node>> nodes;
   tsl::hopscotch_map<qml_property*, QPointer<qml_property>> properties;
+  tsl::hopscotch_map<qml_property_reader*, QPointer<qml_property_reader>> reader_properties;
   tsl::hopscotch_map<qml_model_property*, QPointer<qml_model_property>> models;
 
   QString appAuthor() const;
@@ -50,6 +51,7 @@ public:
   QString appCreator() const;
 
 public slots:
+  void openOSCQueryServer();
   void openOSCQueryClient(QString address, int port);
   void openMIDIInputDevice(int device);
   void openMIDIOutputDevice(int device);

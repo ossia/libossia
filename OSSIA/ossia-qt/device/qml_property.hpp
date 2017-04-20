@@ -19,7 +19,6 @@ class qml_property :
   Q_OBJECT
   Q_INTERFACES(QQmlPropertyValueSource)
 
-  Q_PROPERTY(bool view READ view WRITE setView NOTIFY viewChanged)
   Q_PROPERTY(QVariant min READ min WRITE setMin NOTIFY minChanged FINAL)
   Q_PROPERTY(QVariant max READ max WRITE setMax NOTIFY maxChanged FINAL)
   Q_PROPERTY(QVariantList values READ values WRITE setValues NOTIFY valuesChanged FINAL)
@@ -37,7 +36,7 @@ public:
   void resetNode() override;
   void remapNode();
 
-  void setDevice(qml_device* device) override;
+  void setDevice(QObject* device) override;
 
   void updateQtValue();
 
@@ -50,67 +49,36 @@ public:
   QVariantList values() const;
   QString unit() const;
 
-  bool view() const
-  {
-    return m_view;
-  }
-
 signals:
   void setValue_sig(const value&);
 
   void valueTypeChanged(qml_context::val_type valueType);
-
   void accessChanged(qml_context::access_mode access);
-
   void boundingChanged(qml_context::bounding_mode bounding);
-
   void filterRepetitionsChanged(qml_context::repetition_filter filterRepetitions);
-
   void minChanged(QVariant min);
-
   void maxChanged(QVariant max);
-
   void valuesChanged(QVariantList values);
-
   void unitChanged(QString unit);
-
-  void viewChanged(bool view);
 
 public slots:
   void qtVariantChanged();
   void setValue_slot(const value&);
 
   void setValueType(qml_context::val_type valueType);
-
   void setAccess(qml_context::access_mode access);
-
   void setBounding(qml_context::bounding_mode bounding);
-
   void setFilterRepetitions(qml_context::repetition_filter filterRepetitions);
-
   void setMin(QVariant min);
-
   void setMax(QVariant max);
-
   void setValues(QVariantList values);
-
   void setUnit(QString unit);
-
-  void setView(bool view)
-  {
-    if (m_view == view)
-      return;
-
-    m_view = view;
-    emit viewChanged(view);
-  }
 
 private:
   void setupAddress(bool reading);
   void updateDomain();
   void on_node_deleted(const ossia::net::node_base&);
   void clearNode(bool reading);
-
 
   QQmlProperty m_targetProperty;
   ossia::net::address_base* m_address{};
@@ -122,7 +90,6 @@ private:
   QVariant m_max{};
   QVariantList m_values{};
   QString m_unit{};
-  bool m_view;
 };
 
 }

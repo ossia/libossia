@@ -1,5 +1,4 @@
-import Ossia 1.0
+import Ossia 1.0 as Ossia
 
-Property {
-  view: true
+Ossia.ReaderImpl {
 }

@@ -8,7 +8,10 @@ namespace ossia
 {
 namespace net
 {
-address_base::~address_base() = default;
+address_base::~address_base()
+{
+
+}
 
 static void
 getAddressFromNode_rec(const node_base& n, std::string& str)

@@ -4,6 +4,7 @@
 #include <ossia-qt/js_utilities.hpp>
 #include <ossia-qt/device/qml_device.hpp>
 #include <ossia-qt/device/qml_property.hpp>
+#include <ossia-qt/device/qml_property_reader.hpp>
 #include <ossia-qt/device/qml_node.hpp>
 #include <ossia-qt/device/qml_model_property.hpp>
 #include <ossia/context.hpp>
@@ -27,6 +28,7 @@ void qml_plugin::reg(const char* uri)
   qmlRegisterType<qt::qml_node>(uri, 1, 0, "NodeImpl");
   qmlRegisterType<qt::qml_device>(uri, 1, 0, "Device");
   qmlRegisterType<qt::qml_property>(uri, 1, 0, "Property");
+  qmlRegisterType<qt::qml_property_reader>(uri, 1, 0, "ReaderImpl");
   qmlRegisterType<qt::qml_model_property>(uri, 1, 0, "Instances");
 }
 

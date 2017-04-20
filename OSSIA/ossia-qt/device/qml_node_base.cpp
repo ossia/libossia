@@ -35,7 +35,7 @@ QString qml_node_base::node() const
   return m_node;
 }
 
-qml_device* qml_node_base::device() const
+QObject* qml_node_base::device() const
 {
   return m_device;
 }
@@ -142,14 +142,14 @@ void qml_node_base::setNode(QString node)
   emit nodeChanged(node);
 }
 
-void qml_node_base::setDevice(qml_device* device)
+void qml_node_base::setDevice(QObject* device)
 {
   if (m_device == device)
     return;
 
-  m_device = device;
+  m_device = qobject_cast<qml_device*>(device);
   resetNode();
-  emit deviceChanged(device);
+  emit deviceChanged(m_device);
 }
 
 
@@ -160,7 +160,7 @@ void qml_node_base::setParentNode(qml_node_base* parentNode)
 
   m_parentNode = parentNode;
   if(m_parentNode)
-    m_device = m_parentNode->device();
+    m_device = qobject_cast<qml_device*>(m_parentNode->device());
   resetNode();
 
   emit parentNodeChanged(parentNode);
