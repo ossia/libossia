@@ -29,6 +29,9 @@ void qml_plugin::reg(const char* uri)
   qmlRegisterType<qt::qml_device>(uri, 1, 0, "Device");
   qmlRegisterType<qt::qml_property>(uri, 1, 0, "Property");
   qmlRegisterType<qt::qml_property_reader>(uri, 1, 0, "ReaderImpl");
+  qmlRegisterType<qt::qml_property_writer>(uri, 1, 0, "WriterImpl");
+  qmlRegisterType<qt::qml_binding>(uri, 1, 0, "BindingImpl");
+  qmlRegisterType<qt::qml_callback>(uri, 1, 0, "CallbackImpl");
   qmlRegisterType<qt::qml_model_property>(uri, 1, 0, "Instances");
 }
 

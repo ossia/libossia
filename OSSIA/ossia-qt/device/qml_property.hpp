@@ -34,7 +34,6 @@ public:
   void setTarget(const QQmlProperty &prop) override;
 
   void resetNode() override;
-  void remapNode();
 
   void setDevice(QObject* device) override;
 

@@ -18,7 +18,7 @@ qml_model_property::~qml_model_property()
 {
   if(m_device)
   {
-    m_device->models.erase(this);
+    m_device->remove(this);
   }
 }
 
@@ -46,13 +46,13 @@ void qml_model_property::setDevice(QObject* device)
 
     if(olddev)
     {
-      olddev->models.erase(this);
+      olddev->remove(this);
       disconnect(olddev, &QObject::destroyed, this, &qml_model_property::on_device_deleted);
     }
 
     if(newdev)
     {
-      newdev->models.insert({this, this});
+      newdev->add(this);
       connect(newdev, &QObject::destroyed, this, &qml_model_property::on_device_deleted);
     }
 

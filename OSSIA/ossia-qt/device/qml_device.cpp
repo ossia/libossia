@@ -5,6 +5,7 @@
 #include <QQmlContext>
 #include <QDebug>
 #include <ossia-qt/qml_context.hpp>
+#include <ossia-qt/device/qml_node.hpp>
 #include <ossia-qt/device/qml_property.hpp>
 #include <ossia-qt/device/qml_property_reader.hpp>
 #include <ossia-qt/device/qml_model_property.hpp>
@@ -12,6 +13,9 @@
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #if defined(OSSIA_PROTOCOL_MIDI)
 #include <ossia/network/midi/midi.hpp>
+#endif
+#if defined(OSSIA_PROTOCOL_OSC)
+#include <ossia/network/osc/osc.hpp>
 #endif
 #include <QCoreApplication>
 namespace ossia
@@ -21,26 +25,11 @@ namespace qt
 
 qml_device::qml_device(QObject* parent):
   QObject{parent},
-  m_device{std::make_unique<ossia::net::generic_device>(std::make_unique<ossia::net::local_protocol>(), "device")}
+  m_device{std::make_unique<ossia::net::generic_device>(
+             std::make_unique<ossia::net::local_protocol>(), "device")}
 {
 }
 
-void qml_device::openOSCQueryServer()
-{
-  try {
-    if(auto local = localProtocol())
-    {
-      auto& protos = local->getExposedProtocols();
-      while(!protos.empty())
-        local->stopExposeTo(*protos.back());
-
-      local->exposeTo(
-            std::make_unique<ossia::oscquery::oscquery_server_protocol>(
-              oscPort(),
-              wsPort()));
-    }
-  } catch(...) { }
-}
 
 net::device_base&qml_device::device()
 { return *m_device; }
@@ -51,16 +40,6 @@ const net::device_base&qml_device::device() const
 net::local_protocol* qml_device::localProtocol() const
 {
   return dynamic_cast<ossia::net::local_protocol*>(&device().getProtocol());
-}
-
-int qml_device::wsPort() const
-{
-  return m_wsPort;
-}
-
-int qml_device::oscPort() const
-{
-  return m_oscPort;
 }
 
 bool qml_device::readPreset() const
@@ -83,16 +62,86 @@ QString qml_device::appCreator() const
   return m_appCreator;
 }
 
+void qml_device::add(qml_node* n) { m_nodes.insert({n, n}); }
+
+void qml_device::remove(qml_node* n) { m_nodes.erase(n); }
+
+void qml_device::add(qml_property* n) { m_properties.insert({n, n}); }
+
+void qml_device::remove(qml_property* n) { m_properties.erase(n); }
+
+void qml_device::add(qml_property_reader* n) { m_reader_properties.insert({n, n}); }
+
+void qml_device::remove(qml_property_reader* n) { m_reader_properties.erase(n); }
+
+void qml_device::add(qml_property_writer* n) { m_writer_properties.insert({n, n}); }
+
+void qml_device::remove(qml_property_writer* n) { m_writer_properties.erase(n); }
+
+void qml_device::add(qml_model_property* n) { m_models.insert({n, n}); }
+
+void qml_device::remove(qml_model_property* n) { m_models.erase(n); }
+
+void qml_device::add(qml_binding* n) { m_bindings.insert({n, n}); }
+
+void qml_device::remove(qml_binding* n) { m_bindings.erase(n); }
+
+void qml_device::add(qml_callback* n) { m_callbacks.insert({n, n}); }
+
+void qml_device::remove(qml_callback* n) { m_callbacks.erase(n); }
+
 void qml_device::setupLocal()
 {
   // If there is an error we re-create a dummy device instead.
   m_device = std::make_unique<ossia::net::generic_device>(std::make_unique<ossia::net::local_protocol>(), "device");
 }
 
-void qml_device::openOSCQueryClient(QString address, int port)
+void qml_device::openOSC(QString ip, int localPort, int remotePort)
+{
+  m_device.reset();
+
+  try {
+    auto proto = new ossia::net::osc_protocol{
+                 ip.toStdString(), (uint16_t)remotePort, (uint16_t)localPort};
+    m_device = std::make_unique<ossia::net::generic_device>(
+                 std::unique_ptr<ossia::net::protocol_base>(proto), "device");
+    return;
+  } catch(std::exception& e) {
+    ossia::logger().error("qml_device::openOSC: {}", e.what());
+  } catch(...) {
+    ossia::logger().error("qml_device::openOSC: error");
+  }
+
+  setupLocal();
+}
+
+void qml_device::openOSCQueryServer(int wsPort, int oscPort)
 {
   try {
-    auto proto = new ossia::oscquery::oscquery_mirror_protocol{address.toStdString(), (unsigned int)port};
+    if(auto local = localProtocol())
+    {
+      auto& protos = local->getExposedProtocols();
+      while(!protos.empty())
+        local->stopExposeTo(*protos.back());
+
+      local->exposeTo(
+            std::make_unique<ossia::oscquery::oscquery_server_protocol>(
+              oscPort,
+              wsPort));
+    }
+  } catch(std::exception& e) {
+    ossia::logger().error("qml_device::openOSCQueryServer: {}", e.what());
+  } catch(...) {
+    ossia::logger().error("qml_device::openOSCQueryServer: error");
+  }
+}
+
+void qml_device::openOSCQueryClient(QString address, int localOscPort)
+{
+  m_device.reset();
+  try {
+    auto proto = new ossia::oscquery::oscquery_mirror_protocol{
+                 address.toStdString(), (uint16_t)localOscPort};
     m_device = std::make_unique<ossia::net::generic_device>(std::unique_ptr<ossia::net::protocol_base>(proto), "device");
     proto->update(m_device->getRootNode());
     return;
@@ -107,10 +156,12 @@ void qml_device::openOSCQueryClient(QString address, int port)
 
 void qml_device::openMIDIInputDevice(int port)
 {
+  m_device.reset();
+
 #if defined(OSSIA_PROTOCOL_MIDI)
   try {
     using namespace ossia::net::midi;
-    auto proto = new midi_protocol{midi_info{midi_info::Type::RemoteOutput, {}, (unsigned int)port}};
+    auto proto = new midi_protocol{midi_info{midi_info::Type::RemoteOutput, {}, port}};
     auto dev = std::make_unique<midi_device>(std::unique_ptr<ossia::net::protocol_base>(proto));
     dev->updateNamespace();
     m_device = std::move(dev);
@@ -127,6 +178,8 @@ void qml_device::openMIDIInputDevice(int port)
 
 void qml_device::openMIDIOutputDevice(int port)
 {
+  m_device.reset();
+
 #if defined(OSSIA_PROTOCOL_MIDI)
   try {
     using namespace ossia::net::midi;
@@ -180,24 +233,6 @@ QVariantMap qml_device::getMIDIOutputDevices() const
   return lst;
 }
 
-void qml_device::setWSPort(int localPort)
-{
-  if (m_wsPort == localPort)
-    return;
-
-  m_wsPort = localPort;
-  emit WSPortChanged(localPort);
-}
-
-void qml_device::setOSCPort(int remotePort)
-{
-  if (m_oscPort == remotePort)
-    return;
-
-  m_oscPort = remotePort;
-  emit OSCPortChanged(remotePort);
-}
-
 std::vector<QQuickItem*> items(QQuickItem* root)
 {
   std::vector<QQuickItem*> items;
@@ -219,7 +254,7 @@ std::vector<QQuickItem*> items(QQuickItem* root)
   return items;
 }
 
-void qml_device::rescan(QObject* root)
+void qml_device::recreate(QObject* root)
 {
   if(auto item = qobject_cast<QQuickItem*>(root))
   {
@@ -232,11 +267,11 @@ void qml_device::rescan(QObject* root)
     }
 
     {
-      auto props = properties;
+      auto props = m_properties;
       for(auto obj : props)
       {
         if(obj.second) obj.first->resetNode();
-        else properties.erase(obj.first);
+        else remove(obj.first);
       }
     }
 
@@ -249,12 +284,16 @@ void qml_device::rescan(QObject* root)
 
 void qml_device::remap(QObject* root)
 {
-  auto props = reader_properties;
-  for(auto obj : props)
+  for_each_in_tuple(
+        std::make_tuple(m_reader_properties, m_writer_properties, m_bindings, m_callbacks),
+        [=] (auto props) // Note: we voluntarily make a copy, due to erasing elements
   {
-    if(obj.second) obj.first->resetNode();
-    else reader_properties.erase(obj.first);
-  }
+    for(auto obj : props)
+    {
+      if(obj.second) obj.first->resetNode();
+      else this->remove(obj.first);
+    }
+  });
 }
 
 void qml_device::setReadPreset(bool readPreset)
@@ -295,29 +334,29 @@ void qml_device::savePreset(const QUrl& file)
 
 void qml_device::clearEmptyElements()
 {
-  for(auto it = properties.begin(); it != properties.end();)
-    if(it->second) ++it; else it = properties.erase(it);
+  for(auto it = m_properties.begin(); it != m_properties.end();)
+    if(it->second) ++it; else it = m_properties.erase(it);
 
-  for(auto it = models.begin(); it != models.end();)
-    if(it->second) ++it; else it = models.erase(it);
+  for(auto it = m_models.begin(); it != m_models.end();)
+    if(it->second) ++it; else it = m_models.erase(it);
 
 }
 
 void qml_device::loadPreset(QObject* root, QString file)
 {
   m_readPreset = false;
-  rescan(root);
+  recreate(root);
   try {
     QFile f(file);
     if(f.open(QIODevice::ReadOnly))
     {
       // First reset all item models since they will be in the preset
       {
-        auto model_list = models;
+        auto model_list = m_models;
         for(auto model : model_list)
         {
           if(model.second) model.first->setCount(0);
-          else models.erase(model.first);
+          else m_models.erase(model.first);
         }
       }
       m_readPreset = true;
@@ -330,23 +369,23 @@ void qml_device::loadPreset(QObject* root, QString file)
       clearEmptyElements();
 
       // Now as long as we are creating new models, update their count
-      std::size_t cur_model_size = models.size();
+      std::size_t cur_model_size = m_models.size();
       std::size_t prev_model_size;
       do {
         prev_model_size = cur_model_size;
-        auto mlist = models;
+        auto mlist = m_models;
         for(auto model : mlist)
         {
           if(model.second) model.first->updateCount();
           QCoreApplication::processEvents();
         }
-        cur_model_size = models.size();
+        cur_model_size = m_models.size();
       } while(cur_model_size != prev_model_size);
 
       clearEmptyElements();
 
       // Finallt do a push of all properties registered
-      rescan(root);
+      recreate(root);
       return;
     }
   } catch(std::exception& e) { ossia::logger().error("{}", e.what());
