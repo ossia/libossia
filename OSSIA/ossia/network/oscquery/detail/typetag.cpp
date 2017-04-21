@@ -60,6 +60,7 @@ static std::string get_osc_typetag_impl(const net::address_base& addr)
   std::string s;
   auto val = addr.cloneValue();
   val.apply(osc_type_visitor{s});
+
   switch(val.getType())
   {
     case ossia::val_type::TUPLE:

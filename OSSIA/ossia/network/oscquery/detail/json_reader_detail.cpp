@@ -438,12 +438,18 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
       }
       else if(ext_type)
       {
-        ossia::val_type actual_type = ossia::val_type::TUPLE; // Generic worse case
-        if(*ext_type == generic_buffer_type() || *ext_type == filesystem_path_type())
+        ossia::val_type actual_type = ossia::val_type::TUPLE; // Generic worse case; also "tuple_type()"
+        const auto& e_type = *ext_type;
+        if(e_type == generic_buffer_type() || e_type == filesystem_path_type())
         {
           actual_type = ossia::val_type::STRING;
         }
-        else if(*ext_type == float_array_type())
+        else if(e_type == tuple_type())
+        {
+          // nothing to do, but don't remove so that
+          // we don't go into the float_array case
+        }
+        else if(e_type == float_array_type())
         {
           // Look for Vec2f, Vec3f, Vec4f
           actual_type = VecTypetag(typetag);

@@ -26,7 +26,7 @@ class qml_context : public QObject
 public:
   // QML enums have to begin with a capital
   virtual ~qml_context();
-  enum class val_type
+  enum val_type
   {
     Float, //! \see float
     Int, //! \see int32_t
@@ -41,14 +41,14 @@ public:
     Destination //! \see ossia::Destination
   };
 
-  enum class access_mode
+  enum access_mode
   {
     Get,
     Set,
     Bi
   };
 
-  enum class bounding_mode
+  enum bounding_mode
   {
     Free,
     Clip,
@@ -58,7 +58,7 @@ public:
     High
   };
 
-  enum class repetition_filter
+  enum repetition_filter
   {
     On,
     Off
@@ -79,3 +79,8 @@ public slots:
 };
 }
 }
+
+Q_DECLARE_METATYPE(ossia::qt::qml_context::val_type)
+Q_DECLARE_METATYPE(ossia::qt::qml_context::access_mode)
+Q_DECLARE_METATYPE(ossia::qt::qml_context::bounding_mode)
+Q_DECLARE_METATYPE(ossia::qt::qml_context::repetition_filter)

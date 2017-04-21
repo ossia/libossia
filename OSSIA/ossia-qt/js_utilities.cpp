@@ -441,11 +441,9 @@ void set_address_type(QVariant::Type type, net::address_base& addr)
       break;
     case QVariant::List:
     case QVariant::StringList:
-      addr.setValueType(ossia::val_type::TUPLE);
-      break;
     case QVariant::Date:
     default:
-      addr.setValueType(ossia::val_type::IMPULSE);
+      addr.setValueType(ossia::val_type::TUPLE);
       break;
   }
 }
@@ -541,17 +539,19 @@ QVariant ossia_to_qvariant::operator()(QVariant::Type type, const value& ossia_v
     case QVariant::List:
     {
       // TODO
-      break;
     }
     case QVariant::StringList:
     {
       // TODO tuple of string
-      break;
     }
     case QVariant::Date:
       // TODO double ?
     default:
+    {
+      // Use the ossia type instead
+      return ossia_val.apply(*this);
       break;
+    }
   }
   return {};
 }

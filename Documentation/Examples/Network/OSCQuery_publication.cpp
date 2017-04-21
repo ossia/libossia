@@ -142,6 +142,12 @@ int main()
     address->add_callback(printValueCallback);
     address->pushValue(ossia::make_vec(5., 6.));
   }
+  {
+    auto& node = find_or_create_node(device, "/units/float");
+    auto address = node.createAddress(val_type::INT);
+    node.set(unit_attribute{}, ossia::decibel_u{});
+    address->add_callback(printValueCallback);
+  }
 
   // declare a distant program as an OSCQuery device
   auto oscq = std::make_unique<oscquery::oscquery_server_protocol>(1234, 5678);

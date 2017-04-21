@@ -35,7 +35,7 @@ void qml_property::setTarget(const QQmlProperty &prop)
 
 void qml_property::qtVariantChanged()
 {
-  if(m_address)
+  if(!m_updating && m_address)
   {
     m_address->setValueQuiet(qt_to_ossia{}(m_targetProperty.read()));
     m_device->device().getProtocol().push(*m_address);
@@ -150,48 +150,58 @@ qml_context::val_type qml_property::valueType() const
 {
   if(m_address)
     return static_cast<qml_context::val_type>(m_address->getValueType());
-  return m_valueType;
+  return m_valueType ? *m_valueType : qml_context::val_type{};
 }
 
 qml_context::access_mode qml_property::access() const
 {
   if(m_address)
     return static_cast<qml_context::access_mode>(m_address->getAccessMode());
-  return m_access;
+  return m_access ? *m_access : qml_context::access_mode::Bi;
 }
 
 qml_context::bounding_mode qml_property::bounding() const
 {
   if(m_address)
     return static_cast<qml_context::bounding_mode>(m_address->getBoundingMode());
-  return m_bounding;
+  return m_bounding ? *m_bounding : qml_context::bounding_mode::Free;
 }
 
 qml_context::repetition_filter qml_property::filterRepetitions() const
 {
   if(m_address)
     return static_cast<qml_context::repetition_filter>(m_address->getRepetitionFilter());
-  return m_filterRepetitions;
+  return m_filterRepetitions ? *m_filterRepetitions : qml_context::repetition_filter{};
 }
 
 QVariant qml_property::min() const
 {
+  if(m_address)
+  {
+    return m_address->getDomain().get_min().apply(ossia_to_qvariant{});
+  }
   return m_min;
 }
 
 QVariant qml_property::max() const
 {
+  if(m_address)
+  {
+    return m_address->getDomain().get_max().apply(ossia_to_qvariant{});
+  }
   return m_max;
 }
 
 QVariantList qml_property::values() const
 {
-  return m_values;
+  return *m_values;
 }
 
 QString qml_property::unit() const
 {
-  return m_unit;
+  if(m_address)
+    return QString::fromStdString(ossia::get_pretty_unit_text(m_address->getUnit()));
+  return m_unit ? *m_unit : QString{};
 }
 
 void qml_property::setValue_slot(const value& v)
@@ -199,7 +209,11 @@ void qml_property::setValue_slot(const value& v)
   auto cur = m_targetProperty.read();
   auto next = ossia_to_qvariant{}((QVariant::Type)m_targetProperty.propertyType(), v);
   if(cur != next)
+  {
+    m_updating = true;
     m_targetProperty.write(next);
+    m_updating = false;
+  }
 }
 
 void qml_property::setValueType(qml_context::val_type valueType)
@@ -209,7 +223,7 @@ void qml_property::setValueType(qml_context::val_type valueType)
 
   m_valueType = valueType;
   if(m_address)
-    m_address->setValueType(static_cast<ossia::val_type>(m_valueType));
+    m_address->setValueType(static_cast<ossia::val_type>(valueType));
   emit valueTypeChanged(valueType);
 }
 
@@ -220,7 +234,7 @@ void qml_property::setAccess(qml_context::access_mode access)
 
   m_access = access;
   if(m_address)
-    m_address->setAccessMode(static_cast<ossia::access_mode>(m_access));
+    m_address->setAccessMode(static_cast<ossia::access_mode>(access));
   emit accessChanged(access);
 }
 
@@ -231,7 +245,7 @@ void qml_property::setBounding(qml_context::bounding_mode bounding)
 
   m_bounding = bounding;
   if(m_address)
-    m_address->setBoundingMode(static_cast<ossia::bounding_mode>(m_bounding));
+    m_address->setBoundingMode(static_cast<ossia::bounding_mode>(bounding));
   emit boundingChanged(bounding);
 }
 
@@ -242,7 +256,7 @@ void qml_property::setFilterRepetitions(qml_context::repetition_filter filterRep
 
   m_filterRepetitions = filterRepetitions;
   if(m_address)
-    m_address->setRepetitionFilter(static_cast<ossia::repetition_filter>(m_filterRepetitions));
+    m_address->setRepetitionFilter(static_cast<ossia::repetition_filter>(filterRepetitions));
   emit filterRepetitionsChanged(filterRepetitions);
 }
 
@@ -305,7 +319,9 @@ void qml_property::setupAddress(bool reading)
     m_address = m_ossia_node->createAddress(ossia::val_type::IMPULSE);
     if(m_address)
     {
+      // qDebug() << m_node << "creating address" <<(QVariant::Type) m_targetProperty.propertyType();
       set_address_type((QVariant::Type)m_targetProperty.propertyType(), *m_address);
+      // qDebug() << (qml_context::val_type) m_address->getValueType();
 
       if(m_targetProperty.hasNotifySignal())
       {
@@ -330,8 +346,15 @@ void qml_property::updateDomain()
 {
   auto val_min = qt_to_ossia{}(m_min);
   auto val_max = qt_to_ossia{}(m_max);
-  auto values = qt_to_ossia{}(m_values);
-  m_address->setDomain(ossia::make_domain(val_min, val_max, values));
+  if(m_values)
+  {
+    auto values = qt_to_ossia{}(*m_values);
+    m_address->setDomain(ossia::make_domain(std::move(val_min), std::move(val_max), std::move(values)));
+  }
+  else
+  {
+    m_address->setDomain(ossia::make_domain(std::move(val_min), std::move(val_max)));
+  }
 }
 
 void qml_property::on_node_deleted(const net::node_base&)

@@ -106,7 +106,6 @@ signals:
   void onChanged(QQmlScriptString on);
 
 private:
-  void setupAddress(bool reading);
   void on_node_deleted(const ossia::net::node_base&);
   void clearNode();
 
@@ -139,7 +138,6 @@ public slots:
   void setValue_slot(const ossia::value&);
 
 private:
-  void setupAddress(bool reading);
   void on_node_deleted(const ossia::net::node_base&);
   void clearNode();
 

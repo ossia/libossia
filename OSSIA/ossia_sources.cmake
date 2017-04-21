@@ -365,6 +365,19 @@ set(OSSIA_QT_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.cpp"
     )
+set(OSSIA_QML_SRCS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/Binding.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/Callback.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/MidiSink.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/MidiSource.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/Node.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/OSC.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/OSCQueryClient.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/OSCQueryServer.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/qmldir"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/Reader.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/Writer.qml"
+  )
 
 set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_address.hpp"

@@ -163,6 +163,7 @@ if(OSSIA_QT)
   target_include_directories(ossia PRIVATE
       "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt"
    )
+ add_custom_target(ossia-qml-sources SOURCES ${OSSIA_QML_SRCS})
 endif()
 
 if(OSSIA_DNSSD)

@@ -138,7 +138,6 @@ void generic_address::setValueQuiet(const value& val)
     {
       m_previousValue = m_value;
       m_value = ossia::convert(val, m_value.getType());
-
       /*
         // Alternative : try to convert to the actual value type.
         // There should be a choice here : for instance we should be able to convert

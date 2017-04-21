@@ -19,14 +19,15 @@ class qml_property :
   Q_OBJECT
   Q_INTERFACES(QQmlPropertyValueSource)
 
-  Q_PROPERTY(QVariant min READ min WRITE setMin NOTIFY minChanged FINAL)
-  Q_PROPERTY(QVariant max READ max WRITE setMax NOTIFY maxChanged FINAL)
-  Q_PROPERTY(QVariantList values READ values WRITE setValues NOTIFY valuesChanged FINAL)
-  Q_PROPERTY(QString unit READ unit WRITE setUnit NOTIFY unitChanged FINAL)
-  Q_PROPERTY(qml_context::val_type valueType READ valueType WRITE setValueType NOTIFY valueTypeChanged FINAL)
-  Q_PROPERTY(qml_context::access_mode access READ access WRITE setAccess NOTIFY accessChanged FINAL)
-  Q_PROPERTY(qml_context::bounding_mode bounding READ bounding WRITE setBounding NOTIFY boundingChanged FINAL)
-  Q_PROPERTY(qml_context::repetition_filter filterRepetitions READ filterRepetitions WRITE setFilterRepetitions NOTIFY filterRepetitionsChanged FINAL)
+  Q_PROPERTY(QString unit READ unit WRITE setUnit NOTIFY unitChanged RESET resetUnit FINAL)
+  Q_PROPERTY(ossia::qt::qml_context::val_type valueType READ valueType WRITE setValueType NOTIFY valueTypeChanged RESET resetValueType FINAL)
+  Q_PROPERTY(ossia::qt::qml_context::access_mode access READ access WRITE setAccess NOTIFY accessChanged RESET resetAccess FINAL)
+  Q_PROPERTY(ossia::qt::qml_context::bounding_mode bounding READ bounding WRITE setBounding NOTIFY boundingChanged RESET resetBounding FINAL)
+  Q_PROPERTY(ossia::qt::qml_context::repetition_filter filterRepetitions READ filterRepetitions WRITE setFilterRepetitions NOTIFY filterRepetitionsChanged RESET resetFilterRepetitions FINAL)
+
+  Q_PROPERTY(QVariant min READ min WRITE setMin NOTIFY minChanged RESET resetMin FINAL)
+  Q_PROPERTY(QVariant max READ max WRITE setMax NOTIFY maxChanged RESET resetMax FINAL)
+  Q_PROPERTY(QVariantList values READ values WRITE setValues NOTIFY valuesChanged RESET resetValues FINAL)
 public:
   qml_property(QQuickItem *parent = nullptr);
   ~qml_property();
@@ -73,6 +74,14 @@ public slots:
   void setValues(QVariantList values);
   void setUnit(QString unit);
 
+  void resetValueType() { if(m_valueType) { m_valueType = ossia::none; } }
+  void resetAccess() { if(m_access) { m_access = ossia::none; } }
+  void resetBounding() { if(m_bounding) { m_bounding = ossia::none; } }
+  void resetFilterRepetitions() { if(m_filterRepetitions) { m_filterRepetitions = ossia::none; } }
+  void resetMin() { setMin(QVariant{}); }
+  void resetMax() { setMax(QVariant{});  }
+  void resetValues() { if(m_values) { m_values = ossia::none; } }
+  void resetUnit() { if(m_unit) { m_values = ossia::none; } }
 private:
   void setupAddress(bool reading);
   void updateDomain();
@@ -81,14 +90,15 @@ private:
 
   QQmlProperty m_targetProperty;
   ossia::net::address_base* m_address{};
-  qml_context::val_type m_valueType{};
-  qml_context::access_mode m_access{};
-  qml_context::bounding_mode m_bounding{};
-  qml_context::repetition_filter m_filterRepetitions{};
+  optional<qml_context::val_type> m_valueType{};
+  optional<qml_context::access_mode> m_access{};
+  optional<qml_context::bounding_mode> m_bounding{};
+  optional<qml_context::repetition_filter> m_filterRepetitions{};
   QVariant m_min{};
   QVariant m_max{};
-  QVariantList m_values{};
-  QString m_unit{};
+  optional<QVariantList> m_values{};
+  optional<QString> m_unit{};
+  bool m_updating{};
 };
 
 }
