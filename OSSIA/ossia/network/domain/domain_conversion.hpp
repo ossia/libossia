@@ -194,4 +194,17 @@ inline domain convert_domain(const domain& dom, ossia::val_type newtype)
   }
 }
 
+inline void convert_compatible_domain(domain& dom, ossia::val_type newtype)
+{
+  constexpr const auto tuple_index = 6;
+  // eggs::variants::detail::checked_index_of<vector_domain, domain_base_variant>::count;
+
+  // Converts domains but keeps compatible different domains.
+  // e.g. a float domain works for vec4f or tuple.
+  //! \note check this if the order in domain_base_variant changes.
+  if(dom.which() < tuple_index)
+  {
+    dom = convert_domain(dom, newtype);
+  }
+}
 }

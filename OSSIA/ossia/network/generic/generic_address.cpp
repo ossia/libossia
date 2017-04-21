@@ -6,6 +6,7 @@
 #include <ossia/network/exceptions.hpp>
 #include <ossia/editor/value/value_conversion.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/domain/domain_conversion.hpp>
 
 namespace ossia
 {
@@ -202,9 +203,9 @@ generic_address::setDomain(const ossia::domain& domain)
 {
   if(m_domain != domain)
   {
-    // TODO we should check that the domain is correct
-    // for the type of the value.
     m_domain = domain;
+    convert_compatible_domain(m_domain, m_valueType);
+
     m_node.getDevice().onAttributeModified(m_node, text_domain());
   }
   return *this;
@@ -277,11 +278,10 @@ generic_address& generic_address::setUnit(const unit_t& v)
       {
         m_valueType = vt;
         m_value = ossia::convert(m_value, m_valueType);
-
-        /*
-      if(mDomain)
-        mDomain = convert_domain(mDomain, mValueType);
-      */
+        if(m_domain)
+        {
+          convert_compatible_domain(m_domain, m_valueType);
+        }
       }
     }
   }

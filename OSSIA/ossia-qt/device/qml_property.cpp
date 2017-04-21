@@ -316,28 +316,33 @@ void qml_property::setupAddress(bool reading)
   if(m_ossia_node)
   {
     m_ossia_node->removeAddress();
-    m_address = m_ossia_node->createAddress(ossia::val_type::IMPULSE);
+
+    m_address = m_ossia_node->createAddress(m_valueType ? (ossia::val_type)*m_valueType : ossia::val_type::IMPULSE);
     if(m_address)
     {
-      // qDebug() << m_node << "creating address" <<(QVariant::Type) m_targetProperty.propertyType();
-      set_address_type((QVariant::Type)m_targetProperty.propertyType(), *m_address);
-      // qDebug() << (qml_context::val_type) m_address->getValueType();
+      if(!m_valueType)
+        set_address_type((QVariant::Type)m_targetProperty.propertyType(), *m_address);
 
       if(m_targetProperty.hasNotifySignal())
       {
         m_targetProperty.connectNotifySignal(this, SLOT(qtVariantChanged()));
       }
+      if(m_access)
+        m_address->setAccessMode(static_cast<ossia::access_mode>(*m_access));
 
+      if(m_bounding) {
+        m_address->setBoundingMode(static_cast<ossia::bounding_mode>(*m_bounding));
+      qDebug()<< "setting" << *m_bounding;}
+
+      if(m_filterRepetitions)
+        m_address->setRepetitionFilter(static_cast<ossia::repetition_filter>(*m_filterRepetitions));
+
+      if(m_unit)
+        m_address->setUnit(ossia::parse_pretty_unit(m_unit->toStdString()));
+
+      updateDomain();
       m_address->add_callback([this] (const ossia::value& v) { setValue_sig(v); });
       m_address->setValueQuiet(qt_to_ossia{}(m_targetProperty.read()));
-      /* TODO set them all as optional<> and only update them if they are set.
-      m_address->setValueType(static_cast<ossia::val_type>(m_valueType));
-      m_address->setAccessMode(static_cast<ossia::access_mode>(m_access));
-      m_address->setBoundingMode(static_cast<ossia::bounding_mode>(m_bounding));
-      m_address->setRepetitionFilter(static_cast<ossia::repetition_filter>(m_filterRepetitions));
-      m_address->setUnit(ossia::parse_pretty_unit(m_unit.toStdString()));
-      updateDomain();
-      */
     }
   }
 }
