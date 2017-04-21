@@ -165,6 +165,9 @@ public:
   //! A vector with all the names of the children.
   std::vector<std::string> childrenNames() const;
 
+  //! If childrens are /foo, /bar, bar.1, returns true only for bar.
+  bool is_root_instance(const ossia::net::node_base& child) const;
+
   //! The node subclasses must call this in their destructor.
   mutable Nano::Signal<void(const node_base&)> aboutToBeDeleted;
 

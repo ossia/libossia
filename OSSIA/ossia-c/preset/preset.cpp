@@ -778,19 +778,10 @@ std::string preset_to_device_key(const std::string& presetkey) {
   return boost::join(indexes, ".");
 }
 
-std::string device_to_preset_key(const std::string& devicekey) {
-  return devicekey;
-  std::vector<std::string> indexes;
-  boost::split(indexes, devicekey, [](char c){return c == '.';}, boost::token_compress_on);
-
-  for (std::size_t i = 1; i < indexes.size(); ++i) {
-    int current_index = std::atoi((indexes[i]).c_str());
-    std::stringstream ss;
-    ss << (current_index - 1);
-    indexes[i] = std::string (ss.str());
-  }
-
-  return boost::join(indexes, ".");
+std::string device_to_preset_key(const ossia::net::node_base& node, const ossia::net::node_base& parent) {
+  if(!parent.is_root_instance(node))
+    return node.getName();
+  return node.getName() + ".0";
 }
 
 bool instance_string_compare(const std::string& str, const ossia::net::node_base& node)
@@ -830,9 +821,23 @@ void apply_preset_node(
       }
       else
       {
-        if (currentkey == child->getName()) {
+        const std::string childName = child->getName();
+        if (currentkey == childName) {
           child_exists = true;
           apply_preset_node(*child, keys, val, keeparch, created_nodes);
+        }
+        else
+        {
+          // Case of the 'bar.0' / 'bar'.
+          const auto N = currentkey.size();
+          if((childName.size() == (N - 2))
+             && currentkey[N-2] == '.'
+             && currentkey[N-1] == '0')
+          {
+            currentkey.resize(currentkey.size() - 2);
+            child_exists = true;
+            apply_preset_node(*child, keys, val, keeparch, created_nodes);
+          }
         }
       }
     }
@@ -903,8 +908,8 @@ void ossia::devices::apply_preset(
 
 void make_preset_node(ossia::net::node_base& node, ossia::presets::preset& preset, const std::string& key) {
   std::string currentkey = key;
-  if (node.getParent() != nullptr) {
-    currentkey += "/" + device_to_preset_key(node.getName());
+  if (auto parent = node.getParent()) {
+    currentkey += "/" + device_to_preset_key(node, *parent);
   }
 
   const auto& children = node.children();

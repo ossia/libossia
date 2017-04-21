@@ -41,44 +41,82 @@ int main()
     device.getRootNode().set(app_version_attribute{}, "0.1"s);
     device.getRootNode().set(app_creator_attribute{}, "toto"s);
 
-    auto localTestNode = device.createChild("parameter");
+    auto TestNode = device.createChild("parameter");
 
-    auto localImpulseNode = localTestNode->createChild("my_impulse");
-    auto localImpulseAddress = localImpulseNode->createAddress(val_type::IMPULSE);
+    auto ImpulseNode = TestNode->createChild("my_impulse");
+    auto ImpulseAddress = ImpulseNode->createAddress(val_type::IMPULSE);
 
-    auto localBoolNode = localTestNode->createChild("my_bool");
-    auto localBoolAddress = localBoolNode->createAddress(val_type::BOOL);
-    localBoolNode->set(default_value_attribute{}, true);
-    localBoolNode->set(description_attribute{}, "test description"s);
+    auto BoolNode = TestNode->createChild("my_bool");
+    auto BoolAddress = BoolNode->createAddress(val_type::BOOL);
+    BoolNode->set(default_value_attribute{}, true);
+    BoolNode->set(description_attribute{}, "test description"s);
 
-    auto localIntNode = localTestNode->createChild("my_int");
-    auto localIntAddress = localIntNode->createAddress(val_type::INT);
-    localIntNode->set(default_value_attribute{}, 3);
-    localIntNode->set(domain_attribute{}, make_domain(0, 10));
-    localIntNode->set(value_step_size_attribute{}, 1);
+    auto IntNode = TestNode->createChild("my_int");
+    auto IntAddress = IntNode->createAddress(val_type::INT);
+    IntNode->set(default_value_attribute{}, 3);
+    IntNode->set(domain_attribute{}, make_domain(0, 10));
+    IntNode->set(value_step_size_attribute{}, 1);
 
-    auto localFloatNode = localTestNode->createChild("my_float");
-    auto localFloatAddress = localFloatNode->createAddress(val_type::FLOAT);
-    localFloatNode->set(default_value_attribute{}, 0.5);
-    localFloatNode->set(domain_attribute{}, make_domain(0.0, 1.0));
-    localFloatNode->set(value_step_size_attribute{}, 0.1);
+    auto FloatNode = TestNode->createChild("my_float");
+    auto FloatAddress = FloatNode->createAddress(val_type::FLOAT);
+    FloatNode->set(default_value_attribute{}, 0.5);
+    FloatNode->set(domain_attribute{}, make_domain(0.0, 1.0));
+    FloatNode->set(value_step_size_attribute{}, 0.1);
 
-    auto localStringNode = localTestNode->createChild("my_string");
-    auto localStringAddress = localStringNode->createAddress(val_type::STRING);
-    localStringNode->set(default_value_attribute{}, "test"s);
+
+    auto StringNode1 = TestNode->createChild("my_string");
+    auto StringAddress1 = StringNode1->createAddress(val_type::STRING);
+    StringNode1->set(default_value_attribute{}, "test"s);
+
+
+    auto StringNode2 = TestNode->createChild("my_string");
+    auto StringAddress2 = StringNode2->createAddress(val_type::STRING);
+    StringNode2->set(default_value_attribute{}, "test"s);
+
 
     // update tree value
-    localImpulseAddress->pushValue(impulse{});
-    localBoolAddress->pushValue(true);
-    localIntAddress->pushValue(123);
-    localFloatAddress->pushValue(0.5);
-    localStringAddress->pushValue("hello world !"s);
+    ImpulseAddress->pushValue(impulse{});
+    BoolAddress->pushValue(true);
+    IntAddress->pushValue(123);
+    FloatAddress->pushValue(0.5);
+    StringAddress1->pushValue("hello world !"s);
+    StringAddress2->pushValue("goodbye world !"s);
 
     // display json tree in console
+    std::cerr << "== DEVICE ==\n";
     auto json = ossia::devices::write_json(device);
     std::cerr << json << "\n";
 
     // write it as a file
     ossia::devices::write_file(json, "namespace.json");
+
+    // Preset
+    std::cerr << "\n\n== PRESET ==\n";
+    auto preset = ossia::devices::make_preset(device);
+    for(auto& p : preset)
+    {
+      std::cerr << p.first << " => " << p.second << "\n";
+
+      // Modify it a bit
+      if(p.first == "/parameter/my_int")
+        p.second = ossia::value{456};
+      if(p.first == "/parameter/my_string.0")
+        p.second = "foo";
+      if(p.first == "/parameter/my_string.1")
+        p.second = "bar";
+    }
+
+    // Save the preset to disk
+    std::cerr << "\n\n== PRESET JSON ==\n";
+    auto json_preset = ossia::presets::write_json(preset);
+    std::cerr << json_preset << "\n";
+
+    // Reapply the preset
+    auto new_preset = ossia::presets::read_json(json_preset);
+    ossia::devices::apply_preset(device, new_preset);
+
+    std::cerr << IntAddress->cloneValue() << "\n";
+    std::cerr << StringAddress1->cloneValue() << "\n";
+    std::cerr << StringAddress2->cloneValue() << "\n";
 
 }

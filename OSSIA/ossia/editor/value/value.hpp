@@ -163,6 +163,11 @@ public:
     v = val;
     return *this;
   }
+  value& operator=(const char* c) noexcept
+  {
+    v = std::string(c);
+    return *this;
+  }
   value& operator=(bool val) noexcept
   {
     v = val;

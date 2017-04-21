@@ -208,8 +208,33 @@ std::vector<std::string> node_base::childrenNames() const
   std::transform(m_children.cbegin(), m_children.cend(), std::back_inserter(bros_names),
                  [] (const auto& n) { return n->getName(); });
 
-  SPDLOG_TRACE((&ossia::logger()), "locked(childrenNames)");
+  SPDLOG_TRACE((&ossia::logger()), "unlocked(childrenNames)");
   return bros_names;
+}
+
+bool node_base::is_root_instance(const node_base& child) const
+{
+  SPDLOG_TRACE((&ossia::logger()), "locking(is_root_instance)");
+  read_lock_t lock{m_mutex};
+  SPDLOG_TRACE((&ossia::logger()), "locked(is_root_instance)");
+
+  auto child_name = child.getName();
+  for(auto& cld : m_children)
+  {
+    auto bro_name = cld->getName();
+    if((bro_name.size() > (child_name.size() + 1))
+    && boost::starts_with(bro_name, child_name)
+    && (bro_name[child_name.size()] == '.'))
+    {
+      // TODO to be sure we should do
+      // a full regex check but is it really worth it..
+      SPDLOG_TRACE((&ossia::logger()), "unlocked(is_root_instance)");
+      return true;
+    }
+  }
+
+  SPDLOG_TRACE((&ossia::logger()), "unlocked(is_root_instance)");
+  return false;
 }
 
 node_base*node_base::addChild(std::unique_ptr<node_base> n)
