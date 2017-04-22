@@ -123,6 +123,10 @@ unit_t address_base::getUnit() const { return {}; }
 
 address_base& address_base::setUnit(const unit_t& v) { return *this; }
 
+bool address_base::getMuted() const { return {}; }
+
+address_base& address_base::setMuted(bool v) { return *this; }
+
 value_with_unit get_value(const ossia::Destination& d)
 {
   ossia::net::address_base& addr = d.value.get();

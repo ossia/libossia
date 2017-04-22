@@ -288,5 +288,19 @@ generic_address& generic_address::setUnit(const unit_t& v)
   m_node.getDevice().onAttributeModified(m_node, text_unit());
   return *this;
 }
+
+bool generic_address::getMuted() const
+{
+  return m_muted;
+}
+
+generic_address&generic_address::setMuted(bool v)
+{
+  if(m_muted != v)
+  {
+    m_muted = v;
+    m_node.getDevice().onAttributeModified(m_node, text_muted());
+  }
+}
 }
 }

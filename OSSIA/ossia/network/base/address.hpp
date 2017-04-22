@@ -31,7 +31,8 @@ class node_base;
  * \see generic_address
  *
  */
-class OSSIA_EXPORT address_base : public callback_container<value_callback>
+class OSSIA_EXPORT address_base :
+    public callback_container<value_callback>
 {
 public:
   address_base() = default;
@@ -129,6 +130,9 @@ public:
 
   virtual ossia::unit_t getUnit() const;
   virtual address_base& setUnit(const ossia::unit_t& v);
+
+  virtual bool getMuted() const;
+  virtual address_base& setMuted(bool);
 };
 
 inline bool operator==(const address_base& lhs, const address_base& rhs)

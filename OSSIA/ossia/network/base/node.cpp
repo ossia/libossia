@@ -475,8 +475,7 @@ void set_description(extended_attributes& n, const char* arg)
     set_description(n, ossia::none);
 }
 
-// Address-related ones
-
+// Address-related getters - setters
 ossia::string_view text_value()
 { return make_string_view("value"); }
 value clone_value(const ossia::net::node_base& n)
@@ -535,6 +534,18 @@ optional<bounding_mode> get_bounding_mode(const ossia::net::node_base& n)
 void set_bounding_mode(ossia::net::node_base& n, bounding_mode v)
 {
   if(auto addr = n.getAddress()) addr->setBoundingMode(std::move(v));
+}
+
+ossia::string_view text_muted()
+{ return make_string_view("muted"); }
+muted get_muted(const ossia::net::node_base& n)
+{
+  if(auto addr = n.getAddress()) return addr->getMuted();
+  return false;
+}
+void set_muted(ossia::net::node_base& n, muted v)
+{
+  if(auto addr = n.getAddress()) addr->setMuted(v);
 }
 
 ossia::string_view text_repetition_filter()

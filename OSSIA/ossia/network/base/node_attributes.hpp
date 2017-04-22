@@ -70,6 +70,9 @@ using critical = bool;
 //! Means that the node is not present on the "host" device
 using zombie = bool;
 
+//! Means that the node should not send / receives network messages
+using muted = bool;
+
 //! Device attribute : the name of the software managed by this device
 using app_name = std::string;
 
@@ -164,6 +167,9 @@ OSSIA_EXPORT ossia::string_view text_unit();
 OSSIA_EXPORT unit_t get_unit(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_unit(ossia::net::node_base& n, unit_t v);
 
+OSSIA_EXPORT ossia::string_view text_muted();
+OSSIA_EXPORT muted get_muted(const extended_attributes& n);
+OSSIA_EXPORT void set_muted(extended_attributes& n, muted v);
 
 // Some macros to have minimal reflection facilities...
 #define OSSIA_ATTRIBUTE(Type, Name) \
@@ -186,13 +192,13 @@ OSSIA_EXPORT void set_unit(ossia::net::node_base& n, unit_t v);
 
 
 // Attributes of an address
-
 OSSIA_ATTRIBUTE_2(ossia::value, value, ossia::net::text_value, ossia::net::clone_value, ossia::net::push_value)
 OSSIA_ATTRIBUTE(ossia::val_type, value_type)
 OSSIA_ATTRIBUTE(ossia::domain, domain)
 OSSIA_ATTRIBUTE(ossia::access_mode, access_mode)
 OSSIA_ATTRIBUTE(ossia::bounding_mode, bounding_mode)
 OSSIA_ATTRIBUTE(ossia::unit_t, unit)
+OSSIA_ATTRIBUTE(ossia::net::muted, muted)
 OSSIA_ATTRIBUTE(ossia::value, default_value)
 
 // Metadata attributes

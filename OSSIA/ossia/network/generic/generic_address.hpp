@@ -33,6 +33,7 @@ protected:
   ossia::access_mode m_accessMode{};
   ossia::bounding_mode m_boundingMode{};
   ossia::repetition_filter m_repetitionFilter{};
+  bool m_muted{};
 
   mutable mutex_t m_valueMutex;
   ossia::value m_value;
@@ -82,10 +83,13 @@ public:
   ossia::repetition_filter getRepetitionFilter() const final override;
   ossia::net::generic_address&
       setRepetitionFilter(ossia::repetition_filter) final override;
-bool filterRepetition(const ossia::value& val) const final override;
+  bool filterRepetition(const ossia::value& val) const final override;
 
   ossia::unit_t getUnit() const final override;
   generic_address& setUnit(const ossia::unit_t& v) final override;
+
+  bool getMuted() const final override;
+  generic_address& setMuted(bool v) final override;
 
   void onFirstCallbackAdded() final override;
   void onRemovingLastCallback() final override;

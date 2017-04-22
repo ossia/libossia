@@ -156,7 +156,7 @@ public:
     return {m_children, m_mutex};
   }
 
-  //! Nonprotected version. With great powers, yada yada etc etc
+  //! Non mutex-protected version. With great powers, yada yada etc etc
   const auto& unsafe_children() const { return m_children; }
 
   //! Return a copy of the children vector to iterate without deadlocking.
