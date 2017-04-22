@@ -44,7 +44,7 @@ public:
 
   bool observe(ossia::net::address_base& address_base, bool enable) override;
 
-  void setDevice(ossia::net::device_base& dev) override;
+  void set_device(ossia::net::device_base& dev) override;
 
   static http_address_data read_data(const QJSValue& js) { return js; }
 signals:

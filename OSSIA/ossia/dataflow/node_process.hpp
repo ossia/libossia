@@ -22,7 +22,7 @@ public:
 
   ossia::state_element state() override
   {
-    m_node->set_time(parent()->getDate() / parent()->getDurationNominal());
+    m_node->set_time(parent()->get_date() / parent()->get_nominal_duration());
     m_graph->enable(*m_node);
     return {};
   }

@@ -19,7 +19,7 @@ bool t_remote :: register_node(ossia::net::node_base* node){
 
 bool t_remote :: do_registration(ossia::net::node_base* node){
 
-    if (x_node && x_node->getParent() == node ) {
+    if (x_node && x_node->get_parent() == node ) {
         return true; // already registered to this node;
     }
 
@@ -34,10 +34,10 @@ bool t_remote :: do_registration(ossia::net::node_base* node){
           x_node = ossia::net::find_node(*node, x_name->s_name);
         }
         if (x_node){
-            x_callbackit = x_node->getAddress()->add_callback([=](const ossia::value& v){
+            x_callbackit = x_node->get_address()->add_callback([=](const ossia::value& v){
                 setValue(v);
             });
-            x_node->aboutToBeDeleted.connect<t_remote, &t_remote::isDeleted>(this);
+            x_node->about_to_be_deleted.connect<t_remote, &t_remote::isDeleted>(this);
 
             clock_delay(x_regclock, 0);
 
@@ -49,7 +49,7 @@ bool t_remote :: do_registration(ossia::net::node_base* node){
 
 bool t_remote :: unregister(){
     if (x_callbackit != boost::none) {
-        if (x_node && x_node->getAddress()) x_node->getAddress()->remove_callback(*x_callbackit);
+        if (x_node && x_node->get_address()) x_node->get_address()->remove_callback(*x_callbackit);
         x_callbackit = boost::none;
     }
     obj_quarantining<t_remote>(this);
@@ -59,8 +59,8 @@ bool t_remote :: unregister(){
 }
 
 static void remote_float(t_remote *x, t_float val){
-    if ( x->x_node && x->x_node->getAddress() ){
-        x->x_node->getAddress()->pushValue(float(val));
+    if ( x->x_node && x->x_node->get_address() ){
+        x->x_node->get_address()->push_value(float(val));
     } else {
         pd_error(x,"[ossia.remote %s] is not registered to any parameter", x->x_name->s_name);
     }

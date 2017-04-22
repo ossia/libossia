@@ -12,55 +12,55 @@ namespace net
 {
 generic_node_base::generic_node_base(
     std::string name, ossia::net::device_base& aDevice, node_base& aParent)
-    : mName{std::move(name)}, mDevice{aDevice}, mParent{&aParent}
+    : m_name{std::move(name)}, m_device{aDevice}, m_parent{&aParent}
 {
 }
 
 generic_node_base::generic_node_base(std::string name, ossia::net::device_base& aDevice)
-    : mName{std::move(name)}, mDevice{aDevice}
+    : m_name{std::move(name)}, m_device{aDevice}
 {
 }
 
-device_base&generic_node_base::getDevice() const
+device_base&generic_node_base::get_device() const
 {
-  return mDevice;
+  return m_device;
 }
 
 
-node_base*generic_node_base::getParent() const
+node_base*generic_node_base::get_parent() const
 {
-  return mParent;
+  return m_parent;
 }
 
 
-std::string generic_node_base::getName() const
+std::string generic_node_base::get_name() const
 {
-  return mName;
+  return m_name;
 }
 
 
-node_base& generic_node_base::setName(std::string name)
+node_base& generic_node_base::set_name(std::string name)
 {
-  auto old_name = std::move(mName);
-  if(mParent)
+  auto old_name = std::move(m_name);
+  if(m_parent)
   {
-    const auto& bros = mParent->children();
+    const auto& bros = m_parent->children();
     std::vector<std::string> bros_names;
     bros_names.reserve(bros.size());
 
     std::transform(bros.cbegin(), bros.cend(), std::back_inserter(bros_names),
-                   [] (const auto& n) { return n->getName(); });
+                   [] (const auto& n) { return n->get_name(); });
 
-    mName = sanitize_name(std::move(name), bros_names);
+    m_name = sanitize_name(std::move(name), bros_names);
   }
   else
   {
-    mName = std::move(name);
-    sanitize_name(mName);
+    m_name = std::move(name);
+    sanitize_name(m_name);
   }
 
   // notify observers
-  mDevice.onNodeRenamed(*this, old_name);
+  m_device.on_node_renamed(*this, old_name);
 
   return *this;
 }
@@ -86,57 +86,57 @@ generic_node::generic_node(
 
 generic_node::~generic_node()
 {
-  aboutToBeDeleted(*this);
+  about_to_be_deleted(*this);
 
   m_children.clear();
-  removeAddress();
+  remove_address();
 }
 
 
-ossia::net::address_base* generic_node::getAddress() const
+ossia::net::address_base* generic_node::get_address() const
 {
-  return mAddress.get();
+  return m_address.get();
 }
 
-void generic_node::setAddress(std::unique_ptr<ossia::net::address_base> addr)
+void generic_node::set_address(std::unique_ptr<ossia::net::address_base> addr)
 {
-  removeAddress();
+  remove_address();
   if(addr)
   {
-    mAddress = std::move(addr);
-    mDevice.onAddressCreated(*mAddress);
+    m_address = std::move(addr);
+    m_device.on_address_created(*m_address);
   }
 }
 
-ossia::net::address_base* generic_node::createAddress(ossia::val_type type)
+ossia::net::address_base* generic_node::create_address(ossia::val_type type)
 {
   // clear former address
-  removeAddress();
+  remove_address();
 
   // edit new address
-  mAddress = std::make_unique<ossia::net::generic_address>(*this);
+  m_address = std::make_unique<ossia::net::generic_address>(*this);
 
   // set type
-  mAddress->setValueType(type);
+  m_address->set_value_type(type);
 
   // notify observers
-  mDevice.onAddressCreated(*mAddress);
+  m_device.on_address_created(*m_address);
 
-  return mAddress.get();
+  return m_address.get();
 }
 
-bool generic_node::removeAddress()
+bool generic_node::remove_address()
 {
   // use the device protocol to stop address value observation
-  if (mAddress)
+  if (m_address)
   {
     // notify observers
-    mDevice.onAddressRemoving(*mAddress);
+    m_device.on_address_removing(*m_address);
 
-    auto& device = getDevice();
-    device.getProtocol().observe(*mAddress, false);
+    auto& device = get_device();
+    device.get_protocol().observe(*m_address, false);
 
-    mAddress.reset();
+    m_address.reset();
 
     return true;
   }
@@ -145,11 +145,11 @@ bool generic_node::removeAddress()
 }
 
 std::unique_ptr<ossia::net::node_base>
-generic_node::makeChild(const std::string& name_base)
+generic_node::make_child(const std::string& name_base)
 {
   return std::make_unique<generic_node>(
               name_base,
-              mDevice,
+              m_device,
               *this);
 }
 

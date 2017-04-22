@@ -44,11 +44,11 @@ bool t_model :: register_node(ossia::net::node_base*  node){
 
 bool t_model :: do_registration(ossia::net::node_base*  node){
 
-    if (x_node && x_node->getParent() == node ) return true; // already register to this node;
+    if (x_node && x_node->get_parent() == node ) return true; // already register to this node;
     unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
     if (!node) return false;
 
-    if (node->findChild(x_name->s_name)) { // we have to check if a node with the same name already exists to avoid auto-incrementing name
+    if (node->find_child(x_name->s_name)) { // we have to check if a node with the same name already exists to avoid auto-incrementing name
         bool abord=true;
         std::vector<obj_hierachy> obj = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
         for (auto v : obj){
@@ -77,8 +77,8 @@ bool t_model :: do_registration(ossia::net::node_base*  node){
         }
     }
 
-    x_node = node->createChild(x_name->s_name);
-    x_node->aboutToBeDeleted.connect<t_model, &t_model::isDeleted>(this);
+    x_node = node->create_child(x_name->s_name);
+    x_node->about_to_be_deleted.connect<t_model, &t_model::isDeleted>(this);
 
     ossia::net::set_description(*x_node, x_description->s_name);
     ossia::net::set_tags(*x_node, parse_tags_symbol(x_tags));
@@ -90,8 +90,8 @@ bool t_model :: unregister(){
 
     if(!x_node) return true; // not registered
 
-    if (x_node && x_node->getParent())
-        x_node->getParent()->removeChild(x_name->s_name); // this calls isDeleted() on each registered child and put them into quarantine
+    if (x_node && x_node->get_parent())
+        x_node->get_parent()->remove_child(x_name->s_name); // this calls isDeleted() on each registered child and put them into quarantine
     x_node = nullptr;
 
     obj_quarantining<t_model>(this);

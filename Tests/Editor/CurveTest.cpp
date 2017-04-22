@@ -24,41 +24,41 @@ private Q_SLOTS:
 
     curve_segment_linear<float> linearSegment;
 
-    c->setInitialPointAbscissa(0.);
-    QVERIFY(c->getInitialPointAbscissa() == 0.);
+    c->set_x0(0.);
+    QVERIFY(c->get_x0() == 0.);
 
-    c->setInitialPointOrdinate(0.);
-    QVERIFY(c->getInitialPointOrdinate() == 0.);
+    c->set_y0(0.);
+    QVERIFY(c->get_y0() == 0.);
 
-    c->addPoint(linearSegment, 1., 1.);
-    QVERIFY(c->getPointsMap().size() == 1);
+    c->add_point(linearSegment, 1., 1.);
+    QVERIFY(c->get_points().size() == 1);
 
-    c->addPoint(linearSegment, 2., 0.);
-    QVERIFY(c->getPointsMap().size() == 2);
+    c->add_point(linearSegment, 2., 0.);
+    QVERIFY(c->get_points().size() == 2);
 
-    QVERIFY(c->valueAt(0.) == 0.);
-    QVERIFY(c->valueAt(0.5) == 0.5);
-    QVERIFY(c->valueAt(1.) == 1.);
-    QVERIFY(c->valueAt(1.5) == 0.5);
-    QVERIFY(c->valueAt(2.) == 0.);
+    QVERIFY(c->value_at(0.) == 0.);
+    QVERIFY(c->value_at(0.5) == 0.5);
+    QVERIFY(c->value_at(1.) == 1.);
+    QVERIFY(c->value_at(1.5) == 0.5);
+    QVERIFY(c->value_at(2.) == 0.);
 
-    c->setInitialPointOrdinate(2.);
-    QVERIFY(c->getInitialPointOrdinate() == 2.);
+    c->set_y0(2.);
+    QVERIFY(c->get_y0() == 2.);
 
-    QVERIFY(c->valueAt(0.) == 2.);
-    QVERIFY(c->valueAt(0.5) == 1.5);
-    QVERIFY(c->valueAt(1.) == 1.);
-    QVERIFY(c->valueAt(1.5) == 0.5);
-    QVERIFY(c->valueAt(2.) == 0.);
+    QVERIFY(c->value_at(0.) == 2.);
+    QVERIFY(c->value_at(0.5) == 1.5);
+    QVERIFY(c->value_at(1.) == 1.);
+    QVERIFY(c->value_at(1.5) == 0.5);
+    QVERIFY(c->value_at(2.) == 0.);
 
-    c->removePoint(1.);
-    QVERIFY(c->getPointsMap().size() == 1);
+    c->remove_point(1.);
+    QVERIFY(c->get_points().size() == 1);
 
-    QVERIFY(c->valueAt(0.) == 2.);
-    QVERIFY(c->valueAt(0.5) == 1.5);
-    QVERIFY(c->valueAt(1.) == 1.);
-    QVERIFY(c->valueAt(1.5) == 0.5);
-    QVERIFY(c->valueAt(2.) == 0.);
+    QVERIFY(c->value_at(0.) == 2.);
+    QVERIFY(c->value_at(0.5) == 1.5);
+    QVERIFY(c->value_at(1.) == 1.);
+    QVERIFY(c->value_at(1.5) == 0.5);
+    QVERIFY(c->value_at(2.) == 0.);
   }
 
   void test_float_float()
@@ -68,68 +68,68 @@ private Q_SLOTS:
 
     curve_segment_linear<float> linearSegment;
 
-    c->setInitialPointAbscissa(-100.);
-    QVERIFY(c->getInitialPointAbscissa() == -100.);
+    c->set_x0(-100.);
+    QVERIFY(c->get_x0() == -100.);
 
-    c->setInitialPointOrdinate(-100.);
-    QVERIFY(c->getInitialPointOrdinate() == -100.);
+    c->set_y0(-100.);
+    QVERIFY(c->get_y0() == -100.);
 
-    c->addPoint(linearSegment, 0., 0.);
-    QVERIFY(c->getPointsMap().size() == 1);
+    c->add_point(linearSegment, 0., 0.);
+    QVERIFY(c->get_points().size() == 1);
 
-    QVERIFY(qFuzzyCompare(c->valueAt(-110.), float(-100.)));
-    QVERIFY(qFuzzyCompare(c->valueAt(-100.), float(-100.)));
-    QVERIFY(qFuzzyCompare(c->valueAt(-80.), float(-80.)));
-    QVERIFY(qFuzzyCompare(c->valueAt(-60.), float(-60.)));
-    QVERIFY(qFuzzyCompare(c->valueAt(-40.), float(-40.)));
-    QVERIFY(qFuzzyCompare(c->valueAt(-20.), float(-20.)));
-    QVERIFY(qFuzzyCompare(c->valueAt(-0.), float(0.)));
-    QVERIFY(qFuzzyCompare(c->valueAt(10.), float(0.)));
+    QVERIFY(qFuzzyCompare(c->value_at(-110.), float(-100.)));
+    QVERIFY(qFuzzyCompare(c->value_at(-100.), float(-100.)));
+    QVERIFY(qFuzzyCompare(c->value_at(-80.), float(-80.)));
+    QVERIFY(qFuzzyCompare(c->value_at(-60.), float(-60.)));
+    QVERIFY(qFuzzyCompare(c->value_at(-40.), float(-40.)));
+    QVERIFY(qFuzzyCompare(c->value_at(-20.), float(-20.)));
+    QVERIFY(qFuzzyCompare(c->value_at(-0.), float(0.)));
+    QVERIFY(qFuzzyCompare(c->value_at(10.), float(0.)));
   }
 
   void test_float_int()
   {
     auto c = std::make_shared<curve<float, int>>();
     curve_segment_linear<int> linearSegment;
-    c->setInitialPointAbscissa(-10.);
-    c->setInitialPointOrdinate(-10);
-    c->addPoint(linearSegment, 10., 10);
+    c->set_x0(-10.);
+    c->set_y0(-10);
+    c->add_point(linearSegment, 10., 10);
 
-    QVERIFY(c->valueAt(-10.) == -10);
-    QCOMPARE(c->valueAt(-9.5), -9);
-    QVERIFY(c->valueAt(-9.) == -9);
-    QVERIFY(c->valueAt(-8.5) == -8);
-    QVERIFY(c->valueAt(-8) == -8);
-    QVERIFY(c->valueAt(-7.5) == -7);
-    QVERIFY(c->valueAt(0.) == 0);
-    QVERIFY(c->valueAt(10.) == 10);
+    QVERIFY(c->value_at(-10.) == -10);
+    QCOMPARE(c->value_at(-9.5), -9);
+    QVERIFY(c->value_at(-9.) == -9);
+    QVERIFY(c->value_at(-8.5) == -8);
+    QVERIFY(c->value_at(-8) == -8);
+    QVERIFY(c->value_at(-7.5) == -7);
+    QVERIFY(c->value_at(0.) == 0);
+    QVERIFY(c->value_at(10.) == 10);
   }
 
   void test_destination()
   {
-    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
-    auto localTupleNode = device.createChild("my_tuple");
-    auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
+    auto localTupleNode = device.create_child("my_tuple");
+    auto localTupleAddress = localTupleNode->create_address(val_type::TUPLE);
 
     std::vector<ossia::value> t{float{-1.}, float{0.}, float{1.}};
-    localTupleAddress->setValue(t);
+    localTupleAddress->set_value(t);
 
     auto c = std::make_shared<curve<double, float>>();
     curve_segment_linear<float> linearSegment;
 
-    c->setInitialPointAbscissa(0.);
+    c->set_x0(0.);
 
     Destination d(*localTupleAddress, ossia::destination_index{1});
-    c->setInitialPointOrdinateDestination(d);
+    c->set_y0_destination(d);
 
-    QVERIFY(c->getInitialPointOrdinateDestination() == d);
+    QVERIFY(c->get_y0_destination() == d);
 
-    c->addPoint(linearSegment, 1., 1.);
+    c->add_point(linearSegment, 1., 1.);
 
-    QVERIFY(c->valueAt(0.) == 0.);
-    QVERIFY(c->valueAt(0.5) == 0.5);
-    QVERIFY(c->valueAt(1.) == 1.);
+    QVERIFY(c->value_at(0.) == 0.);
+    QVERIFY(c->value_at(0.5) == 0.5);
+    QVERIFY(c->value_at(1.) == 1.);
   }
 };
 

@@ -20,12 +20,12 @@ qml_node_base::~qml_node_base()
 {
   if(m_ossia_node)
   {
-    auto par = m_ossia_node->getParent();
+    auto par = m_ossia_node->get_parent();
     if(par)
     {
       auto node = m_ossia_node;
       m_ossia_node = nullptr;
-      par->removeChild(*node);
+      par->remove_child(*node);
     }
   }
 }

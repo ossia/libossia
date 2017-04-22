@@ -22,7 +22,7 @@ struct t_model : t_obj_base
     void isDeleted(const ossia::net::node_base& n)
     {
         if (!x_dead){
-            x_node->aboutToBeDeleted.disconnect<t_model, &t_model::isDeleted>(this);
+            x_node->about_to_be_deleted.disconnect<t_model, &t_model::isDeleted>(this);
             x_node = nullptr;
             obj_quarantining<t_model>(this);
         }

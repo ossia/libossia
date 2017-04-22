@@ -31,14 +31,14 @@ public:
   ~oscquery_mirror_protocol();
 
   bool pull(net::address_base&) override;
-  std::future<void> pullAsync(net::address_base&) override;
+  std::future<void> pull_async(net::address_base&) override;
   void request(net::address_base&) override;
   bool push(const net::address_base&) override;
   bool observe(net::address_base&, bool) override;
   bool observe_quietly(net::address_base&, bool) override;
   bool update(net::node_base& b) override;
-  void setDevice(net::device_base& dev) override;
-  ossia::net::device_base& getDevice() const { return *m_device; }
+  void set_device(net::device_base& dev) override;
+  ossia::net::device_base& get_device() const { return *m_device; }
 
 
   /**
@@ -52,7 +52,7 @@ public:
    * Run this function regularly in order to get the update of the device, for
    * instance in the event loop of your application.
    */
-  void runCommands();
+  void run_commands();
 
   /**
    * @brief Provide a callback for whenever an edition command is received
@@ -62,23 +62,23 @@ public:
    * after it has been pushed.
    * This can be used to put the command in the application's main loop.
    */
-  void setCommandCallback(std::function<void()>);
+  void set_command_callback(std::function<void()>);
 
   /**
    * @brief Request a new node from the server
    * @param Parent of the new node
    * @param Data of the new node
    */
-  void requestAddNode(net::node_base&, ossia::net::address_data);
+  void request_add_node(net::node_base&, ossia::net::address_data);
 
   /**
    * @brief Request a node removal from the server
    * @param Node to be removed
    */
-  void requestRemoveNode(net::node_base&);
+  void request_remove_node(net::node_base&);
 
-  void setDisconnectCallback(std::function<void()>);
-  void setFailCallback(std::function<void()>);
+  void set_disconnect_callback(std::function<void()>);
+  void set_fail_callback(std::function<void()>);
 private:
   using connection_handler = websocketpp::connection_hdl;
   bool on_WSMessage(connection_handler hdl, const std::string& message);

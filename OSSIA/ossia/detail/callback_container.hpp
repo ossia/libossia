@@ -34,7 +34,7 @@ template <typename T>
  *
  * Contains callbacks.
  * Classes that have network callbacks may want to derive from this and implement
- * onFirstCallbackAdded, onRemovingLastCallback.
+ * on_first_callback_added, on_removing_last_callback.
  *
  * This allows to cleanly stop listening when there are no callbacks.
  *
@@ -62,9 +62,9 @@ public:
     T cb = callback;
     if(cb)
     {
-      auto it = mCallbacks.insert(mCallbacks.begin(), std::move(cb));
-      if (mCallbacks.size() == 1)
-        onFirstCallbackAdded();
+      auto it = m_callbacks.insert(m_callbacks.begin(), std::move(cb));
+      if (m_callbacks.size() == 1)
+        on_first_callback_added();
       return it;
     }
     else
@@ -79,9 +79,9 @@ public:
    */
   void remove_callback(iterator it)
   {
-    if (mCallbacks.size() == 1)
-      onRemovingLastCallback();
-    mCallbacks.erase(it);
+    if (m_callbacks.size() == 1)
+      on_removing_last_callback();
+    m_callbacks.erase(it);
   }
 
   /**
@@ -89,14 +89,14 @@ public:
    * @return Number of active callbacks.
    */
   std::size_t callback_count() const
-  { return mCallbacks.size(); }
+  { return m_callbacks.size(); }
 
   /**
    * @brief callbacks_empty
    * @return True if there are no callbacks
    */
   bool callbacks_empty() const
-  { return mCallbacks.empty(); }
+  { return m_callbacks.empty(); }
 
   /**
    * @brief send Trigger all callbacks
@@ -105,7 +105,7 @@ public:
   template <typename... Args>
   void send(Args&&... args)
   {
-    for (auto& callback : mCallbacks)
+    for (auto& callback : m_callbacks)
     {
       if(callback)
         callback(std::forward<Args>(args)...);
@@ -117,37 +117,37 @@ public:
    */
   void callbacks_clear()
   {
-    if(!mCallbacks.empty())
-      onRemovingLastCallback();
-    mCallbacks.clear();
+    if(!m_callbacks.empty())
+      on_removing_last_callback();
+    m_callbacks.clear();
   }
 
 protected:
   /**
-   * @brief onFirstCallbackAdded
+   * @brief on_first_callback_added
    *
    * These functions can be reimplemented by
    * subclasses wishing to perform special actions.
    * For instance, when the last callback is removed,
    * stop listening somewhere...
    *
-   * \see \ref onRemovingLastCallback
+   * \see \ref on_removing_last_callback
   */
-  virtual void onFirstCallbackAdded()
+  virtual void on_first_callback_added()
   {
   }
 
   /**
-   * @brief onRemovingLastCallback
+   * @brief on_removing_last_callback
    *
-   * \see \ref onFirstCallbackAdded
+   * \see \ref on_first_callback_added
    */
-  virtual void onRemovingLastCallback()
+  virtual void on_removing_last_callback()
   {
   }
 
 private:
-  impl mCallbacks;
+  impl m_callbacks;
 };
 
 }

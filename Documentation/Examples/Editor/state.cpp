@@ -27,7 +27,7 @@ int main()
         "newDevice"};
 
   // Minuit tree building
-  device.getProtocol().update(device.getRootNode());
+  device.get_protocol().update(device.get_root_node());
 
   // create a state
   state test;
@@ -40,22 +40,22 @@ int main()
 
   for (const auto& module : device.children())
   {
-    if (module->getName() == "deg")
+    if (module->get_name() == "deg")
     {
       for (const auto& parameter : module->children())
       {
-        string parameter_name = parameter->getName();
+        string parameter_name = parameter->get_name();
 
         if (parameter_name == "bitdepth")
         {
           cout << "/deg/bitdepth node found" << endl;
 
-          bitdepthAddress = parameter->getAddress();
-          bitdepthAddress->pullValue();
-          bitdepthMessage = message{*bitdepthAddress, bitdepthAddress->cloneValue()};
+          bitdepthAddress = parameter->get_address();
+          bitdepthAddress->pull_value();
+          bitdepthMessage = message{*bitdepthAddress, bitdepthAddress->value()};
 
           // change the value
-          bitdepthAddress->pushValue(10);
+          bitdepthAddress->push_value(10);
 
           // attach to callback to display later value update
           bitdepthAddress->add_callback(printValueCallback);
@@ -64,12 +64,12 @@ int main()
         {
           cout << "/deg/samplerate_ratio node found" << endl;
 
-          samplerateAddress = parameter->getAddress();
-          samplerateAddress->pullValue();
-          samplerateMessage = message{*samplerateAddress, samplerateAddress->cloneValue()};
+          samplerateAddress = parameter->get_address();
+          samplerateAddress->pull_value();
+          samplerateMessage = message{*samplerateAddress, samplerateAddress->value()};
 
           // change the value
-          samplerateAddress->pushValue(0.5);
+          samplerateAddress->push_value(0.5);
 
           // attach to callback to display later value update
           samplerateAddress->add_callback(printValueCallback);
@@ -101,7 +101,7 @@ int main()
   {
     this_thread::sleep_for( std::chrono::milliseconds(500));
 
-    auto f = samplerateAddress->cloneValue().get<float>();
+    auto f = samplerateAddress->value().get<float>();
     wait = f > 0.5;
 
     if (!wait)

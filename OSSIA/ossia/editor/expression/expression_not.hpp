@@ -29,16 +29,16 @@ public:
   bool evaluate() const;
   void update() const;
 
-  expression_base& getExpression() const;
+  expression_base& get_expression() const;
 
 private:
-  void onFirstCallbackAdded() override;
-  void onRemovingLastCallback() override;
+  void on_first_callback_added() override;
+  void on_removing_last_callback() override;
 
-  void resultCallback(bool result);
+  void result_callback(bool result);
 
-  expression_ptr mExpression;
-  expression_callback_iterator mResultCallbackIndex;
+  expression_ptr m_expression;
+  expression_callback_iterator m_callback;
 };
 }
 }

@@ -151,7 +151,7 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
   using namespace boost;
   using namespace eggs::variants;
 
-  auto addr = n.getAddress();
+  auto addr = n.get_address();
 
   // We are already in an object
   // These attributes are always here
@@ -204,7 +204,7 @@ void json_writer_impl::writeNode(
     writer.StartObject();
     for(const auto& child : cld)
     {
-      writer.String(child->getName());
+      writer.String(child->get_name());
       writeNode(*child);
     }
     writer.EndObject();
@@ -368,7 +368,7 @@ json_writer::string_t json_writer::query_host_info(const oscquery_server_protoco
 
   wr.StartObject();
   wr.Key("NAME");
-  wr.String(proto.getDevice().getName());
+  wr.String(proto.get_device().get_name());
   wr.Key("PORT");
   wr.Int(proto.getOSCPort());
 

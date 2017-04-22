@@ -17,7 +17,7 @@ class AutomationTest : public QObject
     element.launch();
   }
 
-  void event_callback(time_event::Status newStatus)
+  void event_callback(time_event::status newStatus)
   {
     std::cout << "Event : " << "new status received" << std::endl;
   }
@@ -32,9 +32,9 @@ private Q_SLOTS:
   /*! test life cycle and accessors functions */
   void test_basic()
   {
-    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
-    auto cld = device.createChild("child");
-    auto address = cld->createAddress(val_type::FLOAT);
+    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+    auto cld = device.create_child("child");
+    auto address = cld->create_address(val_type::FLOAT);
 
     behavior b;
 
@@ -50,35 +50,35 @@ private Q_SLOTS:
   //! \todo test state()
   void test_execution()
   {
-    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
-    auto cld = device.createChild("child");
-    auto address = cld->createAddress(val_type::FLOAT);
+    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+    auto cld = device.create_child("child");
+    auto address = cld->create_address(val_type::FLOAT);
     address->add_callback([&] (const value&v) { address_callback(v); });
 
     auto c = std::make_shared<curve<double, float>>();
     curve_segment_linear<float> linearSegment;
 
-    c->setInitialPointAbscissa(0.);
-    c->setInitialPointOrdinate(0.);
-    c->addPoint(linearSegment, 0.5, 1.);
-    c->addPoint(linearSegment, 1., 0.);
+    c->set_x0(0.);
+    c->set_y0(0.);
+    c->add_point(linearSegment, 0.5, 1.);
+    c->add_point(linearSegment, 1., 0.);
 
 
     auto start_node = std::make_shared<time_node>();
     auto end_node = std::make_shared<time_node>();
     auto event_callback = std::bind(&AutomationTest::event_callback, this, _1);
-    auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
-    auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
+    auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), event_callback));
+    auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), event_callback));
     auto constraint_callback = std::bind(&AutomationTest::constraint_callback, this, _1, _2, _3);
     auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
-    constraint->addTimeProcess(std::make_unique<automation>(*address, c));
+    constraint->add_time_process(std::make_unique<automation>(*address, c));
 
     m_address_values.clear();
 
-    constraint->setGranularity(10._tv);
+    constraint->set_granularity(10._tv);
     constraint->start();
 
-    while (constraint->getRunning())
+    while (constraint->running())
       ;
     // Let the time for callbacks to happen...
     //std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -106,27 +106,27 @@ private Q_SLOTS:
   void test_dataspace()
   {
 
-    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
-    auto cld = device.createChild("child");
-    auto address = cld->createAddress(val_type::VEC3F);
-    address->setUnit(ossia::rgb_u{});
-    address->pushValue(make_vec(0.1, 0.1, 0.1));
+    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+    auto cld = device.create_child("child");
+    auto address = cld->create_address(val_type::VEC3F);
+    address->set_unit(ossia::rgb_u{});
+    address->push_value(make_vec(0.1, 0.1, 0.1));
 
     address->add_callback([&] (const value&v) { address_callback(v); });
 
     auto c = std::make_shared<curve<double, float>>();
     curve_segment_linear<float> linearSegment;
 
-    c->setInitialPointAbscissa(0.);
-    c->setInitialPointOrdinate(0.);
-    c->addPoint(linearSegment, 1., 1.);
+    c->set_x0(0.);
+    c->set_y0(0.);
+    c->add_point(linearSegment, 1., 1.);
 
     // TODO make a "make_base_scenario" function.
     auto start_node = std::make_shared<time_node>();
     auto end_node = std::make_shared<time_node>();
     auto event_callback = std::bind(&AutomationTest::event_callback, this, _1);
-    auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
-    auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
+    auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), event_callback));
+    auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), event_callback));
     auto constraint_callback = std::bind(&AutomationTest::constraint_callback, this, _1, _2, _3);
     auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
 
@@ -134,9 +134,9 @@ private Q_SLOTS:
 
     auto& tp = (ossia::time_process&) *autom;
 
-    constraint->addTimeProcess(std::move(autom));
+    constraint->add_time_process(std::move(autom));
 
-    auto state = tp.offset(constraint->getDurationNominal() * 0.5);
+    auto state = tp.offset(constraint->get_nominal_duration() * 0.5);
     auto mess = state.target<ossia::message>() ;
     QVERIFY(mess != nullptr);
 

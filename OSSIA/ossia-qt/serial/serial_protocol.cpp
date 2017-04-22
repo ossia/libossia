@@ -61,7 +61,7 @@ bool serial_protocol::push(const ossia::net::address_base& addr)
 {
   auto& ad = dynamic_cast<const serial_address&>(addr);
   auto str = ad.data().request;
-  switch(addr.getValueType())
+  switch(addr.get_value_type())
   {
     case ossia::val_type::FLOAT:
       str.replace("$0", QString::number(ad.getValue().get<float>(), 'g', 4));

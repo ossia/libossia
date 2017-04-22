@@ -9,11 +9,11 @@ namespace expressions
 expression_composition::expression_composition(
     expression_ptr expr1, binary_operator op,
     expression_ptr expr2)
-    : mFirstExpression(std::move(expr1))
-    , mSecondExpression(std::move(expr2))
-    , mOperator(op)
+    : m_first(std::move(expr1))
+    , m_second(std::move(expr2))
+    , m_operator(op)
 {
-  if(!mFirstExpression || !mSecondExpression)
+  if(!m_first || !m_second)
     throw std::runtime_error("An argument to expression_composition is null");
 }
 
@@ -26,54 +26,54 @@ expression_composition::~expression_composition()
 bool expression_composition::evaluate() const
 {
     return do_evaluation(
-          expressions::evaluate(*mFirstExpression),
-          expressions::evaluate(*mSecondExpression));
+          expressions::evaluate(*m_first),
+          expressions::evaluate(*m_second));
 }
 
 void expression_composition::update() const
 {
-  expressions::update(*mFirstExpression);
-  expressions::update(*mSecondExpression);
+  expressions::update(*m_first);
+  expressions::update(*m_second);
 }
 
-expression_base& expression_composition::getFirstOperand() const
+expression_base& expression_composition::get_first_operand() const
 {
-  return *mFirstExpression;
+  return *m_first;
 }
 
-binary_operator expression_composition::getOperator() const
+binary_operator expression_composition::get_operator() const
 {
-  return mOperator;
+  return m_operator;
 }
 
-expression_base& expression_composition::getSecondOperand() const
+expression_base& expression_composition::get_second_operand() const
 {
-  return *mSecondExpression;
+  return *m_second;
 }
 
-void expression_composition::onFirstCallbackAdded()
+void expression_composition::on_first_callback_added()
 {
   // start first expression observation
-  mFirstResultCallbackIndex = expressions::add_callback(
-      *mFirstExpression, [&](bool result) { firstResultCallback(result); });
+  m_firstIndex = expressions::add_callback(
+      *m_first, [&](bool result) { first_callback(result); });
 
   // start second expression observation
-  mSecondResultCallbackIndex = expressions::add_callback(
-      *mSecondExpression, [&](bool result) { secondResultCallback(result); });
+  m_secondIndex = expressions::add_callback(
+      *m_second, [&](bool result) { second_callback(result); });
 }
 
-void expression_composition::onRemovingLastCallback()
+void expression_composition::on_removing_last_callback()
 {
   // stop first expression observation
-  expressions::remove_callback(*mFirstExpression, mFirstResultCallbackIndex);
+  expressions::remove_callback(*m_first, m_firstIndex);
 
   // stop second expression observation
-  expressions::remove_callback(*mSecondExpression, mSecondResultCallbackIndex);
+  expressions::remove_callback(*m_second, m_secondIndex);
 }
 
 bool expression_composition::do_evaluation(bool first, bool second) const
 {
-  switch (mOperator)
+  switch (m_operator)
   {
     case binary_operator::AND:
     {
@@ -92,17 +92,17 @@ bool expression_composition::do_evaluation(bool first, bool second) const
   }
 }
 
-void expression_composition::firstResultCallback(bool first_result)
+void expression_composition::first_callback(bool first_result)
 {
   bool result
-      = do_evaluation(first_result, expressions::evaluate(*mSecondExpression));
+      = do_evaluation(first_result, expressions::evaluate(*m_second));
   send(result);
 }
 
-void expression_composition::secondResultCallback(bool second_result)
+void expression_composition::second_callback(bool second_result)
 {
   bool result
-      = do_evaluation(expressions::evaluate(*mFirstExpression), second_result);
+      = do_evaluation(expressions::evaluate(*m_first), second_result);
   send(result);
 }
 }

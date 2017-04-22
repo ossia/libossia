@@ -25,32 +25,32 @@ public:
 
   auto begin()
   {
-    return mChildren.begin();
+    return m_children.begin();
   }
   auto end()
   {
-    return mChildren.end();
+    return m_children.end();
   }
   auto begin() const
   {
-    return mChildren.begin();
+    return m_children.begin();
   }
   auto end() const
   {
-    return mChildren.end();
+    return m_children.end();
   }
   auto cbegin() const
   {
-    return mChildren.cbegin();
+    return m_children.cbegin();
   }
   auto cend() const
   {
-    return mChildren.cend();
+    return m_children.cend();
   }
 
   auto& children() const
   {
-    return mChildren;
+    return m_children;
   }
 
   std::size_t size() const;
@@ -76,7 +76,7 @@ public:
   void clear();
 
 private:
-  std::vector<state_element> mChildren;
+  std::vector<state_element> m_children;
 };
 
 inline auto begin(state& s)

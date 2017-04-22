@@ -25,7 +25,7 @@ qml_property_context::qml_property_context(
 
 void qml_property_context::qtVariantChanged()
 {
-  address.pushValue(qt_to_ossia{}(targetProperty.read()));
+  address.push_value(qt_to_ossia{}(targetProperty.read()));
 }
 
 
@@ -76,18 +76,18 @@ void qml_property_reader::resetNode()
   if(m_device && m_userRequestedNode.startsWith('/'))
   {
     m_ossia_node = ossia::net::find_node(
-                     m_device->device().getRootNode(),
+                     m_device->device().get_root_node(),
                      m_userRequestedNode.toStdString());
 
     if(m_ossia_node)
     {
-      m_ossia_node->aboutToBeDeleted.connect<qml_property_reader, &qml_property_reader::on_node_deleted>(this);
-      m_address = m_ossia_node->getAddress();
+      m_ossia_node->about_to_be_deleted.connect<qml_property_reader, &qml_property_reader::on_node_deleted>(this);
+      m_address = m_ossia_node->get_address();
 
       if(m_address)
       {
         m_propCtx = new qml_property_context{m_targetProperty, *m_address, this};
-        m_address->pushValue(qt_to_ossia{}(m_targetProperty.read()));
+        m_address->push_value(qt_to_ossia{}(m_targetProperty.read()));
       }
     }
   }
@@ -162,19 +162,19 @@ void qml_property_writer::resetNode()
   if(m_device && m_userRequestedNode.startsWith('/'))
   {
     m_ossia_node = ossia::net::find_node(
-                     m_device->device().getRootNode(),
+                     m_device->device().get_root_node(),
                      m_userRequestedNode.toStdString());
 
     if(m_ossia_node)
     {
-      m_ossia_node->aboutToBeDeleted.connect<qml_property_writer, &qml_property_writer::on_node_deleted>(this);
-      m_address = m_ossia_node->getAddress();
+      m_ossia_node->about_to_be_deleted.connect<qml_property_writer, &qml_property_writer::on_node_deleted>(this);
+      m_address = m_ossia_node->get_address();
       if(m_address)
       {
         m_cb = m_address->add_callback([=] (const ossia::value& v) {
           setValue_sig(v);
         });
-        setValue_slot(m_address->cloneValue());
+        setValue_slot(m_address->value());
       }
     }
   }
@@ -248,13 +248,13 @@ void qml_binding::resetNode()
   if(m_device && m_userRequestedNode.startsWith('/'))
   {
     m_ossia_node = ossia::net::find_node(
-                     m_device->device().getRootNode(),
+                     m_device->device().get_root_node(),
                      m_userRequestedNode.toStdString());
 
     if(m_ossia_node)
     {
-      m_ossia_node->aboutToBeDeleted.connect<qml_binding, &qml_binding::on_node_deleted>(this);
-      m_address = m_ossia_node->getAddress();
+      m_ossia_node->about_to_be_deleted.connect<qml_binding, &qml_binding::on_node_deleted>(this);
+      m_address = m_ossia_node->get_address();
 
       if(m_address)
       {
@@ -264,7 +264,7 @@ void qml_binding::resetNode()
 
         connect(m_expr.get(), &QQmlExpression::valueChanged,
                 this, [=] () {
-          m_address->pushValue(qt_to_ossia{}(m_expr->evaluate()));
+          m_address->push_value(qt_to_ossia{}(m_expr->evaluate()));
         });
       }
     }
@@ -348,19 +348,19 @@ void qml_callback::resetNode()
   if(m_device && m_userRequestedNode.startsWith('/'))
   {
     m_ossia_node = ossia::net::find_node(
-                     m_device->device().getRootNode(),
+                     m_device->device().get_root_node(),
                      m_userRequestedNode.toStdString());
 
     if(m_ossia_node)
     {
-      m_ossia_node->aboutToBeDeleted.connect<qml_callback, &qml_callback::on_node_deleted>(this);
-      m_address = m_ossia_node->getAddress();
+      m_ossia_node->about_to_be_deleted.connect<qml_callback, &qml_callback::on_node_deleted>(this);
+      m_address = m_ossia_node->get_address();
       if(m_address)
       {
         m_cb = m_address->add_callback([=] (const ossia::value& v) {
           setValue_sig(v);
         });
-        setValue_slot(m_address->cloneValue());
+        setValue_slot(m_address->value());
       }
     }
   }

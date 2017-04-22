@@ -5,76 +5,76 @@
 namespace ossia
 {
 time_event::time_event(
-    time_event::ExecutionCallback callback,
+    time_event::exec_callback callback,
     time_node& aTimeNode,
     expression_ptr anExpression)
-    : mCallback(callback)
-    , mTimeNode(aTimeNode)
-    , mStatus(time_event::Status::NONE)
-    , mExpression(std::move(anExpression))
+    : m_callback(callback)
+    , m_timenode(aTimeNode)
+    , m_status(time_event::status::NONE)
+    , m_expression(std::move(anExpression))
 {
 }
 
 time_event::~time_event() = default;
 
-void time_event::setCallback(time_event::ExecutionCallback callback)
+void time_event::set_callback(time_event::exec_callback callback)
 {
-  mCallback = callback;
+  m_callback = callback;
 }
 
 void time_event::happen()
 {
-  if (mStatus != time_event::Status::PENDING)
+  if (m_status != time_event::status::PENDING)
   {
     throw execution_error("time_event::happen: "
                           "only PENDING event can happens");
     return;
   }
 
-  mStatus = time_event::Status::HAPPENED;
+  m_status = time_event::status::HAPPENED;
 
   // stop previous TimeConstraints
-  for (auto& timeConstraint : previousTimeConstraints())
+  for (auto& timeConstraint : previous_time_constraints())
   {
     timeConstraint->stop();
   }
 
   // setup next TimeConstraints
-  for (auto& timeConstraint : nextTimeConstraints())
+  for (auto& timeConstraint : next_time_constraints())
   {
     timeConstraint->start();
   }
 
-  if (mCallback)
-    (mCallback)(mStatus);
+  if (m_callback)
+    (m_callback)(m_status);
 }
 
 void time_event::dispose()
 {
-  if (mStatus == time_event::Status::HAPPENED)
+  if (m_status == time_event::status::HAPPENED)
   {
     throw execution_error("time_event::dispose: "
                           "HAPPENED event cannot be disposed");
     return;
   }
 
-  mStatus = time_event::Status::DISPOSED;
+  m_status = time_event::status::DISPOSED;
 
   // stop previous TimeConstraints
-  for (auto& timeConstraint : previousTimeConstraints())
+  for (auto& timeConstraint : previous_time_constraints())
   {
     timeConstraint->stop();
   }
 
   // dispose next TimeConstraints end event if everything is disposed before
-  for (auto& nextTimeConstraint : nextTimeConstraints())
+  for (auto& nextTimeConstraint : next_time_constraints())
   {
     bool dispose = true;
 
-    for (auto& previousTimeConstraint : nextTimeConstraint->getEndEvent().previousTimeConstraints())
+    for (auto& previousTimeConstraint : nextTimeConstraint->get_end_event().previous_time_constraints())
     {
-      if (previousTimeConstraint->getStartEvent().getStatus()
-          != time_event::Status::DISPOSED)
+      if (previousTimeConstraint->get_start_event().get_status()
+          != time_event::status::DISPOSED)
       {
         dispose = false;
         break;
@@ -82,78 +82,78 @@ void time_event::dispose()
     }
 
     if (dispose)
-      nextTimeConstraint->getEndEvent().dispose();
+      nextTimeConstraint->get_end_event().dispose();
   }
 
-  if (mCallback)
-    (mCallback)(mStatus);
+  if (m_callback)
+    (m_callback)(m_status);
 }
 
-void time_event::addState(state_element&& state)
+void time_event::add_state(state_element&& state)
 {
-  mState.add(std::move(state));
+  m_state.add(std::move(state));
 }
 
-void time_event::removeState(const state_element& state)
+void time_event::remove_state(const state_element& state)
 {
-  mState.remove(state);
+  m_state.remove(state);
 }
 
-time_node& time_event::getTimeNode() const
+time_node& time_event::get_time_node() const
 {
-  return mTimeNode;
+  return m_timenode;
 }
 
-const state& time_event::getState() const
+const state& time_event::get_state() const
 {
-  return mState;
+  return m_state;
 }
 
-const expression& time_event::getExpression() const
+const expression& time_event::get_expression() const
 {
-  return *mExpression;
+  return *m_expression;
 }
 
-time_event& time_event::setExpression(expression_ptr exp)
+time_event& time_event::set_expression(expression_ptr exp)
 {
   assert(exp);
 
-  mExpression = std::move(exp);
+  m_expression = std::move(exp);
 
   return *this;
 }
 
-time_event::Status time_event::getStatus() const
+time_event::status time_event::get_status() const
 {
-  return mStatus;
+  return m_status;
 }
 
-time_event::OffsetBehavior time_event::getOffsetBehavior() const
+time_event::offset_behavior time_event::get_offset_behavior() const
 {
-  return mOffsetBehavior;
+  return m_offset;
 }
 
-time_event& time_event::setOffsetBehavior(OffsetBehavior b)
+time_event& time_event::set_offset_behavior(offset_behavior b)
 {
-  mOffsetBehavior = b;
+  m_offset = b;
   return *this;
 }
 
-void time_event::setStatus(Status status)
+void time_event::set_status(status status)
 {
-  mStatus = status;
-  if (mCallback)
-      (mCallback)(mStatus);
+  m_status = status;
+  if (m_callback)
+      (m_callback)(m_status);
 }
 
 void time_event::reset()
 {
-    setStatus(Status::NONE);
+    set_status(status::NONE);
 }
 
 void time_event::cleanup()
 {
-  m_previousTimeConstraints.clear();
-  m_nextTimeConstraints.clear();
+  m_previous_time_constraints.clear();
+  m_next_time_constraints.clear();
 }
 }

@@ -38,7 +38,7 @@ public:
 
   ossia::net::device_base& device();
   const ossia::net::device_base& device() const;
-  ossia::net::local_protocol* localProtocol() const;
+  ossia::net::multiplex_protocol* localProtocol() const;
 
   bool readPreset() const;
 

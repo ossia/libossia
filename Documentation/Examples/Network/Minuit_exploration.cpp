@@ -27,17 +27,17 @@ int main()
         "B"};
 
   // explore the tree of B
-  device.getProtocol().update(device);
+  device.get_protocol().update(device);
 
   // display tree in console
-  explore(device.getRootNode());
+  explore(device.get_root_node());
 }
 
 void explore(const ossia::net::node_base& node)
 {
   for (const auto& child : node.children_copy())
   {
-    if (auto addr = child->getAddress())
+    if (auto addr = child->get_address())
     {
       // attach to callback to display value update
       addr->add_callback([=] (const value& v) {
@@ -46,7 +46,7 @@ void explore(const ossia::net::node_base& node)
       });
 
       // update the value
-      addr->pullValue();
+      addr->pull_value();
     }
 
     fmt::MemoryWriter w;

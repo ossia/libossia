@@ -15,57 +15,57 @@ private Q_SLOTS:
   /*! test life cycle and accessors functions */
   void test_basic()
   {
-    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
-    QVERIFY(device.getName() == "test");
+    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+    QVERIFY(device.get_name() == "test");
 
-    device.setName("app");
-    QVERIFY(device.getName() == "app");
+    device.set_name("app");
+    QVERIFY(device.get_name() == "app");
 
-    device.createChild("child");
+    device.create_child("child");
     auto& node = device.children().front();
     QVERIFY(node != nullptr);
     QVERIFY(device.children().size() == 1);
 
-    QVERIFY(node->getParent() == &device);
+    QVERIFY(node->get_parent() == &device);
 
-    QVERIFY(node->getName() == "child");
+    QVERIFY(node->get_name() == "child");
 
-    node->setName("foo");
-    QVERIFY(node->getName() == "foo");
+    node->set_name("foo");
+    QVERIFY(node->get_name() == "foo");
 
-    QVERIFY(node->getAddress() == nullptr);
+    QVERIFY(node->get_address() == nullptr);
 
-    auto brother = device.createChild("foo");
+    auto brother = device.create_child("foo");
 
-    QVERIFY(brother->getName() == "foo.1");
+    QVERIFY(brother->get_name() == "foo.1");
   }
 
   /*! test edition functions */
   void test_edition()
   {
-    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
     // edit a node and its address and then remove it
     {
-      auto node = device.createChild("child");
+      auto node = device.create_child("child");
 
-      auto address = node->createAddress();
-      QVERIFY(node->getAddress() != nullptr);
-      QVERIFY(address == node->getAddress());
+      auto address = node->create_address();
+      QVERIFY(node->get_address() != nullptr);
+      QVERIFY(address == node->get_address());
 
-      QVERIFY(node->removeAddress());
-      QVERIFY(node->getAddress() == nullptr);
+      QVERIFY(node->remove_address());
+      QVERIFY(node->get_address() == nullptr);
 
-      device.removeChild("child");
+      device.remove_child("child");
       QVERIFY(device.children().size() == 0);
     }
 
     // edit the same node again to see if it have been
     // correctly destroyed and removed from the namespace
     {
-      auto node = device.createChild("child");
+      auto node = device.create_child("child");
 
-      QVERIFY(node->getName() == "child");
+      QVERIFY(node->get_name() == "child");
     }
   }
 
@@ -125,7 +125,7 @@ private Q_SLOTS:
   /*! test callback notifications */
   void test_callback()
   {
-    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
     /* TODO */
   }
@@ -153,7 +153,7 @@ private Q_SLOTS:
 
   void test_attributes()
   {
-    generic_device dev{std::make_unique<local_protocol>(), "A"};
+    generic_device dev{std::make_unique<multiplex_protocol>(), "A"};
     auto& n = find_or_create_node(dev, "/main");
 
     QVERIFY(!get_access_mode(n));
@@ -174,7 +174,7 @@ private Q_SLOTS:
     QVERIFY(!get_app_version(n));
     QVERIFY(!get_app_creator(n));
 
-    auto a = n.createAddress(ossia::val_type::INT);
+    auto a = n.create_address(ossia::val_type::INT);
 
     QVERIFY((bool)get_access_mode(n));
     QVERIFY((bool)get_bounding_mode(n));
@@ -183,7 +183,7 @@ private Q_SLOTS:
     QVERIFY((bool)get_value_type(n));
     QCOMPARE(*get_value_type(n), ossia::val_type::INT);
 
-    a->pushValue(6);
+    a->push_value(6);
 
     n.set(access_mode_attribute{}, access_mode::GET);
     QVERIFY((bool)get_access_mode(n));

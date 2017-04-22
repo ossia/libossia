@@ -25,30 +25,30 @@ private Q_SLOTS:
   void test_basic()
   {
     // Local device
-    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
     // Local tree building
-    auto localImpulseNode = device.createChild("my_impulse");
-    auto localImpulseAddress = localImpulseNode->createAddress(val_type::IMPULSE);
+    auto localImpulseNode = device.create_child("my_impulse");
+    auto localImpulseAddress = localImpulseNode->create_address(val_type::IMPULSE);
 
-    auto localBoolNode = device.createChild("my_bool");
-    auto localBoolAddress = localBoolNode->createAddress(val_type::BOOL);
+    auto localBoolNode = device.create_child("my_bool");
+    auto localBoolAddress = localBoolNode->create_address(val_type::BOOL);
 
-    auto localIntNode = device.createChild("my_int");
-    auto localIntAddress = localIntNode->createAddress(val_type::INT);
+    auto localIntNode = device.create_child("my_int");
+    auto localIntAddress = localIntNode->create_address(val_type::INT);
 
-    auto localFloatNode = device.createChild("my_float");
-    auto localFloatAddress = localFloatNode->createAddress(val_type::FLOAT);
+    auto localFloatNode = device.create_child("my_float");
+    auto localFloatAddress = localFloatNode->create_address(val_type::FLOAT);
 
-    auto localStringNode = device.createChild("my_string");
-    auto localStringAddress = localStringNode->createAddress(val_type::STRING);
+    auto localStringNode = device.create_child("my_string");
+    auto localStringAddress = localStringNode->create_address(val_type::STRING);
 
-    auto localTupleNode = device.createChild("my_tuple");
-    auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
+    auto localTupleNode = device.create_child("my_tuple");
+    auto localTupleAddress = localTupleNode->create_address(val_type::TUPLE);
 
     //! \todo what about Destination address ? do we observe the address ? how to do that ?
-    //! auto localDestinationNode = device.createChild("my_destination"));
-    //! auto localDestinationAddress = localDestinationNode->createAddress(Type::DESTINATION);
+    //! auto localDestinationNode = device.create_child("my_destination"));
+    //! auto localDestinationAddress = localDestinationNode->create_address(Type::DESTINATION);
 
     // evaluate expressions before Destination value updates
     auto testExprA = make_expression_pulse(Destination(*localImpulseAddress));
@@ -75,26 +75,26 @@ private Q_SLOTS:
 
     // update node's value
     impulse p;
-    localImpulseAddress->pushValue(p);
+    localImpulseAddress->push_value(p);
 
     bool b = false;
-    localBoolAddress->pushValue(b);
+    localBoolAddress->push_value(b);
 
     int i = 5;
-    localIntAddress->pushValue(i);
+    localIntAddress->push_value(i);
 
     float f = 0.5;
-    localFloatAddress->pushValue(f);
+    localFloatAddress->push_value(f);
 
     std::string s = "abc";
-    localStringAddress->pushValue(s);
+    localStringAddress->push_value(s);
 
     //! \todo
     //Destination d(localFloatNode);
-    //localDestinationAddress->pushValue(d);
+    //localDestinationAddress->push_value(d);
 
     std::vector<ossia::value> t{1., 2., 3.};
-    localTupleAddress->pushValue(t);
+    localTupleAddress->push_value(t);
 
     // evaluate expressions after Destination value updates
     QVERIFY(evaluate(testExprA) == true);
@@ -128,13 +128,13 @@ private Q_SLOTS:
     QVERIFY(evaluate(testExprG) == false);
 
     // update node's value again
-    localImpulseAddress->pushValue(p);
-    localBoolAddress->pushValue(b);
-    localIntAddress->pushValue(i);
-    localFloatAddress->pushValue(f);
-    localStringAddress->pushValue(s);
-    //! \todo localDestinationAddress->pushValue(d);
-    localTupleAddress->pushValue(t);
+    localImpulseAddress->push_value(p);
+    localBoolAddress->push_value(b);
+    localIntAddress->push_value(i);
+    localFloatAddress->push_value(f);
+    localStringAddress->push_value(s);
+    //! \todo localDestinationAddress->push_value(d);
+    localTupleAddress->push_value(t);
 
     // evaluate expressions after Destination value updates
     QVERIFY(evaluate(testExprA) == true);
@@ -152,13 +152,13 @@ private Q_SLOTS:
   void test_comparison()
   {
     // Local device
-    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
     // Local tree building
-    auto localNode1 = device.createChild("my_node.1");
-    auto lcalAddr1 = localNode1->createAddress(ossia::val_type::IMPULSE);
-    auto localNode2 = device.createChild("my_node.2");
-    auto lcalAddr2 = localNode2->createAddress(ossia::val_type::IMPULSE);
+    auto localNode1 = device.create_child("my_node.1");
+    auto lcalAddr1 = localNode1->create_address(ossia::val_type::IMPULSE);
+    auto localNode2 = device.create_child("my_node.2");
+    auto lcalAddr2 = localNode2->create_address(ossia::val_type::IMPULSE);
 
     auto testExprA = make_expression_pulse(Destination(*lcalAddr1));
     auto testExprB = make_expression_pulse(Destination(*lcalAddr2));
@@ -178,8 +178,8 @@ private Q_SLOTS:
     // Local device
     impl::BasicDevice device{std::make_unique<ossia::net::Local2>(), "test"};
 
-    auto localIntNode = device.createChild("my_int.1");
-    auto localIntAddress = localIntNode->createAddress(Type::INT);
+    auto localIntNode = device.create_child("my_int.1");
+    auto localIntAddress = localIntNode->create_address(Type::INT);
 
     auto testExpr = make_expression_pulse(Destination(*localIntNode));
 
@@ -192,7 +192,7 @@ private Q_SLOTS:
     m_result_callback_called = false;
 
     Int i1(5);
-    localIntAddress1->pushValue(i1);
+    localIntAddress1->push_value(i1);
 
     QVERIFY(m_result_callback_called == true && m_result == false);
 
@@ -200,7 +200,7 @@ private Q_SLOTS:
     m_result_callback_called = false;
 
     Int i2(5);
-    localIntAddress2->pushValue(i2);
+    localIntAddress2->push_value(i2);
 
     QVERIFY(m_result_callback_called == true && m_result == true);
 
@@ -212,7 +212,7 @@ private Q_SLOTS:
     m_result_callback_called = false;
 
     Int i3(10);
-    localIntAddress2->pushValue(i3);
+    localIntAddress2->push_value(i3);
 
     QVERIFY(m_result_callback_called == false && m_result == false);
     */

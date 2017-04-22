@@ -62,35 +62,35 @@ public:
   net::node_base&getNode() const override
   { return m_node; }
 
-  void pullValue() override
+  void pull_value() override
   { }
-  net::address_base&pushValue(const value&) override
+  net::address_base&push_value(const ossia::value&) override
   { return *this; }
-  net::address_base&pushValue() override
+  net::address_base&push_value() override
   { return *this; }
-  value cloneValue() const override
+  ossia::value value() const override
   { return {}; }
-  net::address_base& setValue(const value&) override
+  net::address_base& set_value(const ossia::value&) override
   { return *this; }
-  val_type getValueType() const override
+  val_type get_value_type() const override
   { return {}; }
-  net::address_base&setValueType(val_type) override
+  net::address_base&set_value_type(val_type) override
   { return *this; }
-  access_mode getAccessMode() const override
+  access_mode get_access() const override
   { return {}; }
-  net::address_base&setAccessMode(access_mode) override
+  net::address_base&set_access(access_mode) override
   { return *this; }
-  const domain&getDomain() const override
+  const domain&get_domain() const override
   { throw; }
-  net::address_base&setDomain(const domain&) override
+  net::address_base&set_domain(const domain&) override
   { return *this; }
-  bounding_mode getBoundingMode() const override
+  bounding_mode get_bounding() const override
   { return {}; }
-  net::address_base&setBoundingMode(bounding_mode) override
+  net::address_base&set_bounding(bounding_mode) override
   { return *this; }
-  repetition_filter getRepetitionFilter() const override
+  repetition_filter get_repetition_filter() const override
   { return {}; }
-  net::address_base&setRepetitionFilter(repetition_filter) override
+  net::address_base&set_repetition_filter(repetition_filter) override
   { return *this; }
 };
 
@@ -128,35 +128,35 @@ public:
   net::node_base&getNode() const override
   { return m_node; }
 
-  void pullValue() override
+  void pull_value() override
   { }
-  net::address_base&pushValue(const value&) override
+  net::address_base&push_value(const ossia::value&) override
   { return *this; }
-  net::address_base&pushValue() override
+  net::address_base&push_value() override
   { return *this; }
-  value cloneValue() const override
+  ossia::value value() const override
   { return {}; }
-  net::address_base& setValue(const value&) override
+  net::address_base& set_value(const ossia::value&) override
   { return *this; }
-  val_type getValueType() const override
+  val_type get_value_type() const override
   { return {}; }
-  net::address_base&setValueType(val_type) override
+  net::address_base&set_value_type(val_type) override
   { return *this; }
-  access_mode getAccessMode() const override
+  access_mode get_access() const override
   { return {}; }
-  net::address_base&setAccessMode(access_mode) override
+  net::address_base&set_access(access_mode) override
   { return *this; }
-  const domain&getDomain() const override
+  const domain&get_domain() const override
   { throw; }
-  net::address_base&setDomain(const domain&) override
+  net::address_base&set_domain(const domain&) override
   { return *this; }
-  bounding_mode getBoundingMode() const override
+  bounding_mode get_bounding() const override
   { return {}; }
-  net::address_base&setBoundingMode(bounding_mode) override
+  net::address_base&set_bounding(bounding_mode) override
   { return *this; }
-  repetition_filter getRepetitionFilter() const override
+  repetition_filter get_repetition_filter() const override
   { return {}; }
-  net::address_base&setRepetitionFilter(repetition_filter) override
+  net::address_base&set_repetition_filter(repetition_filter) override
   { return *this; }
 };
 

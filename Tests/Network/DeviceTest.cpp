@@ -76,24 +76,24 @@ struct remote_data
   remote_data(
       std::unique_ptr<ossia::net::protocol_base> local_proto,
       std::unique_ptr<ossia::net::protocol_base> remote_proto):
-    local_device{std::make_unique<ossia::net::local_protocol>(), "i-score" },
+    local_device{std::make_unique<ossia::net::multiplex_protocol>(), "i-score" },
     remote_device{std::move(remote_proto), "i-score-remote"}
   {
     int N = 10;
 
     for(int i = 0; i < N; i++)
     {
-      auto cld = local_device.createChild(std::to_string(i));
-      local_addr.push_back(cld->createAddress((ossia::val_type) i));
+      auto cld = local_device.create_child(std::to_string(i));
+      local_addr.push_back(cld->create_address((ossia::val_type) i));
     }
 
-    auto& proto_p = static_cast<ossia::net::local_protocol&>(local_device.getProtocol());
-    proto_p.exposeTo(std::move(local_proto));
+    auto& proto_p = static_cast<ossia::net::multiplex_protocol&>(local_device.get_protocol());
+    proto_p.expose_to(std::move(local_proto));
 
     for(int i = 0; i < N; i++)
     {
-      auto cld = remote_device.createChild(std::to_string(i));
-      remote_addr.push_back(cld->createAddress((ossia::val_type) i));
+      auto cld = remote_device.create_child(std::to_string(i));
+      remote_addr.push_back(cld->create_address((ossia::val_type) i));
     }
   }
 
@@ -116,7 +116,7 @@ private Q_SLOTS:
   {
     {
       ossia::net::generic_device local_device{
-        std::make_unique<ossia::net::local_protocol>(), "test" };
+        std::make_unique<ossia::net::multiplex_protocol>(), "test" };
     }
     {
       ossia::net::generic_device osc_device{
@@ -137,8 +137,8 @@ private Q_SLOTS:
       for(auto e : res)
       {
         ossia::net::midi::midi_device dev(std::make_unique<midi_protocol>(e));
-        dev.setName("dada");
-        dev.updateNamespace();
+        dev.set_name("dada");
+        dev.update_namespace();
       }
 
     }
@@ -160,28 +160,28 @@ private Q_SLOTS:
 
 
     int N = 10;
-    auto proto = std::make_unique<ossia::net::local_protocol>();
+    auto proto = std::make_unique<ossia::net::multiplex_protocol>();
     auto proto_p = proto.get();
     ossia::net::generic_device local_device{std::move(proto), "i-score"};
 
     for(int i = 0; i < N; i++)
     {
-      auto cld = local_device.createChild(std::to_string(i));
-      cld->createAddress((ossia::val_type) i);
+      auto cld = local_device.create_child(std::to_string(i));
+      cld->create_address((ossia::val_type) i);
     }
 
-    proto_p->exposeTo(
+    proto_p->expose_to(
           std::make_unique<ossia::net::minuit_protocol>("i-score-remote", "127.0.0.1", 13579, 13580));
 
     ossia::net::generic_device remote_device{
       std::make_unique<ossia::net::minuit_protocol>("i-score-remote", "127.0.0.1", 13580, 13579), "i-score-remote"};
-    remote_device.getProtocol().update(remote_device);
+    remote_device.get_protocol().update(remote_device);
 
     for(auto n : remote_device.children_copy())
     {
-      if(auto a = n->getAddress())
+      if(auto a = n->get_address())
       {
-        a->pullValue();
+        a->pull_value();
       }
     }
   }
@@ -203,7 +203,7 @@ private Q_SLOTS:
 
     // For the sake of coverage...
     const auto& const_dev = http_device;
-    QCOMPARE(&http_device.getRootNode(), &const_dev.getRootNode());
+    QCOMPARE(&http_device.get_root_node(), &const_dev.get_root_node());
 
     // We have to wait a bit for the event loop to run.
     QTimer t;
@@ -211,7 +211,7 @@ private Q_SLOTS:
       auto node = ossia::net::find_node(http_device, "/tata/tutu");
       if(node)
       {
-        node->getAddress()->pushValue(ossia::impulse{});
+        node->get_address()->push_value(ossia::impulse{});
       }
     });
     t.setInterval(1000);
@@ -264,16 +264,16 @@ private:
       {
         for(const ossia::value& val : value_to_test)
         {
-          local_addr[i]->setValueType(val.getType());
-          local_addr[i]->pushValue(val);
+          local_addr[i]->set_value_type(val.getType());
+          local_addr[i]->push_value(val);
         }
       }
       std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
       for(int i = 0; i < N; i++)
       {
-        local_addr[i]->setValueType((ossia::val_type) i);
-        local_addr[i]->pushValue(ossia::init_value((ossia::val_type) i));
+        local_addr[i]->set_value_type((ossia::val_type) i);
+        local_addr[i]->push_value(ossia::init_value((ossia::val_type) i));
       }
       std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
@@ -281,16 +281,16 @@ private:
       {
         for(const ossia::value& val : value_to_test)
         {
-          remote_addr[i]->setValueType(val.getType());
-          remote_addr[i]->pushValue(val);
+          remote_addr[i]->set_value_type(val.getType());
+          remote_addr[i]->push_value(val);
         }
       }
       std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
       for(int i = 0; i < N; i++)
       {
-        remote_addr[i]->setValueType((ossia::val_type) i);
-        remote_addr[i]->pushValue(ossia::init_value((ossia::val_type) i));
+        remote_addr[i]->set_value_type((ossia::val_type) i);
+        remote_addr[i]->push_value(ossia::init_value((ossia::val_type) i));
       }
       std::this_thread::sleep_for(std::chrono::milliseconds(20));
     };
@@ -300,11 +300,11 @@ private:
 
     for(auto val : local_addr)
     {
-      rem.local_device.getProtocol().observe(*val, true);
+      rem.local_device.get_protocol().observe(*val, true);
     }
     for(auto val : remote_addr)
     {
-      rem.remote_device.getProtocol().observe(*val, true);
+      rem.remote_device.get_protocol().observe(*val, true);
     }
     push_all_values();
 
@@ -315,20 +315,20 @@ private:
       {
         for(int i = 0; i < N; i++)
         {
-          vec[i]->setAccessMode(access_mode(access_i));
+          vec[i]->set_access(access_mode(access_i));
         }
         push_all_values();
         for(int bounding_i = 0 ; bounding_i < 6; bounding_i++)
         {
           for(int i = 0; i < N; i++)
           {
-            vec[i]->setBoundingMode(bounding_mode(bounding_i));
+            vec[i]->set_bounding(bounding_mode(bounding_i));
           }
           push_all_values();
 
           for(int domain_i = 0; domain_i < N; domain_i++)
           {
-            vec[domain_i]->setDomain(make_domain(ossia::val_type(domain_i)));
+            vec[domain_i]->set_domain(make_domain(ossia::val_type(domain_i)));
           }
           push_all_values();
 
@@ -337,7 +337,7 @@ private:
           {
             auto val = ossia::init_value((ossia::val_type) domain_i);
             auto dom = ossia::make_domain(val, val);
-            vec[domain_i]->setDomain(dom);
+            vec[domain_i]->set_domain(dom);
           }
           push_all_values();
 

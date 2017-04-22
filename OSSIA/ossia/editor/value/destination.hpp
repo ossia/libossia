@@ -28,8 +28,8 @@ public:
   destination_index index;
   ossia::unit_t unit;
 
-  auto& address() { return value.get(); }
-  auto& address() const { return value.get(); }
+  ossia::net::address_base& address() { return value.get(); }
+  ossia::net::address_base& address() const { return value.get(); }
 
   Destination(net::address_base& v);
   Destination(net::address_base& v, destination_index);

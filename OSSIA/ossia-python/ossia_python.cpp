@@ -26,7 +26,7 @@ public:
 
     python_local_device(std::string name):
         m_device{std::make_unique<ossia::net::local_protocol>(), std::move(name)},
-        m_local_protocol{static_cast<ossia::net::local_protocol&>(m_device.getProtocol())}
+        m_local_protocol{static_cast<ossia::net::local_protocol&>(m_device.get_protocol())}
     {
 
     }
@@ -34,7 +34,7 @@ public:
     bool create_oscquery_server(int osc_port, int ws_port)
     {
         try {
-            m_local_protocol.exposeTo(std::make_unique<ossia::oscquery::oscquery_server_protocol>(
+            m_local_protocol.expose_to(std::make_unique<ossia::oscquery::oscquery_server_protocol>(
                                           osc_port, ws_port));
             return true;
         } catch(std::exception& e) {
@@ -47,17 +47,17 @@ public:
 
     ossia::net::node_base* add_node(const std::string& address)
     {
-        return &ossia::net::find_or_create_node(m_device.getRootNode(), address);
+        return &ossia::net::find_or_create_node(m_device.get_root_node(), address);
     }
 
     ossia::net::node_base* find_node(const std::string& address)
     {
-        return ossia::net::find_node(m_device.getRootNode(), address);
+        return ossia::net::find_node(m_device.get_root_node(), address);
     }
 
     ossia::net::node_base* get_root_node()
     {
-        return &m_device.getRootNode();
+        return &m_device.get_root_node();
     }
 };
 
@@ -70,24 +70,24 @@ public:
 
     python_oscquery_device(std::string name, std::string host, uint16_t local_osc_port):
         m_device{std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(host, local_osc_port), std::move(name)},
-        m_oscquery_protocol{static_cast<ossia::oscquery::oscquery_mirror_protocol&>(m_device.getProtocol())}
+        m_oscquery_protocol{static_cast<ossia::oscquery::oscquery_mirror_protocol&>(m_device.get_protocol())}
     {
 
     }
 
     bool update()
     {
-        return m_oscquery_protocol.update(m_device.getRootNode());
+        return m_oscquery_protocol.update(m_device.get_root_node());
     }
 
     ossia::net::node_base* find_node(const std::string& address)
     {
-        return ossia::net::find_node(m_device.getRootNode(), address);
+        return ossia::net::find_node(m_device.get_root_node(), address);
     }
 
     ossia::net::node_base* get_root_node()
     {
-        return &m_device.getRootNode();
+        return &m_device.get_root_node();
     }
 };
 
@@ -150,32 +150,32 @@ PYBIND11_PLUGIN(ossia_python)
 
     py::class_<ossia::net::node_base>(m, "Node")
             .def("add_node", [] (ossia::net::node_base& node, const std::string& adrs) -> ossia::net::node_base& { return ossia::net::find_or_create_node(node, adrs); }, py::return_value_policy::reference)
-            .def("get_address", &ossia::net::node_base::getAddress, py::return_value_policy::reference)
-            .def("create_address", [] (ossia::net::node_base& node, int type) { return node.createAddress((ossia::val_type) type); }, py::return_value_policy::reference)
+            .def("get_address", &ossia::net::node_base::get_address, py::return_value_policy::reference)
+            .def("create_address", [] (ossia::net::node_base& node, int type) { return node.create_address((ossia::val_type) type); }, py::return_value_policy::reference)
             .def("children", &ossia::net::node_base::children_copy)
             .def("__str__", [] (ossia::net::node_base& node) -> std::string { return ossia::net::osc_address_string(node); })
     ;
 
     py::class_<ossia::net::address_base>(m, "Address")
             .def("get_node", &ossia::net::address_base::getNode, py::return_value_policy::reference)
-            .def("get_value_type", &ossia::net::address_base::getValueType)
-            .def("set_value_type", &ossia::net::address_base::setValueType)
-            .def("get_access_mode", &ossia::net::address_base::getAccessMode)
-            .def("set_access_mode", &ossia::net::address_base::setAccessMode)
-            .def("get_bounding_mode", &ossia::net::address_base::getBoundingMode)
-            .def("set_bounding_mode", &ossia::net::address_base::setBoundingMode)
-            .def("get_domain", &ossia::net::address_base::getDomain)
-            .def("set_domain", &ossia::net::address_base::setDomain)
-            .def("get_repetition_filter", &ossia::net::address_base::getRepetitionFilter)
-            .def("set_repetition_filter", &ossia::net::address_base::setRepetitionFilter)
-            .def("get_unit", &ossia::net::address_base::getUnit)
-            .def("set_unit", &ossia::net::address_base::setUnit)
-            .def("pull_value", &ossia::net::address_base::pullValue)
-            .def("clone_value", [] (ossia::net::address_base& addr) -> ossia::value { return addr.cloneValue(); })
-    .def("fetch_value", [] (ossia::net::address_base& addr) -> ossia::value { return addr.fetchValue(); })
-    .def("push_value", [] (ossia::net::address_base& addr, const ossia::value& v) { addr.pushValue(v); })
+            .def("get_value_type", &ossia::net::address_base::get_value_type)
+            .def("set_value_type", &ossia::net::address_base::set_value_type)
+            .def("get_access_mode", &ossia::net::address_base::get_access)
+            .def("set_access_mode", &ossia::net::address_base::set_access)
+            .def("get_bounding_mode", &ossia::net::address_base::get_bounding)
+            .def("set_bounding_mode", &ossia::net::address_base::set_bounding)
+            .def("get_domain", &ossia::net::address_base::get_domain)
+            .def("set_domain", &ossia::net::address_base::set_domain)
+            .def("get_repetition_filter", &ossia::net::address_base::get_repetition_filter)
+            .def("set_repetition_filter", &ossia::net::address_base::set_repetition_filter)
+            .def("get_unit", &ossia::net::address_base::get_unit)
+            .def("set_unit", &ossia::net::address_base::set_unit)
+            .def("pull_value", &ossia::net::address_base::pull_value)
+            .def("clone_value", [] (ossia::net::address_base& addr) -> ossia::value { return addr.value(); })
+    .def("fetch_value", [] (ossia::net::address_base& addr) -> ossia::value { return addr.fetch_value(); })
+    .def("push_value", [] (ossia::net::address_base& addr, const ossia::value& v) { addr.push_value(v); })
     .def("add_callback", [] (ossia::net::address_base& addr, ossia::value_callback clbk) { addr.add_callback(clbk); })
-    .def("__str__", [] (ossia::net::address_base& addr) -> std::string { return ossia::value_to_pretty_string(addr.cloneValue()); })
+    .def("__str__", [] (ossia::net::address_base& addr) -> std::string { return ossia::value_to_pretty_string(addr.value()); })
     ;
 
     py::enum_<ossia::val_type>(m, "ValueType", py::arithmetic())

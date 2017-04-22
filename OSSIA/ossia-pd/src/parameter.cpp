@@ -33,7 +33,7 @@ static void push_default_value(t_param* x){
 
 bool t_param :: do_registration(ossia::net::node_base* node){
 
-    if (x_node && x_node->getParent() == node ) return true; // already register to this node;
+    if (x_node && x_node->get_parent() == node ) return true; // already register to this node;
 
     unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
 
@@ -44,57 +44,57 @@ bool t_param :: do_registration(ossia::net::node_base* node){
 
     if (absolute_path != address_string) return false;
 
-    if(node->findChild(x_name->s_name)){
+    if(node->find_child(x_name->s_name)){
         // pd_error(this, "a parameter with adress '%s' already exists.", x_name->s_name);
         x_node = nullptr;
         return false;
     }
 
-    x_node = node->createChild(x_name->s_name);
-    x_node->aboutToBeDeleted.connect<t_param, &t_param::isDeleted>(this);
+    x_node = node->create_child(x_name->s_name);
+    x_node->about_to_be_deleted.connect<t_param, &t_param::isDeleted>(this);
     ossia::net::address_base* localAddress{};
     if (std::string(x_type->s_name) == "float") {
-        localAddress = x_node->createAddress(ossia::val_type::FLOAT);
+        localAddress = x_node->create_address(ossia::val_type::FLOAT);
         if (x_default[0].a_type == A_FLOAT )
             ossia::net::set_default_value(localAddress->getNode(), x_default[0].a_w.w_float);
     } else if(std::string(x_type->s_name) == "symbol" || std::string(x_type->s_name) == "string"){
-        localAddress = x_node->createAddress(ossia::val_type::STRING);
+        localAddress = x_node->create_address(ossia::val_type::STRING);
         if (x_default[0].a_type == A_SYMBOL )
             ossia::net::set_default_value(localAddress->getNode(), std::string(x_default[0].a_w.w_symbol->s_name));
     } else if (std::string(x_type->s_name) == "int") {
-        localAddress = x_node->createAddress(ossia::val_type::INT);
+        localAddress = x_node->create_address(ossia::val_type::INT);
         if (x_default[0].a_type == A_FLOAT )
             ossia::net::set_default_value(localAddress->getNode(), x_default[0].a_w.w_float);
     } else if (std::string(x_type->s_name) == "vec2f") {
-        localAddress = x_node->createAddress(ossia::val_type::VEC2F);
+        localAddress = x_node->create_address(ossia::val_type::VEC2F);
         x_type_size = 2;
         if (x_default[0].a_type == A_FLOAT && x_default[1].a_type == A_FLOAT ){
             vec2f vec = make_vec(x_default[0].a_w.w_float, x_default[1].a_w.w_float);
             ossia::net::set_default_value(localAddress->getNode(), vec);
         }
     } else if (std::string(x_type->s_name) == "vec3f") {
-        localAddress = x_node->createAddress(ossia::val_type::VEC3F);
+        localAddress = x_node->create_address(ossia::val_type::VEC3F);
         x_type_size = 3;
         if (x_default[0].a_type == A_FLOAT && x_default[1].a_type == A_FLOAT && x_default[2].a_type == A_FLOAT ){
             vec3f vec = make_vec(x_default[0].a_w.w_float, x_default[1].a_w.w_float, x_default[2].a_w.w_float);
             ossia::net::set_default_value(localAddress->getNode(), vec);
         }
     } else if (std::string(x_type->s_name) == "vec4f") {
-        localAddress = x_node->createAddress(ossia::val_type::VEC4F);
+        localAddress = x_node->create_address(ossia::val_type::VEC4F);
         x_type_size = 4;
         if (x_default[0].a_type == A_FLOAT && x_default[1].a_type == A_FLOAT && x_default[2].a_type == A_FLOAT && x_default[3].a_type == A_FLOAT ){
             vec4f vec = make_vec(x_default[0].a_w.w_float, x_default[1].a_w.w_float, x_default[2].a_w.w_float, x_default[3].a_w.w_float);
             ossia::net::set_default_value(localAddress->getNode(), vec);
         }
     } else if (std::string(x_type->s_name) == "impulse") {
-        localAddress = x_node->createAddress(ossia::val_type::IMPULSE);
+        localAddress = x_node->create_address(ossia::val_type::IMPULSE);
         x_type_size = 0;
     } else if (std::string(x_type->s_name) == "bool") {
-        localAddress = x_node->createAddress(ossia::val_type::BOOL);
+        localAddress = x_node->create_address(ossia::val_type::BOOL);
         if (x_default[0].a_type == A_FLOAT )
                     ossia::net::set_default_value(localAddress->getNode(), x_default[0].a_w.w_float);
     } else if (std::string(x_type->s_name) == "tuple") {
-        localAddress = x_node->createAddress(ossia::val_type::TUPLE);
+        localAddress = x_node->create_address(ossia::val_type::TUPLE);
         x_type_size = 64;
         std::vector<ossia::value> list;
         for ( int i = 0; i<64 && x_default[i].a_type != A_NULL; i++){
@@ -105,7 +105,7 @@ bool t_param :: do_registration(ossia::net::node_base* node){
         }
         if (list.size() > 0) ossia::net::set_default_value(localAddress->getNode(), list);
     } else if (std::string(x_type->s_name) == "char") {
-        localAddress = x_node->createAddress(ossia::val_type::CHAR);
+        localAddress = x_node->create_address(ossia::val_type::CHAR);
         if (x_default[0].a_type == A_FLOAT )
                     ossia::net::set_default_value(localAddress->getNode(), x_default[0].a_w.w_float);
     } else {
@@ -113,34 +113,34 @@ bool t_param :: do_registration(ossia::net::node_base* node){
     }
     if (!localAddress) return false;
 
-    localAddress->setDomain(ossia::make_domain(x_range[0],x_range[1]));
+    localAddress->set_domain(ossia::make_domain(x_range[0],x_range[1]));
     // FIXME : we need case insensitive comparison here
     std::string bounding_mode = x_bounding_mode->s_name;
     if (bounding_mode == "FREE")
-        localAddress->setBoundingMode(ossia::bounding_mode::FREE);
+        localAddress->set_bounding(ossia::bounding_mode::FREE);
     else if (bounding_mode == "CLIP")
-        localAddress->setBoundingMode(ossia::bounding_mode::CLIP);
+        localAddress->set_bounding(ossia::bounding_mode::CLIP);
     else if (bounding_mode == "WRAP")
-        localAddress->setBoundingMode(ossia::bounding_mode::WRAP);
+        localAddress->set_bounding(ossia::bounding_mode::WRAP);
     else if (bounding_mode == "FOLD")
-        localAddress->setBoundingMode(ossia::bounding_mode::FOLD);
+        localAddress->set_bounding(ossia::bounding_mode::FOLD);
     else if (bounding_mode == "LOW")
-        localAddress->setBoundingMode(ossia::bounding_mode::LOW);
+        localAddress->set_bounding(ossia::bounding_mode::LOW);
     else if (bounding_mode == "HIGH")
-        localAddress->setBoundingMode(ossia::bounding_mode::HIGH);
+        localAddress->set_bounding(ossia::bounding_mode::HIGH);
 
     std::string access_mode = x_access_mode->s_name;
     if(access_mode == "BI" || access_mode == "RW")
-        localAddress->setAccessMode(ossia::access_mode::BI);
+        localAddress->set_access(ossia::access_mode::BI);
     else if(access_mode == "GET" || access_mode == "R")
-        localAddress->setAccessMode(ossia::access_mode::GET);
+        localAddress->set_access(ossia::access_mode::GET);
     else if(access_mode == "SET" || access_mode == "W")
-        localAddress->setAccessMode(ossia::access_mode::SET);
+        localAddress->set_access(ossia::access_mode::SET);
 
-    localAddress->setRepetitionFilter(x_repetition_filter? ossia::repetition_filter::ON : ossia::repetition_filter::OFF);
+    localAddress->set_repetition_filter(x_repetition_filter? ossia::repetition_filter::ON : ossia::repetition_filter::OFF);
 
     ossia::unit_t unit = ossia::parse_pretty_unit(x_unit->s_name);
-    localAddress->setUnit(unit);
+    localAddress->set_unit(unit);
 
     ossia::net::set_description(localAddress->getNode(), x_description->s_name);
     ossia::net::set_tags(localAddress->getNode(), parse_tags_symbol(x_tags));
@@ -158,7 +158,7 @@ bool t_param :: do_registration(ossia::net::node_base* node){
 
 bool t_param :: unregister(){
     if (x_node) {
-        if (x_node->getParent()) x_node->getParent()->removeChild(x_name->s_name);
+        if (x_node->get_parent()) x_node->get_parent()->remove_child(x_name->s_name);
         x_node = nullptr;
         for (auto remote : t_remote::quarantine()){
             obj_register<t_remote>(static_cast<t_remote*>(remote));

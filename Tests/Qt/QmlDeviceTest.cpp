@@ -24,7 +24,7 @@ private slots:
     QVERIFY(item);
 
     auto& dev = ossia::qt::qml_singleton_device::instance();
-    auto node = ossia::net::find_node(dev.device().getRootNode(), "/bar/x");
+    auto node = ossia::net::find_node(dev.device().get_root_node(), "/bar/x");
     QVERIFY(node);
 
   }

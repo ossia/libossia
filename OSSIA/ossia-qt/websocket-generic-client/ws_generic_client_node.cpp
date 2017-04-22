@@ -31,17 +31,17 @@ ws_generic_client_node::ws_generic_client_node(
 
 ws_generic_client_node::~ws_generic_client_node()
 {
-  aboutToBeDeleted(*this);
+  about_to_be_deleted(*this);
 
   write_lock_t lock{m_mutex};
   m_children.clear();
   mAddress.reset();
 }
 
-device_base& ws_generic_client_node::getDevice() const
+device_base& ws_generic_client_node::get_device() const
 { return mDevice; }
 
-node_base*ws_generic_client_node::getParent() const
+node_base*ws_generic_client_node::get_parent() const
 { return mParent; }
 
 std::string ws_generic_client_node::getName() const
@@ -53,7 +53,7 @@ node_base&ws_generic_client_node::setName(std::string)
 address_base* ws_generic_client_node::getAddress() const
 { return mAddress.get(); }
 
-address_base*ws_generic_client_node::createAddress(val_type)
+address_base*ws_generic_client_node::create_address(val_type)
 { return nullptr; }
 
 bool ws_generic_client_node::removeAddress()

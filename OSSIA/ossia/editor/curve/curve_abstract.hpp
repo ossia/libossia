@@ -40,7 +40,7 @@ public:
   virtual ~curve_abstract();
 
   /*! get the type of both coordinates */
-  virtual curve_type getType() const = 0;
+  virtual curve_type get_type() const = 0;
 
   /*! Clear internal data structures of the curve.
    * Call before a new execution. */

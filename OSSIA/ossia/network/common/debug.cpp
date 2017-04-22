@@ -12,20 +12,20 @@ namespace net
 
 fmt::BasicWriter<char>& operator<<(fmt::BasicWriter<char>& w, const node_base& n)
 {
-  auto parent = n.getParent();
+  auto parent = n.get_parent();
   while (parent != nullptr)
   {
     w << '\t';
-    parent = parent->getParent();
+    parent = parent->get_parent();
   }
-  w << n.getName();
-  if(auto addr = n.getAddress())
+  w << n.get_name();
+  if(auto addr = n.get_address())
   {
-    w << " : " << value_to_pretty_string(addr->cloneValue())
-      << ", AccessMode(" << addr->getAccessMode() << ")"
-      << ", BoundingMode(" << addr->getBoundingMode() << ")"
-      << ", Domain(" << addr->getDomain() << ")"
-      << ", Unit(" << ossia::get_pretty_unit_text(addr->getUnit()) << ")";
+    w << " : " << value_to_pretty_string(addr->value())
+      << ", AccessMode(" << addr->get_access() << ")"
+      << ", BoundingMode(" << addr->get_bounding() << ")"
+      << ", Domain(" << addr->get_domain() << ")"
+      << ", Unit(" << ossia::get_pretty_unit_text(addr->get_unit()) << ")";
   }
 
   return w;

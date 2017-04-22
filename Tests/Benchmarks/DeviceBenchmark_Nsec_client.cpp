@@ -55,9 +55,9 @@ private Q_SLOTS:
         for(const auto& node : minuitDevice->children())
         {
             if(node->getName() == "startTick")
-                start_addr = node->getAddress();
+                start_addr = node->get_address();
             if(node->getName() == "stopTick")
-                stop_addr = node->getAddress();
+                stop_addr = node->get_address();
             if(start_addr && stop_addr)
                 break;
         }
@@ -82,7 +82,7 @@ private Q_SLOTS:
         while(!a);
 
         int num_sent = 0;
-        start_addr->pushValue(new ossia::impulse{});
+        start_addr->push_value(new ossia::impulse{});
         while(!b)
         {
             // Select a new node
@@ -90,15 +90,15 @@ private Q_SLOTS:
             const auto& name = n->getName();
             if(name != "startTick" && name != "stopTick")
             {
-                if(n->getAddress())
+                if(n->get_address())
                 {
-                    n->getAddress()->pushValue(&f);
+                    n->get_address()->push_value(&f);
                 }
             }
 
             num_sent ++;
         }
-        stop_addr->pushValue(new ossia::impulse{});
+        stop_addr->push_value(new ossia::impulse{});
 
         std::cerr << "Sent " << num_sent << " values in 10 seconds" << std::endl;
 

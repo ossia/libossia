@@ -10,7 +10,7 @@ void ossia_string_free(char* str)
 ossia_protocol_t ossia_protocol_local_create()
 {
   return safe_function(__func__, [=] {
-    return new ossia_protocol(new ossia::net::local_protocol);
+    return new ossia_protocol(new ossia::net::multiplex_protocol);
   });
 }
 
@@ -22,10 +22,10 @@ void ossia_protocol_local_expose_to(
   if(!other) { ossia_log_error("ossia_protocol_local_expose_to: other is null"); return; }
 
   return safe_function(__func__, [=] {
-    auto ptr = dynamic_cast<ossia::net::local_protocol*>(local->protocol);
+    auto ptr = dynamic_cast<ossia::net::multiplex_protocol*>(local->protocol);
     if(ptr)
     {
-      ptr->exposeTo(std::unique_ptr<ossia::net::protocol_base>(other->protocol));
+      ptr->expose_to(std::unique_ptr<ossia::net::protocol_base>(other->protocol));
     }
   });
 }

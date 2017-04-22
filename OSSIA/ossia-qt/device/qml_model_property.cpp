@@ -154,7 +154,7 @@ void qml_model_property::updateCount()
      const std::string& instance_name = m_node.toStdString();
      for(auto& cld : on->children())
      {
-       const auto& name = cld->getName();
+       const auto& name = cld->get_name();
        if(is_instance(instance_name, name))
          newCount++;
      }

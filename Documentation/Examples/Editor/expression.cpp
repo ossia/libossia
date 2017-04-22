@@ -17,43 +17,43 @@ using namespace std;
 int main()
 {
     // Local device
-    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "i-score"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "i-score"};
 
     // Local tree building
-    auto localImpulseNode1 = device.createChild("my_impulse.1");
-    localImpulseNode1->createAddress(val_type::IMPULSE);
-    auto localImpulseNode2 = device.createChild("my_impulse.2");
-    localImpulseNode2->createAddress(val_type::IMPULSE);
+    auto localImpulseNode1 = device.create_child("my_impulse.1");
+    localImpulseNode1->create_address(val_type::IMPULSE);
+    auto localImpulseNode2 = device.create_child("my_impulse.2");
+    localImpulseNode2->create_address(val_type::IMPULSE);
 
-    auto localBoolNode1 = device.createChild("my_bool.1");
-    auto localBoolAddress1 = localBoolNode1->createAddress(val_type::BOOL);
-    auto localBoolNode2 = device.createChild("my_bool.2");
-    auto localBoolAddress2 = localBoolNode2->createAddress(val_type::BOOL);
+    auto localBoolNode1 = device.create_child("my_bool.1");
+    auto localBoolAddress1 = localBoolNode1->create_address(val_type::BOOL);
+    auto localBoolNode2 = device.create_child("my_bool.2");
+    auto localBoolAddress2 = localBoolNode2->create_address(val_type::BOOL);
 
-    auto localIntNode1 = device.createChild("my_int.1");
-    auto localIntAddress1 = localIntNode1->createAddress(val_type::INT);
-    auto localIntNode2 = device.createChild("my_int.2");
-    auto localIntAddress2 = localIntNode2->createAddress(val_type::INT);
+    auto localIntNode1 = device.create_child("my_int.1");
+    auto localIntAddress1 = localIntNode1->create_address(val_type::INT);
+    auto localIntNode2 = device.create_child("my_int.2");
+    auto localIntAddress2 = localIntNode2->create_address(val_type::INT);
 
-    auto localFloatNode1 = device.createChild("my_float.1");
-    auto localFloatAddress1 = localFloatNode1->createAddress(val_type::FLOAT);
-    auto localFloatNode2 = device.createChild("my_float.2");
-    auto localFloatAddress2 = localFloatNode2->createAddress(val_type::FLOAT);
+    auto localFloatNode1 = device.create_child("my_float.1");
+    auto localFloatAddress1 = localFloatNode1->create_address(val_type::FLOAT);
+    auto localFloatNode2 = device.create_child("my_float.2");
+    auto localFloatAddress2 = localFloatNode2->create_address(val_type::FLOAT);
 
-    auto localStringNode1 = device.createChild("my_string.1");
-    auto localStringAddress1 = localStringNode1->createAddress(val_type::STRING);
-    auto localStringNode2 = device.createChild("my_string.2");
-    auto localStringAddress2 = localStringNode2->createAddress(val_type::STRING);
+    auto localStringNode1 = device.create_child("my_string.1");
+    auto localStringAddress1 = localStringNode1->create_address(val_type::STRING);
+    auto localStringNode2 = device.create_child("my_string.2");
+    auto localStringAddress2 = localStringNode2->create_address(val_type::STRING);
 
-    auto localTupleNode1 = device.createChild("my_tuple.1");
-    auto localTupleAddress1 = localTupleNode1->createAddress(val_type::TUPLE);
-    auto localTupleNode2 = device.createChild("my_tuple.2");
-    auto localTupleAddress2 = localTupleNode2->createAddress(val_type::TUPLE);
+    auto localTupleNode1 = device.create_child("my_tuple.1");
+    auto localTupleAddress1 = localTupleNode1->create_address(val_type::TUPLE);
+    auto localTupleNode2 = device.create_child("my_tuple.2");
+    auto localTupleAddress2 = localTupleNode2->create_address(val_type::TUPLE);
 
-    auto localDestinationNode1 = device.createChild("my_destination.1");
-    auto localDestinationAddress1 = localDestinationNode1->createAddress(val_type::DESTINATION);
-    auto localDestinationNode2 = device.createChild("my_destination.2");
-    auto localDestinationAddress2 = localDestinationNode2->createAddress(val_type::DESTINATION);
+    auto localDestinationNode1 = device.create_child("my_destination.1");
+    auto localDestinationAddress1 = localDestinationNode1->create_address(val_type::DESTINATION);
+    auto localDestinationNode2 = device.create_child("my_destination.2");
+    auto localDestinationAddress2 = localDestinationNode2->create_address(val_type::DESTINATION);
 
     // evaluate expression with Impulse
     auto testImpulseExprA = make_expression_atom(impulse(),
@@ -138,40 +138,40 @@ int main()
 
     // update node's value
     bool b1(false);
-    localBoolAddress1->setValue(b1);
+    localBoolAddress1->set_value(b1);
 
     bool b2(true);
-    localBoolAddress2->setValue(b2);
+    localBoolAddress2->set_value(b2);
 
     int i1(5);
-    localIntAddress1->setValue(i1);
+    localIntAddress1->set_value(i1);
 
     int i2(10);
-    localIntAddress2->setValue(i2);
+    localIntAddress2->set_value(i2);
 
     float f1(0.5);
-    localFloatAddress1->setValue(f1);
+    localFloatAddress1->set_value(f1);
 
     float f2(0.2);
-    localFloatAddress2->setValue(f2);
+    localFloatAddress2->set_value(f2);
 
     std::string s1("abc");
-    localStringAddress1->setValue(s1);
+    localStringAddress1->set_value(s1);
 
     std::string s2("bcd");
-    localStringAddress2->setValue(s2);
+    localStringAddress2->set_value(s2);
 
     Destination d1(*localFloatAddress1);
-    localDestinationAddress1->setValue(d1);
+    localDestinationAddress1->set_value(d1);
 
     Destination d2(*localFloatAddress2);
-    localDestinationAddress2->setValue(d2);
+    localDestinationAddress2->set_value(d2);
 
     std::vector<ossia::value> t1(value1);
-    localTupleAddress1->setValue(t1);
+    localTupleAddress1->set_value(t1);
 
     std::vector<ossia::value> t2(value2);
-    localTupleAddress2->setValue(t2);
+    localTupleAddress2->set_value(t2);
 
     // evaluate expression with Destination
     auto testDestinationExprA = make_expression_atom(*localBoolAddress1,

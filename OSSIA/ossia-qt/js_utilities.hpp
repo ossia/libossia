@@ -371,13 +371,13 @@ template<typename Device_T, typename Node_T, typename Protocol_T>
 void create_node_rec(QJSValue js, Device_T& device, Node_T& parent)
 {
   auto data = Protocol_T::read_data(js);
-  if(data.node_name.empty())
+  if(data.name.empty())
     return;
 
   auto node = new Node_T{data, device, parent};
   parent.add_child(std::unique_ptr<ossia::net::node_base>(node));
 
-  device.onNodeCreated(*node);
+  device.on_node_created(*node);
 
   QJSValue children = js.property("children");
   if(!children.isArray())

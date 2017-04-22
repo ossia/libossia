@@ -21,7 +21,7 @@ std::string print_namespace(const node_base& deviceNode);
 
 int main()
 {
-    auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
+    auto local_proto_ptr = std::make_unique<ossia::net::multiplex_protocol>();
     // declare this program "B" as Local device
     ossia::net::generic_device device{std::move(local_proto_ptr), "json_export_test_app"};
 
@@ -37,50 +37,50 @@ int main()
        */
 
     // add app extended information attributes
-    device.getRootNode().set(app_name_attribute{}, "json_export_test_app"s);
-    device.getRootNode().set(app_version_attribute{}, "0.1"s);
-    device.getRootNode().set(app_creator_attribute{}, "toto"s);
+    device.get_root_node().set(app_name_attribute{}, "json_export_test_app"s);
+    device.get_root_node().set(app_version_attribute{}, "0.1"s);
+    device.get_root_node().set(app_creator_attribute{}, "toto"s);
 
-    auto TestNode = device.createChild("parameter");
+    auto TestNode = device.create_child("parameter");
 
-    auto ImpulseNode = TestNode->createChild("my_impulse");
-    auto ImpulseAddress = ImpulseNode->createAddress(val_type::IMPULSE);
+    auto ImpulseNode = TestNode->create_child("my_impulse");
+    auto ImpulseAddress = ImpulseNode->create_address(val_type::IMPULSE);
 
-    auto BoolNode = TestNode->createChild("my_bool");
-    auto BoolAddress = BoolNode->createAddress(val_type::BOOL);
+    auto BoolNode = TestNode->create_child("my_bool");
+    auto BoolAddress = BoolNode->create_address(val_type::BOOL);
     BoolNode->set(default_value_attribute{}, true);
     BoolNode->set(description_attribute{}, "test description"s);
 
-    auto IntNode = TestNode->createChild("my_int");
-    auto IntAddress = IntNode->createAddress(val_type::INT);
+    auto IntNode = TestNode->create_child("my_int");
+    auto IntAddress = IntNode->create_address(val_type::INT);
     IntNode->set(default_value_attribute{}, 3);
     IntNode->set(domain_attribute{}, make_domain(0, 10));
     IntNode->set(value_step_size_attribute{}, 1);
 
-    auto FloatNode = TestNode->createChild("my_float");
-    auto FloatAddress = FloatNode->createAddress(val_type::FLOAT);
+    auto FloatNode = TestNode->create_child("my_float");
+    auto FloatAddress = FloatNode->create_address(val_type::FLOAT);
     FloatNode->set(default_value_attribute{}, 0.5);
     FloatNode->set(domain_attribute{}, make_domain(0.0, 1.0));
     FloatNode->set(value_step_size_attribute{}, 0.1);
 
 
-    auto StringNode1 = TestNode->createChild("my_string");
-    auto StringAddress1 = StringNode1->createAddress(val_type::STRING);
+    auto StringNode1 = TestNode->create_child("my_string");
+    auto StringAddress1 = StringNode1->create_address(val_type::STRING);
     StringNode1->set(default_value_attribute{}, "test"s);
 
 
-    auto StringNode2 = TestNode->createChild("my_string");
-    auto StringAddress2 = StringNode2->createAddress(val_type::STRING);
+    auto StringNode2 = TestNode->create_child("my_string");
+    auto StringAddress2 = StringNode2->create_address(val_type::STRING);
     StringNode2->set(default_value_attribute{}, "test"s);
 
 
     // update tree value
-    ImpulseAddress->pushValue(impulse{});
-    BoolAddress->pushValue(true);
-    IntAddress->pushValue(123);
-    FloatAddress->pushValue(0.5);
-    StringAddress1->pushValue("hello world !"s);
-    StringAddress2->pushValue("goodbye world !"s);
+    ImpulseAddress->push_value(impulse{});
+    BoolAddress->push_value(true);
+    IntAddress->push_value(123);
+    FloatAddress->push_value(0.5);
+    StringAddress1->push_value("hello world !"s);
+    StringAddress2->push_value("goodbye world !"s);
 
     // display json tree in console
     std::cerr << "== DEVICE ==\n";
@@ -115,8 +115,8 @@ int main()
     auto new_preset = ossia::presets::read_json(json_preset);
     ossia::devices::apply_preset(device, new_preset);
 
-    std::cerr << IntAddress->cloneValue() << "\n";
-    std::cerr << StringAddress1->cloneValue() << "\n";
-    std::cerr << StringAddress2->cloneValue() << "\n";
+    std::cerr << IntAddress->value() << "\n";
+    std::cerr << StringAddress1->value() << "\n";
+    std::cerr << StringAddress2->value() << "\n";
 
 }

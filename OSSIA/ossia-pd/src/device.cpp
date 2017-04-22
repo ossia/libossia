@@ -27,7 +27,7 @@ static void *device_new(t_symbol *name, int argc, t_atom *argv)
 
         auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
         x->x_device = new ossia::net::generic_device{std::move(local_proto_ptr), x->x_name->s_name};
-        x->x_node = &x->x_device->getRootNode();
+        x->x_node = &x->x_device->get_root_node();
 
         ebox_attrprocess_viabinbuf(x, d);
     }
@@ -45,13 +45,13 @@ static void device_free(t_device *x)
 static void dump_child(t_device *x, const ossia::net::node_base& node){
     for (const auto& child : node.children()){
         std::stringstream ss;
-        auto parent = child->getParent();
+        auto parent = child->get_parent();
         while (parent != nullptr)
         {
             ss << "\t";
-            parent = parent->getParent();
+            parent = parent->get_parent();
         }
-        ss << child->getName();
+        ss << child->get_name();
         t_atom a;
         SETSYMBOL(&a,gensym(ss.str().c_str()));
         outlet_anything(x->x_dumpout, gensym("child"), 1, &a);
@@ -60,7 +60,7 @@ static void dump_child(t_device *x, const ossia::net::node_base& node){
 }
 
 static void device_dump(t_device *x){
-    dump_child(x, x->x_device->getRootNode());
+    dump_child(x, x->x_device->get_root_node());
 }
 
 void t_device :: loadbang(t_device* x, t_float type){
@@ -121,7 +121,7 @@ void t_device :: unregister_children(){
 static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
 
     if (argc && argv->a_type == A_SYMBOL){
-        auto& proto = static_cast<ossia::net::local_protocol&>(x->x_device->getProtocol());
+        auto& proto = static_cast<ossia::net::local_protocol&>(x->x_device->get_protocol());
         std::string protocol = argv->a_w.w_symbol->s_name;
         if (protocol == "Minuit"){
             Protocol_Settings::minuit settings{};
@@ -138,7 +138,7 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
             }
 
             try {
-                proto.exposeTo(std::make_unique<ossia::net::minuit_protocol>(x->x_name->s_name, settings.remoteip, settings.remoteport, settings.localport));
+                proto.expose_to(std::make_unique<ossia::net::minuit_protocol>(x->x_name->s_name, settings.remoteip, settings.remoteport, settings.localport));
             } catch (const std::exception& e) {
                 pd_error(x,"%s",e.what());
                 return;
@@ -158,7 +158,7 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
             }
 
             try{
-                proto.exposeTo(std::make_unique<ossia::oscquery::oscquery_server_protocol>(settings.oscport, settings.wsport));
+                proto.expose_to(std::make_unique<ossia::oscquery::oscquery_server_protocol>(settings.oscport, settings.wsport));
             } catch (const std::exception& e) {
                 pd_error(x,"%s",e.what());
                 return;
@@ -179,7 +179,7 @@ static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv){
             }
 
             try{
-                proto.exposeTo(std::make_unique<ossia::net::osc_protocol>(settings.remoteip, settings.remoteport , settings.localport));
+                proto.expose_to(std::make_unique<ossia::net::osc_protocol>(settings.remoteip, settings.remoteport , settings.localport));
             } catch (const std::exception& e) {
                 pd_error(x,"%s",e.what());
                 return;

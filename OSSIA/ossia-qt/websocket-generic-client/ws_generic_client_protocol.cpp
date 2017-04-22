@@ -133,16 +133,16 @@ void ws_generic_client_protocol::slot_push(const ws_generic_client_address* addr
   auto dat = addr.data().request;
   if(dat.isCallable())
   {
-      auto res = dat.call({qt::value_to_js_value(addr.cloneValue(), *mEngine)});
+      auto res = dat.call({qt::value_to_js_value(addr.value(), *mEngine)});
       mWebsocket->sendBinaryMessage(res.toVariant().toByteArray());
   }
   else
   {
       if(dat.isString())
       {
-        qDebug() << "sending" << dat.toString().replace("$val", qt::value_to_js_string(addr.cloneValue()));
+        qDebug() << "sending" << dat.toString().replace("$val", qt::value_to_js_string(addr.value()));
         mWebsocket->sendTextMessage(
-              dat.toString().replace("$val", qt::value_to_js_string(addr.cloneValue())));
+              dat.toString().replace("$val", qt::value_to_js_string(addr.value())));
       }
   }
 }
@@ -170,12 +170,12 @@ void ws_generic_client_protocol::apply_reply(QJSValue arr)
     if(v.isNull())
       continue;
 
-    if(auto addr = n->getAddress())
+    if(auto addr = n->get_address())
     {
       qDebug() << "Applied value" << QString::fromStdString(
                     value_to_pretty_string(
-                      qt::value_from_jsvalue(addr->cloneValue(), v)));
-      addr->pushValue(qt::value_from_jsvalue(addr->cloneValue(), v));
+                      qt::value_from_jsvalue(addr->value(), v)));
+      addr->push_value(qt::value_from_jsvalue(addr->value(), v));
     }
   }
 }

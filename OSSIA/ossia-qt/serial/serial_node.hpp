@@ -30,15 +30,15 @@ public:
 
   std::string getName() const override;
 
-  ossia::net::device_base& getDevice() const final override;
+  ossia::net::device_base& get_device() const final override;
 
-  ossia::net::node_base* getParent() const final override;
+  ossia::net::node_base* get_parent() const final override;
 
   ossia::net::node_base& setName(std::string) override;
 
   ossia::net::address_base* getAddress() const final override;
 
-  ossia::net::address_base* createAddress(ossia::val_type) final override;
+  ossia::net::address_base* create_address(ossia::val_type) final override;
 
   bool removeAddress() final override;
 

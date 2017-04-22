@@ -22,6 +22,7 @@ struct websocket_threaded_connection
   }
 };
 
+//! A sink to use with spdlog, that will send its log messages over websockets.
 struct websocket_log_sink final : public spdlog::sinks::sink
 {
   rapidjson::StringBuffer buffer;
@@ -57,6 +58,7 @@ struct websocket_log_sink final : public spdlog::sinks::sink
   }
 };
 
+//! Sends websocket "alive" messages at regular intervals.
 struct websocket_heartbeat
 {
   rapidjson::StringBuffer buffer;

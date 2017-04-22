@@ -176,7 +176,7 @@ inline path_element operator/(const path_element& lhs, const stop& rhs)
  * "?"      -> [:ossia:]?
  * "*"      -> [:ossia:]*
  * "//"     -> any_path() /
- * ".."     -> getParent()
+ * ".."     -> get_parent()
  * "[..]"   -> already handled by the regex engine.
  * "{a,b}"  -> "(a|b)"
  *

@@ -9,18 +9,18 @@ namespace ossia
 {
 
 clock::clock(
-    clock::ExecutionCallback callback, time_value duration,
+    clock::exec_callback callback, time_value duration,
     time_value granularity, time_value offset, float speed,
-    clock::DriveMode driveMode, clock_source s)
-    : mDuration(duration)
-    , mGranularity(granularity)
-    , mOffset(offset)
-    , mSpeed(speed)
-    , mSource{s}
-    , mDriveMode(driveMode)
-    , mRunning(false)
-    , mPaused(false)
-    , mCallback(std::move(callback))
+    clock::drive_mode driveMode, clock_source s)
+    : m_duration(duration)
+    , m_granularity(granularity)
+    , m_offset(offset)
+    , m_speed(speed)
+    , m_source{s}
+    , m_drive_mode(driveMode)
+    , m_running(false)
+    , m_paused(false)
+    , m_callback(std::move(callback))
 {
 }
 
@@ -41,42 +41,42 @@ void clock::stop()
 
 void clock::pause()
 {
-  mPaused = true;
+  m_paused = true;
 }
 
 bool clock::paused() const
 {
-  return mPaused;
+  return m_paused;
 }
 
 void clock::resume()
 {
-  mPaused = false;
+  m_paused = false;
 
   // reset the time reference
-  mLastTime = clock_type::now();
+  m_lastTime = clock_type::now();
 }
 
 bool clock::tick()
 {
   using namespace std::chrono;
-  bool paused = mPaused;
-  bool running = mRunning;
+  bool paused = m_paused;
+  bool running = m_running;
   if (paused || !running)
     return false;
 
-  int64_t granularityInUs(ossia::llround(mGranularity * 1000.));
+  int64_t granularityInUs(ossia::llround(m_granularity * 1000.));
   int64_t droppedTicks = 0;
 
   // how many time since the last tick ?
   int64_t deltaInUs
-      = duration_cast<microseconds>(clock_type::now() - mLastTime).count();
+      = duration_cast<microseconds>(clock_type::now() - m_lastTime).count();
 
-  if (mDriveMode == clock::DriveMode::EXTERNAL)
+  if (m_drive_mode == clock::drive_mode::EXTERNAL)
   {
     // if too early: avoid this tick
-    if (mElapsedTime / granularityInUs
-        == (mElapsedTime + deltaInUs) / granularityInUs)
+    if (m_elapsedTime / granularityInUs
+        == (m_elapsedTime + deltaInUs) / granularityInUs)
       return false;
   }
   else
@@ -87,18 +87,18 @@ bool clock::tick()
     // adjust date and elapsed time considering the dropped ticks
     if (droppedTicks)
     {
-      mDate += droppedTicks * mGranularity * mSpeed;
-      mElapsedTime += droppedTicks * granularityInUs;
+      m_date += droppedTicks * m_granularity * m_speed;
+      m_elapsedTime += droppedTicks * granularityInUs;
 
       //! \debug cout << "+ " << droppedTicks * mGranularity * mSpeed << endl;
 
       // maybe the clock reaches the end ?
-      if (mDuration - mDate < Zero && !mDuration.isInfinite())
+      if (m_duration - m_date < Zero && !m_duration.infinite())
       {
-        mPosition = mDate / mDuration;
+        m_position = m_date / m_duration;
 
         // notify the owner
-        (mCallback)(mPosition, mDate, droppedTicks);
+        (m_callback)(m_position, m_date, droppedTicks);
 
         request_stop();
 
@@ -108,7 +108,7 @@ bool clock::tick()
 
 
     // how many time to pause to reach the next tick ?
-    int64_t pauseInUs = granularityInUs - mElapsedTime % granularityInUs;
+    int64_t pauseInUs = granularityInUs - m_elapsedTime % granularityInUs;
     // if too early: wait
     if (pauseInUs > 0)
     {
@@ -130,30 +130,30 @@ bool clock::tick()
       }
 
       deltaInUs
-          = duration_cast<microseconds>(clock_type::now() - mLastTime).count()
+          = duration_cast<microseconds>(clock_type::now() - m_lastTime).count()
             - droppedTicks * granularityInUs;
     }
   }
 
   // how many time elapsed from the start ?
 
-  mDate += (deltaInUs / 1000.) * mSpeed;
-  mElapsedTime += deltaInUs;
+  m_date += (deltaInUs / 1000.) * m_speed;
+  m_elapsedTime += deltaInUs;
 
   // note the time now to evaluate how long is the callback processing
-  mLastTime = clock_type::now();
+  m_lastTime = clock_type::now();
 
   // test paused and running status after computing the date because there is a
   // sleep before
   if (!paused && running)
   {
-    mPosition = mDate / mDuration;
+    m_position = m_date / m_duration;
 
     // notify the owner
-    (mCallback)(mPosition, mDate, droppedTicks);
+    (m_callback)(m_position, m_date, droppedTicks);
 
     // is this the end
-    if (mDuration - mDate < Zero && !mDuration.isInfinite())
+    if (m_duration - m_date < Zero && !m_duration.infinite())
     {
       request_stop();
     }
@@ -164,36 +164,36 @@ bool clock::tick()
 
 bool clock::tick(ossia::time_value usec)
 {
-  bool paused = mPaused;
-  bool running = mRunning;
+  bool paused = m_paused;
+  bool running = m_running;
   if (paused || !running)
     return false;
 
   // how many time since the last tick ?
   int64_t deltaInUs = ossia::llround(usec);
 
-  assert(mDriveMode == clock::DriveMode::EXTERNAL);
+  assert(m_drive_mode == clock::drive_mode::EXTERNAL);
 
   // how many time elapsed from the start ?
-  mDate += (deltaInUs / 1000.) * mSpeed;
-  mElapsedTime += deltaInUs;
+  m_date += (deltaInUs / 1000.) * m_speed;
+  m_elapsedTime += deltaInUs;
 
   //! \debug cout << "+ " << (deltaInUs / 1000.) * mSpeed << endl;
 
   // note the time now to evaluate how long is the callback processing
-  mLastTime = clock_type::now();
+  m_lastTime = clock_type::now();
 
   // test paused and running status after computing the date because there is a
   // sleep before
-  if (!mPaused && mRunning)
+  if (!m_paused && m_running)
   {
-    mPosition = mDate / mDuration;
+    m_position = m_date / m_duration;
 
     // notify the owner
-    (mCallback)(mPosition, mDate, 0);
+    (m_callback)(m_position, m_date, 0);
 
     // is this the end
-    if (mDuration - mDate < Zero && !mDuration.isInfinite())
+    if (m_duration - m_date < Zero && !m_duration.infinite())
     {
       request_stop();
     }
@@ -202,174 +202,174 @@ bool clock::tick(ossia::time_value usec)
   return true;
 }
 
-time_value clock::getDuration() const
+time_value clock::get_duration() const
 {
-  return mDuration;
+  return m_duration;
 }
 
-ossia::clock& clock::setDuration(ossia::time_value duration)
+ossia::clock& clock::set_duration(ossia::time_value duration)
 {
-  do_setDuration(duration);
+  do_set_duration(duration);
   return *this;
 }
 
-time_value clock::getOffset() const
+time_value clock::get_offset() const
 {
-  return mOffset;
+  return m_offset;
 }
 
-ossia::clock& clock::setOffset(ossia::time_value offset)
+ossia::clock& clock::set_offset(ossia::time_value offset)
 {
-  do_setOffset(offset);
+  do_set_offset(offset);
   return *this;
 }
 
-time_value clock::getGranularity() const
+time_value clock::get_granularity() const
 {
-  return mGranularity;
+  return m_granularity;
 }
 
-ossia::clock& clock::setGranularity(ossia::time_value granularity)
+ossia::clock& clock::set_granularity(ossia::time_value granularity)
 {
-  mGranularity = granularity;
+  m_granularity = granularity;
   return *this;
 }
 
-double clock::getSpeed() const
+double clock::get_speed() const
 {
-  return mSpeed;
+  return m_speed;
 }
 
-ossia::clock& clock::setSpeed(double speed)
+ossia::clock& clock::set_speed(double speed)
 {
-  mSpeed = speed;
+  m_speed = speed;
   return *this;
 }
 
-clock::DriveMode clock::getDriveMode() const
+clock::drive_mode clock::get_drive_mode() const
 {
-  return mDriveMode;
+  return m_drive_mode;
 }
 
-ossia::clock& clock::setDriveMode(clock::DriveMode driveMode)
+ossia::clock& clock::set_drive_mode(clock::drive_mode driveMode)
 {
-  mDriveMode = driveMode;
+  m_drive_mode = driveMode;
   return *this;
 }
 
-bool clock::getRunning() const
+bool clock::running() const
 {
-  return mRunning;
+  return m_running;
 }
 
-time_value clock::getPosition() const
+time_value clock::get_position() const
 {
-  return mPosition;
+  return m_position;
 }
 
-time_value clock::getDate() const
+time_value clock::get_date() const
 {
-  return mDate;
+  return m_date;
 }
 
 void clock::request_stop()
 {
-  if (mRunning)
+  if (m_running)
   {
-    if(mDriveMode == DriveMode::EXTERNAL)
+    if(m_drive_mode == drive_mode::EXTERNAL)
     {
-      mRunning = false;
+      m_running = false;
     }
     else
     {
-      mShouldStop = true;
+      m_shouldStop = true;
     }
 
-    mPaused = false;
-    if (mStatusCallback)
-      mStatusCallback(ClockExecutionStatus::STOPPED);
+    m_paused = false;
+    if (m_statusCallback)
+      m_statusCallback(exec_status::STOPPED);
   }
 }
 
-void clock::setCallback(clock::ExecutionCallback c)
+void clock::set_callback(clock::exec_callback c)
 {
-  mCallback = std::move(c);
+  m_callback = std::move(c);
 }
 
 void clock::do_start()
 {
-  if (mDuration <= mOffset)
+  if (m_duration <= m_offset)
     return stop();
 
-  if (mRunning)
+  if (m_running)
     return;
 
   // reset timing informations
-  mRunning = true;
-  mPaused = false;
-  mShouldStop = false;
+  m_running = true;
+  m_paused = false;
+  m_shouldStop = false;
 
   // set clock at a tick
-  mDate = std::floor(mOffset / (mGranularity * mSpeed))
-          * (mGranularity * mSpeed);
-  mPosition = mDate / mDuration;
-  mLastTime = clock_type::now();
-  mElapsedTime = std::floor(mOffset / mGranularity) * mGranularity * 1000;
+  m_date = std::floor(m_offset / (m_granularity * m_speed))
+          * (m_granularity * m_speed);
+  m_position = m_date / m_duration;
+  m_lastTime = clock_type::now();
+  m_elapsedTime = std::floor(m_offset / m_granularity) * m_granularity * 1000;
 
   // notify the owner
-  (mCallback)(mPosition, mDate, 0);
+  (m_callback)(m_position, m_date, 0);
 
-  if (mDriveMode == clock::DriveMode::INTERNAL)
+  if (m_drive_mode == clock::drive_mode::INTERNAL)
   {
-    if (mThread.joinable())
-      mThread.join();
+    if (m_thread.joinable())
+      m_thread.join();
 
     // launch a new thread to run the clock execution
-    mThread = std::thread(&clock::threadCallback, this);
-    set_thread_realtime(mThread);
+    m_thread = std::thread(&clock::threadCallback, this);
+    set_thread_realtime(m_thread);
   }
 }
 
-void clock::setExecutionStatusCallback(ExecutionStatusCallback e)
+void clock::set_exec_status_callback(exec_status_callback e)
 {
-    mStatusCallback = e;
+    m_statusCallback = e;
 }
 
-clock::ExecutionStatusCallback clock::getExecutionStatusCallback() const
+clock::exec_status_callback clock::get_exec_status_callback() const
 {
-    return mStatusCallback;
+    return m_statusCallback;
 }
 
 void clock::do_stop()
 {
   request_stop();
 
-  if (mDriveMode == clock::DriveMode::INTERNAL)
+  if (m_drive_mode == clock::drive_mode::INTERNAL)
   {
-    if (mThread.joinable())
-      mThread.join();
+    if (m_thread.joinable())
+      m_thread.join();
   }
 }
 
-void clock::do_setDuration(ossia::time_value duration)
+void clock::do_set_duration(ossia::time_value duration)
 {
-  mDuration = duration;
+  m_duration = duration;
 
-  if (mDuration != Zero)
-    mPosition = mDate / mDuration;
+  if (m_duration != Zero)
+    m_position = m_date / m_duration;
   else
-    mPosition = Zero;
+    m_position = Zero;
 }
 
-void clock::do_setOffset(ossia::time_value offset)
+void clock::do_set_offset(ossia::time_value offset)
 {
-  mOffset = offset;
-  mDate = mOffset;
+  m_offset = offset;
+  m_date = m_offset;
 
-  if (mDuration != Zero)
-    mPosition = mDate / mDuration;
+  if (m_duration != Zero)
+    m_position = m_date / m_duration;
   else
-    mPosition = Zero;
+    m_position = Zero;
 }
 
 void clock::threadCallback()
@@ -377,12 +377,12 @@ void clock::threadCallback()
   try
   {
     // launch the tick if the duration is valid and while it have to run
-    if (mDuration > Zero)
-      while (mRunning && !mShouldStop)
+    if (m_duration > Zero)
+      while (m_running && !m_shouldStop)
         tick();
 
-    if(mShouldStop)
-      mRunning = false;
+    if(m_shouldStop)
+      m_running = false;
   }
   catch(std::exception& e)
   {

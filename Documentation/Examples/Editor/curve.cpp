@@ -20,49 +20,49 @@ int main()
   curve_segment_linear<float> secondCurveSegment;
 
   cout << "*** test 1 ***" << endl;
-  c->setInitialPointAbscissa(0.);
-  c->setInitialPointOrdinate(0.);
-  c->addPoint(firstCurveSegment, 1., 1.);
-  c->addPoint(secondCurveSegment, 2., 0.);
+  c->set_x0(0.);
+  c->set_y0(0.);
+  c->add_point(firstCurveSegment, 1., 1.);
+  c->add_point(secondCurveSegment, 2., 0.);
 
-  cout << "value at 0. = " << c->valueAt(0.) << endl;
-  cout << "value at 0.5 = " << c->valueAt(0.5) << endl;
-  cout << "value at 1. = " << c->valueAt(1.) << endl;
-  cout << "value at 1.5 = " << c->valueAt(1.5) << endl;
-  cout << "value at 2. = " << c->valueAt(2.) << endl;
+  cout << "value at 0. = " << c->value_at(0.) << endl;
+  cout << "value at 0.5 = " << c->value_at(0.5) << endl;
+  cout << "value at 1. = " << c->value_at(1.) << endl;
+  cout << "value at 1.5 = " << c->value_at(1.5) << endl;
+  cout << "value at 2. = " << c->value_at(2.) << endl;
 
   cout << "*** test 2 ***" << endl;
-  c->setInitialPointOrdinate(2.);
+  c->set_y0(2.);
 
-  cout << "value at 0. = " << c->valueAt(0.) << endl;
-  cout << "value at 0.5 = " << c->valueAt(0.5) << endl;
-  cout << "value at 1. = " << c->valueAt(1.) << endl;
-  cout << "value at 1.5 = " << c->valueAt(1.5) << endl;
-  cout << "value at 2. = " << c->valueAt(2.) << endl;
+  cout << "value at 0. = " << c->value_at(0.) << endl;
+  cout << "value at 0.5 = " << c->value_at(0.5) << endl;
+  cout << "value at 1. = " << c->value_at(1.) << endl;
+  cout << "value at 1.5 = " << c->value_at(1.5) << endl;
+  cout << "value at 2. = " << c->value_at(2.) << endl;
 
   // Local device
-  ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
+  ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
-  auto localTupleNode = device.createChild("my_tuple");
-  auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
+  auto localTupleNode = device.create_child("my_tuple");
+  auto localTupleAddress = localTupleNode->create_address(val_type::TUPLE);
 
-  localTupleAddress->setValue(std::vector<ossia::value>{-1., 0., 1.});
+  localTupleAddress->set_value(std::vector<ossia::value>{-1., 0., 1.});
 
   cout << "*** test 3 ***" << endl;
-  c->setInitialPointOrdinateDestination(Destination(*localTupleAddress));
+  c->set_y0_destination(Destination(*localTupleAddress));
 
-  cout << "value at 0. = " << c->valueAt(0.) << endl;
-  cout << "value at 0.5 = " << c->valueAt(0.5) << endl;
-  cout << "value at 1. = " << c->valueAt(1.) << endl;
-  cout << "value at 1.5 = " << c->valueAt(1.5) << endl;
-  cout << "value at 2. = " << c->valueAt(2.) << endl;
+  cout << "value at 0. = " << c->value_at(0.) << endl;
+  cout << "value at 0.5 = " << c->value_at(0.5) << endl;
+  cout << "value at 1. = " << c->value_at(1.) << endl;
+  cout << "value at 1.5 = " << c->value_at(1.5) << endl;
+  cout << "value at 2. = " << c->value_at(2.) << endl;
 
   cout << "*** test 4 ***" << endl;
-  c->setInitialPointOrdinateDestination(Destination(*localTupleAddress, destination_index{1}));
+  c->set_y0_destination(Destination(*localTupleAddress, destination_index{1}));
 
-  cout << "value at 0. = " << c->valueAt(0.) << endl;
-  cout << "value at 0.5 = " << c->valueAt(0.5) << endl;
-  cout << "value at 1. = " << c->valueAt(1.) << endl;
-  cout << "value at 1.5 = " << c->valueAt(1.5) << endl;
-  cout << "value at 2. = " << c->valueAt(2.) << endl;
+  cout << "value at 0. = " << c->value_at(0.) << endl;
+  cout << "value at 0.5 = " << c->value_at(0.5) << endl;
+  cout << "value at 1. = " << c->value_at(1.) << endl;
+  cout << "value at 1.5 = " << c->value_at(1.5) << endl;
+  cout << "value at 2. = " << c->value_at(2.) << endl;
 }

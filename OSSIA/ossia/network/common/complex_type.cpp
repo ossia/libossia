@@ -35,18 +35,18 @@ struct setup_address_visitor {
   using ret = ossia::net::address_base*;
   ossia::net::node_base& n;
   ret operator()(ossia::val_type v) const {
-    return n.createAddress(v);
+    return n.create_address(v);
   }
   ret operator()(const ossia::unit_t& v) const {
-    auto addr = n.createAddress(ossia::matching_type(v));
-    addr->setUnit(v);
+    auto addr = n.create_address(ossia::matching_type(v));
+    addr->set_unit(v);
     return addr;
   }
   ret operator()(const ossia::extended_type& v) const {
     auto t = ossia::underlying_type(v);
     if(!t.empty())
     {
-      auto addr = n.createAddress(t[0]);
+      auto addr = n.create_address(t[0]);
       ossia::net::set_extended_type(n, v);
       return addr;
     }
@@ -69,16 +69,16 @@ struct update_address_visitor {
   using ret = void;
   ossia::net::address_base& addr;
   ret operator()(ossia::val_type v) const {
-    addr.setValueType(v);
+    addr.set_value_type(v);
   }
   ret operator()(const ossia::unit_t& v) const {
-    addr.setUnit(v);
+    addr.set_unit(v);
   }
   ret operator()(const ossia::extended_type& v) const {
     auto t = ossia::underlying_type(v);
     if(!t.empty())
     {
-      addr.setValueType(t[0]);
+      addr.set_value_type(t[0]);
     }
     ossia::net::set_extended_type(addr.getNode(), v);
   }

@@ -4,7 +4,7 @@ namespace ossia
 {
 
 time_node::time_node()
-    : mExpression(expressions::make_expression_true())
+    : m_expression(expressions::make_expression_true())
 {
 }
 
@@ -13,21 +13,21 @@ time_node::~time_node() = default;
 bool time_node::trigger()
 {
   // if all TimeEvents are not PENDING
-  if (mPendingEvents.size() != timeEvents().size())
+  if (m_pending.size() != get_time_events().size())
   {
     // stop expression observation because the TimeNode is not ready to be
     // processed
-    observeExpressionResult(false);
+    observe_expression(false);
 
     // the triggering failed
     return false;
   }
 
   // now TimeEvents will happen or be disposed
-  for (auto& timeEvent : mPendingEvents)
+  for (auto& timeEvent : m_pending)
   {
     auto& ev = *timeEvent;
-    auto& expr = ev.getExpression();
+    auto& expr = ev.get_expression();
     // update any Destination value into the expression
     expressions::update(expr);
 
@@ -38,7 +38,7 @@ bool time_node::trigger()
   }
 
   // stop expression observation now the TimeNode has been processed
-  observeExpressionResult(false);
+  observe_expression(false);
 
   // notify observers
   triggered.send();
@@ -47,23 +47,23 @@ bool time_node::trigger()
   return true;
 }
 
-time_value time_node::getDate() const
+time_value time_node::get_date() const
 {
   // compute the date from each first previous time constraint
   // ignoring zero duration time constraint
-  if (!timeEvents().empty())
+  if (!get_time_events().empty())
   {
-    for (auto& timeEvent : timeEvents())
+    for (auto& timeEvent : get_time_events())
     {
-      if (!timeEvent->previousTimeConstraints().empty())
+      if (!timeEvent->previous_time_constraints().empty())
       {
-        if (timeEvent->previousTimeConstraints()[0]->getDurationNominal()
+        if (timeEvent->previous_time_constraints()[0]->get_nominal_duration()
             > Zero)
-          return timeEvent->previousTimeConstraints()[0]->getDurationNominal()
-                 + timeEvent->previousTimeConstraints()[0]
-                       ->getStartEvent()
-                       .getTimeNode()
-                       .getDate();
+          return timeEvent->previous_time_constraints()[0]->get_nominal_duration()
+                 + timeEvent->previous_time_constraints()[0]
+                       ->get_start_event()
+                       .get_time_node()
+                       .get_date();
       }
     }
   }
@@ -71,15 +71,15 @@ time_value time_node::getDate() const
   return Zero;
 }
 
-const expression& time_node::getExpression() const
+const expression& time_node::get_expression() const
 {
-  return *mExpression;
+  return *m_expression;
 }
 
-time_node& time_node::setExpression(expression_ptr exp)
+time_node& time_node::set_expression(expression_ptr exp)
 {
   assert(exp);
-  mExpression = std::move(exp);
+  m_expression = std::move(exp);
   return *this;
 }
 
@@ -87,17 +87,17 @@ time_node::iterator time_node::insert(
     time_node::const_iterator pos,
     std::shared_ptr<time_event> ev)
 {
-  return mTimeEvents.insert(pos, std::move(ev));
+  return m_timeEvents.insert(pos, std::move(ev));
 }
 
 void time_node::remove(const std::shared_ptr<time_event>& e)
 {
-  remove_one(mPendingEvents, e);
-  remove_one(mTimeEvents, e);
+  remove_one(m_pending, e);
+  remove_one(m_timeEvents, e);
 }
 
 time_node::iterator time_node::emplace(
-    const_iterator pos, time_event::ExecutionCallback callback,
+    const_iterator pos, time_event::exec_callback callback,
     ossia::expression_ptr exp)
 {
   return insert(
@@ -109,30 +109,30 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
 {
   // prepare to remember which event changed its status to PENDING
   // because it is needed in time_node::trigger
-  mPendingEvents.clear();
+  m_pending.clear();
 
   bool maximalDurationReached = false;
 
-  for (auto& timeEvent : timeEvents())
+  for (auto& timeEvent : get_time_events())
   {
-    switch (timeEvent->getStatus())
+    switch (timeEvent->get_status())
     {
       // check if NONE TimeEvent is ready to become PENDING
-      case time_event::Status::NONE:
+      case time_event::status::NONE:
       {
         bool minimalDurationReached = true;
 
-        for (auto& timeConstraint : timeEvent->previousTimeConstraints())
+        for (auto& timeConstraint : timeEvent->previous_time_constraints())
         {
           // previous TimeConstraints with a DISPOSED start event are ignored
-          if (timeConstraint->getStartEvent().getStatus()
-              == time_event::Status::DISPOSED)
+          if (timeConstraint->get_start_event().get_status()
+              == time_event::status::DISPOSED)
             continue;
 
           // previous TimeConstraint with a none HAPPENED start event
           // can't have reached its minimal duration
-          if (timeConstraint->getStartEvent().getStatus()
-              != time_event::Status::HAPPENED)
+          if (timeConstraint->get_start_event().get_status()
+              != time_event::status::HAPPENED)
           {
             minimalDurationReached = false;
             break;
@@ -140,7 +140,7 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
 
           // previous TimeConstraint which doesn't reached its minimal duration
           // force to quit
-          if (timeConstraint->getDate() < timeConstraint->getDurationMin())
+          if (timeConstraint->get_date() < timeConstraint->get_min_duration())
           {
             minimalDurationReached = false;
             break;
@@ -149,19 +149,19 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
 
         // access to PENDING status once all previous TimeConstraints allow it
         if (minimalDurationReached)
-          timeEvent->setStatus(time_event::Status::PENDING);
+          timeEvent->set_status(time_event::status::PENDING);
         else
           break;
       }
 
       // PENDING TimeEvent is ready for evaluation
-      case time_event::Status::PENDING:
+      case time_event::status::PENDING:
       {
-        mPendingEvents.push_back(timeEvent);
+        m_pending.push_back(timeEvent);
 
-        for (auto& timeConstraint : timeEvent->previousTimeConstraints())
+        for (auto& timeConstraint : timeEvent->previous_time_constraints())
         {
-          if (timeConstraint->getDate() >= timeConstraint->getDurationMax())
+          if (timeConstraint->get_date() >= timeConstraint->get_max_duration())
           {
             maximalDurationReached = true;
           }
@@ -172,13 +172,13 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
 
       // HAPPENED TimeEvent propagates recursively the execution to the end of
       // each next TimeConstraints
-      case time_event::Status::HAPPENED:
+      case time_event::status::HAPPENED:
       {
-        for (auto& timeConstraint : timeEvent->nextTimeConstraints())
+        for (auto& timeConstraint : timeEvent->next_time_constraints())
         {
           timeConstraint
-              ->getEndEvent()
-              .getTimeNode()
+              ->get_end_event()
+              .get_time_node()
               .process(statusChangedEvents);
         }
 
@@ -186,7 +186,7 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
       }
 
       // DISPOSED TimeEvent stops the propagation of the execution
-      case time_event::Status::DISPOSED:
+      case time_event::status::DISPOSED:
       {
         break;
       }
@@ -194,25 +194,25 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
   }
 
   // if all TimeEvents are not PENDING
-  if (mPendingEvents.size() != timeEvents().size())
+  if (m_pending.size() != get_time_events().size())
   {
-    if(mEvaluating)
+    if(m_evaluating)
     {
-      mEvaluating = false;
-      leftEvaluation.send();
+      m_evaluating = false;
+      left_evaluation.send();
     }
 
     return;
   }
 
-  if(!mEvaluating)
+  if(!m_evaluating)
   {
-    mEvaluating = true;
-    enteredEvaluation.send();
+    m_evaluating = true;
+    entered_evaluation.send();
   }
 
   // false expression mute TimeNode triggering
-  if (*mExpression == expressions::expression_false())
+  if (*m_expression == expressions::expression_false())
     return;
 
   //! \todo force triggering if at leat one TimeEvent has
@@ -221,14 +221,14 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
   // update the expression one time
   // then observe and evaluate TimeNode's expression before to trig
   // only if no maximal duration have been reached
-  if (*mExpression != expressions::expression_true() && !maximalDurationReached)
+  if (*m_expression != expressions::expression_true() && !maximalDurationReached)
   {
-    if (!isObservingExpression())
-      expressions::update(*mExpression);
+    if (!is_observing_expression())
+      expressions::update(*m_expression);
 
-    observeExpressionResult(true);
+    observe_expression(true);
 
-    if (!expressions::evaluate(*mExpression))
+    if (!expressions::evaluate(*m_expression))
       return;
   }
 
@@ -238,45 +238,45 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
     // former PENDING TimeEvents are now HAPPENED or DISPOSED
     statusChangedEvents.insert(
           statusChangedEvents.end(),
-          mPendingEvents.begin(),
-          mPendingEvents.end());
+          m_pending.begin(),
+          m_pending.end());
 
-    mEvaluating = false;
-    finishedEvaluation.send(maximalDurationReached);
+    m_evaluating = false;
+    finished_evaluation.send(maximalDurationReached);
   }
 }
 
-bool time_node::isObservingExpression()
+bool time_node::is_observing_expression()
 {
-  return mObserveExpression;
+  return m_observe;
 }
 
-void time_node::observeExpressionResult(bool observe)
+void time_node::observe_expression(bool observe)
 {
-  if (!mExpression || *mExpression == expressions::expression_true()
-      || *mExpression == expressions::expression_false())
+  if (!m_expression || *m_expression == expressions::expression_true()
+      || *m_expression == expressions::expression_false())
     return;
 
-  if (observe != mObserveExpression)
+  if (observe != m_observe)
   {
-    bool wasObserving = mObserveExpression;
-    mObserveExpression = observe;
+    bool wasObserving = m_observe;
+    m_observe = observe;
 
-    if (mObserveExpression)
+    if (m_observe)
     {
       // pull value
 
       // start expression observation; dummy callback used.
       // Do not remove it : else the expressions will stop listening.
-      mResultCallbackIndex = expressions::add_callback(*mExpression, [] (bool) { });
+      m_callback = expressions::add_callback(*m_expression, [] (bool) { });
     }
     else
     {
       // stop expression observation
-      if (wasObserving && mResultCallbackIndex)
+      if (wasObserving && m_callback)
       {
-        expressions::remove_callback(*mExpression, *mResultCallbackIndex);
-        mResultCallbackIndex = ossia::none;
+        expressions::remove_callback(*m_expression, *m_callback);
+        m_callback = ossia::none;
       }
     }
   }
@@ -284,21 +284,21 @@ void time_node::observeExpressionResult(bool observe)
 
 void time_node::reset()
 {
-    for(auto& timeEvent : mTimeEvents)
+    for(auto& timeEvent : m_timeEvents)
     {
         timeEvent->reset();
     }
 
-    mPendingEvents.clear();
+    m_pending.clear();
 }
 
 void time_node::cleanup()
 {
-  for(auto& timeevent : mTimeEvents)
+  for(auto& timeevent : m_timeEvents)
     timeevent->cleanup();
 
-  mPendingEvents.clear();
-  mTimeEvents.clear();
+  m_pending.clear();
+  m_timeEvents.clear();
 }
 
 }

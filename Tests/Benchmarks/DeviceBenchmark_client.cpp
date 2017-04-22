@@ -55,16 +55,16 @@ private Q_SLOTS:
         for(const auto& node : minuitDevice->children())
         {
             if(node->getName() == "startTick")
-                start_addr = node->getAddress();
+                start_addr = node->get_address();
             if(node->getName() == "stopTick")
-                stop_addr = node->getAddress();
+                stop_addr = node->get_address();
             if(start_addr && stop_addr)
                 break;
         }
 
         OSSIA::Float f(0);
 
-        start_addr->pushValue(new ossia::impulse{});
+        start_addr->push_value(new ossia::impulse{});
         // Send the "start" tick
         // Send the messages
         int iter = 1000000;
@@ -76,10 +76,10 @@ private Q_SLOTS:
             const auto& name = n->getName();
             if(name != "startTick" && name != "stopTick")
             {
-                if(n->getAddress())
+                if(n->get_address())
                 {
                     auto start = std::chrono::steady_clock::now();
-                    n->getAddress()->pushValue(&f);
+                    n->get_address()->push_value(&f);
                     auto end = std::chrono::steady_clock::now();
 
                     total_dur += end - start;
@@ -87,7 +87,7 @@ private Q_SLOTS:
             }
         }
 
-        stop_addr->pushValue(new ossia::impulse{});
+        stop_addr->push_value(new ossia::impulse{});
         std::cout << "Sending: " << iter << ": "
                   << std::chrono::duration <double, std::milli> (total_dur).count() / float(iter)
                   << "" << std::endl;

@@ -34,12 +34,12 @@ std::string serial_node::getName() const
   return mName;
 }
 
-ossia::net::device_base& serial_node::getDevice() const
+ossia::net::device_base& serial_node::get_device() const
 {
   return mDevice;
 }
 
-ossia::net::node_base* serial_node::getParent() const
+ossia::net::node_base* serial_node::get_parent() const
 {
   return mParent;
 }
@@ -54,7 +54,7 @@ ossia::net::address_base* serial_node::getAddress() const
   return mAddress.get();
 }
 
-ossia::net::address_base* serial_node::createAddress(ossia::val_type)
+ossia::net::address_base* serial_node::create_address(ossia::val_type)
 {
   return getAddress();
 }

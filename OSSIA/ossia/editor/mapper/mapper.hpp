@@ -39,9 +39,9 @@ public:
 
   ~mapper();
 
-  void setDriverAddress(ossia::Destination);
-  void setDrivenAddress(ossia::Destination);
-  void setBehavior(ossia::behavior b);
+  void set_driver(ossia::Destination);
+  void set_driven(ossia::Destination);
+  void set_behavior(ossia::behavior b);
 
   void clean();
 
@@ -55,19 +55,19 @@ private:
   void pause() override;
   void resume() override;
 
-  static ossia::value computeValue(const ossia::value&, const ossia::behavior&);
+  static ossia::value compute_value(const ossia::value&, const ossia::behavior&);
 
-  void driverValueCallback(ossia::value value);
+  void driver_value_callback(ossia::value value);
 
-  optional<ossia::Destination> mDriverAddress;
-  ossia::behavior mDrive;
+  optional<ossia::Destination> m_driverAddress;
+  ossia::behavior m_drive;
 
-  optional<ossia::message> mLastMessage;
-  ossia::value mValueToMap;
-  mutable mutex_t mValueToMapMutex;
-  mutable mutex_t mDriverAddressMutex;
+  optional<ossia::message> m_lastMessage;
+  ossia::value m_valueToMap;
+  mutable mutex_t m_valueToMapMutex;
+  mutable mutex_t m_driverAddressMutex;
 
-  optional<ossia::net::address_base::callback_index> mDriverValueCallbackIndex;
+  optional<ossia::net::address_base::callback_index> m_callback;
 
   friend struct mapper_compute_visitor;
 };

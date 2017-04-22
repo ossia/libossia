@@ -30,8 +30,8 @@ oscquery_server_protocol::oscquery_server_protocol(uint16_t osc_port, uint16_t w
   m_websocketServer.set_message_handler([&] (connection_handler hdl, const std::string& str) {
     auto res = on_WSrequest(hdl, str);
 
-    if(mLogger.outbound_logger)
-      mLogger.outbound_logger->info("OSCQuery WS Out: {}", res.GetString());
+    if(m_logger.outbound_logger)
+      m_logger.outbound_logger->info("OSCQuery WS Out: {}", res.GetString());
 
     return res;
   });
@@ -63,7 +63,7 @@ bool oscquery_server_protocol::pull(net::address_base&)
   return false;
 }
 
-std::future<void> oscquery_server_protocol::pullAsync(net::address_base&)
+std::future<void> oscquery_server_protocol::pull_async(net::address_base&)
 {
   // Do nothing
   return {};
@@ -76,7 +76,7 @@ void oscquery_server_protocol::request(net::address_base&)
 
 bool oscquery_server_protocol::push(const net::address_base& addr)
 {
-  if (addr.getAccessMode() == ossia::access_mode::GET)
+  if (addr.get_access() == ossia::access_mode::GET)
     return false;
 
   auto val = net::filter_value(addr);
@@ -133,15 +133,15 @@ bool oscquery_server_protocol::update(net::node_base&)
   return false;
 }
 
-void oscquery_server_protocol::setDevice(net::device_base& dev)
+void oscquery_server_protocol::set_device(net::device_base& dev)
 {
   // TODO disconnect in case there is an existing device
   m_device = &dev;
 
   // TODO renamed, etc
-  dev.onNodeCreated.connect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeCreated>(this);
-  dev.onNodeRemoving.connect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeRemoved>(this);
-  dev.onAttributeModified.connect<oscquery_server_protocol, &oscquery_server_protocol::on_attributeChanged>(this);
+  dev.on_node_created.connect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeCreated>(this);
+  dev.on_node_removing.connect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeRemoved>(this);
+  dev.on_attribute_modified.connect<oscquery_server_protocol, &oscquery_server_protocol::on_attributeChanged>(this);
 
   update_zeroconf();
 }
@@ -224,7 +224,7 @@ void oscquery_server_protocol::add_node(
   const auto& name_it = parameters.find(detail::add_node());
   if(name_it != parameters.end())
   {
-    address.node_name = name_it.value();
+    address.name = name_it.value();
   }
 
   for(const auto& e : parameters)
@@ -240,12 +240,12 @@ void oscquery_server_protocol::add_node(
     }
   }
 
-  m_device->onAddNodeRequested(parent_path.to_string(), std::move(address));
+  m_device->on_add_node_requested(parent_path.to_string(), std::move(address));
 }
 
 void oscquery_server_protocol::remove_node(ossia::string_view path, const std::string& node)
 {
-  m_device->onRemoveNodeRequested(path.to_string(), node);
+  m_device->on_remove_node_requested(path.to_string(), node);
 }
 
 void oscquery_server_protocol::on_OSCMessage(
@@ -260,17 +260,17 @@ try {
   else
   {
     // We still want to save the value even if it is not listened to.
-    if(auto n = net::find_node(m_device->getRootNode(), addr_txt))
+    if(auto n = net::find_node(m_device->get_root_node(), addr_txt))
     {
-      if(auto base_addr = n->getAddress())
+      if(auto base_addr = n->get_address())
       {
         net::update_value_quiet(*base_addr, m);
       }
     }
   }
 
-  if(mLogger.inbound_logger)
-    mLogger.inbound_logger->info("OSCQuery OSC In: {}", m);
+  if(m_logger.inbound_logger)
+    m_logger.inbound_logger->info("OSCQuery OSC In: {}", m);
 } catch(const std::exception& e) {
   logger().error("oscquery_server_protocol::on_OSCMessage: {}", e.what());
 } catch(...) {
@@ -368,7 +368,7 @@ void oscquery_server_protocol::update_zeroconf()
 {
   try {
     m_zeroconfServer = net::make_zeroconf_server(
-                         getDevice().getName(),
+                         get_device().get_name(),
                          "_oscjson._tcp",
                          "", m_wsPort, 0);
   } catch(const std::exception& e) {
@@ -382,8 +382,8 @@ rapidjson::StringBuffer oscquery_server_protocol::on_WSrequest(
     connection_handler hdl,
     const std::string& message)
 {
-  if(mLogger.inbound_logger)
-    mLogger.inbound_logger->info("OSCQuery WS In: {}", message);
+  if(m_logger.inbound_logger)
+    m_logger.inbound_logger->info("OSCQuery WS In: {}", message);
   if(message.empty())
     return {};
   else if(message[0] == '/')

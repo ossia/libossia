@@ -22,12 +22,12 @@ struct address_data
   address_data& operator=(address_data&&) = default;
 
   address_data(std::string n):
-    node_name{std::move(n)}
+    name{std::move(n)}
   {
 
   }
 
-  std::string node_name;
+  std::string name;
 
   ossia::value value;
   ossia::complex_type type;

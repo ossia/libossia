@@ -17,9 +17,9 @@ mapper::mapper(
       ossia::Destination driverAddress,
       ossia::Destination drivenAddress,
       ossia::behavior drive)
-    : mDriverAddress{std::move(driverAddress)}
-    , mDrive{std::move(drive)}
-    , mLastMessage{ossia::message{std::move(drivenAddress), {}}}
+    : m_driverAddress{std::move(driverAddress)}
+    , m_drive{std::move(drive)}
+    , m_lastMessage{ossia::message{std::move(drivenAddress), {}}}
 {
 }
 
@@ -30,7 +30,7 @@ mapper::~mapper()
 
 ossia::state_element mapper::offset(ossia::time_value offset)
 {
-  if (parent()->getRunning())
+  if (parent()->running())
     throw execution_error("mapper_impl::offset: "
                            "parent time constraint is running");
 
@@ -40,7 +40,7 @@ ossia::state_element mapper::offset(ossia::time_value offset)
 ossia::state_element mapper::state()
 {
   auto& par = *parent();
-  if (!par.getRunning())
+  if (!par.running())
   {
     throw execution_error("mapper_impl::state: "
                           "parent time constraint is not running");
@@ -48,58 +48,58 @@ ossia::state_element mapper::state()
   }
 
   // if date hasn't been processed already
-  ossia::time_value date = par.getDate();
-  if (date != mLastDate)
+  ossia::time_value date = par.get_date();
+  if (date != m_lastDate)
   {
-    mLastDate = date;
+    m_lastDate = date;
 
     {
-      std::unique_lock<mutex_t> lock(mValueToMapMutex);
-      if (mValueToMap.valid())
+      std::unique_lock<mutex_t> lock(m_valueToMapMutex);
+      if (m_valueToMap.valid())
       {
         // edit a Message handling the mapped value
-        auto val = mValueToMap;
+        auto val = m_valueToMap;
         // forget the former value
 
-        mValueToMap.reset();
+        m_valueToMap.reset();
         lock.unlock();
 
-        if(mLastMessage)
-          mLastMessage->message_value = computeValue(val, mDrive);
+        if(m_lastMessage)
+          m_lastMessage->message_value = compute_value(val, m_drive);
 
-        if(unmuted() && mLastMessage)
-          return *mLastMessage;
+        if(unmuted() && m_lastMessage)
+          return *m_lastMessage;
         return ossia::state_element{};
       }
     }
   }
 
-  if(unmuted() && mLastMessage)
-    return *mLastMessage;
+  if(unmuted() && m_lastMessage)
+    return *m_lastMessage;
   return ossia::state_element{};
 }
 
 void mapper::start()
 {
   // start driver address value observation
-  if (mDriverAddress && !mDriverValueCallbackIndex)
+  if (m_driverAddress && !m_callback)
   {
-    ossia::net::address_base& addr = mDriverAddress->address();
-    mDriverValueCallbackIndex = addr.add_callback(
-        [this](const ossia::value& val) { driverValueCallback(val); });
+    ossia::net::address_base& addr = m_driverAddress->address();
+    m_callback = addr.add_callback(
+        [this](const ossia::value& val) { driver_value_callback(val); });
 
-    auto def_val = addr.cloneValue();
-    driverValueCallback(def_val);
+    auto def_val = addr.value();
+    driver_value_callback(def_val);
   }
 }
 
 void mapper::stop()
 {
   // stop driver address value observation
-  if (mDriverAddress && mDriverValueCallbackIndex)
+  if (m_driverAddress && m_callback)
   {
-    mDriverAddress->address().remove_callback(*mDriverValueCallbackIndex);
-    mDriverValueCallbackIndex = ossia::none;
+    m_driverAddress->address().remove_callback(*m_callback);
+    m_callback = ossia::none;
   }
 }
 
@@ -111,34 +111,34 @@ void mapper::resume()
 {
 }
 
-void mapper::setDriverAddress(ossia::Destination d)
+void mapper::set_driver(ossia::Destination d)
 {
-  bool active{mDriverValueCallbackIndex};
+  bool active{m_callback};
 
   stop();
 
   {
-    lock_t lock(mDriverAddressMutex);
-    mDriverAddress = std::move(d);
+    lock_t lock(m_driverAddressMutex);
+    m_driverAddress = std::move(d);
   }
 
   if(active)
   {
-    ossia::net::address_base& addr = mDriverAddress->address();
-    mDriverValueCallbackIndex = addr.add_callback(
-        [this](const ossia::value& val) { driverValueCallback(val); });
+    ossia::net::address_base& addr = m_driverAddress->address();
+    m_callback = addr.add_callback(
+        [this](const ossia::value& val) { driver_value_callback(val); });
   }
 }
 
-void mapper::setDrivenAddress(ossia::Destination d)
+void mapper::set_driven(ossia::Destination d)
 {
-  if(mLastMessage)
+  if(m_lastMessage)
   {
-    mLastMessage->destination = std::move(d);
+    m_lastMessage->destination = std::move(d);
   }
   else
   {
-    mLastMessage = ossia::message{d, ossia::value{}};
+    m_lastMessage = ossia::message{d, ossia::value{}};
   }
 }
 
@@ -147,17 +147,17 @@ void mapper::clean()
   // Cleans the callback
   stop();
   {
-    lock_t lock(mDriverAddressMutex);
-    mDriverAddress = ossia::none;
+    lock_t lock(m_driverAddressMutex);
+    m_driverAddress = ossia::none;
   }
 
-  mDrive.reset();
-  mLastMessage = ossia::none;
+  m_drive.reset();
+  m_lastMessage = ossia::none;
 }
 
-void mapper::setBehavior(ossia::behavior b)
+void mapper::set_behavior(ossia::behavior b)
 {
-  mDrive = std::move(b);
+  m_drive = std::move(b);
 }
 
 struct mapper_compute_visitor
@@ -165,7 +165,7 @@ struct mapper_compute_visitor
   ossia::value operator()(float driver, const std::shared_ptr<curve_abstract>& c)
   {
     auto base_curve = c.get();
-    auto t = base_curve->getType();
+    auto t = base_curve->get_type();
     if(t.first != ossia::curve_segment_type::FLOAT)
       return {};
 
@@ -174,17 +174,17 @@ struct mapper_compute_visitor
       case ossia::curve_segment_type::FLOAT:
       {
         auto c = static_cast<curve<float, float>*>(base_curve);
-        return float{c->valueAt(driver)};
+        return float{c->value_at(driver)};
       }
       case ossia::curve_segment_type::INT:
       {
         auto c = static_cast<curve<float, int>*>(base_curve);
-        return int32_t{c->valueAt(driver)};
+        return int32_t{c->value_at(driver)};
       }
       case ossia::curve_segment_type::BOOL:
       {
         auto c = static_cast<curve<float, bool>*>(base_curve);
-        return bool{c->valueAt(driver)};
+        return bool{c->value_at(driver)};
       }
       case ossia::curve_segment_type::DOUBLE:
       case ossia::curve_segment_type::ANY:
@@ -196,7 +196,7 @@ struct mapper_compute_visitor
   ossia::value operator()(int32_t driver, const std::shared_ptr<curve_abstract>& c)
   {
     auto base_curve = c.get();
-    auto t = base_curve->getType();
+    auto t = base_curve->get_type();
     if(t.first != ossia::curve_segment_type::INT)
       return {};
 
@@ -205,17 +205,17 @@ struct mapper_compute_visitor
       case ossia::curve_segment_type::FLOAT:
       {
         auto c = static_cast<curve<int, float>*>(base_curve);
-        return float{c->valueAt(driver)};
+        return float{c->value_at(driver)};
       }
       case ossia::curve_segment_type::INT:
       {
         auto c = static_cast<curve<int, int>*>(base_curve);
-        return int32_t{c->valueAt(driver)};
+        return int32_t{c->value_at(driver)};
       }
       case ossia::curve_segment_type::BOOL:
       {
         auto c = static_cast<curve<int, bool>*>(base_curve);
-        return bool{c->valueAt(driver)};
+        return bool{c->value_at(driver)};
       }
       case ossia::curve_segment_type::DOUBLE:
       case ossia::curve_segment_type::ANY:
@@ -227,7 +227,7 @@ struct mapper_compute_visitor
   ossia::value operator()(bool driver, const std::shared_ptr<curve_abstract>& c)
   {
     auto base_curve = c.get();
-    auto t = base_curve->getType();
+    auto t = base_curve->get_type();
     if(t.first != ossia::curve_segment_type::BOOL)
       return {};
 
@@ -236,17 +236,17 @@ struct mapper_compute_visitor
       case ossia::curve_segment_type::FLOAT:
       {
         auto c = static_cast<curve<bool, float>*>(base_curve);
-        return float{c->valueAt(driver)};
+        return float{c->value_at(driver)};
       }
       case ossia::curve_segment_type::INT:
       {
         auto c = static_cast<curve<bool, int>*>(base_curve);
-        return int32_t{c->valueAt(driver)};
+        return int32_t{c->value_at(driver)};
       }
       case ossia::curve_segment_type::BOOL:
       {
         auto c = static_cast<curve<bool, bool>*>(base_curve);
-        return bool{c->valueAt(driver)};
+        return bool{c->value_at(driver)};
       }
       case ossia::curve_segment_type::DOUBLE:
       case ossia::curve_segment_type::ANY:
@@ -275,13 +275,13 @@ struct mapper_compute_visitor
   ossia::value operator()(std::array<float, N> driver, const std::shared_ptr<curve_abstract>& c)
   {
     auto base_curve = c.get();
-    auto t = base_curve->getType();
+    auto t = base_curve->get_type();
     if(t.first == ossia::curve_segment_type::FLOAT && t.second == ossia::curve_segment_type::FLOAT)
     {
       auto c = static_cast<curve<float, float>*>(base_curve);
       for(std::size_t i = 0; i < N; i++)
       {
-        driver[i] = c->valueAt(driver[i]);
+        driver[i] = c->value_at(driver[i]);
       }
       return driver;
     }
@@ -307,9 +307,9 @@ struct mapper_compute_visitor
       if(!c)
         return {};
 
-      auto t = c->getType();
+      auto t = c->get_type();
       if(t.first == ossia::curve_segment_type::FLOAT && t.second == ossia::curve_segment_type::FLOAT)
-        driver[i] = static_cast<curve<float, float>*>(c)->valueAt(driver[i]);
+        driver[i] = static_cast<curve<float, float>*>(c)->value_at(driver[i]);
       else
         return {};
     }
@@ -328,7 +328,7 @@ struct mapper_compute_visitor
       if (it_driver == t_driver.end())
         break;
 
-      t_value.push_back(mapper::computeValue(*it_driver, e_drive));
+      t_value.push_back(mapper::compute_value(*it_driver, e_drive));
       it_driver++;
     }
 
@@ -344,7 +344,7 @@ struct mapper_compute_visitor
   }
 };
 
-ossia::value mapper::computeValue(
+ossia::value mapper::compute_value(
     const ossia::value& driver, const ossia::behavior& drive)
 {
   if(driver.valid() && drive)
@@ -357,16 +357,16 @@ ossia::value mapper::computeValue(
   return {};
 }
 
-void mapper::driverValueCallback(ossia::value value)
+void mapper::driver_value_callback(ossia::value value)
 {
   // This access is protected by a mutex because driverValueCallback can come from a network thread.
-  std::unique_lock<mutex_t> l1{mDriverAddressMutex};
-  if(mDriverAddress)
+  std::unique_lock<mutex_t> l1{m_driverAddressMutex};
+  if(m_driverAddress)
   {
-    auto driver = *mDriverAddress;
+    auto driver = *m_driverAddress;
     l1.unlock();
 
-    auto driverUnit = driver.address().getUnit();
+    auto driverUnit = driver.address().get_unit();
     if(driverUnit && driver.unit && driverUnit != driver.unit)
     {
       auto v = ossia::convert(value, driverUnit, driver.unit);
@@ -381,9 +381,9 @@ void mapper::driverValueCallback(ossia::value value)
     }
 
     {
-      lock_t lock(mValueToMapMutex);
+      lock_t lock(m_valueToMapMutex);
 
-      mValueToMap = value;
+      m_valueToMap = value;
     }
   }
 }

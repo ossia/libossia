@@ -31,36 +31,36 @@ int main()
   ossia::net::generic_device device{std::unique_ptr<protocol_base>(protocol), "B"};
 
   // Explore the tree of B
-  std::cerr << "update: " << device.getProtocol().update(device) << std::endl;
+  std::cerr << "update: " << device.get_protocol().update(device) << std::endl;
 
   // Display the tree in console
-  explore(device.getRootNode());
+  explore(device.get_root_node());
 
   auto node = ossia::net::find_node(device, "/test/my_float");
   // Request to add an instance :
-  protocol->requestAddNode(*node, {"layer"});
+  protocol->request_add_node(*node, {"layer"});
 
   // Again : (will become layer.1)
-  protocol->requestAddNode(*node, {"layer"});
+  protocol->request_add_node(*node, {"layer"});
 
   // Wait a bit to get a reply
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   // This will apply the changes to the tree.
-  protocol->runCommands();
+  protocol->run_commands();
 
   // Wait a bit
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   // Display the tree with the new nodes
-  explore(device.getRootNode());
+  explore(device.get_root_node());
 }
 
 void explore(const ossia::net::node_base& node)
 {
   for (const auto& child : node.children_copy())
   {
-    if (auto addr = child->getAddress())
+    if (auto addr = child->get_address())
     {
       // attach to callback to display value update
       addr->add_callback([=] (const value& v) { /*
@@ -70,7 +70,7 @@ void explore(const ossia::net::node_base& node)
       });
 
       // update the value
-      addr->pullValue();
+      addr->pull_value();
     }
 
     using namespace fmt;

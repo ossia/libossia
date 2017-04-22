@@ -37,8 +37,8 @@ private Q_SLOTS:
 
         auto testImpulseExprC = make_expression_atom(
                     impulse(), comparator::EQUAL, true);
-        QCOMPARE(testImpulseExprC->target<expression_atom>()->getFirstOperand().getType(), val_type::IMPULSE);
-        QCOMPARE(testImpulseExprC->target<expression_atom>()->getSecondOperand().getType(), val_type::BOOL);
+        QCOMPARE(testImpulseExprC->target<expression_atom>()->get_first_operand().getType(), val_type::IMPULSE);
+        QCOMPARE(testImpulseExprC->target<expression_atom>()->get_second_operand().getType(), val_type::BOOL);
 
         QVERIFY(evaluate(testImpulseExprC) == true);
 
@@ -200,39 +200,39 @@ private Q_SLOTS:
 
         // Local tree building
         auto localImpulseNode1 = *(device->emplace(device->children().cend(), "my_impulse.1"));
-        auto localImpulseAddress1 = localImpulseNode1->createAddress(Type::IMPULSE);
+        auto localImpulseAddress1 = localImpulseNode1->create_address(Type::IMPULSE);
         auto localImpulseNode2 = *(device->emplace(device->children().cend(), "my_impulse.2"));
-        auto localImpulseAddress2 = localImpulseNode2->createAddress(Type::IMPULSE);
+        auto localImpulseAddress2 = localImpulseNode2->create_address(Type::IMPULSE);
 
         auto localBoolNode1 = *(device->emplace(device->children().cend(), "my_bool.1"));
-        auto localBoolAddress1 = localBoolNode1->createAddress(Type::BOOL);
+        auto localBoolAddress1 = localBoolNode1->create_address(Type::BOOL);
         auto localBoolNode2 = *(device->emplace(device->children().cend(), "my_bool.2"));
-        auto localBoolAddress2 = localBoolNode2->createAddress(Type::BOOL);
+        auto localBoolAddress2 = localBoolNode2->create_address(Type::BOOL);
 
         auto localIntNode1 = *(device->emplace(device->children().cend(), "my_int.1"));
-        auto localIntAddress1 = localIntNode1->createAddress(Type::INT);
+        auto localIntAddress1 = localIntNode1->create_address(Type::INT);
         auto localIntNode2 = *(device->emplace(device->children().cend(), "my_int.2"));
-        auto localIntAddress2 = localIntNode2->createAddress(Type::INT);
+        auto localIntAddress2 = localIntNode2->create_address(Type::INT);
 
         auto localFloatNode1 = *(device->emplace(device->children().cend(), "my_float.1"));
-        auto localFloatAddress1 = localFloatNode1->createAddress(Type::FLOAT);
+        auto localFloatAddress1 = localFloatNode1->create_address(Type::FLOAT);
         auto localFloatNode2 = *(device->emplace(device->children().cend(), "my_float.2"));
-        auto localFloatAddress2 = localFloatNode2->createAddress(Type::FLOAT);
+        auto localFloatAddress2 = localFloatNode2->create_address(Type::FLOAT);
 
         auto localStringNode1 = *(device->emplace(device->children().cend(), "my_string.1"));
-        auto localStringAddress1 = localStringNode1->createAddress(Type::STRING);
+        auto localStringAddress1 = localStringNode1->create_address(Type::STRING);
         auto localStringNode2 = *(device->emplace(device->children().cend(), "my_string.2"));
-        auto localStringAddress2 = localStringNode2->createAddress(Type::STRING);
+        auto localStringAddress2 = localStringNode2->create_address(Type::STRING);
 
         auto localTupleNode1 = *(device->emplace(device->children().cend(), "my_tuple.1"));
-        auto localTupleAddress1 = localTupleNode1->createAddress(Type::TUPLE);
+        auto localTupleAddress1 = localTupleNode1->create_address(Type::TUPLE);
         auto localTupleNode2 = *(device->emplace(device->children().cend(), "my_tuple.2"));
-        auto localTupleAddress2 = localTupleNode2->createAddress(Type::TUPLE);
+        auto localTupleAddress2 = localTupleNode2->create_address(Type::TUPLE);
 
         auto localDestinationNode1 = *(device->emplace(device->children().cend(), "my_destination.1"));
-        auto localDestinationAddress1 = localDestinationNode1->createAddress(Type::DESTINATION);
+        auto localDestinationAddress1 = localDestinationNode1->create_address(Type::DESTINATION);
         auto localDestinationNode2 = *(device->emplace(device->children().cend(), "my_destination.2"));
-        auto localDestinationAddress2 = localDestinationNode2->createAddress(Type::DESTINATION);
+        auto localDestinationAddress2 = localDestinationNode2->create_address(Type::DESTINATION);
 
         // update node's value
         Bool b1(false);
@@ -351,9 +351,9 @@ private Q_SLOTS:
         auto device = Device::create(local_protocol, "test");
 
         auto localIntNode1 = *(device->emplace(device->children().cend(), "my_int.1"));
-        auto localIntAddress1 = localIntNode1->createAddress(Type::INT);
+        auto localIntAddress1 = localIntNode1->create_address(Type::INT);
         auto localIntNode2 = *(device->emplace(device->children().cend(), "my_int.2"));
-        auto localIntAddress2 = localIntNode2->createAddress(Type::INT);
+        auto localIntAddress2 = localIntNode2->create_address(Type::INT);
 
         auto testDestinationExpr = make_expression_atom(new Destination(localIntNode1),
                                                            comparator::EQUAL,
@@ -368,7 +368,7 @@ private Q_SLOTS:
         m_result_callback_called = false;
 
         Int i1(5);
-        localIntAddress1->pushValue(&i1);
+        localIntAddress1->push_value(&i1);
 
         QVERIFY(m_result_callback_called == true && m_result == false);
 
@@ -376,7 +376,7 @@ private Q_SLOTS:
         m_result_callback_called = false;
 
         Int i2(5);
-        localIntAddress2->pushValue(&i2);
+        localIntAddress2->push_value(&i2);
 
         QVERIFY(m_result_callback_called == true && m_result == true);
 
@@ -388,7 +388,7 @@ private Q_SLOTS:
         m_result_callback_called = false;
 
         Int i3(10);
-        localIntAddress2->pushValue(&i3);
+        localIntAddress2->push_value(&i3);
 
         QVERIFY(m_result_callback_called == false && m_result == false);
         */

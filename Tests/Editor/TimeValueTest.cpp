@@ -16,16 +16,16 @@ private Q_SLOTS:
         ossia::time_value zero;
         QVERIFY(zero == 0.);
         QVERIFY(zero == Zero);
-        QVERIFY(zero.isInfinite() == false);
+        QVERIFY(zero.infinite() == false);
 
         ossia::time_value one(1.);
         QVERIFY(one == 1.);
         QVERIFY(one == One);
-        QVERIFY(one.isInfinite() == false);
+        QVERIFY(one.infinite() == false);
 
         ossia::time_value infinite(INFINITY);
         QVERIFY(infinite == Infinite);
-        QVERIFY(infinite.isInfinite() == true);
+        QVERIFY(infinite.infinite() == true);
     }
 
     /*! test =, +, +=, -, -= operators */

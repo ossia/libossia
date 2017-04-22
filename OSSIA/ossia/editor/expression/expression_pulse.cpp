@@ -6,47 +6,47 @@ namespace expressions
 {
 
 expression_pulse::expression_pulse(const Destination& destination)
-    : mDestination(destination), mResult(false)
+    : m_destination(destination), m_result(false)
 {
   // start destination observation
-  mDestinationCallbackIndex = mDestination.value.get().add_callback(
-        [&](const ossia::value& result) { destinationCallback(result); });
+  m_callback = m_destination.address().add_callback(
+        [&](const ossia::value& result) { destination_callback(result); });
 }
 
 expression_pulse::~expression_pulse()
 {
   // stop destination observation
-    mDestination.value.get().remove_callback(mDestinationCallbackIndex);
+    m_destination.address().remove_callback(m_callback);
 }
 
 bool expression_pulse::evaluate() const
 {
-  return mResult;
+  return m_result;
 }
 
 void expression_pulse::update() const
 {
   // the result will be false until the next
   // #expression_pulse::destinationCallback call
-  mResult = false;
+  m_result = false;
 }
 
-void expression_pulse::onFirstCallbackAdded()
+void expression_pulse::on_first_callback_added()
 {
 }
 
-void expression_pulse::onRemovingLastCallback()
+void expression_pulse::on_removing_last_callback()
 {
 }
 
-const Destination& expression_pulse::getDestination() const
+const Destination& expression_pulse::get_destination() const
 {
-  return mDestination;
+  return m_destination;
 }
 
-void expression_pulse::destinationCallback(const ossia::value& value)
+void expression_pulse::destination_callback(const ossia::value& value)
 {
-  mResult = true;
+  m_result = true;
   send(true);
 }
 }

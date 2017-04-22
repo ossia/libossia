@@ -46,18 +46,19 @@ public:
 
   virtual ossia::net::node_base& getNode() const = 0;
 
+  /// Value getters ///
   /**
-   * @brief pullValue
+   * @brief pull_value
    *
    * Retrieve the current value over the network.
    * Not all protocols may provide this capability.
    *
    * This may be a blocking call.
    */
-  virtual void pullValue() = 0;
+  virtual void pull_value() = 0;
 
   /**
-   * @brief pullValueAsync
+   * @brief pull_value_async
    *
    * Requests the current value over the network.
    * Not all protocols may provide this capability.
@@ -65,74 +66,68 @@ public:
    * This function returns a future that can be waited
    * upon by client code.
    */
-  virtual std::future<void> pullValueAsync();
+  virtual std::future<void> pull_value_async();
 
   /**
-   * @brief requestValue
+   * @brief request_value
    *
    * Requests the current value over the network.
    * Not all protocols may provide this capability.
    *
    * This call may not block but there is no guarantee
    * that the value has been pulled when the call returns.
-   */
-  virtual void requestValue();
-
-  /**
-   * @brief pushValue
    *
-   * Sets the value locally, and sends it to the network.
+   * However, the callback will be called when the value is received.
    */
-  virtual address_base& pushValue(const value&) = 0;
+  virtual void request_value();
 
-  /**
-   * @brief pushValue
-   *
-   * Sends the local value to the network
-   */
-  virtual address_base& pushValue() = 0;
-
-  virtual value cloneValue() const = 0;
-
-  /**
-   * @brief cloneValueAtIndex Returns the sub-value at the index given by destination_index
-   */
-  value cloneValue(ossia::destination_index) const;
-
-  /**
-   * @brief cloneValueAtIndex Returns a tuple of sub-values matching the indexes
-   */
-  std::vector<ossia::value> cloneValue(const std::vector<ossia::destination_index>&) const;
-
-  virtual address_base& setValue(const value&) = 0;
-
-  //! Reimplement to provide a way that does not call the observers.
-  virtual void setValueQuiet(const value& v) { setValue(v); }
+  //! Clone the current value without any network request
+  virtual ossia::value value() const = 0;
 
   //! Pulls and clone the value.
-  value fetchValue();
+  ossia::value fetch_value();
 
-  virtual val_type getValueType() const = 0;
-  virtual address_base& setValueType(val_type) = 0;
+  //! Sets the value locally, and sends it to the network.
+  virtual address_base& push_value(const ossia::value&) = 0;
 
-  virtual access_mode getAccessMode() const = 0;
-  virtual address_base& setAccessMode(access_mode) = 0;
 
-  virtual const domain& getDomain() const = 0;
-  virtual address_base& setDomain(const domain&) = 0;
+  /// Value setters ///
+  //! Sends the local value to the network
+  virtual address_base& push_value() = 0;
 
-  virtual bounding_mode getBoundingMode() const = 0;
-  virtual address_base& setBoundingMode(bounding_mode) = 0;
+  //! Returns the sub-value at the index given by destination_index
+  ossia::value value(ossia::destination_index) const;
 
-  virtual repetition_filter getRepetitionFilter() const = 0;
-  virtual address_base& setRepetitionFilter(repetition_filter = repetition_filter::ON) = 0;
-  virtual bool filterRepetition(const ossia::value& val) const { return false; } //! by default there is no filter
+  //! Returns a tuple of sub-values matching the indexes
+  std::vector<ossia::value> value(const std::vector<ossia::destination_index>&) const;
 
-  virtual ossia::unit_t getUnit() const;
-  virtual address_base& setUnit(const ossia::unit_t& v);
+  virtual address_base& set_value(const ossia::value&) = 0;
 
-  virtual bool getMuted() const;
-  virtual address_base& setMuted(bool);
+  //! Reimplement to provide a way that does not call the observers.
+  virtual void set_value_quiet(const ossia::value& v) { set_value(v); }
+
+
+  virtual val_type get_value_type() const = 0;
+  virtual address_base& set_value_type(val_type) = 0;
+
+  virtual access_mode get_access() const = 0;
+  virtual address_base& set_access(access_mode) = 0;
+
+  virtual const domain& get_domain() const = 0;
+  virtual address_base& set_domain(const domain&) = 0;
+
+  virtual bounding_mode get_bounding() const = 0;
+  virtual address_base& set_bounding(bounding_mode) = 0;
+
+  virtual repetition_filter get_repetition_filter() const = 0;
+  virtual address_base& set_repetition_filter(repetition_filter = repetition_filter::ON) = 0;
+  virtual bool filter_repetition(const ossia::value& val) const { return false; } //! by default there is no filter
+
+  virtual ossia::unit_t get_unit() const;
+  virtual address_base& set_unit(const ossia::unit_t& v);
+
+  virtual bool get_muted() const;
+  virtual address_base& set_muted(bool);
 };
 
 inline bool operator==(const address_base& lhs, const address_base& rhs)
@@ -151,6 +146,9 @@ OSSIA_EXPORT std::string address_string_from_node(const ossia::net::address_base
 //! Address without the 'device:' part.
 OSSIA_EXPORT std::string osc_address_string(const ossia::net::address_base&);
 OSSIA_EXPORT std::string osc_address_string(const ossia::net::node_base&);
+
+OSSIA_EXPORT std::string osc_address_string_with_device(const ossia::net::address_base&);
+OSSIA_EXPORT std::string osc_address_string_with_device(const ossia::net::node_base&);
 
 OSSIA_EXPORT ossia::value_with_unit get_value(const ossia::Destination& addr);
 OSSIA_EXPORT void push_value(const ossia::Destination& addr, const ossia::value_with_unit&);

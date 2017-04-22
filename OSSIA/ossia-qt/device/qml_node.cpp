@@ -23,13 +23,13 @@ void qml_node::reset_parent()
   const bool reading = m_device ? m_device->readPreset() : false;
   if(m_ossia_node)
   {
-    auto par = m_ossia_node->getParent();
+    auto par = m_ossia_node->get_parent();
     if(par)
     {
       auto node = m_ossia_node;
       m_ossia_node = nullptr;
       if(!reading)
-        par->removeChild(*node);
+        par->remove_child(*node);
     }
   }
 
@@ -56,8 +56,8 @@ void qml_node::resetNode()
   {
     // Utility function to set-up a node.
     auto setup_valid_node = [&] {
-      m_ossia_node->aboutToBeDeleted.connect<qml_node, &qml_node::on_node_deleted>(this);
-      m_node = QString::fromStdString(m_ossia_node->getName());
+      m_ossia_node->about_to_be_deleted.connect<qml_node, &qml_node::on_node_deleted>(this);
+      m_node = QString::fromStdString(m_ossia_node->get_name());
       setPath(
             QString::fromStdString(
               ossia::net::address_string_from_node(*m_ossia_node)));
@@ -89,7 +89,7 @@ void qml_node::resetNode()
     }
     else if(m_userRequestedNode == QStringLiteral("/"))
     {
-      m_ossia_node = &m_device->device().getRootNode();
+      m_ossia_node = &m_device->device().get_root_node();
       setup_valid_node();
       return;
     }
@@ -106,11 +106,11 @@ void qml_node::resetNode()
 
       if(relative)
       {
-        return findClosestParent(this->parent(), m_device->device().getRootNode());
+        return findClosestParent(this->parent(), m_device->device().get_root_node());
       }
       else
       {
-        return m_device->device().getRootNode();
+        return m_device->device().get_root_node();
       }
     };
 

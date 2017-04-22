@@ -140,7 +140,7 @@ net::address_data make_address_data(const QJSValue &js)
   QJSValue name = js.property("name");
   if(name.isString())
   {
-    dat.node_name = name.toString().toStdString();
+    dat.name = name.toString().toStdString();
   }
   else
   {
@@ -396,54 +396,54 @@ void set_address_type(QVariant::Type type, net::address_base& addr)
   switch(type)
   {
     case QVariant::Bool:
-      addr.setValueType(ossia::val_type::BOOL);
+      addr.set_value_type(ossia::val_type::BOOL);
       break;
     case QVariant::Time:
     case QVariant::Int:
     case QVariant::UInt:
     case QVariant::ULongLong:
-      addr.setValueType(ossia::val_type::INT);
+      addr.set_value_type(ossia::val_type::INT);
       break;
     case QVariant::Char:
-      addr.setValueType(ossia::val_type::CHAR);
+      addr.set_value_type(ossia::val_type::CHAR);
       break;
     case QVariant::String:
     case QVariant::ByteArray:
-      addr.setValueType(ossia::val_type::STRING);
+      addr.set_value_type(ossia::val_type::STRING);
       break;
     case QVariant::Double:
-      addr.setValueType(ossia::val_type::FLOAT);
+      addr.set_value_type(ossia::val_type::FLOAT);
       break;
     case QVariant::Color:
-      addr.setUnit(ossia::argb_u{});
+      addr.set_unit(ossia::argb_u{});
       break;
     case QVariant::Point:
     case QVariant::PointF:
     case QVariant::Vector2D:
     case QVariant::Size:
     case QVariant::SizeF:
-      addr.setUnit(ossia::cartesian_2d_u{});
+      addr.set_unit(ossia::cartesian_2d_u{});
       break;
     case QVariant::Vector3D:
-      addr.setUnit(ossia::cartesian_3d_u{});
+      addr.set_unit(ossia::cartesian_3d_u{});
       break;
     case QVariant::Vector4D:
-      addr.setUnit(ossia::axis_u{});
+      addr.set_unit(ossia::axis_u{});
       break;
     case QVariant::Quaternion:
-      addr.setUnit(ossia::quaternion_u{});
+      addr.set_unit(ossia::quaternion_u{});
       break;
     case QVariant::Line:
     case QVariant::LineF:
     case QVariant::Rect:
     case QVariant::RectF:
-      addr.setValueType(ossia::val_type::VEC4F);
+      addr.set_value_type(ossia::val_type::VEC4F);
       break;
     case QVariant::List:
     case QVariant::StringList:
     case QVariant::Date:
     default:
-      addr.setValueType(ossia::val_type::TUPLE);
+      addr.set_value_type(ossia::val_type::TUPLE);
       break;
   }
 }

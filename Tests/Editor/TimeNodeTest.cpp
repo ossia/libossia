@@ -4,7 +4,7 @@
 
 using namespace ossia;
 
-void event_callback(time_event::Status newStatus)
+void event_callback(time_event::status newStatus)
 {
     ;
 }
@@ -21,18 +21,18 @@ private Q_SLOTS:
         auto node = std::make_shared<time_node>();
         QVERIFY(node != nullptr);
 
-        time_value date = node->getDate();
+        time_value date = node->get_date();
         QVERIFY(date == Zero);
 
-        QVERIFY(node->getExpression() == expressions::expression_true());
+        QVERIFY(node->get_expression() == expressions::expression_true());
 
         auto expression = expressions::make_expression_true();
         auto& expr_ref = *expression;
-        node->setExpression(std::move(expression));
+        node->set_expression(std::move(expression));
 
-        QVERIFY(node->getExpression() == expr_ref);
+        QVERIFY(node->get_expression() == expr_ref);
 
-        QVERIFY(node->timeEvents().size() == 0);
+        QVERIFY(node->get_time_events().size() == 0);
 
         //! \todo test clone()
     }
@@ -44,12 +44,12 @@ private Q_SLOTS:
         QVERIFY(node != nullptr);
 
         auto event = *(node->emplace(
-                           node->timeEvents().begin(),
+                           node->get_time_events().begin(),
                            &event_callback, expressions::make_expression_true()));
 
         QVERIFY(event != nullptr);
 
-        QVERIFY(node->timeEvents().size() == 1);
+        QVERIFY(node->get_time_events().size() == 1);
     }
 };
 

@@ -408,7 +408,7 @@ private slots:
 
     // Functional dependency
     simple_explicit_graph g(test, immediate_strict_connection{});
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(*g.n1);
     g.g.disable(*g.n2);
@@ -416,7 +416,7 @@ private slots:
     g.n2->set_time(0);
 
     g.g.state(); // nothing
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
@@ -424,7 +424,7 @@ private slots:
     g.n2->set_time(1);
 
     g.g.state(); // f2 o f1
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
 
     g.g.disable(*g.n1);
     g.g.enable(*g.n2);
@@ -432,7 +432,7 @@ private slots:
     g.n2->set_time(2);
 
     g.g.state(); // nothing
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
   }
 
 
@@ -443,7 +443,7 @@ private slots:
 
     // Functional dependency
     three_serial_nodes_explicit_graph g(test, immediate_strict_connection{});
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
@@ -453,7 +453,7 @@ private slots:
     g.n3->set_time(0);
 
     g.g.state(); // nothing
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1, 100 * 1}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1, 100 * 1}));
 
   }
   void strict_implicit_relationship()
@@ -467,7 +467,7 @@ private slots:
     TestUtils test;
 
     simple_implicit_graph g(test, immediate_glutton_connection{});
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(*g.n1);
     g.g.disable(*g.n2);
@@ -475,7 +475,7 @@ private slots:
     g.n2->set_time(0);
 
     g.g.state(); // f1
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1}));
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
@@ -483,7 +483,7 @@ private slots:
     g.n2->set_time(1);
 
     g.g.state(); // f2 o f1
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
     g.g.disable(*g.n1);
     g.g.enable(*g.n2);
@@ -491,7 +491,7 @@ private slots:
     g.n2->set_time(2);
 
     g.g.state(); // f2
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
 
   }
 
@@ -503,7 +503,7 @@ private slots:
     TestUtils test;
 
     simple_explicit_graph g(test, immediate_glutton_connection{});
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(*g.n1);
     g.g.disable(*g.n2);
@@ -511,7 +511,7 @@ private slots:
     g.n1->set_time(0);
 
     g.g.state(); // f1
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1}));
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
@@ -519,7 +519,7 @@ private slots:
     g.n2->set_time(1);
 
     g.g.state(); // f2 o f1
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
     g.g.disable(*g.n1);
     g.g.enable(*g.n2);
@@ -527,7 +527,7 @@ private slots:
     g.n2->set_time(2);
 
     g.g.state(); // f2
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
 
   }
 
@@ -537,7 +537,7 @@ private slots:
     TestUtils test;
 
     simple_explicit_graph g(test, delayed_strict_connection{});
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(*g.n1);
     g.g.disable(*g.n2);
@@ -545,7 +545,7 @@ private slots:
 
     // f1 pushes 1 * 1 in its queue
     g.g.state();
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
@@ -556,7 +556,7 @@ private slots:
     // f1(1) = 2
     // f2(f1(0), 0) = [1, 10]
     g.g.state();
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1}));
 
     g.g.disable(*g.n1);
     g.g.enable(*g.n2);
@@ -565,7 +565,7 @@ private slots:
 
     // f2(f1(1), 1) = [2, 20]
     g.g.state(); // f2 o f1(t-1)
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
     // 10 * 1 is not here because we start from {1 * 1} from the point of view of f1(t-1)
 
   }
@@ -584,7 +584,7 @@ private slots:
     // Two ways to envision reduction : reduce at the input of an outlet, or reduce the execution of all nodes that did take
     // the same input at this tick. but would not always make sense.
     three_outputs_one_input_explicit_graph g(test, reduction_connection{});
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
@@ -610,7 +610,7 @@ private slots:
     TestUtils test;
 
     three_outputs_one_input_explicit_graph g(test, replacing_connection{});
-    QCOMPARE(test.tuple_addr->cloneValue(), ossia::value(std::vector<ossia::value>{}));
+    QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);

@@ -19,12 +19,12 @@ std::string serial_device::getName() const
 node_base& serial_device::setName(std::string n)
 { mName = n; return *this; }
 
-const node_base& serial_device::getRootNode() const
+const node_base& serial_device::get_root_node() const
 {
   return *this;
 }
 
-node_base& serial_device::getRootNode()
+node_base& serial_device::get_root_node()
 {
   return *this;
 }

@@ -233,7 +233,7 @@ struct push_visitor
   const net::address_base& out;
   void operator()(value_port& val)
   {
-    val.data.push_back(out.cloneValue());
+    val.data.push_back(out.value());
   }
 
   void operator()(audio_port& val)

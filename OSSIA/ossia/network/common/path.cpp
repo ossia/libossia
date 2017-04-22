@@ -30,7 +30,7 @@ void get_parent(
   tsl::hopscotch_set<ossia::net::node_base*> inserted;
   for(auto ptr : old)
   {
-    if(auto par = ptr->getParent())
+    if(auto par = ptr->get_parent())
     {
       auto it = inserted.find(par);
       if(it == inserted.end())
@@ -89,7 +89,7 @@ void match_with_regex(
   {
     for(auto& cld : node->children())
     {
-      if(std::regex_match(cld->getName(), r))
+      if(std::regex_match(cld->get_name(), r))
       {
         vec.push_back(cld.get());
       }

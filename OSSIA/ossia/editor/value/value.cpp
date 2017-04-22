@@ -267,13 +267,13 @@ struct value_comparison_visitor2
   template<typename T>
   bool operator()(const T& lhs, const Destination& d) const
   {
-    return Comparator{}(lhs, d.value.get().cloneValue(d.index));
+    return Comparator{}(lhs, d.address().value(d.index));
   }
 
   template<typename T>
   bool operator()(const Destination& d, const T& rhs) const
   {
-    return Comparator{}(d.value.get().cloneValue(d.index), rhs);
+    return Comparator{}(d.address().value(d.index), rhs);
   }
 
   bool operator()(const impulse& lhs, const Destination& d) const
@@ -288,36 +288,36 @@ struct value_comparison_visitor2
 
   bool operator()(const Destination& lhs, const Destination& d) const
   {
-    return Comparator{}(lhs.value.get().cloneValue(d.index), d.value.get().cloneValue(d.index));
+    return Comparator{}(lhs.address().value(d.index), d.address().value(d.index));
   }
 
   bool operator()(const std::vector<ossia::value>& lhs, const Destination& d) const
   {
-    return Comparator{}(lhs, d.value.get().cloneValue(d.index));
+    return Comparator{}(lhs, d.address().value(d.index));
   }
 
   bool operator()(const Destination& d, const std::vector<ossia::value>& rhs) const
   {
-    return Comparator{}(d.value.get().cloneValue(d.index), rhs);
+    return Comparator{}(d.address().value(d.index), rhs);
   }
 
   bool operator()(const std::array<float, 2>& lhs, const Destination& d) const
-  { return Comparator{}(lhs, d.value.get().cloneValue(d.index)); }
+  { return Comparator{}(lhs, d.address().value(d.index)); }
 
   bool operator()(const Destination& d, const std::array<float, 2>& rhs) const
-  { return Comparator{}(d.value.get().cloneValue(d.index), rhs); }
+  { return Comparator{}(d.address().value(d.index), rhs); }
 
   bool operator()(const std::array<float, 3>& lhs, const Destination& d) const
-  { return Comparator{}(lhs, d.value.get().cloneValue(d.index)); }
+  { return Comparator{}(lhs, d.address().value(d.index)); }
 
   bool operator()(const Destination& d, const std::array<float, 3>& rhs) const
-  { return Comparator{}(d.value.get().cloneValue(d.index), rhs); }
+  { return Comparator{}(d.address().value(d.index), rhs); }
 
   bool operator()(const std::array<float, 4>& lhs, const Destination& d) const
-  { return Comparator{}(lhs, d.value.get().cloneValue(d.index)); }
+  { return Comparator{}(lhs, d.address().value(d.index)); }
 
   bool operator()(const Destination& d, const std::array<float, 4>& rhs) const
-  { return Comparator{}(d.value.get().cloneValue(d.index), rhs); }
+  { return Comparator{}(d.address().value(d.index), rhs); }
 
 
 

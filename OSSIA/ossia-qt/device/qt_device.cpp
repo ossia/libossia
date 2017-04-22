@@ -14,17 +14,17 @@ qt_device::qt_device(
   device_base(std::move(protocol)),
   m_root{obj, *this}
 {
-  mProtocol->setDevice(*this);
-  mCapabilities.change_tree = false;
-  m_root.setName(name);
+  m_protocol->set_device(*this);
+  m_capabilities.change_tree = false;
+  m_root.set_name(name);
 }
 
-const net::node_base&qt_device::getRootNode() const
+const net::node_base&qt_device::get_root_node() const
 {
   return m_root;
 }
 
-net::node_base&qt_device::getRootNode()
+net::node_base&qt_device::get_root_node()
 {
   return m_root;
 }

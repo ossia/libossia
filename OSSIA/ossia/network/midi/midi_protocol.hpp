@@ -42,12 +42,12 @@ struct OSSIA_EXPORT midi_info
 
 class OSSIA_EXPORT midi_protocol final : public ossia::net::protocol_base
 {
-  std::unique_ptr<mm::MidiInput> mInput;
-  std::unique_ptr<mm::MidiOutput> mOutput;
+  std::unique_ptr<mm::MidiInput> m_input;
+  std::unique_ptr<mm::MidiOutput> m_output;
 
-  std::array<midi_channel, 16> mChannels;
+  std::array<midi_channel, 16> m_channels;
 
-  midi_info mInfo;
+  midi_info m_info;
 
 public:
   midi_protocol();

@@ -20,24 +20,24 @@ struct OSSIA_EXPORT clock_source
 
 class OSSIA_EXPORT clock
 {
-    friend class time_constraint;
+  friend class time_constraint;
 public:
   /*! to get the clock execution back
    \param clock position
    \param clock date
    \param dropped ticks */
-  using ExecutionCallback
-      = std::function<void(ossia::time_value, time_value, unsigned char)>;
+  using exec_callback
+  = std::function<void(ossia::time_value, time_value, unsigned char)>;
 
-  enum ClockExecutionStatus
+  enum exec_status
   {
     RUNNING,
     STOPPED
   };
-  using ExecutionStatusCallback = std::function<void(ClockExecutionStatus)>;
+  using exec_status_callback = std::function<void(exec_status)>;
 
   /*! how the time flows for the clock */
-  enum class DriveMode
+  enum class drive_mode
   {
     INTERNAL, // the tick method is called by the clock itself
     EXTERNAL  // the tick method is called from outside the clock
@@ -51,9 +51,9 @@ public:
    \param speed
    \param drive mode*/
   clock(
-      clock::ExecutionCallback, time_value = Infinite, time_value = time_value{10.},
+      clock::exec_callback, time_value = Infinite, time_value = time_value{10.},
       time_value = Zero, float = 1.,
-      clock::DriveMode = clock::DriveMode::INTERNAL, clock_source = clock_source{});
+      clock::drive_mode = clock::drive_mode::INTERNAL, clock_source = clock_source{});
 
   /*! destructor */
   ~clock();
@@ -88,66 +88,74 @@ public:
 
   /*! get the duration of the clock
    \return const #TimeValue duration */
-  time_value getDuration() const;
+  time_value get_duration() const;
 
   /*! set the duration of the clock execution
    \param const #TimeValue duration
    \return #Clock the clock */
-  clock& setDuration(ossia::time_value);
+  clock& set_duration(ossia::time_value);
 
   /*! get the offset of the clock
    \return const #TimeValue offset */
-  time_value getOffset() const;
+  time_value get_offset() const;
 
   /** set the offset of the clock
    \param const #TimeValue offset
    \return #Clock the clock */
-  clock& setOffset(ossia::time_value);
+  clock& set_offset(ossia::time_value);
 
   /*! get the granularity of the clock
    \return const #TimeValue granularity */
-  time_value getGranularity() const;
+  time_value get_granularity() const;
 
   /*! set the granularity of the clock execution
    \param const #TimeValue granularity
    \return #Clock the clock */
-  clock& setGranularity(ossia::time_value);
+  clock& set_granularity(ossia::time_value);
 
   /*! get the speed of the clock
    \return const #TimeValue speed */
-  double getSpeed() const;
+  double get_speed() const;
 
   /** set the speed factor attribute
    \param double speed factor
    \return #Clock the clock */
-  clock& setSpeed(double);
+  clock& set_speed(double);
 
   /*! get the clock drive mode
    \return #DriveMode */
-  DriveMode getDriveMode() const;
+  drive_mode get_drive_mode() const;
 
   /** set is the clock drive mode
    \param #DriveMode
    \return #Clock the clock */
-  clock& setDriveMode(DriveMode);
+  clock& set_drive_mode(drive_mode);
 
   /*! get the running status of the clock
    \return bool true if is running */
-  bool getRunning() const;
+  bool running() const;
 
   /*! get the position of the clock
    \return const #TimeValue position */
-  time_value getPosition() const;
+  time_value get_position() const;
 
   /*! get the date of the clock
    \return const #TimeValue date */
-  time_value getDate() const;
+  time_value get_date() const;
 
   // Execution status will be called when the clock starts and stops.
-  void setExecutionStatusCallback(ExecutionStatusCallback);
-  ExecutionStatusCallback getExecutionStatusCallback() const;
+  void set_exec_status_callback(exec_status_callback);
+  exec_status_callback get_exec_status_callback() const;
 
 
+  /**
+   * @brief setCallback Replace the execution callback.
+   *
+   * The callback **shall** be a valid function, e.g. bool(callback) == true.
+   */
+  void set_callback(exec_callback);
+
+protected:
   /*! to allow TimeConstraint to override start method */
   void do_start();
 
@@ -155,56 +163,50 @@ public:
   void do_stop();
 
   /*! to allow TimeConstraint to override setDuration accessor */
-  void do_setDuration(ossia::time_value);
+  void do_set_duration(ossia::time_value);
 
   /*! to allow TimeConstraint to override setOffset accessor */
-  void do_setOffset(ossia::time_value);
+  void do_set_offset(ossia::time_value);
 
   /*! to avoid dead lock in EXTERNAL drive mode if a TimeProcess wants to end
    * its ParentTimeConstraint's clock */
   void request_stop();
 
-  /**
-   * @brief setCallback Replace the execution callback.
-   *
-   * The callback **shall** be a valid function, e.g. bool(callback) == true.
-   */
-  void setCallback(ExecutionCallback);
+  time_value m_duration{};    /// the time (in ms) the clock will run at normal
+  /// speed factor
+  time_value m_granularity{}; /// the minimum time between each tick (in ms)
+  time_value m_offset{};      /// the date (in ms) the clock will run from
+  double m_speed{1.};           /// the speed factor of the clock
 
-  protected:
-    time_value mDuration{};    /// the time (in ms) the clock will run at normal
-                               /// speed factor
-    time_value mGranularity{}; /// the minimum time between each tick (in ms)
-    time_value mOffset{};      /// the date (in ms) the clock will run from
-    double mSpeed{1.};           /// the speed factor of the clock
+  /// the progression of the clock between the beginning
+  /// and the end [0. :: 1.]
+  time_value m_position{};
 
-    time_value
-        mPosition{};    /// the progression of the clock between the beginning
-                        /// and the end [0. :: 1.]
-    time_value mDate{}; /// how many time the clock is running (without no speed
-                        /// factor consideration)
+  /// how many time the clock is running (without no speed
+  /// factor consideration)
+  time_value m_date{};
 
-    clock_source mSource;
-    std::thread mThread; /// a thread to launch the clock execution
+  clock_source m_source; //! \todo use me
+  std::thread m_thread; /// a thread to launch the clock execution
 
-    clock_type::time_point
-        mLastTime{};          /// a time reference used to compute time tick
-    int64_t mElapsedTime{}; /// a time reference used to know how many time are
-                              /// elapsed in microsecond
-                              ///
-    clock::DriveMode
-        mDriveMode{}; /// in EXTERNAL drive mode the tick() method is
-                      /// called from outside
+  /// a time reference used to compute time tick
+  clock_type::time_point m_lastTime{};
 
-    std::atomic_bool mRunning{}; /// is the clock running right now ?
-    std::atomic_bool mPaused{};  /// is the clock paused right now ?
-    std::atomic_bool mShouldStop{};  /// is the clock paused right now ?
+  /// a time reference used to know elapsed time in a microsecond
+  int64_t m_elapsedTime{};
 
-  private:
-    /*! called back by the internal thread */
-    void threadCallback();
+  /// in EXTERNAL drive mode the tick() method is called from outside
+  clock::drive_mode m_drive_mode{};
 
-    ExecutionCallback mCallback; /// the callback to use for each step
-    ExecutionStatusCallback mStatusCallback;
+  std::atomic_bool m_running{}; /// is the clock running right now ?
+  std::atomic_bool m_paused{}; /// is the clock paused right now ?
+  std::atomic_bool m_shouldStop{};
+
+private:
+  /*! called back by the internal thread */
+  void threadCallback();
+
+  exec_callback m_callback; /// the callback to use for each step
+  exec_status_callback m_statusCallback;
 };
 }

@@ -40,14 +40,14 @@ public:
   ~oscquery_server_protocol();
 
   bool pull(net::address_base&) override;
-  std::future<void> pullAsync(net::address_base&) override;
+  std::future<void> pull_async(net::address_base&) override;
   void request(net::address_base&) override;
   bool push(const net::address_base&) override;
   bool observe(net::address_base&, bool) override;
   bool observe_quietly(net::address_base&, bool) override;
   bool update(net::node_base& b) override;
-  void setDevice(net::device_base& dev) override;
-  ossia::net::device_base& getDevice() const { return *m_device; }
+  void set_device(net::device_base& dev) override;
+  ossia::net::device_base& get_device() const { return *m_device; }
 
   int getOSCPort() const { return m_oscPort; }
 

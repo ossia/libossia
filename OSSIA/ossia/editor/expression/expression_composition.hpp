@@ -33,26 +33,26 @@ public:
 
   void update() const;
 
-  expression_base& getFirstOperand() const;
-  binary_operator getOperator() const;
-  expression_base& getSecondOperand() const;
+  expression_base& get_first_operand() const;
+  binary_operator get_operator() const;
+  expression_base& get_second_operand() const;
 
 private:
-  void onFirstCallbackAdded() override;
-  void onRemovingLastCallback() override;
+  void on_first_callback_added() override;
+  void on_removing_last_callback() override;
 
   bool do_evaluation(bool first, bool second) const;
 
-  void firstResultCallback(bool first_result);
-  void secondResultCallback(bool second_result);
+  void first_callback(bool first_result);
+  void second_callback(bool second_result);
 
-  expression_ptr mFirstExpression;
-  expression_ptr mSecondExpression;
+  expression_ptr m_first;
+  expression_ptr m_second;
 
-  expression_callback_iterator mFirstResultCallbackIndex;
-  expression_callback_iterator mSecondResultCallbackIndex;
+  expression_callback_iterator m_firstIndex;
+  expression_callback_iterator m_secondIndex;
 
-  binary_operator mOperator;
+  binary_operator m_operator{};
 };
 }
 }

@@ -454,12 +454,12 @@ inline ossia::value filter_value(
 
 inline ossia::value filter_value(const ossia::net::address_base& addr)
 {
-  auto val = addr.cloneValue();
-  if (addr.filterRepetition(val))
+  auto val = addr.value();
+  if (addr.filter_repetition(val))
     return {};
 
   return filter_value(
-        addr.getDomain(), std::move(val), addr.getBoundingMode());
+        addr.get_domain(), std::move(val), addr.get_bounding());
 }
 
 inline ossia::value to_value(
@@ -492,13 +492,13 @@ inline bool update_value(
     oscpack::ReceivedMessageArgumentIterator end_it, int N)
 {
   auto res = filter_value(
-               addr.getDomain(),
-               ossia::net::to_value(addr.cloneValue(), beg_it, end_it, N),
-               addr.getBoundingMode());
+               addr.get_domain(),
+               ossia::net::to_value(addr.value(), beg_it, end_it, N),
+               addr.get_bounding());
 
   if (res.valid())
   {
-    addr.setValue(std::move(res));
+    addr.set_value(std::move(res));
     return true;
   }
   return false;
@@ -517,13 +517,13 @@ inline bool update_value_quiet(
     oscpack::ReceivedMessageArgumentIterator end_it, int N)
 {
   auto res = filter_value(
-               addr.getDomain(),
-               ossia::net::to_value(addr.cloneValue(), beg_it, end_it, N),
-               addr.getBoundingMode());
+               addr.get_domain(),
+               ossia::net::to_value(addr.value(), beg_it, end_it, N),
+               addr.get_bounding());
 
   if (res.valid())
   {
-    addr.setValueQuiet(std::move(res));
+    addr.set_value_quiet(std::move(res));
     return true;
   }
   return false;

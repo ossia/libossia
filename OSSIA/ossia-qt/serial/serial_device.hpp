@@ -20,8 +20,8 @@ public:
   std::string getName() const override;
   node_base& setName(std::string n) override;
 
-  const ossia::net::node_base& getRootNode() const override;
-  ossia::net::node_base& getRootNode() override;
+  const ossia::net::node_base& get_root_node() const override;
+  ossia::net::node_base& get_root_node() override;
 };
 
 }

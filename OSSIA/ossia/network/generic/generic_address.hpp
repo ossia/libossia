@@ -54,45 +54,45 @@ public:
 
   ossia::net::node_base& getNode() const final override;
 
-  void pullValue() final override;
-  std::future<void> pullValueAsync() final override;
-  void requestValue() final override;
+  void pull_value() final override;
+  std::future<void> pull_value_async() final override;
+  void request_value() final override;
 
-  ossia::net::generic_address& pushValue(const ossia::value&) final override;
-  ossia::net::generic_address& pushValue() final override;
+  ossia::net::generic_address& push_value(const ossia::value&) final override;
+  ossia::net::generic_address& push_value() final override;
 
   const ossia::value& getValue() const;
-  ossia::value cloneValue() const final override;
-  generic_address& setValue(const ossia::value&) override;
+  ossia::value value() const final override;
+  generic_address& set_value(const ossia::value&) override;
 
   /** Set a value without sending notifications **/
-  void setValueQuiet(const ossia::value&) override;
+  void set_value_quiet(const ossia::value&) override;
 
-  ossia::val_type getValueType() const final override;
-  ossia::net::generic_address& setValueType(ossia::val_type) final override;
+  ossia::val_type get_value_type() const final override;
+  ossia::net::generic_address& set_value_type(ossia::val_type) final override;
 
-  ossia::access_mode getAccessMode() const final override;
-  ossia::net::generic_address& setAccessMode(ossia::access_mode) final override;
+  ossia::access_mode get_access() const final override;
+  ossia::net::generic_address& set_access(ossia::access_mode) final override;
 
-  const ossia::domain& getDomain() const final override;
-  ossia::net::generic_address& setDomain(const ossia::domain&) final override;
+  const ossia::domain& get_domain() const final override;
+  ossia::net::generic_address& set_domain(const ossia::domain&) final override;
 
-  ossia::bounding_mode getBoundingMode() const final override;
-  ossia::net::generic_address& setBoundingMode(ossia::bounding_mode) final override;
+  ossia::bounding_mode get_bounding() const final override;
+  ossia::net::generic_address& set_bounding(ossia::bounding_mode) final override;
 
-  ossia::repetition_filter getRepetitionFilter() const final override;
+  ossia::repetition_filter get_repetition_filter() const final override;
   ossia::net::generic_address&
-      setRepetitionFilter(ossia::repetition_filter) final override;
-  bool filterRepetition(const ossia::value& val) const final override;
+      set_repetition_filter(ossia::repetition_filter) final override;
+  bool filter_repetition(const ossia::value& val) const final override;
 
-  ossia::unit_t getUnit() const final override;
-  generic_address& setUnit(const ossia::unit_t& v) final override;
+  ossia::unit_t get_unit() const final override;
+  generic_address& set_unit(const ossia::unit_t& v) final override;
 
-  bool getMuted() const final override;
-  generic_address& setMuted(bool v) final override;
+  bool get_muted() const final override;
+  generic_address& set_muted(bool v) final override;
 
-  void onFirstCallbackAdded() final override;
-  void onRemovingLastCallback() final override;
+  void on_first_callback_added() final override;
+  void on_removing_last_callback() final override;
 
 private:
   friend struct update_address_visitor;

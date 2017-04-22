@@ -28,7 +28,7 @@ static vec_behavior tuple_convertible_to_vec(
       if(!c)
         return {};
 
-      auto t = c->getType();
+      auto t = c->get_type();
       if(t.first == ossia::curve_segment_type::DOUBLE && t.second == ossia::curve_segment_type::FLOAT)
       {
         arr.push_back(static_cast<ossia::curve<double,float>*>(c));
@@ -61,17 +61,17 @@ ossia::value make_filled_vec(
     case ossia::curve_segment_type::FLOAT:
     {
       auto c = static_cast<curve<double, float>*>(base_curve);
-      return fill_vec<N>(float(c->valueAt(position)));
+      return fill_vec<N>(float(c->value_at(position)));
     }
     case ossia::curve_segment_type::INT:
     {
       auto c = static_cast<curve<double, int>*>(base_curve);
-      return fill_vec<N>(int(c->valueAt(position)));
+      return fill_vec<N>(int(c->value_at(position)));
     }
     case ossia::curve_segment_type::BOOL:
     {
       auto c = static_cast<curve<double, bool>*>(base_curve);
-      return fill_vec<N>(bool(c->valueAt(position)));
+      return fill_vec<N>(bool(c->value_at(position)));
     }
     case ossia::curve_segment_type::DOUBLE:
     case ossia::curve_segment_type::ANY:
@@ -110,15 +110,15 @@ struct compute_value_uninformed_visitor
       return {};
     }
 
-    auto t = base_curve->getType();
+    auto t = base_curve->get_type();
     switch (t.second)
     {
       case ossia::curve_segment_type::FLOAT:
-        return float{static_cast<curve<double, float>*>(base_curve)->valueAt(position)};
+        return float{static_cast<curve<double, float>*>(base_curve)->value_at(position)};
       case ossia::curve_segment_type::INT:
-        return int32_t{static_cast<curve<double, int>*>(base_curve)->valueAt(position)};
+        return int32_t{static_cast<curve<double, int>*>(base_curve)->value_at(position)};
       case ossia::curve_segment_type::BOOL:
-        return bool{static_cast<curve<double, bool>*>(base_curve)->valueAt(position)};
+        return bool{static_cast<curve<double, bool>*>(base_curve)->value_at(position)};
       case ossia::curve_segment_type::DOUBLE:
         break;
       case ossia::curve_segment_type::ANY:
@@ -139,11 +139,11 @@ struct compute_value_uninformed_visitor
     switch(arr.size())
     {
       case 2:
-        return ossia::make_vec(arr[0]->valueAt(position), arr[1]->valueAt(position));
+        return ossia::make_vec(arr[0]->value_at(position), arr[1]->value_at(position));
       case 3:
-        return ossia::make_vec(arr[0]->valueAt(position), arr[1]->valueAt(position), arr[2]->valueAt(position));
+        return ossia::make_vec(arr[0]->value_at(position), arr[1]->value_at(position), arr[2]->value_at(position));
       case 4:
-        return ossia::make_vec(arr[0]->valueAt(position), arr[1]->valueAt(position), arr[2]->valueAt(position), arr[3]->valueAt(position));
+        return ossia::make_vec(arr[0]->value_at(position), arr[1]->value_at(position), arr[2]->value_at(position), arr[3]->value_at(position));
       default:
         break;
     }
@@ -193,7 +193,7 @@ struct compute_value_visitor
       return {};
     }
 
-    auto t = base_curve->getType();
+    auto t = base_curve->get_type();
     if (t.first == ossia::curve_segment_type::DOUBLE)
     {
       switch (driven_type)
@@ -205,11 +205,11 @@ struct compute_value_visitor
           switch (t.second)
           {
             case ossia::curve_segment_type::FLOAT:
-              return float{static_cast<curve<double, float>*>(base_curve)->valueAt(position)};
+              return float{static_cast<curve<double, float>*>(base_curve)->value_at(position)};
             case ossia::curve_segment_type::INT:
-              return int32_t{static_cast<curve<double, int>*>(base_curve)->valueAt(position)};
+              return int32_t{static_cast<curve<double, int>*>(base_curve)->value_at(position)};
             case ossia::curve_segment_type::BOOL:
-              return bool{static_cast<curve<double, bool>*>(base_curve)->valueAt(position)};
+              return bool{static_cast<curve<double, bool>*>(base_curve)->value_at(position)};
             case ossia::curve_segment_type::DOUBLE:
               break;
             case ossia::curve_segment_type::ANY:
@@ -247,11 +247,11 @@ struct compute_value_visitor
     switch(arr.size())
     {
       case 2:
-        return ossia::make_vec(arr[0]->valueAt(position), arr[1]->valueAt(position));
+        return ossia::make_vec(arr[0]->value_at(position), arr[1]->value_at(position));
       case 3:
-        return ossia::make_vec(arr[0]->valueAt(position), arr[1]->valueAt(position), arr[2]->valueAt(position));
+        return ossia::make_vec(arr[0]->value_at(position), arr[1]->value_at(position), arr[2]->value_at(position));
       case 4:
-        return ossia::make_vec(arr[0]->valueAt(position), arr[1]->valueAt(position), arr[2]->valueAt(position), arr[3]->valueAt(position));
+        return ossia::make_vec(arr[0]->value_at(position), arr[1]->value_at(position), arr[2]->value_at(position), arr[3]->value_at(position));
       default:
         break;
     }

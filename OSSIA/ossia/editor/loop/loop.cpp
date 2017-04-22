@@ -7,73 +7,73 @@ namespace ossia
 {
 loop::loop(
     time_value patternDuration,
-    time_constraint::ExecutionCallback patternConstraintCallback,
-    time_event::ExecutionCallback patternStartEventCallback,
-    time_event::ExecutionCallback patternEndEventCallback)
-    : mPatternStartEventCallback(std::move(patternStartEventCallback))
-    , mPatternEndEventCallback(std::move(patternEndEventCallback))
-    , mPatternConstraintCallback(std::move(patternConstraintCallback))
+    time_constraint::exec_callback patternConstraintCallback,
+    time_event::exec_callback patternStartEventCallback,
+    time_event::exec_callback patternEndEventCallback)
+    : m_startCallback(std::move(patternStartEventCallback))
+    , m_endCallback(std::move(patternEndEventCallback))
+    , m_constraintCallback(std::move(patternConstraintCallback))
 {
-  mPatternStartNode = std::make_shared<time_node>();
-  mPatternStartNode->emplace(
-      mPatternStartNode->timeEvents().begin(),
-      [&](time_event::Status result) { PatternStartEventCallback(result); });
+  m_startNode = std::make_shared<time_node>();
+  m_startNode->emplace(
+      m_startNode->get_time_events().begin(),
+      [&](time_event::status result) { start_event_callback(result); });
 
-  mPatternEndNode = std::make_shared<time_node>();
-  mPatternEndNode->emplace(
-      mPatternEndNode->timeEvents().begin(),
-      [&](time_event::Status result) { PatternEndEventCallback(result); });
+  m_endNode = std::make_shared<time_node>();
+  m_endNode->emplace(
+      m_endNode->get_time_events().begin(),
+      [&](time_event::status result) { end_event_callback(result); });
 
   // create a pattern TimeConstraint with all durations equal by default
-  mPatternConstraint = time_constraint::create(
+  m_constraint = time_constraint::create(
       [=](ossia::time_value position, time_value date, const ossia::state& state) {
-        return PatternConstraintCallback(position, date, state);
+        return constraint_callback(position, date, state);
       },
-      *mPatternStartNode->timeEvents()[0], *mPatternEndNode->timeEvents()[0],
+      *m_startNode->get_time_events()[0], *m_endNode->get_time_events()[0],
       patternDuration, patternDuration, patternDuration);
 
   // set pattern TimeConstraint's clock in external mode
-  mPatternConstraint->setDriveMode(clock::DriveMode::EXTERNAL);
+  m_constraint->set_drive_mode(clock::drive_mode::EXTERNAL);
 }
 
 loop::~loop()
 {
-  mPatternStartNode->cleanup();
-  mPatternEndNode->cleanup();
+  m_startNode->cleanup();
+  m_endNode->cleanup();
 }
 
 state_element loop::offset(ossia::time_value offset)
 {
-  if (parent()->getRunning())
+  if (parent()->running())
   {
     throw execution_error("loop::offset: "
                            "parent time constraint is running");
     return {};
   }
   // reset internal mOffsetState
-  mOffsetState.clear();
+  m_offsetState.clear();
 
   time_value patternOffset{std::fmod(
-      (double)offset, (double)mPatternConstraint->getDurationNominal())};
-  flatten_and_filter(mOffsetState, mPatternConstraint->offset(patternOffset));
+      (double)offset, (double)m_constraint->get_nominal_duration())};
+  flatten_and_filter(m_offsetState, m_constraint->offset(patternOffset));
 
   // compile mOffsetState with all HAPPENED event's states
   if(unmuted())
   {
-    if (mPatternConstraint->getStartEvent().getStatus()
-        == time_event::Status::HAPPENED)
+    if (m_constraint->get_start_event().get_status()
+        == time_event::status::HAPPENED)
       flatten_and_filter(
-            mOffsetState, mPatternConstraint->getStartEvent().getState());
+            m_offsetState, m_constraint->get_start_event().get_state());
   }
 
   // TODO why is mOffsetState different from mCurrentState
-  return mOffsetState;
+  return m_offsetState;
 }
 
 state_element loop::state()
 {
   auto& p = *parent();
-  if (!p.getRunning())
+  if (!p.running())
   {
     throw execution_error("loop::state: "
                           "parent time constraint is not running");
@@ -81,31 +81,31 @@ state_element loop::state()
   }
 
   // if date hasn't been processed already
-  time_value date = p.getDate();
-  if (date != mLastDate)
+  time_value date = p.get_date();
+  if (date != m_lastDate)
   {
-    auto prev_last_date = mLastDate;
-    mLastDate = date;
+    auto prev_last_date = m_lastDate;
+    m_lastDate = date;
 
     // reset internal State
-    mCurrentState.clear();
+    m_currentState.clear();
 
     // process the loop from the pattern start TimeNode
     ptr_container<time_event> statusChangedEvents;
-    mPatternStartNode->process(statusChangedEvents);
+    m_startNode->process(statusChangedEvents);
 
     // add the state of each newly HAPPENED TimeEvent
     if(unmuted())
     {
       for (const auto& timeEvent : statusChangedEvents)
-        if (timeEvent->getStatus() == time_event::Status::HAPPENED)
-          flatten_and_filter(mCurrentState, timeEvent->getState());
+        if (timeEvent->get_status() == time_event::status::HAPPENED)
+          flatten_and_filter(m_currentState, timeEvent->get_state());
     }
 
     // make time flow for the pattern constraint
-    if (mPatternConstraint->getRunning())
+    if (m_constraint->running())
     {
-      if (mPatternConstraint->getDriveMode() != clock::DriveMode::EXTERNAL)
+      if (m_constraint->get_drive_mode() != clock::drive_mode::EXTERNAL)
       {
         throw execution_error("loop::state: "
             "the pattern constraint clock is supposed to "
@@ -113,14 +113,14 @@ state_element loop::state()
         return {};
       }
 
-      if (mPatternConstraint->getRunning())
+      if (m_constraint->running())
       {
         // don't tick if the pattern constraint is starting to avoid double
         // ticks
-        auto& startEvent = mPatternConstraint->getStartEvent();
+        auto& startEvent = m_constraint->get_start_event();
         bool not_starting = none_of(
             statusChangedEvents, [&](const std::shared_ptr<time_event>& ev) {
-              return ev->getStatus() == time_event::Status::HAPPENED
+              return ev->get_status() == time_event::status::HAPPENED
                      && ev.get() == &startEvent;
             });
 
@@ -129,9 +129,9 @@ state_element loop::state()
           // no such event found : not starting
           // no such event found : not starting
           if (prev_last_date == Infinite)
-            mPatternConstraint->tick();
+            m_constraint->tick();
           else
-            mPatternConstraint->tick(ossia::time_value{(date - prev_last_date) * 1000.});
+            m_constraint->tick(ossia::time_value{(date - prev_last_date) * 1000.});
         }
         else
         {
@@ -140,20 +140,20 @@ state_element loop::state()
       }
 
       // if the pattern constraint is still running after the tick
-      if (mPatternConstraint->getRunning())
-        flatten_and_filter(mCurrentState, mPatternConstraint->state());
+      if (m_constraint->running())
+        flatten_and_filter(m_currentState, m_constraint->state());
     }
 
     // if the pattern end event happened : stop and reset the loop
-    if (mPatternConstraint->getEndEvent().getStatus()
-        == time_event::Status::HAPPENED)
+    if (m_constraint->get_end_event().get_status()
+        == time_event::status::HAPPENED)
       stop();
   }
 
   //! \see mCurrentState is filled below in
   //! loop::PatternConstraintCallback
   if(unmuted())
-    return mCurrentState;
+    return m_currentState;
   return ossia::state_element{};
 }
 
@@ -163,61 +163,61 @@ void loop::start()
 
 void loop::stop()
 {
-  mPatternConstraint->stop();
+  m_constraint->stop();
 
-  mPatternConstraint->offset(Zero);
+  m_constraint->offset(Zero);
 
-  mPatternConstraint->getStartEvent().setStatus(time_event::Status::PENDING);
-  mPatternConstraint->getEndEvent().setStatus(time_event::Status::NONE);
+  m_constraint->get_start_event().set_status(time_event::status::PENDING);
+  m_constraint->get_end_event().set_status(time_event::status::NONE);
 }
 
 void loop::pause()
 {
-  mPatternConstraint->pause();
+  m_constraint->pause();
 }
 
 void loop::resume()
 {
-  mPatternConstraint->resume();
+  m_constraint->resume();
 }
 
 const std::shared_ptr<time_constraint>
-loop::getPatternTimeConstraint() const
+loop::get_time_constraint() const
 {
-  return mPatternConstraint;
+  return m_constraint;
 }
 
-const std::shared_ptr<time_node> loop::getPatternStartTimeNode() const
+const std::shared_ptr<time_node> loop::get_start_timenode() const
 {
-  return mPatternStartNode;
+  return m_startNode;
 }
 
-const std::shared_ptr<time_node> loop::getPatternEndTimeNode() const
+const std::shared_ptr<time_node> loop::get_end_timenode() const
 {
-  return mPatternEndNode;
+  return m_endNode;
 }
 
-void loop::PatternConstraintCallback(
+void loop::constraint_callback(
     time_value position, time_value date, const ossia::state&)
 {
-  if (mPatternConstraintCallback)
+  if (m_constraintCallback)
   {
     // add the state of the pattern TimeConstraint
-    flatten_and_filter(mCurrentState, mPatternConstraint->state());
+    flatten_and_filter(m_currentState, m_constraint->state());
 
-    (mPatternConstraintCallback)(position, date, mCurrentState);
+    (m_constraintCallback)(position, date, m_currentState);
   }
 }
 
-void loop::PatternStartEventCallback(time_event::Status newStatus)
+void loop::start_event_callback(time_event::status newStatus)
 {
-  if (mPatternStartEventCallback)
-    (mPatternStartEventCallback)(newStatus);
+  if (m_startCallback)
+    (m_startCallback)(newStatus);
 }
 
-void loop::PatternEndEventCallback(time_event::Status newStatus)
+void loop::end_event_callback(time_event::status newStatus)
 {
-  if (mPatternEndEventCallback)
-    (mPatternEndEventCallback)(newStatus);
+  if (m_endCallback)
+    (m_endCallback)(newStatus);
 }
 }

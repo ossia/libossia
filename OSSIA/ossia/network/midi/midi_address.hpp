@@ -115,13 +115,13 @@ struct address_info
 
 class midi_address final : public ossia::net::address_base
 {
-  address_info mInfo;
-  ossia::net::node_base& mParent;
-  midi_protocol& mProtocol;
-  ossia::domain mDomain;
+  address_info m_info;
+  ossia::net::node_base& m_parent;
+  midi_protocol& m_protocol;
+  ossia::domain m_domain;
 
-  ossia::val_type mType = ossia::val_type::INT;
-  value mValue;
+  ossia::val_type m_type = ossia::val_type::INT;
+  ossia::value m_value;
 
 public:
   midi_address(address_info info, ossia::net::node_base& parent);
@@ -130,33 +130,33 @@ public:
 
   ossia::net::node_base& getNode() const override;
 
-  void pullValue() override;
-  address_base& pushValue(const value& val) override;
-  address_base& pushValue() override;
-  const value& getValue() const;
+  void pull_value() override;
+  address_base& push_value(const ossia::value& val) override;
+  address_base& push_value() override;
+  const ossia::value& getValue() const;
 
-  value cloneValue() const override;
-  address_base& setValue(const value& v) override;
+  ossia::value value() const override;
+  address_base& set_value(const ossia::value& v) override;
 
-  ossia::val_type getValueType() const override;
-  address_base& setValueType(ossia::val_type) override;
+  ossia::val_type get_value_type() const override;
+  address_base& set_value_type(ossia::val_type) override;
 
-  ossia::access_mode getAccessMode() const override;
-  address_base& setAccessMode(ossia::access_mode) override;
+  ossia::access_mode get_access() const override;
+  address_base& set_access(ossia::access_mode) override;
 
-  const ossia::domain& getDomain() const override;
-  address_base& setDomain(const ossia::domain&) override;
+  const ossia::domain& get_domain() const override;
+  address_base& set_domain(const ossia::domain&) override;
 
-  ossia::bounding_mode getBoundingMode() const override;
-  address_base& setBoundingMode(ossia::bounding_mode) override;
+  ossia::bounding_mode get_bounding() const override;
+  address_base& set_bounding(ossia::bounding_mode) override;
 
-  ossia::repetition_filter getRepetitionFilter() const override;
-  address_base& setRepetitionFilter(ossia::repetition_filter) override;
+  ossia::repetition_filter get_repetition_filter() const override;
+  address_base& set_repetition_filter(ossia::repetition_filter) override;
 
-  void onFirstCallbackAdded() override;
-  void onRemovingLastCallback() override;
+  void on_first_callback_added() override;
+  void on_removing_last_callback() override;
 
-  void valueCallback(const ossia::value& val);
+  void value_callback(const ossia::value& val);
 };
 }
 }

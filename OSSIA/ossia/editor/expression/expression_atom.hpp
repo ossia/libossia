@@ -35,26 +35,26 @@ public:
   bool evaluate() const;
   void update() const;
 
-  const value& getFirstOperand() const;
-  comparator getOperator() const;
-  const value& getSecondOperand() const;
+  const value& get_first_operand() const;
+  comparator get_operator() const;
+  const value& get_second_operand() const;
 
 private:
-  void onFirstCallbackAdded() override;
-  void onRemovingLastCallback() override;
+  void on_first_callback_added() override;
+  void on_removing_last_callback() override;
 
   bool do_evaluation(const value& first, const value& second) const;
 
   void firstValueCallback(const ossia::value& value);
   void secondValueCallback(const ossia::value& value);
 
-  ossia::value mFirstValue;
-  ossia::value mSecondValue;
+  ossia::value m_first;
+  ossia::value m_second;
 
-  net::address_base::callback_index mFirstValueCallbackIndex;
-  net::address_base::callback_index mSecondValueCallbackIndex;
+  net::address_base::callback_index m_firstCallback;
+  net::address_base::callback_index m_secondCallback;
 
-  comparator mOperator;
+  comparator m_operator{};
 };
 }
 }

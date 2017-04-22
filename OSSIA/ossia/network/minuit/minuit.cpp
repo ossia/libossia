@@ -26,10 +26,10 @@ minuit_protocol::minuit_protocol(
     , mIp{remote_ip}
     , mRemotePort{remote_port}
     , mLocalPort{local_port}
-    , mSender{std::make_unique<osc::sender>(mLogger, remote_ip, remote_port)}
+    , mSender{std::make_unique<osc::sender>(m_logger, remote_ip, remote_port)}
     , mReceiver{std::make_unique<osc::receiver>(local_port, [=](const oscpack::ReceivedMessage& m,
                                 const oscpack::IpEndpointName& ip) {
-                  this->handleReceivedMessage(m, ip);
+                  this->on_received_message(m, ip);
                 })}
     , mLastSentMessage{get_time()}
     , mLastReceivedMessage{get_time()}
@@ -51,52 +51,52 @@ minuit_protocol::~minuit_protocol()
   mReceiver->stop();
 }
 
-void minuit_protocol::setDevice(ossia::net::device_base& dev)
+void minuit_protocol::set_device(ossia::net::device_base& dev)
 {
   mDevice = &dev;
 }
 
-const std::string& minuit_protocol::getIp() const
+const std::string& minuit_protocol::get_ip() const
 {
   return mIp;
 }
 
-minuit_protocol& minuit_protocol::setIp(std::string ip)
+minuit_protocol& minuit_protocol::set_ip(std::string ip)
 {
   mIp = ip;
-  mSender = std::make_unique<osc::sender>(mLogger, mIp, mRemotePort);
+  mSender = std::make_unique<osc::sender>(m_logger, mIp, mRemotePort);
 
   update_zeroconf();
 
   return *this;
 }
 
-uint16_t minuit_protocol::getRemotePort() const
+uint16_t minuit_protocol::get_remote_port() const
 {
   return mRemotePort;
 }
 
-minuit_protocol& minuit_protocol::setRemotePort(uint16_t in_port)
+minuit_protocol& minuit_protocol::set_remote_port(uint16_t in_port)
 {
   mRemotePort = in_port;
-  mSender = std::make_unique<osc::sender>(mLogger, mIp, mRemotePort);
+  mSender = std::make_unique<osc::sender>(m_logger, mIp, mRemotePort);
 
   update_zeroconf();
 
   return *this;
 }
 
-uint16_t minuit_protocol::getLocalPort() const
+uint16_t minuit_protocol::get_local_port() const
 {
   return mLocalPort;
 }
 
-minuit_protocol& minuit_protocol::setLocalPort(uint16_t out_port)
+minuit_protocol& minuit_protocol::set_local_port(uint16_t out_port)
 {
   mLocalPort = out_port;
   mReceiver = std::make_unique<osc::receiver>(out_port, [=](const oscpack::ReceivedMessage& m,
                                           const oscpack::IpEndpointName& ip) {
-                              this->handleReceivedMessage(m, ip);
+                              this->on_received_message(m, ip);
                             });
 
   update_zeroconf();
@@ -107,8 +107,8 @@ minuit_protocol& minuit_protocol::setLocalPort(uint16_t out_port)
 bool minuit_protocol::update(ossia::net::node_base& node)
 {
   // Reset node
-  node.clearChildren();
-  node.removeAddress();
+  node.clear_children();
+  node.remove_address();
 
   // Send "namespace" request
   mNamespaceFinishedPromise = std::promise<void>{};
@@ -219,7 +219,7 @@ void minuit_protocol::request(ossia::net::address_base& address)
   mLastSentMessage = get_time();
 }
 
-std::future<void> minuit_protocol::pullAsync(address_base& address)
+std::future<void> minuit_protocol::pull_async(address_base& address)
 {
   // Send "get" request
   mGetFinishedPromise = std::promise<void>();
@@ -236,7 +236,7 @@ std::future<void> minuit_protocol::pullAsync(address_base& address)
 
 bool minuit_protocol::pull(ossia::net::address_base& address)
 {
-  auto fut = pullAsync(address);
+  auto fut = pull_async(address);
 
   fut.wait_for(std::chrono::milliseconds(25));
 
@@ -245,7 +245,7 @@ bool minuit_protocol::pull(ossia::net::address_base& address)
 
 bool minuit_protocol::push(const ossia::net::address_base& addr)
 {
-  if (addr.getAccessMode() == ossia::access_mode::GET)
+  if (addr.get_access() == ossia::access_mode::GET)
     return false;
 
   auto val = filter_value(addr);
@@ -364,7 +364,7 @@ struct minuit_task
   std::function<void()> handle;
 };
 
-void minuit_protocol::handleReceivedMessage(
+void minuit_protocol::on_received_message(
         const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 {
     ossia::string_view address{m.AddressPattern()};
@@ -380,9 +380,9 @@ void minuit_protocol::handleReceivedMessage(
       else
       {
         // We still want to save the value even if it is not listened to.
-        if(auto n = find_node(mDevice->getRootNode(), address))
+        if(auto n = find_node(mDevice->get_root_node(), address))
         {
-          if(auto base_addr = n->getAddress())
+          if(auto base_addr = n->get_address())
           {
             update_value_quiet(*base_addr, m);
           }
@@ -396,8 +396,8 @@ void minuit_protocol::handleReceivedMessage(
               *this, *mDevice, address, m);
     }
 
-    if(mLogger.inbound_logger)
-      mLogger.inbound_logger->info("In: {0}", m);
+    if(m_logger.inbound_logger)
+      m_logger.inbound_logger->info("In: {0}", m);
 
     mLastReceivedMessage = get_time();
 }

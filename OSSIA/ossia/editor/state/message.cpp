@@ -10,24 +10,24 @@ void message::launch() const
 {
   ossia::net::address_base& addr = destination.value.get();
   const auto& unit = destination.unit;
-  auto addr_unit = addr.getUnit();
+  auto addr_unit = addr.get_unit();
   if(destination.index.empty())
   {
     if(!unit || unit == addr_unit)
     {
-      addr.pushValue(message_value);
+      addr.push_value(message_value);
     }
     else
     {
       // Convert from this message's unit to the address's unit
-      addr.pushValue(ossia::convert(message_value, unit, addr_unit));
+      addr.push_value(ossia::convert(message_value, unit, addr_unit));
     }
   }
   else
   {
     if(!unit || !addr_unit || unit == addr_unit)
     {
-      auto cur = addr.cloneValue();
+      auto cur = addr.value();
       auto cur_t = cur.getType();
       switch(cur_t)
       {
@@ -40,7 +40,7 @@ void message::launch() const
                 cur.v,
                 message_value.v);
 
-          addr.pushValue(std::move(cur));
+          addr.push_value(std::move(cur));
           break;
         }
         case ossia::val_type::TUPLE:
@@ -48,7 +48,7 @@ void message::launch() const
           auto& cur_tuple = cur.get<std::vector<ossia::value>>();
           // Insert the value of this message in the existing value array
           value_merger<true>::insert_in_tuple(cur_tuple, message_value, destination.index);
-          addr.pushValue(std::move(cur));
+          addr.push_value(std::move(cur));
           break;
         }
         default:
@@ -56,7 +56,7 @@ void message::launch() const
           // Create a tuple and put the existing value at [0]
           std::vector<ossia::value> t{std::move(cur)};
           value_merger<true>::insert_in_tuple(t, message_value, destination.index);
-          addr.pushValue(std::move(t));
+          addr.push_value(std::move(t));
           break;
         }
       }
@@ -91,7 +91,7 @@ void message::launch() const
       }
       */
 
-      addr.pushValue(
+      addr.push_value(
             ossia::to_value(
               ossia::convert(
                 ossia::merge(
@@ -110,15 +110,15 @@ void message::launch() const
 void piecewise_message::launch() const
 {
   // If values are missing, merge with the existing ones
-  auto cur = address.get().cloneValue();
+  auto cur = address.get().value();
   if(auto cur_tuple = cur.target<std::vector<ossia::value>>())
   {
     value_merger<true>::merge_tuple(*cur_tuple, message_value);
-    address.get().pushValue(std::move(cur));
+    address.get().push_value(std::move(cur));
   }
   else
   {
-    address.get().pushValue(message_value);
+    address.get().push_value(message_value);
   }
 }
 
@@ -126,16 +126,16 @@ template<std::size_t N>
 void piecewise_vec_message<N>::launch() const
 {
   ossia::net::address_base& addr = address.get();
-  auto addr_unit = addr.getUnit();
+  auto addr_unit = addr.get_unit();
   if(!unit || !addr_unit || unit == addr_unit)
   {
     if(used_values.all())
     {
-      addr.pushValue(message_value);
+      addr.push_value(message_value);
     }
     else
     {
-      auto val = addr.cloneValue();
+      auto val = addr.value();
       if(val.getType() == ossia::value_trait<std::array<float, N>>::ossia_enum)
       {
         auto& v = val.get<std::array<float, N>>();
@@ -147,7 +147,7 @@ void piecewise_vec_message<N>::launch() const
           }
         }
 
-        addr.pushValue(val);
+        addr.push_value(val);
       }
     }
   }
@@ -176,7 +176,7 @@ void piecewise_vec_message<N>::launch() const
       }
       */
 
-      addr.pushValue(ossia::convert(message_value, unit, addr_unit));
+      addr.push_value(ossia::convert(message_value, unit, addr_unit));
     }
     else
     {
@@ -197,7 +197,7 @@ void piecewise_vec_message<N>::launch() const
       */
 
 
-      addr.pushValue(
+      addr.push_value(
                 to_value( // Go from Unit domain to Value domain
                   convert( // Convert to the resulting address unit
                     merge( // Merge the automation value with the "unit" value
@@ -206,7 +206,7 @@ void piecewise_vec_message<N>::launch() const
                         unit),
                       message_value, // Compute the output of the automation
                       used_values),
-                  addr.getUnit())));
+                  addr.get_unit())));
 
     }
   }

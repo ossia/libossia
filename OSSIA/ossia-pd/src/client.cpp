@@ -48,13 +48,13 @@ static void client_free(t_client *x)
 static void dump_child(t_client *x, const ossia::net::node_base& node){
     for (const auto& child : node.children()){
         std::stringstream ss;
-        auto parent = child->getParent();
+        auto parent = child->get_parent();
         while (parent != nullptr)
         {
             ss << "\t";
-            parent = parent->getParent();
+            parent = parent->get_parent();
         }
-        ss << child->getName();
+        ss << child->get_name();
         t_atom a;
         SETSYMBOL(&a,gensym(ss.str().c_str()));
         outlet_anything(x->x_dumpout, gensym("child"), 1, &a);
@@ -63,7 +63,7 @@ static void dump_child(t_client *x, const ossia::net::node_base& node){
 }
 
 static void client_dump(t_client *x){
-    dump_child(x, x->x_device->getRootNode());
+    dump_child(x, x->x_device->get_root_node());
 }
 
 void t_client :: loadbang(t_client* x, t_float type){
@@ -114,7 +114,7 @@ static void explore(const ossia::net::node_base& node)
 {
   for (const auto& child : node.children_copy())
   {
-    if (auto addr = child->getAddress())
+    if (auto addr = child->get_address())
     {
       // attach to callback to display value update
       addr->add_callback([=] (const value& v) {
@@ -124,7 +124,7 @@ static void explore(const ossia::net::node_base& node)
       });
 
       // update the value
-      addr->pullValue();
+      addr->pull_value();
     }
 
     /*
@@ -132,7 +132,7 @@ static void explore(const ossia::net::node_base& node)
     w << *child;
     std::cerr << w.str() << "\n";
     */
-    std::cout << child->getName() <<  std::endl;
+    std::cout << child->get_name() <<  std::endl;
 
     explore(*child);
   }
@@ -184,7 +184,7 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv){
             try{
                 auto protocol = new ossia::oscquery::oscquery_mirror_protocol{wsurl};
                 x->x_device = new ossia::net::generic_device{std::unique_ptr<ossia::net::protocol_base>(protocol), "Pd"};
-                if (x->x_device) std::cout << "connected to device " << x->x_device->getName() << " on " << wsurl << std::endl;
+                if (x->x_device) std::cout << "connected to device " << x->x_device->get_name() << " on " << wsurl << std::endl;
 
             } catch (const std::exception&  e) {
                 pd_error(x,"%s",e.what());
@@ -200,12 +200,12 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv){
         return;
     }
     if (x->x_device){
-        x->x_device->getProtocol().update(*x->x_device);
-        x->x_node = &x->x_device->getRootNode();
+        x->x_device->get_protocol().update(*x->x_device);
+        x->x_node = &x->x_device->get_root_node();
         t_client :: register_children(x);
-        explore(x->x_device->getRootNode());
+        explore(x->x_device->get_root_node());
         for (auto& child : x->x_device->children()){
-            std::cout << child->getName() << std::endl;
+            std::cout << child->get_name() << std::endl;
         }
     }
 }

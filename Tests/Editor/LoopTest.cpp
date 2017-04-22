@@ -15,7 +15,7 @@ class LoopTest : public QObject
         element.launch();
     }
 
-    void event_callback(time_event::Status newStatus)
+    void event_callback(time_event::status newStatus)
     {
         std::cout << "Event : " << "new status received" << std::endl;
     }
@@ -32,9 +32,9 @@ private Q_SLOTS:
 
         QVERIFY(l.parent() == nullptr);
 
-        QVERIFY(l.getPatternTimeConstraint() != nullptr);
-        QVERIFY(l.getPatternStartTimeNode() != nullptr);
-        QVERIFY(l.getPatternEndTimeNode() != nullptr);
+        QVERIFY(l.get_time_constraint() != nullptr);
+        QVERIFY(l.get_start_timenode() != nullptr);
+        QVERIFY(l.get_end_timenode() != nullptr);
 
         //! \todo test clone()
     }
@@ -49,17 +49,17 @@ private Q_SLOTS:
         auto start_node = std::make_shared<time_node>();
         auto end_node = std::make_shared<time_node>();
 
-        auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
-        auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), event_callback));
+        auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), event_callback));
+        auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), event_callback));
 
         auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
 
-        constraint->addTimeProcess(
+        constraint->add_time_process(
               std::make_unique<loop>(25._tv, constraint_callback, event_callback, event_callback));
 
         constraint->start();
 
-        while (constraint->getRunning())
+        while (constraint->running())
             ;
     }
 };

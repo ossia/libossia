@@ -22,8 +22,8 @@ void printValue(const value& v);
 
 int main()
 {
-  auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
-  ossia::net::local_protocol& local_proto = *local_proto_ptr;
+  auto local_proto_ptr = std::make_unique<ossia::net::multiplex_protocol>();
+  ossia::net::multiplex_protocol& local_proto = *local_proto_ptr;
   // declare this program "B" as Local device
   ossia::net::generic_device device{std::move(local_proto_ptr), "B"};
 
@@ -39,51 +39,51 @@ int main()
      */
 
 
-  auto localTestNode = device.createChild("test");
+  auto localTestNode = device.create_child("test");
 
-  auto localImpulseNode = localTestNode->createChild("my_impulse");
-  auto localImpulseAddress = localImpulseNode->createAddress(val_type::IMPULSE);
+  auto localImpulseNode = localTestNode->create_child("my_impulse");
+  auto localImpulseAddress = localImpulseNode->create_address(val_type::IMPULSE);
   localImpulseAddress->add_callback(printValueCallback);
 
-  auto localBoolNode = localTestNode->createChild("my_bool");
-  auto localBoolAddress = localBoolNode->createAddress(val_type::BOOL);
+  auto localBoolNode = localTestNode->create_child("my_bool");
+  auto localBoolAddress = localBoolNode->create_address(val_type::BOOL);
   localBoolAddress->add_callback(printValueCallback);
 
-  auto localIntNode = localTestNode->createChild("my_int");
-  auto localIntAddress = localIntNode->createAddress(val_type::INT);
+  auto localIntNode = localTestNode->create_child("my_int");
+  auto localIntAddress = localIntNode->create_address(val_type::INT);
   localIntAddress->add_callback(printValueCallback);
 
-  auto localFloatNode = localTestNode->createChild("my_float");
-  auto localFloatAddress = localFloatNode->createAddress(val_type::FLOAT);
+  auto localFloatNode = localTestNode->create_child("my_float");
+  auto localFloatAddress = localFloatNode->create_address(val_type::FLOAT);
   localFloatAddress->add_callback(printValueCallback);
 
-  auto localStringNode = localTestNode->createChild("my_string");
-  auto localStringAddress = localStringNode->createAddress(val_type::STRING);
+  auto localStringNode = localTestNode->create_child("my_string");
+  auto localStringAddress = localStringNode->create_address(val_type::STRING);
   localStringAddress->add_callback(printValueCallback);
 
-  // auto localDestinationNode = localTestNode->createChild("my_destination");
-  // auto localDestinationAddress = localDestinationNode->createAddress(val_type::DESTINATION);
+  // auto localDestinationNode = localTestNode->create_child("my_destination");
+  // auto localDestinationAddress = localDestinationNode->create_address(val_type::DESTINATION);
   // localDestinationAddress->addCallback(printValueCallback);
 
-  auto localTupleNode = localTestNode->createChild("my_tuple");
-  auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
+  auto localTupleNode = localTestNode->create_child("my_tuple");
+  auto localTupleAddress = localTupleNode->create_address(val_type::TUPLE);
   localTupleAddress->add_callback(printValueCallback);
 
   // update tree value
-  localImpulseAddress->pushValue(impulse{});
-  localBoolAddress->pushValue(true);
-  localIntAddress->pushValue(123);
-  localFloatAddress->pushValue(0.5);
-  localStringAddress->pushValue("hello world !"s);
+  localImpulseAddress->push_value(impulse{});
+  localBoolAddress->push_value(true);
+  localIntAddress->push_value(123);
+  localFloatAddress->push_value(0.5);
+  localStringAddress->push_value("hello world !"s);
 
   // FIXME
   // Destination d(localFloatNode);
-  // localDestinationAddress->pushValue(&d);
+  // localDestinationAddress->push_value(&d);
 
-  localTupleAddress->pushValue(std::vector<ossia::value>{0., 1., 2.});
+  localTupleAddress->push_value(std::vector<ossia::value>{0., 1., 2.});
 
   // declare a distant program as a Minuit device
-  local_proto.exposeTo(std::make_unique<net::minuit_protocol>("B", "127.0.0.1", 9999, 6666));
+  local_proto.expose_to(std::make_unique<net::minuit_protocol>("B", "127.0.0.1", 9999, 6666));
 
   while (true)
     ;

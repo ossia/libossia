@@ -26,12 +26,12 @@ struct json_query_answerer
         const auto& arr = doc.GetArray();
         for(const auto& e : arr)
         {
-          json_parser::parse_address_value(proto.getDevice().getRootNode(), e);
+          json_parser::parse_address_value(proto.get_device().get_root_node(), e);
         }
       }
       else
       {
-        json_parser::parse_address_value(proto.getDevice().getRootNode(), doc);
+        json_parser::parse_address_value(proto.get_device().get_root_node(), doc);
       }
       return rapidjson::StringBuffer{};
   }

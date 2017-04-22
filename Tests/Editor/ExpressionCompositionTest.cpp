@@ -96,14 +96,14 @@ private Q_SLOTS:
   void test_callback()
   {
     // Local device
-    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
-    auto localIntNode1 = device.createChild("my_int.1");
-    auto localIntAddress1 = localIntNode1->createAddress(val_type::INT);
-    auto localIntNode2 = device.createChild("my_int.2");
-    auto localIntAddress2 = localIntNode2->createAddress(val_type::INT);
-    auto localIntNode3 = device.createChild("my_int.3");
-    auto localIntAddress3 = localIntNode3->createAddress(val_type::INT);
+    auto localIntNode1 = device.create_child("my_int.1");
+    auto localIntAddress1 = localIntNode1->create_address(val_type::INT);
+    auto localIntNode2 = device.create_child("my_int.2");
+    auto localIntAddress2 = localIntNode2->create_address(val_type::INT);
+    auto localIntNode3 = device.create_child("my_int.3");
+    auto localIntAddress3 = localIntNode3->create_address(val_type::INT);
 
     auto testDestinationExprA = make_expression_atom(Destination(*localIntAddress1),
                                                      comparator::LOWER,
@@ -126,7 +126,7 @@ private Q_SLOTS:
     m_result_callback_called = false;
 
     int i1(5);
-    localIntAddress1->pushValue(i1);
+    localIntAddress1->push_value(i1);
 
     QVERIFY(m_result_callback_called == true && m_result == false);
 
@@ -134,7 +134,7 @@ private Q_SLOTS:
     m_result_callback_called = false;
 
     int i2(6);
-    localIntAddress2->pushValue(i2);
+    localIntAddress2->push_value(i2);
 
     QVERIFY(m_result_callback_called == true && m_result == false);
 
@@ -142,7 +142,7 @@ private Q_SLOTS:
     m_result_callback_called = false;
 
     int i3(7);
-    localIntAddress3->pushValue(i3);
+    localIntAddress3->push_value(i3);
 
     QVERIFY(m_result_callback_called == true && m_result == true);
 
@@ -154,7 +154,7 @@ private Q_SLOTS:
     m_result_callback_called = false;
 
     int i4(10);
-    localIntAddress2->pushValue(i4);
+    localIntAddress2->push_value(i4);
 
     QVERIFY(m_result_callback_called == false && m_result == false);
   }

@@ -38,44 +38,44 @@ int main()
      /test/my_tuple
      */
 
-  auto oscTestNode = device.createChild("test");
+  auto oscTestNode = device.create_child("test");
 
-  auto oscImpulseNode = oscTestNode->createChild("my_impulse");
-  auto oscImpulseAddress = oscImpulseNode->createAddress(val_type::IMPULSE);
+  auto oscImpulseNode = oscTestNode->create_child("my_impulse");
+  auto oscImpulseAddress = oscImpulseNode->create_address(val_type::IMPULSE);
   oscImpulseAddress->add_callback(printValueCallback);
 
-  auto oscBoolNode = oscTestNode->createChild("my_bool");
-  auto oscBoolAddress = oscBoolNode->createAddress(val_type::BOOL);
+  auto oscBoolNode = oscTestNode->create_child("my_bool");
+  auto oscBoolAddress = oscBoolNode->create_address(val_type::BOOL);
   oscBoolAddress->add_callback(printValueCallback);
 
-  auto oscIntNode = oscTestNode->createChild("my_int");
-  auto oscIntAddress = oscIntNode->createAddress(val_type::INT);
+  auto oscIntNode = oscTestNode->create_child("my_int");
+  auto oscIntAddress = oscIntNode->create_address(val_type::INT);
   oscIntAddress->add_callback(printValueCallback);
 
-  auto oscFloatNode = oscTestNode->createChild("my_float");
-  auto oscFloatAddress = oscFloatNode->createAddress(val_type::FLOAT);
+  auto oscFloatNode = oscTestNode->create_child("my_float");
+  auto oscFloatAddress = oscFloatNode->create_address(val_type::FLOAT);
   oscFloatAddress->add_callback(printValueCallback);
 
-  auto oscStringNode = oscTestNode->createChild("my_string");
-  auto oscStringAddress = oscStringNode->createAddress(val_type::STRING);
+  auto oscStringNode = oscTestNode->create_child("my_string");
+  auto oscStringAddress = oscStringNode->create_address(val_type::STRING);
   oscStringAddress->add_callback(printValueCallback);
 
-  auto oscTupleNode = oscTestNode->createChild("my_tuple");
-  auto oscTupleAddress = oscTupleNode->createAddress(val_type::TUPLE);
+  auto oscTupleNode = oscTestNode->create_child("my_tuple");
+  auto oscTupleAddress = oscTupleNode->create_address(val_type::TUPLE);
   oscTupleAddress->add_callback(printValueCallback);
 
   // update tree value
-  oscImpulseAddress->setValue(impulse{});
+  oscImpulseAddress->set_value(impulse{});
 
-  oscBoolAddress->setValue(true);
+  oscBoolAddress->set_value(true);
 
-  oscIntAddress->setValue(5);
+  oscIntAddress->set_value(5);
 
-  oscFloatAddress->setValue(0.5);
+  oscFloatAddress->set_value(0.5);
 
-  oscStringAddress->setValue("Hello world!"s);
+  oscStringAddress->set_value("Hello world!"s);
 
-  oscTupleAddress->setValue(std::vector<ossia::value>{0.1, 0.2, 0.3});
+  oscTupleAddress->set_value(std::vector<ossia::value>{0.1, 0.2, 0.3});
 
   while (true)
     ;

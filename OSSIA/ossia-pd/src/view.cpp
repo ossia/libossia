@@ -33,7 +33,7 @@ bool t_view :: register_node(ossia::net::node_base*  node){
 }
 
 bool t_view :: do_registration(ossia::net::node_base*  node){
-    if (x_node && x_node->getParent() == node ) return true; // already register to this node;
+    if (x_node && x_node->get_parent() == node ) return true; // already register to this node;
     unregister(); // we should unregister here because we may have add a node between the registered node and the remote
 
     if (node){
@@ -41,9 +41,9 @@ bool t_view :: do_registration(ossia::net::node_base*  node){
         std::string address_string = ossia::net::address_string_from_node(*node);
 
         if ( absolute_path != address_string) return false;
-        x_node = node->findChild(x_name->s_name);
+        x_node = node->find_child(x_name->s_name);
         if (x_node) {
-            x_node->aboutToBeDeleted.connect<t_view, &t_view::isDeleted>(this);
+            x_node->about_to_be_deleted.connect<t_view, &t_view::isDeleted>(this);
         } else {
             return false;
         }

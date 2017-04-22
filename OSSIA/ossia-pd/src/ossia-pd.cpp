@@ -253,11 +253,11 @@ template<typename T> void obj_dump(T *x){
     outlet_anything(x->x_dumpout,gensym("quarantined"), 1, &a);
 
     if (x->x_node) {
-        ossia::net::address_base* address = x->x_node->getAddress();
+        ossia::net::address_base* address = x->x_node->get_address();
         if (address){
             // type
             std::string type="unknown";
-            switch(address->getValueType()){
+            switch(address->get_value_type()){
             case ossia::val_type::FLOAT:
                 type="float";
                 break;
@@ -299,13 +299,13 @@ template<typename T> void obj_dump(T *x){
             outlet_anything(x->x_dumpout,gensym("type"), 1, &a);
 
             // domain
-            ossia::domain domain = address->getDomain();
+            ossia::domain domain = address->get_domain();
             SETSYMBOL(&a, gensym(domain.to_pretty_string().c_str()));
             outlet_anything(x->x_dumpout,gensym("domain"), 1, &a);
 
             // bounding mode
             std::string bounding_mode;
-            switch(address->getBoundingMode()){
+            switch(address->get_bounding()){
             case ossia::bounding_mode::FREE:
                 bounding_mode = "free";
                 break;
@@ -332,7 +332,7 @@ template<typename T> void obj_dump(T *x){
 
             // access mode
             std::string access_mode;
-            switch(address->getAccessMode()){
+            switch(address->get_access()){
             case ossia::access_mode::BI:
                 access_mode = "bi";
                 break;
@@ -349,13 +349,14 @@ template<typename T> void obj_dump(T *x){
             outlet_anything(x->x_dumpout,gensym("access_mode"), 1, &a);
 
             // repetition filter
-            bool rep = address->getRepetitionFilter();
+            bool rep = address->get_repetition_filter();
             SETFLOAT(&a, rep);
             outlet_anything(x->x_dumpout,gensym("repetition_filter"), 1, &a);
 
 
             // unit
-            address->getUnit();
+            // TODO
+            address->get_unit();
         }
 
         // description

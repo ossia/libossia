@@ -71,15 +71,15 @@ struct minuit_behavior<
     if(idx == std::string::npos)
     {
       // Value
-      auto node = ossia::net::find_node(dev.getRootNode(), full_address);
+      auto node = ossia::net::find_node(dev.get_root_node(), full_address);
       if (!node)
         return;
-      auto addr = node->getAddress();
+      auto addr = node->get_address();
       if (!addr)
         return;
 
       proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
-                        full_address, addr->cloneValue());
+                        full_address, addr->value());
     }
     else
     {
@@ -91,10 +91,10 @@ struct minuit_behavior<
               address.data() + idx + 1,
               full_address.size() - idx - 1));
 
-      auto node = ossia::net::find_node(dev.getRootNode(), address);
+      auto node = ossia::net::find_node(dev.get_root_node(), address);
       if (!node)
         return;
-      auto addr = node->getAddress();
+      auto addr = node->get_address();
       if (!addr)
         return;
 
@@ -103,42 +103,42 @@ struct minuit_behavior<
         case minuit_attribute::Value:
           proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                               full_address,
-                              addr->cloneValue());
+                              addr->value());
           break;
         case minuit_attribute::Type:
           proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                               full_address,
-                              to_minuit_type_text(addr->getValueType()));
+                              to_minuit_type_text(addr->get_value_type()));
           break;
         case minuit_attribute::RangeBounds:
           proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                               full_address,
-                              addr->getDomain());
+                              addr->get_domain());
           break;
         case minuit_attribute::RangeClipMode:
           proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                               full_address,
-                              to_minuit_bounding_text(addr->getBoundingMode()));
+                              to_minuit_bounding_text(addr->get_bounding()));
           break;
         case minuit_attribute::Dataspace:
           proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                               full_address,
-                              ossia::get_dataspace_text(addr->getUnit()));
+                              ossia::get_dataspace_text(addr->get_unit()));
           break;
         case minuit_attribute::DataspaceUnit:
           proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                               full_address,
-                              ossia::get_unit_text(addr->getUnit()));
+                              ossia::get_unit_text(addr->get_unit()));
           break;
         case minuit_attribute::RepetitionFilter:
           proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                               full_address,
-                              (int32_t)addr->getRepetitionFilter());
+                              (int32_t)addr->get_repetition_filter());
           break;
         case minuit_attribute::Service:
           proto.sender().send(proto.name_table.get_action(minuit_action::GetReply),
                               full_address,
-                              to_minuit_service_text(addr->getAccessMode()));
+                              to_minuit_service_text(addr->get_access()));
           break;
         case minuit_attribute::Description:
           if(const auto& desc = ossia::net::get_description(*node))
@@ -270,11 +270,11 @@ struct minuit_behavior<
       ossia::net::device_base& dev,
       ossia::string_view address)
   {
-    auto node = ossia::net::find_node(dev.getRootNode(), address);
+    auto node = ossia::net::find_node(dev.get_root_node(), address);
     if (!node)
       return {};
 
-    return node->childrenNames();
+    return node->children_names();
   }
 
   auto operator()(
@@ -290,7 +290,7 @@ struct minuit_behavior<
     }
     else
     {
-      auto node = ossia::net::find_node(dev.getRootNode(), address);
+      auto node = ossia::net::find_node(dev.get_root_node(), address);
       if (!node)
         return;
 
@@ -300,7 +300,7 @@ struct minuit_behavior<
       }
       else
       {
-        if(node->getAddress())
+        if(node->get_address())
         {
           handle_data_container(proto, address, get_children_names(dev, address));
         }
@@ -320,7 +320,7 @@ inline ossia::domain get_domain(
     oscpack::ReceivedMessageArgumentIterator end_it)
 {
   chobo::small_vector<ossia::value, 2> val;
-  const auto cur = addr.cloneValue();
+  const auto cur = addr.value();
 
   // We read all the values one by one
   while (beg_it != end_it)
@@ -369,10 +369,10 @@ struct minuit_behavior<
     if (idx == std::string::npos)
     {
       // The OSC message is a standard OSC one, carrying a value.
-      auto node = ossia::net::find_node(dev.getRootNode(), full_address);
+      auto node = ossia::net::find_node(dev.get_root_node(), full_address);
       if (node)
       {
-        if (auto addr = node->getAddress())
+        if (auto addr = node->get_address())
         {
           ossia::net::update_value(
                 *addr, ++mess_it, mess.ArgumentsEnd(), mess.ArgumentCount() - 1);
@@ -393,8 +393,8 @@ struct minuit_behavior<
       ++mess_it;
       // mess_it is now at the first argument after the address:attribute
 
-      if (auto node = ossia::net::find_node(dev.getRootNode(), address))
-      if (auto addr = node->getAddress())
+      if (auto node = ossia::net::find_node(dev.get_root_node(), address))
+      if (auto addr = node->get_address())
       switch (attr)
       {
         case minuit_attribute::Value:
@@ -405,42 +405,42 @@ struct minuit_behavior<
         }
         case minuit_attribute::Type:
         {
-          addr->setValueType(
+          addr->set_value_type(
                 ossia::minuit::type_from_minuit_type_text(mess_it->AsStringUnchecked()));
 
           break;
         }
         case minuit_attribute::RangeBounds:
         {
-          addr->setDomain(
+          addr->set_domain(
                 get_domain(*addr, mess_it, mess.ArgumentsEnd()));
           break;
         }
         case minuit_attribute::RangeClipMode:
         {
-          addr->setBoundingMode(
+          addr->set_bounding(
                 from_minuit_bounding_text(mess_it->AsStringUnchecked()));
           break;
         }
         case minuit_attribute::RepetitionFilter:
         {
-          addr->setRepetitionFilter(
+          addr->set_repetition_filter(
                 static_cast<repetition_filter>(mess_it->AsInt32Unchecked()));
           break;
         }
         case minuit_attribute::Dataspace:
         {
-          addr->setUnit(ossia::parse_dataspace(mess_it->AsStringUnchecked()));
+          addr->set_unit(ossia::parse_dataspace(mess_it->AsStringUnchecked()));
           break;
         }
         case minuit_attribute::DataspaceUnit:
         {
-          addr->setUnit(ossia::parse_unit(mess_it->AsStringUnchecked(), addr->getUnit()));
+          addr->set_unit(ossia::parse_unit(mess_it->AsStringUnchecked(), addr->get_unit()));
           break;
         }
         case minuit_attribute::Service:
         {
-          addr->setAccessMode(from_minuit_service_text(mess_it->AsStringUnchecked()));
+          addr->set_access(from_minuit_service_text(mess_it->AsStringUnchecked()));
           break;
         }
         case minuit_attribute::Description:
@@ -568,7 +568,7 @@ struct minuit_behavior<minuit_command::Answer,
       child_address.append(child.begin(), child.end());
 
       // Create the actual node
-      ossia::net::find_or_create_node(dev.getRootNode(), address);
+      ossia::net::find_or_create_node(dev.get_root_node(), address);
 
       // request children
       proto.namespace_refresh(sub_request, child_address);
@@ -584,8 +584,8 @@ struct minuit_behavior<minuit_command::Answer,
     using namespace oscpack;
 
     // Find or create the node
-    auto& n = ossia::net::find_or_create_node(dev.getRootNode(), address);
-    n.createAddress(ossia::val_type::IMPULSE);
+    auto& n = ossia::net::find_or_create_node(dev.get_root_node(), address);
+    n.create_address(ossia::val_type::IMPULSE);
 
     // A data can also have child nodes :
     handle_container(proto, dev, address, beg_it, end_it);

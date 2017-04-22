@@ -31,29 +31,29 @@ class OSSIA_EXPORT time_constraint
 {
 
 public:
-  auto getRunning() const { return mClock->getRunning(); }
-  auto getDate() const { return mClock->getDate(); }
-  auto getPosition() const { return mClock->getPosition(); }
-  auto getDriveMode() const { return mClock->getDriveMode(); }
-  auto getGranularity() const { return mClock->getGranularity(); }
-  auto getOffset() const { return mClock->getOffset(); }
-  auto getSpeed() const { return mClock->getSpeed(); }
-  auto getExecutionStatusCallback() const { return mClock->getExecutionStatusCallback(); }
-  auto paused() const { return mClock->paused(); }
-  void setOffset(ossia::time_value g) const { mClock->setOffset(g); }
-  void setDriveMode(clock::DriveMode m) const { mClock->setDriveMode(m); }
-  void setGranularity(ossia::time_value g) const { mClock->setGranularity(g); }
-  void setSpeed(double g) const { mClock->setSpeed(g); }
-  bool tick() { return mClock->tick(); }
-  bool tick(ossia::time_value usec) { return mClock->tick(usec); }
-  void setExecutionStatusCallback(clock::ExecutionStatusCallback c) { mClock->setExecutionStatusCallback(c); }
+  auto running() const { return m_clock->running(); }
+  auto get_date() const { return m_clock->get_date(); }
+  auto get_position() const { return m_clock->get_position(); }
+  auto get_drive_mode() const { return m_clock->get_drive_mode(); }
+  auto get_granularity() const { return m_clock->get_granularity(); }
+  auto get_offset() const { return m_clock->get_offset(); }
+  auto get_speed() const { return m_clock->get_speed(); }
+  auto get_exec_status_callback() const { return m_clock->get_exec_status_callback(); }
+  auto paused() const { return m_clock->paused(); }
+  void set_offset(ossia::time_value g) const { m_clock->set_offset(g); }
+  void set_drive_mode(clock::drive_mode m) const { m_clock->set_drive_mode(m); }
+  void set_granularity(ossia::time_value g) const { m_clock->set_granularity(g); }
+  void set_speed(double g) const { m_clock->set_speed(g); }
+  bool tick() { return m_clock->tick(); }
+  bool tick(ossia::time_value usec) { return m_clock->tick(usec); }
+  void set_exec_status_callback(clock::exec_status_callback c) { m_clock->set_exec_status_callback(c); }
 
-  clock& getClock() { return *mClock; }
+  clock& get_clock() { return *m_clock; }
   /*! to get the constraint execution back
    \param const #TimeValue process clock position
    \param const #TimeValue process clock date
    \param std::shared_ptr<#State> */
-  using ExecutionCallback
+  using exec_callback
       = std::function<void(ossia::time_value, time_value, const state&)>;
 
   /*! constructor
@@ -67,17 +67,17 @@ public:
    \param const #TimeValue& maximal duration of the #time_constraint
    \return std::shared_ptr<#time_constraint> */
    static std::shared_ptr<time_constraint> create(
-      time_constraint::ExecutionCallback, time_event&,
+      time_constraint::exec_callback, time_event&,
       time_event&, time_value = Infinite, time_value = Zero,
       time_value = Infinite);
 
    time_constraint(
-       time_constraint::ExecutionCallback, time_event&,
+       time_constraint::exec_callback, time_event&,
        time_event&, time_value = Infinite, time_value = Zero,
        time_value = Infinite);
 
    time_constraint(
-       time_constraint::ExecutionCallback, std::unique_ptr<clock>, time_event&,
+       time_constraint::exec_callback, std::unique_ptr<clock>, time_event&,
        time_event&, time_value = Infinite, time_value = Zero,
        time_value = Infinite);
 
@@ -115,80 +115,80 @@ public:
     \param #time_constraint::ExecutionCallback to use to be notified at each
     step
     */
-  void setCallback(ExecutionCallback);
+  void set_callback(exec_callback);
 
   //! This callback won't compute the state.
-  void setStatelessCallback(ExecutionCallback);
+  void set_stateless_callback(exec_callback);
 
   /*! get the #time_constraint nominal duration
    \return const #TimeValue& nominal duration */
-  const time_value& getDurationNominal() const;
+  const time_value& get_nominal_duration() const;
 
   /*! set the #time_constraint duration
    \param const #TimeValue& duration
    \return #time_constraint the constraint */
-  time_constraint& setDurationNominal(ossia::time_value);
+  time_constraint& set_nominal_duration(ossia::time_value);
 
   /*! get the #time_constraint minimal duration
    \return const #TimeValue& minimal duration */
-  const time_value& getDurationMin() const;
+  const time_value& get_min_duration() const;
 
   /*! set the #time_constraint minimal duration
    \param const #TimeValue& minimal duration
    \return #time_constraint the constraint */
-  time_constraint& setDurationMin(ossia::time_value);
+  time_constraint& set_min_duration(ossia::time_value);
 
   /*! get the #time_constraint maximal duration
    \return const #TimeValue& maximal duration */
-  const time_value& getDurationMax() const;
+  const time_value& get_max_duration() const;
 
   /*! set the #time_constraint maximal duration
    \param const #TimeValue& maximal duration
    \return #time_constraint the constraint */
-  time_constraint& setDurationMax(ossia::time_value);
+  time_constraint& set_max_duration(ossia::time_value);
 
   /*! get the event from where the #time_constraint starts
    \return std::shared_ptr<#time_event> start event */
-  time_event& getStartEvent() const;
+  time_event& get_start_event() const;
 
   /*! get the event from where the #time_constraint starts
    \return std::shared_ptr<#time_event> start event */
-  time_event& getEndEvent() const;
+  time_event& get_end_event() const;
 
   /*! add a #TimeProcess
    \details it also stores the #TimeProcess's start and end #States into the
    #time_constraint's start and end #time_events
    \param std::shared_ptr<#TimeProcess> to insert */
-  void addTimeProcess(std::shared_ptr<time_process>);
+  void add_time_process(std::shared_ptr<time_process>);
 
   /*! remove a #TimeProcess
    \details it also removes the #TimeProcess's start and end #States from the
    #time_constraint's start and end #time_events
    \param std::shared_ptr<#TimeProcess> to insert */
-  void removeTimeProcess(time_process*);
+  void remove_time_process(time_process*);
 
   /*! get time processes attached to the #time_constraint
    \return #Container<#TimeProcess> */
-  const std::vector<std::shared_ptr<time_process>>& timeProcesses() const
+  const std::vector<std::shared_ptr<time_process>>& get_time_processes() const
   {
-    return mTimeProcesses;
+    return m_processes;
   }
 
 private:
-  clock::ExecutionCallback make_callback();
-  clock::ExecutionCallback make_stateless_callback();
+  clock::exec_callback make_callback();
+  clock::exec_callback make_stateless_callback();
   ossia::state state_impl();
   ossia::state make_state();
 
-  std::vector<std::shared_ptr<time_process>> mTimeProcesses;
-  std::unique_ptr<clock> mClock;
-  time_constraint::ExecutionCallback mCallback;
+  std::vector<std::shared_ptr<time_process>> m_processes;
+  std::unique_ptr<clock> m_clock;
+  time_constraint::exec_callback m_callback;
 
-  time_event& mStartEvent;
-  time_event& mEndEvent;
+  time_event& m_start;
+  time_event& m_end;
 
-  time_value mDurationNominal{};
-  time_value mDurationMin{};
-  time_value mDurationMax{};
+  time_value m_nominal{};
+  time_value m_min{};
+  time_value m_max{};
 };
 }
