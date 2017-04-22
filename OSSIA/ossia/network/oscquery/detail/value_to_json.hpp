@@ -65,7 +65,7 @@ struct value_to_json_value
   rapidjson::Value operator()(int v) const { return rapidjson::Value{v}; }
   rapidjson::Value operator()(float v) const { return rapidjson::Value{v}; }
   rapidjson::Value operator()(bool v) const { return rapidjson::Value{v}; }
-  rapidjson::Value operator()(char v) const { return rapidjson::Value{&v, 1}; } // 1-char string
+  rapidjson::Value operator()(char v) const { return rapidjson::Value{&v, 1, allocator}; } // 1-char string
   rapidjson::Value operator()(const std::string& v) const
   { return rapidjson::Value{v,allocator}; }
 

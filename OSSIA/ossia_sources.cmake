@@ -366,17 +366,17 @@ set(OSSIA_QT_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.cpp"
     )
 set(OSSIA_QML_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/Binding.qml"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/Callback.qml"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/MidiSink.qml"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/MidiSource.qml"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/Node.qml"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/OSC.qml"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/OSCQueryClient.qml"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/OSCQueryServer.qml"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/qmldir"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/Reader.qml"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/Writer.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Binding.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Callback.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSink.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSource.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Node.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSC.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryClient.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryServer.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/qmldir"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Reader.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Writer.qml"
   )
 
 set(OSSIA_DATAFLOW_HEADERS

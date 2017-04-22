@@ -326,6 +326,9 @@ TEST_CASE ("Types conversion") {
     float f (3.566);
     std::string s ("bonjour");
 
+    ossia::value v = c;
+    REQUIRE(v.getType() == ossia::val_type::CHAR);
+    REQUIRE(*v.target<char>() == '2');
     p.insert(std::make_pair ("/true", btrue));
     p.insert(std::make_pair ("/false", bfalse));
     p.insert(std::make_pair ("/char", c));
