@@ -10,14 +10,14 @@ serial_device::serial_device(const QByteArray& code, const QSerialPortInfo& bot)
   ossia::net::device_base{std::make_unique<serial_protocol>(code, bot)},
   serial_node{{}, *this}
 {
-  mProtocol->setDevice(*this);
+  m_protocol->set_device(*this);
 }
 
-std::string serial_device::getName() const
-{ return mName; }
+std::string serial_device::get_name() const
+{ return m_name; }
 
-node_base& serial_device::setName(std::string n)
-{ mName = n; return *this; }
+node_base& serial_device::set_name(std::string n)
+{ m_name = n; return *this; }
 
 const node_base& serial_device::get_root_node() const
 {

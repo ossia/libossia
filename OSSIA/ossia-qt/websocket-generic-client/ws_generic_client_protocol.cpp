@@ -118,7 +118,7 @@ bool ws_generic_client_protocol::observe(ossia::net::address_base& addr_base, bo
   return true;
 }
 
-void ws_generic_client_protocol::setDevice(device_base& dev)
+void ws_generic_client_protocol::set_device(device_base& dev)
 {
   if(auto htdev = dynamic_cast<ws_generic_client_device*>(&dev))
   {

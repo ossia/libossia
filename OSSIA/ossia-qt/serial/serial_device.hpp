@@ -17,8 +17,8 @@ public:
       const QByteArray& code,
       const QSerialPortInfo& bot);
 
-  std::string getName() const override;
-  node_base& setName(std::string n) override;
+  std::string get_name() const override;
+  node_base& set_name(std::string n) override;
 
   const ossia::net::node_base& get_root_node() const override;
   ossia::net::node_base& get_root_node() override;

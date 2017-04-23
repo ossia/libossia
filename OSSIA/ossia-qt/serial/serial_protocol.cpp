@@ -81,17 +81,17 @@ bool serial_protocol::push(const ossia::net::address_base& addr)
   return false;
 }
 
-bool serial_protocol::observe(address_base&, bool)
+bool serial_protocol::observe(ossia::net::address_base&, bool)
 {
   return false;
 }
 
-bool serial_protocol::update(node_base& node_base)
+bool serial_protocol::update(ossia::net::node_base& node_base)
 {
   return true;
 }
 
-void serial_protocol::setDevice(device_base& dev)
+void serial_protocol::set_device(device_base& dev)
 {
   if(auto htdev = dynamic_cast<serial_device*>(&dev))
   {

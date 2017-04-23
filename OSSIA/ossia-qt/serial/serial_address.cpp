@@ -14,9 +14,9 @@ serial_address::serial_address(
 {
 }
 
-void serial_address::valueCallback(const value& val)
+void serial_address::valueCallback(const ossia::value& val)
 {
-  this->setValue(val);
+  this->set_value(val);
   send(m_value);
 }
 
