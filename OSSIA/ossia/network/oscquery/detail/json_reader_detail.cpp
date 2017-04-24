@@ -199,33 +199,36 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, domain& res)
     dom.values.resize(val.GetArray().Size());
 
     int i = 0;
-    for(const auto& elt : val.GetArray())
+    for(const rapidjson::Value& elt : val.GetArray())
     {
-      auto min_it = elt.FindMember("MIN");
-      auto max_it = elt.FindMember("MAX");
-      auto values_it = elt.FindMember("VALS");
-
-      auto mem_end = elt.MemberEnd();
-
-      if(values_it != mem_end)
+      if(elt.IsObject())
       {
-        if(values_it->value.IsArray())
+        auto min_it = elt.FindMember("MIN");
+        auto max_it = elt.FindMember("MAX");
+        auto values_it = elt.FindMember("VALS");
+
+        auto mem_end = elt.MemberEnd();
+
+        if(values_it != mem_end)
         {
-          for(auto& val : values_it->value.GetArray())
+          if(values_it->value.IsArray())
           {
-            dom.values[i].insert(ReadValue(val));
+            for(auto& val : values_it->value.GetArray())
+            {
+              dom.values[i].insert(ReadValue(val));
+            }
           }
         }
-      }
 
-      if(min_it != mem_end)
-      {
-        dom.min[i] = ReadValue(min_it->value);
-      }
+        if(min_it != mem_end)
+        {
+          dom.min[i] = ReadValue(min_it->value);
+        }
 
-      if(max_it != mem_end)
-      {
-        dom.max[i] = ReadValue(max_it->value);
+        if(max_it != mem_end)
+        {
+          dom.max[i] = ReadValue(max_it->value);
+        }
       }
 
       i++;
