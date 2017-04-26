@@ -1,4 +1,4 @@
-#N canvas 1161 300 530 300 10;
+#N canvas 1158 313 530 300 10;
 #X obj 58 227 ossia.client;
 #X msg 64 187 connect oscquery;
 #X obj 58 249 print;
@@ -7,7 +7,7 @@
 #X obj 114 56 ossia.remote modratio;
 #X floatatom 72 86 5 0 0 0 - - -, f 5;
 #X obj 115 86 ossia.remote modgain;
-#X obj 215 127 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X obj 215 127 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #N canvas 0 145 450 381 randomtest 0;
 #X obj 126 214 makenote 64 200;
@@ -48,12 +48,13 @@
 #X connect 14 0 15 0;
 #X restore 215 148 pd randomtest;
 #X obj 215 201 ossia.remote note;
-#X msg 243 176 42 115;
+#X msg 243 176 30 0;
 #X floatatom 275 61 5 0 0 0 - - -, f 5;
 #X floatatom 275 91 5 0 0 0 - - -, f 5;
 #X obj 318 91 ossia.remote decay;
 #X obj 317 61 ossia.remote attack;
 #X text 234 126 generate random melody;
+#X obj 64 166 loadbang;
 #X connect 0 0 2 0;
 #X connect 1 0 0 0;
 #X connect 3 0 0 0;
@@ -68,3 +69,4 @@
 #X connect 13 0 14 0;
 #X connect 14 0 13 0;
 #X connect 15 0 12 0;
+#X connect 17 0 1 0;
