@@ -14,6 +14,7 @@ option(OSSIA_OSX_FAT_LIBRARIES "Build 32 and 64 bit fat libraries on OS X" OFF)
 option(OSSIA_OSX_RETROCOMPATIBILITY "Build for older OS X versions" OFF)
 option(OSSIA_MOST_STATIC "Try to make binaries that are mostly static" OFF)
 option(OSSIA_DATAFLOW "Dataflow features" ON)
+option(OSSIA_SPLIT_DEBUG "Split debug info" ON)
 
 # Bindings :
 option(OSSIA_JAVA "Build JNI bindings" OFF)
@@ -79,21 +80,22 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
 else()
   check_cxx_compiler_flag("-fuse-ld=lld" LLD_LINKER_SUPPORTED)
   check_cxx_compiler_flag("-fuse-ld=gold" GOLD_LINKER_SUPPORTED)
-  if(LLD_LINKER_SUPPORTED) 
+  if(LLD_LINKER_SUPPORTED)
     set(LINKER_IS_LLD 1)
   elseif(GOLD_LINKER_SUPPORTED)
     set(LINKER_IS_GOLD 1)
   endif()
 endif()
 
-set(DEBUG_SPLIT_FLAG "-gsplit-dwarf")
-set(GOLD_FLAGS 
+if(OSSIA_SPLIT_DEBUG)
+  set(DEBUG_SPLIT_FLAG "-gsplit-dwarf")
+set(GOLD_FLAGS
   -Wa,--compress-debug-sections
   -Wl,--compress-debug-sections=zlib
   -Wl,--dynamic-list-cpp-new
   -Wl,--dynamic-list-cpp-typeinfo
 )
-
+endif()
 if(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*arm.*")
     set(OSSIA_ARCHITECTURE arm)
 elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*aarch64.*")
@@ -170,26 +172,28 @@ if(MSVC)
         ${OSSIA_LINK_OPTIONS}
     )
 else()
+  if(CMAKE_BUILD_TYPE MATCHES Release)
     set(OSSIA_LINK_OPTIONS
       -ffunction-sections
       -fdata-sections
     )
+  endif()
 
     if(CMAKE_COMPILER_IS_GNUCXX)
       set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
         -fvar-tracking-assignments
       )
     endif()
-     
-    if(UNIX AND NOT APPLE)
+
+    if(UNIX AND NOT APPLE AND NOT OSSIA_SPLIT_DEBUG)
       set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
         -Wl,--gc-sections
         -Wl,-Bsymbolic-functions
       )
     endif()
-     
+
     if(LINKER_IS_GOLD OR LINKER_IS_LLD)
-      if(NOT OSSIA_SANITIZE)
+      if(NOT OSSIA_SANITIZE AND NOT OSSIA_SPLIT_DEBUG)
         set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
           ${DEBUG_SPLIT_FLAG}
         )
@@ -200,11 +204,11 @@ else()
         endif()
       endif()
     endif()
-    
+
     if(LINKER_IS_GOLD)
       set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} ${GOLD_FLAGS})
     endif()
-     
+
     if(OSSIA_MOST_STATIC)
       set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -static -static-libgcc -static-libstdc++)
     endif()
