@@ -220,6 +220,7 @@ else()
     endif()
 
     set(OSSIA_COMPILE_OPTIONS
+        ${OSSIA_COMPILE_OPTIONS}
         -std=c++1z
         -Wall
         -Wextra
@@ -228,7 +229,6 @@ else()
         -Wno-missing-braces
         -Wnon-virtual-dtor
         -pedantic
-        -Wcast-align
         -Wunused
         -Woverloaded-virtual
         -pipe
@@ -237,7 +237,11 @@ else()
         -Wmissing-field-initializers
         ${OSSIA_LINK_OPTIONS}
     )
-
+    if(NOT CMAKE_COMPILER_IS_GNUCXX)
+      set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS}
+        -Wno-cast-align
+        -Wno-unused-local-typedef)
+    endif()
     if(OSSIA_CI)
         if(NOT CMAKE_COMPILER_IS_GNUCXX)
             set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -Wl,-S)

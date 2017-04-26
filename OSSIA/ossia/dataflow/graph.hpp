@@ -75,7 +75,7 @@ public:
 
   time_value m_time{};
 
-  friend class init_node_visitor;
+  friend struct init_node_visitor;
   friend struct inlet;
   friend struct outlet;
   friend class ::DataflowTest;

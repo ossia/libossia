@@ -26,7 +26,8 @@ public:
       res[i] = audio[i];
 
     // Fill remaining with zeros.
-    for(int i = N; i < res.size(); i++)
+    const int M = res.size();
+    for(int i = N; i < M; i++)
       res[i] = 0.;
   }
 

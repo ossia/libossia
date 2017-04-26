@@ -17,14 +17,14 @@ namespace net
 {
 osc_protocol::osc_protocol(
     std::string ip, uint16_t remote_port, uint16_t local_port)
-  : m_ip{ip}
-  , m_remote_port{remote_port}
-  , m_local_port{local_port}
-  , m_sender{std::make_unique<osc::sender>(m_logger, ip, remote_port)}
+  : m_sender{std::make_unique<osc::sender>(m_logger, ip, remote_port)}
   , m_receiver{std::make_unique<osc::receiver>(local_port, [=](const oscpack::ReceivedMessage& m,
                                               const oscpack::IpEndpointName& ip) {
   this->on_received_message(m, ip);
 })}
+  , m_ip{ip}
+  , m_remote_port{remote_port}
+  , m_local_port{local_port}
 {
   if(m_receiver->port() != local_port)
   {;
