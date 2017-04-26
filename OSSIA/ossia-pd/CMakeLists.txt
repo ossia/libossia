@@ -85,6 +85,10 @@ set(PROJECT_SRCS
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
 use_gold(${PROJECT_NAME})
 
+# These two lines are used to display the QMLs in the project view of IDEs
+set(QMLS "examples/client-example.qml")
+add_custom_target(pd_qml_examples SOURCES ${QMLS})
+
 target_link_libraries(${PROJECT_NAME} PRIVATE CicmWrapper ossia)
 if(MSVC)
     target_link_libraries(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}\\pd.lib")
