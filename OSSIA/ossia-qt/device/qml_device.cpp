@@ -96,7 +96,7 @@ void qml_device::setupLocal()
   m_device = std::make_unique<ossia::net::generic_device>(std::make_unique<ossia::net::multiplex_protocol>(), "device");
 }
 
-void qml_device::openOSC(QString ip, int localPort, int remotePort)
+bool qml_device::openOSC(QString ip, int localPort, int remotePort)
 {
   m_device.reset();
 
@@ -105,7 +105,7 @@ void qml_device::openOSC(QString ip, int localPort, int remotePort)
                  ip.toStdString(), (uint16_t)remotePort, (uint16_t)localPort};
     m_device = std::make_unique<ossia::net::generic_device>(
                  std::unique_ptr<ossia::net::protocol_base>(proto), "device");
-    return;
+    return true;
   } catch(std::exception& e) {
     ossia::logger().error("qml_device::openOSC: {}", e.what());
   } catch(...) {
@@ -113,9 +113,10 @@ void qml_device::openOSC(QString ip, int localPort, int remotePort)
   }
 
   setupLocal();
+  return false;
 }
 
-void qml_device::openOSCQueryServer(int wsPort, int oscPort)
+bool qml_device::openOSCQueryServer(int wsPort, int oscPort)
 {
   try {
     if(auto local = localProtocol())
@@ -128,15 +129,17 @@ void qml_device::openOSCQueryServer(int wsPort, int oscPort)
             std::make_unique<ossia::oscquery::oscquery_server_protocol>(
               oscPort,
               wsPort));
+      return true;
     }
   } catch(std::exception& e) {
     ossia::logger().error("qml_device::openOSCQueryServer: {}", e.what());
   } catch(...) {
     ossia::logger().error("qml_device::openOSCQueryServer: error");
   }
+    return false;
 }
 
-void qml_device::openOSCQueryClient(QString address, int localOscPort)
+bool qml_device::openOSCQueryClient(QString address, int localOscPort)
 {
   m_device.reset();
   try {
@@ -144,7 +147,7 @@ void qml_device::openOSCQueryClient(QString address, int localOscPort)
                  address.toStdString(), (uint16_t)localOscPort};
     m_device = std::make_unique<ossia::net::generic_device>(std::unique_ptr<ossia::net::protocol_base>(proto), "device");
     proto->update(m_device->get_root_node());
-    return;
+    return true;
   } catch(std::exception& e) {
     ossia::logger().error("qml_device::openOSCQueryClient: {}", e.what());
   } catch(...) {
@@ -152,9 +155,10 @@ void qml_device::openOSCQueryClient(QString address, int localOscPort)
   }
 
   setupLocal();
+  return false;
 }
 
-void qml_device::openMIDIInputDevice(int port)
+bool qml_device::openMIDIInputDevice(int port)
 {
   m_device.reset();
 
@@ -165,7 +169,7 @@ void qml_device::openMIDIInputDevice(int port)
     auto dev = std::make_unique<midi_device>(std::unique_ptr<ossia::net::protocol_base>(proto));
     dev->update_namespace();
     m_device = std::move(dev);
-    return;
+    return true;
   } catch(std::exception& e) {
     ossia::logger().error("qml_device::openMIDIInputDevice: {}", e.what());
   } catch(...) {
@@ -174,9 +178,10 @@ void qml_device::openMIDIInputDevice(int port)
 #endif
 
   setupLocal();
+  return false;
 }
 
-void qml_device::openMIDIOutputDevice(int port)
+bool qml_device::openMIDIOutputDevice(int port)
 {
   m_device.reset();
 
@@ -188,7 +193,7 @@ void qml_device::openMIDIOutputDevice(int port)
     dev->update_namespace();
     m_device = std::move(dev);
 
-    return;
+    return true;
   } catch(std::exception& e) {
     ossia::logger().error("qml_device::openMIDIOutputDevice: {}", e.what());
   } catch(...) {
@@ -197,6 +202,7 @@ void qml_device::openMIDIOutputDevice(int port)
 #endif
 
   setupLocal();
+  return false;
 }
 
 QVariantMap qml_device::getMIDIInputDevices() const

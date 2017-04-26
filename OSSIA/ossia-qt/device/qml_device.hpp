@@ -62,11 +62,11 @@ public:
   void remove(qml_callback* n);
 
 public slots:
-  void openOSC(QString ip, int localPort, int remotePort);
-  void openOSCQueryServer(int WSport, int oscPort);
-  void openOSCQueryClient(QString address, int localOscPort);
-  void openMIDIInputDevice(int device);
-  void openMIDIOutputDevice(int device);
+  bool openOSC(QString ip, int localPort, int remotePort);
+  bool openOSCQueryServer(int WSport, int oscPort);
+  bool openOSCQueryClient(QString address, int localOscPort);
+  bool openMIDIInputDevice(int device);
+  bool openMIDIOutputDevice(int device);
   QVariantMap getMIDIInputDevices() const;
   QVariantMap getMIDIOutputDevices() const;
 
