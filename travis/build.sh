@@ -39,7 +39,11 @@ case "$TRAVIS_OS_NAME" in
         gem install coveralls-lcov
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=Debug -DOSSIA_TESTING=1 -DOSSIA_COVERAGE=1 -DOSSIA_CI=1 ..
         $CMAKE_BIN --build . -- -j2
-        $CMAKE_BIN --build . --target ossia_coverage
+        $CMAKE_BIN --build . --target ExperimentalTest
+        rm -rf **/*.o
+        lcov --compat-libtool --directory .. --capture --output-file coverage.info
+        lcov --remove coverage.info '*.moc' 'moc_*' 'qrc_*' 'ui_*' 'tests/*' '/usr/*' '/opt/*' '3rdparty/*' --output-file coverage.info.cleaned
+
         mv coverage.info.cleaned coverage.info
         coveralls-lcov coverage.info
       ;;
