@@ -89,12 +89,14 @@ endif()
 
 if(OSSIA_SPLIT_DEBUG)
   set(DEBUG_SPLIT_FLAG "-gsplit-dwarf")
-set(GOLD_FLAGS
-  -Wa,--compress-debug-sections
-  -Wl,--compress-debug-sections=zlib
-  -Wl,--dynamic-list-cpp-new
-  -Wl,--dynamic-list-cpp-typeinfo
-)
+  if(NOT APPLE)
+  set(GOLD_FLAGS
+    -Wa,--compress-debug-sections
+    -Wl,--compress-debug-sections=zlib
+    -Wl,--dynamic-list-cpp-new
+    -Wl,--dynamic-list-cpp-typeinfo
+  )
+  endif()
 endif()
 if(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*arm.*")
     set(OSSIA_ARCHITECTURE arm)
