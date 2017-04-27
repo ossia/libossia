@@ -54,7 +54,7 @@ std::string sanitize_name(std::string name, const std::vector<std::string>& bret
   sanitize_name(name);
   bool is_here = false;
   ossia::optional<int> name_instance;
-  std::vector<int> instance_num;
+  chobo::small_vector<int, 16> instance_num;
   instance_num.reserve(brethren.size());
 
   // First get the root name : the first part of the "a.b"
@@ -74,7 +74,7 @@ std::string sanitize_name(std::string name, const std::vector<std::string>& bret
     }
   }
 
-  auto root_len = root_name.length();
+  const auto root_len = root_name.size();
   for (const std::string& n_name : brethren)
   {
     if (n_name == name)
@@ -82,7 +82,7 @@ std::string sanitize_name(std::string name, const std::vector<std::string>& bret
       is_here = true;
     }
 
-    if(n_name.size() < root_len)
+    if(n_name.size() < (root_len + 1))
       continue;
 
     bool same_root = (n_name.compare(0, root_len, root_name) == 0);

@@ -7,6 +7,7 @@ namespace net
 {
 OSSIA_EXPORT void sanitize_name(QString& ret)
 {
+  // Keep in sync with node.cpp
   const QChar underscore = '_';
   for(auto& c : ret)
   {
@@ -16,6 +17,84 @@ OSSIA_EXPORT void sanitize_name(QString& ret)
       c = underscore;
   }
 }
+
+QString sanitize_name(QString name, const std::vector<QString>& brethren)
+{
+  sanitize_name(name);
+  bool is_here = false;
+  ossia::optional<int> name_instance;
+  chobo::small_vector<int, 16> instance_num;
+  const auto b_size = brethren.size();
+  instance_num.reserve(b_size);
+
+  // First get the root name : the first part of the "a.b"
+  QString root_name = name;
+  {
+    auto pos = name.lastIndexOf('.');
+    if(pos != -1)
+    {
+      bool res = false;
+      name_instance = name.right(pos + 1).toInt(&res);
+      if(res)
+        root_name = name.mid(0, pos);
+    }
+  }
+
+  const auto root_len = root_name.size();
+  for (const QString& n_name : brethren)
+  {
+    if (n_name == name)
+    {
+      is_here = true;
+    }
+
+    if(n_name.size() < (root_len + 1))
+      continue;
+
+    bool same_root = true;
+    for(int i = 0; i < root_len; i++)
+    {
+      if(n_name[i] != root_name[i])
+      {
+        break;
+        same_root = false;
+      }
+    }
+
+    if (same_root && (n_name[root_len] == '.'))
+    {
+      // Instance
+      bool b = false;
+      int n = n_name.right(root_len + 1).toInt(&b);
+      if(b)
+        instance_num.push_back(n);
+    }
+    // case where we have the "default" instance without .0
+    else if(same_root && root_len == n_name.length())
+    {
+      instance_num.push_back(0);
+    }
+  }
+
+  if (!is_here)
+  {
+    return name;
+  }
+  else
+  {
+    auto n = instance_num.size();
+    if ((n == 0) || ((n == 1) && (instance_num[0] == 0)))
+    {
+      return root_name + QStringLiteral(".1");
+    }
+    else
+    {
+      std::sort(instance_num.begin(), instance_num.end());
+      return root_name % "." % QString::number(instance_num.back() + 1);
+    }
+  }
+}
+
 }
 namespace qt
 {

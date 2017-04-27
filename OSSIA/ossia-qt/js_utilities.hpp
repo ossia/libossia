@@ -458,6 +458,7 @@ QMetaObject::Connection connectSignalToMatchingMethod(
 
 namespace net {
 OSSIA_EXPORT void sanitize_name(QString& str);
+OSSIA_EXPORT QString sanitize_name(QString name_base, const std::vector<QString>& brethren);
 }
 
 }
