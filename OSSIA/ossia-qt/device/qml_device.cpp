@@ -274,7 +274,7 @@ void qml_device::recreate(QObject* root)
 
     {
       auto props = m_properties;
-      for(auto obj : props)
+      for(const auto& obj : props)
       {
         if(obj.second) obj.first->resetNode();
         else remove(obj.first);

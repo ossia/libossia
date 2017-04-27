@@ -99,6 +99,18 @@ auto max_element(Vector&& v, Fun fun)
     return std::max_element(std::begin(v), std::end(v), fun);
 }
 
+template<typename Vector>
+auto sort(Vector&& v)
+{
+  return std::sort(std::begin(v), std::end(v));
+}
+
+template<typename Vector>
+auto unique(Vector&& v)
+{
+  return std::unique(std::begin(v), std::end(v));
+}
+
 template<typename Vector, typename Fun>
 auto sort(Vector&& v, Fun fun)
 {

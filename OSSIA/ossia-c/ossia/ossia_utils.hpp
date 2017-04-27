@@ -5,13 +5,12 @@
 #include <algorithm>
 #include <cstring>
 #include <cstdio>
-#include <ossia-c/log/tinyformat.h>
 #include <ossia-c/log/ossia_log.h>
 
 template<typename Str, typename... Args>
 void DEBUG_LOG_FMT(Str fmt, Args... args)
 {
-  auto str = tfm::format(fmt, args...);
+  auto str = fmt::format(fmt, args...);
   ossia_log_error(str.c_str());
 }
 struct ossia_protocol
