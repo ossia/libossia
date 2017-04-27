@@ -911,8 +911,11 @@ void make_preset_node(ossia::net::node_base& node, ossia::presets::preset& prese
   if (auto parent = node.get_parent()) {
     currentkey += "/" + device_to_preset_key(node, *parent);
   }
-
+  #if !defined(OSSIA_HAS_SHARED_MUTEX)
+  auto children = node.children_copy();
+  #else
   const auto& children = node.children();
+  #endif
 
   if (children.size() == 0) {
     if(auto addr = node.get_address())

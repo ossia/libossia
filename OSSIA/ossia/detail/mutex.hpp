@@ -2,6 +2,7 @@
 #include <ossia/detail/config.hpp>
 #include <mutex>
 #if !defined(__APPLE__)
+#define OSSIA_HAS_SHARED_MUTEX
 #include <shared_mutex>
 #endif
 namespace ossia
