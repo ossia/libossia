@@ -390,6 +390,7 @@ static std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol){
             } else tag += *c;
             c++;
         }
+        tags.push_back(tag);
     }
     return tags;
 }
