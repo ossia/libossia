@@ -1,4 +1,4 @@
-#N canvas 1103 237 572 617 10;
+#N canvas 1088 302 572 617 10;
 #X obj 289 441 ossia.device Pd;
 #X obj 4 318 osc~;
 #X obj 4 450 *~;
@@ -14,7 +14,7 @@
 #X obj 152 371 line~;
 #X obj 4 165 mtof;
 #X floatatom 4 194 5 0 0 0 - - -, f 5;
-#N canvas 668 363 980 664 envelope 0;
+#N canvas 628 242 860 426 envelope 1;
 #X obj 106 0 inlet;
 #X floatatom 146 90 5 0 0 0 - - -, f 5;
 #X obj 146 109 / 127;
@@ -38,10 +38,10 @@
 #X floatatom 229 80 5 0 0 0 - - -, f 5;
 #X floatatom 106 22 5 0 0 0 - - -, f 5;
 #X obj 146 341 *~;
-#X obj 219 149 ossia.param attack @type float 0unit ms @description
-"Attack time" @default 10;
-#X obj 229 45 ossia.param decay @type float 0unit ms @description "Decay
-time" @default 500;
+#X obj 229 38 ossia.param decay @type float @unit ms @description "Decay
+time" @tags envelope @default 500, f 78;
+#X obj 219 149 ossia.param attack @type int @unit ms @description "Attack
+time" @tags envelope @default 10, f 76;
 #X connect 0 0 21 0;
 #X connect 1 0 2 0;
 #X connect 2 0 3 0;
@@ -66,8 +66,8 @@ time" @default 500;
 #X connect 20 0 19 1;
 #X connect 21 0 12 0;
 #X connect 22 0 10 0;
-#X connect 23 0 11 0;
-#X connect 24 0 20 0;
+#X connect 23 0 20 0;
+#X connect 24 0 11 0;
 #X restore 74 482 pd envelope;
 #X obj 5 579 dac~;
 #X obj 4 14 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0 1
