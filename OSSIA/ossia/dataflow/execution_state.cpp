@@ -145,15 +145,15 @@ void execution_state::copy_from_global(net::address_base& addr, inlet& in)
 void execution_state::insert(const destination_t& dest, data_type v)
 {
   using namespace eggs::variants;
-  if(auto audio = get_if<audio_port>(&v))
+  if(auto audio = eggs::variants::get_if<audio_port>(&v))
   {
     insert(dest, std::move(*audio));
   }
-  else if(auto midi = get_if<midi_port>(&v))
+  else if(auto midi = eggs::variants::get_if<midi_port>(&v))
   {
     insert(dest, std::move(*midi));
   }
-  else if(auto val = get_if<value_port>(&v))
+  else if(auto val = eggs::variants::get_if<value_port>(&v))
   {
     insert(dest, std::move(*val));
   }

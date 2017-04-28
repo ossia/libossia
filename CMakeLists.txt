@@ -20,7 +20,7 @@ add_library(boost INTERFACE IMPORTED)
 set_property(TARGET boost PROPERTY
     INTERFACE_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})
 
-if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
+if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten AND NOT ANDROID)
     add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/ModernMIDI" EXCLUDE_FROM_ALL)
 endif()
 
@@ -32,6 +32,12 @@ endif()
 # Main library
 add_definitions(-DFMT_HEADER_ONLY=1)
 add_subdirectory(OSSIA)
+
+if(ANDROID)
+  return()
+endif()
+
+# Bindings
 if(OSSIA_PD)
     add_subdirectory(OSSIA/ossia-pd)
 endif()
@@ -39,6 +45,7 @@ endif()
 if(OSSIA_MAX)
     add_subdirectory(OSSIA/ossia-max)
 endif()
+
 if(NOT WIN32)
 if(OSSIA_PYTHON)
     add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/pybind11")
