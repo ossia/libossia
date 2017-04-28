@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <asio.hpp>
 #include <asio/placeholders.hpp>
 #include <boost/bind.hpp>

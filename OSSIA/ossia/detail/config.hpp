@@ -65,3 +65,11 @@ namespace ossia
 #if !defined(ASIO_STANDALONE)
   #define ASIO_STANDALONE 1
 #endif
+
+#if !defined(BOOST_REGEX_NO_LIB)
+#define BOOST_REGEX_NO_LIB
+#endif
+
+#if !defined(BOOST_DATE_TIME_NO_LIB)
+#define BOOST_DATE_TIME_NO_LIB
+#endif
