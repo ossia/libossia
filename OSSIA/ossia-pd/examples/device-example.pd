@@ -1,4 +1,4 @@
-#N canvas 1109 211 572 617 10;
+#N canvas 1088 302 572 617 10;
 #X obj 289 441 ossia.device Pd;
 #X obj 4 318 osc~;
 #X obj 4 450 *~;
@@ -8,17 +8,13 @@
 #X obj 289 463 print;
 #X obj 4 521 *~;
 #X obj 83 418 *~;
-#X obj 102 200 ossia.param modratio @default 4 @type float @desctiption
-"Modulator frequency ratio";
 #X text 196 266 convert dBFs to Pd's dB \, 100dB Pd = 0dBFS;
 #X obj 152 327 dbtorms;
 #X msg 152 349 \$1 10;
 #X obj 152 371 line~;
-#X obj 4 68 ossia.param note @type vec2f @desctiption "Midi note and
-velocity";
 #X obj 4 165 mtof;
 #X floatatom 4 194 5 0 0 0 - - -, f 5;
-#N canvas 674 337 980 664 envelope 0;
+#N canvas 628 242 860 426 envelope 1;
 #X obj 106 0 inlet;
 #X floatatom 146 90 5 0 0 0 - - -, f 5;
 #X obj 146 109 / 127;
@@ -41,11 +37,11 @@ velocity";
 #X obj 55 253 pack 0 100;
 #X floatatom 229 80 5 0 0 0 - - -, f 5;
 #X floatatom 106 22 5 0 0 0 - - -, f 5;
-#X obj 219 149 ossia.param attack @type float 0unit ms @desciption
-"Attack time" @default 10;
 #X obj 146 341 *~;
-#X obj 229 46 ossia.param decay @type float 0unit ms @desciption "Decay
-time" @default 500;
+#X obj 229 38 ossia.param decay @type float @unit ms @description "Decay
+time" @tags envelope @default 500, f 78;
+#X obj 219 149 ossia.param attack @type int @unit ms @description "Attack
+time" @tags envelope @default 10, f 76;
 #X connect 0 0 21 0;
 #X connect 1 0 2 0;
 #X connect 2 0 3 0;
@@ -55,8 +51,8 @@ time" @default 500;
 #X connect 6 0 4 0;
 #X connect 7 0 8 0;
 #X connect 8 0 9 0;
-#X connect 9 0 23 0;
-#X connect 9 0 23 1;
+#X connect 9 0 22 0;
+#X connect 9 0 22 1;
 #X connect 11 0 8 1;
 #X connect 12 0 13 0;
 #X connect 12 1 1 0;
@@ -69,16 +65,14 @@ time" @default 500;
 #X connect 19 0 9 0;
 #X connect 20 0 19 1;
 #X connect 21 0 12 0;
-#X connect 22 0 11 0;
-#X connect 23 0 10 0;
-#X connect 24 0 20 0;
+#X connect 22 0 10 0;
+#X connect 23 0 20 0;
+#X connect 24 0 11 0;
 #X restore 74 482 pd envelope;
 #X obj 5 579 dac~;
 #X obj 4 14 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0 1
 ;
 #X floatatom 152 285 5 0 0 0 - - -, f 5;
-#X obj 152 251 ossia.param modgain @default 0 @type float @desctiption
-"Modulator frequency gain" @unit dB;
 #X obj 152 305 + 100;
 #X obj 84 270 * 4;
 #N canvas 0 132 450 300 randomtest 0;
@@ -113,47 +107,53 @@ time" @default 500;
 #X connect 11 0 9 0;
 #X connect 12 0 9 0;
 #X restore 4 35 pd randomtest;
-#X msg 289 407 expose oscquery;
 #X obj 289 385 loadbang;
 #X text 97 513 A simple synth to demonstrate communiation between Ossia
 device and client.;
 #X text 97 543 You can use the patch "client-example.pd" or the QML
 application "client-example.qml" to control this device.;
 #X floatatom 118 176 5 0 0 0 - - -, f 5;
-#X obj 447 371 loadbang;
-#X msg 447 393 \; pd dsp 1;
+#X obj 435 330 loadbang;
+#X msg 435 352 \; pd dsp 1;
 #X obj 4 103 t a a;
 #X msg 74 130 \$2;
 #X obj 4 131 stripnote;
+#X obj 102 200 ossia.param modratio @default 4 @type float @description
+"Modulator frequency ratio";
+#X obj 152 236 ossia.param modgain @default 0 @type float @description
+"Modulator frequency gain" @unit dB;
+#X obj 4 68 ossia.param note @type vec2f @description "Midi note and
+velocity";
+#X msg 289 407 expose oscquery;
 #X connect 0 0 6 0;
 #X connect 1 0 2 0;
 #X connect 2 0 7 0;
 #X connect 3 0 8 0;
-#X connect 4 0 23 1;
+#X connect 4 0 20 1;
 #X connect 5 0 0 0;
-#X connect 7 0 18 0;
-#X connect 7 0 18 1;
+#X connect 7 0 16 0;
+#X connect 7 0 16 1;
 #X connect 8 0 2 1;
-#X connect 9 0 4 0;
+#X connect 10 0 11 0;
 #X connect 11 0 12 0;
-#X connect 12 0 13 0;
-#X connect 13 0 8 1;
-#X connect 14 0 32 0;
-#X connect 15 0 16 0;
-#X connect 16 0 1 0;
-#X connect 16 0 23 0;
-#X connect 17 0 7 1;
-#X connect 19 0 24 0;
-#X connect 20 0 22 0;
-#X connect 21 0 20 0;
-#X connect 22 0 11 0;
-#X connect 23 0 3 0;
-#X connect 24 0 14 0;
-#X connect 25 0 0 0;
-#X connect 26 0 25 0;
-#X connect 29 0 9 0;
-#X connect 30 0 31 0;
-#X connect 32 0 34 0;
-#X connect 32 1 33 0;
-#X connect 33 0 17 0;
-#X connect 34 0 15 0;
+#X connect 12 0 8 1;
+#X connect 13 0 14 0;
+#X connect 14 0 1 0;
+#X connect 14 0 20 0;
+#X connect 15 0 7 1;
+#X connect 17 0 21 0;
+#X connect 18 0 19 0;
+#X connect 19 0 10 0;
+#X connect 20 0 3 0;
+#X connect 21 0 33 0;
+#X connect 22 0 34 0;
+#X connect 25 0 31 0;
+#X connect 26 0 27 0;
+#X connect 28 0 30 0;
+#X connect 28 1 29 0;
+#X connect 29 0 15 0;
+#X connect 30 0 13 0;
+#X connect 31 0 4 0;
+#X connect 32 0 18 0;
+#X connect 33 0 28 0;
+#X connect 34 0 0 0;

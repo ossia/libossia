@@ -235,6 +235,8 @@ extern "C" void setup_ossia0x2eparam(void)
         CLASS_ATTR_SYMBOL     (c, "unit",            0, t_param, x_unit);
         CLASS_ATTR_SYMBOL     (c, "bounding_mode",   0, t_param, x_bounding_mode);
         CLASS_ATTR_SYMBOL     (c, "access_mode",     0, t_param, x_access_mode);
+        CLASS_ATTR_SYMBOL     (c, "description",     0, t_param, x_description);
+        CLASS_ATTR_SYMBOL     (c, "tags",            0, t_param, x_tags);
 
         CLASS_ATTR_ATOM_ARRAY (c, "default",         0, t_param, x_default, 64);
         CLASS_ATTR_FLOAT_ARRAY(c, "range",           0, t_param, x_range, 2);
