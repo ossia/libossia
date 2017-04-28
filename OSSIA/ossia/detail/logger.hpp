@@ -3,6 +3,7 @@
 #include <ossia/detail/config.hpp>
 
 // They have to be in this order
+#define SPDLOG_FINAL final
 #include <spdlog/spdlog.h>
 #include <fmt/ostream.h>
 #include <fmt/format.h>
