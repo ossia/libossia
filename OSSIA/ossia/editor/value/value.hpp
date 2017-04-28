@@ -33,8 +33,8 @@ auto apply(Visitor&& v, Variant&& var) -> decltype(std::forward<Visitor>(v)())
   // Thanks K-Ballo (eggs-cpp/variant#21)
   if (var)
     return eggs::variants::apply(
-        std::forward<Visitor>(v),
-        std::forward<Variant>(var));
+          std::forward<Visitor>(v),
+          std::forward<Variant>(var));
   else
     return std::forward<Visitor>(v)();
 }
@@ -57,23 +57,128 @@ class value;
  */
 OSSIA_EXPORT std::string value_to_pretty_string(const ossia::value& val);
 
+struct value_variant_type
+{
+private:
+  union impl {
+    float m_float;
+    int m_int;
+    vec2f m_vec2;
+    vec3f m_vec3;
+    vec4f m_vec4;
+    impulse m_imp;
+    bool m_bool;
+    std::string m_str;
+    std::vector<ossia::value> m_vec;
+    char m_char;
+    Destination m_dest;
+
+    impl() { }
+    impl(float v): m_float{v} { }
+    impl(int v): m_int{v} { }
+    impl(vec2f v): m_vec2{v} { }
+    impl(vec3f v): m_vec3{v} { }
+    impl(vec4f v): m_vec4{v} { }
+    impl(impulse v): m_imp{} { }
+    impl(bool v): m_bool{v} { }
+    impl(const std::string& v): m_str{v} { }
+    impl(const std::vector<ossia::value>& v): m_vec{v} { }
+    impl(char v): m_char{v} { }
+    impl(const Destination& v): m_dest{v} { }
+    ~impl() { }
+  } m_impl;
+
+  enum Type: int8_t {
+    Float, Int, Vec2, Vec3, Vec4, Impulse, Bool, String, Vector, Char, Dest, Npos
+  } m_type;
+public:
+
+  void destruct_impl()
+  {
+    switch (m_type)
+    {
+      case String:
+        m_impl.m_str.~string();
+        break;
+      case Vector:
+        m_impl.m_vec.~vector<ossia::value>();
+        break;
+      case Dest:
+        m_impl.m_dest.~Destination();
+        break;
+      default:
+        break;
+    }
+  }
+  static const constexpr auto npos = Npos;
+
+
+  int which() { return m_type; }
+  ~value_variant_type() {
+    destruct_impl();
+  }
+  value_variant_type() : m_impl{}, m_type{ Npos } { }
+  value_variant_type(float t): m_impl{t}, m_type{Float} { }
+  value_variant_type(int t) : m_impl{ t }, m_type{ Int } { }
+  value_variant_type(vec2f t) : m_impl{ t }, m_type{ Vec2 } { }
+  value_variant_type(vec3f t) : m_impl{ t }, m_type{ Vec3 } { }
+  value_variant_type(vec4f t) : m_impl{ t }, m_type{ Vec4 } { }
+  value_variant_type(impulse t) : m_impl{ t }, m_type{ Impulse } { }
+  value_variant_type(bool t) : m_impl{ t }, m_type{ Bool } { }
+  value_variant_type(const std::string& t) : m_impl{ t }, m_type{ String } { }
+  value_variant_type(const std::vector<ossia::value>& t) : m_impl{ t }, m_type{ Vector } { }
+  value_variant_type(char t) : m_impl{ t }, m_type{ Char } { }
+  value_variant_type(const Destination& t) : m_impl{ t }, m_type{ Dest } { }
+
+  value_variant_type& operator=(float t) { destruct_impl(); m_value = t; m_type = Float; return *this; }
+  value_variant_type& operator=(int t) : m_impl{ t }, m_type{ Int } { destruct_impl(); m_value = t; m_type = Int; return *this; }
+  value_variant_type& operator=(vec2f t) : m_impl{ t }, m_type{ Vec2 } { destruct_impl(); m_value = t; m_type = Vec2; return *this; }
+  value_variant_type& operator=(vec3f t) : m_impl{ t }, m_type{ Vec3 } { destruct_impl(); m_value = t; m_type = Vec3; return *this; }
+  value_variant_type& operator=(vec4f t) : m_impl{ t }, m_type{ Vec4 } { destruct_impl(); m_value = t; m_type = Vec4; return *this; }
+  value_variant_type& operator=(impulse t) : m_impl{ t }, m_type{ Impulse } { destruct_impl(); m_value = t; m_type = Impulse; return *this; }
+  value_variant_type& operator=(bool t) : m_impl{ t }, m_type{ Bool } { destruct_impl(); m_value = t; m_type = Bool; return *this; }
+  value_variant_type& operator=(const std::string& t) : m_impl{ t }, m_type{ String } { destruct_impl(); m_value = t; m_type = String; return *this; }
+  value_variant_type& operator=(const std::vector<ossia::value>& t) : m_impl{ t }, m_type{ Vector } { destruct_impl(); m_value = t; m_type = Vector; return *this; }
+  value_variant_type& operator=(char t) : m_impl{ t }, m_type{ Char } { destruct_impl(); m_value = t; m_type = Char; return *this; }
+  value_variant_type& operator=(const Destination& t) : m_impl{ t }, m_type{ Dest } { destruct_impl(); m_value = t; m_type = Dest; return *this; }
+
+  value_variant_type(const value_variant_type& other):
+    m_impl{other.m_impl},
+    m_type{other.m_type}
+  {
+
+  }
+
+  value_variant_type& operator=(const value_variant_type& t)
+  {
+    destruct_impl();
+    m_value = t.m_value;
+    m_type = t.m_type;
+    return *this;
+  }
+
+  template<typename T>
+  const T* target() const;
+  template<typename T>
+  T* target();
+};
 using value_variant_type = eggs::variant<
-    float,
-    int,
-    vec2f, vec3f, vec4f,
-    impulse,
-    bool,
-    std::string,
-    std::vector<ossia::value>,
-    char,
-    Destination>;
+float,
+int,
+vec2f, vec3f, vec4f,
+impulse,
+bool,
+std::string,
+std::vector<ossia::value>,
+char,
+Destination>;
 
 #if defined(_MSC_VER)
 using value_variant = value_variant_type;
 #else
 struct OSSIA_EXPORT value_variant : public value_variant_type
 {
-    using value_variant_type::value_variant_type;
+  using value_variant_type::value_variant_type;
 };
 #endif
 
@@ -113,7 +218,7 @@ public:
   OSSIA_DECL_RELAXED_CONSTEXPR value(T*) = delete;
   template <int N>
   OSSIA_DECL_RELAXED_CONSTEXPR value(const char (&txt)[N]):
-      v{eggs::variants::in_place<std::string>, txt, N}
+    v{eggs::variants::in_place<std::string>, txt, N}
   {
 
   }
@@ -310,8 +415,8 @@ public:
   template<typename ostream_t>
   friend ostream_t& operator<<(ostream_t& os, const ossia::value& c)
   {
-      // TODO OPTIMIZEME
-      return os << value_to_pretty_string(c);
+    // TODO OPTIMIZEME
+    return os << value_to_pretty_string(c);
   }
 };
 
