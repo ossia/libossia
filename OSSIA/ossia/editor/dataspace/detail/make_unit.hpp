@@ -52,7 +52,7 @@ private:
 
     uint64_t i = 0;
     uint64_t sum = 0;
-    brigand::for_each<ossia::dataspace_list>([&] (auto t) {
+    brigand::for_each<ossia::dataspace_u_list>([&] (auto t) {
       using dataspace_type = typename decltype(t)::type;
       arr[i] = sum;
       sum += brigand::size<dataspace_type>::value;
@@ -68,7 +68,7 @@ private:
     units_array arr;
 
     uint64_t i = 0;
-    brigand::for_each<ossia::dataspace_list>([&] (auto t) {
+    brigand::for_each<ossia::dataspace_u_list>([&] (auto t) {
       using dataspace_type = typename decltype(t)::type;
       brigand::for_each<dataspace_type>([&] (auto u) {
         using unit_type = typename decltype(u)::type;

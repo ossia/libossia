@@ -33,7 +33,6 @@ endif()
 add_definitions(-DFMT_HEADER_ONLY=1)
 add_subdirectory(OSSIA)
 
-return()
 if(ANDROID)
   return()
 endif()

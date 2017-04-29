@@ -9,6 +9,9 @@
 namespace ossia
 {
 
+template <typename X, typename Y>
+class curve;
+
 struct behavior;
 #include <ossia/editor/curve/behavior_variant_impl.hpp>
 
@@ -21,6 +24,17 @@ struct behavior;
 struct OSSIA_EXPORT behavior final
 {
   behavior_variant_type v;
+
+  behavior() = default;
+  behavior(const behavior&) = default;
+  behavior(behavior&&) = default;
+  behavior& operator=(const behavior&) = default;
+  behavior& operator=(behavior&&) = default;
+
+  behavior(std::shared_ptr<ossia::curve_abstract> c): v{std::move(c)} { }
+  template<typename T, typename U>
+  behavior(std::shared_ptr<ossia::curve<T, U>> c): v{curve_ptr{std::move(c)}} { }
+  behavior(std::vector<ossia::behavior> c): v{std::move(c)} { }
 
   /**
    * @brief reset Recursively calls reset on the curves of this behavior.

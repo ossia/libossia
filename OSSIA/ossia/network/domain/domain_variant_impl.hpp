@@ -707,6 +707,177 @@ auto apply(Visitor&& functor,  domain_base_variant&& var) {
   default: return functor();
   }
 }
+inline bool operator==(const domain_base_variant& lhs, const domain_base_variant& rhs){ 
+  if(lhs.m_type == rhs.m_type) { 
+    switch(lhs.m_type) { 
+    case domain_base_variant::Type::Type0:
+      return lhs.m_impl.m_value0==rhs.m_impl.m_value0;
+    case domain_base_variant::Type::Type2:
+      return lhs.m_impl.m_value2==rhs.m_impl.m_value2;
+    case domain_base_variant::Type::Type4:
+      return lhs.m_impl.m_value4==rhs.m_impl.m_value4;
+    case domain_base_variant::Type::Type6:
+      return lhs.m_impl.m_value6==rhs.m_impl.m_value6;
+    case domain_base_variant::Type::Type8:
+      return lhs.m_impl.m_value8==rhs.m_impl.m_value8;
+    case domain_base_variant::Type::Type10:
+      return lhs.m_impl.m_value10==rhs.m_impl.m_value10;
+      default: return true;
+    }
+  }
+  return false; 
+}
+inline bool operator!=(const domain_base_variant& lhs, const domain_base_variant& rhs){ 
+  if(lhs.m_type != rhs.m_type) return true; 
+  switch(lhs.m_type) { 
+    case domain_base_variant::Type::Type0:
+      return lhs.m_impl.m_value0!=rhs.m_impl.m_value0;
+    case domain_base_variant::Type::Type2:
+      return lhs.m_impl.m_value2!=rhs.m_impl.m_value2;
+    case domain_base_variant::Type::Type4:
+      return lhs.m_impl.m_value4!=rhs.m_impl.m_value4;
+    case domain_base_variant::Type::Type6:
+      return lhs.m_impl.m_value6!=rhs.m_impl.m_value6;
+    case domain_base_variant::Type::Type8:
+      return lhs.m_impl.m_value8!=rhs.m_impl.m_value8;
+    case domain_base_variant::Type::Type10:
+      return lhs.m_impl.m_value10!=rhs.m_impl.m_value10;
+    default: return false;
+  }
+  return true; 
+}
+inline bool operator==(const domain_base_variant& lhs, const ossia::domain_base<ossia::impulse>& rhs){ 
+  return (lhs.m_type == domain_base_variant::Type::Type0) && (lhs.m_impl.m_value0 == rhs); 
+}
+inline bool operator==(const ossia::domain_base<ossia::impulse>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type == domain_base_variant::Type::Type0) && (rhs.m_impl.m_value0 == lhs); 
+}
+inline bool operator!=(const domain_base_variant& lhs, const ossia::domain_base<ossia::impulse>& rhs){ 
+  return (lhs.m_type != domain_base_variant::Type::Type0) || (lhs.m_impl.m_value0 != rhs); 
+}
+inline bool operator!=(const ossia::domain_base<ossia::impulse>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type != domain_base_variant::Type::Type0) || (rhs.m_impl.m_value0 != lhs); 
+}
+inline bool operator==(const domain_base_variant& lhs, const ossia::domain_base<bool>& rhs){ 
+  return (lhs.m_type == domain_base_variant::Type::Type1) && (lhs.m_impl.m_value1 == rhs); 
+}
+inline bool operator==(const ossia::domain_base<bool>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type == domain_base_variant::Type::Type1) && (rhs.m_impl.m_value1 == lhs); 
+}
+inline bool operator!=(const domain_base_variant& lhs, const ossia::domain_base<bool>& rhs){ 
+  return (lhs.m_type != domain_base_variant::Type::Type1) || (lhs.m_impl.m_value1 != rhs); 
+}
+inline bool operator!=(const ossia::domain_base<bool>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type != domain_base_variant::Type::Type1) || (rhs.m_impl.m_value1 != lhs); 
+}
+inline bool operator==(const domain_base_variant& lhs, const ossia::domain_base<int>& rhs){ 
+  return (lhs.m_type == domain_base_variant::Type::Type2) && (lhs.m_impl.m_value2 == rhs); 
+}
+inline bool operator==(const ossia::domain_base<int>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type == domain_base_variant::Type::Type2) && (rhs.m_impl.m_value2 == lhs); 
+}
+inline bool operator!=(const domain_base_variant& lhs, const ossia::domain_base<int>& rhs){ 
+  return (lhs.m_type != domain_base_variant::Type::Type2) || (lhs.m_impl.m_value2 != rhs); 
+}
+inline bool operator!=(const ossia::domain_base<int>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type != domain_base_variant::Type::Type2) || (rhs.m_impl.m_value2 != lhs); 
+}
+inline bool operator==(const domain_base_variant& lhs, const ossia::domain_base<float>& rhs){ 
+  return (lhs.m_type == domain_base_variant::Type::Type3) && (lhs.m_impl.m_value3 == rhs); 
+}
+inline bool operator==(const ossia::domain_base<float>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type == domain_base_variant::Type::Type3) && (rhs.m_impl.m_value3 == lhs); 
+}
+inline bool operator!=(const domain_base_variant& lhs, const ossia::domain_base<float>& rhs){ 
+  return (lhs.m_type != domain_base_variant::Type::Type3) || (lhs.m_impl.m_value3 != rhs); 
+}
+inline bool operator!=(const ossia::domain_base<float>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type != domain_base_variant::Type::Type3) || (rhs.m_impl.m_value3 != lhs); 
+}
+inline bool operator==(const domain_base_variant& lhs, const ossia::domain_base<char>& rhs){ 
+  return (lhs.m_type == domain_base_variant::Type::Type4) && (lhs.m_impl.m_value4 == rhs); 
+}
+inline bool operator==(const ossia::domain_base<char>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type == domain_base_variant::Type::Type4) && (rhs.m_impl.m_value4 == lhs); 
+}
+inline bool operator!=(const domain_base_variant& lhs, const ossia::domain_base<char>& rhs){ 
+  return (lhs.m_type != domain_base_variant::Type::Type4) || (lhs.m_impl.m_value4 != rhs); 
+}
+inline bool operator!=(const ossia::domain_base<char>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type != domain_base_variant::Type::Type4) || (rhs.m_impl.m_value4 != lhs); 
+}
+inline bool operator==(const domain_base_variant& lhs, const ossia::domain_base<std::string>& rhs){ 
+  return (lhs.m_type == domain_base_variant::Type::Type5) && (lhs.m_impl.m_value5 == rhs); 
+}
+inline bool operator==(const ossia::domain_base<std::string>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type == domain_base_variant::Type::Type5) && (rhs.m_impl.m_value5 == lhs); 
+}
+inline bool operator!=(const domain_base_variant& lhs, const ossia::domain_base<std::string>& rhs){ 
+  return (lhs.m_type != domain_base_variant::Type::Type5) || (lhs.m_impl.m_value5 != rhs); 
+}
+inline bool operator!=(const ossia::domain_base<std::string>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type != domain_base_variant::Type::Type5) || (rhs.m_impl.m_value5 != lhs); 
+}
+inline bool operator==(const domain_base_variant& lhs, const ossia::vector_domain& rhs){ 
+  return (lhs.m_type == domain_base_variant::Type::Type6) && (lhs.m_impl.m_value6 == rhs); 
+}
+inline bool operator==(const ossia::vector_domain& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type == domain_base_variant::Type::Type6) && (rhs.m_impl.m_value6 == lhs); 
+}
+inline bool operator!=(const domain_base_variant& lhs, const ossia::vector_domain& rhs){ 
+  return (lhs.m_type != domain_base_variant::Type::Type6) || (lhs.m_impl.m_value6 != rhs); 
+}
+inline bool operator!=(const ossia::vector_domain& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type != domain_base_variant::Type::Type6) || (rhs.m_impl.m_value6 != lhs); 
+}
+inline bool operator==(const domain_base_variant& lhs, const ossia::vecf_domain<2>& rhs){ 
+  return (lhs.m_type == domain_base_variant::Type::Type7) && (lhs.m_impl.m_value7 == rhs); 
+}
+inline bool operator==(const ossia::vecf_domain<2>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type == domain_base_variant::Type::Type7) && (rhs.m_impl.m_value7 == lhs); 
+}
+inline bool operator!=(const domain_base_variant& lhs, const ossia::vecf_domain<2>& rhs){ 
+  return (lhs.m_type != domain_base_variant::Type::Type7) || (lhs.m_impl.m_value7 != rhs); 
+}
+inline bool operator!=(const ossia::vecf_domain<2>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type != domain_base_variant::Type::Type7) || (rhs.m_impl.m_value7 != lhs); 
+}
+inline bool operator==(const domain_base_variant& lhs, const ossia::vecf_domain<3>& rhs){ 
+  return (lhs.m_type == domain_base_variant::Type::Type8) && (lhs.m_impl.m_value8 == rhs); 
+}
+inline bool operator==(const ossia::vecf_domain<3>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type == domain_base_variant::Type::Type8) && (rhs.m_impl.m_value8 == lhs); 
+}
+inline bool operator!=(const domain_base_variant& lhs, const ossia::vecf_domain<3>& rhs){ 
+  return (lhs.m_type != domain_base_variant::Type::Type8) || (lhs.m_impl.m_value8 != rhs); 
+}
+inline bool operator!=(const ossia::vecf_domain<3>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type != domain_base_variant::Type::Type8) || (rhs.m_impl.m_value8 != lhs); 
+}
+inline bool operator==(const domain_base_variant& lhs, const ossia::vecf_domain<4>& rhs){ 
+  return (lhs.m_type == domain_base_variant::Type::Type9) && (lhs.m_impl.m_value9 == rhs); 
+}
+inline bool operator==(const ossia::vecf_domain<4>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type == domain_base_variant::Type::Type9) && (rhs.m_impl.m_value9 == lhs); 
+}
+inline bool operator!=(const domain_base_variant& lhs, const ossia::vecf_domain<4>& rhs){ 
+  return (lhs.m_type != domain_base_variant::Type::Type9) || (lhs.m_impl.m_value9 != rhs); 
+}
+inline bool operator!=(const ossia::vecf_domain<4>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type != domain_base_variant::Type::Type9) || (rhs.m_impl.m_value9 != lhs); 
+}
+inline bool operator==(const domain_base_variant& lhs, const ossia::domain_base<ossia::value>& rhs){ 
+  return (lhs.m_type == domain_base_variant::Type::Type10) && (lhs.m_impl.m_value10 == rhs); 
+}
+inline bool operator==(const ossia::domain_base<ossia::value>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type == domain_base_variant::Type::Type10) && (rhs.m_impl.m_value10 == lhs); 
+}
+inline bool operator!=(const domain_base_variant& lhs, const ossia::domain_base<ossia::value>& rhs){ 
+  return (lhs.m_type != domain_base_variant::Type::Type10) || (lhs.m_impl.m_value10 != rhs); 
+}
+inline bool operator!=(const ossia::domain_base<ossia::value>& lhs, const domain_base_variant& rhs){ 
+  return (rhs.m_type != domain_base_variant::Type::Type10) || (rhs.m_impl.m_value10 != lhs); 
+}
 template<typename Functor>
 auto apply(Functor&& functor, domain_base_variant& arg0, const value_variant_type& arg1)
 {

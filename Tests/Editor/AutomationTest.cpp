@@ -71,7 +71,7 @@ private Q_SLOTS:
     auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), event_callback));
     auto constraint_callback = std::bind(&AutomationTest::constraint_callback, this, _1, _2, _3);
     auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
-    constraint->add_time_process(std::make_unique<automation>(*address, c));
+    constraint->add_time_process(std::make_unique<automation>(*address, curve_ptr{c}));
 
     m_address_values.clear();
 

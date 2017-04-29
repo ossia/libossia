@@ -300,16 +300,15 @@ struct gen_var
   using var_type = brigand::list<Args...>;
 
   using var_impl = brigand::transform<var_type, brigand::bind<var_member, brigand::_1>>;
+  static const constexpr int num_types = sizeof...(Args);
 
   void write_enum()
   {
     str << "enum Type: int8_t { \n";
 
-    int i = 0;
-    brigand::for_each<var_type>([&] (auto _) {
+    for(int i = 0; i < num_types; i++)
       str << "Type" << i << ", ";
-      i++;
-    });
+
     str << "Npos\n";
     str << "};\n";
   }
@@ -373,7 +372,6 @@ struct gen_var
     // Write types
     brigand::for_each<var_impl>([&] (auto _) {
       using meta_t = typename decltype(_)::type;
-      using impl_t = typename meta_t::type;
       meta_t t;
 
       if(!t.is_trivial)
@@ -391,15 +389,94 @@ struct gen_var
 
   void write_assign_switch(std::string orn_before, std::string orn_after)
   {
-    int i = 0;
     // Write types
-    brigand::for_each<var_impl>([&] (auto _) {
+    for(int i = 0; i < num_types; i++) {
       str << "  case Type::Type" << i << ":\n";
       str << "    m_impl.m_value" << i << " = " << orn_before << "other.m_impl.m_value" << i << orn_after << ";\n";
       str << "    break;\n";
+    }
+  }
+
+  void write_comp_switch(std::string comp)
+  {
+    for(int i = 0; i < num_types; i++) {
+      str << "    case " << class_name << "::Type::Type" << i << ":\n";
+      str << "      return lhs.m_impl.m_value" << i << comp << "rhs.m_impl.m_value" << i << ";\n";
+      i++;
+    }
+  }
+
+  void write_comparison_operators()
+  {
+    // Generic ones between two variants
+    {
+      str << "inline bool operator==(const " << class_name << "& lhs, const " << class_name << "& rhs)"
+          << "{ \n"
+             "  if(lhs.m_type == rhs.m_type) { \n"
+             "    switch(lhs.m_type) { \n";
+
+      write_comp_switch("==");
+
+      str << "      default: return true;\n";
+      str << "    }\n";
+      str << "  }\n";
+      str << "  return false; \n";
+      str << "}\n";
+    }
+
+    {
+      str << "inline bool operator!=(const " << class_name << "& lhs, const " << class_name << "& rhs)"
+          << "{ \n"
+             "  if(lhs.m_type != rhs.m_type) return true; \n"
+             "  switch(lhs.m_type) { \n";
+
+      write_comp_switch("!=");
+
+      str << "    default: return false;\n";
+      str << "  }\n";
+      str << "  return true; \n";
+      str << "}\n";
+    }
+
+    // Then specific ones between an instance of the variant and an instance of an actual type
+    int i = 0;
+    // Write types
+    brigand::for_each<var_impl>([&] (auto _) {
+      using meta_t = typename decltype(_)::type;
+      meta_t t;
+
+      // ==
+      {
+        str << "inline bool operator==(const " << class_name << "& lhs, const " << t.type_str << "& rhs)"
+               "{ \n"
+               "  return (lhs.m_type == " << class_name << "::Type::Type" << i << ") && (lhs.m_impl.m_value" << i <<" == rhs); \n";
+        str << "}\n";
+      }
+
+      {
+        str << "inline bool operator==(const " << t.type_str << "& lhs, const " << class_name << "& rhs)"
+               "{ \n"
+               "  return (rhs.m_type == " << class_name << "::Type::Type" << i << ") && (rhs.m_impl.m_value" << i <<" == lhs); \n";
+        str << "}\n";
+      }
+
+      // !=
+      {
+        str << "inline bool operator!=(const " << class_name << "& lhs, const " << t.type_str << "& rhs)"
+               "{ \n"
+               "  return (lhs.m_type != " << class_name << "::Type::Type" << i << ") || (lhs.m_impl.m_value" << i <<" != rhs); \n";
+        str << "}\n";
+      }
+
+      {
+        str << "inline bool operator!=(const " << t.type_str << "& lhs, const " << class_name << "& rhs)"
+               "{ \n"
+               "  return (rhs.m_type != " << class_name << "::Type::Type" << i << ") || (rhs.m_impl.m_value" << i <<" != lhs); \n";
+        str << "}\n";
+      }
+
       i++;
     });
-
   }
 
   void write_copy_constructor()
@@ -798,6 +875,7 @@ int main()
         vecf_domain<4>, domain_base<ossia::value>>
         domain_gen("domain_base_variant");
     domain_gen.write_class();
+    domain_gen.write_comparison_operators();
     f << domain_gen.str.str();
 
 
@@ -919,47 +997,55 @@ int main()
     {
       gen_var<degree, radian> u("angle");
       u.write_class();
+      u.write_comparison_operators();
       f << u.str.str();
     }
     {
       gen_var<argb, rgba, rgb, bgr, argb8, hsv, cmy8, xyz> u("color");
       u.write_class();
+      u.write_comparison_operators();
       f << u.str.str();
     }
     {
       gen_var<meter, kilometer, decimeter, centimeter, millimeter, micrometer, nanometer, picometer, inch, foot, mile>
           u("distance");
       u.write_class();
+      u.write_comparison_operators();
       f << u.str.str();
     }
     {
       gen_var<linear, midigain, decibel, decibel_raw>
           u("gain");
       u.write_class();
+      u.write_comparison_operators();
       f << u.str.str();
     }
     {
       gen_var<quaternion, euler, axis>
           u("orientation");
       u.write_class();
+      u.write_comparison_operators();
       f << u.str.str();
     }
     {
       gen_var<cartesian_3d, cartesian_2d, spherical, polar, opengl, cylindrical>
           u("position");
       u.write_class();
+      u.write_comparison_operators();
       f << u.str.str();
     }
     {
       gen_var<meter_per_second, miles_per_hour, kilometer_per_hour, knot, foot_per_second, foot_per_hour>
           u("speed");
       u.write_class();
+      u.write_comparison_operators();
       f << u.str.str();
     }
     {
       gen_var<second, bark, bpm, cent, frequency, mel, midi_pitch, millisecond, playback_speed>
           u("time");
       u.write_class();
+      u.write_comparison_operators();
       f << u.str.str();
     }
 
@@ -969,6 +1055,7 @@ int main()
       gen_var<ossia::value, distance, position, speed, orientation, angle, color, gain, ossia::time>
           u("strong_value_variant");
       u.write_class();
+      u.write_comparison_operators();
       f << u.str.str();
     }
   }

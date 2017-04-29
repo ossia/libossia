@@ -163,10 +163,10 @@ int main()
     second_curve->add_point(second_powerSegment, 1., 2.);
 
     // create a Tuple value of 3 behavior values based on the same curve
-    std::vector<behavior> first_curves{first_curve, first_curve, first_curve};
+    std::vector<behavior> first_curves{(curve_ptr)first_curve, (curve_ptr)first_curve, (curve_ptr)first_curve};
 
     // create a Tuple value of 3 behavior values based on the same curve
-    std::vector<behavior> second_curves{second_curve, second_curve, second_curve};
+    std::vector<behavior> second_curves{(curve_ptr)second_curve, (curve_ptr)second_curve, (curve_ptr)second_curve};
 
     // create a first Automation to drive /test address by the linear curve
     auto first_automation = std::make_unique<automation>(*local_test_address, first_curves);

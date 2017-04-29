@@ -2,6 +2,8 @@
 #include <ossia/ossia.hpp>
 #include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/editor/dataspace/detail/dataspace_parse.hpp>
+
 #include <iostream>
 #include <brigand/algorithms/for_each.hpp>
 
@@ -54,7 +56,7 @@ private Q_SLOTS:
 
     void test_units()
     {
-      brigand::for_each<unit_variant>([] (auto d_t) {
+      brigand::for_each<dataspace_u_list>([] (auto d_t) {
         using type = typename decltype(d_t)::type;
         brigand::for_each<type>([] (auto u_t) {
           using utype = typename decltype(u_t)::type;

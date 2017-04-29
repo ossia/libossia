@@ -61,6 +61,15 @@ struct OSSIA_EXPORT domain_base
     return *this;
   }
 
+  friend bool operator==(const domain_base<T>& lhs, const domain_base<T>& rhs)
+  {
+      return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
+  }
+  friend bool operator!=(const domain_base<T>& lhs, const domain_base<T>& rhs)
+  {
+      return lhs.min != rhs.min || lhs.max != rhs.max || lhs.values != rhs.values;
+  }
+
   domain_base(value_type v1, value_type v2): min{v1}, max{v2} { }
   domain_base(value_type v1,
               value_type v2,
@@ -73,12 +82,28 @@ struct OSSIA_EXPORT domain_base
 template <>
 struct OSSIA_EXPORT domain_base<impulse>
 {
+    friend bool operator==(const domain_base<impulse>& lhs, const domain_base<impulse>& rhs)
+    {
+        return true;
+    }
+    friend bool operator!=(const domain_base<impulse>& lhs, const domain_base<impulse>& rhs)
+    {
+        return false;
+    }
 };
 
 template <>
 struct OSSIA_EXPORT domain_base<std::string>
 {
   boost::container::flat_set<std::string> values;
+  friend bool operator==(const domain_base<std::string>& lhs, const domain_base<std::string>& rhs)
+  {
+      return lhs.values == rhs.values;
+  }
+  friend bool operator!=(const domain_base<std::string>& lhs, const domain_base<std::string>& rhs)
+  {
+      return lhs.values != rhs.values;
+  }
 };
 
 struct OSSIA_EXPORT vector_domain
@@ -136,9 +161,13 @@ struct OSSIA_EXPORT vector_domain
               value_type&& v2,
               std::vector<boost::container::flat_set<ossia::value>>&& vals): min{std::move(v1)}, max{std::move(v2)}, values{std::move(vals)} { }
 
+  friend bool operator==(const vector_domain& lhs, const vector_domain& rhs)
+  {
+      return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
+  }
   friend bool operator!=(const vector_domain& lhs, const vector_domain& rhs)
   {
-    return lhs.min != rhs.min && lhs.max != rhs.max && lhs.values != rhs.values;
+    return lhs.min != rhs.min || lhs.max != rhs.max || lhs.values != rhs.values;
   }
 };
 
@@ -200,9 +229,13 @@ struct OSSIA_EXPORT vecf_domain
               const std::array<optional<float>, N>& v2,
               std::array<boost::container::flat_set<float>, N>&& vals): min{v1}, max{v2}, values{std::move(vals)} { }
 
+  friend bool operator==(const vecf_domain& lhs, const vecf_domain& rhs)
+  {
+      return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
+  }
   friend bool operator!=(const vecf_domain& lhs, const vecf_domain& rhs)
   {
-    return lhs.min != rhs.min && lhs.max != rhs.max && lhs.values != rhs.values;
+    return lhs.min != rhs.min || lhs.max != rhs.max || lhs.values != rhs.values;
   }
 };
 
@@ -256,5 +289,14 @@ struct OSSIA_EXPORT domain_base<ossia::value>
   domain_base(value_type&& v1,
               value_type&& v2,
               boost::container::flat_set<value_type>&& vals): min{std::move(v1)}, max{std::move(v2)}, values{std::move(vals)} { }
+
+  friend bool operator==(const domain_base<ossia::value>& lhs, const domain_base<ossia::value>& rhs)
+  {
+      return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
+  }
+  friend bool operator!=(const domain_base<ossia::value>& lhs, const domain_base<ossia::value>& rhs)
+  {
+    return lhs.min != rhs.min || lhs.max != rhs.max || lhs.values != rhs.values;
+  }
 };
 }

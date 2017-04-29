@@ -34,7 +34,7 @@ int main()
   behaviour->add_point(curve_segment_linear<float>{}, 0.5, 1.);
   behaviour->add_point(curve_segment_ease<float, easing::circularOut>{}, 1., 0.);
 
-  constraint->add_time_process(std::make_unique<automation>(*address, behaviour));
+  constraint->add_time_process(std::make_unique<automation>(*address, (curve_ptr)behaviour));
 
   constraint->set_speed(1._tv);
   constraint->set_granularity(50._tv); // In milliseconds.
