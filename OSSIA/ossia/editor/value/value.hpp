@@ -243,6 +243,7 @@ public:
   template <typename T>
   const T* target() const noexcept
   {
+    static_assert(!std::is_same<T, ossia::value>::value, "");
     return v.target<T>();
   }
 

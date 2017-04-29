@@ -24,10 +24,8 @@ ossia::vec4f m_value4;
 Impl& operator=(ossia::vec4f v) { m_value4 = v; return *this; }
 
 ossia::impulse m_value5;
- Impl(const ossia::impulse& v): m_value5{v} { }
-Impl(ossia::impulse&& v): m_value5{std::move(v)} { }
-Impl& operator=(const ossia::impulse& v) { m_value5 = v; return *this; }
-Impl& operator=(ossia::impulse&& v) { m_value5 = std::move(v); return *this; }
+ Impl(ossia::impulse v): m_value5{v} { }
+Impl& operator=(ossia::impulse v) { m_value5 = v; return *this; }
 
 bool m_value6;
  Impl(bool v): m_value6{v} { }
@@ -104,8 +102,7 @@ value_variant_type(): m_type{Npos} { }
  value_variant_type(ossia::vec2f v): m_impl{v}, m_type{Type2} { }
  value_variant_type(ossia::vec3f v): m_impl{v}, m_type{Type3} { }
  value_variant_type(ossia::vec4f v): m_impl{v}, m_type{Type4} { }
- value_variant_type(const ossia::impulse& v): m_impl{v}, m_type{Type5} { }
-value_variant_type(ossia::impulse&& v): m_impl{v}, m_type{Type5} { }
+ value_variant_type(ossia::impulse v): m_impl{v}, m_type{Type5} { }
  value_variant_type(bool v): m_impl{v}, m_type{Type6} { }
 value_variant_type(const std::string& v): m_impl{v}, m_type{Type7} { }
 value_variant_type(std::string&& v): m_impl{v}, m_type{Type7} { }
@@ -274,222 +271,222 @@ value_variant_type& operator=(value_variant_type&& other)
   return *this;
 }
 };
-template<> const float* value_variant_type::target() const { 
+template<> inline const float* value_variant_type::target() const { 
   if(m_type == Type0) 
     return &m_impl.m_value0 ;
   return nullptr; 
 }
-template<> const int* value_variant_type::target() const { 
+template<> inline const int* value_variant_type::target() const { 
   if(m_type == Type1) 
     return &m_impl.m_value1 ;
   return nullptr; 
 }
-template<> const ossia::vec2f* value_variant_type::target() const { 
+template<> inline const ossia::vec2f* value_variant_type::target() const { 
   if(m_type == Type2) 
     return &m_impl.m_value2 ;
   return nullptr; 
 }
-template<> const ossia::vec3f* value_variant_type::target() const { 
+template<> inline const ossia::vec3f* value_variant_type::target() const { 
   if(m_type == Type3) 
     return &m_impl.m_value3 ;
   return nullptr; 
 }
-template<> const ossia::vec4f* value_variant_type::target() const { 
+template<> inline const ossia::vec4f* value_variant_type::target() const { 
   if(m_type == Type4) 
     return &m_impl.m_value4 ;
   return nullptr; 
 }
-template<> const ossia::impulse* value_variant_type::target() const { 
+template<> inline const ossia::impulse* value_variant_type::target() const { 
   if(m_type == Type5) 
     return &m_impl.m_value5 ;
   return nullptr; 
 }
-template<> const bool* value_variant_type::target() const { 
+template<> inline const bool* value_variant_type::target() const { 
   if(m_type == Type6) 
     return &m_impl.m_value6 ;
   return nullptr; 
 }
-template<> const std::string* value_variant_type::target() const { 
+template<> inline const std::string* value_variant_type::target() const { 
   if(m_type == Type7) 
     return &m_impl.m_value7 ;
   return nullptr; 
 }
-template<> const std::vector<ossia::value>* value_variant_type::target() const { 
+template<> inline const std::vector<ossia::value>* value_variant_type::target() const { 
   if(m_type == Type8) 
     return &m_impl.m_value8 ;
   return nullptr; 
 }
-template<> const char* value_variant_type::target() const { 
+template<> inline const char* value_variant_type::target() const { 
   if(m_type == Type9) 
     return &m_impl.m_value9 ;
   return nullptr; 
 }
-template<> const ossia::Destination* value_variant_type::target() const { 
+template<> inline const ossia::Destination* value_variant_type::target() const { 
   if(m_type == Type10) 
     return &m_impl.m_value10 ;
   return nullptr; 
 }
-template<> float* value_variant_type::target() { 
+template<> inline float* value_variant_type::target() { 
   if(m_type == Type0) 
     return &m_impl.m_value0 ;
   return nullptr; 
 }
-template<> int* value_variant_type::target() { 
+template<> inline int* value_variant_type::target() { 
   if(m_type == Type1) 
     return &m_impl.m_value1 ;
   return nullptr; 
 }
-template<> ossia::vec2f* value_variant_type::target() { 
+template<> inline ossia::vec2f* value_variant_type::target() { 
   if(m_type == Type2) 
     return &m_impl.m_value2 ;
   return nullptr; 
 }
-template<> ossia::vec3f* value_variant_type::target() { 
+template<> inline ossia::vec3f* value_variant_type::target() { 
   if(m_type == Type3) 
     return &m_impl.m_value3 ;
   return nullptr; 
 }
-template<> ossia::vec4f* value_variant_type::target() { 
+template<> inline ossia::vec4f* value_variant_type::target() { 
   if(m_type == Type4) 
     return &m_impl.m_value4 ;
   return nullptr; 
 }
-template<> ossia::impulse* value_variant_type::target() { 
+template<> inline ossia::impulse* value_variant_type::target() { 
   if(m_type == Type5) 
     return &m_impl.m_value5 ;
   return nullptr; 
 }
-template<> bool* value_variant_type::target() { 
+template<> inline bool* value_variant_type::target() { 
   if(m_type == Type6) 
     return &m_impl.m_value6 ;
   return nullptr; 
 }
-template<> std::string* value_variant_type::target() { 
+template<> inline std::string* value_variant_type::target() { 
   if(m_type == Type7) 
     return &m_impl.m_value7 ;
   return nullptr; 
 }
-template<> std::vector<ossia::value>* value_variant_type::target() { 
+template<> inline std::vector<ossia::value>* value_variant_type::target() { 
   if(m_type == Type8) 
     return &m_impl.m_value8 ;
   return nullptr; 
 }
-template<> char* value_variant_type::target() { 
+template<> inline char* value_variant_type::target() { 
   if(m_type == Type9) 
     return &m_impl.m_value9 ;
   return nullptr; 
 }
-template<> ossia::Destination* value_variant_type::target() { 
+template<> inline ossia::Destination* value_variant_type::target() { 
   if(m_type == Type10) 
     return &m_impl.m_value10 ;
   return nullptr; 
 }
-template<> const float& value_variant_type::get() const { 
+template<> inline const float& value_variant_type::get() const { 
   if(m_type == Type0) 
     return m_impl.m_value0 ;
   throw; 
 }
-template<> const int& value_variant_type::get() const { 
+template<> inline const int& value_variant_type::get() const { 
   if(m_type == Type1) 
     return m_impl.m_value1 ;
   throw; 
 }
-template<> const ossia::vec2f& value_variant_type::get() const { 
+template<> inline const ossia::vec2f& value_variant_type::get() const { 
   if(m_type == Type2) 
     return m_impl.m_value2 ;
   throw; 
 }
-template<> const ossia::vec3f& value_variant_type::get() const { 
+template<> inline const ossia::vec3f& value_variant_type::get() const { 
   if(m_type == Type3) 
     return m_impl.m_value3 ;
   throw; 
 }
-template<> const ossia::vec4f& value_variant_type::get() const { 
+template<> inline const ossia::vec4f& value_variant_type::get() const { 
   if(m_type == Type4) 
     return m_impl.m_value4 ;
   throw; 
 }
-template<> const ossia::impulse& value_variant_type::get() const { 
+template<> inline const ossia::impulse& value_variant_type::get() const { 
   if(m_type == Type5) 
     return m_impl.m_value5 ;
   throw; 
 }
-template<> const bool& value_variant_type::get() const { 
+template<> inline const bool& value_variant_type::get() const { 
   if(m_type == Type6) 
     return m_impl.m_value6 ;
   throw; 
 }
-template<> const std::string& value_variant_type::get() const { 
+template<> inline const std::string& value_variant_type::get() const { 
   if(m_type == Type7) 
     return m_impl.m_value7 ;
   throw; 
 }
-template<> const std::vector<ossia::value>& value_variant_type::get() const { 
+template<> inline const std::vector<ossia::value>& value_variant_type::get() const { 
   if(m_type == Type8) 
     return m_impl.m_value8 ;
   throw; 
 }
-template<> const char& value_variant_type::get() const { 
+template<> inline const char& value_variant_type::get() const { 
   if(m_type == Type9) 
     return m_impl.m_value9 ;
   throw; 
 }
-template<> const ossia::Destination& value_variant_type::get() const { 
+template<> inline const ossia::Destination& value_variant_type::get() const { 
   if(m_type == Type10) 
     return m_impl.m_value10 ;
   throw; 
 }
-template<> float& value_variant_type::get() { 
+template<> inline float& value_variant_type::get() { 
   if(m_type == Type0) 
     return m_impl.m_value0 ;
   throw; 
 }
-template<> int& value_variant_type::get() { 
+template<> inline int& value_variant_type::get() { 
   if(m_type == Type1) 
     return m_impl.m_value1 ;
   throw; 
 }
-template<> ossia::vec2f& value_variant_type::get() { 
+template<> inline ossia::vec2f& value_variant_type::get() { 
   if(m_type == Type2) 
     return m_impl.m_value2 ;
   throw; 
 }
-template<> ossia::vec3f& value_variant_type::get() { 
+template<> inline ossia::vec3f& value_variant_type::get() { 
   if(m_type == Type3) 
     return m_impl.m_value3 ;
   throw; 
 }
-template<> ossia::vec4f& value_variant_type::get() { 
+template<> inline ossia::vec4f& value_variant_type::get() { 
   if(m_type == Type4) 
     return m_impl.m_value4 ;
   throw; 
 }
-template<> ossia::impulse& value_variant_type::get() { 
+template<> inline ossia::impulse& value_variant_type::get() { 
   if(m_type == Type5) 
     return m_impl.m_value5 ;
   throw; 
 }
-template<> bool& value_variant_type::get() { 
+template<> inline bool& value_variant_type::get() { 
   if(m_type == Type6) 
     return m_impl.m_value6 ;
   throw; 
 }
-template<> std::string& value_variant_type::get() { 
+template<> inline std::string& value_variant_type::get() { 
   if(m_type == Type7) 
     return m_impl.m_value7 ;
   throw; 
 }
-template<> std::vector<ossia::value>& value_variant_type::get() { 
+template<> inline std::vector<ossia::value>& value_variant_type::get() { 
   if(m_type == Type8) 
     return m_impl.m_value8 ;
   throw; 
 }
-template<> char& value_variant_type::get() { 
+template<> inline char& value_variant_type::get() { 
   if(m_type == Type9) 
     return m_impl.m_value9 ;
   throw; 
 }
-template<> ossia::Destination& value_variant_type::get() { 
+template<> inline ossia::Destination& value_variant_type::get() { 
   if(m_type == Type10) 
     return m_impl.m_value10 ;
   throw; 

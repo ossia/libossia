@@ -1,3 +1,4 @@
+#pragma once
 #include <ossia/editor/value/value.hpp>
 #include <ossia/editor/curve/behavior.hpp>
 namespace ossia {

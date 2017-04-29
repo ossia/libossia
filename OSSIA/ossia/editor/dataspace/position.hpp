@@ -1,7 +1,5 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace_base.hpp>
-#include <eggs/variant.hpp>
-
 namespace ossia
 {
 struct cartesian_3d_u;
@@ -133,25 +131,5 @@ struct OSSIA_EXPORT cylindrical_u :
 
   static value_type from_neutral(strong_value<neutral_unit> self);
 };
-
-
-
-using cartesian_3d = strong_value<cartesian_3d_u>;
-using cartesian_2d = strong_value<cartesian_2d_u>;
-using spherical = strong_value<spherical_u>;
-using polar = strong_value<polar_u>;
-using opengl = strong_value<opengl_u>;
-using cylindrical = strong_value<cylindrical_u>;
-
-using position_u =
-  eggs::variant<cartesian_3d_u, cartesian_2d_u, spherical_u, polar_u, opengl_u, cylindrical_u>;
-
-template<>
-struct dataspace_traits<position_u>
-{
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("position"); }
-};
-
 
 }

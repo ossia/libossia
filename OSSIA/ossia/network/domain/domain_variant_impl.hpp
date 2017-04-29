@@ -4,8 +4,10 @@ public:
 struct dummy_t {};
 union Impl { 
 ossia::domain_base<ossia::impulse> m_value0;
-Impl(ossia::domain_base<ossia::impulse> v): m_value0{v} { }
-Impl& operator=(ossia::domain_base<ossia::impulse> v) { m_value0 = v; return *this; }
+Impl(const ossia::domain_base<ossia::impulse>& v): m_value0{v} { }
+Impl(ossia::domain_base<ossia::impulse>&& v): m_value0{std::move(v)} { }
+Impl& operator=(const ossia::domain_base<ossia::impulse>& v) { m_value0 = v; return *this; }
+Impl& operator=(ossia::domain_base<ossia::impulse>&& v) { m_value0 = std::move(v); return *this; }
 
 ossia::domain_base<bool> m_value1;
 Impl(const ossia::domain_base<bool>& v): m_value1{v} { }
@@ -78,6 +80,9 @@ Type0, Type1, Type2, Type3, Type4, Type5, Type6, Type7, Type8, Type9, Type10, Np
 
 void destruct_impl() { 
 switch(m_type) { 
+  case Type::Type0:
+    m_impl.m_value0.~domain_base();
+    break;
   case Type::Type1:
     m_impl.m_value1.~domain_base();
     break;
@@ -132,7 +137,8 @@ template<typename T>
 static Type matching_type();
 domain_base_variant(): m_type{Npos} { }
 ~domain_base_variant() { destruct_impl(); }
-domain_base_variant(ossia::domain_base<ossia::impulse> v): m_impl{v}, m_type{Type0} { }
+domain_base_variant(const ossia::domain_base<ossia::impulse>& v): m_impl{v}, m_type{Type0} { }
+domain_base_variant(ossia::domain_base<ossia::impulse>&& v): m_impl{v}, m_type{Type0} { }
 domain_base_variant(const ossia::domain_base<bool>& v): m_impl{v}, m_type{Type1} { }
 domain_base_variant(ossia::domain_base<bool>&& v): m_impl{v}, m_type{Type1} { }
 domain_base_variant(const ossia::domain_base<int>& v): m_impl{v}, m_type{Type2} { }
@@ -313,222 +319,222 @@ domain_base_variant& operator=(domain_base_variant&& other)
   return *this;
 }
 };
-template<> const ossia::domain_base<ossia::impulse>* domain_base_variant::target() const { 
+template<> inline const ossia::domain_base<ossia::impulse>* domain_base_variant::target() const { 
   if(m_type == Type0) 
     return &m_impl.m_value0 ;
   return nullptr; 
 }
-template<> const ossia::domain_base<bool>* domain_base_variant::target() const { 
+template<> inline const ossia::domain_base<bool>* domain_base_variant::target() const { 
   if(m_type == Type1) 
     return &m_impl.m_value1 ;
   return nullptr; 
 }
-template<> const ossia::domain_base<int>* domain_base_variant::target() const { 
+template<> inline const ossia::domain_base<int>* domain_base_variant::target() const { 
   if(m_type == Type2) 
     return &m_impl.m_value2 ;
   return nullptr; 
 }
-template<> const ossia::domain_base<float>* domain_base_variant::target() const { 
+template<> inline const ossia::domain_base<float>* domain_base_variant::target() const { 
   if(m_type == Type3) 
     return &m_impl.m_value3 ;
   return nullptr; 
 }
-template<> const ossia::domain_base<char>* domain_base_variant::target() const { 
+template<> inline const ossia::domain_base<char>* domain_base_variant::target() const { 
   if(m_type == Type4) 
     return &m_impl.m_value4 ;
   return nullptr; 
 }
-template<> const ossia::domain_base<std::string>* domain_base_variant::target() const { 
+template<> inline const ossia::domain_base<std::string>* domain_base_variant::target() const { 
   if(m_type == Type5) 
     return &m_impl.m_value5 ;
   return nullptr; 
 }
-template<> const ossia::vector_domain* domain_base_variant::target() const { 
+template<> inline const ossia::vector_domain* domain_base_variant::target() const { 
   if(m_type == Type6) 
     return &m_impl.m_value6 ;
   return nullptr; 
 }
-template<> const ossia::vecf_domain<2>* domain_base_variant::target() const { 
+template<> inline const ossia::vecf_domain<2>* domain_base_variant::target() const { 
   if(m_type == Type7) 
     return &m_impl.m_value7 ;
   return nullptr; 
 }
-template<> const ossia::vecf_domain<3>* domain_base_variant::target() const { 
+template<> inline const ossia::vecf_domain<3>* domain_base_variant::target() const { 
   if(m_type == Type8) 
     return &m_impl.m_value8 ;
   return nullptr; 
 }
-template<> const ossia::vecf_domain<4>* domain_base_variant::target() const { 
+template<> inline const ossia::vecf_domain<4>* domain_base_variant::target() const { 
   if(m_type == Type9) 
     return &m_impl.m_value9 ;
   return nullptr; 
 }
-template<> const ossia::domain_base<ossia::value>* domain_base_variant::target() const { 
+template<> inline const ossia::domain_base<ossia::value>* domain_base_variant::target() const { 
   if(m_type == Type10) 
     return &m_impl.m_value10 ;
   return nullptr; 
 }
-template<> ossia::domain_base<ossia::impulse>* domain_base_variant::target() { 
+template<> inline ossia::domain_base<ossia::impulse>* domain_base_variant::target() { 
   if(m_type == Type0) 
     return &m_impl.m_value0 ;
   return nullptr; 
 }
-template<> ossia::domain_base<bool>* domain_base_variant::target() { 
+template<> inline ossia::domain_base<bool>* domain_base_variant::target() { 
   if(m_type == Type1) 
     return &m_impl.m_value1 ;
   return nullptr; 
 }
-template<> ossia::domain_base<int>* domain_base_variant::target() { 
+template<> inline ossia::domain_base<int>* domain_base_variant::target() { 
   if(m_type == Type2) 
     return &m_impl.m_value2 ;
   return nullptr; 
 }
-template<> ossia::domain_base<float>* domain_base_variant::target() { 
+template<> inline ossia::domain_base<float>* domain_base_variant::target() { 
   if(m_type == Type3) 
     return &m_impl.m_value3 ;
   return nullptr; 
 }
-template<> ossia::domain_base<char>* domain_base_variant::target() { 
+template<> inline ossia::domain_base<char>* domain_base_variant::target() { 
   if(m_type == Type4) 
     return &m_impl.m_value4 ;
   return nullptr; 
 }
-template<> ossia::domain_base<std::string>* domain_base_variant::target() { 
+template<> inline ossia::domain_base<std::string>* domain_base_variant::target() { 
   if(m_type == Type5) 
     return &m_impl.m_value5 ;
   return nullptr; 
 }
-template<> ossia::vector_domain* domain_base_variant::target() { 
+template<> inline ossia::vector_domain* domain_base_variant::target() { 
   if(m_type == Type6) 
     return &m_impl.m_value6 ;
   return nullptr; 
 }
-template<> ossia::vecf_domain<2>* domain_base_variant::target() { 
+template<> inline ossia::vecf_domain<2>* domain_base_variant::target() { 
   if(m_type == Type7) 
     return &m_impl.m_value7 ;
   return nullptr; 
 }
-template<> ossia::vecf_domain<3>* domain_base_variant::target() { 
+template<> inline ossia::vecf_domain<3>* domain_base_variant::target() { 
   if(m_type == Type8) 
     return &m_impl.m_value8 ;
   return nullptr; 
 }
-template<> ossia::vecf_domain<4>* domain_base_variant::target() { 
+template<> inline ossia::vecf_domain<4>* domain_base_variant::target() { 
   if(m_type == Type9) 
     return &m_impl.m_value9 ;
   return nullptr; 
 }
-template<> ossia::domain_base<ossia::value>* domain_base_variant::target() { 
+template<> inline ossia::domain_base<ossia::value>* domain_base_variant::target() { 
   if(m_type == Type10) 
     return &m_impl.m_value10 ;
   return nullptr; 
 }
-template<> const ossia::domain_base<ossia::impulse>& domain_base_variant::get() const { 
+template<> inline const ossia::domain_base<ossia::impulse>& domain_base_variant::get() const { 
   if(m_type == Type0) 
     return m_impl.m_value0 ;
   throw; 
 }
-template<> const ossia::domain_base<bool>& domain_base_variant::get() const { 
+template<> inline const ossia::domain_base<bool>& domain_base_variant::get() const { 
   if(m_type == Type1) 
     return m_impl.m_value1 ;
   throw; 
 }
-template<> const ossia::domain_base<int>& domain_base_variant::get() const { 
+template<> inline const ossia::domain_base<int>& domain_base_variant::get() const { 
   if(m_type == Type2) 
     return m_impl.m_value2 ;
   throw; 
 }
-template<> const ossia::domain_base<float>& domain_base_variant::get() const { 
+template<> inline const ossia::domain_base<float>& domain_base_variant::get() const { 
   if(m_type == Type3) 
     return m_impl.m_value3 ;
   throw; 
 }
-template<> const ossia::domain_base<char>& domain_base_variant::get() const { 
+template<> inline const ossia::domain_base<char>& domain_base_variant::get() const { 
   if(m_type == Type4) 
     return m_impl.m_value4 ;
   throw; 
 }
-template<> const ossia::domain_base<std::string>& domain_base_variant::get() const { 
+template<> inline const ossia::domain_base<std::string>& domain_base_variant::get() const { 
   if(m_type == Type5) 
     return m_impl.m_value5 ;
   throw; 
 }
-template<> const ossia::vector_domain& domain_base_variant::get() const { 
+template<> inline const ossia::vector_domain& domain_base_variant::get() const { 
   if(m_type == Type6) 
     return m_impl.m_value6 ;
   throw; 
 }
-template<> const ossia::vecf_domain<2>& domain_base_variant::get() const { 
+template<> inline const ossia::vecf_domain<2>& domain_base_variant::get() const { 
   if(m_type == Type7) 
     return m_impl.m_value7 ;
   throw; 
 }
-template<> const ossia::vecf_domain<3>& domain_base_variant::get() const { 
+template<> inline const ossia::vecf_domain<3>& domain_base_variant::get() const { 
   if(m_type == Type8) 
     return m_impl.m_value8 ;
   throw; 
 }
-template<> const ossia::vecf_domain<4>& domain_base_variant::get() const { 
+template<> inline const ossia::vecf_domain<4>& domain_base_variant::get() const { 
   if(m_type == Type9) 
     return m_impl.m_value9 ;
   throw; 
 }
-template<> const ossia::domain_base<ossia::value>& domain_base_variant::get() const { 
+template<> inline const ossia::domain_base<ossia::value>& domain_base_variant::get() const { 
   if(m_type == Type10) 
     return m_impl.m_value10 ;
   throw; 
 }
-template<> ossia::domain_base<ossia::impulse>& domain_base_variant::get() { 
+template<> inline ossia::domain_base<ossia::impulse>& domain_base_variant::get() { 
   if(m_type == Type0) 
     return m_impl.m_value0 ;
   throw; 
 }
-template<> ossia::domain_base<bool>& domain_base_variant::get() { 
+template<> inline ossia::domain_base<bool>& domain_base_variant::get() { 
   if(m_type == Type1) 
     return m_impl.m_value1 ;
   throw; 
 }
-template<> ossia::domain_base<int>& domain_base_variant::get() { 
+template<> inline ossia::domain_base<int>& domain_base_variant::get() { 
   if(m_type == Type2) 
     return m_impl.m_value2 ;
   throw; 
 }
-template<> ossia::domain_base<float>& domain_base_variant::get() { 
+template<> inline ossia::domain_base<float>& domain_base_variant::get() { 
   if(m_type == Type3) 
     return m_impl.m_value3 ;
   throw; 
 }
-template<> ossia::domain_base<char>& domain_base_variant::get() { 
+template<> inline ossia::domain_base<char>& domain_base_variant::get() { 
   if(m_type == Type4) 
     return m_impl.m_value4 ;
   throw; 
 }
-template<> ossia::domain_base<std::string>& domain_base_variant::get() { 
+template<> inline ossia::domain_base<std::string>& domain_base_variant::get() { 
   if(m_type == Type5) 
     return m_impl.m_value5 ;
   throw; 
 }
-template<> ossia::vector_domain& domain_base_variant::get() { 
+template<> inline ossia::vector_domain& domain_base_variant::get() { 
   if(m_type == Type6) 
     return m_impl.m_value6 ;
   throw; 
 }
-template<> ossia::vecf_domain<2>& domain_base_variant::get() { 
+template<> inline ossia::vecf_domain<2>& domain_base_variant::get() { 
   if(m_type == Type7) 
     return m_impl.m_value7 ;
   throw; 
 }
-template<> ossia::vecf_domain<3>& domain_base_variant::get() { 
+template<> inline ossia::vecf_domain<3>& domain_base_variant::get() { 
   if(m_type == Type8) 
     return m_impl.m_value8 ;
   throw; 
 }
-template<> ossia::vecf_domain<4>& domain_base_variant::get() { 
+template<> inline ossia::vecf_domain<4>& domain_base_variant::get() { 
   if(m_type == Type9) 
     return m_impl.m_value9 ;
   throw; 
 }
-template<> ossia::domain_base<ossia::value>& domain_base_variant::get() { 
+template<> inline ossia::domain_base<ossia::value>& domain_base_variant::get() { 
   if(m_type == Type10) 
     return m_impl.m_value10 ;
   throw; 
@@ -1205,6 +1211,56 @@ return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10);
 default: throw; 
 }
 }
+case domain_base_variant::Type::Type10:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
 default: throw; 
 }
 }
@@ -1255,6 +1311,10 @@ case domain_base_variant::Type::Type9:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
 }
+case domain_base_variant::Type::Type10:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10);
+}
 default: throw; 
 }
 }
@@ -1300,6 +1360,10 @@ return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
 case domain_base_variant::Type::Type9:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
+}
+case domain_base_variant::Type::Type10:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -1347,6 +1411,10 @@ case domain_base_variant::Type::Type9:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
 }
+case domain_base_variant::Type::Type10:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10);
+}
 default: throw; 
 }
 }
@@ -1392,6 +1460,10 @@ return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
 case domain_base_variant::Type::Type9:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
+}
+case domain_base_variant::Type::Type10:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -1439,6 +1511,10 @@ case domain_base_variant::Type::Type9:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
 }
+case domain_base_variant::Type::Type10:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10);
+}
 default: throw; 
 }
 }
@@ -1484,6 +1560,10 @@ return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
 case domain_base_variant::Type::Type9:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
+}
+case domain_base_variant::Type::Type10:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -1531,6 +1611,10 @@ case domain_base_variant::Type::Type9:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
 }
+case domain_base_variant::Type::Type10:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10);
+}
 default: throw; 
 }
 }
@@ -1576,6 +1660,10 @@ return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
 case domain_base_variant::Type::Type9:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
+}
+case domain_base_variant::Type::Type10:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -1623,6 +1711,10 @@ case domain_base_variant::Type::Type9:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
 }
+case domain_base_variant::Type::Type10:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10);
+}
 default: throw; 
 }
 }
@@ -1669,6 +1761,10 @@ case domain_base_variant::Type::Type9:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9);
 }
+case domain_base_variant::Type::Type10:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10);
+}
 default: throw; 
 }
 }
@@ -1714,6 +1810,10 @@ return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8);
 case domain_base_variant::Type::Type9:
 {
 return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9);
+}
+case domain_base_variant::Type::Type10:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10);
 }
 default: throw; 
 }

@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace_base.hpp>
-#include <eggs/variant.hpp>
 
 namespace ossia
 {
@@ -142,19 +141,5 @@ struct OSSIA_EXPORT decibel_raw_u : public gain_unit<decibel_raw_u>
   }
 };
 
-using linear = strong_value<linear_u>;
-using midigain = strong_value<midigain_u>;
-using decibel = strong_value<decibel_u>;
-using decibel_raw = strong_value<decibel_raw_u>;
 
-using gain_u =
-  eggs::variant<
-    linear_u, midigain_u, decibel_u, decibel_raw_u>;
-
-template<>
-struct dataspace_traits<gain_u>
-{
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("gain"); }
-};
 }

@@ -40,16 +40,6 @@ struct strong_value
   OSSIA_INLINE strong_value& operator=(const strong_value& other) noexcept { dataspace_value = other.dataspace_value; return *this; }
   OSSIA_INLINE strong_value& operator=(strong_value&& other) noexcept { dataspace_value = std::move(other.dataspace_value); return *this; }
 
-  // Constructor that takes anyything able to initialize val
-/* Sadly does not work on MSVC........
-  template<typename... Args,
-           typename = std::enable_if<
-             std::is_constructible<value_type, Args...>::value>::type>
-      OSSIA_DECL_RELAXED_CONSTEXPR strong_value(Args&&... other):
-      value{std::forward<Args>(other)...}
-  {
-  }
-*/
   OSSIA_INLINE constexpr strong_value(float other) noexcept : dataspace_value{ other } { }
   OSSIA_INLINE constexpr strong_value(double other) noexcept : dataspace_value{ (float)other } { }
   OSSIA_INLINE constexpr strong_value(int other) noexcept : dataspace_value{ (float)other } { }
@@ -115,7 +105,4 @@ struct unit_traits<strong_value<T>>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text() { return unit_traits<T>::text(); }
 };
-
-template<typename T>
-struct dataspace_traits : public std::false_type {};
 }

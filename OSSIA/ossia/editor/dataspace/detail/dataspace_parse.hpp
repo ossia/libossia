@@ -1,21 +1,138 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/dataspace/dataspace_parse.hpp>
+#include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia/detail/string_map.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <brigand/algorithms/for_each.hpp>
+#include <brigand/algorithms/wrap.hpp>
 #include <ossia/detail/string_view.hpp>
 namespace ossia
 {
+template<typename T>
+struct matching_unit_list;
+
+using angle_list =
+brigand::list<
+degree_u, radian_u>;
+
+using color_list =
+brigand::list<
+argb_u, rgba_u, rgb_u, bgr_u, argb8_u, hsv_u, cmy8_u, xyz_u
+/*, hsl_u, cmyk8_u, yxy_u, hunter_lab_u, cie_lab_u, cie_luv_u*/>;
+
+using distance_list =
+brigand::list<
+meter_u, kilometer_u, decimeter_u, centimeter_u, millimeter_u, micrometer_u, nanometer_u, picometer_u, inch_u, foot_u, mile_u>;
+
+using gain_list =
+brigand::list<
+linear_u, midigain_u, decibel_u, decibel_raw_u>;
+
+using orientation_list =
+brigand::list<
+quaternion_u, euler_u, axis_u>;
+
+using position_list =
+brigand::list<cartesian_3d_u, cartesian_2d_u, spherical_u, polar_u, opengl_u, cylindrical_u>;
+
+using speed_list =
+brigand::list<
+meter_per_second_u, miles_per_hour_u, kilometer_per_hour_u, knot_u, foot_per_second_u, foot_per_hour_u>;
+
+using time_list =
+brigand::list<
+second_u, bark_u, bpm_u, cent_u, frequency_u, mel_u, midi_pitch_u, millisecond_u, playback_speed_u>;
+
+using dataspace_list =
+brigand::list<
+angle_list, color_list, distance_list, orientation_list, position_list, speed_list, time_list>;
+
+
+template<> struct matching_unit_list<angle_u> { using type = angle_list; };
+template<> struct matching_unit_list<color_u> { using type = color_list; };
+template<> struct matching_unit_list<distance_u> { using type = distance_list; };
+template<> struct matching_unit_list<position_u> { using type = position_list; };
+template<> struct matching_unit_list<orientation_u> { using type = orientation_list; };
+template<> struct matching_unit_list<gain_u> { using type = gain_list; };
+template<> struct matching_unit_list<speed_u> { using type = speed_list; };
+template<> struct matching_unit_list<time_u> { using type = time_list; };
+
+template<>
+struct dataspace_traits<angle_list>
+{
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  { return ossia::make_string_array("angle"); }
+};
+
+template<>
+struct dataspace_traits<color_list>
+{
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  { return ossia::make_string_array("color"); }
+};
+
+template<>
+struct dataspace_traits<distance_list>
+{
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  { return ossia::make_string_array("distance"); }
+};
+
+template<>
+struct dataspace_traits<gain_list>
+{
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  { return ossia::make_string_array("gain"); }
+};
+
+template<>
+struct dataspace_traits<orientation_list>
+{
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  { return ossia::make_string_array("orientation"); }
+};
+template<>
+struct dataspace_traits<position_list>
+{
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  { return ossia::make_string_array("position"); }
+};
+
+template<>
+struct dataspace_traits<speed_list>
+{
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  { return ossia::make_string_array("speed"); }
+};
+
+template<>
+struct dataspace_traits<time_list>
+{
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  { return ossia::make_string_array("time"); }
+};
+
 namespace detail
 {
 struct unit_text_visitor
 {
-  template<typename... Args>
-  OSSIA_INLINE ossia::string_view operator()(const eggs::variant<Args...>& dataspace)
-  {
-    return ossia::apply(*this, dataspace);
-  }
+  OSSIA_INLINE ossia::string_view operator()(const angle_u& dataspace)
+  { return ossia::apply(*this, dataspace); }
+  OSSIA_INLINE ossia::string_view operator()(const color_u& dataspace)
+  { return ossia::apply(*this, dataspace); }
+  OSSIA_INLINE ossia::string_view operator()(const distance_u& dataspace)
+  { return ossia::apply(*this, dataspace); }
+  OSSIA_INLINE ossia::string_view operator()(const gain_u& dataspace)
+  { return ossia::apply(*this, dataspace); }
+  OSSIA_INLINE ossia::string_view operator()(const position_u& dataspace)
+  { return ossia::apply(*this, dataspace); }
+  OSSIA_INLINE ossia::string_view operator()(const orientation_u& dataspace)
+  { return ossia::apply(*this, dataspace); }
+  OSSIA_INLINE ossia::string_view operator()(const speed_u& dataspace)
+  { return ossia::apply(*this, dataspace); }
+  OSSIA_INLINE ossia::string_view operator()(const time_u& dataspace)
+  { return ossia::apply(*this, dataspace); }
 
   template<typename Unit>
   OSSIA_INLINE ossia::string_view operator()(Unit)
@@ -89,7 +206,7 @@ struct unit_factory_visitor
   template<typename Dataspace_T>
   ossia::unit_t operator()(Dataspace_T arg)
   {
-    static const auto units = brigand::wrap<Dataspace_T, make_unit_map>{}();
+    static const auto units = brigand::wrap<typename matching_unit_list<Dataspace_T>::type, make_unit_map>{}();
     auto it = units.find(text);
     return it != units.end() ? it->second : arg;
   }
@@ -177,7 +294,7 @@ struct make_unit_symbols_helper
 
   make_unit_symbols_helper()
   {
-    brigand::for_each<ossia::unit_variant>([&] (auto t) {
+    brigand::for_each<dataspace_list>([&] (auto t) {
       using dataspace_type = typename decltype(t)::type;
       brigand::for_each<dataspace_type>([&] (auto u) {
         using unit_type = typename decltype(u)::type;

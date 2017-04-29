@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace_base.hpp>
-#include <eggs/variant.hpp>
 
 namespace ossia
 {
@@ -180,30 +179,7 @@ struct playback_speed_u : public time_unit<playback_speed_u>
   }
 };
 
-
-
-using second = strong_value<second_u>;
-using bark = strong_value<bark_u>;
-using bpm = strong_value<bpm_u>;
-using cent = strong_value<cent_u>;
-using frequency = strong_value<frequency_u>;
-using mel = strong_value<mel_u>;
-using midi_pitch = strong_value<midi_pitch_u>;
-using millisecond = strong_value<millisecond_u>;
-using playback_speed = strong_value<playback_speed_u>;
-
 // template<int N>
 // using sample = strong_value<sample_u<N>>;
-
-using time_u =
-  eggs::variant<
-    second_u, bark_u, bpm_u, cent_u, frequency_u, mel_u, midi_pitch_u, millisecond_u, playback_speed_u>;
-
-template<>
-struct dataspace_traits<time_u>
-{
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("time"); }
-};
 
 }

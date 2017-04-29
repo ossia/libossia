@@ -364,6 +364,15 @@ struct domain_value_set_update_visitor
     }
   }
 
+  void operator()(ossia::domain_base<ossia::value>& dom)
+  {
+    dom.values.clear();
+    for(auto& value : values)
+    {
+      dom.values.insert(value);
+    }
+  }
+
   template<std::size_t N>
   void operator()(ossia::vecf_domain<N>& dom)
   {

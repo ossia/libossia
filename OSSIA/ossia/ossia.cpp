@@ -1,15 +1,22 @@
+
 #include <brigand/algorithms/for_each.hpp>
+#include <brigand/algorithms/transform.hpp>
 #include <brigand/sequences/list.hpp>
-#include <ossia/editor/value/destination.hpp>
 #include <ossia/editor/value/impulse.hpp>
 #include <ossia/editor/value/vec.hpp>
-#include <ossia/network/domain/domain_base_impl.hpp>
+#include <ossia/editor/dataspace/dataspace_base_defs_fwd.hpp>
 #include <fmt/ostream.h>
-
 namespace ossia
 {
 struct behavior {};
 struct curve_abstract {};
+struct Destination { std::string v; };
+template<typename T>
+struct domain_base { std::string v; };
+
+struct vector_domain { std::string v; };
+template<int N>
+struct vecf_domain { std::string v; };
 }
 namespace gen_variant
 {
@@ -20,12 +27,94 @@ struct var_member
 
 };
 
+#define UNIT_VARIANT_DEF(Text) \
+template<> struct var_member<ossia::Text ## _u> \
+{ \
+  using type = ossia::Text ## _u; \
+  const std::string type_str = "ossia::" # Text "_u"; \
+  const std::string ctor_str = ""; \
+  static const constexpr bool is_trivial = true; \
+}; \
+template<> struct var_member<ossia::Text> \
+{ \
+  using type = ossia::Text; \
+  const std::string type_str = "ossia::" # Text; \
+  const std::string ctor_str = ""; \
+  static const constexpr bool is_trivial = true; \
+};
+UNIT_VARIANT_DEF(radian)
+UNIT_VARIANT_DEF(degree)
+
+UNIT_VARIANT_DEF(argb)
+UNIT_VARIANT_DEF(rgba)
+UNIT_VARIANT_DEF(rgb)
+UNIT_VARIANT_DEF(bgr)
+UNIT_VARIANT_DEF(argb8)
+UNIT_VARIANT_DEF(hsv)
+UNIT_VARIANT_DEF(cmy8)
+UNIT_VARIANT_DEF(xyz)
+
+UNIT_VARIANT_DEF(meter)
+UNIT_VARIANT_DEF(kilometer)
+UNIT_VARIANT_DEF(decimeter)
+UNIT_VARIANT_DEF(centimeter)
+UNIT_VARIANT_DEF(millimeter)
+UNIT_VARIANT_DEF(micrometer)
+UNIT_VARIANT_DEF(nanometer)
+UNIT_VARIANT_DEF(picometer)
+UNIT_VARIANT_DEF(inch)
+UNIT_VARIANT_DEF(foot)
+UNIT_VARIANT_DEF(mile)
+
+UNIT_VARIANT_DEF(linear)
+UNIT_VARIANT_DEF(midigain)
+UNIT_VARIANT_DEF(decibel)
+UNIT_VARIANT_DEF(decibel_raw)
+
+UNIT_VARIANT_DEF(quaternion)
+UNIT_VARIANT_DEF(euler)
+UNIT_VARIANT_DEF(axis)
+
+UNIT_VARIANT_DEF(cartesian_3d)
+UNIT_VARIANT_DEF(cartesian_2d)
+UNIT_VARIANT_DEF(spherical)
+UNIT_VARIANT_DEF(polar)
+UNIT_VARIANT_DEF(opengl)
+UNIT_VARIANT_DEF(cylindrical)
+
+UNIT_VARIANT_DEF(meter_per_second)
+UNIT_VARIANT_DEF(miles_per_hour)
+UNIT_VARIANT_DEF(kilometer_per_hour)
+UNIT_VARIANT_DEF(knot)
+UNIT_VARIANT_DEF(foot_per_second)
+UNIT_VARIANT_DEF(foot_per_hour)
+
+UNIT_VARIANT_DEF(second)
+UNIT_VARIANT_DEF(bark)
+UNIT_VARIANT_DEF(bpm)
+UNIT_VARIANT_DEF(cent)
+UNIT_VARIANT_DEF(frequency)
+UNIT_VARIANT_DEF(mel)
+UNIT_VARIANT_DEF(midi_pitch)
+UNIT_VARIANT_DEF(millisecond)
+UNIT_VARIANT_DEF(playback_speed)
+
+// Dataspaces
+UNIT_VARIANT_DEF(angle)
+UNIT_VARIANT_DEF(color)
+UNIT_VARIANT_DEF(distance)
+UNIT_VARIANT_DEF(gain)
+UNIT_VARIANT_DEF(orientation)
+UNIT_VARIANT_DEF(position)
+UNIT_VARIANT_DEF(speed)
+UNIT_VARIANT_DEF(time)
+
 template<> struct var_member<ossia::domain_base<ossia::impulse>>
 {
   using type = ossia::domain_base<ossia::impulse>;
   const std::string type_str = "ossia::domain_base<ossia::impulse>";
   const std::string ctor_str = "domain_base";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
 };
 
 template<> struct var_member<ossia::domain_base<int>>
@@ -33,7 +122,7 @@ template<> struct var_member<ossia::domain_base<int>>
   using type = ossia::domain_base<int>;
   const std::string type_str = "ossia::domain_base<int>";
   const std::string ctor_str = "domain_base";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
 };
 
 template<> struct var_member<ossia::domain_base<float>>
@@ -41,63 +130,63 @@ template<> struct var_member<ossia::domain_base<float>>
   using type = ossia::domain_base<float>;
   const std::string type_str = "ossia::domain_base<float>";
   const std::string ctor_str = "domain_base";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
 };
 template<> struct var_member<ossia::domain_base<bool>>
 {
   using type = ossia::domain_base<bool>;
   const std::string type_str = "ossia::domain_base<bool>";
   const std::string ctor_str = "domain_base";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
 };
 template<> struct var_member<ossia::domain_base<char>>
 {
   using type = ossia::domain_base<char>;
   const std::string type_str = "ossia::domain_base<char>";
   const std::string ctor_str = "domain_base";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
 };
 template<> struct var_member<ossia::domain_base<std::string>>
 {
   using type = ossia::domain_base<std::string>;
   const std::string type_str = "ossia::domain_base<std::string>";
   const std::string ctor_str = "domain_base";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
 };
 template<> struct var_member<ossia::vector_domain>
 {
   using type = ossia::vector_domain;
   const std::string type_str = "ossia::vector_domain";
   const std::string ctor_str = "vector_domain";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
 };
 template<> struct var_member<ossia::vecf_domain<2>>
 {
   using type = ossia::vecf_domain<2>;
   const std::string type_str = "ossia::vecf_domain<2>";
   const std::string ctor_str = "vecf_domain";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
 };
 template<> struct var_member<ossia::vecf_domain<3>>
 {
   using type = ossia::vecf_domain<3>;
   const std::string type_str = "ossia::vecf_domain<3>";
   const std::string ctor_str = "vecf_domain";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
 };
 template<> struct var_member<ossia::vecf_domain<4>>
 {
   using type = ossia::vecf_domain<4>;
   const std::string type_str = "ossia::vecf_domain<4>";
   const std::string ctor_str = "vecf_domain";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
 };
 template<> struct var_member<ossia::domain_base<ossia::value>>
 {
   using type = ossia::domain_base<ossia::value>;
   const std::string type_str = "ossia::domain_base<ossia::value>";
   const std::string ctor_str = "domain_base";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
 };
 
 template<> struct var_member<std::shared_ptr<ossia::curve_abstract>>
@@ -105,14 +194,14 @@ template<> struct var_member<std::shared_ptr<ossia::curve_abstract>>
   using type = std::shared_ptr<ossia::curve_abstract>;
   const std::string type_str = "std::shared_ptr<ossia::curve_abstract>";
   const std::string ctor_str = "shared_ptr";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
 };
 template<> struct var_member<std::vector<ossia::behavior>>
 {
   using type = float;
   const std::string type_str = "std::vector<ossia::behavior>";
   const std::string ctor_str = "vector";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
 };
 
 template<> struct var_member<float>
@@ -120,77 +209,84 @@ template<> struct var_member<float>
   using type = float;
   const std::string type_str = "float";
   const std::string ctor_str = "";
-  static const constexpr bool is_cstxpr = true;
+  static const constexpr bool is_trivial = true;
 };
 template<> struct var_member<int>
 {
   using type = int;
   const std::string type_str = "int";
   const std::string ctor_str = "";
-  static const constexpr bool is_cstxpr = true;
+  static const constexpr bool is_trivial = true;
 };
 template<> struct var_member<ossia::vec2f>
 {
   using type = ossia::vec2f;
   const std::string type_str = "ossia::vec2f";
   const std::string ctor_str = "";
-  static const constexpr bool is_cstxpr = true;
+  static const constexpr bool is_trivial = true;
 };
 template<> struct var_member<ossia::vec3f>
 {
   using type = ossia::vec3f;
   const std::string type_str = "ossia::vec3f";
   const std::string ctor_str = "";
-  static const constexpr bool is_cstxpr = true;
+  static const constexpr bool is_trivial = true;
 };
 template<> struct var_member<ossia::vec4f>
 {
   using type = ossia::vec4f;
   const std::string type_str = "ossia::vec4f";
   const std::string ctor_str = "";
-  static const constexpr bool is_cstxpr = true;
+  static const constexpr bool is_trivial = true;
 };
 template<> struct var_member<std::vector<ossia::value>>
 {
   using type = std::vector<ossia::value>;
   const std::string type_str = "std::vector<ossia::value>";
   const std::string ctor_str = "vector<ossia::value>";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
 };
 template<> struct var_member<ossia::impulse>
 {
   using type = ossia::impulse;
   const std::string type_str = "ossia::impulse";
   const std::string ctor_str = "";
-  static const constexpr bool is_cstxpr = true;
+  static const constexpr bool is_trivial = true;
 };
 template<> struct var_member<bool>
 {
   using type = bool;
   const std::string type_str = "bool";
   const std::string ctor_str = "";
-  static const constexpr bool is_cstxpr = true;
+  static const constexpr bool is_trivial = true;
 };
 template<> struct var_member<std::string>
 {
   using type = std::string;
   const std::string type_str = "std::string";
   const std::string ctor_str = "basic_string";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
 };
 template<> struct var_member<char>
 {
   using type = char;
   const std::string type_str = "char";
   const std::string ctor_str = "";
-  static const constexpr bool is_cstxpr = true;
+  static const constexpr bool is_trivial = true;
 };
 template<> struct var_member<ossia::Destination>
 {
   using type = ossia::Destination;
   const std::string type_str = "ossia::Destination";
   const std::string ctor_str = "Destination";
-  static const constexpr bool is_cstxpr = false;
+  static const constexpr bool is_trivial = false;
+};
+template<> struct var_member<ossia::value>
+{
+  using type = ossia::value;
+  const std::string type_str = "ossia::value";
+  const std::string ctor_str = "value";
+  static const constexpr bool is_trivial = false;
 };
 
 template<typename... Args>
@@ -233,12 +329,12 @@ struct gen_var
       str << t.type_str << " m_value" << i << ";\n";
 
       // Constructor
-      if(t.is_cstxpr)
+      if(t.is_trivial)
       {
         str << constexpr_token << " ";
       }
 
-      if(std::is_trivially_copyable<impl_t>::value)
+      if(t.is_trivial)
       {
         str << "Impl(" << t.type_str << " v): m_value" << i << "{v} { }\n";
       }
@@ -249,7 +345,7 @@ struct gen_var
       }
 
       // operator=
-      if(std::is_trivially_copyable<impl_t>::value)
+      if(t.is_trivial)
       {
         str << "Impl& operator=(" << t.type_str << " v) { m_value" << i << " = v; return *this; }\n";
       }
@@ -280,7 +376,7 @@ struct gen_var
       using impl_t = typename meta_t::type;
       meta_t t;
 
-      if(!std::is_trivially_destructible<impl_t>::value)
+      if(!t.is_trivial)
       {
         str << "  case Type::Type" << i << ":\n";
         str << "    m_impl.m_value" << i << ".~" << t.ctor_str << "();\n";
@@ -377,12 +473,12 @@ struct gen_var
       using impl_t = typename meta_t::type;
       meta_t t;
 
-      if(t.is_cstxpr)
+      if(t.is_trivial)
       {
         str << constexpr_token << " ";
       }
 
-      if(std::is_trivially_copyable<impl_t>::value)
+      if(t.is_trivial)
       {
         str << class_name << "(" << t.type_str << " v): m_impl{v}, m_type{Type" << i << "} { }\n";
       }
@@ -419,7 +515,7 @@ struct gen_var
       using meta_t = typename decltype(_)::type;
       meta_t t;
 
-      str << "template<> const " << t.type_str << "* "<< class_name<<"::target() const { \n";
+      str << "template<> inline const " << t.type_str << "* "<< class_name<<"::target() const { \n";
       str << "  if(m_type == Type" << i << ") \n";
       str << "    return &m_impl.m_value" << i << " ;\n";
       str << "  return nullptr; \n";
@@ -432,7 +528,7 @@ struct gen_var
       using meta_t = typename decltype(_)::type;
       meta_t t;
 
-      str << "template<> " << t.type_str << "* "<< class_name<<"::target() { \n";
+      str << "template<> inline " << t.type_str << "* "<< class_name<<"::target() { \n";
       str << "  if(m_type == Type" << i << ") \n";
       str << "    return &m_impl.m_value" << i << " ;\n";
       str << "  return nullptr; \n";
@@ -445,7 +541,7 @@ struct gen_var
       using meta_t = typename decltype(_)::type;
       meta_t t;
 
-      str << "template<> const " << t.type_str << "& "<< class_name<<"::get() const { \n";
+      str << "template<> inline const " << t.type_str << "& "<< class_name<<"::get() const { \n";
       str << "  if(m_type == Type" << i << ") \n";
       str << "    return m_impl.m_value" << i << " ;\n";
       str << "  throw; \n";
@@ -458,7 +554,7 @@ struct gen_var
       using meta_t = typename decltype(_)::type;
       meta_t t;
 
-      str << "template<> " << t.type_str << "& "<< class_name<<"::get() { \n";
+      str << "template<> inline " << t.type_str << "& "<< class_name<<"::get() { \n";
       str << "  if(m_type == Type" << i << ") \n";
       str << "    return m_impl.m_value" << i << " ;\n";
       str << "  throw; \n";
@@ -512,13 +608,6 @@ static Type matching_type();
     write_target();
 
     write_apply();
-
-
-  }
-
-  void write()
-  {
-    write_class();
   }
 
 
@@ -695,7 +784,7 @@ int main()
     std::ofstream f("/home/jcelerier/travail/i-score/API/OSSIA/ossia/editor/curve/behavior_variant_impl.hpp");
     gen_var<std::shared_ptr<ossia::curve_abstract>, std::vector<ossia::behavior>>
         behav_gen("behavior_variant_type");
-    behav_gen.write();
+    behav_gen.write_class();
     f << behav_gen.str.str();
   }
 
@@ -708,16 +797,16 @@ int main()
         vector_domain, vecf_domain<2>, vecf_domain<3>,
         vecf_domain<4>, domain_base<ossia::value>>
         domain_gen("domain_base_variant");
-    domain_gen.write();
+    domain_gen.write_class();
     f << domain_gen.str.str();
 
 
     apply_writer r;
-    r.write_apply_switch({ class_info{"domain_base_variant", 10, class_info::Ref},
+    r.write_apply_switch({ class_info{"domain_base_variant", 11, class_info::Ref},
                            class_info{"value_variant_type", 11, class_info::Cref}
                          });
     r.write_apply_switch({  class_info{"value_variant_type", 11, class_info::Cref},
-                            class_info{"domain_base_variant", 10, class_info::Cref}
+                            class_info{"domain_base_variant", 11, class_info::Cref}
                          });
     f << r.str.str();
   }
@@ -731,7 +820,7 @@ int main()
             bool, std::string, std::vector<ossia::value>,
             char, ossia::Destination>
         value_gen("value_variant_type");
-    value_gen.write();
+    value_gen.write_class();
     f << value_gen.str.str();
 
     apply_writer r;
@@ -759,14 +848,223 @@ int main()
                            class_info{"behavior_variant_type", 2, class_info::Cref}
                          });
 
+    f << "#pragma once\n";
     f << "#include <ossia/editor/value/value.hpp>\n";
     f << "#include <ossia/editor/curve/behavior.hpp>\n";
     f << "namespace ossia {\n";
     f << r.str.str();
     f << "}\n";
   }
-/*
-  gen_var v;
-  v.write();
-  f << v.str.str();*/
+  using namespace ossia;
+
+  {
+    std::ofstream f("/home/jcelerier/i-score/API/OSSIA/ossia/editor/dataspace/dataspace_base_variants.hpp");
+    {
+      gen_var<degree_u, radian_u> u("angle_u");
+      u.write_class();
+      f << u.str.str();
+    }
+    {
+      gen_var<argb_u, rgba_u, rgb_u, bgr_u, argb8_u, hsv_u, cmy8_u, xyz_u> u("color_u");
+      u.write_class();
+      f << u.str.str();
+    }
+    {
+      gen_var<meter_u, kilometer_u, decimeter_u, centimeter_u, millimeter_u, micrometer_u, nanometer_u, picometer_u, inch_u, foot_u, mile_u>
+          u("distance_u");
+      u.write_class();
+      f << u.str.str();
+    }
+    {
+      gen_var<linear_u, midigain_u, decibel_u, decibel_raw_u>
+          u("gain_u");
+      u.write_class();
+      f << u.str.str();
+    }
+    {
+      gen_var<quaternion_u, euler_u, axis_u>
+          u("orientation_u");
+      u.write_class();
+      f << u.str.str();
+    }
+    {
+      gen_var<cartesian_3d_u, cartesian_2d_u, spherical_u, polar_u, opengl_u, cylindrical_u>
+          u("position_u");
+      u.write_class();
+      f << u.str.str();
+    }
+    {
+      gen_var<meter_per_second_u, miles_per_hour_u, kilometer_per_hour_u, knot_u, foot_per_second_u, foot_per_hour_u>
+          u("speed_u");
+      u.write_class();
+      f << u.str.str();
+    }
+    {
+      gen_var<second_u, bark_u, bpm_u, cent_u, frequency_u, mel_u, midi_pitch_u, millisecond_u, playback_speed_u>
+          u("time_u");
+      u.write_class();
+      f << u.str.str();
+    }
+
+    {
+      gen_var<distance_u, position_u, speed_u, orientation_u, angle_u, color_u, gain_u, time_u>
+          u("unit_variant");
+      u.write_class();
+      f << u.str.str();
+    }
+  }
+  {
+    std::ofstream f("/home/jcelerier/i-score/API/OSSIA/ossia/editor/dataspace/dataspace_strong_variants.hpp");
+    // Strong value form
+    {
+      gen_var<degree, radian> u("angle");
+      u.write_class();
+      f << u.str.str();
+    }
+    {
+      gen_var<argb, rgba, rgb, bgr, argb8, hsv, cmy8, xyz> u("color");
+      u.write_class();
+      f << u.str.str();
+    }
+    {
+      gen_var<meter, kilometer, decimeter, centimeter, millimeter, micrometer, nanometer, picometer, inch, foot, mile>
+          u("distance");
+      u.write_class();
+      f << u.str.str();
+    }
+    {
+      gen_var<linear, midigain, decibel, decibel_raw>
+          u("gain");
+      u.write_class();
+      f << u.str.str();
+    }
+    {
+      gen_var<quaternion, euler, axis>
+          u("orientation");
+      u.write_class();
+      f << u.str.str();
+    }
+    {
+      gen_var<cartesian_3d, cartesian_2d, spherical, polar, opengl, cylindrical>
+          u("position");
+      u.write_class();
+      f << u.str.str();
+    }
+    {
+      gen_var<meter_per_second, miles_per_hour, kilometer_per_hour, knot, foot_per_second, foot_per_hour>
+          u("speed");
+      u.write_class();
+      f << u.str.str();
+    }
+    {
+      gen_var<second, bark, bpm, cent, frequency, mel, midi_pitch, millisecond, playback_speed>
+          u("time");
+      u.write_class();
+      f << u.str.str();
+    }
+
+    // List of dataspaces
+
+    {
+      gen_var<ossia::value, distance, position, speed, orientation, angle, color, gain, ossia::time>
+          u("strong_value_variant");
+      u.write_class();
+      f << u.str.str();
+    }
+  }
+
+  {
+    std::ofstream f("/home/jcelerier/i-score/API/OSSIA/ossia/editor/dataspace/dataspace_variant_visitors.hpp");
+    apply_writer r;
+    r.write_apply_switch({ class_info{"strong_value_variant", 9, class_info::Cref},
+                           class_info{"unit_variant", 8, class_info::Cref}
+                         });
+
+    // Value & unit_t
+    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+                           class_info{"angle_u", 2, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+                           class_info{"color_u", 8, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+                           class_info{"distance_u", 11, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+                           class_info{"gain_u", 4, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+                           class_info{"orientation_u", 3, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+                           class_info{"position_u", 6, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+                           class_info{"speed_u", 6, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+                           class_info{"time_u", 9, class_info::Cref}
+                         });
+
+    // Strong value & unit
+    r.write_apply_switch({ class_info{"angle", 2, class_info::Cref},
+                           class_info{"angle_u", 2, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"color", 8, class_info::Cref},
+                           class_info{"color_u", 8, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"distance", 11, class_info::Cref},
+                           class_info{"distance_u", 11, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"gain", 4, class_info::Cref},
+                           class_info{"gain_u", 4, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"orientation", 3, class_info::Cref},
+                           class_info{"orientation_u", 3, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"position", 6, class_info::Cref},
+                           class_info{"position_u", 6, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"speed", 6, class_info::Cref},
+                           class_info{"speed_u", 6, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"time", 9, class_info::Cref},
+                           class_info{"time_u", 9, class_info::Cref}
+                         });
+
+    // Strong value & value
+    r.write_apply_switch({ class_info{"angle", 2, class_info::Cref},
+                           class_info{"value_variant_type", 11, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"color", 8, class_info::Cref},
+                           class_info{"value_variant_type", 11, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"distance", 11, class_info::Cref},
+                           class_info{"value_variant_type", 11, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"gain", 4, class_info::Cref},
+                           class_info{"value_variant_type", 11, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"orientation", 3, class_info::Cref},
+                           class_info{"value_variant_type", 11, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"position", 6, class_info::Cref},
+                           class_info{"value_variant_type", 11, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"speed", 6, class_info::Cref},
+                           class_info{"value_variant_type", 11, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"time", 9, class_info::Cref},
+                           class_info{"value_variant_type", 11, class_info::Cref}
+                         });
+
+
+    f << "#pragma once\n";
+    f << "#include <ossia/editor/dataspace/dataspace.hpp>\n";
+    f << "#include <ossia/editor/dataspace/value_with_unit.hpp>\n";
+    f << "namespace ossia {\n";
+    f << r.str.str();
+    f << "}\n";
+  }
+
 }

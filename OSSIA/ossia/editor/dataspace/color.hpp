@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace_base.hpp>
-#include <eggs/variant.hpp>
 // Algorithms taken from http://www.easyrgb.com
 namespace ossia
 {
@@ -250,32 +249,5 @@ struct OSSIA_EXPORT cie_luv_u : public color_unit<cie_luv_u>
   using value_type = vec3f;
 };
 
-
-using color_u =
-  eggs::variant<
-    argb_u, rgba_u, rgb_u, bgr_u, argb8_u, hsv_u, cmy8_u, xyz_u
-/*, hsl_u, cmyk8_u, yxy_u, hunter_lab_u, cie_lab_u, cie_luv_u*/>;
-
-using argb = strong_value<argb_u>;
-using rgba = strong_value<rgba_u>;
-using rgb = strong_value<rgb_u>;
-using bgr = strong_value<bgr_u>;
-using argb8 = strong_value<argb8_u>;
-using hsv = strong_value<hsv_u>;
-using hsl = strong_value<hsl_u>;
-using cmy8 = strong_value<cmy8_u>;
-using cmyk8 = strong_value<cmyk8_u>;
-using xyz = strong_value<xyz_u>;
-using yxy = strong_value<yxy_u>;
-using hunter_lab = strong_value<hunter_lab_u>;
-using cie_lab = strong_value<cie_lab_u>;
-using cie_luv = strong_value<cie_luv_u>;
-
-template<>
-struct dataspace_traits<color_u>
-{
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("color"); }
-};
 
 }

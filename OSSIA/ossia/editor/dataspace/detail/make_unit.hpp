@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/editor/dataspace/detail/dataspace_parse.hpp>
 #include <brigand/algorithms/for_each.hpp>
 
 namespace ossia
@@ -39,8 +40,8 @@ private:
    * indices[0] == 0
    * indices[1] == position of "first position unit" in the units array
    */
-  using indices_array = std::array<uint64_t, brigand::size<ossia::unit_variant>::value>;
-  using units_array = std::array<ossia::unit_t, unit_count::value>;
+  using indices_array = std::array<uint64_t, ossia::dataspace_count>;
+  using units_array = std::array<ossia::unit_t, ossia::unit_count>;
 
   const indices_array indices;
   const units_array units;
@@ -51,7 +52,7 @@ private:
 
     uint64_t i = 0;
     uint64_t sum = 0;
-    brigand::for_each<ossia::unit_variant>([&] (auto t) {
+    brigand::for_each<ossia::dataspace_list>([&] (auto t) {
       using dataspace_type = typename decltype(t)::type;
       arr[i] = sum;
       sum += brigand::size<dataspace_type>::value;
@@ -67,7 +68,7 @@ private:
     units_array arr;
 
     uint64_t i = 0;
-    brigand::for_each<ossia::unit_variant>([&] (auto t) {
+    brigand::for_each<ossia::dataspace_list>([&] (auto t) {
       using dataspace_type = typename decltype(t)::type;
       brigand::for_each<dataspace_type>([&] (auto u) {
         using unit_type = typename decltype(u)::type;

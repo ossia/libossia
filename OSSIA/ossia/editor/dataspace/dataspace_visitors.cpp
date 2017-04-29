@@ -7,6 +7,7 @@
 #include <ossia/editor/dataspace/detail/make_value.hpp>
 #include <ossia/editor/dataspace/detail/make_unit.hpp>
 #include <ossia/editor/dataspace/value_with_unit.hpp>
+#include <ossia/editor/dataspace/dataspace_variant_visitors.hpp>
 #include <ossia/detail/logger.hpp>
 #include <hopscotch_map.h>
 
@@ -15,12 +16,12 @@ namespace ossia
 /// Parse ///
 ossia::string_view get_dataspace_text(const unit_t& u)
 {
-  return ossia::apply(detail::dataspace_text_visitor{}, u);
+  return ossia::apply(detail::dataspace_text_visitor{}, u.v);
 }
 
 ossia::string_view get_unit_text(const unit_t& u)
 {
-  return ossia::apply(detail::unit_text_visitor{}, u);
+  return ossia::apply(detail::unit_text_visitor{}, u.v);
 }
 
 std::string get_pretty_unit_text(const unit_t& u)
@@ -47,7 +48,7 @@ std::string get_pretty_unit_text(const unit_t& u)
 unit_t parse_unit(ossia::string_view text, const unit_t& dataspace)
 {
   if(!text.empty())
-    return ossia::apply(detail::unit_factory_visitor{text}, dataspace);
+    return ossia::apply(detail::unit_factory_visitor{text}, dataspace.v);
   return {};
 }
 
@@ -121,16 +122,16 @@ char get_unit_accessor(const ossia::unit_t& unit, uint8_t n)
 {
   if(unit)
   {
-    return eggs::variants::apply([=] (auto d) {
+    return ossia::apply_nonnull([=] (auto d) {
       if(d)
       {
-        return eggs::variants::apply([=] (auto u) {
+        return ossia::apply_nonnull([=] (auto u) {
           return detail::unit_accessor_helper<decltype(u)>{}(n);
         }, d);
       }
 
       return '\0';
-    }, unit);
+    }, unit.v);
   }
 
   return 0;
@@ -142,11 +143,11 @@ value_with_unit make_value(const ossia::value& v, const ossia::unit_t& u)
   if(!u || !v.valid())
     return v;
 
-  return eggs::variants::apply([&] (const auto& dataspace) -> ossia::value_with_unit {
+  return ossia::apply_nonnull([&] (const auto& dataspace) -> ossia::value_with_unit {
     if(!dataspace)
       return v;
-    return eggs::variants::apply(make_value_with_unit_visitor{}, v.v, dataspace);
-  }, u);
+    return ossia::apply(make_value_with_unit_visitor{}, v.v, dataspace);
+  }, u.v);
 }
 
 unit_t make_unit(uint64_t dataspace, uint64_t unit)
@@ -160,19 +161,19 @@ val_type matching_type(const unit_t& u)
   if(!u)
     return ossia::val_type::IMPULSE;
 
-  return eggs::variants::apply(
+  return ossia::apply_nonnull(
         [&] (const auto& dataspace) -> ossia::val_type
   {
     if(!dataspace)
       return ossia::val_type::IMPULSE;
 
-    return eggs::variants::apply(
+    return ossia::apply_nonnull(
           [] (auto unit) -> ossia::val_type
     {
       using unit_t = decltype(unit);
       return ossia::value_trait<typename unit_t::value_type>::ossia_enum;
     }, dataspace);
-  }, u);
+  }, u.v);
 
 }
 value_with_unit convert(const value_with_unit& v, const unit_t& t)
@@ -182,7 +183,7 @@ value_with_unit convert(const value_with_unit& v, const unit_t& t)
     if(auto value = v.target<ossia::value>())
       return make_value(*value, t);
     else
-      return eggs::variants::apply(detail::convert_unit_visitor{}, v, t);
+      return ossia::apply(detail::convert_unit_visitor{}, v.v, t.v);
   }
   else
   {
@@ -192,13 +193,13 @@ value_with_unit convert(const value_with_unit& v, const unit_t& t)
 
 value to_value(const value_with_unit& v)
 {
-  return ossia::apply(detail::convert_to_value_visitor{}, v);
+  return ossia::apply(detail::convert_to_value_visitor{}, v.v);
 
 }
 
 unit_t to_unit(const value_with_unit& v)
 {
-  return ossia::apply(detail::convert_to_unit_visitor{}, v);
+  return ossia::apply(detail::convert_to_unit_visitor{}, v.v);
 }
 
 
@@ -225,7 +226,7 @@ struct merger_impl
   OSSIA_INLINE ossia::value_with_unit operator()(const Dataspace_T& ds)
   {
     if(ds && val.v)
-      return eggs::variants::apply(detail::value_merger{idx}, ds, val.v);
+      return ossia::apply(detail::value_merger{idx}, ds, val.v);
     return {};
   }
 };
@@ -260,7 +261,7 @@ struct vec_merger_impl
   {
     if(ds)
     {
-      return eggs::variants::apply(vec_merger_impl_helper<N>{val, idx}, ds);
+      return ossia::apply_nonnull(vec_merger_impl_helper<N>{val, idx}, ds);
     }
     return {};
   }
@@ -272,7 +273,7 @@ ossia::value_with_unit merge(
 {
   if(vu && val.valid())
   {
-    return eggs::variants::apply(merger_impl{val, idx}, vu);
+    return ossia::apply_nonnull(merger_impl{val, idx}, vu.v);
   }
 
   return vu;
@@ -285,7 +286,7 @@ ossia::value_with_unit merge(
 {
   if(vu)
   {
-    return eggs::variants::apply(vec_merger_impl<2>{val, idx}, vu);
+    return ossia::apply_nonnull(vec_merger_impl<2>{val, idx}, vu.v);
   }
 
   return vu;
@@ -298,7 +299,7 @@ ossia::value_with_unit merge(
 {
   if(vu)
   {
-    return eggs::variants::apply(vec_merger_impl<3>{val, idx}, vu);
+    return ossia::apply_nonnull(vec_merger_impl<3>{val, idx}, vu.v);
   }
 
   return vu;
@@ -311,7 +312,7 @@ ossia::value_with_unit merge(
 {
   if(vu)
   {
-    return eggs::variants::apply(vec_merger_impl<4>{val, idx}, vu);
+    return ossia::apply_nonnull(vec_merger_impl<4>{val, idx}, vu.v);
   }
 
   return vu;

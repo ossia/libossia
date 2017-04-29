@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace_base.hpp>
-#include <eggs/variant.hpp>
 
 namespace ossia
 {
@@ -110,22 +109,5 @@ struct unit_traits<mile_u>
   { return ossia::make_string_array("miles"); }
 };
 
-using meter = strong_value<meter_u>;
-using kilometer = strong_value<kilometer_u>;
-using decimeter = strong_value<decimeter_u>;
-using centimeter = strong_value<centimeter_u>;
-using millimeter = strong_value<millimeter_u>;
-using micrometer = strong_value<micrometer_u>;
-using nanometer = strong_value<nanometer_u>;
-using picometer = strong_value<picometer_u>;
-using inch = strong_value<inch_u>;
-using foot = strong_value<foot_u>;
-using mile = strong_value<mile_u>;
 
-template<>
-struct dataspace_traits<distance_u>
-{
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("distance"); }
-};
 }
