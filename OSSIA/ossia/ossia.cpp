@@ -409,7 +409,6 @@ struct gen_var
     for(int i = 0; i < num_types; i++) {
       str << "    case " << class_name << "::Type::Type" << i << ":\n";
       str << "      return lhs.m_impl.m_value" << i << comp << "rhs.m_impl.m_value" << i << ";\n";
-      i++;
     }
   }
 

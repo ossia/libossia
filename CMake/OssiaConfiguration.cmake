@@ -221,6 +221,11 @@ else()
         endif()
     endif()
 
+    if(UNIX AND NOT CMAKE_COMPILER_IS_GNUCXX)
+      set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS}
+        -Wno-gnu-statement-expression
+      )
+    endif()
     set(OSSIA_COMPILE_OPTIONS
         ${OSSIA_COMPILE_OPTIONS}
         -std=c++1z

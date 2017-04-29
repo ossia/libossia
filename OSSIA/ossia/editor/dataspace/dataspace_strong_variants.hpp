@@ -207,6 +207,8 @@ inline bool operator==(const angle& lhs, const angle& rhs){
     switch(lhs.m_type) { 
     case angle::Type::Type0:
       return lhs.m_impl.m_value0==rhs.m_impl.m_value0;
+    case angle::Type::Type1:
+      return lhs.m_impl.m_value1==rhs.m_impl.m_value1;
       default: return true;
     }
   }
@@ -217,6 +219,8 @@ inline bool operator!=(const angle& lhs, const angle& rhs){
   switch(lhs.m_type) { 
     case angle::Type::Type0:
       return lhs.m_impl.m_value0!=rhs.m_impl.m_value0;
+    case angle::Type::Type1:
+      return lhs.m_impl.m_value1!=rhs.m_impl.m_value1;
     default: return false;
   }
   return true; 
@@ -748,12 +752,20 @@ inline bool operator==(const color& lhs, const color& rhs){
     switch(lhs.m_type) { 
     case color::Type::Type0:
       return lhs.m_impl.m_value0==rhs.m_impl.m_value0;
+    case color::Type::Type1:
+      return lhs.m_impl.m_value1==rhs.m_impl.m_value1;
     case color::Type::Type2:
       return lhs.m_impl.m_value2==rhs.m_impl.m_value2;
+    case color::Type::Type3:
+      return lhs.m_impl.m_value3==rhs.m_impl.m_value3;
     case color::Type::Type4:
       return lhs.m_impl.m_value4==rhs.m_impl.m_value4;
+    case color::Type::Type5:
+      return lhs.m_impl.m_value5==rhs.m_impl.m_value5;
     case color::Type::Type6:
       return lhs.m_impl.m_value6==rhs.m_impl.m_value6;
+    case color::Type::Type7:
+      return lhs.m_impl.m_value7==rhs.m_impl.m_value7;
       default: return true;
     }
   }
@@ -764,12 +776,20 @@ inline bool operator!=(const color& lhs, const color& rhs){
   switch(lhs.m_type) { 
     case color::Type::Type0:
       return lhs.m_impl.m_value0!=rhs.m_impl.m_value0;
+    case color::Type::Type1:
+      return lhs.m_impl.m_value1!=rhs.m_impl.m_value1;
     case color::Type::Type2:
       return lhs.m_impl.m_value2!=rhs.m_impl.m_value2;
+    case color::Type::Type3:
+      return lhs.m_impl.m_value3!=rhs.m_impl.m_value3;
     case color::Type::Type4:
       return lhs.m_impl.m_value4!=rhs.m_impl.m_value4;
+    case color::Type::Type5:
+      return lhs.m_impl.m_value5!=rhs.m_impl.m_value5;
     case color::Type::Type6:
       return lhs.m_impl.m_value6!=rhs.m_impl.m_value6;
+    case color::Type::Type7:
+      return lhs.m_impl.m_value7!=rhs.m_impl.m_value7;
     default: return false;
   }
   return true; 
@@ -1520,14 +1540,24 @@ inline bool operator==(const distance& lhs, const distance& rhs){
     switch(lhs.m_type) { 
     case distance::Type::Type0:
       return lhs.m_impl.m_value0==rhs.m_impl.m_value0;
+    case distance::Type::Type1:
+      return lhs.m_impl.m_value1==rhs.m_impl.m_value1;
     case distance::Type::Type2:
       return lhs.m_impl.m_value2==rhs.m_impl.m_value2;
+    case distance::Type::Type3:
+      return lhs.m_impl.m_value3==rhs.m_impl.m_value3;
     case distance::Type::Type4:
       return lhs.m_impl.m_value4==rhs.m_impl.m_value4;
+    case distance::Type::Type5:
+      return lhs.m_impl.m_value5==rhs.m_impl.m_value5;
     case distance::Type::Type6:
       return lhs.m_impl.m_value6==rhs.m_impl.m_value6;
+    case distance::Type::Type7:
+      return lhs.m_impl.m_value7==rhs.m_impl.m_value7;
     case distance::Type::Type8:
       return lhs.m_impl.m_value8==rhs.m_impl.m_value8;
+    case distance::Type::Type9:
+      return lhs.m_impl.m_value9==rhs.m_impl.m_value9;
     case distance::Type::Type10:
       return lhs.m_impl.m_value10==rhs.m_impl.m_value10;
       default: return true;
@@ -1540,14 +1570,24 @@ inline bool operator!=(const distance& lhs, const distance& rhs){
   switch(lhs.m_type) { 
     case distance::Type::Type0:
       return lhs.m_impl.m_value0!=rhs.m_impl.m_value0;
+    case distance::Type::Type1:
+      return lhs.m_impl.m_value1!=rhs.m_impl.m_value1;
     case distance::Type::Type2:
       return lhs.m_impl.m_value2!=rhs.m_impl.m_value2;
+    case distance::Type::Type3:
+      return lhs.m_impl.m_value3!=rhs.m_impl.m_value3;
     case distance::Type::Type4:
       return lhs.m_impl.m_value4!=rhs.m_impl.m_value4;
+    case distance::Type::Type5:
+      return lhs.m_impl.m_value5!=rhs.m_impl.m_value5;
     case distance::Type::Type6:
       return lhs.m_impl.m_value6!=rhs.m_impl.m_value6;
+    case distance::Type::Type7:
+      return lhs.m_impl.m_value7!=rhs.m_impl.m_value7;
     case distance::Type::Type8:
       return lhs.m_impl.m_value8!=rhs.m_impl.m_value8;
+    case distance::Type::Type9:
+      return lhs.m_impl.m_value9!=rhs.m_impl.m_value9;
     case distance::Type::Type10:
       return lhs.m_impl.m_value10!=rhs.m_impl.m_value10;
     default: return false;
@@ -1993,8 +2033,12 @@ inline bool operator==(const gain& lhs, const gain& rhs){
     switch(lhs.m_type) { 
     case gain::Type::Type0:
       return lhs.m_impl.m_value0==rhs.m_impl.m_value0;
+    case gain::Type::Type1:
+      return lhs.m_impl.m_value1==rhs.m_impl.m_value1;
     case gain::Type::Type2:
       return lhs.m_impl.m_value2==rhs.m_impl.m_value2;
+    case gain::Type::Type3:
+      return lhs.m_impl.m_value3==rhs.m_impl.m_value3;
       default: return true;
     }
   }
@@ -2005,8 +2049,12 @@ inline bool operator!=(const gain& lhs, const gain& rhs){
   switch(lhs.m_type) { 
     case gain::Type::Type0:
       return lhs.m_impl.m_value0!=rhs.m_impl.m_value0;
+    case gain::Type::Type1:
+      return lhs.m_impl.m_value1!=rhs.m_impl.m_value1;
     case gain::Type::Type2:
       return lhs.m_impl.m_value2!=rhs.m_impl.m_value2;
+    case gain::Type::Type3:
+      return lhs.m_impl.m_value3!=rhs.m_impl.m_value3;
     default: return false;
   }
   return true; 
@@ -2317,6 +2365,8 @@ inline bool operator==(const orientation& lhs, const orientation& rhs){
     switch(lhs.m_type) { 
     case orientation::Type::Type0:
       return lhs.m_impl.m_value0==rhs.m_impl.m_value0;
+    case orientation::Type::Type1:
+      return lhs.m_impl.m_value1==rhs.m_impl.m_value1;
     case orientation::Type::Type2:
       return lhs.m_impl.m_value2==rhs.m_impl.m_value2;
       default: return true;
@@ -2329,6 +2379,8 @@ inline bool operator!=(const orientation& lhs, const orientation& rhs){
   switch(lhs.m_type) { 
     case orientation::Type::Type0:
       return lhs.m_impl.m_value0!=rhs.m_impl.m_value0;
+    case orientation::Type::Type1:
+      return lhs.m_impl.m_value1!=rhs.m_impl.m_value1;
     case orientation::Type::Type2:
       return lhs.m_impl.m_value2!=rhs.m_impl.m_value2;
     default: return false;
@@ -2776,10 +2828,16 @@ inline bool operator==(const position& lhs, const position& rhs){
     switch(lhs.m_type) { 
     case position::Type::Type0:
       return lhs.m_impl.m_value0==rhs.m_impl.m_value0;
+    case position::Type::Type1:
+      return lhs.m_impl.m_value1==rhs.m_impl.m_value1;
     case position::Type::Type2:
       return lhs.m_impl.m_value2==rhs.m_impl.m_value2;
+    case position::Type::Type3:
+      return lhs.m_impl.m_value3==rhs.m_impl.m_value3;
     case position::Type::Type4:
       return lhs.m_impl.m_value4==rhs.m_impl.m_value4;
+    case position::Type::Type5:
+      return lhs.m_impl.m_value5==rhs.m_impl.m_value5;
       default: return true;
     }
   }
@@ -2790,10 +2848,16 @@ inline bool operator!=(const position& lhs, const position& rhs){
   switch(lhs.m_type) { 
     case position::Type::Type0:
       return lhs.m_impl.m_value0!=rhs.m_impl.m_value0;
+    case position::Type::Type1:
+      return lhs.m_impl.m_value1!=rhs.m_impl.m_value1;
     case position::Type::Type2:
       return lhs.m_impl.m_value2!=rhs.m_impl.m_value2;
+    case position::Type::Type3:
+      return lhs.m_impl.m_value3!=rhs.m_impl.m_value3;
     case position::Type::Type4:
       return lhs.m_impl.m_value4!=rhs.m_impl.m_value4;
+    case position::Type::Type5:
+      return lhs.m_impl.m_value5!=rhs.m_impl.m_value5;
     default: return false;
   }
   return true; 
@@ -3275,10 +3339,16 @@ inline bool operator==(const speed& lhs, const speed& rhs){
     switch(lhs.m_type) { 
     case speed::Type::Type0:
       return lhs.m_impl.m_value0==rhs.m_impl.m_value0;
+    case speed::Type::Type1:
+      return lhs.m_impl.m_value1==rhs.m_impl.m_value1;
     case speed::Type::Type2:
       return lhs.m_impl.m_value2==rhs.m_impl.m_value2;
+    case speed::Type::Type3:
+      return lhs.m_impl.m_value3==rhs.m_impl.m_value3;
     case speed::Type::Type4:
       return lhs.m_impl.m_value4==rhs.m_impl.m_value4;
+    case speed::Type::Type5:
+      return lhs.m_impl.m_value5==rhs.m_impl.m_value5;
       default: return true;
     }
   }
@@ -3289,10 +3359,16 @@ inline bool operator!=(const speed& lhs, const speed& rhs){
   switch(lhs.m_type) { 
     case speed::Type::Type0:
       return lhs.m_impl.m_value0!=rhs.m_impl.m_value0;
+    case speed::Type::Type1:
+      return lhs.m_impl.m_value1!=rhs.m_impl.m_value1;
     case speed::Type::Type2:
       return lhs.m_impl.m_value2!=rhs.m_impl.m_value2;
+    case speed::Type::Type3:
+      return lhs.m_impl.m_value3!=rhs.m_impl.m_value3;
     case speed::Type::Type4:
       return lhs.m_impl.m_value4!=rhs.m_impl.m_value4;
+    case speed::Type::Type5:
+      return lhs.m_impl.m_value5!=rhs.m_impl.m_value5;
     default: return false;
   }
   return true; 
@@ -3921,12 +3997,20 @@ inline bool operator==(const time& lhs, const time& rhs){
     switch(lhs.m_type) { 
     case time::Type::Type0:
       return lhs.m_impl.m_value0==rhs.m_impl.m_value0;
+    case time::Type::Type1:
+      return lhs.m_impl.m_value1==rhs.m_impl.m_value1;
     case time::Type::Type2:
       return lhs.m_impl.m_value2==rhs.m_impl.m_value2;
+    case time::Type::Type3:
+      return lhs.m_impl.m_value3==rhs.m_impl.m_value3;
     case time::Type::Type4:
       return lhs.m_impl.m_value4==rhs.m_impl.m_value4;
+    case time::Type::Type5:
+      return lhs.m_impl.m_value5==rhs.m_impl.m_value5;
     case time::Type::Type6:
       return lhs.m_impl.m_value6==rhs.m_impl.m_value6;
+    case time::Type::Type7:
+      return lhs.m_impl.m_value7==rhs.m_impl.m_value7;
     case time::Type::Type8:
       return lhs.m_impl.m_value8==rhs.m_impl.m_value8;
       default: return true;
@@ -3939,12 +4023,20 @@ inline bool operator!=(const time& lhs, const time& rhs){
   switch(lhs.m_type) { 
     case time::Type::Type0:
       return lhs.m_impl.m_value0!=rhs.m_impl.m_value0;
+    case time::Type::Type1:
+      return lhs.m_impl.m_value1!=rhs.m_impl.m_value1;
     case time::Type::Type2:
       return lhs.m_impl.m_value2!=rhs.m_impl.m_value2;
+    case time::Type::Type3:
+      return lhs.m_impl.m_value3!=rhs.m_impl.m_value3;
     case time::Type::Type4:
       return lhs.m_impl.m_value4!=rhs.m_impl.m_value4;
+    case time::Type::Type5:
+      return lhs.m_impl.m_value5!=rhs.m_impl.m_value5;
     case time::Type::Type6:
       return lhs.m_impl.m_value6!=rhs.m_impl.m_value6;
+    case time::Type::Type7:
+      return lhs.m_impl.m_value7!=rhs.m_impl.m_value7;
     case time::Type::Type8:
       return lhs.m_impl.m_value8!=rhs.m_impl.m_value8;
     default: return false;
@@ -4617,12 +4709,20 @@ inline bool operator==(const strong_value_variant& lhs, const strong_value_varia
     switch(lhs.m_type) { 
     case strong_value_variant::Type::Type0:
       return lhs.m_impl.m_value0==rhs.m_impl.m_value0;
+    case strong_value_variant::Type::Type1:
+      return lhs.m_impl.m_value1==rhs.m_impl.m_value1;
     case strong_value_variant::Type::Type2:
       return lhs.m_impl.m_value2==rhs.m_impl.m_value2;
+    case strong_value_variant::Type::Type3:
+      return lhs.m_impl.m_value3==rhs.m_impl.m_value3;
     case strong_value_variant::Type::Type4:
       return lhs.m_impl.m_value4==rhs.m_impl.m_value4;
+    case strong_value_variant::Type::Type5:
+      return lhs.m_impl.m_value5==rhs.m_impl.m_value5;
     case strong_value_variant::Type::Type6:
       return lhs.m_impl.m_value6==rhs.m_impl.m_value6;
+    case strong_value_variant::Type::Type7:
+      return lhs.m_impl.m_value7==rhs.m_impl.m_value7;
     case strong_value_variant::Type::Type8:
       return lhs.m_impl.m_value8==rhs.m_impl.m_value8;
       default: return true;
@@ -4635,12 +4735,20 @@ inline bool operator!=(const strong_value_variant& lhs, const strong_value_varia
   switch(lhs.m_type) { 
     case strong_value_variant::Type::Type0:
       return lhs.m_impl.m_value0!=rhs.m_impl.m_value0;
+    case strong_value_variant::Type::Type1:
+      return lhs.m_impl.m_value1!=rhs.m_impl.m_value1;
     case strong_value_variant::Type::Type2:
       return lhs.m_impl.m_value2!=rhs.m_impl.m_value2;
+    case strong_value_variant::Type::Type3:
+      return lhs.m_impl.m_value3!=rhs.m_impl.m_value3;
     case strong_value_variant::Type::Type4:
       return lhs.m_impl.m_value4!=rhs.m_impl.m_value4;
+    case strong_value_variant::Type::Type5:
+      return lhs.m_impl.m_value5!=rhs.m_impl.m_value5;
     case strong_value_variant::Type::Type6:
       return lhs.m_impl.m_value6!=rhs.m_impl.m_value6;
+    case strong_value_variant::Type::Type7:
+      return lhs.m_impl.m_value7!=rhs.m_impl.m_value7;
     case strong_value_variant::Type::Type8:
       return lhs.m_impl.m_value8!=rhs.m_impl.m_value8;
     default: return false;

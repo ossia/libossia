@@ -714,14 +714,24 @@ inline bool operator==(const domain_base_variant& lhs, const domain_base_variant
     switch(lhs.m_type) { 
     case domain_base_variant::Type::Type0:
       return lhs.m_impl.m_value0==rhs.m_impl.m_value0;
+    case domain_base_variant::Type::Type1:
+      return lhs.m_impl.m_value1==rhs.m_impl.m_value1;
     case domain_base_variant::Type::Type2:
       return lhs.m_impl.m_value2==rhs.m_impl.m_value2;
+    case domain_base_variant::Type::Type3:
+      return lhs.m_impl.m_value3==rhs.m_impl.m_value3;
     case domain_base_variant::Type::Type4:
       return lhs.m_impl.m_value4==rhs.m_impl.m_value4;
+    case domain_base_variant::Type::Type5:
+      return lhs.m_impl.m_value5==rhs.m_impl.m_value5;
     case domain_base_variant::Type::Type6:
       return lhs.m_impl.m_value6==rhs.m_impl.m_value6;
+    case domain_base_variant::Type::Type7:
+      return lhs.m_impl.m_value7==rhs.m_impl.m_value7;
     case domain_base_variant::Type::Type8:
       return lhs.m_impl.m_value8==rhs.m_impl.m_value8;
+    case domain_base_variant::Type::Type9:
+      return lhs.m_impl.m_value9==rhs.m_impl.m_value9;
     case domain_base_variant::Type::Type10:
       return lhs.m_impl.m_value10==rhs.m_impl.m_value10;
       default: return true;
@@ -734,14 +744,24 @@ inline bool operator!=(const domain_base_variant& lhs, const domain_base_variant
   switch(lhs.m_type) { 
     case domain_base_variant::Type::Type0:
       return lhs.m_impl.m_value0!=rhs.m_impl.m_value0;
+    case domain_base_variant::Type::Type1:
+      return lhs.m_impl.m_value1!=rhs.m_impl.m_value1;
     case domain_base_variant::Type::Type2:
       return lhs.m_impl.m_value2!=rhs.m_impl.m_value2;
+    case domain_base_variant::Type::Type3:
+      return lhs.m_impl.m_value3!=rhs.m_impl.m_value3;
     case domain_base_variant::Type::Type4:
       return lhs.m_impl.m_value4!=rhs.m_impl.m_value4;
+    case domain_base_variant::Type::Type5:
+      return lhs.m_impl.m_value5!=rhs.m_impl.m_value5;
     case domain_base_variant::Type::Type6:
       return lhs.m_impl.m_value6!=rhs.m_impl.m_value6;
+    case domain_base_variant::Type::Type7:
+      return lhs.m_impl.m_value7!=rhs.m_impl.m_value7;
     case domain_base_variant::Type::Type8:
       return lhs.m_impl.m_value8!=rhs.m_impl.m_value8;
+    case domain_base_variant::Type::Type9:
+      return lhs.m_impl.m_value9!=rhs.m_impl.m_value9;
     case domain_base_variant::Type::Type10:
       return lhs.m_impl.m_value10!=rhs.m_impl.m_value10;
     default: return false;

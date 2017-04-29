@@ -20,9 +20,9 @@ struct OSSIA_EXPORT unit_t final
 
   unit_t() = default;
   unit_t(const unit_t&) = default;
-  unit_t(unit_t&&) noexcept = default;
+  unit_t(unit_t&&) = default;
   unit_t& operator=(const unit_t&) = default;
-  unit_t& operator=(unit_t&&) noexcept = default;
+  unit_t& operator=(unit_t&&) = default;
 
   unit_t(angle_u): v{angle_u{}} { }
   unit_t(degree_u): v{angle_u{degree_u{}}} { }
