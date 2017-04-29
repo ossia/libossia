@@ -6,7 +6,7 @@
 #include <cstring>
 #include <cstdio>
 #include <ossia-c/log/ossia_log.h>
-
+#include <fmt/format.h>
 template<typename Str, typename... Args>
 void DEBUG_LOG_FMT(Str fmt, Args... args)
 {

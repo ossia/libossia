@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/dataflow/data.hpp>
 #include <ossia/network/base/device.hpp>
-
+#include <unordered_map>
 namespace ossia
 {
 struct OSSIA_EXPORT execution_state

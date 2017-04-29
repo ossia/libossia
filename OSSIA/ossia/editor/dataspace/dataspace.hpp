@@ -24,11 +24,11 @@ struct OSSIA_EXPORT unit_t final
   unit_t& operator=(const unit_t&) = default;
   unit_t& operator=(unit_t&&) = default;
 
-  unit_t(angle_u): v{angle_u{}} { }
+  unit_t(angle_u t): v{t} { }
   unit_t(degree_u): v{angle_u{degree_u{}}} { }
   unit_t(radian_u): v{angle_u{radian_u{}}} { }
 
-  unit_t(color_u): v{color_u{}} { }
+  unit_t(color_u t): v{t} { }
   unit_t(argb_u): v{color_u{argb_u{}}} { }
   unit_t(rgba_u): v{color_u{rgba_u{}}} { }
   unit_t(rgb_u): v{color_u{rgb_u{}}} { }
@@ -38,7 +38,7 @@ struct OSSIA_EXPORT unit_t final
   unit_t(cmy8_u): v{color_u{cmy8_u{}}} { }
   unit_t(xyz_u): v{color_u{xyz_u{}}} { }
 
-  unit_t(distance_u): v{distance_u{}} { }
+  unit_t(distance_u t): v{t} { }
   unit_t(meter_u): v{distance_u{meter_u{}}} { }
   unit_t(kilometer_u): v{distance_u{kilometer_u{}}} { }
   unit_t(decimeter_u): v{distance_u{decimeter_u{}}} { }
@@ -51,18 +51,18 @@ struct OSSIA_EXPORT unit_t final
   unit_t(foot_u): v{distance_u{foot_u{}}} { }
   unit_t(mile_u): v{distance_u{mile_u{}}} { }
 
-  unit_t(gain_u): v{gain_u{}} { }
+  unit_t(gain_u t): v{t} { }
   unit_t(linear_u): v{gain_u{linear_u{}}} { }
   unit_t(midigain_u): v{gain_u{midigain_u{}}} { }
   unit_t(decibel_u): v{gain_u{decibel_u{}}} { }
   unit_t(decibel_raw_u): v{gain_u{decibel_raw_u{}}} { }
 
-  unit_t(orientation_u): v{orientation_u{}} { }
+  unit_t(orientation_u t): v{t} { }
   unit_t(quaternion_u): v{orientation_u{quaternion_u{}}} { }
   unit_t(euler_u): v{orientation_u{euler_u{}}} { }
   unit_t(axis_u): v{orientation_u{axis_u{}}} { }
 
-  unit_t(position_u): v{position_u{}} { }
+  unit_t(position_u t): v{t} { }
   unit_t(cartesian_3d_u): v{position_u{cartesian_3d_u{}}} { }
   unit_t(cartesian_2d_u): v{position_u{cartesian_2d_u{}}} { }
   unit_t(spherical_u): v{position_u{spherical_u{}}} { }
@@ -70,7 +70,7 @@ struct OSSIA_EXPORT unit_t final
   unit_t(opengl_u): v{position_u{opengl_u{}}} { }
   unit_t(cylindrical_u): v{position_u{cylindrical_u{}}} { }
 
-  unit_t(speed_u): v{speed_u{}} { }
+  unit_t(speed_u t): v{t} { }
   unit_t(meter_per_second_u): v{speed_u{meter_per_second_u{}}} { }
   unit_t(miles_per_hour_u): v{speed_u{miles_per_hour_u{}}} { }
   unit_t(kilometer_per_hour_u): v{speed_u{kilometer_per_hour_u{}}} { }
@@ -78,7 +78,7 @@ struct OSSIA_EXPORT unit_t final
   unit_t(foot_per_hour_u): v{speed_u{foot_per_hour_u{}}} { }
   unit_t(foot_per_second_u): v{speed_u{foot_per_second_u{}}} { }
 
-  unit_t(time_u): v{time_u{}} { }
+  unit_t(time_u t): v{t} { }
   unit_t(second_u): v{time_u{second_u{}}} { }
   unit_t(bark_u): v{time_u{bark_u{}}} { }
   unit_t(bpm_u): v{time_u{bpm_u{}}} { }

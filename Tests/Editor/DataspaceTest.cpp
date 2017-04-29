@@ -114,6 +114,10 @@ private Q_SLOTS:
 
     ossia::color_u col;
     col = ossia::rgb_u{};
+    ossia::unit_t x;
+    x = col;
+    QVERIFY(x.which() == x.v.Type5);
+    QVERIFY(x.v.m_impl.m_value5.m_type == ossia::color_u::Type::Type2);
     // must not compile : col = ossia::decimeter_u{};
 
     // With C++17 : static_assert(eggs::variants::apply(unit_text_visitor{}, col) == ossia::string_view("rgb"), "");

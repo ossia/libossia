@@ -1,4 +1,5 @@
 #include "context.hpp"
+#include <ossia/detail/logger.hpp>
 #if defined(QT_QML_LIB)
 #include <ossia-qt/qml_plugin.hpp>
 #endif

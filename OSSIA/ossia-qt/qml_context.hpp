@@ -5,7 +5,6 @@
 #include <QQmlEngine>
 #include <QDebug>
 #include <ossia-qt/device/qml_device.hpp>
-#include <ossia/detail/logger.hpp>
 #include <ossia-c/preset/preset.hpp>
 
 namespace ossia
@@ -70,12 +69,12 @@ public:
   Q_ENUM(repetition_filter)
 
 public slots:
-  void logTrace(const QString& s) { ossia::logger().trace("{}", s.toStdString()); }
-  void logInfo(const QString& s) { ossia::logger().info("{}", s.toStdString()); }
-  void logDebug(const QString& s) { ossia::logger().debug("{}", s.toStdString()); }
-  void logWarning(const QString& s) { ossia::logger().warn("{}", s.toStdString()); }
-  void logError(const QString& s) { ossia::logger().error("{}", s.toStdString()); }
-  void logCritical(const QString& s) { ossia::logger().critical("{}", s.toStdString()); }
+  void logTrace(const QString& s);
+  void logInfo(const QString& s);
+  void logDebug(const QString& s);
+  void logWarning(const QString& s);
+  void logError(const QString& s);
+  void logCritical(const QString& s);
 };
 }
 }

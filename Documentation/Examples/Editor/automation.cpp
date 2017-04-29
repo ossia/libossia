@@ -1,4 +1,5 @@
 #include <ossia/ossia.hpp>
+#include <ossia/detail/logger.hpp>
 
 int main()
 {

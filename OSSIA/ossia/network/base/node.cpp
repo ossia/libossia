@@ -8,6 +8,7 @@
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <ossia/detail/logger.hpp>
 #include <iostream>
 
 namespace ossia
