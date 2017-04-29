@@ -155,7 +155,7 @@ struct compute_value_uninformed_visitor
     for(const auto& e : b)
     {
       if(e)
-        t.push_back(eggs::variants::apply(*this, e));
+        t.push_back(ossia::apply_nonnull(*this, e));
       else
         return {};
     }
@@ -263,7 +263,7 @@ struct compute_value_visitor
     for(const auto& e : b)
     {
       if(e)
-        t.push_back(eggs::variants::apply(compute_value_uninformed_visitor{position}, e));
+        t.push_back(ossia::apply_nonnull(compute_value_uninformed_visitor{position}, e));
       else
         return {};
     }

@@ -89,6 +89,15 @@ if(OSSIA_PROTOCOL_SERIAL)
 endif()
 
 ### Library ###
+add_executable(ossia_genvar ossia/ossia.cpp)
+target_include_directories(ossia_genvar PUBLIC
+    .
+    "${OSSIA_3RDPARTY_FOLDER}/brigand/include"
+    "${OSSIA_3RDPARTY_FOLDER}/chobo-shl/include"
+    "${OSSIA_3RDPARTY_FOLDER}/variant/include"
+    "${OSSIA_3RDPARTY_FOLDER}/fmt"
+    )
+
 if(APPLE AND OSSIA_FRAMEWORK)
   add_library(ossia MODULE ${SRCS})
   set_target_properties(ossia PROPERTIES BUNDLE TRUE)

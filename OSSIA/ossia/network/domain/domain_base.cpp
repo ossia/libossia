@@ -8,51 +8,51 @@ namespace ossia
 {
 value get_min(const domain& dom)
 {
-  return ossia::apply(domain_min_visitor{}, dom);
+  return ossia::apply(domain_min_visitor{}, dom.v);
 }
 
 value get_max(const domain& dom)
 {
-  return ossia::apply(domain_max_visitor{}, dom);
+  return ossia::apply(domain_max_visitor{}, dom.v);
 }
 
 void set_min(domain& dom, const ossia::value& val)
 {
   if(dom && val.valid())
-    return eggs::variants::apply(domain_set_min_visitor{}, dom, val.v);
+    return ossia::apply(domain_set_min_visitor{}, dom.v, val.v);
   else if(dom) // Remove the value
-    return eggs::variants::apply(domain_set_min_visitor{}, dom);
+    return ossia::apply_nonnull(domain_set_min_visitor{}, dom.v);
 }
 
 void set_max(domain& dom, const ossia::value& val)
 {
   if(dom && val.valid())
-    return eggs::variants::apply(domain_set_max_visitor{}, dom, val.v);
+    return ossia::apply(domain_set_max_visitor{}, dom.v, val.v);
   else if(dom)
-    return eggs::variants::apply(domain_set_max_visitor{}, dom);
+    return ossia::apply_nonnull(domain_set_max_visitor{}, dom.v);
 }
 
 void set_values(domain& dom, const std::vector<ossia::value>& val)
 {
   if(dom)
-    return eggs::variants::apply(domain_value_set_update_visitor{val}, dom);
+    return ossia::apply_nonnull(domain_value_set_update_visitor{val}, dom.v);
 }
 
 domain make_domain(const ossia::value& min, const ossia::value& max)
 {
   if (min.valid() && max.valid())
   {
-    return eggs::variants::apply(domain_minmax_creation_visitor{}, min.v, max.v);
+    return ossia::apply(domain_minmax_creation_visitor{}, min.v, max.v);
   }
   else if(min.valid())
   {
-    auto dom = eggs::variants::apply(domain_minmax_creation_visitor{}, min.v, min.v);
+    auto dom = ossia::apply(domain_minmax_creation_visitor{}, min.v, min.v);
     set_max(dom, ossia::value{});
     return dom;
   }
   else if(max.valid())
   {
-    auto dom = eggs::variants::apply(domain_minmax_creation_visitor{}, max.v, max.v);
+    auto dom = ossia::apply(domain_minmax_creation_visitor{}, max.v, max.v);
     set_min(dom, ossia::value{});
     return dom;
   }
@@ -81,20 +81,20 @@ domain make_domain(const ossia::value& min, const ossia::value& max, const std::
 {
   if (min.valid() && max.valid())
   {
-    auto dom = eggs::variants::apply(domain_minmax_creation_visitor{}, min.v, max.v);
+    auto dom = ossia::apply(domain_minmax_creation_visitor{}, min.v, max.v);
     set_values(dom, vals);
     return dom;
   }
   else if(min.valid())
   {
-    auto dom = eggs::variants::apply(domain_minmax_creation_visitor{}, min.v, min.v);
+    auto dom = ossia::apply(domain_minmax_creation_visitor{}, min.v, min.v);
     set_max(dom, ossia::value{});
     set_values(dom, vals);
     return dom;
   }
   else if(max.valid())
   {
-    auto dom = eggs::variants::apply(domain_minmax_creation_visitor{}, max.v, max.v);
+    auto dom = ossia::apply(domain_minmax_creation_visitor{}, max.v, max.v);
     set_min(dom, ossia::value{});
     set_values(dom, vals);
     return dom;
@@ -104,7 +104,7 @@ domain make_domain(const ossia::value& min, const ossia::value& max, const std::
     if(vals.size() > 0)
     {
       auto dom = make_domain_from_type(vals[0].getType());
-      eggs::variants::apply(domain_value_set_update_visitor{vals}, dom);
+      ossia::apply_nonnull(domain_value_set_update_visitor{vals}, dom.v);
       return dom;
     }
   }
@@ -117,7 +117,7 @@ domain make_domain(
 {
   if (val.size() == 2 && val[0].valid() && val[1].valid())
   {
-    return eggs::variants::apply(domain_minmax_creation_visitor{}, val[0].v, val[1].v);
+    return ossia::apply(domain_minmax_creation_visitor{}, val[0].v, val[1].v);
   }
   else
   {
@@ -185,7 +185,7 @@ value apply_domain(const domain& dom, bounding_mode b, const ossia::value& val)
 {
   if (bool(dom) && bool(val.v))
   {
-    return eggs::variants::apply(apply_domain_visitor{b}, val.v, dom);
+    return ossia::apply(apply_domain_visitor{b}, val.v, dom.v);
   }
   return val;
 }
@@ -194,7 +194,7 @@ value apply_domain(const domain& dom, bounding_mode b, ossia::value&& val)
 {
   if (bool(dom) && bool(val.v))
   {
-    return eggs::variants::apply(apply_domain_visitor{b}, ossia::move(val.v), dom);
+    return ossia::apply(apply_domain_visitor{b}, ossia::move(val.v), dom.v);
   }
   return val;
 }

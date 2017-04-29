@@ -124,7 +124,7 @@ ossia::value apply_domain_visitor::operator()(const std::vector<ossia::value>& v
   for(auto& val : res)
   {
     if(val.getType() == ossia::value_trait<T>::ossia_enum)
-      val = eggs::variants::apply(tuple_apply_domain_helper<domain_base<T>>{*this, domain}, val.v);
+      val = ossia::apply_nonnull(tuple_apply_domain_helper<domain_base<T>>{*this, domain}, val.v);
   }
   return res;
 }
@@ -135,7 +135,7 @@ ossia::value apply_domain_visitor::operator()(std::vector<ossia::value>&& value,
   for(auto& val : value)
   {
     if(val.getType() == ossia::value_trait<T>::ossia_enum)
-      val = eggs::variants::apply(tuple_apply_domain_helper<domain_base<T>>{*this, domain}, std::move(val.v));
+      val = ossia::apply_nonnull(tuple_apply_domain_helper<domain_base<T>>{*this, domain}, std::move(val.v));
   }
   // TODO currently other values (strings, etc...) are ignored; what should we do here ?
   return std::move(value);

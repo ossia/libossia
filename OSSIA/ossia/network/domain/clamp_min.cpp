@@ -12,7 +12,7 @@ struct clamp_min_functor
 ossia::value clamp_min(const ossia::value& val, const ossia::value& min)
 {
   if(val.valid() && min.valid())
-    return eggs::variants::apply(apply_binary_fun_visitor<clamp_min_functor>{}, val.v, min.v);
+    return ossia::apply(apply_binary_fun_visitor<clamp_min_functor>{}, val.v, min.v);
   return val;
 }
 
@@ -25,7 +25,7 @@ ossia::value clamp_min(ossia::value&& val, const ossia::value& min)
 ossia::value clamp_min(ossia::value&& val, const ossia::value& min)
 {
   if(val.valid() && min.valid())
-    return eggs::variants::apply(apply_binary_fun_visitor<clamp_min_functor>{}, ossia::move(val).v, min.v);
+    return ossia::apply(apply_binary_fun_visitor<clamp_min_functor>{}, ossia::move(val).v, min.v);
   return val;
 }
 #endif

@@ -159,34 +159,34 @@ inline domain convert_domain(const domain& dom, ossia::val_type newtype)
   switch (newtype)
   {
     case val_type::IMPULSE:
-      return eggs::variants::apply(
+      return ossia::apply_nonnull(
           domain_conversion<domain_base<impulse>>{}, dom);
     case val_type::INT:
-      return eggs::variants::apply(
+      return ossia::apply_nonnull(
           domain_conversion<domain_base<int32_t>>{}, dom);
     case val_type::FLOAT:
-      return eggs::variants::apply(
+      return ossia::apply_nonnull(
           domain_conversion<domain_base<float>>{}, dom);
     case val_type::BOOL:
-      return eggs::variants::apply(
+      return ossia::apply_nonnull(
           domain_conversion<domain_base<bool>>{}, dom);
     case val_type::CHAR:
-      return eggs::variants::apply(
+      return ossia::apply_nonnull(
           domain_conversion<domain_base<char>>{}, dom);
     case val_type::STRING:
-      return eggs::variants::apply(
+      return ossia::apply_nonnull(
           domain_conversion<domain_base<std::string>>{}, dom);
     case val_type::TUPLE:
-      return eggs::variants::apply(
+      return ossia::apply_nonnull(
           domain_conversion<vector_domain>{}, dom);
     case val_type::VEC2F:
-      return eggs::variants::apply(
+      return ossia::apply_nonnull(
           domain_conversion<vecf_domain<2>>{}, dom);
     case val_type::VEC3F:
-      return eggs::variants::apply(
+      return ossia::apply_nonnull(
           domain_conversion<vecf_domain<3>>{}, dom);
     case val_type::VEC4F:
-      return eggs::variants::apply(
+      return ossia::apply_nonnull(
           domain_conversion<vecf_domain<4>>{}, dom);
     case val_type::DESTINATION:
     default:

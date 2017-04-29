@@ -1,0 +1,1723 @@
+struct domain_base_variant
+{
+public:
+struct dummy_t {};
+union Impl { 
+ossia::domain_base<ossia::impulse> m_value0;
+Impl(ossia::domain_base<ossia::impulse> v): m_value0{v} { }
+Impl& operator=(ossia::domain_base<ossia::impulse> v) { m_value0 = v; return *this; }
+
+ossia::domain_base<bool> m_value1;
+Impl(const ossia::domain_base<bool>& v): m_value1{v} { }
+Impl(ossia::domain_base<bool>&& v): m_value1{std::move(v)} { }
+Impl& operator=(const ossia::domain_base<bool>& v) { m_value1 = v; return *this; }
+Impl& operator=(ossia::domain_base<bool>&& v) { m_value1 = std::move(v); return *this; }
+
+ossia::domain_base<int> m_value2;
+Impl(const ossia::domain_base<int>& v): m_value2{v} { }
+Impl(ossia::domain_base<int>&& v): m_value2{std::move(v)} { }
+Impl& operator=(const ossia::domain_base<int>& v) { m_value2 = v; return *this; }
+Impl& operator=(ossia::domain_base<int>&& v) { m_value2 = std::move(v); return *this; }
+
+ossia::domain_base<float> m_value3;
+Impl(const ossia::domain_base<float>& v): m_value3{v} { }
+Impl(ossia::domain_base<float>&& v): m_value3{std::move(v)} { }
+Impl& operator=(const ossia::domain_base<float>& v) { m_value3 = v; return *this; }
+Impl& operator=(ossia::domain_base<float>&& v) { m_value3 = std::move(v); return *this; }
+
+ossia::domain_base<char> m_value4;
+Impl(const ossia::domain_base<char>& v): m_value4{v} { }
+Impl(ossia::domain_base<char>&& v): m_value4{std::move(v)} { }
+Impl& operator=(const ossia::domain_base<char>& v) { m_value4 = v; return *this; }
+Impl& operator=(ossia::domain_base<char>&& v) { m_value4 = std::move(v); return *this; }
+
+ossia::domain_base<std::string> m_value5;
+Impl(const ossia::domain_base<std::string>& v): m_value5{v} { }
+Impl(ossia::domain_base<std::string>&& v): m_value5{std::move(v)} { }
+Impl& operator=(const ossia::domain_base<std::string>& v) { m_value5 = v; return *this; }
+Impl& operator=(ossia::domain_base<std::string>&& v) { m_value5 = std::move(v); return *this; }
+
+ossia::vector_domain m_value6;
+Impl(const ossia::vector_domain& v): m_value6{v} { }
+Impl(ossia::vector_domain&& v): m_value6{std::move(v)} { }
+Impl& operator=(const ossia::vector_domain& v) { m_value6 = v; return *this; }
+Impl& operator=(ossia::vector_domain&& v) { m_value6 = std::move(v); return *this; }
+
+ossia::vecf_domain<2> m_value7;
+Impl(const ossia::vecf_domain<2>& v): m_value7{v} { }
+Impl(ossia::vecf_domain<2>&& v): m_value7{std::move(v)} { }
+Impl& operator=(const ossia::vecf_domain<2>& v) { m_value7 = v; return *this; }
+Impl& operator=(ossia::vecf_domain<2>&& v) { m_value7 = std::move(v); return *this; }
+
+ossia::vecf_domain<3> m_value8;
+Impl(const ossia::vecf_domain<3>& v): m_value8{v} { }
+Impl(ossia::vecf_domain<3>&& v): m_value8{std::move(v)} { }
+Impl& operator=(const ossia::vecf_domain<3>& v) { m_value8 = v; return *this; }
+Impl& operator=(ossia::vecf_domain<3>&& v) { m_value8 = std::move(v); return *this; }
+
+ossia::vecf_domain<4> m_value9;
+Impl(const ossia::vecf_domain<4>& v): m_value9{v} { }
+Impl(ossia::vecf_domain<4>&& v): m_value9{std::move(v)} { }
+Impl& operator=(const ossia::vecf_domain<4>& v) { m_value9 = v; return *this; }
+Impl& operator=(ossia::vecf_domain<4>&& v) { m_value9 = std::move(v); return *this; }
+
+ossia::domain_base<ossia::value> m_value10;
+Impl(const ossia::domain_base<ossia::value>& v): m_value10{v} { }
+Impl(ossia::domain_base<ossia::value>&& v): m_value10{std::move(v)} { }
+Impl& operator=(const ossia::domain_base<ossia::value>& v) { m_value10 = v; return *this; }
+Impl& operator=(ossia::domain_base<ossia::value>&& v) { m_value10 = std::move(v); return *this; }
+
+dummy_t m_dummy;
+Impl(): m_dummy{} { }
+~Impl() { }
+};
+
+enum Type: int8_t { 
+Type0, Type1, Type2, Type3, Type4, Type5, Type6, Type7, Type8, Type9, Type10, Npos
+};
+
+void destruct_impl() { 
+switch(m_type) { 
+  case Type::Type1:
+    m_impl.m_value1.~domain_base();
+    break;
+  case Type::Type2:
+    m_impl.m_value2.~domain_base();
+    break;
+  case Type::Type3:
+    m_impl.m_value3.~domain_base();
+    break;
+  case Type::Type4:
+    m_impl.m_value4.~domain_base();
+    break;
+  case Type::Type5:
+    m_impl.m_value5.~domain_base();
+    break;
+  case Type::Type6:
+    m_impl.m_value6.~vector_domain();
+    break;
+  case Type::Type7:
+    m_impl.m_value7.~vecf_domain();
+    break;
+  case Type::Type8:
+    m_impl.m_value8.~vecf_domain();
+    break;
+  case Type::Type9:
+    m_impl.m_value9.~vecf_domain();
+    break;
+  case Type::Type10:
+    m_impl.m_value10.~domain_base();
+    break;
+  default: break; 
+ } 
+ }
+Impl m_impl;
+Type m_type;
+
+public:
+static const constexpr auto npos = Npos;
+int which() const { return m_type; }
+
+operator bool() const { return m_type != npos; }
+template<typename T>
+const T* target() const;
+template<typename T>
+T* target();
+template<typename T>
+const T& get() const;
+template<typename T>
+T& get();
+
+template<typename T>
+static Type matching_type();
+domain_base_variant(): m_type{Npos} { }
+~domain_base_variant() { destruct_impl(); }
+domain_base_variant(ossia::domain_base<ossia::impulse> v): m_impl{v}, m_type{Type0} { }
+domain_base_variant(const ossia::domain_base<bool>& v): m_impl{v}, m_type{Type1} { }
+domain_base_variant(ossia::domain_base<bool>&& v): m_impl{v}, m_type{Type1} { }
+domain_base_variant(const ossia::domain_base<int>& v): m_impl{v}, m_type{Type2} { }
+domain_base_variant(ossia::domain_base<int>&& v): m_impl{v}, m_type{Type2} { }
+domain_base_variant(const ossia::domain_base<float>& v): m_impl{v}, m_type{Type3} { }
+domain_base_variant(ossia::domain_base<float>&& v): m_impl{v}, m_type{Type3} { }
+domain_base_variant(const ossia::domain_base<char>& v): m_impl{v}, m_type{Type4} { }
+domain_base_variant(ossia::domain_base<char>&& v): m_impl{v}, m_type{Type4} { }
+domain_base_variant(const ossia::domain_base<std::string>& v): m_impl{v}, m_type{Type5} { }
+domain_base_variant(ossia::domain_base<std::string>&& v): m_impl{v}, m_type{Type5} { }
+domain_base_variant(const ossia::vector_domain& v): m_impl{v}, m_type{Type6} { }
+domain_base_variant(ossia::vector_domain&& v): m_impl{v}, m_type{Type6} { }
+domain_base_variant(const ossia::vecf_domain<2>& v): m_impl{v}, m_type{Type7} { }
+domain_base_variant(ossia::vecf_domain<2>&& v): m_impl{v}, m_type{Type7} { }
+domain_base_variant(const ossia::vecf_domain<3>& v): m_impl{v}, m_type{Type8} { }
+domain_base_variant(ossia::vecf_domain<3>&& v): m_impl{v}, m_type{Type8} { }
+domain_base_variant(const ossia::vecf_domain<4>& v): m_impl{v}, m_type{Type9} { }
+domain_base_variant(ossia::vecf_domain<4>&& v): m_impl{v}, m_type{Type9} { }
+domain_base_variant(const ossia::domain_base<ossia::value>& v): m_impl{v}, m_type{Type10} { }
+domain_base_variant(ossia::domain_base<ossia::value>&& v): m_impl{v}, m_type{Type10} { }
+domain_base_variant(const domain_base_variant& other):
+ m_type{other.m_type} { 
+  switch(m_type) { 
+  case Type::Type0:
+    m_impl.m_value0 = other.m_impl.m_value0;
+    break;
+  case Type::Type1:
+    m_impl.m_value1 = other.m_impl.m_value1;
+    break;
+  case Type::Type2:
+    m_impl.m_value2 = other.m_impl.m_value2;
+    break;
+  case Type::Type3:
+    m_impl.m_value3 = other.m_impl.m_value3;
+    break;
+  case Type::Type4:
+    m_impl.m_value4 = other.m_impl.m_value4;
+    break;
+  case Type::Type5:
+    m_impl.m_value5 = other.m_impl.m_value5;
+    break;
+  case Type::Type6:
+    m_impl.m_value6 = other.m_impl.m_value6;
+    break;
+  case Type::Type7:
+    m_impl.m_value7 = other.m_impl.m_value7;
+    break;
+  case Type::Type8:
+    m_impl.m_value8 = other.m_impl.m_value8;
+    break;
+  case Type::Type9:
+    m_impl.m_value9 = other.m_impl.m_value9;
+    break;
+  case Type::Type10:
+    m_impl.m_value10 = other.m_impl.m_value10;
+    break;
+    default: break;
+  }
+}
+domain_base_variant(domain_base_variant&& other):
+m_type{other.m_type} { 
+  switch(m_type) { 
+  case Type::Type0:
+    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    break;
+  case Type::Type1:
+    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    break;
+  case Type::Type2:
+    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    break;
+  case Type::Type3:
+    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    break;
+  case Type::Type4:
+    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    break;
+  case Type::Type5:
+    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    break;
+  case Type::Type6:
+    m_impl.m_value6 = std::move(other.m_impl.m_value6);
+    break;
+  case Type::Type7:
+    m_impl.m_value7 = std::move(other.m_impl.m_value7);
+    break;
+  case Type::Type8:
+    m_impl.m_value8 = std::move(other.m_impl.m_value8);
+    break;
+  case Type::Type9:
+    m_impl.m_value9 = std::move(other.m_impl.m_value9);
+    break;
+  case Type::Type10:
+    m_impl.m_value10 = std::move(other.m_impl.m_value10);
+    break;
+    default: break;
+  }
+}
+domain_base_variant& operator=(const domain_base_variant& other){ 
+  m_type = other.m_type;
+  switch(m_type) { 
+  case Type::Type0:
+    m_impl.m_value0 = other.m_impl.m_value0;
+    break;
+  case Type::Type1:
+    m_impl.m_value1 = other.m_impl.m_value1;
+    break;
+  case Type::Type2:
+    m_impl.m_value2 = other.m_impl.m_value2;
+    break;
+  case Type::Type3:
+    m_impl.m_value3 = other.m_impl.m_value3;
+    break;
+  case Type::Type4:
+    m_impl.m_value4 = other.m_impl.m_value4;
+    break;
+  case Type::Type5:
+    m_impl.m_value5 = other.m_impl.m_value5;
+    break;
+  case Type::Type6:
+    m_impl.m_value6 = other.m_impl.m_value6;
+    break;
+  case Type::Type7:
+    m_impl.m_value7 = other.m_impl.m_value7;
+    break;
+  case Type::Type8:
+    m_impl.m_value8 = other.m_impl.m_value8;
+    break;
+  case Type::Type9:
+    m_impl.m_value9 = other.m_impl.m_value9;
+    break;
+  case Type::Type10:
+    m_impl.m_value10 = other.m_impl.m_value10;
+    break;
+    default: break;
+  }
+  return *this;
+}
+domain_base_variant& operator=(domain_base_variant&& other)
+{ 
+  m_type = other.m_type;
+  switch(m_type) { 
+  case Type::Type0:
+    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    break;
+  case Type::Type1:
+    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    break;
+  case Type::Type2:
+    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    break;
+  case Type::Type3:
+    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    break;
+  case Type::Type4:
+    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    break;
+  case Type::Type5:
+    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    break;
+  case Type::Type6:
+    m_impl.m_value6 = std::move(other.m_impl.m_value6);
+    break;
+  case Type::Type7:
+    m_impl.m_value7 = std::move(other.m_impl.m_value7);
+    break;
+  case Type::Type8:
+    m_impl.m_value8 = std::move(other.m_impl.m_value8);
+    break;
+  case Type::Type9:
+    m_impl.m_value9 = std::move(other.m_impl.m_value9);
+    break;
+  case Type::Type10:
+    m_impl.m_value10 = std::move(other.m_impl.m_value10);
+    break;
+    default: break;
+  }
+  return *this;
+}
+};
+template<> const ossia::domain_base<ossia::impulse>* domain_base_variant::target() const { 
+  if(m_type == Type0) 
+    return &m_impl.m_value0 ;
+  return nullptr; 
+}
+template<> const ossia::domain_base<bool>* domain_base_variant::target() const { 
+  if(m_type == Type1) 
+    return &m_impl.m_value1 ;
+  return nullptr; 
+}
+template<> const ossia::domain_base<int>* domain_base_variant::target() const { 
+  if(m_type == Type2) 
+    return &m_impl.m_value2 ;
+  return nullptr; 
+}
+template<> const ossia::domain_base<float>* domain_base_variant::target() const { 
+  if(m_type == Type3) 
+    return &m_impl.m_value3 ;
+  return nullptr; 
+}
+template<> const ossia::domain_base<char>* domain_base_variant::target() const { 
+  if(m_type == Type4) 
+    return &m_impl.m_value4 ;
+  return nullptr; 
+}
+template<> const ossia::domain_base<std::string>* domain_base_variant::target() const { 
+  if(m_type == Type5) 
+    return &m_impl.m_value5 ;
+  return nullptr; 
+}
+template<> const ossia::vector_domain* domain_base_variant::target() const { 
+  if(m_type == Type6) 
+    return &m_impl.m_value6 ;
+  return nullptr; 
+}
+template<> const ossia::vecf_domain<2>* domain_base_variant::target() const { 
+  if(m_type == Type7) 
+    return &m_impl.m_value7 ;
+  return nullptr; 
+}
+template<> const ossia::vecf_domain<3>* domain_base_variant::target() const { 
+  if(m_type == Type8) 
+    return &m_impl.m_value8 ;
+  return nullptr; 
+}
+template<> const ossia::vecf_domain<4>* domain_base_variant::target() const { 
+  if(m_type == Type9) 
+    return &m_impl.m_value9 ;
+  return nullptr; 
+}
+template<> const ossia::domain_base<ossia::value>* domain_base_variant::target() const { 
+  if(m_type == Type10) 
+    return &m_impl.m_value10 ;
+  return nullptr; 
+}
+template<> ossia::domain_base<ossia::impulse>* domain_base_variant::target() { 
+  if(m_type == Type0) 
+    return &m_impl.m_value0 ;
+  return nullptr; 
+}
+template<> ossia::domain_base<bool>* domain_base_variant::target() { 
+  if(m_type == Type1) 
+    return &m_impl.m_value1 ;
+  return nullptr; 
+}
+template<> ossia::domain_base<int>* domain_base_variant::target() { 
+  if(m_type == Type2) 
+    return &m_impl.m_value2 ;
+  return nullptr; 
+}
+template<> ossia::domain_base<float>* domain_base_variant::target() { 
+  if(m_type == Type3) 
+    return &m_impl.m_value3 ;
+  return nullptr; 
+}
+template<> ossia::domain_base<char>* domain_base_variant::target() { 
+  if(m_type == Type4) 
+    return &m_impl.m_value4 ;
+  return nullptr; 
+}
+template<> ossia::domain_base<std::string>* domain_base_variant::target() { 
+  if(m_type == Type5) 
+    return &m_impl.m_value5 ;
+  return nullptr; 
+}
+template<> ossia::vector_domain* domain_base_variant::target() { 
+  if(m_type == Type6) 
+    return &m_impl.m_value6 ;
+  return nullptr; 
+}
+template<> ossia::vecf_domain<2>* domain_base_variant::target() { 
+  if(m_type == Type7) 
+    return &m_impl.m_value7 ;
+  return nullptr; 
+}
+template<> ossia::vecf_domain<3>* domain_base_variant::target() { 
+  if(m_type == Type8) 
+    return &m_impl.m_value8 ;
+  return nullptr; 
+}
+template<> ossia::vecf_domain<4>* domain_base_variant::target() { 
+  if(m_type == Type9) 
+    return &m_impl.m_value9 ;
+  return nullptr; 
+}
+template<> ossia::domain_base<ossia::value>* domain_base_variant::target() { 
+  if(m_type == Type10) 
+    return &m_impl.m_value10 ;
+  return nullptr; 
+}
+template<> const ossia::domain_base<ossia::impulse>& domain_base_variant::get() const { 
+  if(m_type == Type0) 
+    return m_impl.m_value0 ;
+  throw; 
+}
+template<> const ossia::domain_base<bool>& domain_base_variant::get() const { 
+  if(m_type == Type1) 
+    return m_impl.m_value1 ;
+  throw; 
+}
+template<> const ossia::domain_base<int>& domain_base_variant::get() const { 
+  if(m_type == Type2) 
+    return m_impl.m_value2 ;
+  throw; 
+}
+template<> const ossia::domain_base<float>& domain_base_variant::get() const { 
+  if(m_type == Type3) 
+    return m_impl.m_value3 ;
+  throw; 
+}
+template<> const ossia::domain_base<char>& domain_base_variant::get() const { 
+  if(m_type == Type4) 
+    return m_impl.m_value4 ;
+  throw; 
+}
+template<> const ossia::domain_base<std::string>& domain_base_variant::get() const { 
+  if(m_type == Type5) 
+    return m_impl.m_value5 ;
+  throw; 
+}
+template<> const ossia::vector_domain& domain_base_variant::get() const { 
+  if(m_type == Type6) 
+    return m_impl.m_value6 ;
+  throw; 
+}
+template<> const ossia::vecf_domain<2>& domain_base_variant::get() const { 
+  if(m_type == Type7) 
+    return m_impl.m_value7 ;
+  throw; 
+}
+template<> const ossia::vecf_domain<3>& domain_base_variant::get() const { 
+  if(m_type == Type8) 
+    return m_impl.m_value8 ;
+  throw; 
+}
+template<> const ossia::vecf_domain<4>& domain_base_variant::get() const { 
+  if(m_type == Type9) 
+    return m_impl.m_value9 ;
+  throw; 
+}
+template<> const ossia::domain_base<ossia::value>& domain_base_variant::get() const { 
+  if(m_type == Type10) 
+    return m_impl.m_value10 ;
+  throw; 
+}
+template<> ossia::domain_base<ossia::impulse>& domain_base_variant::get() { 
+  if(m_type == Type0) 
+    return m_impl.m_value0 ;
+  throw; 
+}
+template<> ossia::domain_base<bool>& domain_base_variant::get() { 
+  if(m_type == Type1) 
+    return m_impl.m_value1 ;
+  throw; 
+}
+template<> ossia::domain_base<int>& domain_base_variant::get() { 
+  if(m_type == Type2) 
+    return m_impl.m_value2 ;
+  throw; 
+}
+template<> ossia::domain_base<float>& domain_base_variant::get() { 
+  if(m_type == Type3) 
+    return m_impl.m_value3 ;
+  throw; 
+}
+template<> ossia::domain_base<char>& domain_base_variant::get() { 
+  if(m_type == Type4) 
+    return m_impl.m_value4 ;
+  throw; 
+}
+template<> ossia::domain_base<std::string>& domain_base_variant::get() { 
+  if(m_type == Type5) 
+    return m_impl.m_value5 ;
+  throw; 
+}
+template<> ossia::vector_domain& domain_base_variant::get() { 
+  if(m_type == Type6) 
+    return m_impl.m_value6 ;
+  throw; 
+}
+template<> ossia::vecf_domain<2>& domain_base_variant::get() { 
+  if(m_type == Type7) 
+    return m_impl.m_value7 ;
+  throw; 
+}
+template<> ossia::vecf_domain<3>& domain_base_variant::get() { 
+  if(m_type == Type8) 
+    return m_impl.m_value8 ;
+  throw; 
+}
+template<> ossia::vecf_domain<4>& domain_base_variant::get() { 
+  if(m_type == Type9) 
+    return m_impl.m_value9 ;
+  throw; 
+}
+template<> ossia::domain_base<ossia::value>& domain_base_variant::get() { 
+  if(m_type == Type10) 
+    return m_impl.m_value10 ;
+  throw; 
+}
+template<typename Visitor>
+auto apply_nonnull(Visitor&& functor, const domain_base_variant& var) {
+  switch (var.m_type) { 
+  case domain_base_variant::Type::Type0:
+    return functor(var.m_impl.m_value0);
+  case domain_base_variant::Type::Type1:
+    return functor(var.m_impl.m_value1);
+  case domain_base_variant::Type::Type2:
+    return functor(var.m_impl.m_value2);
+  case domain_base_variant::Type::Type3:
+    return functor(var.m_impl.m_value3);
+  case domain_base_variant::Type::Type4:
+    return functor(var.m_impl.m_value4);
+  case domain_base_variant::Type::Type5:
+    return functor(var.m_impl.m_value5);
+  case domain_base_variant::Type::Type6:
+    return functor(var.m_impl.m_value6);
+  case domain_base_variant::Type::Type7:
+    return functor(var.m_impl.m_value7);
+  case domain_base_variant::Type::Type8:
+    return functor(var.m_impl.m_value8);
+  case domain_base_variant::Type::Type9:
+    return functor(var.m_impl.m_value9);
+  case domain_base_variant::Type::Type10:
+    return functor(var.m_impl.m_value10);
+  default: throw;
+  }
+}
+template<typename Visitor>
+auto apply_nonnull(Visitor&& functor,  domain_base_variant& var) {
+  switch (var.m_type) { 
+  case domain_base_variant::Type::Type0:
+    return functor(var.m_impl.m_value0);
+  case domain_base_variant::Type::Type1:
+    return functor(var.m_impl.m_value1);
+  case domain_base_variant::Type::Type2:
+    return functor(var.m_impl.m_value2);
+  case domain_base_variant::Type::Type3:
+    return functor(var.m_impl.m_value3);
+  case domain_base_variant::Type::Type4:
+    return functor(var.m_impl.m_value4);
+  case domain_base_variant::Type::Type5:
+    return functor(var.m_impl.m_value5);
+  case domain_base_variant::Type::Type6:
+    return functor(var.m_impl.m_value6);
+  case domain_base_variant::Type::Type7:
+    return functor(var.m_impl.m_value7);
+  case domain_base_variant::Type::Type8:
+    return functor(var.m_impl.m_value8);
+  case domain_base_variant::Type::Type9:
+    return functor(var.m_impl.m_value9);
+  case domain_base_variant::Type::Type10:
+    return functor(var.m_impl.m_value10);
+  default: throw;
+  }
+}
+template<typename Visitor>
+auto apply_nonnull(Visitor&& functor,  domain_base_variant&& var) {
+  switch (var.m_type) { 
+  case domain_base_variant::Type::Type0:
+    return functor(std::move(var.m_impl.m_value0));
+  case domain_base_variant::Type::Type1:
+    return functor(std::move(var.m_impl.m_value1));
+  case domain_base_variant::Type::Type2:
+    return functor(std::move(var.m_impl.m_value2));
+  case domain_base_variant::Type::Type3:
+    return functor(std::move(var.m_impl.m_value3));
+  case domain_base_variant::Type::Type4:
+    return functor(std::move(var.m_impl.m_value4));
+  case domain_base_variant::Type::Type5:
+    return functor(std::move(var.m_impl.m_value5));
+  case domain_base_variant::Type::Type6:
+    return functor(std::move(var.m_impl.m_value6));
+  case domain_base_variant::Type::Type7:
+    return functor(std::move(var.m_impl.m_value7));
+  case domain_base_variant::Type::Type8:
+    return functor(std::move(var.m_impl.m_value8));
+  case domain_base_variant::Type::Type9:
+    return functor(std::move(var.m_impl.m_value9));
+  case domain_base_variant::Type::Type10:
+    return functor(std::move(var.m_impl.m_value10));
+  default: throw;
+  }
+}
+template<typename Visitor>
+auto apply(Visitor&& functor, const domain_base_variant& var) {
+  switch (var.m_type) { 
+  case domain_base_variant::Type::Type0:
+    return functor(var.m_impl.m_value0);
+  case domain_base_variant::Type::Type1:
+    return functor(var.m_impl.m_value1);
+  case domain_base_variant::Type::Type2:
+    return functor(var.m_impl.m_value2);
+  case domain_base_variant::Type::Type3:
+    return functor(var.m_impl.m_value3);
+  case domain_base_variant::Type::Type4:
+    return functor(var.m_impl.m_value4);
+  case domain_base_variant::Type::Type5:
+    return functor(var.m_impl.m_value5);
+  case domain_base_variant::Type::Type6:
+    return functor(var.m_impl.m_value6);
+  case domain_base_variant::Type::Type7:
+    return functor(var.m_impl.m_value7);
+  case domain_base_variant::Type::Type8:
+    return functor(var.m_impl.m_value8);
+  case domain_base_variant::Type::Type9:
+    return functor(var.m_impl.m_value9);
+  case domain_base_variant::Type::Type10:
+    return functor(var.m_impl.m_value10);
+  default: return functor();
+  }
+}
+template<typename Visitor>
+auto apply(Visitor&& functor,  domain_base_variant& var) {
+  switch (var.m_type) { 
+  case domain_base_variant::Type::Type0:
+    return functor(var.m_impl.m_value0);
+  case domain_base_variant::Type::Type1:
+    return functor(var.m_impl.m_value1);
+  case domain_base_variant::Type::Type2:
+    return functor(var.m_impl.m_value2);
+  case domain_base_variant::Type::Type3:
+    return functor(var.m_impl.m_value3);
+  case domain_base_variant::Type::Type4:
+    return functor(var.m_impl.m_value4);
+  case domain_base_variant::Type::Type5:
+    return functor(var.m_impl.m_value5);
+  case domain_base_variant::Type::Type6:
+    return functor(var.m_impl.m_value6);
+  case domain_base_variant::Type::Type7:
+    return functor(var.m_impl.m_value7);
+  case domain_base_variant::Type::Type8:
+    return functor(var.m_impl.m_value8);
+  case domain_base_variant::Type::Type9:
+    return functor(var.m_impl.m_value9);
+  case domain_base_variant::Type::Type10:
+    return functor(var.m_impl.m_value10);
+  default: return functor();
+  }
+}
+template<typename Visitor>
+auto apply(Visitor&& functor,  domain_base_variant&& var) {
+  switch (var.m_type) { 
+  case domain_base_variant::Type::Type0:
+    return functor(std::move(var.m_impl.m_value0));
+  case domain_base_variant::Type::Type1:
+    return functor(std::move(var.m_impl.m_value1));
+  case domain_base_variant::Type::Type2:
+    return functor(std::move(var.m_impl.m_value2));
+  case domain_base_variant::Type::Type3:
+    return functor(std::move(var.m_impl.m_value3));
+  case domain_base_variant::Type::Type4:
+    return functor(std::move(var.m_impl.m_value4));
+  case domain_base_variant::Type::Type5:
+    return functor(std::move(var.m_impl.m_value5));
+  case domain_base_variant::Type::Type6:
+    return functor(std::move(var.m_impl.m_value6));
+  case domain_base_variant::Type::Type7:
+    return functor(std::move(var.m_impl.m_value7));
+  case domain_base_variant::Type::Type8:
+    return functor(std::move(var.m_impl.m_value8));
+  case domain_base_variant::Type::Type9:
+    return functor(std::move(var.m_impl.m_value9));
+  case domain_base_variant::Type::Type10:
+    return functor(std::move(var.m_impl.m_value10));
+  default: return functor();
+  }
+}
+template<typename Functor>
+auto apply(Functor&& functor, domain_base_variant& arg0, const value_variant_type& arg1)
+{
+switch(arg0.m_type) {
+case domain_base_variant::Type::Type0:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case domain_base_variant::Type::Type1:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case domain_base_variant::Type::Type2:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case domain_base_variant::Type::Type3:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case domain_base_variant::Type::Type4:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case domain_base_variant::Type::Type5:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case domain_base_variant::Type::Type6:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case domain_base_variant::Type::Type7:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case domain_base_variant::Type::Type8:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case domain_base_variant::Type::Type9:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}
+template<typename Functor>
+auto apply(Functor&& functor, const value_variant_type& arg0, const domain_base_variant& arg1)
+{
+switch(arg0.m_type) {
+case value_variant_type::Type::Type0:
+{
+switch(arg1.m_type) {
+case domain_base_variant::Type::Type0:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value0);
+}
+case domain_base_variant::Type::Type1:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value1);
+}
+case domain_base_variant::Type::Type2:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value2);
+}
+case domain_base_variant::Type::Type3:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value3);
+}
+case domain_base_variant::Type::Type4:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value4);
+}
+case domain_base_variant::Type::Type5:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value5);
+}
+case domain_base_variant::Type::Type6:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value6);
+}
+case domain_base_variant::Type::Type7:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value7);
+}
+case domain_base_variant::Type::Type8:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8);
+}
+case domain_base_variant::Type::Type9:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type1:
+{
+switch(arg1.m_type) {
+case domain_base_variant::Type::Type0:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value0);
+}
+case domain_base_variant::Type::Type1:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value1);
+}
+case domain_base_variant::Type::Type2:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value2);
+}
+case domain_base_variant::Type::Type3:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value3);
+}
+case domain_base_variant::Type::Type4:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value4);
+}
+case domain_base_variant::Type::Type5:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value5);
+}
+case domain_base_variant::Type::Type6:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value6);
+}
+case domain_base_variant::Type::Type7:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value7);
+}
+case domain_base_variant::Type::Type8:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
+}
+case domain_base_variant::Type::Type9:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type2:
+{
+switch(arg1.m_type) {
+case domain_base_variant::Type::Type0:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value0);
+}
+case domain_base_variant::Type::Type1:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value1);
+}
+case domain_base_variant::Type::Type2:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value2);
+}
+case domain_base_variant::Type::Type3:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value3);
+}
+case domain_base_variant::Type::Type4:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value4);
+}
+case domain_base_variant::Type::Type5:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value5);
+}
+case domain_base_variant::Type::Type6:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value6);
+}
+case domain_base_variant::Type::Type7:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value7);
+}
+case domain_base_variant::Type::Type8:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8);
+}
+case domain_base_variant::Type::Type9:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type3:
+{
+switch(arg1.m_type) {
+case domain_base_variant::Type::Type0:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value0);
+}
+case domain_base_variant::Type::Type1:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value1);
+}
+case domain_base_variant::Type::Type2:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value2);
+}
+case domain_base_variant::Type::Type3:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value3);
+}
+case domain_base_variant::Type::Type4:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value4);
+}
+case domain_base_variant::Type::Type5:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value5);
+}
+case domain_base_variant::Type::Type6:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value6);
+}
+case domain_base_variant::Type::Type7:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value7);
+}
+case domain_base_variant::Type::Type8:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
+}
+case domain_base_variant::Type::Type9:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type4:
+{
+switch(arg1.m_type) {
+case domain_base_variant::Type::Type0:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value0);
+}
+case domain_base_variant::Type::Type1:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value1);
+}
+case domain_base_variant::Type::Type2:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value2);
+}
+case domain_base_variant::Type::Type3:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value3);
+}
+case domain_base_variant::Type::Type4:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value4);
+}
+case domain_base_variant::Type::Type5:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value5);
+}
+case domain_base_variant::Type::Type6:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value6);
+}
+case domain_base_variant::Type::Type7:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value7);
+}
+case domain_base_variant::Type::Type8:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8);
+}
+case domain_base_variant::Type::Type9:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type5:
+{
+switch(arg1.m_type) {
+case domain_base_variant::Type::Type0:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value0);
+}
+case domain_base_variant::Type::Type1:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value1);
+}
+case domain_base_variant::Type::Type2:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value2);
+}
+case domain_base_variant::Type::Type3:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value3);
+}
+case domain_base_variant::Type::Type4:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value4);
+}
+case domain_base_variant::Type::Type5:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value5);
+}
+case domain_base_variant::Type::Type6:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value6);
+}
+case domain_base_variant::Type::Type7:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value7);
+}
+case domain_base_variant::Type::Type8:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
+}
+case domain_base_variant::Type::Type9:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type6:
+{
+switch(arg1.m_type) {
+case domain_base_variant::Type::Type0:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value0);
+}
+case domain_base_variant::Type::Type1:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value1);
+}
+case domain_base_variant::Type::Type2:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value2);
+}
+case domain_base_variant::Type::Type3:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value3);
+}
+case domain_base_variant::Type::Type4:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value4);
+}
+case domain_base_variant::Type::Type5:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value5);
+}
+case domain_base_variant::Type::Type6:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value6);
+}
+case domain_base_variant::Type::Type7:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value7);
+}
+case domain_base_variant::Type::Type8:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8);
+}
+case domain_base_variant::Type::Type9:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type7:
+{
+switch(arg1.m_type) {
+case domain_base_variant::Type::Type0:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value0);
+}
+case domain_base_variant::Type::Type1:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value1);
+}
+case domain_base_variant::Type::Type2:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value2);
+}
+case domain_base_variant::Type::Type3:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value3);
+}
+case domain_base_variant::Type::Type4:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value4);
+}
+case domain_base_variant::Type::Type5:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value5);
+}
+case domain_base_variant::Type::Type6:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value6);
+}
+case domain_base_variant::Type::Type7:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value7);
+}
+case domain_base_variant::Type::Type8:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
+}
+case domain_base_variant::Type::Type9:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type8:
+{
+switch(arg1.m_type) {
+case domain_base_variant::Type::Type0:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value0);
+}
+case domain_base_variant::Type::Type1:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value1);
+}
+case domain_base_variant::Type::Type2:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value2);
+}
+case domain_base_variant::Type::Type3:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value3);
+}
+case domain_base_variant::Type::Type4:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value4);
+}
+case domain_base_variant::Type::Type5:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value5);
+}
+case domain_base_variant::Type::Type6:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value6);
+}
+case domain_base_variant::Type::Type7:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value7);
+}
+case domain_base_variant::Type::Type8:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8);
+}
+case domain_base_variant::Type::Type9:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type9:
+{
+switch(arg1.m_type) {
+case domain_base_variant::Type::Type0:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value0);
+}
+case domain_base_variant::Type::Type1:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value1);
+}
+case domain_base_variant::Type::Type2:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value2);
+}
+case domain_base_variant::Type::Type3:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value3);
+}
+case domain_base_variant::Type::Type4:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value4);
+}
+case domain_base_variant::Type::Type5:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value5);
+}
+case domain_base_variant::Type::Type6:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value6);
+}
+case domain_base_variant::Type::Type7:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value7);
+}
+case domain_base_variant::Type::Type8:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value8);
+}
+case domain_base_variant::Type::Type9:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type10:
+{
+switch(arg1.m_type) {
+case domain_base_variant::Type::Type0:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0);
+}
+case domain_base_variant::Type::Type1:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1);
+}
+case domain_base_variant::Type::Type2:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2);
+}
+case domain_base_variant::Type::Type3:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3);
+}
+case domain_base_variant::Type::Type4:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4);
+}
+case domain_base_variant::Type::Type5:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5);
+}
+case domain_base_variant::Type::Type6:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6);
+}
+case domain_base_variant::Type::Type7:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7);
+}
+case domain_base_variant::Type::Type8:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8);
+}
+case domain_base_variant::Type::Type9:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9);
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}

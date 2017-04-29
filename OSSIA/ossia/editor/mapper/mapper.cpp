@@ -3,6 +3,7 @@
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/detail/logger.hpp>
+#include <ossia/misc_visitors.hpp>
 #include <iostream>
 
 namespace ossia
@@ -262,7 +263,7 @@ struct mapper_compute_visitor
     {
       if(v.valid())
       {
-        v = eggs::variants::apply([&] (const auto& e) {
+        v = ossia::apply_nonnull([&] (const auto& e) {
           return this->operator ()(e, c);
         }, std::move(v.v));
       }
@@ -349,7 +350,7 @@ ossia::value mapper::compute_value(
 {
   if(driver.valid() && drive)
   {
-    return eggs::variants::apply(mapper_compute_visitor{}, driver.v, drive);
+    return ossia::apply(mapper_compute_visitor{}, driver.v, drive.v);
   }
 
   throw invalid_value_type_error("mapper_impl::computeValue: "

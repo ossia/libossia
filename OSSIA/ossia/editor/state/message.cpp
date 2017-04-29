@@ -35,7 +35,7 @@ void message::launch() const
         case ossia::val_type::VEC3F:
         case ossia::val_type::VEC4F:
         {
-          eggs::variants::apply(
+          ossia::apply(
                 vec_merger{destination, destination},
                 cur.v,
                 message_value.v);

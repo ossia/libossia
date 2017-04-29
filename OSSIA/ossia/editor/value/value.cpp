@@ -328,7 +328,7 @@ struct value_comparison_visitor2
   {
     // Note : v.size == 1 only makes sense if comparator is ==...
     return (v.size() == 1) && v[0].v && (
-          eggs::variants::apply(
+          ossia::apply_nonnull(
             partial_lhs_value_comparison_visitor2<T, Comparator>{lhs},
             v[0].v));
   }
@@ -338,7 +338,7 @@ struct value_comparison_visitor2
   {
     // Note : v.size == 1 only makes sense if comparator is ==...
     return (v.size() == 1) && v[0].v && (
-          eggs::variants::apply(
+          ossia::apply_nonnull(
             partial_rhs_value_comparison_visitor2<T, Comparator>{rhs},
             v[0].v));
   }
@@ -363,7 +363,7 @@ struct value_comparison_visitor2
     {
       if(val.valid() && tit->valid())
       {
-        result &= eggs::variants::apply(*this, val.v, tit->v);
+        result &= ossia::apply(*this, val.v, tit->v);
       }
       else // TODO handle case where !val && !tit
       {
@@ -438,7 +438,7 @@ bool operator==(const value& lhs, const value& rhs)
 {
   if(lhs.v && rhs.v)
   {
-    return eggs::variants::apply(
+    return ossia::apply(
           value_comparison_visitor2<std::equal_to<>>{}, lhs.v, rhs.v);
   }
   else if(!lhs.v && !rhs.v)
@@ -452,7 +452,7 @@ bool operator!=(const value& lhs, const value& rhs)
 {
   if(lhs.v && rhs.v)
   {
-    return !eggs::variants::apply(
+    return !ossia::apply(
         value_comparison_visitor2<std::equal_to<>>{}, lhs.v, rhs.v);
   }
   else if(!lhs.v && !rhs.v)
@@ -466,7 +466,7 @@ bool operator>(const value& lhs, const value& rhs)
 {
   if(lhs.v && rhs.v)
   {
-    return eggs::variants::apply(
+    return ossia::apply(
           value_comparison_visitor2<std::greater<>>{}, lhs.v, rhs.v);
   }
   else
@@ -479,7 +479,7 @@ bool operator>=(const value& lhs, const value& rhs)
 {
   if(lhs.v && rhs.v)
   {
-    return eggs::variants::apply(
+    return ossia::apply(
           value_comparison_visitor2<std::greater_equal<>>{}, lhs.v, rhs.v);
   }
   else if(!lhs.v && !rhs.v)
@@ -496,7 +496,7 @@ bool operator<(const value& lhs, const value& rhs)
 {
   if(lhs.v && rhs.v)
   {
-    return eggs::variants::apply(value_comparison_visitor2<std::less<>>{}, lhs.v, rhs.v);;
+    return ossia::apply(value_comparison_visitor2<std::less<>>{}, lhs.v, rhs.v);;
   }
   else
   {
@@ -508,7 +508,7 @@ bool operator<=(const value& lhs, const value& rhs)
 {
   if(lhs.v && rhs.v)
   {
-    return eggs::variants::apply(
+    return ossia::apply(
           value_comparison_visitor2<std::less_equal<>>{}, lhs.v, rhs.v);
   }
   else if(!lhs.v && !rhs.v)
@@ -625,14 +625,14 @@ struct is_array_helper
 bool is_numeric(const ossia::value& val)
 {
   if(val.valid())
-    return eggs::variants::apply(detail::is_numeric_helper{}, val.v);
+    return ossia::apply_nonnull(detail::is_numeric_helper{}, val.v);
   return false;
 }
 
 bool is_array(const ossia::value& val)
 {
   if(val.valid())
-    return eggs::variants::apply(detail::is_array_helper{}, val.v);
+    return ossia::apply_nonnull(detail::is_array_helper{}, val.v);
   return false;
 }
 
@@ -668,7 +668,7 @@ std::ostream& operator<<(
     {
       fmt::MemoryWriter w;
       ossia::value_prettyprint_visitor<fmt::MemoryWriter> vis{w};
-      eggs::variants::apply(vis, val.v);
+      ossia::apply_nonnull(vis, val.v);
       s << w.str();
     }
     if (i < n - 1)

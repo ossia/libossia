@@ -67,7 +67,7 @@ struct domain_prettyprint_visitor
 std::string domain::to_pretty_string() const
 {
   fmt::MemoryWriter s;
-  eggs::variants::apply(domain_prettyprint_visitor{s}, (domain_base_variant&)*this);
+  ossia::apply_nonnull(domain_prettyprint_visitor{s}, (domain_base_variant&)*this);
   return s.str();
 }
 

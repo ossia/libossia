@@ -188,7 +188,7 @@ struct state_flatten_visitor_merger
       // since it's very cheap, the value will contain the whole array data
       // and the index will be the relevant index in the array.
       // Hence we merge both indexes.
-      auto res = eggs::variants::apply(
+      auto res = ossia::apply(
             vec_merger{existing.destination, incoming.destination},
             existing.message_value.v,
             incoming.message_value.v);
@@ -357,7 +357,7 @@ struct state_flatten_visitor_merger
       // since it's very cheap, the value will contain the whole array data
       // and the index will be the relevant index in the array.
       // Hence we merge both indexes.
-      auto res = eggs::variants::apply(
+      auto res = ossia::apply(
             vec_merger{existing.destination, incoming.destination},
             existing.message_value.v,
             incoming.message_value.v);

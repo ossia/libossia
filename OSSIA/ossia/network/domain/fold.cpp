@@ -12,7 +12,7 @@ struct fold_functor
 ossia::value fold(const ossia::value& val, const ossia::value& min, const ossia::value& max)
 {
   if(val.valid() && min.valid() && max.valid())
-    return eggs::variants::apply(apply_ternary_fun_visitor<fold_functor>{}, val.v, min.v, max.v);
+    return ossia::apply(apply_ternary_fun_visitor<fold_functor>{}, val.v, min.v, max.v);
   return val;
 }
 
@@ -25,7 +25,7 @@ ossia::value fold(ossia::value&& val, const ossia::value& min, const ossia::valu
 ossia::value fold(ossia::value&& val, const ossia::value& min, const ossia::value& max)
 {
   if(val.valid() && min.valid() && max.valid())
-    return eggs::variants::apply(apply_ternary_fun_visitor<fold_functor>{}, ossia::move(val).v, min.v, max.v);
+    return ossia::apply(apply_ternary_fun_visitor<fold_functor>{}, ossia::move(val).v, min.v, max.v);
   return val;
 }
 #endif
