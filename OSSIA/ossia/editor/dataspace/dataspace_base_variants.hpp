@@ -202,6 +202,36 @@ auto apply(Visitor&& functor,  angle_u&& var) {
   default: return functor();
   }
 }
+inline bool operator==(const angle_u& lhs, const angle_u& rhs){ 
+  return (lhs.m_type == rhs.m_type);
+}
+inline bool operator!=(const angle_u& lhs, const angle_u& rhs){ 
+  return (lhs.m_type != rhs.m_type);
+}
+inline bool operator==(const angle_u& lhs, const ossia::degree_u& rhs){ 
+  return (lhs.m_type == angle_u::Type::Type0); 
+}
+inline bool operator==(const ossia::degree_u& lhs, const angle_u& rhs){ 
+  return (rhs.m_type == angle_u::Type::Type0); 
+}
+inline bool operator!=(const angle_u& lhs, const ossia::degree_u& rhs){ 
+  return (lhs.m_type != angle_u::Type::Type0); 
+}
+inline bool operator!=(const ossia::degree_u& lhs, const angle_u& rhs){ 
+  return (rhs.m_type != angle_u::Type::Type0); 
+}
+inline bool operator==(const angle_u& lhs, const ossia::radian_u& rhs){ 
+  return (lhs.m_type == angle_u::Type::Type1); 
+}
+inline bool operator==(const ossia::radian_u& lhs, const angle_u& rhs){ 
+  return (rhs.m_type == angle_u::Type::Type1); 
+}
+inline bool operator!=(const angle_u& lhs, const ossia::radian_u& rhs){ 
+  return (lhs.m_type != angle_u::Type::Type1); 
+}
+inline bool operator!=(const ossia::radian_u& lhs, const angle_u& rhs){ 
+  return (rhs.m_type != angle_u::Type::Type1); 
+}
 struct color_u
 {
 public:
@@ -699,6 +729,108 @@ auto apply(Visitor&& functor,  color_u&& var) {
     return functor(std::move(var.m_impl.m_value7));
   default: return functor();
   }
+}
+inline bool operator==(const color_u& lhs, const color_u& rhs){ 
+  return (lhs.m_type == rhs.m_type);
+}
+inline bool operator!=(const color_u& lhs, const color_u& rhs){ 
+  return (lhs.m_type != rhs.m_type);
+}
+inline bool operator==(const color_u& lhs, const ossia::argb_u& rhs){ 
+  return (lhs.m_type == color_u::Type::Type0); 
+}
+inline bool operator==(const ossia::argb_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type == color_u::Type::Type0); 
+}
+inline bool operator!=(const color_u& lhs, const ossia::argb_u& rhs){ 
+  return (lhs.m_type != color_u::Type::Type0); 
+}
+inline bool operator!=(const ossia::argb_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type != color_u::Type::Type0); 
+}
+inline bool operator==(const color_u& lhs, const ossia::rgba_u& rhs){ 
+  return (lhs.m_type == color_u::Type::Type1); 
+}
+inline bool operator==(const ossia::rgba_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type == color_u::Type::Type1); 
+}
+inline bool operator!=(const color_u& lhs, const ossia::rgba_u& rhs){ 
+  return (lhs.m_type != color_u::Type::Type1); 
+}
+inline bool operator!=(const ossia::rgba_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type != color_u::Type::Type1); 
+}
+inline bool operator==(const color_u& lhs, const ossia::rgb_u& rhs){ 
+  return (lhs.m_type == color_u::Type::Type2); 
+}
+inline bool operator==(const ossia::rgb_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type == color_u::Type::Type2); 
+}
+inline bool operator!=(const color_u& lhs, const ossia::rgb_u& rhs){ 
+  return (lhs.m_type != color_u::Type::Type2); 
+}
+inline bool operator!=(const ossia::rgb_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type != color_u::Type::Type2); 
+}
+inline bool operator==(const color_u& lhs, const ossia::bgr_u& rhs){ 
+  return (lhs.m_type == color_u::Type::Type3); 
+}
+inline bool operator==(const ossia::bgr_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type == color_u::Type::Type3); 
+}
+inline bool operator!=(const color_u& lhs, const ossia::bgr_u& rhs){ 
+  return (lhs.m_type != color_u::Type::Type3); 
+}
+inline bool operator!=(const ossia::bgr_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type != color_u::Type::Type3); 
+}
+inline bool operator==(const color_u& lhs, const ossia::argb8_u& rhs){ 
+  return (lhs.m_type == color_u::Type::Type4); 
+}
+inline bool operator==(const ossia::argb8_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type == color_u::Type::Type4); 
+}
+inline bool operator!=(const color_u& lhs, const ossia::argb8_u& rhs){ 
+  return (lhs.m_type != color_u::Type::Type4); 
+}
+inline bool operator!=(const ossia::argb8_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type != color_u::Type::Type4); 
+}
+inline bool operator==(const color_u& lhs, const ossia::hsv_u& rhs){ 
+  return (lhs.m_type == color_u::Type::Type5); 
+}
+inline bool operator==(const ossia::hsv_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type == color_u::Type::Type5); 
+}
+inline bool operator!=(const color_u& lhs, const ossia::hsv_u& rhs){ 
+  return (lhs.m_type != color_u::Type::Type5); 
+}
+inline bool operator!=(const ossia::hsv_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type != color_u::Type::Type5); 
+}
+inline bool operator==(const color_u& lhs, const ossia::cmy8_u& rhs){ 
+  return (lhs.m_type == color_u::Type::Type6); 
+}
+inline bool operator==(const ossia::cmy8_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type == color_u::Type::Type6); 
+}
+inline bool operator!=(const color_u& lhs, const ossia::cmy8_u& rhs){ 
+  return (lhs.m_type != color_u::Type::Type6); 
+}
+inline bool operator!=(const ossia::cmy8_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type != color_u::Type::Type6); 
+}
+inline bool operator==(const color_u& lhs, const ossia::xyz_u& rhs){ 
+  return (lhs.m_type == color_u::Type::Type7); 
+}
+inline bool operator==(const ossia::xyz_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type == color_u::Type::Type7); 
+}
+inline bool operator!=(const color_u& lhs, const ossia::xyz_u& rhs){ 
+  return (lhs.m_type != color_u::Type::Type7); 
+}
+inline bool operator!=(const ossia::xyz_u& lhs, const color_u& rhs){ 
+  return (rhs.m_type != color_u::Type::Type7); 
 }
 struct distance_u
 {
@@ -1345,6 +1477,144 @@ auto apply(Visitor&& functor,  distance_u&& var) {
   default: return functor();
   }
 }
+inline bool operator==(const distance_u& lhs, const distance_u& rhs){ 
+  return (lhs.m_type == rhs.m_type);
+}
+inline bool operator!=(const distance_u& lhs, const distance_u& rhs){ 
+  return (lhs.m_type != rhs.m_type);
+}
+inline bool operator==(const distance_u& lhs, const ossia::meter_u& rhs){ 
+  return (lhs.m_type == distance_u::Type::Type0); 
+}
+inline bool operator==(const ossia::meter_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type == distance_u::Type::Type0); 
+}
+inline bool operator!=(const distance_u& lhs, const ossia::meter_u& rhs){ 
+  return (lhs.m_type != distance_u::Type::Type0); 
+}
+inline bool operator!=(const ossia::meter_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type != distance_u::Type::Type0); 
+}
+inline bool operator==(const distance_u& lhs, const ossia::kilometer_u& rhs){ 
+  return (lhs.m_type == distance_u::Type::Type1); 
+}
+inline bool operator==(const ossia::kilometer_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type == distance_u::Type::Type1); 
+}
+inline bool operator!=(const distance_u& lhs, const ossia::kilometer_u& rhs){ 
+  return (lhs.m_type != distance_u::Type::Type1); 
+}
+inline bool operator!=(const ossia::kilometer_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type != distance_u::Type::Type1); 
+}
+inline bool operator==(const distance_u& lhs, const ossia::decimeter_u& rhs){ 
+  return (lhs.m_type == distance_u::Type::Type2); 
+}
+inline bool operator==(const ossia::decimeter_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type == distance_u::Type::Type2); 
+}
+inline bool operator!=(const distance_u& lhs, const ossia::decimeter_u& rhs){ 
+  return (lhs.m_type != distance_u::Type::Type2); 
+}
+inline bool operator!=(const ossia::decimeter_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type != distance_u::Type::Type2); 
+}
+inline bool operator==(const distance_u& lhs, const ossia::centimeter_u& rhs){ 
+  return (lhs.m_type == distance_u::Type::Type3); 
+}
+inline bool operator==(const ossia::centimeter_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type == distance_u::Type::Type3); 
+}
+inline bool operator!=(const distance_u& lhs, const ossia::centimeter_u& rhs){ 
+  return (lhs.m_type != distance_u::Type::Type3); 
+}
+inline bool operator!=(const ossia::centimeter_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type != distance_u::Type::Type3); 
+}
+inline bool operator==(const distance_u& lhs, const ossia::millimeter_u& rhs){ 
+  return (lhs.m_type == distance_u::Type::Type4); 
+}
+inline bool operator==(const ossia::millimeter_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type == distance_u::Type::Type4); 
+}
+inline bool operator!=(const distance_u& lhs, const ossia::millimeter_u& rhs){ 
+  return (lhs.m_type != distance_u::Type::Type4); 
+}
+inline bool operator!=(const ossia::millimeter_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type != distance_u::Type::Type4); 
+}
+inline bool operator==(const distance_u& lhs, const ossia::micrometer_u& rhs){ 
+  return (lhs.m_type == distance_u::Type::Type5); 
+}
+inline bool operator==(const ossia::micrometer_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type == distance_u::Type::Type5); 
+}
+inline bool operator!=(const distance_u& lhs, const ossia::micrometer_u& rhs){ 
+  return (lhs.m_type != distance_u::Type::Type5); 
+}
+inline bool operator!=(const ossia::micrometer_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type != distance_u::Type::Type5); 
+}
+inline bool operator==(const distance_u& lhs, const ossia::nanometer_u& rhs){ 
+  return (lhs.m_type == distance_u::Type::Type6); 
+}
+inline bool operator==(const ossia::nanometer_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type == distance_u::Type::Type6); 
+}
+inline bool operator!=(const distance_u& lhs, const ossia::nanometer_u& rhs){ 
+  return (lhs.m_type != distance_u::Type::Type6); 
+}
+inline bool operator!=(const ossia::nanometer_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type != distance_u::Type::Type6); 
+}
+inline bool operator==(const distance_u& lhs, const ossia::picometer_u& rhs){ 
+  return (lhs.m_type == distance_u::Type::Type7); 
+}
+inline bool operator==(const ossia::picometer_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type == distance_u::Type::Type7); 
+}
+inline bool operator!=(const distance_u& lhs, const ossia::picometer_u& rhs){ 
+  return (lhs.m_type != distance_u::Type::Type7); 
+}
+inline bool operator!=(const ossia::picometer_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type != distance_u::Type::Type7); 
+}
+inline bool operator==(const distance_u& lhs, const ossia::inch_u& rhs){ 
+  return (lhs.m_type == distance_u::Type::Type8); 
+}
+inline bool operator==(const ossia::inch_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type == distance_u::Type::Type8); 
+}
+inline bool operator!=(const distance_u& lhs, const ossia::inch_u& rhs){ 
+  return (lhs.m_type != distance_u::Type::Type8); 
+}
+inline bool operator!=(const ossia::inch_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type != distance_u::Type::Type8); 
+}
+inline bool operator==(const distance_u& lhs, const ossia::foot_u& rhs){ 
+  return (lhs.m_type == distance_u::Type::Type9); 
+}
+inline bool operator==(const ossia::foot_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type == distance_u::Type::Type9); 
+}
+inline bool operator!=(const distance_u& lhs, const ossia::foot_u& rhs){ 
+  return (lhs.m_type != distance_u::Type::Type9); 
+}
+inline bool operator!=(const ossia::foot_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type != distance_u::Type::Type9); 
+}
+inline bool operator==(const distance_u& lhs, const ossia::mile_u& rhs){ 
+  return (lhs.m_type == distance_u::Type::Type10); 
+}
+inline bool operator==(const ossia::mile_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type == distance_u::Type::Type10); 
+}
+inline bool operator!=(const distance_u& lhs, const ossia::mile_u& rhs){ 
+  return (lhs.m_type != distance_u::Type::Type10); 
+}
+inline bool operator!=(const ossia::mile_u& lhs, const distance_u& rhs){ 
+  return (rhs.m_type != distance_u::Type::Type10); 
+}
 struct gain_u
 {
 public:
@@ -1647,6 +1917,60 @@ auto apply(Visitor&& functor,  gain_u&& var) {
   default: return functor();
   }
 }
+inline bool operator==(const gain_u& lhs, const gain_u& rhs){ 
+  return (lhs.m_type == rhs.m_type);
+}
+inline bool operator!=(const gain_u& lhs, const gain_u& rhs){ 
+  return (lhs.m_type != rhs.m_type);
+}
+inline bool operator==(const gain_u& lhs, const ossia::linear_u& rhs){ 
+  return (lhs.m_type == gain_u::Type::Type0); 
+}
+inline bool operator==(const ossia::linear_u& lhs, const gain_u& rhs){ 
+  return (rhs.m_type == gain_u::Type::Type0); 
+}
+inline bool operator!=(const gain_u& lhs, const ossia::linear_u& rhs){ 
+  return (lhs.m_type != gain_u::Type::Type0); 
+}
+inline bool operator!=(const ossia::linear_u& lhs, const gain_u& rhs){ 
+  return (rhs.m_type != gain_u::Type::Type0); 
+}
+inline bool operator==(const gain_u& lhs, const ossia::midigain_u& rhs){ 
+  return (lhs.m_type == gain_u::Type::Type1); 
+}
+inline bool operator==(const ossia::midigain_u& lhs, const gain_u& rhs){ 
+  return (rhs.m_type == gain_u::Type::Type1); 
+}
+inline bool operator!=(const gain_u& lhs, const ossia::midigain_u& rhs){ 
+  return (lhs.m_type != gain_u::Type::Type1); 
+}
+inline bool operator!=(const ossia::midigain_u& lhs, const gain_u& rhs){ 
+  return (rhs.m_type != gain_u::Type::Type1); 
+}
+inline bool operator==(const gain_u& lhs, const ossia::decibel_u& rhs){ 
+  return (lhs.m_type == gain_u::Type::Type2); 
+}
+inline bool operator==(const ossia::decibel_u& lhs, const gain_u& rhs){ 
+  return (rhs.m_type == gain_u::Type::Type2); 
+}
+inline bool operator!=(const gain_u& lhs, const ossia::decibel_u& rhs){ 
+  return (lhs.m_type != gain_u::Type::Type2); 
+}
+inline bool operator!=(const ossia::decibel_u& lhs, const gain_u& rhs){ 
+  return (rhs.m_type != gain_u::Type::Type2); 
+}
+inline bool operator==(const gain_u& lhs, const ossia::decibel_raw_u& rhs){ 
+  return (lhs.m_type == gain_u::Type::Type3); 
+}
+inline bool operator==(const ossia::decibel_raw_u& lhs, const gain_u& rhs){ 
+  return (rhs.m_type == gain_u::Type::Type3); 
+}
+inline bool operator!=(const gain_u& lhs, const ossia::decibel_raw_u& rhs){ 
+  return (lhs.m_type != gain_u::Type::Type3); 
+}
+inline bool operator!=(const ossia::decibel_raw_u& lhs, const gain_u& rhs){ 
+  return (rhs.m_type != gain_u::Type::Type3); 
+}
 struct orientation_u
 {
 public:
@@ -1899,6 +2223,48 @@ auto apply(Visitor&& functor,  orientation_u&& var) {
     return functor(std::move(var.m_impl.m_value2));
   default: return functor();
   }
+}
+inline bool operator==(const orientation_u& lhs, const orientation_u& rhs){ 
+  return (lhs.m_type == rhs.m_type);
+}
+inline bool operator!=(const orientation_u& lhs, const orientation_u& rhs){ 
+  return (lhs.m_type != rhs.m_type);
+}
+inline bool operator==(const orientation_u& lhs, const ossia::quaternion_u& rhs){ 
+  return (lhs.m_type == orientation_u::Type::Type0); 
+}
+inline bool operator==(const ossia::quaternion_u& lhs, const orientation_u& rhs){ 
+  return (rhs.m_type == orientation_u::Type::Type0); 
+}
+inline bool operator!=(const orientation_u& lhs, const ossia::quaternion_u& rhs){ 
+  return (lhs.m_type != orientation_u::Type::Type0); 
+}
+inline bool operator!=(const ossia::quaternion_u& lhs, const orientation_u& rhs){ 
+  return (rhs.m_type != orientation_u::Type::Type0); 
+}
+inline bool operator==(const orientation_u& lhs, const ossia::euler_u& rhs){ 
+  return (lhs.m_type == orientation_u::Type::Type1); 
+}
+inline bool operator==(const ossia::euler_u& lhs, const orientation_u& rhs){ 
+  return (rhs.m_type == orientation_u::Type::Type1); 
+}
+inline bool operator!=(const orientation_u& lhs, const ossia::euler_u& rhs){ 
+  return (lhs.m_type != orientation_u::Type::Type1); 
+}
+inline bool operator!=(const ossia::euler_u& lhs, const orientation_u& rhs){ 
+  return (rhs.m_type != orientation_u::Type::Type1); 
+}
+inline bool operator==(const orientation_u& lhs, const ossia::axis_u& rhs){ 
+  return (lhs.m_type == orientation_u::Type::Type2); 
+}
+inline bool operator==(const ossia::axis_u& lhs, const orientation_u& rhs){ 
+  return (rhs.m_type == orientation_u::Type::Type2); 
+}
+inline bool operator!=(const orientation_u& lhs, const ossia::axis_u& rhs){ 
+  return (lhs.m_type != orientation_u::Type::Type2); 
+}
+inline bool operator!=(const ossia::axis_u& lhs, const orientation_u& rhs){ 
+  return (rhs.m_type != orientation_u::Type::Type2); 
 }
 struct position_u
 {
@@ -2300,6 +2666,84 @@ auto apply(Visitor&& functor,  position_u&& var) {
   default: return functor();
   }
 }
+inline bool operator==(const position_u& lhs, const position_u& rhs){ 
+  return (lhs.m_type == rhs.m_type);
+}
+inline bool operator!=(const position_u& lhs, const position_u& rhs){ 
+  return (lhs.m_type != rhs.m_type);
+}
+inline bool operator==(const position_u& lhs, const ossia::cartesian_3d_u& rhs){ 
+  return (lhs.m_type == position_u::Type::Type0); 
+}
+inline bool operator==(const ossia::cartesian_3d_u& lhs, const position_u& rhs){ 
+  return (rhs.m_type == position_u::Type::Type0); 
+}
+inline bool operator!=(const position_u& lhs, const ossia::cartesian_3d_u& rhs){ 
+  return (lhs.m_type != position_u::Type::Type0); 
+}
+inline bool operator!=(const ossia::cartesian_3d_u& lhs, const position_u& rhs){ 
+  return (rhs.m_type != position_u::Type::Type0); 
+}
+inline bool operator==(const position_u& lhs, const ossia::cartesian_2d_u& rhs){ 
+  return (lhs.m_type == position_u::Type::Type1); 
+}
+inline bool operator==(const ossia::cartesian_2d_u& lhs, const position_u& rhs){ 
+  return (rhs.m_type == position_u::Type::Type1); 
+}
+inline bool operator!=(const position_u& lhs, const ossia::cartesian_2d_u& rhs){ 
+  return (lhs.m_type != position_u::Type::Type1); 
+}
+inline bool operator!=(const ossia::cartesian_2d_u& lhs, const position_u& rhs){ 
+  return (rhs.m_type != position_u::Type::Type1); 
+}
+inline bool operator==(const position_u& lhs, const ossia::spherical_u& rhs){ 
+  return (lhs.m_type == position_u::Type::Type2); 
+}
+inline bool operator==(const ossia::spherical_u& lhs, const position_u& rhs){ 
+  return (rhs.m_type == position_u::Type::Type2); 
+}
+inline bool operator!=(const position_u& lhs, const ossia::spherical_u& rhs){ 
+  return (lhs.m_type != position_u::Type::Type2); 
+}
+inline bool operator!=(const ossia::spherical_u& lhs, const position_u& rhs){ 
+  return (rhs.m_type != position_u::Type::Type2); 
+}
+inline bool operator==(const position_u& lhs, const ossia::polar_u& rhs){ 
+  return (lhs.m_type == position_u::Type::Type3); 
+}
+inline bool operator==(const ossia::polar_u& lhs, const position_u& rhs){ 
+  return (rhs.m_type == position_u::Type::Type3); 
+}
+inline bool operator!=(const position_u& lhs, const ossia::polar_u& rhs){ 
+  return (lhs.m_type != position_u::Type::Type3); 
+}
+inline bool operator!=(const ossia::polar_u& lhs, const position_u& rhs){ 
+  return (rhs.m_type != position_u::Type::Type3); 
+}
+inline bool operator==(const position_u& lhs, const ossia::opengl_u& rhs){ 
+  return (lhs.m_type == position_u::Type::Type4); 
+}
+inline bool operator==(const ossia::opengl_u& lhs, const position_u& rhs){ 
+  return (rhs.m_type == position_u::Type::Type4); 
+}
+inline bool operator!=(const position_u& lhs, const ossia::opengl_u& rhs){ 
+  return (lhs.m_type != position_u::Type::Type4); 
+}
+inline bool operator!=(const ossia::opengl_u& lhs, const position_u& rhs){ 
+  return (rhs.m_type != position_u::Type::Type4); 
+}
+inline bool operator==(const position_u& lhs, const ossia::cylindrical_u& rhs){ 
+  return (lhs.m_type == position_u::Type::Type5); 
+}
+inline bool operator==(const ossia::cylindrical_u& lhs, const position_u& rhs){ 
+  return (rhs.m_type == position_u::Type::Type5); 
+}
+inline bool operator!=(const position_u& lhs, const ossia::cylindrical_u& rhs){ 
+  return (lhs.m_type != position_u::Type::Type5); 
+}
+inline bool operator!=(const ossia::cylindrical_u& lhs, const position_u& rhs){ 
+  return (rhs.m_type != position_u::Type::Type5); 
+}
 struct speed_u
 {
 public:
@@ -2699,6 +3143,84 @@ auto apply(Visitor&& functor,  speed_u&& var) {
     return functor(std::move(var.m_impl.m_value5));
   default: return functor();
   }
+}
+inline bool operator==(const speed_u& lhs, const speed_u& rhs){ 
+  return (lhs.m_type == rhs.m_type);
+}
+inline bool operator!=(const speed_u& lhs, const speed_u& rhs){ 
+  return (lhs.m_type != rhs.m_type);
+}
+inline bool operator==(const speed_u& lhs, const ossia::meter_per_second_u& rhs){ 
+  return (lhs.m_type == speed_u::Type::Type0); 
+}
+inline bool operator==(const ossia::meter_per_second_u& lhs, const speed_u& rhs){ 
+  return (rhs.m_type == speed_u::Type::Type0); 
+}
+inline bool operator!=(const speed_u& lhs, const ossia::meter_per_second_u& rhs){ 
+  return (lhs.m_type != speed_u::Type::Type0); 
+}
+inline bool operator!=(const ossia::meter_per_second_u& lhs, const speed_u& rhs){ 
+  return (rhs.m_type != speed_u::Type::Type0); 
+}
+inline bool operator==(const speed_u& lhs, const ossia::miles_per_hour_u& rhs){ 
+  return (lhs.m_type == speed_u::Type::Type1); 
+}
+inline bool operator==(const ossia::miles_per_hour_u& lhs, const speed_u& rhs){ 
+  return (rhs.m_type == speed_u::Type::Type1); 
+}
+inline bool operator!=(const speed_u& lhs, const ossia::miles_per_hour_u& rhs){ 
+  return (lhs.m_type != speed_u::Type::Type1); 
+}
+inline bool operator!=(const ossia::miles_per_hour_u& lhs, const speed_u& rhs){ 
+  return (rhs.m_type != speed_u::Type::Type1); 
+}
+inline bool operator==(const speed_u& lhs, const ossia::kilometer_per_hour_u& rhs){ 
+  return (lhs.m_type == speed_u::Type::Type2); 
+}
+inline bool operator==(const ossia::kilometer_per_hour_u& lhs, const speed_u& rhs){ 
+  return (rhs.m_type == speed_u::Type::Type2); 
+}
+inline bool operator!=(const speed_u& lhs, const ossia::kilometer_per_hour_u& rhs){ 
+  return (lhs.m_type != speed_u::Type::Type2); 
+}
+inline bool operator!=(const ossia::kilometer_per_hour_u& lhs, const speed_u& rhs){ 
+  return (rhs.m_type != speed_u::Type::Type2); 
+}
+inline bool operator==(const speed_u& lhs, const ossia::knot_u& rhs){ 
+  return (lhs.m_type == speed_u::Type::Type3); 
+}
+inline bool operator==(const ossia::knot_u& lhs, const speed_u& rhs){ 
+  return (rhs.m_type == speed_u::Type::Type3); 
+}
+inline bool operator!=(const speed_u& lhs, const ossia::knot_u& rhs){ 
+  return (lhs.m_type != speed_u::Type::Type3); 
+}
+inline bool operator!=(const ossia::knot_u& lhs, const speed_u& rhs){ 
+  return (rhs.m_type != speed_u::Type::Type3); 
+}
+inline bool operator==(const speed_u& lhs, const ossia::foot_per_second_u& rhs){ 
+  return (lhs.m_type == speed_u::Type::Type4); 
+}
+inline bool operator==(const ossia::foot_per_second_u& lhs, const speed_u& rhs){ 
+  return (rhs.m_type == speed_u::Type::Type4); 
+}
+inline bool operator!=(const speed_u& lhs, const ossia::foot_per_second_u& rhs){ 
+  return (lhs.m_type != speed_u::Type::Type4); 
+}
+inline bool operator!=(const ossia::foot_per_second_u& lhs, const speed_u& rhs){ 
+  return (rhs.m_type != speed_u::Type::Type4); 
+}
+inline bool operator==(const speed_u& lhs, const ossia::foot_per_hour_u& rhs){ 
+  return (lhs.m_type == speed_u::Type::Type5); 
+}
+inline bool operator==(const ossia::foot_per_hour_u& lhs, const speed_u& rhs){ 
+  return (rhs.m_type == speed_u::Type::Type5); 
+}
+inline bool operator!=(const speed_u& lhs, const ossia::foot_per_hour_u& rhs){ 
+  return (lhs.m_type != speed_u::Type::Type5); 
+}
+inline bool operator!=(const ossia::foot_per_hour_u& lhs, const speed_u& rhs){ 
+  return (rhs.m_type != speed_u::Type::Type5); 
 }
 struct time_u
 {
@@ -3247,6 +3769,120 @@ auto apply(Visitor&& functor,  time_u&& var) {
   default: return functor();
   }
 }
+inline bool operator==(const time_u& lhs, const time_u& rhs){ 
+  return (lhs.m_type == rhs.m_type);
+}
+inline bool operator!=(const time_u& lhs, const time_u& rhs){ 
+  return (lhs.m_type != rhs.m_type);
+}
+inline bool operator==(const time_u& lhs, const ossia::second_u& rhs){ 
+  return (lhs.m_type == time_u::Type::Type0); 
+}
+inline bool operator==(const ossia::second_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type == time_u::Type::Type0); 
+}
+inline bool operator!=(const time_u& lhs, const ossia::second_u& rhs){ 
+  return (lhs.m_type != time_u::Type::Type0); 
+}
+inline bool operator!=(const ossia::second_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type != time_u::Type::Type0); 
+}
+inline bool operator==(const time_u& lhs, const ossia::bark_u& rhs){ 
+  return (lhs.m_type == time_u::Type::Type1); 
+}
+inline bool operator==(const ossia::bark_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type == time_u::Type::Type1); 
+}
+inline bool operator!=(const time_u& lhs, const ossia::bark_u& rhs){ 
+  return (lhs.m_type != time_u::Type::Type1); 
+}
+inline bool operator!=(const ossia::bark_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type != time_u::Type::Type1); 
+}
+inline bool operator==(const time_u& lhs, const ossia::bpm_u& rhs){ 
+  return (lhs.m_type == time_u::Type::Type2); 
+}
+inline bool operator==(const ossia::bpm_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type == time_u::Type::Type2); 
+}
+inline bool operator!=(const time_u& lhs, const ossia::bpm_u& rhs){ 
+  return (lhs.m_type != time_u::Type::Type2); 
+}
+inline bool operator!=(const ossia::bpm_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type != time_u::Type::Type2); 
+}
+inline bool operator==(const time_u& lhs, const ossia::cent_u& rhs){ 
+  return (lhs.m_type == time_u::Type::Type3); 
+}
+inline bool operator==(const ossia::cent_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type == time_u::Type::Type3); 
+}
+inline bool operator!=(const time_u& lhs, const ossia::cent_u& rhs){ 
+  return (lhs.m_type != time_u::Type::Type3); 
+}
+inline bool operator!=(const ossia::cent_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type != time_u::Type::Type3); 
+}
+inline bool operator==(const time_u& lhs, const ossia::frequency_u& rhs){ 
+  return (lhs.m_type == time_u::Type::Type4); 
+}
+inline bool operator==(const ossia::frequency_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type == time_u::Type::Type4); 
+}
+inline bool operator!=(const time_u& lhs, const ossia::frequency_u& rhs){ 
+  return (lhs.m_type != time_u::Type::Type4); 
+}
+inline bool operator!=(const ossia::frequency_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type != time_u::Type::Type4); 
+}
+inline bool operator==(const time_u& lhs, const ossia::mel_u& rhs){ 
+  return (lhs.m_type == time_u::Type::Type5); 
+}
+inline bool operator==(const ossia::mel_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type == time_u::Type::Type5); 
+}
+inline bool operator!=(const time_u& lhs, const ossia::mel_u& rhs){ 
+  return (lhs.m_type != time_u::Type::Type5); 
+}
+inline bool operator!=(const ossia::mel_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type != time_u::Type::Type5); 
+}
+inline bool operator==(const time_u& lhs, const ossia::midi_pitch_u& rhs){ 
+  return (lhs.m_type == time_u::Type::Type6); 
+}
+inline bool operator==(const ossia::midi_pitch_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type == time_u::Type::Type6); 
+}
+inline bool operator!=(const time_u& lhs, const ossia::midi_pitch_u& rhs){ 
+  return (lhs.m_type != time_u::Type::Type6); 
+}
+inline bool operator!=(const ossia::midi_pitch_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type != time_u::Type::Type6); 
+}
+inline bool operator==(const time_u& lhs, const ossia::millisecond_u& rhs){ 
+  return (lhs.m_type == time_u::Type::Type7); 
+}
+inline bool operator==(const ossia::millisecond_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type == time_u::Type::Type7); 
+}
+inline bool operator!=(const time_u& lhs, const ossia::millisecond_u& rhs){ 
+  return (lhs.m_type != time_u::Type::Type7); 
+}
+inline bool operator!=(const ossia::millisecond_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type != time_u::Type::Type7); 
+}
+inline bool operator==(const time_u& lhs, const ossia::playback_speed_u& rhs){ 
+  return (lhs.m_type == time_u::Type::Type8); 
+}
+inline bool operator==(const ossia::playback_speed_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type == time_u::Type::Type8); 
+}
+inline bool operator!=(const time_u& lhs, const ossia::playback_speed_u& rhs){ 
+  return (lhs.m_type != time_u::Type::Type8); 
+}
+inline bool operator!=(const ossia::playback_speed_u& lhs, const time_u& rhs){ 
+  return (rhs.m_type != time_u::Type::Type8); 
+}
 struct unit_variant
 {
 public:
@@ -3744,4 +4380,147 @@ auto apply(Visitor&& functor,  unit_variant&& var) {
     return functor(std::move(var.m_impl.m_value7));
   default: return functor();
   }
+}
+inline bool operator==(const unit_variant& lhs, const unit_variant& rhs){ 
+  if(lhs.m_type == rhs.m_type) { 
+    switch(lhs.m_type) { 
+    case unit_variant::Type::Type0:
+      return lhs.m_impl.m_value0==rhs.m_impl.m_value0;
+    case unit_variant::Type::Type1:
+      return lhs.m_impl.m_value1==rhs.m_impl.m_value1;
+    case unit_variant::Type::Type2:
+      return lhs.m_impl.m_value2==rhs.m_impl.m_value2;
+    case unit_variant::Type::Type3:
+      return lhs.m_impl.m_value3==rhs.m_impl.m_value3;
+    case unit_variant::Type::Type4:
+      return lhs.m_impl.m_value4==rhs.m_impl.m_value4;
+    case unit_variant::Type::Type5:
+      return lhs.m_impl.m_value5==rhs.m_impl.m_value5;
+    case unit_variant::Type::Type6:
+      return lhs.m_impl.m_value6==rhs.m_impl.m_value6;
+    case unit_variant::Type::Type7:
+      return lhs.m_impl.m_value7==rhs.m_impl.m_value7;
+      default: return true;
+    }
+  }
+  return false; 
+}
+inline bool operator!=(const unit_variant& lhs, const unit_variant& rhs){ 
+  if(lhs.m_type != rhs.m_type) return true; 
+  switch(lhs.m_type) { 
+    case unit_variant::Type::Type0:
+      return lhs.m_impl.m_value0!=rhs.m_impl.m_value0;
+    case unit_variant::Type::Type1:
+      return lhs.m_impl.m_value1!=rhs.m_impl.m_value1;
+    case unit_variant::Type::Type2:
+      return lhs.m_impl.m_value2!=rhs.m_impl.m_value2;
+    case unit_variant::Type::Type3:
+      return lhs.m_impl.m_value3!=rhs.m_impl.m_value3;
+    case unit_variant::Type::Type4:
+      return lhs.m_impl.m_value4!=rhs.m_impl.m_value4;
+    case unit_variant::Type::Type5:
+      return lhs.m_impl.m_value5!=rhs.m_impl.m_value5;
+    case unit_variant::Type::Type6:
+      return lhs.m_impl.m_value6!=rhs.m_impl.m_value6;
+    case unit_variant::Type::Type7:
+      return lhs.m_impl.m_value7!=rhs.m_impl.m_value7;
+    default: return false;
+  }
+  return true; 
+}
+inline bool operator==(const unit_variant& lhs, const ossia::distance_u& rhs){ 
+  return (lhs.m_type == unit_variant::Type::Type0) && (lhs.m_impl.m_value0 == rhs); 
+}
+inline bool operator==(const ossia::distance_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type == unit_variant::Type::Type0) && (rhs.m_impl.m_value0 == lhs); 
+}
+inline bool operator!=(const unit_variant& lhs, const ossia::distance_u& rhs){ 
+  return (lhs.m_type != unit_variant::Type::Type0) || (lhs.m_impl.m_value0 != rhs); 
+}
+inline bool operator!=(const ossia::distance_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type != unit_variant::Type::Type0) || (rhs.m_impl.m_value0 != lhs); 
+}
+inline bool operator==(const unit_variant& lhs, const ossia::position_u& rhs){ 
+  return (lhs.m_type == unit_variant::Type::Type1) && (lhs.m_impl.m_value1 == rhs); 
+}
+inline bool operator==(const ossia::position_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type == unit_variant::Type::Type1) && (rhs.m_impl.m_value1 == lhs); 
+}
+inline bool operator!=(const unit_variant& lhs, const ossia::position_u& rhs){ 
+  return (lhs.m_type != unit_variant::Type::Type1) || (lhs.m_impl.m_value1 != rhs); 
+}
+inline bool operator!=(const ossia::position_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type != unit_variant::Type::Type1) || (rhs.m_impl.m_value1 != lhs); 
+}
+inline bool operator==(const unit_variant& lhs, const ossia::speed_u& rhs){ 
+  return (lhs.m_type == unit_variant::Type::Type2) && (lhs.m_impl.m_value2 == rhs); 
+}
+inline bool operator==(const ossia::speed_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type == unit_variant::Type::Type2) && (rhs.m_impl.m_value2 == lhs); 
+}
+inline bool operator!=(const unit_variant& lhs, const ossia::speed_u& rhs){ 
+  return (lhs.m_type != unit_variant::Type::Type2) || (lhs.m_impl.m_value2 != rhs); 
+}
+inline bool operator!=(const ossia::speed_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type != unit_variant::Type::Type2) || (rhs.m_impl.m_value2 != lhs); 
+}
+inline bool operator==(const unit_variant& lhs, const ossia::orientation_u& rhs){ 
+  return (lhs.m_type == unit_variant::Type::Type3) && (lhs.m_impl.m_value3 == rhs); 
+}
+inline bool operator==(const ossia::orientation_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type == unit_variant::Type::Type3) && (rhs.m_impl.m_value3 == lhs); 
+}
+inline bool operator!=(const unit_variant& lhs, const ossia::orientation_u& rhs){ 
+  return (lhs.m_type != unit_variant::Type::Type3) || (lhs.m_impl.m_value3 != rhs); 
+}
+inline bool operator!=(const ossia::orientation_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type != unit_variant::Type::Type3) || (rhs.m_impl.m_value3 != lhs); 
+}
+inline bool operator==(const unit_variant& lhs, const ossia::angle_u& rhs){ 
+  return (lhs.m_type == unit_variant::Type::Type4) && (lhs.m_impl.m_value4 == rhs); 
+}
+inline bool operator==(const ossia::angle_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type == unit_variant::Type::Type4) && (rhs.m_impl.m_value4 == lhs); 
+}
+inline bool operator!=(const unit_variant& lhs, const ossia::angle_u& rhs){ 
+  return (lhs.m_type != unit_variant::Type::Type4) || (lhs.m_impl.m_value4 != rhs); 
+}
+inline bool operator!=(const ossia::angle_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type != unit_variant::Type::Type4) || (rhs.m_impl.m_value4 != lhs); 
+}
+inline bool operator==(const unit_variant& lhs, const ossia::color_u& rhs){ 
+  return (lhs.m_type == unit_variant::Type::Type5) && (lhs.m_impl.m_value5 == rhs); 
+}
+inline bool operator==(const ossia::color_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type == unit_variant::Type::Type5) && (rhs.m_impl.m_value5 == lhs); 
+}
+inline bool operator!=(const unit_variant& lhs, const ossia::color_u& rhs){ 
+  return (lhs.m_type != unit_variant::Type::Type5) || (lhs.m_impl.m_value5 != rhs); 
+}
+inline bool operator!=(const ossia::color_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type != unit_variant::Type::Type5) || (rhs.m_impl.m_value5 != lhs); 
+}
+inline bool operator==(const unit_variant& lhs, const ossia::gain_u& rhs){ 
+  return (lhs.m_type == unit_variant::Type::Type6) && (lhs.m_impl.m_value6 == rhs); 
+}
+inline bool operator==(const ossia::gain_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type == unit_variant::Type::Type6) && (rhs.m_impl.m_value6 == lhs); 
+}
+inline bool operator!=(const unit_variant& lhs, const ossia::gain_u& rhs){ 
+  return (lhs.m_type != unit_variant::Type::Type6) || (lhs.m_impl.m_value6 != rhs); 
+}
+inline bool operator!=(const ossia::gain_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type != unit_variant::Type::Type6) || (rhs.m_impl.m_value6 != lhs); 
+}
+inline bool operator==(const unit_variant& lhs, const ossia::time_u& rhs){ 
+  return (lhs.m_type == unit_variant::Type::Type7) && (lhs.m_impl.m_value7 == rhs); 
+}
+inline bool operator==(const ossia::time_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type == unit_variant::Type::Type7) && (rhs.m_impl.m_value7 == lhs); 
+}
+inline bool operator!=(const unit_variant& lhs, const ossia::time_u& rhs){ 
+  return (lhs.m_type != unit_variant::Type::Type7) || (lhs.m_impl.m_value7 != rhs); 
+}
+inline bool operator!=(const ossia::time_u& lhs, const unit_variant& rhs){ 
+  return (rhs.m_type != unit_variant::Type::Type7) || (rhs.m_impl.m_value7 != lhs); 
 }

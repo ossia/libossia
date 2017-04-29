@@ -411,6 +411,64 @@ struct gen_var
     }
   }
 
+  void write_typeonly_comparison_operators()
+  {
+    // Generic ones between two variants
+    {
+      str << "inline bool operator==(const " << class_name << "& lhs, const " << class_name << "& rhs)"
+          << "{ \n"
+             "  return (lhs.m_type == rhs.m_type);\n";
+      str << "}\n";
+    }
+
+    {
+      str << "inline bool operator!=(const " << class_name << "& lhs, const " << class_name << "& rhs)"
+          << "{ \n"
+             "  return (lhs.m_type != rhs.m_type);\n";
+      str << "}\n";
+    }
+
+    // Then specific ones between an instance of the variant and an instance of an actual type
+    int i = 0;
+    // Write types
+    brigand::for_each<var_impl>([&] (auto _) {
+      using meta_t = typename decltype(_)::type;
+      meta_t t;
+
+      // ==
+      {
+        str << "inline bool operator==(const " << class_name << "& lhs, const " << t.type_str << "& rhs)"
+               "{ \n"
+               "  return (lhs.m_type == " << class_name << "::Type::Type" << i << "); \n";
+        str << "}\n";
+      }
+
+      {
+        str << "inline bool operator==(const " << t.type_str << "& lhs, const " << class_name << "& rhs)"
+               "{ \n"
+               "  return (rhs.m_type == " << class_name << "::Type::Type" << i << "); \n";
+        str << "}\n";
+      }
+
+      // !=
+      {
+        str << "inline bool operator!=(const " << class_name << "& lhs, const " << t.type_str << "& rhs)"
+               "{ \n"
+               "  return (lhs.m_type != " << class_name << "::Type::Type" << i << "); \n";
+        str << "}\n";
+      }
+
+      {
+        str << "inline bool operator!=(const " << t.type_str << "& lhs, const " << class_name << "& rhs)"
+               "{ \n"
+               "  return (rhs.m_type != " << class_name << "::Type::Type" << i << "); \n";
+        str << "}\n";
+      }
+
+      i++;
+    });
+  }
+
   void write_comparison_operators()
   {
     // Generic ones between two variants
@@ -915,6 +973,12 @@ int main()
     f << value_gen.str.str();
 
     apply_writer r;
+    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Ref},
+                           class_info{"value_variant_type", 11, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+                           class_info{"value_variant_type", 11, class_info::Ref}
+                         });
     r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
                            class_info{"value_variant_type", 11, class_info::Cref}
                          });
@@ -926,6 +990,10 @@ int main()
                          });
 
     r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+                           class_info{"value_variant_type", 11, class_info::Cref},
+                           class_info{"value_variant_type", 11, class_info::Cref}
+                         });
+    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::RvRef},
                            class_info{"value_variant_type", 11, class_info::Cref},
                            class_info{"value_variant_type", 11, class_info::Cref}
                          });
@@ -953,47 +1021,55 @@ int main()
     {
       gen_var<degree_u, radian_u> u("angle_u");
       u.write_class();
+      u.write_typeonly_comparison_operators();
       f << u.str.str();
     }
     {
       gen_var<argb_u, rgba_u, rgb_u, bgr_u, argb8_u, hsv_u, cmy8_u, xyz_u> u("color_u");
       u.write_class();
+      u.write_typeonly_comparison_operators();
       f << u.str.str();
     }
     {
       gen_var<meter_u, kilometer_u, decimeter_u, centimeter_u, millimeter_u, micrometer_u, nanometer_u, picometer_u, inch_u, foot_u, mile_u>
           u("distance_u");
       u.write_class();
+      u.write_typeonly_comparison_operators();
       f << u.str.str();
     }
     {
       gen_var<linear_u, midigain_u, decibel_u, decibel_raw_u>
           u("gain_u");
       u.write_class();
+      u.write_typeonly_comparison_operators();
       f << u.str.str();
     }
     {
       gen_var<quaternion_u, euler_u, axis_u>
           u("orientation_u");
       u.write_class();
+      u.write_typeonly_comparison_operators();
       f << u.str.str();
     }
     {
       gen_var<cartesian_3d_u, cartesian_2d_u, spherical_u, polar_u, opengl_u, cylindrical_u>
           u("position_u");
       u.write_class();
+      u.write_typeonly_comparison_operators();
       f << u.str.str();
     }
     {
       gen_var<meter_per_second_u, miles_per_hour_u, kilometer_per_hour_u, knot_u, foot_per_second_u, foot_per_hour_u>
           u("speed_u");
       u.write_class();
+      u.write_typeonly_comparison_operators();
       f << u.str.str();
     }
     {
       gen_var<second_u, bark_u, bpm_u, cent_u, frequency_u, mel_u, midi_pitch_u, millisecond_u, playback_speed_u>
           u("time_u");
       u.write_class();
+      u.write_typeonly_comparison_operators();
       f << u.str.str();
     }
 
@@ -1001,6 +1077,7 @@ int main()
       gen_var<distance_u, position_u, speed_u, orientation_u, angle_u, color_u, gain_u, time_u>
           u("unit_variant");
       u.write_class();
+      u.write_comparison_operators();
       f << u.str.str();
     }
   }

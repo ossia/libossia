@@ -46,7 +46,7 @@ second_u, bark_u, bpm_u, cent_u, frequency_u, mel_u, midi_pitch_u, millisecond_u
 
 using dataspace_u_list =
 brigand::list<
-angle_u_list, color_u_list, distance_u_list, orientation_u_list, position_u_list, speed_u_list, time_u_list>;
+distance_u_list, position_u_list, speed_u_list, orientation_u_list, angle_u_list, color_u_list, gain_u_list, time_u_list>;
 
 
 template<> struct matching_unit_u_list<angle_u> { using type = angle_u_list; };
@@ -106,7 +106,7 @@ second, bark, bpm, cent, frequency, mel, midi_pitch, millisecond, playback_speed
 
 using dataspace_list =
 brigand::list<
-angle_list, color_list, distance_list, orientation_list, position_list, speed_list, time_list>;
+distance_list, position_list, speed_list, orientation_list, angle_list, color_list, gain_list, time_list>;
 
 
 template<> struct matching_unit_list<angle> { using type = angle_list; };

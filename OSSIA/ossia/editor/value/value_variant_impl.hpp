@@ -662,6 +662,1120 @@ auto apply(Visitor&& functor,  value_variant_type&& var) {
   }
 }
 template<typename Functor>
+auto apply(Functor&& functor, value_variant_type& arg0, const value_variant_type& arg1)
+{
+switch(arg0.m_type) {
+case value_variant_type::Type::Type0:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type1:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type2:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type3:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type4:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type5:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type6:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type7:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type8:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type9:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type10:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}
+template<typename Functor>
+auto apply(Functor&& functor, const value_variant_type& arg0, value_variant_type& arg1)
+{
+switch(arg0.m_type) {
+case value_variant_type::Type::Type0:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type1:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type2:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type3:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type4:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type5:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type6:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type7:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type8:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type9:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type10:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}
+template<typename Functor>
 auto apply(Functor&& functor, const value_variant_type& arg0, const value_variant_type& arg1)
 {
 switch(arg0.m_type) {
@@ -8445,6 +9559,6129 @@ return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10, arg2.m_impl.m_value
 case value_variant_type::Type::Type10:
 {
 return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}
+template<typename Functor>
+auto apply(Functor&& functor, value_variant_type&& arg0, const value_variant_type& arg1, const value_variant_type& arg2)
+{
+switch(arg0.m_type) {
+case value_variant_type::Type::Type0:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value0, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value0, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value0, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value0, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value0, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value0, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value0, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value0, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value0, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type1:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value1, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value1, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value1, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value1, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value1, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value1, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value1, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value1, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value1, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type2:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value2, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value2, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value2, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value2, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value2, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value2, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value2, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value2, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value2, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type3:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value3, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value3, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value3, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value3, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value3, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value3, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value3, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value3, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value3, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type4:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value4, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value4, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value4, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value4, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value4, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value4, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value4, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value4, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value4, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type5:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value5, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value5, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value5, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value5, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value5, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value5, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value5, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value5, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value5, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type6:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value6, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value6, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value6, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value6, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value6, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value6, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value6, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value6, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value6, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type7:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value7, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value7, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value7, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value7, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value7, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value7, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value7, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value7, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value7, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type8:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value8, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value8, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value8, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value8, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value8, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value8, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value8, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value8, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value8, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type9:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value9, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value9, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value9, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value9, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value9, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value9, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value9, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value9, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value9, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type10:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type1:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value0, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value0, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value0, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value0, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value0, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value0, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value0, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value0, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value0, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type1:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value1, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value1, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value1, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value1, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value1, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value1, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value1, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value1, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value1, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type2:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value2, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value2, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value2, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value2, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value2, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value2, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value2, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value2, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value2, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type3:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value3, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value3, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value3, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value3, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value3, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value3, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value3, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value3, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value3, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type4:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value4, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value4, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value4, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value4, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value4, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value4, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value4, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value4, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value4, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type5:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value5, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value5, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value5, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value5, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value5, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value5, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value5, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value5, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value5, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type6:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value6, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value6, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value6, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value6, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value6, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value6, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value6, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value6, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value6, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type7:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value7, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value7, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value7, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value7, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value7, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value7, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value7, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value7, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value7, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type8:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value8, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value8, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value8, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value8, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value8, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value8, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value8, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value8, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value8, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type9:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value9, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value9, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value9, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value9, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value9, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value9, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value9, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value9, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value9, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type10:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type2:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value0, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value0, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value0, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value0, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value0, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value0, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value0, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value0, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value0, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type1:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value1, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value1, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value1, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value1, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value1, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value1, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value1, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value1, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value1, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type2:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value2, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value2, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value2, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value2, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value2, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value2, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value2, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value2, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value2, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type3:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value3, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value3, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value3, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value3, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value3, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value3, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value3, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value3, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value3, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type4:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value4, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value4, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value4, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value4, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value4, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value4, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value4, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value4, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value4, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type5:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value5, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value5, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value5, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value5, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value5, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value5, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value5, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value5, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value5, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type6:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value6, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value6, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value6, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value6, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value6, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value6, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value6, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value6, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value6, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type7:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value7, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value7, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value7, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value7, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value7, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value7, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value7, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value7, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value7, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type8:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value8, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value8, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value8, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value8, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value8, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value8, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value8, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value8, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value8, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type9:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value9, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value9, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value9, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value9, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value9, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value9, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value9, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value9, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value9, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type10:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type3:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value0, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value0, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value0, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value0, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value0, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value0, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value0, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value0, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value0, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type1:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value1, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value1, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value1, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value1, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value1, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value1, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value1, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value1, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value1, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type2:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value2, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value2, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value2, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value2, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value2, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value2, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value2, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value2, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value2, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type3:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value3, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value3, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value3, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value3, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value3, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value3, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value3, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value3, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value3, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type4:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value4, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value4, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value4, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value4, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value4, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value4, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value4, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value4, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value4, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type5:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value5, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value5, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value5, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value5, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value5, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value5, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value5, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value5, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value5, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type6:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value6, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value6, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value6, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value6, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value6, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value6, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value6, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value6, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value6, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type7:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value7, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value7, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value7, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value7, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value7, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value7, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value7, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value7, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value7, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type8:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value8, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value8, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value8, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value8, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value8, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value8, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value8, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value8, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value8, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type9:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value9, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value9, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value9, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value9, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value9, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value9, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value9, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value9, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value9, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type10:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type4:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value0, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value0, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value0, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value0, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value0, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value0, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value0, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value0, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value0, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type1:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value1, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value1, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value1, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value1, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value1, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value1, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value1, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value1, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value1, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type2:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value2, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value2, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value2, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value2, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value2, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value2, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value2, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value2, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value2, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type3:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value3, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value3, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value3, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value3, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value3, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value3, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value3, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value3, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value3, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type4:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value4, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value4, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value4, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value4, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value4, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value4, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value4, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value4, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value4, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type5:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value5, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value5, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value5, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value5, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value5, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value5, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value5, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value5, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value5, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type6:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value6, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value6, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value6, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value6, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value6, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value6, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value6, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value6, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value6, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type7:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value7, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value7, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value7, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value7, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value7, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value7, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value7, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value7, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value7, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type8:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value8, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value8, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value8, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value8, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value8, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value8, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value8, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value8, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value8, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type9:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value9, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value9, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value9, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value9, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value9, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value9, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value9, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value9, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value9, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type10:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type5:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value0, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value0, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value0, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value0, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value0, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value0, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value0, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value0, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value0, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type1:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value1, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value1, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value1, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value1, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value1, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value1, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value1, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value1, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value1, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type2:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value2, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value2, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value2, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value2, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value2, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value2, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value2, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value2, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value2, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type3:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value3, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value3, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value3, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value3, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value3, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value3, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value3, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value3, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value3, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type4:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value4, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value4, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value4, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value4, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value4, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value4, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value4, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value4, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value4, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type5:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value5, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value5, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value5, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value5, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value5, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value5, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value5, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value5, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value5, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type6:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value6, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value6, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value6, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value6, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value6, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value6, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value6, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value6, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value6, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type7:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value7, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value7, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value7, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value7, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value7, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value7, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value7, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value7, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value7, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type8:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value8, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value8, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value8, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value8, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value8, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value8, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value8, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value8, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value8, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type9:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value9, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value9, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value9, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value9, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value9, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value9, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value9, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value9, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value9, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type10:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type6:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value0, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value0, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value0, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value0, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value0, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value0, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value0, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value0, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value0, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type1:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value1, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value1, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value1, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value1, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value1, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value1, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value1, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value1, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value1, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type2:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value2, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value2, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value2, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value2, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value2, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value2, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value2, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value2, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value2, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type3:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value3, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value3, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value3, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value3, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value3, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value3, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value3, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value3, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value3, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type4:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value4, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value4, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value4, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value4, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value4, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value4, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value4, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value4, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value4, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type5:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value5, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value5, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value5, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value5, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value5, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value5, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value5, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value5, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value5, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type6:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value6, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value6, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value6, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value6, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value6, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value6, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value6, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value6, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value6, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type7:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value7, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value7, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value7, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value7, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value7, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value7, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value7, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value7, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value7, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type8:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value8, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value8, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value8, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value8, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value8, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value8, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value8, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value8, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value8, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type9:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value9, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value9, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value9, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value9, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value9, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value9, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value9, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value9, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value9, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type10:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type7:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value0, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value0, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value0, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value0, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value0, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value0, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value0, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value0, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value0, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type1:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value1, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value1, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value1, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value1, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value1, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value1, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value1, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value1, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value1, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type2:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value2, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value2, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value2, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value2, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value2, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value2, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value2, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value2, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value2, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type3:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value3, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value3, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value3, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value3, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value3, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value3, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value3, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value3, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value3, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type4:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value4, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value4, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value4, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value4, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value4, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value4, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value4, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value4, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value4, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type5:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value5, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value5, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value5, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value5, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value5, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value5, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value5, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value5, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value5, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type6:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value6, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value6, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value6, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value6, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value6, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value6, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value6, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value6, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value6, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type7:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value7, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value7, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value7, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value7, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value7, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value7, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value7, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value7, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value7, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type8:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value8, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value8, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value8, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value8, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value8, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value8, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value8, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value8, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value8, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type9:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value9, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value9, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value9, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value9, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value9, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value9, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value9, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value9, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value9, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type10:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type8:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value0, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value0, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value0, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value0, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value0, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value0, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value0, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value0, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value0, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type1:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value1, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value1, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value1, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value1, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value1, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value1, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value1, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value1, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value1, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type2:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value2, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value2, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value2, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value2, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value2, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value2, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value2, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value2, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value2, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type3:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value3, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value3, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value3, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value3, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value3, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value3, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value3, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value3, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value3, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type4:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value4, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value4, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value4, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value4, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value4, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value4, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value4, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value4, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value4, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type5:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value5, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value5, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value5, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value5, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value5, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value5, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value5, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value5, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value5, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type6:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value6, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value6, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value6, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value6, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value6, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value6, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value6, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value6, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value6, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type7:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value7, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value7, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value7, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value7, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value7, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value7, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value7, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value7, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value7, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type8:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value8, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value8, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value8, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value8, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value8, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value8, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value8, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value8, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value8, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type9:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value9, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value9, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value9, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value9, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value9, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value9, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value9, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value9, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value9, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type10:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type9:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value0, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value0, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value0, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value0, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value0, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value0, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value0, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value0, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value0, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type1:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value1, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value1, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value1, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value1, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value1, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value1, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value1, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value1, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value1, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type2:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value2, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value2, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value2, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value2, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value2, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value2, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value2, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value2, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value2, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type3:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value3, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value3, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value3, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value3, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value3, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value3, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value3, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value3, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value3, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type4:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value4, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value4, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value4, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value4, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value4, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value4, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value4, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value4, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value4, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type5:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value5, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value5, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value5, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value5, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value5, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value5, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value5, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value5, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value5, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type6:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value6, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value6, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value6, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value6, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value6, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value6, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value6, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value6, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value6, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type7:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value7, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value7, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value7, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value7, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value7, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value7, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value7, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value7, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value7, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type8:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value8, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value8, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value8, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value8, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value8, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value8, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value8, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value8, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value8, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type9:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value9, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value9, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value9, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value9, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value9, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value9, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value9, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value9, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value9, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type10:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type10:
+{
+switch(arg1.m_type) {
+case value_variant_type::Type::Type0:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type1:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type2:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type3:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type4:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type5:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type6:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type7:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type8:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type9:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
+}
+default: throw; 
+}
+}
+case value_variant_type::Type::Type10:
+{
+switch(arg2.m_type) {
+case value_variant_type::Type::Type0:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
+}
+case value_variant_type::Type::Type1:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
+}
+case value_variant_type::Type::Type2:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
+}
+case value_variant_type::Type::Type3:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
+}
+case value_variant_type::Type::Type4:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
+}
+case value_variant_type::Type::Type5:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
+}
+case value_variant_type::Type::Type6:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
+}
+case value_variant_type::Type::Type7:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
+}
+case value_variant_type::Type::Type8:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
+}
+case value_variant_type::Type::Type9:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
+}
+case value_variant_type::Type::Type10:
+{
+return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }

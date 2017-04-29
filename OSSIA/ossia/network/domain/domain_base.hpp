@@ -87,6 +87,13 @@ struct OSSIA_EXPORT domain
 
   std::string to_pretty_string() const;
 
+
+  friend bool operator==(const ossia::domain& d, const ossia::domain& other)
+  { return d.v == other.v; }
+
+  friend bool operator!=(const ossia::domain& d, const ossia::domain& other)
+  { return d.v != other.v; }
+
   template<typename T>
   friend bool operator==(const ossia::domain& d, const T& other)
   { return d.v == other; }

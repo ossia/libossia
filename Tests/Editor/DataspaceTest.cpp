@@ -134,9 +134,13 @@ private Q_SLOTS:
     }
 
     {
+      QVERIFY(ossia::unit_t{ossia::color_u{}} != ossia::unit_t{ossia::centimeter_u{}});
+      QVERIFY(ossia::unit_t{ossia::color_u{}} != ossia::centimeter_u{});
+
       ossia::unit_t some_unit = ossia::color_u{};
-      QVERIFY(parse_unit("cm", some_unit) != ossia::centimeter_u{});
-      QVERIFY(parse_unit("cm", some_unit) == ossia::color_u{});
+      auto parsed_unit = parse_unit("cm", some_unit);
+      QVERIFY(parsed_unit != ossia::centimeter_u{});
+      QVERIFY(parsed_unit == ossia::color_u{});
     }
 
 #endif

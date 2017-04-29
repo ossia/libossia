@@ -96,15 +96,14 @@ struct OSSIA_EXPORT unit_t final
   auto which() const { return v.which(); }
   operator bool() const { return bool(v); }
 
-  template<typename T>
-  friend bool operator==(ossia::unit_t unit, T other)
+  friend bool operator==(const ossia::unit_t& unit, const ossia::unit_t& other)
   {
-    return true; //unit.v == other;
+    return unit.v == other.v;
   }
-  template<typename T>
-  friend bool operator!=(ossia::unit_t unit, T other)
+
+  friend bool operator!=(const ossia::unit_t& unit, const ossia::unit_t& other)
   {
-    return false; //unit.v != other;
+    return unit.v != other.v;
   }
 
 };
