@@ -78,16 +78,16 @@ struct OSSIA_EXPORT unit_t final
   unit_t(foot_per_hour_u): v{speed_u{foot_per_hour_u{}}} { }
   unit_t(foot_per_second_u): v{speed_u{foot_per_second_u{}}} { }
 
-  unit_t(time_u t): v{t} { }
-  unit_t(second_u): v{time_u{second_u{}}} { }
-  unit_t(bark_u): v{time_u{bark_u{}}} { }
-  unit_t(bpm_u): v{time_u{bpm_u{}}} { }
-  unit_t(cent_u): v{time_u{cent_u{}}} { }
-  unit_t(frequency_u): v{time_u{frequency_u{}}} { }
-  unit_t(mel_u): v{time_u{mel_u{}}} { }
-  unit_t(midi_pitch_u): v{time_u{midi_pitch_u{}}} { }
-  unit_t(millisecond_u): v{time_u{millisecond_u{}}} { }
-  unit_t(playback_speed_u): v{time_u{playback_speed_u{}}} { }
+  unit_t(timing_u t): v{t} { }
+  unit_t(second_u): v{timing_u{second_u{}}} { }
+  unit_t(bark_u): v{timing_u{bark_u{}}} { }
+  unit_t(bpm_u): v{timing_u{bpm_u{}}} { }
+  unit_t(cent_u): v{timing_u{cent_u{}}} { }
+  unit_t(frequency_u): v{timing_u{frequency_u{}}} { }
+  unit_t(mel_u): v{timing_u{mel_u{}}} { }
+  unit_t(midi_pitch_u): v{timing_u{midi_pitch_u{}}} { }
+  unit_t(millisecond_u): v{timing_u{millisecond_u{}}} { }
+  unit_t(playback_speed_u): v{timing_u{playback_speed_u{}}} { }
 
 
   template<typename T>
@@ -151,7 +151,7 @@ template<> struct hash<ossia::color_u>
 { std::size_t operator()(const ossia::color_u& k) const { return k.which(); } };
 template<> struct hash<ossia::gain_u>
 { std::size_t operator()(const ossia::gain_u& k) const { return k.which(); } };
-template<> struct hash<ossia::time_u>
-{ std::size_t operator()(const ossia::time_u& k) const { return k.which(); } };
+template<> struct hash<ossia::timing_u>
+{ std::size_t operator()(const ossia::timing_u& k) const { return k.which(); } };
 
 }

@@ -162,7 +162,7 @@ struct orientation_u;
 struct gain_u;
 struct position_u;
 struct speed_u;
-struct time_u;
+struct timing_u;
 
 struct angle;
 struct color;
@@ -171,7 +171,7 @@ struct orientation;
 struct gain;
 struct position;
 struct speed;
-struct time;
+struct timing;
 
 struct unit_t;
 struct value_with_unit;

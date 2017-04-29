@@ -45,7 +45,7 @@ struct convert_unit_visitor
   { return ossia::apply(*this, d1, d2); }
   OSSIA_INLINE ossia::value_with_unit operator()(const speed& d1, const speed_u& d2)
   { return ossia::apply(*this, d1, d2); }
-  OSSIA_INLINE ossia::value_with_unit operator()(const time& d1, const time_u& d2)
+  OSSIA_INLINE ossia::value_with_unit operator()(const timing& d1, const timing_u& d2)
   { return ossia::apply(*this, d1, d2); }
 
   template<typename... Args2>
@@ -74,7 +74,7 @@ struct convert_to_value_visitor
   { return ossia::apply(*this, d1); }
   OSSIA_INLINE ossia::value operator()(const speed& d1)
   { return ossia::apply(*this, d1); }
-  OSSIA_INLINE ossia::value operator()(const time& d1)
+  OSSIA_INLINE ossia::value operator()(const timing& d1)
   { return ossia::apply(*this, d1); }
 
   template<typename T>
@@ -111,7 +111,7 @@ struct convert_to_unit_visitor
   { return ossia::apply(*this, d1); }
   OSSIA_INLINE ossia::unit_t operator()(const speed& d1)
   { return ossia::apply(*this, d1); }
-  OSSIA_INLINE ossia::unit_t operator()(const time& d1)
+  OSSIA_INLINE ossia::unit_t operator()(const timing& d1)
   { return ossia::apply(*this, d1); }
 
   template<typename T>

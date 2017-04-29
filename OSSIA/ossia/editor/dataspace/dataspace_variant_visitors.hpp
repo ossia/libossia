@@ -2623,45 +2623,45 @@ default: throw;
 }
 }
 template<typename Functor>
-auto apply(Functor&& functor, const value_variant_type& arg0, const time_u& arg1)
+auto apply(Functor&& functor, const value_variant_type& arg0, const timing_u& arg1)
 {
 switch(arg0.m_type) {
 case value_variant_type::Type::Type0:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8);
 }
@@ -2671,39 +2671,39 @@ default: throw;
 case value_variant_type::Type::Type1:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
 }
@@ -2713,39 +2713,39 @@ default: throw;
 case value_variant_type::Type::Type2:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8);
 }
@@ -2755,39 +2755,39 @@ default: throw;
 case value_variant_type::Type::Type3:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
 }
@@ -2797,39 +2797,39 @@ default: throw;
 case value_variant_type::Type::Type4:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8);
 }
@@ -2839,39 +2839,39 @@ default: throw;
 case value_variant_type::Type::Type5:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
 }
@@ -2881,39 +2881,39 @@ default: throw;
 case value_variant_type::Type::Type6:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8);
 }
@@ -2923,39 +2923,39 @@ default: throw;
 case value_variant_type::Type::Type7:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
 }
@@ -2965,39 +2965,39 @@ default: throw;
 case value_variant_type::Type::Type8:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8);
 }
@@ -3007,39 +3007,39 @@ default: throw;
 case value_variant_type::Type::Type9:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value8);
 }
@@ -3049,39 +3049,39 @@ default: throw;
 case value_variant_type::Type::Type10:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8);
 }
@@ -4525,381 +4525,381 @@ default: throw;
 }
 }
 template<typename Functor>
-auto apply(Functor&& functor, const time& arg0, const time_u& arg1)
+auto apply(Functor&& functor, const timing& arg0, const timing_u& arg1)
 {
 switch(arg0.m_type) {
-case time::Type::Type0:
+case timing::Type::Type0:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8);
 }
 default: throw; 
 }
 }
-case time::Type::Type1:
+case timing::Type::Type1:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
 }
 default: throw; 
 }
 }
-case time::Type::Type2:
+case timing::Type::Type2:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8);
 }
 default: throw; 
 }
 }
-case time::Type::Type3:
+case timing::Type::Type3:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
 }
 default: throw; 
 }
 }
-case time::Type::Type4:
+case timing::Type::Type4:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8);
 }
 default: throw; 
 }
 }
-case time::Type::Type5:
+case timing::Type::Type5:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
 }
 default: throw; 
 }
 }
-case time::Type::Type6:
+case timing::Type::Type6:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8);
 }
 default: throw; 
 }
 }
-case time::Type::Type7:
+case timing::Type::Type7:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
 }
 default: throw; 
 }
 }
-case time::Type::Type8:
+case timing::Type::Type8:
 {
 switch(arg1.m_type) {
-case time_u::Type::Type0:
+case timing_u::Type::Type0:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value0);
 }
-case time_u::Type::Type1:
+case timing_u::Type::Type1:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value1);
 }
-case time_u::Type::Type2:
+case timing_u::Type::Type2:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value2);
 }
-case time_u::Type::Type3:
+case timing_u::Type::Type3:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value3);
 }
-case time_u::Type::Type4:
+case timing_u::Type::Type4:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value4);
 }
-case time_u::Type::Type5:
+case timing_u::Type::Type5:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value5);
 }
-case time_u::Type::Type6:
+case timing_u::Type::Type6:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value6);
 }
-case time_u::Type::Type7:
+case timing_u::Type::Type7:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value7);
 }
-case time_u::Type::Type8:
+case timing_u::Type::Type8:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8);
 }
@@ -6959,10 +6959,10 @@ default: throw;
 }
 }
 template<typename Functor>
-auto apply(Functor&& functor, const time& arg0, const value_variant_type& arg1)
+auto apply(Functor&& functor, const timing& arg0, const value_variant_type& arg1)
 {
 switch(arg0.m_type) {
-case time::Type::Type0:
+case timing::Type::Type0:
 {
 switch(arg1.m_type) {
 case value_variant_type::Type::Type0:
@@ -7012,7 +7012,7 @@ return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10);
 default: throw; 
 }
 }
-case time::Type::Type1:
+case timing::Type::Type1:
 {
 switch(arg1.m_type) {
 case value_variant_type::Type::Type0:
@@ -7062,7 +7062,7 @@ return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10);
 default: throw; 
 }
 }
-case time::Type::Type2:
+case timing::Type::Type2:
 {
 switch(arg1.m_type) {
 case value_variant_type::Type::Type0:
@@ -7112,7 +7112,7 @@ return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10);
 default: throw; 
 }
 }
-case time::Type::Type3:
+case timing::Type::Type3:
 {
 switch(arg1.m_type) {
 case value_variant_type::Type::Type0:
@@ -7162,7 +7162,7 @@ return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10);
 default: throw; 
 }
 }
-case time::Type::Type4:
+case timing::Type::Type4:
 {
 switch(arg1.m_type) {
 case value_variant_type::Type::Type0:
@@ -7212,7 +7212,7 @@ return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10);
 default: throw; 
 }
 }
-case time::Type::Type5:
+case timing::Type::Type5:
 {
 switch(arg1.m_type) {
 case value_variant_type::Type::Type0:
@@ -7262,7 +7262,7 @@ return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10);
 default: throw; 
 }
 }
-case time::Type::Type6:
+case timing::Type::Type6:
 {
 switch(arg1.m_type) {
 case value_variant_type::Type::Type0:
@@ -7312,7 +7312,7 @@ return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10);
 default: throw; 
 }
 }
-case time::Type::Type7:
+case timing::Type::Type7:
 {
 switch(arg1.m_type) {
 case value_variant_type::Type::Type0:
@@ -7362,7 +7362,7 @@ return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10);
 default: throw; 
 }
 }
-case time::Type::Type8:
+case timing::Type::Type8:
 {
 switch(arg1.m_type) {
 case value_variant_type::Type::Type0:

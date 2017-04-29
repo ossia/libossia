@@ -3445,7 +3445,7 @@ inline bool operator!=(const speed& lhs, const ossia::foot_per_hour& rhs){
 inline bool operator!=(const ossia::foot_per_hour& lhs, const speed& rhs){ 
   return (rhs.m_type != speed::Type::Type5) || (rhs.m_impl.m_value5 != lhs); 
 }
-struct time
+struct timing
 {
 public:
 struct dummy_t {};
@@ -3501,36 +3501,36 @@ T& get();
 
 template<typename T>
 static Type matching_type();
-time(): m_type{Npos} { }
-~time() { destruct_impl(); }
- time(ossia::second v): m_type{Type0} { 
+timing(): m_type{Npos} { }
+~timing() { destruct_impl(); }
+ timing(ossia::second v): m_type{Type0} { 
   new(&m_impl.m_value0) ossia::second{v};
 }
- time(ossia::bark v): m_type{Type1} { 
+ timing(ossia::bark v): m_type{Type1} { 
   new(&m_impl.m_value1) ossia::bark{v};
 }
- time(ossia::bpm v): m_type{Type2} { 
+ timing(ossia::bpm v): m_type{Type2} { 
   new(&m_impl.m_value2) ossia::bpm{v};
 }
- time(ossia::cent v): m_type{Type3} { 
+ timing(ossia::cent v): m_type{Type3} { 
   new(&m_impl.m_value3) ossia::cent{v};
 }
- time(ossia::frequency v): m_type{Type4} { 
+ timing(ossia::frequency v): m_type{Type4} { 
   new(&m_impl.m_value4) ossia::frequency{v};
 }
- time(ossia::mel v): m_type{Type5} { 
+ timing(ossia::mel v): m_type{Type5} { 
   new(&m_impl.m_value5) ossia::mel{v};
 }
- time(ossia::midi_pitch v): m_type{Type6} { 
+ timing(ossia::midi_pitch v): m_type{Type6} { 
   new(&m_impl.m_value6) ossia::midi_pitch{v};
 }
- time(ossia::millisecond v): m_type{Type7} { 
+ timing(ossia::millisecond v): m_type{Type7} { 
   new(&m_impl.m_value7) ossia::millisecond{v};
 }
- time(ossia::playback_speed v): m_type{Type8} { 
+ timing(ossia::playback_speed v): m_type{Type8} { 
   new(&m_impl.m_value8) ossia::playback_speed{v};
 }
-time(const time& other):
+timing(const timing& other):
  m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
@@ -3563,7 +3563,7 @@ time(const time& other):
     default: break;
   }
 }
-time(time&& other):
+timing(timing&& other):
 m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
@@ -3596,7 +3596,7 @@ m_type{other.m_type} {
     default: break;
   }
 }
-time& operator=(const time& other){ 
+timing& operator=(const timing& other){ 
   destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
@@ -3631,7 +3631,7 @@ time& operator=(const time& other){
   }
   return *this;
 }
-time& operator=(time&& other)
+timing& operator=(timing&& other)
 { 
   destruct_impl(); 
   m_type = other.m_type;
@@ -3668,488 +3668,488 @@ time& operator=(time&& other)
   return *this;
 }
 };
-template<> inline const ossia::second* time::target() const { 
+template<> inline const ossia::second* timing::target() const { 
   if(m_type == Type0) 
     return &m_impl.m_value0 ;
   return nullptr; 
 }
-template<> inline const ossia::bark* time::target() const { 
+template<> inline const ossia::bark* timing::target() const { 
   if(m_type == Type1) 
     return &m_impl.m_value1 ;
   return nullptr; 
 }
-template<> inline const ossia::bpm* time::target() const { 
+template<> inline const ossia::bpm* timing::target() const { 
   if(m_type == Type2) 
     return &m_impl.m_value2 ;
   return nullptr; 
 }
-template<> inline const ossia::cent* time::target() const { 
+template<> inline const ossia::cent* timing::target() const { 
   if(m_type == Type3) 
     return &m_impl.m_value3 ;
   return nullptr; 
 }
-template<> inline const ossia::frequency* time::target() const { 
+template<> inline const ossia::frequency* timing::target() const { 
   if(m_type == Type4) 
     return &m_impl.m_value4 ;
   return nullptr; 
 }
-template<> inline const ossia::mel* time::target() const { 
+template<> inline const ossia::mel* timing::target() const { 
   if(m_type == Type5) 
     return &m_impl.m_value5 ;
   return nullptr; 
 }
-template<> inline const ossia::midi_pitch* time::target() const { 
+template<> inline const ossia::midi_pitch* timing::target() const { 
   if(m_type == Type6) 
     return &m_impl.m_value6 ;
   return nullptr; 
 }
-template<> inline const ossia::millisecond* time::target() const { 
+template<> inline const ossia::millisecond* timing::target() const { 
   if(m_type == Type7) 
     return &m_impl.m_value7 ;
   return nullptr; 
 }
-template<> inline const ossia::playback_speed* time::target() const { 
+template<> inline const ossia::playback_speed* timing::target() const { 
   if(m_type == Type8) 
     return &m_impl.m_value8 ;
   return nullptr; 
 }
-template<> inline ossia::second* time::target() { 
+template<> inline ossia::second* timing::target() { 
   if(m_type == Type0) 
     return &m_impl.m_value0 ;
   return nullptr; 
 }
-template<> inline ossia::bark* time::target() { 
+template<> inline ossia::bark* timing::target() { 
   if(m_type == Type1) 
     return &m_impl.m_value1 ;
   return nullptr; 
 }
-template<> inline ossia::bpm* time::target() { 
+template<> inline ossia::bpm* timing::target() { 
   if(m_type == Type2) 
     return &m_impl.m_value2 ;
   return nullptr; 
 }
-template<> inline ossia::cent* time::target() { 
+template<> inline ossia::cent* timing::target() { 
   if(m_type == Type3) 
     return &m_impl.m_value3 ;
   return nullptr; 
 }
-template<> inline ossia::frequency* time::target() { 
+template<> inline ossia::frequency* timing::target() { 
   if(m_type == Type4) 
     return &m_impl.m_value4 ;
   return nullptr; 
 }
-template<> inline ossia::mel* time::target() { 
+template<> inline ossia::mel* timing::target() { 
   if(m_type == Type5) 
     return &m_impl.m_value5 ;
   return nullptr; 
 }
-template<> inline ossia::midi_pitch* time::target() { 
+template<> inline ossia::midi_pitch* timing::target() { 
   if(m_type == Type6) 
     return &m_impl.m_value6 ;
   return nullptr; 
 }
-template<> inline ossia::millisecond* time::target() { 
+template<> inline ossia::millisecond* timing::target() { 
   if(m_type == Type7) 
     return &m_impl.m_value7 ;
   return nullptr; 
 }
-template<> inline ossia::playback_speed* time::target() { 
+template<> inline ossia::playback_speed* timing::target() { 
   if(m_type == Type8) 
     return &m_impl.m_value8 ;
   return nullptr; 
 }
-template<> inline const ossia::second& time::get() const { 
+template<> inline const ossia::second& timing::get() const { 
   if(m_type == Type0) 
     return m_impl.m_value0 ;
   throw; 
 }
-template<> inline const ossia::bark& time::get() const { 
+template<> inline const ossia::bark& timing::get() const { 
   if(m_type == Type1) 
     return m_impl.m_value1 ;
   throw; 
 }
-template<> inline const ossia::bpm& time::get() const { 
+template<> inline const ossia::bpm& timing::get() const { 
   if(m_type == Type2) 
     return m_impl.m_value2 ;
   throw; 
 }
-template<> inline const ossia::cent& time::get() const { 
+template<> inline const ossia::cent& timing::get() const { 
   if(m_type == Type3) 
     return m_impl.m_value3 ;
   throw; 
 }
-template<> inline const ossia::frequency& time::get() const { 
+template<> inline const ossia::frequency& timing::get() const { 
   if(m_type == Type4) 
     return m_impl.m_value4 ;
   throw; 
 }
-template<> inline const ossia::mel& time::get() const { 
+template<> inline const ossia::mel& timing::get() const { 
   if(m_type == Type5) 
     return m_impl.m_value5 ;
   throw; 
 }
-template<> inline const ossia::midi_pitch& time::get() const { 
+template<> inline const ossia::midi_pitch& timing::get() const { 
   if(m_type == Type6) 
     return m_impl.m_value6 ;
   throw; 
 }
-template<> inline const ossia::millisecond& time::get() const { 
+template<> inline const ossia::millisecond& timing::get() const { 
   if(m_type == Type7) 
     return m_impl.m_value7 ;
   throw; 
 }
-template<> inline const ossia::playback_speed& time::get() const { 
+template<> inline const ossia::playback_speed& timing::get() const { 
   if(m_type == Type8) 
     return m_impl.m_value8 ;
   throw; 
 }
-template<> inline ossia::second& time::get() { 
+template<> inline ossia::second& timing::get() { 
   if(m_type == Type0) 
     return m_impl.m_value0 ;
   throw; 
 }
-template<> inline ossia::bark& time::get() { 
+template<> inline ossia::bark& timing::get() { 
   if(m_type == Type1) 
     return m_impl.m_value1 ;
   throw; 
 }
-template<> inline ossia::bpm& time::get() { 
+template<> inline ossia::bpm& timing::get() { 
   if(m_type == Type2) 
     return m_impl.m_value2 ;
   throw; 
 }
-template<> inline ossia::cent& time::get() { 
+template<> inline ossia::cent& timing::get() { 
   if(m_type == Type3) 
     return m_impl.m_value3 ;
   throw; 
 }
-template<> inline ossia::frequency& time::get() { 
+template<> inline ossia::frequency& timing::get() { 
   if(m_type == Type4) 
     return m_impl.m_value4 ;
   throw; 
 }
-template<> inline ossia::mel& time::get() { 
+template<> inline ossia::mel& timing::get() { 
   if(m_type == Type5) 
     return m_impl.m_value5 ;
   throw; 
 }
-template<> inline ossia::midi_pitch& time::get() { 
+template<> inline ossia::midi_pitch& timing::get() { 
   if(m_type == Type6) 
     return m_impl.m_value6 ;
   throw; 
 }
-template<> inline ossia::millisecond& time::get() { 
+template<> inline ossia::millisecond& timing::get() { 
   if(m_type == Type7) 
     return m_impl.m_value7 ;
   throw; 
 }
-template<> inline ossia::playback_speed& time::get() { 
+template<> inline ossia::playback_speed& timing::get() { 
   if(m_type == Type8) 
     return m_impl.m_value8 ;
   throw; 
 }
 template<typename Visitor>
-auto apply_nonnull(Visitor&& functor, const time& var) {
+auto apply_nonnull(Visitor&& functor, const timing& var) {
   switch (var.m_type) { 
-  case time::Type::Type0:
+  case timing::Type::Type0:
     return functor(var.m_impl.m_value0);
-  case time::Type::Type1:
+  case timing::Type::Type1:
     return functor(var.m_impl.m_value1);
-  case time::Type::Type2:
+  case timing::Type::Type2:
     return functor(var.m_impl.m_value2);
-  case time::Type::Type3:
+  case timing::Type::Type3:
     return functor(var.m_impl.m_value3);
-  case time::Type::Type4:
+  case timing::Type::Type4:
     return functor(var.m_impl.m_value4);
-  case time::Type::Type5:
+  case timing::Type::Type5:
     return functor(var.m_impl.m_value5);
-  case time::Type::Type6:
+  case timing::Type::Type6:
     return functor(var.m_impl.m_value6);
-  case time::Type::Type7:
+  case timing::Type::Type7:
     return functor(var.m_impl.m_value7);
-  case time::Type::Type8:
+  case timing::Type::Type8:
     return functor(var.m_impl.m_value8);
   default: throw;
   }
 }
 template<typename Visitor>
-auto apply_nonnull(Visitor&& functor,  time& var) {
+auto apply_nonnull(Visitor&& functor,  timing& var) {
   switch (var.m_type) { 
-  case time::Type::Type0:
+  case timing::Type::Type0:
     return functor(var.m_impl.m_value0);
-  case time::Type::Type1:
+  case timing::Type::Type1:
     return functor(var.m_impl.m_value1);
-  case time::Type::Type2:
+  case timing::Type::Type2:
     return functor(var.m_impl.m_value2);
-  case time::Type::Type3:
+  case timing::Type::Type3:
     return functor(var.m_impl.m_value3);
-  case time::Type::Type4:
+  case timing::Type::Type4:
     return functor(var.m_impl.m_value4);
-  case time::Type::Type5:
+  case timing::Type::Type5:
     return functor(var.m_impl.m_value5);
-  case time::Type::Type6:
+  case timing::Type::Type6:
     return functor(var.m_impl.m_value6);
-  case time::Type::Type7:
+  case timing::Type::Type7:
     return functor(var.m_impl.m_value7);
-  case time::Type::Type8:
+  case timing::Type::Type8:
     return functor(var.m_impl.m_value8);
   default: throw;
   }
 }
 template<typename Visitor>
-auto apply_nonnull(Visitor&& functor,  time&& var) {
+auto apply_nonnull(Visitor&& functor,  timing&& var) {
   switch (var.m_type) { 
-  case time::Type::Type0:
+  case timing::Type::Type0:
     return functor(std::move(var.m_impl.m_value0));
-  case time::Type::Type1:
+  case timing::Type::Type1:
     return functor(std::move(var.m_impl.m_value1));
-  case time::Type::Type2:
+  case timing::Type::Type2:
     return functor(std::move(var.m_impl.m_value2));
-  case time::Type::Type3:
+  case timing::Type::Type3:
     return functor(std::move(var.m_impl.m_value3));
-  case time::Type::Type4:
+  case timing::Type::Type4:
     return functor(std::move(var.m_impl.m_value4));
-  case time::Type::Type5:
+  case timing::Type::Type5:
     return functor(std::move(var.m_impl.m_value5));
-  case time::Type::Type6:
+  case timing::Type::Type6:
     return functor(std::move(var.m_impl.m_value6));
-  case time::Type::Type7:
+  case timing::Type::Type7:
     return functor(std::move(var.m_impl.m_value7));
-  case time::Type::Type8:
+  case timing::Type::Type8:
     return functor(std::move(var.m_impl.m_value8));
   default: throw;
   }
 }
 template<typename Visitor>
-auto apply(Visitor&& functor, const time& var) {
+auto apply(Visitor&& functor, const timing& var) {
   switch (var.m_type) { 
-  case time::Type::Type0:
+  case timing::Type::Type0:
     return functor(var.m_impl.m_value0);
-  case time::Type::Type1:
+  case timing::Type::Type1:
     return functor(var.m_impl.m_value1);
-  case time::Type::Type2:
+  case timing::Type::Type2:
     return functor(var.m_impl.m_value2);
-  case time::Type::Type3:
+  case timing::Type::Type3:
     return functor(var.m_impl.m_value3);
-  case time::Type::Type4:
+  case timing::Type::Type4:
     return functor(var.m_impl.m_value4);
-  case time::Type::Type5:
+  case timing::Type::Type5:
     return functor(var.m_impl.m_value5);
-  case time::Type::Type6:
+  case timing::Type::Type6:
     return functor(var.m_impl.m_value6);
-  case time::Type::Type7:
+  case timing::Type::Type7:
     return functor(var.m_impl.m_value7);
-  case time::Type::Type8:
+  case timing::Type::Type8:
     return functor(var.m_impl.m_value8);
   default: return functor();
   }
 }
 template<typename Visitor>
-auto apply(Visitor&& functor,  time& var) {
+auto apply(Visitor&& functor,  timing& var) {
   switch (var.m_type) { 
-  case time::Type::Type0:
+  case timing::Type::Type0:
     return functor(var.m_impl.m_value0);
-  case time::Type::Type1:
+  case timing::Type::Type1:
     return functor(var.m_impl.m_value1);
-  case time::Type::Type2:
+  case timing::Type::Type2:
     return functor(var.m_impl.m_value2);
-  case time::Type::Type3:
+  case timing::Type::Type3:
     return functor(var.m_impl.m_value3);
-  case time::Type::Type4:
+  case timing::Type::Type4:
     return functor(var.m_impl.m_value4);
-  case time::Type::Type5:
+  case timing::Type::Type5:
     return functor(var.m_impl.m_value5);
-  case time::Type::Type6:
+  case timing::Type::Type6:
     return functor(var.m_impl.m_value6);
-  case time::Type::Type7:
+  case timing::Type::Type7:
     return functor(var.m_impl.m_value7);
-  case time::Type::Type8:
+  case timing::Type::Type8:
     return functor(var.m_impl.m_value8);
   default: return functor();
   }
 }
 template<typename Visitor>
-auto apply(Visitor&& functor,  time&& var) {
+auto apply(Visitor&& functor,  timing&& var) {
   switch (var.m_type) { 
-  case time::Type::Type0:
+  case timing::Type::Type0:
     return functor(std::move(var.m_impl.m_value0));
-  case time::Type::Type1:
+  case timing::Type::Type1:
     return functor(std::move(var.m_impl.m_value1));
-  case time::Type::Type2:
+  case timing::Type::Type2:
     return functor(std::move(var.m_impl.m_value2));
-  case time::Type::Type3:
+  case timing::Type::Type3:
     return functor(std::move(var.m_impl.m_value3));
-  case time::Type::Type4:
+  case timing::Type::Type4:
     return functor(std::move(var.m_impl.m_value4));
-  case time::Type::Type5:
+  case timing::Type::Type5:
     return functor(std::move(var.m_impl.m_value5));
-  case time::Type::Type6:
+  case timing::Type::Type6:
     return functor(std::move(var.m_impl.m_value6));
-  case time::Type::Type7:
+  case timing::Type::Type7:
     return functor(std::move(var.m_impl.m_value7));
-  case time::Type::Type8:
+  case timing::Type::Type8:
     return functor(std::move(var.m_impl.m_value8));
   default: return functor();
   }
 }
-inline bool operator==(const time& lhs, const time& rhs){ 
+inline bool operator==(const timing& lhs, const timing& rhs){ 
   if(lhs.m_type == rhs.m_type) { 
     switch(lhs.m_type) { 
-    case time::Type::Type0:
+    case timing::Type::Type0:
       return lhs.m_impl.m_value0==rhs.m_impl.m_value0;
-    case time::Type::Type1:
+    case timing::Type::Type1:
       return lhs.m_impl.m_value1==rhs.m_impl.m_value1;
-    case time::Type::Type2:
+    case timing::Type::Type2:
       return lhs.m_impl.m_value2==rhs.m_impl.m_value2;
-    case time::Type::Type3:
+    case timing::Type::Type3:
       return lhs.m_impl.m_value3==rhs.m_impl.m_value3;
-    case time::Type::Type4:
+    case timing::Type::Type4:
       return lhs.m_impl.m_value4==rhs.m_impl.m_value4;
-    case time::Type::Type5:
+    case timing::Type::Type5:
       return lhs.m_impl.m_value5==rhs.m_impl.m_value5;
-    case time::Type::Type6:
+    case timing::Type::Type6:
       return lhs.m_impl.m_value6==rhs.m_impl.m_value6;
-    case time::Type::Type7:
+    case timing::Type::Type7:
       return lhs.m_impl.m_value7==rhs.m_impl.m_value7;
-    case time::Type::Type8:
+    case timing::Type::Type8:
       return lhs.m_impl.m_value8==rhs.m_impl.m_value8;
       default: return true;
     }
   }
   return false; 
 }
-inline bool operator!=(const time& lhs, const time& rhs){ 
+inline bool operator!=(const timing& lhs, const timing& rhs){ 
   if(lhs.m_type != rhs.m_type) return true; 
   switch(lhs.m_type) { 
-    case time::Type::Type0:
+    case timing::Type::Type0:
       return lhs.m_impl.m_value0!=rhs.m_impl.m_value0;
-    case time::Type::Type1:
+    case timing::Type::Type1:
       return lhs.m_impl.m_value1!=rhs.m_impl.m_value1;
-    case time::Type::Type2:
+    case timing::Type::Type2:
       return lhs.m_impl.m_value2!=rhs.m_impl.m_value2;
-    case time::Type::Type3:
+    case timing::Type::Type3:
       return lhs.m_impl.m_value3!=rhs.m_impl.m_value3;
-    case time::Type::Type4:
+    case timing::Type::Type4:
       return lhs.m_impl.m_value4!=rhs.m_impl.m_value4;
-    case time::Type::Type5:
+    case timing::Type::Type5:
       return lhs.m_impl.m_value5!=rhs.m_impl.m_value5;
-    case time::Type::Type6:
+    case timing::Type::Type6:
       return lhs.m_impl.m_value6!=rhs.m_impl.m_value6;
-    case time::Type::Type7:
+    case timing::Type::Type7:
       return lhs.m_impl.m_value7!=rhs.m_impl.m_value7;
-    case time::Type::Type8:
+    case timing::Type::Type8:
       return lhs.m_impl.m_value8!=rhs.m_impl.m_value8;
     default: return false;
   }
   return true; 
 }
-inline bool operator==(const time& lhs, const ossia::second& rhs){ 
-  return (lhs.m_type == time::Type::Type0) && (lhs.m_impl.m_value0 == rhs); 
+inline bool operator==(const timing& lhs, const ossia::second& rhs){ 
+  return (lhs.m_type == timing::Type::Type0) && (lhs.m_impl.m_value0 == rhs); 
 }
-inline bool operator==(const ossia::second& lhs, const time& rhs){ 
-  return (rhs.m_type == time::Type::Type0) && (rhs.m_impl.m_value0 == lhs); 
+inline bool operator==(const ossia::second& lhs, const timing& rhs){ 
+  return (rhs.m_type == timing::Type::Type0) && (rhs.m_impl.m_value0 == lhs); 
 }
-inline bool operator!=(const time& lhs, const ossia::second& rhs){ 
-  return (lhs.m_type != time::Type::Type0) || (lhs.m_impl.m_value0 != rhs); 
+inline bool operator!=(const timing& lhs, const ossia::second& rhs){ 
+  return (lhs.m_type != timing::Type::Type0) || (lhs.m_impl.m_value0 != rhs); 
 }
-inline bool operator!=(const ossia::second& lhs, const time& rhs){ 
-  return (rhs.m_type != time::Type::Type0) || (rhs.m_impl.m_value0 != lhs); 
+inline bool operator!=(const ossia::second& lhs, const timing& rhs){ 
+  return (rhs.m_type != timing::Type::Type0) || (rhs.m_impl.m_value0 != lhs); 
 }
-inline bool operator==(const time& lhs, const ossia::bark& rhs){ 
-  return (lhs.m_type == time::Type::Type1) && (lhs.m_impl.m_value1 == rhs); 
+inline bool operator==(const timing& lhs, const ossia::bark& rhs){ 
+  return (lhs.m_type == timing::Type::Type1) && (lhs.m_impl.m_value1 == rhs); 
 }
-inline bool operator==(const ossia::bark& lhs, const time& rhs){ 
-  return (rhs.m_type == time::Type::Type1) && (rhs.m_impl.m_value1 == lhs); 
+inline bool operator==(const ossia::bark& lhs, const timing& rhs){ 
+  return (rhs.m_type == timing::Type::Type1) && (rhs.m_impl.m_value1 == lhs); 
 }
-inline bool operator!=(const time& lhs, const ossia::bark& rhs){ 
-  return (lhs.m_type != time::Type::Type1) || (lhs.m_impl.m_value1 != rhs); 
+inline bool operator!=(const timing& lhs, const ossia::bark& rhs){ 
+  return (lhs.m_type != timing::Type::Type1) || (lhs.m_impl.m_value1 != rhs); 
 }
-inline bool operator!=(const ossia::bark& lhs, const time& rhs){ 
-  return (rhs.m_type != time::Type::Type1) || (rhs.m_impl.m_value1 != lhs); 
+inline bool operator!=(const ossia::bark& lhs, const timing& rhs){ 
+  return (rhs.m_type != timing::Type::Type1) || (rhs.m_impl.m_value1 != lhs); 
 }
-inline bool operator==(const time& lhs, const ossia::bpm& rhs){ 
-  return (lhs.m_type == time::Type::Type2) && (lhs.m_impl.m_value2 == rhs); 
+inline bool operator==(const timing& lhs, const ossia::bpm& rhs){ 
+  return (lhs.m_type == timing::Type::Type2) && (lhs.m_impl.m_value2 == rhs); 
 }
-inline bool operator==(const ossia::bpm& lhs, const time& rhs){ 
-  return (rhs.m_type == time::Type::Type2) && (rhs.m_impl.m_value2 == lhs); 
+inline bool operator==(const ossia::bpm& lhs, const timing& rhs){ 
+  return (rhs.m_type == timing::Type::Type2) && (rhs.m_impl.m_value2 == lhs); 
 }
-inline bool operator!=(const time& lhs, const ossia::bpm& rhs){ 
-  return (lhs.m_type != time::Type::Type2) || (lhs.m_impl.m_value2 != rhs); 
+inline bool operator!=(const timing& lhs, const ossia::bpm& rhs){ 
+  return (lhs.m_type != timing::Type::Type2) || (lhs.m_impl.m_value2 != rhs); 
 }
-inline bool operator!=(const ossia::bpm& lhs, const time& rhs){ 
-  return (rhs.m_type != time::Type::Type2) || (rhs.m_impl.m_value2 != lhs); 
+inline bool operator!=(const ossia::bpm& lhs, const timing& rhs){ 
+  return (rhs.m_type != timing::Type::Type2) || (rhs.m_impl.m_value2 != lhs); 
 }
-inline bool operator==(const time& lhs, const ossia::cent& rhs){ 
-  return (lhs.m_type == time::Type::Type3) && (lhs.m_impl.m_value3 == rhs); 
+inline bool operator==(const timing& lhs, const ossia::cent& rhs){ 
+  return (lhs.m_type == timing::Type::Type3) && (lhs.m_impl.m_value3 == rhs); 
 }
-inline bool operator==(const ossia::cent& lhs, const time& rhs){ 
-  return (rhs.m_type == time::Type::Type3) && (rhs.m_impl.m_value3 == lhs); 
+inline bool operator==(const ossia::cent& lhs, const timing& rhs){ 
+  return (rhs.m_type == timing::Type::Type3) && (rhs.m_impl.m_value3 == lhs); 
 }
-inline bool operator!=(const time& lhs, const ossia::cent& rhs){ 
-  return (lhs.m_type != time::Type::Type3) || (lhs.m_impl.m_value3 != rhs); 
+inline bool operator!=(const timing& lhs, const ossia::cent& rhs){ 
+  return (lhs.m_type != timing::Type::Type3) || (lhs.m_impl.m_value3 != rhs); 
 }
-inline bool operator!=(const ossia::cent& lhs, const time& rhs){ 
-  return (rhs.m_type != time::Type::Type3) || (rhs.m_impl.m_value3 != lhs); 
+inline bool operator!=(const ossia::cent& lhs, const timing& rhs){ 
+  return (rhs.m_type != timing::Type::Type3) || (rhs.m_impl.m_value3 != lhs); 
 }
-inline bool operator==(const time& lhs, const ossia::frequency& rhs){ 
-  return (lhs.m_type == time::Type::Type4) && (lhs.m_impl.m_value4 == rhs); 
+inline bool operator==(const timing& lhs, const ossia::frequency& rhs){ 
+  return (lhs.m_type == timing::Type::Type4) && (lhs.m_impl.m_value4 == rhs); 
 }
-inline bool operator==(const ossia::frequency& lhs, const time& rhs){ 
-  return (rhs.m_type == time::Type::Type4) && (rhs.m_impl.m_value4 == lhs); 
+inline bool operator==(const ossia::frequency& lhs, const timing& rhs){ 
+  return (rhs.m_type == timing::Type::Type4) && (rhs.m_impl.m_value4 == lhs); 
 }
-inline bool operator!=(const time& lhs, const ossia::frequency& rhs){ 
-  return (lhs.m_type != time::Type::Type4) || (lhs.m_impl.m_value4 != rhs); 
+inline bool operator!=(const timing& lhs, const ossia::frequency& rhs){ 
+  return (lhs.m_type != timing::Type::Type4) || (lhs.m_impl.m_value4 != rhs); 
 }
-inline bool operator!=(const ossia::frequency& lhs, const time& rhs){ 
-  return (rhs.m_type != time::Type::Type4) || (rhs.m_impl.m_value4 != lhs); 
+inline bool operator!=(const ossia::frequency& lhs, const timing& rhs){ 
+  return (rhs.m_type != timing::Type::Type4) || (rhs.m_impl.m_value4 != lhs); 
 }
-inline bool operator==(const time& lhs, const ossia::mel& rhs){ 
-  return (lhs.m_type == time::Type::Type5) && (lhs.m_impl.m_value5 == rhs); 
+inline bool operator==(const timing& lhs, const ossia::mel& rhs){ 
+  return (lhs.m_type == timing::Type::Type5) && (lhs.m_impl.m_value5 == rhs); 
 }
-inline bool operator==(const ossia::mel& lhs, const time& rhs){ 
-  return (rhs.m_type == time::Type::Type5) && (rhs.m_impl.m_value5 == lhs); 
+inline bool operator==(const ossia::mel& lhs, const timing& rhs){ 
+  return (rhs.m_type == timing::Type::Type5) && (rhs.m_impl.m_value5 == lhs); 
 }
-inline bool operator!=(const time& lhs, const ossia::mel& rhs){ 
-  return (lhs.m_type != time::Type::Type5) || (lhs.m_impl.m_value5 != rhs); 
+inline bool operator!=(const timing& lhs, const ossia::mel& rhs){ 
+  return (lhs.m_type != timing::Type::Type5) || (lhs.m_impl.m_value5 != rhs); 
 }
-inline bool operator!=(const ossia::mel& lhs, const time& rhs){ 
-  return (rhs.m_type != time::Type::Type5) || (rhs.m_impl.m_value5 != lhs); 
+inline bool operator!=(const ossia::mel& lhs, const timing& rhs){ 
+  return (rhs.m_type != timing::Type::Type5) || (rhs.m_impl.m_value5 != lhs); 
 }
-inline bool operator==(const time& lhs, const ossia::midi_pitch& rhs){ 
-  return (lhs.m_type == time::Type::Type6) && (lhs.m_impl.m_value6 == rhs); 
+inline bool operator==(const timing& lhs, const ossia::midi_pitch& rhs){ 
+  return (lhs.m_type == timing::Type::Type6) && (lhs.m_impl.m_value6 == rhs); 
 }
-inline bool operator==(const ossia::midi_pitch& lhs, const time& rhs){ 
-  return (rhs.m_type == time::Type::Type6) && (rhs.m_impl.m_value6 == lhs); 
+inline bool operator==(const ossia::midi_pitch& lhs, const timing& rhs){ 
+  return (rhs.m_type == timing::Type::Type6) && (rhs.m_impl.m_value6 == lhs); 
 }
-inline bool operator!=(const time& lhs, const ossia::midi_pitch& rhs){ 
-  return (lhs.m_type != time::Type::Type6) || (lhs.m_impl.m_value6 != rhs); 
+inline bool operator!=(const timing& lhs, const ossia::midi_pitch& rhs){ 
+  return (lhs.m_type != timing::Type::Type6) || (lhs.m_impl.m_value6 != rhs); 
 }
-inline bool operator!=(const ossia::midi_pitch& lhs, const time& rhs){ 
-  return (rhs.m_type != time::Type::Type6) || (rhs.m_impl.m_value6 != lhs); 
+inline bool operator!=(const ossia::midi_pitch& lhs, const timing& rhs){ 
+  return (rhs.m_type != timing::Type::Type6) || (rhs.m_impl.m_value6 != lhs); 
 }
-inline bool operator==(const time& lhs, const ossia::millisecond& rhs){ 
-  return (lhs.m_type == time::Type::Type7) && (lhs.m_impl.m_value7 == rhs); 
+inline bool operator==(const timing& lhs, const ossia::millisecond& rhs){ 
+  return (lhs.m_type == timing::Type::Type7) && (lhs.m_impl.m_value7 == rhs); 
 }
-inline bool operator==(const ossia::millisecond& lhs, const time& rhs){ 
-  return (rhs.m_type == time::Type::Type7) && (rhs.m_impl.m_value7 == lhs); 
+inline bool operator==(const ossia::millisecond& lhs, const timing& rhs){ 
+  return (rhs.m_type == timing::Type::Type7) && (rhs.m_impl.m_value7 == lhs); 
 }
-inline bool operator!=(const time& lhs, const ossia::millisecond& rhs){ 
-  return (lhs.m_type != time::Type::Type7) || (lhs.m_impl.m_value7 != rhs); 
+inline bool operator!=(const timing& lhs, const ossia::millisecond& rhs){ 
+  return (lhs.m_type != timing::Type::Type7) || (lhs.m_impl.m_value7 != rhs); 
 }
-inline bool operator!=(const ossia::millisecond& lhs, const time& rhs){ 
-  return (rhs.m_type != time::Type::Type7) || (rhs.m_impl.m_value7 != lhs); 
+inline bool operator!=(const ossia::millisecond& lhs, const timing& rhs){ 
+  return (rhs.m_type != timing::Type::Type7) || (rhs.m_impl.m_value7 != lhs); 
 }
-inline bool operator==(const time& lhs, const ossia::playback_speed& rhs){ 
-  return (lhs.m_type == time::Type::Type8) && (lhs.m_impl.m_value8 == rhs); 
+inline bool operator==(const timing& lhs, const ossia::playback_speed& rhs){ 
+  return (lhs.m_type == timing::Type::Type8) && (lhs.m_impl.m_value8 == rhs); 
 }
-inline bool operator==(const ossia::playback_speed& lhs, const time& rhs){ 
-  return (rhs.m_type == time::Type::Type8) && (rhs.m_impl.m_value8 == lhs); 
+inline bool operator==(const ossia::playback_speed& lhs, const timing& rhs){ 
+  return (rhs.m_type == timing::Type::Type8) && (rhs.m_impl.m_value8 == lhs); 
 }
-inline bool operator!=(const time& lhs, const ossia::playback_speed& rhs){ 
-  return (lhs.m_type != time::Type::Type8) || (lhs.m_impl.m_value8 != rhs); 
+inline bool operator!=(const timing& lhs, const ossia::playback_speed& rhs){ 
+  return (lhs.m_type != timing::Type::Type8) || (lhs.m_impl.m_value8 != rhs); 
 }
-inline bool operator!=(const ossia::playback_speed& lhs, const time& rhs){ 
-  return (rhs.m_type != time::Type::Type8) || (rhs.m_impl.m_value8 != lhs); 
+inline bool operator!=(const ossia::playback_speed& lhs, const timing& rhs){ 
+  return (rhs.m_type != timing::Type::Type8) || (rhs.m_impl.m_value8 != lhs); 
 }
 struct strong_value_variant
 {
@@ -4172,7 +4172,7 @@ ossia::color m_value6;
 
 ossia::gain m_value7;
 
-ossia::time m_value8;
+ossia::timing m_value8;
 
 dummy_t m_dummy;
 Impl(): m_dummy{} { }
@@ -4239,8 +4239,8 @@ strong_value_variant(ossia::value&& v): m_type{Type0} {
  strong_value_variant(ossia::gain v): m_type{Type7} { 
   new(&m_impl.m_value7) ossia::gain{v};
 }
- strong_value_variant(ossia::time v): m_type{Type8} { 
-  new(&m_impl.m_value8) ossia::time{v};
+ strong_value_variant(ossia::timing v): m_type{Type8} { 
+  new(&m_impl.m_value8) ossia::timing{v};
 }
 strong_value_variant(const strong_value_variant& other):
  m_type{other.m_type} { 
@@ -4270,7 +4270,7 @@ strong_value_variant(const strong_value_variant& other):
     new(&m_impl.m_value7) ossia::gain{other.m_impl.m_value7};
     break;
   case Type::Type8:
-    new(&m_impl.m_value8) ossia::time{other.m_impl.m_value8};
+    new(&m_impl.m_value8) ossia::timing{other.m_impl.m_value8};
     break;
     default: break;
   }
@@ -4303,7 +4303,7 @@ m_type{other.m_type} {
     new(&m_impl.m_value7) ossia::gain{std::move(other.m_impl.m_value7)};
     break;
   case Type::Type8:
-    new(&m_impl.m_value8) ossia::time{std::move(other.m_impl.m_value8)};
+    new(&m_impl.m_value8) ossia::timing{std::move(other.m_impl.m_value8)};
     break;
     default: break;
   }
@@ -4337,7 +4337,7 @@ strong_value_variant& operator=(const strong_value_variant& other){
     new(&m_impl.m_value7) ossia::gain{other.m_impl.m_value7};
     break;
   case Type::Type8:
-    new(&m_impl.m_value8) ossia::time{other.m_impl.m_value8};
+    new(&m_impl.m_value8) ossia::timing{other.m_impl.m_value8};
     break;
     default: break;
   }
@@ -4373,7 +4373,7 @@ strong_value_variant& operator=(strong_value_variant&& other)
     new(&m_impl.m_value7) ossia::gain{std::move(other.m_impl.m_value7)};
     break;
   case Type::Type8:
-    new(&m_impl.m_value8) ossia::time{std::move(other.m_impl.m_value8)};
+    new(&m_impl.m_value8) ossia::timing{std::move(other.m_impl.m_value8)};
     break;
     default: break;
   }
@@ -4420,7 +4420,7 @@ template<> inline const ossia::gain* strong_value_variant::target() const {
     return &m_impl.m_value7 ;
   return nullptr; 
 }
-template<> inline const ossia::time* strong_value_variant::target() const { 
+template<> inline const ossia::timing* strong_value_variant::target() const { 
   if(m_type == Type8) 
     return &m_impl.m_value8 ;
   return nullptr; 
@@ -4465,7 +4465,7 @@ template<> inline ossia::gain* strong_value_variant::target() {
     return &m_impl.m_value7 ;
   return nullptr; 
 }
-template<> inline ossia::time* strong_value_variant::target() { 
+template<> inline ossia::timing* strong_value_variant::target() { 
   if(m_type == Type8) 
     return &m_impl.m_value8 ;
   return nullptr; 
@@ -4510,7 +4510,7 @@ template<> inline const ossia::gain& strong_value_variant::get() const {
     return m_impl.m_value7 ;
   throw; 
 }
-template<> inline const ossia::time& strong_value_variant::get() const { 
+template<> inline const ossia::timing& strong_value_variant::get() const { 
   if(m_type == Type8) 
     return m_impl.m_value8 ;
   throw; 
@@ -4555,7 +4555,7 @@ template<> inline ossia::gain& strong_value_variant::get() {
     return m_impl.m_value7 ;
   throw; 
 }
-template<> inline ossia::time& strong_value_variant::get() { 
+template<> inline ossia::timing& strong_value_variant::get() { 
   if(m_type == Type8) 
     return m_impl.m_value8 ;
   throw; 
@@ -4851,15 +4851,15 @@ inline bool operator!=(const strong_value_variant& lhs, const ossia::gain& rhs){
 inline bool operator!=(const ossia::gain& lhs, const strong_value_variant& rhs){ 
   return (rhs.m_type != strong_value_variant::Type::Type7) || (rhs.m_impl.m_value7 != lhs); 
 }
-inline bool operator==(const strong_value_variant& lhs, const ossia::time& rhs){ 
+inline bool operator==(const strong_value_variant& lhs, const ossia::timing& rhs){ 
   return (lhs.m_type == strong_value_variant::Type::Type8) && (lhs.m_impl.m_value8 == rhs); 
 }
-inline bool operator==(const ossia::time& lhs, const strong_value_variant& rhs){ 
+inline bool operator==(const ossia::timing& lhs, const strong_value_variant& rhs){ 
   return (rhs.m_type == strong_value_variant::Type::Type8) && (rhs.m_impl.m_value8 == lhs); 
 }
-inline bool operator!=(const strong_value_variant& lhs, const ossia::time& rhs){ 
+inline bool operator!=(const strong_value_variant& lhs, const ossia::timing& rhs){ 
   return (lhs.m_type != strong_value_variant::Type::Type8) || (lhs.m_impl.m_value8 != rhs); 
 }
-inline bool operator!=(const ossia::time& lhs, const strong_value_variant& rhs){ 
+inline bool operator!=(const ossia::timing& lhs, const strong_value_variant& rhs){ 
   return (rhs.m_type != strong_value_variant::Type::Type8) || (rhs.m_impl.m_value8 != lhs); 
 }

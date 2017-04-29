@@ -53,7 +53,7 @@ struct dataspace_traits<speed_u>
 };
 
 template<>
-struct dataspace_traits<time_u>
+struct dataspace_traits<timing_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("time"); }

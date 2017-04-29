@@ -71,6 +71,7 @@ auto pop_front(T& container)
 
 struct execution_mock
 {
+  execution_mock(int f, std::weak_ptr<node_mock> p): factor{f}, node{p} { }
   const int factor = 1;
   std::weak_ptr<node_mock> node;
   void operator()(const execution_state& )

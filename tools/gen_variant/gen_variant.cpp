@@ -106,7 +106,7 @@ UNIT_VARIANT_DEF(gain)
 UNIT_VARIANT_DEF(orientation)
 UNIT_VARIANT_DEF(position)
 UNIT_VARIANT_DEF(speed)
-UNIT_VARIANT_DEF(time)
+UNIT_VARIANT_DEF(timing)
 
 template<> struct var_member<ossia::domain_base<ossia::impulse>>
 {
@@ -1067,14 +1067,14 @@ int main()
     }
     {
       gen_var<second_u, bark_u, bpm_u, cent_u, frequency_u, mel_u, midi_pitch_u, millisecond_u, playback_speed_u>
-          u("time_u");
+          u("timing_u");
       u.write_class();
       u.write_typeonly_comparison_operators();
       f << u.str.str();
     }
 
     {
-      gen_var<distance_u, position_u, speed_u, orientation_u, angle_u, color_u, gain_u, time_u>
+      gen_var<distance_u, position_u, speed_u, orientation_u, angle_u, color_u, gain_u, timing_u>
           u("unit_variant");
       u.write_class();
       u.write_comparison_operators();
@@ -1133,7 +1133,7 @@ int main()
     }
     {
       gen_var<second, bark, bpm, cent, frequency, mel, midi_pitch, millisecond, playback_speed>
-          u("time");
+          u("timing");
       u.write_class();
       u.write_comparison_operators();
       f << u.str.str();
@@ -1142,7 +1142,7 @@ int main()
     // List of dataspaces
 
     {
-      gen_var<ossia::value, distance, position, speed, orientation, angle, color, gain, ossia::time>
+      gen_var<ossia::value, distance, position, speed, orientation, angle, color, gain, ossia::timing>
           u("strong_value_variant");
       u.write_class();
       u.write_comparison_operators();
@@ -1180,7 +1180,7 @@ int main()
                            class_info{"speed_u", 6, class_info::Cref}
                          });
     r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
-                           class_info{"time_u", 9, class_info::Cref}
+                           class_info{"timing_u", 9, class_info::Cref}
                          });
 
     // Strong value & unit
@@ -1205,8 +1205,8 @@ int main()
     r.write_apply_switch({ class_info{"speed", 6, class_info::Cref},
                            class_info{"speed_u", 6, class_info::Cref}
                          });
-    r.write_apply_switch({ class_info{"time", 9, class_info::Cref},
-                           class_info{"time_u", 9, class_info::Cref}
+    r.write_apply_switch({ class_info{"timing", 9, class_info::Cref},
+                           class_info{"timing_u", 9, class_info::Cref}
                          });
 
     // Strong value & value
@@ -1231,7 +1231,7 @@ int main()
     r.write_apply_switch({ class_info{"speed", 6, class_info::Cref},
                            class_info{"value_variant_type", 11, class_info::Cref}
                          });
-    r.write_apply_switch({ class_info{"time", 9, class_info::Cref},
+    r.write_apply_switch({ class_info{"timing", 9, class_info::Cref},
                            class_info{"value_variant_type", 11, class_info::Cref}
                          });
 

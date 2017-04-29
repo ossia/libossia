@@ -82,7 +82,7 @@ unit_t parse_dataspace(ossia::string_view text)
     {make_string_view("orientation"), orientation_u{}},
     {make_string_view("angle"), angle_u{}},
     {make_string_view("gain"), gain_u{}},
-    {make_string_view("time"), time_u{}},
+    {make_string_view("time"), timing_u{}},
   };
 
   auto it = dataspaces.find(text);
@@ -336,7 +336,7 @@ template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::speed_
 template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::orientation_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::angle_u);
 template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::gain_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::time_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::timing_u);
 
 
 }

@@ -40,13 +40,13 @@ using speed_u_list =
 brigand::list<
 meter_per_second_u, miles_per_hour_u, kilometer_per_hour_u, knot_u, foot_per_second_u, foot_per_hour_u>;
 
-using time_u_list =
+using timing_u_list =
 brigand::list<
 second_u, bark_u, bpm_u, cent_u, frequency_u, mel_u, midi_pitch_u, millisecond_u, playback_speed_u>;
 
 using dataspace_u_list =
 brigand::list<
-distance_u_list, position_u_list, speed_u_list, orientation_u_list, angle_u_list, color_u_list, gain_u_list, time_u_list>;
+distance_u_list, position_u_list, speed_u_list, orientation_u_list, angle_u_list, color_u_list, gain_u_list, timing_u_list>;
 
 
 template<> struct matching_unit_u_list<angle_u> { using type = angle_u_list; };
@@ -56,7 +56,7 @@ template<> struct matching_unit_u_list<position_u> { using type = position_u_lis
 template<> struct matching_unit_u_list<orientation_u> { using type = orientation_u_list; };
 template<> struct matching_unit_u_list<gain_u> { using type = gain_u_list; };
 template<> struct matching_unit_u_list<speed_u> { using type = speed_u_list; };
-template<> struct matching_unit_u_list<time_u> { using type = time_u_list; };
+template<> struct matching_unit_u_list<timing_u> { using type = timing_u_list; };
 
 template<> struct matching_unit_u_list<angle_u_list> { using type = angle_u; };
 template<> struct matching_unit_u_list<color_u_list> { using type = color_u; };
@@ -65,7 +65,7 @@ template<> struct matching_unit_u_list<position_u_list> { using type = position_
 template<> struct matching_unit_u_list<orientation_u_list> { using type = orientation_u; };
 template<> struct matching_unit_u_list<gain_u_list> { using type = gain_u; };
 template<> struct matching_unit_u_list<speed_u_list> { using type = speed_u; };
-template<> struct matching_unit_u_list<time_u_list> { using type = time_u; };
+template<> struct matching_unit_u_list<timing_u_list> { using type = timing_u; };
 
 
 
@@ -116,7 +116,7 @@ template<> struct matching_unit_list<position> { using type = position_list; };
 template<> struct matching_unit_list<orientation> { using type = orientation_list; };
 template<> struct matching_unit_list<gain> { using type = gain_list; };
 template<> struct matching_unit_list<speed> { using type = speed_list; };
-template<> struct matching_unit_list<time> { using type = time_list; };
+template<> struct matching_unit_list<timing> { using type = time_list; };
 
 template<> struct matching_unit_list<angle_list> { using type = angle; };
 template<> struct matching_unit_list<color_list> { using type = color; };
@@ -125,7 +125,7 @@ template<> struct matching_unit_list<position_list> { using type = position; };
 template<> struct matching_unit_list<orientation_list> { using type = orientation; };
 template<> struct matching_unit_list<gain_list> { using type = gain; };
 template<> struct matching_unit_list<speed_list> { using type = speed; };
-template<> struct matching_unit_list<time_list> { using type = time; };
+template<> struct matching_unit_list<time_list> { using type = timing; };
 
 
 template<>
@@ -177,7 +177,7 @@ struct dataspace_traits<speed_u_list>
 };
 
 template<>
-struct dataspace_traits<time_u_list>
+struct dataspace_traits<timing_u_list>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("time"); }
@@ -201,7 +201,7 @@ struct unit_text_visitor
   { return ossia::apply(*this, dataspace); }
   OSSIA_INLINE ossia::string_view operator()(const speed_u& dataspace)
   { return ossia::apply(*this, dataspace); }
-  OSSIA_INLINE ossia::string_view operator()(const time_u& dataspace)
+  OSSIA_INLINE ossia::string_view operator()(const timing_u& dataspace)
   { return ossia::apply(*this, dataspace); }
 
   template<typename Unit>
