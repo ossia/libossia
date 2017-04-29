@@ -326,7 +326,7 @@ struct gen_var
       meta_t t;
 
       str << t.type_str << " m_value" << i << ";\n";
-
+/*
       // Constructor
       if(t.is_trivial)
       {
@@ -353,7 +353,7 @@ struct gen_var
         str << "Impl& operator=(const " << t.type_str << "& v) { m_value" << i << " = v; return *this; }\n";
         str << "Impl& operator=(" << t.type_str << "&& v) { m_value" << i << " = std::move(v); return *this; }\n";
       }
-
+*/
       str << "\n";
       i++;
     });
@@ -390,11 +390,18 @@ struct gen_var
   void write_assign_switch(std::string orn_before, std::string orn_after)
   {
     // Write types
-    for(int i = 0; i < num_types; i++) {
+    int i = 0;
+    // Write types
+    brigand::for_each<var_impl>([&] (auto _) {
+      using meta_t = typename decltype(_)::type;
+      meta_t t;
+
       str << "  case Type::Type" << i << ":\n";
-      str << "    m_impl.m_value" << i << " = " << orn_before << "other.m_impl.m_value" << i << orn_after << ";\n";
+      str << "    new(&m_impl.m_value" << i << ") " << t.type_str << "{" << orn_before << "other.m_impl.m_value" << i << orn_after << "};\n";
       str << "    break;\n";
-    }
+
+      i++;
+    });
   }
 
   void write_comp_switch(std::string comp)
@@ -513,6 +520,7 @@ struct gen_var
       str << class_name << "& operator=(const " << class_name
           << "& other)"
              "{ \n"
+             "  destruct_impl(); \n"
              "  m_type = other.m_type;\n"
              "  switch(m_type) { \n";
 
@@ -528,6 +536,7 @@ struct gen_var
       str << class_name << "& operator=(" << class_name
           << "&& other)\n"
              "{ \n"
+             "  destruct_impl(); \n"
              "  m_type = other.m_type;\n"
              "  switch(m_type) { \n";
 
@@ -557,12 +566,18 @@ struct gen_var
 
       if(t.is_trivial)
       {
-        str << class_name << "(" << t.type_str << " v): m_impl{v}, m_type{Type" << i << "} { }\n";
+        str << class_name << "(" << t.type_str << " v): m_type{Type" << i << "} { \n";
+        str << "  new(&m_impl.m_value" << i << ") " << t.type_str << "{v};\n";
+        str << "}\n";
       }
       else
       {
-        str << class_name << "(const " << t.type_str << "& v): m_impl{v}, m_type{Type" << i << "} { }\n";
-        str << class_name << "(" << t.type_str << "&& v): m_impl{v}, m_type{Type" << i << "} { }\n";
+        str << class_name << "(const " << t.type_str << "& v): m_type{Type" << i << "} { \n";
+        str << "  new(&m_impl.m_value" << i << ") " << t.type_str << "{v};\n";
+        str << "}\n";
+        str << class_name << "(" << t.type_str << "&& v): m_type{Type" << i << "} { \n";
+        str << "  new(&m_impl.m_value" << i << ") " << t.type_str << "{std::move(v)};\n";
+        str << "}\n";
       }
       i++;
     });

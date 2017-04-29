@@ -4,16 +4,8 @@ public:
 struct dummy_t {};
 union Impl { 
 std::shared_ptr<ossia::curve_abstract> m_value0;
-Impl(const std::shared_ptr<ossia::curve_abstract>& v): m_value0{v} { }
-Impl(std::shared_ptr<ossia::curve_abstract>&& v): m_value0{std::move(v)} { }
-Impl& operator=(const std::shared_ptr<ossia::curve_abstract>& v) { m_value0 = v; return *this; }
-Impl& operator=(std::shared_ptr<ossia::curve_abstract>&& v) { m_value0 = std::move(v); return *this; }
 
 std::vector<ossia::behavior> m_value1;
-Impl(const std::vector<ossia::behavior>& v): m_value1{v} { }
-Impl(std::vector<ossia::behavior>&& v): m_value1{std::move(v)} { }
-Impl& operator=(const std::vector<ossia::behavior>& v) { m_value1 = v; return *this; }
-Impl& operator=(std::vector<ossia::behavior>&& v) { m_value1 = std::move(v); return *this; }
 
 dummy_t m_dummy;
 Impl(): m_dummy{} { }
@@ -56,18 +48,26 @@ template<typename T>
 static Type matching_type();
 behavior_variant_type(): m_type{Npos} { }
 ~behavior_variant_type() { destruct_impl(); }
-behavior_variant_type(const std::shared_ptr<ossia::curve_abstract>& v): m_impl{v}, m_type{Type0} { }
-behavior_variant_type(std::shared_ptr<ossia::curve_abstract>&& v): m_impl{v}, m_type{Type0} { }
-behavior_variant_type(const std::vector<ossia::behavior>& v): m_impl{v}, m_type{Type1} { }
-behavior_variant_type(std::vector<ossia::behavior>&& v): m_impl{v}, m_type{Type1} { }
+behavior_variant_type(const std::shared_ptr<ossia::curve_abstract>& v): m_type{Type0} { 
+  new(&m_impl.m_value0) std::shared_ptr<ossia::curve_abstract>{v};
+}
+behavior_variant_type(std::shared_ptr<ossia::curve_abstract>&& v): m_type{Type0} { 
+  new(&m_impl.m_value0) std::shared_ptr<ossia::curve_abstract>{std::move(v)};
+}
+behavior_variant_type(const std::vector<ossia::behavior>& v): m_type{Type1} { 
+  new(&m_impl.m_value1) std::vector<ossia::behavior>{v};
+}
+behavior_variant_type(std::vector<ossia::behavior>&& v): m_type{Type1} { 
+  new(&m_impl.m_value1) std::vector<ossia::behavior>{std::move(v)};
+}
 behavior_variant_type(const behavior_variant_type& other):
  m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) std::shared_ptr<ossia::curve_abstract>{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) std::vector<ossia::behavior>{other.m_impl.m_value1};
     break;
     default: break;
   }
@@ -76,22 +76,23 @@ behavior_variant_type(behavior_variant_type&& other):
 m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) std::shared_ptr<ossia::curve_abstract>{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) std::vector<ossia::behavior>{std::move(other.m_impl.m_value1)};
     break;
     default: break;
   }
 }
 behavior_variant_type& operator=(const behavior_variant_type& other){ 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) std::shared_ptr<ossia::curve_abstract>{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) std::vector<ossia::behavior>{other.m_impl.m_value1};
     break;
     default: break;
   }
@@ -99,13 +100,14 @@ behavior_variant_type& operator=(const behavior_variant_type& other){
 }
 behavior_variant_type& operator=(behavior_variant_type&& other)
 { 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) std::shared_ptr<ossia::curve_abstract>{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) std::vector<ossia::behavior>{std::move(other.m_impl.m_value1)};
     break;
     default: break;
   }

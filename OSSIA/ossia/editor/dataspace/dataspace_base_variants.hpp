@@ -4,12 +4,8 @@ public:
 struct dummy_t {};
 union Impl { 
 ossia::degree_u m_value0;
- Impl(ossia::degree_u v): m_value0{v} { }
-Impl& operator=(ossia::degree_u v) { m_value0 = v; return *this; }
 
 ossia::radian_u m_value1;
- Impl(ossia::radian_u v): m_value1{v} { }
-Impl& operator=(ossia::radian_u v) { m_value1 = v; return *this; }
 
 dummy_t m_dummy;
 Impl(): m_dummy{} { }
@@ -46,16 +42,20 @@ template<typename T>
 static Type matching_type();
 angle_u(): m_type{Npos} { }
 ~angle_u() { destruct_impl(); }
- angle_u(ossia::degree_u v): m_impl{v}, m_type{Type0} { }
- angle_u(ossia::radian_u v): m_impl{v}, m_type{Type1} { }
+ angle_u(ossia::degree_u v): m_type{Type0} { 
+  new(&m_impl.m_value0) ossia::degree_u{v};
+}
+ angle_u(ossia::radian_u v): m_type{Type1} { 
+  new(&m_impl.m_value1) ossia::radian_u{v};
+}
 angle_u(const angle_u& other):
  m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::degree_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::radian_u{other.m_impl.m_value1};
     break;
     default: break;
   }
@@ -64,22 +64,23 @@ angle_u(angle_u&& other):
 m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::degree_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::radian_u{std::move(other.m_impl.m_value1)};
     break;
     default: break;
   }
 }
 angle_u& operator=(const angle_u& other){ 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::degree_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::radian_u{other.m_impl.m_value1};
     break;
     default: break;
   }
@@ -87,13 +88,14 @@ angle_u& operator=(const angle_u& other){
 }
 angle_u& operator=(angle_u&& other)
 { 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::degree_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::radian_u{std::move(other.m_impl.m_value1)};
     break;
     default: break;
   }
@@ -206,36 +208,20 @@ public:
 struct dummy_t {};
 union Impl { 
 ossia::argb_u m_value0;
- Impl(ossia::argb_u v): m_value0{v} { }
-Impl& operator=(ossia::argb_u v) { m_value0 = v; return *this; }
 
 ossia::rgba_u m_value1;
- Impl(ossia::rgba_u v): m_value1{v} { }
-Impl& operator=(ossia::rgba_u v) { m_value1 = v; return *this; }
 
 ossia::rgb_u m_value2;
- Impl(ossia::rgb_u v): m_value2{v} { }
-Impl& operator=(ossia::rgb_u v) { m_value2 = v; return *this; }
 
 ossia::bgr_u m_value3;
- Impl(ossia::bgr_u v): m_value3{v} { }
-Impl& operator=(ossia::bgr_u v) { m_value3 = v; return *this; }
 
 ossia::argb8_u m_value4;
- Impl(ossia::argb8_u v): m_value4{v} { }
-Impl& operator=(ossia::argb8_u v) { m_value4 = v; return *this; }
 
 ossia::hsv_u m_value5;
- Impl(ossia::hsv_u v): m_value5{v} { }
-Impl& operator=(ossia::hsv_u v) { m_value5 = v; return *this; }
 
 ossia::cmy8_u m_value6;
- Impl(ossia::cmy8_u v): m_value6{v} { }
-Impl& operator=(ossia::cmy8_u v) { m_value6 = v; return *this; }
 
 ossia::xyz_u m_value7;
- Impl(ossia::xyz_u v): m_value7{v} { }
-Impl& operator=(ossia::xyz_u v) { m_value7 = v; return *this; }
 
 dummy_t m_dummy;
 Impl(): m_dummy{} { }
@@ -272,40 +258,56 @@ template<typename T>
 static Type matching_type();
 color_u(): m_type{Npos} { }
 ~color_u() { destruct_impl(); }
- color_u(ossia::argb_u v): m_impl{v}, m_type{Type0} { }
- color_u(ossia::rgba_u v): m_impl{v}, m_type{Type1} { }
- color_u(ossia::rgb_u v): m_impl{v}, m_type{Type2} { }
- color_u(ossia::bgr_u v): m_impl{v}, m_type{Type3} { }
- color_u(ossia::argb8_u v): m_impl{v}, m_type{Type4} { }
- color_u(ossia::hsv_u v): m_impl{v}, m_type{Type5} { }
- color_u(ossia::cmy8_u v): m_impl{v}, m_type{Type6} { }
- color_u(ossia::xyz_u v): m_impl{v}, m_type{Type7} { }
+ color_u(ossia::argb_u v): m_type{Type0} { 
+  new(&m_impl.m_value0) ossia::argb_u{v};
+}
+ color_u(ossia::rgba_u v): m_type{Type1} { 
+  new(&m_impl.m_value1) ossia::rgba_u{v};
+}
+ color_u(ossia::rgb_u v): m_type{Type2} { 
+  new(&m_impl.m_value2) ossia::rgb_u{v};
+}
+ color_u(ossia::bgr_u v): m_type{Type3} { 
+  new(&m_impl.m_value3) ossia::bgr_u{v};
+}
+ color_u(ossia::argb8_u v): m_type{Type4} { 
+  new(&m_impl.m_value4) ossia::argb8_u{v};
+}
+ color_u(ossia::hsv_u v): m_type{Type5} { 
+  new(&m_impl.m_value5) ossia::hsv_u{v};
+}
+ color_u(ossia::cmy8_u v): m_type{Type6} { 
+  new(&m_impl.m_value6) ossia::cmy8_u{v};
+}
+ color_u(ossia::xyz_u v): m_type{Type7} { 
+  new(&m_impl.m_value7) ossia::xyz_u{v};
+}
 color_u(const color_u& other):
  m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::argb_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::rgba_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::rgb_u{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::bgr_u{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::argb8_u{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::hsv_u{other.m_impl.m_value5};
     break;
   case Type::Type6:
-    m_impl.m_value6 = other.m_impl.m_value6;
+    new(&m_impl.m_value6) ossia::cmy8_u{other.m_impl.m_value6};
     break;
   case Type::Type7:
-    m_impl.m_value7 = other.m_impl.m_value7;
+    new(&m_impl.m_value7) ossia::xyz_u{other.m_impl.m_value7};
     break;
     default: break;
   }
@@ -314,58 +316,59 @@ color_u(color_u&& other):
 m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::argb_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::rgba_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::rgb_u{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::bgr_u{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::argb8_u{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::hsv_u{std::move(other.m_impl.m_value5)};
     break;
   case Type::Type6:
-    m_impl.m_value6 = std::move(other.m_impl.m_value6);
+    new(&m_impl.m_value6) ossia::cmy8_u{std::move(other.m_impl.m_value6)};
     break;
   case Type::Type7:
-    m_impl.m_value7 = std::move(other.m_impl.m_value7);
+    new(&m_impl.m_value7) ossia::xyz_u{std::move(other.m_impl.m_value7)};
     break;
     default: break;
   }
 }
 color_u& operator=(const color_u& other){ 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::argb_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::rgba_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::rgb_u{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::bgr_u{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::argb8_u{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::hsv_u{other.m_impl.m_value5};
     break;
   case Type::Type6:
-    m_impl.m_value6 = other.m_impl.m_value6;
+    new(&m_impl.m_value6) ossia::cmy8_u{other.m_impl.m_value6};
     break;
   case Type::Type7:
-    m_impl.m_value7 = other.m_impl.m_value7;
+    new(&m_impl.m_value7) ossia::xyz_u{other.m_impl.m_value7};
     break;
     default: break;
   }
@@ -373,31 +376,32 @@ color_u& operator=(const color_u& other){
 }
 color_u& operator=(color_u&& other)
 { 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::argb_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::rgba_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::rgb_u{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::bgr_u{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::argb8_u{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::hsv_u{std::move(other.m_impl.m_value5)};
     break;
   case Type::Type6:
-    m_impl.m_value6 = std::move(other.m_impl.m_value6);
+    new(&m_impl.m_value6) ossia::cmy8_u{std::move(other.m_impl.m_value6)};
     break;
   case Type::Type7:
-    m_impl.m_value7 = std::move(other.m_impl.m_value7);
+    new(&m_impl.m_value7) ossia::xyz_u{std::move(other.m_impl.m_value7)};
     break;
     default: break;
   }
@@ -702,48 +706,26 @@ public:
 struct dummy_t {};
 union Impl { 
 ossia::meter_u m_value0;
- Impl(ossia::meter_u v): m_value0{v} { }
-Impl& operator=(ossia::meter_u v) { m_value0 = v; return *this; }
 
 ossia::kilometer_u m_value1;
- Impl(ossia::kilometer_u v): m_value1{v} { }
-Impl& operator=(ossia::kilometer_u v) { m_value1 = v; return *this; }
 
 ossia::decimeter_u m_value2;
- Impl(ossia::decimeter_u v): m_value2{v} { }
-Impl& operator=(ossia::decimeter_u v) { m_value2 = v; return *this; }
 
 ossia::centimeter_u m_value3;
- Impl(ossia::centimeter_u v): m_value3{v} { }
-Impl& operator=(ossia::centimeter_u v) { m_value3 = v; return *this; }
 
 ossia::millimeter_u m_value4;
- Impl(ossia::millimeter_u v): m_value4{v} { }
-Impl& operator=(ossia::millimeter_u v) { m_value4 = v; return *this; }
 
 ossia::micrometer_u m_value5;
- Impl(ossia::micrometer_u v): m_value5{v} { }
-Impl& operator=(ossia::micrometer_u v) { m_value5 = v; return *this; }
 
 ossia::nanometer_u m_value6;
- Impl(ossia::nanometer_u v): m_value6{v} { }
-Impl& operator=(ossia::nanometer_u v) { m_value6 = v; return *this; }
 
 ossia::picometer_u m_value7;
- Impl(ossia::picometer_u v): m_value7{v} { }
-Impl& operator=(ossia::picometer_u v) { m_value7 = v; return *this; }
 
 ossia::inch_u m_value8;
- Impl(ossia::inch_u v): m_value8{v} { }
-Impl& operator=(ossia::inch_u v) { m_value8 = v; return *this; }
 
 ossia::foot_u m_value9;
- Impl(ossia::foot_u v): m_value9{v} { }
-Impl& operator=(ossia::foot_u v) { m_value9 = v; return *this; }
 
 ossia::mile_u m_value10;
- Impl(ossia::mile_u v): m_value10{v} { }
-Impl& operator=(ossia::mile_u v) { m_value10 = v; return *this; }
 
 dummy_t m_dummy;
 Impl(): m_dummy{} { }
@@ -780,52 +762,74 @@ template<typename T>
 static Type matching_type();
 distance_u(): m_type{Npos} { }
 ~distance_u() { destruct_impl(); }
- distance_u(ossia::meter_u v): m_impl{v}, m_type{Type0} { }
- distance_u(ossia::kilometer_u v): m_impl{v}, m_type{Type1} { }
- distance_u(ossia::decimeter_u v): m_impl{v}, m_type{Type2} { }
- distance_u(ossia::centimeter_u v): m_impl{v}, m_type{Type3} { }
- distance_u(ossia::millimeter_u v): m_impl{v}, m_type{Type4} { }
- distance_u(ossia::micrometer_u v): m_impl{v}, m_type{Type5} { }
- distance_u(ossia::nanometer_u v): m_impl{v}, m_type{Type6} { }
- distance_u(ossia::picometer_u v): m_impl{v}, m_type{Type7} { }
- distance_u(ossia::inch_u v): m_impl{v}, m_type{Type8} { }
- distance_u(ossia::foot_u v): m_impl{v}, m_type{Type9} { }
- distance_u(ossia::mile_u v): m_impl{v}, m_type{Type10} { }
+ distance_u(ossia::meter_u v): m_type{Type0} { 
+  new(&m_impl.m_value0) ossia::meter_u{v};
+}
+ distance_u(ossia::kilometer_u v): m_type{Type1} { 
+  new(&m_impl.m_value1) ossia::kilometer_u{v};
+}
+ distance_u(ossia::decimeter_u v): m_type{Type2} { 
+  new(&m_impl.m_value2) ossia::decimeter_u{v};
+}
+ distance_u(ossia::centimeter_u v): m_type{Type3} { 
+  new(&m_impl.m_value3) ossia::centimeter_u{v};
+}
+ distance_u(ossia::millimeter_u v): m_type{Type4} { 
+  new(&m_impl.m_value4) ossia::millimeter_u{v};
+}
+ distance_u(ossia::micrometer_u v): m_type{Type5} { 
+  new(&m_impl.m_value5) ossia::micrometer_u{v};
+}
+ distance_u(ossia::nanometer_u v): m_type{Type6} { 
+  new(&m_impl.m_value6) ossia::nanometer_u{v};
+}
+ distance_u(ossia::picometer_u v): m_type{Type7} { 
+  new(&m_impl.m_value7) ossia::picometer_u{v};
+}
+ distance_u(ossia::inch_u v): m_type{Type8} { 
+  new(&m_impl.m_value8) ossia::inch_u{v};
+}
+ distance_u(ossia::foot_u v): m_type{Type9} { 
+  new(&m_impl.m_value9) ossia::foot_u{v};
+}
+ distance_u(ossia::mile_u v): m_type{Type10} { 
+  new(&m_impl.m_value10) ossia::mile_u{v};
+}
 distance_u(const distance_u& other):
  m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::meter_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::kilometer_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::decimeter_u{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::centimeter_u{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::millimeter_u{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::micrometer_u{other.m_impl.m_value5};
     break;
   case Type::Type6:
-    m_impl.m_value6 = other.m_impl.m_value6;
+    new(&m_impl.m_value6) ossia::nanometer_u{other.m_impl.m_value6};
     break;
   case Type::Type7:
-    m_impl.m_value7 = other.m_impl.m_value7;
+    new(&m_impl.m_value7) ossia::picometer_u{other.m_impl.m_value7};
     break;
   case Type::Type8:
-    m_impl.m_value8 = other.m_impl.m_value8;
+    new(&m_impl.m_value8) ossia::inch_u{other.m_impl.m_value8};
     break;
   case Type::Type9:
-    m_impl.m_value9 = other.m_impl.m_value9;
+    new(&m_impl.m_value9) ossia::foot_u{other.m_impl.m_value9};
     break;
   case Type::Type10:
-    m_impl.m_value10 = other.m_impl.m_value10;
+    new(&m_impl.m_value10) ossia::mile_u{other.m_impl.m_value10};
     break;
     default: break;
   }
@@ -834,76 +838,77 @@ distance_u(distance_u&& other):
 m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::meter_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::kilometer_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::decimeter_u{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::centimeter_u{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::millimeter_u{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::micrometer_u{std::move(other.m_impl.m_value5)};
     break;
   case Type::Type6:
-    m_impl.m_value6 = std::move(other.m_impl.m_value6);
+    new(&m_impl.m_value6) ossia::nanometer_u{std::move(other.m_impl.m_value6)};
     break;
   case Type::Type7:
-    m_impl.m_value7 = std::move(other.m_impl.m_value7);
+    new(&m_impl.m_value7) ossia::picometer_u{std::move(other.m_impl.m_value7)};
     break;
   case Type::Type8:
-    m_impl.m_value8 = std::move(other.m_impl.m_value8);
+    new(&m_impl.m_value8) ossia::inch_u{std::move(other.m_impl.m_value8)};
     break;
   case Type::Type9:
-    m_impl.m_value9 = std::move(other.m_impl.m_value9);
+    new(&m_impl.m_value9) ossia::foot_u{std::move(other.m_impl.m_value9)};
     break;
   case Type::Type10:
-    m_impl.m_value10 = std::move(other.m_impl.m_value10);
+    new(&m_impl.m_value10) ossia::mile_u{std::move(other.m_impl.m_value10)};
     break;
     default: break;
   }
 }
 distance_u& operator=(const distance_u& other){ 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::meter_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::kilometer_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::decimeter_u{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::centimeter_u{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::millimeter_u{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::micrometer_u{other.m_impl.m_value5};
     break;
   case Type::Type6:
-    m_impl.m_value6 = other.m_impl.m_value6;
+    new(&m_impl.m_value6) ossia::nanometer_u{other.m_impl.m_value6};
     break;
   case Type::Type7:
-    m_impl.m_value7 = other.m_impl.m_value7;
+    new(&m_impl.m_value7) ossia::picometer_u{other.m_impl.m_value7};
     break;
   case Type::Type8:
-    m_impl.m_value8 = other.m_impl.m_value8;
+    new(&m_impl.m_value8) ossia::inch_u{other.m_impl.m_value8};
     break;
   case Type::Type9:
-    m_impl.m_value9 = other.m_impl.m_value9;
+    new(&m_impl.m_value9) ossia::foot_u{other.m_impl.m_value9};
     break;
   case Type::Type10:
-    m_impl.m_value10 = other.m_impl.m_value10;
+    new(&m_impl.m_value10) ossia::mile_u{other.m_impl.m_value10};
     break;
     default: break;
   }
@@ -911,40 +916,41 @@ distance_u& operator=(const distance_u& other){
 }
 distance_u& operator=(distance_u&& other)
 { 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::meter_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::kilometer_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::decimeter_u{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::centimeter_u{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::millimeter_u{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::micrometer_u{std::move(other.m_impl.m_value5)};
     break;
   case Type::Type6:
-    m_impl.m_value6 = std::move(other.m_impl.m_value6);
+    new(&m_impl.m_value6) ossia::nanometer_u{std::move(other.m_impl.m_value6)};
     break;
   case Type::Type7:
-    m_impl.m_value7 = std::move(other.m_impl.m_value7);
+    new(&m_impl.m_value7) ossia::picometer_u{std::move(other.m_impl.m_value7)};
     break;
   case Type::Type8:
-    m_impl.m_value8 = std::move(other.m_impl.m_value8);
+    new(&m_impl.m_value8) ossia::inch_u{std::move(other.m_impl.m_value8)};
     break;
   case Type::Type9:
-    m_impl.m_value9 = std::move(other.m_impl.m_value9);
+    new(&m_impl.m_value9) ossia::foot_u{std::move(other.m_impl.m_value9)};
     break;
   case Type::Type10:
-    m_impl.m_value10 = std::move(other.m_impl.m_value10);
+    new(&m_impl.m_value10) ossia::mile_u{std::move(other.m_impl.m_value10)};
     break;
     default: break;
   }
@@ -1345,20 +1351,12 @@ public:
 struct dummy_t {};
 union Impl { 
 ossia::linear_u m_value0;
- Impl(ossia::linear_u v): m_value0{v} { }
-Impl& operator=(ossia::linear_u v) { m_value0 = v; return *this; }
 
 ossia::midigain_u m_value1;
- Impl(ossia::midigain_u v): m_value1{v} { }
-Impl& operator=(ossia::midigain_u v) { m_value1 = v; return *this; }
 
 ossia::decibel_u m_value2;
- Impl(ossia::decibel_u v): m_value2{v} { }
-Impl& operator=(ossia::decibel_u v) { m_value2 = v; return *this; }
 
 ossia::decibel_raw_u m_value3;
- Impl(ossia::decibel_raw_u v): m_value3{v} { }
-Impl& operator=(ossia::decibel_raw_u v) { m_value3 = v; return *this; }
 
 dummy_t m_dummy;
 Impl(): m_dummy{} { }
@@ -1395,24 +1393,32 @@ template<typename T>
 static Type matching_type();
 gain_u(): m_type{Npos} { }
 ~gain_u() { destruct_impl(); }
- gain_u(ossia::linear_u v): m_impl{v}, m_type{Type0} { }
- gain_u(ossia::midigain_u v): m_impl{v}, m_type{Type1} { }
- gain_u(ossia::decibel_u v): m_impl{v}, m_type{Type2} { }
- gain_u(ossia::decibel_raw_u v): m_impl{v}, m_type{Type3} { }
+ gain_u(ossia::linear_u v): m_type{Type0} { 
+  new(&m_impl.m_value0) ossia::linear_u{v};
+}
+ gain_u(ossia::midigain_u v): m_type{Type1} { 
+  new(&m_impl.m_value1) ossia::midigain_u{v};
+}
+ gain_u(ossia::decibel_u v): m_type{Type2} { 
+  new(&m_impl.m_value2) ossia::decibel_u{v};
+}
+ gain_u(ossia::decibel_raw_u v): m_type{Type3} { 
+  new(&m_impl.m_value3) ossia::decibel_raw_u{v};
+}
 gain_u(const gain_u& other):
  m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::linear_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::midigain_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::decibel_u{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::decibel_raw_u{other.m_impl.m_value3};
     break;
     default: break;
   }
@@ -1421,34 +1427,35 @@ gain_u(gain_u&& other):
 m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::linear_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::midigain_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::decibel_u{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::decibel_raw_u{std::move(other.m_impl.m_value3)};
     break;
     default: break;
   }
 }
 gain_u& operator=(const gain_u& other){ 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::linear_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::midigain_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::decibel_u{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::decibel_raw_u{other.m_impl.m_value3};
     break;
     default: break;
   }
@@ -1456,19 +1463,20 @@ gain_u& operator=(const gain_u& other){
 }
 gain_u& operator=(gain_u&& other)
 { 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::linear_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::midigain_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::decibel_u{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::decibel_raw_u{std::move(other.m_impl.m_value3)};
     break;
     default: break;
   }
@@ -1645,16 +1653,10 @@ public:
 struct dummy_t {};
 union Impl { 
 ossia::quaternion_u m_value0;
- Impl(ossia::quaternion_u v): m_value0{v} { }
-Impl& operator=(ossia::quaternion_u v) { m_value0 = v; return *this; }
 
 ossia::euler_u m_value1;
- Impl(ossia::euler_u v): m_value1{v} { }
-Impl& operator=(ossia::euler_u v) { m_value1 = v; return *this; }
 
 ossia::axis_u m_value2;
- Impl(ossia::axis_u v): m_value2{v} { }
-Impl& operator=(ossia::axis_u v) { m_value2 = v; return *this; }
 
 dummy_t m_dummy;
 Impl(): m_dummy{} { }
@@ -1691,20 +1693,26 @@ template<typename T>
 static Type matching_type();
 orientation_u(): m_type{Npos} { }
 ~orientation_u() { destruct_impl(); }
- orientation_u(ossia::quaternion_u v): m_impl{v}, m_type{Type0} { }
- orientation_u(ossia::euler_u v): m_impl{v}, m_type{Type1} { }
- orientation_u(ossia::axis_u v): m_impl{v}, m_type{Type2} { }
+ orientation_u(ossia::quaternion_u v): m_type{Type0} { 
+  new(&m_impl.m_value0) ossia::quaternion_u{v};
+}
+ orientation_u(ossia::euler_u v): m_type{Type1} { 
+  new(&m_impl.m_value1) ossia::euler_u{v};
+}
+ orientation_u(ossia::axis_u v): m_type{Type2} { 
+  new(&m_impl.m_value2) ossia::axis_u{v};
+}
 orientation_u(const orientation_u& other):
  m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::quaternion_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::euler_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::axis_u{other.m_impl.m_value2};
     break;
     default: break;
   }
@@ -1713,28 +1721,29 @@ orientation_u(orientation_u&& other):
 m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::quaternion_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::euler_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::axis_u{std::move(other.m_impl.m_value2)};
     break;
     default: break;
   }
 }
 orientation_u& operator=(const orientation_u& other){ 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::quaternion_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::euler_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::axis_u{other.m_impl.m_value2};
     break;
     default: break;
   }
@@ -1742,16 +1751,17 @@ orientation_u& operator=(const orientation_u& other){
 }
 orientation_u& operator=(orientation_u&& other)
 { 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::quaternion_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::euler_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::axis_u{std::move(other.m_impl.m_value2)};
     break;
     default: break;
   }
@@ -1896,28 +1906,16 @@ public:
 struct dummy_t {};
 union Impl { 
 ossia::cartesian_3d_u m_value0;
- Impl(ossia::cartesian_3d_u v): m_value0{v} { }
-Impl& operator=(ossia::cartesian_3d_u v) { m_value0 = v; return *this; }
 
 ossia::cartesian_2d_u m_value1;
- Impl(ossia::cartesian_2d_u v): m_value1{v} { }
-Impl& operator=(ossia::cartesian_2d_u v) { m_value1 = v; return *this; }
 
 ossia::spherical_u m_value2;
- Impl(ossia::spherical_u v): m_value2{v} { }
-Impl& operator=(ossia::spherical_u v) { m_value2 = v; return *this; }
 
 ossia::polar_u m_value3;
- Impl(ossia::polar_u v): m_value3{v} { }
-Impl& operator=(ossia::polar_u v) { m_value3 = v; return *this; }
 
 ossia::opengl_u m_value4;
- Impl(ossia::opengl_u v): m_value4{v} { }
-Impl& operator=(ossia::opengl_u v) { m_value4 = v; return *this; }
 
 ossia::cylindrical_u m_value5;
- Impl(ossia::cylindrical_u v): m_value5{v} { }
-Impl& operator=(ossia::cylindrical_u v) { m_value5 = v; return *this; }
 
 dummy_t m_dummy;
 Impl(): m_dummy{} { }
@@ -1954,32 +1952,44 @@ template<typename T>
 static Type matching_type();
 position_u(): m_type{Npos} { }
 ~position_u() { destruct_impl(); }
- position_u(ossia::cartesian_3d_u v): m_impl{v}, m_type{Type0} { }
- position_u(ossia::cartesian_2d_u v): m_impl{v}, m_type{Type1} { }
- position_u(ossia::spherical_u v): m_impl{v}, m_type{Type2} { }
- position_u(ossia::polar_u v): m_impl{v}, m_type{Type3} { }
- position_u(ossia::opengl_u v): m_impl{v}, m_type{Type4} { }
- position_u(ossia::cylindrical_u v): m_impl{v}, m_type{Type5} { }
+ position_u(ossia::cartesian_3d_u v): m_type{Type0} { 
+  new(&m_impl.m_value0) ossia::cartesian_3d_u{v};
+}
+ position_u(ossia::cartesian_2d_u v): m_type{Type1} { 
+  new(&m_impl.m_value1) ossia::cartesian_2d_u{v};
+}
+ position_u(ossia::spherical_u v): m_type{Type2} { 
+  new(&m_impl.m_value2) ossia::spherical_u{v};
+}
+ position_u(ossia::polar_u v): m_type{Type3} { 
+  new(&m_impl.m_value3) ossia::polar_u{v};
+}
+ position_u(ossia::opengl_u v): m_type{Type4} { 
+  new(&m_impl.m_value4) ossia::opengl_u{v};
+}
+ position_u(ossia::cylindrical_u v): m_type{Type5} { 
+  new(&m_impl.m_value5) ossia::cylindrical_u{v};
+}
 position_u(const position_u& other):
  m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::cartesian_3d_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::cartesian_2d_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::spherical_u{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::polar_u{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::opengl_u{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::cylindrical_u{other.m_impl.m_value5};
     break;
     default: break;
   }
@@ -1988,46 +1998,47 @@ position_u(position_u&& other):
 m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::cartesian_3d_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::cartesian_2d_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::spherical_u{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::polar_u{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::opengl_u{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::cylindrical_u{std::move(other.m_impl.m_value5)};
     break;
     default: break;
   }
 }
 position_u& operator=(const position_u& other){ 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::cartesian_3d_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::cartesian_2d_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::spherical_u{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::polar_u{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::opengl_u{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::cylindrical_u{other.m_impl.m_value5};
     break;
     default: break;
   }
@@ -2035,25 +2046,26 @@ position_u& operator=(const position_u& other){
 }
 position_u& operator=(position_u&& other)
 { 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::cartesian_3d_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::cartesian_2d_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::spherical_u{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::polar_u{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::opengl_u{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::cylindrical_u{std::move(other.m_impl.m_value5)};
     break;
     default: break;
   }
@@ -2294,28 +2306,16 @@ public:
 struct dummy_t {};
 union Impl { 
 ossia::meter_per_second_u m_value0;
- Impl(ossia::meter_per_second_u v): m_value0{v} { }
-Impl& operator=(ossia::meter_per_second_u v) { m_value0 = v; return *this; }
 
 ossia::miles_per_hour_u m_value1;
- Impl(ossia::miles_per_hour_u v): m_value1{v} { }
-Impl& operator=(ossia::miles_per_hour_u v) { m_value1 = v; return *this; }
 
 ossia::kilometer_per_hour_u m_value2;
- Impl(ossia::kilometer_per_hour_u v): m_value2{v} { }
-Impl& operator=(ossia::kilometer_per_hour_u v) { m_value2 = v; return *this; }
 
 ossia::knot_u m_value3;
- Impl(ossia::knot_u v): m_value3{v} { }
-Impl& operator=(ossia::knot_u v) { m_value3 = v; return *this; }
 
 ossia::foot_per_second_u m_value4;
- Impl(ossia::foot_per_second_u v): m_value4{v} { }
-Impl& operator=(ossia::foot_per_second_u v) { m_value4 = v; return *this; }
 
 ossia::foot_per_hour_u m_value5;
- Impl(ossia::foot_per_hour_u v): m_value5{v} { }
-Impl& operator=(ossia::foot_per_hour_u v) { m_value5 = v; return *this; }
 
 dummy_t m_dummy;
 Impl(): m_dummy{} { }
@@ -2352,32 +2352,44 @@ template<typename T>
 static Type matching_type();
 speed_u(): m_type{Npos} { }
 ~speed_u() { destruct_impl(); }
- speed_u(ossia::meter_per_second_u v): m_impl{v}, m_type{Type0} { }
- speed_u(ossia::miles_per_hour_u v): m_impl{v}, m_type{Type1} { }
- speed_u(ossia::kilometer_per_hour_u v): m_impl{v}, m_type{Type2} { }
- speed_u(ossia::knot_u v): m_impl{v}, m_type{Type3} { }
- speed_u(ossia::foot_per_second_u v): m_impl{v}, m_type{Type4} { }
- speed_u(ossia::foot_per_hour_u v): m_impl{v}, m_type{Type5} { }
+ speed_u(ossia::meter_per_second_u v): m_type{Type0} { 
+  new(&m_impl.m_value0) ossia::meter_per_second_u{v};
+}
+ speed_u(ossia::miles_per_hour_u v): m_type{Type1} { 
+  new(&m_impl.m_value1) ossia::miles_per_hour_u{v};
+}
+ speed_u(ossia::kilometer_per_hour_u v): m_type{Type2} { 
+  new(&m_impl.m_value2) ossia::kilometer_per_hour_u{v};
+}
+ speed_u(ossia::knot_u v): m_type{Type3} { 
+  new(&m_impl.m_value3) ossia::knot_u{v};
+}
+ speed_u(ossia::foot_per_second_u v): m_type{Type4} { 
+  new(&m_impl.m_value4) ossia::foot_per_second_u{v};
+}
+ speed_u(ossia::foot_per_hour_u v): m_type{Type5} { 
+  new(&m_impl.m_value5) ossia::foot_per_hour_u{v};
+}
 speed_u(const speed_u& other):
  m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::meter_per_second_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::miles_per_hour_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::kilometer_per_hour_u{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::knot_u{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::foot_per_second_u{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::foot_per_hour_u{other.m_impl.m_value5};
     break;
     default: break;
   }
@@ -2386,46 +2398,47 @@ speed_u(speed_u&& other):
 m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::meter_per_second_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::miles_per_hour_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::kilometer_per_hour_u{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::knot_u{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::foot_per_second_u{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::foot_per_hour_u{std::move(other.m_impl.m_value5)};
     break;
     default: break;
   }
 }
 speed_u& operator=(const speed_u& other){ 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::meter_per_second_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::miles_per_hour_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::kilometer_per_hour_u{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::knot_u{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::foot_per_second_u{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::foot_per_hour_u{other.m_impl.m_value5};
     break;
     default: break;
   }
@@ -2433,25 +2446,26 @@ speed_u& operator=(const speed_u& other){
 }
 speed_u& operator=(speed_u&& other)
 { 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::meter_per_second_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::miles_per_hour_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::kilometer_per_hour_u{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::knot_u{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::foot_per_second_u{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::foot_per_hour_u{std::move(other.m_impl.m_value5)};
     break;
     default: break;
   }
@@ -2692,40 +2706,22 @@ public:
 struct dummy_t {};
 union Impl { 
 ossia::second_u m_value0;
- Impl(ossia::second_u v): m_value0{v} { }
-Impl& operator=(ossia::second_u v) { m_value0 = v; return *this; }
 
 ossia::bark_u m_value1;
- Impl(ossia::bark_u v): m_value1{v} { }
-Impl& operator=(ossia::bark_u v) { m_value1 = v; return *this; }
 
 ossia::bpm_u m_value2;
- Impl(ossia::bpm_u v): m_value2{v} { }
-Impl& operator=(ossia::bpm_u v) { m_value2 = v; return *this; }
 
 ossia::cent_u m_value3;
- Impl(ossia::cent_u v): m_value3{v} { }
-Impl& operator=(ossia::cent_u v) { m_value3 = v; return *this; }
 
 ossia::frequency_u m_value4;
- Impl(ossia::frequency_u v): m_value4{v} { }
-Impl& operator=(ossia::frequency_u v) { m_value4 = v; return *this; }
 
 ossia::mel_u m_value5;
- Impl(ossia::mel_u v): m_value5{v} { }
-Impl& operator=(ossia::mel_u v) { m_value5 = v; return *this; }
 
 ossia::midi_pitch_u m_value6;
- Impl(ossia::midi_pitch_u v): m_value6{v} { }
-Impl& operator=(ossia::midi_pitch_u v) { m_value6 = v; return *this; }
 
 ossia::millisecond_u m_value7;
- Impl(ossia::millisecond_u v): m_value7{v} { }
-Impl& operator=(ossia::millisecond_u v) { m_value7 = v; return *this; }
 
 ossia::playback_speed_u m_value8;
- Impl(ossia::playback_speed_u v): m_value8{v} { }
-Impl& operator=(ossia::playback_speed_u v) { m_value8 = v; return *this; }
 
 dummy_t m_dummy;
 Impl(): m_dummy{} { }
@@ -2762,44 +2758,62 @@ template<typename T>
 static Type matching_type();
 time_u(): m_type{Npos} { }
 ~time_u() { destruct_impl(); }
- time_u(ossia::second_u v): m_impl{v}, m_type{Type0} { }
- time_u(ossia::bark_u v): m_impl{v}, m_type{Type1} { }
- time_u(ossia::bpm_u v): m_impl{v}, m_type{Type2} { }
- time_u(ossia::cent_u v): m_impl{v}, m_type{Type3} { }
- time_u(ossia::frequency_u v): m_impl{v}, m_type{Type4} { }
- time_u(ossia::mel_u v): m_impl{v}, m_type{Type5} { }
- time_u(ossia::midi_pitch_u v): m_impl{v}, m_type{Type6} { }
- time_u(ossia::millisecond_u v): m_impl{v}, m_type{Type7} { }
- time_u(ossia::playback_speed_u v): m_impl{v}, m_type{Type8} { }
+ time_u(ossia::second_u v): m_type{Type0} { 
+  new(&m_impl.m_value0) ossia::second_u{v};
+}
+ time_u(ossia::bark_u v): m_type{Type1} { 
+  new(&m_impl.m_value1) ossia::bark_u{v};
+}
+ time_u(ossia::bpm_u v): m_type{Type2} { 
+  new(&m_impl.m_value2) ossia::bpm_u{v};
+}
+ time_u(ossia::cent_u v): m_type{Type3} { 
+  new(&m_impl.m_value3) ossia::cent_u{v};
+}
+ time_u(ossia::frequency_u v): m_type{Type4} { 
+  new(&m_impl.m_value4) ossia::frequency_u{v};
+}
+ time_u(ossia::mel_u v): m_type{Type5} { 
+  new(&m_impl.m_value5) ossia::mel_u{v};
+}
+ time_u(ossia::midi_pitch_u v): m_type{Type6} { 
+  new(&m_impl.m_value6) ossia::midi_pitch_u{v};
+}
+ time_u(ossia::millisecond_u v): m_type{Type7} { 
+  new(&m_impl.m_value7) ossia::millisecond_u{v};
+}
+ time_u(ossia::playback_speed_u v): m_type{Type8} { 
+  new(&m_impl.m_value8) ossia::playback_speed_u{v};
+}
 time_u(const time_u& other):
  m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::second_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::bark_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::bpm_u{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::cent_u{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::frequency_u{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::mel_u{other.m_impl.m_value5};
     break;
   case Type::Type6:
-    m_impl.m_value6 = other.m_impl.m_value6;
+    new(&m_impl.m_value6) ossia::midi_pitch_u{other.m_impl.m_value6};
     break;
   case Type::Type7:
-    m_impl.m_value7 = other.m_impl.m_value7;
+    new(&m_impl.m_value7) ossia::millisecond_u{other.m_impl.m_value7};
     break;
   case Type::Type8:
-    m_impl.m_value8 = other.m_impl.m_value8;
+    new(&m_impl.m_value8) ossia::playback_speed_u{other.m_impl.m_value8};
     break;
     default: break;
   }
@@ -2808,64 +2822,65 @@ time_u(time_u&& other):
 m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::second_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::bark_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::bpm_u{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::cent_u{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::frequency_u{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::mel_u{std::move(other.m_impl.m_value5)};
     break;
   case Type::Type6:
-    m_impl.m_value6 = std::move(other.m_impl.m_value6);
+    new(&m_impl.m_value6) ossia::midi_pitch_u{std::move(other.m_impl.m_value6)};
     break;
   case Type::Type7:
-    m_impl.m_value7 = std::move(other.m_impl.m_value7);
+    new(&m_impl.m_value7) ossia::millisecond_u{std::move(other.m_impl.m_value7)};
     break;
   case Type::Type8:
-    m_impl.m_value8 = std::move(other.m_impl.m_value8);
+    new(&m_impl.m_value8) ossia::playback_speed_u{std::move(other.m_impl.m_value8)};
     break;
     default: break;
   }
 }
 time_u& operator=(const time_u& other){ 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::second_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::bark_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::bpm_u{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::cent_u{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::frequency_u{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::mel_u{other.m_impl.m_value5};
     break;
   case Type::Type6:
-    m_impl.m_value6 = other.m_impl.m_value6;
+    new(&m_impl.m_value6) ossia::midi_pitch_u{other.m_impl.m_value6};
     break;
   case Type::Type7:
-    m_impl.m_value7 = other.m_impl.m_value7;
+    new(&m_impl.m_value7) ossia::millisecond_u{other.m_impl.m_value7};
     break;
   case Type::Type8:
-    m_impl.m_value8 = other.m_impl.m_value8;
+    new(&m_impl.m_value8) ossia::playback_speed_u{other.m_impl.m_value8};
     break;
     default: break;
   }
@@ -2873,34 +2888,35 @@ time_u& operator=(const time_u& other){
 }
 time_u& operator=(time_u&& other)
 { 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::second_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::bark_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::bpm_u{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::cent_u{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::frequency_u{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::mel_u{std::move(other.m_impl.m_value5)};
     break;
   case Type::Type6:
-    m_impl.m_value6 = std::move(other.m_impl.m_value6);
+    new(&m_impl.m_value6) ossia::midi_pitch_u{std::move(other.m_impl.m_value6)};
     break;
   case Type::Type7:
-    m_impl.m_value7 = std::move(other.m_impl.m_value7);
+    new(&m_impl.m_value7) ossia::millisecond_u{std::move(other.m_impl.m_value7)};
     break;
   case Type::Type8:
-    m_impl.m_value8 = std::move(other.m_impl.m_value8);
+    new(&m_impl.m_value8) ossia::playback_speed_u{std::move(other.m_impl.m_value8)};
     break;
     default: break;
   }
@@ -3237,36 +3253,20 @@ public:
 struct dummy_t {};
 union Impl { 
 ossia::distance_u m_value0;
- Impl(ossia::distance_u v): m_value0{v} { }
-Impl& operator=(ossia::distance_u v) { m_value0 = v; return *this; }
 
 ossia::position_u m_value1;
- Impl(ossia::position_u v): m_value1{v} { }
-Impl& operator=(ossia::position_u v) { m_value1 = v; return *this; }
 
 ossia::speed_u m_value2;
- Impl(ossia::speed_u v): m_value2{v} { }
-Impl& operator=(ossia::speed_u v) { m_value2 = v; return *this; }
 
 ossia::orientation_u m_value3;
- Impl(ossia::orientation_u v): m_value3{v} { }
-Impl& operator=(ossia::orientation_u v) { m_value3 = v; return *this; }
 
 ossia::angle_u m_value4;
- Impl(ossia::angle_u v): m_value4{v} { }
-Impl& operator=(ossia::angle_u v) { m_value4 = v; return *this; }
 
 ossia::color_u m_value5;
- Impl(ossia::color_u v): m_value5{v} { }
-Impl& operator=(ossia::color_u v) { m_value5 = v; return *this; }
 
 ossia::gain_u m_value6;
- Impl(ossia::gain_u v): m_value6{v} { }
-Impl& operator=(ossia::gain_u v) { m_value6 = v; return *this; }
 
 ossia::time_u m_value7;
- Impl(ossia::time_u v): m_value7{v} { }
-Impl& operator=(ossia::time_u v) { m_value7 = v; return *this; }
 
 dummy_t m_dummy;
 Impl(): m_dummy{} { }
@@ -3303,40 +3303,56 @@ template<typename T>
 static Type matching_type();
 unit_variant(): m_type{Npos} { }
 ~unit_variant() { destruct_impl(); }
- unit_variant(ossia::distance_u v): m_impl{v}, m_type{Type0} { }
- unit_variant(ossia::position_u v): m_impl{v}, m_type{Type1} { }
- unit_variant(ossia::speed_u v): m_impl{v}, m_type{Type2} { }
- unit_variant(ossia::orientation_u v): m_impl{v}, m_type{Type3} { }
- unit_variant(ossia::angle_u v): m_impl{v}, m_type{Type4} { }
- unit_variant(ossia::color_u v): m_impl{v}, m_type{Type5} { }
- unit_variant(ossia::gain_u v): m_impl{v}, m_type{Type6} { }
- unit_variant(ossia::time_u v): m_impl{v}, m_type{Type7} { }
+ unit_variant(ossia::distance_u v): m_type{Type0} { 
+  new(&m_impl.m_value0) ossia::distance_u{v};
+}
+ unit_variant(ossia::position_u v): m_type{Type1} { 
+  new(&m_impl.m_value1) ossia::position_u{v};
+}
+ unit_variant(ossia::speed_u v): m_type{Type2} { 
+  new(&m_impl.m_value2) ossia::speed_u{v};
+}
+ unit_variant(ossia::orientation_u v): m_type{Type3} { 
+  new(&m_impl.m_value3) ossia::orientation_u{v};
+}
+ unit_variant(ossia::angle_u v): m_type{Type4} { 
+  new(&m_impl.m_value4) ossia::angle_u{v};
+}
+ unit_variant(ossia::color_u v): m_type{Type5} { 
+  new(&m_impl.m_value5) ossia::color_u{v};
+}
+ unit_variant(ossia::gain_u v): m_type{Type6} { 
+  new(&m_impl.m_value6) ossia::gain_u{v};
+}
+ unit_variant(ossia::time_u v): m_type{Type7} { 
+  new(&m_impl.m_value7) ossia::time_u{v};
+}
 unit_variant(const unit_variant& other):
  m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::distance_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::position_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::speed_u{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::orientation_u{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::angle_u{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::color_u{other.m_impl.m_value5};
     break;
   case Type::Type6:
-    m_impl.m_value6 = other.m_impl.m_value6;
+    new(&m_impl.m_value6) ossia::gain_u{other.m_impl.m_value6};
     break;
   case Type::Type7:
-    m_impl.m_value7 = other.m_impl.m_value7;
+    new(&m_impl.m_value7) ossia::time_u{other.m_impl.m_value7};
     break;
     default: break;
   }
@@ -3345,58 +3361,59 @@ unit_variant(unit_variant&& other):
 m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::distance_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::position_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::speed_u{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::orientation_u{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::angle_u{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::color_u{std::move(other.m_impl.m_value5)};
     break;
   case Type::Type6:
-    m_impl.m_value6 = std::move(other.m_impl.m_value6);
+    new(&m_impl.m_value6) ossia::gain_u{std::move(other.m_impl.m_value6)};
     break;
   case Type::Type7:
-    m_impl.m_value7 = std::move(other.m_impl.m_value7);
+    new(&m_impl.m_value7) ossia::time_u{std::move(other.m_impl.m_value7)};
     break;
     default: break;
   }
 }
 unit_variant& operator=(const unit_variant& other){ 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::distance_u{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::position_u{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::speed_u{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::orientation_u{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::angle_u{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::color_u{other.m_impl.m_value5};
     break;
   case Type::Type6:
-    m_impl.m_value6 = other.m_impl.m_value6;
+    new(&m_impl.m_value6) ossia::gain_u{other.m_impl.m_value6};
     break;
   case Type::Type7:
-    m_impl.m_value7 = other.m_impl.m_value7;
+    new(&m_impl.m_value7) ossia::time_u{other.m_impl.m_value7};
     break;
     default: break;
   }
@@ -3404,31 +3421,32 @@ unit_variant& operator=(const unit_variant& other){
 }
 unit_variant& operator=(unit_variant&& other)
 { 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::distance_u{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::position_u{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::speed_u{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::orientation_u{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::angle_u{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::color_u{std::move(other.m_impl.m_value5)};
     break;
   case Type::Type6:
-    m_impl.m_value6 = std::move(other.m_impl.m_value6);
+    new(&m_impl.m_value6) ossia::gain_u{std::move(other.m_impl.m_value6)};
     break;
   case Type::Type7:
-    m_impl.m_value7 = std::move(other.m_impl.m_value7);
+    new(&m_impl.m_value7) ossia::time_u{std::move(other.m_impl.m_value7)};
     break;
     default: break;
   }

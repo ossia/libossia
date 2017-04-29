@@ -4,54 +4,26 @@ public:
 struct dummy_t {};
 union Impl { 
 float m_value0;
- Impl(float v): m_value0{v} { }
-Impl& operator=(float v) { m_value0 = v; return *this; }
 
 int m_value1;
- Impl(int v): m_value1{v} { }
-Impl& operator=(int v) { m_value1 = v; return *this; }
 
 ossia::vec2f m_value2;
- Impl(ossia::vec2f v): m_value2{v} { }
-Impl& operator=(ossia::vec2f v) { m_value2 = v; return *this; }
 
 ossia::vec3f m_value3;
- Impl(ossia::vec3f v): m_value3{v} { }
-Impl& operator=(ossia::vec3f v) { m_value3 = v; return *this; }
 
 ossia::vec4f m_value4;
- Impl(ossia::vec4f v): m_value4{v} { }
-Impl& operator=(ossia::vec4f v) { m_value4 = v; return *this; }
 
 ossia::impulse m_value5;
- Impl(ossia::impulse v): m_value5{v} { }
-Impl& operator=(ossia::impulse v) { m_value5 = v; return *this; }
 
 bool m_value6;
- Impl(bool v): m_value6{v} { }
-Impl& operator=(bool v) { m_value6 = v; return *this; }
 
 std::string m_value7;
-Impl(const std::string& v): m_value7{v} { }
-Impl(std::string&& v): m_value7{std::move(v)} { }
-Impl& operator=(const std::string& v) { m_value7 = v; return *this; }
-Impl& operator=(std::string&& v) { m_value7 = std::move(v); return *this; }
 
 std::vector<ossia::value> m_value8;
-Impl(const std::vector<ossia::value>& v): m_value8{v} { }
-Impl(std::vector<ossia::value>&& v): m_value8{std::move(v)} { }
-Impl& operator=(const std::vector<ossia::value>& v) { m_value8 = v; return *this; }
-Impl& operator=(std::vector<ossia::value>&& v) { m_value8 = std::move(v); return *this; }
 
 char m_value9;
- Impl(char v): m_value9{v} { }
-Impl& operator=(char v) { m_value9 = v; return *this; }
 
 ossia::Destination m_value10;
-Impl(const ossia::Destination& v): m_value10{v} { }
-Impl(ossia::Destination&& v): m_value10{std::move(v)} { }
-Impl& operator=(const ossia::Destination& v) { m_value10 = v; return *this; }
-Impl& operator=(ossia::Destination&& v) { m_value10 = std::move(v); return *this; }
 
 dummy_t m_dummy;
 Impl(): m_dummy{} { }
@@ -97,55 +69,83 @@ template<typename T>
 static Type matching_type();
 value_variant_type(): m_type{Npos} { }
 ~value_variant_type() { destruct_impl(); }
- value_variant_type(float v): m_impl{v}, m_type{Type0} { }
- value_variant_type(int v): m_impl{v}, m_type{Type1} { }
- value_variant_type(ossia::vec2f v): m_impl{v}, m_type{Type2} { }
- value_variant_type(ossia::vec3f v): m_impl{v}, m_type{Type3} { }
- value_variant_type(ossia::vec4f v): m_impl{v}, m_type{Type4} { }
- value_variant_type(ossia::impulse v): m_impl{v}, m_type{Type5} { }
- value_variant_type(bool v): m_impl{v}, m_type{Type6} { }
-value_variant_type(const std::string& v): m_impl{v}, m_type{Type7} { }
-value_variant_type(std::string&& v): m_impl{v}, m_type{Type7} { }
-value_variant_type(const std::vector<ossia::value>& v): m_impl{v}, m_type{Type8} { }
-value_variant_type(std::vector<ossia::value>&& v): m_impl{v}, m_type{Type8} { }
- value_variant_type(char v): m_impl{v}, m_type{Type9} { }
-value_variant_type(const ossia::Destination& v): m_impl{v}, m_type{Type10} { }
-value_variant_type(ossia::Destination&& v): m_impl{v}, m_type{Type10} { }
+ value_variant_type(float v): m_type{Type0} { 
+  new(&m_impl.m_value0) float{v};
+}
+ value_variant_type(int v): m_type{Type1} { 
+  new(&m_impl.m_value1) int{v};
+}
+ value_variant_type(ossia::vec2f v): m_type{Type2} { 
+  new(&m_impl.m_value2) ossia::vec2f{v};
+}
+ value_variant_type(ossia::vec3f v): m_type{Type3} { 
+  new(&m_impl.m_value3) ossia::vec3f{v};
+}
+ value_variant_type(ossia::vec4f v): m_type{Type4} { 
+  new(&m_impl.m_value4) ossia::vec4f{v};
+}
+ value_variant_type(ossia::impulse v): m_type{Type5} { 
+  new(&m_impl.m_value5) ossia::impulse{v};
+}
+ value_variant_type(bool v): m_type{Type6} { 
+  new(&m_impl.m_value6) bool{v};
+}
+value_variant_type(const std::string& v): m_type{Type7} { 
+  new(&m_impl.m_value7) std::string{v};
+}
+value_variant_type(std::string&& v): m_type{Type7} { 
+  new(&m_impl.m_value7) std::string{std::move(v)};
+}
+value_variant_type(const std::vector<ossia::value>& v): m_type{Type8} { 
+  new(&m_impl.m_value8) std::vector<ossia::value>{v};
+}
+value_variant_type(std::vector<ossia::value>&& v): m_type{Type8} { 
+  new(&m_impl.m_value8) std::vector<ossia::value>{std::move(v)};
+}
+ value_variant_type(char v): m_type{Type9} { 
+  new(&m_impl.m_value9) char{v};
+}
+value_variant_type(const ossia::Destination& v): m_type{Type10} { 
+  new(&m_impl.m_value10) ossia::Destination{v};
+}
+value_variant_type(ossia::Destination&& v): m_type{Type10} { 
+  new(&m_impl.m_value10) ossia::Destination{std::move(v)};
+}
 value_variant_type(const value_variant_type& other):
  m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) float{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) int{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::vec2f{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::vec3f{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::vec4f{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::impulse{other.m_impl.m_value5};
     break;
   case Type::Type6:
-    m_impl.m_value6 = other.m_impl.m_value6;
+    new(&m_impl.m_value6) bool{other.m_impl.m_value6};
     break;
   case Type::Type7:
-    m_impl.m_value7 = other.m_impl.m_value7;
+    new(&m_impl.m_value7) std::string{other.m_impl.m_value7};
     break;
   case Type::Type8:
-    m_impl.m_value8 = other.m_impl.m_value8;
+    new(&m_impl.m_value8) std::vector<ossia::value>{other.m_impl.m_value8};
     break;
   case Type::Type9:
-    m_impl.m_value9 = other.m_impl.m_value9;
+    new(&m_impl.m_value9) char{other.m_impl.m_value9};
     break;
   case Type::Type10:
-    m_impl.m_value10 = other.m_impl.m_value10;
+    new(&m_impl.m_value10) ossia::Destination{other.m_impl.m_value10};
     break;
     default: break;
   }
@@ -154,76 +154,77 @@ value_variant_type(value_variant_type&& other):
 m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) float{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) int{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::vec2f{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::vec3f{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::vec4f{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::impulse{std::move(other.m_impl.m_value5)};
     break;
   case Type::Type6:
-    m_impl.m_value6 = std::move(other.m_impl.m_value6);
+    new(&m_impl.m_value6) bool{std::move(other.m_impl.m_value6)};
     break;
   case Type::Type7:
-    m_impl.m_value7 = std::move(other.m_impl.m_value7);
+    new(&m_impl.m_value7) std::string{std::move(other.m_impl.m_value7)};
     break;
   case Type::Type8:
-    m_impl.m_value8 = std::move(other.m_impl.m_value8);
+    new(&m_impl.m_value8) std::vector<ossia::value>{std::move(other.m_impl.m_value8)};
     break;
   case Type::Type9:
-    m_impl.m_value9 = std::move(other.m_impl.m_value9);
+    new(&m_impl.m_value9) char{std::move(other.m_impl.m_value9)};
     break;
   case Type::Type10:
-    m_impl.m_value10 = std::move(other.m_impl.m_value10);
+    new(&m_impl.m_value10) ossia::Destination{std::move(other.m_impl.m_value10)};
     break;
     default: break;
   }
 }
 value_variant_type& operator=(const value_variant_type& other){ 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) float{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) int{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::vec2f{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::vec3f{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::vec4f{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::impulse{other.m_impl.m_value5};
     break;
   case Type::Type6:
-    m_impl.m_value6 = other.m_impl.m_value6;
+    new(&m_impl.m_value6) bool{other.m_impl.m_value6};
     break;
   case Type::Type7:
-    m_impl.m_value7 = other.m_impl.m_value7;
+    new(&m_impl.m_value7) std::string{other.m_impl.m_value7};
     break;
   case Type::Type8:
-    m_impl.m_value8 = other.m_impl.m_value8;
+    new(&m_impl.m_value8) std::vector<ossia::value>{other.m_impl.m_value8};
     break;
   case Type::Type9:
-    m_impl.m_value9 = other.m_impl.m_value9;
+    new(&m_impl.m_value9) char{other.m_impl.m_value9};
     break;
   case Type::Type10:
-    m_impl.m_value10 = other.m_impl.m_value10;
+    new(&m_impl.m_value10) ossia::Destination{other.m_impl.m_value10};
     break;
     default: break;
   }
@@ -231,40 +232,41 @@ value_variant_type& operator=(const value_variant_type& other){
 }
 value_variant_type& operator=(value_variant_type&& other)
 { 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) float{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) int{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::vec2f{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::vec3f{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::vec4f{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::impulse{std::move(other.m_impl.m_value5)};
     break;
   case Type::Type6:
-    m_impl.m_value6 = std::move(other.m_impl.m_value6);
+    new(&m_impl.m_value6) bool{std::move(other.m_impl.m_value6)};
     break;
   case Type::Type7:
-    m_impl.m_value7 = std::move(other.m_impl.m_value7);
+    new(&m_impl.m_value7) std::string{std::move(other.m_impl.m_value7)};
     break;
   case Type::Type8:
-    m_impl.m_value8 = std::move(other.m_impl.m_value8);
+    new(&m_impl.m_value8) std::vector<ossia::value>{std::move(other.m_impl.m_value8)};
     break;
   case Type::Type9:
-    m_impl.m_value9 = std::move(other.m_impl.m_value9);
+    new(&m_impl.m_value9) char{std::move(other.m_impl.m_value9)};
     break;
   case Type::Type10:
-    m_impl.m_value10 = std::move(other.m_impl.m_value10);
+    new(&m_impl.m_value10) ossia::Destination{std::move(other.m_impl.m_value10)};
     break;
     default: break;
   }

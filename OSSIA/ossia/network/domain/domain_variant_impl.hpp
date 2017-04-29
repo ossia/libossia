@@ -4,70 +4,26 @@ public:
 struct dummy_t {};
 union Impl { 
 ossia::domain_base<ossia::impulse> m_value0;
-Impl(const ossia::domain_base<ossia::impulse>& v): m_value0{v} { }
-Impl(ossia::domain_base<ossia::impulse>&& v): m_value0{std::move(v)} { }
-Impl& operator=(const ossia::domain_base<ossia::impulse>& v) { m_value0 = v; return *this; }
-Impl& operator=(ossia::domain_base<ossia::impulse>&& v) { m_value0 = std::move(v); return *this; }
 
 ossia::domain_base<bool> m_value1;
-Impl(const ossia::domain_base<bool>& v): m_value1{v} { }
-Impl(ossia::domain_base<bool>&& v): m_value1{std::move(v)} { }
-Impl& operator=(const ossia::domain_base<bool>& v) { m_value1 = v; return *this; }
-Impl& operator=(ossia::domain_base<bool>&& v) { m_value1 = std::move(v); return *this; }
 
 ossia::domain_base<int> m_value2;
-Impl(const ossia::domain_base<int>& v): m_value2{v} { }
-Impl(ossia::domain_base<int>&& v): m_value2{std::move(v)} { }
-Impl& operator=(const ossia::domain_base<int>& v) { m_value2 = v; return *this; }
-Impl& operator=(ossia::domain_base<int>&& v) { m_value2 = std::move(v); return *this; }
 
 ossia::domain_base<float> m_value3;
-Impl(const ossia::domain_base<float>& v): m_value3{v} { }
-Impl(ossia::domain_base<float>&& v): m_value3{std::move(v)} { }
-Impl& operator=(const ossia::domain_base<float>& v) { m_value3 = v; return *this; }
-Impl& operator=(ossia::domain_base<float>&& v) { m_value3 = std::move(v); return *this; }
 
 ossia::domain_base<char> m_value4;
-Impl(const ossia::domain_base<char>& v): m_value4{v} { }
-Impl(ossia::domain_base<char>&& v): m_value4{std::move(v)} { }
-Impl& operator=(const ossia::domain_base<char>& v) { m_value4 = v; return *this; }
-Impl& operator=(ossia::domain_base<char>&& v) { m_value4 = std::move(v); return *this; }
 
 ossia::domain_base<std::string> m_value5;
-Impl(const ossia::domain_base<std::string>& v): m_value5{v} { }
-Impl(ossia::domain_base<std::string>&& v): m_value5{std::move(v)} { }
-Impl& operator=(const ossia::domain_base<std::string>& v) { m_value5 = v; return *this; }
-Impl& operator=(ossia::domain_base<std::string>&& v) { m_value5 = std::move(v); return *this; }
 
 ossia::vector_domain m_value6;
-Impl(const ossia::vector_domain& v): m_value6{v} { }
-Impl(ossia::vector_domain&& v): m_value6{std::move(v)} { }
-Impl& operator=(const ossia::vector_domain& v) { m_value6 = v; return *this; }
-Impl& operator=(ossia::vector_domain&& v) { m_value6 = std::move(v); return *this; }
 
 ossia::vecf_domain<2> m_value7;
-Impl(const ossia::vecf_domain<2>& v): m_value7{v} { }
-Impl(ossia::vecf_domain<2>&& v): m_value7{std::move(v)} { }
-Impl& operator=(const ossia::vecf_domain<2>& v) { m_value7 = v; return *this; }
-Impl& operator=(ossia::vecf_domain<2>&& v) { m_value7 = std::move(v); return *this; }
 
 ossia::vecf_domain<3> m_value8;
-Impl(const ossia::vecf_domain<3>& v): m_value8{v} { }
-Impl(ossia::vecf_domain<3>&& v): m_value8{std::move(v)} { }
-Impl& operator=(const ossia::vecf_domain<3>& v) { m_value8 = v; return *this; }
-Impl& operator=(ossia::vecf_domain<3>&& v) { m_value8 = std::move(v); return *this; }
 
 ossia::vecf_domain<4> m_value9;
-Impl(const ossia::vecf_domain<4>& v): m_value9{v} { }
-Impl(ossia::vecf_domain<4>&& v): m_value9{std::move(v)} { }
-Impl& operator=(const ossia::vecf_domain<4>& v) { m_value9 = v; return *this; }
-Impl& operator=(ossia::vecf_domain<4>&& v) { m_value9 = std::move(v); return *this; }
 
 ossia::domain_base<ossia::value> m_value10;
-Impl(const ossia::domain_base<ossia::value>& v): m_value10{v} { }
-Impl(ossia::domain_base<ossia::value>&& v): m_value10{std::move(v)} { }
-Impl& operator=(const ossia::domain_base<ossia::value>& v) { m_value10 = v; return *this; }
-Impl& operator=(ossia::domain_base<ossia::value>&& v) { m_value10 = std::move(v); return *this; }
 
 dummy_t m_dummy;
 Impl(): m_dummy{} { }
@@ -137,63 +93,107 @@ template<typename T>
 static Type matching_type();
 domain_base_variant(): m_type{Npos} { }
 ~domain_base_variant() { destruct_impl(); }
-domain_base_variant(const ossia::domain_base<ossia::impulse>& v): m_impl{v}, m_type{Type0} { }
-domain_base_variant(ossia::domain_base<ossia::impulse>&& v): m_impl{v}, m_type{Type0} { }
-domain_base_variant(const ossia::domain_base<bool>& v): m_impl{v}, m_type{Type1} { }
-domain_base_variant(ossia::domain_base<bool>&& v): m_impl{v}, m_type{Type1} { }
-domain_base_variant(const ossia::domain_base<int>& v): m_impl{v}, m_type{Type2} { }
-domain_base_variant(ossia::domain_base<int>&& v): m_impl{v}, m_type{Type2} { }
-domain_base_variant(const ossia::domain_base<float>& v): m_impl{v}, m_type{Type3} { }
-domain_base_variant(ossia::domain_base<float>&& v): m_impl{v}, m_type{Type3} { }
-domain_base_variant(const ossia::domain_base<char>& v): m_impl{v}, m_type{Type4} { }
-domain_base_variant(ossia::domain_base<char>&& v): m_impl{v}, m_type{Type4} { }
-domain_base_variant(const ossia::domain_base<std::string>& v): m_impl{v}, m_type{Type5} { }
-domain_base_variant(ossia::domain_base<std::string>&& v): m_impl{v}, m_type{Type5} { }
-domain_base_variant(const ossia::vector_domain& v): m_impl{v}, m_type{Type6} { }
-domain_base_variant(ossia::vector_domain&& v): m_impl{v}, m_type{Type6} { }
-domain_base_variant(const ossia::vecf_domain<2>& v): m_impl{v}, m_type{Type7} { }
-domain_base_variant(ossia::vecf_domain<2>&& v): m_impl{v}, m_type{Type7} { }
-domain_base_variant(const ossia::vecf_domain<3>& v): m_impl{v}, m_type{Type8} { }
-domain_base_variant(ossia::vecf_domain<3>&& v): m_impl{v}, m_type{Type8} { }
-domain_base_variant(const ossia::vecf_domain<4>& v): m_impl{v}, m_type{Type9} { }
-domain_base_variant(ossia::vecf_domain<4>&& v): m_impl{v}, m_type{Type9} { }
-domain_base_variant(const ossia::domain_base<ossia::value>& v): m_impl{v}, m_type{Type10} { }
-domain_base_variant(ossia::domain_base<ossia::value>&& v): m_impl{v}, m_type{Type10} { }
+domain_base_variant(const ossia::domain_base<ossia::impulse>& v): m_type{Type0} { 
+  new(&m_impl.m_value0) ossia::domain_base<ossia::impulse>{v};
+}
+domain_base_variant(ossia::domain_base<ossia::impulse>&& v): m_type{Type0} { 
+  new(&m_impl.m_value0) ossia::domain_base<ossia::impulse>{std::move(v)};
+}
+domain_base_variant(const ossia::domain_base<bool>& v): m_type{Type1} { 
+  new(&m_impl.m_value1) ossia::domain_base<bool>{v};
+}
+domain_base_variant(ossia::domain_base<bool>&& v): m_type{Type1} { 
+  new(&m_impl.m_value1) ossia::domain_base<bool>{std::move(v)};
+}
+domain_base_variant(const ossia::domain_base<int>& v): m_type{Type2} { 
+  new(&m_impl.m_value2) ossia::domain_base<int>{v};
+}
+domain_base_variant(ossia::domain_base<int>&& v): m_type{Type2} { 
+  new(&m_impl.m_value2) ossia::domain_base<int>{std::move(v)};
+}
+domain_base_variant(const ossia::domain_base<float>& v): m_type{Type3} { 
+  new(&m_impl.m_value3) ossia::domain_base<float>{v};
+}
+domain_base_variant(ossia::domain_base<float>&& v): m_type{Type3} { 
+  new(&m_impl.m_value3) ossia::domain_base<float>{std::move(v)};
+}
+domain_base_variant(const ossia::domain_base<char>& v): m_type{Type4} { 
+  new(&m_impl.m_value4) ossia::domain_base<char>{v};
+}
+domain_base_variant(ossia::domain_base<char>&& v): m_type{Type4} { 
+  new(&m_impl.m_value4) ossia::domain_base<char>{std::move(v)};
+}
+domain_base_variant(const ossia::domain_base<std::string>& v): m_type{Type5} { 
+  new(&m_impl.m_value5) ossia::domain_base<std::string>{v};
+}
+domain_base_variant(ossia::domain_base<std::string>&& v): m_type{Type5} { 
+  new(&m_impl.m_value5) ossia::domain_base<std::string>{std::move(v)};
+}
+domain_base_variant(const ossia::vector_domain& v): m_type{Type6} { 
+  new(&m_impl.m_value6) ossia::vector_domain{v};
+}
+domain_base_variant(ossia::vector_domain&& v): m_type{Type6} { 
+  new(&m_impl.m_value6) ossia::vector_domain{std::move(v)};
+}
+domain_base_variant(const ossia::vecf_domain<2>& v): m_type{Type7} { 
+  new(&m_impl.m_value7) ossia::vecf_domain<2>{v};
+}
+domain_base_variant(ossia::vecf_domain<2>&& v): m_type{Type7} { 
+  new(&m_impl.m_value7) ossia::vecf_domain<2>{std::move(v)};
+}
+domain_base_variant(const ossia::vecf_domain<3>& v): m_type{Type8} { 
+  new(&m_impl.m_value8) ossia::vecf_domain<3>{v};
+}
+domain_base_variant(ossia::vecf_domain<3>&& v): m_type{Type8} { 
+  new(&m_impl.m_value8) ossia::vecf_domain<3>{std::move(v)};
+}
+domain_base_variant(const ossia::vecf_domain<4>& v): m_type{Type9} { 
+  new(&m_impl.m_value9) ossia::vecf_domain<4>{v};
+}
+domain_base_variant(ossia::vecf_domain<4>&& v): m_type{Type9} { 
+  new(&m_impl.m_value9) ossia::vecf_domain<4>{std::move(v)};
+}
+domain_base_variant(const ossia::domain_base<ossia::value>& v): m_type{Type10} { 
+  new(&m_impl.m_value10) ossia::domain_base<ossia::value>{v};
+}
+domain_base_variant(ossia::domain_base<ossia::value>&& v): m_type{Type10} { 
+  new(&m_impl.m_value10) ossia::domain_base<ossia::value>{std::move(v)};
+}
 domain_base_variant(const domain_base_variant& other):
  m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::domain_base<ossia::impulse>{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::domain_base<bool>{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::domain_base<int>{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::domain_base<float>{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::domain_base<char>{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::domain_base<std::string>{other.m_impl.m_value5};
     break;
   case Type::Type6:
-    m_impl.m_value6 = other.m_impl.m_value6;
+    new(&m_impl.m_value6) ossia::vector_domain{other.m_impl.m_value6};
     break;
   case Type::Type7:
-    m_impl.m_value7 = other.m_impl.m_value7;
+    new(&m_impl.m_value7) ossia::vecf_domain<2>{other.m_impl.m_value7};
     break;
   case Type::Type8:
-    m_impl.m_value8 = other.m_impl.m_value8;
+    new(&m_impl.m_value8) ossia::vecf_domain<3>{other.m_impl.m_value8};
     break;
   case Type::Type9:
-    m_impl.m_value9 = other.m_impl.m_value9;
+    new(&m_impl.m_value9) ossia::vecf_domain<4>{other.m_impl.m_value9};
     break;
   case Type::Type10:
-    m_impl.m_value10 = other.m_impl.m_value10;
+    new(&m_impl.m_value10) ossia::domain_base<ossia::value>{other.m_impl.m_value10};
     break;
     default: break;
   }
@@ -202,76 +202,77 @@ domain_base_variant(domain_base_variant&& other):
 m_type{other.m_type} { 
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::domain_base<ossia::impulse>{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::domain_base<bool>{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::domain_base<int>{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::domain_base<float>{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::domain_base<char>{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::domain_base<std::string>{std::move(other.m_impl.m_value5)};
     break;
   case Type::Type6:
-    m_impl.m_value6 = std::move(other.m_impl.m_value6);
+    new(&m_impl.m_value6) ossia::vector_domain{std::move(other.m_impl.m_value6)};
     break;
   case Type::Type7:
-    m_impl.m_value7 = std::move(other.m_impl.m_value7);
+    new(&m_impl.m_value7) ossia::vecf_domain<2>{std::move(other.m_impl.m_value7)};
     break;
   case Type::Type8:
-    m_impl.m_value8 = std::move(other.m_impl.m_value8);
+    new(&m_impl.m_value8) ossia::vecf_domain<3>{std::move(other.m_impl.m_value8)};
     break;
   case Type::Type9:
-    m_impl.m_value9 = std::move(other.m_impl.m_value9);
+    new(&m_impl.m_value9) ossia::vecf_domain<4>{std::move(other.m_impl.m_value9)};
     break;
   case Type::Type10:
-    m_impl.m_value10 = std::move(other.m_impl.m_value10);
+    new(&m_impl.m_value10) ossia::domain_base<ossia::value>{std::move(other.m_impl.m_value10)};
     break;
     default: break;
   }
 }
 domain_base_variant& operator=(const domain_base_variant& other){ 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = other.m_impl.m_value0;
+    new(&m_impl.m_value0) ossia::domain_base<ossia::impulse>{other.m_impl.m_value0};
     break;
   case Type::Type1:
-    m_impl.m_value1 = other.m_impl.m_value1;
+    new(&m_impl.m_value1) ossia::domain_base<bool>{other.m_impl.m_value1};
     break;
   case Type::Type2:
-    m_impl.m_value2 = other.m_impl.m_value2;
+    new(&m_impl.m_value2) ossia::domain_base<int>{other.m_impl.m_value2};
     break;
   case Type::Type3:
-    m_impl.m_value3 = other.m_impl.m_value3;
+    new(&m_impl.m_value3) ossia::domain_base<float>{other.m_impl.m_value3};
     break;
   case Type::Type4:
-    m_impl.m_value4 = other.m_impl.m_value4;
+    new(&m_impl.m_value4) ossia::domain_base<char>{other.m_impl.m_value4};
     break;
   case Type::Type5:
-    m_impl.m_value5 = other.m_impl.m_value5;
+    new(&m_impl.m_value5) ossia::domain_base<std::string>{other.m_impl.m_value5};
     break;
   case Type::Type6:
-    m_impl.m_value6 = other.m_impl.m_value6;
+    new(&m_impl.m_value6) ossia::vector_domain{other.m_impl.m_value6};
     break;
   case Type::Type7:
-    m_impl.m_value7 = other.m_impl.m_value7;
+    new(&m_impl.m_value7) ossia::vecf_domain<2>{other.m_impl.m_value7};
     break;
   case Type::Type8:
-    m_impl.m_value8 = other.m_impl.m_value8;
+    new(&m_impl.m_value8) ossia::vecf_domain<3>{other.m_impl.m_value8};
     break;
   case Type::Type9:
-    m_impl.m_value9 = other.m_impl.m_value9;
+    new(&m_impl.m_value9) ossia::vecf_domain<4>{other.m_impl.m_value9};
     break;
   case Type::Type10:
-    m_impl.m_value10 = other.m_impl.m_value10;
+    new(&m_impl.m_value10) ossia::domain_base<ossia::value>{other.m_impl.m_value10};
     break;
     default: break;
   }
@@ -279,40 +280,41 @@ domain_base_variant& operator=(const domain_base_variant& other){
 }
 domain_base_variant& operator=(domain_base_variant&& other)
 { 
+  destruct_impl(); 
   m_type = other.m_type;
   switch(m_type) { 
   case Type::Type0:
-    m_impl.m_value0 = std::move(other.m_impl.m_value0);
+    new(&m_impl.m_value0) ossia::domain_base<ossia::impulse>{std::move(other.m_impl.m_value0)};
     break;
   case Type::Type1:
-    m_impl.m_value1 = std::move(other.m_impl.m_value1);
+    new(&m_impl.m_value1) ossia::domain_base<bool>{std::move(other.m_impl.m_value1)};
     break;
   case Type::Type2:
-    m_impl.m_value2 = std::move(other.m_impl.m_value2);
+    new(&m_impl.m_value2) ossia::domain_base<int>{std::move(other.m_impl.m_value2)};
     break;
   case Type::Type3:
-    m_impl.m_value3 = std::move(other.m_impl.m_value3);
+    new(&m_impl.m_value3) ossia::domain_base<float>{std::move(other.m_impl.m_value3)};
     break;
   case Type::Type4:
-    m_impl.m_value4 = std::move(other.m_impl.m_value4);
+    new(&m_impl.m_value4) ossia::domain_base<char>{std::move(other.m_impl.m_value4)};
     break;
   case Type::Type5:
-    m_impl.m_value5 = std::move(other.m_impl.m_value5);
+    new(&m_impl.m_value5) ossia::domain_base<std::string>{std::move(other.m_impl.m_value5)};
     break;
   case Type::Type6:
-    m_impl.m_value6 = std::move(other.m_impl.m_value6);
+    new(&m_impl.m_value6) ossia::vector_domain{std::move(other.m_impl.m_value6)};
     break;
   case Type::Type7:
-    m_impl.m_value7 = std::move(other.m_impl.m_value7);
+    new(&m_impl.m_value7) ossia::vecf_domain<2>{std::move(other.m_impl.m_value7)};
     break;
   case Type::Type8:
-    m_impl.m_value8 = std::move(other.m_impl.m_value8);
+    new(&m_impl.m_value8) ossia::vecf_domain<3>{std::move(other.m_impl.m_value8)};
     break;
   case Type::Type9:
-    m_impl.m_value9 = std::move(other.m_impl.m_value9);
+    new(&m_impl.m_value9) ossia::vecf_domain<4>{std::move(other.m_impl.m_value9)};
     break;
   case Type::Type10:
-    m_impl.m_value10 = std::move(other.m_impl.m_value10);
+    new(&m_impl.m_value10) ossia::domain_base<ossia::value>{std::move(other.m_impl.m_value10)};
     break;
     default: break;
   }
