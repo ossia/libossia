@@ -16,8 +16,8 @@ cd build
 
 case "$TRAVIS_OS_NAME" in
   linux)
-    export CC=/usr/bin/clang-4.0
-    export CXX=/usr/bin/clang++-4.0
+#    export CC=/usr/bin/clang-4.0
+#    export CXX=/usr/bin/clang++-4.0
     export BOOST_ROOT=/opt/boost
 #    export VERBOSE=1
     QT_ENV_SCRIPT=$(find /opt -name 'qt*-env.sh')
@@ -42,7 +42,7 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . --target ExperimentalTest
         rm -rf **/*.o
         lcov --compat-libtool --directory .. --capture --output-file coverage.info
-        lcov --remove coverage.info '*.moc' 'moc_*' 'qrc_*' 'ui_*' 'tests/*' '/usr/*' '/opt/*' '3rdparty/*' --output-file coverage.info.cleaned
+        lcov --remove coverage.info '*.moc' '*/moc_*' '*/qrc_*' '*/ui_*' '*/tests/*' '/usr/*' '/opt/*' '*/3rdparty/*' --output-file coverage.info.cleaned
 
         mv coverage.info.cleaned coverage.info
         coveralls-lcov coverage.info
