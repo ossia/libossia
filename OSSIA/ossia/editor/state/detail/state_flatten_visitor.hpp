@@ -5,6 +5,7 @@
 #include <ossia/editor/value/value_traits.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/detail/apply.hpp>
 #include <iostream>
 namespace ossia
 {

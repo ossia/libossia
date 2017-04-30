@@ -4,7 +4,6 @@
 #include <ossia/network/oscquery/detail/server.hpp>
 #include <ossia/network/oscquery/oscquery_client.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
-#include <eggs/variant.hpp>
 #include <readerwriterqueue.h>
 
 #include <hopscotch_map.h>

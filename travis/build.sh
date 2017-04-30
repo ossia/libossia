@@ -16,8 +16,8 @@ cd build
 
 case "$TRAVIS_OS_NAME" in
   linux)
-#    export CC=/usr/bin/clang-4.0
-#    export CXX=/usr/bin/clang++-4.0
+    export CC=/usr/bin/gcc-6
+    export CXX=/usr/bin/g++-6
     export BOOST_ROOT=/opt/boost
 #    export VERBOSE=1
     QT_ENV_SCRIPT=$(find /opt -name 'qt*-env.sh')

@@ -1,7 +1,6 @@
 #pragma once
 #include <ossia/editor/value/value_base.hpp>
 #include <ossia/editor/exceptions.hpp>
-#include <eggs/variant.hpp>
 
 #include <ossia_export.h>
 
@@ -17,26 +16,6 @@ namespace detail
 {
 template<typename T>
 struct dummy { using type = T; };
-}
-
-/**
- * \brief ossia::apply : helper function to apply a visitor to a variant
- * without throwing in the empty variant case.
- *
- * By default, a eggs::variant throws bad_variant.
- * In this case, the operator()() without arguments will be called.
- * This allows a simpler handling of the default case.
- */
-template <typename Visitor, typename Variant>
-auto apply(Visitor&& v, Variant&& var) -> decltype(std::forward<Visitor>(v)())
-{
-  // Thanks K-Ballo (eggs-cpp/variant#21)
-  if (var)
-    return eggs::variants::apply(
-          std::forward<Visitor>(v),
-          std::forward<Variant>(var));
-  else
-    return std::forward<Visitor>(v)();
 }
 
 
@@ -56,7 +35,6 @@ class value;
  *
  */
 OSSIA_EXPORT std::string value_to_pretty_string(const ossia::value& val);
-
 
 
 #include <ossia/editor/value/value_variant_impl.hpp>
@@ -100,7 +78,7 @@ public:
   value(T*) = delete;
   template <int N>
   value(const char (&txt)[N]):
-    v{eggs::variants::in_place<std::string>, txt, N}
+    v{std::string(txt, N)}
   {
 
   }

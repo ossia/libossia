@@ -4,6 +4,7 @@
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ModernMIDI/midi_message.h>
+#include <eggs/variant.hpp>
 
 #include <vector>
 #include <array>

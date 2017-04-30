@@ -22,6 +22,5 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <eggs/variant.hpp>
 
 #endif

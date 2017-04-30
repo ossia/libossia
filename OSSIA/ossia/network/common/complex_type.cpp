@@ -3,6 +3,7 @@
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/detail/apply.hpp>
 namespace ossia
 {
 

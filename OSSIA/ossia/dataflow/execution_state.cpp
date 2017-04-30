@@ -1,6 +1,7 @@
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/audio_address.hpp>
 #include <ossia/dataflow/port.hpp>
+#include <ossia/detail/apply.hpp>
 
 namespace ossia
 {

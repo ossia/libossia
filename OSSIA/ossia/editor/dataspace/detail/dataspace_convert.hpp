@@ -48,14 +48,6 @@ struct convert_unit_visitor
   OSSIA_INLINE ossia::value_with_unit operator()(const timing& d1, const timing_u& d2)
   { return ossia::apply(*this, d1, d2); }
 
-  template<typename... Args2>
-  OSSIA_INLINE ossia::value_with_unit operator()(const ossia::value& value, const eggs::variant<Args2...>& dataspace)
-  {
-    // Just set the unit on the value. This case is handled in value_with_unit and should not be
-    // triggered here.
-    // Throw if it is incompatible ?
-    return {};
-  }
 };
 
 struct convert_to_value_visitor
