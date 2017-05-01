@@ -2,6 +2,7 @@
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/editor/value/value.hpp>
 #include <initializer_list>
 #include <memory>
 #include <ossia_export.h>
@@ -28,6 +29,7 @@ public:
   destination_index index;
   ossia::unit_t unit;
 
+  ossia::value pull() const;
   ossia::net::address_base& address() { return value.get(); }
   ossia::net::address_base& address() const { return value.get(); }
 

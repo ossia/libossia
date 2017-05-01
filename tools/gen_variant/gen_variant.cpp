@@ -927,6 +927,7 @@ int main()
 {
   using namespace gen_variant;
 
+  static const constexpr int value_size = 10;
   // Behavior variant generation
   {
     std::ofstream f("/home/jcelerier/travail/i-score/API/OSSIA/ossia/editor/curve/behavior_variant_impl.hpp");
@@ -952,9 +953,9 @@ int main()
 
     apply_writer r;
     r.write_apply_switch({ class_info{"domain_base_variant", 11, class_info::Ref},
-                           class_info{"value_variant_type", 11, class_info::Cref}
+                           class_info{"value_variant_type", value_size, class_info::Cref}
                          });
-    r.write_apply_switch({  class_info{"value_variant_type", 11, class_info::Cref},
+    r.write_apply_switch({  class_info{"value_variant_type", value_size, class_info::Cref},
                             class_info{"domain_base_variant", 11, class_info::Cref}
                          });
     f << r.str.str();
@@ -967,35 +968,35 @@ int main()
     gen_var<float, int, ossia::vec2f, ossia::vec3f, ossia::vec4f,
             ossia::impulse,
             bool, std::string, std::vector<ossia::value>,
-            char, ossia::Destination>
+            char>
         value_gen("value_variant_type");
     value_gen.write_class();
     f << value_gen.str.str();
 
     apply_writer r;
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Ref},
-                           class_info{"value_variant_type", 11, class_info::Cref}
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::Ref},
+                           class_info{"value_variant_type", value_size, class_info::Cref}
                          });
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
-                           class_info{"value_variant_type", 11, class_info::Ref}
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::Cref},
+                           class_info{"value_variant_type", value_size, class_info::Ref}
                          });
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
-                           class_info{"value_variant_type", 11, class_info::Cref}
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::Cref},
+                           class_info{"value_variant_type", value_size, class_info::Cref}
                          });
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::RvRef},
-                           class_info{"value_variant_type", 11, class_info::RvRef}
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::RvRef},
+                           class_info{"value_variant_type", value_size, class_info::RvRef}
                          });
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Ref},
-                           class_info{"value_variant_type", 11, class_info::Ref}
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::Ref},
+                           class_info{"value_variant_type", value_size, class_info::Ref}
                          });
 
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
-                           class_info{"value_variant_type", 11, class_info::Cref},
-                           class_info{"value_variant_type", 11, class_info::Cref}
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::Cref},
+                           class_info{"value_variant_type", value_size, class_info::Cref},
+                           class_info{"value_variant_type", value_size, class_info::Cref}
                          });
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::RvRef},
-                           class_info{"value_variant_type", 11, class_info::Cref},
-                           class_info{"value_variant_type", 11, class_info::Cref}
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::RvRef},
+                           class_info{"value_variant_type", value_size, class_info::Cref},
+                           class_info{"value_variant_type", value_size, class_info::Cref}
                          });
     f << r.str.str();
   }
@@ -1003,7 +1004,7 @@ int main()
   {
     std::ofstream f("/home/jcelerier/i-score/API/OSSIA/ossia/misc_visitors.hpp");
     apply_writer r;
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::Cref},
                            class_info{"behavior_variant_type", 2, class_info::Cref}
                          });
 
@@ -1158,28 +1159,28 @@ int main()
                          });
 
     // Value & unit_t
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::Cref},
                            class_info{"angle_u", 2, class_info::Cref}
                          });
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::Cref},
                            class_info{"color_u", 8, class_info::Cref}
                          });
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::Cref},
                            class_info{"distance_u", 11, class_info::Cref}
                          });
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::Cref},
                            class_info{"gain_u", 4, class_info::Cref}
                          });
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::Cref},
                            class_info{"orientation_u", 3, class_info::Cref}
                          });
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::Cref},
                            class_info{"position_u", 6, class_info::Cref}
                          });
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::Cref},
                            class_info{"speed_u", 6, class_info::Cref}
                          });
-    r.write_apply_switch({ class_info{"value_variant_type", 11, class_info::Cref},
+    r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::Cref},
                            class_info{"timing_u", 9, class_info::Cref}
                          });
 
@@ -1211,28 +1212,28 @@ int main()
 
     // Strong value & value
     r.write_apply_switch({ class_info{"angle", 2, class_info::Cref},
-                           class_info{"value_variant_type", 11, class_info::Cref}
+                           class_info{"value_variant_type", value_size, class_info::Cref}
                          });
     r.write_apply_switch({ class_info{"color", 8, class_info::Cref},
-                           class_info{"value_variant_type", 11, class_info::Cref}
+                           class_info{"value_variant_type", value_size, class_info::Cref}
                          });
     r.write_apply_switch({ class_info{"distance", 11, class_info::Cref},
-                           class_info{"value_variant_type", 11, class_info::Cref}
+                           class_info{"value_variant_type", value_size, class_info::Cref}
                          });
     r.write_apply_switch({ class_info{"gain", 4, class_info::Cref},
-                           class_info{"value_variant_type", 11, class_info::Cref}
+                           class_info{"value_variant_type", value_size, class_info::Cref}
                          });
     r.write_apply_switch({ class_info{"orientation", 3, class_info::Cref},
-                           class_info{"value_variant_type", 11, class_info::Cref}
+                           class_info{"value_variant_type", value_size, class_info::Cref}
                          });
     r.write_apply_switch({ class_info{"position", 6, class_info::Cref},
-                           class_info{"value_variant_type", 11, class_info::Cref}
+                           class_info{"value_variant_type", value_size, class_info::Cref}
                          });
     r.write_apply_switch({ class_info{"speed", 6, class_info::Cref},
-                           class_info{"value_variant_type", 11, class_info::Cref}
+                           class_info{"value_variant_type", value_size, class_info::Cref}
                          });
     r.write_apply_switch({ class_info{"timing", 9, class_info::Cref},
-                           class_info{"value_variant_type", 11, class_info::Cref}
+                           class_info{"value_variant_type", value_size, class_info::Cref}
                          });
 
 

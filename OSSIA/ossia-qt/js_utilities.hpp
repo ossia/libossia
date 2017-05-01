@@ -96,7 +96,6 @@ public:
   ossia::value operator()(vec3f v) const;
   ossia::value operator()(vec4f v) const;
 
-  ossia::value operator()(const Destination& t);
   ossia::value operator()() const;
 };
 
@@ -183,7 +182,6 @@ struct ossia_to_qvariant
   QVariant operator()(vec3f val) const { return make_array(val); }
   QVariant operator()(vec4f val) const { return make_array(val); }
 
-  QVariant operator()(const Destination& t) const { return {}; }
   QVariant operator()() const { return {}; }
 
   QVariant operator()(const std::vector<ossia::value>& val) const
@@ -242,7 +240,6 @@ struct js_value_outbound_visitor
   QJSValue operator()(vec3f val) const;
   QJSValue operator()(vec4f val) const;
 
-  QJSValue operator()(const Destination& t);
   QJSValue operator()() const;
 };
 
@@ -287,7 +284,6 @@ struct js_string_outbound_visitor
   QString operator()(vec3f val) const;
   QString operator()(vec4f val) const;
 
-  QString operator()(const Destination& t);
   QString operator()() const;
 };
 

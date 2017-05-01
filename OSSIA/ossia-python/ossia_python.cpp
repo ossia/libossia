@@ -112,8 +112,6 @@ struct to_python_value
     template<int N>
     py::object operator()(const std::array<float, N>&) const { throw; }
 
-    py::object operator()(const ossia::Destination&) const { throw; }
-
     py::object operator()() { throw; }
 
 };
@@ -189,7 +187,6 @@ PYBIND11_PLUGIN(ossia_python)
             .value("String", ossia::val_type::STRING)
             .value("Tuple", ossia::val_type::TUPLE)
             .value("Char", ossia::val_type::CHAR)
-            .value("Destination", ossia::val_type::DESTINATION)
             .export_values();
 
     py::enum_<ossia::access_mode>(m, "AccessMode", py::arithmetic())

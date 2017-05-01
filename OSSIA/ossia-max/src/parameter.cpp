@@ -34,7 +34,6 @@ struct ossia_value_to_outlet
   void operator()(ossia::vec4f v) const { }
   void operator()(const std::string& v) const { }
   void operator()(const std::vector<ossia::value>& v) const { }
-  void operator()(const ossia::Destination&) const { }
   void operator()() { }
 };
 

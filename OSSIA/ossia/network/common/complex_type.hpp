@@ -6,7 +6,10 @@
 
 namespace ossia
 {
-namespace net { class node_base; }
+namespace net {
+class node_base;
+class address_base;
+}
 
 /**
  * @typedef Used when an external information can be mapped to multiple levels of typing.

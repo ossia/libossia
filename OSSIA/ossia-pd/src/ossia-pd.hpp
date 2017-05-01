@@ -104,18 +104,7 @@ struct value2atom
         va.push_back(a[2]);
         return va;
     }
-    std::vector<t_atom> operator()(const Destination& d) const
-    {
-      /*
-      s << "destination" << ossia::net::address_string_from_node(d.value);
-      if(d.unit)
-      {
-        s << " " << ossia::get_pretty_unit_text(d.unit);
-      }
-      */
-      std::vector<t_atom> va;
-      return va;
-    }
+
     std::vector<t_atom> operator()(const std::vector<ossia::value>& t) const
     {
         std::vector<t_atom> va;
@@ -210,17 +199,6 @@ struct value_visitor
         SETFLOAT(a+3,vec[3]);
         outlet_list(x->x_dataout, gensym("list"), 4, a);
         if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),4, a);
-    }
-    void operator()(const Destination& d) const
-    {
-      post("%s receive a Destination",x->x_name->s_name);
-      /*
-      s << "destination" << ossia::net::address_string_from_node(d.value);
-      if(d.unit)
-      {
-        s << " " << ossia::get_pretty_unit_text(d.unit);
-      }
-      */
     }
     void operator()(const std::vector<ossia::value>& t) const
     {

@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/editor/value/value.hpp>
+#include <ossia/editor/value/destination.hpp>
 #include <ossia/editor/state/destination_qualifiers.hpp>
 #include <ossia_export.h>
 #include <utility>

@@ -37,8 +37,14 @@ private Q_SLOTS:
 
         auto testImpulseExprC = make_expression_atom(
                     impulse(), comparator::EQUAL, true);
-        QCOMPARE(testImpulseExprC->target<expression_atom>()->get_first_operand().getType(), val_type::IMPULSE);
-        QCOMPARE(testImpulseExprC->target<expression_atom>()->get_second_operand().getType(), val_type::BOOL);
+        auto first_op = testImpulseExprC->target<expression_atom>()->get_first_operand();
+        auto first_val = first_op.target<ossia::value>();
+        auto second_op = testImpulseExprC->target<expression_atom>()->get_second_operand();
+        auto second_val = second_op.target<ossia::value>();
+        QVERIFY(first_val);
+        QVERIFY(second_val);
+        QCOMPARE(first_val->getType(), val_type::IMPULSE);
+        QCOMPARE(second_val->getType(), val_type::BOOL);
 
         QVERIFY(evaluate(testImpulseExprC) == true);
 

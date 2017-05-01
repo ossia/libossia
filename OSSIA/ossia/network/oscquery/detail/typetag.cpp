@@ -44,11 +44,6 @@ struct osc_type_visitor
     }
     type += oscpack::TypeTagValues::ARRAY_END_TYPE_TAG;
   }
-
-  void operator()(const ossia::Destination& d)
-  {
-    throw;
-  }
 };
 
 

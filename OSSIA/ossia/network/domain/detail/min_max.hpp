@@ -266,8 +266,6 @@ struct domain_minmax_creation_visitor
   template <typename T, typename U>
   OSSIA_INLINE domain operator()(const T&, const U&)
   { return domain{}; }
-  OSSIA_INLINE domain operator()(const Destination&, const Destination&)
-  { return domain{}; }
 };
 
 
@@ -330,10 +328,6 @@ struct domain_value_set_creation_visitor
     return {};
   }
 
-
-
-  domain operator()(const Destination&)
-  { return domain{}; }
   domain operator()(const impulse&)
   { return domain{}; }
 };
@@ -391,9 +385,6 @@ struct domain_value_set_update_visitor
     }
   }
 
-
-  void operator()(ossia::domain_base<Destination>&)
-  {  }
   void operator()(ossia::domain_base<impulse>&)
   { }
 };

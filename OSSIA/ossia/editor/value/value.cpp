@@ -50,6 +50,12 @@ Destination::Destination(Destination&& other) = default;
 Destination& Destination::operator=(const Destination&) = default;
 Destination& Destination::operator=(Destination&&) = default;
 
+value Destination::pull() const
+{
+  // TODO unit conversion
+  return value.get().value(index);
+}
+
 Destination::Destination(ossia::net::address_base& v) : value(v)
 {
   // TODO should we also copy the unit of the address ?
@@ -262,65 +268,6 @@ struct value_comparison_visitor2
   {
     return Comparator{}(v, comparisons::String_T{});
   }
-
-  // Destination
-  template<typename T>
-  bool operator()(const T& lhs, const Destination& d) const
-  {
-    return Comparator{}(lhs, d.address().value(d.index));
-  }
-
-  template<typename T>
-  bool operator()(const Destination& d, const T& rhs) const
-  {
-    return Comparator{}(d.address().value(d.index), rhs);
-  }
-
-  bool operator()(const impulse& lhs, const Destination& d) const
-  {
-    return Comparator{}(impulse{}, impulse{});
-  }
-
-  bool operator()(const Destination& d, const impulse& rhs) const
-  {
-    return Comparator{}(impulse{}, impulse{});
-  }
-
-  bool operator()(const Destination& lhs, const Destination& d) const
-  {
-    return Comparator{}(lhs.address().value(d.index), d.address().value(d.index));
-  }
-
-  bool operator()(const std::vector<ossia::value>& lhs, const Destination& d) const
-  {
-    return Comparator{}(lhs, d.address().value(d.index));
-  }
-
-  bool operator()(const Destination& d, const std::vector<ossia::value>& rhs) const
-  {
-    return Comparator{}(d.address().value(d.index), rhs);
-  }
-
-  bool operator()(const std::array<float, 2>& lhs, const Destination& d) const
-  { return Comparator{}(lhs, d.address().value(d.index)); }
-
-  bool operator()(const Destination& d, const std::array<float, 2>& rhs) const
-  { return Comparator{}(d.address().value(d.index), rhs); }
-
-  bool operator()(const std::array<float, 3>& lhs, const Destination& d) const
-  { return Comparator{}(lhs, d.address().value(d.index)); }
-
-  bool operator()(const Destination& d, const std::array<float, 3>& rhs) const
-  { return Comparator{}(d.address().value(d.index), rhs); }
-
-  bool operator()(const std::array<float, 4>& lhs, const Destination& d) const
-  { return Comparator{}(lhs, d.address().value(d.index)); }
-
-  bool operator()(const Destination& d, const std::array<float, 4>& rhs) const
-  { return Comparator{}(d.address().value(d.index), rhs); }
-
-
-
 
   // Tuple
   template<typename T>
@@ -563,14 +510,6 @@ struct value_prettyprint_visitor
   void operator()(vec4f vec) const
   {
     s.write("vec4f: {}", vec);
-  }
-  void operator()(const Destination& d) const
-  {
-    s << "destination" << ossia::net::address_string_from_node(d.value);
-    if(d.unit)
-    {
-      s << " " << ossia::get_pretty_unit_text(d.unit);
-    }
   }
   void operator()(const std::vector<ossia::value>& t) const
   {

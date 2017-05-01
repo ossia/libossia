@@ -288,9 +288,6 @@ template<typename T> void obj_dump(T *x){
             case ossia::val_type::CHAR:
                 type="char";
                 break;
-            case ossia::val_type::DESTINATION:
-                type="destination";
-                break;
             default:
                 type="unknown";
             }

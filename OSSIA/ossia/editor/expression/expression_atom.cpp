@@ -9,9 +9,41 @@ expression_atom::expression_atom(
     const value& lhs, comparator op, const value& rhs)
     : m_first(lhs), m_second(rhs), m_operator(op)
 {
-  if(!m_first.valid() || !m_second.valid())
+  if(!lhs.valid() || !rhs.valid())
     throw std::runtime_error("expression_atom created with invalid values");
 }
+
+expression_atom::expression_atom(
+    const Destination& lhs, comparator op, const value& rhs)
+  : m_first(lhs), m_second(rhs), m_operator(op)
+{
+  if(!rhs.valid())
+    throw std::runtime_error("expression_atom created with invalid values");
+}
+
+expression_atom::expression_atom(
+    const value& lhs, comparator op, const Destination& rhs)
+  : m_first(lhs), m_second(rhs), m_operator(op)
+{
+  if(!lhs.valid())
+    throw std::runtime_error("expression_atom created with invalid values");
+}
+
+expression_atom::expression_atom(
+    const expression_atom::val_t& lhs,
+    comparator op,
+    const expression_atom::val_t& rhs, expression_atom::dummy_t)
+  : m_first(lhs), m_second(rhs), m_operator(op)
+{
+
+}
+
+expression_atom::expression_atom(
+    const Destination& lhs, comparator op, const Destination& rhs)
+  : m_first(lhs), m_second(rhs), m_operator(op)
+{
+}
+
 
 expression_atom::~expression_atom()
 {
@@ -21,25 +53,25 @@ expression_atom::~expression_atom()
 
 bool expression_atom::evaluate() const
 {
-  return do_evaluation(m_first, m_second);
+  return eggs::variants::apply(*this, m_first, m_second);
 }
 
 void expression_atom::update() const
 {
   // pull value of the first operand if it is a Destination
-  if (auto d = m_first.target<Destination>())
+  if (const Destination* d = m_first.target<Destination>())
   {
     d->address().pull_value();
   }
 
   // pull value of the second operand if it is a Destination
-  if (auto d = m_second.target<Destination>())
+  if (const Destination* d = m_second.target<Destination>())
   {
     d->address().pull_value();
   }
 }
 
-const value& expression_atom::get_first_operand() const
+const expression_atom::val_t& expression_atom::get_first_operand() const
 {
   return m_first;
 }
@@ -49,7 +81,7 @@ comparator expression_atom::get_operator() const
   return m_operator;
 }
 
-const value& expression_atom::get_second_operand() const
+const expression_atom::val_t& expression_atom::get_second_operand() const
 {
   return m_second;
 }
@@ -57,7 +89,6 @@ const value& expression_atom::get_second_operand() const
 void expression_atom::on_first_callback_added()
 {
   // start first operand observation if it is a Destination
-  //! \todo what about Tuple of Destinations ?
   if (auto d = m_first.target<Destination>())
   {
     m_firstCallback = d->address().add_callback(
@@ -66,7 +97,6 @@ void expression_atom::on_first_callback_added()
   }
 
   // start second operand observation if it is a Destination
-  //! \todo what about Tuple of Destinations ?
   if (auto d = m_second.target<Destination>())
   {
     m_secondCallback = d->address().add_callback(
@@ -78,22 +108,20 @@ void expression_atom::on_first_callback_added()
 void expression_atom::on_removing_last_callback()
 {
   // stop first operand observation if it is a Destination
-  //! \todo what about Tuple of Destinations ?
   if (auto d = m_first.target<Destination>())
   {
     d->address().remove_callback(m_firstCallback);
   }
 
   // start second operand observation if it is a Destination
-  //! \todo what about Tuple of Destinations ?
   if (auto d = m_second.target<Destination>())
   {
     d->address().remove_callback(m_secondCallback);
   }
 }
 
-bool expression_atom::do_evaluation(
-    const value& first, const value& second) const
+bool expression_atom::operator()(
+    const ossia::value& first, const ossia::value& second) const
 {
   switch (m_operator)
   {
@@ -126,16 +154,43 @@ bool expression_atom::do_evaluation(
   }
 }
 
-void expression_atom::firstValueCallback(const value& value)
+bool expression_atom::operator()(
+    const ossia::value& first, const ossia::Destination& second) const
 {
-  if (value.valid())
-    send(do_evaluation(value, m_second));
+  return operator()(first, second.pull());
+}
+bool expression_atom::operator()(
+    const ossia::Destination& first, const ossia::value& second) const
+{
+  return operator()(first.pull(), second);
+}
+bool expression_atom::operator()(
+    const ossia::Destination& first, const ossia::Destination& second) const
+{
+  return operator()(first.pull(), second.pull());
 }
 
-void expression_atom::secondValueCallback(const value& value)
+bool expression_atom::operator()(
+    const ossia::value& first, const val_t& second) const
+{
+  return eggs::variants::apply([&] (const auto& t) { return this->operator()(first, t); }, second);
+}
+bool expression_atom::operator()(
+    const val_t& first, const ossia::value& second) const
+{
+  return eggs::variants::apply([&] (const auto& t) { return this->operator()(t, second); }, first);
+}
+
+void expression_atom::firstValueCallback(const ossia::value& value)
 {
   if (value.valid())
-    send(do_evaluation(m_first, value));
+    send((*this)(value, m_second));
+}
+
+void expression_atom::secondValueCallback(const ossia::value& value)
+{
+  if (value.valid())
+    send((*this)(m_first, value));
 }
 }
 }

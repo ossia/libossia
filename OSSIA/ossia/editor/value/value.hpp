@@ -1,7 +1,10 @@
 #pragma once
 #include <ossia/editor/value/value_base.hpp>
+#include <ossia/detail/destination_index.hpp>
 #include <ossia/editor/exceptions.hpp>
-
+#include <ossia/network/common/address_properties.hpp>
+#include <vector>
+#include <string>
 #include <ossia_export.h>
 
 namespace fmt
@@ -84,7 +87,6 @@ public:
   }
 
   value(impulse val) noexcept : v{val} { }
-  value(const ossia::Destination& val) noexcept : v{val} { }
 
   value(bool val) noexcept : v{val} { }
   value(int val) noexcept : v{val} { }
@@ -96,10 +98,6 @@ public:
   value(std::array<float, 2> val) noexcept : v{val} { }
   value(std::array<float, 3> val) noexcept : v{val} { }
   value(std::array<float, 4> val) noexcept : v{val} { }
-  value(ossia::net::address_base& val) noexcept : v{val} { }
-
-  // Movable overloads
-  value(ossia::Destination&& val) noexcept : v{std::move(val)} { }
 
   explicit value(std::string&& val) noexcept : v{std::move(val)} { }
   explicit value(std::vector<ossia::value>&& val) noexcept : v{std::move(val)} { }
@@ -119,11 +117,6 @@ public:
 
   // Assignment
   value& operator=(ossia::impulse val) noexcept
-  {
-    v = val;
-    return *this;
-  }
-  value& operator=(const ossia::Destination& val) noexcept
   {
     v = val;
     return *this;
@@ -176,11 +169,6 @@ public:
   value& operator=(std::array<float, 4> val) noexcept
   {
     v = val;
-    return *this;
-  }
-  value& operator=(ossia::net::address_base& val) noexcept
-  {
-    v = Destination{val};
     return *this;
   }
 
@@ -305,8 +293,6 @@ inline ossia::value init_value(ossia::val_type type)
       return vec3f{};
     case val_type::VEC4F:
       return vec4f{};
-    case val_type::DESTINATION:
-      throw invalid_value_type_error("init_value: do not create Destination like this");
   }
 
   throw invalid_value_type_error("init_value: Invalid type");

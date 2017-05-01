@@ -282,13 +282,6 @@ public:
                                        "Cannot convert String to a numeric type");
         return {};
       }
-      Y operator()(const Destination& d) const
-      {
-        throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
-                                       "Cannot convert Destination to a numeric type");
-        return {};
-        ;
-      }
       Y operator()() const
       {
         throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "

@@ -22,8 +22,7 @@ enum class val_type : int8_t
   BOOL, //! \see Bool
   STRING, //! \see String
   TUPLE, //! \see Tuple
-  CHAR, //! \see Char
-  DESTINATION //! \see Destination
+  CHAR
 };
 
 

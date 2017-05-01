@@ -149,6 +149,16 @@ expression_ptr make_expression_atom(Args&&... args)
   return std::make_unique<expression_base>(
       eggs::variants::in_place<expression_atom>, std::forward<Args>(args)...);
 }
+OSSIA_EXPORT
+expression_ptr make_expression_atom(
+    const ossia::expressions::expression_atom::val_t& lhs,
+    ossia::expressions::comparator c,
+    const ossia::expressions::expression_atom::val_t& rhs);
+OSSIA_EXPORT
+expression_ptr make_expression_atom(
+    ossia::expressions::expression_atom::val_t&& lhs,
+    ossia::expressions::comparator c,
+    ossia::expressions::expression_atom::val_t&& rhs);
 
 /**
  * @brief make_expression_bool

@@ -60,9 +60,6 @@ struct osc_outbound_visitor
     {
       p << vec[0] << vec[1] << vec[2] << vec[3];
     }
-    void operator()(const ossia::Destination& d) const
-    {
-    }
     void operator()(const std::vector<ossia::value>& t) const
     {
       for (const auto& val : t)
@@ -327,12 +324,6 @@ struct osc_inbound_visitor
       }
     }
 
-    ossia::value operator()(const ossia::Destination& d) const
-    {
-      return d;
-    }
-
-
     ossia::value operator()(const std::vector<ossia::value>&)
     {
       /* This code preserves type info, this is not what we want.
@@ -399,11 +390,6 @@ struct osc_inbound_numeric_visitor
     ossia::value operator()(std::array<float, N> vec) const
     {
       return osc_utilities::get_float(cur_it, vec[0]);
-    }
-
-    ossia::value operator()(const ossia::Destination& d) const
-    {
-      return d;
     }
 
     ossia::value operator()(const std::vector<ossia::value>& t)

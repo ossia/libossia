@@ -46,8 +46,7 @@ enum ossia_type
   BOOL_T,
   STRING_T,
   TUPLE_T,
-  CHAR_T,
-  DESTINATION_T
+  CHAR_T
 };
 
 enum ossia_access_mode

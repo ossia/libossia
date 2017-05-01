@@ -1,5 +1,7 @@
 #include "domain_base.hpp"
 #include <ossia/network/domain/detail/clamp_visitors.hpp>
+#include <ossia/network/domain/domain_base.hpp>
+#include <ossia/detail/math.hpp>
 
 namespace ossia
 {

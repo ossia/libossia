@@ -42,7 +42,6 @@ struct numeric_value_converter
   T operator()(char v) { return v; }
   T operator()() const { return T{}; }
 
-  T operator()(const Destination&) const { return T{}; }
   T operator()(const std::string& v) const {
     try {
       return boost::lexical_cast<T>(v);
@@ -91,7 +90,6 @@ struct value_converter<std::string>
   T operator()(char v) { return boost::lexical_cast<std::string>(v); }
   T operator()(const std::string& v) const { return v; }
 
-  T operator()(const Destination&) const { return T{}; }
   T operator()() const { return T{}; }
 
   template<std::size_t N>
@@ -199,18 +197,6 @@ struct value_converter<std::array<float, N>>
 
   std::array<float, N> operator()() { return {}; }
 };
-
-template<>
-struct value_converter<Destination>
-{
-  template<typename... U>
-  Destination operator()(U&&...)
-  {
-    throw invalid_value_type_error("value_converter<Destination>: "
-                                   "Don't try to convert from / to a Destination");
-  }
-};
-
 }
 
 template<typename T>
@@ -263,8 +249,6 @@ auto lift(ossia::val_type type, Fun f, Args&&... args)
       return f(ossia::value_trait<vec3f>{}, std::forward<Args>(args)...);
     case val_type::VEC4F:
       return f(ossia::value_trait<vec4f>{}, std::forward<Args>(args)...);
-    case val_type::DESTINATION:
-      return f(ossia::value_trait<Destination>{}, std::forward<Args>(args)...);
   }
 
   throw invalid_value_type_error("lift: Invalid type");

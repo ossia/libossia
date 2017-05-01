@@ -45,13 +45,6 @@ struct value_to_json
     }
     writer.EndArray();
   }
-
-  void operator()(const ossia::Destination& d) const
-  {
-    throw;
-  }
-
-
   void operator()() const
   {
     throw;
@@ -88,12 +81,6 @@ struct value_to_json_value
     }
     return v;
   }
-
-  rapidjson::Value operator()(const ossia::Destination& d) const
-  {
-    throw;
-  }
-
   rapidjson::Value operator()() const
   {
     throw;
@@ -303,11 +290,6 @@ struct json_to_value
     return b;
   }
 
-  bool operator()(ossia::Destination& d) const
-  {
-    throw;
-  }
-
   bool operator()() const
   {
     throw;
@@ -419,11 +401,6 @@ struct json_to_value_unchecked
         res.push_back(ReadValue(elt));
       }
     }
-  }
-
-  void operator()(ossia::Destination& d) const
-  {
-    throw;
   }
 
   void operator()() const

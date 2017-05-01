@@ -50,11 +50,6 @@ int main()
     auto localTupleNode2 = device.create_child("my_tuple.2");
     auto localTupleAddress2 = localTupleNode2->create_address(val_type::TUPLE);
 
-    auto localDestinationNode1 = device.create_child("my_destination.1");
-    auto localDestinationAddress1 = localDestinationNode1->create_address(val_type::DESTINATION);
-    auto localDestinationNode2 = device.create_child("my_destination.2");
-    auto localDestinationAddress2 = localDestinationNode2->create_address(val_type::DESTINATION);
-
     // evaluate expression with Impulse
     auto testImpulseExprA = make_expression_atom(impulse(),
                                                    comparator::EQUAL,
@@ -161,12 +156,6 @@ int main()
     std::string s2("bcd");
     localStringAddress2->set_value(s2);
 
-    Destination d1(*localFloatAddress1);
-    localDestinationAddress1->set_value(d1);
-
-    Destination d2(*localFloatAddress2);
-    localDestinationAddress2->set_value(d2);
-
     std::vector<ossia::value> t1(value1);
     localTupleAddress1->set_value(t1);
 
@@ -197,12 +186,6 @@ int main()
                                                        *localStringAddress2);
 
     cout << boolalpha << "testDestinationExprD is " << evaluate(testDestinationExprD) << endl;
-
-    auto testDestinationExprE = make_expression_atom(*localDestinationAddress1,
-                                                       comparator::GREATER_EQUAL,
-                                                       *localDestinationAddress2);
-
-    cout << boolalpha << "testDestinationExprE is " << evaluate(testDestinationExprE) << endl;
 
     auto testDestinationExprF = make_expression_atom(*localTupleAddress1,
                                                        comparator::LOWER_EQUAL,

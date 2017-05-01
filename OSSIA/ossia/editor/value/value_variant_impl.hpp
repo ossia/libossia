@@ -23,15 +23,13 @@ std::vector<ossia::value> m_value8;
 
 char m_value9;
 
-ossia::Destination m_value10;
-
 dummy_t m_dummy;
 Impl(): m_dummy{} { }
 ~Impl() { }
 };
 
 enum Type: int8_t { 
-Type0, Type1, Type2, Type3, Type4, Type5, Type6, Type7, Type8, Type9, Type10, Npos
+Type0, Type1, Type2, Type3, Type4, Type5, Type6, Type7, Type8, Type9, Npos
 };
 
 void destruct_impl() { 
@@ -41,9 +39,6 @@ switch(m_type) {
     break;
   case Type::Type8:
     m_impl.m_value8.~vector<ossia::value>();
-    break;
-  case Type::Type10:
-    m_impl.m_value10.~Destination();
     break;
   default: break; 
  } 
@@ -105,12 +100,6 @@ value_variant_type(std::vector<ossia::value>&& v): m_type{Type8} {
  value_variant_type(char v): m_type{Type9} { 
   new(&m_impl.m_value9) char{v};
 }
-value_variant_type(const ossia::Destination& v): m_type{Type10} { 
-  new(&m_impl.m_value10) ossia::Destination{v};
-}
-value_variant_type(ossia::Destination&& v): m_type{Type10} { 
-  new(&m_impl.m_value10) ossia::Destination{std::move(v)};
-}
 value_variant_type(const value_variant_type& other):
  m_type{other.m_type} { 
   switch(m_type) { 
@@ -143,9 +132,6 @@ value_variant_type(const value_variant_type& other):
     break;
   case Type::Type9:
     new(&m_impl.m_value9) char{other.m_impl.m_value9};
-    break;
-  case Type::Type10:
-    new(&m_impl.m_value10) ossia::Destination{other.m_impl.m_value10};
     break;
     default: break;
   }
@@ -183,9 +169,6 @@ m_type{other.m_type} {
   case Type::Type9:
     new(&m_impl.m_value9) char{std::move(other.m_impl.m_value9)};
     break;
-  case Type::Type10:
-    new(&m_impl.m_value10) ossia::Destination{std::move(other.m_impl.m_value10)};
-    break;
     default: break;
   }
 }
@@ -222,9 +205,6 @@ value_variant_type& operator=(const value_variant_type& other){
     break;
   case Type::Type9:
     new(&m_impl.m_value9) char{other.m_impl.m_value9};
-    break;
-  case Type::Type10:
-    new(&m_impl.m_value10) ossia::Destination{other.m_impl.m_value10};
     break;
     default: break;
   }
@@ -264,9 +244,6 @@ value_variant_type& operator=(value_variant_type&& other)
     break;
   case Type::Type9:
     new(&m_impl.m_value9) char{std::move(other.m_impl.m_value9)};
-    break;
-  case Type::Type10:
-    new(&m_impl.m_value10) ossia::Destination{std::move(other.m_impl.m_value10)};
     break;
     default: break;
   }
@@ -323,11 +300,6 @@ template<> inline const char* value_variant_type::target() const {
     return &m_impl.m_value9 ;
   return nullptr; 
 }
-template<> inline const ossia::Destination* value_variant_type::target() const { 
-  if(m_type == Type10) 
-    return &m_impl.m_value10 ;
-  return nullptr; 
-}
 template<> inline float* value_variant_type::target() { 
   if(m_type == Type0) 
     return &m_impl.m_value0 ;
@@ -376,11 +348,6 @@ template<> inline std::vector<ossia::value>* value_variant_type::target() {
 template<> inline char* value_variant_type::target() { 
   if(m_type == Type9) 
     return &m_impl.m_value9 ;
-  return nullptr; 
-}
-template<> inline ossia::Destination* value_variant_type::target() { 
-  if(m_type == Type10) 
-    return &m_impl.m_value10 ;
   return nullptr; 
 }
 template<> inline const float& value_variant_type::get() const { 
@@ -433,11 +400,6 @@ template<> inline const char& value_variant_type::get() const {
     return m_impl.m_value9 ;
   throw; 
 }
-template<> inline const ossia::Destination& value_variant_type::get() const { 
-  if(m_type == Type10) 
-    return m_impl.m_value10 ;
-  throw; 
-}
 template<> inline float& value_variant_type::get() { 
   if(m_type == Type0) 
     return m_impl.m_value0 ;
@@ -488,11 +450,6 @@ template<> inline char& value_variant_type::get() {
     return m_impl.m_value9 ;
   throw; 
 }
-template<> inline ossia::Destination& value_variant_type::get() { 
-  if(m_type == Type10) 
-    return m_impl.m_value10 ;
-  throw; 
-}
 template<typename Visitor>
 auto apply_nonnull(Visitor&& functor, const value_variant_type& var) {
   switch (var.m_type) { 
@@ -516,8 +473,6 @@ auto apply_nonnull(Visitor&& functor, const value_variant_type& var) {
     return functor(var.m_impl.m_value8);
   case value_variant_type::Type::Type9:
     return functor(var.m_impl.m_value9);
-  case value_variant_type::Type::Type10:
-    return functor(var.m_impl.m_value10);
   default: throw;
   }
 }
@@ -544,8 +499,6 @@ auto apply_nonnull(Visitor&& functor,  value_variant_type& var) {
     return functor(var.m_impl.m_value8);
   case value_variant_type::Type::Type9:
     return functor(var.m_impl.m_value9);
-  case value_variant_type::Type::Type10:
-    return functor(var.m_impl.m_value10);
   default: throw;
   }
 }
@@ -572,8 +525,6 @@ auto apply_nonnull(Visitor&& functor,  value_variant_type&& var) {
     return functor(std::move(var.m_impl.m_value8));
   case value_variant_type::Type::Type9:
     return functor(std::move(var.m_impl.m_value9));
-  case value_variant_type::Type::Type10:
-    return functor(std::move(var.m_impl.m_value10));
   default: throw;
   }
 }
@@ -600,8 +551,6 @@ auto apply(Visitor&& functor, const value_variant_type& var) {
     return functor(var.m_impl.m_value8);
   case value_variant_type::Type::Type9:
     return functor(var.m_impl.m_value9);
-  case value_variant_type::Type::Type10:
-    return functor(var.m_impl.m_value10);
   default: return functor();
   }
 }
@@ -628,8 +577,6 @@ auto apply(Visitor&& functor,  value_variant_type& var) {
     return functor(var.m_impl.m_value8);
   case value_variant_type::Type::Type9:
     return functor(var.m_impl.m_value9);
-  case value_variant_type::Type::Type10:
-    return functor(var.m_impl.m_value10);
   default: return functor();
   }
 }
@@ -656,8 +603,6 @@ auto apply(Visitor&& functor,  value_variant_type&& var) {
     return functor(std::move(var.m_impl.m_value8));
   case value_variant_type::Type::Type9:
     return functor(std::move(var.m_impl.m_value9));
-  case value_variant_type::Type::Type10:
-    return functor(std::move(var.m_impl.m_value10));
   default: return functor();
   }
 }
@@ -708,10 +653,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -757,10 +698,6 @@ return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -808,10 +745,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -857,10 +790,6 @@ return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -908,10 +837,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -957,10 +882,6 @@ return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -1008,10 +929,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -1057,10 +974,6 @@ return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -1108,10 +1021,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -1157,60 +1066,6 @@ return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg1.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -1265,10 +1120,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -1314,10 +1165,6 @@ return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -1365,10 +1212,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -1414,10 +1257,6 @@ return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -1465,10 +1304,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -1514,10 +1349,6 @@ return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -1565,10 +1396,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -1614,10 +1441,6 @@ return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -1665,10 +1488,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -1714,60 +1533,6 @@ return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg1.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -1822,10 +1587,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -1871,10 +1632,6 @@ return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -1922,10 +1679,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -1971,10 +1724,6 @@ return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -2022,10 +1771,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -2071,10 +1816,6 @@ return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -2122,10 +1863,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -2171,10 +1908,6 @@ return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -2222,10 +1955,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -2271,60 +2000,6 @@ return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg1.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -2379,10 +2054,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value0), std::move(arg1.m_impl.m_value9));
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value0), std::move(arg1.m_impl.m_value10));
-}
 default: throw; 
 }
 }
@@ -2428,10 +2099,6 @@ return functor(std::move(arg0.m_impl.m_value1), std::move(arg1.m_impl.m_value8))
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value1), std::move(arg1.m_impl.m_value9));
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value1), std::move(arg1.m_impl.m_value10));
 }
 default: throw; 
 }
@@ -2479,10 +2146,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value2), std::move(arg1.m_impl.m_value9));
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value2), std::move(arg1.m_impl.m_value10));
-}
 default: throw; 
 }
 }
@@ -2528,10 +2191,6 @@ return functor(std::move(arg0.m_impl.m_value3), std::move(arg1.m_impl.m_value8))
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value3), std::move(arg1.m_impl.m_value9));
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value3), std::move(arg1.m_impl.m_value10));
 }
 default: throw; 
 }
@@ -2579,10 +2238,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value4), std::move(arg1.m_impl.m_value9));
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value4), std::move(arg1.m_impl.m_value10));
-}
 default: throw; 
 }
 }
@@ -2628,10 +2283,6 @@ return functor(std::move(arg0.m_impl.m_value5), std::move(arg1.m_impl.m_value8))
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value5), std::move(arg1.m_impl.m_value9));
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value5), std::move(arg1.m_impl.m_value10));
 }
 default: throw; 
 }
@@ -2679,10 +2330,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value6), std::move(arg1.m_impl.m_value9));
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value6), std::move(arg1.m_impl.m_value10));
-}
 default: throw; 
 }
 }
@@ -2728,10 +2375,6 @@ return functor(std::move(arg0.m_impl.m_value7), std::move(arg1.m_impl.m_value8))
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value7), std::move(arg1.m_impl.m_value9));
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value7), std::move(arg1.m_impl.m_value10));
 }
 default: throw; 
 }
@@ -2779,10 +2422,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value8), std::move(arg1.m_impl.m_value9));
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value8), std::move(arg1.m_impl.m_value10));
-}
 default: throw; 
 }
 }
@@ -2828,60 +2467,6 @@ return functor(std::move(arg0.m_impl.m_value9), std::move(arg1.m_impl.m_value8))
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value9), std::move(arg1.m_impl.m_value9));
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value9), std::move(arg1.m_impl.m_value10));
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg1.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value10), std::move(arg1.m_impl.m_value0));
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value10), std::move(arg1.m_impl.m_value1));
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value10), std::move(arg1.m_impl.m_value2));
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value10), std::move(arg1.m_impl.m_value3));
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value10), std::move(arg1.m_impl.m_value4));
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value10), std::move(arg1.m_impl.m_value5));
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value10), std::move(arg1.m_impl.m_value6));
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value10), std::move(arg1.m_impl.m_value7));
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value10), std::move(arg1.m_impl.m_value8));
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value10), std::move(arg1.m_impl.m_value9));
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value10), std::move(arg1.m_impl.m_value10));
 }
 default: throw; 
 }
@@ -2936,10 +2521,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -2985,10 +2566,6 @@ return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -3036,10 +2613,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -3085,10 +2658,6 @@ return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -3136,10 +2705,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -3185,10 +2750,6 @@ return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -3236,10 +2797,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -3285,10 +2842,6 @@ return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -3336,10 +2889,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -3385,60 +2934,6 @@ return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value8);
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg1.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -3496,10 +2991,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -3545,10 +3036,6 @@ return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value1, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -3596,10 +3083,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -3645,10 +3128,6 @@ return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value3, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -3696,10 +3175,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -3745,10 +3220,6 @@ return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value5, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -3796,10 +3267,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -3845,10 +3312,6 @@ return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value7, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -3896,10 +3359,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -3945,60 +3404,6 @@ return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -4052,10 +3457,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -4101,10 +3502,6 @@ return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value1, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -4152,10 +3549,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -4201,10 +3594,6 @@ return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value3, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -4252,10 +3641,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -4301,10 +3686,6 @@ return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value5, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -4352,10 +3733,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -4401,10 +3778,6 @@ return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value7, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -4452,10 +3825,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -4501,60 +3870,6 @@ return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -4608,10 +3923,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -4657,10 +3968,6 @@ return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value1, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -4708,10 +4015,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -4757,10 +4060,6 @@ return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value3, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -4808,10 +4107,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -4857,10 +4152,6 @@ return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value5, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -4908,10 +4199,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -4957,10 +4244,6 @@ return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value7, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -5008,10 +4291,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -5057,60 +4336,6 @@ return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -5164,10 +4389,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -5213,10 +4434,6 @@ return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value1, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -5264,10 +4481,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -5313,10 +4526,6 @@ return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value3, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -5364,10 +4573,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -5413,10 +4618,6 @@ return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value5, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -5464,10 +4665,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -5513,10 +4710,6 @@ return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value7, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -5564,10 +4757,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -5613,60 +4802,6 @@ return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -5720,10 +4855,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -5769,10 +4900,6 @@ return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value1, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -5820,10 +4947,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -5869,10 +4992,6 @@ return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value3, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -5920,10 +5039,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -5969,10 +5084,6 @@ return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value5, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -6020,10 +5131,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -6069,10 +5176,6 @@ return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value7, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -6120,10 +5223,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -6169,60 +5268,6 @@ return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -6276,10 +5321,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -6325,10 +5366,6 @@ return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value1, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -6376,10 +5413,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -6425,10 +5458,6 @@ return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value3, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -6476,10 +5505,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -6525,10 +5550,6 @@ return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value5, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -6576,10 +5597,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -6625,10 +5642,6 @@ return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value7, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -6676,10 +5689,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -6725,60 +5734,6 @@ return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -6832,10 +5787,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -6881,10 +5832,6 @@ return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value1, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -6932,10 +5879,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -6981,10 +5924,6 @@ return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value3, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -7032,10 +5971,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -7081,10 +6016,6 @@ return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value5, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -7132,10 +6063,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -7181,10 +6108,6 @@ return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value7, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -7232,10 +6155,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -7281,60 +6200,6 @@ return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -7388,10 +6253,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -7437,10 +6298,6 @@ return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value1, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -7488,10 +6345,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -7537,10 +6390,6 @@ return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value3, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -7588,10 +6437,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -7637,10 +6482,6 @@ return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value5, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -7688,10 +6529,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -7737,10 +6574,6 @@ return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value7, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -7788,10 +6621,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -7837,60 +6666,6 @@ return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -7944,10 +6719,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -7993,10 +6764,6 @@ return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value1, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -8044,10 +6811,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -8093,10 +6856,6 @@ return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value3, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -8144,10 +6903,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -8193,10 +6948,6 @@ return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value5, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -8244,10 +6995,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -8293,10 +7040,6 @@ return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value7, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -8344,10 +7087,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -8393,60 +7132,6 @@ return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -8500,10 +7185,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -8549,10 +7230,6 @@ return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value1, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -8600,10 +7277,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -8649,10 +7322,6 @@ return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value3, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -8700,10 +7369,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -8749,10 +7414,6 @@ return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value5, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -8800,10 +7461,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -8849,10 +7506,6 @@ return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value7, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -8900,10 +7553,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -8949,616 +7598,6 @@ return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9, arg2.m_impl.m_value8)
 case value_variant_type::Type::Type9:
 {
 return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg1.m_type) {
-case value_variant_type::Type::Type0:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type1:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type2:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type3:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value3, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type4:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type5:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value5, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type6:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type7:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value7, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type8:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type9:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -9619,10 +7658,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -9668,10 +7703,6 @@ return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value1, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -9719,10 +7750,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -9768,10 +7795,6 @@ return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value3, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -9819,10 +7842,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -9868,10 +7887,6 @@ return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value5, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -9919,10 +7934,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -9968,10 +7979,6 @@ return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value7, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -10019,10 +8026,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -10068,60 +8071,6 @@ return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value9, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value0), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -10175,10 +8124,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -10224,10 +8169,6 @@ return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value1, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -10275,10 +8216,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -10324,10 +8261,6 @@ return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value3, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -10375,10 +8308,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -10424,10 +8353,6 @@ return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value5, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -10475,10 +8400,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -10524,10 +8445,6 @@ return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value7, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -10575,10 +8492,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -10624,60 +8537,6 @@ return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value9, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value1), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -10731,10 +8590,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -10780,10 +8635,6 @@ return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value1, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -10831,10 +8682,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -10880,10 +8727,6 @@ return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value3, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -10931,10 +8774,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -10980,10 +8819,6 @@ return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value5, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -11031,10 +8866,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -11080,10 +8911,6 @@ return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value7, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -11131,10 +8958,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -11180,60 +9003,6 @@ return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value9, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value2), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -11287,10 +9056,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -11336,10 +9101,6 @@ return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value1, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -11387,10 +9148,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -11436,10 +9193,6 @@ return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value3, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -11487,10 +9240,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -11536,10 +9285,6 @@ return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value5, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -11587,10 +9332,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -11636,10 +9377,6 @@ return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value7, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -11687,10 +9424,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -11736,60 +9469,6 @@ return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value9, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value3), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -11843,10 +9522,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -11892,10 +9567,6 @@ return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value1, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -11943,10 +9614,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -11992,10 +9659,6 @@ return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value3, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -12043,10 +9706,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -12092,10 +9751,6 @@ return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value5, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -12143,10 +9798,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -12192,10 +9843,6 @@ return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value7, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -12243,10 +9890,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -12292,60 +9935,6 @@ return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value9, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value4), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -12399,10 +9988,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -12448,10 +10033,6 @@ return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value1, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -12499,10 +10080,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -12548,10 +10125,6 @@ return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value3, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -12599,10 +10172,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -12648,10 +10217,6 @@ return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value5, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -12699,10 +10264,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -12748,10 +10309,6 @@ return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value7, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -12799,10 +10356,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -12848,60 +10401,6 @@ return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value9, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value5), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -12955,10 +10454,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -13004,10 +10499,6 @@ return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value1, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -13055,10 +10546,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -13104,10 +10591,6 @@ return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value3, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -13155,10 +10638,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -13204,10 +10683,6 @@ return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value5, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -13255,10 +10730,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -13304,10 +10775,6 @@ return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value7, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -13355,10 +10822,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -13404,60 +10867,6 @@ return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value9, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value6), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -13511,10 +10920,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -13560,10 +10965,6 @@ return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value1, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -13611,10 +11012,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -13660,10 +11057,6 @@ return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value3, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -13711,10 +11104,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -13760,10 +11149,6 @@ return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value5, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -13811,10 +11196,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -13860,10 +11241,6 @@ return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value7, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -13911,10 +11288,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -13960,60 +11333,6 @@ return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value9, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value7), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -14067,10 +11386,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -14116,10 +11431,6 @@ return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value1, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -14167,10 +11478,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -14216,10 +11523,6 @@ return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value3, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -14267,10 +11570,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -14316,10 +11615,6 @@ return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value5, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -14367,10 +11662,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -14416,10 +11707,6 @@ return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value7, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -14467,10 +11754,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -14516,60 +11799,6 @@ return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value9, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value8), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -14623,10 +11852,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -14672,10 +11897,6 @@ return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value1, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -14723,10 +11944,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -14772,10 +11989,6 @@ return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value3, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -14823,10 +12036,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -14872,10 +12081,6 @@ return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value5, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -14923,10 +12128,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -14972,10 +12173,6 @@ return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value7, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
 }
 default: throw; 
 }
@@ -15023,10 +12220,6 @@ case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
 }
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
 default: throw; 
 }
 }
@@ -15072,616 +12265,6 @@ return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value9, arg2.m_imp
 case value_variant_type::Type::Type9:
 {
 return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value9), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg1.m_type) {
-case value_variant_type::Type::Type0:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value0, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type1:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value1, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type2:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value2, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type3:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value3, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type4:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value4, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type5:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value5, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type6:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value6, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type7:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value7, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type8:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value8, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type9:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value9, arg2.m_impl.m_value10);
-}
-default: throw; 
-}
-}
-case value_variant_type::Type::Type10:
-{
-switch(arg2.m_type) {
-case value_variant_type::Type::Type0:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value0);
-}
-case value_variant_type::Type::Type1:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value1);
-}
-case value_variant_type::Type::Type2:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value2);
-}
-case value_variant_type::Type::Type3:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value3);
-}
-case value_variant_type::Type::Type4:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value4);
-}
-case value_variant_type::Type::Type5:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value5);
-}
-case value_variant_type::Type::Type6:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value6);
-}
-case value_variant_type::Type::Type7:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value7);
-}
-case value_variant_type::Type::Type8:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value8);
-}
-case value_variant_type::Type::Type9:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value9);
-}
-case value_variant_type::Type::Type10:
-{
-return functor(std::move(arg0.m_impl.m_value10), arg1.m_impl.m_value10, arg2.m_impl.m_value10);
 }
 default: throw; 
 }

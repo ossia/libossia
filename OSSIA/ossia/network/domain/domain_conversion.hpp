@@ -188,7 +188,6 @@ inline domain convert_domain(const domain& dom, ossia::val_type newtype)
     case val_type::VEC4F:
       return ossia::apply_nonnull(
           domain_conversion<vecf_domain<4>>{}, dom);
-    case val_type::DESTINATION:
     default:
       return domain{};
   }

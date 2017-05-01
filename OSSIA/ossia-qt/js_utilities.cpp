@@ -197,9 +197,6 @@ value js_value_inbound_visitor::operator()(vec4f v) const
   }
   return v;
 }
-
-value js_value_inbound_visitor::operator()(const Destination &t) { return t; }
-
 value js_value_inbound_visitor::operator()() const { return {}; }
 
 
@@ -365,12 +362,7 @@ QJSValue js_value_outbound_visitor::operator()(vec4f val) const
   return v;
 }
 
-QJSValue js_value_outbound_visitor::operator()(const Destination &t) { return {}; }
-
 QJSValue js_value_outbound_visitor::operator()() const { return {}; }
-
-
-
 
 QString js_string_outbound_visitor::operator()(impulse) const
 {
@@ -434,8 +426,6 @@ QString js_string_outbound_visitor::operator()(vec4f val) const
 {
   return make_array(val);
 }
-
-QString js_string_outbound_visitor::operator()(const Destination &t) { return (*this)(impulse{}); }
 
 QString js_string_outbound_visitor::operator()() const { return (*this)(impulse{}); }
 

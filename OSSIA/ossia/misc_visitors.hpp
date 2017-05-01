@@ -146,20 +146,6 @@ return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value1);
 default: throw; 
 }
 }
-case value_variant_type::Type::Type10:
-{
-switch(arg1.m_type) {
-case behavior_variant_type::Type::Type0:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value0);
-}
-case behavior_variant_type::Type::Type1:
-{
-return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value1);
-}
-default: throw; 
-}
-}
 default: throw; 
 }
 }

@@ -36,8 +36,7 @@ public:
     Bool, //! \see bool
     String, //! \see std::string
     Tuple, //! \see std::vector<ossia::value>
-    Char, //! \see char
-    Destination //! \see ossia::Destination
+    Char //! \see char
   };
 
   enum access_mode
