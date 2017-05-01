@@ -65,7 +65,7 @@ if(OSSIA_TESTING)
     enable_testing()
     add_subdirectory(Tests)
 endif()
-set(OSSIA_GENVAR 1)
+
 if(OSSIA_GENVAR)
     add_subdirectory(tools/gen_variant)
 endif()
