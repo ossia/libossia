@@ -100,8 +100,6 @@ private:
   optional<QVariantList> m_values{};
   optional<QString> m_unit{};
   bool m_updatingFromSetValue{};
-  bool m_updatingFromPushValue{};
-
 };
 
 }

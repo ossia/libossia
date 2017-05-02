@@ -37,8 +37,6 @@ void qml_property::qtVariantChanged()
 {
   if(!m_updatingFromSetValue && m_address)
   {
-    m_updatingFromPushValue = true;
-
     if(m_callback)
       m_address->remove_callback(*m_callback);
 
@@ -217,14 +215,9 @@ QString qml_property::unit() const
 
 void qml_property::setValue_slot(const value& v)
 {
-  if(m_updatingFromPushValue)
-  {
-    m_updatingFromPushValue = false;
-    return;
-  }
   auto cur = m_targetProperty.read();
   auto next = ossia_to_qvariant{}((QVariant::Type)m_targetProperty.propertyType(), v);
-  if(cur != next && !m_updatingFromPushValue)
+  if(cur != next)
   {
     m_updatingFromSetValue = true;
     m_targetProperty.write(next);
