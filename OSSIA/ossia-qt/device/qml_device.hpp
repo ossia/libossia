@@ -31,6 +31,7 @@ class OSSIA_EXPORT qml_device :
   Q_PROPERTY(QString appAuthor READ appAuthor WRITE setAppAuthor NOTIFY appAuthorChanged FINAL)
   Q_PROPERTY(QString appVersion READ appVersion WRITE setAppVersion NOTIFY appVersionChanged FINAL)
   Q_PROPERTY(QString appCreator READ appCreator WRITE setAppCreator NOTIFY appCreatorChanged FINAL)
+  Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
 
 public:
   qml_device(QObject* parent = nullptr);
@@ -61,6 +62,8 @@ public:
   void add(qml_callback* n);
   void remove(qml_callback* n);
 
+  QString name() const;
+
 public slots:
   bool openOSC(QString ip, int localPort, int remotePort);
   bool openOSCQueryServer(int WSport, int oscPort);
@@ -83,6 +86,8 @@ public slots:
   void setAppVersion(QString appVersion);
   void setAppCreator(QString appCreator);
 
+  void setName(QString name);
+
 signals:
   void readPresetChanged(bool readPreset);
 
@@ -90,10 +95,13 @@ signals:
   void appVersionChanged(QString appVersion);
   void appCreatorChanged(QString appCreator);
 
+  void nameChanged(QString name);
+
 private:
   void setupLocal();
   void clearEmptyElements();
 
+  QString m_name{"device"};
   std::unique_ptr<ossia::net::device_base> m_device;
 
   ptr_set<qml_node> m_nodes;

@@ -34,13 +34,14 @@ void qml_plugin::reg(const char* uri)
   qmlRegisterType<qt::qml_callback>(uri, 1, 0, "CallbackImpl");
   qmlRegisterType<qt::qml_model_property>(uri, 1, 0, "Instances");
 }
-
+#if !defined(OSSIA_DISABLE_QT_PLUGIN)
 void qml_plugin::registerTypes(const char* uri)
 {
   // Note : it will be registered twice. But maybe that's not a problem...
   reg(uri);
   static ossia::context c;
 }
+#endif
 
 }
 }

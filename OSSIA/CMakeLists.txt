@@ -164,6 +164,9 @@ if(OSSIA_QT)
       "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt"
    )
  add_custom_target(ossia-qml-sources SOURCES ${OSSIA_QML_SRCS})
+ if(OSSIA_DISABLE_QT_PLUGIN)
+   target_compile_definitions(ossia PRIVATE OSSIA_DISABLE_QT_PLUGIN)
+ endif()
 endif()
 
 if(OSSIA_DNSSD)

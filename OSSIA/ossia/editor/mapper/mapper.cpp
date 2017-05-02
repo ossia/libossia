@@ -87,7 +87,9 @@ void mapper::start()
   {
     ossia::net::address_base& addr = m_driverAddress->address();
     m_callback = addr.add_callback(
-        [this](const ossia::value& val) { driver_value_callback(val); });
+        [this](const ossia::value& val) {
+      driver_value_callback(val);
+    });
 
     auto def_val = addr.value();
     driver_value_callback(def_val);

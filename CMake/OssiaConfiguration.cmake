@@ -31,6 +31,7 @@ option(OSSIA_PROTOCOL_HTTP "Enable HTTP protocol" ON) # Requires Qt
 option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF) # Requires Qt
 option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF) # Requires Qt
 option(OSSIA_NO_QT "Disable all the features that may require Qt" OFF)
+option(OSSIA_NO_QT_PLUGIN "Disable building of a Qt plugin" OFF)
 option(OSSIA_DNSSD "Enable DNSSD support" ON)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
 

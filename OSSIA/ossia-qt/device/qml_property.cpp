@@ -5,7 +5,7 @@
 
 #include <ossia/network/generic/generic_device.hpp>
 #include <QDebug>
-
+#include <QTimer>
 namespace ossia
 {
 namespace qt
@@ -35,10 +35,19 @@ void qml_property::setTarget(const QQmlProperty &prop)
 
 void qml_property::qtVariantChanged()
 {
-  if(!m_updating && m_address)
+  if(!m_updatingFromSetValue && m_address)
   {
-    m_address->set_value_quiet(qt_to_ossia{}(m_targetProperty.read()));
-    m_device->device().get_protocol().push(*m_address);
+    m_updatingFromPushValue = true;
+
+    if(m_callback)
+      m_address->remove_callback(*m_callback);
+
+    m_address->push_value(qt_to_ossia{}(m_targetProperty.read()));
+
+    m_callback = m_address->add_callback([this] (const ossia::value& v)
+    {
+      setValue_sig(v);
+    });
   }
 }
 
@@ -72,6 +81,7 @@ void qml_property::resetNode()
   {
     setPath({});
     m_address = nullptr;
+    m_callback = ossia::none;
     return;
   }
 
@@ -139,6 +149,7 @@ void qml_property::resetNode()
   // In case something went wrong...
   setPath({});
   m_address = nullptr;
+  m_callback = ossia::none;
 }
 
 void qml_property::updateQtValue()
@@ -206,13 +217,18 @@ QString qml_property::unit() const
 
 void qml_property::setValue_slot(const value& v)
 {
+  if(m_updatingFromPushValue)
+  {
+    m_updatingFromPushValue = false;
+    return;
+  }
   auto cur = m_targetProperty.read();
   auto next = ossia_to_qvariant{}((QVariant::Type)m_targetProperty.propertyType(), v);
-  if(cur != next)
+  if(cur != next && !m_updatingFromPushValue)
   {
-    m_updating = true;
+    m_updatingFromSetValue = true;
     m_targetProperty.write(next);
-    m_updating = false;
+    m_updatingFromSetValue = false;
   }
 }
 
@@ -313,6 +329,7 @@ void qml_property::setupAddress(bool reading)
   }
 
   m_address = nullptr;
+  m_callback = ossia::none;
   if(m_ossia_node)
   {
     m_ossia_node->remove_address();
@@ -330,9 +347,8 @@ void qml_property::setupAddress(bool reading)
       if(m_access)
         m_address->set_access(static_cast<ossia::access_mode>(*m_access));
 
-      if(m_bounding) {
+      if(m_bounding)
         m_address->set_bounding(static_cast<ossia::bounding_mode>(*m_bounding));
-      qDebug()<< "setting" << *m_bounding;}
 
       if(m_filterRepetitions)
         m_address->set_repetition_filter(static_cast<ossia::repetition_filter>(*m_filterRepetitions));
@@ -341,7 +357,10 @@ void qml_property::setupAddress(bool reading)
         m_address->set_unit(ossia::parse_pretty_unit(m_unit->toStdString()));
 
       updateDomain();
-      m_address->add_callback([this] (const ossia::value& v) { setValue_sig(v); });
+      m_callback = m_address->add_callback([this] (const ossia::value& v)
+      {
+        setValue_sig(v);
+      });
       m_address->set_value_quiet(qt_to_ossia{}(m_targetProperty.read()));
     }
   }
@@ -366,6 +385,7 @@ void qml_property::on_node_deleted(const net::node_base&)
 {
   m_address = nullptr;
   m_ossia_node = nullptr;
+  m_callback = ossia::none;
 }
 
 void qml_property::clearNode(bool reading)
@@ -379,6 +399,7 @@ void qml_property::clearNode(bool reading)
       auto node = m_ossia_node;
       m_address = nullptr;
       m_ossia_node = nullptr;
+      m_callback = ossia::none;
       if(!reading)
         par->remove_child(*node);
     }

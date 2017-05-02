@@ -90,6 +90,7 @@ private:
 
   QQmlProperty m_targetProperty;
   ossia::net::address_base* m_address{};
+  optional<ossia::net::address_base::iterator> m_callback;
   optional<qml_context::val_type> m_valueType{};
   optional<qml_context::access_mode> m_access{};
   optional<qml_context::bounding_mode> m_bounding{};
@@ -98,7 +99,9 @@ private:
   QVariant m_max{};
   optional<QVariantList> m_values{};
   optional<QString> m_unit{};
-  bool m_updating{};
+  bool m_updatingFromSetValue{};
+  bool m_updatingFromPushValue{};
+
 };
 
 }
