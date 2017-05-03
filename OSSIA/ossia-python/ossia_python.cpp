@@ -116,6 +116,11 @@ struct to_python_value
 
 };
 
+// TODO : add explorations tools functions
+// get_nodes
+// get_params
+// .. cf __init__ pyossia
+
 // to get children of a node
 PYBIND11_MAKE_OPAQUE(std::vector<ossia::net::node_base*>);
 
