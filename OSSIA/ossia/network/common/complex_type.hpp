@@ -2,10 +2,14 @@
 #include <ossia/editor/value/value.hpp>
 #include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia/network/common/extended_types.hpp>
+#include <eggs/variant.hpp>
 
 namespace ossia
 {
-namespace net { class node_base; }
+namespace net {
+class node_base;
+class address_base;
+}
 
 /**
  * @typedef Used when an external information can be mapped to multiple levels of typing.

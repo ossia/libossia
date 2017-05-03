@@ -13,7 +13,7 @@ void protocol_base::request(address_base&)
 {
 }
 
-std::future<void> protocol_base::pullAsync(address_base&)
+std::future<void> protocol_base::pull_async(address_base&)
 {
   return {};
 }

@@ -23,17 +23,17 @@ public:
       std::unique_ptr<ossia::net::http_protocol> protocol_base,
       std::string name);
 
-  const ossia::net::node_base& getRootNode() const override
+  const ossia::net::node_base& get_root_node() const override
   {
     return *this;
   }
-  ossia::net::node_base& getRootNode() override
+  ossia::net::node_base& get_root_node() override
   {
     return *this;
   }
 
-  using http_node::getName;
-  using http_node::setName;
+  using http_node::get_name;
+  using http_node::set_name;
 
   ~http_device();
 };

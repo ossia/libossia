@@ -12,11 +12,11 @@
 
 TEST_CASE ("Device exceptions") {
   ossia::net::generic_device localDevice{
-    std::make_unique<ossia::net::local_protocol>(), "test"};
+    std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
-  auto rootnode = localDevice.getRootNode().createChild("root");
-  auto childnode = rootnode->createChild("child");
-  auto childaddr = childnode->createAddress(ossia::val_type::BOOL);
+  auto rootnode = localDevice.get_root_node().create_child("root");
+  auto childnode = rootnode->create_child("child");
+  auto childaddr = childnode->create_address(ossia::val_type::BOOL);
 
   SECTION("Invalid address: target node has children") {
     ossia::presets::preset preset;
@@ -39,42 +39,42 @@ TEST_CASE ("Device exceptions") {
 
 TEST_CASE ("Building device from preset") {
   ossia::net::generic_device localDevice{
-    std::make_unique<ossia::net::local_protocol>(), "device"};
+    std::make_unique<ossia::net::multiplex_protocol>(), "device"};
 
   ossia::presets::preset p;
-  p.emplace("/a.0/b/c.0", 1);
-  p.emplace("/a.0/b/c.1", 2);
-  p.emplace("/a.1/b.0/c", 3);
-  p.emplace("/a.1/b.0/d", 4);
+  p.emplace("/a.0/b.0/c.0", 1);
+  p.emplace("/a.0/b.0/c.1", 2);
+  p.emplace("/a.1/b.1/c", 3);
+  p.emplace("/a.1/b.1/d", 4);
 
   REQUIRE_NOTHROW(ossia::devices::apply_preset(localDevice, p, ossia::devices::keep_arch_off));
 
   using namespace ossia::devices;
   SECTION("Presence of nodes") {
-    REQUIRE(get_node(localDevice, "/device/a.1") != nullptr);
-    REQUIRE(get_node(localDevice, "/device/a.1/b") != nullptr);
-    REQUIRE(get_node(localDevice, "/device/a.1/b/c.1") != nullptr);
-    REQUIRE(get_node(localDevice, "/device/a.1/b/c.2") != nullptr);
-    REQUIRE(get_node(localDevice, "/device/a.2/b.1") != nullptr);
-    REQUIRE(get_node(localDevice, "/device/a.2/b.1/c") != nullptr);
-    REQUIRE(get_node(localDevice, "/device/a.2/b.1/d") != nullptr);
+    REQUIRE(get_node(localDevice, "/device/a.0") != nullptr);
+    REQUIRE(get_node(localDevice, "/device/a.0/b.0") != nullptr);
+    REQUIRE(get_node(localDevice, "/device/a.0/b.0/c.0") != nullptr);
+    REQUIRE(get_node(localDevice, "/device/a.0/b.0/c.1") != nullptr);
+    REQUIRE(get_node(localDevice, "/device/a.1/b.1") != nullptr);
+    REQUIRE(get_node(localDevice, "/device/a.1/b.1/c") != nullptr);
+    REQUIRE(get_node(localDevice, "/device/a.1/b.1/d") != nullptr);
   }
 
   SECTION("Value of nodes") {
     REQUIRE(get_node(localDevice, "/device")->children().size() == 2);
-    REQUIRE(get_node(localDevice, "/device/a.1")->children().size() == 1);
-    REQUIRE(get_node(localDevice, "/device/a.1/b")->children().size() == 2);
-    REQUIRE(get_node(localDevice, "/device/a.1/b/c.1")->getAddress()->cloneValue().get<int32_t>() == 1);
-    REQUIRE(get_node(localDevice, "/device/a.1/b/c.2")->getAddress()->cloneValue().get<int32_t>() == 2);
-    REQUIRE(get_node(localDevice, "/device/a.2/b.1")->children().size() == 2);
-    REQUIRE(get_node(localDevice, "/device/a.2/b.1/c")->getAddress()->cloneValue().get<int32_t>() == 3);
-    REQUIRE(get_node(localDevice, "/device/a.2/b.1/d")->getAddress()->cloneValue().get<int32_t>() == 4);
+    REQUIRE(get_node(localDevice, "/device/a.0")->children().size() == 1);
+    REQUIRE(get_node(localDevice, "/device/a.0/b.0")->children().size() == 2);
+    REQUIRE(get_node(localDevice, "/device/a.0/b.0/c.0")->get_address()->value().get<int32_t>() == 1);
+    REQUIRE(get_node(localDevice, "/device/a.0/b.0/c.1")->get_address()->value().get<int32_t>() == 2);
+    REQUIRE(get_node(localDevice, "/device/a.1/b.1")->children().size() == 2);
+    REQUIRE(get_node(localDevice, "/device/a.1/b.1/c")->get_address()->value().get<int32_t>() == 3);
+    REQUIRE(get_node(localDevice, "/device/a.1/b.1/d")->get_address()->value().get<int32_t>() == 4);
   }
 }
 
 TEST_CASE ("Functions on instances") {
   ossia::net::generic_device localDevice{
-    std::make_unique<ossia::net::local_protocol>(), "device"};
+    std::make_unique<ossia::net::multiplex_protocol>(), "device"};
 
   ossia::presets::instance_functions funcs;
   using namespace ossia::regex_path;
@@ -110,7 +110,7 @@ TEST_CASE ("Functions on instances") {
     number_of_b_nodes++;
   });
 
-  funcs.emplace_back((device("device") / "a.2" / "b.1" / "d").regex(),
+  funcs.emplace_back((device("device") / "a.1" / "b.1" / "d").regex(),
                      [&] (const ossia::net::node_base& node) {
     std::cerr << "Case 3: "
               << ossia::net::address_string_from_node(node)
@@ -120,10 +120,10 @@ TEST_CASE ("Functions on instances") {
   });
 
   ossia::presets::preset p;
-  p.emplace("/a.0/b/c.0", 1);
-  p.emplace("/a.0/b/c.1", 2);
-  p.emplace("/a.1/b.0/c", 3);
-  p.emplace("/a.1/b.0/d", 4);
+  p.emplace("/a.0/b.0/c.0", 1);
+  p.emplace("/a.0/b.0/c.1", 2);
+  p.emplace("/a.1/b.1/c", 3);
+  p.emplace("/a.1/b.1/d", 4);
 
   REQUIRE_NOTHROW(ossia::devices::apply_preset(localDevice, p, ossia::devices::keep_arch_off, funcs));
 

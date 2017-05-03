@@ -12,6 +12,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <vector>
 #include <ossia_export.h>
 #include <utility>
 namespace ossia
@@ -65,7 +66,7 @@ public:
 
   void reset() override
   {
-    mInitialPointOrdinateCacheUsed = false;
+    m_y0_cacheUsed = false;
   }
 
 
@@ -74,10 +75,10 @@ public:
  \param X target point abscissa
  \param Y target point ordinate
  \return bool */
-  bool addPoint(
+  bool add_point(
       ossia::curve_segment<Y> segment, X abscissa, Y value)
   {
-    mPointsMap.emplace(abscissa, std::make_pair(value, std::move(segment)));
+    m_points.emplace(abscissa, std::make_pair(value, std::move(segment)));
 
     return true;
   }
@@ -86,22 +87,22 @@ public:
   /*! remove a point from the curve
  \param X point abscissa
  \return bool */
-  bool removePoint(X abscissa)
+  bool remove_point(X abscissa)
   {
-    return mPointsMap.erase(abscissa) > 0;
+    return m_points.erase(abscissa) > 0;
   }
 
 
   /*! get value at an abscissa
  \param X abscissa.
  \return Y ordinate */
-  Y valueAt(X abscissa) const
+  Y value_at(X abscissa) const
   {
-    X lastAbscissa = getInitialPointAbscissa();
-    Y lastValue = getInitialPointOrdinate();
+    X lastAbscissa = get_x0();
+    Y lastValue = get_y0();
 
-    auto end = mPointsMap.end();
-    for (auto it = mPointsMap.begin(); it != end; ++it)
+    auto end = m_points.end();
+    for (auto it = m_points.begin(); it != end; ++it)
     {
       if (abscissa > lastAbscissa && abscissa <= it->first)
       {
@@ -123,7 +124,7 @@ public:
     return lastValue;
   }
 
-  ossia::curve_type getType() const override
+  ossia::curve_type get_type() const override
   {
     return std::make_pair(curve_segment_type_map<X>, curve_segment_type_map<Y>);
   }
@@ -132,17 +133,17 @@ public:
  \details if there is an initial abcissa destination, it will return the value
  of the address
  \return X value */
-  X getInitialPointAbscissa() const
+  X get_x0() const
   {
-    if(!mInitialPointAbscissaDestination)
-      return mInitialPointAbscissa;
+    if(!m_x0_destination)
+      return m_x0;
     else
     {
-      auto& address = mInitialPointAbscissaDestination->value.get();
-      address.pullValue();
-      auto val = address.cloneValue();
-      auto res = convertToTemplateTypeValue(
-          val, mInitialPointAbscissaDestination->index.begin());
+      auto& address = m_x0_destination->value.get();
+      address.pull_value();
+      auto val = address.value();
+      auto res = convert_to_template_type_value(
+          val, m_x0_destination->index.begin());
       return res;
     }
   }
@@ -152,82 +153,82 @@ public:
  \details if there is an initial ordinate destination, it will return the value
  of the address
  \return Y value */
-  Y getInitialPointOrdinate() const
+  Y get_y0() const
   {
-    if(!mInitialPointOrdinateDestination)
-      return mInitialPointOrdinate;
+    if(!m_y0_destination)
+      return m_y0;
     else
     {
-      if (mInitialPointOrdinateCacheUsed)
-        return mInitialPointOrdinateCache;
+      if (m_y0_cacheUsed)
+        return m_y0_cache;
 
-      const Destination& dest = *mInitialPointOrdinateDestination;
-      mInitialPointOrdinateCacheUsed = true;
-      mInitialPointOrdinateCache = convertToTemplateTypeValue(
-          dest.value.get().fetchValue(), dest.index.begin());
-      return mInitialPointOrdinateCache;
+      const Destination& dest = *m_y0_destination;
+      m_y0_cacheUsed = true;
+      m_y0_cache = convert_to_template_type_value(
+          dest.address().fetch_value(), dest.index.begin());
+      return m_y0_cache;
     }
   }
 
   /*! set initial point abscissa
  \details if there is an initial abscissa destination, this accessor is useless
  \param X abscissa */
-  void setInitialPointAbscissa(X value)
+  void set_x0(X value)
   {
-    mInitialPointAbscissa = value;
+    m_x0 = value;
   }
 
   /*! set initial point ordinate
  \details if there is an initial ordinate destination, this accessor is useless
  \param Y ordinate */
-  void setInitialPointOrdinate(Y value)
+  void set_y0(Y value)
   {
-    mInitialPointOrdinate = value;
+    m_y0 = value;
   }
 
   /*! get initial point abscissa destination
  \return const Destination* */
-  ossia::optional<Destination> getInitialPointAbscissaDestination() const
+  ossia::optional<Destination> get_x0_destination() const
   {
-    return mInitialPointAbscissaDestination;
+    return m_x0_destination;
   }
 
 
   /*! get initial point ordinate destination
  \return const Destination* */
-  ossia::optional<Destination> getInitialPointOrdinateDestination() const
+  ossia::optional<Destination> get_y0_destination() const
   {
-    return mInitialPointOrdinateDestination;
+    return m_y0_destination;
   }
 
 
   /*! set initial curve abscissa using a Destination
  \param const Destination* */
-  void setInitialPointAbscissaDestination(
+  void set_x0_destination(
       const ossia::Destination& destination)
   {
-    mInitialPointAbscissaDestination = destination;
+    m_x0_destination = destination;
   }
 
   /*! set initial curve ordinate using a Destination
  \param const Destination* */
-  void setInitialPointOrdinateDestination(
+  void set_y0_destination(
       const ossia::Destination& destination)
   {
-    mInitialPointOrdinateDestination = destination;
+    m_y0_destination = destination;
   }
 
   /*! get points of the curve
   \return std::map<X, pair<Y, CurveSegment<Y>>> map of {abscissa, {value,
           previous segment}
   */
-  std::map<X, std::pair<Y, curve_segment<Y>>> getPointsMap() const
+  std::map<X, std::pair<Y, curve_segment<Y>>> get_points() const
   {
-    return {mPointsMap.cbegin(), mPointsMap.cend()};
+    return {m_points.cbegin(), m_points.cend()};
   }
 
 
-  static Y convertToTemplateTypeValue(
+  static Y convert_to_template_type_value(
       const ossia::value& value, ossia::destination_index::const_iterator idx)
   {
     using namespace ossia;
@@ -266,7 +267,7 @@ public:
       Y operator()(const std::vector<ossia::value>& t) const
       {
         auto& val = t[*index];
-        return convertToTemplateTypeValue(val, index + 1);
+        return convert_to_template_type_value(val, index + 1);
       }
 
       Y operator()(impulse) const
@@ -281,13 +282,6 @@ public:
                                        "Cannot convert String to a numeric type");
         return {};
       }
-      Y operator()(const Destination& d) const
-      {
-        throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
-                                       "Cannot convert Destination to a numeric type");
-        return {};
-        ;
-      }
       Y operator()() const
       {
         throw invalid_value_type_error("curve_impl::convertToTemplateTypeValue: "
@@ -300,17 +294,16 @@ public:
   }
 
 private:
-  X mInitialPointAbscissa;
-  ossia::optional<ossia::Destination> mInitialPointAbscissaDestination;
-
-  Y mInitialPointOrdinate;
-  ossia::optional<ossia::Destination> mInitialPointOrdinateDestination;
+  X m_x0;
+  Y m_y0;
+  ossia::optional<ossia::Destination> m_x0_destination;
+  ossia::optional<ossia::Destination> m_y0_destination;
 
   using map_type = curve_map<X, std::pair<Y, ossia::curve_segment<Y>>>;
-  map_type mPointsMap;
+  map_type m_points;
 
-  mutable Y mInitialPointOrdinateCache;
-  mutable bool mInitialPointOrdinateCacheUsed = false;
+  mutable Y m_y0_cache;
+  mutable bool m_y0_cacheUsed = false;
 
 };
 
@@ -340,7 +333,7 @@ public:
     return mValue;
   }
 
-  curve_type getType() const override
+  curve_type get_type() const override
   {
     return std::make_pair(
           ossia::curve_segment_type::DOUBLE,

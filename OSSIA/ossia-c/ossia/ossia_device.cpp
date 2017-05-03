@@ -50,7 +50,7 @@ const char* ossia_device_get_name(ossia_device_t node)
     if(!node) { ossia_log_error("ossia_device_get_name: node is null"); return nullptr; }
     if(!node->device) { ossia_log_error("ossia_device_get_name: node->device"); return nullptr; }
 
-    return strdup(node->device->getName().c_str());
+    return strdup(node->device->get_name().c_str());
   });
 }
 
@@ -60,7 +60,7 @@ void ossia_device_free(ossia_device_t device)
     if(device && device->device)
     {
       auto& devs = static_devices();
-      auto it = devs.find(device->device->getName());
+      auto it = devs.find(device->device->get_name());
       if(it != devs.end())
       {
         devs.erase(it);
@@ -89,7 +89,7 @@ bool ossia_device_update_namespace(ossia_device_t device)
     if(device)
     {
       assert(device->device);
-      return device->device->getProtocol().update(device->device->getRootNode());
+      return device->device->get_protocol().update(device->device->get_root_node());
     }
     else
     {
@@ -107,7 +107,7 @@ ossia_node_t ossia_device_get_root_node(
       return {};
 
     assert(device->device);
-    return convert(&device->device->getRootNode());
+    return convert(&device->device->get_root_node());
   });
 }
 }

@@ -26,15 +26,15 @@ public:
       ossia::net::device_base& aDevice,
       node_base& aParent);
 
-  void setValueQuiet(const ossia::value&) final override;
-  ossia::net::address_base* getAddress() const final override;
-  ossia::net::address_base* createAddress(ossia::val_type type) final override;
-  bool removeAddress() final override;
+  void set_value_quiet(const ossia::value&) final override;
+  ossia::net::address_base* get_address() const final override;
+  ossia::net::address_base* create_address(ossia::val_type type) final override;
+  bool remove_address() final override;
 
   template<typename T>
   void qtValueChanged(const T& val)
   {
-    ossia::net::generic_address::setValueQuiet(qt_to_ossia{}(val));
+    ossia::net::generic_address::set_value_quiet(qt_to_ossia{}(val));
 
     m_protocol.push(*this);
   }
@@ -68,15 +68,14 @@ private slots:
 
   void qtImpulse() { m_protocol.push(*this); }
 
-
-  void setValue_slot(const value&);
+  void setValue_slot(const ossia::value&);
 
 signals:
-  void setValue_sig(const value&);
+  void setValue_sig(const ossia::value&);
 
 private:
-  std::unique_ptr<node_base> makeChild(const std::string& name) final override;
-  void removingChild(node_base&) final override;
+  std::unique_ptr<node_base> make_child(const std::string& name) final override;
+  void removing_child(node_base&) final override;
 
   QObject& m_obj;
   QMetaProperty m_prop;

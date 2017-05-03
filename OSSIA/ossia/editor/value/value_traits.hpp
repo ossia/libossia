@@ -78,16 +78,6 @@ struct value_trait<std::vector<ossia::value>>
 };
 
 template <>
-struct value_trait<ossia::Destination>
-{
-  using ossia_type = ossia::Destination;
-  using value_type = ossia::net::address_base*;
-  static const constexpr auto ossia_enum = val_type::DESTINATION;
-  static const constexpr bool is_numeric = false;
-  static const constexpr bool is_array = false;
-};
-
-template <>
 struct value_trait<ossia::vec2f>
 {
   using ossia_type = ossia::vec2f;

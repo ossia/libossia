@@ -9,7 +9,7 @@ env:
     - GH_REPO_NAME: libossia
     - GH_REPO_REF: github.com/OSSIA/libossia.git
 
-osx_image: xcode8.2
+osx_image: xcode8.3
 dist: trusty
 sudo: required
 

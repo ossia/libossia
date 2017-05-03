@@ -1,5 +1,6 @@
 #include "minuit_common.hpp"
 #include <ossia/detail/string_map.hpp>
+#include <ossia/editor/value/value.hpp>
 
 namespace ossia
 {
@@ -50,12 +51,6 @@ ossia::string_view to_minuit_type_text(const ossia::value& val)
     ossia::string_view operator()(const std::vector<ossia::value>& t) const
     {
       return make_string_view("array");
-    }
-    ossia::string_view operator()(const ossia::Destination& d) const
-    {
-      throw invalid_value_type_error("to_minuit_type_text: "
-                                     "Trying to send Destination value");
-      return {};
     }
     ossia::string_view operator()() const
     {

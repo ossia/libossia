@@ -14,19 +14,19 @@ class OSCQueryTest : public QObject
 private Q_SLOTS:
     void test_parse()
     {
-      generic_device dev{std::make_unique<local_protocol>(), "A"};
+      generic_device dev{std::make_unique<multiplex_protocol>(), "A"};
 
       // Create a node
       {
         auto& n = find_or_create_node(dev, "/main");
-        auto a = n.createAddress(ossia::val_type::INT);
+        auto a = n.create_address(ossia::val_type::FLOAT);
 
-        a->pushValue(6);
+        a->push_value(6);
 
         n.set(access_mode_attribute{}, access_mode::GET);
         n.set(bounding_mode_attribute{}, bounding_mode::FOLD);
-        n.set(domain_attribute{}, make_domain(-10, 10));
-        n.set(default_value_attribute{}, ossia::value(0));
+        n.set(domain_attribute{}, make_domain(-10., 10.));
+        n.set(default_value_attribute{}, ossia::value(0.));
         n.set(tags_attribute{}, tags{"fancy", "wow", "1234"});
         n.set(refresh_rate_attribute{}, 100);
         n.set(value_step_size_attribute{}, 0.5);
@@ -46,7 +46,7 @@ private Q_SLOTS:
       std::cerr << str.GetString() << std::endl;
 
       // Clear the device
-      dev.clearChildren();
+      dev.clear_children();
 
       // Parse json
       rapidjson::Document doc;
@@ -67,7 +67,7 @@ private Q_SLOTS:
         QCOMPARE(*get_bounding_mode(n), bounding_mode::FOLD);
 
         QVERIFY((bool)get_domain(n));
-        QCOMPARE(get_domain(n), make_domain(-10, 10));
+        QCOMPARE(get_domain(n), make_domain(-10., 10.));
 
         QVERIFY((bool)get_default_value(n));
         QCOMPARE(*get_default_value(n), ossia::value(0));

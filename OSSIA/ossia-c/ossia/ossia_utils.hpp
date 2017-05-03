@@ -5,13 +5,12 @@
 #include <algorithm>
 #include <cstring>
 #include <cstdio>
-#include <ossia-c/log/tinyformat.h>
 #include <ossia-c/log/ossia_log.h>
-
+#include <fmt/format.h>
 template<typename Str, typename... Args>
 void DEBUG_LOG_FMT(Str fmt, Args... args)
 {
-  auto str = tfm::format(fmt, args...);
+  auto str = fmt::format(fmt, args...);
   ossia_log_error(str.c_str());
 }
 struct ossia_protocol
@@ -71,22 +70,22 @@ inline auto convert(ossia::bounding_mode t)
   return static_cast<ossia_bounding_mode>(t);
 }
 
-inline auto convert_address(ossia_address_t v)
+inline ossia::net::address_base* convert_address(ossia_address_t v)
 {
   return static_cast<ossia::net::address_base*>(v);
 }
 
-inline auto convert(ossia::net::address_base* v)
+inline void* convert(ossia::net::address_base* v)
 {
   return static_cast<void*>(v);
 }
 
-inline auto convert_node(ossia_node_t v)
+inline ossia::net::node_base* convert_node(ossia_node_t v)
 {
   return static_cast<ossia::net::node_base*>(v);
 }
 
-inline auto convert(ossia::net::node_base* v)
+inline void* convert(ossia::net::node_base* v)
 {
   return static_cast<void*>(v);
 }

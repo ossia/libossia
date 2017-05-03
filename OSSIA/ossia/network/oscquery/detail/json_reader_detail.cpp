@@ -199,33 +199,36 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, domain& res)
     dom.values.resize(val.GetArray().Size());
 
     int i = 0;
-    for(const auto& elt : val.GetArray())
+    for(const rapidjson::Value& elt : val.GetArray())
     {
-      auto min_it = elt.FindMember("MIN");
-      auto max_it = elt.FindMember("MAX");
-      auto values_it = elt.FindMember("VALS");
-
-      auto mem_end = elt.MemberEnd();
-
-      if(values_it != mem_end)
+      if(elt.IsObject())
       {
-        if(values_it->value.IsArray())
+        auto min_it = elt.FindMember("MIN");
+        auto max_it = elt.FindMember("MAX");
+        auto values_it = elt.FindMember("VALS");
+
+        auto mem_end = elt.MemberEnd();
+
+        if(values_it != mem_end)
         {
-          for(auto& val : values_it->value.GetArray())
+          if(values_it->value.IsArray())
           {
-            dom.values[i].insert(ReadValue(val));
+            for(auto& val : values_it->value.GetArray())
+            {
+              dom.values[i].insert(ReadValue(val));
+            }
           }
         }
-      }
 
-      if(min_it != mem_end)
-      {
-        dom.min[i] = ReadValue(min_it->value);
-      }
+        if(min_it != mem_end)
+        {
+          dom.min[i] = ReadValue(min_it->value);
+        }
 
-      if(max_it != mem_end)
-      {
-        dom.max[i] = ReadValue(max_it->value);
+        if(max_it != mem_end)
+        {
+          dom.max[i] = ReadValue(max_it->value);
+        }
       }
 
       i++;
@@ -431,19 +434,25 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
       ossia::net::address_base* addr = nullptr;
       if(unit) // The unit enforces the value type
       {
-        addr = node.createAddress(ossia::matching_type(*unit));
+        addr = node.create_address(ossia::matching_type(*unit));
 
-        addr->setUnit(*unit);
+        addr->set_unit(*unit);
         ossia::net::set_extended_type(node, ext_type);
       }
       else if(ext_type)
       {
-        ossia::val_type actual_type = ossia::val_type::TUPLE; // Generic worse case
-        if(*ext_type == generic_buffer_type() || *ext_type == filesystem_path_type())
+        ossia::val_type actual_type = ossia::val_type::TUPLE; // Generic worse case; also "tuple_type()"
+        const auto& e_type = *ext_type;
+        if(e_type == generic_buffer_type() || e_type == filesystem_path_type())
         {
           actual_type = ossia::val_type::STRING;
         }
-        else if(*ext_type == float_array_type())
+        else if(e_type == tuple_type())
+        {
+          // nothing to do, but don't remove so that
+          // we don't go into the float_array case
+        }
+        else if(e_type == float_array_type())
         {
           // Look for Vec2f, Vec3f, Vec4f
           actual_type = VecTypetag(typetag);
@@ -461,7 +470,7 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
           }
         }
 
-        addr = node.createAddress(actual_type);
+        addr = node.create_address(actual_type);
         ossia::net::set_extended_type(node, ext_type);
       }
       else if(val_type)
@@ -472,17 +481,17 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
       // We have a type. Now we read the value according to it.
       if(value_it != obj.MemberEnd())
       {
-        ossia::value res = node.getAddress()->cloneValue();
+        ossia::value res = node.get_address()->value();
         int typetag_counter = 0;
         bool ok = res.apply(oscquery::detail::json_to_value{value_it->value, typetag, typetag_counter});
         if(ok)
-          node.getAddress()->setValue(std::move(res));
+          node.get_address()->set_value(std::move(res));
       }
 
       // Same for default value
       if(default_value_it != obj.MemberEnd())
       {
-        ossia::value res = node.getAddress()->cloneValue();
+        ossia::value res = node.get_address()->value();
         int typetag_counter = 0;
         bool ok = res.apply(oscquery::detail::json_to_value{default_value_it->value, typetag, typetag_counter});
         if(ok)
@@ -495,21 +504,21 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
       if(value_it != obj.MemberEnd())
       {
         auto val = ReadValue(value_it->value);
-        auto addr = node.createAddress(val.getType());
-        addr->setValue(std::move(val));
+        auto addr = node.create_address(val.getType());
+        addr->set_value(std::move(val));
       }
 
       if(default_value_it != obj.MemberEnd())
       {
         auto val = ReadValue(default_value_it->value);
-        if(node.getAddress())
+        if(node.get_address())
         {
           ossia::net::set_default_value(node, std::move(val));
         }
         else
         {
-          auto addr = node.createAddress(val.getType());
-          addr->setValue(val);
+          auto addr = node.create_address(val.getType());
+          addr->set_value(val);
           ossia::net::set_default_value(node, std::move(val));
         }
       }
@@ -534,7 +543,7 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
     auto& obj = contents_it->value;
     for(auto child_it = obj.MemberBegin(); child_it != obj.MemberEnd(); ++child_it)
     {
-      auto cld = node.createChild(getString(child_it->name));
+      auto cld = node.create_child(getString(child_it->name));
       readObject(*cld, child_it->value);
     }
   }
@@ -600,8 +609,8 @@ void json_parser::parse_namespace(net::node_base& root, const rapidjson::Value& 
     auto node = ossia::net::find_node(root, str);
     if(node)
     {
-      node->clearChildren();
-      node->removeAddress();
+      node->clear_children();
+      node->remove_address();
 
       detail::json_parser_impl::readObject(*node, obj);
     }
@@ -613,8 +622,8 @@ void json_parser::parse_namespace(net::node_base& root, const rapidjson::Value& 
   }
   else
   {
-    root.clearChildren();
-    root.removeAddress();
+    root.clear_children();
+    root.remove_address();
 
     detail::json_parser_impl::readObject(root, obj);
   }
@@ -622,9 +631,9 @@ void json_parser::parse_namespace(net::node_base& root, const rapidjson::Value& 
 
 void json_parser::parse_value(net::address_base& addr, const rapidjson::Value& obj)
 {
-  auto val = addr.cloneValue();
+  auto val = addr.value();
   val.apply(detail::json_to_value_unchecked{obj});
-  addr.setValue(std::move(val));
+  addr.set_value(std::move(val));
 }
 
 void json_parser::parse_address_value(
@@ -641,14 +650,14 @@ void json_parser::parse_address_value(
       auto node = ossia::net::find_node(root, path);
       if(node)
       {
-        auto addr = node->getAddress();
+        auto addr = node->get_address();
         if(addr)
         {
-          auto val = addr->cloneValue();
+          auto val = addr->value();
           val.apply(detail::json_to_value_unchecked{obj});
 
           // TODO don't push it back to the sender
-          addr->pushValue(std::move(val));
+          addr->push_value(std::move(val));
         }
       }
     }
@@ -687,10 +696,10 @@ void json_parser::parse_path_added(net::node_base& root, const rapidjson::Value&
         auto node = ossia::net::find_node(root, str.first);
         if(node)
         {
-          auto cld = node->findChild(str.second.to_string());
+          auto cld = node->find_child(str.second.to_string());
           if(!cld)
           {
-            auto cld = node->createChild(str.second.to_string());
+            auto cld = node->create_child(str.second.to_string());
             detail::json_parser_impl::readObject(*cld, dat);
           }
           else

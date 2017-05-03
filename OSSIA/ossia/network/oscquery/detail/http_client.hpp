@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <asio.hpp>
 #include <asio/placeholders.hpp>
 #include <boost/bind.hpp>
@@ -12,6 +13,7 @@ namespace oscquery
 using tcp = asio::ip::tcp;
 class http_get_request
 {
+  fmt::MemoryWriter m_request;
 public:
   http_get_request(
       std::function<void(http_get_request*, const std::string&)> f,
@@ -25,11 +27,10 @@ public:
       m_fun{std::move(f)},
       m_err{std::move(err)}
   {
-    std::ostream request_stream(&m_request);
-    request_stream << "GET " << path << " HTTP/1.1\r\n";
-    request_stream << "Host: " << server << "\r\n";
-    request_stream << "Accept: */*\r\n";
-    request_stream << "Connection: close\r\n\r\n";
+    m_request << "GET " << path << " HTTP/1.1\r\n";
+    m_request << "Host: " << server << "\r\n";
+    m_request << "Accept: */*\r\n";
+    m_request << "Connection: close\r\n\r\n";
 
     m_resolver.async_resolve(server, port,
         std::bind(&http_get_request::handle_resolve, this,
@@ -65,8 +66,9 @@ private:
   {
     if (!err)
     {
+      asio::const_buffer request(m_request.data(), m_request.size());
       // The connection was successful. Send the request.
-      asio::async_write(m_socket, m_request,
+      asio::async_write(m_socket, request,
           std::bind(&http_get_request::handle_write_request, this,
             std::placeholders::_1));
     }
@@ -185,7 +187,6 @@ private:
 
   tcp::resolver m_resolver;
   tcp::socket m_socket;
-  asio::streambuf m_request;
   asio::streambuf m_response;
   std::stringstream m_stream;
   std::function<void(http_get_request*, const std::string&)> m_fun;

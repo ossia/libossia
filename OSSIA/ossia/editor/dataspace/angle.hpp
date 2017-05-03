@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace_base.hpp>
-#include <eggs/variant.hpp>
 
 namespace ossia
 {
@@ -48,17 +47,4 @@ struct OSSIA_EXPORT degree_u : public angle_unit<degree_u>
   }
 };
 
-using degree = strong_value<degree_u>;
-using radian = strong_value<radian_u>;
-
-using angle_u =
-  eggs::variant<
-    degree_u, radian_u>;
-
-template<>
-struct dataspace_traits<angle_u>
-{
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("angle"); }
-};
 }

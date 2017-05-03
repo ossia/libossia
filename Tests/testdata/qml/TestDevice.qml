@@ -1,17 +1,16 @@
 import QtQuick 2.0
-import Ossia 1.0
+import Ossia 1.0 as Ossia
+import "Ossia" as Ossia
 
 Item {
     // /bar
-    OssiaNode {
+    Ossia.Node {
         id: tutu
-        device: OssiaSingleDevice
         node: "bar"
     }
 
     // /bar/x
-    OssiaPropertyBase on x {
-        device: OssiaSingleDevice
+    Ossia.Property on x {
     }
 
     PropertyAnimation on x {
@@ -28,22 +27,22 @@ Item {
         color: "black"
 
         // /foo/rot
-        OssiaPropertyBase on rotation {
-            device: OssiaSingleDevice
+        Ossia.Property on rotation {
             node: "/foo/rot"
         }
 
         // /bar/rect_y
-        OssiaPropertyBase on y {
-            device: OssiaSingleDevice
+        Ossia.Property on y {
             node: "rect_y"
         }
 
         // /bar/rect/width
-        OssiaPropertyBase on width {
-            device: OssiaSingleDevice
+        Ossia.Property on width {
             node: "rect/width"
         }
 
     }
+
+    id: root
+    Component.onCompleted: Ossia.SingleDevice.recreate(root)
 }

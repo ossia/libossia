@@ -7,6 +7,8 @@
 #include <ossia/detail/optional.hpp>
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <ossia/detail/logger.hpp>
 #include <iostream>
 
 namespace ossia
@@ -53,7 +55,7 @@ std::string sanitize_name(std::string name, const std::vector<std::string>& bret
   sanitize_name(name);
   bool is_here = false;
   ossia::optional<int> name_instance;
-  std::vector<int> instance_num;
+  chobo::small_vector<int, 16> instance_num;
   instance_num.reserve(brethren.size());
 
   // First get the root name : the first part of the "a.b"
@@ -73,7 +75,7 @@ std::string sanitize_name(std::string name, const std::vector<std::string>& bret
     }
   }
 
-  auto root_len = root_name.length();
+  const auto root_len = root_name.size();
   for (const std::string& n_name : brethren)
   {
     if (n_name == name)
@@ -81,7 +83,7 @@ std::string sanitize_name(std::string name, const std::vector<std::string>& bret
       is_here = true;
     }
 
-    if(n_name.size() < root_len)
+    if(n_name.size() < (root_len + 1))
       continue;
 
     bool same_root = (n_name.compare(0, root_len, root_name) == 0);
@@ -149,18 +151,23 @@ std::vector<std::string> address_parts(const ossia::string_view& src)
 }
 node_base::~node_base() = default;
 
-const extended_attributes& node_base::getExtendedAttributes() const
+void node_base::set_address(std::unique_ptr<address_base>)
+{
+
+}
+
+const extended_attributes& node_base::get_extended_attributes() const
 {
   return m_extended;
 }
 
-void node_base::setExtendedAttributes(
+void node_base::set_extended_attributes(
     const extended_attributes& e)
 {
   m_extended = e;
 }
 
-boost::any node_base::getAttribute(
+boost::any node_base::get_attribute(
     ossia::string_view str) const
 {
   auto it = m_extended.find(str);
@@ -171,13 +178,13 @@ boost::any node_base::getAttribute(
 
 
 
-node_base* node_base::createChild(std::string name)
+node_base* node_base::create_child(std::string name)
 {
-  auto& dev = getDevice();
-  if(!dev.getCapabilities().change_tree)
+  auto& dev = get_device();
+  if(!dev.get_capabilities().change_tree)
     return nullptr;
 
-  auto res = makeChild(sanitize_name(std::move(name), childrenNames()));
+  auto res = make_child(sanitize_name(std::move(name), children_names()));
 
   auto ptr = res.get();
   if (res)
@@ -185,13 +192,13 @@ node_base* node_base::createChild(std::string name)
     { write_lock_t lock{m_mutex};
       m_children.push_back(std::move(res));
     }
-    dev.onNodeCreated(*ptr);
+    dev.on_node_created(*ptr);
   }
 
   return ptr;
 }
 
-std::vector<std::string> node_base::childrenNames() const
+std::vector<std::string> node_base::children_names() const
 {
   SPDLOG_TRACE((&ossia::logger()), "locking(childrenNames)");
   read_lock_t lock{m_mutex};
@@ -200,35 +207,60 @@ std::vector<std::string> node_base::childrenNames() const
   bros_names.reserve(m_children.size());
 
   std::transform(m_children.cbegin(), m_children.cend(), std::back_inserter(bros_names),
-                 [] (const auto& n) { return n->getName(); });
+                 [] (const auto& n) { return n->get_name(); });
 
-  SPDLOG_TRACE((&ossia::logger()), "locked(childrenNames)");
+  SPDLOG_TRACE((&ossia::logger()), "unlocked(childrenNames)");
   return bros_names;
 }
 
-node_base*node_base::addChild(std::unique_ptr<node_base> n)
+bool node_base::is_root_instance(const node_base& child) const
 {
-  auto& dev = getDevice();
-  if(!dev.getCapabilities().change_tree)
+  SPDLOG_TRACE((&ossia::logger()), "locking(is_root_instance)");
+  read_lock_t lock{m_mutex};
+  SPDLOG_TRACE((&ossia::logger()), "locked(is_root_instance)");
+
+  auto child_name = child.get_name();
+  for(auto& cld : m_children)
+  {
+    auto bro_name = cld->get_name();
+    if((bro_name.size() > (child_name.size() + 1))
+    && boost::starts_with(bro_name, child_name)
+    && (bro_name[child_name.size()] == '.'))
+    {
+      // TODO to be sure we should do
+      // a full regex check but is it really worth it..
+      SPDLOG_TRACE((&ossia::logger()), "unlocked(is_root_instance)");
+      return true;
+    }
+  }
+
+  SPDLOG_TRACE((&ossia::logger()), "unlocked(is_root_instance)");
+  return false;
+}
+
+node_base*node_base::add_child(std::unique_ptr<node_base> n)
+{
+  auto& dev = get_device();
+  if(!dev.get_capabilities().change_tree)
     return nullptr;
 
   if(n)
   {
-    const auto name = n->getName();
-    if(name == sanitize_name(name, childrenNames()))
+    const auto name = n->get_name();
+    if(name == sanitize_name(name, children_names()))
     {
       auto ptr = n.get();
       { write_lock_t lock{m_mutex};
         m_children.push_back(std::move(n));
       }
-      dev.onNodeCreated(*ptr);
+      dev.on_node_created(*ptr);
       return ptr;
     }
   }
   return nullptr;
 }
 
-node_base* node_base::findChild(ossia::string_view name)
+node_base* node_base::find_child(ossia::string_view name)
 {
   {
     SPDLOG_TRACE((&ossia::logger()), "locking(findChild)");
@@ -236,7 +268,7 @@ node_base* node_base::findChild(ossia::string_view name)
     SPDLOG_TRACE((&ossia::logger()), "locked(findChild)");
     for(auto& node : m_children)
     {
-      if(node->getName() == name)
+      if(node->get_name() == name)
       {
         SPDLOG_TRACE((&ossia::logger()), "unlocked(findChild)");
         return node.get();
@@ -248,7 +280,7 @@ node_base* node_base::findChild(ossia::string_view name)
   return nullptr;
 }
 
-bool node_base::hasChild(node_base& n)
+bool node_base::has_child(node_base& n)
 {
   SPDLOG_TRACE((&ossia::logger()), "locking(hasChild)");
   read_lock_t lock{m_mutex};
@@ -258,10 +290,10 @@ bool node_base::hasChild(node_base& n)
   return any_of(m_children, [&] (auto& cld) { return cld.get() == &n; } );
 }
 
-bool node_base::removeChild(const std::string& name)
+bool node_base::remove_child(const std::string& name)
 {
-  auto& dev = getDevice();
-  if(!dev.getCapabilities().change_tree)
+  auto& dev = get_device();
+  if(!dev.get_capabilities().change_tree)
     return false;
 
   std::string n = name;
@@ -269,12 +301,12 @@ bool node_base::removeChild(const std::string& name)
 
   write_lock_t lock{m_mutex};
   auto it = find_if(
-              m_children, [&](const auto& c) { return c->getName() == n; });
+              m_children, [&](const auto& c) { return c->get_name() == n; });
 
   if (it != m_children.end())
   {
-    dev.onNodeRemoving(**it);
-    removingChild(**it);
+    dev.on_node_removing(**it);
+    removing_child(**it);
     m_children.erase(it);
 
     return true;
@@ -285,10 +317,10 @@ bool node_base::removeChild(const std::string& name)
   }
 }
 
-bool node_base::removeChild(const node_base& n)
+bool node_base::remove_child(const node_base& n)
 {
-  auto& dev = getDevice();
-  if(!dev.getCapabilities().change_tree)
+  auto& dev = get_device();
+  if(!dev.get_capabilities().change_tree)
     return false;
 
   write_lock_t lock{m_mutex};
@@ -296,8 +328,8 @@ bool node_base::removeChild(const node_base& n)
 
   if (it != m_children.end())
   {
-    dev.onNodeRemoving(**it);
-    removingChild(**it);
+    dev.on_node_removing(**it);
+    removing_child(**it);
     m_children.erase(it);
 
     return true;
@@ -308,17 +340,17 @@ bool node_base::removeChild(const node_base& n)
   }
 }
 
-void node_base::clearChildren()
+void node_base::clear_children()
 {
-  auto& dev = getDevice();
-  if(!dev.getCapabilities().change_tree)
+  auto& dev = get_device();
+  if(!dev.get_capabilities().change_tree)
     return;
 
   write_lock_t lock{m_mutex};
   for (auto& child : m_children)
   {
-    dev.onNodeRemoving(*child);
-    removingChild(*child);
+    dev.on_node_removing(*child);
+    removing_child(*child);
     child.reset();
   }
 
@@ -413,14 +445,16 @@ optional<extended_type> get_extended_type(const ossia::net::node_base& n)
   auto opt = get_optional_attribute<extended_type>(n, text_extended_type() );
   if(!opt)
   {
-    if(address_base* addr = n.getAddress())
+    if(address_base* addr = n.get_address())
     {
-      switch(addr->getValueType())
+      switch(addr->get_value_type())
       {
         case ossia::val_type::VEC2F:
         case ossia::val_type::VEC3F:
         case ossia::val_type::VEC4F:
           return float_array_type();
+        case ossia::val_type::TUPLE:
+          return tuple_type();
         default:
           break;
       }
@@ -442,91 +476,257 @@ void set_description(extended_attributes& n, const char* arg)
     set_description(n, ossia::none);
 }
 
-// Address-related ones
-
+// Address-related getters - setters
 ossia::string_view text_value()
 { return make_string_view("value"); }
 value clone_value(const ossia::net::node_base& n)
 {
-  if(auto addr = n.getAddress()) return addr->cloneValue();
+  if(auto addr = n.get_address()) return addr->value();
   return {};
 }
 void set_value(ossia::net::node_base& n, value v)
 {
-  if(auto addr = n.getAddress()) addr->setValue(std::move(v));
+  if(auto addr = n.get_address()) addr->set_value(std::move(v));
 }
 
 ossia::string_view text_value_type()
 { return make_string_view("type"); }
 optional<val_type> get_value_type(const ossia::net::node_base& n)
 {
-  if(auto addr = n.getAddress()) return addr->getValueType();
+  if(auto addr = n.get_address()) return addr->get_value_type();
   return ossia::none;
 }
 void set_value_type(ossia::net::node_base& n, val_type v)
 {
-  if(auto addr = n.getAddress()) addr->setValueType(std::move(v));
+  if(auto addr = n.get_address()) addr->set_value_type(std::move(v));
 }
 
 ossia::string_view text_domain()
 { return make_string_view("domain"); }
 domain get_domain(const ossia::net::node_base& n)
 {
-  if(auto addr = n.getAddress()) return addr->getDomain();
+  if(auto addr = n.get_address()) return addr->get_domain();
   return {};
 }
 void set_domain(ossia::net::node_base& n, domain v)
 {
-  if(auto addr = n.getAddress()) addr->setDomain(std::move(v));
+  if(auto addr = n.get_address()) addr->set_domain(std::move(v));
 }
 
 ossia::string_view text_access_mode()
 { return make_string_view("access"); }
 optional<access_mode> get_access_mode(const ossia::net::node_base& n)
 {
-  if(auto addr = n.getAddress()) return addr->getAccessMode();
+  if(auto addr = n.get_address()) return addr->get_access();
   return ossia::none;
 }
 void set_access_mode(ossia::net::node_base& n, access_mode v)
 {
-  if(auto addr = n.getAddress()) addr->setAccessMode(std::move(v));
+  if(auto addr = n.get_address()) addr->set_access(std::move(v));
 }
 
 ossia::string_view text_bounding_mode()
 { return make_string_view("bounding"); }
 optional<bounding_mode> get_bounding_mode(const ossia::net::node_base& n)
 {
-  if(auto addr = n.getAddress()) return addr->getBoundingMode();
+  if(auto addr = n.get_address()) return addr->get_bounding();
   return ossia::none;
 }
 void set_bounding_mode(ossia::net::node_base& n, bounding_mode v)
 {
-  if(auto addr = n.getAddress()) addr->setBoundingMode(std::move(v));
+  if(auto addr = n.get_address()) addr->set_bounding(std::move(v));
+}
+
+ossia::string_view text_muted()
+{ return make_string_view("muted"); }
+muted get_muted(const ossia::net::node_base& n)
+{
+  if(auto addr = n.get_address()) return addr->get_muted();
+  return false;
+}
+void set_muted(ossia::net::node_base& n, muted v)
+{
+  if(auto addr = n.get_address()) addr->set_muted(v);
 }
 
 ossia::string_view text_repetition_filter()
 { return make_string_view("repetition_filter"); }
 repetition_filter get_repetition_filter(const ossia::net::node_base& n)
 {
-  if(auto addr = n.getAddress()) return addr->getRepetitionFilter();
+  if(auto addr = n.get_address()) return addr->get_repetition_filter();
   return repetition_filter::OFF;
 }
 void set_repetition_filter(ossia::net::node_base& n, repetition_filter v)
 {
-  if(auto addr = n.getAddress()) addr->setRepetitionFilter(std::move(v));
+  if(auto addr = n.get_address()) addr->set_repetition_filter(std::move(v));
 }
 
 ossia::string_view text_unit()
 { return make_string_view("unit"); }
 unit_t get_unit(const ossia::net::node_base& n)
 {
-  if(auto addr = n.getAddress()) return addr->getUnit();
+  if(auto addr = n.get_address()) return addr->get_unit();
   return {};
 }
 void set_unit(ossia::net::node_base& n, unit_t v)
 {
-  if(auto addr = n.getAddress()) addr->setUnit(std::move(v));
+  if(auto addr = n.get_address()) addr->set_unit(std::move(v));
 }
 
+
+
+
+namespace
+{
+static node_base* find_node_rec(
+    node_base& node,
+    ossia::string_view address) // Format a/b/c -> b/c -> c
+{
+  auto first_slash_index = address.find_first_of('/');
+
+  if (first_slash_index != std::string::npos)
+  {
+    auto child = node.find_child(address.substr(0, first_slash_index));
+    if (child)
+    {
+      // There are still nodes since we found a slash
+      return find_node_rec(
+            *child,
+            address.substr(first_slash_index + 1));
+    }
+    else
+    {
+      return nullptr;
+    }
+  }
+  else
+  {
+    // One of the child may be the researched node.
+    return node.find_child(address);
+  }
+}
+
+static node_base& find_or_create_node_rec(
+    node_base& node,
+    ossia::string_view address) // Format a/b/c -> b/c -> c
+{
+  auto first_slash_index = address.find_first_of('/');
+
+  if (first_slash_index != std::string::npos)
+  {
+    auto cur = address.substr(0, first_slash_index);
+    auto cld = node.find_child(cur);
+    if (cld)
+    {
+      // There are still nodes since we found a slash
+      return find_or_create_node_rec(*cld,
+                                     address.substr(first_slash_index + 1));
+    }
+    else
+    {
+      // Create a node
+      auto& child = *node.create_child(cur.to_string());
+
+      // Recurse on it
+      return find_or_create_node_rec(
+            child, address.substr(first_slash_index + 1));
+    }
+  }
+  else
+  {
+    // One of the child may be the researched node.
+    auto n = node.find_child(address);
+    if(n)
+    {
+      return *n;
+    }
+    else
+    {
+      // Create and return the node
+      return  *node.create_child(address.to_string());
+    }
+  }
+}
+
+static node_base& create_node_rec(
+    node_base& node,
+    ossia::string_view address) // Format a/b/c -> b/c -> c
+{
+  auto first_slash_index = address.find_first_of('/');
+
+  if (first_slash_index != std::string::npos)
+  {
+    auto cur = address.substr(0, first_slash_index);
+    auto cld = node.find_child(cur);
+    if (cld)
+    {
+      // There are still nodes since we found a slash
+      return create_node_rec(
+            *cld,
+            address.substr(first_slash_index + 1));
+    }
+    else
+    {
+      // Create a node
+      auto& child = *node.create_child(cur.to_string());
+
+      // Recurse on it
+      return create_node_rec(
+            child, address.substr(first_slash_index + 1));
+    }
+  }
+  else
+  {
+    // Create and return the node
+    return *node.create_child(address.to_string());
+  }
+}
+
+//! Note : here we modify the string_view only.
+//! The original address remains unchanged.
+static ossia::string_view sanitize_address(ossia::string_view address)
+{
+  while (boost::algorithm::starts_with(address, "/"))
+    address.remove_prefix(1);
+  while (boost::algorithm::ends_with(address, "/"))
+    address.remove_suffix(1);
+  return address;
+}
+}
+
+node_base* find_node(node_base& dev, ossia::string_view address)
+{
+  // TODO validate
+  address = sanitize_address(address);
+  if (address.empty())
+    return &dev;
+
+  // address now looks like a/b/c
+  return find_node_rec(dev, address);
+}
+
+node_base&
+find_or_create_node(node_base& node, ossia::string_view address)
+{
+  // TODO validate
+  address = sanitize_address(address);
+  if (address.empty())
+    return node;
+
+  // address now looks like a/b/c
+  return find_or_create_node_rec(node, address);
+}
+
+node_base&
+create_node(node_base& node, ossia::string_view address)
+{
+  // TODO validate
+  address = sanitize_address(address);
+  if (address.empty())
+    address = "node";
+
+  // address now looks like a/b/c
+  return create_node_rec(node, address);
+}
 }
 }

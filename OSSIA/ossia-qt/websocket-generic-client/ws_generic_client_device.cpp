@@ -10,7 +10,7 @@ ws_generic_client_device::ws_generic_client_device(std::unique_ptr<ws_generic_cl
   device_base(std::move(protocol)),
   ws_generic_client_node{ws_generic_client_address_data{name}, *this}
 {
-  mProtocol->setDevice(*this);
+  m_protocol->set_device(*this);
 }
 
 ws_generic_client_device::~ws_generic_client_device()

@@ -13,7 +13,7 @@ protected:
     ossiaException(int lineno, const std::string& filename, const std::string& details, const std::string& name);
 public:
     ossiaException(int lineno, const std::string& filename, const std::string& details = {});
-    const char* what () const noexcept;
+    const char* what () const noexcept override;
 };
 
 class ossiaException_InvalidJSON : public ossiaException {

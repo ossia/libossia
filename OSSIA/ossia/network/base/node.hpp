@@ -32,7 +32,7 @@ class node_base;
  * The \ref node_base has ownership of its children.
  *
  * If a node is meant to send and receive data, an \ref address_base
- * should be created with node_base::createAddress.
+ * should be created with node_base::create_address.
  *
  * Some device trees may provide immutable node hierarchies :
  * child nodes cannot be added nor removed.
@@ -57,29 +57,31 @@ public:
   virtual ~node_base();
 
   //! The device in which this node is.
-  virtual device_base& getDevice() const = 0;
+  virtual device_base& get_device() const = 0;
 
   //! Parent of this node. May be null if it is the device (i.e. root).
-  virtual node_base* getParent() const = 0;
+  virtual node_base* get_parent() const = 0;
 
   /**
    * \brief The name of this node, e.g. "foo".
    *
    * \see ossia::net::address_string_from_node
    */
-  virtual std::string getName() const = 0;
-  virtual node_base& setName(std::string) = 0;
+  virtual std::string get_name() const = 0;
+  virtual node_base& set_name(std::string) = 0;
 
   //! Allows a node to carry a value
-  virtual address_base* createAddress(val_type = val_type::IMPULSE) = 0;
-  virtual bool removeAddress() = 0;
-  virtual address_base* getAddress() const = 0;
+  virtual address_base* create_address(val_type = val_type::IMPULSE) = 0;
+  //! Default implementation does nothing
+  virtual void set_address(std::unique_ptr<ossia::net::address_base>);
+  virtual bool remove_address() = 0;
+  virtual address_base* get_address() const = 0;
 
   /** Allows to add arbitrary key-value metadata to nodes.
    * There is a list of pre-defined attributes available in \ref node_attributes.hpp
    */
-  const extended_attributes& getExtendedAttributes() const;
-  void setExtendedAttributes(const extended_attributes&);
+  const extended_attributes& get_extended_attributes() const;
+  void set_extended_attributes(const extended_attributes&);
 
   /** Get a specific attribute.
    * Usage :
@@ -93,7 +95,7 @@ public:
    * }
    * \endcode
    */
-  boost::any getAttribute(ossia::string_view str) const;
+  boost::any get_attribute(ossia::string_view str) const;
 
   template<typename T>
   void set(ossia::string_view str, const T& val);
@@ -108,7 +110,7 @@ public:
   void set(Attribute a, T&& value);
 
   /**
-   * @brief createChild Adds a sub-child of the given name.
+   * @brief create_child Adds a sub-child of the given name.
    *
    * @note The name of the child may be modified, so it should be checked after creation.
    *
@@ -117,7 +119,7 @@ public:
    *
    * @return A pointer to the child if it could be created, else nullptr.
    */
-  node_base* createChild(std::string name);
+  node_base* create_child(std::string name);
 
   /**
    * @brief Adds a new child if it can be added.
@@ -125,7 +127,7 @@ public:
    * For instance if the name is already taken, it won't be added
    * and the returned pointer will be null.
    */
-  node_base* addChild(std::unique_ptr<node_base>);
+  node_base* add_child(std::unique_ptr<node_base>);
 
   /**
    * @brief Find a direct child of this node.
@@ -135,16 +137,16 @@ public:
    * If you need to find a child recursively, see ossia::net::find_node.
    *
    */
-  node_base* findChild(ossia::string_view name);
+  node_base* find_child(ossia::string_view name);
 
   //! Return true if this node is parent of this children
-  bool hasChild(ossia::net::node_base&);
+  bool has_child(ossia::net::node_base&);
 
-  bool removeChild(const std::string& name);
-  bool removeChild(const node_base& name);
+  bool remove_child(const std::string& name);
+  bool remove_child(const node_base& name);
 
   //! Remove all the children.
-  void clearChildren();
+  void clear_children();
 
   operator const extended_attributes&() const { return m_extended; }
   operator extended_attributes&() { return m_extended; }
@@ -154,24 +156,27 @@ public:
     return {m_children, m_mutex};
   }
 
-  //! Nonprotected version. With great powers, yada yada etc etc
+  //! Non mutex-protected version. With great powers, yada yada etc etc
   const auto& unsafe_children() const { return m_children; }
 
   //! Return a copy of the children vector to iterate without deadlocking.
   std::vector<node_base*> children_copy() const;
 
   //! A vector with all the names of the children.
-  std::vector<std::string> childrenNames() const;
+  std::vector<std::string> children_names() const;
+
+  //! If childrens are /foo, /bar, bar.1, returns true only for bar.
+  bool is_root_instance(const ossia::net::node_base& child) const;
 
   //! The node subclasses must call this in their destructor.
-  mutable Nano::Signal<void(const node_base&)> aboutToBeDeleted;
+  mutable Nano::Signal<void(const node_base&)> about_to_be_deleted;
 
 protected:
   //! Should return nullptr if no child is to be added.
-  virtual std::unique_ptr<node_base> makeChild(const std::string& name) = 0;
+  virtual std::unique_ptr<node_base> make_child(const std::string& name) = 0;
 
   //! Reimplement for a specific removal action.
-  virtual void removingChild(node_base& node_base) = 0;
+  virtual void removing_child(node_base& node_base) = 0;
 
   children_t m_children;
   mutable shared_mutex_t m_mutex;

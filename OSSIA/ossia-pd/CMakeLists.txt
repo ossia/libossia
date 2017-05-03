@@ -65,6 +65,8 @@ set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../../3rdparty")
 include_directories(SYSTEM "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include")
 
 set(PROJECT_SRCS
+  src/client.cpp
+  src/client.hpp
   src/device.cpp
   src/device.hpp
   src/model.cpp
@@ -82,6 +84,10 @@ set(PROJECT_SRCS
 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
 use_gold(${PROJECT_NAME})
+
+# These two lines are used to display the QMLs in the project view of IDEs
+set(QMLS "examples/client-example.qml")
+add_custom_target(pd_qml_examples SOURCES ${QMLS})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE CicmWrapper ossia)
 if(MSVC)

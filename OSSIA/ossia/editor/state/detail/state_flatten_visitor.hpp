@@ -5,6 +5,7 @@
 #include <ossia/editor/value/value_traits.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/detail/apply.hpp>
 #include <iostream>
 namespace ossia
 {
@@ -88,7 +89,7 @@ struct vec_merger
       if(incoming_dest.unit)
         type = ossia::matching_type(incoming_dest.unit);
       else
-        type = existing_dest.value.get().getValueType();
+        type = existing_dest.address().get_value_type();
 
       switch(type)
       {
@@ -182,13 +183,13 @@ struct state_flatten_visitor_merger
     auto to_append_index_empty = incoming.destination.index.empty();
     auto source_index_empty = existing.destination.index.empty();
     if(same_vec_type(existing.message_value, incoming.message_value) ||
-       is_vec(existing.destination.value.get().getValueType()))
+       is_vec(existing.destination.address().get_value_type()))
     {
       // We handle the Vec types a bit differently :
       // since it's very cheap, the value will contain the whole array data
       // and the index will be the relevant index in the array.
       // Hence we merge both indexes.
-      auto res = eggs::variants::apply(
+      auto res = ossia::apply(
             vec_merger{existing.destination, incoming.destination},
             existing.message_value.v,
             incoming.message_value.v);
@@ -351,13 +352,13 @@ struct state_flatten_visitor_merger
     auto to_append_index_empty = incoming.destination.index.empty();
     auto source_index_empty = existing.destination.index.empty();
     if(same_vec_type(existing.message_value, incoming.message_value) ||
-       is_vec(existing.destination.value.get().getValueType()))
+       is_vec(existing.destination.address().get_value_type()))
     {
       // We handle the Vec types a bit differently :
       // since it's very cheap, the value will contain the whole array data
       // and the index will be the relevant index in the array.
       // Hence we merge both indexes.
-      auto res = eggs::variants::apply(
+      auto res = ossia::apply(
             vec_merger{existing.destination, incoming.destination},
             existing.message_value.v,
             incoming.message_value.v);

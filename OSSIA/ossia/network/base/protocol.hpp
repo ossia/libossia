@@ -42,7 +42,7 @@ public:
    * @brief Pulls a value from the server asynchronously.
    * @return A future that will be set when the value is received.
    */
-  virtual std::future<void> pullAsync(address_base&);
+  virtual std::future<void> pull_async(address_base&);
 
   /**
    * @brief Request an update on a value.
@@ -84,18 +84,18 @@ public:
    * @brief It is mandatory to call this function from device implementations, when
    * the protocol is set.
    */
-  virtual void setDevice(ossia::net::device_base& dev)
+  virtual void set_device(ossia::net::device_base& dev)
   {
   }
 
   //! Replace the loggers used
-  void setLogger(const network_logger& l)
-  { mLogger = l; }
-  const network_logger& getLogger() const
-  { return mLogger; }
+  void set_logger(const network_logger& l)
+  { m_logger = l; }
+  const network_logger& get_logger() const
+  { return m_logger; }
 
 protected:
-  network_logger mLogger;
+  network_logger m_logger;
 };
 
 }

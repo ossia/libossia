@@ -35,7 +35,7 @@ public:
       // Then we enable / disable listening
       if(listen_text == detail::text_true())
       {
-        clt->start_listen(path.to_string(), node.getAddress());
+        clt->start_listen(path.to_string(), node.get_address());
         return {};
       }
       else if(listen_text == detail::text_false())
@@ -69,7 +69,7 @@ public:
       throw bad_request_error{"Client not found"};
 
     // Then we set-up the sender
-    clt->openOSCSender(proto.getLogger(), port);
+    clt->openOSCSender(proto.get_logger(), port);
 
     proto.enableClient(hdl);
     return {};
@@ -85,7 +85,7 @@ public:
       // Here we handle the url elements relative to oscquery
       if(parameters.size() == 0)
       {
-        auto& root = proto.getDevice().getRootNode();
+        auto& root = proto.get_device().get_root_node();
         if(path == "/")
         {
           return oscquery::json_writer::query_namespace(root);
@@ -104,7 +104,7 @@ public:
         auto host_it = parameters.find("HOST_INFO");
         if(host_it == parameters.end())
         {
-          auto node = ossia::net::find_node(proto.getDevice().getRootNode(), path);
+          auto node = ossia::net::find_node(proto.get_device().get_root_node(), path);
           // First check if we have the path
           if(!node)
             throw node_not_found_error{path.to_string()};

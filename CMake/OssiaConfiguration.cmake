@@ -13,6 +13,8 @@ option(OSSIA_LTO "Link-time optimizations. Fails on Windows." OFF)
 option(OSSIA_OSX_FAT_LIBRARIES "Build 32 and 64 bit fat libraries on OS X" OFF)
 option(OSSIA_OSX_RETROCOMPATIBILITY "Build for older OS X versions" OFF)
 option(OSSIA_MOST_STATIC "Try to make binaries that are mostly static" OFF)
+option(OSSIA_DATAFLOW "Dataflow features" ON)
+option(OSSIA_SPLIT_DEBUG "Split debug info" ON)
 
 # Bindings :
 option(OSSIA_JAVA "Build JNI bindings" OFF)
@@ -29,7 +31,8 @@ option(OSSIA_PROTOCOL_HTTP "Enable HTTP protocol" ON) # Requires Qt
 option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF) # Requires Qt
 option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF) # Requires Qt
 option(OSSIA_NO_QT "Disable all the features that may require Qt" OFF)
-
+option(OSSIA_NO_QT_PLUGIN "Disable building of a Qt plugin" OFF)
+option(OSSIA_DNSSD "Enable DNSSD support" ON)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
 
 include(Sanitize)
@@ -64,23 +67,38 @@ include(ProcessorCount)
 include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-Wmisleading-indentation" SUPPORTS_MISLEADING_INDENT_FLAG)
 check_cxx_compiler_flag("-Wl,-z,defs" WL_ZDEFS_SUPPORTED)
-check_cxx_compiler_flag("-fuse-ld=lld" LLD_LINKER_SUPPORTED)
-check_cxx_compiler_flag("-fuse-ld=gold" GOLD_LINKER_SUPPORTED)
 
-if(LLD_LINKER_SUPPORTED) 
-  set(LINKER_IS_LLD 1)
-elseif(GOLD_LINKER_SUPPORTED)
-  set(LINKER_IS_GOLD 1)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
+  set(LINKER_IS_LLD 0)
+  set(LINKER_IS_GOLD 0)
+  set(OSSIA_PD 0)
+  set(OSSIA_PYTHON 0)
+  set(OSSIA_DATAFLOW 0)
+  set(OSSIA_DNSSD 0)
+  set(OSSIA_PROTOCOL_MIDI 0)
+  set(OSSIA_DISABLE_COTIRE 1)
+  set(ANDROID 1)
+else()
+  # check_cxx_compiler_flag("-fuse-ld=lld" LLD_LINKER_SUPPORTED)
+  check_cxx_compiler_flag("-fuse-ld=gold" GOLD_LINKER_SUPPORTED)
+  if(LLD_LINKER_SUPPORTED)
+    set(LINKER_IS_LLD 1)
+  elseif(GOLD_LINKER_SUPPORTED)
+    set(LINKER_IS_GOLD 1)
+  endif()
 endif()
 
-set(DEBUG_SPLIT_FLAG "-gsplit-dwarf")
-set(GOLD_FLAGS 
-  -Wa,--compress-debug-sections
-  -Wl,--compress-debug-sections=zlib
-  -Wl,--dynamic-list-cpp-new
-  -Wl,--dynamic-list-cpp-typeinfo
-)
-
+if(OSSIA_SPLIT_DEBUG)
+  set(DEBUG_SPLIT_FLAG "-gsplit-dwarf")
+  if(NOT APPLE)
+  set(GOLD_FLAGS
+    -Wa,--compress-debug-sections
+    -Wl,--compress-debug-sections=zlib
+    -Wl,--dynamic-list-cpp-new
+    -Wl,--dynamic-list-cpp-typeinfo
+  )
+  endif()
+endif()
 if(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*arm.*")
     set(OSSIA_ARCHITECTURE arm)
 elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*aarch64.*")
@@ -97,15 +115,15 @@ endif()
 # Common setup
 set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
-if(${CMAKE_VERSION} VERSION_LESS 3.8.0)
+if(${CMAKE_VERSION} VERSION_LESS 3.8.0 OR ANDROID OR APPLE)
   set(CMAKE_CXX_STANDARD 14)
   if(NOT MSVC)
-    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++14)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
   endif()
 else()
   set(CMAKE_CXX_STANDARD 17)
   if(NOT MSVC)
-    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++1z)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z")
   endif()
 endif()
 # So that make install after make all_unity does not rebuild everything :
@@ -157,26 +175,28 @@ if(MSVC)
         ${OSSIA_LINK_OPTIONS}
     )
 else()
+  if(CMAKE_BUILD_TYPE MATCHES Release)
     set(OSSIA_LINK_OPTIONS
       -ffunction-sections
       -fdata-sections
     )
+  endif()
 
     if(CMAKE_COMPILER_IS_GNUCXX)
       set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
         -fvar-tracking-assignments
       )
     endif()
-     
-    if(UNIX AND NOT APPLE)
+
+    if(UNIX AND NOT APPLE AND NOT OSSIA_SPLIT_DEBUG)
       set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
         -Wl,--gc-sections
         -Wl,-Bsymbolic-functions
       )
     endif()
-     
+
     if(LINKER_IS_GOLD OR LINKER_IS_LLD)
-      if(NOT OSSIA_SANITIZE)
+      if(NOT OSSIA_SANITIZE AND NOT OSSIA_SPLIT_DEBUG)
         set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
           ${DEBUG_SPLIT_FLAG}
         )
@@ -187,11 +207,11 @@ else()
         endif()
       endif()
     endif()
-    
+
     if(LINKER_IS_GOLD)
       set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} ${GOLD_FLAGS})
     endif()
-     
+
     if(OSSIA_MOST_STATIC)
       set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -static -static-libgcc -static-libstdc++)
     endif()
@@ -202,7 +222,13 @@ else()
         endif()
     endif()
 
+    if(UNIX AND NOT CMAKE_COMPILER_IS_GNUCXX)
+      set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS}
+        -Wno-gnu-statement-expression
+      )
+    endif()
     set(OSSIA_COMPILE_OPTIONS
+        ${OSSIA_COMPILE_OPTIONS}
         -std=c++1z
         -Wall
         -Wextra
@@ -211,7 +237,6 @@ else()
         -Wno-missing-braces
         -Wnon-virtual-dtor
         -pedantic
-        -Wcast-align
         -Wunused
         -Woverloaded-virtual
         -pipe
@@ -220,7 +245,11 @@ else()
         -Wmissing-field-initializers
         ${OSSIA_LINK_OPTIONS}
     )
-
+    if(NOT CMAKE_COMPILER_IS_GNUCXX)
+      set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS}
+        -Wno-cast-align
+        -Wno-unused-local-typedef)
+    endif()
     if(OSSIA_CI)
         if(NOT CMAKE_COMPILER_IS_GNUCXX)
             set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -Wl,-S)

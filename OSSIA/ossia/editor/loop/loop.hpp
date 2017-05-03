@@ -33,8 +33,8 @@ public:
    back
    \return a new loop */
     loop(
-        time_value, time_constraint::ExecutionCallback,
-        time_event::ExecutionCallback, time_event::ExecutionCallback);
+        time_value, time_constraint::exec_callback,
+        time_event::exec_callback, time_event::exec_callback);
 
   /*! destructor */
   ~loop();
@@ -44,40 +44,39 @@ public:
   void pause() override;
   void resume() override;
 
-  state_element offset(time_value) override;
+  state_element offset(ossia::time_value) override;
   state_element state() override;
 
   /*! get the pattern #time_constraint
    \return std::shared_ptr<TimeConstraint> */
-  const std::shared_ptr<time_constraint>
-  getPatternTimeConstraint() const;
+  const std::shared_ptr<time_constraint> get_time_constraint() const;
 
   /*! get the pattern start #time_node
    \return std::shared_ptr<TimeNode> */
-  const std::shared_ptr<time_node> getPatternStartTimeNode() const;
+  const std::shared_ptr<time_node> get_start_timenode() const;
 
   /*! get the pattern end #time_node
    \return std::shared_ptr<TimeNode> */
-  const std::shared_ptr<time_node> getPatternEndTimeNode() const;
+  const std::shared_ptr<time_node> get_end_timenode() const;
 
   private:
-  void PatternConstraintCallback(time_value, time_value, const ossia::state&);
+  void constraint_callback(ossia::time_value, time_value, const ossia::state&);
 
-  void PatternStartEventCallback(time_event::Status);
+  void start_event_callback(time_event::status);
 
-  void PatternEndEventCallback(time_event::Status);
+  void end_event_callback(time_event::status);
 
-  std::shared_ptr<time_node> mPatternStartNode;
-  time_event::ExecutionCallback mPatternStartEventCallback;
+  std::shared_ptr<time_node> m_startNode;
+  time_event::exec_callback m_startCallback;
 
-  std::shared_ptr<time_node> mPatternEndNode;
-  time_event::ExecutionCallback mPatternEndEventCallback;
+  std::shared_ptr<time_node> m_endNode;
+  time_event::exec_callback m_endCallback;
 
-  std::shared_ptr<time_constraint> mPatternConstraint;
-  time_constraint::ExecutionCallback mPatternConstraintCallback;
+  std::shared_ptr<time_constraint> m_constraint;
+  time_constraint::exec_callback m_constraintCallback;
 
-  ossia::state mCurrentState; // an internal State to return on state call
-  ossia::state mOffsetState;  // an internal State built when offset is called
+  ossia::state m_currentState; // an internal State to return on state call
+  ossia::state m_offsetState;  // an internal State built when offset is called
 
 };
 }

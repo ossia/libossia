@@ -22,6 +22,7 @@
 
 #include <ossia/ossia.hpp>
 #include <ossia-c/ossia/ossia_utils.hpp>
+#include <ossia/network/oscquery/detail/value_to_json.hpp>
 
 struct ossia_preset
 {
@@ -187,7 +188,7 @@ ossia_preset_result ossia_devices_get_node(ossia_device_t odev, const char* addr
   if (odev != nullptr) {
     try {
       assert(odev->device);
-      auto gotnode = ossia::devices::get_node(odev->device->getRootNode(), addr);
+      auto gotnode = ossia::devices::get_node(odev->device->get_root_node(), addr);
       if (gotnode == nullptr) {
         return OSSIA_PRESETS_INVALID_ADDRESS;
       }
@@ -250,7 +251,7 @@ ossia_preset_result ossia_presets_key_to_string(
       auto it = preset->impl.find(key);
       if(it != preset->impl.end())
       {
-        *buffer = copy_string(ossia::convert<std::string>(it.value()));
+        *buffer = copy_string(ossia::convert<std::string>(it->second));
         return OSSIA_PRESETS_OK;
       }
       else
@@ -277,7 +278,7 @@ ossia_preset_result ossia_presets_key_to_value(
       auto it = preset->impl.find(key);
       if(it != preset->impl.end())
       {
-        *buffer = convert(it.value());
+        *buffer = convert(it->second);
         return OSSIA_PRESETS_OK;
       }
       else
@@ -375,43 +376,11 @@ ossia::presets::preset ossia::presets::read_json(const std::string &str) {
   }
 }
 
-rapidjson::Value ossia_to_json_value(const ossia::value& val, rapidjson::Document::AllocatorType& docallocator) {
-  rapidjson::Value jsonvalue;
-  ossia::val_type tvalue = val.getType();
 
-  switch (tvalue) {
-    case ossia::val_type::BOOL: {
-      auto typedval = val.get<bool>();
-      jsonvalue.SetBool(typedval);
-    }
-      break;
-    case ossia::val_type::INT: {
-      auto typedval = val.get<int32_t>();
-      jsonvalue.SetInt(typedval);
-    }
-      break;
-    case ossia::val_type::FLOAT: {
-      auto typedval = val.get<float>();
-      jsonvalue.SetDouble(typedval);
-    }
-      break;
-    case ossia::val_type::CHAR: {
-      auto typedval = val.get<char>();
-      char buff[2];
-      std::sprintf(buff, "%c", (char)typedval);
-      buff[1] = 0;
-      jsonvalue.SetString(buff, docallocator);
-    }
-      break;
-    case ossia::val_type::STRING: {
-      auto typedval = val.get<std::string>();
-      jsonvalue.SetString(typedval, docallocator);
-    }
-      break;
-    default:
-      break;
-  }
-  return jsonvalue;
+rapidjson::Value ossia_to_json_value(
+    const ossia::value& val,
+    rapidjson::Document::AllocatorType& docallocator) {
+  return val.apply(ossia::oscquery::detail::value_to_json_value{docallocator});
 }
 
 void insert(
@@ -533,22 +502,9 @@ std::string ossia::presets::write_json(const preset & prst) {
   }
 
   rapidjson::StringBuffer buffer;
-  rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+  rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
   d.Accept(writer);
   return buffer.GetString();
-}
-
-
-std::string ossia::presets::to_string(const preset & preset) {
-  std::string str = "[";
-  std::vector<std::string> substrings;
-  substrings.reserve(preset.size());
-  for (const preset_pair& pp : preset) {
-    substrings.push_back(to_string(pp));
-  }
-  str += boost::join(substrings, ", ");
-  str += "]";
-  return str;
 }
 
 std::string ossia_value_to_std_string(const ossia::value& val) {
@@ -575,13 +531,26 @@ std::string ossia_value_to_std_string(const ossia::value& val) {
   return ss.str();
 }
 
-std::string ossia::presets::to_string(const preset_pair & pp) {
+static std::string to_string(const ossia::presets::preset_pair & pp) {
   std::stringstream ss;
   ss << pp.first << ": ";
   auto& val = pp.second;
   ss << ossia_value_to_std_string(val);
   return std::string(ss.str());
 }
+
+std::string ossia::presets::to_string(const preset & preset) {
+  std::string str = "[";
+  std::vector<std::string> substrings;
+  substrings.reserve(preset.size());
+  for (const preset_pair& pp : preset) {
+    substrings.push_back(::to_string(pp));
+  }
+  str += boost::join(substrings, ", ");
+  str += "]";
+  return str;
+}
+
 
 std::string domain_to_string(const ossia::domain& domain)
 {
@@ -601,11 +570,11 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
   v.SetObject();
   auto& alloc = d.GetAllocator();
 
-  auto address = node.getAddress();
+  auto address = node.get_address();
   if(address)
   {
     auto default_value = ossia::net::get_default_value(node);
-    switch (address->getValueType())
+    switch (address->get_value_type())
     {
       case ossia::val_type::IMPULSE :
       {
@@ -636,12 +605,12 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
           }
 
         // append domain attribute
-        auto domain = domain_to_string(address->getDomain());
+        auto domain = domain_to_string(address->get_domain());
         if(!domain.empty())
         {
           rapidjson::Value s;
           s.SetString(domain, alloc);
-          v.AddMember("valueDomain", s, alloc);
+          v.AddMember("rangeBounds", s, alloc);
         }
 
         // append step size attribute
@@ -665,12 +634,12 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
           }
 
         // append domain attribute
-        auto domain = domain_to_string(address->getDomain());
+        auto domain = domain_to_string(address->get_domain());
         if(!domain.empty())
         {
           rapidjson::Value s;
           s.SetString(domain, alloc);
-          v.AddMember("valueDomain", s, alloc);
+          v.AddMember("rangeBounds", s, alloc);
         }
 
         // append step size attribute
@@ -712,12 +681,18 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
     {
       v.AddMember("description", *descr, alloc);
     }
+
+    if(auto dynInstance = ossia::net::get_instance_bounds(node))
+    {
+      v.AddMember("dynamicInstances", true, alloc);
+      v.AddMember("instanceBounds", fmt::format("{} {}", dynInstance->min_instances, dynInstance->max_instances), alloc);
+    }
   }
 
   for (const auto& child : node.children())
   {
     rapidjson::Value s;
-    s.SetString(child->getName(), alloc);
+    s.SetString(child->get_name(), alloc);
     v.AddMember(s, export_nodes_to_json(*child, d), alloc);
   }
 
@@ -731,7 +706,7 @@ std::string ossia::devices::write_json(
   d.SetObject();
   auto& alloc = d.GetAllocator();
 
-  auto& node = deviceBase.getRootNode();
+  auto& node = deviceBase.get_root_node();
 
   // Device metadata
   // append app name attribute
@@ -760,7 +735,8 @@ std::string ossia::devices::write_json(
   }
 
   // parse device node tree and export to json
-  d.AddMember(rapidjson::StringRef(deviceBase.getName()), export_nodes_to_json(deviceBase.getRootNode(), d), d.GetAllocator());
+  std::string deviceName = deviceBase.get_name();
+  d.AddMember(rapidjson::StringRef(deviceName), export_nodes_to_json(deviceBase.get_root_node(), d), d.GetAllocator());
 
   // return json string
   rapidjson::StringBuffer buffer;
@@ -788,6 +764,7 @@ void ossia::devices::write_file(
 }
 
 std::string preset_to_device_key(const std::string& presetkey) {
+  return presetkey;
   std::vector<std::string> indexes;
   boost::split(indexes, presetkey, [](char c){return c == '.';}, boost::token_compress_on);
 
@@ -801,23 +778,15 @@ std::string preset_to_device_key(const std::string& presetkey) {
   return boost::join(indexes, ".");
 }
 
-std::string device_to_preset_key(const std::string& devicekey) {
-  std::vector<std::string> indexes;
-  boost::split(indexes, devicekey, [](char c){return c == '.';}, boost::token_compress_on);
-
-  for (std::size_t i = 1; i < indexes.size(); ++i) {
-    int current_index = std::atoi((indexes[i]).c_str());
-    std::stringstream ss;
-    ss << (current_index - 1);
-    indexes[i] = std::string (ss.str());
-  }
-
-  return boost::join(indexes, ".");
+std::string device_to_preset_key(const ossia::net::node_base& node, const ossia::net::node_base& parent) {
+  if(!parent.is_root_instance(node))
+    return node.get_name();
+  return node.get_name() + ".0";
 }
 
 bool instance_string_compare(const std::string& str, const ossia::net::node_base& node)
 {
-  auto node_name = node.getName();
+  auto node_name = node.get_name();
   auto opt = ossia::net::sanitize_name(str, {});
   return opt == node_name;
 }
@@ -831,11 +800,11 @@ void apply_preset_node(
 {
   if (keys.size() == 0) {
     if (root.children().size() > 0) {
-      std::string details = "Node " + root.getName() + " is not terminal";
+      std::string details = "Node " + root.get_name() + " is not terminal";
       throw(ossia::ossiaException_InvalidAddress (__LINE__, __FILE__, details.c_str()));
     }
     else {
-      root.getAddress()->pushValue(val);
+      root.get_address()->push_value(val);
     }
   }
   else {
@@ -847,14 +816,28 @@ void apply_preset_node(
     for (auto& child : root.children()) {
       if(!child)
       {
-        auto err = std::string("Null child of : ") + root.getName();
+        auto err = std::string("Null child of : ") + root.get_name();
         ossia_log_error(err.c_str());
       }
       else
       {
-        if (currentkey == child->getName()) {
+        const std::string childName = child->get_name();
+        if (currentkey == childName) {
           child_exists = true;
           apply_preset_node(*child, keys, val, keeparch, created_nodes);
+        }
+        else
+        {
+          // Case of the 'bar.0' / 'bar'.
+          const auto N = currentkey.size();
+          if((childName.size() == (N - 2))
+             && currentkey[N-2] == '.'
+             && currentkey[N-1] == '0')
+          {
+            currentkey.resize(currentkey.size() - 2);
+            child_exists = true;
+            apply_preset_node(*child, keys, val, keeparch, created_nodes);
+          }
         }
       }
     }
@@ -866,7 +849,7 @@ void apply_preset_node(
       }
       else
       {
-        if(auto newchild = root.createChild(currentkey))
+        if(auto newchild = root.create_child(currentkey))
         {
           // We push them in the vector in their order of creation
           // This way when iterating we will have the parents before the children.
@@ -874,7 +857,7 @@ void apply_preset_node(
 
           // addresses only on leaf nodes... maybe we should not have this restriction.
           if (keys.empty())
-            newchild->createAddress(val.getType());
+            newchild->create_address(val.getType());
 
           apply_preset_node(*newchild, keys, val, keeparch, created_nodes);
         }
@@ -914,7 +897,7 @@ void ossia::devices::apply_preset(
     boost::split(keys, itpp->first, [](char c){return c == '/';}, boost::token_compress_on);
     keys.erase(keys.begin()); // first subtring is empty
 
-    apply_preset_node(ossiadev.getRootNode(), keys, itpp->second, keeparch, created_nodes);
+    apply_preset_node(ossiadev.get_root_node(), keys, itpp->second, keeparch, created_nodes);
   }
 
   for(auto node : created_nodes)
@@ -925,15 +908,18 @@ void ossia::devices::apply_preset(
 
 void make_preset_node(ossia::net::node_base& node, ossia::presets::preset& preset, const std::string& key) {
   std::string currentkey = key;
-  if (node.getParent() != nullptr) {
-    currentkey += "/" + device_to_preset_key(node.getName());
+  if (auto parent = node.get_parent()) {
+    currentkey += "/" + device_to_preset_key(node, *parent);
   }
-
+  #if !defined(OSSIA_HAS_SHARED_MUTEX)
+  auto children = node.children_copy();
+  #else
   const auto& children = node.children();
+  #endif
 
   if (children.size() == 0) {
-    if(auto addr = node.getAddress())
-      preset.insert(std::make_pair(currentkey, addr->cloneValue()));
+    if(auto addr = node.get_address())
+      preset.insert(std::make_pair(currentkey, addr->value()));
   }
   else {
     for (auto& child : children) {
@@ -944,7 +930,7 @@ void make_preset_node(ossia::net::node_base& node, ossia::presets::preset& prese
 
 ossia::presets::preset ossia::devices::make_preset(ossia::net::device_base & ossiadev) {
   presets::preset preset;
-  make_preset_node(ossiadev.getRootNode(), preset, "");
+  make_preset_node(ossiadev.get_root_node(), preset, "");
   return preset;
 }
 
@@ -954,7 +940,7 @@ ossia::net::node_base* get_node_node(ossia::net::node_base& root, std::vector<st
   if (keys.size() > 0) {
     std::string currentkey = keys[0];
 
-    if (root.getName().compare(currentkey) == 0) {
+    if (root.get_name().compare(currentkey) == 0) {
       if (keys.size() == 1) {
         res = &root;
       }
@@ -991,16 +977,16 @@ void to_string_node(
   for (auto& child: root.children())
   {
     std::vector<std::string> newkeys = keys;
-    newkeys.push_back(root.getName());
+    newkeys.push_back(root.get_name());
     to_string_node(*child, strnodes, newkeys);
   }
 
-  if (root.getAddress() != nullptr && root.children().size() == 0)
+  if (root.get_address() != nullptr && root.children().size() == 0)
   {
-    auto v = root.getAddress()->cloneValue();
+    auto v = root.get_address()->value();
     if (v.valid())
     {
-      keys.push_back(root.getName());
+      keys.push_back(root.get_name());
       std::string nodename = boost::join(keys, "/");
       strnodes.push_back(nodename + ": " + ossia_value_to_std_string(v));
     }
@@ -1009,7 +995,7 @@ void to_string_node(
 }
 
 std::string ossia::devices::to_string(const ossia::net::device_base& ossiadev) {
-  auto& root = ossiadev.getRootNode();
+  auto& root = ossiadev.get_root_node();
   std::stringstream ss;
   std::vector<std::string> strnodes;
   std::vector<std::string> keys;

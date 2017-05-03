@@ -4,6 +4,7 @@
 #pragma GCC system_header
 #pragma clang system_header
 
+/////////////
 #include <vector>
 #include <list>
 #include <memory>
@@ -21,6 +22,5 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <eggs/variant.hpp>
 
 #endif

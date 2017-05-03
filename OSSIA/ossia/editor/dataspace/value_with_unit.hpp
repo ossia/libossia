@@ -1,41 +1,38 @@
 #pragma once
-#include <ossia/editor/dataspace/dataspace_fwd.hpp>
+#include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/editor/dataspace/dataspace_base.hpp>
+#include <ossia/editor/value/value.hpp>
 #include <brigand/algorithms/fold.hpp>
 namespace ossia
 {
 
-// Basically eggs::variant<ossia::value, ossia::distance, ossia::position, ossia::speed...>
-using value_with_unit_variant =
-brigand::as_eggs_variant<
-  brigand::append<
-    brigand::list<ossia::value>,
-    brigand::as_list<
-      brigand::transform<
-        unit_variant,
-        brigand::bind<ossia::add_value, brigand::_1>
-      >
-    >
-  >
->;
-
-struct OSSIA_EXPORT value_with_unit final : public value_with_unit_variant
+#include <ossia/editor/dataspace/dataspace_strong_variants.hpp>
+struct OSSIA_EXPORT value_with_unit final
 {
-  OSSIA_DECL_RELAXED_CONSTEXPR value_with_unit() noexcept { }
-
-#if defined(_MSC_VER)
+  strong_value_variant v;
+  value_with_unit() = default;
+  value_with_unit(const value_with_unit& other) = default;
+  value_with_unit(value_with_unit&& other) = default;
+  value_with_unit& operator=(const value_with_unit& other) = default;
+  value_with_unit& operator=(value_with_unit&& other) = default;
   template<typename T>
-  value_with_unit(const T& arg) noexcept : value_with_unit_variant(arg) { }
-  value_with_unit(const value_with_unit& d) noexcept : value_with_unit_variant{ (const value_with_unit_variant&)d } { }
-  value_with_unit(value_with_unit&& d) noexcept : value_with_unit_variant{ std::move((value_with_unit_variant&)d) } { }
-  value_with_unit& operator=(const value_with_unit& d) noexcept { ((value_with_unit_variant&)(*this)) = (const value_with_unit_variant&)d; return *this; }
-  value_with_unit& operator=(value_with_unit&& d) noexcept { ((value_with_unit_variant&)(*this)) = std::move((value_with_unit_variant&)d); return *this; }
-  ~value_with_unit() noexcept { }
-#else
-  using value_with_unit_variant::value_with_unit_variant;
-  value_with_unit(const value_with_unit&) = default;
-  value_with_unit(value_with_unit&&other) noexcept : value_with_unit_variant{std::move(other)} { }
-  value_with_unit& operator=(const value_with_unit&) = default;
-  value_with_unit& operator=(value_with_unit&& other) noexcept { (value_with_unit_variant&) *this = std::move(other); return *this; }
-#endif
+  value_with_unit(const T& arg) noexcept : v(arg) { }
+
+
+  auto which() const { return v.which(); }
+  operator bool() const { return bool(v); }
+
+  template <typename T>
+  const T* target() const noexcept
+  {
+    return v.target<T>();
+  }
+
+  template <typename T>
+  T* target()  noexcept
+  {
+    return v.target<T>();
+  }
+
 };
 }

@@ -10,7 +10,7 @@ http_device::http_device(std::unique_ptr<http_protocol> protocol, std::string na
   device_base(std::move(protocol)),
   http_node{http_address_data{name}, *this}
 {
-  mProtocol->setDevice(*this);
+  m_protocol->set_device(*this);
 }
 
 http_device::~http_device()

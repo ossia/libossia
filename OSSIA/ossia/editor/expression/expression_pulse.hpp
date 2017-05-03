@@ -39,18 +39,18 @@ public:
   /*! reset the evaluation to false until the next destination update */
   void update() const;
 
-  const Destination& getDestination() const;
+  const Destination& get_destination() const;
 
 private:
-  void onFirstCallbackAdded() override;
-  void onRemovingLastCallback() override;
+  void on_first_callback_added() override;
+  void on_removing_last_callback() override;
 
-  void destinationCallback(const value& value);
+  void destination_callback(const value& value);
 
-  Destination mDestination;
+  Destination m_destination;
 
-  net::address_base::callback_index mDestinationCallbackIndex;
-  mutable bool mResult{};
+  net::address_base::callback_index m_callback;
+  mutable bool m_result{};
 };
 }
 }

@@ -30,7 +30,7 @@ struct device_capabilities
  *
  * It handles transformations of the node tree and allows
  * to add callbacks to be called :
- * - after a node has been created : device_base::onNodeCreated
+ * - after a node has been created : device_base::on_node_created
  * - after a node has been renamed : device_base::onNodeRenamed
  * - before a node is removed : device_base::onNodeRemoving
  *
@@ -62,48 +62,48 @@ public:
   device_base& operator=(const device_base&) = delete;
   device_base& operator=(device_base&&) = delete;
 
-  ossia::net::protocol_base& getProtocol() const;
+  ossia::net::protocol_base& get_protocol() const;
 
   virtual ~device_base();
 
-  virtual const ossia::net::node_base& getRootNode() const = 0;
-  virtual ossia::net::node_base& getRootNode() = 0;
+  virtual const ossia::net::node_base& get_root_node() const = 0;
+  virtual ossia::net::node_base& get_root_node() = 0;
 
-  device_capabilities getCapabilities() const
-  { return mCapabilities; }
+  device_capabilities get_capabilities() const
+  { return m_capabilities; }
 
-  void setName(const std::string& str)
+  void set_name(const std::string& str)
   {
-    getRootNode().setName(str);
+    get_root_node().set_name(str);
   }
-  std::string getName() const
+  std::string get_name() const
   {
-    return getRootNode().getName();
+    return get_root_node().get_name();
   }
 
   Nano::Signal<void(const node_base&)>
-      onNodeCreated; // The node being created
+      on_node_created; // The node being created
   Nano::Signal<void(const node_base&)>
-      onNodeRemoving; // The node being removed
+      on_node_removing; // The node being removed
   Nano::Signal<void(const node_base&, std::string)>
-      onNodeRenamed; // Node has the new name, second argument is the old name
+      on_node_renamed; // Node has the new name, second argument is the old name
   Nano::Signal<void(const node_base&, ossia::string_view)>
-      onAttributeModified; // Second argument is an identifier
+      on_attribute_modified; // Second argument is an identifier
   Nano::Signal<void(const address_base&)>
-      onAddressCreated; // The address being created
+      on_address_created; // The address being created
   Nano::Signal<void(const address_base&)>
-      onAddressRemoving; // The node whose address was removed
+      on_address_removing; // The node whose address was removed
 
   //! Called when a network client requests the creation of an instance.
   //!  First argument is the path to the parent.
-  Nano::Signal<void(std::string, address_data)> onAddNodeRequested;
+  Nano::Signal<void(std::string, address_data)> on_add_node_requested;
 
   //! Called when a network client requests the removal of an instance.
   //! Argument is the path of the parent and the node to remove.
-  Nano::Signal<void(std::string, std::string)> onRemoveNodeRequested;
+  Nano::Signal<void(std::string, std::string)> on_remove_node_requested;
 protected:
-  std::unique_ptr<ossia::net::protocol_base> mProtocol;
-  device_capabilities mCapabilities;
+  std::unique_ptr<ossia::net::protocol_base> m_protocol;
+  device_capabilities m_capabilities;
 };
 
 template<typename T>
@@ -113,7 +113,7 @@ void node_base::set(ossia::string_view str, const T& value)
   if(opt && *opt != value)
   {
     ossia::set_attribute(*this, str, value);
-    getDevice().onAttributeModified(*this, str);
+    get_device().on_attribute_modified(*this, str);
   }
 }
 
@@ -124,7 +124,7 @@ void node_base::set(ossia::string_view str, T&& value)
   if(opt && *opt != value)
   {
     ossia::set_attribute(*this, str, std::move(value));
-    getDevice().onAttributeModified(*this, str);
+    get_device().on_attribute_modified(*this, str);
   }
 }
 
@@ -139,7 +139,7 @@ void node_base::set(Attribute a, const T& value)
   if(compare_optional(opt, val))
   {
     a.setter(*this, val);
-    getDevice().onAttributeModified(*this, a.text());
+    get_device().on_attribute_modified(*this, a.text());
   }
 }
 
@@ -156,7 +156,7 @@ void node_base::set(Attribute a, T&& value)
   if(compare_optional(opt, value))
   {
     a.setter(*this, std::move(value));
-    getDevice().onAttributeModified(*this, a.text());
+    get_device().on_attribute_modified(*this, a.text());
   }
 }
 }

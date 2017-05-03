@@ -46,8 +46,8 @@ class OSSIA_EXPORT automation final :
 
     ~automation();
 
-    void setDestination(Destination d);
-    void setBehavior(ossia::behavior b);
+    void set_destination(Destination d);
+    void set_behavior(ossia::behavior b);
 
     void clean();
 
@@ -60,15 +60,15 @@ class OSSIA_EXPORT automation final :
     void pause() override;
     void resume() override;
 
-    static ossia::value computeValue(
+    static ossia::value compute_value(
         double,
         ossia::val_type drivenType,
         const ossia::behavior&);
 
-    void updateMessage(double t);
+    void update_message(double t);
 
-    ossia::behavior mDrive;
-    optional<ossia::message> mLastMessage;
-    ossia::val_type mDrivenType{};
+    ossia::behavior m_drive;
+    optional<ossia::message> m_lastMessage;
+    ossia::val_type m_drivenType{};
 };
 }

@@ -19,13 +19,13 @@ Bindings (in progress) :
 * Qt and QML
 
 Documentation :
-* [Examples](https://github.com/OSSIA/API/tree/master/Documentation/Examples)
-* [Doxygen](http://ossia.github.io/API/html)
-* [Building](https://github.com/OSSIA/API/wiki/Building)
-* [Code style](https://github.com/OSSIA/API/wiki/Code-style-guide)
+* [Examples](https://github.com/OSSIA/libossia/tree/master/Documentation/Examples)
+* [Doxygen](http://ossia.github.io/libossia/html)
+* [Building](https://github.com/OSSIA/libossia/wiki/Building)
+* [Code style](https://github.com/OSSIA/libossia/wiki/Code-style-guide)
 
 Build Status
 ============
 * Linux, OS X : [![Build Status](https://travis-ci.org/OSSIA/libossia.svg)](https://travis-ci.org/OSSIA/libossia)
-* Windows : [![Build status](https://ci.appveyor.com/api/projects/status/a05adb08b7mdmg39?svg=true)](https://ci.appveyor.com/project/JeanMichalCelerier/api)
-* Coveralls : [![Coverage Status](https://coveralls.io/repos/github/OSSIA/API/badge.svg?branch=master)](https://coveralls.io/github/OSSIA/API?branch=master)
+* Windows : [![Build status](https://ci.appveyor.com/api/projects/status/ut3o8p64lib3ie1w?svg=true)](https://ci.appveyor.com/project/JeanMichalCelerier/libossia)
+* Coveralls : [![Coverage Status](https://coveralls.io/repos/github/OSSIA/libossia/badge.svg?branch=master)](https://coveralls.io/github/OSSIA/libossia?branch=master)

@@ -26,9 +26,18 @@ ossia_add_test(AutomationTest
     )
 
 if(NOT OSSIA_CI)
-    # this test is too reliant on specific hardward capabilities to run on travis
+    # this test is too reliant on specific hardware capabilities to run on travis
     ossia_add_test(ClockTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ClockTest.cpp")
 endif()
+
+# The following lines are used to display the QMLs in the project view of IDEs
+SET(QMLS "${CMAKE_CURRENT_SOURCE_DIR}/testdata/http/http_example.qml"
+         "${CMAKE_CURRENT_SOURCE_DIR}/testdata/qml/TestDevice.qml"
+         "${CMAKE_CURRENT_SOURCE_DIR}/testdata/qml/TestDevice2.qml"
+         "${CMAKE_CURRENT_SOURCE_DIR}/testdata/serial/serial_example.qml"
+         "${CMAKE_CURRENT_SOURCE_DIR}/testdata/websocket/ws_example.qml"
+         "${CMAKE_CURRENT_SOURCE_DIR}/testdata/websocket/ws_icmc.qml")
+add_custom_target(ossia_test_ui_qml SOURCES ${QMLS})
 
 ossia_add_test(CurveTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/CurveTest.cpp")
 ossia_add_test(CurveSegmentEmptyTest       "${CMAKE_CURRENT_SOURCE_DIR}/Editor/CurveSegment/CurveSegmentEmptyTest.cpp")
@@ -53,7 +62,9 @@ ossia_add_test(ValueTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/V
 ossia_add_test(DataspaceTest               "${CMAKE_CURRENT_SOURCE_DIR}/Editor/DataspaceTest.cpp")
 ossia_add_test(DataspaceMergeTest          "${CMAKE_CURRENT_SOURCE_DIR}/Editor/DataspaceMergeTest.cpp")
 
-ossia_add_test(PresetTest                      "${CMAKE_CURRENT_SOURCE_DIR}/Preset/PresetTest.cpp")
+ossia_add_test(DataflowTest                "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/DataflowTest.cpp")
+
+ossia_add_test(PresetTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Preset/PresetTest.cpp")
 
 ossia_add_test(AddressTest                 "${CMAKE_CURRENT_SOURCE_DIR}/Network/AddressTest.cpp")
 ossia_add_test(DeviceTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/DeviceTest.cpp")
@@ -61,7 +72,8 @@ ossia_add_test(NodeTest                    "${CMAKE_CURRENT_SOURCE_DIR}/Network/
 ossia_add_test(PathTest                    "${CMAKE_CURRENT_SOURCE_DIR}/Network/PathTest.cpp")
 
 ossia_add_test(QtTest                      "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QtDeviceTest.cpp")
-ossia_add_test(QmlTest                      "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlDeviceTest.cpp")
+ossia_add_test(QmlTest                     "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlDeviceTest.cpp")
+
 if("${OSSIA_PROTOCOLS}" MATCHES "WebSockets")
   ossia_add_test(WebSocketTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/WebSocketTest.cpp")
 endif()
@@ -98,11 +110,24 @@ ossia_add_test_c(api_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-c-ap
 ossia_add_test_c(presets_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-presets.cpp")
 
 # A command to copy the test data.
+
 if(MSVC)
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/testdata" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/Debug/")
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/testdata" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/Release/")
+    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/testdata" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/")
+
+    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../OSSIA/ossia-qt/Ossia" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/Debug/testdata/qml")
+    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../OSSIA/ossia-qt/Ossia" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/Release/testdata/qml")
+    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../OSSIA/ossia-qt/Ossia" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml")
+
+    file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/Debug/testdata/qml/Ossia/qmldir"
+                "${CMAKE_CURRENT_BINARY_DIR}/Release/testdata/qml/Ossia/qmldir"
+                "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml/Ossia/qmldir")
 else()
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/testdata" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/")
+    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../OSSIA/ossia-qt/Ossia" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml")
+
+    file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml/Ossia/qmldir")
 endif()
 
 include(CTest)

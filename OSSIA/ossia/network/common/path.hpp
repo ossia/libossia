@@ -78,7 +78,7 @@ struct OSSIA_EXPORT any_instance : public path_element
 //! Can match nodes from an alternative, foo:/bar/baz, foo:/bob/baz, and not foo:/bin/baz
 struct OSSIA_EXPORT any_between : public path_element
 {
-  any_between(std::string s): path_element{s} { }
+  any_between(std::string s): path_element{std::move(s)} { }
 
   any_between(std::initializer_list<std::string> args):
     path_element{""}
@@ -176,7 +176,7 @@ inline path_element operator/(const path_element& lhs, const stop& rhs)
  * "?"      -> [:ossia:]?
  * "*"      -> [:ossia:]*
  * "//"     -> any_path() /
- * ".."     -> getParent()
+ * ".."     -> get_parent()
  * "[..]"   -> already handled by the regex engine.
  * "{a,b}"  -> "(a|b)"
  *

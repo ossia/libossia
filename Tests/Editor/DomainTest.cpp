@@ -17,12 +17,12 @@ class DomainTest : public QObject
     using val_t = decltype(T{});
     for(int i = 0; i < 6; i++)
     {
-      addr.setBoundingMode((bounding_mode)i);
-      addr.pushValue(T{(val_t)(min - 100)});
-      addr.pushValue(min);
-      addr.pushValue(T{(val_t)((min + max) / 2)});
-      addr.pushValue(max);
-      addr.pushValue(T{(val_t)(max + 100)});
+      addr.set_bounding((bounding_mode)i);
+      addr.push_value(T{(val_t)(min - 100)});
+      addr.push_value(min);
+      addr.push_value(T{(val_t)((min + max) / 2)});
+      addr.push_value(max);
+      addr.push_value(T{(val_t)(max + 100)});
     }
   }
 
@@ -30,7 +30,7 @@ class DomainTest : public QObject
   void test_clamp_numeric(ossia::net::address_base& addr, T min, T max)
   {
     auto dom = ossia::make_domain(min, max);
-    addr.setDomain(dom);
+    addr.set_domain(dom);
 
     // min and max
     push_all(addr, min, max);
@@ -64,9 +64,9 @@ class DomainTest : public QObject
 
     for(int i = 0; i < 6; i++)
     {
-      addr.setBoundingMode((bounding_mode)i);
+      addr.set_bounding((bounding_mode)i);
       for(auto& vec : test_vecs)
-        addr.pushValue(vec);
+        addr.push_value(vec);
     }
   }
 
@@ -84,9 +84,9 @@ class DomainTest : public QObject
 
     for(int i = 0; i < 6; i++)
     {
-      addr.setBoundingMode((bounding_mode)i);
+      addr.set_bounding((bounding_mode)i);
       for(auto& vec : test_vecs)
-        addr.pushValue(vec);
+        addr.push_value(vec);
     }
   }
 
@@ -94,7 +94,7 @@ class DomainTest : public QObject
   void test_clamp_vec(ossia::net::address_base& addr, float min, float max)
   {
     auto dom = ossia::make_domain(min, max);
-    addr.setDomain(dom);
+    addr.set_domain(dom);
 
     // min and max
     push_all_vec<N>(addr, min, max);
@@ -118,7 +118,7 @@ class DomainTest : public QObject
   void test_clamp_vec(ossia::net::address_base& addr, std::array<float, N> min, std::array<float, N> max)
   {
     auto dom = ossia::make_domain(min, max);
-    addr.setDomain(dom);
+    addr.set_domain(dom);
 
     // min and max
     push_all_vec<N>(addr, min, max);
@@ -156,8 +156,8 @@ class DomainTest : public QObject
                       T{(val_t)(max + 100)}};
     for(int i = 0; i < 6; i++)
     {
-      addr.setBoundingMode((bounding_mode)i);
-      addr.pushValue(t);
+      addr.set_bounding((bounding_mode)i);
+      addr.push_value(t);
     }
   }
 
@@ -166,7 +166,7 @@ class DomainTest : public QObject
   {
     domain_base<T> dom{min, max};
 
-    addr.setDomain(dom);
+    addr.set_domain(dom);
 
     // min and max
     push_tuple(addr, min, max);

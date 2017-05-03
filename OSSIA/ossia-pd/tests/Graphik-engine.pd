@@ -1,9 +1,9 @@
-#N canvas 1181 55 469 442 10;
+#N canvas 1172 119 587 442 10;
 #X msg 257 328 draw line;
 #X msg 331 329 draw fill;
 #X obj 3 4 cnv 15 220 70 empty empty empty 20 12 0 14 -195568 -66577
 0;
-#N canvas 0 22 454 304 gemwin 0;
+#N canvas 0 50 454 304 gemwin 0;
 #X obj 132 205 gemwin;
 #X obj 67 89 outlet;
 #X obj 67 10 inlet;
@@ -99,7 +99,7 @@
 #X obj 126 396 rectangle 2 2;
 #X obj 257 286 sel 0 1;
 #X obj 328 285 print;
-#X obj 257 250 ossia.param filled @default 1;
+#X obj 257 250 ossia.param filled @default 1 @type bool;
 #X connect 0 0 17 0;
 #X connect 1 0 17 0;
 #X connect 3 0 4 0;

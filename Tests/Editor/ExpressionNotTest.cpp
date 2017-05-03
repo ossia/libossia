@@ -64,12 +64,12 @@ private Q_SLOTS:
     void test_callback()
     {
         // Local device
-        ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
+        ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
-        auto localIntNode1 = device.createChild("my_int.1");
-        auto localIntAddress1 = localIntNode1->createAddress(val_type::INT);
-        auto localIntNode2 = device.createChild("my_int.2");
-        auto localIntAddress2 = localIntNode2->createAddress(val_type::INT);
+        auto localIntNode1 = device.create_child("my_int.1");
+        auto localIntAddress1 = localIntNode1->create_address(val_type::INT);
+        auto localIntNode2 = device.create_child("my_int.2");
+        auto localIntAddress2 = localIntNode2->create_address(val_type::INT);
 
         auto testDestinationExpr = make_expression_atom(Destination(*localIntAddress1),
                                                           comparator::DIFFERENT,
@@ -85,21 +85,21 @@ private Q_SLOTS:
         m_result = false;
         m_result_callback_called = false;
 
-        localIntAddress1->pushValue(5);
+        localIntAddress1->push_value(5);
 
         QVERIFY(m_result_callback_called == true && m_result == false);
 
         m_result = false;
         m_result_callback_called = false;
 
-        localIntAddress2->pushValue(5);
+        localIntAddress2->push_value(5);
 
         QVERIFY(m_result_callback_called == true && m_result == true);
 
         m_result = false;
         m_result_callback_called = false;
 
-        localIntAddress2->pushValue(10);
+        localIntAddress2->push_value(10);
 
         QVERIFY(m_result_callback_called == true && m_result == false);
 
@@ -110,7 +110,7 @@ private Q_SLOTS:
         m_result = false;
         m_result_callback_called = false;
 
-        localIntAddress2->pushValue(5);
+        localIntAddress2->push_value(5);
 
         QVERIFY(m_result_callback_called == false && m_result == false);
     }

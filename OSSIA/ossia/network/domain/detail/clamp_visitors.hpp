@@ -68,7 +68,7 @@ struct apply_ternary_fun_visitor
       val.reserve(N);
       for(std::size_t i = 0; i < N; i++)
       {
-        val.push_back(eggs::variants::apply(*this, incoming[i].v, min[i].v, max[i].v));
+        val.push_back(ossia::apply(*this, incoming[i].v, min[i].v, max[i].v));
       }
     }
     return val;
@@ -83,7 +83,7 @@ struct apply_ternary_fun_visitor
     {
       for(std::size_t i = 0; i < N; i++)
       {
-        val[i] = eggs::variants::apply(*this, std::move(val)[i].v, min[i].v, max[i].v);
+        val[i] = ossia::apply(*this, std::move(val)[i].v, min[i].v, max[i].v);
       }
     }
     return std::move(val);
@@ -96,7 +96,7 @@ struct apply_ternary_fun_visitor
     val.reserve(N);
     for(std::size_t i = 0; i < N; i++)
     {
-      val.push_back(eggs::variants::apply(*this, incoming[i].v, min.v, max.v));
+      val.push_back(ossia::apply(*this, incoming[i].v, min.v, max.v));
     }
     return val;
   }
@@ -106,19 +106,19 @@ struct apply_ternary_fun_visitor
     const auto N = val.size();
     for(std::size_t i = 0; i < N; i++)
     {
-      val[i] = eggs::variants::apply(*this, std::move(val)[i].v, min.v, max.v);
+      val[i] = ossia::apply(*this, std::move(val)[i].v, min.v, max.v);
     }
     return std::move(val);
   }
 
   ossia::value operator()(const ossia::value& val, const ossia::value& min, const ossia::value& max)
   {
-    return eggs::variants::apply(*this, val.v, min.v, max.v);
+    return ossia::apply(*this, val.v, min.v, max.v);
   }
 
   ossia::value operator()(ossia::value&& val, const ossia::value& min, const ossia::value& max)
   {
-    return eggs::variants::apply(*this, std::move(val.v), min.v, max.v);
+    return ossia::apply(*this, std::move(val.v), min.v, max.v);
   }
 };
 
@@ -186,7 +186,7 @@ struct apply_binary_fun_visitor
       val.reserve(N);
       for(std::size_t i = 0; i < N; i++)
       {
-        val.push_back(eggs::variants::apply(*this, incoming[i].v, min[i].v));
+        val.push_back(ossia::apply(*this, incoming[i].v, min[i].v));
       }
     }
     return val;
@@ -200,7 +200,7 @@ struct apply_binary_fun_visitor
     {
       for(std::size_t i = 0; i < N; i++)
       {
-        val[i] = eggs::variants::apply(*this, std::move(val)[i].v, min[i].v);
+        val[i] = ossia::apply(*this, std::move(val)[i].v, min[i].v);
       }
     }
     return std::move(val);
@@ -213,7 +213,7 @@ struct apply_binary_fun_visitor
     val.reserve(N);
     for(std::size_t i = 0; i < N; i++)
     {
-      val.push_back(eggs::variants::apply(*this, incoming[i].v, min.v));
+      val.push_back(ossia::apply(*this, incoming[i].v, min.v));
     }
     return val;
   }
@@ -223,19 +223,19 @@ struct apply_binary_fun_visitor
     const auto N = val.size();
     for(std::size_t i = 0; i < N; i++)
     {
-      val[i] = eggs::variants::apply(*this, std::move(val)[i].v, min.v);
+      val[i] = ossia::apply(*this, std::move(val)[i].v, min.v);
     }
     return std::move(val);
   }
 
   ossia::value operator()(const ossia::value& val, const ossia::value& min)
   {
-    return eggs::variants::apply(*this, val.v, min.v);
+    return ossia::apply(*this, val.v, min.v);
   }
 
   ossia::value operator()(ossia::value&& val, const ossia::value& min)
   {
-    return eggs::variants::apply(*this, std::move(val.v), min.v);
+    return ossia::apply(*this, std::move(val.v), min.v);
   }
 };
 

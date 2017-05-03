@@ -543,13 +543,13 @@ private Q_SLOTS:
     //! \todo test clone()
 
     // Local device
-    ossia::net::generic_device device{std::make_unique<ossia::net::local_protocol>(), "test"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
-    auto localTupleNode = device.createChild("my_tuple");
-    auto localTupleAddress = localTupleNode->createAddress(val_type::TUPLE);
+    auto localTupleNode = device.create_child("my_tuple");
+    auto localTupleAddress = localTupleNode->create_address(val_type::TUPLE);
 
     std::vector<ossia::value> t{float(-1.), float(0.), float(1.)};
-    localTupleAddress->setValue(t);
+    localTupleAddress->set_value(t);
 
     Destination d1(*localTupleAddress);
     QVERIFY(d1.index.size() == 0);

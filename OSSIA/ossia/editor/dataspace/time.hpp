@@ -1,13 +1,12 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace_base.hpp>
-#include <eggs/variant.hpp>
 
 namespace ossia
 {
 struct time_dataspace;
 struct second_u;
 template<typename Impl>
-struct time_unit
+struct timing_unit
 {
   using is_unit = std::true_type;
   using neutral_unit = second_u;
@@ -16,7 +15,7 @@ struct time_unit
   using dataspace_type = time_dataspace;
 };
 
-struct second_u : public time_unit<second_u>
+struct second_u : public timing_unit<second_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("second", "s"); }
@@ -32,7 +31,7 @@ struct second_u : public time_unit<second_u>
   }
 };
 
-struct bark_u : public time_unit<bark_u>
+struct bark_u : public timing_unit<bark_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("bark"); }
@@ -48,7 +47,7 @@ struct bark_u : public time_unit<bark_u>
   }
 };
 
-struct bpm_u : public time_unit<bpm_u>
+struct bpm_u : public timing_unit<bpm_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("bpm"); }
@@ -64,7 +63,7 @@ struct bpm_u : public time_unit<bpm_u>
   }
 };
 
-struct cent_u : public time_unit<cent_u>
+struct cent_u : public timing_unit<cent_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("cents"); }
@@ -80,7 +79,7 @@ struct cent_u : public time_unit<cent_u>
   }
 };
 
-struct frequency_u : public time_unit<frequency_u>
+struct frequency_u : public timing_unit<frequency_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("fps", "Hz", "hz", "Hertz"); }
@@ -96,7 +95,7 @@ struct frequency_u : public time_unit<frequency_u>
   }
 };
 
-struct mel_u : public time_unit<mel_u>
+struct mel_u : public timing_unit<mel_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("mel"); }
@@ -112,7 +111,7 @@ struct mel_u : public time_unit<mel_u>
   }
 };
 
-struct midi_pitch_u : public time_unit<midi_pitch_u>
+struct midi_pitch_u : public timing_unit<midi_pitch_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("midinote"); }
@@ -128,7 +127,7 @@ struct midi_pitch_u : public time_unit<midi_pitch_u>
   }
 };
 
-struct millisecond_u : public time_unit<millisecond_u>
+struct millisecond_u : public timing_unit<millisecond_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("ms", "millisecond"); }
@@ -146,7 +145,7 @@ struct millisecond_u : public time_unit<millisecond_u>
 
 /*
 template<int N>
-struct sample_u : public time_unit<sample_u<N>>
+struct sample_u : public timing_unit<sample_u<N>>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("sample"); }
@@ -164,7 +163,7 @@ struct sample_u : public time_unit<sample_u<N>>
 */
 
 static const double exp_69_12 = ossia::exp2(69. / 12.);
-struct playback_speed_u : public time_unit<playback_speed_u>
+struct playback_speed_u : public timing_unit<playback_speed_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("speed"); }
@@ -180,30 +179,7 @@ struct playback_speed_u : public time_unit<playback_speed_u>
   }
 };
 
-
-
-using second = strong_value<second_u>;
-using bark = strong_value<bark_u>;
-using bpm = strong_value<bpm_u>;
-using cent = strong_value<cent_u>;
-using frequency = strong_value<frequency_u>;
-using mel = strong_value<mel_u>;
-using midi_pitch = strong_value<midi_pitch_u>;
-using millisecond = strong_value<millisecond_u>;
-using playback_speed = strong_value<playback_speed_u>;
-
 // template<int N>
 // using sample = strong_value<sample_u<N>>;
-
-using time_u =
-  eggs::variant<
-    second_u, bark_u, bpm_u, cent_u, frequency_u, mel_u, midi_pitch_u, millisecond_u, playback_speed_u>;
-
-template<>
-struct dataspace_traits<time_u>
-{
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("time"); }
-};
 
 }

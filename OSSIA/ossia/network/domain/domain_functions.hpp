@@ -45,18 +45,6 @@ OSSIA_EXPORT domain make_domain(
 OSSIA_EXPORT domain init_domain(
     ossia::val_type type);
 
-OSSIA_EXPORT bool operator==(const domain_base<impulse>& lhs, const domain_base<impulse>& rhs);
-OSSIA_EXPORT bool operator==(const domain_base<std::string>& lhs, const domain_base<std::string>& rhs);
-OSSIA_EXPORT bool operator==(const domain_base<char>& lhs, const domain_base<char>& rhs);
-OSSIA_EXPORT bool operator==(const domain_base<bool>& lhs, const domain_base<bool>& rhs);
-OSSIA_EXPORT bool operator==(const domain_base<float>& lhs, const domain_base<float>& rhs);
-OSSIA_EXPORT bool operator==(const domain_base<int32_t>& lhs, const domain_base<int32_t>& rhs);
-OSSIA_EXPORT bool operator==(const vector_domain& lhs, const vector_domain& rhs);
-OSSIA_EXPORT bool operator==(const vecf_domain<2>& lhs, const vecf_domain<2>& rhs);
-OSSIA_EXPORT bool operator==(const vecf_domain<3>& lhs, const vecf_domain<3>& rhs);
-OSSIA_EXPORT bool operator==(const vecf_domain<4>& lhs, const vecf_domain<4>& rhs);
-OSSIA_EXPORT bool operator==(const domain_base<ossia::value>& lhs, const domain_base<ossia::value>& rhs);
-
 template <typename T>
 bool operator!=(const domain_base<T>& lhs, const domain_base<T>& rhs)
 {

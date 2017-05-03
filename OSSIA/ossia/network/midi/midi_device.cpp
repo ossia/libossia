@@ -14,20 +14,20 @@ midi_device::midi_device(std::unique_ptr<protocol_base> prot)
 {
 }
 
-std::string midi_device::getName() const
+std::string midi_device::get_name() const
 {
-  return mName;
+  return m_name;
 }
 
-node_base& midi_device::setName(std::string n)
+node_base& midi_device::set_name(std::string n)
 {
-  mName = n;
+  m_name = n;
   return *this;
 }
 
-bool midi_device::updateNamespace()
+bool midi_device::update_namespace()
 {
-  clearChildren();
+  clear_children();
 
   try
   {

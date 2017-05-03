@@ -6,6 +6,7 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/generic/generic_address.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia-c/preset/preset.hpp>
 #include <ossia-qt/metatypes.hpp>
 #include <QStringBuilder>
 #include <QHash>
@@ -27,69 +28,19 @@
 #include <QtGui/QVector4D>
 #include <QtGui/QQuaternion>
 #include <ossia/detail/optional.hpp>
+#include <ossia-qt/qml_context.hpp>
 
 namespace ossia
 {
 namespace qt
 {
 
-/**
- * @brief The qml_context struct
- *
- * This class is used to allow QML scripts to access common enums
- * in Ossia.
- */
-struct qml_context
-{
-private:
-  Q_GADGET
+template<std::size_t N>
+struct QArray {};
 
-public:
-  // QML enums have to begin with a capital
-  enum class val_type
-  {
-    Float, //! \see float
-    Int, //! \see int32_t
-    Vec2f, //! \see ossia::vec2f
-    Vec3f, //! \see ossia::vec3f
-    Vec4f, //! \see ossia::vec4f
-    Impulse, //! \see ossia::impulse
-    Bool, //! \see bool
-    String, //! \see std::string
-    Tuple, //! \see std::vector<ossia::value>
-    Char, //! \see char
-    Destination //! \see ossia::Destination
-  };
-
-  enum class access_mode
-  {
-    Get,
-    Set,
-    Bi
-  };
-
-  enum class bounding_mode
-  {
-    Free,
-    Clip,
-    Wrap,
-    Fold,
-    Low,
-    High
-  };
-
-  enum class repetition_filter
-  {
-    On,
-    Off
-  };
-
-  Q_ENUM(val_type)
-  Q_ENUM(access_mode)
-  Q_ENUM(bounding_mode)
-  Q_ENUM(repetition_filter)
-};
-
+template<> struct QArray<2> { using type = QVector2D; };
+template<> struct QArray<3> { using type = QVector3D; };
+template<> struct QArray<4> { using type = QVector4D; };
 
 /**
  * @brief The matching_ossia_enum struct
@@ -99,7 +50,6 @@ public:
 template<typename T>
 struct matching_ossia_enum
 {
-
 };
 template<>
 struct matching_ossia_enum<ossia::val_type>
@@ -146,7 +96,6 @@ public:
   ossia::value operator()(vec3f v) const;
   ossia::value operator()(vec4f v) const;
 
-  ossia::value operator()(const Destination& t);
   ossia::value operator()() const;
 };
 
@@ -177,8 +126,26 @@ struct qt_to_ossia
   ossia::value operator()(QVector3D v) { return make_vec(v.x(), v.y(), v.z()); }
   ossia::value operator()(QVector4D v) { return make_vec(v.x(), v.y(), v.z(), v.w()); }
   ossia::value operator()(QQuaternion v) { return make_vec(v.scalar(), v.x(), v.y(), v.z()); }
-  ossia::value operator()(const QVariantList& v) { return {}; }
-  ossia::value operator()(const QStringList& v) { return {}; }
+  auto operator()(const QVariantList& v)
+  {
+    std::vector<ossia::value> tpl;
+    tpl.reserve(v.size());
+    for(auto& val : v)
+    {
+      tpl.push_back(qt_to_ossia{}(val));
+    }
+    return tpl;
+  }
+  ossia::value operator()(const QStringList& v)
+  {
+    std::vector<ossia::value> tpl;
+    tpl.reserve(v.size());
+    for(auto& val : v)
+    {
+      tpl.push_back(val.toStdString());
+    }
+    return tpl;
+  }
   ossia::value operator()(const QDate& v) { return v.toString().toStdString(); }
 
   ossia::value operator()(const QVariant& v);
@@ -187,6 +154,47 @@ struct qt_to_ossia
 struct ossia_to_qvariant
 {
   QVariant operator()(QVariant::Type type, const ossia::value& ossia_val);
+
+
+  QVariant operator()(impulse) const { return {}; }
+
+  QVariant operator()(int32_t val) const { return val; }
+
+  QVariant operator()(float val) const { return val; }
+  QVariant operator()(bool val) const { return val; }
+  QVariant operator()(char val) const { return val; }
+
+  QVariant operator()(const std::string& val) const { return QString::fromStdString(val); }
+
+
+
+  template<std::size_t N>
+  typename QArray<N>::type make_array(const std::array<float, N>& arr) const
+  {
+    typename QArray<N>::type vec;
+
+    for(std::size_t i = 0U; i < N; i++)
+      vec[i] = arr[i];
+    return vec;
+  }
+
+  QVariant operator()(vec2f val) const { return make_array(val); }
+  QVariant operator()(vec3f val) const { return make_array(val); }
+  QVariant operator()(vec4f val) const { return make_array(val); }
+
+  QVariant operator()() const { return {}; }
+
+  QVariant operator()(const std::vector<ossia::value>& val) const
+  {
+    QVariantList v;
+    v.reserve(val.size());
+    for(const ossia::value& e : val)
+    {
+      v.push_back(e.apply(*this));
+    }
+    return v;
+  }
+
 };
 
 
@@ -232,7 +240,6 @@ struct js_value_outbound_visitor
   QJSValue operator()(vec3f val) const;
   QJSValue operator()(vec4f val) const;
 
-  QJSValue operator()(const Destination& t);
   QJSValue operator()() const;
 };
 
@@ -277,7 +284,6 @@ struct js_string_outbound_visitor
   QString operator()(vec3f val) const;
   QString operator()(vec4f val) const;
 
-  QString operator()(const Destination& t);
   QString operator()() const;
 };
 
@@ -361,13 +367,13 @@ template<typename Device_T, typename Node_T, typename Protocol_T>
 void create_node_rec(QJSValue js, Device_T& device, Node_T& parent)
 {
   auto data = Protocol_T::read_data(js);
-  if(data.node_name.empty())
+  if(data.name.empty())
     return;
 
   auto node = new Node_T{data, device, parent};
   parent.add_child(std::unique_ptr<ossia::net::node_base>(node));
 
-  device.onNodeCreated(*node);
+  device.on_node_created(*node);
 
   QJSValue children = js.property("children");
   if(!children.isArray())
@@ -448,11 +454,12 @@ QMetaObject::Connection connectSignalToMatchingMethod(
 
 namespace net {
 OSSIA_EXPORT void sanitize_name(QString& str);
+OSSIA_EXPORT QString sanitize_name(QString name_base, const std::vector<QString>& brethren);
 }
 
 }
 
-Q_DECLARE_METATYPE(ossia::qt::qml_context)
+Q_DECLARE_METATYPE(ossia::qt::qml_context*)
 #else
 #error This file requires Qt.
 #endif

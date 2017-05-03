@@ -18,16 +18,16 @@ public:
 
   ~alias_node();
 
-  ossia::net::node_base* getOrigin() const;
+  ossia::net::node_base* get_origin() const;
   void setOrigin(ossia::net::node_base* o);
 
-  address_base* createAddress(val_type v) override;
-  bool removeAddress() override;
-  address_base* getAddress() const override;
+  address_base* create_address(val_type v) override;
+  bool remove_address() override;
+  address_base* get_address() const override;
 
 protected:
-  std::unique_ptr<node_base> makeChild(const std::string& name) override;
-  void removingChild(node_base& ) override;
+  std::unique_ptr<node_base> make_child(const std::string& name) override;
+  void removing_child(node_base& ) override;
 
 private:
   void onDeletion(const ossia::net::node_base& orig);

@@ -18,9 +18,9 @@ private slots:
   {
     using namespace std::literals;
 
-    ossia::net::generic_device dev{std::make_unique<ossia::net::local_protocol>(), "mydevice"};
+    ossia::net::generic_device dev{std::make_unique<ossia::net::multiplex_protocol>(), "mydevice"};
 
-    auto& root = dev.getRootNode();
+    auto& root = dev.get_root_node();
     ossia::net::set_app_creator(root, "test"s);
     ossia::net::set_app_version(root, "v1.0"s);
 
@@ -29,15 +29,24 @@ private slots:
     auto& n3 = ossia::net::find_or_create_node(root, "/bim/boum");
     auto& n4 = ossia::net::find_or_create_node(root, "/bim/boum.1");
 
-    n1.createAddress(ossia::val_type::INT);
-    n2.createAddress(ossia::val_type::FLOAT);
-    n3.createAddress(ossia::val_type::STRING);
-    n4.createAddress(ossia::val_type::STRING);
+    auto a1 = n1.create_address(ossia::val_type::INT);
+    auto a2 = n2.create_address(ossia::val_type::FLOAT);
+    auto a3 = n3.create_address(ossia::val_type::STRING);
+    auto a4 = n4.create_address(ossia::val_type::STRING);
 
     ossia::net::set_default_value(n1, 1234);
     ossia::net::set_default_value(n2, 5678.);
     ossia::net::set_default_value(n3, "hello"s);
     ossia::net::set_default_value(n4, "bye"s);
+
+    a1->push_value(13579);
+    a2->push_value(3.1415);
+    a3->push_value("foo"s);
+    a4->push_value("bar"s);
+
+    auto preset = ossia::devices::make_preset(dev);
+    auto presetJSON = ossia::presets::write_json(preset);
+    qDebug() << presetJSON.c_str();
 
     auto str = ossia::devices::write_json(dev);
     qDebug() << str.c_str();

@@ -91,7 +91,7 @@ bool http_protocol::observe(address_base& address_base, bool enable)
 
 }
 
-void http_protocol::setDevice(device_base& dev)
+void http_protocol::set_device(device_base& dev)
 {
   if(auto htdev = dynamic_cast<http_device*>(&dev))
   {
@@ -108,7 +108,7 @@ void http_protocol::slot_push(const http_address* addr_p)
         QNetworkRequest(
           dat.replace(
             "$val",
-            qt::value_to_js_string(addr.cloneValue()))));
+            qt::value_to_js_string(addr.value()))));
 
   auto pair = std::make_pair(rep, &addr);
 
@@ -153,9 +153,9 @@ void http_protocol::apply_reply(QJSValue arr)
     if(v.isNull())
       continue;
 
-    if(auto addr = n->getAddress())
+    if(auto addr = n->get_address())
     {
-      addr->pushValue(qt::value_from_jsvalue(addr->cloneValue(), v));
+      addr->push_value(qt::value_from_jsvalue(addr->value(), v));
     }
   }
 }

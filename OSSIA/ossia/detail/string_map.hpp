@@ -21,7 +21,7 @@ struct string_hash
 #if !defined(_MSC_VER)
     return std::hash<ossia::string_view>{}(s);
 #else
-	return std::hash<std::string>{}(s.to_string()); // TODO fixme with VS2017
+  return std::hash<std::string>{}(s.to_string()); // TODO fixme with VS2017
 #endif
   }
   template<std::size_t N>
@@ -77,8 +77,8 @@ struct string_equal
 };
 
 template<typename Value>
-using string_map = tsl::hopscotch_map<std::string, Value, string_hash, string_equal>;
+using string_map = tsl::hopscotch_map<std::string, Value, string_hash, string_equal, std::allocator<std::pair<std::string, Value>>, 1>;
 template<typename Value>
-using string_view_map = tsl::hopscotch_map<ossia::string_view, Value, string_hash, string_equal>;
+using string_view_map = tsl::hopscotch_map<ossia::string_view, Value, string_hash, string_equal, std::allocator<std::pair<ossia::string_view, Value>>, 1>;
 
 }

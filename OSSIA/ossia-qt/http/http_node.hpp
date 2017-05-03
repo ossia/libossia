@@ -30,21 +30,21 @@ public:
 
   ~http_node();
 
-  device_base& getDevice() const override;
-  node_base* getParent() const override;
+  device_base& get_device() const override;
+  node_base* get_parent() const override;
 
-  std::string getName() const override;
-  node_base& setName(std::string) override;
+  std::string get_name() const override;
+  node_base& set_name(std::string) override;
 
-  address_base* getAddress() const override;
-  address_base* createAddress(val_type = val_type::IMPULSE) override;
-  bool removeAddress() override;
+  address_base* get_address() const override;
+  address_base* create_address(val_type = val_type::IMPULSE) override;
+  bool remove_address() override;
 
   void add_child(std::unique_ptr<ossia::net::node_base>);
 private:
-  std::unique_ptr<node_base> makeChild(const std::string& name) override;
+  std::unique_ptr<node_base> make_child(const std::string& name) override;
 
-  void removingChild(node_base& node_base) override;
+  void removing_child(node_base& node_base) override;
 };
 
 }

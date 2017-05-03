@@ -1,0 +1,18 @@
+module Ossia
+typeinfo plugins.qmltypes
+plugin ossia
+classname ossia::qt::qml_plugin
+
+Node 1.0 Node.qml
+Reader 1.0 Reader.qml
+Writer 1.0 Writer.qml
+Binding 1.0 Binding.qml
+Callback 1.0 Callback.qml
+
+MidiSource 1.0 MidiSource.qml
+MidiSink 1.0 MidiSink.qml
+OSCQueryClient 1.0 OSCQueryClient.qml
+OSCQueryServer 1.0 OSCQueryServer.qml
+OSC 1.0 OSC.qml
+
+

@@ -1,5 +1,7 @@
 #include "domain_base.hpp"
 #include <ossia/network/domain/detail/clamp_visitors.hpp>
+#include <ossia/network/domain/domain_base.hpp>
+#include <ossia/detail/math.hpp>
 
 namespace ossia
 {
@@ -12,7 +14,7 @@ struct wrap_functor
 ossia::value wrap(const ossia::value& val, const ossia::value& min, const ossia::value& max)
 {
   if(val.valid() && min.valid() && max.valid())
-    return eggs::variants::apply(apply_ternary_fun_visitor<wrap_functor>{}, val.v, min.v, max.v);
+    return ossia::apply(apply_ternary_fun_visitor<wrap_functor>{}, val.v, min.v, max.v);
   return val;
 }
 
@@ -25,7 +27,7 @@ ossia::value wrap(ossia::value&& val, const ossia::value& min, const ossia::valu
 ossia::value wrap(ossia::value&& val, const ossia::value& min, const ossia::value& max)
 {
   if(val.valid() && min.valid() && max.valid())
-    return eggs::variants::apply(apply_ternary_fun_visitor<wrap_functor>{}, ossia::move(val).v, min.v, max.v);
+    return ossia::apply(apply_ternary_fun_visitor<wrap_functor>{}, ossia::move(val).v, min.v, max.v);
   return val;
 }
 #endif

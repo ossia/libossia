@@ -45,8 +45,8 @@ private Q_SLOTS:
     // - in adresses, the [ ] characters for [dataspace.unit] or [0].
     // Maybe a space ? foo:/bar 345, foo:/bar color.rgb
 
-    ossia::net::generic_device device1{std::make_unique<ossia::net::local_protocol>(), "test"};
-    ossia::net::generic_device device2{std::make_unique<ossia::net::local_protocol>(), "banana"};
+    ossia::net::generic_device device1{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+    ossia::net::generic_device device2{std::make_unique<ossia::net::multiplex_protocol>(), "banana"};
 
     auto& n1 = ossia::net::find_or_create_node(device1, "foo/bar/baz");
     auto& n2 = ossia::net::find_or_create_node(device1, "foo/bar/blop");
@@ -59,7 +59,7 @@ private Q_SLOTS:
     {
       auto p = traversal::make_path("foo/b??" "/b?*"); // separated because trigraphs...
       QVERIFY(bool(p));
-      std::vector<ossia::net::node_base*> vec{&device1.getRootNode(), &device2.getRootNode()};
+      std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
       traversal::apply(*p, vec);
       debug(vec);
 
@@ -70,7 +70,7 @@ private Q_SLOTS:
     {
       auto p = traversal::make_path("//baz");
       QVERIFY(bool(p));
-      std::vector<ossia::net::node_base*> vec{&device1.getRootNode(), &device2.getRootNode()};
+      std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
       traversal::apply(*p, vec);
       std::vector<ossia::net::node_base*> expected{&n1, &n3};
       QVERIFY(vec == expected);
@@ -79,7 +79,7 @@ private Q_SLOTS:
     {
       auto p = traversal::make_path("//baz.*/*");
       QVERIFY(bool(p));
-      std::vector<ossia::net::node_base*> vec{&device1.getRootNode(), &device2.getRootNode()};
+      std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
       traversal::apply(*p, vec);
       std::vector<ossia::net::node_base*> expected{&n4};
       QVERIFY(vec == expected);
@@ -88,9 +88,9 @@ private Q_SLOTS:
     {
       auto p = traversal::make_path("//baz/..");
       QVERIFY(bool(p));
-      std::vector<ossia::net::node_base*> vec{&device1.getRootNode(), &device2.getRootNode()};
+      std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
       traversal::apply(*p, vec);
-      std::vector<ossia::net::node_base*> expected{n1.getParent(), n3.getParent()};
+      std::vector<ossia::net::node_base*> expected{n1.get_parent(), n3.get_parent()};
       QVERIFY(vec == expected);
     }
 
@@ -98,7 +98,7 @@ private Q_SLOTS:
     {
       auto p = traversal::make_path("foo/[bw]*/[bw]*");
       QVERIFY(bool(p));
-      std::vector<ossia::net::node_base*> vec{&device1.getRootNode(), &device2.getRootNode()};
+      std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
       traversal::apply(*p, vec);
       debug(vec);
       std::vector<ossia::net::node_base*> expected{&n1, &n2, &n5, &n4};

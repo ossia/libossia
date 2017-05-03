@@ -24,48 +24,28 @@ void time_process::resume()
 
 void time_process::mute(bool m)
 {
-  mUnmuted = !m;
+  m_unmuted = !m;
   mute_impl(m);
 }
 
 bool time_process::unmuted() const
 {
-  return mUnmuted;
+  return m_unmuted;
 }
 
 void time_process::enable(bool m)
 {
-  mEnabled = m;
+  m_enabled = m;
 }
 
 bool time_process::enabled() const
 {
-  return mEnabled;
+  return m_enabled;
 }
 
 time_constraint*time_process::parent() const
 {
-  return mParent;
-}
-
-int32_t time_process::getPriority() const
-{
-  return mPriority;
-}
-
-void time_process::setPriority(int32_t i)
-{
-  mPriority = i;
-}
-
-bool time_process::getPriorityOverride() const
-{
-  return mPriorityOverride;
-}
-
-void time_process::setPriorityOverride(bool o)
-{
-  mPriorityOverride = o;
+  return m_parent;
 }
 
 void time_process::mute_impl(bool)

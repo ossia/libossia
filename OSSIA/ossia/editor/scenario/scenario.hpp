@@ -3,7 +3,7 @@
 #include <ossia/editor/scenario/clock.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/editor/state/state.hpp>
-#include <list>
+#include <boost/container/flat_map.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -20,7 +20,7 @@ class OSSIA_EXPORT scenario final :
 
     ~scenario();
 
-    state_element offset(time_value) override;
+    state_element offset(ossia::time_value) override;
 
     state_element state() override;
 
@@ -33,45 +33,45 @@ class OSSIA_EXPORT scenario final :
     /*! add a #time_constraint and its #time_nodes into the scenario if they don't
      already be added
      \param std::shared_ptr<#time_constraint> to add */
-    void addTimeConstraint(std::shared_ptr<time_constraint>);
+    void add_time_constraint(std::shared_ptr<time_constraint>);
 
     /*! remove a #time_constraint from the scenario without removing any #time_node
      \param std::shared_ptr<#time_constraint> to remove */
-    void removeTimeConstraint(const std::shared_ptr<time_constraint>&);
+    void remove_time_constraint(const std::shared_ptr<time_constraint>&);
 
     /*! add a #time_node into the scenario if it is not already added
      \param std::shared_ptr<#time_node> to add */
-    void addTimeNode(std::shared_ptr<time_node>);
+    void add_time_node(std::shared_ptr<time_node>);
 
     /*! remove a #time_node from the scenario
      \param std::shared_ptr<#time_node> to remove */
-    void removeTimeNode(const std::shared_ptr<time_node>&);
+    void remove_time_node(const std::shared_ptr<time_node>&);
 
     /*! get the node from where the scenario starts
      \return std::shared_ptr<#time_node> start node */
-    const std::shared_ptr<time_node>& getStartTimeNode() const;
+    const std::shared_ptr<time_node>& get_start_time_node() const;
 
     /*! get all TimeNodes of the scenario
      \return #Container<#time_node> */
-    const ptr_container<time_node>& timeNodes() const;
+    const ptr_container<time_node>& get_time_nodes() const;
 
     /*! get all TimeConstraints of the scenario
      \return #Container<#time_constraint> */
-    const ptr_container<time_constraint>& timeConstraints() const;
+    const ptr_container<time_constraint>& get_time_constraints() const;
 
     /*! order all HAPPENED TimeEvents into mOffetEventMap */
     void process_offset(time_node&, time_value);
 
   private:
-    ptr_container<time_constraint> mTimeContraints;
-    ptr_container<time_node> mTimeNodes; // list of all TimeNodes of the scenario
+    ptr_container<time_constraint> m_constraints;
+    ptr_container<time_node> m_nodes; // list of all TimeNodes of the scenario
                                          // (the first is the start node, the
                                          // second is the end node)
 
-    std::list<std::pair<time_value, std::shared_ptr<time_event>>>
-        mPastEventList; // a temporary list to order all past events to build the
-                        // offset state
+    // a temporary list to order all past events to build the
+    // offset state
+    boost::container::flat_map<time_value, std::shared_ptr<time_event>> m_pastEvents;
 
-    ossia::state mLastState;
+    ossia::state m_lastState;
 };
 }

@@ -64,9 +64,9 @@ struct different_visitor
 
   bool operator()(const expression_atom& lhs, const expression_atom& rhs)
   {
-    return value(lhs.getFirstOperand()) != value(rhs.getFirstOperand())
-           || lhs.getOperator() != rhs.getOperator()
-           || value(lhs.getSecondOperand()) != value(rhs.getSecondOperand());
+    return lhs.get_first_operand() != rhs.get_first_operand()
+           || lhs.get_operator() != rhs.get_operator()
+           || lhs.get_second_operand() != rhs.get_second_operand();
   }
 
   bool operator()(const expression_bool& lhs, const expression_bool& rhs)
@@ -77,22 +77,22 @@ struct different_visitor
   bool operator()(
       const expression_composition& lhs, const expression_composition& rhs)
   {
-    return lhs.getOperator() != rhs.getOperator()
+    return lhs.get_operator() != rhs.get_operator()
            || eggs::variants::apply(
-                  *this, lhs.getFirstOperand(), rhs.getFirstOperand())
+                  *this, lhs.get_first_operand(), rhs.get_first_operand())
            || eggs::variants::apply(
-                  *this, lhs.getSecondOperand(), rhs.getSecondOperand());
+                  *this, lhs.get_second_operand(), rhs.get_second_operand());
   }
 
   bool operator()(const expression_not& lhs, const expression_not& rhs)
   {
     return eggs::variants::apply(
-        *this, lhs.getExpression(), rhs.getExpression());
+        *this, lhs.get_expression(), rhs.get_expression());
   }
 
   bool operator()(const expression_pulse& lhs, const expression_pulse& rhs)
   {
-    return lhs.getDestination() != rhs.getDestination();
+    return lhs.get_destination() != rhs.get_destination();
   }
 };
 
@@ -106,9 +106,9 @@ struct equal_visitor
 
   bool operator()(const expression_atom& lhs, const expression_atom& rhs)
   {
-    return lhs.getOperator() == rhs.getOperator()
-           && value(lhs.getFirstOperand()) == value(rhs.getFirstOperand())
-           && value(lhs.getSecondOperand()) == value(rhs.getSecondOperand());
+    return lhs.get_operator() == rhs.get_operator()
+           && lhs.get_first_operand() == rhs.get_first_operand()
+           && lhs.get_second_operand() == rhs.get_second_operand();
   }
 
   bool operator()(const expression_bool& lhs, const expression_bool& rhs)
@@ -119,23 +119,22 @@ struct equal_visitor
   bool operator()(
       const expression_composition& lhs, const expression_composition& rhs)
   {
-    return lhs.getOperator() == rhs.getOperator()
+    return lhs.get_operator() == rhs.get_operator()
            && eggs::variants::apply(
-                  *this, lhs.getFirstOperand(), rhs.getFirstOperand())
+                  *this, lhs.get_first_operand(), rhs.get_first_operand())
            && eggs::variants::apply(
-                  *this, lhs.getSecondOperand(), rhs.getSecondOperand());
+                  *this, lhs.get_second_operand(), rhs.get_second_operand());
   }
 
   bool operator()(const expression_not& lhs, const expression_not& rhs)
   {
     return eggs::variants::apply(
-        *this, lhs.getExpression(), rhs.getExpression());
+        *this, lhs.get_expression(), rhs.get_expression());
   }
 
   bool operator()(const expression_pulse& lhs, const expression_pulse& rhs)
   {
-    return ossia::value(lhs.getDestination())
-           == ossia::value(rhs.getDestination());
+    return lhs.get_destination() == rhs.get_destination();
   }
 };
 }
@@ -184,6 +183,19 @@ const expression_base& expression_true() {
 const expression_base& expression_false() {
   static const expression_base e{eggs::variants::in_place<expression_bool>, false};
   return e;
+}
+
+expression_ptr make_expression_atom(const expression_atom::val_t& lhs, comparator c, const expression_atom::val_t& rhs)
+{
+  return std::make_unique<expression_base>(
+        eggs::variants::in_place<expression_atom>, lhs, c, rhs, expression_atom::dummy_t{});
+}
+
+
+expression_ptr make_expression_atom(expression_atom::val_t&& lhs, comparator c, expression_atom::val_t&& rhs)
+{
+  return std::make_unique<expression_base>(
+        eggs::variants::in_place<expression_atom>, std::move(lhs), c, std::move(rhs), expression_atom::dummy_t{});
 }
 
 }

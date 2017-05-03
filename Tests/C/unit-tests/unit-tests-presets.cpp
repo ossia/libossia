@@ -208,6 +208,68 @@ TEST_CASE ("Building object"){
     REQUIRE(d["b"]["e"]["f"].GetInt() == i4);
 }
 
+void make_preset(const ossia::net::node_base& n, ossia::presets::preset& p)
+{
+  if(auto addr = n.get_address())
+  {
+
+  }
+}
+
+
+TEST_CASE ("Device") {
+    ossia::net::generic_device dev{std::make_unique<ossia::net::multiplex_protocol>(), ""};
+    auto& r = dev.get_root_node();
+    ossia::net::create_node(r, "/width").create_address(ossia::val_type::FLOAT);
+    ossia::net::create_node(r, "/leText.0/text").create_address(ossia::val_type::STRING);
+    ossia::net::create_node(r, "/leText.1/text").create_address(ossia::val_type::STRING);
+    ossia::net::create_node(r, "/leText.2/text").create_address(ossia::val_type::STRING);
+    ossia::net::create_node(r, "/leText.3/text").create_address(ossia::val_type::STRING);
+    ossia::net::create_node(r, "/leText.0/color").create_address(ossia::val_type::INT);
+    ossia::net::create_node(r, "/leText.1/color").create_address(ossia::val_type::INT);
+    ossia::net::create_node(r, "/leText.2/color").create_address(ossia::val_type::INT);
+    ossia::net::create_node(r, "/leText.3/color").create_address(ossia::val_type::INT);
+    ossia::net::create_node(r, "/leText.0/font.pointSize").create_address(ossia::val_type::INT);
+    ossia::net::create_node(r, "/leText.1/font.pointSize").create_address(ossia::val_type::INT);
+    ossia::net::create_node(r, "/leText.2/font.pointSize").create_address(ossia::val_type::INT);
+    ossia::net::create_node(r, "/leText.3/font.pointSize").create_address(ossia::val_type::INT);
+
+    auto p = ossia::devices::make_preset(dev);
+    REQUIRE(p.size() == 13);
+
+    for(auto& preset : p)
+      std::cerr << preset.first << " : " << preset.second << " \n";
+
+    std::string json = ossia::presets::write_json(p);
+
+    rapidjson::Document d;
+    d.Parse(json.c_str());
+}
+
+TEST_CASE ("Instances") {
+    ossia::presets::preset p;
+    using namespace std::literals;
+
+    p.insert(std::make_pair ("/width", 123));
+    p.insert(std::make_pair ("/leText.0/text", "foo"s));
+    p.insert(std::make_pair ("/leText.0/color", "bar"s));
+    p.insert(std::make_pair ("/leText.0/font.pointSize", 456));
+    p.insert(std::make_pair ("/leText.1/text", "foo"s));
+    p.insert(std::make_pair ("/leText.1/color", "bar"s));
+    p.insert(std::make_pair ("/leText.1/font.pointSize", 456));
+    p.insert(std::make_pair ("/leText.2/text", "foo"s));
+    p.insert(std::make_pair ("/leText.2/color", "bar"s));
+    p.insert(std::make_pair ("/leText.2/font.pointSize", 456));
+    p.insert(std::make_pair ("/leText.3/text", "foo"s));
+    p.insert(std::make_pair ("/leText.3/color", "bar"s));
+    p.insert(std::make_pair ("/leText.3/font.pointSize", 456));
+
+    std::string json = ossia::presets::write_json(p);
+
+    rapidjson::Document d;
+    d.Parse(json.c_str());
+}
+
 TEST_CASE ("Nested arrays and objects") {
     ossia::presets::preset p;
 
@@ -264,6 +326,9 @@ TEST_CASE ("Types conversion") {
     float f (3.566);
     std::string s ("bonjour");
 
+    ossia::value v = c;
+    REQUIRE(v.getType() == ossia::val_type::CHAR);
+    REQUIRE(*v.target<char>() == '2');
     p.insert(std::make_pair ("/true", btrue));
     p.insert(std::make_pair ("/false", bfalse));
     p.insert(std::make_pair ("/char", c));

@@ -20,8 +20,8 @@ find_package(Boost REQUIRED)
 
 if(NOT "${OSSIA_NO_QT}")
   if("${OSSIA_QT}")
-    find_package(Qt5 5.6 QUIET COMPONENTS Core Gui Qml)
-    if(NOT "${Qt5Qml_FOUND}")
+    find_package(Qt5 5.6 QUIET COMPONENTS Core Gui Qml Quick)
+    if(NOT "${Qt5Quick_FOUND}")
       set(OSSIA_QT OFF)
     else()
       set(CMAKE_AUTOMOC 1)
@@ -30,6 +30,10 @@ if(NOT "${OSSIA_NO_QT}")
 endif()
 
 ### Protocol setup ###
+# These two are always here:
+set(OSSIA_PROTOCOL_OSC 1)
+set(OSSIA_PROTOCOL_MINUIT 1)
+
 if(IOS OR CMAKE_SYSTEM_NAME MATCHES Emscripten)
   set(OSSIA_PROTOCOL_MIDI FALSE)
   set(OSSIA_PROTOCOL_HTTP FALSE)
@@ -143,38 +147,51 @@ if(OSSIA_C)
 endif()
 
 if(OSSIA_JAVA)
-    target_sources(ossia PRIVATE ${OSSIA_JAVA_HEADERS} ${OSSIA_JAVA_SRCS})
-    target_include_directories(ossia PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java"
-        )
-    target_include_directories(ossia SYSTEM PRIVATE
-        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/jni_hpp/include>
-        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/jni_hpp/test>
-        )
+  target_sources(ossia PRIVATE ${OSSIA_JAVA_HEADERS} ${OSSIA_JAVA_SRCS})
+  target_include_directories(ossia PRIVATE
+      "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java"
+  )
+  target_include_directories(ossia SYSTEM PRIVATE
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/jni_hpp/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/jni_hpp/test>
+  )
 endif()
 
 if(OSSIA_QT)
-    target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS})
-    target_link_libraries(ossia PUBLIC Qt5::Core Qt5::Gui Qt5::Qml)
-    target_include_directories(ossia PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt"
-        )
+  target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS})
+  target_link_libraries(ossia PUBLIC Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick)
+  target_include_directories(ossia PRIVATE
+      "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt"
+   )
+ add_custom_target(ossia-qml-sources SOURCES ${OSSIA_QML_SRCS})
+ if(OSSIA_DISABLE_QT_PLUGIN)
+   target_compile_definitions(ossia PRIVATE OSSIA_DISABLE_QT_PLUGIN)
+ endif()
 endif()
 
-target_sources(ossia PRIVATE $<TARGET_OBJECTS:Servus>)
-get_target_property(SERVUS_LINK_LIBRARIES Servus INTERFACE_LINK_LIBRARIES)
-get_target_property(SERVUS_COMPILE_DEFINITIONS Servus INTERFACE_COMPILE_DEFINITIONS)
-target_link_libraries(ossia PRIVATE ${SERVUS_LINK_LIBRARIES})
-target_include_directories(ossia PRIVATE ${OSSIA_3RDPARTY_FOLDER}/Servus)
-target_compile_definitions(ossia PRIVATE ${SERVUS_COMPILE_DEFINITIONS})
+if(OSSIA_DNSSD)
+  target_sources(ossia PRIVATE $<TARGET_OBJECTS:Servus>)
+  get_target_property(SERVUS_LINK_LIBRARIES Servus INTERFACE_LINK_LIBRARIES)
+  get_target_property(SERVUS_COMPILE_DEFINITIONS Servus INTERFACE_COMPILE_DEFINITIONS)
+  target_link_libraries(ossia PRIVATE ${SERVUS_LINK_LIBRARIES})
+  target_include_directories(ossia PRIVATE ${OSSIA_3RDPARTY_FOLDER}/Servus)
+  target_compile_definitions(ossia PRIVATE ${SERVUS_COMPILE_DEFINITIONS})
+endif()
 
+if(OSSIA_DATAFLOW)
+  target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
+endif()
 # Useful properties
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")
 source_group(Editor REGULAR_EXPRESSION "ossia/editor.*")
 source_group(Network REGULAR_EXPRESSION "ossia/network.*")
 
 # Compile options
-target_compile_definitions(ossia PRIVATE RAPIDJSON_HAS_STDSTRING=1)
+target_compile_definitions(ossia PUBLIC
+  RAPIDJSON_HAS_STDSTRING=1
+  $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING>
+  $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_SAFE_MODE>
+  )
 
 if(WIN32)
     target_compile_definitions(ossia PUBLIC
@@ -223,6 +240,7 @@ else()
 endif()
 
 generate_export_header(ossia BASE_NAME OSSIA)
+configure_file(ossia-config.hpp.in ossia-config.hpp)
 
 target_include_directories(ossia
     INTERFACE
@@ -236,10 +254,11 @@ target_include_directories(ossia
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/variant/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/brigand>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/brigand/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/fmt>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/chobo-shl/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/GSL/include>
 )
 
 target_include_directories(ossia SYSTEM

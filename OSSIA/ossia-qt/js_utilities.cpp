@@ -1,12 +1,13 @@
 #if defined(QT_CORE_LIB)
 #include "js_utilities.hpp"
-
+#include <ossia/editor/value/value_conversion.hpp>
 namespace ossia
 {
 namespace net
 {
 OSSIA_EXPORT void sanitize_name(QString& ret)
 {
+  // Keep in sync with node.cpp
   const QChar underscore = '_';
   for(auto& c : ret)
   {
@@ -16,6 +17,84 @@ OSSIA_EXPORT void sanitize_name(QString& ret)
       c = underscore;
   }
 }
+
+QString sanitize_name(QString name, const std::vector<QString>& brethren)
+{
+  sanitize_name(name);
+  bool is_here = false;
+  ossia::optional<int> name_instance;
+  chobo::small_vector<int, 16> instance_num;
+  const auto b_size = brethren.size();
+  instance_num.reserve(b_size);
+
+  // First get the root name : the first part of the "a.b"
+  QString root_name = name;
+  {
+    auto pos = name.lastIndexOf('.');
+    if(pos != -1)
+    {
+      bool res = false;
+      name_instance = name.right(pos + 1).toInt(&res);
+      if(res)
+        root_name = name.mid(0, pos);
+    }
+  }
+
+  const auto root_len = root_name.size();
+  for (const QString& n_name : brethren)
+  {
+    if (n_name == name)
+    {
+      is_here = true;
+    }
+
+    if(n_name.size() < (root_len + 1))
+      continue;
+
+    bool same_root = true;
+    for(int i = 0; i < root_len; i++)
+    {
+      if(n_name[i] != root_name[i])
+      {
+        break;
+        same_root = false;
+      }
+    }
+
+    if (same_root && (n_name[root_len] == '.'))
+    {
+      // Instance
+      bool b = false;
+      int n = n_name.rightRef(root_len + 1).toInt(&b);
+      if(b)
+        instance_num.push_back(n);
+    }
+    // case where we have the "default" instance without .0
+    else if(same_root && root_len == n_name.length())
+    {
+      instance_num.push_back(0);
+    }
+  }
+
+  if (!is_here)
+  {
+    return name;
+  }
+  else
+  {
+    auto n = instance_num.size();
+    if ((n == 0) || ((n == 1) && (instance_num[0] == 0)))
+    {
+      return root_name + QStringLiteral(".1");
+    }
+    else
+    {
+      std::sort(instance_num.begin(), instance_num.end());
+      return root_name % "." % QString::number(instance_num.back() + 1);
+    }
+  }
+}
+
 }
 namespace qt
 {
@@ -118,9 +197,6 @@ value js_value_inbound_visitor::operator()(vec4f v) const
   }
   return v;
 }
-
-value js_value_inbound_visitor::operator()(const Destination &t) { return t; }
-
 value js_value_inbound_visitor::operator()() const { return {}; }
 
 
@@ -140,7 +216,7 @@ net::address_data make_address_data(const QJSValue &js)
   QJSValue name = js.property("name");
   if(name.isString())
   {
-    dat.node_name = name.toString().toStdString();
+    dat.name = name.toString().toStdString();
   }
   else
   {
@@ -286,12 +362,7 @@ QJSValue js_value_outbound_visitor::operator()(vec4f val) const
   return v;
 }
 
-QJSValue js_value_outbound_visitor::operator()(const Destination &t) { return {}; }
-
 QJSValue js_value_outbound_visitor::operator()() const { return {}; }
-
-
-
 
 QString js_string_outbound_visitor::operator()(impulse) const
 {
@@ -356,8 +427,6 @@ QString js_string_outbound_visitor::operator()(vec4f val) const
   return make_array(val);
 }
 
-QString js_string_outbound_visitor::operator()(const Destination &t) { return (*this)(impulse{}); }
-
 QString js_string_outbound_visitor::operator()() const { return (*this)(impulse{}); }
 
 value value_from_jsvalue(const QJSValue& v)
@@ -396,56 +465,54 @@ void set_address_type(QVariant::Type type, net::address_base& addr)
   switch(type)
   {
     case QVariant::Bool:
-      addr.setValueType(ossia::val_type::BOOL);
+      addr.set_value_type(ossia::val_type::BOOL);
       break;
     case QVariant::Time:
     case QVariant::Int:
     case QVariant::UInt:
     case QVariant::ULongLong:
-      addr.setValueType(ossia::val_type::INT);
+      addr.set_value_type(ossia::val_type::INT);
       break;
     case QVariant::Char:
-      addr.setValueType(ossia::val_type::CHAR);
+      addr.set_value_type(ossia::val_type::CHAR);
       break;
     case QVariant::String:
     case QVariant::ByteArray:
-      addr.setValueType(ossia::val_type::STRING);
+      addr.set_value_type(ossia::val_type::STRING);
       break;
     case QVariant::Double:
-      addr.setValueType(ossia::val_type::FLOAT);
+      addr.set_value_type(ossia::val_type::FLOAT);
       break;
     case QVariant::Color:
-      addr.setUnit(ossia::argb_u{});
+      addr.set_unit(ossia::argb_u{});
       break;
     case QVariant::Point:
     case QVariant::PointF:
     case QVariant::Vector2D:
     case QVariant::Size:
     case QVariant::SizeF:
-      addr.setUnit(ossia::cartesian_2d_u{});
+      addr.set_unit(ossia::cartesian_2d_u{});
       break;
     case QVariant::Vector3D:
-      addr.setUnit(ossia::cartesian_3d_u{});
+      addr.set_unit(ossia::cartesian_3d_u{});
       break;
     case QVariant::Vector4D:
-      addr.setUnit(ossia::axis_u{});
+      addr.set_unit(ossia::axis_u{});
       break;
     case QVariant::Quaternion:
-      addr.setUnit(ossia::quaternion_u{});
+      addr.set_unit(ossia::quaternion_u{});
       break;
     case QVariant::Line:
     case QVariant::LineF:
     case QVariant::Rect:
     case QVariant::RectF:
-      addr.setValueType(ossia::val_type::VEC4F);
+      addr.set_value_type(ossia::val_type::VEC4F);
       break;
     case QVariant::List:
     case QVariant::StringList:
-      addr.setValueType(ossia::val_type::TUPLE);
-      break;
     case QVariant::Date:
     default:
-      addr.setValueType(ossia::val_type::IMPULSE);
+      addr.set_value_type(ossia::val_type::TUPLE);
       break;
   }
 }
@@ -455,100 +522,105 @@ QVariant ossia_to_qvariant::operator()(QVariant::Type type, const value& ossia_v
   switch(type)
   {
     case QVariant::Bool:
-      return QVariant::fromValue(ossia_val.get<bool>());
+      return QVariant::fromValue(convert<bool>(ossia_val));
     case QVariant::Time:
-      return QVariant::fromValue(QTime().addMSecs(ossia_val.get<int>()));
+      return QVariant::fromValue(QTime().addMSecs(convert<int>(ossia_val)));
     case QVariant::Int:
-      return QVariant::fromValue(ossia_val.get<int>());
+      return QVariant::fromValue(convert<int>(ossia_val));
     case QVariant::UInt:
-      return QVariant::fromValue((quint32)ossia_val.get<int>());
+      return QVariant::fromValue((quint32)convert<int>(ossia_val));
     case QVariant::ULongLong:
-      return QVariant::fromValue((qlonglong)ossia_val.get<int>());
+      return QVariant::fromValue((qlonglong)convert<int>(ossia_val));
     case QVariant::Char:
-      return QVariant::fromValue(QChar::fromLatin1(ossia_val.get<char>()));
+      return QVariant::fromValue(QChar::fromLatin1(convert<char>(ossia_val)));
     case QVariant::String:
-      return QVariant::fromValue(QString::fromStdString(ossia_val.get<std::string>()));
+      return QVariant::fromValue(QString::fromStdString(convert<std::string>(ossia_val)));
     case QVariant::ByteArray:
-      return QVariant::fromValue(QByteArray::fromStdString(ossia_val.get<std::string>()));
+      return QVariant::fromValue(QByteArray::fromStdString(convert<std::string>(ossia_val)));
     case QVariant::Double:
-      return QVariant::fromValue((double)ossia_val.get<float>());
+      return QVariant::fromValue(convert<double>(ossia_val));
     case QVariant::Color:
     {
-      auto val = ossia_val.get<vec4f>();
+      auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QColor::fromRgbF(val[1], val[2], val[3], val[0]));
     }
     case QVariant::Point:
     {
-      auto val = ossia_val.get<vec2f>();
+      auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QPoint(val[0], val[1]));
     }
     case QVariant::PointF:
     {
-      auto val = ossia_val.get<vec2f>();
+      auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QPointF(val[0], val[1]));
     }
     case QVariant::Vector2D:
     {
-      auto val = ossia_val.get<vec2f>();
+      auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QVector2D(val[0], val[1]));
     }
       break;
     case QVariant::Vector3D:
     {
-      auto val = ossia_val.get<vec3f>();
+      auto val = convert<vec3f>(ossia_val);
       return QVariant::fromValue(QVector3D(val[0], val[1], val[2]));
     }
     case QVariant::Vector4D:
     {
-      auto val = ossia_val.get<vec4f>();
+      auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QVector4D(val[0], val[1], val[2], val[3]));
     }
     case QVariant::Quaternion:
     {
-      auto val = ossia_val.get<vec4f>();
+      auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QQuaternion(val[0], val[1], val[2], val[3]));
     }
     case QVariant::Line:
     {
-      auto val = ossia_val.get<vec4f>();
+      auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QLine(val[0], val[1], val[2], val[3]));
     }
     case QVariant::LineF:
     {
-      auto val = ossia_val.get<vec4f>();
+      auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QLineF(val[0], val[1], val[2], val[3]));
     }
     case QVariant::Rect:
     {
-      auto val = ossia_val.get<vec4f>();
+      auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QRect(val[0], val[1], val[2], val[3]));
     }
     case QVariant::RectF:
     {
-      auto val = ossia_val.get<vec4f>();
+      auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QRectF(val[0], val[1], val[2], val[3]));
     }
     case QVariant::Size:
     {
-      auto val = ossia_val.get<vec2f>();
+      auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QSize(val[0], val[1]));
     }
     case QVariant::SizeF:
     {
-      auto val = ossia_val.get<vec2f>();
+      auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QSizeF(val[0], val[1]));
     }
     case QVariant::List:
     {
-      break;
+      // TODO
     }
     case QVariant::StringList:
     {
-      break;
+      // TODO tuple of string
     }
     case QVariant::Date:
+      // TODO double ?
     default:
+    {
+      // Use the ossia type instead
+      return ossia_val.apply(*this);
       break;
+    }
   }
   return {};
 }
@@ -607,6 +679,8 @@ value qt_to_ossia::operator()(const QVariant& v)
       return operator()(v.toStringList());
     case QVariant::Date:
       return operator()(v.toDate());
+//    case 1024: // QJSValue -> seems to crash
+//      return value_from_jsvalue(v.value<QJSValue>());
     default:
       return operator()();
   }

@@ -1,6 +1,16 @@
 #pragma once
 #include <ossia_export.h>
-#include <ossia/detail/logger.hpp>
+#include <memory>
+#include <vector>
+
+namespace spdlog
+{
+namespace sinks
+{
+class sink;
+}
+using sink_ptr = std::shared_ptr<sinks::sink>;
+}
 
 namespace ossia
 {

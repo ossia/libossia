@@ -17,76 +17,76 @@ namespace net
 {
 osc_protocol::osc_protocol(
     std::string ip, uint16_t remote_port, uint16_t local_port)
-  : mIp{ip}
-  , mRemotePort{remote_port}
-  , mLocalPort{local_port}
-  , mSender{std::make_unique<osc::sender>(mLogger, ip, remote_port)}
-  , mReceiver{std::make_unique<osc::receiver>(local_port, [=](const oscpack::ReceivedMessage& m,
+  : m_sender{std::make_unique<osc::sender>(m_logger, ip, remote_port)}
+  , m_receiver{std::make_unique<osc::receiver>(local_port, [=](const oscpack::ReceivedMessage& m,
                                               const oscpack::IpEndpointName& ip) {
-  this->handleReceivedMessage(m, ip);
+  this->on_received_message(m, ip);
 })}
+  , m_ip{ip}
+  , m_remote_port{remote_port}
+  , m_local_port{local_port}
 {
-  if(mReceiver->port() != local_port)
+  if(m_receiver->port() != local_port)
   {;
     throw ossia::connection_error{"osc_protocol::osc_protocol: "
                                   "Could not connect to port: " + boost::lexical_cast<std::string>(local_port)};
   }
-  mReceiver->run();
+  m_receiver->run();
 }
 
 osc_protocol::~osc_protocol()
 {
 }
 
-const std::string& osc_protocol::getIp() const
+const std::string& osc_protocol::get_ip() const
 {
-  return mIp;
+  return m_ip;
 }
 
-osc_protocol& osc_protocol::setIp(std::string ip)
+osc_protocol& osc_protocol::set_ip(std::string ip)
 {
-  mIp = ip;
-  mSender = std::make_unique<osc::sender>(mLogger, mIp, mRemotePort);
+  m_ip = ip;
+  m_sender = std::make_unique<osc::sender>(m_logger, m_ip, m_remote_port);
 
   return *this;
 }
 
-uint16_t osc_protocol::getRemotePort() const
+uint16_t osc_protocol::get_remote_port() const
 {
-  return mRemotePort;
+  return m_remote_port;
 }
 
-osc_protocol& osc_protocol::setRemotePort(uint16_t in_port)
+osc_protocol& osc_protocol::set_remote_port(uint16_t in_port)
 {
-  mRemotePort = in_port;
-  mSender = std::make_unique<osc::sender>(mLogger, mIp, mRemotePort);
+  m_remote_port = in_port;
+  m_sender = std::make_unique<osc::sender>(m_logger, m_ip, m_remote_port);
 
   return *this;
 }
 
-uint16_t osc_protocol::getLocalPort() const
+uint16_t osc_protocol::get_local_port() const
 {
-  return mLocalPort;
+  return m_local_port;
 }
 
-osc_protocol& osc_protocol::setLocalPort(uint16_t out_port)
+osc_protocol& osc_protocol::set_local_port(uint16_t out_port)
 {
-  mLocalPort = out_port;
-  mReceiver = std::make_unique<osc::receiver>(out_port, [=](const oscpack::ReceivedMessage& m,
+  m_local_port = out_port;
+  m_receiver = std::make_unique<osc::receiver>(out_port, [=](const oscpack::ReceivedMessage& m,
                                               const oscpack::IpEndpointName& ip) {
-    this->handleReceivedMessage(m, ip);
+    this->on_received_message(m, ip);
   });
   return *this;
 }
 
-bool osc_protocol::getLearningStatus() const
+bool osc_protocol::learning() const
 {
-  return mLearning;
+  return m_learning;
 }
 
-osc_protocol& osc_protocol::setLearningStatus(bool newLearn)
+osc_protocol& osc_protocol::set_learning(bool newLearn)
 {
-  mLearning = newLearn;
+  m_learning = newLearn;
   return *this;
 }
 
@@ -102,13 +102,13 @@ bool osc_protocol::pull(ossia::net::address_base& address)
 
 bool osc_protocol::push(const ossia::net::address_base& addr)
 {
-  if (addr.getAccessMode() == ossia::access_mode::GET)
+  if (addr.get_access() == ossia::access_mode::GET)
     return false;
 
   auto val = filter_value(addr);
   if (val.valid())
   {
-    mSender->send(addr, val);
+    m_sender->send(addr, val);
     return true;
   }
   return false;
@@ -117,22 +117,22 @@ bool osc_protocol::push(const ossia::net::address_base& addr)
 bool osc_protocol::observe(ossia::net::address_base& address, bool enable)
 {
   if (enable)
-    mListening.insert(
+    m_listening.insert(
           std::make_pair(osc_address_string(address), &address));
   else
-    mListening.erase(osc_address_string(address));
+    m_listening.erase(osc_address_string(address));
 
   return true;
 }
 
 
-void osc_protocol::handleReceivedMessage(
+void osc_protocol::on_received_message(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 {
-  if(!mLearning)
+  if(!m_learning)
   {
     auto addr_txt = m.AddressPattern();
-    auto addr = mListening.find(addr_txt);
+    auto addr = m_listening.find(addr_txt);
     if (addr && *addr)
     {
       update_value(**addr, m);
@@ -140,9 +140,9 @@ void osc_protocol::handleReceivedMessage(
     else
     {
       // We still want to save the value even if it is not listened to.
-      if(auto n = find_node(mDevice->getRootNode(), addr_txt))
+      if(auto n = find_node(m_device->get_root_node(), addr_txt))
       {
-        if(auto base_addr = n->getAddress())
+        if(auto base_addr = n->get_address())
         {
           update_value_quiet(*base_addr, m);
         }
@@ -151,11 +151,11 @@ void osc_protocol::handleReceivedMessage(
   }
   else
   {
-    handleLearn(m);
+    on_learn(m);
   }
 
-  if(mLogger.inbound_logger)
-    mLogger.inbound_logger->info("In: {0}", m);
+  if(m_logger.inbound_logger)
+    m_logger.inbound_logger->info("In: {0}", m);
 }
 
 template<std::size_t N>
@@ -168,7 +168,7 @@ static bool is_vec(std::vector<ossia::value>& t)
   });
 }
 
-void osc_protocol::handleLearn(const oscpack::ReceivedMessage& m)
+void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
 {
   // TODO put them in a hash map instead.
   // Find-or-add algorithm
@@ -176,10 +176,10 @@ void osc_protocol::handleLearn(const oscpack::ReceivedMessage& m)
   std::vector<std::string> v = address_parts(addr);
 
   bool is_new = false;
-  node_base* n = &mDevice->getRootNode();
+  node_base* n = &m_device->get_root_node();
   for(const auto& part : v)
   {
-    auto cld = n->findChild(part);
+    auto cld = n->find_child(part);
     if(cld)
     {
       n = cld;
@@ -187,7 +187,7 @@ void osc_protocol::handleLearn(const oscpack::ReceivedMessage& m)
     else
     {
       // Start adding
-      n = n->createChild(part);
+      n = n->create_child(part);
       is_new = true;
     }
   }
@@ -200,14 +200,14 @@ void osc_protocol::handleLearn(const oscpack::ReceivedMessage& m)
   {
     case 0:
     {
-      n->createAddress();
+      n->create_address();
       break;
     }
     case 1:
     {
       auto val = osc_utilities::create_value(m.ArgumentsBegin());
-      auto addr = n->createAddress(val.getType());
-      addr->setValue(val);
+      auto addr = n->create_address(val.getType());
+      addr->set_value(val);
       break;
     }
     case 2:
@@ -215,13 +215,13 @@ void osc_protocol::handleLearn(const oscpack::ReceivedMessage& m)
       auto val = osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount());
       if(is_vec<2>(val))
       {
-        auto addr = n->createAddress(ossia::val_type::VEC2F);
-        addr->setValue(convert<ossia::vec2f>(val));
+        auto addr = n->create_address(ossia::val_type::VEC2F);
+        addr->set_value(convert<ossia::vec2f>(val));
       }
       else
       {
-        auto addr = n->createAddress(ossia::val_type::TUPLE);
-        addr->setValue(osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount()));
+        auto addr = n->create_address(ossia::val_type::TUPLE);
+        addr->set_value(osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount()));
       }
       break;
     }
@@ -230,13 +230,13 @@ void osc_protocol::handleLearn(const oscpack::ReceivedMessage& m)
       auto val = osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount());
       if(is_vec<3>(val))
       {
-        auto addr = n->createAddress(ossia::val_type::VEC3F);
-        addr->setValue(convert<ossia::vec2f>(val));
+        auto addr = n->create_address(ossia::val_type::VEC3F);
+        addr->set_value(convert<ossia::vec2f>(val));
       }
       else
       {
-        auto addr = n->createAddress(ossia::val_type::TUPLE);
-        addr->setValue(osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount()));
+        auto addr = n->create_address(ossia::val_type::TUPLE);
+        addr->set_value(osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount()));
       }
       break;
     }
@@ -245,28 +245,28 @@ void osc_protocol::handleLearn(const oscpack::ReceivedMessage& m)
       auto val = osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount());
       if(is_vec<4>(val))
       {
-        auto addr = n->createAddress(ossia::val_type::VEC4F);
-        addr->setValue(convert<ossia::vec2f>(val));
+        auto addr = n->create_address(ossia::val_type::VEC4F);
+        addr->set_value(convert<ossia::vec2f>(val));
       }
       else
       {
-        auto addr = n->createAddress(ossia::val_type::TUPLE);
-        addr->setValue(osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount()));
+        auto addr = n->create_address(ossia::val_type::TUPLE);
+        addr->set_value(osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount()));
       }
       break;
     }
     default:
     {
-      auto addr = n->createAddress(ossia::val_type::TUPLE);
-      addr->setValue(osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount()));
+      auto addr = n->create_address(ossia::val_type::TUPLE);
+      addr->set_value(osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount()));
       break;
     }
   }
 }
 
-void osc_protocol::setDevice(device_base& dev)
+void osc_protocol::set_device(device_base& dev)
 {
-  mDevice = &dev;
+  m_device = &dev;
 }
 }
 }

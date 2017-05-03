@@ -13,7 +13,8 @@ struct t_param : t_obj_base
     bool unregister();
 
     t_symbol* x_type;
-    t_atom x_default;
+    int x_type_size;
+    t_atom x_default[64];
     // TODO use optional for range
     float x_range[2];
     t_symbol* x_bounding_mode;
@@ -22,6 +23,7 @@ struct t_param : t_obj_base
     t_symbol* x_unit;
     t_symbol* x_tags;
     t_symbol* x_description;
+    int x_priority;
 
     static std::vector<t_param*>& quarantine(){
         static std::vector<t_param*> quarantine;
@@ -30,10 +32,9 @@ struct t_param : t_obj_base
 
     void isDeleted(const ossia::net::node_base& n)
     {
-        x_node->aboutToBeDeleted.disconnect<t_param, &t_param::isDeleted>(this);
+        x_node->about_to_be_deleted.disconnect<t_param, &t_param::isDeleted>(this);
         x_node = nullptr;
         obj_quarantining<t_param>(this);
-        obj_register<t_param>(this);
     }
 };
 

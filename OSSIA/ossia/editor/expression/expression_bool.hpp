@@ -13,7 +13,7 @@ namespace expressions
 class OSSIA_EXPORT expression_bool final :
     public expression_callback_container
 {
-  bool mResult;
+  bool m_result{};
 
 public:
   expression_bool(bool result);
@@ -27,7 +27,7 @@ public:
 
   bool evaluate() const
   {
-    return mResult;
+    return m_result;
   }
   void update() const
   {

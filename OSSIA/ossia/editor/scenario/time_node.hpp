@@ -23,6 +23,8 @@ struct time_value;
  * attached #time_event evaluation.
  *
  * \details #time_node is also a #time_event container.
+ * \todo the shared_from_this is used at a single point, maybe it should be removed ?
+ * or replaced with intrusive_ptr ?
  */
 class OSSIA_EXPORT time_node final :
     public std::enable_shared_from_this<time_node>
@@ -44,10 +46,10 @@ class OSSIA_EXPORT time_node final :
    \details a #time_node with na previous #time_constraints have a date equals to
    0.
    \return #TimeValue the date */
-    time_value getDate() const;
+    time_value get_date() const;
 
     /*! get the expression of the #time_node */
-    const expression& getExpression() const;
+    const expression& get_expression() const;
 
     /*! set the expression of the #time_node
    \details setting the expression to ExpressionTrue will defer the evaluation
@@ -56,7 +58,7 @@ class OSSIA_EXPORT time_node final :
    execution
    \param expression_ptr
    \return #time_node the time node */
-    time_node& setExpression(expression_ptr);
+    time_node& set_expression(expression_ptr);
 
     /*! create and store a #time_event
    \param #Container<#time_event>::const_iterator where to store the #time_event
@@ -65,7 +67,7 @@ class OSSIA_EXPORT time_node final :
    #time_event
    \return std::shared_ptr<#time_event> */
     iterator emplace(
-        const_iterator, time_event::ExecutionCallback,
+        const_iterator, time_event::exec_callback,
         expression_ptr = expressions::make_expression_true());
     iterator insert(
         const_iterator, std::shared_ptr<time_event>);
@@ -73,16 +75,16 @@ class OSSIA_EXPORT time_node final :
 
     /*! get the #time_events of the #time_node
    \return #Container<#time_event> */
-    ptr_container<time_event>& timeEvents()
+    ptr_container<time_event>& get_time_events()
     {
-      return mTimeEvents;
+      return m_timeEvents;
     }
 
     /*! get the #time_events of the #time_node
    \return #Container<#time_event> */
-    const ptr_container<time_event>& timeEvents() const
+    const ptr_container<time_event>& get_time_events() const
     {
-      return mTimeEvents;
+      return m_timeEvents;
     }
 
     // Interface to be used for set-up by other time processes
@@ -90,10 +92,10 @@ class OSSIA_EXPORT time_node final :
     void process(ptr_container<time_event>& statusChangedEvents);
 
     /* is the TimeNode observing its Expression ? */
-    bool isObservingExpression();
+    bool is_observing_expression();
 
     /* enable observation of the Expression */
-    void observeExpressionResult(bool);
+    void observe_expression(bool);
 
     //! Resets the internal state. Necessary when restarting an execution.
     void reset();
@@ -104,32 +106,30 @@ class OSSIA_EXPORT time_node final :
     /*! Execution callbacks
      *
      * Used to be notified when the #time_node is triggered.
-     *
+     * \todo why no nano-signal-slot ?
      * \details This is not thread-safe
      */
     callback_container<std::function<void()>> triggered;
 
     //! Called when the time node starts evaluating
-    callback_container<std::function<void()>> enteredEvaluation;
+    callback_container<std::function<void()>> entered_evaluation;
 
     //! Called if the time node stops evaluating due to a changing duration
-    callback_container<std::function<void()>> leftEvaluation;
+    callback_container<std::function<void()>> left_evaluation;
 
     //! Boolean : true if the evaluation was finished due to the max bound
-    callback_container<std::function<void(bool)>> finishedEvaluation;
+    callback_container<std::function<void(bool)>> finished_evaluation;
 
 
   private:
-    ossia::expression_ptr mExpression;
+    ossia::expression_ptr m_expression;
 
-    ptr_container<time_event> mTimeEvents;
-    ptr_container<time_event> mPendingEvents;
+    ptr_container<time_event> m_timeEvents;
+    ptr_container<time_event> m_pending;
 
+    optional<expressions::expression_callback_iterator> m_callback;
 
-    optional<expressions::expression_callback_iterator> mResultCallbackIndex;
-
-    bool mObserveExpression = false;
-    bool mEvaluating = false;
-
+    bool m_observe = false;
+    bool m_evaluating = false;
 };
 }

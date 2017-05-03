@@ -13,8 +13,8 @@ struct OSSIA_EXPORT expression_generic_base
   virtual ~expression_generic_base();
   virtual void update() = 0;
   virtual bool evaluate() const = 0;
-  virtual void onFirstCallbackAdded(expression_generic&) = 0;
-  virtual void onRemovingLastCallback(expression_generic&) = 0;
+  virtual void on_first_callback_added(expression_generic&) = 0;
+  virtual void on_removing_last_callback(expression_generic&) = 0;
 };
 
 class OSSIA_EXPORT expression_generic final :
@@ -31,10 +31,10 @@ public:
   { return expr->evaluate(); }
 
 private:
-  void onFirstCallbackAdded() override
-  { expr->onFirstCallbackAdded(*this); }
-  void onRemovingLastCallback() override
-  { expr->onRemovingLastCallback(*this); }
+  void on_first_callback_added() override
+  { expr->on_first_callback_added(*this); }
+  void on_removing_last_callback() override
+  { expr->on_removing_last_callback(*this); }
 };
 }
 }

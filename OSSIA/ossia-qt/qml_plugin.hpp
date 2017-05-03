@@ -5,8 +5,14 @@ namespace ossia
 {
 namespace qt
 {
-
-class OSSIA_EXPORT qml_plugin final : public QQmlExtensionPlugin
+#if defined(OSSIA_DISABLE_QT_PLUGIN)
+class OSSIA_EXPORT qml_plugin
+{
+public:
+    static void reg(const char* uri);
+};
+#else
+class OSSIA_EXPORT qml_plugin : public QQmlExtensionPlugin
 {
   Q_OBJECT
   Q_PLUGIN_METADATA(IID QQmlExtensionInterface_iid)
@@ -16,6 +22,6 @@ public:
 
     void registerTypes(const char *uri) override;
 };
-
+#endif
 }
 }

@@ -215,11 +215,6 @@ struct value_merger
     return value_unit;
   }
   template<typename T>
-  OSSIA_INLINE ossia::value_with_unit operator()(const strong_value<T>& value_unit, const Destination& value)
-  {
-    return value_unit;
-  }
-  template<typename T>
   OSSIA_INLINE ossia::value_with_unit operator()(const strong_value<T>& value_unit, const std::string& value)
   {
     return value_unit;

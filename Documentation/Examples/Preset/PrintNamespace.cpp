@@ -27,10 +27,10 @@ int main()
     };
 
     // explore the tree of B
-    device.getProtocol().update(device);
+    device.get_protocol().update(device);
 
     // display json tree in console
-    std::cerr << print_namespace(device.getRootNode()) << "\n";
+    std::cerr << print_namespace(device.get_root_node()) << "\n";
 }
 
 rapidjson::Value explore(
@@ -40,11 +40,11 @@ rapidjson::Value explore(
     rapidjson::Value v;
     v.SetObject();
 
-    auto address = node.getAddress();
+    auto address = node.get_address();
 
     if(address)
     {
-        switch (address->getValueType())
+        switch (address->get_value_type())
         {
             case val_type::IMPULSE :
             {
@@ -54,32 +54,32 @@ rapidjson::Value explore(
             case val_type::BOOL :
             {
                 v.AddMember("valueType", "boolean", d.GetAllocator());
-                v.AddMember("value", address->cloneValue().get<bool>(), d.GetAllocator());
+                v.AddMember("value", address->value().get<bool>(), d.GetAllocator());
                 break;
             }
             case val_type::INT :
             {
                 v.AddMember("valueType", "integer", d.GetAllocator());
-                v.AddMember("value", address->cloneValue().get<int>(), d.GetAllocator());
+                v.AddMember("value", address->value().get<int>(), d.GetAllocator());
                 break;
             }
             case val_type::FLOAT :
             {
                 v.AddMember("valueType", "decimal", d.GetAllocator());
-                v.AddMember("value", address->cloneValue().get<float>(), d.GetAllocator());
+                v.AddMember("value", address->value().get<float>(), d.GetAllocator());
                 break;
             }
             case val_type::CHAR :
             {
                 v.AddMember("valueType", "char", d.GetAllocator());
-                v.AddMember("value", address->cloneValue().get<char>(), d.GetAllocator());
+                v.AddMember("value", address->value().get<char>(), d.GetAllocator());
                 break;
             }
             case val_type::STRING :
             {
                 v.AddMember("valueType", "string", d.GetAllocator());
 
-                auto val = address->cloneValue().get<std::string>();
+                auto val = address->value().get<std::string>();
                 rapidjson::Value s;
                 s.SetString(val.c_str(), val.size(), d.GetAllocator());
                 v.AddMember("value", s, d.GetAllocator());
@@ -94,7 +94,7 @@ rapidjson::Value explore(
     for (const auto& child : node.children())
     {
         rapidjson::Value s;
-        s.SetString(child->getName().c_str(), child->getName().size(), d.GetAllocator());
+        s.SetString(child->get_name().c_str(), child->get_name().size(), d.GetAllocator());
         v.AddMember(s, explore(*child, d), d.GetAllocator());
     }
 

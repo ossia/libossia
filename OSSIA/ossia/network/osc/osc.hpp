@@ -24,19 +24,6 @@ namespace net
 {
 class OSSIA_EXPORT osc_protocol final : public ossia::net::protocol_base
 {
-private:
-  std::string mIp;
-  uint16_t mRemotePort{}; /// the port that a remote device opens
-  uint16_t mLocalPort{};  /// the port where a remote device sends OSC messages
-                          /// to (opened in this library)
-  std::atomic_bool mLearning{};       /// if the device is currently learning from inbound
-                          /// messages.
-  listened_addresses mListening;
-
-  std::unique_ptr<osc::sender> mSender;
-  std::unique_ptr<osc::receiver> mReceiver;
-
-  ossia::net::device_base* mDevice{};
 public:
   osc_protocol(std::string ip, uint16_t remote_port, uint16_t local_port);
 
@@ -47,17 +34,17 @@ public:
 
   ~osc_protocol();
 
-  const std::string& getIp() const;
-  osc_protocol& setIp(std::string);
+  const std::string& get_ip() const;
+  osc_protocol& set_ip(std::string);
 
-  uint16_t getRemotePort() const;
-  osc_protocol& setRemotePort(uint16_t);
+  uint16_t get_remote_port() const;
+  osc_protocol& set_remote_port(uint16_t);
 
-  uint16_t getLocalPort() const;
-  osc_protocol& setLocalPort(uint16_t);
+  uint16_t get_local_port() const;
+  osc_protocol& set_local_port(uint16_t);
 
-  bool getLearningStatus() const;
-  osc_protocol& setLearningStatus(bool);
+  bool learning() const;
+  osc_protocol& set_learning(bool);
 
   bool update(ossia::net::node_base& node_base) override;
 
@@ -68,10 +55,24 @@ public:
   bool observe(ossia::net::address_base& address_base, bool enable) override;
 
 private:
-  void handleReceivedMessage(
+  void on_received_message(
       const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
-  void handleLearn(const oscpack::ReceivedMessage& m);
-  void setDevice(ossia::net::device_base& dev) override;
+  void on_learn(const oscpack::ReceivedMessage& m);
+  void set_device(ossia::net::device_base& dev) override;
+
+  listened_addresses m_listening;
+
+  std::unique_ptr<osc::sender> m_sender;
+  std::unique_ptr<osc::receiver> m_receiver;
+
+  ossia::net::device_base* m_device{};
+  std::string m_ip;
+
+  uint16_t m_remote_port{}; /// the port that a remote device opens
+  uint16_t m_local_port{};  /// the port where a remote device sends OSC messages
+                          /// to (opened in this library)
+  std::atomic_bool m_learning{};       /// if the device is currently learning from inbound
+                          /// messages.
 };
 }
 }

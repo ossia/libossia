@@ -1,7 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #include <eggs/variant.hpp>
-#include <ossia/detail/instantiations.hpp>
 namespace ossia
 {
 struct message;

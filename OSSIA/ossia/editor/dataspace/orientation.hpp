@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/editor/dataspace/dataspace_base.hpp>
-#include <eggs/variant.hpp>
 
 namespace ossia
 {
@@ -67,21 +66,5 @@ struct OSSIA_EXPORT axis_u :
 
   static value_type from_neutral(strong_value<neutral_unit> self);
 };
-
-
-
-using quaternion = strong_value<quaternion_u>;
-using euler = strong_value<euler_u>;
-using axis = strong_value<axis_u>;
-
-using orientation_u = eggs::variant<quaternion_u, euler_u, axis_u>;
-
-template<>
-struct dataspace_traits<orientation_u>
-{
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("orientation"); }
-};
-
 
 }

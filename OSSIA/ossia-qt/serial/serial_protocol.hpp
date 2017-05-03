@@ -63,7 +63,7 @@ public:
   bool observe(ossia::net::address_base&, bool) override;
   bool update(ossia::net::node_base& node_base) override;
 
-  void setDevice(ossia::net::device_base& dev) override;
+  void set_device(ossia::net::device_base& dev) override;
 
   static serial_address_data read_data(const QJSValue& js) { return js; }
 

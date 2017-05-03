@@ -20,17 +20,17 @@ qt_object_node::qt_object_node(QObject& obj, net::device_base& device, net::node
   init(obj);
 }
 
-net::address_base* qt_object_node::getAddress() const
+net::address_base* qt_object_node::get_address() const
 {
   return mAddress.get();
 }
 
-net::address_base* qt_object_node::createAddress(val_type type)
+net::address_base* qt_object_node::create_address(val_type type)
 {
   return nullptr;
 }
 
-bool qt_object_node::removeAddress()
+bool qt_object_node::remove_address()
 {
   return false;
 }
@@ -40,7 +40,7 @@ void qt_object_node::init(QObject& obj)
   auto name = obj.objectName();
 
   if(!name.isEmpty())
-    setName(obj.objectName().toStdString());
+    set_name(obj.objectName().toStdString());
   else
   {
     std::string str;
@@ -55,11 +55,11 @@ void qt_object_node::init(QObject& obj)
 
     if(!str.empty())
     {
-      setName(std::move(str));
+      set_name(std::move(str));
     }
     else
     {
-      setName("Object");
+      set_name("Object");
     }
   }
 
@@ -70,13 +70,13 @@ void qt_object_node::init(QObject& obj)
   for(auto c : obj.children())
   {
     children_vect.push_back(
-          std::make_unique<qt_object_node>(*c, mDevice, *this));
+          std::make_unique<qt_object_node>(*c, m_device, *this));
   }
 
   for(int i = 0; i < obj.metaObject()->propertyCount(); i++)
   {
     children_vect.push_back(
-          std::make_unique<qt_property_node>(obj, obj.metaObject()->property(i), mDevice, *this));
+          std::make_unique<qt_property_node>(obj, obj.metaObject()->property(i), m_device, *this));
   }
 
   {
@@ -90,7 +90,7 @@ void qt_object_node::childEvent(QChildEvent* event)
 {
   if(event->type() == QChildEvent::ChildAdded)
   {
-    addChild(std::make_unique<qt_object_node>(*event->child(), mDevice, *this));
+    add_child(std::make_unique<qt_object_node>(*event->child(), m_device, *this));
   }
   else if(event->type() == QChildEvent::ChildRemoved)
   {
@@ -107,18 +107,18 @@ void qt_object_node::childEvent(QChildEvent* event)
 
     if(it != m_children.end())
     {
-      mDevice.onNodeRemoving(**it);
+      m_device.on_node_removing(**it);
       m_children.erase(it);
     }
   }
 }
 
-std::unique_ptr<net::node_base> qt_object_node::makeChild(const std::string& name)
+std::unique_ptr<net::node_base> qt_object_node::make_child(const std::string& name)
 {
   return nullptr;
 }
 
-void qt_object_node::removingChild(net::node_base&)
+void qt_object_node::removing_child(net::node_base&)
 {
 }
 

@@ -34,7 +34,6 @@ struct ossia_value_to_outlet
   void operator()(ossia::vec4f v) const { }
   void operator()(const std::string& v) const { }
   void operator()(const std::vector<ossia::value>& v) const { }
-  void operator()(const ossia::Destination&) const { }
   void operator()() { }
 };
 
@@ -128,25 +127,25 @@ void* ossia_parameter_new(t_symbol *s, long argc, t_atom *argv)
 
     // Create the node with what we found
     x->node = &ossia::net::create_node(
-          ossia::max::singleton::device_instance().getRootNode(),
+          ossia::max::singleton::device_instance().get_root_node(),
           name_to_create
           );
 
-    auto addr = x->node->createAddress(name_to_type(type_to_set));
+    auto addr = x->node->create_address(name_to_type(type_to_set));
 
     // Handle domain
     if(int_min && int_max)
-      addr->setDomain(ossia::make_domain(*int_min, *int_max));
+      addr->set_domain(ossia::make_domain(*int_min, *int_max));
     else if(int_min)
-      addr->setDomain(ossia::make_domain(*int_min, ossia::value{}));
+      addr->set_domain(ossia::make_domain(*int_min, ossia::value{}));
     else if(int_max)
-      addr->setDomain(ossia::make_domain(ossia::value{}, *int_max));
+      addr->set_domain(ossia::make_domain(ossia::value{}, *int_max));
     else if(float_min && float_max)
-      addr->setDomain(ossia::make_domain(*float_min, *float_max));
+      addr->set_domain(ossia::make_domain(*float_min, *float_max));
     else if(float_min)
-      addr->setDomain(ossia::make_domain(*float_min, ossia::value{}));
+      addr->set_domain(ossia::make_domain(*float_min, ossia::value{}));
     else if(float_max)
-      addr->setDomain(ossia::make_domain(ossia::value{}, *float_max));
+      addr->set_domain(ossia::make_domain(ossia::value{}, *float_max));
 
     if(unit)
       addr->setUnit(unit);
@@ -178,9 +177,9 @@ void ossia_parameter_in(ossia::max::parameter* x, T f)
 {
   if(x && x->node)
   {
-    if(auto addr = x->node->getAddress())
+    if(auto addr = x->node->get_address())
     {
-      addr->pushValue(f);
+      addr->push_value(f);
     }
   }
 }
@@ -211,7 +210,7 @@ void ossia_parameter_free(ossia::max::parameter* x)
   {
     if(x->node)
     {
-      if(auto par = x->node->getParent())
+      if(auto par = x->node->get_parent())
       {
         par->removeChild(*x->node);
         x->node = nullptr;

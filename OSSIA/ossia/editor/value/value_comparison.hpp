@@ -111,10 +111,6 @@ struct NumericValue
       {
         return (v.size() == 1) && (fun(lhs, v[0]));
       }
-      bool operator()(const Destination& d) const
-      {
-        return fun(lhs, d.value.get().cloneValue(d.index));
-      }
 
       bool operator()(const std::string& v) const
       {
@@ -183,12 +179,6 @@ struct StringValue
       {
         return (v.size() == 1) && (fun(lhs, v[0]));
       }
-
-      bool operator()(const Destination& d) const
-      {
-        return fun(lhs, d.value.get().cloneValue(d.index));
-      }
-
       bool operator()(vec2f v) const
       {
         return fun(v, String_T{});
@@ -286,15 +276,11 @@ public:
   {
     return fun(lhs.value.get(), Impulse_T{});
   }
-  bool operator()(const Destination& d) const
-  {
-    return fun(lhs.value.get().cloneValue(lhs.index), d.value.get().cloneValue(d.index));
-  }
 
   template <typename T>
   bool operator()(const T& v) const
   {
-    return fun(lhs.value.get().cloneValue(lhs.index), rhs);
+    return fun(lhs.address().value(lhs.index), rhs);
   }
 
   bool operator()() const

@@ -8,7 +8,7 @@
 #include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia_export.h>
-
+#include <cstdint>
 namespace ossia
 {
 class state;
@@ -26,48 +26,38 @@ class time_node;
  */
 class OSSIA_EXPORT time_event
 {
-  public:
-    /*! event status */
-    enum class Status
-    {
-      NONE,
-      PENDING,
-      HAPPENED,
-      DISPOSED
-    };
+public:
+  /*! event status */
+  enum class status: int8_t
+  {
+    NONE,
+    PENDING,
+    HAPPENED,
+    DISPOSED
+  };
 
-    /**
+  /**
      * @brief The OffsetBehavior enum
      * Describes what happens when a parent scenario
      * does an offset beyond this event. This is useful to
      * make default cases for the scenario.
      */
-    enum class OffsetBehavior
-    {
-        EXPRESSION_TRUE, //! The condition is considered True
-        EXPRESSION_FALSE, //! The condition is considered False
-        EXPRESSION //! The condition will be evaluated
-    };
+  enum class offset_behavior: int8_t
+  {
+    EXPRESSION_TRUE, //! The condition is considered True
+    EXPRESSION_FALSE, //! The condition is considered False
+    EXPRESSION //! The condition will be evaluated
+  };
 
-    /*! to get the event status back
+  /*! to get the event status back
      \param #Status new status */
-    using ExecutionCallback = std::function<void(Status)>;
-
-  private:
-    time_event::ExecutionCallback mCallback;
-
-    time_node& mTimeNode;
-    state mState;
-    Status mStatus;
-    OffsetBehavior mOffsetBehavior{OffsetBehavior::EXPRESSION_TRUE};
-
-    expression_ptr mExpression;
+  using exec_callback = std::function<void(status)>;
 
 public:
-    time_event(
-        time_event::ExecutionCallback,
-        time_node& aTimeNode,
-        expression_ptr anExpression);
+  time_event(
+      time_event::exec_callback,
+      time_node& aTimeNode,
+      expression_ptr anExpression);
 
   /*! destructor */
   ~time_event();
@@ -76,7 +66,7 @@ public:
   /*! changes the callback in the event
    \param #time_event::ExecutionCallback to get #time_event's status back
    \details this may be unsafe to do during execution */
-  void setCallback(time_event::ExecutionCallback) ;
+  void set_callback(time_event::exec_callback) ;
 
   /*! make the event happen to propagate the execution to next TimeConstraints
    \details the event have to be in PENDING status to call this method
@@ -96,81 +86,91 @@ public:
 
   /*! add a sub state into the state of the event
    \param std::shared_ptr<#State> to add */
-  void addState(state_element&&) ;
+  void add_state(state_element&&) ;
 
   /*! remove a sub state from the state of the event
    \param std::shared_ptr<#State> to remove */
-  void removeState(const state_element&) ;
+  void remove_state(const state_element&) ;
 
   /*! get the #time_node where the event is
    \return std::shared_ptr<#time_node> */
-  time_node& getTimeNode() const ;
+  time_node& get_time_node() const ;
 
   /*! get the state of the event
   \return std::shared_ptr<#State> */
-  const state& getState() const ;
+  const state& get_state() const ;
 
   /*! get the expression of the event
   \return std::shared_ptr<expression> */
-  const expression& getExpression() const ;
+  const expression& get_expression() const ;
 
   /*! set the expression of the event
    \param std::shared_ptr<expression>
    \return #time_event the event */
-  time_event& setExpression(expression_ptr) ;
+  time_event& set_expression(expression_ptr) ;
 
   /*! get the status of the event
    \return #Status */
-  Status getStatus() const ;
+  status get_status() const ;
 
   /**
    * @brief getOffsetValue Returns the value of the condition if
    * we are offseting past this time event.
    */
-  OffsetBehavior getOffsetBehavior() const;
+  offset_behavior get_offset_behavior() const;
 
   /**
    * @brief setOffsetValue Sets the value of the condition if we are offseting
    * past this time event.
    */
-  time_event& setOffsetBehavior(OffsetBehavior);
+  time_event& set_offset_behavior(offset_behavior);
 
   /*! get previous time contraints attached to the event
    \return #Container<#time_constraint> */
-  ptr_container<time_constraint>& previousTimeConstraints()
+  ptr_container<time_constraint>& previous_time_constraints()
   {
-    return m_previousTimeConstraints;
+    return m_previous_time_constraints;
   }
 
   /*! get previous time contraints attached to the event
    \return #Container<#TimeProcess> */
-  const ptr_container<time_constraint>& previousTimeConstraints() const
+  const ptr_container<time_constraint>& previous_time_constraints() const
   {
-    return m_previousTimeConstraints;
+    return m_previous_time_constraints;
   }
 
   /*! get next time contraints attached to the event
    \return #Container<#time_constraint> */
-  ptr_container<time_constraint>& nextTimeConstraints()
+  ptr_container<time_constraint>& next_time_constraints()
   {
-    return m_nextTimeConstraints;
+    return m_next_time_constraints;
   }
 
   /*! get next time contraints attached to the event
    \return #Container<#TimeProcess> */
-  const ptr_container<time_constraint>& nextTimeConstraints() const
+  const ptr_container<time_constraint>& next_time_constraints() const
   {
-    return m_nextTimeConstraints;
+    return m_next_time_constraints;
   }
 
-  void setStatus(Status status);
+  void set_status(status s);
 
   void reset();
 
   /* To be called before deletion, to break the shared_ptr cycle */
   void cleanup();
+
 private:
-  ptr_container<time_constraint> m_previousTimeConstraints;
-  ptr_container<time_constraint> m_nextTimeConstraints;
+  time_event::exec_callback m_callback;
+
+  time_node& m_timenode;
+  state m_state;
+  status m_status;
+  offset_behavior m_offset{offset_behavior::EXPRESSION_TRUE};
+
+  expression_ptr m_expression;
+
+  ptr_container<time_constraint> m_previous_time_constraints;
+  ptr_container<time_constraint> m_next_time_constraints;
 };
 }

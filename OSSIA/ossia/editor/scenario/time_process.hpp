@@ -26,7 +26,7 @@ public:
    \details don't call offset when the parent #time_constraint is running
    \param const #time_value offset date
    \return state_element */
-  virtual state_element offset(time_value) = 0;
+  virtual state_element offset(ossia::time_value) = 0;
 
   /*! get a #StateElement from the process depending on its parent
    #time_constraint date
@@ -99,25 +99,17 @@ public:
    */
   time_constraint* parent() const;
 
-  int32_t getPriority() const;
-  void setPriority(int32_t i);
-
-  bool getPriorityOverride() const;
-  void setPriorityOverride(bool o);
-
   protected:
     //! Reimplement this to have a special behaviour on mute
     virtual void mute_impl(bool);
-    ossia::time_value mLastDate{ossia::Infinite};
+    ossia::time_value m_lastDate{ossia::Infinite};
     // used to filter multiple state calls at the
     // same time (use date as position can be always
     // 0 in infinite duration case)
 
   private:
-    time_constraint* mParent{};
-    int32_t mPriority = 0;
-    bool mPriorityOverride = false;
-    bool mUnmuted = true;
-    bool mEnabled = true;
+    time_constraint* m_parent{};
+    bool m_unmuted = true;
+    bool m_enabled = true;
 };
 }

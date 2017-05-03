@@ -90,14 +90,14 @@ private Q_SLOTS:
 
         ossia::qt::qt_device dev{
           app,
-          std::make_unique<ossia::net::local_protocol>(),
+          std::make_unique<ossia::net::multiplex_protocol>(),
           "newDevice" };
 
         obj2.setTutu(555);
         obj2.setVec3({1, 2, 3});
 
-        auto& proto = static_cast<ossia::net::local_protocol&>(dev.getProtocol());
-        proto.exposeTo(
+        auto& proto = static_cast<ossia::net::multiplex_protocol&>(dev.get_protocol());
+        proto.expose_to(
               std::make_unique<ossia::net::minuit_protocol>("i-score", "127.0.0.1", 13579, 9998));
 
        QTimer::singleShot(3000, [&] () { app.exit(); });

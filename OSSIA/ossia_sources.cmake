@@ -338,12 +338,15 @@ set(OSSIA_JAVA_SRCS
 set(OSSIA_QT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property_reader.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_model_property.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node_base.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_object_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_property_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/value_metatypes.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/metatypes.hpp"
@@ -351,17 +354,47 @@ set(OSSIA_QT_HEADERS
 set(OSSIA_QT_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property_reader.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_model_property.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node_base.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_object_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_property_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.cpp"
     )
+set(OSSIA_QML_SRCS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Binding.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Callback.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSink.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSource.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Node.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSC.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryClient.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryServer.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/qmldir"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Reader.qml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Writer.qml"
+  )
 
-set(OSSIA_PYTHON_HEADERS
-    )
-set(OSSIA_PYTHON_SRCS
-    #"${CMAKE_CURRENT_SOURCE_DIR}/ossia-python/ossia_python.cpp"
-    )
+set(OSSIA_DATAFLOW_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/dataflow.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/connection.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/data.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/dataflow_fwd.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution_state.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_edge.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_process.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.hpp"
+)
+
+set(OSSIA_DATAFLOW_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution_state.cpp"
+)

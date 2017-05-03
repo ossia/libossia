@@ -114,6 +114,10 @@ private Q_SLOTS:
 
     ossia::color_u col;
     col = ossia::rgb_u{};
+    ossia::unit_t x;
+    x = col;
+    QVERIFY(x.which() == x.v.Type5);
+    QVERIFY(x.v.m_impl.m_value5.m_type == ossia::color_u::Type::Type2);
     // must not compile : col = ossia::decimeter_u{};
 
     // With C++17 : static_assert(eggs::variants::apply(unit_text_visitor{}, col) == ossia::string_view("rgb"), "");
@@ -130,9 +134,13 @@ private Q_SLOTS:
     }
 
     {
+      QVERIFY(ossia::unit_t{ossia::color_u{}} != ossia::unit_t{ossia::centimeter_u{}});
+      QVERIFY(ossia::unit_t{ossia::color_u{}} != ossia::centimeter_u{});
+
       ossia::unit_t some_unit = ossia::color_u{};
-      QVERIFY(parse_unit("cm", some_unit) != ossia::centimeter_u{});
-      QVERIFY(parse_unit("cm", some_unit) == ossia::color_u{});
+      auto parsed_unit = parse_unit("cm", some_unit);
+      QVERIFY(parsed_unit != ossia::centimeter_u{});
+      QVERIFY(parsed_unit == ossia::color_u{});
     }
 
 #endif
@@ -143,7 +151,7 @@ private Q_SLOTS:
     ossia::unit_t unit;
 
     // Construction
-    brigand::for_each<ossia::unit_variant>([&] (auto t) {
+    brigand::for_each<ossia::dataspace_u_list>([&] (auto t) {
       brigand::for_each<typename decltype(t)::type>([&] (auto u) {
         unit = typename decltype(u)::type{};
       });
@@ -152,22 +160,23 @@ private Q_SLOTS:
 
   void test_conversions()
   {
-    test_conversions_impl<ossia::distance>();
-    test_conversions_impl<ossia::angle>();
-    test_conversions_impl<ossia::color>();
-    test_conversions_impl<ossia::position>();
-    test_conversions_impl<ossia::orientation>();
-    test_conversions_impl<ossia::speed>();
-    test_conversions_impl<ossia::gain>();
-    test_conversions_impl<ossia::time>();
+    test_conversions_impl<ossia::distance_list>();
+    test_conversions_impl<ossia::angle_list>();
+    test_conversions_impl<ossia::color_list>();
+    test_conversions_impl<ossia::position_list>();
+    test_conversions_impl<ossia::orientation_list>();
+    test_conversions_impl<ossia::speed_list>();
+    test_conversions_impl<ossia::gain_list>();
+    test_conversions_impl<ossia::time_list>();
   }
 
   void test_visitors()
   {
     // get_unit_text
     ossia::get_unit_text(ossia::unit_t{});
-    brigand::for_each<ossia::unit_variant>([&] (auto t) {
-      ossia::get_unit_text(typename decltype(t)::type{});
+    brigand::for_each<ossia::dataspace_u_list>([&] (auto t) {
+      using dataspace_t = typename ossia::matching_unit_u_list<typename decltype(t)::type>::type;
+      ossia::get_unit_text(dataspace_t{});
       brigand::for_each<typename decltype(t)::type>([&] (auto u) {
         ossia::get_unit_text(typename decltype(u)::type{});
       });
@@ -184,14 +193,15 @@ private Q_SLOTS:
     auto p2 = ossia::parse_unit("rgb", ossia::unit_t{});
     QVERIFY(!p2);
 
-    brigand::for_each<ossia::unit_variant>([&] (auto t) {
+    brigand::for_each<ossia::dataspace_u_list>([&] (auto t) {
       using dataspace_type = typename decltype(t)::type;
       brigand::for_each<dataspace_type>([&] (auto u) {
         using unit_type = typename decltype(u)::type;
         auto unit_text_array = ossia::unit_traits<unit_type>::text();
         for(auto unit_text : unit_text_array)
         {
-          auto parsed_unit = ossia::parse_unit(unit_text, dataspace_type{});
+          using dataspace_correct_type = typename ossia::matching_unit_u_list<dataspace_type>::type;
+          auto parsed_unit = ossia::parse_unit(unit_text, dataspace_correct_type{});
           QVERIFY(parsed_unit == unit_type{});
         }
       });
@@ -285,18 +295,19 @@ private Q_SLOTS:
 
     {
 qDebug() << ossia::to_pretty_string(make_value(int32_t{ 10 }, ossia::centimeter_u{})).c_str();
-      QVERIFY(make_value(int32_t{10}, ossia::centimeter_u{}) == ossia::centimeter{10});
-      QVERIFY(make_value(char{10}, ossia::centimeter_u{}) == ossia::centimeter{10});
-      QVERIFY(make_value(bool{true}, ossia::centimeter_u{}) == ossia::centimeter{1});
-      QVERIFY(make_value(1.2, ossia::centimeter_u{}) == ossia::centimeter{1.2});
+      QVERIFY(make_value(int32_t{10}, ossia::centimeter_u{}) == ossia::value_with_unit{ossia::centimeter{10}});
+      QVERIFY(make_value(char{10}, ossia::centimeter_u{}) == ossia::value_with_unit{ossia::centimeter{10}});
+      QVERIFY(make_value(bool{true}, ossia::centimeter_u{}) == ossia::value_with_unit{ossia::centimeter{1}});
+      QVERIFY(make_value(1.2, ossia::centimeter_u{}) == ossia::value_with_unit{ossia::centimeter{1.2}});
       QVERIFY(make_value(1.2, ossia::rgb_u{}) == ossia::value_with_unit{});
       QVERIFY(make_value(ossia::impulse{}, ossia::rgb_u{}) == ossia::value_with_unit{});
       QVERIFY(make_value(ossia::impulse{}, ossia::rgba_u{}) == ossia::value_with_unit{});
       QVERIFY(make_value(ossia::impulse{}, ossia::cartesian_2d_u{}) == ossia::value_with_unit{});
-      QVERIFY(make_value(make_vec(1.2, 1.3, 32.5), ossia::rgb_u{}) == ossia::rgb{make_vec(1.2, 1.3, 32.5)});
-      QVERIFY(make_value(make_vec(1.2, 1.3, 32.5, 0.7), ossia::rgba_u{}) == ossia::rgba{make_vec(1.2, 1.3, 32.5, 0.7)});
-      QVERIFY(make_value(make_vec(1.2, 1.3), ossia::cartesian_2d_u{}) == ossia::cartesian_2d{make_vec(1.2, 1.3)});
-      QVERIFY(make_value(std::vector<ossia::value>{1.2, 1.3, 32.5}, ossia::rgb_u{}) == ossia::rgb{make_vec(1.2, 1.3, 32.5)});
+      QVERIFY(make_value(make_vec(1.2, 1.3, 32.5), ossia::rgb_u{}) == ossia::value_with_unit{ossia::rgb{make_vec(1.2, 1.3, 32.5)}});
+      QVERIFY(make_value(make_vec(1.2, 1.3, 32.5, 0.7), ossia::rgba_u{}) == ossia::value_with_unit{ossia::rgba{make_vec(1.2, 1.3, 32.5, 0.7)}});
+      QVERIFY(make_value(make_vec(1.2, 1.3), ossia::cartesian_2d_u{}) == ossia::value_with_unit{ossia::cartesian_2d{make_vec(1.2, 1.3)}});
+      QVERIFY(make_value(std::vector<ossia::value>{1.2, 1.3, 32.5}, ossia::rgb_u{}) == ossia::value_with_unit{ossia::rgb{make_vec(1.2, 1.3, 32.5)}});
+
     }
 
     {
@@ -321,7 +332,7 @@ qDebug() << ossia::to_pretty_string(make_value(int32_t{ 10 }, ossia::centimeter_
     }
 
     {
-      QVERIFY(convert(ossia::rgb{make_vec(1.2, 1.3, 32.5)}, ossia::bgr_u{}) == ossia::bgr{make_vec(32.5, 1.3, 1.2)});
+      QVERIFY(convert(ossia::rgb{make_vec(1.2, 1.3, 32.5)}, ossia::bgr_u{}) == ossia::value_with_unit{ossia::bgr{make_vec(32.5, 1.3, 1.2)}});
       QVERIFY(convert(ossia::rgb{make_vec(1.2, 1.3, 32.5)}, ossia::centimeter_u{}) == ossia::value_with_unit{});
       QVERIFY(convert(ossia::value_with_unit{}, ossia::centimeter_u{}) == ossia::value_with_unit{});
     }

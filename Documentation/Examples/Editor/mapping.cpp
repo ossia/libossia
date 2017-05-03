@@ -30,7 +30,7 @@ using namespace ossia;
 
 using namespace std;
 
-void constraint_callback(time_value position, time_value date, std::shared_ptr<StateElement> element)
+void constraint_callback(ossia::time_value position, time_value date, std::shared_ptr<StateElement> element)
 {
     element->launch();
 }
@@ -50,31 +50,31 @@ int main()
     auto local_device = Device::create(local_protocol, "test");
     
     local_device->emplace(local_device->children().begin(), "float");
-    auto float_address = local_device->children().front()->createAddress(Type::FLOAT);
+    auto float_address = local_device->children().front()->create_address(Type::FLOAT);
     float_address->addCallback([&] (const value& v) { float_address_callback(v); });
     
-    auto int_address = local_device->children().front()->createAddress(Type::INT);
+    auto int_address = local_device->children().front()->create_address(Type::INT);
     int_address->addCallback([&] (const value& v) { int_address_callback(v); });
     
     auto curve = Curve<float, int>::create();
     auto linearSegment = CurveSegmentLinear<int>::create(curve);
     curve->setInitialvalue(0);
-    curve->addPoint(0.5, 5, linearSegment);
-    curve->addPoint(1., 10, linearSegment);
+    curve->add_point(0.5, 5, linearSegment);
+    curve->add_point(1., 10, linearSegment);
     Behavior b(curve);
     auto mapper = Mapper::create(float_address, int_address, &b);
     
     auto start_node = TimeNode::create();
     auto end_node = TimeNode::create();
-    auto start_event = *(start_node->emplace(start_node->timeEvents().begin(), event_callback));
-    auto end_event = *(end_node->emplace(end_node->timeEvents().begin(), &event_callback));
+    auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), event_callback));
+    auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
     auto constraint = TimeConstraint::create(&constraint_callback, start_event, end_event, 100.);
-    constraint->addTimeProcess(mapper);
+    constraint->add_time_process(mapper);
     
-    constraint->setGranularity(10.);
+    constraint->set_granularity(10.);
     constraint->start();
     
-    while (constraint->getRunning())
+    while (constraint->running())
     {
         double position = constraint->getPosition();
         const Float* current_float = static_cast<const Float*>(float_address->getvalue());

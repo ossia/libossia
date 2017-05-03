@@ -13,11 +13,7 @@ bool t_view :: register_node(ossia::net::node_base*  node){
     bool res = do_registration(node);
     if (res) {
         obj_dequarantining<t_view>(this);
-        // TODO review search order => we may stop on the first child view found
-        // TODO review search order => we should search for remote in the same level and stop if we found a view at the same level
-        // TODO the same apply to parameter/remote
-        // FIXME nested view is not registered properly
-        std::vector<obj_hierachy> viewnode = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view", 0);
+        std::vector<obj_hierachy> viewnode = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
         for (auto v : viewnode){
             if(v.classname == "ossia.view"){
                 t_view* view = (t_view*) v.x;
@@ -31,77 +27,68 @@ bool t_view :: register_node(ossia::net::node_base*  node){
                 remote->register_node(x_node);
             }
         }
-
-        /*
-        std::vector<obj_hierachy> views = find_child(x_obj.o_canvas->gl_list, osym_view, 1);
-        std::sort(views.begin(), views.end());
-        for (auto v : views){
-            t_view* view = (t_view*) v.x;
-            view->register_node(x_node);
-        }
-        */
-
     } else obj_quarantining<t_view>(this);
 
     return res;
 }
 
 bool t_view :: do_registration(ossia::net::node_base*  node){
-    if (x_node && x_node->getParent() == node ) return true; // already register to this node;
+    if (x_node && x_node->get_parent() == node ) return true; // already register to this node;
     unregister(); // we should unregister here because we may have add a node between the registered node and the remote
 
     if (node){
-        x_node = node->findChild(x_name->s_name);
+        std::string absolute_path = get_absolute_path<t_view>(this);
+        std::string address_string = ossia::net::address_string_from_node(*node);
+
+        if ( absolute_path != address_string) return false;
+        x_node = node->find_child(x_name->s_name);
         if (x_node) {
-            x_node->aboutToBeDeleted.connect<t_view, &t_view::isDeleted>(this);
+            x_node->about_to_be_deleted.connect<t_view, &t_view::isDeleted>(this);
         } else {
             return false;
         }
+    } else {
+        return false;
     }
 
     return true;
+}
+
+static void register_children(t_view* x){
+    std::vector<obj_hierachy> viewnode = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view");
+    for (auto v : viewnode){
+        if(v.classname == "ossia.view"){
+            t_view* view = (t_view*) v.x;
+            if (view == x) continue;
+            obj_register<t_view>(view);
+        } else if(v.classname == "ossia.remote"){
+            t_remote* remote = (t_remote*) v.x;
+            obj_register<t_remote>(remote);
+        }
+    }
 }
 
 bool t_view :: unregister(){
     if(!x_node) return true; // not registered
 
-    ossia::net::node_base* parent = x_node->getParent();
-    if (parent){
-        std::vector<obj_hierachy> viewnode = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view", 0);
-        for (auto v : viewnode){
-            if(v.classname == "ossia.view"){
-                t_view* view = (t_view*) v.x;
-                if (view == this) continue;
-                view->register_node(parent);
-            } else if(v.classname == "ossia.remote"){
-                t_remote* remote = (t_remote*) v.x;
-                remote->register_node(parent);
-            }
+    std::vector<obj_hierachy> viewnode = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
+    for (auto v : viewnode){
+        if(v.classname == "ossia.view"){
+            t_view* view = (t_view*) v.x;
+            if (view == this) continue;
+            view->unregister();
+        } else if(v.classname == "ossia.remote"){
+            t_remote* remote = (t_remote*) v.x;
+            remote->unregister();
         }
     }
-
-    /*
-    // when removing a view, we should re-register all its children to parent node
-    std::vector<obj_hierachy> remotes = find_child(x_obj.o_canvas->gl_list, osym_remote, 0);
-    for (auto v : remotes){
-        t_remote* remote = (t_remote*) v.x;
-        // remote->unregister();
-        if (!remote->x_node) remote->register_node(x_node->getParent());
-        else if(remote->x_node->getParent() == x_node) remote->register_node(x_node->getParent());
-    }
-
-    std::vector<obj_hierachy> views = find_child(x_obj.o_canvas->gl_list, osym_view, 0);
-    for (auto v : views){
-        t_view* view = (t_view*) v.x;
-        if (view != this && (!view->x_node || view->x_node->getParent() == x_node)) view->register_node(x_node->getParent());
-    }
-    */
     x_node = nullptr;
     obj_quarantining<t_view>(this);
 
+    register_children(this);
+
     return true;
 }
-
 
 static void view_click(t_view *x,
     t_floatarg xpos, t_floatarg ypos, t_floatarg shift,
@@ -110,7 +97,7 @@ static void view_click(t_view *x,
   using namespace std::chrono;
   milliseconds ms = duration_cast< milliseconds >( system_clock::now().time_since_epoch() );
   milliseconds diff = (ms - x->x_last_click);
-  if ( diff.count() < 200 ){
+  if ( diff.count() < 200 ){ // 200 ms double click
     x->x_last_click = milliseconds(0);
 
     int l;
@@ -137,17 +124,21 @@ static void *view_new(t_symbol *name, int argc, t_atom *argv)
     if(x)
     {
         x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+        x->x_clock = clock_new(x, (t_method)obj_tick);
+        x->x_regclock = clock_new(x, (t_method)obj_register<t_view>);
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
             if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/') x->x_absolute = true;
-            obj_register<t_view>(x);
+
+            // we need to delay registration because object may use patcher hierarchy to check address validity
+            // and object will be added to patcher's objects list (aka canvas g_list) after model_new() returns.
+            // 0 ms delay means that it will be perform on next clock tick
+            clock_delay(x->x_regclock, 0);
         } else {
             x->x_name = gensym("untitledModel");
             pd_error(x,"You have to pass a name as the first argument");
         }
-
-        x->x_clock = clock_new(x, (t_method)obj_tick);
     }
 
     return (x);
@@ -158,6 +149,8 @@ static void view_free(t_view *x)
     x->x_dead = true;
     x->unregister();
     obj_dequarantining<t_view>(x);
+    clock_free(x->x_regclock);
+    clock_free(x->x_clock);
 }
 
 extern "C" void setup_ossia0x2eview(void)

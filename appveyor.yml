@@ -1,7 +1,7 @@
 image: Visual Studio 2015
 
 environment:
-  BOOST_ROOT: c:\Libraries\boost_1_63_0
+  BOOST_ROOT: c:/Libraries/boost_1_63_0
   CTEST_OUTPUT_ON_FAILURE: 1
 
   matrix:
@@ -30,14 +30,14 @@ before_build:
   - cmake -G "%CMAKE_GENERATOR_NAME%" -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DBOOST_ROOT="%BOOST_ROOT%" -DCMAKE_PREFIX_PATH="%QTDIR%/lib/cmake/Qt5" ..
 
 build:
-  project: C:\projects\API\build\OSSIA.sln
+  project: C:\projects\libossia\build\OSSIA.sln
   parallel: true
 
 after_build:
   - copy OSSIA\%configuration%\ossia.dll Tests\%configuration%\
 
 test_script:
-  - cd C:\projects\API\build\
+  - cd C:\projects\libossia\build\
   - dir
   - cmake --build . --target RUN_TESTS --config %configuration%
 

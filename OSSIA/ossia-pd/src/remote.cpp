@@ -19,19 +19,27 @@ bool t_remote :: register_node(ossia::net::node_base* node){
 
 bool t_remote :: do_registration(ossia::net::node_base* node){
 
-    if (x_node && x_node->getParent() == node ) {
+    if (x_node && x_node->get_parent() == node ) {
         return true; // already registered to this node;
     }
 
     if(node){
-        ossia::net::node_base*  nodePtr = node->findChild(x_name->s_name);
-        if (nodePtr){
-            x_node = nodePtr;
-            x_callbackit = x_node->getAddress()->add_callback([=](const ossia::value& v){
+        if ( x_absolute ){
+            x_node = ossia::net::find_node(*node, x_name->s_name);
+            if (!x_node)pd_error(this, "can't find node %s !", x_name->s_name);
+        } else {
+          std::string absolute_path = get_absolute_path<t_remote>(this);
+          std::string address_string = ossia::net::address_string_from_node(*node);
+          if ( absolute_path != address_string) return false;
+          x_node = ossia::net::find_node(*node, x_name->s_name);
+        }
+        if (x_node){
+            x_callbackit = x_node->get_address()->add_callback([=](const ossia::value& v){
                 setValue(v);
             });
-            x_node->aboutToBeDeleted.connect<t_remote, &t_remote::isDeleted>(this);
-            setValue(x_node->getAddress()->cloneValue());
+            x_node->about_to_be_deleted.connect<t_remote, &t_remote::isDeleted>(this);
+
+            clock_delay(x_regclock, 0);
 
             return true;
         }
@@ -41,7 +49,7 @@ bool t_remote :: do_registration(ossia::net::node_base* node){
 
 bool t_remote :: unregister(){
     if (x_callbackit != boost::none) {
-        if (x_node && x_node->getAddress()) x_node->getAddress()->remove_callback(*x_callbackit);
+        if (x_node && x_node->get_address()) x_node->get_address()->remove_callback(*x_callbackit);
         x_callbackit = boost::none;
     }
     obj_quarantining<t_remote>(this);
@@ -51,8 +59,8 @@ bool t_remote :: unregister(){
 }
 
 static void remote_float(t_remote *x, t_float val){
-    if ( x->x_node && x->x_node->getAddress() ){
-        x->x_node->getAddress()->pushValue(float(val));
+    if ( x->x_node && x->x_node->get_address() ){
+        x->x_node->get_address()->push_value(float(val));
     } else {
         pd_error(x,"[ossia.remote %s] is not registered to any parameter", x->x_name->s_name);
     }
@@ -106,6 +114,7 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
         }
 
         x->x_clock = clock_new(x, (t_method)obj_tick);
+        x->x_regclock = clock_new(x, (t_method)t_obj_base::obj_bang);
 
         obj_register<t_remote>(x);
     }

@@ -5,9 +5,9 @@ namespace ossia
 {
 namespace expressions
 {
-expression_not::expression_not(expression_ptr p) : mExpression{std::move(p)}
+expression_not::expression_not(expression_ptr p) : m_expression{std::move(p)}
 {
-  if(!mExpression)
+  if(!m_expression)
     throw std::runtime_error("An argument to expression_not is null");
 }
 
@@ -19,31 +19,31 @@ expression_not::~expression_not()
 
 bool expression_not::evaluate() const
 {
-  return !expressions::evaluate(*mExpression);
+  return !expressions::evaluate(*m_expression);
 }
 
 void expression_not::update() const
 {
-  expressions::update(*mExpression);
+  expressions::update(*m_expression);
 }
 
-expression_base& expression_not::getExpression() const
+expression_base& expression_not::get_expression() const
 {
-  return *mExpression;
+  return *m_expression;
 }
 
-void expression_not::onFirstCallbackAdded()
+void expression_not::on_first_callback_added()
 {
-  mResultCallbackIndex = expressions::add_callback(
-      *mExpression, [&](bool result) { resultCallback(result); });
+  m_callback = expressions::add_callback(
+      *m_expression, [&](bool result) { result_callback(result); });
 }
 
-void expression_not::onRemovingLastCallback()
+void expression_not::on_removing_last_callback()
 {
-  expressions::remove_callback(*mExpression, mResultCallbackIndex);
+  expressions::remove_callback(*m_expression, m_callback);
 }
 
-void expression_not::resultCallback(bool result)
+void expression_not::result_callback(bool result)
 {
   send(!result);
 }

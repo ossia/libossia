@@ -32,46 +32,46 @@ midi_node::~midi_node()
 }
 
 midi_node::midi_node(midi_device& aDevice, node_base& aParent)
-    : mDevice{aDevice}, mParent{aParent}
+    : m_device{aDevice}, m_parent{aParent}
 {
 }
 
-device_base& midi_node::getDevice() const
+device_base& midi_node::get_device() const
 {
-  return mDevice;
+  return m_device;
 }
 
-node_base* midi_node::getParent() const
+node_base* midi_node::get_parent() const
 {
-  return &mParent;
+  return &m_parent;
 }
 
-node_base& midi_node::setName(std::string)
+node_base& midi_node::set_name(std::string)
 {
   return *this;
 }
 
-address_base* midi_node::getAddress() const
+address_base* midi_node::get_address() const
 {
-  return mAddress.get();
+  return m_address.get();
 }
 
-address_base* midi_node::createAddress(val_type)
+address_base* midi_node::create_address(val_type)
 {
-  return mAddress.get();
+  return m_address.get();
 }
 
-bool midi_node::removeAddress()
+bool midi_node::remove_address()
 {
   return false;
 }
 
-std::unique_ptr<node_base> midi_node::makeChild(const std::string& name)
+std::unique_ptr<node_base> midi_node::make_child(const std::string& name)
 {
   return nullptr;
 }
 
-void midi_node::removingChild(node_base& node)
+void midi_node::removing_child(node_base& node)
 {
 }
 }

@@ -26,24 +26,24 @@ int main()
 {
   using namespace ossia::net;
 
-  auto local_proto_ptr = std::make_unique<local_protocol>();
-  local_protocol& local_proto = *local_proto_ptr;
+  auto local_proto_ptr = std::make_unique<multiplex_protocol>();
+  multiplex_protocol& local_proto = *local_proto_ptr;
   // declare this program "B" as Local device
   generic_device device{std::move(local_proto_ptr), "B"};
 
   auto onAddNode = [&] (std::string parent, address_data dat) {
     auto& p_node = ossia::net::find_or_create_node(device, parent);
-    auto cld = p_node.createChild(dat.node_name);
-    cld->createAddress(ossia::val_type::INT);
+    auto cld = p_node.create_child(dat.name);
+    cld->create_address(ossia::val_type::INT);
   };
-  device.onAddNodeRequested.connect(&onAddNode);
+  device.on_add_node_requested.connect(&onAddNode);
 
   auto onRemoveNode = [&] (std::string parent, std::string node) {
     auto p_node = ossia::net::find_node(device, parent);
     if(p_node)
-      p_node->removeChild(node);
+      p_node->remove_child(node);
   };
-  device.onRemoveNodeRequested.connect(&onRemoveNode);
+  device.on_remove_node_requested.connect(&onRemoveNode);
 
   /* publish each feature of program "B" as address into a tree */
 
@@ -52,38 +52,38 @@ int main()
     auto& node = find_or_create_node(device, "/test/my_impulse");
 
     // Addresses allow nodes to have values.
-    auto address = node.createAddress(val_type::IMPULSE);
+    auto address = node.create_address(val_type::IMPULSE);
 
     // Called whenver the value is changed
     address->add_callback(printValueCallback);
 
     // Send a message. Impulse is a message without any content.
-    address->pushValue(impulse{});
+    address->push_value(impulse{});
   }
 
   {
     auto& node = find_or_create_node(device, "/test/my_bool");
-    auto address = node.createAddress(val_type::BOOL);
+    auto address = node.create_address(val_type::BOOL);
     address->add_callback(printValueCallback);
-    address->pushValue(true);
+    address->push_value(true);
   }
   {
     auto& node = find_or_create_node(device, "/test/my_float");
-    auto address = node.createAddress(val_type::FLOAT);
+    auto address = node.create_address(val_type::FLOAT);
     address->add_callback(printValueCallback);
-    address->pushValue(1234.);
+    address->push_value(1234.);
 
     std::thread t{[=] {
         static int i = 1234;
         while(true) {
-          address->pushValue(i++);
+          address->push_value(i++);
           std::this_thread::sleep_for(std::chrono::seconds(1));
         }}};
     t.detach();
   }
   {
     auto& node = find_or_create_node(device, "/test/my_int");
-    auto address = node.createAddress(val_type::INT);
+    auto address = node.create_address(val_type::INT);
 
     // Set some metadata
     node.set(access_mode_attribute{}, access_mode::GET);
@@ -92,31 +92,31 @@ int main()
     node.set(description_attribute{}, "an integral value");
 
     address->add_callback(printValueCallback);
-    address->pushValue(5678);
+    address->push_value(5678);
   }
 
   {
     auto& node = find_or_create_node(device, "/test/my_char");
-    auto address = node.createAddress(val_type::CHAR);
+    auto address = node.create_address(val_type::CHAR);
     address->add_callback(printValueCallback);
-    address->pushValue('c');
+    address->push_value('c');
   }
 
   {
     auto& node = find_or_create_node(device, "/test/my_string");
-    auto address = node.createAddress(val_type::STRING);
+    auto address = node.create_address(val_type::STRING);
     address->add_callback(printValueCallback);
-    address->pushValue("hello world"s);
+    address->push_value("hello world"s);
   }
 
   {
     // tuple is a std::vector<value>
     auto& node = find_or_create_node(device, "/test/my_tuple");
-    auto address = node.createAddress(val_type::TUPLE);
+    auto address = node.create_address(val_type::TUPLE);
     address->add_callback(printValueCallback);
 
     using tuple = std::vector<ossia::value>;
-    address->pushValue(tuple{"foo"s, 1234, tuple{"bar"s, 4.5}});
+    address->push_value(tuple{"foo"s, 1234, tuple{"bar"s, 4.5}});
 
     // Domain of the tuple
     node.set(domain_attribute{},
@@ -131,16 +131,22 @@ int main()
   {
     // fixed-length arrays
     auto& node = find_or_create_node(device, "/test/my_vec3f");
-    auto address = node.createAddress(val_type::VEC3F);
+    auto address = node.create_address(val_type::VEC3F);
     address->add_callback(printValueCallback);
-    address->pushValue(ossia::make_vec(0., 1., 2.));
+    address->push_value(ossia::make_vec(0., 1., 2.));
   }
   {
     auto& node = find_or_create_node(device, "/units/vec2");
-    auto address = node.createAddress(val_type::VEC2F);
+    auto address = node.create_address(val_type::VEC2F);
     node.set(unit_attribute{}, ossia::cartesian_2d_u{});
     address->add_callback(printValueCallback);
-    address->pushValue(ossia::make_vec(5., 6.));
+    address->push_value(ossia::make_vec(5., 6.));
+  }
+  {
+    auto& node = find_or_create_node(device, "/units/float");
+    auto address = node.create_address(val_type::INT);
+    node.set(unit_attribute{}, ossia::decibel_u{});
+    address->add_callback(printValueCallback);
   }
 
   // declare a distant program as an OSCQuery device
@@ -148,8 +154,8 @@ int main()
   ossia::net::network_logger n;
   n.inbound_logger = spdlog::stdout_color_mt("console");
   n.outbound_logger = n.inbound_logger;
-  oscq->setLogger(n);
-  local_proto.exposeTo(std::move(oscq));
+  oscq->set_logger(n);
+  local_proto.expose_to(std::move(oscq));
 
   while (true)
     ;

@@ -23,17 +23,17 @@ public:
       std::unique_ptr<ossia::net::ws_generic_client_protocol> protocol_base,
       std::string name);
 
-  const ossia::net::node_base& getRootNode() const override
+  const ossia::net::node_base& get_root_node() const override
   {
     return *this;
   }
-  ossia::net::node_base& getRootNode() override
+  ossia::net::node_base& get_root_node() override
   {
     return *this;
   }
 
-  using ws_generic_client_node::getName;
-  using ws_generic_client_node::setName;
+  using ws_generic_client_node::get_name;
+  using ws_generic_client_node::set_name;
 
   ~ws_generic_client_device();
 };

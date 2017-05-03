@@ -37,7 +37,7 @@ void behavior::reset()
       void operator()(const std::vector<behavior>& p)
       {
         for(auto& b : p)
-          eggs::variants::apply(*this, b);
+          ossia::apply_nonnull(*this, b);
       }
 
       void operator()() { }
