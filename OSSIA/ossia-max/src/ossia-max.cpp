@@ -30,6 +30,8 @@ void ext_main(void *r)
 
   class_addmethod(instance.ossia_logger_class, (method) ossia_logger_in_anything, "anything", A_GIMME, 0);
   class_register(CLASS_BOX, instance.ossia_logger_class);
+
+  post("Welcome to OSSIA library for Max");
 }
 
 singleton& singleton::instance()
@@ -75,6 +77,6 @@ singleton::singleton():
   m_localProtocol{new ossia::net::local_protocol},
   m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_device"}
 {
-  m_localProtocol->exposeTo(
+  m_localProtocol->expose_to(
         std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678));
 }
