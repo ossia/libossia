@@ -100,8 +100,9 @@ else()
   endif()
 endif()
 
-target_link_libraries(ossia PUBLIC boost)
-
+if(NOT ANDROID)
+  target_link_libraries(ossia PUBLIC boost)
+endif()
 # Additional protocols
 if(OSSIA_PROTOCOL_MIDI)
   target_sources(ossia PRIVATE ${OSSIA_MIDI_SRCS} ${OSSIA_MIDI_HEADERS})

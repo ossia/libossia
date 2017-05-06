@@ -15,11 +15,15 @@ include(OssiaConfiguration)
 # Dependencies
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
 
-find_package(Boost REQUIRED)
-add_library(boost INTERFACE IMPORTED)
-set_property(TARGET boost PROPERTY
-    INTERFACE_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})
-
+if(ANDROID)
+  set(Boost_FOUND True)
+  include_directories("/opt/boost_1_64_0")
+else()
+  find_package(Boost REQUIRED)
+  add_library(boost INTERFACE IMPORTED)
+  set_property(TARGET boost PROPERTY
+               INTERFACE_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})
+endif()
 if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten AND NOT ANDROID)
     add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/ModernMIDI" EXCLUDE_FROM_ALL)
 endif()
