@@ -148,7 +148,7 @@ void* ossia_parameter_new(t_symbol *s, long argc, t_atom *argv)
       addr->set_domain(ossia::make_domain(ossia::value{}, *float_max));
 
     if(unit)
-      addr->setUnit(unit);
+      addr->set_unit(unit);
     // etc...
     // { level: 4 ; message : "foo" }
     // Create the outlet
@@ -212,7 +212,7 @@ void ossia_parameter_free(ossia::max::parameter* x)
     {
       if(auto par = x->node->get_parent())
       {
-        par->removeChild(*x->node);
+        par->remove_child(*x->node);
         x->node = nullptr;
       }
     }
