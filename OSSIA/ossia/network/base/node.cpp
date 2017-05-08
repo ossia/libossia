@@ -9,6 +9,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <ossia/detail/logger.hpp>
+#include <spdlog/spdlog.h>
 #include <iostream>
 
 namespace ossia

@@ -4,7 +4,7 @@
 
 // They have to be in this order
 #define SPDLOG_FINAL final
-#include <spdlog/spdlog.h>
+#include <spdlog/logger.h>
 #include <fmt/ostream.h>
 #include <fmt/format.h>
 
