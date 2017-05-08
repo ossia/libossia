@@ -11,6 +11,9 @@
 #include <ossia-qt/device/qml_model_property.hpp>
 #include <ossia/network/common/debug.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/local/local.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 #if defined(OSSIA_PROTOCOL_MIDI)
 #include <ossia/network/midi/midi.hpp>
 #endif
@@ -134,10 +137,12 @@ bool qml_device::openOSCQueryServer(int wsPort, int oscPort)
       while(!protos.empty())
         local->stop_expose_to(*protos.back());
 
-      local->expose_to(
-            std::make_unique<ossia::oscquery::oscquery_server_protocol>(
-              oscPort,
-              wsPort));
+      auto proto =
+          std::make_unique<ossia::oscquery::oscquery_server_protocol>(
+            oscPort,
+            wsPort);
+      //proto->set_logger(ossia::net::network_logger{spdlog::get("ossia"),  spdlog::get("ossia")});
+      local->expose_to(std::move(proto));
       return true;
     }
   } catch(std::exception& e) {

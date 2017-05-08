@@ -654,7 +654,7 @@ void json_parser::parse_address_value(
         if(addr)
         {
           auto val = addr->value();
-          val.apply(detail::json_to_value_unchecked{obj});
+          val.apply(detail::json_to_value_unchecked{val_it->value});
 
           // TODO don't push it back to the sender
           addr->push_value(std::move(val));

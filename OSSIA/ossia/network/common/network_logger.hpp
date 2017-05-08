@@ -1,8 +1,6 @@
 #pragma once
 #include <memory>
-#include <functional>
 #include <ossia_export.h>
-#include <string>
 
 namespace spdlog
 {
@@ -20,6 +18,13 @@ class OSSIA_EXPORT network_logger
 public:
   network_logger();
   ~network_logger();
+
+  network_logger(std::shared_ptr<spdlog::logger> i, std::shared_ptr<spdlog::logger> o):
+    inbound_logger{std::move(i)}
+  , outbound_logger{std::move(o)}
+  {
+
+  }
 
   /**
    * @brief inbound_logger Set log function for messages coming from

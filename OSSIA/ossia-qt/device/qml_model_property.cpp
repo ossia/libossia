@@ -1,5 +1,7 @@
 #include "qml_model_property.hpp"
 #include <ossia-qt/device/qml_device.hpp>
+#include <ossia/network/base/node_attributes.hpp>
+#include <ossia/network/base/node.hpp>
 
 #include <boost/algorithm/string.hpp>
 namespace ossia

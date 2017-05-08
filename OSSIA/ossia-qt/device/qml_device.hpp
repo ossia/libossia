@@ -1,13 +1,14 @@
 #pragma once
 #include <QObject>
-#include <ossia/network/oscquery/oscquery_server.hpp>
-#include <ossia/network/local/local.hpp>
-#include <ossia/network/generic/generic_device.hpp>
 #include <QPointer>
 #include <QVariantMap>
 #include <hopscotch_map.h>
+#include <ossia_export.h>
 namespace ossia
 {
+namespace net { class device_base; }
+namespace net { class generic_device; }
+namespace net { class multiplex_protocol; }
 namespace qt
 {
 
