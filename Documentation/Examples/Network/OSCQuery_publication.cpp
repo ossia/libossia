@@ -15,6 +15,7 @@
 #include <ossia/ossia.hpp>
 #include <ossia/network/base/address_data.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <spdlog/spdlog.h>
 
 using namespace ossia;
 using namespace std;
