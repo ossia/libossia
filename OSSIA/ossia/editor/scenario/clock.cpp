@@ -54,7 +54,7 @@ void clock::resume()
   m_paused = false;
 
   // reset the time reference
-  m_lastTime = clock_type::now();
+  m_lastTime = m_source.now();
 }
 
 bool clock::tick()
@@ -70,7 +70,7 @@ bool clock::tick()
 
   // how many time since the last tick ?
   int64_t deltaInUs
-      = duration_cast<microseconds>(clock_type::now() - m_lastTime).count();
+      = duration_cast<microseconds>(m_source.now() - m_lastTime).count();
 
   if (m_drive_mode == clock::drive_mode::EXTERNAL)
   {
@@ -115,22 +115,22 @@ bool clock::tick()
       while (pauseInUs > 5000)
       {
         // pause the thread logarithmically
-        auto t1 = clock_type::now();
+        auto t1 = m_source.now();
         std::this_thread::sleep_for(std::chrono::microseconds(pauseInUs / 2));
-        auto t2 = clock_type::now();
+        auto t2 = m_source.now();
         pauseInUs -= duration_cast<microseconds>(t2 - t1).count();
       }
 
       {
         // busy loop
-        auto t1 = clock_type::now();
-        while (duration_cast<microseconds>(clock_type::now() - t1).count()
+        auto t1 = m_source.now();
+        while (duration_cast<microseconds>(m_source.now() - t1).count()
                < (pauseInUs + 10))
           ;
       }
 
       deltaInUs
-          = duration_cast<microseconds>(clock_type::now() - m_lastTime).count()
+          = duration_cast<microseconds>(m_source.now() - m_lastTime).count()
             - droppedTicks * granularityInUs;
     }
   }
@@ -141,7 +141,7 @@ bool clock::tick()
   m_elapsedTime += deltaInUs;
 
   // note the time now to evaluate how long is the callback processing
-  m_lastTime = clock_type::now();
+  m_lastTime = m_source.now();
 
   // test paused and running status after computing the date because there is a
   // sleep before
@@ -181,7 +181,7 @@ bool clock::tick(ossia::time_value usec)
   //! \debug cout << "+ " << (deltaInUs / 1000.) * mSpeed << endl;
 
   // note the time now to evaluate how long is the callback processing
-  m_lastTime = clock_type::now();
+  m_lastTime = m_source.now();
 
   // test paused and running status after computing the date because there is a
   // sleep before
@@ -313,7 +313,7 @@ void clock::do_start()
   m_date = std::floor(m_offset / (m_granularity * m_speed))
           * (m_granularity * m_speed);
   m_position = m_date / m_duration;
-  m_lastTime = clock_type::now();
+  m_lastTime = m_source.now();
   m_elapsedTime = std::floor(m_offset / m_granularity) * m_granularity * 1000;
 
   // notify the owner
