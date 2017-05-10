@@ -89,6 +89,7 @@ public:
 
   //! Sets the value locally, and sends it to the network.
   virtual address_base& push_value(const ossia::value&) = 0;
+  virtual address_base& push_value(ossia::value&&) = 0;
 
 
   /// Value setters ///
@@ -102,9 +103,11 @@ public:
   std::vector<ossia::value> value(const std::vector<ossia::destination_index>&) const;
 
   virtual address_base& set_value(const ossia::value&) = 0;
+  virtual address_base& set_value(ossia::value&&) = 0;
 
   //! Reimplement to provide a way that does not call the observers.
   virtual void set_value_quiet(const ossia::value& v) { set_value(v); }
+  virtual void set_value_quiet(ossia::value&& v) { set_value(std::move(v)); }
 
 
   virtual val_type get_value_type() const = 0;

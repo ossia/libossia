@@ -39,6 +39,13 @@ address_base& midi_address::push_value(const ossia::value& val)
   return *this;
 }
 
+address_base& midi_address::push_value(ossia::value&& val)
+{
+  m_value = std::move(val);
+  m_protocol.push(*this);
+  return *this;
+}
+
 address_base& midi_address::push_value()
 {
   m_protocol.push(*this);
@@ -61,6 +68,17 @@ address_base& midi_address::set_value(const ossia::value& v)
     m_value = v;
   else
     m_value = ossia::convert(v, m_type);
+
+  send(m_value);
+  return *this;
+}
+
+address_base& midi_address::set_value(ossia::value&& v)
+{
+  if(m_type == v.getType())
+    m_value = std::move(v);
+  else
+    m_value = ossia::convert(std::move(v), m_type);
 
   send(m_value);
   return *this;

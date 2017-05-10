@@ -72,6 +72,15 @@ ossia::net::generic_address& generic_address::push_value(const ossia::value& val
   return *this;
 }
 
+ossia::net::generic_address& generic_address::push_value(ossia::value&& value)
+{
+  set_value(std::move(value));
+
+  m_protocol.push(*this);
+
+  return *this;
+}
+
 ossia::net::generic_address& generic_address::push_value()
 {
   m_protocol.push(*this);
@@ -98,6 +107,13 @@ ossia::net::generic_address& generic_address::set_value(const ossia::value& val)
   return *this;
 }
 
+ossia::net::generic_address& generic_address::set_value(ossia::value&& val)
+{
+  set_value_quiet(std::move(val));
+  send(value());
+  return *this;
+}
+
 void generic_address::set_value_quiet(const ossia::value& val)
 {
   using namespace ossia;
@@ -105,8 +121,6 @@ void generic_address::set_value_quiet(const ossia::value& val)
     return;
 
   lock_t lock(m_valueMutex);
-  // std::cerr << address_string_from_node(*this) << " : " << mValue << " <=== " << val << std::endl;
-
   if (m_value.v.which() == val.v.which())
   {
     m_previousValue = std::move(m_value); // TODO also implement me for MIDI
@@ -116,19 +130,26 @@ void generic_address::set_value_quiet(const ossia::value& val)
   {
     m_previousValue = m_value;
     m_value = ossia::convert(val, m_value.getType());
-    /*
-        // Alternative : try to convert to the actual value type.
-        // There should be a choice here : for instance we should be able to convert
-        // the values coming from the network, but change the type of the values coming from here.
-        // std::cerr << address_string_from_node(*this) << " TYPE CHANGE : " << mValue.v.which() << " <=== " << val.v.which() << std::endl;
-        mValueType = val.getType();
-        if(mDomain)
-          mDomain = convert_domain(mDomain, mValueType);
-        */
   }
+}
 
-  // TODO clamping the input implies ensuring that
-  // mValue = ossia::net::clamp(mDomain, mBoundingMode, mValue);
+void generic_address::set_value_quiet(ossia::value&& val)
+{
+  using namespace ossia;
+  if(!val.valid())
+    return;
+
+  lock_t lock(m_valueMutex);
+  if (m_value.v.which() == val.v.which())
+  {
+    m_previousValue = std::move(m_value); // TODO also implement me for MIDI
+    m_value = std::move(val);
+  }
+  else
+  {
+    m_previousValue = std::move(m_value);
+    m_value = ossia::convert(std::move(val), m_previousValue.getType());
+  }
 }
 
 void generic_address::set_value_quiet(const Destination& destination)

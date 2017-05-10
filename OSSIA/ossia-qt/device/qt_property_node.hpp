@@ -27,6 +27,7 @@ public:
       node_base& aParent);
 
   void set_value_quiet(const ossia::value&) final override;
+  void set_value_quiet(ossia::value&&) final override;
   ossia::net::address_base* get_address() const final override;
   ossia::net::address_base* create_address(ossia::val_type type) final override;
   bool remove_address() final override;

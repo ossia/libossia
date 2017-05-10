@@ -80,6 +80,12 @@ void qt_property_node::set_value_quiet(const ossia::value& ossia_val)
 
   emit setValue_sig(ossia_val);
 }
+void qt_property_node::set_value_quiet(ossia::value&& ossia_val)
+{
+  ossia::net::generic_address::set_value_quiet(std::move(ossia_val));
+
+  emit setValue_sig(ossia_val);
+}
 
 net::address_base* qt_property_node::get_address() const
 {

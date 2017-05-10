@@ -2,6 +2,7 @@
 #include <ossia/detail/config.hpp>
 #include <list>
 #include <stdexcept>
+#include <mutex>
 #include <ossia_export.h>
 namespace ossia
 {
@@ -42,7 +43,31 @@ template <typename T>
 class callback_container
 {
 public:
-  virtual ~callback_container() = default;
+  callback_container() { }
+  callback_container(const callback_container& other)
+  {
+    std::lock_guard<std::mutex> lck{other.m_mutx};
+    m_callbacks = other.m_callbacks;
+  }
+  callback_container(callback_container&& other)
+  {
+    std::lock_guard<std::mutex> lck{other.m_mutx};
+    m_callbacks = std::move(other.m_callbacks);
+  }
+  callback_container& operator=(const callback_container& other)
+  {
+    std::lock_guard<std::mutex> lck{other.m_mutx};
+    m_callbacks = other.m_callbacks;
+    return *this;
+  }
+  callback_container& operator=(callback_container&& other)
+  {
+    std::lock_guard<std::mutex> lck{other.m_mutx};
+    m_callbacks = std::move(other.m_callbacks);
+    return *this;
+  }
+
+  virtual ~callback_container() { }
 
   /**
    * @brief impl How the callbackas are stored.
@@ -62,6 +87,7 @@ public:
     T cb = callback;
     if(cb)
     {
+      std::lock_guard<std::mutex> lck{m_mutx};
       auto it = m_callbacks.insert(m_callbacks.begin(), std::move(cb));
       if (m_callbacks.size() == 1)
         on_first_callback_added();
@@ -79,6 +105,7 @@ public:
    */
   void remove_callback(iterator it)
   {
+    std::lock_guard<std::mutex> lck{m_mutx};
     if (m_callbacks.size() == 1)
       on_removing_last_callback();
     m_callbacks.erase(it);
@@ -89,14 +116,20 @@ public:
    * @return Number of active callbacks.
    */
   std::size_t callback_count() const
-  { return m_callbacks.size(); }
+  {
+    std::lock_guard<std::mutex> lck{m_mutx};
+    return m_callbacks.size();
+  }
 
   /**
    * @brief callbacks_empty
    * @return True if there are no callbacks
    */
   bool callbacks_empty() const
-  { return m_callbacks.empty(); }
+  {
+    std::lock_guard<std::mutex> lck{m_mutx};
+    return m_callbacks.empty();
+  }
 
   /**
    * @brief send Trigger all callbacks
@@ -105,6 +138,7 @@ public:
   template <typename... Args>
   void send(Args&&... args)
   {
+    std::lock_guard<std::mutex> lck{m_mutx};
     for (auto& callback : m_callbacks)
     {
       if(callback)
@@ -117,6 +151,7 @@ public:
    */
   void callbacks_clear()
   {
+    std::lock_guard<std::mutex> lck{m_mutx};
     if(!m_callbacks.empty())
       on_removing_last_callback();
     m_callbacks.clear();
@@ -148,6 +183,7 @@ protected:
 
 private:
   impl m_callbacks;
+  mutable std::mutex m_mutx;
 };
 
 }

@@ -59,14 +59,17 @@ public:
   void request_value() final override;
 
   ossia::net::generic_address& push_value(const ossia::value&) final override;
+  ossia::net::generic_address& push_value(ossia::value&&) final override;
   ossia::net::generic_address& push_value() final override;
 
   const ossia::value& getValue() const;
   ossia::value value() const final override;
   generic_address& set_value(const ossia::value&) override;
+  generic_address& set_value(ossia::value&&) override;
 
   /** Set a value without sending notifications **/
   void set_value_quiet(const ossia::value&) override;
+  void set_value_quiet(ossia::value&&) override;
   void set_value_quiet(const ossia::Destination&);
 
   ossia::val_type get_value_type() const final override;
