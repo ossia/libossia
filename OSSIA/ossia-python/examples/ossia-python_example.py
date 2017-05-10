@@ -1,8 +1,16 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+This file illustrates how to use the python binding of Ossia library.
+This is a low level approach to integrate Ossia architecture into a python program.
+For higher level features use pyossia module.
+"""
+
 import ossia_python as ossia
 import time
 
-print("OSSIA PYTHON LIBRARY EXAMPLE")
+print("OSSIA LIBRARY EXAMPLE")
 
 ### LOCAL DEVICE SETUP
 
@@ -15,21 +23,26 @@ local_device.create_oscquery_server(3456, 5678)
 # create a node, create a boolean address and initialize it
 bool_node = local_device.add_node("/test/value/bool")
 bool_address = bool_node.create_address(ossia.ValueType.Bool)
-bool_address.push_value(ossia.Value(True))
+bool_address.set_access_mode(ossia.AccessMode.Get);
+bool_address.push_value(ossia.Value(True))									### TODO : bool_address.push_value(True)
 
 # create a node, create an integer address and initialize it
 int_node = local_device.add_node("/test/value/int")
 int_address = int_node.create_address(ossia.ValueType.Int)
-int_address.push_value(ossia.Value(100))
+int_address.set_access_mode(ossia.AccessMode.Set);
+int_address.make_domain(ossia.Value(-10), ossia.Value(10));
+int_address.set_bounding_mode(ossia.BoundingMode.Clip);
+int_address.push_value(ossia.Value(100))									### TODO : int_address.push_value(100)
+int_address.apply_domain();
 
 # create a node, create a float address, set its properties and initialize it
 float_node = local_device.add_node("/test/value/float")
 float_address = float_node.create_address(ossia.ValueType.Float)
 float_address.set_access_mode(ossia.AccessMode.Bi);
+float_address.make_domain(ossia.Value(-2.0), ossia.Value(2.0));
 float_address.set_bounding_mode(ossia.BoundingMode.Clip);
-float_address.get_domain().set_min(ossia.Value(-1.0));
-float_address.get_domain().set_max(ossia.Value(1.0));
-float_address.push_value(ossia.Value(1.5))								### BUG : the value is not clipped
+float_address.push_value(ossia.Value(2.5))
+float_address.apply_domain();
 
 # create a node, create a char address and initialize it
 char_node = local_device.add_node("/test/value/char")
@@ -39,7 +52,7 @@ char_address.push_value(ossia.Value('a'))
 # create a node, create a string address and initialize it
 string_node = local_device.add_node("/test/value/string")
 string_address = string_node.create_address(ossia.ValueType.String)
-string_address.push_value(ossia.Value("hello world !"))					### BUG : affiche juste h dans i-score
+string_address.push_value(ossia.Value("hello world !"))
 
 # create a node, create a 3 floats vector address and initialize it
 vec3f_node = local_device.add_node("/test/value/vec3f")
@@ -49,7 +62,7 @@ vec3f_address.push_value(ossia.Value([100, 127, 255]))
 # create a node, create a tuple address and initialize it
 tuple_node = local_device.add_node("/test/value/tuple")
 tuple_address = tuple_node.create_address(ossia.ValueType.Tuple)
-tuple_value = ossia.Value([ossia.Value(44100), ossia.Value("test.wav"), ossia.Value(0.9)]) ### BUG : affiche juste le code ascii du string
+tuple_value = ossia.Value([ossia.Value(44100), ossia.Value("test.wav"), ossia.Value(0.9)])
 tuple_address.push_value(tuple_value)
 
 # attach a callback function to the boolean address
@@ -94,7 +107,10 @@ def iterate_on_children(node):
 
 	for child in node.children():
 		if child.get_address():
-			print(str(child) + " " + str(child.get_address()))
+			print(str(child) + " " + str(child.get_address()) + " <" + str(child.get_address().get_value_type()) + ", " + str(child.get_address().get_access_mode()) + ">")
+			if child.get_address().have_domain():
+				print("min : " + str(child.get_address().get_domain().get_min().get()) + ", max : " + str(child.get_address().get_domain().get_max().get()))
+
 		else:
 			print(child)
 

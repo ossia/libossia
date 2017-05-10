@@ -1,6 +1,3 @@
-# OSSIA-PYTHON
-
-ossia-python is a python binding of libossia
 # Build tips
 
 ## build for python 3
@@ -14,7 +11,4 @@ ossia-python is a python binding of libossia
 `OSSIA_PROTOCOL_MIDI:BOOL=ON`    
 `OSSIA_PROTOCOL_OSCQUERY:BOOL=ON`    
 `OSSIA_PROTOCOL_SERIAL:BOOL=OFF`    
-`OSSIA_PROTOCOL_WEBSOCKETS:BOOL=OFF`    
-
-# Work in progress
-Network part of libossia is currently implemented (partially) in python.    
+`OSSIA_PROTOCOL_WEBSOCKETS:BOOL=OFF`   

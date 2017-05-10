@@ -17,20 +17,31 @@ namespace pybind11 { namespace py = pybind11; }
 
 namespace py = pybind11;
 
-class python_local_device
+/**
+ * @brief Local device class
+ *
+ * A local device is required to build any OSSIA network
+ */
+class ossia_local_device
 {
     ossia::net::generic_device m_device;
     ossia::net::local_protocol& m_local_protocol;
 
 public:
 
-    python_local_device(std::string name):
+    /** Constructor
+    \param std::string name of the local device */
+    ossia_local_device(std::string name):
         m_device{std::make_unique<ossia::net::local_protocol>(), std::move(name)},
         m_local_protocol{static_cast<ossia::net::local_protocol&>(m_device.get_protocol())}
     {
 
     }
 
+    /** Make the local device able to handle oscquery request
+    \param int port where OSC requests have to be sent by any remote client to deal with the local device
+    \param int port where WebSocket requests have to be sent by any remote client to deal with the local device
+    \return bool */
     bool create_oscquery_server(int osc_port, int ws_port)
     {
         try {
@@ -38,9 +49,9 @@ public:
                                           osc_port, ws_port));
             return true;
         } catch(std::exception& e) {
-            ossia::logger().error("python_local_device: error when creating OSCQuery server: {}", e.what());
+            ossia::logger().error("ossia_local_device: error when creating OSCQuery server: {}", e.what());
         } catch(...) {
-            ossia::logger().error("python_local_device: error when creating OSCQuery server: {}");
+            ossia::logger().error("ossia_local_device: error when creating OSCQuery server: {}");
         }
         return false;
     }
@@ -61,14 +72,19 @@ public:
     }
 };
 
-class python_oscquery_device
+/**
+ * @brief OSCQuery device class
+ *
+ * An OSCQuery device is required to deal with a remote application using OSCQuery protocol 
+ */
+class ossia_oscquery_device
 {
     ossia::net::generic_device m_device;
     ossia::oscquery::oscquery_mirror_protocol& m_oscquery_protocol;
 
 public:
 
-    python_oscquery_device(std::string name, std::string host, uint16_t local_osc_port):
+    ossia_oscquery_device(std::string name, std::string host, uint16_t local_osc_port):
         m_device{std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(host, local_osc_port), std::move(name)},
         m_oscquery_protocol{static_cast<ossia::oscquery::oscquery_mirror_protocol&>(m_device.get_protocol())}
     {
@@ -91,6 +107,10 @@ public:
     }
 };
 
+/**
+ * @brief To cast python value into OSSIA value
+ *
+ */
 struct to_python_value
 {
     template<typename T>
@@ -126,21 +146,21 @@ PYBIND11_MAKE_OPAQUE(std::vector<ossia::net::node_base*>);
 
 PYBIND11_PLUGIN(ossia_python)
 {
-    py::module m("ossia_python", "ossia");
+    py::module m("ossia_python", "python binding of ossia library");
 
-    py::class_<python_local_device>(m, "LocalDevice")
+    py::class_<ossia_local_device>(m, "LocalDevice")
             .def(py::init<std::string>())
-            .def("create_oscquery_server", &python_local_device::create_oscquery_server)
-            .def("add_node", &python_local_device::add_node, py::return_value_policy::reference)
-            .def("find_node", &python_local_device::find_node, py::return_value_policy::reference)
-            .def("get_root_node", &python_local_device::get_root_node, py::return_value_policy::reference)
+            .def("create_oscquery_server", &ossia_local_device::create_oscquery_server)
+            .def("add_node", &ossia_local_device::add_node, py::return_value_policy::reference)
+            .def("find_node", &ossia_local_device::find_node, py::return_value_policy::reference)
+            .def("get_root_node", &ossia_local_device::get_root_node, py::return_value_policy::reference)
             ;
 
-    py::class_<python_oscquery_device>(m, "OSCQueryDevice")
+    py::class_<ossia_oscquery_device>(m, "OSCQueryDevice")
             .def(py::init<std::string, std::string, uint16_t>())
-            .def("update", &python_oscquery_device::update)
-            .def("find_node", &python_oscquery_device::find_node, py::return_value_policy::reference)
-            .def("get_root_node", &python_oscquery_device::get_root_node, py::return_value_policy::reference)
+            .def("update", &ossia_oscquery_device::update)
+            .def("find_node", &ossia_oscquery_device::find_node, py::return_value_policy::reference)
+            .def("get_root_node", &ossia_oscquery_device::get_root_node, py::return_value_policy::reference)
             ;
 
     py::class_<std::vector<ossia::net::node_base*>>(m, "NodeVector")
@@ -167,18 +187,21 @@ PYBIND11_PLUGIN(ossia_python)
             .def("set_access_mode", &ossia::net::address_base::set_access)
             .def("get_bounding_mode", &ossia::net::address_base::get_bounding)
             .def("set_bounding_mode", &ossia::net::address_base::set_bounding)
+            .def("make_domain", [] (ossia::net::address_base &addr, const ossia::value& min, const ossia::value& max) { addr.set_domain(ossia::make_domain(min, max)); })
+            .def("make_domain", [] (ossia::net::address_base &addr, const ossia::value& min, const ossia::value& max, const std::vector<ossia::value>& vals) {addr.set_domain(ossia::make_domain(min, max, vals)); })
+            .def("have_domain", [] (ossia::net::address_base &addr) -> bool { return bool(addr.get_domain()); })
             .def("get_domain", &ossia::net::address_base::get_domain)
-            .def("set_domain", &ossia::net::address_base::set_domain)
+            .def("apply_domain", [] (ossia::net::address_base &addr) { addr.push_value(ossia::apply_domain(addr.get_domain(), addr.get_bounding(), addr.fetch_value())); })
             .def("get_repetition_filter", &ossia::net::address_base::get_repetition_filter)
             .def("set_repetition_filter", &ossia::net::address_base::set_repetition_filter)
             .def("get_unit", &ossia::net::address_base::get_unit)
             .def("set_unit", &ossia::net::address_base::set_unit)
             .def("pull_value", &ossia::net::address_base::pull_value)
             .def("clone_value", [] (ossia::net::address_base& addr) -> ossia::value { return addr.value(); })
-    .def("fetch_value", [] (ossia::net::address_base& addr) -> ossia::value { return addr.fetch_value(); })
-    .def("push_value", [] (ossia::net::address_base& addr, const ossia::value& v) { addr.push_value(v); })
-    .def("add_callback", [] (ossia::net::address_base& addr, ossia::value_callback clbk) { addr.add_callback(clbk); })
-    .def("__str__", [] (ossia::net::address_base& addr) -> std::string { return ossia::value_to_pretty_string(addr.value()); })
+            .def("fetch_value", [] (ossia::net::address_base& addr) -> ossia::value { return addr.fetch_value(); })
+            .def("push_value", [] (ossia::net::address_base& addr, const ossia::value& v) { addr.push_value(v); })
+            .def("add_callback", [] (ossia::net::address_base& addr, ossia::value_callback clbk) { addr.add_callback(clbk); })
+            .def("__str__", [] (ossia::net::address_base& addr) -> std::string { return ossia::value_to_pretty_string(addr.value()); })
     ;
 
     py::enum_<ossia::val_type>(m, "ValueType", py::arithmetic())
@@ -216,10 +239,8 @@ PYBIND11_PLUGIN(ossia_python)
 
     py::class_<ossia::domain>(m, "Domain")
             .def(py::init())
-            //.def("get_min", &ossia::domain::get_min)
-            .def("set_min", &ossia::domain::set_min)
-            //.def("get_max", &ossia::domain::get_max)
-            .def("set_max", &ossia::domain::set_max)
+            .def("get_min", [] (ossia::domain& d) -> ossia::value { return ossia::get_min(d); })
+            .def("get_max", [] (ossia::domain& d) -> ossia::value { return ossia::get_max(d); })
             ;
 
     py::class_<ossia::value>(m, "Value")
