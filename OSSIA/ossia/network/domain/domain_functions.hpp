@@ -12,7 +12,6 @@ struct vector_domain;
 template<std::size_t N>
 struct vecf_domain;
 
-
 OSSIA_EXPORT value apply_domain(
     const domain& dom,
     bounding_mode b,
@@ -24,22 +23,18 @@ OSSIA_EXPORT value apply_domain(
 
 OSSIA_EXPORT value get_min(const domain& dom);
 OSSIA_EXPORT value get_max(const domain& dom);
+
 OSSIA_EXPORT void set_min(domain& dom, const ossia::value& val);
 OSSIA_EXPORT void set_max(domain& dom, const ossia::value& val);
 
 OSSIA_EXPORT void set_values(domain& dom, const std::vector<ossia::value>& val);
 
-OSSIA_EXPORT domain make_domain_from_type(
-    ossia::val_type type);
-
 OSSIA_EXPORT domain make_domain(
     const ossia::value& min,
     const ossia::value& max);
-
 OSSIA_EXPORT domain make_domain(
     const chobo::small_vector<ossia::value, 2>& val,
     const ossia::value& cur);
-
 OSSIA_EXPORT domain make_domain(
     const ossia::value& min,
     const ossia::value& max,
