@@ -29,6 +29,9 @@ OSSIA_EXPORT void set_max(domain& dom, const ossia::value& val);
 
 OSSIA_EXPORT void set_values(domain& dom, const std::vector<ossia::value>& val);
 
+OSSIA_EXPORT domain make_domain_from_type(
+    ossia::val_type type);
+
 OSSIA_EXPORT domain make_domain(
     const ossia::value& min,
     const ossia::value& max);

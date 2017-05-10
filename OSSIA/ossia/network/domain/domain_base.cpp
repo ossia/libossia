@@ -59,9 +59,9 @@ domain make_domain(const ossia::value& min, const ossia::value& max)
   return {};
 }
 
-ossia::domain make_domain_from_type(ossia::val_type v)
+ossia::domain make_domain_from_type(ossia::val_type type)
 {
-  switch(v)
+  switch(type)
   {
     case ossia::val_type::FLOAT: return ossia::domain_base<float>{};
     case ossia::val_type::INT: return ossia::domain_base<int>{};
