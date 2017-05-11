@@ -1,5 +1,8 @@
 #pragma once
 #include <ossia/network/common/complex_type.hpp>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/network/common/extended_types.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/detail/any_map.hpp>
 

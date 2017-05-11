@@ -7,6 +7,7 @@
 #include <ossia/editor/value/value_conversion.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/domain/domain_conversion.hpp>
+#include <ossia/network/base/address_data.hpp>
 
 namespace ossia
 {

@@ -3,7 +3,6 @@
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/base/address.hpp>
-#include <ossia/network/base/address_data.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 
@@ -19,7 +18,7 @@ namespace ossia
 namespace net
 {
 
-
+struct address_data;
 class protocol_base;
 
 //! Default implementation for address_base, with everything expected and mutable

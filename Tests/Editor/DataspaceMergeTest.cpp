@@ -54,10 +54,10 @@ private Q_SLOTS:
     static_assert(!ossia::detail::is_array<decltype(ossia::centimeter::dataspace_value)>::value, "");
     static_assert(ossia::detail::is_array<decltype(ossia::rgb::dataspace_value)>::value, "RGB is not iterable");
 
-    static_assert(!ossia::is_unit_v<int>, "");
-    static_assert(ossia::is_unit_v<ossia::centimeter_u>, "");
-    static_assert(ossia::is_unit_v<ossia::rgb_u>, "");
-    static_assert(!ossia::is_unit_v<ossia::color_u>, "");
+    static_assert(!ossia::is_unit<int>::value, "");
+    static_assert(ossia::is_unit<ossia::centimeter_u>::value, "");
+    static_assert(ossia::is_unit<ossia::rgb_u>::value, "");
+    static_assert(!ossia::is_unit<ossia::color_u>::value, "");
   }
 
   void convert_test()

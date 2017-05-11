@@ -332,7 +332,7 @@ void oscquery_mirror_protocol::set_fail_callback(std::function<void ()> f)
 
 void oscquery_mirror_protocol::request_add_node(
     net::node_base& parent,
-    net::address_data dat)
+    const net::address_data& dat)
 {
   std::string req; req.reserve(64);
   req += net::osc_address_string(parent);

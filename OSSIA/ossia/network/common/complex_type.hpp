@@ -1,11 +1,12 @@
 #pragma once
-#include <ossia/editor/value/value.hpp>
-#include <ossia/editor/dataspace/dataspace.hpp>
-#include <ossia/network/common/extended_types.hpp>
 #include <eggs/variant.hpp>
-
+#include <ossia/network/common/address_properties.hpp>
+#include <ossia_export.h>
 namespace ossia
 {
+struct unit_t;
+using extended_type = std::string;
+
 namespace net {
 class node_base;
 class address_base;

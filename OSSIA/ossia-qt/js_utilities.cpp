@@ -1,6 +1,8 @@
 #if defined(QT_CORE_LIB)
 #include "js_utilities.hpp"
 #include <ossia/editor/value/value_conversion.hpp>
+#include <ossia/network/common/complex_type.hpp>
+#include <ossia/network/base/address_data.hpp>
 namespace ossia
 {
 namespace net

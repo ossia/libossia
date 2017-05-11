@@ -3,7 +3,6 @@
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/oscquery/detail/client.hpp>
-#include <ossia/network/base/address_data.hpp>
 #include <ossia/detail/json.hpp>
 #include <readerwriterqueue.h>
 namespace osc
@@ -20,6 +19,7 @@ class IpEndpointName;
 
 namespace ossia
 {
+namespace net { struct address_data; }
 namespace oscquery
 {
 class http_get_request;
@@ -69,7 +69,7 @@ public:
    * @param Parent of the new node
    * @param Data of the new node
    */
-  void request_add_node(net::node_base&, ossia::net::address_data);
+  void request_add_node(net::node_base&, const ossia::net::address_data&);
 
   /**
    * @brief Request a node removal from the server
