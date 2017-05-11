@@ -150,10 +150,12 @@ PYBIND11_PLUGIN(ossia_python)
 
     py::class_<ossia_local_device>(m, "LocalDevice")
             .def(py::init<std::string>())
+            .def_property_readonly("root_node", &ossia_local_device::get_root_node, py::return_value_policy::reference)
+
             .def("create_oscquery_server", &ossia_local_device::create_oscquery_server)
             .def("add_node", &ossia_local_device::add_node, py::return_value_policy::reference)
             .def("find_node", &ossia_local_device::find_node, py::return_value_policy::reference)
-            .def("get_root_node", &ossia_local_device::get_root_node, py::return_value_policy::reference)
+            
             ;
 
     py::class_<ossia_oscquery_device>(m, "OSCQueryDevice")
@@ -172,34 +174,35 @@ PYBIND11_PLUGIN(ossia_python)
             ;
 
     py::class_<ossia::net::node_base>(m, "Node")
+            .def_property_readonly("address", &ossia::net::node_base::get_address, py::return_value_policy::reference)
+            
             .def("add_node", [] (ossia::net::node_base& node, const std::string& adrs) -> ossia::net::node_base& { return ossia::net::find_or_create_node(node, adrs); }, py::return_value_policy::reference)
-            .def("get_address", &ossia::net::node_base::get_address, py::return_value_policy::reference)
             .def("create_address", [] (ossia::net::node_base& node, int type) { return node.create_address((ossia::val_type) type); }, py::return_value_policy::reference)
             .def("children", &ossia::net::node_base::children_copy)
             .def("__str__", [] (ossia::net::node_base& node) -> std::string { return ossia::net::osc_address_string(node); })
     ;
 
     py::class_<ossia::net::address_base>(m, "Address")
-            .def("get_node", &ossia::net::address_base::getNode, py::return_value_policy::reference)
-            .def("get_value_type", &ossia::net::address_base::get_value_type)
-            .def("set_value_type", &ossia::net::address_base::set_value_type)
-            .def("get_access_mode", &ossia::net::address_base::get_access)
-            .def("set_access_mode", &ossia::net::address_base::set_access)
-            .def("get_bounding_mode", &ossia::net::address_base::get_bounding)
-            .def("set_bounding_mode", &ossia::net::address_base::set_bounding)
+            .def_property_readonly("node", &ossia::net::address_base::getNode, py::return_value_policy::reference)
+            
+            .def_property("value", [] (ossia::net::address_base& addr) -> ossia::value { return addr.fetch_value(); }, [] (ossia::net::address_base& addr, const ossia::value& v) { addr.push_value(v); })
+            .def_property("value_type", &ossia::net::address_base::get_value_type, &ossia::net::address_base::set_value_type)
+            .def_property("access_mode", &ossia::net::address_base::get_access, &ossia::net::address_base::set_access)
+            .def_property("bounding_mode", &ossia::net::address_base::get_bounding, &ossia::net::address_base::set_bounding)
+            .def_property("repetition_filter", &ossia::net::address_base::get_repetition_filter, &ossia::net::address_base::set_repetition_filter)
+            .def_property("unit", &ossia::net::address_base::get_unit, &ossia::net::address_base::set_unit)
+            
+            .def_property_readonly("domain", &ossia::net::address_base::get_domain, py::return_value_policy::reference)
+            .def("have_domain", [] (ossia::net::address_base &addr) -> bool { return bool(addr.get_domain()); })
             .def("make_domain", [] (ossia::net::address_base &addr, const ossia::value& min, const ossia::value& max) { addr.set_domain(ossia::make_domain(min, max)); })
             .def("make_domain", [] (ossia::net::address_base &addr, const ossia::value& min, const ossia::value& max, const std::vector<ossia::value>& vals) {addr.set_domain(ossia::make_domain(min, max, vals)); })
-            .def("have_domain", [] (ossia::net::address_base &addr) -> bool { return bool(addr.get_domain()); })
-            .def("get_domain", &ossia::net::address_base::get_domain)
             .def("apply_domain", [] (ossia::net::address_base &addr) { addr.push_value(ossia::apply_domain(addr.get_domain(), addr.get_bounding(), addr.fetch_value())); })
-            .def("get_repetition_filter", &ossia::net::address_base::get_repetition_filter)
-            .def("set_repetition_filter", &ossia::net::address_base::set_repetition_filter)
-            .def("get_unit", &ossia::net::address_base::get_unit)
-            .def("set_unit", &ossia::net::address_base::set_unit)
+            
             .def("pull_value", &ossia::net::address_base::pull_value)
             .def("clone_value", [] (ossia::net::address_base& addr) -> ossia::value { return addr.value(); })
             .def("fetch_value", [] (ossia::net::address_base& addr) -> ossia::value { return addr.fetch_value(); })
             .def("push_value", [] (ossia::net::address_base& addr, const ossia::value& v) { addr.push_value(v); })
+
             .def("add_callback", [] (ossia::net::address_base& addr, ossia::value_callback clbk) { addr.add_callback(clbk); })
             .def("__str__", [] (ossia::net::address_base& addr) -> std::string { return ossia::value_to_pretty_string(addr.value()); })
     ;
@@ -239,8 +242,8 @@ PYBIND11_PLUGIN(ossia_python)
 
     py::class_<ossia::domain>(m, "Domain")
             .def(py::init())
-            .def("get_min", [] (ossia::domain& d) -> ossia::value { return ossia::get_min(d); })
-            .def("get_max", [] (ossia::domain& d) -> ossia::value { return ossia::get_max(d); })
+            .def_property("min", [] (ossia::domain& d) -> ossia::value { return ossia::get_min(d); }, [] (ossia::domain& d, const ossia::value& v) { ossia::set_min(d, v); })
+            .def_property("max", [] (ossia::domain& d) -> ossia::value { return ossia::get_max(d); }, [] (ossia::domain& d, const ossia::value& v) { ossia::set_max(d, v); })
             ;
 
     py::class_<ossia::value>(m, "Value")
@@ -263,6 +266,7 @@ PYBIND11_PLUGIN(ossia_python)
             .def("get_vec2f",  [] (const ossia::value& val) { return val.get<std::array<float, 2>>(); })
             .def("get_vec3f",  [] (const ossia::value& val) { return val.get<std::array<float, 3>>(); })
             .def("get_vec4f",  [] (const ossia::value& val) { return val.get<std::array<float, 4>>(); })
+            .def("__str__", [] (const ossia::value& val) -> std::string { return ossia::value_to_pretty_string(val); })
             ;
 
     return m.ptr();
