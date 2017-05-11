@@ -1,6 +1,4 @@
 #pragma once
-#include <ossia/network/generic/generic_address.hpp>
-#include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/minuit/detail/minuit_common.hpp>
 #include <ossia/network/minuit/minuit.hpp>

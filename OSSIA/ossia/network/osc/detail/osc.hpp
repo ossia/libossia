@@ -2,7 +2,6 @@
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/domain/domain.hpp>
-#include <ossia/network/generic/generic_address.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <oscpack/osc/OscOutboundPacketStream.h>
 #include <oscpack/osc/OscReceivedElements.h>
