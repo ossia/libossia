@@ -831,8 +831,49 @@ private Q_SLOTS:
         QVERIFY(s.size() == 1);
         QVERIFY(*s.begin() == m1);
       }
+  }
+
+  void test_merge_vec_in_tuple()
+  {
+    ossia::TestUtils t;
+    ossia::state s;
+
+    ossia::message m1{*t.tuple_addr, std::vector<ossia::value>{0., 0.5, 0.2}, {}};
+    ossia::flatten_and_filter(s, ossia::message{m1});
+
+    ossia::message m2{*t.tuple_addr, ossia::vec3f{0., 0., 0.}, {}};
+    ossia::flatten_and_filter(s, ossia::message{m2});
+
+    QVERIFY(s.size() == 1);
+
+    ossia::message m3{*t.tuple_addr, std::vector<ossia::value>{0., 0., 0.}, {}};
+    ossia::print(std::cerr, m3);
+    std::cerr << std::endl;
+    ossia::print(std::cerr, *s.begin());
+    QVERIFY(*s.begin() == m3);
 
   }
+  void test_merge_tuple_in_vec()
+  {
+    ossia::TestUtils t;
+    ossia::state s;
+
+    ossia::message m1{*t.vec3f_addr, ossia::vec3f{0., 0.5, 0.2}, {}};
+    ossia::flatten_and_filter(s, ossia::message{m1});
+
+    ossia::message m2{*t.vec3f_addr, std::vector<ossia::value>{0., 0., 0.}, {}};
+    ossia::flatten_and_filter(s, ossia::message{m2});
+
+    QVERIFY(s.size() == 1);
+
+    ossia::message m3{*t.vec3f_addr, ossia::vec3f{0., 0., 0.}, {}};
+    ossia::print(std::cerr, m3);
+    std::cerr << std::endl;
+    ossia::print(std::cerr, *s.begin());
+    QVERIFY(*s.begin() == m3);
+
+  }
+
 
 };
 QTEST_APPLESS_MAIN(DataspaceMergeTest)

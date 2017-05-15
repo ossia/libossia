@@ -170,6 +170,40 @@ struct vec_merger
       }
     }
   }
+
+  template<std::size_t N>
+  ossia::state_element operator()(std::array<float, N>& orig, const std::vector<ossia::value>& incoming) const
+  {
+    auto& existing_index = existing_dest.index;
+    auto& incoming_index = incoming_dest.index;
+    if(incoming_index.empty())
+    {
+      value_merger<true>::merge_tuple(orig, incoming);
+      return {};
+    }
+    else
+    {
+      auto i = incoming_index[0];
+      if(i < N)
+      {
+        value_merger<true>::write_float(incoming[i], orig[i]);
+      }
+
+      if(existing_index != incoming_index && !existing_index.empty())
+      {
+        // Case where we had a message setting the index [0] and another setting the index [2]
+        // for instance
+        piecewise_vec_message<N> mess{existing_dest.value, orig, incoming_dest.unit, {}};
+        mess.used_values.set(existing_index[0]);
+        mess.used_values.set(i);
+        return mess;
+      }
+      else
+      {
+        return {};
+      }
+    }
+  }
 };
 
 struct state_flatten_visitor_merger

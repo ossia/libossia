@@ -35,7 +35,9 @@ automation::~automation() = default;
 void automation::update_message(double t)
 {
   if(m_lastMessage)
+  {
     m_lastMessage->message_value = compute_value(t, m_drivenType, m_drive);
+  }
 }
 
 ossia::state_element automation::offset(ossia::time_value offset)
