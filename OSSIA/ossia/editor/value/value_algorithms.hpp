@@ -66,7 +66,7 @@ static void merge_value(ossia::value& dest, Value_T&& src)
         }
         case ossia::val_type::VEC4F:
         {
-          auto& src_vec = src.template get<ossia::vec3f>();
+          auto& src_vec = src.template get<ossia::vec4f>();
           switch(dest.getType())
           {
             case ossia::val_type::TUPLE: merge_tuple(dest.get<std::vector<ossia::value>>(), src_vec); break;
