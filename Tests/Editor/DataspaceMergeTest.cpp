@@ -858,15 +858,15 @@ private Q_SLOTS:
     ossia::TestUtils t;
     ossia::state s;
 
-    ossia::message m1{*t.vec3f_addr, ossia::vec3f{0., 0.5, 0.2}, {}};
+    ossia::message m1{*t.vec3f_addr, ossia::vec3f{0.f, 0.5f, 0.2f}, {}};
     ossia::flatten_and_filter(s, ossia::message{m1});
 
-    ossia::message m2{*t.vec3f_addr, std::vector<ossia::value>{0., 0., 0.}, {}};
+    ossia::message m2{*t.vec3f_addr, std::vector<ossia::value>{0.f, 0.f, 0.f}, {}};
     ossia::flatten_and_filter(s, ossia::message{m2});
 
     QVERIFY(s.size() == 1);
 
-    ossia::message m3{*t.vec3f_addr, ossia::vec3f{0., 0., 0.}, {}};
+    ossia::message m3{*t.vec3f_addr, ossia::vec3f{0.f, 0.f, 0.f}, {}};
     ossia::print(std::cerr, m3);
     std::cerr << std::endl;
     ossia::print(std::cerr, *s.begin());
