@@ -15,6 +15,7 @@ http_address::http_address(
 
 http_address::~http_address()
 {
+  callback_container<value_callback>::callbacks_clear();
 }
 
 }

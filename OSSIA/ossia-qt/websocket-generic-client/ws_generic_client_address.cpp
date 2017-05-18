@@ -15,6 +15,7 @@ ws_generic_client_address::ws_generic_client_address(
 
 ws_generic_client_address::~ws_generic_client_address()
 {
+  callback_container<value_callback>::callbacks_clear();
 }
 
 }
