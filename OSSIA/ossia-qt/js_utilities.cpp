@@ -36,7 +36,7 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
     if(pos != -1)
     {
       bool res = false;
-      name_instance = name.right(pos + 1).toInt(&res);
+      name_instance = name.mid(pos + 1).toInt(&res);
       if(res)
         root_name = name.mid(0, pos);
     }
@@ -67,7 +67,7 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
     {
       // Instance
       bool b = false;
-      int n = n_name.rightRef(root_len + 1).toInt(&b);
+      int n = n_name.midRef(root_len + 1).toInt(&b);
       if(b)
         instance_num.push_back(n);
     }
