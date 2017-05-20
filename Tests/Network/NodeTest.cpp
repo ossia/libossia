@@ -40,6 +40,30 @@ private Q_SLOTS:
     QVERIFY(brother->get_name() == "foo.1");
   }
 
+  void test_instances()
+  {
+      ossia::net::generic_device dev;
+      QVERIFY((ossia::net::create_node(dev, "/foo/bar").get_name()) == "bar");
+      QVERIFY((ossia::net::create_node(dev, "/foo/bar").get_name()) == "bar.1");
+      QVERIFY((ossia::net::create_node(dev, "/foo/bar").get_name()) == "bar.2");
+      QVERIFY((ossia::net::create_node(dev, "/foo/bar").get_name()) == "bar.3");
+
+      QVERIFY((ossia::net::create_node(dev, "/foo/baz.0").get_name()) == "baz.0");
+      QVERIFY((ossia::net::create_node(dev, "/foo/baz.0").get_name()) == "baz.1");
+      QVERIFY((ossia::net::create_node(dev, "/foo/baz.0").get_name()) == "baz.2");
+      QVERIFY((ossia::net::create_node(dev, "/foo/baz.0").get_name()) == "baz.3");
+
+      QVERIFY((ossia::net::create_node(dev, "/foo/blop.2").get_name()) == "blop.2");
+      QVERIFY((ossia::net::create_node(dev, "/foo/blop").get_name()) == "blop");
+      QVERIFY((ossia::net::create_node(dev, "/foo/blop").get_name()) == "blop.3");
+      QVERIFY((ossia::net::create_node(dev, "/foo/blop").get_name()) == "blop.4");
+
+      QVERIFY((ossia::net::create_node(dev, "/foo/flop.2").get_name()) == "flop.2");
+      QVERIFY((ossia::net::create_node(dev, "/foo/flop.2").get_name()) == "flop.3");
+      QVERIFY((ossia::net::create_node(dev, "/foo/flop.2").get_name()) == "flop.4");
+      QVERIFY((ossia::net::create_node(dev, "/foo/flop.2").get_name()) == "flop.5");
+  }
+
   /*! test edition functions */
   void test_edition()
   {
