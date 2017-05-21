@@ -1,0 +1,5 @@
+Example of usage:
+
+    faust -a portaudio-arch.cpp harpe.dsp > ex.cpp
+    g++ -std=c++1z ex.cpp -I/opt/libossia/include/ /opt/libossia/lib/libossia.so.1.0.0 -pthread -lportaudio
+

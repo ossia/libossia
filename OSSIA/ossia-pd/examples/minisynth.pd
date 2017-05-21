@@ -1,0 +1,22 @@
+#N canvas 961 31 958 1029 10;
+#X obj 145 144 ossia.model tata;
+#X obj 157 318 phasor~;
+#X obj 157 372 outlet~;
+#X obj 99 173 ossia.param freq @type float @default 100;
+#X obj 158 346 *~ 0.2;
+#X obj 101 259 +;
+#X obj 175 263 random 100;
+#X obj 280 243 loadbang;
+#X obj 389 225 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 238 307 metro 500;
+#X obj 359 278 ossia.param rythm @type float @default 400;
+#X connect 1 0 4 0;
+#X connect 3 0 5 1;
+#X connect 4 0 2 0;
+#X connect 5 0 1 0;
+#X connect 6 0 5 0;
+#X connect 7 0 9 0;
+#X connect 8 0 9 0;
+#X connect 9 0 6 0;
+#X connect 10 0 9 1;
