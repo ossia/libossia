@@ -49,35 +49,20 @@ bool t_model :: do_registration(ossia::net::node_base*  node){
     if (!node) return false;
 
     if (node->find_child(x_name->s_name)) { // we have to check if a node with the same name already exists to avoid auto-incrementing name
-        bool abord=true;
         std::vector<obj_hierachy> obj = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
         for (auto v : obj){
             if(v.classname == "ossia.param"){
                 t_param* param = (t_param*) v.x;
                 if (std::string(param->x_name->s_name) == std::string(x_name->s_name)) {
-                    abord = false;
                     param->unregister(); // if we already have a t_param node of that name, unregister it
-                    // we will register it again after node creation
-                    continue;
-                }
-            } else if (v.classname == "ossia.model"){
-                t_model* model = (t_model*) v.x;
-                if (std::string(model->x_name->s_name) == std::string(x_name->s_name) && model != this) {
-                    abord = false;
-                    model->unregister(); // if we already have a t_param node of that name, unregister it
                     // we will register it again after node creation
                     continue;
                 }
             }
         }
-
-        if (abord){
-            // pd_error((t_object*) this, "node %s already exists", x_name->s_name);
-            return false;
-        }
     }
 
-    x_node = node->create_child(x_name->s_name);
+    x_node = &ossia::net::create_node(*node, x_name->s_name);
     x_node->about_to_be_deleted.connect<t_model, &t_model::isDeleted>(this);
 
     ossia::net::set_description(*x_node, x_description->s_name);
@@ -91,7 +76,7 @@ bool t_model :: unregister(){
     if(!x_node) return true; // not registered
 
     if (x_node && x_node->get_parent())
-        x_node->get_parent()->remove_child(x_name->s_name); // this calls isDeleted() on each registered child and put them into quarantine
+        x_node->get_parent()->remove_child(*x_node); // this calls isDeleted() on each registered child and put them into quarantine
     x_node = nullptr;
 
     obj_quarantining<t_model>(this);
