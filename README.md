@@ -17,6 +17,7 @@ Bindings (in progress) :
 * Java (preliminary)
 * Unity3D
 * Qt and QML
+* Faust
 
 Documentation :
 * [Examples](https://github.com/OSSIA/libossia/tree/master/Documentation/Examples)
