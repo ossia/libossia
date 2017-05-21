@@ -36,6 +36,23 @@ struct t_param : t_obj_base
         x_node = nullptr;
         obj_quarantining<t_param>(this);
     }
+
+    static std::vector<t_param*>& rename(){
+        static std::vector<t_param*> rename;
+        return rename;
+    }
+
+    bool isRenamed(t_param* x){
+      return ossia::contains(x->rename(),x);
+    }
+
+    void renaming(t_param* x){
+        if ( !isRenamed(x) ) x->rename().push_back(x);
+    }
+
+    void derenaming(t_param* x){
+        x->rename().erase(std::remove(x->rename().begin(), x->rename().end(), x), x->rename().end());
+    }
 };
 
 } } // namespace
