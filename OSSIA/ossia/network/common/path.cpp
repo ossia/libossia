@@ -132,7 +132,7 @@ try
   path p;
 
   bool starts_any = boost::starts_with(address, "//");
-  const std::string ossia_chars = ossia::net::name_characters().to_string();
+  const std::string ossia_chars = std::string(ossia::net::name_characters());
   if(!starts_any)
   {
     // Split on "/"

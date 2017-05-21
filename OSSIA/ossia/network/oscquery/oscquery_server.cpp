@@ -240,12 +240,12 @@ void oscquery_server_protocol::add_node(
     }
   }
 
-  m_device->on_add_node_requested(parent_path.to_string(), std::move(address));
+  m_device->on_add_node_requested(std::string(parent_path), std::move(address));
 }
 
 void oscquery_server_protocol::remove_node(ossia::string_view path, const std::string& node)
 {
-  m_device->on_remove_node_requested(path.to_string(), node);
+  m_device->on_remove_node_requested(std::string(path), node);
 }
 
 void oscquery_server_protocol::on_OSCMessage(

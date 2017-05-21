@@ -305,10 +305,10 @@ struct make_unit_symbols_sub_helper
       {
         res.clear();
 
-        res += ds.to_string(); // color
+        res += ds; // color
         res += '.'; // color.
 
-        res += un.to_string(); // color.rgb
+        res += un; // color.rgb
 
         // Add the unit in long form
         map.add(res, {{}, unit_type{}});
@@ -334,10 +334,10 @@ struct make_unit_symbols_sub_helper<Dataspace, Unit, enable_if_multidimensional<
       {
         res.clear();
 
-        res += ds.to_string(); // color
+        res += ds; // color
         res += '.'; // color.
 
-        res += un.to_string(); // color.rgb
+        res += un; // color.rgb
 
         // Add the unit in long form
         map.add(res, {{}, unit_type{}});

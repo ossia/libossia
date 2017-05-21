@@ -626,7 +626,7 @@ static node_base& find_or_create_node_rec(
     else
     {
       // Create a node
-      auto& child = *node.create_child(cur.to_string());
+      auto& child = *node.create_child(std::string(cur));
 
       // Recurse on it
       return find_or_create_node_rec(
@@ -644,7 +644,7 @@ static node_base& find_or_create_node_rec(
     else
     {
       // Create and return the node
-      return  *node.create_child(address.to_string());
+      return *node.create_child(std::string(address));
     }
   }
 }
@@ -669,7 +669,7 @@ static node_base& create_node_rec(
     else
     {
       // Create a node
-      auto& child = *node.create_child(cur.to_string());
+      auto& child = *node.create_child(std::string(cur));
 
       // Recurse on it
       return create_node_rec(
@@ -679,7 +679,7 @@ static node_base& create_node_rec(
   else
   {
     // Create and return the node
-    return *node.create_child(address.to_string());
+    return *node.create_child(std::string(address));
   }
 }
 

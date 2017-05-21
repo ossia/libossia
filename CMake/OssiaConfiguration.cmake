@@ -185,24 +185,20 @@ else()
       set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
         -fvar-tracking-assignments
       )
-    endif()
-
-    if(UNIX AND NOT APPLE AND NOT OSSIA_SPLIT_DEBUG)
-      set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
-        -Wl,--gc-sections
-        -Wl,-Bsymbolic-functions
-      )
-    endif()
-
-    if(LINKER_IS_GOLD OR LINKER_IS_LLD)
-      if(NOT OSSIA_SANITIZE AND NOT OSSIA_SPLIT_DEBUG)
+      if(NOT OSSIA_SPLIT_DEBUG)
         set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
-          ${DEBUG_SPLIT_FLAG}
+          -Wl,--gc-sections
+          -Wl,-Bsymbolic-functions
         )
-        if(NOT APPLE)
-            set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
-              -Wl,--gdb-index
-            )
+
+
+        if(LINKER_IS_GOLD OR LINKER_IS_LLD)
+          if(NOT OSSIA_SANITIZE)
+              set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
+                ${DEBUG_SPLIT_FLAG}
+                -Wl,--gdb-index
+              )
+          endif()
         endif()
       endif()
     endif()

@@ -73,7 +73,7 @@ void set_attribute(any_map& e, ossia::string_view str, const T& val)
   if(it != e.end())
     it.value() = val;
   else
-    e.insert(std::make_pair(str.to_string(), val));
+    e.insert(std::make_pair(std::string(str), val));
 }
 
 //! Checks if an attribute is present.
@@ -87,7 +87,7 @@ inline void set_attribute(any_map& e, ossia::string_view str)
 {
   auto it = e.find(str);
   if(it == e.end())
-    e.insert(std::make_pair(str.to_string(), boost::any{}));
+    e.insert(std::make_pair(std::string(str), boost::any{}));
 }
 
 //! Remove an attribute
@@ -105,7 +105,7 @@ void set_attribute(any_map& e, ossia::string_view str, T&& val)
   if(it != e.end())
     it.value() = std::move(val);
   else
-    e.insert(std::make_pair(str.to_string(), std::move(val)));
+    e.insert(std::make_pair(std::string(str), std::move(val)));
 }
 
 //! Removes an attribute in an any_map

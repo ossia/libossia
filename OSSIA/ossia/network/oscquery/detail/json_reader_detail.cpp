@@ -106,6 +106,7 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, bounding_mode& res
       {
         return read_bounding(arr[0], res);
       }
+      return false;
     }
     default:
       return false;
@@ -143,6 +144,7 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, access_mode& am)
           return read_access(arr[0].GetInt(), am);
         }
       }
+      return false;
     }
     default:
       return false;
@@ -616,7 +618,7 @@ void json_parser::parse_namespace(net::node_base& root, const rapidjson::Value& 
     }
     else
     {
-      throw ossia::node_not_found_error{str.to_string() + "not found"};
+      throw ossia::node_not_found_error{std::string(str) + "not found"};
     }
 
   }
@@ -696,10 +698,10 @@ void json_parser::parse_path_added(net::node_base& root, const rapidjson::Value&
         auto node = ossia::net::find_node(root, str.first);
         if(node)
         {
-          auto cld = node->find_child(str.second.to_string());
+          auto cld = node->find_child(std::string(str.second));
           if(!cld)
           {
-            auto cld = node->create_child(str.second.to_string());
+            auto cld = node->create_child(std::string(str.second));
             detail::json_parser_impl::readObject(*cld, dat);
           }
           else

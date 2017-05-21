@@ -553,7 +553,7 @@ struct minuit_behavior<minuit_command::Answer,
         = proto.name_table.get_action(minuit_action::NamespaceRequest);
 
     // Get the sub-nodes
-    std::string child_address = address.to_string();
+    std::string child_address{address};
     if (child_address.back() != '/')
       child_address += '/';
     const auto child_address_size = child_address.size();
@@ -605,7 +605,7 @@ struct minuit_behavior<minuit_command::Answer,
         case minuit_attribute::Dataspace:
         {
           // name?get address:attribute
-          auto str = address.to_string();
+          auto str = std::string(address);
           str += ':';
           str.append(it->begin(), it->end());
           proto.get_refresh(sub_request, str);
@@ -634,7 +634,7 @@ struct minuit_behavior<minuit_command::Answer,
         case minuit_attribute::Description:
         {
           // name?get address:attribute
-          auto str = address.to_string();
+          auto str = std::string(address);
           str += ':';
           str.append(attrib.begin(), attrib.end());
           proto.get_refresh(sub_request, str);
