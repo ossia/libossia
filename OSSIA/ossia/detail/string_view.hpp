@@ -27,13 +27,13 @@
     namespace ossia
     { using string_view = boost::string_ref; }
   #endif
-#else
-  #if __cplusplus <= 201402L || __clang__ || (defined(__GNUC__) && (__GNUC__ < 7))
+#endif
+
+#if __cplusplus <= 201402L || __clang__ || defined(_MSC_VER) || (defined(__GNUC__) && (__GNUC__ < 7))
     inline std::string& operator+=(std::string& s, const ossia::string_view& v) {
-      s.append(v.data(), v.size());
-      return s;
+        s.append(v.data(), v.size());
+        return s;
     }
-  #endif
 #endif
 
 namespace ossia
