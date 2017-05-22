@@ -2,6 +2,7 @@
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/domain/domain.hpp>
+#include <ossia/network/osc/detail/osc.hpp>
 
 #include <ossia/network/minuit/detail/minuit_name_table.hpp>
 
@@ -21,6 +22,7 @@ class IpEndpointName;
 }
 namespace osc
 {
+template<typename T>
 class sender;
 class receiver;
 }
@@ -74,7 +76,7 @@ public:
   void get_refresh(ossia::string_view req, const std::string& addr);
   void get_refreshed(ossia::string_view req);
 
-  osc::sender& sender() const;
+  osc::sender<osc_outbound_visitor>& sender() const;
   ossia::minuit::name_table name_table;
 private:
   void on_received_message(
@@ -101,7 +103,7 @@ private:
   std::vector<std::string> mGetRequests;
   std::atomic_int mPendingGetRequests{};
 
-  std::unique_ptr<osc::sender> mSender;
+  std::unique_ptr<osc::sender<osc_outbound_visitor>> mSender;
   std::unique_ptr<osc::receiver> mReceiver;
 
   zeroconf_server mZeroconfServer;

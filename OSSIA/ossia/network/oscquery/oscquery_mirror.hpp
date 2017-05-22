@@ -5,8 +5,10 @@
 #include <ossia/network/oscquery/detail/client.hpp>
 #include <ossia/detail/json.hpp>
 #include <readerwriterqueue.h>
+#include <ossia/network/osc/detail/osc.hpp>
 namespace osc
 {
+template<typename T>
 class sender;
 class receiver;
 }
@@ -93,7 +95,7 @@ private:
 
   void on_queryClose();
   void on_queryFail();
-  std::unique_ptr<osc::sender> m_oscSender;
+  std::unique_ptr<osc::sender<net::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
 
   ossia::oscquery::websocket_client m_websocketClient;

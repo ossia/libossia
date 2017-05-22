@@ -7,6 +7,7 @@
 #include <hopscotch_map.h>
 #include <ossia/detail/mutex.hpp>
 #include <atomic>
+#include <ossia/network/osc/detail/osc.hpp>
 
 namespace oscpack
 {
@@ -15,6 +16,7 @@ class IpEndpointName;
 }
 namespace osc
 {
+template<typename T>
 class sender;
 class receiver;
 }
@@ -62,7 +64,7 @@ private:
 
   listened_addresses m_listening;
 
-  std::unique_ptr<osc::sender> m_sender;
+  std::unique_ptr<osc::sender<osc_outbound_visitor>> m_sender;
   std::unique_ptr<osc::receiver> m_receiver;
 
   ossia::net::device_base* m_device{};

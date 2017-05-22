@@ -26,7 +26,7 @@ minuit_protocol::minuit_protocol(
     , mIp{remote_ip}
     , mRemotePort{remote_port}
     , mLocalPort{local_port}
-    , mSender{std::make_unique<osc::sender>(m_logger, remote_ip, remote_port)}
+    , mSender{std::make_unique<osc::sender<osc_outbound_visitor>>(m_logger, remote_ip, remote_port)}
     , mReceiver{std::make_unique<osc::receiver>(local_port, [=](const oscpack::ReceivedMessage& m,
                                 const oscpack::IpEndpointName& ip) {
                   this->on_received_message(m, ip);
@@ -64,7 +64,7 @@ const std::string& minuit_protocol::get_ip() const
 minuit_protocol& minuit_protocol::set_ip(std::string ip)
 {
   mIp = ip;
-  mSender = std::make_unique<osc::sender>(m_logger, mIp, mRemotePort);
+  mSender = std::make_unique<osc::sender<osc_outbound_visitor>>(m_logger, mIp, mRemotePort);
 
   update_zeroconf();
 
@@ -79,7 +79,7 @@ uint16_t minuit_protocol::get_remote_port() const
 minuit_protocol& minuit_protocol::set_remote_port(uint16_t in_port)
 {
   mRemotePort = in_port;
-  mSender = std::make_unique<osc::sender>(m_logger, mIp, mRemotePort);
+  mSender = std::make_unique<osc::sender<osc_outbound_visitor>>(m_logger, mIp, mRemotePort);
 
   update_zeroconf();
 
@@ -355,14 +355,10 @@ void minuit_protocol::get_refreshed(ossia::string_view addr)
   }
 }
 
-osc::sender& minuit_protocol::sender() const
+osc::sender<osc_outbound_visitor>& minuit_protocol::sender() const
 {
     return *mSender;
 }
-struct minuit_task
-{
-  std::function<void()> handle;
-};
 
 void minuit_protocol::on_received_message(
         const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)

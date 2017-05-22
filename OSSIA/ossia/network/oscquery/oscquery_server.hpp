@@ -13,6 +13,8 @@
 #include <ossia/network/zeroconf/zeroconf.hpp>
 namespace osc
 {
+
+template<typename T>
 class sender;
 class receiver;
 }

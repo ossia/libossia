@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/oscquery/detail/server.hpp>
+#include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/detail/string_map.hpp>
 
@@ -15,7 +16,7 @@ struct oscquery_client
   string_map<ossia::net::address_base*> listening;
 
   std::string client_ip;
-  std::unique_ptr<osc::sender> sender;
+  std::unique_ptr<osc::sender<net::osc_outbound_visitor>> sender;
 
 public:
   oscquery_client() = default;
@@ -68,7 +69,7 @@ public:
 
   void openOSCSender(const ossia::net::network_logger& l,  uint16_t port)
   {
-    sender = std::make_unique<osc::sender>(l, client_ip, port);
+    sender = std::make_unique<osc::sender<net::osc_outbound_visitor>>(l, client_ip, port);
   }
 };
 

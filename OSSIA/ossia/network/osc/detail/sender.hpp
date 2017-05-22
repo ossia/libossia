@@ -17,6 +17,7 @@ namespace osc
  * Sends OSC packets to a given address on an UDP port.
  *
  */
+template<typename ValueWriter>
 class sender
 {
 public:
@@ -76,13 +77,13 @@ private:
   {
     try
     {
-      oscpack::MessageGenerator<> m;
+      oscpack::MessageGenerator<ValueWriter> m;
 
       send_impl(m(args...));
     }
     catch(const oscpack::OutOfBufferMemoryException&)
     {
-      oscpack::DynamicMessageGenerator m;
+      oscpack::DynamicMessageGenerator<ValueWriter> m;
 
       send_impl(m(args...));
     }

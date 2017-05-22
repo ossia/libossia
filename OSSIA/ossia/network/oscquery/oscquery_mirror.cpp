@@ -435,7 +435,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
         case message_type::Device:
         {
           // The ip of the OSC server on the server
-          m_oscSender = std::make_unique<osc::sender>(
+          m_oscSender = std::make_unique<osc::sender<net::osc_outbound_visitor>>(
                 m_logger,
                 to_ip(m_websocketHost),
                 json_parser::get_port(*data));
