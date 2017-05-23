@@ -28,6 +28,7 @@ namespace ossia
 namespace net
 {
 class node_base;
+class address_data;
 
 //! How many instances a node can have
 struct OSSIA_EXPORT instance_bounds
@@ -70,6 +71,9 @@ using critical = bool;
 //! Means that the node is not present on the "host" device
 using zombie = bool;
 
+//! Means that the node should not be advertised by default
+using hidden = bool;
+
 //! Means that the node should not send / receives network messages
 using muted = bool;
 
@@ -108,13 +112,13 @@ OSSIA_EXPORT ossia::string_view text_value_step_size();
 OSSIA_EXPORT optional<value_step_size> get_value_step_size(const extended_attributes& n);
 OSSIA_EXPORT void set_value_step_size(extended_attributes& n, optional<value_step_size> v);
 
-OSSIA_EXPORT ossia::string_view text_critical();
-OSSIA_EXPORT critical get_critical(const extended_attributes& n);
-OSSIA_EXPORT void set_critical(extended_attributes& n, critical v);
-
 OSSIA_EXPORT ossia::string_view text_zombie();
 OSSIA_EXPORT zombie get_zombie(const extended_attributes& n);
 OSSIA_EXPORT void set_zombie(extended_attributes& n, zombie v);
+
+OSSIA_EXPORT ossia::string_view text_hidden();
+OSSIA_EXPORT hidden get_hidden(const extended_attributes& n);
+OSSIA_EXPORT void set_hidden(extended_attributes& n, hidden v);
 
 OSSIA_EXPORT ossia::string_view text_extended_type();
 OSSIA_EXPORT optional<extended_type> get_extended_type(const ossia::net::node_base& n);
@@ -142,6 +146,7 @@ OSSIA_EXPORT void set_default_value(extended_attributes& n, ossia::none_t v);
 OSSIA_EXPORT ossia::string_view text_value();
 OSSIA_EXPORT value clone_value(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_value(ossia::net::node_base& n, value v);
+OSSIA_EXPORT void set_value(ossia::net::address_data& n, value v);
 
 OSSIA_EXPORT ossia::string_view text_value_type();
 OSSIA_EXPORT optional<val_type> get_value_type(const ossia::net::node_base& n);
@@ -150,26 +155,37 @@ OSSIA_EXPORT void set_value_type(ossia::net::node_base& n, val_type v);
 OSSIA_EXPORT ossia::string_view text_domain();
 OSSIA_EXPORT domain get_domain(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_domain(ossia::net::node_base& n, domain v);
+OSSIA_EXPORT void set_domain(ossia::net::address_data& n, domain v);
 
 OSSIA_EXPORT ossia::string_view text_access_mode();
 OSSIA_EXPORT optional<access_mode> get_access_mode(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_access_mode(ossia::net::node_base& n, access_mode v);
+OSSIA_EXPORT void set_access_mode(ossia::net::address_data& n, access_mode v);
 
 OSSIA_EXPORT ossia::string_view text_bounding_mode();
 OSSIA_EXPORT optional<bounding_mode> get_bounding_mode(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_bounding_mode(ossia::net::node_base& n, bounding_mode v);
+OSSIA_EXPORT void set_bounding_mode(ossia::net::address_data& n, bounding_mode v);
 
 OSSIA_EXPORT ossia::string_view text_repetition_filter();
 OSSIA_EXPORT repetition_filter get_repetition_filter(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_repetition_filter(ossia::net::node_base& n, repetition_filter v);
+OSSIA_EXPORT void set_repetition_filter(ossia::net::address_data& n, repetition_filter v);
 
 OSSIA_EXPORT ossia::string_view text_unit();
 OSSIA_EXPORT unit_t get_unit(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_unit(ossia::net::node_base& n, unit_t v);
+OSSIA_EXPORT void set_unit(ossia::net::address_data& n, unit_t v);
 
 OSSIA_EXPORT ossia::string_view text_muted();
-OSSIA_EXPORT muted get_muted(const extended_attributes& n);
-OSSIA_EXPORT void set_muted(extended_attributes& n, muted v);
+OSSIA_EXPORT muted get_muted(const ossia::net::node_base& n);
+OSSIA_EXPORT void set_muted(ossia::net::node_base& n, muted v);
+OSSIA_EXPORT void set_muted(ossia::net::address_data& n, muted v);
+
+OSSIA_EXPORT ossia::string_view text_critical();
+OSSIA_EXPORT critical get_critical(const ossia::net::node_base& n);
+OSSIA_EXPORT void set_critical(ossia::net::node_base& n, critical v);
+OSSIA_EXPORT void set_critical(ossia::net::address_data& n, critical v);
 
 // Some macros to have minimal reflection facilities...
 #define OSSIA_ATTRIBUTE(Type, Name) \
@@ -199,6 +215,8 @@ OSSIA_ATTRIBUTE(ossia::access_mode, access_mode)
 OSSIA_ATTRIBUTE(ossia::bounding_mode, bounding_mode)
 OSSIA_ATTRIBUTE(ossia::unit_t, unit)
 OSSIA_ATTRIBUTE(ossia::net::muted, muted)
+OSSIA_ATTRIBUTE(ossia::net::critical, critical)
+OSSIA_ATTRIBUTE(ossia::net::hidden, hidden)
 OSSIA_ATTRIBUTE(ossia::value, default_value)
 
 // Metadata attributes
@@ -208,7 +226,6 @@ OSSIA_ATTRIBUTE(ossia::net::refresh_rate, refresh_rate)
 OSSIA_ATTRIBUTE(ossia::net::priority, priority)
 OSSIA_ATTRIBUTE(ossia::net::value_step_size, value_step_size)
 OSSIA_ATTRIBUTE(ossia::net::instance_bounds, instance_bounds)
-OSSIA_ATTRIBUTE(ossia::net::critical, critical)
 OSSIA_ATTRIBUTE(ossia::extended_type, extended_type)
 OSSIA_ATTRIBUTE(ossia::repetition_filter, repetition_filter)
 OSSIA_ATTRIBUTE(ossia::net::app_name, app_name)

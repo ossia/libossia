@@ -319,5 +319,20 @@ generic_address&generic_address::set_muted(bool v)
   }
   return *this;
 }
+
+bool generic_address::get_critical() const
+{
+  return m_critical;
+}
+
+generic_address&generic_address::set_critical(bool v)
+{
+  if(m_critical != v)
+  {
+    m_critical = v;
+    m_node.get_device().on_attribute_modified(m_node, text_critical());
+  }
+  return *this;
+}
 }
 }

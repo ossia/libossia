@@ -21,7 +21,6 @@ namespace net
 {
 class node_base;
 
-
 /**
  * @brief The address_base class
  *
@@ -131,6 +130,8 @@ public:
 
   virtual bool get_muted() const;
   virtual address_base& set_muted(bool);
+  virtual bool get_critical() const;
+  virtual address_base& set_critical(bool);
 };
 
 inline bool operator==(const address_base& lhs, const address_base& rhs)

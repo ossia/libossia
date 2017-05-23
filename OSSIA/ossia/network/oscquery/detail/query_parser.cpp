@@ -152,13 +152,13 @@ void query_parser::parse(net::app_creator_attribute attr, const std::string& dat
 
 void query_parser::parse(net::value_attribute attr, const std::string& data, net::address_data& res)
 {
-  // TODO
+  //attr.setter(res, data);
   // Note : we can leverage the fact that this is called after the unit, type, etc. have been parsed
 }
 
 void query_parser::parse(net::domain_attribute attr, const std::string& data, net::address_data& res)
 {
-  // TODO
+  //attr.setter(res, data);
 }
 
 void query_parser::parse(net::tags_attribute, const std::string& data, net::address_data& res)
@@ -168,7 +168,7 @@ void query_parser::parse(net::tags_attribute, const std::string& data, net::addr
 
 void query_parser::parse(net::instance_bounds_attribute attr, const std::string& data, net::address_data& res)
 {
-  // TODO
+  //attr.setter(res, data);
 }
 
 void query_parser::parse(net::unit_attribute attr, const std::string& data, net::address_data& res)
@@ -183,7 +183,7 @@ void query_parser::parse(net::extended_type_attribute attr, const std::string& d
 
 void query_parser::parse(net::default_value_attribute attr, const std::string& data, net::address_data& res)
 {
-  // TODO
+  attr.setter(res, data);
 }
 
 void query_parser::parse(detail::typetag_attribute attr, const std::string& data, net::address_data& res)

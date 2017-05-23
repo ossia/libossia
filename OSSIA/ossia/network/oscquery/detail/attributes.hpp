@@ -42,6 +42,7 @@ constexpr auto attribute_priority() { return "PRIORITY"; }
 constexpr auto attribute_step_size() { return "STEP_SIZE"; }
 constexpr auto attribute_instance_bounds() { return "INSTANCE_BOUNDS"; }
 constexpr auto attribute_critical() { return "CRITICAL"; }
+constexpr auto attribute_hidden() { return "HIDDEN"; }
 constexpr auto attribute_extended_type() { return "EXTENDED_TYPE"; }
 constexpr auto attribute_repetition_filter() { return "REPETITION_FILTER"; }
 constexpr auto attribute_default_value() { return "DEFAULT_VALUE"; }
@@ -106,6 +107,7 @@ template<> struct metadata<net::priority_attribute> { static constexpr auto key(
 template<> struct metadata<net::value_step_size_attribute> { static constexpr auto key() { return detail::attribute_step_size(); } };
 template<> struct metadata<net::instance_bounds_attribute> { static constexpr auto key() { return detail::attribute_instance_bounds(); } };
 template<> struct metadata<net::critical_attribute> { static constexpr auto key() { return detail::attribute_critical(); } };
+template<> struct metadata<net::hidden_attribute> { static constexpr auto key() { return detail::attribute_hidden(); } };
 template<> struct metadata<net::extended_type_attribute> { static constexpr auto key() { return detail::attribute_extended_type(); } };
 template<> struct metadata<net::description_attribute> { static constexpr auto key() { return detail::attribute_description(); } };
 template<> struct metadata<net::repetition_filter_attribute> { static constexpr auto key() { return detail::attribute_repetition_filter(); } };
@@ -142,6 +144,7 @@ net::priority_attribute,
 net::value_step_size_attribute,
 net::instance_bounds_attribute,
 net::critical_attribute,
+net::hidden_attribute,
 net::extended_type_attribute,
 net::description_attribute,
 net::app_name_attribute,
@@ -159,6 +162,7 @@ net::priority_attribute,
 net::value_step_size_attribute,
 net::instance_bounds_attribute,
 net::critical_attribute,
+net::hidden_attribute,
 net::description_attribute,
 net::app_name_attribute,
 net::app_creator_attribute,

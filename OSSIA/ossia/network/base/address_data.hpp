@@ -38,6 +38,8 @@ struct address_data
   ossia::optional<ossia::access_mode> access;
   ossia::optional<ossia::bounding_mode> bounding;
   ossia::optional<ossia::repetition_filter> repetition_filter;
+  ossia::optional<bool> muted{};
+  ossia::optional<bool> critical{};
   unit_t unit;
 
   extended_attributes extended;

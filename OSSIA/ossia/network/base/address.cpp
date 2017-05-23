@@ -160,6 +160,10 @@ bool address_base::get_muted() const { return {}; }
 
 address_base& address_base::set_muted(bool v) { return *this; }
 
+bool address_base::get_critical() const { return {}; }
+
+address_base& address_base::set_critical(bool v) { return *this; }
+
 value_with_unit get_value(const ossia::Destination& d)
 {
   ossia::net::address_base& addr = d.value.get();

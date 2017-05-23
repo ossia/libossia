@@ -33,6 +33,7 @@ protected:
   ossia::bounding_mode m_boundingMode{};
   ossia::repetition_filter m_repetitionFilter{};
   bool m_muted{};
+  bool m_critical{};
 
   mutable mutex_t m_valueMutex;
   ossia::value m_value;
@@ -93,6 +94,9 @@ public:
 
   bool get_muted() const final override;
   generic_address& set_muted(bool v) final override;
+
+  bool get_critical() const final override;
+  generic_address& set_critical(bool v) final override;
 
   void on_first_callback_added() final override;
   void on_removing_last_callback() final override;
