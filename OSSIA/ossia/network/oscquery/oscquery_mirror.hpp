@@ -2,6 +2,7 @@
 
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
+#include <ossia/network/oscquery/oscquery_client.hpp>
 #include <ossia/network/oscquery/detail/client.hpp>
 #include <ossia/detail/json.hpp>
 #include <readerwriterqueue.h>
@@ -95,7 +96,7 @@ private:
 
   void on_queryClose();
   void on_queryFail();
-  std::unique_ptr<osc::sender<net::osc_outbound_visitor>> m_oscSender;
+  std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
 
   ossia::oscquery::websocket_client m_websocketClient;

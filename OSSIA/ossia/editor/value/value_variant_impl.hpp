@@ -250,7 +250,7 @@ value_variant_type& operator=(value_variant_type&& other)
   return *this;
 }
 };
-template<> inline const float* value_variant_type::target() const { 
+template<> OSSIA_EXPORT inline const float* value_variant_type::target() const {
   if(m_type == Type0) 
     return &m_impl.m_value0 ;
   return nullptr; 

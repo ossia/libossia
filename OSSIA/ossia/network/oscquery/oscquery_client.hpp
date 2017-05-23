@@ -3,11 +3,62 @@
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/detail/string_map.hpp>
+#include <ossia/detail/mutex.hpp>
 
 namespace ossia
 {
 namespace oscquery
 {
+struct osc_outbound_visitor
+{
+  public:
+    oscpack::OutboundPacketStream& p;
+    void operator()(ossia::impulse) const
+    {
+    }
+    void operator()(int32_t i) const
+    {
+      p << int32_t(i);
+    }
+    void operator()(float f) const
+    {
+      p << float(f);
+    }
+    void operator()(bool b) const
+    {
+      p << bool(b);
+    }
+    void operator()(char c) const
+    {
+      p << char(c);
+    }
+    void operator()(const std::string& str) const
+    {
+      p << (ossia::string_view)str;
+    }
+    void operator()(ossia::vec2f vec) const
+    {
+      p << vec[0] << vec[1];
+    }
+    void operator()(ossia::vec3f vec) const
+    {
+      p << vec[0] << vec[1] << vec[2];
+    }
+    void operator()(ossia::vec4f vec) const
+    {
+      p << vec[0] << vec[1] << vec[2] << vec[3];
+    }
+    void operator()(const std::vector<ossia::value>& t) const
+    {
+      for (const auto& val : t)
+      {
+        val.apply(*this);
+      }
+    }
+    void operator()() const
+    {
+    }
+};
 
 struct oscquery_client
 {
@@ -16,7 +67,7 @@ struct oscquery_client
   string_map<ossia::net::address_base*> listening;
 
   std::string client_ip;
-  std::unique_ptr<osc::sender<net::osc_outbound_visitor>> sender;
+  std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> sender;
 
 public:
   oscquery_client() = default;
@@ -69,7 +120,7 @@ public:
 
   void openOSCSender(const ossia::net::network_logger& l,  uint16_t port)
   {
-    sender = std::make_unique<osc::sender<net::osc_outbound_visitor>>(l, client_ip, port);
+    sender = std::make_unique<osc::sender<oscquery::osc_outbound_visitor>>(l, client_ip, port);
   }
 };
 

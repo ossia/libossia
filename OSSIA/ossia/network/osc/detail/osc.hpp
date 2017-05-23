@@ -10,13 +10,6 @@
 // see http://stackoverflow.com/questions/23437778/comparing-3-modern-c-ways-to-convert-integral-values-to-strings
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
 #include <boost/lexical_cast.hpp>
-
-namespace oscpack
-{
-inline oscpack::OutboundPacketStream&
-operator<<(oscpack::OutboundPacketStream& p, const ossia::value& val);
-}
-
 namespace ossia
 {
 namespace net
@@ -63,7 +56,7 @@ struct osc_outbound_visitor
     {
       for (const auto& val : t)
       {
-        p << val;
+        val.apply(*this);
       }
     }
 
@@ -582,12 +575,14 @@ struct osc_write_domain_visitor
 
 namespace oscpack
 {
+/*
 inline oscpack::OutboundPacketStream&
 operator<<(oscpack::OutboundPacketStream& p, const ossia::value& val)
 {
   val.apply(ossia::net::osc_outbound_visitor{p});
   return p;
 }
+*/
 
 
 inline oscpack::OutboundPacketStream&
