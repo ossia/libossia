@@ -533,8 +533,18 @@ private Q_SLOTS:
 
   void test_link()
   {
-    ossia::value v;
-    v.target<const float>();
+    {
+      ossia::value v;
+      v.target<const float>();
+      v.target<const std::array<float, 3>>();
+    }
+
+    {
+      const ossia::value v;
+      v.target<const float>();
+      v.target<const std::array<float, 3>>();
+    }
+
   }
 
   /*! test generic */
