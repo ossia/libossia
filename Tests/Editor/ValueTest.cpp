@@ -531,6 +531,12 @@ private Q_SLOTS:
     //! \todo <= comparison with behavior
   }
 
+  void test_link()
+  {
+    ossia::value v;
+    v.target<const float>();
+  }
+
   /*! test generic */
   void test_generic()
   {
