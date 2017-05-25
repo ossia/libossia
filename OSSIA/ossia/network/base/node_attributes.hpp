@@ -28,7 +28,7 @@ namespace ossia
 namespace net
 {
 class node_base;
-class address_data;
+struct address_data;
 
 //! How many instances a node can have
 struct OSSIA_EXPORT instance_bounds
