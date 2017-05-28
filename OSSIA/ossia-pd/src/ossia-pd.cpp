@@ -366,13 +366,12 @@ template<typename T> void obj_dump(T *x){
         // tags
         auto tags = ossia::net::get_tags(*x->x_node);
         if (tags){
-            t_atom l[(*tags).size()];
-            int i = 0;
-            for (auto s : *tags){
-                SETSYMBOL(l+i,gensym(s.c_str()));
-                i++;
+            std::size_t N = (*tags).size();
+            std::vector<t_atom> l(N);
+            for(std::size_t i = 0; i < N; i++) {
+                SETSYMBOL(&l[i], gensym((*tags)[i].c_str()));
             }
-            outlet_anything(x->x_dumpout,gensym("tags"), (*tags).size(), l);
+            outlet_anything(x->x_dumpout,gensym("tags"), N, l.data());
         } else {
           outlet_anything(x->x_dumpout,gensym("tags"), 0, nullptr);
         }
