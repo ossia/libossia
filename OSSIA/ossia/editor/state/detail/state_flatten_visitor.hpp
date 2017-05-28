@@ -216,8 +216,8 @@ struct state_flatten_visitor_merger
   {
     auto to_append_index_empty = incoming.destination.index.empty();
     auto source_index_empty = existing.destination.index.empty();
-    if(same_vec_type(existing.message_value, incoming.message_value) ||
-       is_vec(existing.destination.address().get_value_type()))
+    if(incoming.message_value.valid() && (same_vec_type(existing.message_value, incoming.message_value) ||
+       is_vec(existing.destination.address().get_value_type())))
     {
       // We handle the Vec types a bit differently :
       // since it's very cheap, the value will contain the whole array data
@@ -385,8 +385,8 @@ struct state_flatten_visitor_merger
 
     auto to_append_index_empty = incoming.destination.index.empty();
     auto source_index_empty = existing.destination.index.empty();
-    if(same_vec_type(existing.message_value, incoming.message_value) ||
-       is_vec(existing.destination.address().get_value_type()))
+    if(incoming.message_value.valid() && (same_vec_type(existing.message_value, incoming.message_value) ||
+       is_vec(existing.destination.address().get_value_type())))
     {
       // We handle the Vec types a bit differently :
       // since it's very cheap, the value will contain the whole array data
