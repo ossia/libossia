@@ -3,7 +3,6 @@
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/base/address.hpp>
-#include <ossia/network/base/address_data.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 
@@ -19,7 +18,7 @@ namespace ossia
 namespace net
 {
 
-
+struct address_data;
 class protocol_base;
 
 //! Default implementation for address_base, with everything expected and mutable
@@ -34,6 +33,7 @@ protected:
   ossia::bounding_mode m_boundingMode{};
   ossia::repetition_filter m_repetitionFilter{};
   bool m_muted{};
+  bool m_critical{};
 
   mutable mutex_t m_valueMutex;
   ossia::value m_value;
@@ -59,14 +59,17 @@ public:
   void request_value() final override;
 
   ossia::net::generic_address& push_value(const ossia::value&) final override;
+  ossia::net::generic_address& push_value(ossia::value&&) final override;
   ossia::net::generic_address& push_value() final override;
 
   const ossia::value& getValue() const;
   ossia::value value() const final override;
   generic_address& set_value(const ossia::value&) override;
+  generic_address& set_value(ossia::value&&) override;
 
   /** Set a value without sending notifications **/
   void set_value_quiet(const ossia::value&) override;
+  void set_value_quiet(ossia::value&&) override;
   void set_value_quiet(const ossia::Destination&);
 
   ossia::val_type get_value_type() const final override;
@@ -91,6 +94,9 @@ public:
 
   bool get_muted() const final override;
   generic_address& set_muted(bool v) final override;
+
+  bool get_critical() const final override;
+  generic_address& set_critical(bool v) final override;
 
   void on_first_callback_added() final override;
   void on_removing_last_callback() final override;

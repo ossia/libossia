@@ -132,18 +132,18 @@ inline path_element operator/(const path_element& lhs, const any_instance& rhs)
 inline path_element operator/(const path_element& lhs, const any_node&)
 {
   return path_element{lhs.address +
-        "\\/[" + ossia::net::name_characters().to_string() + "]*"};
+        "\\/[" + std::string(ossia::net::name_characters()) + "]*"};
 }
 
 inline path_element operator/(const path_element& lhs, const any_path&)
 {
   return path_element{lhs.address +
-        "(\\/[" + ossia::net::name_characters().to_string() + "]*)+"};
+        "(\\/[" + std::string(ossia::net::name_characters()) + "]*)+"};
 }
 
 inline path_element operator/(const any_path&, const path_element& rhs)
 {
-  const std::string sub = ossia::net::name_characters().to_string();
+  const std::string sub = std::string(ossia::net::name_characters());
   std::string sub2 = "^([";
   sub2 += sub;
   sub2 += "]*:)(\\/?[";

@@ -27,6 +27,23 @@ struct t_model : t_obj_base
             obj_quarantining<t_model>(this);
         }
     }
+
+    static std::vector<t_model*>& rename(){
+        static std::vector<t_model*> rename;
+        return rename;
+    }
+
+    bool isRenamed(t_model* x){
+      return ossia::contains(x->rename(),x);
+    }
+
+    void renaming(t_model* x){
+        if ( !isRenamed(x) ) x->rename().push_back(x);
+    }
+
+    void derenaming(t_model* x){
+        x->rename().erase(std::remove(x->rename().begin(), x->rename().end(), x), x->rename().end());
+    }
 };
 
 } } // namespace

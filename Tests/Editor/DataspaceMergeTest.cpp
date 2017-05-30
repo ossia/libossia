@@ -54,10 +54,10 @@ private Q_SLOTS:
     static_assert(!ossia::detail::is_array<decltype(ossia::centimeter::dataspace_value)>::value, "");
     static_assert(ossia::detail::is_array<decltype(ossia::rgb::dataspace_value)>::value, "RGB is not iterable");
 
-    static_assert(!ossia::is_unit_v<int>, "");
-    static_assert(ossia::is_unit_v<ossia::centimeter_u>, "");
-    static_assert(ossia::is_unit_v<ossia::rgb_u>, "");
-    static_assert(!ossia::is_unit_v<ossia::color_u>, "");
+    static_assert(!ossia::is_unit<int>::value, "");
+    static_assert(ossia::is_unit<ossia::centimeter_u>::value, "");
+    static_assert(ossia::is_unit<ossia::rgb_u>::value, "");
+    static_assert(!ossia::is_unit<ossia::color_u>::value, "");
   }
 
   void convert_test()
@@ -831,8 +831,49 @@ private Q_SLOTS:
         QVERIFY(s.size() == 1);
         QVERIFY(*s.begin() == m1);
       }
+  }
+
+  void test_merge_vec_in_tuple()
+  {
+    ossia::TestUtils t;
+    ossia::state s;
+
+    ossia::message m1{*t.tuple_addr, std::vector<ossia::value>{0., 0.5, 0.2}, {}};
+    ossia::flatten_and_filter(s, ossia::message{m1});
+
+    ossia::message m2{*t.tuple_addr, ossia::vec3f{0., 0., 0.}, {}};
+    ossia::flatten_and_filter(s, ossia::message{m2});
+
+    QVERIFY(s.size() == 1);
+
+    ossia::message m3{*t.tuple_addr, std::vector<ossia::value>{0., 0., 0.}, {}};
+    ossia::print(std::cerr, m3);
+    std::cerr << std::endl;
+    ossia::print(std::cerr, *s.begin());
+    QVERIFY(*s.begin() == m3);
 
   }
+  void test_merge_tuple_in_vec()
+  {
+    ossia::TestUtils t;
+    ossia::state s;
+
+    ossia::message m1{*t.vec3f_addr, ossia::vec3f{0.f, 0.5f, 0.2f}, {}};
+    ossia::flatten_and_filter(s, ossia::message{m1});
+
+    ossia::message m2{*t.vec3f_addr, std::vector<ossia::value>{0.f, 0.f, 0.f}, {}};
+    ossia::flatten_and_filter(s, ossia::message{m2});
+
+    QVERIFY(s.size() == 1);
+
+    ossia::message m3{*t.vec3f_addr, ossia::vec3f{0.f, 0.f, 0.f}, {}};
+    ossia::print(std::cerr, m3);
+    std::cerr << std::endl;
+    ossia::print(std::cerr, *s.begin());
+    QVERIFY(*s.begin() == m3);
+
+  }
+
 
 };
 QTEST_APPLESS_MAIN(DataspaceMergeTest)

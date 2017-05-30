@@ -63,7 +63,6 @@ private Q_SLOTS:
           std::cerr << ossia::get_pretty_unit_text(utype{}) << std::endl;
         });
       });
-
     }
 };
 

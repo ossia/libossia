@@ -39,18 +39,15 @@ bool t_param :: do_registration(ossia::net::node_base* node){
 
     if(!node) return false;
 
+    /*
     std::string absolute_path = get_absolute_path<t_param>(this);
     std::string address_string = ossia::net::address_string_from_node(*node);
-
     if (absolute_path != address_string) return false;
+    */
 
-    if(node->find_child(x_name->s_name)){
-        // pd_error(this, "a parameter with adress '%s' already exists.", x_name->s_name);
-        x_node = nullptr;
-        return false;
-    }
+    x_node = &ossia::net::create_node(*node, x_name->s_name);
+    if (x_node->get_name() != std::string(x_name->s_name)) renaming(this);
 
-    x_node = node->create_child(x_name->s_name);
     x_node->about_to_be_deleted.connect<t_param, &t_param::isDeleted>(this);
     ossia::net::address_base* localAddress{};
     if (std::string(x_type->s_name) == "float") {
@@ -158,13 +155,21 @@ bool t_param :: do_registration(ossia::net::node_base* node){
 
 bool t_param :: unregister(){
     if (x_node) {
-        if (x_node->get_parent()) x_node->get_parent()->remove_child(x_name->s_name);
+        if (x_node->get_parent()) x_node->get_parent()->remove_child(*x_node);
         x_node = nullptr;
         for (auto remote : t_remote::quarantine()){
             obj_register<t_remote>(static_cast<t_remote*>(remote));
         }
     }
     obj_quarantining<t_param>(this);
+
+    derenaming(this);
+    for (auto param : t_param::rename()){
+        if ( strcmp(param->x_name->s_name, x_name->s_name) == 0 ){
+            param->unregister();
+            obj_register<t_param>(param);
+        }
+    }
     return true;
 }
 
@@ -198,7 +203,7 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
-            if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/') x->x_absolute = true;
+            x->x_absolute = std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/';
 
         } else {
             pd_error(x,"You have to pass a name as the first argument");

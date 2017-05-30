@@ -79,6 +79,7 @@ inline bool url_decode(const std::string& in, std::string& out)
         {
           return false;
         }
+        break;
       }
       case '+':
         out += ' ';

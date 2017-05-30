@@ -43,7 +43,7 @@ inline oscpack::OutboundPacketStream& operator<<(
 }
 
 
-template <int BufferSize = 2048>
+template <typename ValueWriter, int BufferSize = 2048>
 class MessageGenerator
 {
 public:
@@ -109,6 +109,13 @@ private:
   {
   }
 
+  template <typename... Args>
+  void subfunc(const ossia::value& arg1, Args&&... args)
+  {
+    arg1.apply(ValueWriter{p});
+    subfunc(args...);
+  }
+
   template <typename Arg1, typename... Args>
   void subfunc(Arg1&& arg1, Args&&... args)
   {
@@ -126,6 +133,7 @@ private:
 
 
 // TODO have a queue of dynamic messages
+template<typename ValueWriter>
 class DynamicMessageGenerator
 {
 public:

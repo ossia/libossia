@@ -2,7 +2,7 @@
 
 #include <boost/version.hpp>
 #if defined(__has_include)
-  #if __has_include(<string_view>)
+  #if __has_include(<string_view>) &&  __cplusplus > 201402L
     #define OSSIA_STRING_VIEW 1
     #include <string_view>
     namespace ossia
@@ -14,6 +14,7 @@
     { using string_view = std::experimental::string_view; }
   #endif
 #endif
+
 #if !defined(OSSIA_STRING_VIEW)
   #if BOOST_VERSION >= 106100
     #define HAS_BOOST_STRING_VIEW
@@ -26,6 +27,13 @@
     namespace ossia
     { using string_view = boost::string_ref; }
   #endif
+#endif
+
+#if __cplusplus <= 201402L || __clang__ || defined(_MSC_VER) || (defined(__GNUC__) && (__GNUC__ < 7))
+    inline std::string& operator+=(std::string& s, const ossia::string_view& v) {
+        s.append(v.data(), v.size());
+        return s;
+    }
 #endif
 
 namespace ossia

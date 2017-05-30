@@ -216,6 +216,8 @@ private Q_SLOTS:
     message m0_bis{{*n1, ossia::destination_index{0}}, float{7.}};
     flatten_and_filter(s1, m0_bis);
 
+    ossia::print(std::cerr, s1.children()[0]);
+    std::cerr << std::endl;
     state_element expected_bis = piecewise_message{*n1, std::vector<ossia::value>{float{7.}, float{10.}, float{15.}}, {}};
     QVERIFY(s1.children()[0] == expected_bis);
   }

@@ -46,8 +46,8 @@ if(OSSIA_QT)
   install_headers_rec("${OSSIA_QT_HEADERS}")
   install(
       FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/qmldir
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml/Node.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/qmldir
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Node.qml
       DESTINATION lib)
 endif()
 # Install export header

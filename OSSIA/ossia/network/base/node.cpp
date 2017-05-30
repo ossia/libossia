@@ -2,6 +2,7 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/address.hpp>
+#include <ossia/network/base/address_data.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/detail/optional.hpp>
@@ -431,8 +432,8 @@ OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(description, description, "description")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(priority, priority, "priority")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(refresh_rate, refresh_rate, "refreshRate")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(value_step_size, value_step_size, "valueStepsize")
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(critical, critical, "critical")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(zombie, zombie, "zombie")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(hidden, hidden, "hidden")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_name, app_name, "appName")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_version, app_version, "appVersion")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_creator, app_creator, "appCreator")
@@ -489,6 +490,10 @@ void set_value(ossia::net::node_base& n, value v)
 {
   if(auto addr = n.get_address()) addr->set_value(std::move(v));
 }
+void set_value(ossia::net::address_data& n, value v)
+{
+  n.value = std::move(v);
+}
 
 ossia::string_view text_value_type()
 { return make_string_view("type"); }
@@ -513,6 +518,10 @@ void set_domain(ossia::net::node_base& n, domain v)
 {
   if(auto addr = n.get_address()) addr->set_domain(std::move(v));
 }
+void set_domain(ossia::net::address_data& n, domain v)
+{
+  n.domain = std::move(v);
+}
 
 ossia::string_view text_access_mode()
 { return make_string_view("access"); }
@@ -524,6 +533,10 @@ optional<access_mode> get_access_mode(const ossia::net::node_base& n)
 void set_access_mode(ossia::net::node_base& n, access_mode v)
 {
   if(auto addr = n.get_address()) addr->set_access(std::move(v));
+}
+void set_access_mode(ossia::net::address_data& n, access_mode v)
+{
+  n.access = v;
 }
 
 ossia::string_view text_bounding_mode()
@@ -537,6 +550,10 @@ void set_bounding_mode(ossia::net::node_base& n, bounding_mode v)
 {
   if(auto addr = n.get_address()) addr->set_bounding(std::move(v));
 }
+void set_bounding_mode(ossia::net::address_data& n, bounding_mode v)
+{
+  n.bounding = v;
+}
 
 ossia::string_view text_muted()
 { return make_string_view("muted"); }
@@ -548,6 +565,26 @@ muted get_muted(const ossia::net::node_base& n)
 void set_muted(ossia::net::node_base& n, muted v)
 {
   if(auto addr = n.get_address()) addr->set_muted(v);
+}
+void set_muted(ossia::net::address_data& n, muted v)
+{
+  n.muted = v;
+}
+
+ossia::string_view text_critical()
+{ return make_string_view("critical"); }
+critical get_critical(const ossia::net::node_base& n)
+{
+  if(auto addr = n.get_address()) return addr->get_critical();
+  return false;
+}
+void set_critical(ossia::net::node_base& n, critical v)
+{
+  if(auto addr = n.get_address()) addr->set_critical(v);
+}
+void set_critical(ossia::net::address_data& n, critical v)
+{
+  n.critical = v;
 }
 
 ossia::string_view text_repetition_filter()
@@ -626,7 +663,7 @@ static node_base& find_or_create_node_rec(
     else
     {
       // Create a node
-      auto& child = *node.create_child(cur.to_string());
+      auto& child = *node.create_child(std::string(cur));
 
       // Recurse on it
       return find_or_create_node_rec(
@@ -644,7 +681,7 @@ static node_base& find_or_create_node_rec(
     else
     {
       // Create and return the node
-      return  *node.create_child(address.to_string());
+      return *node.create_child(std::string(address));
     }
   }
 }
@@ -669,7 +706,7 @@ static node_base& create_node_rec(
     else
     {
       // Create a node
-      auto& child = *node.create_child(cur.to_string());
+      auto& child = *node.create_child(std::string(cur));
 
       // Recurse on it
       return create_node_rec(
@@ -679,7 +716,7 @@ static node_base& create_node_rec(
   else
   {
     // Create and return the node
-    return *node.create_child(address.to_string());
+    return *node.create_child(std::string(address));
   }
 }
 

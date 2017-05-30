@@ -22,7 +22,6 @@ namespace net
 class device_base;
 class address_base;
 class node_base;
-
 /**
  * @brief The node_base class
  *

@@ -1,5 +1,8 @@
 #pragma once
 #include <ossia/network/common/complex_type.hpp>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/network/common/extended_types.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/detail/any_map.hpp>
 
@@ -35,6 +38,8 @@ struct address_data
   ossia::optional<ossia::access_mode> access;
   ossia::optional<ossia::bounding_mode> bounding;
   ossia::optional<ossia::repetition_filter> repetition_filter;
+  ossia::optional<bool> muted{};
+  ossia::optional<bool> critical{};
   unit_t unit;
 
   extended_attributes extended;

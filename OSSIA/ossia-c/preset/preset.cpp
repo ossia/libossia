@@ -238,7 +238,7 @@ bool ossia_presets_has_key(
       return lippincott();
     }
   }
-  return OSSIA_PRESETS_NULL_PRESET;
+  return false;
 }
 
 ossia_preset_result ossia_presets_key_to_string(

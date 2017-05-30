@@ -3,6 +3,7 @@
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
+#include <ossia/network/base/device.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <boost/algorithm/string/erase.hpp>
@@ -210,13 +211,16 @@ std::future<void> oscquery_mirror_protocol::pull_async(net::address_base& addres
           ossia::net::osc_address_string(address),
           get_promise{std::move(promise), &address}));
   */
-  query_send_message(text + detail::query_value().to_string());
+  text += detail::query_value();
+  query_send_message(text);
   return fut;
 }
 
 void oscquery_mirror_protocol::request(net::address_base& address)
 {
-  query_send_message(net::osc_address_string(address) + detail::query_value().to_string());
+  auto text = net::osc_address_string(address);
+  text += detail::query_value();
+  query_send_message(text);
 }
 
 bool oscquery_mirror_protocol::push(const net::address_base& addr)
@@ -247,7 +251,7 @@ bool oscquery_mirror_protocol::observe(net::address_base& address, bool enable)
   if (enable)
   {
     auto str = net::osc_address_string(address);
-    query_send_message(str + detail::query_listen_true().to_string());
+    query_send_message(str + std::string(detail::query_listen_true()));
     m_listening.insert(
           std::make_pair(str, &address));
   }
@@ -255,7 +259,7 @@ bool oscquery_mirror_protocol::observe(net::address_base& address, bool enable)
   {
     auto str = net::osc_address_string(address);
     // TODO for minuit when disconnecting, disable listening for everything.
-    query_send_message(str + detail::query_listen_false().to_string());
+    query_send_message(str + std::string(detail::query_listen_false()));
     m_listening.erase(str);
   }
   return true;
@@ -310,9 +314,9 @@ void oscquery_mirror_protocol::request_remove_node(
   if(auto parent = self.get_parent())
   {
     std::string req; req.reserve(64);
-    req += net::osc_address_string(*parent);
+    req = net::osc_address_string(*parent);
     req +='?';
-    req += detail::remove_node().to_string();
+    req += detail::remove_node();
     req += '=';
     req += self.get_name();
 
@@ -332,12 +336,12 @@ void oscquery_mirror_protocol::set_fail_callback(std::function<void ()> f)
 
 void oscquery_mirror_protocol::request_add_node(
     net::node_base& parent,
-    net::address_data dat)
+    const net::address_data& dat)
 {
   std::string req; req.reserve(64);
   req += net::osc_address_string(parent);
   req +='?';
-  req += detail::add_node().to_string();
+  req += detail::add_node();
   req += '=';
   req += dat.name;
 
@@ -431,7 +435,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
         case message_type::Device:
         {
           // The ip of the OSC server on the server
-          m_oscSender = std::make_unique<osc::sender>(
+          m_oscSender = std::make_unique<osc::sender<oscquery::osc_outbound_visitor>>(
                 m_logger,
                 to_ip(m_websocketHost),
                 json_parser::get_port(*data));

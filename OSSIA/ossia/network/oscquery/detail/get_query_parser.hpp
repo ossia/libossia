@@ -35,12 +35,12 @@ public:
       // Then we enable / disable listening
       if(listen_text == detail::text_true())
       {
-        clt->start_listen(path.to_string(), node.get_address());
+        clt->start_listen(std::string(path), node.get_address());
         return {};
       }
       else if(listen_text == detail::text_false())
       {
-        clt->stop_listen(path.to_string());
+        clt->stop_listen(std::string(path));
         return {};
       }
       else
@@ -96,7 +96,7 @@ public:
           if(node)
             return oscquery::json_writer::query_namespace(*node);
           else
-            throw node_not_found_error{path.to_string()};
+            throw node_not_found_error{std::string(path)};
         }
       }
       else
@@ -107,7 +107,7 @@ public:
           auto node = ossia::net::find_node(proto.get_device().get_root_node(), path);
           // First check if we have the path
           if(!node)
-            throw node_not_found_error{path.to_string()};
+            throw node_not_found_error{std::string(path)};
 
           // Listen
           auto listen_it = parameters.find(detail::listen());

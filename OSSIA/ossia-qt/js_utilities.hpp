@@ -4,7 +4,6 @@
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/base/node.hpp>
-#include <ossia/network/generic/generic_address.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia-c/preset/preset.hpp>
 #include <ossia-qt/metatypes.hpp>

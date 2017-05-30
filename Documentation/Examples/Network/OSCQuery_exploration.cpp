@@ -15,6 +15,7 @@
 #include <memory>
 #include <functional>
 #include <ossia/network/oscquery/detail/http_client.hpp>
+#include <ossia/network/base/address_data.hpp>
 using namespace ossia;
 using namespace ossia::net;
 using namespace std;
@@ -38,10 +39,10 @@ int main()
 
   auto node = ossia::net::find_node(device, "/test/my_float");
   // Request to add an instance :
-  protocol->request_add_node(*node, {"layer"});
+  protocol->request_add_node(*node, address_data{"layer"});
 
   // Again : (will become layer.1)
-  protocol->request_add_node(*node, {"layer"});
+  protocol->request_add_node(*node, address_data{"layer"});
 
   // Wait a bit to get a reply
   std::this_thread::sleep_for(std::chrono::milliseconds(100));

@@ -119,18 +119,16 @@ struct is_unit
 
     static const bool value = sizeof(test<T>(0)) == 1;
 };
-template<typename T>
-constexpr bool is_unit_v = is_unit<T>::value;
 
 template<typename T, typename U>
-typename std::enable_if_t<is_unit_v<T> && is_unit_v<U>, bool> operator==(T, U) { return false; }
+typename std::enable_if_t<is_unit<T>::value && is_unit<U>::value, bool> operator==(T, U) { return false; }
 template<typename T, typename U>
-typename std::enable_if_t<is_unit_v<T> && is_unit_v<U>, bool> operator!=(T, U) { return true; }
+typename std::enable_if_t<is_unit<T>::value && is_unit<U>::value, bool> operator!=(T, U) { return true; }
 
 template<typename T>
-typename std::enable_if_t<is_unit_v<T>, bool> operator==(T, T) { return true; }
+typename std::enable_if_t<is_unit<T>::value, bool> operator==(T, T) { return true; }
 template<typename T>
-typename std::enable_if_t<is_unit_v<T>, bool> operator!=(T, T) { return false; }
+typename std::enable_if_t<is_unit<T>::value, bool> operator!=(T, T) { return false; }
 
 static const constexpr int dataspace_count = 8;
 static const constexpr int unit_count = 2 + 8 + 11 + 4 + 3 + 6 + 6 + 9;

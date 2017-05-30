@@ -29,13 +29,13 @@ std::string get_pretty_unit_text(const unit_t& u)
     using namespace std::literals;
     if(u)
     {
-        auto str = get_dataspace_text(u).to_string();
+        std::string str{get_dataspace_text(u)};
         auto str2 = get_unit_text(u);
         if(!str2.empty())
         {
           str.reserve(str.size() + 1 + str2.size());
           str += '.';
-          str += str2.to_string();
+          str += str2;
         }
         return str;
     }

@@ -2,12 +2,14 @@
 
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
+#include <ossia/network/oscquery/oscquery_client.hpp>
 #include <ossia/network/oscquery/detail/client.hpp>
-#include <ossia/network/base/address_data.hpp>
 #include <ossia/detail/json.hpp>
 #include <readerwriterqueue.h>
+#include <ossia/network/osc/detail/osc.hpp>
 namespace osc
 {
+template<typename T>
 class sender;
 class receiver;
 }
@@ -20,6 +22,7 @@ class IpEndpointName;
 
 namespace ossia
 {
+namespace net { struct address_data; }
 namespace oscquery
 {
 class http_get_request;
@@ -69,7 +72,7 @@ public:
    * @param Parent of the new node
    * @param Data of the new node
    */
-  void request_add_node(net::node_base&, ossia::net::address_data);
+  void request_add_node(net::node_base&, const ossia::net::address_data&);
 
   /**
    * @brief Request a node removal from the server
@@ -93,7 +96,7 @@ private:
 
   void on_queryClose();
   void on_queryFail();
-  std::unique_ptr<osc::sender> m_oscSender;
+  std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
 
   ossia::oscquery::websocket_client m_websocketClient;

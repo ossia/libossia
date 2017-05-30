@@ -67,11 +67,15 @@ public:
   { }
   net::address_base&push_value(const ossia::value&) override
   { return *this; }
+  net::address_base&push_value(ossia::value&&) override
+  { return *this; }
   net::address_base&push_value() override
   { return *this; }
   ossia::value value() const override
   { return {}; }
   net::address_base& set_value(const ossia::value&) override
+  { return *this; }
+  net::address_base& set_value(ossia::value&&) override
   { return *this; }
   val_type get_value_type() const override
   { return {}; }
@@ -133,11 +137,15 @@ public:
   { }
   net::address_base&push_value(const ossia::value&) override
   { return *this; }
+  net::address_base&push_value(ossia::value&&) override
+  { return *this; }
   net::address_base&push_value() override
   { return *this; }
   ossia::value value() const override
   { return {}; }
   net::address_base& set_value(const ossia::value&) override
+  { return *this; }
+  net::address_base& set_value(ossia::value&&) override
   { return *this; }
   val_type get_value_type() const override
   { return {}; }

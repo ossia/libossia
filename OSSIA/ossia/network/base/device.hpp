@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/network/base/node.hpp>
-#include <ossia/network/base/address_data.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
@@ -9,6 +8,7 @@ namespace ossia
 {
 namespace net
 {
+struct address_data;
 class protocol_base;
 
 /**
@@ -96,7 +96,7 @@ public:
 
   //! Called when a network client requests the creation of an instance.
   //!  First argument is the path to the parent.
-  Nano::Signal<void(std::string, address_data)> on_add_node_requested;
+  Nano::Signal<void(std::string, const address_data&)> on_add_node_requested;
 
   //! Called when a network client requests the removal of an instance.
   //! Argument is the path of the parent and the node to remove.

@@ -28,6 +28,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/linear.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/power.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/sin.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/behavior_variant_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/exceptions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/editor.hpp"
 
@@ -70,6 +71,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_traits.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_algorithms.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value_variant_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/vec.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/dataspace_parse.hpp"
@@ -83,6 +85,8 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_base_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_base_defs_fwd.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_base_variants.hpp"	
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/value_with_unit.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/position.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/orientation.hpp"
@@ -116,6 +120,8 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/array_domain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/value_set_domain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/apply_domain.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base_impl.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_variant_impl.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address_data.hpp"

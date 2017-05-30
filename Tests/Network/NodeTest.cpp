@@ -2,6 +2,7 @@
 #include <ossia/ossia.hpp>
 #include <iostream>
 #include <ossia/network/common/path.hpp>
+#include <ossia-qt/js_utilities.hpp>
 
 using namespace ossia;
 using namespace ossia::net;
@@ -11,6 +12,7 @@ class NodeTest : public QObject
 {
   Q_OBJECT
 private Q_SLOTS:
+
 
   /*! test life cycle and accessors functions */
   void test_basic()
@@ -38,6 +40,30 @@ private Q_SLOTS:
     auto brother = device.create_child("foo");
 
     QVERIFY(brother->get_name() == "foo.1");
+  }
+
+  void test_instances()
+  {
+      ossia::net::generic_device dev;
+      QVERIFY((ossia::net::create_node(dev, "/foo/bar").get_name()) == "bar");
+      QVERIFY((ossia::net::create_node(dev, "/foo/bar").get_name()) == "bar.1");
+      QVERIFY((ossia::net::create_node(dev, "/foo/bar").get_name()) == "bar.2");
+      QVERIFY((ossia::net::create_node(dev, "/foo/bar").get_name()) == "bar.3");
+
+      QVERIFY((ossia::net::create_node(dev, "/foo/baz.0").get_name()) == "baz.0");
+      QVERIFY((ossia::net::create_node(dev, "/foo/baz.0").get_name()) == "baz.1");
+      QVERIFY((ossia::net::create_node(dev, "/foo/baz.0").get_name()) == "baz.2");
+      QVERIFY((ossia::net::create_node(dev, "/foo/baz.0").get_name()) == "baz.3");
+
+      QVERIFY((ossia::net::create_node(dev, "/foo/blop.2").get_name()) == "blop.2");
+      QVERIFY((ossia::net::create_node(dev, "/foo/blop").get_name()) == "blop");
+      QVERIFY((ossia::net::create_node(dev, "/foo/blop").get_name()) == "blop.3");
+      QVERIFY((ossia::net::create_node(dev, "/foo/blop").get_name()) == "blop.4");
+
+      QVERIFY((ossia::net::create_node(dev, "/foo/flop.2").get_name()) == "flop.2");
+      QVERIFY((ossia::net::create_node(dev, "/foo/flop.2").get_name()) == "flop.3");
+      QVERIFY((ossia::net::create_node(dev, "/foo/flop.2").get_name()) == "flop.4");
+      QVERIFY((ossia::net::create_node(dev, "/foo/flop.2").get_name()) == "flop.5");
   }
 
   /*! test edition functions */
@@ -132,22 +158,52 @@ private Q_SLOTS:
 
   void test_sanitize()
   {
+      using namespace std::literals;
       QCOMPARE(QString::fromStdString(sanitize_name("foo")), QString("foo"));
       QCOMPARE(QString::fromStdString(sanitize_name("foo*")), QString("foo_"));
       QCOMPARE(QString::fromStdString(sanitize_name("fo$o$*")), QString("fo_o__"));
       QCOMPARE(QString::fromStdString(sanitize_name("")), QString(""));
 
-      QCOMPARE(QString::fromStdString(sanitize_name("foo", {"foo"})), QString("foo.1"));
-      QCOMPARE(QString::fromStdString(sanitize_name("foo", {"foo", "foo.1"})), QString("foo.2"));
+      QCOMPARE(QString::fromStdString(sanitize_name("foo"s, {"foo"})), QString("foo.1"));
+      QCOMPARE(QString::fromStdString(sanitize_name("foo"s, {"foo", "foo.1"})), QString("foo.2"));
 
-      QCOMPARE(QString::fromStdString(sanitize_name("foo.1", {"foo"})), QString("foo.1"));
-      QCOMPARE(QString::fromStdString(sanitize_name("foo.1", {"foo", "foo.1"})), QString("foo.2"));
+      QCOMPARE(QString::fromStdString(sanitize_name("foo.1"s, {"foo"})), QString("foo.1"));
+      QCOMPARE(QString::fromStdString(sanitize_name("foo.1"s, {"foo.1"})), QString("foo.2"));
+      QCOMPARE(QString::fromStdString(sanitize_name("foo.1"s, {"foo", "foo.1"})), QString("foo.2"));
 
-      QCOMPARE(QString::fromStdString(sanitize_name("foo.2", {"foo"})), QString("foo.2"));
-      QCOMPARE(QString::fromStdString(sanitize_name("foo.2", {"foo", "foo.1"})), QString("foo.2"));
+      QCOMPARE(QString::fromStdString(sanitize_name("foo.2"s, {"foo"})), QString("foo.2"));
+      QCOMPARE(QString::fromStdString(sanitize_name("foo.2"s, {"foo", "foo.1"})), QString("foo.2"));
 
-      QCOMPARE(QString::fromStdString(sanitize_name("foo.3", {"foo"})), QString("foo.3"));
-      QCOMPARE(QString::fromStdString(sanitize_name("foo.3", {"foo", "foo.1"})), QString("foo.3"));
+      QCOMPARE(QString::fromStdString(sanitize_name("foo.3"s, {"foo"})), QString("foo.3"));
+      QCOMPARE(QString::fromStdString(sanitize_name("foo.3"s, {"foo", "foo.1"})), QString("foo.3"));
+
+
+      QVERIFY((ossia::net::sanitize_name("foo"s, {"foo"})) == "foo.1");
+      QVERIFY((ossia::net::sanitize_name("foo"s, {"foo", "foo.1"})) == "foo.2");
+
+      QVERIFY((ossia::net::sanitize_name(QString("foo"), {QString("foo")})) == "foo.1");
+      QVERIFY((ossia::net::sanitize_name(QString("foo"), {QString("foo"), QString("foo.1")})) == "foo.2");
+
+      QVERIFY((ossia::net::sanitize_name(QString("foo34"), {QString("foo34")})) == "foo34.1");
+      QVERIFY((ossia::net::sanitize_name(QString("foo34"), {QString("foo34"), QString("foo34.1")})) == "foo34.2");
+
+      qDebug() <<ossia::net::sanitize_name(QString("State.1"), {QString("State.1")});
+      QVERIFY((ossia::net::sanitize_name(QString("State.1"), {QString("State.1")})) == "State.2");
+      QVERIFY((ossia::net::sanitize_name(QString("State.1"), {QString("State.1"), QString("State.2")})) == "State.3");
+      QVERIFY((ossia::net::sanitize_name(QString("State.1"), {QString("State.1"), QString("State.2")})) == "State.3");
+
+
+      QVERIFY((ossia::net::sanitize_name(QString("State.2"), {QString("State.1")})) == "State.2");
+      QVERIFY((ossia::net::sanitize_name(QString("State.2"), {QString("State.1"), QString("State.2")})) == "State.3");
+
+
+      const char state1[]{'S', 't', 'a', 't', 'e', '.', '1'};
+      QVERIFY((ossia::net::sanitize_name(
+                   QString("State.1"),
+                    {"TimeNode.0", "Event.0", "State.0", "TimeNode.1", "bogs3tone68", "State.1"})) == "State.2");
+      QVERIFY((ossia::net::sanitize_name(
+                   QString::fromLatin1(state1, 7),
+      {QString::fromLatin1(state1, 7)})) == "State.2");
   }
 
 
@@ -248,10 +304,8 @@ private Q_SLOTS:
     n.set(app_creator_attribute{}, "Lelouch vi Brittania");
     QVERIFY((bool)get_app_creator(n));
     QCOMPARE(*get_app_creator(n), std::string("Lelouch vi Brittania"));
-
-
-
   }
+
 };
 
 QTEST_APPLESS_MAIN(NodeTest)
