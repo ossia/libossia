@@ -7,7 +7,8 @@ set(MAXSDK_AUDIO_LIBRARY NOTFOUND)
 set(MAXSDK_CRT_LIBRARY NOTFOUND)
 find_path(
     MAXSDK_MAINPATH "c74support"
-    HINTS "$ENV{HOME}/Documents/Max 7/Packages/max-sdk-7.1.0/source"
+    HINTS "$ENV{HOME}/Documents/Max 7/Packages/max-sdk-7.3.3/source" 
+          "$ENV{HOME}/Documents/Max 7/Packages/max-sdk-7.1.0/source"
     DOC "Insert main path to MaxSDK (download it from http://cycling74.com/products/sdk/ for both MacOSX and Windows)")
 
 # Just to test if Max/MSP found!!
