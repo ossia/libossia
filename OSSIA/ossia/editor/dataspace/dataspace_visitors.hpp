@@ -22,10 +22,18 @@ ossia::string_view get_dataspace_text(const ossia::unit_t&);
 
 /**
  * @brief get_unit_text
- * @return Text corresponding to the unit. For instance "rgb" or "xyz".
+ * @return Text corresponding to the unit. For instance "rgb" or "cartesian3D".
  */
 OSSIA_EXPORT
 ossia::string_view get_unit_text(const ossia::unit_t&);
+
+/**
+ * @brief get_unit_accessors
+ * @return If the unit has an array-like type (e.g. RGB color, XY point),
+ *         this returns a string of array attributes. Else an empty string.
+ */
+OSSIA_EXPORT
+ossia::string_view get_unit_accessors(const ossia::unit_t&);
 
 /**
  * @brief get_pretty_unit_text Unit for human readability and debugging

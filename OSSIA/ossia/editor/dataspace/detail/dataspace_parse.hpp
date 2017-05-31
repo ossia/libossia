@@ -221,6 +221,37 @@ struct unit_text_visitor
   }
 };
 
+struct unit_accessor_visitor
+{
+  OSSIA_INLINE ossia::string_view operator()(const angle_u& dataspace)
+  { return {}; }
+  OSSIA_INLINE ossia::string_view operator()(const color_u& dataspace)
+  { return ossia::apply(*this, dataspace); }
+  OSSIA_INLINE ossia::string_view operator()(const distance_u& dataspace)
+  { return {}; }
+  OSSIA_INLINE ossia::string_view operator()(const gain_u& dataspace)
+  { return {}; }
+  OSSIA_INLINE ossia::string_view operator()(const position_u& dataspace)
+  { return ossia::apply(*this, dataspace); }
+  OSSIA_INLINE ossia::string_view operator()(const orientation_u& dataspace)
+  { return ossia::apply(*this, dataspace); }
+  OSSIA_INLINE ossia::string_view operator()(const speed_u& dataspace)
+  { return {}; }
+  OSSIA_INLINE ossia::string_view operator()(const timing_u& dataspace)
+  { return {}; }
+
+  template<typename Unit>
+  OSSIA_INLINE ossia::string_view operator()(Unit)
+  {
+    return Unit::array_parameters();
+  }
+
+  OSSIA_INLINE ossia::string_view operator()()
+  {
+    return {};
+  }
+};
+
 struct dataspace_text_visitor
 {
   template<typename Dataspace>
