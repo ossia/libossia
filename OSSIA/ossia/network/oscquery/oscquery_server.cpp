@@ -76,9 +76,6 @@ void oscquery_server_protocol::request(net::address_base&)
 
 bool oscquery_server_protocol::push(const net::address_base& addr)
 {
-  if (addr.get_access() == ossia::access_mode::GET)
-    return false;
-
   auto val = net::filter_value(addr);
   if (val.valid())
   {
