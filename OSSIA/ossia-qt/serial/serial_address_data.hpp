@@ -1,6 +1,8 @@
 #pragma once
 #include <ossia-qt/js_utilities.hpp>
 
+#include <ossia/network/base/address_data.hpp>
+
 namespace ossia
 {
 namespace net
