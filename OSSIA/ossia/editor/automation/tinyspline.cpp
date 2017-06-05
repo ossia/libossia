@@ -882,7 +882,7 @@ void ts_bspline_move(tsBSpline* from, tsBSpline* to)
     to->knots = from->knots;
     ts_bspline_default(from);
 }
-
+OSSIA_EXPORT
 tsError ts_bspline_new(
     const size_t deg, const size_t dim,
     const size_t n_ctrlp, const tsBSplineType type,

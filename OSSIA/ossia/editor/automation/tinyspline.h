@@ -2,7 +2,7 @@
 #define	TINYSPLINE_H
 
 #include <stddef.h>
-
+#include <ossia_export.h>
 #ifdef	__cplusplus
 extern "C" {
 #endif
@@ -48,32 +48,32 @@ typedef float tsReal;
  */
 typedef enum
 {
-	/* No error. */
-	TS_SUCCESS = 0,
+  /* No error. */
+  TS_SUCCESS = 0,
 
-	/* Unable to allocate memory (using malloc/realloc). */
-	TS_MALLOC = -1,
+  /* Unable to allocate memory (using malloc/realloc). */
+  TS_MALLOC = -1,
 
-	/* The dimension of the control points are 0. */
-	TS_DIM_ZERO = -2,
+  /* The dimension of the control points are 0. */
+  TS_DIM_ZERO = -2,
 
-	/* Degree of spline (deg) >= number of control points (n_ctrlp). */
-	TS_DEG_GE_NCTRLP = -3,
+  /* Degree of spline (deg) >= number of control points (n_ctrlp). */
+  TS_DEG_GE_NCTRLP = -3,
 
-	/* Spline is not defined at knot value u. */
-	TS_U_UNDEFINED = -4,
+  /* Spline is not defined at knot value u. */
+  TS_U_UNDEFINED = -4,
 
-	/* Multiplicity of a knot (s) > order of spline.  */
-	TS_MULTIPLICITY = -5,
+  /* Multiplicity of a knot (s) > order of spline.  */
+  TS_MULTIPLICITY = -5,
 
-	/* Decreasing knot vector. */
-	TS_KNOTS_DECR = -6,
+  /* Decreasing knot vector. */
+  TS_KNOTS_DECR = -6,
 
-	/* Unexpected number of knots. */
-	TS_NUM_KNOTS = -7,
+  /* Unexpected number of knots. */
+  TS_NUM_KNOTS = -7,
 
-	/* Spline is not derivable */
-	TS_UNDERIVABLE = -8
+  /* Spline is not derivable */
+  TS_UNDERIVABLE = -8
 } tsError;
 
 /**
@@ -84,17 +84,17 @@ typedef enum
  */
 typedef enum
 {
-	/* Not available/Undefined. */
-	TS_NONE = 0,
+  /* Not available/Undefined. */
+  TS_NONE = 0,
 
-	/* Uniformly spaced knot vector. */
-	TS_OPENED = 1,
+  /* Uniformly spaced knot vector. */
+  TS_OPENED = 1,
 
-	/* Uniformly spaced knot vector with clamped end knots. */
-	TS_CLAMPED = 2,
+  /* Uniformly spaced knot vector with clamped end knots. */
+  TS_CLAMPED = 2,
 
-	/* Uniformly spaced knot vector with s(u) = order of spline. */
-	TS_BEZIERS = 3
+  /* Uniformly spaced knot vector with s(u) = order of spline. */
+  TS_BEZIERS = 3
 } tsBSplineType;
 
 /**
@@ -133,26 +133,26 @@ typedef enum
  */
 typedef struct
 {
-	/* Degree of B-Spline basis function. */
-	size_t deg;
+  /* Degree of B-Spline basis function. */
+  size_t deg;
 
-	/* A convenience field for deg+1. */
-	size_t order;
+  /* A convenience field for deg+1. */
+  size_t order;
 
-	/* Dimension of a control points. */
-	size_t dim;
+  /* Dimension of a control points. */
+  size_t dim;
 
-	/* Number of control points. */
-	size_t n_ctrlp;
+  /* Number of control points. */
+  size_t n_ctrlp;
 
-	/* Number of knots (n_ctrlp + deg + 1). */
-	size_t n_knots;
+  /* Number of knots (n_ctrlp + deg + 1). */
+  size_t n_knots;
 
-	/* Control points of a spline. */
-	tsReal *ctrlp;
+  /* Control points of a spline. */
+  tsReal *ctrlp;
 
-	/* Knot vector of a spline (ascending order). */
-	tsReal *knots;
+  /* Knot vector of a spline (ascending order). */
+  tsReal *knots;
 } tsBSpline;
 
 /**
@@ -243,29 +243,29 @@ typedef struct
  */
 typedef struct
 {
-	/* The evaluated knot value. */
-	tsReal u;
+  /* The evaluated knot value. */
+  tsReal u;
 
-	/* The index [u_k, u_k+1) */
-	size_t k;
+  /* The index [u_k, u_k+1) */
+  size_t k;
 
-	/* Multiplicity of u_k. */
-	size_t s;
+  /* Multiplicity of u_k. */
+  size_t s;
 
-	/* How many times u must be inserted to get the resulting point. */
-	size_t h;
+  /* How many times u must be inserted to get the resulting point. */
+  size_t h;
 
-	/* Dimension of a control point. */
-	size_t dim;
+  /* Dimension of a control point. */
+  size_t dim;
 
-	/* Number of points in 'points'. */
-	size_t n_points;
+  /* Number of points in 'points'. */
+  size_t n_points;
 
-	/* Points of the net used to evaluate u_k. */
-	tsReal *points;
+  /* Points of the net used to evaluate u_k. */
+  tsReal *points;
 
-	/* A convenient pointer to the result in 'points'. */
-	tsReal *result;
+  /* A convenient pointer to the result in 'points'. */
+  tsReal *result;
 } tsDeBoorNet;
 
 
@@ -284,6 +284,7 @@ typedef struct
  *
  * All values of \bspline are set to 0/NULL.
  */
+OSSIA_EXPORT
 void ts_bspline_default(tsBSpline *bspline);
 
 /**
@@ -300,9 +301,10 @@ void ts_bspline_default(tsBSpline *bspline);
  * @return TS_SUCCESS           on success.
  * @return TS_MALLOC            if allocating memory failed.
  */
+OSSIA_EXPORT
 tsError ts_bspline_copy(
-	const tsBSpline *original,
-	tsBSpline *copy
+  const tsBSpline *original,
+  tsBSpline *copy
 );
 
 /**
@@ -311,6 +313,7 @@ tsError ts_bspline_copy(
  * Moves all values from \from to \to and calls ::ts_bspline_default on \from
  * afterwards. Does nothing if \from == \to.
  */
+OSSIA_EXPORT
 void ts_bspline_move(tsBSpline *from, tsBSpline *to);
 
 /**
@@ -328,10 +331,11 @@ void ts_bspline_move(tsBSpline *from, tsBSpline *to);
  * @return TS_NUM_KNOTS        if \type == TS_BEZIERS and \n_ctrlp % \deg+1 != 0
  * @return TS_MALLOC           if allocating memory failed.
  */
+OSSIA_EXPORT
 tsError ts_bspline_new(
-	const size_t deg, const size_t dim, const size_t n_ctrlp,
-	const tsBSplineType type,
-	tsBSpline *bspline
+  const size_t deg, const size_t dim, const size_t n_ctrlp,
+  const tsBSplineType type,
+  tsBSpline *bspline
 );
 
 /**
@@ -357,9 +361,10 @@ tsError ts_bspline_new(
  * @return TS_DEG_GE_NCTRLP     if \n < 2.
  * @return TS_MALLOC            if allocating memory failed.
  */
+OSSIA_EXPORT
 tsError ts_bspline_interpolate_cubic(
-	const tsReal *points, const size_t n, const size_t dim,
-	tsBSpline *bspline
+  const tsReal *points, const size_t n, const size_t dim,
+  tsBSpline *bspline
 );
 
 /**
@@ -368,6 +373,7 @@ tsError ts_bspline_interpolate_cubic(
  * Frees all dynamically allocated memory and calls ::ts_deboornet_free
  * afterwards.
  */
+OSSIA_EXPORT
 void ts_bspline_free(tsBSpline *bspline);
 
 /**
@@ -375,6 +381,7 @@ void ts_bspline_free(tsBSpline *bspline);
  *
  * All values of \deBoorNet are set to 0/NULL.
  */
+OSSIA_EXPORT
 void ts_deboornet_default(tsDeBoorNet *deBoorNet);
 
 /**
@@ -391,9 +398,10 @@ void ts_deboornet_default(tsDeBoorNet *deBoorNet);
  * @return TS_SUCCESS           on success.
  * @return TS_MALLOC            if allocating memory failed.
  */
+OSSIA_EXPORT
 tsError ts_deboornet_copy(
-	const tsDeBoorNet *original,
-	tsDeBoorNet *copy
+  const tsDeBoorNet *original,
+  tsDeBoorNet *copy
 );
 
 /**
@@ -402,6 +410,7 @@ tsError ts_deboornet_copy(
  * Moves all values from \from to \to and calls ::ts_deboornet_default on
  * \from afterwards. Does nothing if \from == \to.
  */
+OSSIA_EXPORT
 void ts_deboornet_move(tsDeBoorNet *from, tsDeBoorNet *to);
 
 /**
@@ -418,9 +427,10 @@ void ts_deboornet_move(tsDeBoorNet *from, tsDeBoorNet *to);
  * @return TS_MULTIPLICITY      if multiplicity of \u > order of \bspline.
  * @return TS_U_UNDEFINED       if \bspline is not defined at \u.
  */
+OSSIA_EXPORT
 tsError ts_bspline_evaluate(
-	const tsBSpline *bspline, const tsReal u,
-	tsDeBoorNet *deBoorNet
+  const tsBSpline *bspline, const tsReal u,
+  tsDeBoorNet *deBoorNet
 );
 
 /**
@@ -429,6 +439,7 @@ tsError ts_bspline_evaluate(
  * Frees all dynamically allocated memory and calls ::ts_deboornet_default
  * afterwards.
  */
+OSSIA_EXPORT
 void ts_deboornet_free(tsDeBoorNet *deBoorNet);
 
 
@@ -526,9 +537,10 @@ void ts_deboornet_free(tsDeBoorNet *deBoorNet);
  *                              \original. NOTE: This will be fixed in the
  *                              future.
  */
+OSSIA_EXPORT
 tsError ts_bspline_derive(
-	const tsBSpline *original,
-	tsBSpline *derivative
+  const tsBSpline *original,
+  tsBSpline *derivative
 );
 
 /**
@@ -543,9 +555,10 @@ tsError ts_bspline_derive(
  * @return TS_MALLOC            if \bspline != \result and allocating
  *                              memory failed.
  */
+OSSIA_EXPORT
 tsError ts_bspline_set_ctrlp(
-	const tsBSpline *bspline, const tsReal *ctrlp,
-	tsBSpline *result
+  const tsBSpline *bspline, const tsReal *ctrlp,
+  tsBSpline *result
 );
 
 /**
@@ -560,9 +573,10 @@ tsError ts_bspline_set_ctrlp(
  * @return TS_MALLOC            if \bspline != \result and allocating
  *                              memory failed.
  */
+OSSIA_EXPORT
 tsError ts_bspline_set_knots(
-	const tsBSpline *bspline, const tsReal *knots,
-	tsBSpline *result
+  const tsBSpline *bspline, const tsReal *knots,
+  tsBSpline *result
 );
 
 /**
@@ -587,15 +601,16 @@ tsError ts_bspline_set_knots(
  * @return TS_KNOTS_DECR        if \min >= \max.
  * (The function uses ::ts_fequals in order to determine if \min == \max)
  */
+OSSIA_EXPORT
 tsError ts_bspline_fill_knots(
-	const tsBSpline *original, const tsBSplineType type, const tsReal min,
-	const tsReal max,
-	tsBSpline *result
+  const tsBSpline *original, const tsBSplineType type, const tsReal min,
+  const tsReal max,
+  tsBSpline *result
 );
-
+OSSIA_EXPORT
 tsError ts_bspline_insert_knot(
-	const tsBSpline *bspline, const tsReal u, const size_t n,
-	tsBSpline *result, size_t *k
+  const tsBSpline *bspline, const tsReal u, const size_t n,
+  tsBSpline *result, size_t *k
 );
 
 /**
@@ -624,14 +639,15 @@ tsError ts_bspline_insert_knot(
  *                                  the control points of \bspline.
  *      @return TS_MALLOC           if allocating memory failed.
  */
+OSSIA_EXPORT
 tsError ts_bspline_resize(
-	const tsBSpline *bspline, const int n, const int back,
-	tsBSpline *resized
+  const tsBSpline *bspline, const int n, const int back,
+  tsBSpline *resized
 );
-
+OSSIA_EXPORT
 tsError ts_bspline_split(
-	const tsBSpline *bspline, const tsReal u,
-	tsBSpline *split, size_t *k
+  const tsBSpline *bspline, const tsReal u,
+  tsBSpline *split, size_t *k
 );
 
 /**
@@ -657,14 +673,15 @@ tsError ts_bspline_split(
  * @return TS_MALLOC            if \original != \buckled and allocating
  *                              memory failed.
  */
+OSSIA_EXPORT
 tsError ts_bspline_buckle(
-	const tsBSpline *original, const tsReal b,
-	tsBSpline *buckled
+  const tsBSpline *original, const tsReal b,
+  tsBSpline *buckled
 );
-
+OSSIA_EXPORT
 tsError ts_bspline_to_beziers(
-	const tsBSpline *bspline,
-	tsBSpline *beziers
+  const tsBSpline *bspline,
+  tsBSpline *beziers
 );
 
 
@@ -684,6 +701,7 @@ tsError ts_bspline_to_beziers(
  * @return 1    if \x is equals to \y.
  * @return 0    otherwise.
  */
+OSSIA_EXPORT
 int ts_fequals(const tsReal x, const tsReal y);
 
 /**
@@ -691,6 +709,7 @@ int ts_fequals(const tsReal x, const tsReal y);
  * \err is not associated (indicating a bug) or is TS_SUCCESS (which is not an
  * actual error).
  */
+OSSIA_EXPORT
 const char* ts_enum_str(const tsError err);
 
 /**
@@ -698,6 +717,7 @@ const char* ts_enum_str(const tsError err);
  * associated. Keep in mind that by concept "unknown error" is not associated,
  * though, TS_SUCCESS is returned.
  */
+OSSIA_EXPORT
 tsError ts_str_enum(const char *str);
 
 /**
