@@ -118,6 +118,39 @@ xyz_u::value_type xyz_u::from_neutral(strong_value<xyz_u::neutral_unit> self)
         );
 }
 
+
+strong_value<hunter_lab_u::neutral_unit> hunter_lab_u::to_neutral(strong_value<hunter_lab_u::concrete_type> self)
+{
+  const auto l = self.dataspace_value[0];
+  const auto a = self.dataspace_value[1];
+  const auto b = self.dataspace_value[2];
+
+  const auto x = (a / 17.5) * (l / 10.0);
+  const auto y = l * l / 100.;
+  const auto z = b / 7.0 * l / 10.0;
+
+  ossia::xyz xyz{(float)((x+y) / 1.02), (float)y, (float)(-(z-y) / 0.847)};
+  return xyz;
+}
+
+hunter_lab_u::value_type hunter_lab_u::from_neutral(strong_value<hunter_lab_u::neutral_unit> self)
+{
+  // taken from https://github.com/berendeanicolae/ColorSpace/blob/master/src/Conversion.cpp
+  // should be parametrized on white
+  ossia::xyz xy{self};
+
+  const auto x = xy.dataspace_value[0];
+  const auto y = xy.dataspace_value[1];
+  const auto z = xy.dataspace_value[2];
+  const auto sqrt_y = std::sqrt(y);
+
+  const auto l = 10.0 * sqrt_y;
+  const auto a = (y != 0) ? (17.5 * (1.02 * x - y) / sqrt_y) : 0.;
+  const auto b = (y != 0) ? (7.0 * (y - 0.847 * z) / sqrt_y) : 0.;
+
+  return make_vec(l,a,b);
+}
+
 // ORIENTATION //
 strong_value<euler_u::neutral_unit> euler_u::to_neutral(strong_value<euler_u::concrete_type> self)
 {

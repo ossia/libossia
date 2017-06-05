@@ -229,6 +229,9 @@ struct OSSIA_EXPORT hunter_lab_u : public color_unit<hunter_lab_u>
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
   { return ossia::make_string_view("lab"); }
   using value_type = vec3f;
+
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self);
+  static value_type from_neutral(strong_value<neutral_unit> self);
 };
 
 struct OSSIA_EXPORT cie_lab_u : public color_unit<cie_lab_u>
