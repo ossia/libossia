@@ -100,6 +100,8 @@ else()
   endif()
 endif()
 
+target_compile_definitions(ossia PUBLIC TINYSPLINE_DOUBLE_PRECISION)
+
 if(NOT ANDROID)
   target_link_libraries(ossia PUBLIC boost)
 endif()

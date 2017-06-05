@@ -62,6 +62,3 @@
 [submodule "3rdparty/libartnet"]
 	path = 3rdparty/libartnet
 	url = https://github.com/OpenLightingProject/libartnet
-[submodule "3rdparty/tinyspline"]
-	path = 3rdparty/tinyspline
-	url = https://github.com/msteinbeck/tinyspline
