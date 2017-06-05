@@ -44,12 +44,6 @@
 [submodule "3rdparty/chobo-shl"]
 	path = 3rdparty/chobo-shl
 	url = https://github.com/Chobolabs/chobo-shl
-[submodule "3rdparty/libzmq"]
-	path = 3rdparty/libzmq
-	url = https://github.com/zeromq/libzmq
-[submodule "3rdparty/cppzmq"]
-	path = 3rdparty/cppzmq
-	url = https://github.com/zeromq/cppzmq
 [submodule "3rdparty/GSL"]
 	path = 3rdparty/GSL
 	url = https://github.com/Microsoft/GSL
@@ -65,3 +59,9 @@
 [submodule "3rdparty/Servus"]
 	path = 3rdparty/Servus
 	url = https://github.com/jcelerier/Servus
+[submodule "3rdparty/libartnet"]
+	path = 3rdparty/libartnet
+	url = https://github.com/OpenLightingProject/libartnet
+[submodule "3rdparty/tinyspline"]
+	path = 3rdparty/tinyspline
+	url = https://github.com/msteinbeck/tinyspline
