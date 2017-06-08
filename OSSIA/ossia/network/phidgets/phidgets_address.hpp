@@ -2,7 +2,7 @@
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/phidgets/detail/phidgetspp.hpp>
-
+#include <ossia/network/domain/domain.hpp>
 namespace ossia
 {
 class phidget_protocol;
